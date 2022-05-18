@@ -2,6 +2,6 @@
 resolver = "2"
 
 members = [
-    "gear-feeds-router",
-    "gear-feeds-channel"
+    "router",
+    "channel"
 ]
