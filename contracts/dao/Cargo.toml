@@ -1,0 +1,20 @@
+[package]
+name = "dao"
+version = "0.1.0"
+edition = "2021"
+authors = ["Gear Technologies"]
+license = "GPL-3.0"
+
+[dependencies]
+codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }
+dao-io = { path = "io" }
+ft-io = { git = "https://github.com/gear-quick-start/fungible-token.git" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
+primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"]}
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
+
+[dev-dependencies]
+gtest = { git = "https://github.com/gear-tech/gear.git" }
+
+[build-dependencies]
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
