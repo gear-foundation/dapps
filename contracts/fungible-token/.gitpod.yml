@@ -7,7 +7,7 @@ tasks:
       echo 'export CARGO_HOME="$HOME/.cargo"' >> ~/.bashrc
       source ~/.bashrc
     init: |
-      gp open contract/src/lib.rs
+      gp open src/lib.rs
       clear && printf '\e[3J' && history -c
 
 vscode:
