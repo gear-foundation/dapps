@@ -1,0 +1,7 @@
+.binpath
+.DS_Store
+target
+gear-feeds-channel/target
+gear-feeds-router/target
+gear-feeds-channel/.binpath
+gear-feeds-router/.binpath
