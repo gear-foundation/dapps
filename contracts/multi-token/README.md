@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-tech/erc1155">
+  <a href="https://gitpod.io/#https://github.com/gear-academy/erc1155">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="GEAR">
   </a>
 </p>
