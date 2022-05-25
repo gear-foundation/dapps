@@ -1,11 +1,16 @@
 <p align="center">
   <a href="https://gitpod.io/#https://github.com/gear-academy/ping">
-    <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="GEAR">
+    <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
 
 # Ping Pong
+
 An elementary application for familiarity with Gear. You send "PING" and the program responds with "PONG"
+
+## Prebuilt Binaries
+
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-academy/app/releases/tag/build).
 
 ## Building Locally
 
@@ -43,7 +48,7 @@ make build
 ### ✅ Run tests
 
 ```shell
-cargo test
+cargo test --release
 ```
 
 ... or ...
@@ -52,13 +57,13 @@ cargo test
 make test
 ```
 
-### Run everything with one command
+### 🚀 Run everything with one command
 
 ```shell
 make all
 ```
 
-... or ...
+... or just ...
 
 ```shell
 make
