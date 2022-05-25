@@ -10,14 +10,14 @@ use gstd::{ActorId, String};
 use gtest::{Log, Program, System};
 
 const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
-const USERS: &'static [u64] = &[3, 4, 5];
+const USERS: &[u64] = &[3, 4, 5];
 const TOKEN_ID: u128 = 1;
 const BALANCE: u128 = 100;
 
 fn init(sys: &System) -> Program {
     sys.init_logger();
 
-    let ft = Program::current(&sys);
+    let ft = Program::current(sys);
 
     let init_config = InitConfig {
         name: String::from("Gear"),
@@ -26,13 +26,13 @@ fn init(sys: &System) -> Program {
     };
 
     ft.send(USERS[0], init_config);
-    return ft;
+    ft
 }
 
 fn init_with_mint(sys: &System) {
     sys.init_logger();
 
-    let ft = Program::current(&sys);
+    let ft = Program::current(sys);
 
     let init_config = InitConfig {
         name: String::from("Gear"),
@@ -150,7 +150,7 @@ fn safe_transfer_from() {
 
     let failed_res = ft.send(
         from,
-        Action::SafeTransferFrom(from.into(), ZERO_ID.into(), TOKEN_ID, 10),
+        Action::SafeTransferFrom(from.into(), ZERO_ID, TOKEN_ID, 10),
     );
 
     assert!(failed_res.main_failed());

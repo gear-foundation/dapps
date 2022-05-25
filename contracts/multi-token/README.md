@@ -1,10 +1,19 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-academy/erc1155">
-    <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="GEAR">
+  <a href="https://gitpod.io/#https://github.com/gear-academy/multitoken">
+    <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
 
-# ERC-1155
+# Multitoken
+
+[![Build][build_badge]][build_href]
+[![License][lic_badge]][lic_href]
+
+[build_badge]: https://github.com/gear-academy/multitoken/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-academy/multitoken/actions/workflows/build.yml
+
+[lic_badge]: https://img.shields.io/badge/License-GPL%203.0-success
+[lic_href]: https://github.com/gear-academy/multitoken/blob/master/LICENSE
 
 ## Description
 
@@ -137,8 +146,11 @@ pub struct BalanceOfBatchReply {
 
 https://docs.openzeppelin.com/contracts/4.x/api/token/erc1155
 
+## Prebuilt Binaries
 
-## Using
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-academy/multitoken/releases/tag/build).
+
+## Building Locally
 
 ### ⚙️ Install Rust
 
@@ -159,10 +171,6 @@ rustup target add wasm32-unknown-unknown --toolchain nightly
 make init
 ```
 
-### ✍️ Edit the program
-
-Open [`src/lib.rs`](src/lib.rs) and address all `TODO`s there.
-
 ### 🏗️ Build
 
 ```shell
@@ -178,7 +186,7 @@ make build
 ### ✅ Run tests
 
 ```shell
-cargo test
+cargo test --release
 ```
 
 ... or ...
@@ -187,13 +195,13 @@ cargo test
 make test
 ```
 
-### Run everything with one command
+### 🚀 Run everything with one command
 
 ```shell
 make all
 ```
 
-... or ...
+... or just ...
 
 ```shell
 make
