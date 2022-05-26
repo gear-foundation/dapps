@@ -5,7 +5,11 @@ edition = "2021"
 license = "GPL-3.0"
 authors = ["Gear Technologies"]
 
+[lib]
+proc-macro = true
+
 [dependencies]
 syn = "1.0"
 quote = "1.0"
 proc-macro2 = "1.0"
+gear-lib-macros = { path = "macros" }
