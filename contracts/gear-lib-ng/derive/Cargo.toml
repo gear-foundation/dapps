@@ -1,0 +1,11 @@
+[package]
+name = "gear-lib-derive"
+version = "0.1.0"
+edition = "2021"
+license = "GPL-3.0"
+authors = ["Gear Technologies"]
+
+[dependencies]
+syn = "1.0"
+quote = "1.0"
+proc-macro2 = "1.0"
