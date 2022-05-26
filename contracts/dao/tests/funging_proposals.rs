@@ -4,10 +4,7 @@ use ft_io::*;
 use gtest::{Program, System};
 
 fn init_fungible_token(sys: &System) {
-    let ft = Program::from_file(
-        &sys,
-        "../target/wasm32-unknown-unknown/release/fungible_token.wasm",
-    );
+    let ft = Program::from_file(sys, "./target/fungible_token.wasm");
 
     let res = ft.send(
         100001,
@@ -21,7 +18,7 @@ fn init_fungible_token(sys: &System) {
 }
 
 fn init_dao(sys: &System) {
-    let dao = Program::current(&sys);
+    let dao = Program::current(sys);
     let res = dao.send(
         100001,
         InitDao {
@@ -67,9 +64,9 @@ fn add_member(
         3,
         DaoAction::SubmitMembershipProposal {
             applicant: applicant.into(),
-            token_tribute: token_tribute,
-            shares_requested: shares_requested,
-            quorum: quorum,
+            token_tribute,
+            shares_requested,
+            quorum,
             details: "".to_string(),
         },
     );
@@ -78,7 +75,7 @@ fn add_member(
     let res = dao.send(
         3,
         DaoAction::SubmitVote {
-            proposal_id: proposal_id.clone(),
+            proposal_id,
             vote: Vote::Yes,
         },
     );
@@ -86,7 +83,7 @@ fn add_member(
 
     sys.spend_blocks(1000000001);
 
-    let res = dao.send(3, DaoAction::ProcessProposal(proposal_id.clone()));
+    let res = dao.send(3, DaoAction::ProcessProposal(proposal_id));
     assert!(!res.main_failed());
 }
 
