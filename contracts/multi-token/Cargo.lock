@@ -585,6 +585,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "gear-lib"
+version = "0.1.0"
+source = "git+https://github.com/gear-academy/gear-lib.git#7270c85d4a1d2fa84c32823a87af4d8ceb4a13a2"
+dependencies = [
+ "gstd",
+ "parity-scale-codec",
+ "primitive-types",
+ "scale-info",
+]
+
+[[package]]
+name = "gear-lib-derive"
+version = "0.1.0"
+source = "git+https://github.com/gear-academy/gear-lib.git#7270c85d4a1d2fa84c32823a87af4d8ceb4a13a2"
+dependencies = [
+ "gear-lib-macros",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "gear-lib-macros"
+version = "0.1.0"
+source = "git+https://github.com/gear-academy/gear-lib.git#7270c85d4a1d2fa84c32823a87af4d8ceb4a13a2"
+
+[[package]]
 name = "gear-wasm-builder"
 version = "0.1.2"
 source = "git+https://github.com/gear-tech/gear.git#9bd56a0aa17931985c80ec3fa2377518eacc25bb"
@@ -821,9 +848,23 @@ checksum = "7843ec2de400bcbc6a6328c958dc38e5359da6e93e72e37bc5246bf1ae776389"
 name = "multitoken"
 version = "0.1.0"
 dependencies = [
+ "gear-lib",
+ "gear-lib-derive",
  "gear-wasm-builder",
  "gstd",
  "gtest",
+ "multitoken-io",
+ "parity-scale-codec",
+ "primitive-types",
+ "scale-info",
+]
+
+[[package]]
+name = "multitoken-io"
+version = "0.1.0"
+dependencies = [
+ "gear-lib",
+ "gstd",
  "parity-scale-codec",
  "primitive-types",
  "scale-info",
