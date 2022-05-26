@@ -5,7 +5,12 @@
 </p>
 
 # Fungible token
+
 An example of a Fungible token contract which similar to ERC-20
+
+## Prebuilt Binaries
+
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-academy/fungible-token/releases/tag/build).
 
 ## Building Locally
 
@@ -28,10 +33,6 @@ rustup target add wasm32-unknown-unknown --toolchain nightly
 make init
 ```
 
-### ✍️ Edit the program
-
-Open [`src/lib.rs`](src/lib.rs) and address all `TODO`s there.
-
 ### 🏗️ Build
 
 ```shell
@@ -47,7 +48,7 @@ make build
 ### ✅ Run tests
 
 ```shell
-cargo test
+cargo test --release
 ```
 
 ... or ...
@@ -56,13 +57,13 @@ cargo test
 make test
 ```
 
-### Run everything with one command
+### 🚀 Run everything with one command
 
 ```shell
 make all
 ```
 
-... or ...
+... or just ...
 
 ```shell
 make
