@@ -7,12 +7,12 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use codec::Encode;
 use gtest::{Program, System};
 use lt_io::*;
-const USERS: &'static [u64] = &[3, 4, 5, 0];
+const USERS: &[u64] = &[3, 4, 5, 0];
 
 fn init(sys: &System) {
     sys.init_logger();
 
-    let lt = Program::current(&sys);
+    let lt = Program::current(sys);
 
     let res = lt.send_bytes_with_value(USERS[0], b"Init", 10000);
 

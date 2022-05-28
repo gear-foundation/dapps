@@ -8,10 +8,10 @@ use ft_io::*;
 use gstd::String;
 use gtest::{Program, System};
 use lt_io::*;
-const USERS: &'static [u64] = &[1, 2, 3, 4, 5];
+const USERS: &[u64] = &[1, 2, 3, 4, 5];
 
 fn init_lottery(sys: &System) {
-    let lt = Program::current(&sys);
+    let lt = Program::current(sys);
 
     let res = lt.send_bytes_with_value(USERS[2], b"Init", 10000);
 
@@ -19,10 +19,7 @@ fn init_lottery(sys: &System) {
 }
 
 fn init_fungible_token(sys: &System) {
-    let ft = Program::from_file(
-        &sys,
-        "../target/wasm32-unknown-unknown/release/fungible_token.wasm",
-    );
+    let ft = Program::from_file(sys, "./target/fungible_token.wasm");
 
     let res = ft.send(
         USERS[2],
