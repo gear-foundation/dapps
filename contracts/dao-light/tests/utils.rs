@@ -1,16 +1,12 @@
-use codec::Encode;
 use dao_light_io::*;
 use ft_io::*;
 use gtest::{Program, RunResult, System};
-pub const MEMBERS: &'static [u64] = &[3, 4, 5, 6];
+pub const MEMBERS: &[u64] = &[3, 4, 5, 6];
 pub const ZERO_ID: u64 = 0;
 
 pub fn init_fungible_token(sys: &System) {
     sys.init_logger();
-    let ft = Program::from_file(
-        &sys,
-        "../target/wasm32-unknown-unknown/release/fungible_token.wasm",
-    );
+    let ft = Program::from_file(sys, "./target/fungible_token.wasm");
 
     let res = ft.send(
         MEMBERS[0],
@@ -29,7 +25,7 @@ pub fn init_fungible_token(sys: &System) {
 
 pub fn init_dao(sys: &System) {
     sys.init_logger();
-    let dao = Program::current(&sys);
+    let dao = Program::current(sys);
     let res = dao.send(
         MEMBERS[0],
         InitDao {
@@ -59,13 +55,7 @@ pub fn proposal(dao: &Program, member: u64, applicant: u64, amount: u128) -> Run
 }
 
 pub fn vote(dao: &Program, member: u64, proposal_id: u128, vote: Vote) -> RunResult {
-    dao.send(
-        member,
-        DaoAction::SubmitVote {
-            proposal_id,
-            vote: vote.clone(),
-        },
-    )
+    dao.send(member, DaoAction::SubmitVote { proposal_id, vote })
 }
 
 pub fn process(dao: &Program, member: u64, proposal_id: u128) -> RunResult {
@@ -73,6 +63,5 @@ pub fn process(dao: &Program, member: u64, proposal_id: u128) -> RunResult {
 }
 
 pub fn ragequit(dao: &Program, member: u64, amount: u128) -> RunResult {
-    let res = dao.send(member, DaoAction::RageQuit { amount });
-    res
+    dao.send(member, DaoAction::RageQuit { amount })
 }

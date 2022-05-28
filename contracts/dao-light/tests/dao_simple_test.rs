@@ -1,6 +1,6 @@
 use codec::Encode;
 use dao_light_io::*;
-use gtest::{Program, System};
+use gtest::System;
 mod utils;
 use utils::*;
 

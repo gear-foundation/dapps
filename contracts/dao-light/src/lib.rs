@@ -68,15 +68,14 @@ impl Dao {
             });
 
         self.total_shares = self.total_shares.saturating_add(share);
-        
         msg::reply(
-            DaoEvent::Deposit { 
+            DaoEvent::Deposit {
                 member: msg::source(),
                 share,
             },
             0,
-        ).unwrap();
-
+        )
+        .unwrap();
     }
 
     /// The proposal of funding

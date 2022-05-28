@@ -11,11 +11,10 @@ primitive-types = { version = "0.11.1", default-features = false, features = ["s
 codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }
 scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
 dao-light-io = { path = "io" }
-ft-io = { git = "https://github.com/gear-quick-start/fungible-token.git" }
+ft-io = { git = "https://github.com/gear-academy/fungible-token.git" }
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git" }
 
 [build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
-
