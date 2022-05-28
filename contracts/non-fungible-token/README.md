@@ -1,11 +1,26 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-academy/non-fungible-token">
-    <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="GEAR">
+  <a href="https://gitpod.io/#https://github.com/gear-academy/non-fungible-token" target="_blank">
+    <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
 
 # Non Fungible token
+
+[![Build][build_badge]][build_href]
+[![License][lic_badge]][lic_href]
+
+[build_badge]: https://github.com/gear-academy/non-fungible-token/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-academy/non-fungible-token/actions/workflows/build.yml
+
+[lic_badge]: https://img.shields.io/badge/License-GPL%203.0-success
+[lic_href]: https://github.com/gear-academy/non-fungible-token/blob/master/LICENSE
+
+
 An example of simple NFT.
+
+## Prebuilt Binaries
+
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-academy/non-fungible-token/releases/tag/build).
 
 ## Building Locally
 
@@ -43,7 +58,7 @@ make build
 ### ✅ Run tests
 
 ```shell
-cargo test
+cargo test --release
 ```
 
 ... or ...
@@ -52,13 +67,13 @@ cargo test
 make test
 ```
 
-### Run everything with one command
+### 🚀 Run everything with one command
 
 ```shell
 make all
 ```
 
-... or ...
+... or just ...
 
 ```shell
 make
