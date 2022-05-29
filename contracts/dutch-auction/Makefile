@@ -31,5 +31,6 @@ linter:
 pre-commit: fmt linter test
 
 test: build
+	@if [ ! -f "./target/nft_example.wasm" ]; then wget "https://github.com/gear-academy/non-fungible-token/releases/download/build/nft_example.wasm" -O "./target/nft_example.wasm"; fi
 	@echo ──────────── Run tests ────────────────────────
 	@cargo +nightly test --release

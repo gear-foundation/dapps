@@ -33,15 +33,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "08f9b8508dccb7687a1d6c4ce66b2b0ecef467c94667de27d8d7fe1f8d2a9cdc"
 
 [[package]]
-name = "app"
-version = "0.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gstd",
- "gtest",
-]
-
-[[package]]
 name = "arrayvec"
 version = "0.4.12"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -65,6 +56,16 @@ dependencies = [
  "hermit-abi",
  "libc",
  "winapi",
+]
+
+[[package]]
+name = "auction-io"
+version = "0.1.0"
+dependencies = [
+ "gstd",
+ "parity-scale-codec",
+ "primitive-types",
+ "scale-info",
 ]
 
 [[package]]
@@ -390,6 +391,21 @@ dependencies = [
  "page_size",
  "static_assertions",
  "str-buf",
+]
+
+[[package]]
+name = "dutch-auction"
+version = "0.1.0"
+dependencies = [
+ "auction-io",
+ "gear-wasm-builder",
+ "gstd",
+ "gtest",
+ "nft-example-io",
+ "non-fungible-token",
+ "parity-scale-codec",
+ "primitive-types",
+ "scale-info",
 ]
 
 [[package]]
@@ -827,10 +843,33 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7843ec2de400bcbc6a6328c958dc38e5359da6e93e72e37bc5246bf1ae776389"
 
 [[package]]
+name = "nft-example-io"
+version = "0.1.0"
+source = "git+https://github.com/gear-academy/non-fungible-token.git#702bf7350cda5492b2d158a75d655aaaddb874b4"
+dependencies = [
+ "gstd",
+ "parity-scale-codec",
+ "primitive-types",
+ "scale-info",
+]
+
+[[package]]
 name = "nodrop"
 version = "0.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72ef4a56884ca558e5ddb05a1d1e7e1bfd9a68d9ed024c21704cc98872dae1bb"
+
+[[package]]
+name = "non-fungible-token"
+version = "0.1.0"
+source = "git+https://github.com/gear-academy/non-fungible-token.git#702bf7350cda5492b2d158a75d655aaaddb874b4"
+dependencies = [
+ "gear-wasm-builder",
+ "gstd",
+ "parity-scale-codec",
+ "primitive-types",
+ "scale-info",
+]
 
 [[package]]
 name = "num_cpus"

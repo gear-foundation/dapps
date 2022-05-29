@@ -1,12 +1,18 @@
 [package]
-name = "app"
+name = "dutch-auction"
 version = "0.1.0"
 edition = "2021"
 license = "GPL-3.0"
 authors = ["Gear Technologies"]
 
 [dependencies]
+codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive"] }
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
+non-fungible-token = { git = "https://github.com/gear-academy/non-fungible-token.git" }
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
+auction-io = { path = "io" }
+primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"] }
+nft-example-io = { git = "https://github.com/gear-academy/non-fungible-token.git" }
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git" }
