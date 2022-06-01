@@ -1,8 +1,6 @@
 [workspace]
 resolver = "2"
 members = [
-    "nft-example",
-    "nft-marketplace/marketplace",
-    "nft-marketplace/nft",
-    "non-fungible-token",
+    "nft",
+    "nft-marketplace",
 ]

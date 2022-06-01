@@ -623,6 +623,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "gear-lib"
+version = "0.1.0"
+source = "git+https://github.com/gear-academy/gear-lib.git#3490226f6cf2c54bd4d766d843812b5596de6b50"
+dependencies = [
+ "gstd",
+ "parity-scale-codec",
+ "primitive-types",
+ "scale-info",
+]
+
+[[package]]
+name = "gear-lib-derive"
+version = "0.1.0"
+source = "git+https://github.com/gear-academy/gear-lib.git#3490226f6cf2c54bd4d766d843812b5596de6b50"
+dependencies = [
+ "gear-lib-macros",
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
+name = "gear-lib-macros"
+version = "0.1.0"
+source = "git+https://github.com/gear-academy/gear-lib.git#3490226f6cf2c54bd4d766d843812b5596de6b50"
+
+[[package]]
 name = "gear-wasm-builder"
 version = "0.1.2"
 source = "git+https://github.com/gear-tech/gear.git#9084c2e2fa2d74eee01fe68d67d0239c18da00d8"
@@ -881,38 +908,12 @@ checksum = "7843ec2de400bcbc6a6328c958dc38e5359da6e93e72e37bc5246bf1ae776389"
 name = "nft"
 version = "0.1.0"
 dependencies = [
- "ft-io",
+ "gear-lib",
+ "gear-lib-derive",
  "gear-wasm-builder",
  "gstd",
  "gtest",
- "market-io",
  "nft-io",
- "non-fungible-token",
- "parity-scale-codec",
- "primitive-types",
- "royalties",
- "scale-info",
-]
-
-[[package]]
-name = "nft-example"
-version = "0.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "nft-example-io",
- "non-fungible-token",
- "parity-scale-codec",
- "primitive-types",
- "scale-info",
-]
-
-[[package]]
-name = "nft-example-io"
-version = "0.1.0"
-dependencies = [
- "gstd",
  "parity-scale-codec",
  "primitive-types",
  "scale-info",
@@ -922,10 +923,10 @@ dependencies = [
 name = "nft-io"
 version = "0.1.0"
 dependencies = [
+ "gear-lib",
  "gstd",
  "parity-scale-codec",
  "primitive-types",
- "royalties",
  "scale-info",
 ]
 
@@ -934,6 +935,7 @@ name = "nft-marketplace"
 version = "0.1.0"
 dependencies = [
  "ft-io",
+ "gear-lib",
  "gear-wasm-builder",
  "gstd",
  "gtest",
@@ -950,17 +952,6 @@ name = "nodrop"
 version = "0.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72ef4a56884ca558e5ddb05a1d1e7e1bfd9a68d9ed024c21704cc98872dae1bb"
-
-[[package]]
-name = "non-fungible-token"
-version = "0.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gstd",
- "parity-scale-codec",
- "primitive-types",
- "scale-info",
-]
 
 [[package]]
 name = "num_cpus"
@@ -1240,16 +1231,6 @@ dependencies = [
  "libc",
  "mach",
  "winapi",
-]
-
-[[package]]
-name = "royalties"
-version = "0.1.0"
-dependencies = [
- "gstd",
- "parity-scale-codec",
- "primitive-types",
- "scale-info",
 ]
 
 [[package]]
