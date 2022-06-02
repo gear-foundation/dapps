@@ -48,9 +48,9 @@ impl Auction {
         self.is_active = false;
         let refund = msg::value() - price;
 
-        let _transfer_response: nft_example_io::Event = msg::send_and_wait_for_reply(
+        let _transfer_response: Vec<u8> = msg::send_and_wait_for_reply(
             self.nft.contract_id,
-            nft_example_io::Action::Transfer {
+            nft_io::NFTAction::Transfer {
                 to: msg::source(),
                 token_id: self.nft.token_id,
             },

@@ -398,11 +398,11 @@ name = "dutch-auction"
 version = "0.1.0"
 dependencies = [
  "auction-io",
+ "gear-lib",
  "gear-wasm-builder",
  "gstd",
  "gtest",
- "nft-example-io",
- "non-fungible-token",
+ "nft-io",
  "parity-scale-codec",
  "primitive-types",
  "scale-info",
@@ -533,7 +533,7 @@ dependencies = [
 [[package]]
 name = "galloc"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dc204c5be88f33dc57ed3a737718a58a0314a5aa"
+source = "git+https://github.com/gear-tech/gear.git#d068068f0a39fcd295544a0eedd4630a41494e4d"
 dependencies = [
  "dlmalloc",
 ]
@@ -541,12 +541,16 @@ dependencies = [
 [[package]]
 name = "gcore"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dc204c5be88f33dc57ed3a737718a58a0314a5aa"
+source = "git+https://github.com/gear-tech/gear.git#d068068f0a39fcd295544a0eedd4630a41494e4d"
+dependencies = [
+ "gear-core-errors",
+ "parity-scale-codec",
+]
 
 [[package]]
 name = "gear-backend-common"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dc204c5be88f33dc57ed3a737718a58a0314a5aa"
+source = "git+https://github.com/gear-tech/gear.git#d068068f0a39fcd295544a0eedd4630a41494e4d"
 dependencies = [
  "derive_more",
  "gear-core",
@@ -557,20 +561,21 @@ dependencies = [
 [[package]]
 name = "gear-backend-wasmtime"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dc204c5be88f33dc57ed3a737718a58a0314a5aa"
+source = "git+https://github.com/gear-tech/gear.git#d068068f0a39fcd295544a0eedd4630a41494e4d"
 dependencies = [
  "derive_more",
  "gear-backend-common",
  "gear-core",
  "gear-core-errors",
  "log",
+ "parity-scale-codec",
  "wasmtime",
 ]
 
 [[package]]
 name = "gear-core"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dc204c5be88f33dc57ed3a737718a58a0314a5aa"
+source = "git+https://github.com/gear-tech/gear.git#d068068f0a39fcd295544a0eedd4630a41494e4d"
 dependencies = [
  "blake2-rfc",
  "derive_more",
@@ -587,7 +592,7 @@ dependencies = [
 [[package]]
 name = "gear-core-errors"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dc204c5be88f33dc57ed3a737718a58a0314a5aa"
+source = "git+https://github.com/gear-tech/gear.git#d068068f0a39fcd295544a0eedd4630a41494e4d"
 dependencies = [
  "derive_more",
  "parity-scale-codec",
@@ -597,7 +602,7 @@ dependencies = [
 [[package]]
 name = "gear-core-processor"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dc204c5be88f33dc57ed3a737718a58a0314a5aa"
+source = "git+https://github.com/gear-tech/gear.git#d068068f0a39fcd295544a0eedd4630a41494e4d"
 dependencies = [
  "anyhow",
  "blake2-rfc",
@@ -610,9 +615,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "gear-lib"
+version = "0.1.0"
+source = "git+https://github.com/gear-academy/gear-lib.git#3490226f6cf2c54bd4d766d843812b5596de6b50"
+dependencies = [
+ "gstd",
+ "parity-scale-codec",
+ "primitive-types",
+ "scale-info",
+]
+
+[[package]]
 name = "gear-wasm-builder"
 version = "0.1.2"
-source = "git+https://github.com/gear-tech/gear.git#dc204c5be88f33dc57ed3a737718a58a0314a5aa"
+source = "git+https://github.com/gear-tech/gear.git#d068068f0a39fcd295544a0eedd4630a41494e4d"
 dependencies = [
  "anyhow",
  "cargo_metadata",
@@ -650,12 +666,13 @@ dependencies = [
 [[package]]
 name = "gstd"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dc204c5be88f33dc57ed3a737718a58a0314a5aa"
+source = "git+https://github.com/gear-tech/gear.git#d068068f0a39fcd295544a0eedd4630a41494e4d"
 dependencies = [
  "bs58",
  "futures",
  "galloc",
  "gcore",
+ "gear-core-errors",
  "gstd-codegen",
  "hex",
  "parity-scale-codec",
@@ -666,7 +683,7 @@ dependencies = [
 [[package]]
 name = "gstd-codegen"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dc204c5be88f33dc57ed3a737718a58a0314a5aa"
+source = "git+https://github.com/gear-tech/gear.git#d068068f0a39fcd295544a0eedd4630a41494e4d"
 dependencies = [
  "quote",
  "syn",
@@ -675,7 +692,7 @@ dependencies = [
 [[package]]
 name = "gtest"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dc204c5be88f33dc57ed3a737718a58a0314a5aa"
+source = "git+https://github.com/gear-tech/gear.git#d068068f0a39fcd295544a0eedd4630a41494e4d"
 dependencies = [
  "colored",
  "env_logger",
@@ -738,9 +755,9 @@ dependencies = [
 
 [[package]]
 name = "indexmap"
-version = "1.8.1"
+version = "1.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "0f647032dfaa1f8b6dc29bd3edb7bbef4861b8b8007ebb118d6db284fd59f6ee"
+checksum = "e6012d540c5baa3589337a98ce73408de9b5a25ec9fc2c6fd6be8f0d39e0ca5a"
 dependencies = [
  "autocfg",
  "hashbrown",
@@ -829,9 +846,9 @@ dependencies = [
 
 [[package]]
 name = "miniz_oxide"
-version = "0.5.1"
+version = "0.5.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d2b29bd4bc3f33391105ebee3589c19197c4271e3e5a9ec9bfe8127eeff8f082"
+checksum = "6f5c75688da582b8ffc1f1799e9db273f32133c49e048f614d22ec3256773ccc"
 dependencies = [
  "adler",
 ]
@@ -843,10 +860,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7843ec2de400bcbc6a6328c958dc38e5359da6e93e72e37bc5246bf1ae776389"
 
 [[package]]
-name = "nft-example-io"
+name = "nft-io"
 version = "0.1.0"
-source = "git+https://github.com/gear-academy/non-fungible-token.git#702bf7350cda5492b2d158a75d655aaaddb874b4"
+source = "git+https://github.com/gear-academy/non-fungible-token.git#629056e92551ee6b2d54fe7af76fc755361ffd15"
 dependencies = [
+ "gear-lib",
  "gstd",
  "parity-scale-codec",
  "primitive-types",
@@ -858,18 +876,6 @@ name = "nodrop"
 version = "0.1.14"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "72ef4a56884ca558e5ddb05a1d1e7e1bfd9a68d9ed024c21704cc98872dae1bb"
-
-[[package]]
-name = "non-fungible-token"
-version = "0.1.0"
-source = "git+https://github.com/gear-academy/non-fungible-token.git#702bf7350cda5492b2d158a75d655aaaddb874b4"
-dependencies = [
- "gear-wasm-builder",
- "gstd",
- "parity-scale-codec",
- "primitive-types",
- "scale-info",
-]
 
 [[package]]
 name = "num_cpus"
@@ -1276,9 +1282,9 @@ checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
 
 [[package]]
 name = "str-buf"
-version = "2.0.4"
+version = "2.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5d3f6746ae4fb2c851c6ad2fdaa1090f6777315bc7522b2a2bc5897e091eefb2"
+checksum = "0873cb29201126440dcc78d0b1f5a13d917e78831778429a7920ca9c7f3dae1e"
 
 [[package]]
 name = "syn"
