@@ -32,7 +32,7 @@ fn init(sys: &System) -> Program {
 }
 
 fn init_nft(sys: &System, owner: u64) {
-    let nft_program = Program::from_file(sys, "./target/nft_example.wasm");
+    let nft_program = Program::from_file(sys, "./target/nft.wasm");
 
     nft_program.send(
         owner,
