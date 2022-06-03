@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-academy/escrow" target="_blank">
+  <a href="https://gitpod.io/#https://github.com/gear-dapps/escrow" target="_blank">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
@@ -9,15 +9,15 @@
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
 
-[build_badge]: https://github.com/gear-academy/escrow/workflows/Build/badge.svg
-[build_href]: https://github.com/gear-academy/escrow/actions/workflows/build.yml
+[build_badge]: https://github.com/gear-dapps/escrow/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-dapps/escrow/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-GPL%203.0-success
-[lic_href]: https://github.com/gear-academy/escrow/blob/master/LICENSE
+[lic_href]: https://github.com/gear-dapps/escrow/blob/master/LICENSE
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-academy/escrow/releases/tag/build).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/escrow/releases/tag/build).
 
 ## Building Locally
 
