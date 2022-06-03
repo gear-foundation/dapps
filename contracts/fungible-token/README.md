@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-academy/fungible-token">
+  <a href="https://gitpod.io/#https://github.com/gear-dapps/fungible-token">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="GEAR">
   </a>
 </p>
@@ -10,7 +10,7 @@ An example of a Fungible token contract which similar to ERC-20
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-academy/fungible-token/releases/tag/build).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/fungible-token/releases/tag/build).
 
 ## Building Locally
 
