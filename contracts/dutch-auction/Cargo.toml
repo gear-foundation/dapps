@@ -11,8 +11,8 @@ gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
 scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
 auction-io = { path = "io" }
 primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"] }
-nft-io = { git = "https://github.com/gear-academy/non-fungible-token.git" }
-gear-lib = { git = "https://github.com/gear-academy/gear-lib.git" }
+nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git" }
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git" }
