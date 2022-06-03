@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-academy/multitoken">
+  <a href="https://gitpod.io/#https://github.com/gear-dapps/multitoken">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
@@ -9,11 +9,11 @@
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
 
-[build_badge]: https://github.com/gear-academy/multitoken/workflows/Build/badge.svg
-[build_href]: https://github.com/gear-academy/multitoken/actions/workflows/build.yml
+[build_badge]: https://github.com/gear-dapps/multitoken/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-dapps/multitoken/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-GPL%203.0-success
-[lic_href]: https://github.com/gear-academy/multitoken/blob/master/LICENSE
+[lic_href]: https://github.com/gear-dapps/multitoken/blob/master/LICENSE
 
 ## Description
 
@@ -148,7 +148,7 @@ https://docs.openzeppelin.com/contracts/4.x/api/token/erc1155
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-academy/multitoken/releases/tag/build).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/multitoken/releases/tag/build).
 
 ## Building Locally
 
