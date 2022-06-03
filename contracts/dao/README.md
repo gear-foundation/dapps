@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-academy/dao" target="_blank">
+  <a href="https://gitpod.io/#https://github.com/gear-dapps/dao" target="_blank">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
@@ -9,17 +9,17 @@
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
 
-[build_badge]: https://github.com/gear-academy/dao/workflows/Build/badge.svg
-[build_href]: https://github.com/gear-academy/dao/actions/workflows/build.yml
+[build_badge]: https://github.com/gear-dapps/dao/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-dapps/dao/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-GPL%203.0-success
-[lic_href]: https://github.com/gear-academy/dao/blob/master/LICENSE
+[lic_href]: https://github.com/gear-dapps/dao/blob/master/LICENSE
 
 An example of DAO application.
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-academy/dao/releases/tag/build).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/dao/releases/tag/build).
 
 ## Building Locally
 

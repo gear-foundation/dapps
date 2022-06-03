@@ -465,7 +465,7 @@ dependencies = [
 [[package]]
 name = "ft-io"
 version = "0.1.0"
-source = "git+https://github.com/gear-academy/fungible-token.git#08642d0788de5beaf7177eeb079f43389ac8ffcb"
+source = "git+https://github.com/gear-dapps/fungible-token.git#08642d0788de5beaf7177eeb079f43389ac8ffcb"
 dependencies = [
  "gstd",
  "parity-scale-codec",
