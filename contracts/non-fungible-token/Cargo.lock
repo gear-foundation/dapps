@@ -468,7 +468,7 @@ dependencies = [
 [[package]]
 name = "ft-io"
 version = "0.1.0"
-source = "git+https://github.com/gear-academy/fungible-token.git#08642d0788de5beaf7177eeb079f43389ac8ffcb"
+source = "git+https://github.com/gear-dapps/fungible-token.git#4da67648659e58dc2c60a9a589cdfc4f38d58329"
 dependencies = [
  "gstd",
  "parity-scale-codec",
@@ -630,7 +630,7 @@ dependencies = [
 [[package]]
 name = "gear-lib"
 version = "0.1.0"
-source = "git+https://github.com/gear-academy/gear-lib.git#3490226f6cf2c54bd4d766d843812b5596de6b50"
+source = "git+https://github.com/gear-dapps/gear-lib.git#a7ddecc78afd222558ae2577c4fc93dee650e959"
 dependencies = [
  "gstd",
  "parity-scale-codec",
@@ -641,7 +641,7 @@ dependencies = [
 [[package]]
 name = "gear-lib-derive"
 version = "0.1.0"
-source = "git+https://github.com/gear-academy/gear-lib.git#3490226f6cf2c54bd4d766d843812b5596de6b50"
+source = "git+https://github.com/gear-dapps/gear-lib.git#a7ddecc78afd222558ae2577c4fc93dee650e959"
 dependencies = [
  "gear-lib-macros",
  "proc-macro2",
@@ -652,7 +652,7 @@ dependencies = [
 [[package]]
 name = "gear-lib-macros"
 version = "0.1.0"
-source = "git+https://github.com/gear-academy/gear-lib.git#3490226f6cf2c54bd4d766d843812b5596de6b50"
+source = "git+https://github.com/gear-dapps/gear-lib.git#a7ddecc78afd222558ae2577c4fc93dee650e959"
 
 [[package]]
 name = "gear-wasm-builder"
