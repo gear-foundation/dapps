@@ -3,11 +3,11 @@
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
 
-[build_badge]: https://github.com/gear-academy/gear-lib/workflows/Build/badge.svg
-[build_href]: https://github.com/gear-academy/gear-lib/actions/workflows/build.yml
+[build_badge]: https://github.com/gear-dapps/gear-lib/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-dapps/gear-lib/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-GPL%203.0-success
-[lic_href]: https://github.com/gear-academy/gear-lib/blob/master/LICENSE
+[lic_href]: https://github.com/gear-dapps/gear-lib/blob/master/LICENSE
 
 <!-- Description starts here -->
 
