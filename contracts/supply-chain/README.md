@@ -1,38 +1,25 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-academy/app" target="_blank">
+  <a href="https://gitpod.io/#https://github.com/gear-dapps/supply-chain" target="_blank">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
 
-# Gear Template App
+# Supply chain
 
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
 
-[build_badge]: https://github.com/gear-academy/app/workflows/Build/badge.svg
-[build_href]: https://github.com/gear-academy/app/actions/workflows/build.yml
+[build_badge]: https://github.com/gear-dapps/supply-chain/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-dapps/supply-chain/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-GPL%203.0-success
-[lic_href]: https://github.com/gear-academy/app/blob/master/LICENSE
+[lic_href]: https://github.com/gear-dapps/supply-chain/blob/master/LICENSE
 
-<!-- Description starts here -->
-
-Template application. Use this repository as a template when creating a new application repo.
-
-> https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template
-
-<!-- End of description -->
-
-## Initial checklist after creating a new repo
-
-- [ ] Change app name in `Cargo.toml`
-- [ ] Fix Gitpod/badge/releases links in `README.md` (replace `gear-academy/app` with `gear-academy/<my-new-app>`)
-- [ ] Add description in `README.md`
-- [ ] Remove this section
+An example of a supply chain smart contract.
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-academy/app/releases/tag/build).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/supply-chain/releases/tag/build).
 
 ## Building Locally
 
