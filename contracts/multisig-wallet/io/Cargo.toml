@@ -1,19 +1,14 @@
 [package]
-name = "app"
+name = "multisig-wallet-io"
 version = "0.1.0"
 edition = "2021"
 license = "GPL-3.0"
 authors = ["Gear Technologies"]
 
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
 [dependencies]
-codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive"] }
+codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
-multisig-wallet-io = { path = "io" }
 primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"]}
 scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
-
-[dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git" }
-
-[build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
