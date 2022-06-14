@@ -9,7 +9,7 @@ const SUBSCRIBER: [u8; 32] = [2; 32];
 
 fn init_with_msg(sys: &System) {
     let feeds_channel = Program::from_file(
-        &sys,
+        sys,
         "../target/wasm32-unknown-unknown/release/gear_feeds_channel.wasm",
     );
     // ⚠️ TODO: Change the text message
@@ -44,8 +44,6 @@ fn meta() {
 }
 
 #[test]
-// ⚠️ TODO: Remove `#[should_panic]` after fixing the contract
-#[should_panic]
 fn subscribe_and_unsubscribe() {
     let sys = System::new();
     sys.init_logger();

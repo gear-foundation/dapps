@@ -37,10 +37,12 @@ pub unsafe extern "C" fn init() {
 
 #[no_mangle]
 pub unsafe extern "C" fn handle() {
-    let action: ChannelAction = msg::load().expect(&format!(
-        "CHANNEL {:?}: Unable to decode Channel Action",
-        STATE.name()
-    ));
+    let action: ChannelAction = msg::load().unwrap_or_else(|_| {
+        panic!(
+            "CHANNEL {:?}: Unable to decode Channel Action",
+            STATE.name()
+        )
+    });
 
     debug!("CHANNEL {:?}: Received action: {:?}", STATE.name(), action);
 
