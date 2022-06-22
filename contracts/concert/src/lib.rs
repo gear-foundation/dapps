@@ -78,7 +78,7 @@ impl Concert {
             },
             0,
         )
-        .unwrap();
+        .expect("Error during a replying with ConcertEvent::Creation");
     }
 
     async fn buy_tickets(
@@ -113,7 +113,7 @@ impl Concert {
 
         self.buyers.insert(msg::source());
 
-        let _: MTKEvent = msg::send_and_wait_for_reply(
+        msg::send_for_reply_as::<_, MTKEvent>(
             self.contract_id,
             MTKAction::Mint {
                 account: msg::source(),
@@ -123,11 +123,12 @@ impl Concert {
             },
             0,
         )
-        .unwrap()
+        .expect("Error in async message to MTK contract")
         .await
         .expect("CONCERT: Error minting concert tokens");
 
-        msg::reply(ConcertEvent::Purchase { concert_id, amount }, 0).unwrap();
+        msg::reply(ConcertEvent::Purchase { concert_id, amount }, 0)
+            .expect("Error during a replying with ConcertEvent::Purchase");
     }
 
     // MINT SEVERAL FOR A USER
@@ -139,7 +140,7 @@ impl Concert {
         let accounts: Vec<_> = self.buyers.clone().into_iter().collect();
         let tokens: Vec<TokenId> = iter::repeat(self.name).take(accounts.len()).collect();
 
-        let balance_response: MTKEvent = msg::send_and_wait_for_reply(
+        let balance_response: MTKEvent = msg::send_for_reply_as(
             self.contract_id,
             MTKAction::BalanceOfBatch {
                 accounts,
@@ -147,7 +148,7 @@ impl Concert {
             },
             0,
         )
-        .unwrap()
+        .expect("Error in async message to MTK contract")
         .await
         .expect("CONCERT: Error getting balances from the contract");
 
@@ -159,7 +160,7 @@ impl Concert {
             };
         // we know each user balance now
         for balance in &balances {
-            let _: MTKEvent = msg::send_and_wait_for_reply(
+            msg::send_for_reply_as::<_, MTKEvent>(
                 self.contract_id,
                 MTKAction::Burn {
                     id: balance.id,
@@ -167,7 +168,7 @@ impl Concert {
                 },
                 0,
             )
-            .unwrap()
+            .expect("Error in async message to MTK contract")
             .await
             .expect("CONCERT: Error burning balances");
         }
@@ -184,7 +185,7 @@ impl Concert {
                     meta.push(token_meta);
                 }
 
-                let _: MTKEvent = msg::send_and_wait_for_reply(
+                msg::send_for_reply_as::<_, MTKEvent>(
                     self.contract_id,
                     MTKAction::MintBatch {
                         account: *actor,
@@ -194,11 +195,12 @@ impl Concert {
                     },
                     0,
                 )
-                .unwrap()
+                .expect("Error in async message to MTK contract")
                 .await
                 .expect("CONCERT: Error minging tickets");
             }
         }
-        msg::reply(ConcertEvent::Hold { concert_id }, 0).unwrap();
+        msg::reply(ConcertEvent::Hold { concert_id }, 0)
+            .expect("Error during a replying with ConcertEvent::Hold");
     }
 }
