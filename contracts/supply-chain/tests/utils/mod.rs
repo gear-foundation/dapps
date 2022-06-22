@@ -1,7 +1,13 @@
-pub use ft_io::{FTAction, FTEvent, InitConfig as InitFT};
+use ft_io::{FTAction, FTEvent, InitConfig as InitFT};
+use gear_lib::non_fungible_token::{
+    state::{NFTQuery, NFTQueryReply},
+    token::Token,
+};
 pub use gstd::prelude::*;
-pub use gtest::{Program, System};
-pub use nft_io::{InitNFT, NFTAction};
+use gstd::ActorId;
+pub use gtest::Program;
+use gtest::System;
+use nft_io::InitNFT;
 pub use supply_chain_io::*;
 
 pub mod check;
@@ -16,12 +22,14 @@ pub const RETAILER: [u64; 2] = [8, 9];
 pub const CONSUMER: [u64; 2] = [10, 11];
 pub const FOREIGN_USER: u64 = 1337;
 pub const ITEM_ID: [u128; 2] = [0, 1];
-pub const ITEM_NAME: [&str; 2] = ["Banana", "Tasty"];
-pub const ITEM_NOTES: [&str; 2] = ["Watermelon", "Fresh"];
+pub const NONEXISTEND_ITEM: u128 = 999999;
+pub const ITEM_NAME: [&str; 2] = ["Banana", "Watermelon"];
+pub const ITEM_DESCRIPTION: [&str; 2] = ["Tasty", "Fresh"];
 pub const ITEM_PRICE_BY_PRODUCER: [u128; 2] = [1234, 4321];
 pub const ITEM_PRICE_BY_DISTRIBUTOR: [u128; 2] = [12345, 54321];
 pub const ITEM_PRICE_BY_RETAILER: [u128; 2] = [123456, 654321];
 pub const DELIVERY_TIME: [u64; 2] = [604800000, 1209600000];
+pub const ZERO_ID: ActorId = ActorId::new([0; 32]);
 
 pub fn init_system() -> System {
     let system = System::new();
@@ -31,7 +39,7 @@ pub fn init_system() -> System {
 }
 
 pub fn init_ft_program(system: &System) -> Program {
-    let ft_program = Program::from_file(system, "./target/fungible_token.opt.wasm");
+    let ft_program = Program::from_file(system, "./target/fungible_token.wasm");
 
     assert!(ft_program
         .send(
@@ -48,7 +56,7 @@ pub fn init_ft_program(system: &System) -> Program {
 }
 
 pub fn init_nft_program(system: &System) -> Program {
-    let nft_program = Program::from_file(system, "./target/nft.opt.wasm");
+    let nft_program = Program::from_file(system, "./target/nft.wasm");
 
     assert!(nft_program
         .send(
@@ -66,27 +74,6 @@ pub fn init_nft_program(system: &System) -> Program {
     nft_program
 }
 
-pub fn init_supply_chain_program(system: &System) -> Program {
-    let supply_chain_program = Program::current(system);
-
-    assert!(supply_chain_program
-        .send(
-            FOREIGN_USER,
-            InitSupplyChain {
-                ft_program_id: FT_PROGRAM_ID.into(),
-                nft_program_id: NFT_PROGRAM_ID.into(),
-
-                producers: BTreeSet::from([PRODUCER[0].into(), PRODUCER[1].into()]),
-                distributors: BTreeSet::from([DISTRIBUTOR[0].into(), DISTRIBUTOR[1].into()]),
-                retailers: BTreeSet::from([RETAILER[0].into(), RETAILER[1].into()]),
-            },
-        )
-        .log()
-        .is_empty());
-
-    supply_chain_program
-}
-
 pub fn mint(ft_program: &Program, actor: u64, amount: u128) {
     assert!(ft_program.send(actor, FTAction::Mint(amount)).contains(&(
         actor,
@@ -97,4 +84,47 @@ pub fn mint(ft_program: &Program, actor: u64, amount: u128) {
         }
         .encode()
     )));
+}
+
+pub fn check_nft_owner(nft_program: &Program, nft: u128, actor: u64) {
+    let actor = actor.into();
+    let nft = nft.into();
+    match nft_program.meta_state(NFTQuery::Token {
+        token_id: nft,
+    }) {
+        NFTQueryReply::Token {
+            token: Token { owner_id, .. },
+        } if owner_id == actor => {}
+        NFTQueryReply::Token {
+            token: Token { owner_id, .. },
+        } => panic!("Given address ({actor:?}) not equals to the owner address ({owner_id:?}) of an NFT with the {nft} ID"),
+        _ => unreachable!("Unreachable metastate reply for the NFTQuery::Token payload has occured")
+    }
+}
+
+pub fn check_nft_name_n_description(
+    nft_program: &Program,
+    nft: u128,
+    name: &str,
+    description: &str,
+) {
+    let nft = nft.into();
+    match nft_program.meta_state(NFTQuery::Token {
+        token_id: nft,
+    }) {
+        NFTQueryReply::Token {
+            token: Token { name: true_name, description: true_description, .. },
+        } if name == true_name && description == true_description => {}
+        NFTQueryReply::Token {
+            token: Token { name: true_name, description: true_description, .. },
+        } => panic!("Given name ({name:?}) & description ({description:?}) not equal \
+                     to the name ({true_name:?}) & description ({true_description:?}) of an NFT with the {nft} ID"),
+        _ => unreachable!("Unreachable metastate reply for the NFTQuery::Token payload has occured")
+    }
+}
+
+pub fn check_balance(ft_program: &Program, user: u64, balance: u128) {
+    ft_program
+        .send(FOREIGN_USER, FTAction::BalanceOf(user.into()))
+        .contains(&(FOREIGN_USER, FTEvent::Balance(balance).encode()));
 }

@@ -1,5 +1,22 @@
 use super::*;
 
+pub fn init_supply_chain_program(supply_chain_program: &Program) {
+    assert!(supply_chain_program
+        .send(
+            FOREIGN_USER,
+            InitSupplyChain {
+                ft_program_id: FT_PROGRAM_ID.into(),
+                nft_program_id: NFT_PROGRAM_ID.into(),
+
+                producers: BTreeSet::from([PRODUCER[0].into(), PRODUCER[1].into()]),
+                distributors: BTreeSet::from([DISTRIBUTOR[0].into(), DISTRIBUTOR[1].into()]),
+                retailers: BTreeSet::from([RETAILER[0].into(), RETAILER[1].into()]),
+            },
+        )
+        .log()
+        .is_empty());
+}
+
 pub fn produce(
     supply_chain_program: &Program,
     producer: u64,
@@ -199,4 +216,12 @@ pub fn purchare_by_consumer(supply_chain_program: &Program, consumer: u64, item_
             SupplyChainAction::PurchaseByConsumer(item_id.into()),
         )
         .contains(&(consumer, SupplyChainEvent::Success.encode())));
+}
+
+pub fn get_item_info(supply_chain_program: &Program, item_id: u128, item_info: ItemInfo) {
+    assert_eq!(
+        supply_chain_program
+            .meta_state::<_, SupplyChainStateReply>(SupplyChainState::ItemInfo(item_id.into())),
+        SupplyChainStateReply::ItemInfo(item_info)
+    );
 }

@@ -6,6 +6,8 @@ use gstd::{async_main, exec, msg, prelude::*, ActorId};
 use nft_io::NFTAction;
 use supply_chain_io::*;
 
+const ZERO_ID: ActorId = ActorId::new([0; 32]);
+
 #[derive(Default)]
 struct Item {
     info: ItemInfo,
@@ -16,6 +18,10 @@ fn panic_item_not_exist(item_id: ItemId) -> ! {
     panic!("Item with the {item_id} ID doesn't exist")
 }
 
+fn panic_zero_address_among(who: &str) -> ! {
+    panic!("Zero address can't be among {who}")
+}
+
 fn get_mut_item(items: &mut BTreeMap<ItemId, Item>, id: ItemId) -> &mut Item {
     items
         .get_mut(&id)
@@ -23,23 +29,19 @@ fn get_mut_item(items: &mut BTreeMap<ItemId, Item>, id: ItemId) -> &mut Item {
 }
 
 async fn transfer_tokens(ft_program_id: ActorId, from: ActorId, to: ActorId, amount: u128) {
-    msg::send_and_wait_for_reply::<FTEvent, _>(
-        ft_program_id,
-        FTAction::Transfer { from, to, amount },
-        0,
-    )
-    .expect("Error in async message to FT contract")
-    .await
-    .expect("Unable to decode FTEvent");
+    msg::send_for_reply_as::<_, FTEvent>(ft_program_id, FTAction::Transfer { from, to, amount }, 0)
+        .expect("Error during a sending FTAction::Transfer to a FT program")
+        .await
+        .expect("Unable to decode FTEvent");
 }
 
 async fn transfer_nft(nft_program_id: ActorId, to: ActorId, token_id: ItemId) {
-    msg::send_and_wait_for_reply::<NFTTransfer, _>(
+    msg::send_for_reply_as::<_, NFTTransfer>(
         nft_program_id,
         NFTAction::Transfer { to, token_id },
         0,
     )
-    .expect("Error in async message to NFT contract")
+    .expect("Error during a sending NFTAction::Transfer to an NFT program")
     .await
     .expect("Unable to decode NFTTransfer");
 }
@@ -74,7 +76,7 @@ async fn receive(ft_program_id: ActorId, seller: ActorId, item: &Item) {
 }
 
 fn reply(supply_chain_event: SupplyChainEvent) {
-    msg::reply(supply_chain_event, 0).expect("Error in message reply");
+    msg::reply(supply_chain_event, 0).expect("Error during a replying with SupplyChainEvent");
 }
 
 #[derive(Default)]
@@ -111,7 +113,7 @@ impl SupplyChain {
     async fn produce_item(&mut self, name: String, description: String) {
         self.check_producer();
 
-        let raw_reply: Vec<u8> = msg::send_and_wait_for_reply(
+        let raw_reply: Vec<u8> = msg::send_for_reply_as(
             self.nft_program_id,
             NFTAction::Mint {
                 token_metadata: TokenMetadata {
@@ -122,7 +124,7 @@ impl SupplyChain {
             },
             0,
         )
-        .expect("Error in sending Mint message to NFT contract")
+        .expect("Error during a sending NFTAction::Mint to an NFT program")
         .await
         .expect("Unable to decode Vec<u8>");
 
@@ -379,6 +381,17 @@ pub extern "C" fn init() {
         ft_program_id,
         nft_program_id,
     } = msg::load().expect("Unable to decode InitSupplyChain");
+
+    if producers.contains(&ZERO_ID) {
+        panic_zero_address_among("producers")
+    }
+    if distributors.contains(&ZERO_ID) {
+        panic_zero_address_among("distributors")
+    }
+    if retailers.contains(&ZERO_ID) {
+        panic_zero_address_among("retailers")
+    }
+
     let supply_chain = SupplyChain {
         producers,
         distributors,
@@ -464,7 +477,7 @@ pub extern "C" fn meta_state() -> *mut [i32; 2] {
     let state: SupplyChainState = msg::load().expect("Unable to decode SupplyChainState");
     let supply_chain = unsafe { SUPPLY_CHAIN.get_or_insert(Default::default()) };
     let encoded = match state {
-        SupplyChainState::GetItemInfo(item_id) => {
+        SupplyChainState::ItemInfo(item_id) => {
             SupplyChainStateReply::ItemInfo(supply_chain.get_item_info(item_id)).encode()
         }
     };

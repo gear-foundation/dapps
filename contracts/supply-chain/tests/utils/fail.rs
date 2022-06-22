@@ -1,5 +1,11 @@
 use super::*;
 
+pub fn init_supply_chain_program(supply_chain_program: &Program, init_config: InitSupplyChain) {
+    assert!(supply_chain_program
+        .send(FOREIGN_USER, init_config,)
+        .main_failed());
+}
+
 pub fn produce(supply_chain_program: &Program, user: u64) {
     assert!(supply_chain_program
         .send(
@@ -145,4 +151,8 @@ pub fn purchare_by_consumer(supply_chain_program: &Program, user: u64, item_id: 
     assert!(supply_chain_program
         .send(user, SupplyChainAction::PurchaseByConsumer(item_id.into()))
         .main_failed());
+}
+
+pub fn get_item_info(supply_chain_program: &Program, item_id: u128) {
+    supply_chain_program.meta_state(SupplyChainState::ItemInfo(item_id.into()))
 }
