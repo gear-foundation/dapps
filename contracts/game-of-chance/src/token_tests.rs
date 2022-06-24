@@ -58,6 +58,8 @@ fn enter() {
         LtAction::StartLottery {
             duration: 5000,
             token_address: Some(USERS[0].into()),
+            participation_cost: 1000,
+            prize_fund: 2000,
         },
     );
     assert!(res.log().is_empty());
@@ -73,12 +75,12 @@ fn enter() {
     println!("Balance(u128): {:?}", res.decoded_log::<FTEvent>());
     assert!(res.contains(&(USERS[2], FTEvent::Balance(1000).encode())));
 
-    let res = lt.send_with_value(USERS[4], LtAction::Enter(2000), 2000);
+    let res = lt.send_with_value(USERS[4], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[4], LtEvent::PlayerAdded(1).encode())));
 
     let res = ft.send(USERS[2], FTAction::BalanceOf(USERS[1].into()));
     println!("Balance(u128): {:?}", res.decoded_log::<FTEvent>());
-    assert!(res.contains(&(USERS[2], FTEvent::Balance(3000).encode())));
+    assert!(res.contains(&(USERS[2], FTEvent::Balance(2000).encode())));
 }
 
 #[test]
@@ -95,6 +97,8 @@ fn pick_winner() {
         LtAction::StartLottery {
             duration: 5000,
             token_address: Some(USERS[0].into()),
+            participation_cost: 1000,
+            prize_fund: 2000,
         },
     );
     assert!(res.log().is_empty());
@@ -102,7 +106,7 @@ fn pick_winner() {
     let res = lt.send_with_value(USERS[3], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[3], LtEvent::PlayerAdded(0).encode())));
 
-    let res = lt.send_with_value(USERS[4], LtAction::Enter(2000), 2000);
+    let res = lt.send_with_value(USERS[4], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[4], LtEvent::PlayerAdded(1).encode())));
 
     sys.spend_blocks(5000);

@@ -5,6 +5,7 @@ use std::println;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use codec::Encode;
+use gstd::BTreeMap;
 use gtest::{Program, System};
 use lt_io::*;
 const USERS: &[u64] = &[3, 4, 5];
@@ -26,10 +27,16 @@ fn start_lottery() {
         .expect("Time went backwards")
         .as_secs();
 
-    let state = LotteryState {
+    let state = LtEvent::LotteryState {
+        lottery_owner: USERS[0].into(),
         lottery_started: true,
         lottery_start_time: time,
         lottery_duration: 5000,
+        participation_cost: 1000,
+        prize_fund: 2000,
+        token_address: None,
+        lottery_id: 1,
+        players: BTreeMap::new(),
     };
 
     let sys = System::new();
@@ -41,6 +48,8 @@ fn start_lottery() {
         LtAction::StartLottery {
             duration: 5000,
             token_address: None,
+            participation_cost: 1000,
+            prize_fund: 2000,
         },
     );
     assert!(res.log().is_empty());
@@ -48,7 +57,7 @@ fn start_lottery() {
     println!("time: {}", time);
 
     let res = lt.send(USERS[0], LtAction::LotteryState);
-    assert!(res.contains(&(USERS[0], LtEvent::LotteryState(state).encode())));
+    assert!(res.contains(&(USERS[0], state.encode())));
 }
 
 #[test]
@@ -62,6 +71,8 @@ fn enter() {
         LtAction::StartLottery {
             duration: 5000,
             token_address: None,
+            participation_cost: 1000,
+            prize_fund: 2000,
         },
     );
     assert!(res.log().is_empty());
@@ -69,7 +80,7 @@ fn enter() {
     let res = lt.send_with_value(USERS[0], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[0], LtEvent::PlayerAdded(0).encode())));
 
-    let res = lt.send_with_value(USERS[1], LtAction::Enter(2000), 2000);
+    let res = lt.send_with_value(USERS[1], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[1], LtEvent::PlayerAdded(1).encode())));
 }
 
@@ -84,6 +95,8 @@ fn pick_winner() {
         LtAction::StartLottery {
             duration: 5000,
             token_address: None,
+            participation_cost: 1000,
+            prize_fund: 2000,
         },
     );
     assert!(res.log().is_empty());
@@ -91,7 +104,7 @@ fn pick_winner() {
     let res = lt.send_with_value(USERS[0], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[0], LtEvent::PlayerAdded(0).encode())));
 
-    let res = lt.send_with_value(USERS[1], LtAction::Enter(2000), 2000);
+    let res = lt.send_with_value(USERS[1], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[1], LtEvent::PlayerAdded(1).encode())));
 
     sys.spend_blocks(5000);
