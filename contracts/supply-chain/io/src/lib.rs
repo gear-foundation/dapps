@@ -1,9 +1,9 @@
 #![no_std]
 
+use gear_lib::non_fungible_token::token::TokenId;
 use gstd::{prelude::*, ActorId};
-use primitive_types::U256;
 
-pub type ItemId = U256;
+pub type ItemId = TokenId;
 
 /// Initializes a supply chain.
 ///
@@ -51,7 +51,7 @@ pub enum SupplyChainAction {
     /// and a producer of this item.
     /// * Item's [`ItemState`] must be [`Produced`](ItemState::Produced).
     ///
-    /// On success, returns [`SupplyChainEvent::Success`].
+    /// On success, returns [`SupplyChainEvent::ForSaleByProducer`].
     PutUpForSaleByProducer {
         /// An item's ID.
         item_id: ItemId,
@@ -71,7 +71,7 @@ pub enum SupplyChainAction {
     /// * [`msg::source()`](gstd::msg::source) must be a distributor in a supply chain.
     /// * Item's [`ItemState`] must be [`ForSaleByProducer`](ItemState::ForSaleByProducer).
     ///
-    /// On success, returns [`SupplyChainEvent::Success`].
+    /// On success, returns [`SupplyChainEvent::PurchasedByDistributor`].
     PurchaseByDistributor {
         /// An item's ID.
         item_id: ItemId,
@@ -92,7 +92,7 @@ pub enum SupplyChainAction {
     /// and a producer of this item.
     /// * Item's [`ItemState`] must be [`PurchasedByDistributor`](ItemState::PurchasedByDistributor).
     ///
-    /// On success, returns [`SupplyChainEvent::Success`].
+    /// On success, returns [`SupplyChainEvent::ApprovedByProducer`].
     ApproveByProducer {
         /// An item's ID.
         item_id: ItemId,
@@ -110,7 +110,7 @@ pub enum SupplyChainAction {
     /// and a producer of this item.
     /// * Item's [`ItemState`] must be [`PurchasedByDistributor`](ItemState::PurchasedByDistributor).
     ///
-    /// On success, returns [`SupplyChainEvent::Success`].
+    /// On success, returns [`SupplyChainEvent::ShippedByProducer`].
     ShipByProducer(
         /// An item's ID.
         ItemId,
@@ -129,7 +129,7 @@ pub enum SupplyChainAction {
     /// and a distributor of this item.
     /// * Item's [`ItemState`] must be [`ShippedByProducer`](ItemState::ShippedByProducer).
     ///
-    /// On success, returns [`SupplyChainEvent::Success`].
+    /// On success, returns [`SupplyChainEvent::ReceivedByDistributor`].
     ReceiveByDistributor(
         /// An item's ID.
         ItemId,
@@ -142,7 +142,7 @@ pub enum SupplyChainAction {
     /// and a distributor of this item.
     /// * Item's [`ItemState`] must be [`ReceivedByDistributor`](ItemState::ReceivedByDistributor).
     ///
-    /// On success, returns [`SupplyChainEvent::Success`].
+    /// On success, returns [`SupplyChainEvent::ProcessedByDistributor`].
     ProcessByDistributor(
         /// An item's ID.
         ItemId,
@@ -155,7 +155,7 @@ pub enum SupplyChainAction {
     /// and a distributor of this item.
     /// * Item's [`ItemState`] must be [`ProcessedByDistributor`](ItemState::ProcessedByDistributor).
     ///
-    /// On success, returns [`SupplyChainEvent::Success`].
+    /// On success, returns [`SupplyChainEvent::PackagedByDistributor`].
     PackageByDistributor(
         /// An item's ID.
         ItemId,
@@ -171,7 +171,7 @@ pub enum SupplyChainAction {
     /// and a distributor of this item.
     /// * Item's [`ItemState`] must be [`PackagedByDistributor`](ItemState::PackagedByDistributor).
     ///
-    /// On success, returns [`SupplyChainEvent::Success`].
+    /// On success, returns [`SupplyChainEvent::ForSaleByDistributor`].
     PutUpForSaleByDistributor {
         /// An item's ID.
         item_id: ItemId,
@@ -188,7 +188,7 @@ pub enum SupplyChainAction {
     /// * [`msg::source()`](gstd::msg::source) must be a retailer in a supply chain.
     /// * Item's [`ItemState`] must be [`ForSaleByDistributor`](ItemState::ForSaleByDistributor).
     ///
-    /// On success, returns [`SupplyChainEvent::Success`].
+    /// On success, returns [`SupplyChainEvent::PurchasedByRetailer`].
     PurchaseByRetailer {
         /// An item's ID.
         item_id: ItemId,
@@ -209,7 +209,7 @@ pub enum SupplyChainAction {
     /// and a distributor of this item.
     /// * Item's [`ItemState`] must be [`PurchasedByRetailer`](ItemState::PurchasedByRetailer).
     ///
-    /// On success, returns [`SupplyChainEvent::Success`].
+    /// On success, returns [`SupplyChainEvent::ApprovedByDistributor`].
     ApproveByDistributor {
         /// An item's ID.
         item_id: ItemId,
@@ -227,7 +227,7 @@ pub enum SupplyChainAction {
     /// and a distributor of this item.
     /// * Item's [`ItemState`] must be [`PurchasedByRetailer`](ItemState::PurchasedByRetailer).
     ///
-    /// On success, returns [`SupplyChainEvent::Success`].
+    /// On success, returns [`SupplyChainEvent::ShippedByDistributor`].
     ShipByDistributor(
         /// An item's ID.
         ItemId,
@@ -246,7 +246,7 @@ pub enum SupplyChainAction {
     /// and a retailer of this item.
     /// * Item's [`ItemState`] must be [`ShippedByDistributor`](ItemState::ShippedByDistributor).
     ///
-    /// On success, returns [`SupplyChainEvent::Success`].
+    /// On success, returns [`SupplyChainEvent::ReceivedByRetailer`].
     ReceiveByRetailer(
         /// An item's ID.
         ItemId,
@@ -262,7 +262,7 @@ pub enum SupplyChainAction {
     /// and a retailer of this item.
     /// * Item's [`ItemState`] must be [`ReceivedByRetailer`](ItemState::ReceivedByRetailer).
     ///
-    /// On success, returns [`SupplyChainEvent::Success`].
+    /// On success, returns [`SupplyChainEvent::ForSaleByRetailer`].
     PutUpForSaleByRetailer {
         /// An item's ID.
         item_id: ItemId,
@@ -279,7 +279,7 @@ pub enum SupplyChainAction {
     /// # Requirements
     /// * Item's [`ItemState`] must be [`ForSaleByRetailer`](ItemState::ForSaleByRetailer).
     ///
-    /// On success, returns [`SupplyChainEvent::Success`].
+    /// On success, returns [`SupplyChainEvent::PurchasedByConsumer`].
     PurchaseByConsumer(
         /// An item's ID.
         ItemId,
@@ -292,7 +292,62 @@ pub enum SupplyChainEvent {
         /// An ID of a produced item.
         ItemId,
     ),
-    Success,
+    ForSaleByProducer(
+        /// An ID of an item put up for a sale by a producer.
+        ItemId,
+    ),
+    PurchasedByDistributor(
+        /// An ID of an item purchased by a distributor.
+        ItemId,
+    ),
+    ApprovedByProducer(
+        /// An ID of an item approved by a producer for a purchase.
+        ItemId,
+    ),
+    ShippedByProducer(
+        /// An ID of an item shipped by a producer.
+        ItemId,
+    ),
+    ReceivedByDistributor(
+        /// An ID of an item received by a distributor.
+        ItemId,
+    ),
+    ProcessedByDistributor(
+        /// An ID of an item processed by a distributor.
+        ItemId,
+    ),
+    PackagedByDistributor(
+        /// An ID of an item packaged by a distributor.
+        ItemId,
+    ),
+    ForSaleByDistributor(
+        /// An ID of an item put up for a sale by a distributor.
+        ItemId,
+    ),
+    PurchasedByRetailer(
+        /// An ID of an item purchased by a retailer.
+        ItemId,
+    ),
+    ApprovedByDistributor(
+        /// An ID of an item approved by a retailer for a purchase.
+        ItemId,
+    ),
+    ShippedByDistributor(
+        /// An ID of an item shipped by a distributor.
+        ItemId,
+    ),
+    ReceivedByRetailer(
+        /// An ID of an item received by a retailer.
+        ItemId,
+    ),
+    ForSaleByRetailer(
+        /// An ID of an item put up for a sale by a retailer.
+        ItemId,
+    ),
+    PurchasedByConsumer(
+        /// An ID of an item purchased by a consumer.
+        ItemId,
+    ),
 }
 
 #[derive(Encode, Decode, TypeInfo)]

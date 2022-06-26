@@ -89,16 +89,22 @@ pub fn mint(ft_program: &Program, actor: u64, amount: u128) {
 pub fn check_nft_owner(nft_program: &Program, nft: u128, actor: u64) {
     let actor = actor.into();
     let nft = nft.into();
-    match nft_program.meta_state(NFTQuery::Token {
-        token_id: nft,
-    }) {
+    match nft_program.meta_state(NFTQuery::Token { token_id: nft }) {
         NFTQueryReply::Token {
             token: Token { owner_id, .. },
-        } if owner_id == actor => {}
-        NFTQueryReply::Token {
-            token: Token { owner_id, .. },
-        } => panic!("Given address ({actor:?}) not equals to the owner address ({owner_id:?}) of an NFT with the {nft} ID"),
-        _ => unreachable!("Unreachable metastate reply for the NFTQuery::Token payload has occured")
+        } => {
+            if owner_id != actor {
+                panic!(
+                    "Owner assertion failed.\n\
+                     NFT ID: {nft}\n\
+                     Given address: {actor:?}\n\
+                     Owner address: {owner_id:?}"
+                );
+            }
+        }
+        _ => {
+            unreachable!("Unreachable metastate reply for the NFTQuery::Token payload has occured")
+        }
     }
 }
 
@@ -109,17 +115,29 @@ pub fn check_nft_name_n_description(
     description: &str,
 ) {
     let nft = nft.into();
-    match nft_program.meta_state(NFTQuery::Token {
-        token_id: nft,
-    }) {
+    match nft_program.meta_state(NFTQuery::Token { token_id: nft }) {
         NFTQueryReply::Token {
-            token: Token { name: true_name, description: true_description, .. },
-        } if name == true_name && description == true_description => {}
-        NFTQueryReply::Token {
-            token: Token { name: true_name, description: true_description, .. },
-        } => panic!("Given name ({name:?}) & description ({description:?}) not equal \
-                     to the name ({true_name:?}) & description ({true_description:?}) of an NFT with the {nft} ID"),
-        _ => unreachable!("Unreachable metastate reply for the NFTQuery::Token payload has occured")
+            token:
+                Token {
+                    name: true_name,
+                    description: true_description,
+                    ..
+                },
+        } => {
+            if name != true_name || description != true_description {
+                panic!(
+                    "Name & description assertion failed.\n\
+                     NFT ID: {nft}\n\
+                     Given name: {name:?}\n\
+                     Given description: {description:?}\n\
+                     True name: {true_name:?}\n\
+                     True description: {true_description:?}"
+                )
+            }
+        }
+        _ => {
+            unreachable!("Unreachable metastate reply for the NFTQuery::Token payload has occured")
+        }
     }
 }
 

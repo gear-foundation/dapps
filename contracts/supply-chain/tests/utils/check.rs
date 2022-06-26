@@ -53,7 +53,10 @@ pub fn put_up_for_sale_by_producer(
                 price,
             },
         )
-        .contains(&(producer, SupplyChainEvent::Success.encode())));
+        .contains(&(
+            producer,
+            SupplyChainEvent::ForSaleByProducer(item_id.into()).encode(),
+        )));
 }
 
 pub fn purchare_by_distributor(
@@ -70,7 +73,10 @@ pub fn purchare_by_distributor(
                 delivery_time,
             },
         )
-        .contains(&(distributor, SupplyChainEvent::Success.encode())));
+        .contains(&(
+            distributor,
+            SupplyChainEvent::PurchasedByDistributor(item_id.into()).encode(),
+        )));
 }
 
 pub fn approve_by_producer(
@@ -87,13 +93,19 @@ pub fn approve_by_producer(
                 approve,
             },
         )
-        .contains(&(producer, SupplyChainEvent::Success.encode())));
+        .contains(&(
+            producer,
+            SupplyChainEvent::ApprovedByProducer(item_id.into()).encode(),
+        )));
 }
 
 pub fn ship_by_producer(supply_chain_program: &Program, producer: u64, item_id: u128) {
     assert!(supply_chain_program
         .send(producer, SupplyChainAction::ShipByProducer(item_id.into()))
-        .contains(&(producer, SupplyChainEvent::Success.encode(),)));
+        .contains(&(
+            producer,
+            SupplyChainEvent::ShippedByProducer(item_id.into()).encode(),
+        )));
 }
 
 pub fn receive_by_distributor(supply_chain_program: &Program, distributor: u64, item_id: u128) {
@@ -102,7 +114,10 @@ pub fn receive_by_distributor(supply_chain_program: &Program, distributor: u64, 
             distributor,
             SupplyChainAction::ReceiveByDistributor(item_id.into()),
         )
-        .contains(&(distributor, SupplyChainEvent::Success.encode())));
+        .contains(&(
+            distributor,
+            SupplyChainEvent::ReceivedByDistributor(item_id.into()).encode(),
+        )));
 }
 
 pub fn process_by_distributor(supply_chain_program: &Program, distributor: u64, item_id: u128) {
@@ -111,7 +126,10 @@ pub fn process_by_distributor(supply_chain_program: &Program, distributor: u64, 
             distributor,
             SupplyChainAction::ProcessByDistributor(item_id.into()),
         )
-        .contains(&(distributor, SupplyChainEvent::Success.encode())));
+        .contains(&(
+            distributor,
+            SupplyChainEvent::ProcessedByDistributor(item_id.into()).encode(),
+        )));
 }
 
 pub fn package_by_distributor(supply_chain_program: &Program, distributor: u64, item_id: u128) {
@@ -120,7 +138,10 @@ pub fn package_by_distributor(supply_chain_program: &Program, distributor: u64, 
             distributor,
             SupplyChainAction::PackageByDistributor(item_id.into()),
         )
-        .contains(&(distributor, SupplyChainEvent::Success.encode())));
+        .contains(&(
+            distributor,
+            SupplyChainEvent::PackagedByDistributor(item_id.into()).encode(),
+        )));
 }
 
 pub fn put_up_for_sale_by_distributor(
@@ -137,7 +158,10 @@ pub fn put_up_for_sale_by_distributor(
                 price,
             },
         )
-        .contains(&(distributor, SupplyChainEvent::Success.encode())));
+        .contains(&(
+            distributor,
+            SupplyChainEvent::ForSaleByDistributor(item_id.into()).encode(),
+        )));
 }
 
 pub fn purchare_by_retailer(
@@ -154,7 +178,10 @@ pub fn purchare_by_retailer(
                 delivery_time,
             },
         )
-        .contains(&(retailer, SupplyChainEvent::Success.encode())));
+        .contains(&(
+            retailer,
+            SupplyChainEvent::PurchasedByRetailer(item_id.into()).encode(),
+        )));
 }
 
 pub fn approve_by_distributor(
@@ -171,7 +198,10 @@ pub fn approve_by_distributor(
                 approve,
             },
         )
-        .contains(&(distributor, SupplyChainEvent::Success.encode())));
+        .contains(&(
+            distributor,
+            SupplyChainEvent::ApprovedByDistributor(item_id.into()).encode(),
+        )));
 }
 
 pub fn ship_by_distributor(supply_chain_program: &Program, distributor: u64, item_id: u128) {
@@ -180,7 +210,10 @@ pub fn ship_by_distributor(supply_chain_program: &Program, distributor: u64, ite
             distributor,
             SupplyChainAction::ShipByDistributor(item_id.into()),
         )
-        .contains(&(distributor, SupplyChainEvent::Success.encode())));
+        .contains(&(
+            distributor,
+            SupplyChainEvent::ShippedByDistributor(item_id.into()).encode(),
+        )));
 }
 
 pub fn receive_by_retailer(supply_chain_program: &Program, retailer: u64, item_id: u128) {
@@ -189,7 +222,10 @@ pub fn receive_by_retailer(supply_chain_program: &Program, retailer: u64, item_i
             retailer,
             SupplyChainAction::ReceiveByRetailer(item_id.into()),
         )
-        .contains(&(retailer, SupplyChainEvent::Success.encode())));
+        .contains(&(
+            retailer,
+            SupplyChainEvent::ReceivedByRetailer(item_id.into()).encode(),
+        )));
 }
 
 pub fn put_up_for_sale_by_retailer(
@@ -206,7 +242,10 @@ pub fn put_up_for_sale_by_retailer(
                 price,
             },
         )
-        .contains(&(retailer, SupplyChainEvent::Success.encode())));
+        .contains(&(
+            retailer,
+            SupplyChainEvent::ForSaleByRetailer(item_id.into()).encode(),
+        )));
 }
 
 pub fn purchare_by_consumer(supply_chain_program: &Program, consumer: u64, item_id: u128) {
@@ -215,13 +254,16 @@ pub fn purchare_by_consumer(supply_chain_program: &Program, consumer: u64, item_
             consumer,
             SupplyChainAction::PurchaseByConsumer(item_id.into()),
         )
-        .contains(&(consumer, SupplyChainEvent::Success.encode())));
+        .contains(&(
+            consumer,
+            SupplyChainEvent::PurchasedByConsumer(item_id.into()).encode(),
+        )));
 }
 
 pub fn get_item_info(supply_chain_program: &Program, item_id: u128, item_info: ItemInfo) {
     assert_eq!(
         supply_chain_program
             .meta_state::<_, SupplyChainStateReply>(SupplyChainState::ItemInfo(item_id.into())),
-        SupplyChainStateReply::ItemInfo(item_info)
+        SupplyChainStateReply::ItemInfo(item_info),
     );
 }

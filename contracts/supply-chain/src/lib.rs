@@ -164,7 +164,7 @@ impl SupplyChain {
         transfer_nft(self.nft_program_id, exec::program_id(), item_id).await;
 
         item.info.state = ItemState::ForSaleByProducer;
-        reply(SupplyChainEvent::Success);
+        reply(SupplyChainEvent::ForSaleByProducer(item_id));
     }
 
     async fn purchase_by_distributor(&mut self, item_id: ItemId, delivery_time: u64) {
@@ -182,7 +182,7 @@ impl SupplyChain {
         item.info.distributor = msg::source();
 
         item.info.state = ItemState::PurchasedByDistributor;
-        reply(SupplyChainEvent::Success);
+        reply(SupplyChainEvent::PurchasedByDistributor(item_id));
     }
 
     async fn approve_by_producer(&mut self, item_id: ItemId, approve: bool) {
@@ -204,7 +204,7 @@ impl SupplyChain {
             ItemState::ForSaleByProducer
         };
 
-        reply(SupplyChainEvent::Success);
+        reply(SupplyChainEvent::ApprovedByProducer(item_id));
     }
 
     fn ship_by_producer(&mut self, item_id: ItemId) {
@@ -216,7 +216,7 @@ impl SupplyChain {
         item.shipping_time = exec::block_timestamp();
 
         item.info.state = ItemState::ShippedByProducer;
-        reply(SupplyChainEvent::Success);
+        reply(SupplyChainEvent::ShippedByProducer(item_id));
     }
 
     async fn receive_by_distributor(&mut self, item_id: ItemId) {
@@ -229,7 +229,7 @@ impl SupplyChain {
         transfer_nft(self.nft_program_id, msg::source(), item_id).await;
 
         item.info.state = ItemState::ReceivedByDistributor;
-        reply(SupplyChainEvent::Success);
+        reply(SupplyChainEvent::ReceivedByDistributor(item_id));
     }
 
     fn process_by_distributor(&mut self, item_id: ItemId) {
@@ -239,7 +239,7 @@ impl SupplyChain {
         assert_eq!(item.info.distributor, msg::source());
 
         item.info.state = ItemState::ProcessedByDistributor;
-        reply(SupplyChainEvent::Success);
+        reply(SupplyChainEvent::ProcessedByDistributor(item_id));
     }
 
     fn package_by_distributor(&mut self, item_id: ItemId) {
@@ -249,7 +249,7 @@ impl SupplyChain {
         assert_eq!(item.info.distributor, msg::source());
 
         item.info.state = ItemState::PackagedByDistributor;
-        reply(SupplyChainEvent::Success);
+        reply(SupplyChainEvent::PackagedByDistributor(item_id));
     }
 
     async fn put_up_for_sale_by_distributor(&mut self, item_id: ItemId, price: u128) {
@@ -262,7 +262,7 @@ impl SupplyChain {
         transfer_nft(self.nft_program_id, exec::program_id(), item_id).await;
 
         item.info.state = ItemState::ForSaleByDistributor;
-        reply(SupplyChainEvent::Success);
+        reply(SupplyChainEvent::ForSaleByDistributor(item_id));
     }
 
     async fn purchase_by_retailer(&mut self, item_id: ItemId, delivery_time: u64) {
@@ -281,7 +281,7 @@ impl SupplyChain {
         item.info.retailer = msg::source();
 
         item.info.state = ItemState::PurchasedByRetailer;
-        reply(SupplyChainEvent::Success);
+        reply(SupplyChainEvent::PurchasedByRetailer(item_id));
     }
 
     async fn approve_by_distributor(&mut self, item_id: ItemId, approve: bool) {
@@ -303,7 +303,7 @@ impl SupplyChain {
             ItemState::ForSaleByDistributor
         };
 
-        reply(SupplyChainEvent::Success);
+        reply(SupplyChainEvent::ApprovedByDistributor(item_id));
     }
 
     fn ship_by_distributor(&mut self, item_id: ItemId) {
@@ -315,7 +315,7 @@ impl SupplyChain {
         item.shipping_time = exec::block_timestamp();
 
         item.info.state = ItemState::ShippedByDistributor;
-        reply(SupplyChainEvent::Success);
+        reply(SupplyChainEvent::ShippedByDistributor(item_id));
     }
 
     async fn receive_by_retailer(&mut self, item_id: ItemId) {
@@ -328,7 +328,7 @@ impl SupplyChain {
         transfer_nft(self.nft_program_id, msg::source(), item_id).await;
 
         item.info.state = ItemState::ReceivedByRetailer;
-        reply(SupplyChainEvent::Success);
+        reply(SupplyChainEvent::ReceivedByRetailer(item_id));
     }
 
     async fn put_up_for_sale_by_retailer(&mut self, item_id: ItemId, price: u128) {
@@ -341,7 +341,7 @@ impl SupplyChain {
         transfer_nft(self.nft_program_id, exec::program_id(), item_id).await;
 
         item.info.state = ItemState::ForSaleByRetailer;
-        reply(SupplyChainEvent::Success);
+        reply(SupplyChainEvent::ForSaleByRetailer(item_id));
     }
 
     async fn purchase_by_consumer(&mut self, item_id: ItemId) {
@@ -358,7 +358,7 @@ impl SupplyChain {
         transfer_nft(self.nft_program_id, msg::source(), item_id).await;
 
         item.info.state = ItemState::PurchasedByConsumer;
-        reply(SupplyChainEvent::Success);
+        reply(SupplyChainEvent::PurchasedByConsumer(item_id));
     }
 
     fn get_item_info(&self, item_id: ItemId) -> ItemInfo {
@@ -373,7 +373,7 @@ impl SupplyChain {
 static mut SUPPLY_CHAIN: Option<SupplyChain> = None;
 
 #[no_mangle]
-pub extern "C" fn init() {
+extern "C" fn init() {
     let InitSupplyChain {
         producers,
         distributors,
@@ -406,7 +406,7 @@ pub extern "C" fn init() {
 }
 
 #[async_main]
-pub async fn main() {
+async fn main() {
     let action = msg::load().expect("Unable to decode SupplyChainAction");
     let supply_chain = unsafe { SUPPLY_CHAIN.get_or_insert(Default::default()) };
     match action {
@@ -473,7 +473,7 @@ pub async fn main() {
 }
 
 #[no_mangle]
-pub extern "C" fn meta_state() -> *mut [i32; 2] {
+extern "C" fn meta_state() -> *mut [i32; 2] {
     let state: SupplyChainState = msg::load().expect("Unable to decode SupplyChainState");
     let supply_chain = unsafe { SUPPLY_CHAIN.get_or_insert(Default::default()) };
     let encoded = match state {
