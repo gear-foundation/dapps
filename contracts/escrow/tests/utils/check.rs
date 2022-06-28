@@ -20,62 +20,33 @@ pub fn create(
         .contains(&(from, EscrowEvent::Created(wallet_id.into()).encode())));
 }
 
-pub fn deposit(escrow_program: &Program, wallet_id: u128, buyer: u64, amount: u128) {
+pub fn deposit(escrow_program: &Program, wallet_id: u128, buyer: u64) {
     assert!(escrow_program
         .send(buyer, EscrowAction::Deposit(wallet_id.into()))
-        .contains(&(
-            buyer,
-            EscrowEvent::Deposited {
-                buyer: buyer.into(),
-                amount,
-            }
-            .encode()
-        )));
+        .contains(&(buyer, EscrowEvent::Deposited(wallet_id.into()).encode())));
 }
 
-pub fn confirm(escrow_program: &Program, wallet_id: u128, buyer: u64, seller: u64, amount: u128) {
+pub fn confirm(escrow_program: &Program, wallet_id: u128, buyer: u64) {
     assert!(escrow_program
         .send(buyer, EscrowAction::Confirm(wallet_id.into()))
-        .contains(&(
-            buyer,
-            EscrowEvent::Confirmed {
-                seller: seller.into(),
-                amount,
-            }
-            .encode()
-        )));
+        .contains(&(buyer, EscrowEvent::Confirmed(wallet_id.into()).encode())));
 }
 
-pub fn refund(escrow_program: &Program, wallet_id: u128, buyer: u64, seller: u64, amount: u128) {
+pub fn refund(escrow_program: &Program, wallet_id: u128, seller: u64) {
     assert!(escrow_program
         .send(seller, EscrowAction::Refund(wallet_id.into()))
-        .contains(&(
-            seller,
-            EscrowEvent::Refunded {
-                buyer: buyer.into(),
-                amount
-            }
-            .encode()
-        )));
+        .contains(&(seller, EscrowEvent::Refunded(wallet_id.into()).encode())));
 }
 
-pub fn cancel(
-    escrow_program: &Program,
-    wallet_id: u128,
-    from: u64,
-    buyer: u64,
-    seller: u64,
-    amount: u128,
-) {
+pub fn cancel(escrow_program: &Program, wallet_id: u128, from: u64) {
     assert!(escrow_program
         .send(from, EscrowAction::Cancel(wallet_id.into()))
-        .contains(&(
-            from,
-            EscrowEvent::Cancelled {
-                buyer: buyer.into(),
-                seller: seller.into(),
-                amount
-            }
-            .encode()
-        )));
+        .contains(&(from, EscrowEvent::Cancelled(wallet_id.into()).encode())));
+}
+
+pub fn info(escrow_program: &Program, wallet_id: u128, wallet_info: Wallet) {
+    assert_eq!(
+        escrow_program.meta_state::<_, EscrowStateReply>(EscrowState::Info(wallet_id.into())),
+        EscrowStateReply::Info(wallet_info)
+    )
 }

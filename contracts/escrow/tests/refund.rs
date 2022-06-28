@@ -35,7 +35,7 @@ fn not_seller_refund() {
         SELLER[0],
         AMOUNT[0],
     );
-    check::deposit(&escrow_program, WALLET[0], BUYER[0], AMOUNT[0]);
+    check::deposit(&escrow_program, WALLET[0], BUYER[0]);
     // Should fail because not the seller for this wallet tries to refund.
     fail::refund(&escrow_program, WALLET[0], FOREIGN_USER);
     fail::refund(&escrow_program, WALLET[0], BUYER[0]);

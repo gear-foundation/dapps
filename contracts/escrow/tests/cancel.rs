@@ -16,7 +16,7 @@ fn cancel_paid() {
         SELLER[0],
         AMOUNT[0],
     );
-    check::deposit(&escrow_program, WALLET[0], BUYER[0], AMOUNT[0]);
+    check::deposit(&escrow_program, WALLET[0], BUYER[0]);
     // Should fail because the buyer/seller tries to cancel the deal with the paid wallet.
     fail::cancel(&escrow_program, WALLET[0], BUYER[0]);
     fail::cancel(&escrow_program, WALLET[0], SELLER[0]);
@@ -56,14 +56,7 @@ fn interact_after_cancel() {
         SELLER[0],
         AMOUNT[0],
     );
-    check::cancel(
-        &escrow_program,
-        WALLET[0],
-        BUYER[0],
-        BUYER[0],
-        SELLER[0],
-        AMOUNT[0],
-    );
+    check::cancel(&escrow_program, WALLET[0], BUYER[0]);
 
     // All of this should fail because nobody can interact with a closed wallet.
     fail::deposit(&escrow_program, WALLET[0], BUYER[0]);

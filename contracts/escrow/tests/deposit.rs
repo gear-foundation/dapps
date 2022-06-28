@@ -36,7 +36,7 @@ fn double_deposit() {
         SELLER[0],
         AMOUNT[0],
     );
-    check::deposit(&escrow_program, WALLET[0], BUYER[0], AMOUNT[0]);
+    check::deposit(&escrow_program, WALLET[0], BUYER[0]);
     // Should fail because the buyer tries to deposit twice.
     fail::deposit(&escrow_program, WALLET[0], BUYER[0]);
     check_balance(&ft_program, BUYER[0], AMOUNT[0]);

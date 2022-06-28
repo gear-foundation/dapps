@@ -36,3 +36,7 @@ pub fn cancel(escrow_program: &Program, wallet_id: u128, from: u64) {
         .send(from, EscrowAction::Cancel(wallet_id.into()))
         .main_failed());
 }
+
+pub fn info(escrow_program: &Program, wallet_id: u128) {
+    escrow_program.meta_state::<_, EscrowStateReply>(EscrowState::Info(wallet_id.into()));
+}
