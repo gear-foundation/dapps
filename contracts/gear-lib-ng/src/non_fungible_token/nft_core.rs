@@ -34,7 +34,7 @@ pub trait NFTCore: NFTStateKeeper {
             .encode(),
             0,
         )
-        .expect("Error during a reply with NFTEvent::NFTTransfer");
+        .expect("Error in reply `NFTTransfer`, mint function");
     }
 
     /// Burns a token
@@ -67,7 +67,7 @@ pub trait NFTCore: NFTStateKeeper {
             .encode(),
             0,
         )
-        .expect("Error during a reply with NFTEvent::NFTTransfer");
+        .expect("Error in reply `NFTTransfer`, burn function");
     }
 
     /// Transfers a token to the new owner
@@ -91,7 +91,7 @@ pub trait NFTCore: NFTStateKeeper {
             .encode(),
             0,
         )
-        .expect("Error during a reply with NFTEvent::NFTTransfer");
+        .expect("Error in reply `NFTApproval`, transfer function");
     }
 
     /// Transfers a token to the new owner
@@ -117,7 +117,7 @@ pub trait NFTCore: NFTStateKeeper {
             .encode(),
             0,
         )
-        .expect("Error during a reply with NFTEvent::NFTTransferPayout");
+        .expect("Error in reply `NFTTransferPayout`");
     }
 
     fn internal_transfer(&mut self, to: &ActorId, token_id: TokenId) -> ActorId {
@@ -170,8 +170,10 @@ pub trait NFTCore: NFTStateKeeper {
         self.get_mut()
             .token_approvals
             .entry(token_id)
-            .and_modify(|approvals| approvals.push(*to))
-            .or_insert_with(|| vec![*to]);
+            .and_modify(|approvals| {
+                approvals.insert(*to);
+            })
+            .or_insert_with(|| BTreeSet::from([*to]));
         msg::reply(
             NFTApproval {
                 owner,
@@ -181,7 +183,32 @@ pub trait NFTCore: NFTStateKeeper {
             .encode(),
             0,
         )
-        .expect("Error during a reply with NFTEvent::NFTApproval");
+        .expect("Error in reply `NFTApproval`, approve function");
+    }
+
+    fn revoke_approval(&mut self, approved_account: &ActorId, token_id: TokenId) {
+        let owner = *self
+            .get()
+            .owner_by_id
+            .get(&token_id)
+            .expect("NonFungibleToken: token does not exist");
+        self.assert_owner(&owner);
+        self.get_mut()
+            .token_approvals
+            .entry(token_id)
+            .and_modify(|approvals| {
+                approvals.remove(approved_account);
+            });
+        msg::reply(
+            NFTApproval {
+                owner,
+                approved_account: ZERO_ID,
+                token_id,
+            }
+            .encode(),
+            0,
+        )
+        .expect("Error in reply `NFTApproval`, revoke_approval function");
     }
 
     /// Returns a `Payout` struct for a given token
