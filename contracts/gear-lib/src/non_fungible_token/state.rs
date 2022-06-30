@@ -9,7 +9,7 @@ pub struct NFTState {
     pub symbol: String,
     pub base_uri: String,
     pub owner_by_id: BTreeMap<TokenId, ActorId>,
-    pub token_approvals: BTreeMap<TokenId, Vec<ActorId>>,
+    pub token_approvals: BTreeMap<TokenId, BTreeSet<ActorId>>,
     pub token_metadata_by_id: BTreeMap<TokenId, Option<TokenMetadata>>,
     pub tokens_for_owner: BTreeMap<ActorId, Vec<TokenId>>,
     pub royalties: Option<Royalties>,
@@ -28,6 +28,7 @@ pub enum NFTQuery {
     TotalSupply,
     SupplyForOwner { owner: ActorId },
     AllTokens,
+    ApprovedTokens { account: ActorId },
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
@@ -50,6 +51,9 @@ pub enum NFTQueryReply {
         supply: u128,
     },
     AllTokens {
+        tokens: Vec<Token>,
+    },
+    ApprovedTokens {
         tokens: Vec<Token>,
     },
 }
@@ -101,6 +105,21 @@ pub trait NFTMetaState: NFTStateKeeper {
             .map(|id| self.token(*id))
             .collect()
     }
+    fn approved_tokens(&self, account: &ActorId) -> Vec<Token> {
+        self.get()
+            .owner_by_id
+            .keys()
+            .filter_map(|id| {
+                self.get().token_approvals.get(id).and_then(|approvals| {
+                    if approvals.contains(account) {
+                        Some(self.token(*id))
+                    } else {
+                        None
+                    }
+                })
+            })
+            .collect()
+    }
 
     fn proc_state(&self, query: NFTQuery) -> Option<Vec<u8>> {
         let encoded = match query {
@@ -108,29 +127,27 @@ pub trait NFTMetaState: NFTStateKeeper {
                 name: self.get().name.clone(),
                 symbol: self.get().symbol.clone(),
                 base_uri: self.get().base_uri.clone(),
-            }
-            .encode(),
+            },
             NFTQuery::Token { token_id } => NFTQueryReply::Token {
                 token: self.token(token_id),
-            }
-            .encode(),
+            },
             NFTQuery::TokensForOwner { owner } => NFTQueryReply::TokensForOwner {
                 tokens: self.tokens_for_owner(&owner),
-            }
-            .encode(),
+            },
             NFTQuery::TotalSupply => NFTQueryReply::TotalSupply {
                 total_supply: self.total_supply(),
-            }
-            .encode(),
+            },
             NFTQuery::SupplyForOwner { owner } => NFTQueryReply::SupplyForOwner {
                 supply: self.supply_for_owner(&owner),
-            }
-            .encode(),
+            },
             NFTQuery::AllTokens => NFTQueryReply::AllTokens {
                 tokens: self.all_tokens(),
-            }
-            .encode(),
-        };
+            },
+            NFTQuery::ApprovedTokens { account } => NFTQueryReply::ApprovedTokens {
+                tokens: self.approved_tokens(&account),
+            },
+        }
+        .encode();
         Some(encoded)
     }
 }

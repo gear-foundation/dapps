@@ -12,7 +12,7 @@ pub struct Token {
     pub description: String,
     pub media: String,
     pub reference: String,
-    pub approved_account_ids: Vec<ActorId>,
+    pub approved_account_ids: BTreeSet<ActorId>,
 }
 
 #[derive(Debug, Default, Encode, Decode, Clone, TypeInfo)]
