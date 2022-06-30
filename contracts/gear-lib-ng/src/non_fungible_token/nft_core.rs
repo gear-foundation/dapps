@@ -1,6 +1,6 @@
 use crate::non_fungible_token::{io::*, royalties::*, state::*, token::*};
 use gstd::{exec, msg, prelude::*, ActorId};
-const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
+const ZERO_ID: ActorId = ActorId::zero();
 
 pub trait NFTCore: NFTStateKeeper {
     /// Mints a new token
@@ -34,7 +34,7 @@ pub trait NFTCore: NFTStateKeeper {
             .encode(),
             0,
         )
-        .unwrap();
+        .expect("Error during a reply with NFTEvent::NFTTransfer");
     }
 
     /// Burns a token
@@ -67,7 +67,7 @@ pub trait NFTCore: NFTStateKeeper {
             .encode(),
             0,
         )
-        .unwrap();
+        .expect("Error during a reply with NFTEvent::NFTTransfer");
     }
 
     /// Transfers a token to the new owner
@@ -91,7 +91,7 @@ pub trait NFTCore: NFTStateKeeper {
             .encode(),
             0,
         )
-        .unwrap();
+        .expect("Error during a reply with NFTEvent::NFTTransfer");
     }
 
     /// Transfers a token to the new owner
@@ -117,7 +117,7 @@ pub trait NFTCore: NFTStateKeeper {
             .encode(),
             0,
         )
-        .unwrap();
+        .expect("Error during a reply with NFTEvent::NFTTransferPayout");
     }
 
     fn internal_transfer(&mut self, to: &ActorId, token_id: TokenId) -> ActorId {
@@ -181,7 +181,7 @@ pub trait NFTCore: NFTStateKeeper {
             .encode(),
             0,
         )
-        .unwrap();
+        .expect("Error during a reply with NFTEvent::NFTApproval");
     }
 
     /// Returns a `Payout` struct for a given token
