@@ -1,7 +1,7 @@
 use crate::multitoken::{io::*, state::*};
 use gstd::{exec, msg, prelude::*, ActorId};
 
-const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
+const ZERO_ID: ActorId = ActorId::zero();
 
 pub trait MTKCore: StateKeeper + MTKTokenState {
     fn assert_can_burn(&mut self, owner: &ActorId, id: &TokenId, amount: u128) {
@@ -85,7 +85,7 @@ pub trait MTKCore: StateKeeper + MTKTokenState {
             },
             0,
         )
-        .unwrap();
+        .expect("Error during a reply with MTKEvent::Transfer");
     }
 
     // The internal implementation of burn action with all the checks and panics
@@ -129,7 +129,7 @@ pub trait MTKCore: StateKeeper + MTKTokenState {
             },
             0,
         )
-        .unwrap();
+        .expect("Error during a reply with MTKEvent::Transfer");
     }
 
     // The internal implementation of transfer action with all the checks and panics
@@ -196,7 +196,7 @@ pub trait MTKCore: StateKeeper + MTKTokenState {
             },
             0,
         )
-        .unwrap();
+        .expect("Error during a reply with MTKEvent::Transfer");
     }
 
     /// Gives a right to another account to manage its tokens
@@ -221,7 +221,7 @@ pub trait MTKCore: StateKeeper + MTKTokenState {
             },
             0,
         )
-        .unwrap();
+        .expect("Error during a reply with MTKEvent::Approval");
     }
 
     /// Removed a right to another account to manage its tokens
@@ -244,7 +244,7 @@ pub trait MTKCore: StateKeeper + MTKTokenState {
             },
             0,
         )
-        .unwrap();
+        .expect("Error during a reply with MTKEvent::RevokeApproval");
     }
 
     /// Returns the amount of multiple specific tokens multiple users have
@@ -267,6 +267,7 @@ pub trait MTKCore: StateKeeper + MTKTokenState {
             })
             .collect();
 
-        msg::reply(MTKEvent::BalanceOf(res), 0).unwrap();
+        msg::reply(MTKEvent::BalanceOf(res), 0)
+            .expect("Error during a reply with MTKEvent::BalanceOf");
     }
 }
