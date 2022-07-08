@@ -1,9 +1,8 @@
 #![no_std]
 
-use gstd::{debug, msg, prelude::*};
+use gstd::{debug, msg, prelude::*, ActorId};
 
 use codec::{Decode, Encode};
-use primitive_types::H256;
 use scale_info::TypeInfo;
 
 gstd::metadata! {
@@ -15,14 +14,14 @@ gstd::metadata! {
 
 #[derive(Decode, TypeInfo)]
 struct Register {
-    address: H256,
+    address: ActorId,
 }
 
 #[derive(Encode, TypeInfo)]
 struct Channel {
-    id: H256,
+    id: ActorId,
     name: String,
-    owner_id: H256,
+    owner_id: ActorId,
     description: String,
 }
 
@@ -40,11 +39,11 @@ enum ChannelOutput {
 struct Meta {
     name: String,
     description: String,
-    owner_id: H256,
+    owner_id: ActorId,
 }
 
 impl Channel {
-    fn new(id: H256, meta: Meta) -> Self {
+    fn new(id: ActorId, meta: Meta) -> Self {
         Self {
             id,
             name: meta.name,
@@ -61,12 +60,12 @@ async fn main() {
     debug!("ROUTER: Starting registering {:?}", register.address);
 
     let ChannelOutput::Metadata(meta) =
-        msg::send_and_wait_for_reply(register.address.into(), ChannelAction::Meta, 0)
-            .unwrap()
+        msg::send_and_wait_for_reply(register.address, ChannelAction::Meta, 0)
+            .expect("ROUTER: Error sending async message")
             .await
             .expect("ROUTER: Error processing async message");
 
-    msg::reply(Channel::new(register.address, meta.clone()), 0).unwrap();
+    msg::reply(Channel::new(register.address, meta.clone()), 0).expect("Error sending reply");
 
     debug!(
         "ROUTER: Successfully added channel\nName: {:?}\nAddress: {:?}\nOwner: {:?}",

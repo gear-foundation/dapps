@@ -1,7 +1,6 @@
-use gstd::{exec, prelude::String};
+use gstd::{exec, prelude::String, ActorId};
 
 use codec::{Decode, Encode};
-use primitive_types::H256;
 use scale_info::TypeInfo;
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
@@ -18,7 +17,7 @@ pub enum ChannelOutput {
     SingleMessage(Message),
 }
 
-#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo, Default)]
 pub struct Message {
     pub text: String,
     pub timestamp: u32,
@@ -37,11 +36,11 @@ impl Message {
 pub struct Meta {
     pub name: String,
     pub description: String,
-    pub owner_id: H256,
+    pub owner_id: ActorId,
 }
 
 impl Meta {
-    pub const fn new(name: String, description: String, owner_id: H256) -> Self {
+    pub const fn new(name: String, description: String, owner_id: ActorId) -> Self {
         Self {
             name,
             description,
