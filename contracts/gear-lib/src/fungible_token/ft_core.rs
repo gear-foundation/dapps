@@ -8,17 +8,17 @@ pub trait FTCore: FTStateKeeper {
     /// Requirements: None
     /// Arguments:
     /// * `amount`: The amount of token to be minted (actually have no limit)
-    fn mint(&mut self, amount: u128) {
+    fn mint(&mut self, to: &ActorId, amount: u128) {
         self.get_mut()
             .balances
-            .entry(msg::source())
+            .entry(*to)
             .and_modify(|balance| *balance += amount)
             .or_insert(amount);
         self.get_mut().total_supply += amount;
         msg::reply(
             FTTransfer {
                 from: ZERO_ID,
-                to: msg::source(),
+                to: *to,
                 amount,
             }
             .encode(),
