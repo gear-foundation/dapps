@@ -200,9 +200,7 @@ fn settle_auction() {
         USERS[0],
         MarketEvent::ItemInfo(Item {
             owner_id: USERS[3].into(),
-            nft_contract_id: 2.into(),
             ft_contract_id: None,
-            token_id: 0.into(),
             price: None,
             auction: None,
             offers: vec![],
@@ -368,9 +366,7 @@ fn auction_with_ft_token() {
         USERS[0],
         MarketEvent::ItemInfo(Item {
             owner_id: USERS[3].into(),
-            nft_contract_id: 2.into(),
             ft_contract_id: Some(1.into()),
-            token_id: 0.into(),
             price: None,
             auction: None,
             offers: vec![],

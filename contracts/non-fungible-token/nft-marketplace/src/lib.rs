@@ -11,53 +11,38 @@ pub mod auction;
 pub mod offers;
 pub mod payment;
 pub mod sale;
+pub mod state;
+use state::*;
 
 pub type ContractAndTokenId = String;
 
+const MIN_TREASURY_FEE: u8 = 0;
+const MAX_TREASURT_FEE: u8 = 5;
+pub const BASE_PERCENT: u8 = 100;
+
 #[derive(Debug, Default, Encode, Decode, TypeInfo)]
 pub struct Market {
-    pub owner_id: ActorId,
+    pub admin_id: ActorId,
     pub treasury_id: ActorId,
-    pub treasury_fee: u128,
+    pub treasury_fee: u8,
     pub items: BTreeMap<ContractAndTokenId, Item>,
-    pub approved_nft_contracts: Vec<ActorId>,
-    pub approved_ft_contracts: Vec<ActorId>,
-    pub offer_history_length: u8,
+    pub approved_nft_contracts: BTreeSet<ActorId>,
+    pub approved_ft_contracts: BTreeSet<ActorId>,
 }
 
 static mut MARKET: Option<Market> = None;
 
 impl Market {
-    /// Adds nft contract addresses that can be listed on marketplace
-    /// Requirements:
-    /// Only admin can add approved nft addresses
-    /// Arguments:
-    /// * `nft_contract_id`: the NFT contract address
     fn add_nft_contract(&mut self, nft_contract_id: &ActorId) {
-        self.check_owner();
-        self.approved_nft_contracts.push(*nft_contract_id);
+        self.check_admin();
+        self.approved_nft_contracts.insert(*nft_contract_id);
     }
 
-    /// Adds the contract addresses of fungible tokens with which users can pay for NFT
-    /// Requirements:
-    /// Only admin can add approved ft addresses
-    /// Arguments:
-    /// * `ft_contract_id`: the FT contract address
     fn add_ft_contract(&mut self, ft_contract_id: &ActorId) {
-        self.check_owner();
-        self.approved_ft_contracts.push(*ft_contract_id);
+        self.check_admin();
+        self.approved_ft_contracts.insert(*ft_contract_id);
     }
 
-    /// Add data on market item
-    /// If NFT is not listed on the marketplace then it will be listed
-    /// Requirements
-    /// * `msg::source()` must be the NFT owner
-    /// * `nft_contract_id` must be added to `approved_nft_contracts`
-    /// * if item already exists, then it cannot be changed if there is an active auction
-    /// Arguments:
-    /// * `nft_contract_id`: the NFT contract address
-    /// * `token_id`: the NFT id
-    /// * `price`: the NFT price (if it is `None` then the item is not on the sale)
     pub async fn add_market_data(
         &mut self,
         nft_contract_id: &ActorId,
@@ -81,9 +66,7 @@ impl Market {
             })
             .or_insert(Item {
                 owner_id: msg::source(),
-                nft_contract_id: *nft_contract_id,
                 ft_contract_id,
-                token_id,
                 price,
                 auction: None,
                 offers: Vec::new(),
@@ -98,11 +81,11 @@ impl Market {
             },
             0,
         )
-        .unwrap();
+        .expect("Error in reply [MarketEvent::MarketDataAdded]");
     }
 
-    pub fn check_owner(&self) {
-        if msg::source() != self.owner_id {
+    pub fn check_admin(&self) {
+        if msg::source() != self.admin_id {
             panic!("Only owner can make that action");
         }
     }
@@ -117,20 +100,11 @@ impl Market {
         if ft_contract_id.is_some()
             && !self
                 .approved_ft_contracts
-                .contains(&ft_contract_id.unwrap())
+                .contains(&ft_contract_id.expect("Must not be an error here"))
         {
             panic!("that ft contract is not approved");
         }
     }
-}
-
-gstd::metadata! {
-    title: "NFTMarketplace",
-        init:
-            input: InitMarket,
-        handle:
-            input: MarketAction,
-            output: MarketEvent,
 }
 
 #[gstd::async_main]
@@ -169,9 +143,10 @@ async unsafe fn main() {
             let item = market
                 .items
                 .get(&contract_and_token_id)
-                .unwrap_or(&Item::default())
+                .expect("Item does not exist")
                 .clone();
-            msg::reply(MarketEvent::ItemInfo(item), 0).unwrap();
+            msg::reply(MarketEvent::ItemInfo(item), 0)
+                .expect("Error in reply [MarketEvent::ItemInfo]");
         }
         MarketAction::AddOffer {
             nft_contract_id,
@@ -234,11 +209,48 @@ async unsafe fn main() {
 #[no_mangle]
 pub unsafe extern "C" fn init() {
     let config: InitMarket = msg::load().expect("Unable to decode InitConfig");
+    if config.treasury_fee == MIN_TREASURY_FEE || config.treasury_fee > MAX_TREASURT_FEE {
+        panic!("Wrong treasury fee");
+    }
     let market = Market {
-        owner_id: config.owner_id,
+        admin_id: config.admin_id,
         treasury_id: config.treasury_id,
         treasury_fee: config.treasury_fee,
         ..Market::default()
     };
     MARKET = Some(market);
+}
+
+gstd::metadata! {
+title: "NFTMarketplace",
+    init:
+        input: InitMarket,
+    handle:
+        input: MarketAction,
+        output: MarketEvent,
+    state:
+        input: State,
+        output: StateReply,
+}
+
+#[no_mangle]
+pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
+    let state: State = msg::load().expect("failed to decode input argument");
+    let market: &mut Market = MARKET.get_or_insert(Market::default());
+    let encoded = match state {
+        State::AllItems => StateReply::AllItems(market.items.values().cloned().collect()).encode(),
+        State::ItemInfo {
+            nft_contract_id,
+            token_id,
+        } => {
+            let contract_and_token_id =
+                format!("{}{}", H256::from_slice(nft_contract_id.as_ref()), token_id);
+            if let Some(item) = market.items.get(&contract_and_token_id) {
+                StateReply::ItemInfo(item.clone()).encode()
+            } else {
+                StateReply::ItemInfo(Item::default()).encode()
+            }
+        }
+    };
+    gstd::util::to_leak_ptr(encoded)
 }

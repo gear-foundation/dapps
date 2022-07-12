@@ -1,8 +1,8 @@
 use ft_io::*;
 use gstd::{exec, msg, ActorId};
-
+const MINIMUM_VALUE: u64 = 500;
 pub async fn transfer_tokens(contract_id: &ActorId, from: &ActorId, to: &ActorId, amount: u128) {
-    let _transfer_response: FTEvent = msg::send_and_wait_for_reply(
+    msg::send_and_wait_for_reply::<FTEvent, _>(
         *contract_id,
         FTAction::Transfer {
             from: *from,
@@ -11,7 +11,7 @@ pub async fn transfer_tokens(contract_id: &ActorId, from: &ActorId, to: &ActorId
         },
         0,
     )
-    .unwrap()
+    .expect("Error in sending message to FT contract")
     .await
     .expect("Error in transfer");
 }
@@ -23,11 +23,17 @@ pub async fn transfer_payment(
     price: u128,
 ) {
     if ft_contract_id.is_none() {
-        if to != &exec::program_id() {
-            msg::send(*to, "", price).unwrap();
+        if to != &exec::program_id() && price > MINIMUM_VALUE.into() {
+            msg::send(*to, "", price).expect("Error in sending payment in value");
         }
     } else {
-        transfer_tokens(&ft_contract_id.unwrap(), from, to, price).await;
+        transfer_tokens(
+            &ft_contract_id.expect("There must no be an error here"),
+            from,
+            to,
+            price,
+        )
+        .await;
     }
 }
 

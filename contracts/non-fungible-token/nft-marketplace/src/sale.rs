@@ -1,16 +1,8 @@
-use crate::{nft_messages::*, payment::*, Market, MarketEvent};
+use crate::{nft_messages::*, payment::*, Market, MarketEvent, BASE_PERCENT};
 use gstd::{msg, prelude::*, ActorId};
 use primitive_types::{H256, U256};
 
 impl Market {
-    /// Called when a user wants to buy NFT.
-    /// Requirements:
-    /// * The NFT must exists and be on sale
-    /// * The buyer must have enough balance
-    /// * There must be no opened auctions
-    /// Arguments:
-    /// * `nft_contract_id`: NFT contract address
-    /// * `token_id`: the token ID
     pub async fn buy_item(&mut self, nft_contract_id: &ActorId, token_id: U256) {
         let contract_and_token_id =
             format!("{}{}", H256::from_slice(nft_contract_id.as_ref()), token_id);
@@ -21,12 +13,11 @@ impl Market {
         if item.auction.is_some() {
             panic!("There is an opened auction");
         }
-        if item.price.is_none() {
-            panic!("The item is not on sale");
-        }
-        check_attached_value(item.ft_contract_id, item.price.unwrap());
+        let price = item.price.expect("The item is not on sale");
+
+        check_attached_value(item.ft_contract_id, price);
         // fee for treasury
-        let treasury_fee = item.price.unwrap() * self.treasury_fee / 10_000u128;
+        let treasury_fee = price * (self.treasury_fee * BASE_PERCENT) as u128 / 10_000u128;
 
         transfer_payment(
             &msg::source(),
@@ -41,7 +32,7 @@ impl Market {
             nft_contract_id,
             &msg::source(),
             token_id,
-            item.price.unwrap() - treasury_fee,
+            price - treasury_fee,
         )
         .await;
         for (account, amount) in payouts.iter() {
@@ -59,6 +50,6 @@ impl Market {
             },
             0,
         )
-        .unwrap();
+        .expect("Error in reply [MarketEvent::ItemSold]");
     }
 }
