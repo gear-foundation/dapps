@@ -143,6 +143,11 @@ static mut ESCROW: Option<Escrow> = None;
 #[no_mangle]
 extern "C" fn init() {
     let config: InitEscrow = msg::load().expect("Unable to decode InitEscrow");
+
+    if config.ft_program_id == ActorId::zero() {
+        panic!("FT program address can't be 0");
+    }
+
     let escrow = Escrow {
         ft_program_id: config.ft_program_id,
         ..Default::default()
@@ -179,9 +184,16 @@ extern "C" fn meta_state() -> *mut [i32; 2] {
                 .wallets
                 .get(&wallet_id)
                 .unwrap_or_else(|| panic_wallet_not_exist(wallet_id)),
-        )
-        .encode(),
-    };
+        ),
+        EscrowState::CreatedWallets => EscrowStateReply::CreatedWallets(
+            escrow
+                .wallets
+                .iter()
+                .map(|(wallet_id, wallet)| (*wallet_id, *wallet))
+                .collect(),
+        ),
+    }
+    .encode();
     gstd::util::to_leak_ptr(encoded)
 }
 

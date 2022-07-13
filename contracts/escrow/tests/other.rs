@@ -146,3 +146,52 @@ fn interact_with_non_existend_wallet_meta_state() {
 
     fail::info(&escrow_program, NONEXISTENT_WALLET);
 }
+
+#[test]
+fn created_wallets() {
+    let system = init_system();
+    let escrow_program = init_escrow(&system);
+
+    check::created_wallets(&escrow_program, vec![]);
+
+    check::create(
+        &escrow_program,
+        WALLET[0],
+        SELLER[0],
+        BUYER[0],
+        SELLER[0],
+        AMOUNT[0],
+    );
+    check::create(
+        &escrow_program,
+        WALLET[1],
+        SELLER[1],
+        BUYER[1],
+        SELLER[1],
+        AMOUNT[1],
+    );
+
+    check::created_wallets(
+        &escrow_program,
+        vec![
+            (
+                WALLET[0].into(),
+                Wallet {
+                    amount: AMOUNT[0],
+                    buyer: BUYER[0].into(),
+                    seller: SELLER[0].into(),
+                    state: WalletState::AwaitingDeposit,
+                },
+            ),
+            (
+                WALLET[1].into(),
+                Wallet {
+                    amount: AMOUNT[1],
+                    buyer: BUYER[1].into(),
+                    seller: SELLER[1].into(),
+                    state: WalletState::AwaitingDeposit,
+                },
+            ),
+        ],
+    );
+}
