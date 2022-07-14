@@ -5,7 +5,7 @@ use std::println;
 use std::time::{SystemTime, UNIX_EPOCH};
 
 use codec::Encode;
-use gstd::BTreeMap;
+use gstd::{ActorId, BTreeMap};
 use gtest::{Program, System};
 use lt_io::*;
 const USERS: &[u64] = &[3, 4, 5];
@@ -15,6 +15,7 @@ fn init(sys: &System) {
 
     let lt = Program::current(sys);
 
+    sys.mint_to(USERS[0], 10000);
     let res = lt.send_bytes_with_value(USERS[0], b"Init", 10000);
 
     assert!(res.log().is_empty());
@@ -44,6 +45,7 @@ fn meta_tests() {
     );
     assert!(res.log().is_empty());
 
+    sys.mint_to(USERS[0], 1000);
     let res = lt.send_with_value(USERS[0], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[0], LtEvent::PlayerAdded(0).encode())));
 
@@ -55,6 +57,7 @@ fn meta_tests() {
         },
     );
 
+    sys.mint_to(USERS[1], 1000);
     let res = lt.send_with_value(USERS[1], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[1], LtEvent::PlayerAdded(1).encode())));
 
@@ -66,23 +69,23 @@ fn meta_tests() {
         },
     );
 
-    println!(
-        "meta players: {:?}",
-        lt.meta_state::<_, LtStateReply>(LtState::GetPlayers)
-    );
+    let expected_players: LtStateReply = lt
+        .meta_state(LtState::GetPlayers)
+        .expect("Error in reading meta_state");
+    println!("meta players: {:?}", expected_players,);
 
-    assert_eq!(
-        lt.meta_state::<_, LtStateReply>(LtState::GetPlayers),
-        LtStateReply::Players(players.clone())
-    );
+    assert_eq!(expected_players, LtStateReply::Players(players.clone()));
 
-    assert_eq!(
-        lt.meta_state::<_, LtStateReply>(LtState::BalanceOf(0)),
-        LtStateReply::Balance(1000)
-    );
+    let balance: LtStateReply = lt
+        .meta_state(LtState::BalanceOf(0))
+        .expect("Error in reading meta_state");
+    assert_eq!(balance, LtStateReply::Balance(1000));
 
+    let lottery_state: LtStateReply = lt
+        .meta_state(LtState::LotteryState)
+        .expect("Error in reading meta_state");
     assert_eq!(
-        lt.meta_state::<_, LtStateReply>(LtState::LotteryState),
+        lottery_state,
         LtStateReply::LotteryState {
             lottery_owner: USERS[0].into(),
             lottery_started: true,
@@ -93,6 +96,7 @@ fn meta_tests() {
             token_address: None,
             lottery_id: 1,
             players,
+            winner: ActorId::zero(),
         }
     );
 

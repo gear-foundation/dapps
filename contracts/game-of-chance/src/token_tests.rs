@@ -13,6 +13,7 @@ const USERS: &[u64] = &[1, 2, 3, 4, 5];
 fn init_lottery(sys: &System) {
     let lt = Program::current(sys);
 
+    sys.mint_to(USERS[2], 10000);
     let res = lt.send_bytes_with_value(USERS[2], b"Init", 10000);
 
     assert!(res.log().is_empty());
@@ -68,6 +69,7 @@ fn enter() {
     println!("TotalSupply(u128): {:?}", res.decoded_log::<FTEvent>());
     assert!(res.contains(&(USERS[2], FTEvent::TotalSupply(3000).encode())));
 
+    sys.mint_to(USERS[3], 1000);
     let res = lt.send_with_value(USERS[3], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[3], LtEvent::PlayerAdded(0).encode())));
 
@@ -75,6 +77,7 @@ fn enter() {
     println!("Balance(u128): {:?}", res.decoded_log::<FTEvent>());
     assert!(res.contains(&(USERS[2], FTEvent::Balance(1000).encode())));
 
+    sys.mint_to(USERS[4], 1000);
     let res = lt.send_with_value(USERS[4], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[4], LtEvent::PlayerAdded(1).encode())));
 
@@ -103,9 +106,11 @@ fn pick_winner() {
     );
     assert!(res.log().is_empty());
 
+    sys.mint_to(USERS[3], 1000);
     let res = lt.send_with_value(USERS[3], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[3], LtEvent::PlayerAdded(0).encode())));
 
+    sys.mint_to(USERS[4], 1000);
     let res = lt.send_with_value(USERS[4], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[4], LtEvent::PlayerAdded(1).encode())));
 

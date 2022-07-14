@@ -15,6 +15,8 @@ fn init(sys: &System) {
 
     let lt = Program::current(sys);
 
+    sys.mint_to(USERS[0], 10000);
+
     let res = lt.send_bytes_with_value(USERS[0], b"Init", 10000);
 
     assert!(res.log().is_empty());
@@ -77,6 +79,8 @@ fn enter() {
     init(&sys);
     let lt = sys.get_program(1);
 
+    sys.mint_to(USERS[1], 3000);
+
     let res = lt.send_with_value(USERS[1], LtAction::Enter(3000), 3000);
     assert!(res.main_failed());
 
@@ -91,9 +95,11 @@ fn enter() {
     );
     assert!(res.log().is_empty());
 
+    sys.mint_to(USERS[0], 1000);
     let res = lt.send_with_value(USERS[0], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[0], LtEvent::PlayerAdded(0).encode())));
 
+    sys.mint_to(USERS[1], 2000);
     let res = lt.send_with_value(USERS[1], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[1], LtEvent::PlayerAdded(1).encode())));
 
@@ -124,9 +130,11 @@ fn pick_winner() {
     let res = lt.send(USERS[0], LtAction::PickWinner);
     assert!(res.main_failed());
 
+    sys.mint_to(USERS[0], 1000);
     let res = lt.send_with_value(USERS[0], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[0], LtEvent::PlayerAdded(0).encode())));
 
+    sys.mint_to(USERS[1], 1000);
     let res = lt.send_with_value(USERS[1], LtAction::Enter(1000), 1000);
     assert!(res.contains(&(USERS[1], LtEvent::PlayerAdded(1).encode())));
 

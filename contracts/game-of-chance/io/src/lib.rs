@@ -63,5 +63,6 @@ pub enum LtStateReply {
         token_address: Option<ActorId>,
         players: BTreeMap<u32, Player>,
         lottery_id: u32,
+        winner: ActorId,
     },
 }

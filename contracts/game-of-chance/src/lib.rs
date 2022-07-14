@@ -65,7 +65,7 @@ impl Lottery {
         }
 
         if self.lottery_is_on() {
-            self.init_lottery();
+            self.players = BTreeMap::new();
         }
 
         self.lottery_started = true;
@@ -150,17 +150,6 @@ impl Lottery {
         u32::from_le_bytes([code_hash[0], code_hash[1], code_hash[2], code_hash[3]])
     }
 
-    //Reset the lottery to the initial state
-    fn init_lottery(&mut self) {
-        self.lottery_started = false;
-        self.lottery_start_time = 0;
-        self.lottery_duration = 0;
-        self.participation_cost = 0;
-        self.prize_fund = 0;
-        self.token_address = None;
-        self.players = BTreeMap::new();
-    }
-
     /// Lottery winner calculation
     /// Requirements:
     /// * Only owner can pick the winner
@@ -201,6 +190,7 @@ impl Lottery {
             "Winner: {} token_address(): {:?}",
             index, self.token_address
         );
+        self.lottery_started = false;
     }
 
     //Sending the 'LotteryState' message
@@ -270,18 +260,29 @@ pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
     let encoded = match query {
         LtState::GetPlayers => LtStateReply::Players(lottery.players.clone()).encode(),
         LtState::GetWinners => LtStateReply::Winners(lottery.lottery_history.clone()).encode(),
-        LtState::LotteryState => LtStateReply::LotteryState {
-            lottery_owner: lottery.lottery_owner,
-            lottery_started: lottery.lottery_started,
-            lottery_start_time: lottery.lottery_start_time,
-            lottery_duration: lottery.lottery_duration,
-            participation_cost: lottery.participation_cost,
-            prize_fund: lottery.prize_fund,
-            token_address: lottery.token_address,
-            players: lottery.players.clone(),
-            lottery_id: lottery.lottery_id,
+        LtState::LotteryState => {
+            let winner: ActorId = if lottery.lottery_started {
+                ActorId::zero()
+            } else {
+                *lottery
+                    .lottery_history
+                    .get(&lottery.lottery_id)
+                    .unwrap_or(&ActorId::zero())
+            };
+            LtStateReply::LotteryState {
+                lottery_owner: lottery.lottery_owner,
+                lottery_started: lottery.lottery_started,
+                lottery_start_time: lottery.lottery_start_time,
+                lottery_duration: lottery.lottery_duration,
+                participation_cost: lottery.participation_cost,
+                prize_fund: lottery.prize_fund,
+                token_address: lottery.token_address,
+                players: lottery.players.clone(),
+                lottery_id: lottery.lottery_id,
+                winner,
+            }
+            .encode()
         }
-        .encode(),
 
         LtState::BalanceOf(index) => {
             if let Some(player) = lottery.players.get(&index) {
