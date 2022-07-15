@@ -11,7 +11,7 @@ pub struct InitStaking {
     pub reward_total: u128,
 }
 
-#[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
+#[derive(Debug, Default, Encode, Decode, TypeInfo, Clone, PartialEq)]
 pub struct Staker {
     pub balance: u128,
     pub reward_allowed: u128,
@@ -35,13 +35,13 @@ pub enum StakingEvent {
     Reward(u128),
 }
 
-#[derive(Debug, Encode, Decode, TypeInfo)]
+#[derive(Debug, Encode, Decode, TypeInfo, PartialEq)]
 pub enum StakingState {
     GetStakers,
     GetStaker(ActorId),
 }
 
-#[derive(Debug, Encode, Decode, TypeInfo)]
+#[derive(Debug, Encode, Decode, TypeInfo, PartialEq)]
 pub enum StakingStateReply {
     Stakers(BTreeMap<ActorId, Staker>),
     Staker(Staker),

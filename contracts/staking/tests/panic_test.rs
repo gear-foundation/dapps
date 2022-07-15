@@ -130,13 +130,24 @@ fn update_staking() {
             staking_token_address: USERS[1].into(),
             reward_token_address: USERS[2].into(),
             distribution_time: 10000,
+            reward_total: 1000,
+        }),
+    );
+    assert!(res.main_failed());
+
+    let res = staking.send(
+        USERS[3],
+        StakingAction::UpdateStaking(InitStaking {
+            staking_token_address: USERS[1].into(),
+            reward_token_address: USERS[2].into(),
+            distribution_time: 10000,
             reward_total: 0,
         }),
     );
     assert!(res.main_failed());
 
     let res = staking.send(
-        USERS[4],
+        USERS[3],
         StakingAction::UpdateStaking(InitStaking {
             staking_token_address: USERS[1].into(),
             reward_token_address: USERS[2].into(),

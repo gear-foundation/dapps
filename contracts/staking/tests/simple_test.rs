@@ -11,7 +11,7 @@ use gtest::{Program, System};
 use staking_io::*;
 
 const USERS: &[u64] = &[1, 2, 3, 4, 5, 6, 7, 8];
-const DECIMALS_COUNT: u128 = 10_u128.pow(20);
+const DECIMALS_FACTOR: u128 = 10_u128.pow(20);
 
 #[derive(Debug, Default, Encode)]
 struct Staking {
@@ -130,6 +130,7 @@ fn update_staking(staking: &mut Staking, reward: u128, time: u64) {
         panic!("update_staking(): reward is null");
     }
 
+    staking.distribution_time = 10000;
     update_reward(staking, time);
     staking.all_produced = staking.reward_produced;
     staking.produced_time = time;
@@ -138,9 +139,15 @@ fn update_staking(staking: &mut Staking, reward: u128, time: u64) {
 
 /// Calculates the reward produced so far
 fn produced(staking: &mut Staking, time: u64) -> u128 {
+    let mut elapsed_time = time - staking.produced_time;
+
+    if elapsed_time > staking.distribution_time {
+        elapsed_time = staking.distribution_time;
+    }
+
     staking.all_produced
-        + staking.reward_total
-        + (time - staking.produced_time) as u128 / staking.distribution_time as u128
+        + staking.reward_total.saturating_mul(elapsed_time as u128)
+            / staking.distribution_time as u128
 }
 
 /// Calculates the maximum possible reward
@@ -148,7 +155,7 @@ fn produced(staking: &mut Staking, time: u64) -> u128 {
 /// Arguments:
 /// `amount`: the number of tokens
 fn get_max_reward(staking: &Staking, amount: u128) -> u128 {
-    (amount * staking.tokens_per_stake) / DECIMALS_COUNT
+    (amount * staking.tokens_per_stake) / DECIMALS_FACTOR
 }
 
 /// Updates the reward produced so far and calculates tokens per stake
@@ -161,7 +168,7 @@ fn update_reward(staking: &mut Staking, time: u64) {
         if staking.total_staked > 0 {
             staking.tokens_per_stake = staking
                 .tokens_per_stake
-                .saturating_add((produced_new * DECIMALS_COUNT) / staking.total_staked);
+                .saturating_add((produced_new * DECIMALS_FACTOR) / staking.total_staked);
         }
 
         staking.reward_produced = staking.reward_produced.saturating_add(produced_new);
@@ -205,7 +212,7 @@ fn update_staking_test() {
     let staking = sys.get_program(1);
 
     let res = staking.send(
-        USERS[4],
+        USERS[3],
         StakingAction::UpdateStaking(InitStaking {
             staking_token_address: USERS[1].into(),
             reward_token_address: USERS[2].into(),
@@ -213,13 +220,12 @@ fn update_staking_test() {
             reward_total: 1000,
         }),
     );
-    assert!(res.contains(&(USERS[4], StakingEvent::Updated.encode())));
+    assert!(res.contains(&(USERS[3], StakingEvent::Updated.encode())));
 }
 
 #[test]
 fn send_reward() {
     let sys = System::new();
-
     init_staking(&sys);
     init_staking_token(&sys);
     init_reward_token(&sys);
@@ -232,7 +238,6 @@ fn send_reward() {
         .as_secs();
 
     let mut staking = Staking {
-        distribution_time: 10000,
         ..Default::default()
     };
 
@@ -253,12 +258,12 @@ fn send_reward() {
 
     staking.total_staked = 1500;
 
-    sys.spend_blocks(500000);
+    sys.spend_blocks(2000);
 
     let res = st.send(USERS[5], StakingAction::Stake(2000));
     assert!(res.contains(&(USERS[5], StakingEvent::StakeAccepted(2000).encode())));
 
-    update_reward(&mut staking, time + 500000);
+    update_reward(&mut staking, time + 2000);
     staking.stakers.insert(
         USERS[5].into(),
         Staker {
@@ -270,9 +275,9 @@ fn send_reward() {
 
     staking.total_staked = 3500;
 
-    sys.spend_blocks(500000);
+    sys.spend_blocks(1000);
 
-    update_reward(&mut staking, time + 500000 * 2);
+    update_reward(&mut staking, time + 3000);
     let reward = calc_reward(&mut staking, &USERS[4].into());
 
     staking
@@ -289,9 +294,9 @@ fn send_reward() {
     );
     assert!(res.contains(&(USERS[4], StakingEvent::Reward(reward).encode())));
 
-    sys.spend_blocks(500000);
+    sys.spend_blocks(1000);
 
-    update_reward(&mut staking, time + 500000 * 3);
+    update_reward(&mut staking, time + 4000);
     let reward = calc_reward(&mut staking, &USERS[5].into());
 
     staking
@@ -325,6 +330,102 @@ fn withdraw() {
         .as_secs();
 
     let mut staking = Staking {
+        ..Default::default()
+    };
+
+    update_staking(&mut staking, 1000, time);
+
+    let res = st.send(USERS[4], StakingAction::Stake(1500));
+    assert!(res.contains(&(USERS[4], StakingEvent::StakeAccepted(1500).encode())));
+
+    update_reward(&mut staking, time);
+    staking.stakers.insert(
+        USERS[4].into(),
+        Staker {
+            reward_debt: get_max_reward(&staking, 1500),
+            balance: 1500,
+            ..Default::default()
+        },
+    );
+
+    staking.total_staked = 1500;
+
+    sys.spend_blocks(2000);
+
+    let res = st.send(USERS[5], StakingAction::Stake(2000));
+    assert!(res.contains(&(USERS[5], StakingEvent::StakeAccepted(2000).encode())));
+
+    update_reward(&mut staking, time + 2000);
+    staking.stakers.insert(
+        USERS[5].into(),
+        Staker {
+            reward_debt: get_max_reward(&staking, 2000),
+            balance: 2000,
+            ..Default::default()
+        },
+    );
+
+    staking.total_staked = 3500;
+
+    sys.spend_blocks(1000);
+
+    let res = st.send(USERS[4], StakingAction::Withdraw(500));
+    assert!(res.contains(&(USERS[4], StakingEvent::Withdrawn(500).encode())));
+
+    update_reward(&mut staking, time + 3000);
+    let max_reward = get_max_reward(&staking, 500);
+
+    if let Some(staker) = staking.stakers.get_mut(&USERS[4].into()) {
+        staker.reward_allowed = staker.reward_allowed.saturating_add(max_reward);
+
+        staker.balance = staker.balance.saturating_sub(500);
+        staking.total_staked -= 500;
+    }
+
+    sys.spend_blocks(1000);
+
+    update_reward(&mut staking, time + 4000);
+    let reward = calc_reward(&mut staking, &USERS[4].into());
+
+    staking
+        .stakers
+        .entry(USERS[4].into())
+        .and_modify(|stake| stake.distributed = stake.distributed.saturating_add(reward));
+
+    let res = st.send(USERS[4], StakingAction::GetReward);
+    assert!(res.contains(&(USERS[4], StakingEvent::Reward(reward).encode())));
+    println!("Reward[4]: {:?}", res.decoded_log::<StakingEvent>());
+
+    sys.spend_blocks(2000);
+
+    update_reward(&mut staking, time + 6000);
+    let reward = calc_reward(&mut staking, &USERS[5].into());
+
+    staking
+        .stakers
+        .entry(USERS[5].into())
+        .and_modify(|stake| stake.distributed = stake.distributed.saturating_add(reward));
+
+    let res = st.send(USERS[5], StakingAction::GetReward);
+    assert!(res.contains(&(USERS[5], StakingEvent::Reward(reward).encode())));
+    println!("Reward[5]: {:?}", res.decoded_log::<StakingEvent>());
+}
+
+#[test]
+fn meta_tests() {
+    let sys = System::new();
+    init_staking(&sys);
+    init_staking_token(&sys);
+    init_reward_token(&sys);
+    sys.init_logger();
+    let st = sys.get_program(1);
+
+    let time = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .expect("Time went backwards")
+        .as_secs();
+
+    let mut staking = Staking {
         distribution_time: 10000,
         ..Default::default()
     };
@@ -346,12 +447,12 @@ fn withdraw() {
 
     staking.total_staked = 1500;
 
-    sys.spend_blocks(500000);
+    sys.spend_blocks(2000);
 
     let res = st.send(USERS[5], StakingAction::Stake(2000));
     assert!(res.contains(&(USERS[5], StakingEvent::StakeAccepted(2000).encode())));
 
-    update_reward(&mut staking, time + 500000);
+    update_reward(&mut staking, time + 2000);
     staking.stakers.insert(
         USERS[5].into(),
         Staker {
@@ -363,47 +464,17 @@ fn withdraw() {
 
     staking.total_staked = 3500;
 
-    sys.spend_blocks(500000);
+    assert_eq!(
+        st.meta_state::<_, StakingStateReply>(StakingState::GetStakers)
+            .expect("StakingState::GetStakers failure"),
+        StakingStateReply::Stakers(staking.stakers.clone())
+    );
 
-    let res = st.send(USERS[4], StakingAction::Withdraw(500));
-    assert!(res.contains(&(USERS[4], StakingEvent::Withdrawn(500).encode())));
+    let staker = staking.stakers.get(&USERS[4].into()).unwrap();
 
-    if let Some(staker) = staking.stakers.get_mut(&USERS[4].into()) {
-        staker.reward_allowed = staker
-            .reward_allowed
-            .saturating_add((500 * staking.tokens_per_stake) / DECIMALS_COUNT);
-        staker.balance = staker.balance.saturating_sub(500);
-
-        update_reward(&mut staking, time + 500000 * 2);
-
-        staking.total_staked -= 500;
-    }
-
-    sys.spend_blocks(500000);
-
-    update_reward(&mut staking, time + 500000 * 3);
-    let reward = calc_reward(&mut staking, &USERS[4].into());
-
-    staking
-        .stakers
-        .entry(USERS[4].into())
-        .and_modify(|stake| stake.distributed = stake.distributed.saturating_add(reward));
-
-    let res = st.send(USERS[4], StakingAction::GetReward);
-    assert!(res.contains(&(USERS[4], StakingEvent::Reward(reward).encode())));
-    println!("Reward[4]: {:?}", res.decoded_log::<StakingEvent>());
-
-    sys.spend_blocks(500000);
-
-    update_reward(&mut staking, time + 500000 * 4);
-    let reward = calc_reward(&mut staking, &USERS[5].into());
-
-    staking
-        .stakers
-        .entry(USERS[5].into())
-        .and_modify(|stake| stake.distributed = stake.distributed.saturating_add(reward));
-
-    let res = st.send(USERS[5], StakingAction::GetReward);
-    assert!(res.contains(&(USERS[5], StakingEvent::Reward(reward).encode())));
-    println!("Reward[5]: {:?}", res.decoded_log::<StakingEvent>());
+    assert_eq!(
+        st.meta_state::<_, StakingStateReply>(StakingState::GetStaker(USERS[4].into()))
+            .expect("StakingState::GetStaker failure"),
+        StakingStateReply::Staker(staker.clone())
+    );
 }
