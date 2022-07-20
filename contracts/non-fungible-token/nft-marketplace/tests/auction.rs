@@ -65,6 +65,17 @@ fn bid(market: &Program, user: u64, price: u128) -> RunResult {
     )
 }
 
+fn bid_with_token(market: &Program, user: u64, price: u128) -> RunResult {
+    market.send(
+        user,
+        MarketAction::AddBid {
+            nft_contract_id: 2.into(),
+            token_id: 0.into(),
+            price,
+        },
+    )
+}
+
 #[test]
 fn create_auction() {
     let sys = System::new();
@@ -121,6 +132,7 @@ fn add_bid() {
     let res = start_auction(&market, None, 100_000, 60_000, 86_400_000);
     assert!(!res.main_failed());
 
+    sys.mint_to(USERS[0], 100_001);
     let res = bid(&market, USERS[0], 100_001);
     assert!(res.contains(&(
         USERS[0],
@@ -143,6 +155,7 @@ fn add_bid_failures() {
     let res = start_auction(&market, None, 100_000, 60_000, 86_400_000);
     assert!(!res.main_failed());
     // must fail since the price is equal to the current bid price
+    sys.mint_to(USERS[0], 200_000);
     let res = bid(&market, USERS[0], 100_000);
     assert!(res.main_failed());
 
@@ -164,6 +177,7 @@ fn settle_auction() {
 
     // Users add bids
     USERS.iter().enumerate().for_each(|(i, user)| {
+        sys.mint_to(*user, 100_001 + i as u128);
         let res = bid(&market, *user, 100_001 + i as u128);
         assert!(!res.main_failed());
     });
@@ -313,7 +327,7 @@ fn auction_with_ft_token() {
 
     // Users add bids
     USERS.iter().enumerate().for_each(|(i, user)| {
-        let res = bid(&market, *user, 10_100 + 100 * i as u128);
+        let res = bid_with_token(&market, *user, 10_100 + 100 * i as u128);
         assert!(!res.main_failed());
     });
 

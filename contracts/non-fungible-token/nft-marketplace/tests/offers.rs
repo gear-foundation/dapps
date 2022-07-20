@@ -35,16 +35,28 @@ fn before_each_test(sys: &System) {
 }
 
 fn offer(market: &Program, user: u64, ft_contract_id: Option<ActorId>, price: u128) {
-    let res = market.send_with_value(
-        user,
-        MarketAction::AddOffer {
-            nft_contract_id: 2.into(),
-            ft_contract_id,
-            token_id: 0.into(),
+    let res = if ft_contract_id.is_none() {
+        market.send_with_value(
+            user,
+            MarketAction::AddOffer {
+                nft_contract_id: 2.into(),
+                ft_contract_id,
+                token_id: 0.into(),
+                price,
+            },
             price,
-        },
-        price,
-    );
+        )
+    } else {
+        market.send(
+            user,
+            MarketAction::AddOffer {
+                nft_contract_id: 2.into(),
+                ft_contract_id,
+                token_id: 0.into(),
+                price,
+            },
+        )
+    };
     assert!(res.contains(&(
         user,
         MarketEvent::OfferAdded {
@@ -66,6 +78,7 @@ fn add_offer() {
     add_market_data(&market, None, USERS[0], 0, Some(100_000));
     let mut offers = vec![];
     for i in 0..9 {
+        sys.mint_to(USERS[1], 1000 * (i + 1) as u128);
         offer(&market, USERS[1], None, 1000 * (i + 1));
         let hash = get_hash(None, 1_000 * (i + 1));
         offers.push(Offer {
@@ -173,6 +186,7 @@ fn add_offer_failures() {
     assert!(res.main_failed());
 
     // must fail since the attached value is not equal to the offered price
+    sys.mint_to(USERS[1], 10001);
     let res = market.send_with_value(
         USERS[1],
         MarketAction::AddOffer {
@@ -197,6 +211,7 @@ fn accept_offer() {
     let res = ft.send(USERS[2], FTAction::Mint(100_000));
     assert!(!res.main_failed());
     add_market_data(&market, None, USERS[0], 0, Some(100_000));
+    sys.mint_to(USERS[1], 100_000);
     offer(&market, USERS[1], None, 100_000);
     offer(&market, USERS[2], Some(1.into()), 1_000);
 
@@ -300,6 +315,7 @@ fn accept_offer_failures() {
     let res = ft.send(USERS[2], FTAction::Mint(100_000));
     assert!(!res.main_failed());
     add_market_data(&market, None, USERS[0], 0, Some(100_000));
+    sys.mint_to(USERS[1], 100_000);
     offer(&market, USERS[1], None, 100_000);
     // must fail since only owner can accept offer
     let res = market.send(
@@ -335,6 +351,7 @@ fn withdraw() {
     let res = ft.send(USERS[2], FTAction::Mint(100_000));
     assert!(!res.main_failed());
     add_market_data(&market, None, USERS[0], 0, Some(100_000));
+    sys.mint_to(USERS[1], 100_000);
     offer(&market, USERS[1], None, 100_000);
     offer(&market, USERS[2], Some(1.into()), 1_000);
 
@@ -434,6 +451,7 @@ fn withdraws_failure() {
     let res = ft.send(USERS[2], FTAction::Mint(100_000));
     assert!(!res.main_failed());
     add_market_data(&market, None, USERS[0], 0, Some(100_000));
+    sys.mint_to(USERS[1], 100_000);
     offer(&market, USERS[1], None, 100_000);
     offer(&market, USERS[2], Some(1.into()), 1_000);
 

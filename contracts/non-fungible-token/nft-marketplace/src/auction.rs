@@ -3,7 +3,7 @@ use crate::{
     payment::{check_attached_value, transfer_payment},
     Item, Market, MarketEvent, BASE_PERCENT,
 };
-use gstd::{exec, msg, prelude::*, ActorId};
+use gstd::{debug, exec, msg, prelude::*, ActorId};
 use market_io::*;
 use primitive_types::{H256, U256};
 const MIN_BID_PERIOD: u64 = 60_000;
@@ -119,7 +119,10 @@ impl Market {
 
         // transfer NFT and pay royalties
         let payouts = nft_transfer(nft_contract_id, &winner, token_id, price - treasury_fee).await;
+        debug!("payouts {:?}", payouts);
+
         for (account, amount) in payouts.iter() {
+            debug!("account {:?} amount {:?}", account, amount);
             transfer_payment(&exec::program_id(), account, item.ft_contract_id, *amount).await;
         }
 

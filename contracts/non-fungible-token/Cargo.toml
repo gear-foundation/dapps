@@ -3,4 +3,5 @@ resolver = "2"
 members = [
     "nft",
     "nft-marketplace",
+    "on-chain-nft",
 ]
