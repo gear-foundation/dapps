@@ -1,13 +1,14 @@
 #![no_std]
 
 use codec::Encode;
-use gstd::{exec::block_timestamp, msg, prelude::*, ActorId};
+use core::cmp::min;
+use gstd::{exec, exec::block_timestamp, msg, prelude::*, ActorId};
 use primitive_types::U256;
 
 pub mod state;
-pub use state::{AuctionInfo, State, StateReply};
+pub use state::*;
 
-pub use auction_io::{Action, CreateConfig, Event, InitConfig};
+pub use auction_io::*;
 
 #[derive(Debug, Default)]
 pub struct NFT {
@@ -22,7 +23,7 @@ pub struct Auction {
     pub nft: NFT,
     pub starting_price: u128,
     pub discount_rate: u128,
-    pub is_active: bool,
+    pub status: Status,
     pub started_at: u64,
     pub expires_at: u64,
 }
@@ -31,7 +32,7 @@ static mut AUCTION: Option<Auction> = None;
 
 impl Auction {
     async fn buy(&mut self) {
-        if !self.is_active {
+        if !self.is_active() {
             panic!("already bought or auction expired");
         }
 
@@ -45,10 +46,12 @@ impl Auction {
             panic!("value < price, {:?} < {:?}", msg::value(), price);
         }
 
-        self.is_active = false;
-        let refund = msg::value() - price;
+        self.status = Status::Purchased { price };
 
-        let _transfer_response: Vec<u8> = msg::send_and_wait_for_reply(
+        let refund = msg::value() - price;
+        let refund = if refund < 500 { 0 } else { refund };
+
+        msg::send_for_reply(
             self.nft.contract_id,
             nft_io::NFTAction::Transfer {
                 to: msg::source(),
@@ -60,36 +63,43 @@ impl Auction {
         .await
         .expect("Error in nft transfer");
 
-        msg::send(msg::source(), "", refund).expect("Couldn't send refund");
-        msg::send(self.nft.owner, "", price).expect("Couldn't send payment for nft owner");
+        msg::send(self.nft.owner, "REWARD", price).expect("Couldn't send payment for nft owner");
+        msg::reply(Event::Bought { price }, refund).expect("Can't send refund and reply");
     }
 
     fn token_price(&self) -> u128 {
-        let time_elapsed = block_timestamp() - self.started_at;
-        let discount = self.discount_rate * (time_elapsed as u128);
+        // time_elapsed is in seconds
+        let time_elapsed = block_timestamp().saturating_sub(self.started_at) / 1000;
+        let discount = min(
+            self.discount_rate * (time_elapsed as u128),
+            self.starting_price,
+        );
 
         self.starting_price - discount
     }
 
-    fn renew_contract(&mut self, config: CreateConfig) {
-        if self.is_active {
+    async fn renew_contract(&mut self, config: CreateConfig) {
+        if self.is_active() {
             panic!("already in use")
         }
 
-        let hours_count = config.duration.days * 24 + config.duration.hours;
-        let minutes_count = hours_count * 60 + config.duration.minutes;
-        let duration = minutes_count * 60 * 1000;
+        let minutes_count = config.duration.hours * 60 + config.duration.minutes;
+        let duration_in_seconds = minutes_count * 60 + config.duration.seconds;
 
-        if config.starting_price < config.discount_rate * (duration as u128) {
+        if config.starting_price < config.discount_rate * (duration_in_seconds as u128) {
             panic!("starting price < min");
         }
 
-        self.is_active = true;
+        self.validate_nft_approve(config.nft_contract_actor_id, config.token_id)
+            .await;
+
+        self.status = Status::IsRunning;
         self.started_at = block_timestamp();
-        self.expires_at = block_timestamp() + duration;
+        self.expires_at = block_timestamp() + duration_in_seconds * 1000;
         self.nft.token_id = config.token_id;
         self.nft.contract_id = config.nft_contract_actor_id;
-        self.nft.owner = config.token_owner;
+        self.nft.owner = Self::get_token_owner(config.nft_contract_actor_id, config.token_id).await;
+
         self.discount_rate = config.discount_rate;
         self.starting_price = config.starting_price;
 
@@ -104,9 +114,46 @@ impl Auction {
         .unwrap();
     }
 
+    async fn get_token_owner(contract_id: ActorId, token_id: U256) -> ActorId {
+        let owner: Vec<u8> =
+            msg::send_for_reply_as(contract_id, nft_io::NFTAction::Owner { token_id }, 0)
+                .expect("Can't send message")
+                .await
+                .expect("Error in nft owner");
+
+        ActorId::decode(&mut &owner[..]).expect("Error in decoding")
+    }
+
+    async fn validate_nft_approve(&self, contract_id: ActorId, token_id: U256) {
+        let is_approved_bytes: Vec<u8> = msg::send_for_reply_as(
+            contract_id,
+            nft_io::NFTAction::IsApproved {
+                token_id,
+                to: exec::program_id(),
+            },
+            0,
+        )
+        .expect("Can't send message")
+        .await
+        .expect("Error in nft is approved to program check");
+
+        let is_approved = bool::decode(&mut &is_approved_bytes[..]).expect("Error in decoding");
+
+        if !is_approved {
+            panic!("You must approve your NFT to this contract before")
+        }
+    }
+
     fn stop_if_time_is_over(&mut self) {
-        if block_timestamp() >= self.expires_at {
-            self.is_active = false
+        if self.is_active() && block_timestamp() >= self.expires_at {
+            self.status = Status::Expired;
+        }
+    }
+
+    fn is_active(&self) -> bool {
+        match self.status {
+            Status::None | Status::Purchased { .. } | Status::Expired | Status::Stopped => false,
+            Status::IsRunning => true,
         }
     }
 
@@ -115,7 +162,7 @@ impl Auction {
             panic!("Can't stop if sender is not owner")
         }
 
-        self.is_active = false;
+        self.status = Status::Stopped;
 
         msg::reply(
             Event::AuctionStoped {
@@ -132,15 +179,17 @@ impl Auction {
             nft_contract_actor_id: self.nft.contract_id,
             token_id: self.nft.token_id,
             token_owner: self.nft.owner,
+            auction_owner: self.owner,
             starting_price: self.starting_price,
+            current_price: self.token_price(),
+            discount_rate: self.discount_rate,
+            time_left: self.expires_at.saturating_sub(block_timestamp()),
         }
     }
 }
 
 gstd::metadata! {
     title: "Auction",
-    init:
-        input: InitConfig,
     handle:
         input: Action,
         output: Event,
@@ -168,7 +217,7 @@ async unsafe fn main() {
 
     match action {
         Action::Buy => auction.buy().await,
-        Action::Create(config) => auction.renew_contract(config),
+        Action::Create(config) => auction.renew_contract(config).await,
         Action::ForceStop => auction.force_stop(),
     }
 }
@@ -181,9 +230,8 @@ pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
     auction.stop_if_time_is_over();
 
     let encoded = match query {
-        State::TokenPrice() => StateReply::TokenPrice(auction.token_price()),
-        State::IsActive() => StateReply::IsActive(auction.is_active),
-        State::Info() => StateReply::Info(auction.info()),
+        State::Info => StateReply::Info(auction.info()),
+        State::Status => StateReply::Status(auction.status.clone()),
     }
     .encode();
 

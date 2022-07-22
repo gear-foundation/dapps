@@ -38,7 +38,9 @@ jobs:
         run: make build
 
       - name: Run tests
-        run: make test
+        run: |
+          rm ./target/nft.wasm
+          make test
 
       - name: Upload artifacts
         if: github.event_name == 'push'
