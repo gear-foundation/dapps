@@ -50,6 +50,8 @@ pub unsafe extern "C" fn handle() {
             amount,
         } => NFTCore::transfer_payout(nft, &to, token_id, amount),
         NFTAction::Approve { to, token_id } => NFTCore::approve(nft, &to, token_id),
+        NFTAction::Owner { token_id } => NFTCore::owner_of(nft, token_id),
+        NFTAction::IsApproved { to, token_id } => NFTCore::is_approved_to(nft, &to, token_id),
     }
 }
 

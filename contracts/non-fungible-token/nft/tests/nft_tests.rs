@@ -2,6 +2,7 @@ use codec::Encode;
 use gear_lib::non_fungible_token::io::*;
 use gtest::System;
 mod utils;
+use gstd::ActorId;
 use utils::*;
 const USERS: &[u64] = &[3, 4, 5];
 const ZERO_ID: u64 = 0;
@@ -78,6 +79,50 @@ fn transfer_failures() {
     assert!(transfer(&nft, USERS[1], USERS[0], 0).main_failed());
     // must fail since transfer to the zero address
     assert!(transfer(&nft, USERS[1], ZERO_ID, 0).main_failed());
+}
+
+#[test]
+fn owner_success() {
+    let sys = System::new();
+    init_nft(&sys);
+    let nft = sys.get_program(1);
+    assert!(!mint(&nft, USERS[0]).main_failed());
+    assert!(!approve(&nft, USERS[0], USERS[1], 0).main_failed());
+    let res = owner_of(&nft, USERS[1], 0);
+    println!("{:?}", res.decoded_log::<ActorId>());
+    let message = ActorId::from(USERS[0]).encode();
+    assert!(res.contains(&(USERS[1], message.encode())));
+}
+
+#[test]
+fn is_approved_to_success() {
+    let sys = System::new();
+    init_nft(&sys);
+    let nft = sys.get_program(1);
+    assert!(!mint(&nft, USERS[0]).main_failed());
+    assert!(!approve(&nft, USERS[0], USERS[1], 0).main_failed());
+
+    let res = is_approved_to(&nft, USERS[1], 0, USERS[1]);
+    println!("{:?}", res.decoded_log::<bool>());
+    let message = true.encode();
+    assert!(res.contains(&(USERS[1], message.encode())));
+
+    let res = is_approved_to(&nft, USERS[1], 0, USERS[0]);
+    println!("{:?}", res.decoded_log::<bool>());
+    let message = false.encode();
+    assert!(res.contains(&(USERS[1], message.encode())));
+}
+
+#[test]
+fn is_approved_to_failure() {
+    let sys = System::new();
+    init_nft(&sys);
+    let nft = sys.get_program(1);
+    assert!(!mint(&nft, USERS[0]).main_failed());
+    assert!(!approve(&nft, USERS[0], USERS[1], 0).main_failed());
+    let res = is_approved_to(&nft, USERS[1], 1, USERS[1]);
+    println!("{:?}", res.decoded_log::<bool>());
+    assert!(res.main_failed());
 }
 
 #[test]

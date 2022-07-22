@@ -2,7 +2,7 @@ use ft_io::*;
 use gstd::{exec, msg, ActorId};
 const MINIMUM_VALUE: u64 = 500;
 pub async fn transfer_tokens(contract_id: &ActorId, from: &ActorId, to: &ActorId, amount: u128) {
-    let _transfer_response: FTEvent = msg::send_for_reply_as(
+    msg::send_for_reply(
         *contract_id,
         FTAction::Transfer {
             from: *from,
