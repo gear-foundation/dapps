@@ -14,6 +14,7 @@ fn init_with_mint(sys: &System) {
         InitConfig {
             name: String::from("MyToken"),
             symbol: String::from("MTK"),
+            decimals: 18,
         },
     );
 

@@ -20,6 +20,8 @@ struct FungibleToken {
     balances: BTreeMap<ActorId, u128>,
     /// Map to hold allowance information of token holders.
     allowances: BTreeMap<ActorId, BTreeMap<ActorId, u128>>,
+    /// Token's decimals.
+    pub decimals: u8,
 }
 
 static mut FUNGIBLE_TOKEN: Option<FungibleToken> = None;
@@ -180,6 +182,7 @@ pub unsafe extern "C" fn init() {
     let ft = FungibleToken {
         name: config.name,
         symbol: config.symbol,
+        decimals: config.decimals,
         ..FungibleToken::default()
     };
     FUNGIBLE_TOKEN = Some(ft);
@@ -192,16 +195,15 @@ pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
     let encoded = match query {
         State::Name => StateReply::Name(ft.name.clone()).encode(),
         State::Symbol => StateReply::Name(ft.symbol.clone()).encode(),
-        State::Decimals => StateReply::Decimals(18).encode(),
+        State::Decimals => StateReply::Decimals(ft.decimals).encode(),
         State::TotalSupply => StateReply::TotalSupply(ft.total_supply).encode(),
         State::BalanceOf(account) => {
             let balance = ft.balances.get(&account).unwrap_or(&0);
             StateReply::Balance(*balance).encode()
         }
-    };
-    let result = gstd::macros::util::to_wasm_ptr(&(encoded[..]));
-    core::mem::forget(encoded);
-    result
+    }
+    .encode();
+    gstd::util::to_leak_ptr(encoded)
 }
 
 #[no_mangle]
