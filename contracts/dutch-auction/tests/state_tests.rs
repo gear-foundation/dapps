@@ -26,8 +26,8 @@ fn is_active_before_deal() {
 
     let auction = init(&sys);
 
-    if let StateReply::Status(status) = auction.meta_state(State::Status).unwrap() {
-        assert!(matches!(status, Status::IsRunning));
+    if let Ok(StateReply::Info(info)) = auction.meta_state(State::Info) {
+        assert!(matches!(info.status, Status::IsRunning));
     } else {
         panic!("Can't get state");
     }
@@ -40,9 +40,9 @@ fn is_not_active_after_deal() {
     let auction = init(&sys);
     auction.send_with_value(USERS[1], Action::Buy, 1_000_000_000);
 
-    if let StateReply::Status(status) = auction.meta_state(State::Status).unwrap() {
+    if let Ok(StateReply::Info(info)) = auction.meta_state(State::Info) {
         assert!(matches!(
-            status,
+            info.status,
             Status::Purchased {
                 price: 1_000_000_000
             }

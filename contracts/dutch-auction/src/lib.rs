@@ -184,6 +184,7 @@ impl Auction {
             current_price: self.token_price(),
             discount_rate: self.discount_rate,
             time_left: self.expires_at.saturating_sub(block_timestamp()),
+            status: self.status.clone(),
         }
     }
 }
@@ -231,7 +232,6 @@ pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
 
     let encoded = match query {
         State::Info => StateReply::Info(auction.info()),
-        State::Status => StateReply::Status(auction.status.clone()),
     }
     .encode();
 

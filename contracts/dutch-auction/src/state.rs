@@ -5,13 +5,11 @@ use scale_info::TypeInfo;
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
 pub enum State {
-    Status,
     Info,
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
 pub enum StateReply {
-    Status(Status),
     Info(AuctionInfo),
 }
 
@@ -37,4 +35,5 @@ pub struct AuctionInfo {
     pub current_price: u128,
     pub discount_rate: u128,
     pub time_left: u64,
+    pub status: Status,
 }
