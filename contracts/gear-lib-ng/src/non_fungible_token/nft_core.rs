@@ -211,6 +211,26 @@ pub trait NFTCore: NFTStateKeeper {
         .expect("Error in reply `NFTApproval`, revoke_approval function");
     }
 
+    fn owner_of(&self, token_id: TokenId) {
+        let owner = *self
+            .get()
+            .owner_by_id
+            .get(&token_id)
+            .expect("NonFungibleToken: token does not exist");
+        msg::reply(owner.encode(), 0).expect("Error in reply 'ActorId', owner_of function");
+    }
+
+    fn is_approved_to(&self, to: &ActorId, token_id: TokenId) {
+        let result = self
+            .get()
+            .token_approvals
+            .get(&token_id)
+            .expect("NonFungibleToken: token does not exist")
+            .contains(to);
+
+        msg::reply(result.encode(), 0).expect("Error in reply 'bool', is_approved_to function");
+    }
+
     /// Returns a `Payout` struct for a given token
     /// If NFT contract has no royalties it just returns BtreeMap {“owner”: "amount"}
     fn nft_payout(&self, owner: &ActorId, amount: u128) -> Payout {
