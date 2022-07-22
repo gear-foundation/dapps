@@ -4,7 +4,7 @@
   </a>
 </p>
 
-# Gear Template App
+# RMRK protocol
 
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
@@ -14,21 +14,6 @@
 
 [lic_badge]: https://img.shields.io/badge/License-GPL%203.0-success
 [lic_href]: https://github.com/gear-dapps/app/blob/master/LICENSE
-
-<!-- Description starts here -->
-
-Template application. Use this repository as a template when creating a new application repo.
-
-> https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template
-
-<!-- End of description -->
-
-## Initial checklist after creating a new repo
-
-- [ ] Change app name in `Cargo.toml`
-- [ ] Fix Gitpod/badge/releases links in `README.md` (replace `gear-academy/app` with `gear-academy/<my-new-app>`)
-- [ ] Add description in `README.md`
-- [ ] Remove this section
 
 ## Prebuilt Binaries
 
