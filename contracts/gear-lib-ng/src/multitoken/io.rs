@@ -3,7 +3,7 @@ use gstd::{prelude::*, ActorId};
 use scale_info::TypeInfo;
 pub type TokenId = u128;
 
-#[derive(Debug, Decode, Encode, TypeInfo, Default, Clone)]
+#[derive(Debug, Decode, Encode, TypeInfo, Default, Clone, PartialEq, Eq)]
 pub struct TokenMetadata {
     pub title: Option<String>,
     pub description: Option<String>,
@@ -11,7 +11,7 @@ pub struct TokenMetadata {
     pub reference: Option<String>,
 }
 
-#[derive(Debug, Decode, Encode, TypeInfo, Default, Clone)]
+#[derive(Debug, Decode, Encode, TypeInfo, Default, Clone, PartialEq, Eq)]
 pub struct Token {
     pub id: TokenId,
     pub amount: u128,
@@ -25,7 +25,7 @@ pub struct InitConfig {
     pub base_uri: String,
 }
 
-#[derive(Debug, Encode, Decode, TypeInfo)]
+#[derive(Debug, Encode, Decode, TypeInfo, PartialEq, Eq)]
 pub struct BalanceReply {
     pub account: ActorId,
     pub id: TokenId,
