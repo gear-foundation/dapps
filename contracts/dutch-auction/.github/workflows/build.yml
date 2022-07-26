@@ -39,7 +39,7 @@ jobs:
 
       - name: Run tests
         run: |
-          rm ./target/nft.wasm
+          rm -f ./target/nft.wasm
           make test
 
       - name: Upload artifacts
