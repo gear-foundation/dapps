@@ -34,6 +34,10 @@ impl WasmProgram for FungibleToken {
     fn handle_reply(&mut self, _: Vec<u8>) -> Result<Option<Vec<u8>>, &'static str> {
         Ok(None)
     }
+
+    fn meta_state(&mut self, _payload: Option<Vec<u8>>) -> Result<Vec<u8>, &'static str> {
+        Ok(Vec::new())
+    }
 }
 
 fn init_dao(sys: &System) {

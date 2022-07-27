@@ -5,13 +5,14 @@ use gtest::{Program, System};
 
 fn init_fungible_token(sys: &System) {
     sys.init_logger();
-    let ft = Program::from_file(sys, "./target/fungible_token.wasm");
+    let ft = Program::from_file(sys, "./target/fungible_token-0.1.0.wasm");
 
     let res = ft.send(
         100001,
         InitConfig {
             name: String::from("MyToken"),
             symbol: String::from("MTK"),
+            decimals: 18,
         },
     );
 

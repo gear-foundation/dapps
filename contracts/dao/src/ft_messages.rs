@@ -2,7 +2,7 @@ use ft_io::*;
 use gstd::{msg, ActorId};
 
 pub async fn transfer_from_tokens(token_id: &ActorId, from: &ActorId, to: &ActorId, amount: u128) {
-    let _transfer_response: FTEvent = msg::send_and_wait_for_reply(
+    let _transfer_response: FTEvent = msg::send_for_reply_as(
         *token_id,
         FTAction::Transfer {
             from: *from,
@@ -17,7 +17,7 @@ pub async fn transfer_from_tokens(token_id: &ActorId, from: &ActorId, to: &Actor
 }
 
 pub async fn transfer_tokens(token_id: &ActorId, from: &ActorId, to: &ActorId, amount: u128) {
-    let _transfer_response: FTEvent = msg::send_and_wait_for_reply(
+    let _transfer_response: FTEvent = msg::send_for_reply_as(
         *token_id,
         FTAction::Transfer {
             from: *from,
@@ -33,7 +33,7 @@ pub async fn transfer_tokens(token_id: &ActorId, from: &ActorId, to: &ActorId, a
 
 pub async fn balance(token_id: &ActorId, account: &ActorId) -> u128 {
     let balance_response: FTEvent =
-        msg::send_and_wait_for_reply(*token_id, FTAction::BalanceOf(*account), 0)
+        msg::send_for_reply_as(*token_id, FTAction::BalanceOf(*account), 0)
             .unwrap()
             .await
             .expect("Error in balance");
