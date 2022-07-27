@@ -2,7 +2,7 @@
 name = "nft-marketplace"
 version = "0.1.0"
 edition = "2021"
-license = "GPL-3.0"
+license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
@@ -11,7 +11,7 @@ codec = { package = "parity-scale-codec", version = "3.1.2", default-features = 
 scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
 primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"]}
 nft-io = { path = "../nft/io" }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token.git" }
+ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.0" }
 market-io = {path = "io" }
 sp-core-hashing = { version = "4.0.0", default-features = false }
 gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git" }
