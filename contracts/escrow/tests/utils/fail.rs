@@ -38,5 +38,7 @@ pub fn cancel(escrow_program: &Program, wallet_id: u128, from: u64) {
 }
 
 pub fn info(escrow_program: &Program, wallet_id: u128) {
-    escrow_program.meta_state::<_, EscrowStateReply>(EscrowState::Info(wallet_id.into()));
+    escrow_program
+        .meta_state::<_, EscrowStateReply>(EscrowState::Info(wallet_id.into()))
+        .unwrap();
 }

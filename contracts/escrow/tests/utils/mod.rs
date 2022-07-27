@@ -23,7 +23,7 @@ pub fn init_system() -> System {
 }
 
 pub fn init_ft(sys: &System) -> Program {
-    let ft_program = Program::from_file(sys, "./target/fungible_token.wasm");
+    let ft_program = Program::from_file(sys, "./target/fungible_token-0.1.0.wasm");
 
     assert!(ft_program
         .send(
@@ -31,6 +31,7 @@ pub fn init_ft(sys: &System) -> Program {
             InitFT {
                 name: String::from("MyToken"),
                 symbol: String::from("MTK"),
+                decimals: 18,
             },
         )
         .log()
