@@ -6,11 +6,20 @@
 
 # Fungible token
 
-An example of a Fungible token contract which similar to ERC-20
+[![Build][build_badge]][build_href]
+[![License][lic_badge]][lic_href]
+
+[build_badge]: https://github.com/gear-dapps/fungible-token/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-dapps/fungible-token/actions/workflows/build.yml
+
+[lic_badge]: https://img.shields.io/badge/License-MIT-success
+[lic_href]: https://github.com/gear-dapps/fungible-token/blob/master/LICENSE
+
+An example of a Fungible token contract which similar to ERC-20.
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/fungible-token/releases/tag/build).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/fungible-token/releases).
 
 ## Building Locally
 
