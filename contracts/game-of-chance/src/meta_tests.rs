@@ -26,7 +26,7 @@ fn meta_tests() {
     let time = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("Time went backwards")
-        .as_secs();
+        .as_millis() as u64;
 
     let sys = System::new();
     init(&sys);

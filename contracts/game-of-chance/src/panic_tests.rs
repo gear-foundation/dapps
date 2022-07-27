@@ -27,7 +27,7 @@ fn start_lottery() {
     let time = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .expect("Time went backwards")
-        .as_secs();
+        .as_millis() as u64;
 
     let state = LtEvent::LotteryState {
         lottery_owner: USERS[0].into(),
