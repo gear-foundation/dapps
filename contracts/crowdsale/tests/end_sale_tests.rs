@@ -30,7 +30,7 @@ fn end_sale_zero_tokens() {
     start_sale(&ico, 1);
 
     let amount: u128 = TOKENS_CNT;
-    buy_tokens(&ico, amount, amount * START_PRICE);
+    buy_tokens(&sys, &ico, amount, amount * START_PRICE);
 
     end_sale(&ico);
 }
@@ -46,7 +46,7 @@ fn end_sale_time_and_tokens_left() {
     start_sale(&ico, 1);
 
     let amount: u128 = TOKENS_CNT - 5;
-    buy_tokens(&ico, amount, amount * START_PRICE);
+    buy_tokens(&sys, &ico, amount, amount * START_PRICE);
 
     end_sale(&ico);
 }

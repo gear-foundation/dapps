@@ -353,7 +353,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "crowdsale_ico"
+name = "crowdsale-ico"
 version = "0.1.0"
 dependencies = [
  "ft-io",
@@ -455,7 +455,7 @@ dependencies = [
 [[package]]
 name = "ft-io"
 version = "0.1.0"
-source = "git+https://github.com/gear-dapps/fungible-token.git#4da67648659e58dc2c60a9a589cdfc4f38d58329"
+source = "git+https://github.com/gear-dapps/fungible-token.git?tag=0.1.0#6acb28899081895eb2f3072dc3a8db1ba207b0e8"
 dependencies = [
  "gstd",
  "parity-scale-codec",

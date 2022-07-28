@@ -1,8 +1,8 @@
 [package]
-name = "crowdsale_ico"
+name = "crowdsale-ico"
 version = "0.1.0"
 edition = "2021"
-license = "GPL-3.0"
+license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
@@ -10,7 +10,7 @@ gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
 primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"]}
 scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
 codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive"] }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token.git" }
+ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.0" }
 ico-io = { path = "io" }
 
 [dev-dependencies]
@@ -18,4 +18,3 @@ gtest = { git = "https://github.com/gear-tech/gear.git" }
 
 [build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
-

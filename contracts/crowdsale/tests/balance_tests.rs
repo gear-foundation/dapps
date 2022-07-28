@@ -13,18 +13,23 @@ fn balance_after_two_purchases() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 2);
+    start_sale(&ico, (TIME_INCREASE_STEP + 1) as _);
 
     balance_of(&ico, 0);
 
     let amount: u128 = 5;
-    buy_tokens(&ico, amount, amount * START_PRICE);
+    buy_tokens(&sys, &ico, amount, amount * START_PRICE);
 
     balance_of(&ico, amount);
 
-    sys.spend_blocks((TIME_INCREASE_STEP + 1).try_into().unwrap());
+    sys.spend_blocks((TIME_INCREASE_STEP + 1) as _);
 
-    buy_tokens(&ico, amount, amount * (START_PRICE + PRICE_INCREASE_STEP));
+    buy_tokens(
+        &sys,
+        &ico,
+        amount,
+        amount * (START_PRICE + PRICE_INCREASE_STEP),
+    );
 
     balance_of(&ico, amount * 2);
 }
@@ -39,7 +44,7 @@ fn owner_balance() {
     start_sale(&ico, 1);
 
     let amount = 5;
-    buy_tokens(&ico, amount, amount * START_PRICE);
+    buy_tokens(&sys, &ico, amount, amount * START_PRICE);
 
     sys.spend_blocks(1001);
 

@@ -80,16 +80,14 @@ fn zero_duration_start_ico() {
 fn not_minting_tokens() {
     let sys = System::new();
 
-    let ft = Program::from_file(
-        &sys,
-        "fungible-token/target/wasm32-unknown-unknown/release/fungible_token.wasm",
-    );
+    let ft = Program::from_file(&sys, "./target/fungible_token-0.1.0.wasm");
 
     let res = ft.send(
         OWNER_ID,
         InitConfig {
             name: String::from("MyToken"),
             symbol: String::from("MTK"),
+            decimals: 18,
         },
     );
 
