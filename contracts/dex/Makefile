@@ -31,5 +31,10 @@ linter:
 pre-commit: fmt linter test
 
 test: build
+	@if [ ! -f "./target/fungible_token.wasm" ]; then\
+	    curl -L\
+	        "https://github.com/gear-dapps/fungible-token/releases/download/build/fungible_token.wasm"\
+	        -o "./target/fungible_token.wasm";\
+	fi
 	@echo ──────────── Run tests ────────────────────────
 	@cargo +nightly test --release

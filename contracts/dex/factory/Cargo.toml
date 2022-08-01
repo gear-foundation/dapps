@@ -1,0 +1,21 @@
+[package]
+name = "dex-factory"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+[dependencies]
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
+codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
+primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"]}
+dex-factory-io = { path = "../factory/io" }
+dex-pair-io = { path = "../pair/io" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git" }
+
+[dev-dependencies]
+gtest = { git = "https://github.com/gear-tech/gear.git"}
+
+[build-dependencies]
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }

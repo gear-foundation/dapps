@@ -1,15 +1,6 @@
-[package]
-name = "app"
-version = "0.1.0"
-edition = "2021"
-license = "GPL-3.0"
-authors = ["Gear Technologies"]
-
-[dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
-
-[dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git" }
-
-[build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+[workspace]
+resolver = "2"
+members = [
+    "factory",
+    "pair",
+]
