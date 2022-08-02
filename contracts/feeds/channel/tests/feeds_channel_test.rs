@@ -1,108 +1,114 @@
-use codec::Encode;
+use channel_io::*;
+use gstd::{ActorId, BTreeSet};
 use gtest::{Program, System};
-#[path = "../src/common.rs"]
-pub mod common;
-use common::*;
-
-const OWNER: [u8; 32] = [1; 32];
-const SUBSCRIBER: [u8; 32] = [2; 32];
-
-fn init_with_msg(sys: &System) {
-    let feeds_channel = Program::from_file(
-        sys,
-        "../target/wasm32-unknown-unknown/release/gear_feeds_channel.wasm",
-    );
-    // ⚠️ TODO: Change the text message
-    let res = feeds_channel.send(
-        OWNER,
-        Message {
-            text: "".to_string(),
-            timestamp: 0,
-        },
-    );
-
-    assert!(res.log().is_empty());
-}
+use router_io::*;
+mod utils;
+use utils::*;
 
 #[test]
-fn meta() {
+fn channels_initialization() {
     let sys = System::new();
     sys.init_logger();
-    init_with_msg(&sys);
 
-    let feeds_channel = sys.get_program(1);
-    let res = feeds_channel.send(OWNER, ChannelAction::Meta);
+    // upload and init a router program
+    let router = Program::router(&sys);
 
-    // ⚠️ TODO: Change the channel name and description
-    let meta = Meta {
-        name: "Channel-Coolest-Name".to_string(),
-        description: "Channel-Coolest-Description".to_string(),
+    // upload and init 2 channels
+    Program::channel(&sys);
+    Program::channel(&sys);
+
+    // check that channels were registered at router contract
+    let mut expected_channels: Vec<Channel> = Vec::new();
+
+    // first channel info
+    let mut channel = Channel {
+        id: 2.into(),
+        name: String::from("Channel-Coolest-Name"),
         owner_id: OWNER.into(),
+        description: String::from("Channel-Coolest-Description"),
     };
+    // read info about that channel from the router contract
+    router.check_channel_info(channel.clone());
 
-    assert!(res.contains(&(OWNER, ChannelOutput::Metadata(meta).encode())));
+    expected_channels.push(channel.clone());
+    // change id to get the second channel info
+    channel.id = 3.into();
+    router.check_channel_info(channel.clone());
+
+    expected_channels.push(channel);
+
+    // check that channels are in the router state
+    router.check_all_channel(expected_channels);
+
+    // check that OWNER subscribes to 2 channels
+    let mut expected_subscriptions: BTreeSet<ActorId> = BTreeSet::new();
+    expected_subscriptions.insert(2.into());
+    expected_subscriptions.insert(3.into());
+
+    router.check_user_subscriptions(OWNER, expected_subscriptions);
 }
 
 #[test]
-fn subscribe_and_unsubscribe() {
+fn subscriptions() {
     let sys = System::new();
     sys.init_logger();
-    init_with_msg(&sys);
 
-    let feeds_channel = sys.get_program(1);
-    // subscribes to the channel
-    feeds_channel.send(SUBSCRIBER, ChannelAction::Subscribe);
+    let router = Program::router(&sys);
+    let channel = Program::channel(&sys);
 
-    // ⚠️ TODO: Change the post message
-    let res = feeds_channel.send(OWNER, ChannelAction::Post("hello".to_string()));
+    let channel_id: ActorId = CHANNEL_ID.into();
+    // add subscribers
+    for subscriber in SUBSCRIBERS {
+        channel.add_subscriber(*subscriber);
+        // check a subscription in the router contract
+        router.check_user_subscriptions(*subscriber, BTreeSet::from([channel_id]));
+    }
 
-    // checks that the message was sent to the owner
-    // ⚠️ TODO: Change the received message
-    assert!(res.contains(&(
-        OWNER,
-        ChannelOutput::SingleMessage(Message {
-            text: "hello".to_string(),
-            timestamp: 0,
-        })
-        .encode()
-    )));
+    // must fail since already subscribed to the channel
+    channel.add_subscriber_fail(SUBSCRIBERS[0]);
 
-    // checks that the message was sent to the subscriber
-    // ⚠️ TODO: Change the received message
-    assert!(res.contains(&(
-        SUBSCRIBER,
-        ChannelOutput::SingleMessage(Message {
-            text: "hello".to_string(),
-            timestamp: 0,
-        })
-        .encode()
-    )));
+    // unsubscribe
+    channel.unsubscribe(SUBSCRIBERS[1]);
+    // check that subscriptions of SUBSCRIBERS[1] are empty
+    router.check_user_subscriptions(SUBSCRIBERS[1], BTreeSet::new());
 
-    // unsubscribes from the channel
-    feeds_channel.send(SUBSCRIBER, ChannelAction::Unsubscribe);
-
-    let res = feeds_channel.send(OWNER, ChannelAction::Post("hello".to_string()));
-
-    // checks that the subscriber didn't receive the message
-    assert!(!res.contains(&(
-        SUBSCRIBER,
-        ChannelOutput::SingleMessage(Message {
-            text: "hello".to_string(),
-            timestamp: 0,
-        })
-        .encode()
-    )));
+    // must fail since a sender does not subscribe to channel
+    channel.unsubscribe_fail(SUBSCRIBERS[1]);
 }
 
 #[test]
-fn check_for_failure() {
+fn post() {
     let sys = System::new();
     sys.init_logger();
-    init_with_msg(&sys);
 
-    let feeds_channel = sys.get_program(1);
+    // upload and init a router program
+    Program::router(&sys);
 
-    // must fails since a subscriber is not the channel owner
-    let res = feeds_channel.send(SUBSCRIBER, ChannelAction::Post("hello".to_string()));
-    assert!(res.main_failed());
+    // upload and init a channel
+    let channel = Program::channel(&sys);
+
+    let mut expected_messages: Vec<Message> = Vec::new();
+    // init message
+    let mut message = Message {
+        owner: OWNER.into(),
+        text: String::from("Channel \"Channel-Coolest-Name\" was created"),
+        timestamp: 0,
+    };
+    expected_messages.push(message.clone());
+    // add subscribers
+    for subscriber in SUBSCRIBERS {
+        channel.add_subscriber(*subscriber);
+    }
+
+    // message for post
+    message.text = String::from("Hello");
+    expected_messages.push(message.clone());
+
+    channel.post(OWNER, SUBSCRIBERS, String::from("Hello"), message);
+
+    let messages: Vec<Message> = channel.meta_state(()).expect("Meta_state failed");
+    assert_eq!(expected_messages, messages);
+
+    // must fail since not owner posted a message
+    channel.post_fail(SUBSCRIBERS[0], String::from("Hello"));
 }

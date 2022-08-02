@@ -1,12 +1,13 @@
 #![no_std]
 
+use channel_io::*;
 use gstd::{debug, msg, prelude::*, ActorId};
-
-mod common;
-use common::*;
+use router_io::*;
 
 gstd::metadata! {
     title: "GEAR Workshop Channel Contract",
+    init:
+        input: ChannelInit,
     handle:
         input: ChannelAction,
         output: ChannelOutput,
@@ -17,6 +18,7 @@ gstd::metadata! {
 #[derive(Default)]
 pub struct Channel {
     pub owner_id: ActorId,
+    pub router_id: ActorId,
     pub name: String,
     pub description: String,
     pub subscribers: BTreeSet<ActorId>,
@@ -28,6 +30,11 @@ impl Channel {
     pub fn set_owner_id(&mut self, id: ActorId) {
         self.owner_id = id;
     }
+
+    pub fn set_router_id(&mut self, id: ActorId) {
+        self.router_id = id;
+    }
+
     pub fn is_owner(&self, id: ActorId) -> bool {
         id == self.owner_id
     }
@@ -39,20 +46,45 @@ impl Channel {
         self.description = String::from(desc);
     }
 
-    pub fn add_subscriber(&mut self, id: ActorId) {
-        self.subscribers.insert(id);
+    pub async fn add_subscriber(&mut self, id: ActorId) {
+        assert!(
+            self.subscribers.insert(id),
+            "Already subscribed to that channel"
+        );
+        // send message to router contract to inform about new subscriber
+        msg::send_for_reply_as::<_, RouterEvent>(
+            self.router_id,
+            RouterAction::AddSubscriberToChannel(msg::source()),
+            0,
+        )
+        .expect("Error in sending async message `[RouterAction::AddSubscriberToChannel]` to router contract")
+        .await
+        .expect("Error in async message `[RouterAction::AddSubscriberToChannel]`");
+        msg::reply(ChannelOutput::SubscriberAdded(id), 0)
+            .expect("Error in reply to message  ChannelAction::Subscribe");
+
+        debug!("CHANNEL {:?}: Subscriber added", self.name)
     }
 
-    pub fn remove_subscriber(&mut self, id: ActorId) {
-        self.subscribers.retain(|v| *v != id);
-    }
+    pub async fn remove_subscriber(&mut self, id: ActorId) {
+        if self.subscribers.remove(&id) {
+            // send message to router contract to delete a subscriber
+            msg::send_for_reply_as::<_, RouterEvent>(
+                self.router_id,
+                RouterAction::RemoveSubscriberFromChannel(msg::source()),
+                0,
+            )
+            .expect("Error in sending async message `[RouterAction::RemoveSubscriberFromChannel]` to router contract")
+            .await
+            .expect("Error in async message `[RouterAction::RemoveSubscriberFromChannel]`");
+        } else {
+            panic!("The msg::source() does not subscribe to that channel");
+        }
 
-    pub fn post(&mut self, text: String) {
-        assert!(self.owner_id == msg::source(), "Poster is not an owner");
-        let message = Message::new(text);
-        self.add_message(message);
+        msg::reply(ChannelOutput::SubscriberRemoved(id), 0)
+            .expect("Error in reply to message  ChannelAction::Unsubscribe");
 
-        // event
+        debug!("CHANNEL {:?}: Subscriber removed", self.name)
     }
 
     pub fn add_message(&mut self, message: Message) {
@@ -64,17 +96,35 @@ impl Channel {
     }
 }
 
-#[no_mangle]
-pub unsafe extern "C" fn init() {
+#[gstd::async_init]
+async fn init() {
+    let channel_init: ChannelInit = msg::load().expect("Unable to decode ChannelInit");
+
     let mut channel: Channel = Default::default();
     channel.set_owner_id(msg::source());
+    channel.set_router_id(channel_init.router_contract_id);
     channel.set_name("Channel-Coolest-Name");
     channel.set_description("Channel-Coolest-Description");
+
+    debug!("ROUTER ID {:?}", channel_init.router_contract_id);
+    // sends message to router contract to register
+    msg::send_for_reply_as::<_, RouterEvent>(
+        channel_init.router_contract_id,
+        RouterAction::Register {
+            name: channel.name.clone(),
+            description: channel.description.clone(),
+            owner_id: msg::source(),
+        },
+        0,
+    )
+    .expect("Error in sending async message `[RouterAction::Register]` to router contract")
+    .await
+    .expect("Error in async message `[RouterAction::Register]`");
 
     let init_message = Message::new(format!("Channel {:?} was created", channel.name));
 
     channel.add_message(init_message);
-    channel.add_subscriber(msg::source());
+    channel.add_subscriber(msg::source()).await;
 
     debug!(
         "Channel {:?} initialized successfully!",
@@ -95,30 +145,11 @@ async unsafe fn main() {
 
     debug!("CHANNEL {:?}: Received action: {:?}", channel.name, action);
     match action {
-        ChannelAction::Meta => {
-            let meta = ChannelOutput::Metadata(Meta::new(
-                channel.name.clone(),
-                channel.description.clone(),
-                channel.owner_id,
-            ));
-
-            msg::reply(meta, 0).expect("Error in reply ChannelOutput::Metadata");
-
-            debug!("CHANNEL {:?}: Meta sent", channel.name)
-        }
         ChannelAction::Subscribe => {
-            channel.add_subscriber(msg::source());
-
-            msg::reply((), 0).expect("Error in reply to message  ChannelAction::Subscribe");
-
-            debug!("CHANNEL {:?}: Subscriber added", channel.name)
+            channel.add_subscriber(msg::source()).await;
         }
         ChannelAction::Unsubscribe => {
-            channel.remove_subscriber(msg::source());
-
-            msg::reply((), 0).expect("Error in reply to message  ChannelAction::Unsubscribe");
-
-            debug!("CHANNEL {:?}: Subscriber removed", channel.name)
+            channel.remove_subscriber(msg::source()).await;
         }
         ChannelAction::Post(text) => {
             if !channel.is_owner(msg::source()) {
@@ -133,7 +164,8 @@ async unsafe fn main() {
                 msg::send(sub, ChannelOutput::SingleMessage(message.clone()), 0)
                     .expect("Error in sending message to subscriber");
             }
-            msg::reply((), 0).expect("Error in reply to message  ChannelAction::Post");
+            msg::reply(ChannelOutput::MessagePosted(message.clone()), 0)
+                .expect("Error in reply to message  ChannelAction::Post");
 
             debug!("Added a post: {:?}", message);
         }
