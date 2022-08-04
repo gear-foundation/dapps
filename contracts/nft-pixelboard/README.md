@@ -1,38 +1,27 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-dapps/app" target="_blank">
+  <a href="https://gitpod.io/#https://github.com/gear-dapps/nft-pixelboard" target="_blank">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
 
-# Gear Template App
+# NFT pixelboard
 
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
+[![Docs][docs_badge]][docs_href]
 
-[build_badge]: https://github.com/gear-dapps/app/workflows/Build/badge.svg
-[build_href]: https://github.com/gear-dapps/app/actions/workflows/build.yml
+[build_badge]: https://github.com/gear-dapps/nft-pixelboard/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-dapps/nft-pixelboard/actions/workflows/build.yml
 
-[lic_badge]: https://img.shields.io/badge/License-GPL%203.0-success
-[lic_href]: https://github.com/gear-dapps/app/blob/master/LICENSE
+[lic_badge]: https://img.shields.io/badge/License-MIT-success
+[lic_href]: LICENSE
 
-<!-- Description starts here -->
-
-Template application. Use this repository as a template when creating a new application repo.
-
-> https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template
-
-<!-- End of description -->
-
-## Initial checklist after creating a new repo
-
-- [ ] Change app name in `Cargo.toml`
-- [ ] Fix Gitpod/badge/releases links in `README.md` (replace `gear-academy/app` with `gear-academy/<my-new-app>`)
-- [ ] Add description in `README.md`
-- [ ] Remove this section
+[docs_badge]: https://img.shields.io/badge/docs-online-5023dd
+[docs_href]: https://dapps.gear.rs/nft_pixelboard_io/index.html
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/app/releases/tag/build).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/nft-pixelboard/releases).
 
 ## Building Locally
 
@@ -93,4 +82,4 @@ make
 
 ## License
 
-The source code is licensed under [GPL v3.0 license](LICENSE).
+The source code is licensed under the [MIT license](LICENSE).
