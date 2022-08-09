@@ -76,7 +76,7 @@ impl IcoContract {
                 },
                 0,
             )
-            .unwrap();
+            .expect("Error in reply");
         }
     }
 
@@ -130,7 +130,7 @@ impl IcoContract {
 
         if amount_sent > cost {
             change = amount_sent - cost;
-            msg::send(msg::source(), "", change).unwrap();
+            msg::send(msg::source(), "", change).expect("Sending error");
         }
 
         self.token_holders
@@ -148,7 +148,7 @@ impl IcoContract {
             },
             0,
         )
-        .unwrap();
+        .expect("Error in reply");
     }
 
     /// Ends ICO contract
@@ -195,7 +195,7 @@ impl IcoContract {
         }
 
         self.ico_state.ico_ended = true;
-        msg::reply(IcoEvent::SaleEnded, 0).unwrap();
+        msg::reply(IcoEvent::SaleEnded, 0).expect("Error in reply");
     }
 
     fn get_current_price(&self, time_now: u64) -> u128 {
@@ -227,29 +227,6 @@ async unsafe fn main() {
         IcoAction::StartSale { .. } => ico.start_ico(action).await,
         IcoAction::Buy(value) => ico.buy_tokens(value),
         IcoAction::EndSale => ico.end_sale().await,
-        IcoAction::BalanceOf(address) => {
-            asserts::owner_message(&ico.owner, "BalanceOf()");
-
-            if let Some(val) = ico.token_holders.get(&address) {
-                msg::reply(
-                    IcoEvent::BalanceOf {
-                        address,
-                        balance: *val,
-                    },
-                    0,
-                )
-                .unwrap();
-            } else {
-                msg::reply(
-                    IcoEvent::BalanceOf {
-                        address,
-                        balance: 0,
-                    },
-                    0,
-                )
-                .unwrap();
-            }
-        }
     }
 }
 
@@ -302,25 +279,35 @@ gstd::metadata! {
         input: IcoAction,
         output: IcoEvent,
     state:
-        input: State,
-        output: StateReply,
+        input: StateIco,
+        output: StateIcoReply,
 }
 
 #[no_mangle]
 pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
     let time_now: u64 = exec::block_timestamp();
 
-    let state: State = msg::load().expect("failed to decode State");
+    let state: StateIco = msg::load().expect("failed to decode State");
     let ico: &mut IcoContract = ICO_CONTRACT.get_or_insert(IcoContract::default());
 
     let encoded = match state {
-        State::CurrentPrice => StateReply::CurrentPrice(ico.get_current_price(time_now)).encode(),
-        State::TokensLeft => StateReply::TokensLeft(ico.get_balance()).encode(),
-        State::Balance(address) => {
+        StateIco::CurrentPrice => {
+            StateIcoReply::CurrentPrice(ico.get_current_price(time_now)).encode()
+        }
+        StateIco::TokensLeft => StateIcoReply::TokensLeft(ico.get_balance()).encode(),
+        StateIco::BalanceOf(address) => {
             if let Some(val) = ico.token_holders.get(&address) {
-                StateReply::Balance(*val).encode()
+                StateIcoReply::BalanceOf {
+                    address,
+                    balance: *val,
+                }
+                .encode()
             } else {
-                StateReply::Balance(0).encode()
+                StateIcoReply::BalanceOf {
+                    address,
+                    balance: 0,
+                }
+                .encode()
             }
         }
     };

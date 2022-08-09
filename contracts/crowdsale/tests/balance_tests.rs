@@ -1,4 +1,3 @@
-use gstd::Encode;
 use gtest::System;
 
 use ico_io::*;
@@ -48,46 +47,27 @@ fn owner_balance() {
 
     sys.spend_blocks(1001);
 
-    let res = ico.send(OWNER_ID, IcoAction::BalanceOf(OWNER_ID.into()));
-    assert!(res.contains(&(
-        OWNER_ID,
-        (IcoEvent::BalanceOf {
-            address: OWNER_ID.into(),
-            balance: 0
-        })
-        .encode()
-    )));
+    let res: StateIcoReply = ico
+        .meta_state(StateIco::BalanceOf(OWNER_ID.into()))
+        .expect("Error in meta_state");
+
+    if let StateIcoReply::BalanceOf { address, balance } = res {
+        assert!(
+            address == OWNER_ID.into() && balance == 0,
+            "Error in balance_of()"
+        );
+    }
 
     end_sale(&ico);
 
-    let res = ico.send(OWNER_ID, IcoAction::BalanceOf(OWNER_ID.into()));
-    assert!(res.contains(&(
-        OWNER_ID,
-        (IcoEvent::BalanceOf {
-            address: OWNER_ID.into(),
-            balance: TOKENS_CNT - amount
-        })
-        .encode()
-    )));
-}
+    let res: StateIcoReply = ico
+        .meta_state(StateIco::BalanceOf(OWNER_ID.into()))
+        .expect("Error in meta_state");
 
-#[test]
-#[should_panic]
-fn not_owner_balance() {
-    let sys = System::new();
-    init(&sys);
-
-    let ico = sys.get_program(2);
-
-    start_sale(&ico, 1);
-
-    let res = ico.send(USER_ID, IcoAction::BalanceOf(USER_ID.into()));
-    assert!(res.contains(&(
-        USER_ID,
-        (IcoEvent::BalanceOf {
-            address: USER_ID.into(),
-            balance: 0
-        })
-        .encode()
-    )));
+    if let StateIcoReply::BalanceOf { address, balance } = res {
+        assert!(
+            address == OWNER_ID.into() && balance == TOKENS_CNT - amount,
+            "Error in balance_of()"
+        );
+    }
 }

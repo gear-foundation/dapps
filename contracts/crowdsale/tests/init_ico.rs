@@ -13,7 +13,7 @@ pub const TOKEN_ADDRESS: u64 = 1;
 pub const OWNER_ID: u64 = 100001;
 pub const USER_ID: u64 = 12345;
 
-pub const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
+pub const ZERO_ID: ActorId = ActorId::zero();
 
 pub const TOKENS_CNT: u128 = 100;
 pub const START_PRICE: u128 = 1000;
@@ -60,10 +60,11 @@ pub fn init(sys: &System) {
 
     init_fungible_token(sys);
     init_ico(sys);
+    sys.mint_to(USER_ID, 100_000);
 }
 
 pub fn start_sale(ico: &Program, ico_duration: u64) {
-    let duration = Duration::from_secs(ico_duration).as_millis() as u64;
+    let duration = Duration::from_secs(ico_duration).as_millis() as u64 * 1000;
     let res = ico.send(
         OWNER_ID,
         IcoAction::StartSale {
@@ -71,7 +72,7 @@ pub fn start_sale(ico: &Program, ico_duration: u64) {
             start_price: START_PRICE,
             tokens_goal: TOKENS_CNT,
             price_increase_step: PRICE_INCREASE_STEP,
-            time_increase_step: TIME_INCREASE_STEP,
+            time_increase_step: TIME_INCREASE_STEP * 1000,
         },
     );
 
@@ -82,7 +83,7 @@ pub fn start_sale(ico: &Program, ico_duration: u64) {
             start_price: START_PRICE,
             tokens_goal: TOKENS_CNT,
             price_increase_step: PRICE_INCREASE_STEP,
-            time_increase_step: TIME_INCREASE_STEP,
+            time_increase_step: TIME_INCREASE_STEP * 1000,
         }
         .encode()
     )));
@@ -110,13 +111,14 @@ pub fn buy_tokens(_sys: &System, ico: &Program, amount: u128, price: u128) {
 }
 
 pub fn balance_of(ico: &Program, amount: u128) {
-    let res = ico.send(OWNER_ID, IcoAction::BalanceOf(USER_ID.into()));
-    assert!(res.contains(&(
-        OWNER_ID,
-        (IcoEvent::BalanceOf {
-            address: USER_ID.into(),
-            balance: amount
-        })
-        .encode()
-    )));
+    let res: StateIcoReply = ico
+        .meta_state(StateIco::BalanceOf(USER_ID.into()))
+        .expect("Error in meta_state");
+
+    if let StateIcoReply::BalanceOf { address, balance } = res {
+        assert!(
+            address == USER_ID.into() && balance == amount,
+            "Error in balance_of()"
+        );
+    }
 }
