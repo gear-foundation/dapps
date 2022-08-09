@@ -8,10 +8,10 @@ authors = ["Gear Technologies"]
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git" }
 codec = { package = "parity-scale-codec", version = "3", default-features = false }
-supply-chain-io = { path = "io" }
-nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git" }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token.git" }
+nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.1.0" }
+ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.0" }
 gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git" }
+scale-info = { version = "2", default-features = false }
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git" }

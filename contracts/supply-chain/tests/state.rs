@@ -1,91 +1,115 @@
 pub mod utils;
-use utils::*;
+use utils::{prelude::*, FungibleToken, NonFungibleToken};
 
 #[test]
 fn state() {
-    let system = init_system();
+    let system = utils::initialize_system();
 
-    let ft_program = init_ft_program(&system);
-    init_nft_program(&system);
-    let supply_chain_program = Program::current(&system);
-    check::init_supply_chain_program(&supply_chain_program);
+    let ft_program = FungibleToken::initialize(&system);
+    // Double the balances to catch bugs.
+    ft_program.mint(DISTRIBUTOR, ITEM_PRICE * 2);
+    ft_program.mint(RETAILER, ITEM_PRICE * 2);
+    ft_program.mint(CONSUMER, ITEM_PRICE * 2);
 
-    mint(&ft_program, DISTRIBUTOR[0], ITEM_PRICE_BY_PRODUCER[0]);
-    mint(&ft_program, RETAILER[0], ITEM_PRICE_BY_DISTRIBUTOR[0]);
-    mint(&ft_program, CONSUMER[0], ITEM_PRICE_BY_RETAILER[0]);
+    let nft_program = NonFungibleToken::initialize(&system);
+    let schain_program =
+        SupplyChain::initialize(&system, ft_program.actor_id(), nft_program.actor_id());
 
-    check::produce(
-        &supply_chain_program,
-        PRODUCER[0],
-        ITEM_NAME[0],
-        ITEM_DESCRIPTION[0],
-        ITEM_ID[0],
-    );
+    schain_program.produce(PRODUCER).check(0);
 
-    check::put_up_for_sale_by_producer(
-        &supply_chain_program,
-        PRODUCER[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_PRODUCER[0],
-    );
-    fail::put_up_for_sale_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0]);
+    schain_program
+        .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE)
+        .check(0);
+    // Should fail because item's `ItemState` must be `Produced`.
+    schain_program
+        .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE)
+        .failed();
 
-    check::purchare_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[0],
-        ITEM_ID[0],
-        DELIVERY_TIME[0],
-    );
-    fail::purchare_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
+    schain_program
+        .purchase_by_distributor(DISTRIBUTOR, 0, DELIVERY_TIME)
+        .check(0);
+    // Should fail because item's `ItemState` must be `ForSaleByProducer`.
+    schain_program
+        .purchase_by_distributor(DISTRIBUTOR, 0, DELIVERY_TIME)
+        .failed();
 
-    check::approve_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0], true);
-    fail::approve_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0]);
+    schain_program
+        .approve_by_producer(PRODUCER, 0, true)
+        .check(0);
+    //Should fail because item's `ItemState` must be `PurchasedByDistributor`.
+    schain_program
+        .approve_by_producer(PRODUCER, 0, true)
+        .failed();
 
-    check::ship_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0]);
-    fail::ship_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0]);
+    schain_program.ship_by_producer(PRODUCER, 0).check(0);
+    // Should fail because item's `ItemState` must be `ApprovedByProducer`.
+    schain_program.ship_by_producer(PRODUCER, 0).failed();
 
-    check::receive_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    fail::receive_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
+    schain_program
+        .receive_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
+    // Should fail because item's `ItemState` must be `ShippedByProducer`.
+    schain_program
+        .receive_by_distributor(DISTRIBUTOR, 0)
+        .failed();
 
-    check::process_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    fail::process_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
+    schain_program
+        .process_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
+    // Should fail because item's `ItemState` must be `ReceivedByDistributor`.
+    schain_program
+        .process_by_distributor(DISTRIBUTOR, 0)
+        .failed();
 
-    check::package_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    fail::package_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
+    schain_program
+        .package_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
+    // Should fail because item's `ItemState` must be `ProcessedByDistributor`.
+    schain_program
+        .package_by_distributor(DISTRIBUTOR, 0)
+        .failed();
 
-    check::put_up_for_sale_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_DISTRIBUTOR[0],
-    );
-    fail::put_up_for_sale_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
+    schain_program
+        .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE)
+        .check(0);
+    // Should fail because item's `ItemState` must be `PackagedByDistributor`.
+    schain_program
+        .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE)
+        .failed();
 
-    check::purchare_by_retailer(
-        &supply_chain_program,
-        RETAILER[0],
-        ITEM_ID[0],
-        DELIVERY_TIME[0],
-    );
-    fail::purchare_by_retailer(&supply_chain_program, RETAILER[0], ITEM_ID[0]);
+    schain_program
+        .purchase_by_retailer(RETAILER, 0, DELIVERY_TIME)
+        .check(0);
+    // Should fail because item's `ItemState` must be `ForSaleByDistributor`.
+    schain_program
+        .purchase_by_retailer(RETAILER, 0, DELIVERY_TIME)
+        .failed();
 
-    check::approve_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0], true);
-    fail::approve_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
+    schain_program
+        .approve_by_distributor(DISTRIBUTOR, 0, true)
+        .check(0);
+    // Should fail because item's `ItemState` must be `PurchasedByRetailer`.
+    schain_program
+        .approve_by_distributor(DISTRIBUTOR, 0, true)
+        .failed();
 
-    check::ship_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    fail::ship_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
+    schain_program.ship_by_distributor(DISTRIBUTOR, 0).check(0);
+    // Should fail because item's `ItemState` must be `ApprovedByDistributor`.
+    schain_program.ship_by_distributor(DISTRIBUTOR, 0).failed();
 
-    check::receive_by_retailer(&supply_chain_program, RETAILER[0], ITEM_ID[0]);
-    fail::receive_by_retailer(&supply_chain_program, RETAILER[0], ITEM_ID[0]);
+    schain_program.receive_by_retailer(RETAILER, 0).check(0);
+    // Should fail because item's `ItemState` must be `ShippedByDistributor`.
+    schain_program.receive_by_retailer(RETAILER, 0).failed();
 
-    check::put_up_for_sale_by_retailer(
-        &supply_chain_program,
-        RETAILER[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_RETAILER[0],
-    );
-    fail::put_up_for_sale_by_retailer(&supply_chain_program, RETAILER[0], ITEM_ID[0]);
+    schain_program
+        .put_up_for_sale_by_retailer(RETAILER, 0, ITEM_PRICE)
+        .check(0);
+    // Should fail because item's `ItemState` must be `ReceivedByRetailer`.
+    schain_program
+        .put_up_for_sale_by_retailer(RETAILER, 0, ITEM_PRICE)
+        .failed();
 
-    check::purchare_by_consumer(&supply_chain_program, CONSUMER[0], ITEM_ID[0]);
-    fail::purchare_by_consumer(&supply_chain_program, FOREIGN_USER, ITEM_ID[0]);
+    schain_program.purchase_by_consumer(CONSUMER, 0).check(0);
+    // Should fail because item's `ItemState` must be `ForSaleByRetailer`.
+    schain_program.purchase_by_consumer(CONSUMER, 0).failed();
 }

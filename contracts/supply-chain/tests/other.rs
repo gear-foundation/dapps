@@ -1,53 +1,130 @@
 pub mod utils;
-use utils::*;
+use gstd::ActorId;
+use utils::{prelude::*, FungibleToken, NonFungibleToken};
 
 #[test]
-fn interact_with_unexistend_item() {
-    let system = init_system();
-    let supply_chain_program = Program::current(&system);
-    check::init_supply_chain_program(&supply_chain_program);
+fn interact_with_unexistent_item() {
+    const NONEXISTENT_ITEM: u128 = 99999999;
 
-    fail::put_up_for_sale_by_producer(&supply_chain_program, PRODUCER[0], NONEXISTEND_ITEM);
-    fail::purchare_by_distributor(&supply_chain_program, DISTRIBUTOR[0], NONEXISTEND_ITEM);
-    fail::approve_by_producer(&supply_chain_program, PRODUCER[0], NONEXISTEND_ITEM);
-    fail::ship_by_producer(&supply_chain_program, PRODUCER[0], NONEXISTEND_ITEM);
-    fail::receive_by_distributor(&supply_chain_program, DISTRIBUTOR[0], NONEXISTEND_ITEM);
-    fail::process_by_distributor(&supply_chain_program, DISTRIBUTOR[0], NONEXISTEND_ITEM);
-    fail::package_by_distributor(&supply_chain_program, DISTRIBUTOR[0], NONEXISTEND_ITEM);
-    fail::put_up_for_sale_by_distributor(&supply_chain_program, DISTRIBUTOR[0], NONEXISTEND_ITEM);
-    fail::purchare_by_retailer(&supply_chain_program, RETAILER[0], NONEXISTEND_ITEM);
-    fail::approve_by_distributor(&supply_chain_program, DISTRIBUTOR[0], NONEXISTEND_ITEM);
-    fail::ship_by_distributor(&supply_chain_program, DISTRIBUTOR[0], NONEXISTEND_ITEM);
-    fail::receive_by_retailer(&supply_chain_program, RETAILER[0], NONEXISTEND_ITEM);
-    fail::put_up_for_sale_by_retailer(&supply_chain_program, RETAILER[0], NONEXISTEND_ITEM);
-    fail::purchare_by_consumer(&supply_chain_program, CONSUMER[0], NONEXISTEND_ITEM);
+    let system = utils::initialize_system();
+
+    let ft_program = FungibleToken::initialize(&system);
+    let nft_program = NonFungibleToken::initialize(&system);
+    let schain_program =
+        SupplyChain::initialize(&system, ft_program.actor_id(), nft_program.actor_id());
+
+    // Should fail because an item must exist in a supply chain.
+    schain_program
+        .put_up_for_sale_by_producer(PRODUCER, NONEXISTENT_ITEM, ITEM_PRICE)
+        .failed();
+    // Should fail because an item must exist in a supply chain.
+    schain_program
+        .purchase_by_distributor(DISTRIBUTOR, NONEXISTENT_ITEM, DELIVERY_TIME)
+        .failed();
+    // Should fail because an item must exist in a supply chain.
+    schain_program
+        .approve_by_producer(PRODUCER, NONEXISTENT_ITEM, true)
+        .failed();
+    // Should fail because an item must exist in a supply chain.
+    schain_program
+        .ship_by_producer(PRODUCER, NONEXISTENT_ITEM)
+        .failed();
+    // Should fail because an item must exist in a supply chain.
+    schain_program
+        .receive_by_distributor(DISTRIBUTOR, NONEXISTENT_ITEM)
+        .failed();
+    // Should fail because an item must exist in a supply chain.
+    schain_program
+        .process_by_distributor(DISTRIBUTOR, NONEXISTENT_ITEM)
+        .failed();
+    // Should fail because an item must exist in a supply chain.
+    schain_program
+        .package_by_distributor(DISTRIBUTOR, NONEXISTENT_ITEM)
+        .failed();
+    // Should fail because an item must exist in a supply chain.
+    schain_program
+        .put_up_for_sale_by_distributor(DISTRIBUTOR, NONEXISTENT_ITEM, ITEM_PRICE)
+        .failed();
+    // Should fail because an item must exist in a supply chain.
+    schain_program
+        .purchase_by_retailer(RETAILER, NONEXISTENT_ITEM, DELIVERY_TIME)
+        .failed();
+    // Should fail because an item must exist in a supply chain.
+    schain_program
+        .approve_by_distributor(DISTRIBUTOR, NONEXISTENT_ITEM, true)
+        .failed();
+    // Should fail because an item must exist in a supply chain.
+    schain_program
+        .ship_by_distributor(DISTRIBUTOR, NONEXISTENT_ITEM)
+        .failed();
+    // Should fail because an item must exist in a supply chain.
+    schain_program
+        .receive_by_retailer(RETAILER, NONEXISTENT_ITEM)
+        .failed();
+    // Should fail because an item must exist in a supply chain.
+    schain_program
+        .put_up_for_sale_by_retailer(RETAILER, NONEXISTENT_ITEM, ITEM_PRICE)
+        .failed();
+    // Should fail because an item must exist in a supply chain.
+    schain_program
+        .purchase_by_consumer(CONSUMER, NONEXISTENT_ITEM)
+        .failed();
+
+    // Should return the `Default` value because an item must exist in a supply
+    // chain.
+    schain_program
+        .meta_state()
+        .item_info(NONEXISTENT_ITEM)
+        .check(Default::default());
 }
 
 #[test]
-#[should_panic]
-fn interact_with_unexistend_item_meta_state() {
-    let system = init_system();
-    let supply_chain_program = Program::current(&system);
-    check::init_supply_chain_program(&supply_chain_program);
+fn initialization() {
+    let system = utils::initialize_system();
 
-    fail::get_item_info(&supply_chain_program, NONEXISTEND_ITEM);
-}
+    let ft_program = FungibleToken::initialize(&system);
+    let nft_program = NonFungibleToken::initialize(&system);
 
-#[test]
-fn init_with_zero_address() {
-    let system = init_system();
-    let supply_chain_program = Program::current(&system);
-    check::init_supply_chain_program(&supply_chain_program);
+    let mut supply_chain_config = InitSupplyChain {
+        producers: [ActorId::zero()].into(),
+        distributors: [ActorId::zero()].into(),
+        retailers: [ActorId::zero()].into(),
 
-    fail::init_supply_chain_program(
-        &supply_chain_program,
-        InitSupplyChain {
-            ft_program_id: FT_PROGRAM_ID.into(),
-            nft_program_id: NFT_PROGRAM_ID.into(),
+        ft_program: ft_program.actor_id(),
+        nft_program: nft_program.actor_id(),
+    };
+    //Should fail because each address of `producers`, `distributors`, and
+    // `retailers` mustn't equal `ActorId::zero()`.
+    SupplyChain::initialize_custom(&system, supply_chain_config.clone()).failed();
 
-            producers: BTreeSet::from([PRODUCER[0].into(), PRODUCER[1].into()]),
-            distributors: BTreeSet::from([DISTRIBUTOR[0].into(), DISTRIBUTOR[1].into()]),
-            retailers: BTreeSet::from([RETAILER[0].into(), RETAILER[1].into()]),
-        },
-    );
+    supply_chain_config.producers = [PRODUCER.into()].into();
+    //Should fail because each address of `producers`, `distributors`, and
+    // `retailers` mustn't equal `ActorId::zero()`.
+    SupplyChain::initialize_custom(&system, supply_chain_config.clone()).failed();
+
+    supply_chain_config.distributors = [DISTRIBUTOR.into()].into();
+    //Should fail because each address of `producers`, `distributors`, and
+    // `retailers` mustn't equal `ActorId::zero()`.
+    SupplyChain::initialize_custom(&system, supply_chain_config.clone()).failed();
+
+    supply_chain_config.retailers = [RETAILER.into()].into();
+    let supply_chain_program =
+        SupplyChain::initialize_custom(&system, supply_chain_config.clone()).succeed();
+
+    supply_chain_program
+        .meta_state()
+        .participants()
+        .check(Participants {
+            producers: supply_chain_config.producers,
+            distributors: supply_chain_config.distributors,
+            retailers: supply_chain_config.retailers,
+        });
+    supply_chain_program
+        .meta_state()
+        .ft_program()
+        .check(ft_program.actor_id());
+    supply_chain_program
+        .meta_state()
+        .nft_program()
+        .check(nft_program.actor_id());
 }

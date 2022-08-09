@@ -8,18 +8,20 @@
 
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
+[![Docs][docs_badge]][docs_href]
 
 [build_badge]: https://github.com/gear-dapps/supply-chain/workflows/Build/badge.svg
 [build_href]: https://github.com/gear-dapps/supply-chain/actions/workflows/build.yml
 
-[lic_badge]: https://img.shields.io/badge/License-GPL%203.0-success
-[lic_href]: https://github.com/gear-dapps/supply-chain/blob/master/LICENSE
+[lic_badge]: https://img.shields.io/badge/License-MIT-success
+[lic_href]: LICENSE
 
-An example of a supply chain smart contract.
+[docs_badge]: https://img.shields.io/badge/docs-online-5023dd
+[docs_href]: https://dapps.gear.rs/supply_chain
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/supply-chain/releases/tag/build).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/supply-chain/releases).
 
 ## Building Locally
 
@@ -80,4 +82,4 @@ make
 
 ## License
 
-The source code is licensed under [GPL v3.0 license](LICENSE).
+The source code is licensed under the [MIT license](LICENSE).

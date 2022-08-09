@@ -1,214 +1,194 @@
 pub mod utils;
-use utils::*;
+use utils::{prelude::*, FungibleToken, NonFungibleToken};
+
+const DELIVERY_TIME_IN_BLOCKS: u32 = (DELIVERY_TIME / 1000) as _;
 
 #[test]
 fn delivery_wo_delay() {
-    let system = init_system();
+    const NO_DELAY: u32 = DELIVERY_TIME_IN_BLOCKS;
 
-    let ft_program = init_ft_program(&system);
-    init_nft_program(&system);
-    let supply_chain_program = Program::current(&system);
-    check::init_supply_chain_program(&supply_chain_program);
+    let system = utils::initialize_system();
 
-    mint(&ft_program, DISTRIBUTOR[0], ITEM_PRICE_BY_PRODUCER[0]);
-    mint(&ft_program, RETAILER[0], ITEM_PRICE_BY_DISTRIBUTOR[0]);
+    let ft_program = FungibleToken::initialize(&system);
+    ft_program.mint(DISTRIBUTOR, ITEM_PRICE);
+    ft_program.mint(RETAILER, ITEM_PRICE);
 
-    check::produce(
-        &supply_chain_program,
-        PRODUCER[0],
-        ITEM_NAME[0],
-        ITEM_DESCRIPTION[0],
-        ITEM_ID[0],
-    );
-    check::put_up_for_sale_by_producer(
-        &supply_chain_program,
-        PRODUCER[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_PRODUCER[0],
-    );
-    check::purchare_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[0],
-        ITEM_ID[0],
-        DELIVERY_TIME[0],
-    );
-    check::approve_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0], true);
-    check::ship_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0]);
-    system.spend_blocks(DELIVERY_TIME[0].try_into().unwrap());
-    check::receive_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
+    let nft_program = NonFungibleToken::initialize(&system);
+    let schain_program =
+        SupplyChain::initialize(&system, ft_program.actor_id(), nft_program.actor_id());
 
+    schain_program.produce(PRODUCER).check(0);
+    schain_program
+        .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE)
+        .check(0);
+    schain_program
+        .purchase_by_distributor(DISTRIBUTOR, 0, DELIVERY_TIME)
+        .check(0);
+    schain_program
+        .approve_by_producer(PRODUCER, 0, true)
+        .check(0);
+    schain_program.ship_by_producer(PRODUCER, 0).check(0);
+
+    system.spend_blocks(NO_DELAY);
+    schain_program
+        .receive_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
     // Since the delivery is completed on time,
-    // all tokens are transferred to the producer (seller).
-    check_balance(&ft_program, PRODUCER[0], ITEM_PRICE_BY_PRODUCER[0]);
-    check_balance(&ft_program, DISTRIBUTOR[0], 0);
+    // all fungible tokens are transferred to the producer (seller).
+    ft_program.balance_of(PRODUCER).check(ITEM_PRICE);
+    ft_program.balance_of(DISTRIBUTOR).check(0);
 
-    check::process_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    check::package_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    check::put_up_for_sale_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_DISTRIBUTOR[0],
-    );
-    check::purchare_by_retailer(
-        &supply_chain_program,
-        RETAILER[0],
-        ITEM_ID[0],
-        DELIVERY_TIME[1],
-    );
-    check::approve_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0], true);
-    check::ship_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    system.spend_blocks(DELIVERY_TIME[1].try_into().unwrap());
-    check::receive_by_retailer(&supply_chain_program, RETAILER[0], ITEM_ID[0]);
+    schain_program
+        .process_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
+    schain_program
+        .package_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
+    schain_program
+        .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE)
+        .check(0);
+    schain_program
+        .purchase_by_retailer(RETAILER, 0, DELIVERY_TIME)
+        .check(0);
+    schain_program
+        .approve_by_distributor(DISTRIBUTOR, 0, true)
+        .check(0);
+    schain_program.ship_by_distributor(DISTRIBUTOR, 0).check(0);
 
+    system.spend_blocks(NO_DELAY);
+    schain_program.receive_by_retailer(RETAILER, 0).check(0);
     // Since the delivery is completed on time,
-    // all tokens are transferred to the distributor (seller).
-    check_balance(&ft_program, DISTRIBUTOR[0], ITEM_PRICE_BY_DISTRIBUTOR[0]);
-    check_balance(&ft_program, RETAILER[0], 0);
+    // all fungible tokens are transferred to the distributor (seller).
+    ft_program.balance_of(DISTRIBUTOR).check(ITEM_PRICE);
+    ft_program.balance_of(RETAILER).check(0);
 }
 
 #[test]
 fn delivery_with_delay() {
-    let system = init_system();
+    // Even and odd prices required for a reliable penalty calculation check.
+    const ITEM_PRICE: [u128; 2] = [123123, 12341234];
+    const DELAY: u32 = DELIVERY_TIME_IN_BLOCKS * 2 - 1;
 
-    let ft_program = init_ft_program(&system);
-    init_nft_program(&system);
-    let supply_chain_program = Program::current(&system);
-    check::init_supply_chain_program(&supply_chain_program);
+    let system = utils::initialize_system();
 
-    mint(&ft_program, DISTRIBUTOR[0], ITEM_PRICE_BY_PRODUCER[0]);
-    mint(&ft_program, RETAILER[0], ITEM_PRICE_BY_DISTRIBUTOR[0]);
+    let ft_program = FungibleToken::initialize(&system);
+    ft_program.mint(DISTRIBUTOR, ITEM_PRICE[0]);
+    ft_program.mint(RETAILER, ITEM_PRICE[1]);
 
-    check::produce(
-        &supply_chain_program,
-        PRODUCER[0],
-        ITEM_NAME[0],
-        ITEM_DESCRIPTION[0],
-        ITEM_ID[0],
-    );
-    check::put_up_for_sale_by_producer(
-        &supply_chain_program,
-        PRODUCER[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_PRODUCER[0],
-    );
-    check::purchare_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[0],
-        ITEM_ID[0],
-        DELIVERY_TIME[0],
-    );
-    check::approve_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0], true);
-    check::ship_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0]);
-    system.spend_blocks((DELIVERY_TIME[0] * 2 - 1).try_into().unwrap());
-    check::receive_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
+    let nft_program = NonFungibleToken::initialize(&system);
+    let schain_program =
+        SupplyChain::initialize(&system, ft_program.actor_id(), nft_program.actor_id());
 
+    schain_program.produce(PRODUCER).check(0);
+    schain_program
+        .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE[0])
+        .check(0);
+    schain_program
+        .purchase_by_distributor(DISTRIBUTOR, 0, DELIVERY_TIME)
+        .check(0);
+    schain_program
+        .approve_by_producer(PRODUCER, 0, true)
+        .check(0);
+    schain_program.ship_by_producer(PRODUCER, 0).check(0);
+
+    system.spend_blocks(DELAY);
+    schain_program
+        .receive_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
     // Since the delivery is completed with the delay,
-    // the half of tokens is transferred to the producer (seller)
+    // the half of fungible tokens is transferred to the producer (seller)
     // and the other half of them is refunded to the distributor (buyer).
-    check_balance(&ft_program, PRODUCER[0], ITEM_PRICE_BY_PRODUCER[0] / 2);
-    check_balance(
-        &ft_program,
-        DISTRIBUTOR[0],
-        ITEM_PRICE_BY_PRODUCER[0] - ITEM_PRICE_BY_PRODUCER[0] / 2,
-    );
+    ft_program.balance_of(PRODUCER).check(ITEM_PRICE[0] / 2);
+    ft_program
+        .balance_of(DISTRIBUTOR)
+        .check(ITEM_PRICE[0] - ITEM_PRICE[0] / 2);
 
-    check::process_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    check::package_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    check::put_up_for_sale_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_DISTRIBUTOR[0],
-    );
-    check::purchare_by_retailer(
-        &supply_chain_program,
-        RETAILER[0],
-        ITEM_ID[0],
-        DELIVERY_TIME[1],
-    );
-    check::approve_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0], true);
-    check::ship_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    system.spend_blocks((DELIVERY_TIME[1] * 2 - 1).try_into().unwrap());
-    check::receive_by_retailer(&supply_chain_program, RETAILER[0], ITEM_ID[0]);
+    schain_program
+        .process_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
+    schain_program
+        .package_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
+    schain_program
+        .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE[1])
+        .check(0);
+    schain_program
+        .purchase_by_retailer(RETAILER, 0, DELIVERY_TIME)
+        .check(0);
+    schain_program
+        .approve_by_distributor(DISTRIBUTOR, 0, true)
+        .check(0);
+    schain_program.ship_by_distributor(DISTRIBUTOR, 0).check(0);
 
+    system.spend_blocks(DELAY);
+    schain_program.receive_by_retailer(RETAILER, 0).check(0);
     // Since the delivery is completed with the delay,
-    // the half of tokens is transferred to the distributor (seller)
+    // the half of fungible tokens is transferred to the distributor (seller)
     // and the other half of them is refunded to the retailer (buyer).
-    check_balance(
-        &ft_program,
-        DISTRIBUTOR[0],
-        ITEM_PRICE_BY_PRODUCER[0] / 2 + ITEM_PRICE_BY_DISTRIBUTOR[0] / 2,
-    );
-    check_balance(
-        &ft_program,
-        RETAILER[0],
-        ITEM_PRICE_BY_DISTRIBUTOR[0] - ITEM_PRICE_BY_DISTRIBUTOR[0] / 2,
-    );
+    ft_program
+        .balance_of(DISTRIBUTOR)
+        .check(ITEM_PRICE[0] - ITEM_PRICE[0] / 2 + ITEM_PRICE[1] / 2);
+    ft_program
+        .balance_of(RETAILER)
+        .check(ITEM_PRICE[1] - ITEM_PRICE[1] / 2);
 }
 
 #[test]
 fn delivery_with_big_delay() {
-    let system = init_system();
+    const BIG_DELAY: u32 = DELIVERY_TIME_IN_BLOCKS * 2;
 
-    let ft_program = init_ft_program(&system);
-    init_nft_program(&system);
-    let supply_chain_program = Program::current(&system);
-    check::init_supply_chain_program(&supply_chain_program);
+    let system = utils::initialize_system();
 
-    mint(&ft_program, DISTRIBUTOR[0], ITEM_PRICE_BY_PRODUCER[0]);
-    mint(&ft_program, RETAILER[0], ITEM_PRICE_BY_DISTRIBUTOR[0]);
+    let ft_program = FungibleToken::initialize(&system);
+    ft_program.mint(DISTRIBUTOR, ITEM_PRICE);
+    ft_program.mint(RETAILER, ITEM_PRICE);
 
-    check::produce(
-        &supply_chain_program,
-        PRODUCER[0],
-        ITEM_NAME[0],
-        ITEM_DESCRIPTION[0],
-        ITEM_ID[0],
-    );
-    check::put_up_for_sale_by_producer(
-        &supply_chain_program,
-        PRODUCER[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_PRODUCER[0],
-    );
-    check::purchare_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[0],
-        ITEM_ID[0],
-        DELIVERY_TIME[0],
-    );
-    check::approve_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0], true);
-    check::ship_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0]);
-    system.spend_blocks((DELIVERY_TIME[0] * 2).try_into().unwrap());
-    check::receive_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
+    let nft_program = NonFungibleToken::initialize(&system);
+    let schain_program =
+        SupplyChain::initialize(&system, ft_program.actor_id(), nft_program.actor_id());
 
+    schain_program.produce(PRODUCER).check(0);
+    schain_program
+        .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE)
+        .check(0);
+    schain_program
+        .purchase_by_distributor(DISTRIBUTOR, 0, DELIVERY_TIME)
+        .check(0);
+    schain_program
+        .approve_by_producer(PRODUCER, 0, true)
+        .check(0);
+    schain_program.ship_by_producer(PRODUCER, 0).check(0);
+
+    system.spend_blocks(BIG_DELAY);
+    schain_program
+        .receive_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
     // Since the delivery is completed with the big delay,
-    // all tokens are refunded to the distributor (buyer).
-    check_balance(&ft_program, PRODUCER[0], 0);
-    check_balance(&ft_program, DISTRIBUTOR[0], ITEM_PRICE_BY_PRODUCER[0]);
+    // all fungible tokens are refunded to the distributor (buyer).
+    ft_program.balance_of(PRODUCER).check(0);
+    ft_program.balance_of(DISTRIBUTOR).check(ITEM_PRICE);
 
-    check::process_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    check::package_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    check::put_up_for_sale_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_DISTRIBUTOR[0],
-    );
-    check::purchare_by_retailer(
-        &supply_chain_program,
-        RETAILER[0],
-        ITEM_ID[0],
-        DELIVERY_TIME[1],
-    );
-    check::approve_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0], true);
-    check::ship_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    system.spend_blocks((DELIVERY_TIME[1] * 2).try_into().unwrap());
-    check::receive_by_retailer(&supply_chain_program, RETAILER[0], ITEM_ID[0]);
+    schain_program
+        .process_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
+    schain_program
+        .package_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
+    schain_program
+        .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE)
+        .check(0);
+    schain_program
+        .purchase_by_retailer(RETAILER, 0, DELIVERY_TIME)
+        .check(0);
+    schain_program
+        .approve_by_distributor(DISTRIBUTOR, 0, true)
+        .check(0);
+    schain_program.ship_by_distributor(DISTRIBUTOR, 0).check(0);
 
+    system.spend_blocks(BIG_DELAY);
+    schain_program.receive_by_retailer(RETAILER, 0).check(0);
     // Since the delivery is completed with the big delay,
-    // all tokens are refunded to the retailer (buyer).
-    check_balance(&ft_program, DISTRIBUTOR[0], ITEM_PRICE_BY_PRODUCER[0]);
-    check_balance(&ft_program, RETAILER[0], ITEM_PRICE_BY_DISTRIBUTOR[0]);
+    // all fungible tokens are refunded to the retailer (buyer).
+    ft_program.balance_of(DISTRIBUTOR).check(ITEM_PRICE);
+    ft_program.balance_of(RETAILER).check(ITEM_PRICE);
 }

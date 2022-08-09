@@ -1,12 +1,12 @@
 #![no_std]
 
-use ft_io::{FTAction, FTEvent};
-use gear_lib::non_fungible_token::{io::NFTTransfer, token::TokenMetadata};
+use gear_lib::non_fungible_token::token::TokenMetadata;
 use gstd::{async_main, exec, msg, prelude::*, ActorId};
-use nft_io::NFTAction;
-use supply_chain_io::*;
 
-const ZERO_ID: ActorId = ActorId::new([0; 32]);
+mod utils;
+
+mod io;
+pub use io::*;
 
 #[derive(Default)]
 struct Item {
@@ -14,69 +14,35 @@ struct Item {
     shipping_time: u64,
 }
 
-fn panic_item_not_exist(item_id: ItemId) -> ! {
-    panic!("Item with the {item_id} ID doesn't exist")
-}
-
-fn panic_zero_address_among(who: &str) -> ! {
-    panic!("Zero address can't be among {who}")
-}
-
 fn get_mut_item(items: &mut BTreeMap<ItemId, Item>, id: ItemId) -> &mut Item {
     items
         .get_mut(&id)
-        .unwrap_or_else(|| panic_item_not_exist(id))
+        .unwrap_or_else(|| panic!("Item not found by an ID"))
 }
 
-async fn transfer_tokens(ft_program_id: ActorId, from: ActorId, to: ActorId, amount: u128) {
-    msg::send_for_reply_as::<_, FTEvent>(ft_program_id, FTAction::Transfer { from, to, amount }, 0)
-        .expect("Error during a sending FTAction::Transfer to a FT program")
-        .await
-        .expect("Unable to decode FTEvent");
-}
-
-async fn transfer_nft(nft_program_id: ActorId, to: ActorId, token_id: ItemId) {
-    msg::send_for_reply_as::<_, NFTTransfer>(
-        nft_program_id,
-        NFTAction::Transfer { to, token_id },
-        0,
-    )
-    .expect("Error during a sending NFTAction::Transfer to an NFT program")
-    .await
-    .expect("Unable to decode NFTTransfer");
-}
-
-async fn receive(ft_program_id: ActorId, seller: ActorId, item: &Item) {
+async fn receive(ft_program: ActorId, msg_source: ActorId, seller: ActorId, item: &Item) {
+    let program_id = exec::program_id();
     let elapsed_time = exec::block_timestamp() - item.shipping_time;
-    // By default, all tokens are transferred to a seller,
+    // By default, all fungible tokens are transferred to a seller,
     let (mut to, mut amount) = (seller, item.info.price);
 
-    // but if a seller spends more time than agreed...
+    // but if the seller spends more time than was agreed...
     if elapsed_time > item.info.delivery_time {
         // ...and is extremely late (more than or exactly 2 times in this example),
         if elapsed_time >= item.info.delivery_time * 2 {
-            // then all tokens are refunded to a buyer...
-            to = msg::source();
+            // then all fungible tokens are refunded to a buyer...
+            to = msg_source;
         } else {
-            // ...or another half is transferred to a seller
+            // ...or another half is transferred to a seller...
             amount /= 2;
 
             // ...and a half of tokens is refunded to a buyer.
-            transfer_tokens(
-                ft_program_id,
-                exec::program_id(),
-                msg::source(),
-                item.info.price - amount,
-            )
-            .await;
+            utils::transfer_ftokens(ft_program, program_id, msg_source, item.info.price - amount)
+                .await;
         }
     }
 
-    transfer_tokens(ft_program_id, exec::program_id(), to, amount).await;
-}
-
-fn reply(supply_chain_event: SupplyChainEvent) {
-    msg::reply(supply_chain_event, 0).expect("Error during a replying with SupplyChainEvent");
+    utils::transfer_ftokens(ft_program, program_id, to, amount).await;
 }
 
 #[derive(Default)]
@@ -87,115 +53,95 @@ struct SupplyChain {
     distributors: BTreeSet<ActorId>,
     retailers: BTreeSet<ActorId>,
 
-    ft_program_id: ActorId,
-    nft_program_id: ActorId,
+    ft_program: ActorId,
+    nft_program: ActorId,
 }
 
 impl SupplyChain {
-    fn check_producer(&self) {
-        if !self.producers.contains(&msg::source()) {
-            panic!("msg::source() must be a producer");
+    fn check_producer(&self, actor_id: ActorId) {
+        if !self.producers.contains(&actor_id) {
+            panic!("Actor must be a producer");
         }
     }
 
-    fn check_distributor(&self) {
-        if !self.distributors.contains(&msg::source()) {
-            panic!("msg::source() must be a distributor");
+    fn check_distributor(&self, actor_id: ActorId) {
+        if !self.distributors.contains(&actor_id) {
+            panic!("Actor must be a distributor");
         }
     }
 
-    fn check_retailer(&self) {
-        if !self.retailers.contains(&msg::source()) {
-            panic!("msg::source() must be a retailer");
+    fn check_retailer(&self, actor_id: ActorId) {
+        if !self.retailers.contains(&actor_id) {
+            panic!("Actor must be a retailer");
         }
     }
 
-    async fn produce_item(&mut self, name: String, description: String) {
-        self.check_producer();
+    async fn produce_item(&mut self, token_metadata: TokenMetadata) {
+        let msg_source = msg::source();
+        self.check_producer(msg_source);
 
-        let raw_reply: Vec<u8> = msg::send_for_reply_as(
-            self.nft_program_id,
-            NFTAction::Mint {
-                token_metadata: TokenMetadata {
-                    name,
-                    description,
-                    ..Default::default()
-                },
-            },
-            0,
-        )
-        .expect("Error during a sending NFTAction::Mint to an NFT program")
-        .await
-        .expect("Unable to decode Vec<u8>");
-
-        let decoded_reply =
-            NFTTransfer::decode(&mut &raw_reply[..]).expect("Unable to decode NFTTransfer");
-
-        // After minting NFT for an item,
-        // an item gets an ID equal to the ID of its NFT.
-        let item_id = match decoded_reply {
-            NFTTransfer { to, token_id, .. } if to == exec::program_id() => token_id,
-            smth_else => panic!(
-                "NFTTransfer must be NFTTransfer {{ to: exec::program_id(), .. }} not {smth_else:?}"
-            ),
-        };
-        transfer_nft(self.nft_program_id, msg::source(), item_id).await;
+        let item_id = utils::mint_nft(self.nft_program, token_metadata).await;
+        utils::transfer_nft(self.nft_program, msg_source, item_id).await;
 
         self.items.insert(
             item_id,
             Item {
                 info: ItemInfo {
-                    producer: msg::source(),
+                    producer: msg_source,
                     ..Default::default()
                 },
                 ..Default::default()
             },
         );
-        reply(SupplyChainEvent::Produced(item_id));
+        utils::reply(SupplyChainEvent::Produced(item_id));
     }
 
     async fn put_up_for_sale_by_producer(&mut self, item_id: ItemId, price: u128) {
-        self.check_producer();
+        let msg_source = msg::source();
+        self.check_producer(msg_source);
         let item = get_mut_item(&mut self.items, item_id);
         assert_eq!(item.info.state, ItemState::Produced);
-        assert_eq!(item.info.producer, msg::source());
+        assert_eq!(item.info.producer, msg_source);
 
         item.info.price = price;
-        transfer_nft(self.nft_program_id, exec::program_id(), item_id).await;
+        utils::transfer_nft(self.nft_program, exec::program_id(), item_id).await;
 
         item.info.state = ItemState::ForSaleByProducer;
-        reply(SupplyChainEvent::ForSaleByProducer(item_id));
+        utils::reply(SupplyChainEvent::ForSaleByProducer(item_id));
     }
 
     async fn purchase_by_distributor(&mut self, item_id: ItemId, delivery_time: u64) {
-        self.check_distributor();
+        let msg_source = msg::source();
+        self.check_distributor(msg_source);
         let item = get_mut_item(&mut self.items, item_id);
+        assert_eq!(item.info.state, ItemState::ForSaleByProducer);
 
-        transfer_tokens(
-            self.ft_program_id,
-            msg::source(),
+        utils::transfer_ftokens(
+            self.ft_program,
+            msg_source,
             exec::program_id(),
             item.info.price,
         )
         .await;
         item.info.delivery_time = delivery_time;
-        item.info.distributor = msg::source();
+        item.info.distributor = msg_source;
 
         item.info.state = ItemState::PurchasedByDistributor;
-        reply(SupplyChainEvent::PurchasedByDistributor(item_id));
+        utils::reply(SupplyChainEvent::PurchasedByDistributor(item_id));
     }
 
     async fn approve_by_producer(&mut self, item_id: ItemId, approve: bool) {
-        self.check_producer();
+        let msg_source = msg::source();
+        self.check_producer(msg_source);
         let item = get_mut_item(&mut self.items, item_id);
         assert_eq!(item.info.state, ItemState::PurchasedByDistributor);
-        assert_eq!(item.info.producer, msg::source());
+        assert_eq!(item.info.producer, msg_source);
 
         item.info.state = if approve {
             ItemState::ApprovedByProducer
         } else {
-            transfer_tokens(
-                self.ft_program_id,
+            utils::transfer_ftokens(
+                self.ft_program,
                 exec::program_id(),
                 item.info.distributor,
                 item.info.price,
@@ -204,97 +150,104 @@ impl SupplyChain {
             ItemState::ForSaleByProducer
         };
 
-        reply(SupplyChainEvent::ApprovedByProducer(item_id));
+        utils::reply(SupplyChainEvent::ApprovedByProducer(item_id));
     }
 
     fn ship_by_producer(&mut self, item_id: ItemId) {
-        self.check_producer();
+        let msg_source = msg::source();
+        self.check_producer(msg_source);
         let item = get_mut_item(&mut self.items, item_id);
         assert_eq!(item.info.state, ItemState::ApprovedByProducer);
-        assert_eq!(item.info.producer, msg::source());
+        assert_eq!(item.info.producer, msg_source);
 
         item.shipping_time = exec::block_timestamp();
 
         item.info.state = ItemState::ShippedByProducer;
-        reply(SupplyChainEvent::ShippedByProducer(item_id));
+        utils::reply(SupplyChainEvent::ShippedByProducer(item_id));
     }
 
     async fn receive_by_distributor(&mut self, item_id: ItemId) {
-        self.check_distributor();
+        let msg_source = msg::source();
+        self.check_distributor(msg_source);
         let item = get_mut_item(&mut self.items, item_id);
         assert_eq!(item.info.state, ItemState::ShippedByProducer);
-        assert_eq!(item.info.distributor, msg::source());
+        assert_eq!(item.info.distributor, msg_source);
 
-        receive(self.ft_program_id, item.info.producer, item).await;
-        transfer_nft(self.nft_program_id, msg::source(), item_id).await;
+        receive(self.ft_program, msg_source, item.info.producer, item).await;
+        utils::transfer_nft(self.nft_program, msg_source, item_id).await;
 
         item.info.state = ItemState::ReceivedByDistributor;
-        reply(SupplyChainEvent::ReceivedByDistributor(item_id));
+        utils::reply(SupplyChainEvent::ReceivedByDistributor(item_id));
     }
 
     fn process_by_distributor(&mut self, item_id: ItemId) {
-        self.check_distributor();
+        let msg_source = msg::source();
+        self.check_distributor(msg_source);
         let item = get_mut_item(&mut self.items, item_id);
         assert_eq!(item.info.state, ItemState::ReceivedByDistributor);
-        assert_eq!(item.info.distributor, msg::source());
+        assert_eq!(item.info.distributor, msg_source);
 
         item.info.state = ItemState::ProcessedByDistributor;
-        reply(SupplyChainEvent::ProcessedByDistributor(item_id));
+        utils::reply(SupplyChainEvent::ProcessedByDistributor(item_id));
     }
 
     fn package_by_distributor(&mut self, item_id: ItemId) {
-        self.check_distributor();
+        let msg_source = msg::source();
+        self.check_distributor(msg_source);
         let item = get_mut_item(&mut self.items, item_id);
         assert_eq!(item.info.state, ItemState::ProcessedByDistributor);
-        assert_eq!(item.info.distributor, msg::source());
+        assert_eq!(item.info.distributor, msg_source);
 
         item.info.state = ItemState::PackagedByDistributor;
-        reply(SupplyChainEvent::PackagedByDistributor(item_id));
+        utils::reply(SupplyChainEvent::PackagedByDistributor(item_id));
     }
 
     async fn put_up_for_sale_by_distributor(&mut self, item_id: ItemId, price: u128) {
-        self.check_distributor();
+        let msg_source = msg::source();
+        self.check_distributor(msg_source);
         let item = get_mut_item(&mut self.items, item_id);
         assert_eq!(item.info.state, ItemState::PackagedByDistributor);
-        assert_eq!(item.info.distributor, msg::source());
+        assert_eq!(item.info.distributor, msg_source);
 
         item.info.price = price;
-        transfer_nft(self.nft_program_id, exec::program_id(), item_id).await;
+        utils::transfer_nft(self.nft_program, exec::program_id(), item_id).await;
 
         item.info.state = ItemState::ForSaleByDistributor;
-        reply(SupplyChainEvent::ForSaleByDistributor(item_id));
+        utils::reply(SupplyChainEvent::ForSaleByDistributor(item_id));
     }
 
     async fn purchase_by_retailer(&mut self, item_id: ItemId, delivery_time: u64) {
-        self.check_retailer();
+        let msg_source = msg::source();
+        self.check_retailer(msg_source);
         let item = get_mut_item(&mut self.items, item_id);
         assert_eq!(item.info.state, ItemState::ForSaleByDistributor);
 
-        transfer_tokens(
-            self.ft_program_id,
-            msg::source(),
+        utils::transfer_ftokens(
+            self.ft_program,
+            msg_source,
             exec::program_id(),
             item.info.price,
         )
         .await;
         item.info.delivery_time = delivery_time;
-        item.info.retailer = msg::source();
+        item.info.retailer = msg_source;
 
         item.info.state = ItemState::PurchasedByRetailer;
-        reply(SupplyChainEvent::PurchasedByRetailer(item_id));
+        utils::reply(SupplyChainEvent::PurchasedByRetailer(item_id));
     }
 
     async fn approve_by_distributor(&mut self, item_id: ItemId, approve: bool) {
-        self.check_distributor();
+        let msg_source = msg::source();
+        self.check_distributor(msg_source);
         let item = get_mut_item(&mut self.items, item_id);
         assert_eq!(item.info.state, ItemState::PurchasedByRetailer);
-        assert_eq!(item.info.distributor, msg::source());
+        assert_eq!(item.info.distributor, msg_source);
 
         item.info.state = if approve {
             ItemState::ApprovedByDistributor
         } else {
-            transfer_tokens(
-                self.ft_program_id,
+            utils::transfer_ftokens(
+                self.ft_program,
                 exec::program_id(),
                 item.info.retailer,
                 item.info.price,
@@ -303,74 +256,70 @@ impl SupplyChain {
             ItemState::ForSaleByDistributor
         };
 
-        reply(SupplyChainEvent::ApprovedByDistributor(item_id));
+        utils::reply(SupplyChainEvent::ApprovedByDistributor(item_id));
     }
 
     fn ship_by_distributor(&mut self, item_id: ItemId) {
-        self.check_distributor();
+        let msg_source = msg::source();
+        self.check_distributor(msg_source);
         let item = get_mut_item(&mut self.items, item_id);
         assert_eq!(item.info.state, ItemState::ApprovedByDistributor);
-        assert_eq!(item.info.distributor, msg::source());
+        assert_eq!(item.info.distributor, msg_source);
 
         item.shipping_time = exec::block_timestamp();
 
         item.info.state = ItemState::ShippedByDistributor;
-        reply(SupplyChainEvent::ShippedByDistributor(item_id));
+        utils::reply(SupplyChainEvent::ShippedByDistributor(item_id));
     }
 
     async fn receive_by_retailer(&mut self, item_id: ItemId) {
-        self.check_retailer();
+        let msg_source = msg::source();
+        self.check_retailer(msg_source);
         let item = get_mut_item(&mut self.items, item_id);
         assert_eq!(item.info.state, ItemState::ShippedByDistributor);
-        assert_eq!(item.info.retailer, msg::source());
+        assert_eq!(item.info.retailer, msg_source);
 
-        receive(self.ft_program_id, item.info.distributor, item).await;
-        transfer_nft(self.nft_program_id, msg::source(), item_id).await;
+        receive(self.ft_program, msg_source, item.info.distributor, item).await;
+        utils::transfer_nft(self.nft_program, msg_source, item_id).await;
 
         item.info.state = ItemState::ReceivedByRetailer;
-        reply(SupplyChainEvent::ReceivedByRetailer(item_id));
+        utils::reply(SupplyChainEvent::ReceivedByRetailer(item_id));
     }
 
     async fn put_up_for_sale_by_retailer(&mut self, item_id: ItemId, price: u128) {
-        self.check_retailer();
+        let msg_source = msg::source();
+        self.check_retailer(msg_source);
         let item = get_mut_item(&mut self.items, item_id);
         assert_eq!(item.info.state, ItemState::ReceivedByRetailer);
-        assert_eq!(item.info.retailer, msg::source());
+        assert_eq!(item.info.retailer, msg_source);
 
         item.info.price = price;
-        transfer_nft(self.nft_program_id, exec::program_id(), item_id).await;
+        utils::transfer_nft(self.nft_program, exec::program_id(), item_id).await;
 
         item.info.state = ItemState::ForSaleByRetailer;
-        reply(SupplyChainEvent::ForSaleByRetailer(item_id));
+        utils::reply(SupplyChainEvent::ForSaleByRetailer(item_id));
     }
 
     async fn purchase_by_consumer(&mut self, item_id: ItemId) {
+        let msg_source = msg::source();
         let item = get_mut_item(&mut self.items, item_id);
         assert_eq!(item.info.state, ItemState::ForSaleByRetailer);
 
-        transfer_tokens(
-            self.ft_program_id,
-            msg::source(),
+        utils::transfer_ftokens(
+            self.ft_program,
+            msg_source,
             item.info.retailer,
             item.info.price,
         )
         .await;
-        transfer_nft(self.nft_program_id, msg::source(), item_id).await;
+        utils::transfer_nft(self.nft_program, msg_source, item_id).await;
 
         item.info.state = ItemState::PurchasedByConsumer;
-        reply(SupplyChainEvent::PurchasedByConsumer(item_id));
-    }
-
-    fn get_item_info(&self, item_id: ItemId) -> ItemInfo {
-        self.items
-            .get(&item_id)
-            .unwrap_or_else(|| panic_item_not_exist(item_id))
-            .info
-            .clone()
+        utils::reply(SupplyChainEvent::PurchasedByConsumer(item_id));
     }
 }
 
-static mut SUPPLY_CHAIN: Option<SupplyChain> = None;
+static mut PROGRAM: Option<SupplyChain> = None;
 
 #[no_mangle]
 extern "C" fn init() {
@@ -378,109 +327,98 @@ extern "C" fn init() {
         producers,
         distributors,
         retailers,
-        ft_program_id,
-        nft_program_id,
-    } = msg::load().expect("Unable to decode InitSupplyChain");
+        ft_program,
+        nft_program,
+    } = msg::load().expect("Unable to decode `InitSupplyChain`");
 
-    if producers.contains(&ZERO_ID) {
-        panic_zero_address_among("producers")
-    }
-    if distributors.contains(&ZERO_ID) {
-        panic_zero_address_among("distributors")
-    }
-    if retailers.contains(&ZERO_ID) {
-        panic_zero_address_among("retailers")
+    if [&producers, &distributors, &retailers]
+        .iter()
+        .any(|addresses| addresses.contains(&ActorId::zero()))
+    {
+        panic!("Each address of `producers`, `distributors`, and `retailers` mustn't equal `ActorId::zero()`");
     }
 
     let supply_chain = SupplyChain {
         producers,
         distributors,
         retailers,
-        ft_program_id,
-        nft_program_id,
+        ft_program,
+        nft_program,
         ..Default::default()
     };
     unsafe {
-        SUPPLY_CHAIN = Some(supply_chain);
+        PROGRAM = Some(supply_chain);
     }
 }
 
 #[async_main]
 async fn main() {
-    let action = msg::load().expect("Unable to decode SupplyChainAction");
-    let supply_chain = unsafe { SUPPLY_CHAIN.get_or_insert(Default::default()) };
+    let action = msg::load().expect("Unable to decode `SupplyChainAction`");
+    let program = unsafe { PROGRAM.get_or_insert(Default::default()) };
     match action {
-        SupplyChainAction::Produce { name, description } => {
-            supply_chain.produce_item(name, description).await;
-        }
+        SupplyChainAction::Produce { token_metadata } => program.produce_item(token_metadata).await,
         SupplyChainAction::PutUpForSaleByProducer { item_id, price } => {
-            supply_chain
-                .put_up_for_sale_by_producer(item_id, price)
-                .await;
+            program.put_up_for_sale_by_producer(item_id, price).await
         }
         SupplyChainAction::PurchaseByDistributor {
             item_id,
             delivery_time,
         } => {
-            supply_chain
+            program
                 .purchase_by_distributor(item_id, delivery_time)
-                .await;
+                .await
         }
         SupplyChainAction::ApproveByProducer { item_id, approve } => {
-            supply_chain.approve_by_producer(item_id, approve).await;
+            program.approve_by_producer(item_id, approve).await
         }
-        SupplyChainAction::ShipByProducer(item_id) => supply_chain.ship_by_producer(item_id),
+        SupplyChainAction::ShipByProducer(item_id) => program.ship_by_producer(item_id),
         SupplyChainAction::ReceiveByDistributor(item_id) => {
-            supply_chain.receive_by_distributor(item_id).await;
+            program.receive_by_distributor(item_id).await
         }
-        SupplyChainAction::ProcessByDistributor(item_id) => {
-            supply_chain.process_by_distributor(item_id);
-        }
-        SupplyChainAction::PackageByDistributor(item_id) => {
-            supply_chain.package_by_distributor(item_id);
-        }
+        SupplyChainAction::ProcessByDistributor(item_id) => program.process_by_distributor(item_id),
+        SupplyChainAction::PackageByDistributor(item_id) => program.package_by_distributor(item_id),
         SupplyChainAction::PutUpForSaleByDistributor { item_id, price } => {
-            supply_chain
-                .put_up_for_sale_by_distributor(item_id, price)
-                .await;
+            program.put_up_for_sale_by_distributor(item_id, price).await
         }
         SupplyChainAction::PurchaseByRetailer {
             item_id,
             delivery_time,
-        } => {
-            supply_chain
-                .purchase_by_retailer(item_id, delivery_time)
-                .await;
-        }
+        } => program.purchase_by_retailer(item_id, delivery_time).await,
         SupplyChainAction::ApproveByDistributor { item_id, approve } => {
-            supply_chain.approve_by_distributor(item_id, approve).await;
+            program.approve_by_distributor(item_id, approve).await
         }
-        SupplyChainAction::ShipByDistributor(item_id) => {
-            supply_chain.ship_by_distributor(item_id);
-        }
-        SupplyChainAction::ReceiveByRetailer(item_id) => {
-            supply_chain.receive_by_retailer(item_id).await;
-        }
+        SupplyChainAction::ShipByDistributor(item_id) => program.ship_by_distributor(item_id),
+        SupplyChainAction::ReceiveByRetailer(item_id) => program.receive_by_retailer(item_id).await,
         SupplyChainAction::PutUpForSaleByRetailer { item_id, price } => {
-            supply_chain
-                .put_up_for_sale_by_retailer(item_id, price)
-                .await;
+            program.put_up_for_sale_by_retailer(item_id, price).await
         }
         SupplyChainAction::PurchaseByConsumer(item_id) => {
-            supply_chain.purchase_by_consumer(item_id).await;
+            program.purchase_by_consumer(item_id).await
         }
     }
 }
 
 #[no_mangle]
 extern "C" fn meta_state() -> *mut [i32; 2] {
-    let state: SupplyChainState = msg::load().expect("Unable to decode SupplyChainState");
-    let supply_chain = unsafe { SUPPLY_CHAIN.get_or_insert(Default::default()) };
-    let encoded = match state {
-        SupplyChainState::ItemInfo(item_id) => {
-            SupplyChainStateReply::ItemInfo(supply_chain.get_item_info(item_id)).encode()
+    let query = msg::load().expect("Unable to decode `SupplyChainStateQuery`");
+    let program = unsafe { PROGRAM.get_or_insert(Default::default()) };
+    let encoded = match query {
+        SupplyChainStateQuery::ItemInfo(item_id) => {
+            SupplyChainStateReply::ItemInfo(if let Some(item) = program.items.get(&item_id) {
+                item.info.clone()
+            } else {
+                Default::default()
+            })
         }
-    };
+        SupplyChainStateQuery::Participants => SupplyChainStateReply::Participants(Participants {
+            producers: program.producers.clone(),
+            distributors: program.distributors.clone(),
+            retailers: program.retailers.clone(),
+        }),
+        SupplyChainStateQuery::FTProgram => SupplyChainStateReply::FTProgram(program.ft_program),
+        SupplyChainStateQuery::NFTProgram => SupplyChainStateReply::NFTProgram(program.nft_program),
+    }
+    .encode();
     gstd::util::to_leak_ptr(encoded)
 }
 
@@ -492,6 +430,6 @@ gstd::metadata! {
         input: SupplyChainAction,
         output: SupplyChainEvent,
     state:
-        input: SupplyChainState,
+        input: SupplyChainStateQuery,
         output: SupplyChainStateReply,
 }

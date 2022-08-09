@@ -1,97 +1,114 @@
 pub mod utils;
-use utils::*;
+use utils::{prelude::*, FungibleToken, NonFungibleToken};
+
+const ITEM_PRICE_BY_PRODUCER: u128 = ITEM_PRICE;
+const ITEM_PRICE_BY_DISTRIBUTOR: u128 = ITEM_PRICE * 2;
+const ITEM_PRICE_BY_RETAILER: u128 = ITEM_PRICE * 3;
 
 #[test]
-fn approve_reuse() {
-    let system = init_system();
+fn approve_reuse_and_ft_transfer() {
+    let system = utils::initialize_system();
 
-    let ft_program = init_ft_program(&system);
-    init_nft_program(&system);
-    let supply_chain_program = Program::current(&system);
-    check::init_supply_chain_program(&supply_chain_program);
+    let ft_program = FungibleToken::initialize(&system);
+    ft_program.mint(DISTRIBUTOR, ITEM_PRICE_BY_PRODUCER);
+    ft_program.mint(RETAILER, ITEM_PRICE_BY_DISTRIBUTOR);
+    ft_program.mint(CONSUMER, ITEM_PRICE_BY_RETAILER);
 
-    mint(&ft_program, DISTRIBUTOR[0], ITEM_PRICE_BY_PRODUCER[0]);
-    mint(&ft_program, RETAILER[0], ITEM_PRICE_BY_DISTRIBUTOR[0]);
-    mint(&ft_program, CONSUMER[0], ITEM_PRICE_BY_RETAILER[0]);
+    let nft_program = NonFungibleToken::initialize(&system);
+    let schain_program =
+        SupplyChain::initialize(&system, ft_program.actor_id(), nft_program.actor_id());
 
-    check::produce(
-        &supply_chain_program,
-        PRODUCER[0],
-        ITEM_NAME[0],
-        ITEM_DESCRIPTION[0],
-        ITEM_ID[0],
-    );
-    check::put_up_for_sale_by_producer(
-        &supply_chain_program,
-        PRODUCER[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_PRODUCER[0],
-    );
+    schain_program.produce(PRODUCER).check(0);
+    schain_program
+        .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE_BY_PRODUCER)
+        .check(0);
+    schain_program
+        .meta_state()
+        .item_price(0)
+        .check(ITEM_PRICE_BY_PRODUCER);
 
-    // There may be a case when a buyer puts an inconvenient
-    // delivery time for a seller.
-    check::purchare_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[0],
-        ITEM_ID[0],
-        DELIVERY_TIME[0],
-    );
-    // Then the seller can cancel this purchase and put
-    // the item back for a sale.
-    check::approve_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0], false);
-    // Thereafter the same buyer or another can purchase
-    // this item again and put a more convenient delivery time
-    // for the seller...
-    check::purchare_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[0],
-        ITEM_ID[0],
-        DELIVERY_TIME[1],
-    );
+    // There may be a case when a buyer puts an inconvenient delivery time for a
+    // seller.
+    schain_program
+        .purchase_by_distributor(DISTRIBUTOR, 0, DELIVERY_TIME)
+        .check(0);
+    ft_program
+        .balance_of(schain_program.actor_id())
+        .check(ITEM_PRICE_BY_PRODUCER);
+    // Then a seller can cancel this purchase and put its item back up for sale.
+    schain_program
+        .approve_by_producer(PRODUCER, 0, false)
+        .check(0);
+    ft_program
+        .balance_of(DISTRIBUTOR)
+        .check(ITEM_PRICE_BY_PRODUCER);
+    // Thereafter the same buyer or another can purchase this item again and put
+    // a more convenient delivery time for a seller...
+    schain_program
+        .purchase_by_distributor(DISTRIBUTOR, 0, DELIVERY_TIME)
+        .check(0);
+    ft_program
+        .balance_of(schain_program.actor_id())
+        .check(ITEM_PRICE_BY_PRODUCER);
     // ...who will approve this purchase and ship the item later.
-    check::approve_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0], true);
+    schain_program
+        .approve_by_producer(PRODUCER, 0, true)
+        .check(0);
 
-    check::ship_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0]);
-    check::receive_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    check::process_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    check::package_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    check::put_up_for_sale_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_DISTRIBUTOR[0],
-    );
+    schain_program.ship_by_producer(PRODUCER, 0).check(0);
+    schain_program
+        .receive_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
+    schain_program
+        .process_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
+    schain_program
+        .package_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
+    schain_program
+        .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE_BY_DISTRIBUTOR)
+        .check(0);
+    schain_program
+        .meta_state()
+        .item_price(0)
+        .check(ITEM_PRICE_BY_DISTRIBUTOR);
 
-    // There may be a case when a buyer puts an inconvenient
-    // delivery time for a seller.
-    check::purchare_by_retailer(
-        &supply_chain_program,
-        RETAILER[0],
-        ITEM_ID[0],
-        DELIVERY_TIME[0],
-    );
-    // Then the seller can cancel this purchase and put
-    // the item back for a sale.
-    check::approve_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0], false);
-    // Thereafter the same buyer or another can purchase
-    // this item again and put a more convenient delivery time
-    // for the seller...
-    check::purchare_by_retailer(
-        &supply_chain_program,
-        RETAILER[0],
-        ITEM_ID[0],
-        DELIVERY_TIME[1],
-    );
+    // There may be a case when a buyer puts an inconvenient delivery time for a
+    // seller.
+    schain_program
+        .purchase_by_retailer(RETAILER, 0, DELIVERY_TIME)
+        .check(0);
+    ft_program
+        .balance_of(schain_program.actor_id())
+        .check(ITEM_PRICE_BY_DISTRIBUTOR);
+    // Then a seller can cancel this purchase and put its item back up for sale.
+    schain_program
+        .approve_by_distributor(DISTRIBUTOR, 0, false)
+        .check(0);
+    ft_program
+        .balance_of(RETAILER)
+        .check(ITEM_PRICE_BY_DISTRIBUTOR);
+    // Thereafter the same buyer or another can purchase this item again and put
+    // a more convenient delivery time for a seller...
+    schain_program
+        .purchase_by_retailer(RETAILER, 0, DELIVERY_TIME)
+        .check(0);
+    ft_program
+        .balance_of(schain_program.actor_id())
+        .check(ITEM_PRICE_BY_DISTRIBUTOR);
     // ...who will approve this purchase and ship the item later.
-    check::approve_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0], true);
+    schain_program
+        .approve_by_distributor(DISTRIBUTOR, 0, true)
+        .check(0);
 
-    check::ship_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    check::receive_by_retailer(&supply_chain_program, RETAILER[0], ITEM_ID[0]);
-    check::put_up_for_sale_by_retailer(
-        &supply_chain_program,
-        RETAILER[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_RETAILER[0],
-    );
-    check::purchare_by_consumer(&supply_chain_program, CONSUMER[0], ITEM_ID[0]);
+    schain_program.ship_by_distributor(DISTRIBUTOR, 0).check(0);
+    schain_program.receive_by_retailer(RETAILER, 0).check(0);
+    schain_program
+        .put_up_for_sale_by_retailer(RETAILER, 0, ITEM_PRICE_BY_RETAILER)
+        .check(0);
+    schain_program
+        .meta_state()
+        .item_price(0)
+        .check(ITEM_PRICE_BY_RETAILER);
+    schain_program.purchase_by_consumer(CONSUMER, 0).check(0);
 }

@@ -1,170 +1,95 @@
 pub mod utils;
-use utils::*;
+use gear_lib::non_fungible_token::token::Token;
+use utils::{prelude::*, FungibleToken, NonFungibleToken};
 
 #[test]
 fn nft_transfer() {
-    let system = init_system();
+    let system = utils::initialize_system();
 
-    let ft_program = init_ft_program(&system);
-    let nft_program = init_nft_program(&system);
-    let supply_chain_program = Program::current(&system);
-    check::init_supply_chain_program(&supply_chain_program);
+    let ft_program = FungibleToken::initialize(&system);
+    ft_program.mint(DISTRIBUTOR, ITEM_PRICE);
+    ft_program.mint(RETAILER, ITEM_PRICE);
+    ft_program.mint(CONSUMER, ITEM_PRICE);
 
-    mint(&ft_program, DISTRIBUTOR[0], ITEM_PRICE_BY_PRODUCER[0]);
-    mint(&ft_program, DISTRIBUTOR[1], ITEM_PRICE_BY_PRODUCER[1]);
-    mint(&ft_program, RETAILER[0], ITEM_PRICE_BY_DISTRIBUTOR[0]);
-    mint(&ft_program, RETAILER[1], ITEM_PRICE_BY_DISTRIBUTOR[1]);
-    mint(&ft_program, CONSUMER[0], ITEM_PRICE_BY_RETAILER[0]);
-    mint(&ft_program, CONSUMER[1], ITEM_PRICE_BY_RETAILER[1]);
+    let nft_program = NonFungibleToken::initialize(&system);
+    let schain_program =
+        SupplyChain::initialize(&system, ft_program.actor_id(), nft_program.actor_id());
 
-    check::produce(
-        &supply_chain_program,
-        PRODUCER[0],
-        ITEM_NAME[0],
-        ITEM_DESCRIPTION[0],
-        ITEM_ID[0],
-    );
-    check::produce(
-        &supply_chain_program,
-        PRODUCER[1],
-        ITEM_NAME[1],
-        ITEM_DESCRIPTION[1],
-        ITEM_ID[1],
-    );
-    check_nft_owner(&nft_program, ITEM_ID[0], PRODUCER[0]);
-    check_nft_owner(&nft_program, ITEM_ID[1], PRODUCER[1]);
+    schain_program.produce(PRODUCER).check(0);
+    nft_program.meta_state().owner_id(0).check(PRODUCER.into());
 
-    check::put_up_for_sale_by_producer(
-        &supply_chain_program,
-        PRODUCER[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_PRODUCER[0],
-    );
-    check::put_up_for_sale_by_producer(
-        &supply_chain_program,
-        PRODUCER[1],
-        ITEM_ID[1],
-        ITEM_PRICE_BY_PRODUCER[1],
-    );
-    check_nft_owner(&nft_program, ITEM_ID[0], SUPPLY_CHAIN_PROGRAM_ID);
-    check_nft_owner(&nft_program, ITEM_ID[1], SUPPLY_CHAIN_PROGRAM_ID);
+    schain_program
+        .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE)
+        .check(0);
+    nft_program
+        .meta_state()
+        .owner_id(0)
+        .check(schain_program.actor_id());
 
-    check::purchare_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[0],
-        ITEM_ID[0],
-        DELIVERY_TIME[0],
-    );
-    check::purchare_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[1],
-        ITEM_ID[1],
-        DELIVERY_TIME[1],
-    );
+    schain_program
+        .purchase_by_distributor(DISTRIBUTOR, 0, DELIVERY_TIME)
+        .check(0);
+    schain_program
+        .approve_by_producer(PRODUCER, 0, true)
+        .check(0);
+    schain_program.ship_by_producer(PRODUCER, 0).check(0);
 
-    check::approve_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0], true);
-    check::approve_by_producer(&supply_chain_program, PRODUCER[1], ITEM_ID[1], true);
+    schain_program
+        .receive_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
+    nft_program
+        .meta_state()
+        .owner_id(0)
+        .check(DISTRIBUTOR.into());
 
-    check::ship_by_producer(&supply_chain_program, PRODUCER[0], ITEM_ID[0]);
-    check::ship_by_producer(&supply_chain_program, PRODUCER[1], ITEM_ID[1]);
+    schain_program
+        .process_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
+    schain_program
+        .package_by_distributor(DISTRIBUTOR, 0)
+        .check(0);
 
-    check::receive_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    check::receive_by_distributor(&supply_chain_program, DISTRIBUTOR[1], ITEM_ID[1]);
-    check_nft_owner(&nft_program, ITEM_ID[0], DISTRIBUTOR[0]);
-    check_nft_owner(&nft_program, ITEM_ID[1], DISTRIBUTOR[1]);
+    schain_program
+        .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE)
+        .check(0);
+    nft_program
+        .meta_state()
+        .owner_id(0)
+        .check(schain_program.actor_id());
 
-    check::process_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    check::process_by_distributor(&supply_chain_program, DISTRIBUTOR[1], ITEM_ID[1]);
+    schain_program
+        .purchase_by_retailer(RETAILER, 0, DELIVERY_TIME)
+        .check(0);
+    schain_program
+        .approve_by_distributor(DISTRIBUTOR, 0, true)
+        .check(0);
+    schain_program.ship_by_distributor(DISTRIBUTOR, 0).check(0);
 
-    check::package_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    check::package_by_distributor(&supply_chain_program, DISTRIBUTOR[1], ITEM_ID[1]);
+    schain_program.receive_by_retailer(RETAILER, 0).check(0);
+    nft_program.meta_state().owner_id(0).check(RETAILER.into());
 
-    check::put_up_for_sale_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_DISTRIBUTOR[0],
-    );
-    check::put_up_for_sale_by_distributor(
-        &supply_chain_program,
-        DISTRIBUTOR[1],
-        ITEM_ID[1],
-        ITEM_PRICE_BY_DISTRIBUTOR[1],
-    );
-    check_nft_owner(&nft_program, ITEM_ID[0], SUPPLY_CHAIN_PROGRAM_ID);
-    check_nft_owner(&nft_program, ITEM_ID[1], SUPPLY_CHAIN_PROGRAM_ID);
+    schain_program
+        .put_up_for_sale_by_retailer(RETAILER, 0, ITEM_PRICE)
+        .check(0);
+    nft_program
+        .meta_state()
+        .owner_id(0)
+        .check(schain_program.actor_id());
 
-    check::purchare_by_retailer(
-        &supply_chain_program,
-        RETAILER[0],
-        ITEM_ID[0],
-        DELIVERY_TIME[0],
-    );
-    check::purchare_by_retailer(
-        &supply_chain_program,
-        RETAILER[1],
-        ITEM_ID[1],
-        DELIVERY_TIME[1],
-    );
+    schain_program.purchase_by_consumer(CONSUMER, 0).check(0);
+    nft_program.meta_state().owner_id(0).check(CONSUMER.into());
 
-    check::approve_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0], true);
-    check::approve_by_distributor(&supply_chain_program, DISTRIBUTOR[1], ITEM_ID[1], true);
+    schain_program.meta_state().item_info(0).check(ItemInfo {
+        producer: PRODUCER.into(),
+        distributor: DISTRIBUTOR.into(),
+        retailer: RETAILER.into(),
 
-    check::ship_by_distributor(&supply_chain_program, DISTRIBUTOR[0], ITEM_ID[0]);
-    check::ship_by_distributor(&supply_chain_program, DISTRIBUTOR[1], ITEM_ID[1]);
-
-    check::receive_by_retailer(&supply_chain_program, RETAILER[0], ITEM_ID[0]);
-    check::receive_by_retailer(&supply_chain_program, RETAILER[1], ITEM_ID[1]);
-    check_nft_owner(&nft_program, ITEM_ID[0], RETAILER[0]);
-    check_nft_owner(&nft_program, ITEM_ID[1], RETAILER[1]);
-
-    check::put_up_for_sale_by_retailer(
-        &supply_chain_program,
-        RETAILER[0],
-        ITEM_ID[0],
-        ITEM_PRICE_BY_RETAILER[0],
-    );
-    check::put_up_for_sale_by_retailer(
-        &supply_chain_program,
-        RETAILER[1],
-        ITEM_ID[1],
-        ITEM_PRICE_BY_RETAILER[1],
-    );
-    check_nft_owner(&nft_program, ITEM_ID[0], SUPPLY_CHAIN_PROGRAM_ID);
-    check_nft_owner(&nft_program, ITEM_ID[1], SUPPLY_CHAIN_PROGRAM_ID);
-
-    check::purchare_by_consumer(&supply_chain_program, CONSUMER[0], ITEM_ID[0]);
-    check::purchare_by_consumer(&supply_chain_program, CONSUMER[1], ITEM_ID[1]);
-    check_nft_owner(&nft_program, ITEM_ID[0], CONSUMER[0]);
-    check_nft_owner(&nft_program, ITEM_ID[1], CONSUMER[1]);
-
-    check::get_item_info(
-        &supply_chain_program,
-        ITEM_ID[0],
-        ItemInfo {
-            producer: PRODUCER[0].into(),
-            distributor: DISTRIBUTOR[0].into(),
-            retailer: RETAILER[0].into(),
-
-            state: ItemState::PurchasedByConsumer,
-            price: ITEM_PRICE_BY_RETAILER[0],
-            delivery_time: DELIVERY_TIME[0],
-        },
-    );
-    check_nft_name_n_description(&nft_program, ITEM_ID[0], ITEM_NAME[0], ITEM_DESCRIPTION[0]);
-
-    check::get_item_info(
-        &supply_chain_program,
-        ITEM_ID[1],
-        ItemInfo {
-            producer: PRODUCER[1].into(),
-            distributor: DISTRIBUTOR[1].into(),
-            retailer: RETAILER[1].into(),
-
-            state: ItemState::PurchasedByConsumer,
-            price: ITEM_PRICE_BY_RETAILER[1],
-            delivery_time: DELIVERY_TIME[1],
-        },
-    );
-    check_nft_name_n_description(&nft_program, ITEM_ID[1], ITEM_NAME[1], ITEM_DESCRIPTION[1]);
+        state: ItemState::PurchasedByConsumer,
+        price: ITEM_PRICE,
+        delivery_time: DELIVERY_TIME,
+    });
+    nft_program.meta_state().token(0).check(Token {
+        owner_id: CONSUMER.into(),
+        ..Default::default()
+    });
 }
