@@ -5,7 +5,7 @@ use sp_core::{
     Pair,
 };
 
-#[derive(Debug, Encode, Decode, TypeInfo)]
+#[derive(Debug, Encode, Decode, TypeInfo, Clone)]
 pub struct DelegatedApproveMessage {
     pub token_owner_id: ActorId,
     pub approved_actor_id: ActorId,
