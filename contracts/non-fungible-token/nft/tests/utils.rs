@@ -34,6 +34,20 @@ pub fn mint(nft: &Program, member: u64) -> RunResult {
     )
 }
 
+pub fn mint_to_actor(nft: &Program, member: [u8; 32]) -> RunResult {
+    nft.send(
+        member,
+        NFTAction::Mint {
+            token_metadata: TokenMetadata {
+                name: "CryptoKitty".to_string(),
+                description: "Description".to_string(),
+                media: "http://".to_string(),
+                reference: "http://".to_string(),
+            },
+        },
+    )
+}
+
 pub fn burn(nft: &Program, member: u64, token_id: u64) -> RunResult {
     nft.send(
         member,
@@ -80,4 +94,14 @@ pub fn approve(nft: &Program, from: u64, to: u64, token_id: u64) -> RunResult {
             token_id: token_id.into(),
         },
     )
+}
+
+pub fn delegated_approve(
+    nft: &Program,
+    from: u64,
+    message: DelegatedApproveMessage,
+    signature: [u8; 64],
+) -> RunResult {
+    let action = NFTAction::DelegatedApprove { message, signature };
+    nft.send(from, action)
 }

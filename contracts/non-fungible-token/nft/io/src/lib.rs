@@ -5,6 +5,8 @@ use gear_lib::non_fungible_token::{royalties::*, token::*};
 use gstd::{prelude::*, ActorId};
 use scale_info::TypeInfo;
 
+pub use gear_lib::non_fungible_token::delegated::DelegatedApproveMessage;
+
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum NFTAction {
     Mint {
@@ -25,6 +27,10 @@ pub enum NFTAction {
     Approve {
         to: ActorId,
         token_id: TokenId,
+    },
+    DelegatedApprove {
+        message: DelegatedApproveMessage,
+        signature: [u8; 64],
     },
     Owner {
         token_id: TokenId,
