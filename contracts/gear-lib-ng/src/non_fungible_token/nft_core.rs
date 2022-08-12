@@ -1,5 +1,7 @@
-use crate::non_fungible_token::{io::*, royalties::*, state::*, token::*};
+use crate::non_fungible_token::{delegated::*, io::*, royalties::*, state::*, token::*};
 use gstd::{exec, msg, prelude::*, ActorId};
+use sp_core::sr25519::Signature;
+
 const ZERO_ID: ActorId = ActorId::zero();
 
 pub trait NFTCore: NFTStateKeeper {
@@ -229,6 +231,36 @@ pub trait NFTCore: NFTStateKeeper {
             .contains(to);
 
         msg::reply(result.encode(), 0).expect("Error in reply 'bool', is_approved_to function");
+    }
+
+    fn delegated_approve(&mut self, message: DelegatedApproveMessage, signed_approve: [u8; 64]) {
+        let to = &message.approved_actor_id;
+        let token_id = message.token_id;
+        let owner = *self
+            .get()
+            .owner_by_id
+            .get(&token_id)
+            .expect("NonFungibleToken: token does not exist");
+
+        message.validate(&Signature(signed_approve), &owner);
+
+        self.get_mut()
+            .token_approvals
+            .entry(token_id)
+            .and_modify(|approvals| {
+                approvals.insert(*to);
+            })
+            .or_insert_with(|| BTreeSet::from([*to]));
+        msg::reply(
+            NFTApproval {
+                owner,
+                approved_account: *to,
+                token_id,
+            }
+            .encode(),
+            0,
+        )
+        .expect("Error in reply `NFTApproval`, approve function");
     }
 
     /// Returns a `Payout` struct for a given token
