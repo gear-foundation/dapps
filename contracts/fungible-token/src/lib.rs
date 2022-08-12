@@ -4,7 +4,7 @@
 mod tests;
 
 use ft_io::*;
-use gstd::{exec, msg, prelude::*, ActorId};
+use gstd::{debug, exec, msg, prelude::*, ActorId};
 
 const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
 
@@ -192,19 +192,35 @@ pub unsafe extern "C" fn init() {
 pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
     let query: State = msg::load().expect("failed to decode input argument");
     let ft: &mut FungibleToken = FUNGIBLE_TOKEN.get_or_insert(FungibleToken::default());
+    debug!("{:?}", query);
     let encoded = match query {
-        State::Name => StateReply::Name(ft.name.clone()).encode(),
-        State::Symbol => StateReply::Name(ft.symbol.clone()).encode(),
-        State::Decimals => StateReply::Decimals(ft.decimals).encode(),
-        State::TotalSupply => StateReply::TotalSupply(ft.total_supply).encode(),
+        State::Name => StateReply::Name(ft.name.clone()),
+        State::Symbol => StateReply::Name(ft.symbol.clone()),
+        State::Decimals => StateReply::Decimals(ft.decimals),
+        State::TotalSupply => StateReply::TotalSupply(ft.total_supply),
         State::BalanceOf(account) => {
             let balance = ft.balances.get(&account).unwrap_or(&0);
-            StateReply::Balance(*balance).encode()
+            StateReply::Balance(*balance)
         }
     }
     .encode();
     gstd::util::to_leak_ptr(encoded)
 }
 
-#[no_mangle]
-pub unsafe extern "C" fn handle_reply() {}
+#[derive(Debug, Encode, Decode, TypeInfo)]
+pub enum State {
+    Name,
+    Symbol,
+    Decimals,
+    TotalSupply,
+    BalanceOf(ActorId),
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+pub enum StateReply {
+    Name(String),
+    Symbol(String),
+    Decimals(u8),
+    TotalSupply(u128),
+    Balance(u128),
+}
