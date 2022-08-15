@@ -6,8 +6,9 @@ tasks:
       source $HOME/.cargo/env
       echo 'export CARGO_HOME="$HOME/.cargo"' >> ~/.bashrc
       source ~/.bashrc
+      sudo apt install binaryen
     init: |
-      gp open gear-feeds-channel/src/lib.rs
+      gp open channel/src/lib.rs
       clear && printf '\e[3J' && history -c
 
 vscode:
