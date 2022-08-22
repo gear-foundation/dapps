@@ -9,23 +9,23 @@ pub type ItemId = TokenId;
 /// Initializes the supply chain program.
 ///
 /// # Requirements
-/// * Each address of `producers`, `distributors`, and `retailers` mustn't equal
-/// [`ActorId::zero()`].
+/// * Each [`ActorId`] of `producers`, `distributors`, and `retailers` mustn't
+/// equal [`ActorId::zero()`].
 #[derive(Encode, Decode, TypeInfo, Clone)]
 pub struct InitSupplyChain {
-    /// Addresses that'll have the right to interact with a supply chain on
+    /// IDs of actors that'll have the right to interact with a supply chain on
     /// behalf of a producer.
     pub producers: BTreeSet<ActorId>,
-    /// Addresses that'll have the right to interact with a supply chain on
+    /// IDs of actors that'll have the right to interact with a supply chain on
     /// behalf of a distributor.
     pub distributors: BTreeSet<ActorId>,
-    /// Addresses that'll have the right to interact with a supply chain on
+    /// IDs of actors that'll have the right to interact with a supply chain on
     /// behalf of a retailer.
     pub retailers: BTreeSet<ActorId>,
 
-    /// A FT program address.
+    /// A FT program [`ActorId`].
     pub ft_program: ActorId,
-    /// An NFT program address.
+    /// An NFT program [`ActorId`].
     pub nft_program: ActorId,
 }
 
@@ -397,29 +397,39 @@ pub enum SupplyChainEvent {
 /// On failure, returns a [`Default`] value.
 #[derive(Encode, Decode, TypeInfo)]
 pub enum SupplyChainStateQuery {
-    /// Gets [`ItemInfo`].
+    /// Queries [`ItemInfo`].
     ///
     /// Returns [`SupplyChainStateReply::ItemInfo`].
     ItemInfo(ItemId),
 
-    /// Gets supply chain [`Participants`].
+    /// Queries supply chain [`Participants`].
     ///
     /// Returns [`SupplyChainStateReply::Participants`].
     Participants,
 
-    /// Gets an FT program address used by a supply chain.
+    /// Queries an FT program [`ActorId`] used by a supply chain.
     ///
     /// Returns [`SupplyChainStateReply::FTProgram`].
     FTProgram,
 
-    /// Gets an NFT program address used by a supply chain.
+    /// Queries an NFT program [`ActorId`] used by a supply chain.
     ///
     /// Returns [`SupplyChainStateReply::NFTProgram`].
     NFTProgram,
+
+    /// Queries [`ItemId`] & [`ItemInfo`] of all items that exist in a supply chain.
+    ///
+    /// Returns [`SupplyChainStateReply::ExistingItems`].
+    ExistingItems,
+
+    /// Queries [`Role`]s of given [`ActorId`].
+    ///
+    /// Returns [`SupplyChainStateReply::Roles`].
+    Roles(ActorId),
 }
 
 /// A reply for queried [`SupplyChainStateQuery`].
-#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
+#[derive(Encode, Decode, TypeInfo)]
 pub enum SupplyChainStateReply {
     /// Should be returned from [`SupplyChainStateQuery::ItemInfo`].
     ItemInfo(ItemInfo),
@@ -429,22 +439,36 @@ pub enum SupplyChainStateReply {
     Participants(Participants),
     /// Should be returned from [`SupplyChainStateQuery::NFTProgram`].
     NFTProgram(ActorId),
+    /// Should be returned from [`SupplyChainStateQuery::ExistingItems`].
+    ExistingItems(BTreeMap<ItemId, ItemInfo>),
+    /// Should be returned from [`SupplyChainStateQuery::Roles`].
+    Roles(BTreeSet<Role>),
+}
+
+/// Roles of supply chain [`Participants`].
+///
+/// Can be queried by [`SupplyChainStateQuery::Roles`].
+#[derive(Encode, Decode, TypeInfo, PartialEq, Eq, PartialOrd, Ord, Debug)]
+pub enum Role {
+    Producer,
+    Distributor,
+    Retailer,
 }
 
 /// Item info.
 ///
 /// Can be queried by [`SupplyChainStateQuery::ItemInfo`].
-#[derive(Encode, Decode, Clone, TypeInfo, Default, Debug, PartialEq, Eq)]
+#[derive(Encode, Decode, Clone, Copy, TypeInfo, Default, Debug, PartialEq, Eq, PartialOrd, Ord)]
 pub struct ItemInfo {
-    /// An item's producer address.
+    /// Item's producer [`ActorId`].
     pub producer: ActorId,
-    /// An address of an item's current or past distributor address (depends on
-    /// item's `state`). If it equals [`ActorId::zero()`], then it means that an
-    /// item has never had a distributor.
+    /// [`ActorId`] of an item's current or past distributor (depends on item's
+    /// state`). If it equals [`ActorId::zero()`], then it means that an item
+    /// has never had a distributor.
     pub distributor: ActorId,
-    /// An address of an item's current or past retailer address (depends on
-    /// item's `state`). If it equals [`ActorId::zero()`], then it means that an
-    /// item has never had a retailer.
+    /// [`ActorId`] of an item's current or past retailer (depends on item's
+    /// `state`). If it equals [`ActorId::zero()`], then it means that an item
+    /// has never had a retailer.
     pub retailer: ActorId,
 
     pub state: ItemState,
@@ -456,7 +480,7 @@ pub struct ItemInfo {
 }
 
 /// An item's state.
-#[derive(Encode, Decode, PartialEq, Eq, Clone, Copy, Debug, TypeInfo, Default)]
+#[derive(Encode, Decode, PartialEq, Eq, Clone, Copy, Debug, TypeInfo, Default, PartialOrd, Ord)]
 pub enum ItemState {
     #[default]
     Produced,
@@ -479,13 +503,13 @@ pub enum ItemState {
 #[derive(TypeInfo, Encode, Decode, PartialEq, Eq, Debug)]
 /// Supply chain participants.
 pub struct Participants {
-    /// Addresses that have the right to interact with a supply chain on
+    /// IDs of actors that have the right to interact with a supply chain on
     /// behalf of a producer.
     pub producers: BTreeSet<ActorId>,
-    /// Addresses that have the right to interact with a supply chain on
+    /// IDs of actors that have the right to interact with a supply chain on
     /// behalf of a distributor.
     pub distributors: BTreeSet<ActorId>,
-    /// Addresses that have the right to interact with a supply chain on
+    /// IDs of actors that have the right to interact with a supply chain on
     /// behalf of a retailer.
     pub retailers: BTreeSet<ActorId>,
 }

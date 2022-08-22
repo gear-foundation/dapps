@@ -189,3 +189,45 @@ fn ownership_and_role() {
         .put_up_for_sale_by_retailer(RETAILER[1], 0, ITEM_PRICE)
         .failed();
 }
+
+#[test]
+fn query_roles() {
+    let system = utils::initialize_system();
+
+    let ft_program = FungibleToken::initialize(&system);
+    let nft_program = NonFungibleToken::initialize(&system);
+
+    let mut schain_program = SupplyChain::initialize_custom(
+        &system,
+        InitSupplyChain {
+            producers: [FOREIGN_USER.into()].into(),
+            distributors: [FOREIGN_USER.into()].into(),
+            retailers: [FOREIGN_USER.into()].into(),
+
+            ft_program: ft_program.actor_id(),
+            nft_program: nft_program.actor_id(),
+        },
+    )
+    .succeed();
+    schain_program
+        .meta_state()
+        .roles(FOREIGN_USER)
+        .check([Role::Producer, Role::Distributor, Role::Retailer].into());
+
+    schain_program = SupplyChain::initialize_custom(
+        &system,
+        InitSupplyChain {
+            producers: [].into(),
+            distributors: [].into(),
+            retailers: [].into(),
+
+            ft_program: ft_program.actor_id(),
+            nft_program: nft_program.actor_id(),
+        },
+    )
+    .succeed();
+    schain_program
+        .meta_state()
+        .roles(FOREIGN_USER)
+        .check([].into());
+}

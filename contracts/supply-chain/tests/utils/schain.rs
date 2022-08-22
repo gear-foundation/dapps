@@ -308,4 +308,28 @@ impl SupplyChainMetaState<'_> {
             unreachable!()
         }
     }
+
+    pub fn existing_items(self) -> MetaStateReply<BTreeMap<ItemId, ItemInfo>> {
+        if let SupplyChainStateReply::ExistingItems(reply) = self
+            .0
+            .meta_state(SupplyChainStateQuery::ExistingItems)
+            .unwrap()
+        {
+            MetaStateReply(reply)
+        } else {
+            unreachable!()
+        }
+    }
+
+    pub fn roles(self, actor_id: u64) -> MetaStateReply<BTreeSet<Role>> {
+        if let SupplyChainStateReply::Roles(reply) = self
+            .0
+            .meta_state(SupplyChainStateQuery::Roles(actor_id.into()))
+            .unwrap()
+        {
+            MetaStateReply(reply)
+        } else {
+            unreachable!()
+        }
+    }
 }

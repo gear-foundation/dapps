@@ -333,9 +333,9 @@ extern "C" fn init() {
 
     if [&producers, &distributors, &retailers]
         .iter()
-        .any(|addresses| addresses.contains(&ActorId::zero()))
+        .any(|actor_ids| actor_ids.contains(&ActorId::zero()))
     {
-        panic!("Each address of `producers`, `distributors`, and `retailers` mustn't equal `ActorId::zero()`");
+        panic!("Each `ActorId` of `producers`, `distributors`, and `retailers` mustn't equal `ActorId::zero()`");
     }
 
     let supply_chain = SupplyChain {
@@ -405,7 +405,7 @@ extern "C" fn meta_state() -> *mut [i32; 2] {
     let encoded = match query {
         SupplyChainStateQuery::ItemInfo(item_id) => {
             SupplyChainStateReply::ItemInfo(if let Some(item) = program.items.get(&item_id) {
-                item.info.clone()
+                item.info
             } else {
                 Default::default()
             })
@@ -417,6 +417,28 @@ extern "C" fn meta_state() -> *mut [i32; 2] {
         }),
         SupplyChainStateQuery::FTProgram => SupplyChainStateReply::FTProgram(program.ft_program),
         SupplyChainStateQuery::NFTProgram => SupplyChainStateReply::NFTProgram(program.nft_program),
+        SupplyChainStateQuery::ExistingItems => SupplyChainStateReply::ExistingItems(
+            program
+                .items
+                .iter()
+                .map(|item| (*item.0, item.1.info))
+                .collect(),
+        ),
+        SupplyChainStateQuery::Roles(actor_id) => {
+            let mut roles = BTreeSet::new();
+
+            if program.producers.contains(&actor_id) {
+                roles.insert(Role::Producer);
+            }
+            if program.distributors.contains(&actor_id) {
+                roles.insert(Role::Distributor);
+            }
+            if program.retailers.contains(&actor_id) {
+                roles.insert(Role::Retailer);
+            }
+
+            SupplyChainStateReply::Roles(roles)
+        }
     }
     .encode();
     gstd::util::to_leak_ptr(encoded)
