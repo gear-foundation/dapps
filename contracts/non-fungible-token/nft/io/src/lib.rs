@@ -1,7 +1,11 @@
 #![no_std]
 
 use codec::{Decode, Encode};
-use gear_lib::non_fungible_token::{royalties::*, token::*};
+use gear_lib::non_fungible_token::{
+    io::{NFTApproval, NFTTransfer, NFTTransferPayout},
+    royalties::*,
+    token::*,
+};
 use gstd::{prelude::*, ActorId};
 use scale_info::TypeInfo;
 
@@ -47,4 +51,20 @@ pub struct InitNFT {
     pub symbol: String,
     pub base_uri: String,
     pub royalties: Option<Royalties>,
+}
+
+#[derive(Encode, Decode, TypeInfo, Debug)]
+pub enum NFTEvent {
+    Transfer(NFTTransfer),
+    TransferPayout(NFTTransferPayout),
+    Approval(NFTApproval),
+    Owner {
+        owner: ActorId,
+        token_id: TokenId,
+    },
+    IsApproved {
+        to: ActorId,
+        token_id: TokenId,
+        approved: bool,
+    },
 }

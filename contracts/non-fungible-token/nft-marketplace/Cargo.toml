@@ -1,6 +1,6 @@
 [package]
 name = "nft-marketplace"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
@@ -14,7 +14,7 @@ nft-io = { path = "../nft/io" }
 ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.0" }
 market-io = {path = "io" }
 sp-core-hashing = { version = "4.0.0", default-features = false }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", branch = "feature/delegated-approve" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.2.0" }
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git"}

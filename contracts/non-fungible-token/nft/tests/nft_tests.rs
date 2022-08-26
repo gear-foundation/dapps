@@ -5,6 +5,7 @@ use gstd::ActorId;
 use gtest::System;
 mod utils;
 use hex_literal::hex;
+use nft_io::*;
 use sp_core::{sr25519::Pair as Sr25519Pair, Pair};
 use utils::*;
 
@@ -17,13 +18,13 @@ fn mint_success() {
     init_nft(&sys);
     let nft = sys.get_program(1);
     let res = mint(&nft, USERS[0]);
-    let message = NFTTransfer {
+    let message = NFTEvent::Transfer(NFTTransfer {
         from: ZERO_ID.into(),
         to: USERS[0].into(),
         token_id: 0.into(),
-    }
+    })
     .encode();
-    assert!(res.contains(&(USERS[0], message.encode())));
+    assert!(res.contains(&(USERS[0], message)));
 }
 
 #[test]
@@ -33,13 +34,13 @@ fn burn_success() {
     let nft = sys.get_program(1);
     assert!(!mint(&nft, USERS[0]).main_failed());
     let res = burn(&nft, USERS[0], 0);
-    let message = NFTTransfer {
+    let message = NFTEvent::Transfer(NFTTransfer {
         from: USERS[0].into(),
         to: ZERO_ID.into(),
         token_id: 0.into(),
-    }
+    })
     .encode();
-    assert!(res.contains(&(USERS[0], message.encode())));
+    assert!(res.contains(&(USERS[0], message)));
 }
 
 #[test]
@@ -61,13 +62,13 @@ fn transfer_success() {
     let nft = sys.get_program(1);
     assert!(!mint(&nft, USERS[0]).main_failed());
     let res = transfer(&nft, USERS[0], USERS[1], 0);
-    let message = NFTTransfer {
+    let message = NFTEvent::Transfer(NFTTransfer {
         from: USERS[0].into(),
         to: USERS[1].into(),
         token_id: 0.into(),
-    }
+    })
     .encode();
-    assert!(res.contains(&(USERS[0], message.encode())));
+    assert!(res.contains(&(USERS[0], message)));
 }
 
 #[test]
@@ -93,9 +94,13 @@ fn owner_success() {
     assert!(!mint(&nft, USERS[0]).main_failed());
     assert!(!approve(&nft, USERS[0], USERS[1], 0).main_failed());
     let res = owner_of(&nft, USERS[1], 0);
-    println!("{:?}", res.decoded_log::<ActorId>());
-    let message = ActorId::from(USERS[0]).encode();
-    assert!(res.contains(&(USERS[1], message.encode())));
+    println!("{:?}", res.decoded_log::<NFTEvent>());
+    let message = NFTEvent::Owner {
+        token_id: 0.into(),
+        owner: ActorId::from(USERS[0]),
+    }
+    .encode();
+    assert!(res.contains(&(USERS[1], message)));
 }
 
 #[test]
@@ -107,14 +112,24 @@ fn is_approved_to_success() {
     assert!(!approve(&nft, USERS[0], USERS[1], 0).main_failed());
 
     let res = is_approved_to(&nft, USERS[1], 0, USERS[1]);
-    println!("{:?}", res.decoded_log::<bool>());
-    let message = true.encode();
-    assert!(res.contains(&(USERS[1], message.encode())));
+    println!("{:?}", res.decoded_log::<NFTEvent>());
+    let message = NFTEvent::IsApproved {
+        to: USERS[1].into(),
+        token_id: 0.into(),
+        approved: true,
+    }
+    .encode();
+    assert!(res.contains(&(USERS[1], message)));
 
     let res = is_approved_to(&nft, USERS[1], 0, USERS[0]);
-    println!("{:?}", res.decoded_log::<bool>());
-    let message = false.encode();
-    assert!(res.contains(&(USERS[1], message.encode())));
+    println!("{:?}", res.decoded_log::<NFTEvent>());
+    let message = NFTEvent::IsApproved {
+        to: USERS[0].into(),
+        token_id: 0.into(),
+        approved: false,
+    }
+    .encode();
+    assert!(res.contains(&(USERS[1], message)));
 }
 
 #[test]
@@ -125,7 +140,7 @@ fn is_approved_to_failure() {
     assert!(!mint(&nft, USERS[0]).main_failed());
     assert!(!approve(&nft, USERS[0], USERS[1], 0).main_failed());
     let res = is_approved_to(&nft, USERS[1], 1, USERS[1]);
-    println!("{:?}", res.decoded_log::<bool>());
+    println!("{:?}", res.decoded_log::<NFTEvent>());
     assert!(res.main_failed());
 }
 
@@ -136,13 +151,13 @@ fn approve_success() {
     let nft = sys.get_program(1);
     assert!(!mint(&nft, USERS[0]).main_failed());
     let res = approve(&nft, USERS[0], USERS[1], 0);
-    let message = NFTApproval {
+    let message = NFTEvent::Approval(NFTApproval {
         owner: USERS[0].into(),
         approved_account: USERS[1].into(),
         token_id: 0.into(),
-    }
+    })
     .encode();
-    assert!(res.contains(&(USERS[0], message.encode())));
+    assert!(res.contains(&(USERS[0], message)));
     assert!(!transfer(&nft, USERS[1], USERS[2], 0).main_failed());
 }
 
@@ -189,13 +204,13 @@ fn delegated_approve_success() {
     let signature = pair.sign(message.encode().as_slice());
 
     let res = delegated_approve(&nft, USERS[1], message, signature.0);
-    let message = NFTApproval {
+    let message = NFTEvent::Approval(NFTApproval {
         owner: owner_id.into(),
         approved_account: USERS[1].into(),
         token_id: 0.into(),
-    }
+    })
     .encode();
-    assert!(res.contains(&(USERS[1], message.encode())));
+    assert!(res.contains(&(USERS[1], message)));
     assert!(!transfer(&nft, USERS[1], USERS[2], 0).main_failed());
 }
 

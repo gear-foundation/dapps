@@ -3,6 +3,7 @@ use gear_lib::non_fungible_token::token::*;
 use gstd::prelude::*;
 use gtest::System;
 mod utils;
+use on_chain_nft_io::OnChainNFTEvent;
 use utils::*;
 const USERS: &[u64] = &[3, 4, 5];
 const ZERO_ID: u64 = 0;
@@ -13,13 +14,13 @@ fn mint_success() {
     init_nft(&sys);
     let nft = sys.get_program(1);
     let res = mint(&nft, USERS[0], vec![0, 1]);
-    let message = NFTTransfer {
+    let message = OnChainNFTEvent::Transfer(NFTTransfer {
         from: ZERO_ID.into(),
         to: USERS[0].into(),
         token_id: 0.into(),
-    }
+    })
     .encode();
-    assert!(res.contains(&(USERS[0], message.encode())));
+    assert!(res.contains(&(USERS[0], message)));
     // Check that we minted a token properly
     check_token_from_state(&nft, USERS[0], 0);
 }
@@ -47,13 +48,13 @@ fn burn_success() {
     check_token_from_state(&nft, USERS[0], 0);
 
     let res = burn(&nft, USERS[0], 0);
-    let message = NFTTransfer {
+    let message = OnChainNFTEvent::Transfer(NFTTransfer {
         from: USERS[0].into(),
         to: ZERO_ID.into(),
         token_id: 0.into(),
-    }
+    })
     .encode();
-    assert!(res.contains(&(USERS[0], message.encode())));
+    assert!(res.contains(&(USERS[0], message)));
     // We should check against owner_id = 0 since the token is burned
     check_token_from_state(&nft, 0, 0);
 }
@@ -80,13 +81,13 @@ fn transfer_success() {
     check_token_from_state(&nft, USERS[0], 0);
 
     let res = transfer(&nft, USERS[0], USERS[1], 0);
-    let message = NFTTransfer {
+    let message = OnChainNFTEvent::Transfer(NFTTransfer {
         from: USERS[0].into(),
         to: USERS[1].into(),
         token_id: 0.into(),
-    }
+    })
     .encode();
-    assert!(res.contains(&(USERS[0], message.encode())));
+    assert!(res.contains(&(USERS[0], message)));
 
     // Check the token now belongs to another user
     check_token_from_state(&nft, USERS[1], 0);
@@ -117,13 +118,13 @@ fn approve_success() {
     check_token_from_state(&nft, USERS[0], 0);
 
     let res = approve(&nft, USERS[0], USERS[1], 0);
-    let message = NFTApproval {
+    let message = OnChainNFTEvent::Approval(NFTApproval {
         owner: USERS[0].into(),
         approved_account: USERS[1].into(),
         token_id: 0.into(),
-    }
+    })
     .encode();
-    assert!(res.contains(&(USERS[0], message.encode())));
+    assert!(res.contains(&(USERS[0], message)));
     assert!(!transfer(&nft, USERS[1], USERS[2], 0).main_failed());
 }
 
@@ -154,13 +155,13 @@ fn test_token_uri_state() {
     init_nft(&sys);
     let nft = sys.get_program(1);
     let res = mint(&nft, USERS[0], vec![0, 1]);
-    let message = NFTTransfer {
+    let message = OnChainNFTEvent::Transfer(NFTTransfer {
         from: ZERO_ID.into(),
         to: USERS[0].into(),
         token_id: 0.into(),
-    }
+    })
     .encode();
-    assert!(res.contains(&(USERS[0], message.encode())));
+    assert!(res.contains(&(USERS[0], message)));
     // Check that we minted a token properly
     check_token_from_state(&nft, USERS[0], 0);
 

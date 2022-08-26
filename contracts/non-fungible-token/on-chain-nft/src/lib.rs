@@ -1,6 +1,6 @@
 #![no_std]
 
-use gear_lib::non_fungible_token::{nft_core::*, state::*, token::*};
+use gear_lib::non_fungible_token::{io::NFTTransfer, nft_core::*, state::*, token::*};
 use gear_lib_derive::{NFTCore, NFTMetaState, NFTStateKeeper};
 use gstd::{msg, prelude::*, ActorId};
 use on_chain_nft_io::*;
@@ -21,7 +21,7 @@ pub struct OnChainNFT {
 static mut CONTRACT: Option<OnChainNFT> = None;
 
 #[no_mangle]
-pub unsafe extern "C" fn init() {
+unsafe extern "C" fn init() {
     let config: InitOnChainNFT = msg::load().expect("Unable to decode InitOnChainNFT");
     let nft = OnChainNFT {
         token: NFTState {
@@ -39,27 +39,43 @@ pub unsafe extern "C" fn init() {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn handle() {
+unsafe extern "C" fn handle() {
     let action: OnChainNFTAction = msg::load().expect("Could not load OnChainNFTAction");
     let nft = CONTRACT.get_or_insert(Default::default());
     match action {
         OnChainNFTAction::Mint {
             description,
             token_metadata,
-        } => OnChainNFTCore::mint(nft, description, token_metadata),
-        OnChainNFTAction::Burn { token_id } => OnChainNFTCore::burn(nft, token_id),
-        OnChainNFTAction::Transfer { to, token_id } => NFTCore::transfer(nft, &to, token_id),
+        } => msg::reply(
+            OnChainNFTEvent::Transfer(OnChainNFTCore::mint(nft, description, token_metadata)),
+            0,
+        ),
+        OnChainNFTAction::Burn { token_id } => msg::reply(
+            OnChainNFTEvent::Transfer(OnChainNFTCore::burn(nft, token_id)),
+            0,
+        ),
+        OnChainNFTAction::Transfer { to, token_id } => msg::reply(
+            OnChainNFTEvent::Transfer(NFTCore::transfer(nft, &to, token_id)),
+            0,
+        ),
         OnChainNFTAction::TransferPayout {
             to,
             token_id,
             amount,
-        } => NFTCore::transfer_payout(nft, &to, token_id, amount),
-        OnChainNFTAction::Approve { to, token_id } => NFTCore::approve(nft, &to, token_id),
+        } => msg::reply(
+            OnChainNFTEvent::TransferPayout(NFTCore::transfer_payout(nft, &to, token_id, amount)),
+            0,
+        ),
+        OnChainNFTAction::Approve { to, token_id } => msg::reply(
+            OnChainNFTEvent::Approval(NFTCore::approve(nft, &to, token_id)),
+            0,
+        ),
     }
+    .expect("Error during replying with `OnChainNFTEvent`");
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
+unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
     let query: OnChainNFTQuery = msg::load().expect("failed to decode input argument");
     let nft = CONTRACT.get_or_insert(OnChainNFT::default());
     match query {
@@ -77,8 +93,8 @@ pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
 }
 
 pub trait OnChainNFTCore: NFTCore {
-    fn mint(&mut self, description: Vec<ItemId>, metadata: TokenMetadata);
-    fn burn(&mut self, token_id: TokenId);
+    fn mint(&mut self, description: Vec<ItemId>, metadata: TokenMetadata) -> NFTTransfer;
+    fn burn(&mut self, token_id: TokenId) -> NFTTransfer;
     fn token_uri(&mut self, token_id: TokenId) -> Option<Vec<u8>>;
 }
 
@@ -87,7 +103,7 @@ impl OnChainNFTCore for OnChainNFT {
     /// `description` - is the vector of ids ,
     ///  where each index represents a layer id, and element represents a layer item id.
     /// `metadata` - is the default metadata provided by gear-lib.
-    fn mint(&mut self, description: Vec<ItemId>, metadata: TokenMetadata) {
+    fn mint(&mut self, description: Vec<ItemId>, metadata: TokenMetadata) -> NFTTransfer {
         // precheck if the layers actually exist
         for (layer_id, layer_item_id) in description.iter().enumerate() {
             if layer_id > self.layers.len() {
@@ -119,15 +135,16 @@ impl OnChainNFTCore for OnChainNFT {
             panic!("Such nft already exists");
         }
         self.nfts_existence.insert(key);
-        NFTCore::mint(self, &msg::source(), self.token_id, Some(metadata));
+        let transfer = NFTCore::mint(self, &msg::source(), self.token_id, Some(metadata));
         self.nfts.insert(self.token_id, description);
         self.token_id = self.token_id.saturating_add(U256::one());
+        transfer
     }
 
     /// Burns an NFT.
     /// `token_id` - is the id of a token. MUST exist.
-    fn burn(&mut self, token_id: TokenId) {
-        NFTCore::burn(self, token_id);
+    fn burn(&mut self, token_id: TokenId) -> NFTTransfer {
+        let transfer = NFTCore::burn(self, token_id);
         let key = self
             .nfts
             .get(&token_id)
@@ -137,6 +154,7 @@ impl OnChainNFTCore for OnChainNFT {
             .collect::<String>();
         self.nfts.remove(&token_id);
         self.nfts_existence.remove(&key);
+        transfer
     }
 
     /// Returns token information - metadata and all the content of all the layers for the NFT.
@@ -170,7 +188,7 @@ gstd::metadata! {
         input: InitOnChainNFT,
     handle:
         input: OnChainNFTAction,
-        output: Vec<u8>,
+        output: OnChainNFTEvent,
     state:
         input: OnChainNFTQuery,
         output: Vec<u8>,

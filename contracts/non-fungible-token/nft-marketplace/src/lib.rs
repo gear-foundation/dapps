@@ -207,7 +207,7 @@ async unsafe fn main() {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn init() {
+unsafe extern "C" fn init() {
     let config: InitMarket = msg::load().expect("Unable to decode InitConfig");
     if config.treasury_fee == MIN_TREASURY_FEE || config.treasury_fee > MAX_TREASURT_FEE {
         panic!("Wrong treasury fee");
@@ -234,7 +234,7 @@ title: "NFTMarketplace",
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
+unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
     let state: State = msg::load().expect("failed to decode input argument");
     let market: &mut Market = MARKET.get_or_insert(Market::default());
     let encoded = match state {

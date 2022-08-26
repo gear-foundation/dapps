@@ -1,6 +1,11 @@
 #![no_std]
 
-use gear_lib::non_fungible_token::{royalties::*, state::*, token::*};
+use gear_lib::non_fungible_token::{
+    io::{NFTApproval, NFTTransfer, NFTTransferPayout},
+    royalties::*,
+    state::*,
+    token::*,
+};
 use gstd::{prelude::*, ActorId};
 
 pub type LayerId = u128;
@@ -134,4 +139,11 @@ pub struct InitOnChainNFT {
     pub layers: BTreeMap<LayerId, Vec<String>>,
     /// Royalties for NFT
     pub royalties: Option<Royalties>,
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+pub enum OnChainNFTEvent {
+    Transfer(NFTTransfer),
+    TransferPayout(NFTTransferPayout),
+    Approval(NFTApproval),
 }
