@@ -15,7 +15,12 @@ pub trait NFTCore: NFTStateKeeper {
     /// * `to`: An account to which minted NFT will be assigned
     /// * `token_id`: the ID of minted NFT
     /// * `token_metadata`: optional additional metadata about NFT
-    fn mint(&mut self, to: &ActorId, token_id: TokenId, token_metadata: Option<TokenMetadata>) {
+    fn mint(
+        &mut self,
+        to: &ActorId,
+        token_id: TokenId,
+        token_metadata: Option<TokenMetadata>,
+    ) -> NFTTransfer {
         self.assert_token_exists(token_id);
         self.assert_zero_address(to);
         self.get_mut().owner_by_id.insert(token_id, *to);
@@ -27,16 +32,11 @@ pub trait NFTCore: NFTStateKeeper {
         self.get_mut()
             .token_metadata_by_id
             .insert(token_id, token_metadata);
-        msg::reply(
-            NFTTransfer {
-                from: ZERO_ID,
-                to: *to,
-                token_id,
-            }
-            .encode(),
-            0,
-        )
-        .expect("Error in reply `NFTTransfer`, mint function");
+        NFTTransfer {
+            from: ZERO_ID,
+            to: *to,
+            token_id,
+        }
     }
 
     /// Burns a token
@@ -47,7 +47,7 @@ pub trait NFTCore: NFTStateKeeper {
     ///
     /// Arguments:
     /// * `token_id`: the ID of  NFT that will be burnt
-    fn burn(&mut self, token_id: TokenId) {
+    fn burn(&mut self, token_id: TokenId) -> NFTTransfer {
         let owner = *self
             .get()
             .owner_by_id
@@ -60,16 +60,11 @@ pub trait NFTCore: NFTStateKeeper {
             .tokens_for_owner
             .entry(owner)
             .and_modify(|tokens| tokens.retain(|&token| token != token_id));
-        msg::reply(
-            NFTTransfer {
-                from: owner,
-                to: ZERO_ID,
-                token_id,
-            }
-            .encode(),
-            0,
-        )
-        .expect("Error in reply `NFTTransfer`, burn function");
+        NFTTransfer {
+            from: owner,
+            to: ZERO_ID,
+            token_id,
+        }
     }
 
     /// Transfers a token to the new owner
@@ -82,18 +77,13 @@ pub trait NFTCore: NFTStateKeeper {
     /// Arguments:
     /// * `to`: An account to which NFT will be transferred
     /// * `token_id`: the ID of transferred NFT
-    fn transfer(&mut self, to: &ActorId, token_id: TokenId) {
+    fn transfer(&mut self, to: &ActorId, token_id: TokenId) -> NFTTransfer {
         let owner = self.internal_transfer(to, token_id);
-        msg::reply(
-            NFTTransfer {
-                from: owner,
-                to: *to,
-                token_id,
-            }
-            .encode(),
-            0,
-        )
-        .expect("Error in reply `NFTApproval`, transfer function");
+        NFTTransfer {
+            from: owner,
+            to: *to,
+            token_id,
+        }
     }
 
     /// Transfers a token to the new owner
@@ -106,20 +96,20 @@ pub trait NFTCore: NFTStateKeeper {
     /// Arguments:
     /// * `to`: An account to which NFT will be transferred
     /// * `token_id`: the ID of transferred NFT
-    fn transfer_payout(&mut self, to: &ActorId, token_id: TokenId, amount: u128) {
+    fn transfer_payout(
+        &mut self,
+        to: &ActorId,
+        token_id: TokenId,
+        amount: u128,
+    ) -> NFTTransferPayout {
         let owner = self.internal_transfer(to, token_id);
         let payouts = self.nft_payout(&owner, amount);
-        msg::reply(
-            NFTTransferPayout {
-                from: owner,
-                to: *to,
-                token_id,
-                payouts,
-            }
-            .encode(),
-            0,
-        )
-        .expect("Error in reply `NFTTransferPayout`");
+        NFTTransferPayout {
+            from: owner,
+            to: *to,
+            token_id,
+            payouts,
+        }
     }
 
     fn internal_transfer(&mut self, to: &ActorId, token_id: TokenId) -> ActorId {
@@ -161,7 +151,7 @@ pub trait NFTCore: NFTStateKeeper {
     /// Arguments:
     /// * `to`: An account that will be approved to manage the indicated NFT
     /// * `token_id`: the ID of the NFT
-    fn approve(&mut self, to: &ActorId, token_id: TokenId) {
+    fn approve(&mut self, to: &ActorId, token_id: TokenId) -> NFTApproval {
         let owner = *self
             .get()
             .owner_by_id
@@ -176,19 +166,14 @@ pub trait NFTCore: NFTStateKeeper {
                 approvals.insert(*to);
             })
             .or_insert_with(|| BTreeSet::from([*to]));
-        msg::reply(
-            NFTApproval {
-                owner,
-                approved_account: *to,
-                token_id,
-            }
-            .encode(),
-            0,
-        )
-        .expect("Error in reply `NFTApproval`, approve function");
+        NFTApproval {
+            owner,
+            approved_account: *to,
+            token_id,
+        }
     }
 
-    fn revoke_approval(&mut self, approved_account: &ActorId, token_id: TokenId) {
+    fn revoke_approval(&mut self, approved_account: &ActorId, token_id: TokenId) -> NFTApproval {
         let owner = *self
             .get()
             .owner_by_id
@@ -201,39 +186,34 @@ pub trait NFTCore: NFTStateKeeper {
             .and_modify(|approvals| {
                 approvals.remove(approved_account);
             });
-        msg::reply(
-            NFTApproval {
-                owner,
-                approved_account: ZERO_ID,
-                token_id,
-            }
-            .encode(),
-            0,
-        )
-        .expect("Error in reply `NFTApproval`, revoke_approval function");
+        NFTApproval {
+            owner,
+            approved_account: ZERO_ID,
+            token_id,
+        }
     }
 
-    fn owner_of(&self, token_id: TokenId) {
-        let owner = *self
+    fn owner_of(&self, token_id: TokenId) -> ActorId {
+        *self
             .get()
             .owner_by_id
             .get(&token_id)
-            .expect("NonFungibleToken: token does not exist");
-        msg::reply(owner.encode(), 0).expect("Error in reply 'ActorId', owner_of function");
+            .expect("NonFungibleToken: token does not exist")
     }
 
-    fn is_approved_to(&self, to: &ActorId, token_id: TokenId) {
-        let result = self
-            .get()
+    fn is_approved_to(&self, to: &ActorId, token_id: TokenId) -> bool {
+        self.get()
             .token_approvals
             .get(&token_id)
             .expect("NonFungibleToken: token does not exist")
-            .contains(to);
-
-        msg::reply(result.encode(), 0).expect("Error in reply 'bool', is_approved_to function");
+            .contains(to)
     }
 
-    fn delegated_approve(&mut self, message: DelegatedApproveMessage, signed_approve: [u8; 64]) {
+    fn delegated_approve(
+        &mut self,
+        message: DelegatedApproveMessage,
+        signed_approve: [u8; 64],
+    ) -> NFTApproval {
         let to = &message.approved_actor_id;
         let token_id = message.token_id;
         let owner = *self
@@ -251,16 +231,11 @@ pub trait NFTCore: NFTStateKeeper {
                 approvals.insert(*to);
             })
             .or_insert_with(|| BTreeSet::from([*to]));
-        msg::reply(
-            NFTApproval {
-                owner,
-                approved_account: *to,
-                token_id,
-            }
-            .encode(),
-            0,
-        )
-        .expect("Error in reply `NFTApproval`, approve function");
+        NFTApproval {
+            owner,
+            approved_account: *to,
+            token_id,
+        }
     }
 
     /// Returns a `Payout` struct for a given token
