@@ -14,7 +14,7 @@ pub struct SimpleMTK {
 }
 
 pub trait SimpleMTKCore: MTKCore {
-    fn mint(&mut self, amount: u128, token_metadata: Option<TokenMetadata>);
+    fn mint(&mut self, account: ActorId, amount: u128, token_metadata: Option<TokenMetadata>);
 
     fn burn(&mut self, id: TokenId, amount: u128);
 }
@@ -34,25 +34,27 @@ gstd::metadata! {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn init() {
+extern "C" fn init() {
     let config: InitMTK = msg::load().expect("Unable to decode InitConfig");
     let mut multi_token = SimpleMTK::default();
     multi_token.tokens.name = config.name;
     multi_token.tokens.symbol = config.symbol;
     multi_token.tokens.base_uri = config.base_uri;
     multi_token.owner = msg::source();
-    CONTRACT = Some(multi_token);
+    unsafe {
+        CONTRACT = Some(multi_token);
+    }
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn handle() {
+unsafe extern "C" fn handle() {
     let action: MyMTKAction = msg::load().expect("Could not load msg");
     let multi_token = CONTRACT.get_or_insert(SimpleMTK::default());
     match action {
         MyMTKAction::Mint {
             amount,
             token_metadata,
-        } => SimpleMTKCore::mint(multi_token, amount, token_metadata),
+        } => SimpleMTKCore::mint(multi_token, msg::source(), amount, token_metadata),
         MyMTKAction::Burn { id, amount } => SimpleMTKCore::burn(multi_token, id, amount),
         MyMTKAction::BalanceOf { account, id } => {
             MTKCore::balance_of(multi_token, vec![account], vec![id])
@@ -84,7 +86,7 @@ pub unsafe extern "C" fn handle() {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
+unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
     let query: MTKQuery = msg::load().expect("failed to decode input argument");
     let multi_token = CONTRACT.get_or_insert(SimpleMTK::default());
     let encoded = MTKTokenState::proc_state(multi_token, query).expect("error");
@@ -92,10 +94,10 @@ pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
 }
 
 impl SimpleMTKCore for SimpleMTK {
-    fn mint(&mut self, amount: u128, token_metadata: Option<TokenMetadata>) {
+    fn mint(&mut self, account: ActorId, amount: u128, token_metadata: Option<TokenMetadata>) {
         MTKCore::mint(
             self,
-            &msg::source(),
+            &account,
             vec![(self.token_id)],
             vec![amount],
             vec![token_metadata],
