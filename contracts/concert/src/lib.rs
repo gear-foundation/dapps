@@ -1,7 +1,9 @@
 #![no_std]
 
 use concert_io::*;
+use gear_lib::multitoken::io::*;
 use gstd::{msg, prelude::*, ActorId};
+use multitoken_io::*;
 
 const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
 const NFT_COUNT: u128 = 1;
@@ -11,14 +13,20 @@ pub struct Concert {
     pub owner_id: ActorId,
     pub contract_id: ActorId,
 
-    pub name: TokenId,
+    pub name: String,
+    pub description: String,
+
+    pub ticket_ft_id: u128,
     pub creator: ActorId,
     pub number_of_tickets: u128,
+    pub tickets_left: u128,
     pub date: u128,
 
     pub buyers: BTreeSet<ActorId>,
 
     pub id_counter: u128,
+    pub concert_id: u128,
+    pub running: bool,
     // user to token id to metadata
     pub metadata: BTreeMap<ActorId, BTreeMap<u128, Option<TokenMetadata>>>,
 }
@@ -26,7 +34,7 @@ pub struct Concert {
 static mut CONTRACT: Option<Concert> = None;
 
 #[no_mangle]
-pub unsafe extern "C" fn init() {
+unsafe extern "C" fn init() {
     let config: InitConcert = msg::load().expect("Unable to decode InitConfig");
     let concert = Concert {
         owner_id: config.owner_id,
@@ -43,36 +51,71 @@ async unsafe fn main() {
     match action {
         ConcertAction::Create {
             creator,
-            concert_id,
+            name,
+            description,
             number_of_tickets,
             date,
-        } => concert.create_concert(creator, concert_id, number_of_tickets, date),
-        ConcertAction::Hold { concert_id } => concert.hold_concert(concert_id).await,
-        ConcertAction::BuyTickets {
-            concert_id,
-            amount,
-            metadata,
-        } => concert.buy_tickets(concert_id, amount, metadata).await,
+        } => concert.create_concert(name, description, creator, number_of_tickets, date),
+        ConcertAction::Hold => concert.hold_concert().await,
+        ConcertAction::BuyTickets { amount, metadata } => {
+            concert.buy_tickets(amount, metadata).await
+        }
     }
+}
+
+#[no_mangle]
+extern "C" fn meta_state() -> *mut [i32; 2] {
+    let state: ConcertStateQuery = msg::load().expect("Unable to decode ConcertStateQuery");
+    let concert = unsafe { CONTRACT.get_or_insert(Default::default()) };
+    let reply = match state {
+        ConcertStateQuery::CurrentConcert => ConcertStateReply::CurrentConcert {
+            name: concert.name.clone(),
+            description: concert.description.clone(),
+            date: concert.date,
+            number_of_tickets: concert.number_of_tickets,
+            tickets_left: concert.tickets_left,
+        },
+        ConcertStateQuery::Buyers => ConcertStateReply::Buyers {
+            accounts: concert.buyers.clone(),
+        },
+        ConcertStateQuery::UserTickets { user } => ConcertStateReply::UserTickets {
+            tickets: concert
+                .metadata
+                .get(&user)
+                .unwrap_or(&BTreeMap::new())
+                .values()
+                .cloned()
+                .collect(),
+        },
+    };
+    gstd::util::to_leak_ptr(reply.encode())
 }
 
 impl Concert {
     fn create_concert(
         &mut self,
+        name: String,
+        description: String,
         creator: ActorId,
-        concert_id: u128,
         number_of_tickets: u128,
         date: u128,
     ) {
+        if self.running {
+            panic!("CONCERT: There is already a concert registered.")
+        }
         self.creator = creator;
-        self.id_counter = concert_id;
-        self.name = concert_id;
+        self.concert_id = self.id_counter;
+        self.ticket_ft_id = self.concert_id;
+        self.name = name;
+        self.description = description;
         self.number_of_tickets = number_of_tickets;
         self.date = date;
+        self.running = true;
+        self.tickets_left = number_of_tickets;
         msg::reply(
             ConcertEvent::Creation {
                 creator,
-                concert_id,
+                concert_id: self.concert_id,
                 number_of_tickets,
                 date,
             },
@@ -81,12 +124,7 @@ impl Concert {
         .expect("Error during a replying with ConcertEvent::Creation");
     }
 
-    async fn buy_tickets(
-        &mut self,
-        concert_id: u128,
-        amount: u128,
-        mtd: Vec<Option<TokenMetadata>>,
-    ) {
+    async fn buy_tickets(&mut self, amount: u128, mtd: Vec<Option<TokenMetadata>>) {
         if msg::source() == ZERO_ID {
             panic!("CONCERT: Message from zero address");
         }
@@ -95,7 +133,7 @@ impl Concert {
             panic!("CONCERT: Can not buy less than 1 ticket");
         }
 
-        if self.number_of_tickets < amount {
+        if self.tickets_left < amount {
             panic!("CONCERT: Not enought tickets");
         }
 
@@ -112,14 +150,12 @@ impl Concert {
         }
 
         self.buyers.insert(msg::source());
-
+        self.tickets_left -= amount;
         msg::send_for_reply_as::<_, MTKEvent>(
             self.contract_id,
-            MTKAction::Mint {
-                account: msg::source(),
-                id: concert_id,
+            MyMTKAction::Mint {
                 amount,
-                meta: None,
+                token_metadata: None,
             },
             0,
         )
@@ -127,22 +163,30 @@ impl Concert {
         .await
         .expect("CONCERT: Error minting concert tokens");
 
-        msg::reply(ConcertEvent::Purchase { concert_id, amount }, 0)
-            .expect("Error during a replying with ConcertEvent::Purchase");
+        msg::reply(
+            ConcertEvent::Purchase {
+                concert_id: self.concert_id,
+                amount,
+            },
+            0,
+        )
+        .expect("Error during a replying with ConcertEvent::Purchase");
     }
 
     // MINT SEVERAL FOR A USER
-    async fn hold_concert(&mut self, concert_id: u128) {
+    async fn hold_concert(&mut self) {
         if msg::source() != self.creator {
             panic!("CONCERT: Only creator can hold a concert");
         }
         // get balances from a contract
         let accounts: Vec<_> = self.buyers.clone().into_iter().collect();
-        let tokens: Vec<TokenId> = iter::repeat(self.name).take(accounts.len()).collect();
+        let tokens: Vec<TokenId> = iter::repeat(self.ticket_ft_id)
+            .take(accounts.len())
+            .collect();
 
         let balance_response: MTKEvent = msg::send_for_reply_as(
             self.contract_id,
-            MTKAction::BalanceOfBatch {
+            MyMTKAction::BalanceOfBatch {
                 accounts,
                 ids: tokens,
             },
@@ -151,9 +195,8 @@ impl Concert {
         .expect("Error in async message to MTK contract")
         .await
         .expect("CONCERT: Error getting balances from the contract");
-
-        let balances: Vec<BalanceOfBatchReply> =
-            if let MTKEvent::BalanceOfBatch(balance_response) = balance_response {
+        let balances: Vec<BalanceReply> =
+            if let MTKEvent::BalanceOf(balance_response) = balance_response {
                 balance_response
             } else {
                 Vec::new()
@@ -162,7 +205,7 @@ impl Concert {
         for balance in &balances {
             msg::send_for_reply_as::<_, MTKEvent>(
                 self.contract_id,
-                MTKAction::Burn {
+                MyMTKAction::Burn {
                     id: balance.id,
                     amount: balance.amount,
                 },
@@ -184,14 +227,12 @@ impl Concert {
                     amounts.push(NFT_COUNT);
                     meta.push(token_meta);
                 }
-
                 msg::send_for_reply_as::<_, MTKEvent>(
                     self.contract_id,
-                    MTKAction::MintBatch {
-                        account: *actor,
+                    MyMTKAction::MintBatch {
                         ids,
                         amounts,
-                        meta,
+                        tokens_metadata: meta,
                     },
                     0,
                 )
@@ -200,7 +241,25 @@ impl Concert {
                 .expect("CONCERT: Error minging tickets");
             }
         }
-        msg::reply(ConcertEvent::Hold { concert_id }, 0)
-            .expect("Error during a replying with ConcertEvent::Hold");
+        self.running = false;
+        msg::reply(
+            ConcertEvent::Hold {
+                concert_id: self.concert_id,
+            },
+            0,
+        )
+        .expect("Error during a replying with ConcertEvent::Hold");
     }
+}
+
+gstd::metadata! {
+    title: "Concert",
+    init:
+        input: InitConcert,
+    handle:
+        input: ConcertAction,
+        output: ConcertEvent,
+    state:
+        input: ConcertStateQuery,
+        output: ConcertStateReply,
 }

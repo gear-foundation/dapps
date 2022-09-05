@@ -31,5 +31,11 @@ linter:
 pre-commit: fmt linter test
 
 test: build
+	@\
+	if [ ! -f "./target/multitoken.wasm" ]; then\
+	    curl -L\
+	        "https://github.com/gear-dapps/multitoken/releases/download/build/multitoken.wasm"\
+	        -o "./target/multitoken.wasm";\
+	fi
 	@echo ──────────── Run tests ────────────────────────
 	@cargo +nightly test --release
