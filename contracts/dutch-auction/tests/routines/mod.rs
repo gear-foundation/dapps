@@ -1,8 +1,7 @@
 use auction_io::*;
 use codec::Encode;
-use gear_lib::non_fungible_token::token::*;
-use gstd::ActorId;
-use gtest::{Program, RunResult, System};
+use gear_lib::non_fungible_token::token::{TokenId, TokenMetadata};
+use gtest::{Log, Program, RunResult, System};
 
 pub const USERS: &[u64] = &[4, 5, 6];
 #[allow(dead_code)]
@@ -22,7 +21,7 @@ pub fn init(sys: &System) -> Program {
 
     init_nft(sys, owner_user);
     let result = update_auction(&auction_program, owner_user, 2, 1_000_000_000);
-
+    println!("{:?}", result.decoded_log::<Event>());
     assert!(result.contains(&(
         owner_user,
         Event::AuctionStarted {
@@ -66,8 +65,11 @@ pub fn init_nft(sys: &System, owner: u64) {
     assert!(!res.main_failed());
 
     let res = nft_owner(&nft_program, owner, 0.into());
-    let new_owner = ActorId::from(owner);
-    assert!(res.contains(&(owner, new_owner.encode().encode())));
+    let log = Log::builder().dest(owner).payload(nft_io::NFTEvent::Owner {
+        owner: owner.into(),
+        token_id: 0.into(),
+    });
+    assert!(res.contains(&log));
 
     let res = nft_program.send(
         owner,

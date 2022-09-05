@@ -1,5 +1,4 @@
 use auction_io::*;
-// use codec::Encode;
 use dutch_auction::{State, StateReply, Status};
 use gtest::System;
 

@@ -13,8 +13,7 @@ fn buy() {
     let auction = init(&sys);
 
     let nft_program = sys.get_program(2);
-    let res = nft_owner(&nft_program, USERS[0], 0.into());
-    println!("{:?}", res.decoded_log::<Vec<u8>>());
+    let token_id: u64 = 0;
 
     let result = auction.send_with_value(USERS[1], Action::Buy, 1_000_000_000);
 
@@ -26,12 +25,15 @@ fn buy() {
         .encode()
     )));
 
-    let res = nft_owner(&nft_program, USERS[0], 0.into());
+    let res = nft_owner(&nft_program, USERS[0], token_id.into());
     let new_owner = ActorId::from(USERS[1]);
-    println!("{:?}", res.decoded_log::<Vec<u8>>());
 
-    let log = Log::builder().dest(USERS[0]).payload(new_owner.encode());
-    println!("{:?}", log);
+    let log = Log::builder()
+        .dest(USERS[0])
+        .payload(nft_io::NFTEvent::Owner {
+            owner: new_owner,
+            token_id: token_id.into(),
+        });
 
     assert!(res.contains(&log));
 
@@ -49,7 +51,7 @@ fn buy_later_with_lower_price() {
     let sys = System::new();
 
     let auction = init(&sys);
-    sys.spend_blocks(100_000_000);
+    sys.spend_blocks(100_000);
     let result = auction.send_with_value(USERS[1], Action::Buy, 900_000_000);
 
     assert!(result.contains(&(USERS[1], Event::Bought { price: 900_000_000 }.encode())));

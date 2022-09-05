@@ -3,6 +3,7 @@
 use codec::Encode;
 use core::cmp::min;
 use gstd::{exec, exec::block_timestamp, msg, prelude::*, ActorId};
+use nft_io::{NFTAction, NFTEvent};
 use primitive_types::U256;
 
 pub mod state;
@@ -53,7 +54,7 @@ impl Auction {
 
         msg::send_for_reply(
             self.nft.contract_id,
-            nft_io::NFTAction::Transfer {
+            NFTAction::Transfer {
                 to: msg::source(),
                 token_id: self.nft.token_id,
             },
@@ -115,19 +116,22 @@ impl Auction {
     }
 
     async fn get_token_owner(contract_id: ActorId, token_id: U256) -> ActorId {
-        let owner: Vec<u8> =
-            msg::send_for_reply_as(contract_id, nft_io::NFTAction::Owner { token_id }, 0)
-                .expect("Can't send message")
-                .await
-                .expect("Error in nft owner");
+        let reply: NFTEvent = msg::send_for_reply_as(contract_id, NFTAction::Owner { token_id }, 0)
+            .expect("Can't send message")
+            .await
+            .expect("Unable to decode `NFTEvent`");
 
-        ActorId::decode(&mut &owner[..]).expect("Error in decoding")
+        if let NFTEvent::Owner { owner, .. } = reply {
+            owner
+        } else {
+            panic!("Wrong received message!")
+        }
     }
 
     async fn validate_nft_approve(&self, contract_id: ActorId, token_id: U256) {
-        let is_approved_bytes: Vec<u8> = msg::send_for_reply_as(
+        let reply: NFTEvent = msg::send_for_reply_as(
             contract_id,
-            nft_io::NFTAction::IsApproved {
+            NFTAction::IsApproved {
                 token_id,
                 to: exec::program_id(),
             },
@@ -135,12 +139,14 @@ impl Auction {
         )
         .expect("Can't send message")
         .await
-        .expect("Error in nft is approved to program check");
+        .expect("Unable to decode `NFTEvent`");
 
-        let is_approved = bool::decode(&mut &is_approved_bytes[..]).expect("Error in decoding");
-
-        if !is_approved {
-            panic!("You must approve your NFT to this contract before")
+        if let NFTEvent::IsApproved { approved, .. } = reply {
+            if !approved {
+                panic!("You must approve your NFT to this contract before")
+            }
+        } else {
+            panic!("Wrong received message!")
         }
     }
 
