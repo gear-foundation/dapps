@@ -12,7 +12,7 @@ scale-info = { version = "2.0.1", default-features = false, features = ["derive"
 primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"]}
 dex-factory-io = { path = "../factory/io" }
 dex-pair-io = { path = "../pair/io" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.2.0" }
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git"}

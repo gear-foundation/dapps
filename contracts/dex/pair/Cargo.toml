@@ -13,10 +13,10 @@ primitive-types = { version = "0.11.1", default-features = false, features = ["s
 dex-pair-io = { path = "../pair/io" }
 dex-factory-io = { path = "../factory/io" }
 
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git" }
-gear-lib-derive = { git = "https://github.com/gear-academy/gear-lib.git" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.2.0" }
+gear-lib-derive = { git = "https://github.com/gear-academy/gear-lib.git", tag = "0.2.0" }
 num = { version = "0.4", default-features = false }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token.git" }
+ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.0" }
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git"}
