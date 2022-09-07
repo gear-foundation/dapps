@@ -28,6 +28,11 @@ jobs:
           components: clippy, rustfmt
           target: wasm32-unknown-unknown
 
+      - name: 'Install binaryen'
+        run: |
+          sudo wget -c https://github.com/WebAssembly/binaryen/releases/download/version_105/binaryen-version_105-x86_64-linux.tar.gz -O - | sudo tar -xz -C .
+          sudo cp binaryen-version_105/bin/wasm-opt /usr/bin/
+
       - name: Check fmt
         run: make fmt-check
 
@@ -38,9 +43,7 @@ jobs:
         run: make build
 
       - name: Run tests
-        run: |
-          rm -f ./target/nft.wasm
-          make test
+        run: make test
 
       - name: Upload artifacts
         if: github.event_name == 'push'
