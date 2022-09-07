@@ -1,9 +1,3 @@
-#[cfg(test)]
-extern crate std;
-#[cfg(test)]
-use std::println;
-use std::time::{SystemTime, UNIX_EPOCH};
-
 use codec::Encode;
 use ft_io::*;
 use gstd::{ActorId, BTreeMap};
@@ -42,13 +36,14 @@ fn init_staking(sys: &System) {
 }
 
 fn init_staking_token(sys: &System) {
-    let st_token = Program::from_file(sys, "./target/fungible_token.wasm");
+    let st_token = Program::from_file(sys, "./target/fungible_token-0.1.0.wasm");
 
     let res = st_token.send(
         USERS[3],
         InitConfig {
             name: String::from("StakingToken"),
             symbol: String::from("STK"),
+            decimals: 18,
         },
     );
 
@@ -95,13 +90,14 @@ fn init_staking_token(sys: &System) {
 }
 
 fn init_reward_token(sys: &System) {
-    let rw_token = Program::from_file(sys, "./target/fungible_token.wasm");
+    let rw_token = Program::from_file(sys, "./target/fungible_token-0.1.0.wasm");
 
     let res = rw_token.send(
         USERS[3],
         InitConfig {
             name: String::from("RewardToken"),
             symbol: String::from("RTK"),
+            decimals: 18,
         },
     );
 
@@ -232,10 +228,7 @@ fn send_reward() {
     sys.init_logger();
     let st = sys.get_program(1);
 
-    let time = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("Time went backwards")
-        .as_secs();
+    let time = sys.block_timestamp();
 
     let mut staking = Staking {
         ..Default::default()
@@ -258,7 +251,7 @@ fn send_reward() {
 
     staking.total_staked = 1500;
 
-    sys.spend_blocks(2000);
+    sys.spend_blocks(2);
 
     let res = st.send(USERS[5], StakingAction::Stake(2000));
     assert!(res.contains(&(USERS[5], StakingEvent::StakeAccepted(2000).encode())));
@@ -275,7 +268,7 @@ fn send_reward() {
 
     staking.total_staked = 3500;
 
-    sys.spend_blocks(1000);
+    sys.spend_blocks(1);
 
     update_reward(&mut staking, time + 3000);
     let reward = calc_reward(&mut staking, &USERS[4].into());
@@ -294,7 +287,7 @@ fn send_reward() {
     );
     assert!(res.contains(&(USERS[4], StakingEvent::Reward(reward).encode())));
 
-    sys.spend_blocks(1000);
+    sys.spend_blocks(1);
 
     update_reward(&mut staking, time + 4000);
     let reward = calc_reward(&mut staking, &USERS[5].into());
@@ -324,10 +317,7 @@ fn withdraw() {
     sys.init_logger();
     let st = sys.get_program(1);
 
-    let time = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("Time went backwards")
-        .as_secs();
+    let time = sys.block_timestamp();
 
     let mut staking = Staking {
         ..Default::default()
@@ -350,7 +340,7 @@ fn withdraw() {
 
     staking.total_staked = 1500;
 
-    sys.spend_blocks(2000);
+    sys.spend_blocks(2);
 
     let res = st.send(USERS[5], StakingAction::Stake(2000));
     assert!(res.contains(&(USERS[5], StakingEvent::StakeAccepted(2000).encode())));
@@ -367,7 +357,7 @@ fn withdraw() {
 
     staking.total_staked = 3500;
 
-    sys.spend_blocks(1000);
+    sys.spend_blocks(1);
 
     let res = st.send(USERS[4], StakingAction::Withdraw(500));
     assert!(res.contains(&(USERS[4], StakingEvent::Withdrawn(500).encode())));
@@ -382,7 +372,7 @@ fn withdraw() {
         staking.total_staked -= 500;
     }
 
-    sys.spend_blocks(1000);
+    sys.spend_blocks(1);
 
     update_reward(&mut staking, time + 4000);
     let reward = calc_reward(&mut staking, &USERS[4].into());
@@ -396,7 +386,7 @@ fn withdraw() {
     assert!(res.contains(&(USERS[4], StakingEvent::Reward(reward).encode())));
     println!("Reward[4]: {:?}", res.decoded_log::<StakingEvent>());
 
-    sys.spend_blocks(2000);
+    sys.spend_blocks(2);
 
     update_reward(&mut staking, time + 6000);
     let reward = calc_reward(&mut staking, &USERS[5].into());
@@ -420,10 +410,7 @@ fn meta_tests() {
     sys.init_logger();
     let st = sys.get_program(1);
 
-    let time = SystemTime::now()
-        .duration_since(UNIX_EPOCH)
-        .expect("Time went backwards")
-        .as_secs();
+    let time = sys.block_timestamp();
 
     let mut staking = Staking {
         distribution_time: 10000,
@@ -447,7 +434,7 @@ fn meta_tests() {
 
     staking.total_staked = 1500;
 
-    sys.spend_blocks(2000);
+    sys.spend_blocks(2);
 
     let res = st.send(USERS[5], StakingAction::Stake(2000));
     assert!(res.contains(&(USERS[5], StakingEvent::StakeAccepted(2000).encode())));

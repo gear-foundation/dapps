@@ -25,13 +25,14 @@ fn init_staking(sys: &System) {
 }
 
 fn init_staking_token(sys: &System) {
-    let st_token = Program::from_file(sys, "./target/fungible_token.wasm");
+    let st_token = Program::from_file(sys, "./target/fungible_token-0.1.0.wasm");
 
     let res = st_token.send(
         USERS[3],
         InitConfig {
             name: String::from("StakingToken"),
             symbol: String::from("STK"),
+            decimals: 18,
         },
     );
 
@@ -78,13 +79,14 @@ fn init_staking_token(sys: &System) {
 }
 
 fn init_reward_token(sys: &System) {
-    let rw_token = Program::from_file(sys, "./target/fungible_token.wasm");
+    let rw_token = Program::from_file(sys, "./target/fungible_token-0.1.0.wasm");
 
     let res = rw_token.send(
         USERS[3],
         InitConfig {
             name: String::from("RewardToken"),
             symbol: String::from("RTK"),
+            decimals: 18,
         },
     );
 
