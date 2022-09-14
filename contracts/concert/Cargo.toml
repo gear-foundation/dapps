@@ -9,7 +9,7 @@ authors = ["Gear Technologies"]
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
 codec = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
 concert-io = { path = "io" }
-scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
+scale-info = { version = "2.2.0", default-features = false, features = ["derive"] }
 
 multitoken-io = { git = "https://github.com/gear-dapps/multitoken.git", tag = "0.2.0" }
 gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.2.0" }
