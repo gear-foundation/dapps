@@ -8,7 +8,7 @@ authors = ["Gear Technologies"]
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
 codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }
-scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
+scale-info = { version = "2.2.0", default-features = false, features = ["derive"] }
 primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"] }
 base-io = { path = "io" }
 types = { path = "../types/" }
