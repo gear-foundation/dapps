@@ -1,0 +1,13 @@
+[package]
+name = "gear-lib-sr25519"
+version = "0.3.0"
+authors = ["Gear Technologies"]
+edition = "2021"
+
+[dependencies.schnorrkel]
+version = "0.10.2"
+default-features = false
+features = [
+	"preaudit_deprecated",
+	"u64_backend",
+]

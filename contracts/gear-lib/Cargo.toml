@@ -1,18 +1,7 @@
-[package]
-name = "gear-lib"
-version = "0.2.0"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
-
-[dependencies]
-codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive"] }
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
-primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"] }
-scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
-sp-core = { version = "6.0.0", git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable", default-features = false, features = ["full_crypto"] }
-
 [workspace]
+resolver = "2"
 members = [
     "derive",
+    "lib",
+    "sr25519",
 ]

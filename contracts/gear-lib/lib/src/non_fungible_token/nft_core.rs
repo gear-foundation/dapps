@@ -1,6 +1,5 @@
 use crate::non_fungible_token::{delegated::*, io::*, royalties::*, state::*, token::*};
 use gstd::{exec, msg, prelude::*, ActorId};
-use sp_core::sr25519::Signature;
 
 const ZERO_ID: ActorId = ActorId::zero();
 
@@ -222,7 +221,7 @@ pub trait NFTCore: NFTStateKeeper {
             .get(&token_id)
             .expect("NonFungibleToken: token does not exist");
 
-        message.validate(&Signature(signed_approve), &owner);
+        message.validate(&signed_approve, &owner);
 
         self.get_mut()
             .token_approvals
