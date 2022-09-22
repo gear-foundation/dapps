@@ -867,8 +867,6 @@ dependencies = [
  "gtest",
  "multitoken-io",
  "parity-scale-codec",
- "primitive-types",
- "scale-info",
 ]
 
 [[package]]
@@ -878,7 +876,6 @@ dependencies = [
  "gear-lib",
  "gstd",
  "parity-scale-codec",
- "primitive-types",
  "scale-info",
 ]
 
