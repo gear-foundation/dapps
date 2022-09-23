@@ -158,9 +158,6 @@ dependencies = [
  "gstd",
  "gtest",
  "ico-io",
- "parity-scale-codec",
- "primitive-types",
- "scale-info",
 ]
 
 [[package]]
@@ -487,7 +484,6 @@ version = "0.1.0"
 dependencies = [
  "gstd",
  "parity-scale-codec",
- "primitive-types",
  "scale-info",
 ]
 
