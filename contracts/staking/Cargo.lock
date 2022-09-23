@@ -829,7 +829,6 @@ dependencies = [
  "gstd",
  "gtest",
  "parity-scale-codec",
- "primitive-types",
  "scale-info",
  "staking-io",
 ]
@@ -840,7 +839,6 @@ version = "0.1.0"
 dependencies = [
  "gstd",
  "parity-scale-codec",
- "primitive-types",
  "scale-info",
 ]
 
