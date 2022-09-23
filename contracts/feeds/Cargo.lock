@@ -132,7 +132,6 @@ version = "0.1.0"
 dependencies = [
  "gstd",
  "parity-scale-codec",
- "primitive-types",
  "scale-info",
 ]
 
@@ -299,7 +298,7 @@ dependencies = [
 [[package]]
 name = "galloc"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#ef320bf6636794d6077ed91c017ce34293c099af"
+source = "git+https://github.com/gear-tech/gear.git#0c6113075a98c45506a25a46988f66d4cb6abe6e"
 dependencies = [
  "dlmalloc",
 ]
@@ -307,7 +306,7 @@ dependencies = [
 [[package]]
 name = "gcore"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#ef320bf6636794d6077ed91c017ce34293c099af"
+source = "git+https://github.com/gear-tech/gear.git#0c6113075a98c45506a25a46988f66d4cb6abe6e"
 dependencies = [
  "gear-core-errors",
  "parity-scale-codec",
@@ -316,7 +315,7 @@ dependencies = [
 [[package]]
 name = "gear-backend-common"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#ef320bf6636794d6077ed91c017ce34293c099af"
+source = "git+https://github.com/gear-tech/gear.git#0c6113075a98c45506a25a46988f66d4cb6abe6e"
 dependencies = [
  "derive_more",
  "gear-core",
@@ -329,7 +328,7 @@ dependencies = [
 [[package]]
 name = "gear-backend-wasmi"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#ef320bf6636794d6077ed91c017ce34293c099af"
+source = "git+https://github.com/gear-tech/gear.git#0c6113075a98c45506a25a46988f66d4cb6abe6e"
 dependencies = [
  "derive_more",
  "gear-backend-common",
@@ -344,7 +343,7 @@ dependencies = [
 [[package]]
 name = "gear-core"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#ef320bf6636794d6077ed91c017ce34293c099af"
+source = "git+https://github.com/gear-tech/gear.git#0c6113075a98c45506a25a46988f66d4cb6abe6e"
 dependencies = [
  "blake2-rfc",
  "derive_more",
@@ -362,7 +361,7 @@ dependencies = [
 [[package]]
 name = "gear-core-errors"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#ef320bf6636794d6077ed91c017ce34293c099af"
+source = "git+https://github.com/gear-tech/gear.git#0c6113075a98c45506a25a46988f66d4cb6abe6e"
 dependencies = [
  "derive_more",
  "parity-scale-codec",
@@ -372,7 +371,7 @@ dependencies = [
 [[package]]
 name = "gear-core-processor"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#ef320bf6636794d6077ed91c017ce34293c099af"
+source = "git+https://github.com/gear-tech/gear.git#0c6113075a98c45506a25a46988f66d4cb6abe6e"
 dependencies = [
  "anyhow",
  "blake2-rfc",
@@ -394,10 +393,7 @@ dependencies = [
  "gear-wasm-builder",
  "gstd",
  "gtest",
- "parity-scale-codec",
- "primitive-types",
  "router-io",
- "scale-info",
 ]
 
 [[package]]
@@ -407,15 +403,13 @@ dependencies = [
  "gear-wasm-builder",
  "gstd",
  "parity-scale-codec",
- "primitive-types",
  "router-io",
- "scale-info",
 ]
 
 [[package]]
 name = "gear-wasm-builder"
 version = "0.1.2"
-source = "git+https://github.com/gear-tech/gear.git#ef320bf6636794d6077ed91c017ce34293c099af"
+source = "git+https://github.com/gear-tech/gear.git#0c6113075a98c45506a25a46988f66d4cb6abe6e"
 dependencies = [
  "anyhow",
  "cargo_metadata",
@@ -431,7 +425,7 @@ dependencies = [
 [[package]]
 name = "gstd"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#ef320bf6636794d6077ed91c017ce34293c099af"
+source = "git+https://github.com/gear-tech/gear.git#0c6113075a98c45506a25a46988f66d4cb6abe6e"
 dependencies = [
  "bs58",
  "futures",
@@ -448,7 +442,7 @@ dependencies = [
 [[package]]
 name = "gstd-codegen"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#ef320bf6636794d6077ed91c017ce34293c099af"
+source = "git+https://github.com/gear-tech/gear.git#0c6113075a98c45506a25a46988f66d4cb6abe6e"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -458,7 +452,7 @@ dependencies = [
 [[package]]
 name = "gtest"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#ef320bf6636794d6077ed91c017ce34293c099af"
+source = "git+https://github.com/gear-tech/gear.git#0c6113075a98c45506a25a46988f66d4cb6abe6e"
 dependencies = [
  "anyhow",
  "colored",
@@ -778,7 +772,6 @@ version = "0.1.0"
 dependencies = [
  "gstd",
  "parity-scale-codec",
- "primitive-types",
  "scale-info",
 ]
 
