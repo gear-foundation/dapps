@@ -83,6 +83,7 @@ fn submit_several_transactions() {
 fn submit_and_execute_automatically() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..3], 1);
+    sys.mint_to(USERS[0], 1_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -105,6 +106,7 @@ fn submit_and_execute_automatically() {
 fn submit_transaction_with_zero_destination() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..3], 2);
+    sys.mint_to(USERS[0], 10000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {

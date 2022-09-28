@@ -8,6 +8,7 @@ fn common_init<'a>(sys: &'a System, users: &[u64], required: u64) -> Program<'a>
 
     let wallet = Program::current(sys);
 
+    sys.mint_to(USERS[0], 1_000_000_000);
     wallet.send_with_value(
         USERS[0],
         MWInitConfig {
@@ -69,6 +70,7 @@ fn send_directly() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..2], 1);
 
+    sys.mint_to(USERS[0], 1_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::ReplaceOwner {

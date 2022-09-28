@@ -1,15 +1,15 @@
 [package]
-name = "app"
+name = "multisig-wallet"
 version = "0.1.0"
 edition = "2021"
-license = "GPL-3.0"
+license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive"] }
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
 multisig-wallet-io = { path = "io" }
-primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"]}
+primitive-types = { version = "0.12.0", default-features = false, features = ["scale-info"]}
 scale-info = { version = "2.2.0", default-features = false, features = ["derive"] }
 
 [dev-dependencies]

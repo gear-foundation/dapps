@@ -24,6 +24,7 @@ fn common() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..2], 1);
 
+    sys.mint_to(USERS[0], 2_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -59,6 +60,7 @@ fn try_to_send_directly() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..2], 1);
 
+    sys.mint_to(USERS[0], 1_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::RemoveOwner(USERS[1].into()).encode(),
@@ -73,6 +75,7 @@ fn try_to_remove_not_existing_owner() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..1], 1);
 
+    sys.mint_to(USERS[0], 1_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -92,6 +95,7 @@ fn try_to_remove_last_owner() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..1], 1);
 
+    sys.mint_to(USERS[0], 1_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -111,6 +115,7 @@ fn try_to_remove_the_same_owner_twice() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..2], 1);
 
+    sys.mint_to(USERS[0], 2_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -147,6 +152,7 @@ fn change_requirement() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..2], 2);
 
+    sys.mint_to(USERS[0], 2_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -190,6 +196,7 @@ fn change_requirement() {
 
     assert!(res.contains(&(USERS[0], expect.encode())));
 
+    sys.mint_to(USERS[1], 1_000_000_000);
     let res = wallet.send_with_value(
         USERS[1],
         MWAction::SubmitTransaction {
@@ -213,6 +220,7 @@ fn add_than_remove() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..3], 1);
 
+    sys.mint_to(USERS[0], 1_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {

@@ -16,6 +16,7 @@ fn common_init<'a>(sys: &'a System, users: &[u64], required: u64) -> Program<'a>
         },
     );
 
+    sys.mint_to(USERS[0], 1_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
