@@ -3,7 +3,7 @@ name = "demo-ping"
 version = "0.1.0"
 authors = ["Gear Technologies"]
 edition = "2021"
-license = "GPL-3.0"
+license = "MIT"
 
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
