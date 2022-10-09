@@ -32,7 +32,7 @@ impl Royalties {
         let mut payouts: Payout = self
             .accounts
             .iter()
-            .map(|(account, percent)| (*account, *percent as u128 * royalty_payment / 10_000))
+            .map(|(account, percent)| (*account, *percent * royalty_payment / 10_000))
             .collect();
 
         let rest = amount - royalty_payment;
