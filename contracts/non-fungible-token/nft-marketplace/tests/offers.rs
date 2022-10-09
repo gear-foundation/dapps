@@ -78,7 +78,7 @@ fn add_offer() {
     add_market_data(&market, None, USERS[0], 0, Some(100_000));
     let mut offers = vec![];
     for i in 0..9 {
-        sys.mint_to(USERS[1], 1000 * (i + 1) as u128);
+        sys.mint_to(USERS[1], 1000 * (i + 1));
         offer(&market, USERS[1], None, 1000 * (i + 1));
         let hash = get_hash(None, 1_000 * (i + 1));
         offers.push(Offer {
