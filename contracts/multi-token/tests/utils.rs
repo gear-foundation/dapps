@@ -4,7 +4,7 @@ use gstd::{ActorId, String};
 pub use gtest::{Program, System};
 use multitoken_io::*;
 
-const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
+const NFT_COUNT: u128 = 1;
 
 pub fn init_mtk(sys: &System, from: u64) {
     sys.init_logger();
@@ -44,7 +44,7 @@ pub fn mint_internal(
             from,
             MTKEvent::Transfer {
                 operator: from.into(),
-                from: ZERO_ID,
+                from: ActorId::zero(),
                 to: from.into(),
                 ids: vec![token_id],
                 amounts: vec![amount],
@@ -72,7 +72,7 @@ pub fn mint_batch_internal(
 
     let codec = MTKEvent::Transfer {
         operator: from.into(),
-        from: ZERO_ID,
+        from: ActorId::zero(),
         to: from.into(),
         ids,
         amounts,
@@ -98,7 +98,7 @@ pub fn burn_internal(mtk: &Program, from: u64, token_id: u128, amount: u128, sho
             MTKEvent::Transfer {
                 operator: from.into(),
                 from: from.into(),
-                to: ZERO_ID,
+                to: ActorId::zero(),
                 ids: vec![token_id],
                 amounts: vec![amount],
             }
@@ -119,7 +119,7 @@ pub fn burn_batch_internal(mtk: &Program, from: u64, ids: Vec<u128>, amounts: Ve
     let codec = MTKEvent::Transfer {
         operator: from.into(),
         from: from.into(),
-        to: ZERO_ID,
+        to: ActorId::zero(),
         ids,
         amounts,
     }
@@ -239,6 +239,39 @@ pub fn transfer_batch_internal(
     assert!(res.contains(&(from, codec)));
 }
 
+pub fn transform_internal(
+    mtk: &Program,
+    from: u64,
+    token_id: u128,
+    amount: u128,
+    nfts: Vec<BurnToNFT>,
+) {
+    let mut ids = vec![];
+    for burn_info in &nfts {
+        for id in &burn_info.nfts_ids {
+            ids.push(*id);
+        }
+    }
+    let res = mtk.send(
+        from,
+        MyMTKAction::Transform {
+            id: token_id,
+            amount,
+            nfts,
+        },
+    );
+
+    let codec = MTKEvent::Transfer {
+        operator: from.into(),
+        from: ActorId::zero(),
+        to: ActorId::zero(),
+        ids,
+        amounts: vec![NFT_COUNT; amount as usize],
+    }
+    .encode();
+    assert!(res.contains(&(from, codec)));
+}
+
 pub fn check_token_ids_for_owner(mtk: &Program, account: u64, ids: Vec<u128>) {
     match mtk.meta_state::<_, MTKQueryReply>(MTKQuery::TokensIDsForOwner(ActorId::from(account))) {
         Ok(MTKQueryReply::TokensIDsForOwner(true_ids)) => {
@@ -253,6 +286,7 @@ pub fn check_token_ids_for_owner(mtk: &Program, account: u64, ids: Vec<u128>) {
         }
     }
 }
+
 pub fn check_balance(mtk: &Program, account: u64, token_id: u128, balance: u128) {
     match mtk.meta_state::<_, MTKQueryReply>(MTKQuery::BalanceOf(ActorId::from(account), token_id))
     {

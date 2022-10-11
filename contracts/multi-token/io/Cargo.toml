@@ -1,6 +1,6 @@
 [package]
 name = "multitoken-io"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
@@ -9,4 +9,4 @@ authors = ["Gear Technologies"]
 codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive"] }
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
 scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.2.0"  }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.0"  }

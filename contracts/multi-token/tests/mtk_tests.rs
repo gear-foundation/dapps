@@ -1,10 +1,15 @@
+use gstd::ActorId;
 mod utils;
+use multitoken_io::BurnToNFT;
 use utils::*;
 
 const USERS: &[u64] = &[3, 4, 5, 0];
 const TOKEN_AMOUNT: u128 = 100;
 const TOKENS_TO_BURN: u128 = 50;
 const TOKEN_ID: u128 = 0;
+const TOKENS_TO_TRANSFORM: u128 = 2;
+const NFT_1_ID: u128 = 100001;
+const NFT_2_ID: u128 = 100002;
 
 #[test]
 fn mint() {
@@ -185,4 +190,34 @@ fn transfer_from_batch() {
 
     check_balance(&mtk, USERS[1], 1u128, TOKEN_AMOUNT);
     check_balance(&mtk, USERS[1], 2u128, TOKEN_AMOUNT);
+}
+
+#[test]
+fn transform() {
+    let sys = System::new();
+    init_mtk(&sys, USERS[0]);
+    let mtk = sys.get_program(1);
+    mint_internal(&mtk, USERS[0], TOKEN_AMOUNT, TOKEN_ID, None, false);
+    check_balance(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT);
+    let nfts = vec![BurnToNFT {
+        account: ActorId::from(USERS[1]),
+        nfts_ids: vec![NFT_1_ID, NFT_2_ID],
+        nfts_metadata: vec![
+            Some(TokenMetadata {
+                title: Some(String::from("Kitty")),
+                description: Some(String::from("Just a test kitty #1")),
+                media: Some(String::from("www.example.com/erc1155/kitty.png")),
+                reference: Some(String::from("www.example.com/erc1155/kitty")),
+            }),
+            Some(TokenMetadata {
+                title: Some(String::from("Kitty")),
+                description: Some(String::from("Just a test kitty #2")),
+                media: Some(String::from("www.example.com/erc1155/kitty.png")),
+                reference: Some(String::from("www.example.com/erc1155/kitty")),
+            }),
+        ],
+    }];
+    transform_internal(&mtk, USERS[0], TOKEN_ID, TOKENS_TO_TRANSFORM, nfts);
+    // check that user actually has an NFT now
+    check_balance(&mtk, USERS[1], NFT_1_ID, 1);
 }

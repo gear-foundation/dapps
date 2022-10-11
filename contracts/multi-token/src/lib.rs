@@ -4,6 +4,8 @@ use gear_lib_derive::{MTKCore, MTKTokenState, StateKeeper};
 use gstd::{msg, prelude::*, ActorId};
 use multitoken_io::*;
 
+const NFT_COUNT: u128 = 1;
+
 #[derive(Debug, Default, MTKTokenState, MTKCore, StateKeeper)]
 pub struct SimpleMTK {
     #[MTKStateKeeper]
@@ -17,6 +19,8 @@ pub trait SimpleMTKCore: MTKCore {
     fn mint(&mut self, account: ActorId, amount: u128, token_metadata: Option<TokenMetadata>);
 
     fn burn(&mut self, id: TokenId, amount: u128);
+
+    fn transform(&mut self, id: TokenId, amount: u128, nfts: Vec<BurnToNFT>);
 }
 
 static mut CONTRACT: Option<SimpleMTK> = None;
@@ -82,6 +86,9 @@ unsafe extern "C" fn handle() {
         MyMTKAction::BurnBatch { ids, amounts } => MTKCore::burn(multi_token, ids, amounts),
         MyMTKAction::Approve { account } => MTKCore::approve(multi_token, &account),
         MyMTKAction::RevokeApproval { account } => MTKCore::revoke_approval(multi_token, &account),
+        MyMTKAction::Transform { id, amount, nfts } => {
+            SimpleMTKCore::transform(multi_token, id, amount, nfts)
+        }
     }
 }
 
@@ -94,6 +101,12 @@ unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
 }
 
 impl SimpleMTKCore for SimpleMTK {
+    /// Mints a token.
+    ///
+    /// Arguments:
+    /// * `account`: Which account to mint tokens to. Default - `msg::source()`,
+    /// * `amount`: Token amount. In case of NFT - 1.
+    /// * `token_metadata`: Token metadata, only applicable when minting an NFT. Otherwise - `None`.
     fn mint(&mut self, account: ActorId, amount: u128, token_metadata: Option<TokenMetadata>) {
         MTKCore::mint(
             self,
@@ -106,11 +119,83 @@ impl SimpleMTKCore for SimpleMTK {
         self.token_id = self.token_id.saturating_add(1);
     }
 
+    /// Burns a token.
+    ///
+    /// Requirements:
+    /// * sender MUST have sufficient amount of token.
+    ///
+    /// Arguments:
+    /// * `id`: Token ID.
+    /// * `amount`: Token's amount to be burnt.
     fn burn(&mut self, id: TokenId, amount: u128) {
         MTKCore::burn(self, vec![id], vec![amount]);
         let sup = self.supply(id);
         let mut _balance = self
             .supply
             .insert(self.token_id, sup.saturating_sub(amount));
+    }
+
+    /// Transforms FT tokens to multiple NFTs.
+    ///
+    /// Requirements:
+    /// * a sender MUST have sufficient amount of tokens to burn,
+    /// * a sender MUST be the owner.
+    ///
+    /// Arguments:
+    /// * `id`: Token ID.
+    /// * `amount`: Token's amount to be burnt.
+    /// * `accounts`: To which accounts to mint NFT.
+    /// * `nft_ids`: NFTs' IDs to be minted.
+    /// * `nfts_metadata`: NFT's metadata.
+    fn transform(&mut self, id: TokenId, amount: u128, nfts: Vec<BurnToNFT>) {
+        // pre-checks
+        let mut nft_count = 0;
+        for info in &nfts {
+            nft_count += info.nfts_ids.len();
+        }
+        if amount as usize != nft_count {
+            panic!("MTK: amount of burnt tokens MUST be equal to the amount of nfts.");
+        }
+
+        // burn FT (not to produce another message - just simply use burn_impl)
+        self.assert_can_burn(&msg::source(), &id, amount);
+        self.burn_impl(&id, amount);
+
+        let sup = self.supply(id);
+        let mut _balance = self
+            .supply
+            .insert(self.token_id, sup.saturating_sub(amount));
+        let mut ids = vec![];
+
+        for burn_info in nfts {
+            if burn_info.account.is_zero() {
+                panic!("MTK: Mint to zero address");
+            }
+            if burn_info.nfts_ids.len() != burn_info.nfts_metadata.len() {
+                panic!("MTK: ids and amounts length mismatch");
+            }
+            burn_info
+                .nfts_metadata
+                .into_iter()
+                .enumerate()
+                .for_each(|(i, meta)| {
+                    self.mint_impl(&burn_info.account, &burn_info.nfts_ids[i], NFT_COUNT, meta)
+                });
+            for id in burn_info.nfts_ids {
+                ids.push(id);
+            }
+        }
+
+        msg::reply(
+            MTKEvent::Transfer {
+                operator: msg::source(),
+                from: ActorId::zero(),
+                to: ActorId::zero(),
+                ids: ids.to_vec(),
+                amounts: vec![NFT_COUNT; amount as usize],
+            },
+            0,
+        )
+        .expect("Error during a reply with MTKEvent::Transfer");
     }
 }
