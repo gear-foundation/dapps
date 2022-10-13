@@ -586,13 +586,22 @@ dependencies = [
 ]
 
 [[package]]
+name = "fixed-hash"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "835c052cb0c08c1acf6ffd71c022172e18723949c8282f2b9f27efbc51e64534"
+dependencies = [
+ "static_assertions",
+]
+
+[[package]]
 name = "ft-io"
 version = "0.1.0"
 source = "git+https://github.com/gear-dapps/fungible-token.git?tag=0.1.0#6acb28899081895eb2f3072dc3a8db1ba207b0e8"
 dependencies = [
  "gstd",
  "parity-scale-codec",
- "primitive-types",
+ "primitive-types 0.11.1",
  "scale-info",
 ]
 
@@ -695,7 +704,7 @@ dependencies = [
 [[package]]
 name = "galloc"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#e8af76fd40fb31c3acc7bae3987dd730c5b62eae"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "dlmalloc",
 ]
@@ -703,16 +712,17 @@ dependencies = [
 [[package]]
 name = "gcore"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#e8af76fd40fb31c3acc7bae3987dd730c5b62eae"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "gear-core-errors",
  "parity-scale-codec",
+ "static_assertions",
 ]
 
 [[package]]
 name = "gear-backend-common"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#e8af76fd40fb31c3acc7bae3987dd730c5b62eae"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "derive_more",
  "gear-core",
@@ -725,7 +735,7 @@ dependencies = [
 [[package]]
 name = "gear-backend-wasmi"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#e8af76fd40fb31c3acc7bae3987dd730c5b62eae"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "derive_more",
  "gear-backend-common",
@@ -740,7 +750,7 @@ dependencies = [
 [[package]]
 name = "gear-core"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#e8af76fd40fb31c3acc7bae3987dd730c5b62eae"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "blake2-rfc",
  "derive_more",
@@ -758,7 +768,7 @@ dependencies = [
 [[package]]
 name = "gear-core-errors"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#e8af76fd40fb31c3acc7bae3987dd730c5b62eae"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "derive_more",
  "parity-scale-codec",
@@ -768,7 +778,7 @@ dependencies = [
 [[package]]
 name = "gear-core-processor"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#e8af76fd40fb31c3acc7bae3987dd730c5b62eae"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "anyhow",
  "blake2-rfc",
@@ -789,7 +799,7 @@ dependencies = [
  "gear-lib-sr25519",
  "gstd",
  "parity-scale-codec",
- "primitive-types",
+ "primitive-types 0.11.1",
  "scale-info",
 ]
 
@@ -820,7 +830,7 @@ dependencies = [
 [[package]]
 name = "gear-wasm-builder"
 version = "0.1.2"
-source = "git+https://github.com/gear-tech/gear.git#e8af76fd40fb31c3acc7bae3987dd730c5b62eae"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "anyhow",
  "cargo_metadata",
@@ -879,7 +889,7 @@ dependencies = [
 [[package]]
 name = "gstd"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#e8af76fd40fb31c3acc7bae3987dd730c5b62eae"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "bs58",
  "futures",
@@ -889,14 +899,15 @@ dependencies = [
  "gstd-codegen",
  "hex",
  "parity-scale-codec",
- "primitive-types",
+ "primitive-types 0.11.1",
  "scale-info",
+ "static_assertions",
 ]
 
 [[package]]
 name = "gstd-codegen"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#e8af76fd40fb31c3acc7bae3987dd730c5b62eae"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -906,7 +917,7 @@ dependencies = [
 [[package]]
 name = "gtest"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#e8af76fd40fb31c3acc7bae3987dd730c5b62eae"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "anyhow",
  "colored",
@@ -1177,7 +1188,7 @@ dependencies = [
  "gstd",
  "nft-io",
  "parity-scale-codec",
- "primitive-types",
+ "primitive-types 0.11.1",
  "scale-info",
  "sp-core-hashing 4.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1239,7 +1250,7 @@ dependencies = [
  "hex-literal",
  "nft-io",
  "parity-scale-codec",
- "primitive-types",
+ "primitive-types 0.11.1",
  "scale-info",
  "sp-core",
 ]
@@ -1251,7 +1262,7 @@ dependencies = [
  "gear-lib",
  "gstd",
  "parity-scale-codec",
- "primitive-types",
+ "primitive-types 0.11.1",
  "scale-info",
 ]
 
@@ -1267,7 +1278,7 @@ dependencies = [
  "market-io",
  "nft-io",
  "parity-scale-codec",
- "primitive-types",
+ "primitive-types 0.12.0",
  "scale-info",
  "sp-core-hashing 4.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
 ]
@@ -1351,7 +1362,7 @@ dependencies = [
  "gtest",
  "on-chain-nft-io",
  "parity-scale-codec",
- "primitive-types",
+ "primitive-types 0.11.1",
  "scale-info",
 ]
 
@@ -1362,7 +1373,7 @@ dependencies = [
  "gear-lib",
  "gstd",
  "parity-scale-codec",
- "primitive-types",
+ "primitive-types 0.11.1",
  "scale-info",
 ]
 
@@ -1431,7 +1442,7 @@ dependencies = [
  "impl-trait-for-tuples",
  "parity-util-mem-derive",
  "parking_lot",
- "primitive-types",
+ "primitive-types 0.11.1",
  "winapi",
 ]
 
@@ -1535,9 +1546,21 @@ version = "0.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e28720988bff275df1f51b171e1b2a18c30d194c4d2b61defdacecd625a5d94a"
 dependencies = [
- "fixed-hash",
+ "fixed-hash 0.7.0",
  "impl-codec",
  "impl-serde",
+ "scale-info",
+ "uint",
+]
+
+[[package]]
+name = "primitive-types"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5cfd65aea0c5fa0bfcc7c9e7ca828c921ef778f43d325325ec84bda371bfa75a"
+dependencies = [
+ "fixed-hash 0.8.0",
+ "impl-codec",
  "scale-info",
  "uint",
 ]
@@ -1680,18 +1703,18 @@ dependencies = [
 
 [[package]]
 name = "ref-cast"
-version = "1.0.10"
+version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b8ebf632f3e32bf35133f620cf481f29c99ae0fb01450fd3d85eee0225274ec1"
+checksum = "70d392892f272751a9ab8dbcdb379092be98acc6331d029fbb8643eff11d3315"
 dependencies = [
  "ref-cast-impl",
 ]
 
 [[package]]
 name = "ref-cast-impl"
-version = "1.0.10"
+version = "1.0.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "caab98faa75ce294d40512ce514a46b15eafe78d72c9397a68ea45b3a88201b6"
+checksum = "213c2951ea9c3641b1044acbce5510fdceae2caf3d853c3a79dc2d7d51e138fb"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1995,7 +2018,7 @@ dependencies = [
  "parity-scale-codec",
  "parity-util-mem",
  "parking_lot",
- "primitive-types",
+ "primitive-types 0.11.1",
  "rand 0.7.3",
  "regex",
  "scale-info",
@@ -2074,7 +2097,7 @@ dependencies = [
  "bytes",
  "impl-trait-for-tuples",
  "parity-scale-codec",
- "primitive-types",
+ "primitive-types 0.11.1",
  "sp-externalities",
  "sp-runtime-interface-proc-macro",
  "sp-std 4.0.0 (git+https://github.com/gear-tech/substrate.git?branch=gear-stable)",
@@ -2152,9 +2175,9 @@ checksum = "7f6002a767bff9e83f8eeecf883ecb8011875a21ae8da43bffb817a57e78cc09"
 
 [[package]]
 name = "ss58-registry"
-version = "1.31.0"
+version = "1.33.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1de151faef619cb7b5c26b32d42bc7ddccac0d202beb7a84344b44e9232b92f7"
+checksum = "3ab7554f8a8b6f8d71cd5a8e6536ef116e2ce0504cf97ebf16311d58065dc8a6"
 dependencies = [
  "Inflector",
  "num-format",
