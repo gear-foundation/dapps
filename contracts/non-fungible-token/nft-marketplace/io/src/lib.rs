@@ -36,6 +36,8 @@ pub struct Bid {
 
 #[derive(Debug, Encode, Decode, TypeInfo, Clone, Default)]
 pub struct Item {
+    pub nft_contract_id: ActorId,
+    pub token_id: U256,
     pub owner_id: ActorId,
     pub ft_contract_id: Option<ActorId>,
     pub price: Option<u128>,

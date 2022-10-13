@@ -48,6 +48,8 @@ impl Market {
                 item.ft_contract_id = ft_contract_id
             })
             .or_insert(Item {
+                nft_contract_id: *nft_contract_id,
+                token_id,
                 owner_id: msg::source(),
                 ft_contract_id,
                 price: None,

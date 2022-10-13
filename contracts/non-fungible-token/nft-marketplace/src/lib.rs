@@ -65,6 +65,8 @@ impl Market {
                 item.ft_contract_id = ft_contract_id
             })
             .or_insert(Item {
+                nft_contract_id: *nft_contract_id,
+                token_id,
                 owner_id: msg::source(),
                 ft_contract_id,
                 price,
@@ -246,9 +248,9 @@ unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
             let contract_and_token_id =
                 format!("{}{}", H256::from_slice(nft_contract_id.as_ref()), token_id);
             if let Some(item) = market.items.get(&contract_and_token_id) {
-                StateReply::ItemInfo(item.clone()).encode()
+                StateReply::ItemInfo(Box::new(item.clone())).encode()
             } else {
-                StateReply::ItemInfo(Item::default()).encode()
+                StateReply::ItemInfo(Box::new(Item::default())).encode()
             }
         }
     };

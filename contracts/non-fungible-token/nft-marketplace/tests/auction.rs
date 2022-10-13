@@ -213,6 +213,8 @@ fn settle_auction() {
     assert!(res.contains(&(
         USERS[0],
         MarketEvent::ItemInfo(Item {
+            nft_contract_id: 2.into(),
+            token_id: 0.into(),
             owner_id: USERS[3].into(),
             ft_contract_id: None,
             price: None,
@@ -307,7 +309,6 @@ fn settle_auction_failures() {
     assert!(res.main_failed());
 }
 
-#[test]
 fn auction_with_ft_token() {
     let sys = System::new();
     sys.init_logger();
@@ -379,6 +380,8 @@ fn auction_with_ft_token() {
     assert!(res.contains(&(
         USERS[0],
         MarketEvent::ItemInfo(Item {
+            nft_contract_id: 2.into(),
+            token_id: 0.into(),
             owner_id: USERS[3].into(),
             ft_contract_id: Some(1.into()),
             price: None,

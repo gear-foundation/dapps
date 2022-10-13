@@ -16,5 +16,5 @@ pub enum State {
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum StateReply {
     AllItems(Vec<Item>),
-    ItemInfo(Item),
+    ItemInfo(Box<Item>),
 }

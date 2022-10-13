@@ -11,7 +11,7 @@ pub const TREASURY_ID: u64 = 8;
 pub fn init_ft(sys: &System) {
     let ft = Program::from_file(sys, "../target/fungible_token-0.1.0.wasm");
 
-    let res = ft.send(
+    ft.send(
         USERS[0],
         InitConfig {
             name: String::from("MyToken"),
@@ -20,7 +20,6 @@ pub fn init_ft(sys: &System) {
         },
     );
 
-    assert!(res.log().is_empty());
 }
 
 pub fn init_nft(sys: &System) {
