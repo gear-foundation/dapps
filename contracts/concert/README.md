@@ -23,7 +23,7 @@ Concert application.
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/concert/releases/tag/build).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/concert/releases).
 
 ## Building Locally
 
@@ -84,4 +84,4 @@ make
 
 ## License
 
-The source code is licensed under [MIT license](LICENSE).
+The source code is licensed under the [MIT license](LICENSE).

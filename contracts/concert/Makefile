@@ -26,16 +26,16 @@ init:
 
 linter:
 	@echo ──────────── Run linter ───────────────────────
-	@cargo +nightly clippy --all-targets -- --no-deps -D warnings -A "clippy::missing_safety_doc"
+	@cargo +nightly clippy --all-targets -- --no-deps -D warnings
 
 pre-commit: fmt linter test
 
 test: build
 	@\
-	if [ ! -f "./target/multitoken.wasm" ]; then\
+	if [ ! -f "./target/multitoken-0.3.1.opt.wasm" ]; then\
 	    curl -L\
-	        "https://github.com/gear-dapps/multitoken/releases/download/build/multitoken.wasm"\
-	        -o "./target/multitoken.wasm";\
+	        "https://github.com/gear-dapps/multitoken/releases/download/0.3.1/multitoken-0.3.1.opt.wasm"\
+	        -o "./target/multitoken-0.3.1.opt.wasm";\
 	fi
 	@echo ──────────── Run tests ────────────────────────
 	@cargo +nightly test --release

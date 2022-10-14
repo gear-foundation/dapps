@@ -1,12 +1,12 @@
 #![no_std]
 
-use codec::{Decode, Encode};
 use gear_lib::multitoken::io::*;
 use gstd::{prelude::*, ActorId};
-use scale_info::TypeInfo;
 
 // Concert related stuff
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ConcertAction {
     Create {
         creator: ActorId,
@@ -23,6 +23,8 @@ pub enum ConcertAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ConcertEvent {
     Creation {
         creator: ActorId,
@@ -40,6 +42,8 @@ pub enum ConcertEvent {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ConcertStateQuery {
     CurrentConcert,
     Buyers,
@@ -47,6 +51,8 @@ pub enum ConcertStateQuery {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ConcertStateReply {
     CurrentConcert {
         name: String,
@@ -64,6 +70,8 @@ pub enum ConcertStateReply {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitConcert {
     pub owner_id: ActorId,
     pub mtk_contract: ActorId,

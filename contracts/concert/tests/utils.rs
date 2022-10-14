@@ -19,7 +19,7 @@ pub fn init_system() -> System {
 
 pub fn init_concert(sys: &System) -> Program {
     let concert_program = Program::current(sys);
-    let mtk_program = Program::from_file(sys, "./target/multitoken.wasm");
+    let mtk_program = Program::from_file(sys, "./target/multitoken-0.3.1.opt.wasm");
     let res = mtk_program.send(
         USER,
         InitConfig {
