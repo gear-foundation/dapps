@@ -1,8 +1,7 @@
 #![no_std]
 
-use codec::Encode;
 use core::cmp::min;
-use gstd::{exec, exec::block_timestamp, msg, prelude::*, ActorId};
+use gstd::{exec, msg, prelude::*, ActorId};
 use nft_io::{NFTAction, NFTEvent};
 use primitive_types::U256;
 
@@ -37,7 +36,7 @@ impl Auction {
             panic!("already bought or auction expired");
         }
 
-        if block_timestamp() >= self.expires_at {
+        if exec::block_timestamp() >= self.expires_at {
             panic!("auction expired");
         }
 
@@ -70,7 +69,7 @@ impl Auction {
 
     fn token_price(&self) -> u128 {
         // time_elapsed is in seconds
-        let time_elapsed = block_timestamp().saturating_sub(self.started_at) / 1000;
+        let time_elapsed = exec::block_timestamp().saturating_sub(self.started_at) / 1000;
         let discount = min(
             self.discount_rate * (time_elapsed as u128),
             self.starting_price,
@@ -95,8 +94,8 @@ impl Auction {
             .await;
 
         self.status = Status::IsRunning;
-        self.started_at = block_timestamp();
-        self.expires_at = block_timestamp() + duration_in_seconds * 1000;
+        self.started_at = exec::block_timestamp();
+        self.expires_at = self.started_at + duration_in_seconds * 1000;
         self.nft.token_id = config.token_id;
         self.nft.contract_id = config.nft_contract_actor_id;
         self.nft.owner = Self::get_token_owner(config.nft_contract_actor_id, config.token_id).await;
@@ -151,7 +150,7 @@ impl Auction {
     }
 
     fn stop_if_time_is_over(&mut self) {
-        if self.is_active() && block_timestamp() >= self.expires_at {
+        if self.is_active() && exec::block_timestamp() >= self.expires_at {
             self.status = Status::Expired;
         }
     }
@@ -189,7 +188,7 @@ impl Auction {
             starting_price: self.starting_price,
             current_price: self.token_price(),
             discount_rate: self.discount_rate,
-            time_left: self.expires_at.saturating_sub(block_timestamp()),
+            time_left: self.expires_at.saturating_sub(exec::block_timestamp()),
             status: self.status.clone(),
         }
     }
@@ -206,17 +205,17 @@ gstd::metadata! {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn init() {
+extern "C" fn init() {
     let auction = Auction {
         owner: msg::source(),
         ..Default::default()
     };
 
-    AUCTION = Some(auction)
+    unsafe { AUCTION = Some(auction) };
 }
 
 #[gstd::async_main]
-async unsafe fn main() {
+async fn main() {
     let action: Action = msg::load().expect("Could not load Action");
     let auction: &mut Auction = unsafe { AUCTION.get_or_insert(Auction::default()) };
 
@@ -230,9 +229,9 @@ async unsafe fn main() {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
+extern "C" fn meta_state() -> *mut [i32; 2] {
     let query: State = msg::load().expect("failed to decode input argument");
-    let auction: &mut Auction = AUCTION.get_or_insert(Auction::default());
+    let auction: &mut Auction = unsafe { AUCTION.get_or_insert(Auction::default()) };
 
     auction.stop_if_time_is_over();
 

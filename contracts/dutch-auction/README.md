@@ -12,7 +12,7 @@
 [build_badge]: https://github.com/gear-dapps/dutch-auction/workflows/Build/badge.svg
 [build_href]: https://github.com/gear-dapps/dutch-auction/actions/workflows/build.yml
 
-[lic_badge]: https://img.shields.io/badge/License-GPL%203.0-success
+[lic_badge]: https://img.shields.io/badge/License-MIT-success
 [lic_href]: https://github.com/gear-dapps/dutch-auction/blob/master/LICENSE
 
 <!-- Description starts here -->
@@ -23,7 +23,7 @@ A Dutch auction is one of several types of auctions for buying or selling goods.
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/dutch-auction/releases/tag/build).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/dutch-auction/releases).
 
 ## Building Locally
 
@@ -84,4 +84,4 @@ make
 
 ## License
 
-The source code is licensed under [GPL v3.0 license](LICENSE).
+The source code is licensed under the [MIT license](LICENSE).

@@ -1,6 +1,6 @@
 use auction_io::*;
-use codec::Encode;
 use gear_lib::non_fungible_token::token::{TokenId, TokenMetadata};
+use gstd::Encode;
 use gtest::{Log, Program, RunResult, System};
 
 pub const USERS: &[u64] = &[4, 5, 6];
@@ -36,7 +36,7 @@ pub fn init(sys: &System) -> Program {
 }
 
 pub fn init_nft(sys: &System, owner: u64) {
-    let nft_program = Program::from_file(sys, "./target/nft.wasm");
+    let nft_program = Program::from_file(sys, "./target/nft-0.2.1.opt.wasm");
 
     let res = nft_program.send(
         owner,

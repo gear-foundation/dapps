@@ -1,11 +1,11 @@
 #![no_std]
 
-use codec::{Decode, Encode};
 use gstd::{prelude::*, ActorId};
 use primitive_types::U256;
-use scale_info::TypeInfo;
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Action {
     Buy,
     Create(CreateConfig),
@@ -13,6 +13,8 @@ pub enum Action {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Event {
     AuctionStarted {
         token_owner: ActorId,
@@ -29,6 +31,8 @@ pub enum Event {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Duration {
     pub hours: u64,
     pub minutes: u64,
@@ -36,6 +40,8 @@ pub struct Duration {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct CreateConfig {
     pub nft_contract_actor_id: ActorId,
     pub token_id: U256,

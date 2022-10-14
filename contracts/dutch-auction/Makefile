@@ -26,11 +26,11 @@ init:
 
 linter:
 	@echo ──────────── Run linter ───────────────────────
-	@cargo +nightly clippy --all-targets -- --no-deps -D warnings -A "clippy::missing_safety_doc"
+	@cargo +nightly clippy --all-targets -- --no-deps -D warnings
 
 pre-commit: fmt linter test
 
 test: build
-	@if [ ! -f "./target/nft.wasm" ]; then wget "https://github.com/gear-dapps/non-fungible-token/releases/download/build/nft.wasm" -O "./target/nft.wasm"; fi
+	@if [ ! -f "./target/nft-0.2.1.opt.wasm" ]; then wget "https://github.com/gear-dapps/non-fungible-token/releases/download/0.2.1/nft-0.2.1.opt.wasm" -O "./target/nft-0.2.1.opt.wasm"; fi
 	@echo ──────────── Run tests ────────────────────────
 	@cargo +nightly test --release

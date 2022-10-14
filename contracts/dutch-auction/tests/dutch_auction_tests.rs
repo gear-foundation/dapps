@@ -1,6 +1,5 @@
 use auction_io::*;
-use codec::Encode;
-use gstd::ActorId;
+use gstd::{ActorId, Encode};
 use gtest::{Log, System};
 
 mod routines;
