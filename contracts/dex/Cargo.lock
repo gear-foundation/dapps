@@ -243,9 +243,6 @@ dependencies = [
  "gstd",
  "gtest",
  "num",
- "parity-scale-codec",
- "primitive-types",
- "scale-info",
 ]
 
 [[package]]
