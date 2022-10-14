@@ -1,6 +1,5 @@
-use codec::Encode;
 pub use gear_lib::multitoken::{io::*, state::*};
-use gstd::{ActorId, String};
+use gstd::{ActorId, Encode, String};
 pub use gtest::{Program, System};
 use multitoken_io::*;
 

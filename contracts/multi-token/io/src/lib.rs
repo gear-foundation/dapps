@@ -1,12 +1,12 @@
 #![no_std]
 
-use codec::{Decode, Encode};
 use gear_lib::multitoken::io::*;
 use gstd::{prelude::*, ActorId};
-use scale_info::TypeInfo;
 
 /// Transform to NFT piece of data.
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct BurnToNFT {
     /// To which account mint NFTs.
     pub account: ActorId,
@@ -17,6 +17,8 @@ pub struct BurnToNFT {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum MyMTKAction {
     /// Mints a token.
     ///
@@ -173,6 +175,8 @@ pub enum MyMTKAction {
 /// Initializes a Multitoken.
 ///
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitMTK {
     /// Multitoken name.
     pub name: String,

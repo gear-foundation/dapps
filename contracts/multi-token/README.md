@@ -148,7 +148,7 @@ https://docs.openzeppelin.com/contracts/4.x/api/token/erc1155
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/multitoken/releases/tag/build).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/multitoken/releases).
 
 ## Building Locally
 
@@ -209,4 +209,4 @@ make
 
 ## License
 
-The source code is licensed under [GPL v3.0 license](LICENSE).
+The source code is licensed under the [MIT license](LICENSE).
