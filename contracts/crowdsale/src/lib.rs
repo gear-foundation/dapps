@@ -219,7 +219,7 @@ impl IcoContract {
 }
 
 #[gstd::async_main]
-async unsafe fn main() {
+async fn main() {
     let action: IcoAction = msg::load().expect("Unable to decode SaleAction");
     let ico: &mut IcoContract = unsafe { ICO_CONTRACT.get_or_insert(Default::default()) };
 
@@ -256,7 +256,7 @@ fn check_input(config: &IcoAction) {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn init() {
+extern "C" fn init() {
     let config: IcoInit = msg::load().expect("Unable to decode ICOInit");
 
     asserts::not_zero_address(&config.token_address, "Init token address");
@@ -268,7 +268,7 @@ pub unsafe extern "C" fn init() {
         ..Default::default()
     };
 
-    ICO_CONTRACT = Some(ico);
+    unsafe { ICO_CONTRACT = Some(ico) };
 }
 
 gstd::metadata! {
@@ -284,11 +284,11 @@ gstd::metadata! {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
+extern "C" fn meta_state() -> *mut [i32; 2] {
     let time_now: u64 = exec::block_timestamp();
 
     let state: StateIco = msg::load().expect("failed to decode State");
-    let ico: &mut IcoContract = ICO_CONTRACT.get_or_insert(IcoContract::default());
+    let ico: &mut IcoContract = unsafe { ICO_CONTRACT.get_or_insert(IcoContract::default()) };
 
     let encoded = match state {
         StateIco::CurrentPrice => {

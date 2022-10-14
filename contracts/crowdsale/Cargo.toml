@@ -6,7 +6,7 @@ license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
+gstd = { git = "https://github.com/gear-tech/gear.git" }
 ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.0" }
 ico-io = { path = "io" }
 
