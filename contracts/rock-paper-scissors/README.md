@@ -1,38 +1,29 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-academy/app" target="_blank">
+  <a href="https://gitpod.io/#https://github.com/gear-academy/rock-paper-scissors" target="_blank">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
 
-# Gear Template App
+# Rock Paper Scissors
 
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
 
-[build_badge]: https://github.com/gear-academy/app/workflows/Build/badge.svg
-[build_href]: https://github.com/gear-academy/app/actions/workflows/build.yml
+[build_badge]: https://github.com/gear-academy/rock-paper-scissors/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-academy/rock-paper-scissors/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-MIT-success
-[lic_href]: https://github.com/gear-academy/app/blob/master/LICENSE
+[lic_href]: https://github.com/gear-academy/rock-paper-scissors/blob/master/LICENSE
 
 <!-- Description starts here -->
 
-Template application. Use this repository as a template when creating a new application repo.
-
-> https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template
+Rock Paper Scissors (also known by other orderings of the three items, with "rock" sometimes being called "stone", or as Rochambeau, roshambo, or ro-sham-bo) is a hand game originating from China, usually played between two people, in which each player simultaneously forms one of three shapes with an outstretched hand.
 
 <!-- End of description -->
 
-## Initial checklist after creating a new repo
-
-- [ ] Change app name in `Cargo.toml`
-- [ ] Fix Gitpod/badge/releases links in `README.md` (replace `gear-academy/app` with `gear-academy/<my-new-app>`)
-- [ ] Add description in `README.md`
-- [ ] Remove this section
-
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-academy/app/releases/tag/build).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-academy/app/releases).
 
 ## Building Locally
 
@@ -93,4 +84,4 @@ make
 
 ## License
 
-The source code is licensed under [MIT license](LICENSE).
+The source code is licensed under the [MIT license](LICENSE).

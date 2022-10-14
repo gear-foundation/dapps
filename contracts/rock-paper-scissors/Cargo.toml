@@ -7,8 +7,6 @@ authors = ["Gear Technologies"]
 
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
-scale-info = { version = "2.2.0", default-features = false, features = ["derive"] }
-primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"] }
 sp-core-hashing = { version = "4.0.0", default-features = false }
 rps-io = { path = "io" }
 

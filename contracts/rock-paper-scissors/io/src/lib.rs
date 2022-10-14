@@ -1,8 +1,6 @@
 #![no_std]
 
-use codec::{Decode, Encode};
 use gstd::{prelude::*, ActorId};
-use scale_info::TypeInfo;
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
 pub enum Move {

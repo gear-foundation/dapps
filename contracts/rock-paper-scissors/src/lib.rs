@@ -94,7 +94,7 @@ impl RPSGame {
 }
 
 #[no_mangle]
-unsafe extern "C" fn init() {
+extern "C" fn init() {
     let config: GameConfig = msg::load().expect("Could not load Action");
     debug!("init(): {:?}", config);
 
@@ -107,13 +107,13 @@ unsafe extern "C" fn init() {
         ..Default::default()
     };
 
-    RPS_GAME = Some(game);
+    unsafe { RPS_GAME = Some(game) };
 }
 
 #[no_mangle]
-unsafe extern "C" fn handle() {
+extern "C" fn handle() {
     let action: Action = msg::load().expect("Could not load Action");
-    let game: &mut RPSGame = RPS_GAME.get_or_insert(RPSGame::default());
+    let game: &mut RPSGame = unsafe { RPS_GAME.get_or_insert(RPSGame::default()) };
 
     game.change_stage_by_timeout_if_needed();
 
@@ -127,9 +127,9 @@ unsafe extern "C" fn handle() {
 }
 
 #[no_mangle]
-unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
+extern "C" fn meta_state() -> *mut [i32; 2] {
     let query: State = msg::load().expect("failed to decode input argument");
-    let game: &RPSGame = RPS_GAME.get_or_insert(RPSGame::default());
+    let game: &RPSGame = unsafe { RPS_GAME.get_or_insert(RPSGame::default()) };
 
     let encoded = match query {
         State::Config => StateReply::Config(game.game_config.clone()),
@@ -147,7 +147,7 @@ unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
 gstd::metadata! {
     title: "RockPaperScissors",
     init:
-        input : GameConfig,
+        input: GameConfig,
     handle:
         input: Action,
         output: Event,
