@@ -79,7 +79,7 @@ impl Factory {
 
         // create program
         let factory_id = &exec::program_id();
-        let program_id = ProgramGenerator::create_program(
+        let (_, program_id) = ProgramGenerator::create_program(
             self.pair_code_hash.into(),
             InitPair {
                 factory: *factory_id,

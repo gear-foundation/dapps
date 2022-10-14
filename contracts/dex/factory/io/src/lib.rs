@@ -8,6 +8,8 @@ pub type FungibleId = ActorId;
 /// Initializes a factory.
 ///
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitFactory {
     /// The address that can actually set the fee.
     pub fee_to_setter: ActorId,
@@ -16,6 +18,8 @@ pub struct InitFactory {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum FactoryAction {
     /// Creates an exchange pair
     ///
@@ -55,6 +59,8 @@ pub enum FactoryAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum FactoryEvent {
     PairCreated {
         /// The first token address
@@ -72,6 +78,8 @@ pub enum FactoryEvent {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum FactoryStateQuery {
     FeeTo,
     FeeToSetter,
@@ -84,6 +92,8 @@ pub enum FactoryStateQuery {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum FactoryStateReply {
     FeeTo { address: ActorId },
     FeeToSetter { address: ActorId },

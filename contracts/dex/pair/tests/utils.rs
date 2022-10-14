@@ -27,7 +27,7 @@ pub fn init_factory(sys: &System, user: u64, fee_setter: u64) -> Program {
 
 pub fn init_ft(sys: &System, user: u64, name: String, symbol: String, id: u64) -> Program {
     sys.init_logger();
-    let ft_program = Program::from_file_with_id(sys, id, "../target/fungible_token.wasm");
+    let ft_program = Program::from_file_with_id(sys, id, "../target/fungible_token-0.1.1.wasm");
     assert!(ft_program
         .send(
             user,
