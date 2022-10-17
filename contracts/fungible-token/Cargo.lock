@@ -313,7 +313,7 @@ dependencies = [
 [[package]]
 name = "galloc"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "dlmalloc",
 ]
@@ -321,7 +321,7 @@ dependencies = [
 [[package]]
 name = "gcore"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "gear-core-errors",
  "parity-scale-codec",
@@ -331,7 +331,7 @@ dependencies = [
 [[package]]
 name = "gear-backend-common"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "derive_more",
  "gear-core",
@@ -344,7 +344,7 @@ dependencies = [
 [[package]]
 name = "gear-backend-wasmi"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "derive_more",
  "gear-backend-common",
@@ -359,7 +359,7 @@ dependencies = [
 [[package]]
 name = "gear-core"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "blake2-rfc",
  "derive_more",
@@ -377,7 +377,7 @@ dependencies = [
 [[package]]
 name = "gear-core-errors"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "derive_more",
  "parity-scale-codec",
@@ -387,7 +387,7 @@ dependencies = [
 [[package]]
 name = "gear-core-processor"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "anyhow",
  "blake2-rfc",
@@ -403,7 +403,7 @@ dependencies = [
 [[package]]
 name = "gear-wasm-builder"
 version = "0.1.2"
-source = "git+https://github.com/gear-tech/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "anyhow",
  "cargo_metadata",
@@ -419,7 +419,7 @@ dependencies = [
 [[package]]
 name = "gstd"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "bs58",
  "futures",
@@ -437,7 +437,7 @@ dependencies = [
 [[package]]
 name = "gstd-codegen"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -447,7 +447,7 @@ dependencies = [
 [[package]]
 name = "gtest"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
+source = "git+https://github.com/gear-dapps/gear.git?rev=6471eb93#6471eb93ef2a628e51ae29c3f0d60b236defe473"
 dependencies = [
  "anyhow",
  "colored",
@@ -720,9 +720,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.46"
+version = "1.0.47"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94e2ef8dbfc347b10c094890f778ee2e36ca9bb4262e86dc99cd217e35f3470b"
+checksum = "5ea3d908b0e36316caf9e9e2c4625cdde190a7e6f440d794667ed17a1855e725"
 dependencies = [
  "unicode-ident",
 ]

@@ -30,8 +30,8 @@ jobs:
 
       - name: 'Install binaryen'
         run: |
-          sudo wget -c https://github.com/WebAssembly/binaryen/releases/download/version_105/binaryen-version_105-x86_64-linux.tar.gz -O - | sudo tar -xz -C .
-          sudo cp binaryen-version_105/bin/wasm-opt /usr/bin/
+          wget -c https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O - | tar -xz -C .
+          sudo cp binaryen-version_110/bin/wasm-opt /usr/bin/
 
       - name: Check fmt
         run: make fmt-check
