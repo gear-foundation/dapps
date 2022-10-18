@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-dapps/non-fungible-token" target="_blank">
+  <a href="https://gitpod.io/#https://github.com/gear-dapps/on-chain-nft" target="_blank">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
@@ -9,14 +9,14 @@
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
 
-[build_badge]: https://github.com/gear-dapps/non-fungible-token/workflows/Build/badge.svg
-[build_href]: https://github.com/gear-dapps/non-fungible-token/actions/workflows/build.yml
+[build_badge]: https://github.com/gear-dapps/on-chain-nft/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-dapps/on-chain-nft/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-MIT-success
-[lic_href]: https://github.com/gear-dapps/non-fungible-token/blob/master/LICENSE
+[lic_href]: https://github.com/gear-dapps/on-chain-nft/blob/master/LICENSE
 
 
-An example of simple NFT.
+An example of On-chain NFT.
 
 ## Prebuilt Binaries
 
