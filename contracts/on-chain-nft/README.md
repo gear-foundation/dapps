@@ -4,7 +4,7 @@
   </a>
 </p>
 
-# Non Fungible token
+# On-chain NFT
 
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
