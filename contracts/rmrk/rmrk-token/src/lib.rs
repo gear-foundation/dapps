@@ -84,7 +84,7 @@ unsafe extern "C" fn init() {
         ..RMRKToken::default()
     };
     if let Some(resource_hash) = config.resource_hash {
-        let resource_id = ProgramGenerator::create_program(
+        let (_message_id, resource_id) = ProgramGenerator::create_program(
             resource_hash.into(),
             InitResource {
                 resource_name: config.resource_name,
