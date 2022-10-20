@@ -1,0 +1,17 @@
+[package]
+name = "ft-main"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gstd = { git = "https://github.com/gear-tech/gear.git" }
+ft-logic-io = { path = "../ft-logic/io" }
+ft-main-io = { path = "io" }
+primitive-types = { version = "0.11.1", default-features = false }
+sp-core-hashing = { version = "4.0.0", default-features = false }
+
+[build-dependencies]
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+
+[dev-dependencies]
+gtest = { git = "https://github.com/gear-tech/gear.git" }
