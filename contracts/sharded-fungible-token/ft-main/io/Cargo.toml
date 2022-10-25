@@ -7,5 +7,5 @@ edition = "2021"
 codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false }
 gstd = { git = "https://github.com/gear-tech/gear.git" }
 scale-info = { version = "2.0.1", default-features = false }
-primitive-types = { version = "0.11.1", default-features = false }
+primitive-types = { version = "0.12.0", default-features = false }
 ft-logic-io = { path = "../../ft-logic/io" }

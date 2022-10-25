@@ -1,6 +1,6 @@
 #![no_std]
 use ft_logic_io::*;
-use gstd::{debug, exec, msg, prelude::*, prog::ProgramGenerator, ActorId};
+use gstd::{exec, msg, prelude::*, prog::ProgramGenerator, ActorId};
 mod instruction;
 use instruction::*;
 mod messages;
@@ -278,7 +278,6 @@ impl FTLogic {
             )
             .expect("Error in creating Storage program");
             self.id_to_storage.insert(id, address);
-            debug!("STORAGE ADDRESS {:?}", address);
             address
         }
     }
@@ -338,7 +337,6 @@ async fn main() {
 
 #[no_mangle]
 unsafe extern "C" fn init() {
-    debug!("INIT FT LOFIC");
     let init_config: InitFTLogic = msg::load().expect("Unable to decode `InitFTLogic`");
     let ft_logic = FTLogic {
         admin: init_config.admin,
