@@ -1,10 +1,10 @@
 use alloc::string::String;
-use codec::{Decode, Encode};
-use gstd::{prelude::Vec, ActorId};
+use gstd::{prelude::*, ActorId};
 use primitive_types::U256;
-use scale_info::TypeInfo;
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum State {
     ConfirmationsCount(U256),
     TransactionsCount {
@@ -24,6 +24,8 @@ pub enum State {
 }
 
 #[derive(Debug, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {
     ConfirmationCount(u64),
     TransactionsCount(u64),

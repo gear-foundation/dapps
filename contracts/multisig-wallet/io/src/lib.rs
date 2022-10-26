@@ -1,11 +1,11 @@
 #![no_std]
 
-use codec::{Decode, Encode};
 use gstd::{prelude::*, ActorId};
 use primitive_types::U256;
-use scale_info::TypeInfo;
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum MWAction {
     AddOwner(ActorId),
     RemoveOwner(ActorId),
@@ -26,6 +26,8 @@ pub enum MWAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum MWEvent {
     Confirmation {
         sender: ActorId,
@@ -55,6 +57,8 @@ pub enum MWEvent {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct MWInitConfig {
     pub owners: Vec<ActorId>,
     pub required: u64,

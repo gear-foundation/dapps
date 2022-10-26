@@ -1,7 +1,7 @@
-use codec::Encode;
-use gstd::ActorId;
+use gstd::{ActorId, Encode};
 use gtest::{Program, System};
 use multisig_wallet_io::*;
+
 const USERS: &[u64] = &[3, 4, 5, 6];
 const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
 

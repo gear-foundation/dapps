@@ -1,6 +1,7 @@
-use codec::Encode;
+use gstd::Encode;
 use gtest::{Program, System};
 use multisig_wallet_io::*;
+
 const USERS: &[u64] = &[3, 4, 5, 6];
 
 fn common_init<'a>(sys: &'a System, users: &[u64], required: u64) -> Program<'a> {

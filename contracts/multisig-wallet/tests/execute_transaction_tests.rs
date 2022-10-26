@@ -1,6 +1,7 @@
-use codec::Encode;
+use gstd::Encode;
 use gtest::{Program, System};
 use multisig_wallet_io::*;
+
 const USERS: &[u64] = &[3, 4, 5, 6];
 
 // We can test execute transaction only in case when we change a required confirmations count
