@@ -1,6 +1,5 @@
 #![no_std]
 
-use codec::{Decode, Encode};
 use gstd::{prelude::*, ActorId};
 
 #[derive(Debug, Decode, Encode, TypeInfo, Clone)]

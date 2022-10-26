@@ -1,8 +1,6 @@
 #![no_std]
-use codec::{Decode, Encode};
 pub use dao_io::*;
 use gstd::{exec, msg, prelude::*, ActorId, String};
-use scale_info::TypeInfo;
 pub mod state;
 use state::*;
 pub mod ft_messages;
@@ -527,17 +525,17 @@ impl Dao {
 gstd::metadata! {
     title: "DAO",
     init:
-        input : InitDao,
+        input: InitDao,
     handle:
-        input : DaoAction,
-        output : DaoEvent,
+        input: DaoAction,
+        output: DaoEvent,
     state:
         input: State,
         output: StateReply,
 }
 
 #[no_mangle]
-unsafe extern "C" fn init() {
+extern "C" fn init() {
     let config: InitDao = msg::load().expect("Unable to decode InitDao");
     let mut dao = Dao {
         admin: config.admin,
@@ -560,13 +558,13 @@ unsafe extern "C" fn init() {
     );
     dao.member_by_delegate_key
         .insert(config.admin, config.admin);
-    DAO = Some(dao);
+    unsafe { DAO = Some(dao) };
 }
 
 #[gstd::async_main]
-async unsafe fn main() {
+async fn main() {
     let action: DaoAction = msg::load().expect("Could not load Action");
-    let dao: &mut Dao = unsafe { DAO.get_or_insert(Dao::default()) };
+    let dao: &mut Dao = unsafe { DAO.get_or_insert(Default::default()) };
     match action {
         DaoAction::AddToWhiteList(account) => dao.add_to_whitelist(&account),
         DaoAction::SubmitMembershipProposal {
@@ -618,9 +616,9 @@ async unsafe fn main() {
 }
 
 #[no_mangle]
-unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
+extern "C" fn meta_state() -> *mut [i32; 2] {
     let state: State = msg::load().expect("failed to decode input argument");
-    let dao: &mut Dao = DAO.get_or_insert(Dao::default());
+    let dao: &mut Dao = unsafe { DAO.get_or_insert(Default::default()) };
     let encoded = match state {
         State::IsMember(account) => StateReply::IsMember(dao.is_member(&account)),
         State::IsInWhitelist(account) => {
