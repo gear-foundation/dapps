@@ -1,16 +1,18 @@
 #![no_std]
 
-use codec::{Decode, Encode};
 use gstd::{prelude::*, ActorId};
-use scale_info::TypeInfo;
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Clone, PartialEq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Player {
     pub player_id: ActorId,
     pub balance: u128,
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum LtAction {
     Enter(u128),
     StartLottery {
@@ -24,6 +26,8 @@ pub enum LtAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum LtEvent {
     LotteryState {
         lottery_owner: ActorId,
@@ -41,6 +45,8 @@ pub enum LtEvent {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum LtState {
     GetWinners,
     GetPlayers,
@@ -49,6 +55,8 @@ pub enum LtState {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo, PartialEq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum LtStateReply {
     Winners(BTreeMap<u32, ActorId>),
     Players(BTreeMap<u32, Player>),

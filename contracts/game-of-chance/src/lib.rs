@@ -12,13 +12,13 @@ mod token_tests;
 #[cfg(test)]
 mod meta_tests;
 
-use codec::{Decode, Encode};
 use ft_io::*;
 use gstd::{debug, exec, msg, prelude::*, ActorId};
 use lt_io::*;
-use scale_info::TypeInfo;
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 struct Lottery {
     lottery_owner: ActorId,
     lottery_started: bool,

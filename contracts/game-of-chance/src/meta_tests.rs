@@ -4,8 +4,7 @@ extern crate std;
 use std::println;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use codec::Encode;
-use gstd::{ActorId, BTreeMap};
+use gstd::{ActorId, BTreeMap, Encode};
 use gtest::{Program, System};
 use lt_io::*;
 const USERS: &[u64] = &[3, 4, 5];
@@ -72,7 +71,7 @@ fn meta_tests() {
     let expected_players: LtStateReply = lt
         .meta_state(LtState::GetPlayers)
         .expect("Error in reading meta_state");
-    println!("meta players: {:?}", expected_players,);
+    println!("meta players: {expected_players:?}");
 
     assert_eq!(expected_players, LtStateReply::Players(players.clone()));
 

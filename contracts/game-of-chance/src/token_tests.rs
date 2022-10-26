@@ -3,9 +3,8 @@ extern crate std;
 #[cfg(test)]
 use std::println;
 
-use codec::Encode;
 use ft_io::*;
-use gstd::String;
+use gstd::{Encode, String};
 use gtest::{Program, System};
 use lt_io::*;
 const USERS: &[u64] = &[1, 2, 3, 4, 5];
@@ -20,7 +19,7 @@ fn init_lottery(sys: &System) {
 }
 
 fn init_fungible_token(sys: &System) {
-    let ft = Program::from_file(sys, "./target/fungible_token-0.1.0.wasm");
+    let ft = Program::from_file(sys, "./target/fungible_token-0.1.2.wasm");
 
     let res = ft.send(
         USERS[2],

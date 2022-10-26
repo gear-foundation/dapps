@@ -4,8 +4,7 @@ extern crate std;
 use std::println;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use codec::Encode;
-use gstd::BTreeMap;
+use gstd::{BTreeMap, Encode};
 use gtest::{Program, System};
 use lt_io::*;
 const USERS: &[u64] = &[3, 4, 5, 0];
@@ -67,7 +66,7 @@ fn start_lottery() {
     );
     assert!(res.main_failed());
 
-    println!("time: {}", time);
+    println!("time: {time}");
 
     let res = lt.send(USERS[0], LtAction::LotteryState);
     assert!(res.contains(&(USERS[0], state.encode())));
