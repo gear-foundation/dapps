@@ -1,6 +1,5 @@
-use codec::Encode;
 use ft_io::*;
-use gstd::String;
+use gstd::{Encode, String};
 use gtest::{Program, System};
 const USERS: &[u64] = &[3, 4, 5];
 

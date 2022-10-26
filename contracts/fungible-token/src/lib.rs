@@ -150,9 +150,9 @@ gstd::metadata! {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn handle() {
+extern "C" fn handle() {
     let action: FTAction = msg::load().expect("Could not load Action");
-    let ft: &mut FungibleToken = FUNGIBLE_TOKEN.get_or_insert(FungibleToken::default());
+    let ft: &mut FungibleToken = unsafe { FUNGIBLE_TOKEN.get_or_insert(Default::default()) };
     match action {
         FTAction::Mint(amount) => {
             ft.mint(amount);
@@ -177,21 +177,21 @@ pub unsafe extern "C" fn handle() {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn init() {
+extern "C" fn init() {
     let config: InitConfig = msg::load().expect("Unable to decode InitConfig");
     let ft = FungibleToken {
         name: config.name,
         symbol: config.symbol,
         decimals: config.decimals,
-        ..FungibleToken::default()
+        ..Default::default()
     };
-    FUNGIBLE_TOKEN = Some(ft);
+    unsafe { FUNGIBLE_TOKEN = Some(ft) };
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
+extern "C" fn meta_state() -> *mut [i32; 2] {
     let query: State = msg::load().expect("failed to decode input argument");
-    let ft: &mut FungibleToken = FUNGIBLE_TOKEN.get_or_insert(FungibleToken::default());
+    let ft: &mut FungibleToken = unsafe { FUNGIBLE_TOKEN.get_or_insert(Default::default()) };
     debug!("{:?}", query);
     let encoded = match query {
         State::Name => StateReply::Name(ft.name.clone()),
@@ -208,6 +208,8 @@ pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum State {
     Name,
     Symbol,
@@ -217,6 +219,8 @@ pub enum State {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {
     Name(String),
     Symbol(String),

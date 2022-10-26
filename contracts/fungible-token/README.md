@@ -80,4 +80,4 @@ make
 
 ## License
 
-The source code is licensed under [MIT license](LICENSE).
+The source code is licensed under the [MIT license](LICENSE).

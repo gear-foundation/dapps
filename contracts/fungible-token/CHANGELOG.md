@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2022-10-26
+### Changed
+- Updated `gstd`, `gtest`, `gear-wasm-builder` to the current commit hash (`#d4552434`).
+
 ## [0.1.1] - 2022-09-20
 ### Changed
 - `gstd, gtest, gear-wasm-builder` are temporarily attached to a particular commit.
@@ -14,6 +18,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/fungible-token/compare/0.1.1...HEAD
+[Unreleased]: https://github.com/gear-dapps/fungible-token/compare/0.1.2...HEAD
+[0.1.2]: https://github.com/gear-dapps/fungible-token/compare/0.1.1...0.1.2
 [0.1.1]: https://github.com/gear-dapps/fungible-token/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/gear-dapps/fungible-token/compare/a0eac6e...0.1.0
