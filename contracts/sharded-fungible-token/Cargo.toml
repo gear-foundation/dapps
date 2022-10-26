@@ -5,3 +5,9 @@ members = [
     "ft-main",
     "ft-storage",
 ]
+
+[patch.'https://github.com/gear-tech/gear.git']
+gcore = { git = "https://github.com/gear-dapps/gear.git", features = ["debug"], rev = "d4552434" }
+gstd = { git = "https://github.com/gear-dapps/gear.git", features = ["debug"], rev = "d4552434" }
+gtest = { git = "https://github.com/gear-dapps/gear.git", rev = "d4552434" }
+gear-wasm-builder = { git = "https://github.com/gear-dapps/gear.git", rev = "d4552434" }
