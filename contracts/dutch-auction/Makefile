@@ -31,6 +31,6 @@ linter:
 pre-commit: fmt linter test
 
 test: build
-	@if [ ! -f "./target/nft-0.2.1.opt.wasm" ]; then wget "https://github.com/gear-dapps/non-fungible-token/releases/download/0.2.1/nft-0.2.1.opt.wasm" -O "./target/nft-0.2.1.opt.wasm"; fi
+	@if [ ! -f "./target/nft-0.2.3.opt.wasm" ]; then wget "https://github.com/gear-dapps/non-fungible-token/releases/download/0.2.3/nft-0.2.3.opt.wasm" -O "./target/nft-0.2.3.opt.wasm"; fi
 	@echo ──────────── Run tests ────────────────────────
 	@cargo +nightly test --release

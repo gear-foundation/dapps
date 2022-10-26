@@ -36,7 +36,7 @@ pub fn init(sys: &System) -> Program {
 }
 
 pub fn init_nft(sys: &System, owner: u64) {
-    let nft_program = Program::from_file(sys, "./target/nft-0.2.1.opt.wasm");
+    let nft_program = Program::from_file(sys, "./target/nft-0.2.3.opt.wasm");
 
     let res = nft_program.send(
         owner,
