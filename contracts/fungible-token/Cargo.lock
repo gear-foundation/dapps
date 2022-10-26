@@ -223,14 +223,14 @@ dependencies = [
 
 [[package]]
 name = "ft-io"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "gstd",
 ]
 
 [[package]]
 name = "fungible-token"
-version = "0.1.0"
+version = "0.1.2"
 dependencies = [
  "ft-io",
  "gear-wasm-builder",
