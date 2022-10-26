@@ -1,6 +1,4 @@
-use codec::{Decode, Encode};
 use gstd::{prelude::*, ActorId};
-use scale_info::TypeInfo;
 
 #[derive(Debug, Default)]
 pub struct FTState {

@@ -69,7 +69,7 @@ pub trait MTKTokenState: StateKeeper {
         self.get()
             .base_uri
             .clone()
-            .replace("{id}", &format!("{}", id))
+            .replace("{id}", &format!("{id}"))
     }
 
     fn get_metadata(&self, id: TokenId) -> TokenMetadata {

@@ -1,13 +1,13 @@
 [package]
 name = "gear-lib"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive"] }
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
+codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
 primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"] }
-scale-info = { version = "2.2.0", default-features = false, features = ["derive"] }
+scale-info = { version = "2.2.0", default-features = false }
 sr25519 = { package = "gear-lib-sr25519", path = "../sr25519" }

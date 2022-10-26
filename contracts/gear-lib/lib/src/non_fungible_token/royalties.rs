@@ -1,5 +1,4 @@
 use gstd::{prelude::*, ActorId};
-use scale_info::TypeInfo;
 
 pub type Payout = BTreeMap<ActorId, u128>;
 

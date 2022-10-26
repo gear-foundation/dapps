@@ -1,6 +1,5 @@
-use codec::{Decode, Encode};
 use gstd::{prelude::*, ActorId};
-use scale_info::TypeInfo;
+
 pub type TokenId = u128;
 
 #[derive(Debug, Decode, Encode, TypeInfo, Default, Clone, PartialEq, Eq)]

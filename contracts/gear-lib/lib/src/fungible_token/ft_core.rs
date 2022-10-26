@@ -1,5 +1,6 @@
 use crate::fungible_token::{io::*, state::*};
 use gstd::{msg, prelude::*, ActorId};
+
 const ZERO_ID: ActorId = ActorId::zero();
 
 pub trait FTCore: FTStateKeeper {
