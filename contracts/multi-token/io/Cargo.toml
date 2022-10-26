@@ -1,10 +1,10 @@
 [package]
 name = "multitoken-io"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.0"  }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.1"  }
