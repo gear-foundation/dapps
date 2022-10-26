@@ -1,6 +1,7 @@
 use gear_lib::non_fungible_token::token::*;
 use gtest::{Program, RunResult, System};
 use nft_io::*;
+
 const USERS: &[u64] = &[3, 4, 5];
 
 pub fn init_nft(sys: &System) {

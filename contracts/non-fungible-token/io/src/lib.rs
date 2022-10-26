@@ -1,17 +1,17 @@
 #![no_std]
 
-use codec::{Decode, Encode};
 use gear_lib::non_fungible_token::{
     io::{NFTApproval, NFTTransfer, NFTTransferPayout},
     royalties::*,
     token::*,
 };
 use gstd::{prelude::*, ActorId};
-use scale_info::TypeInfo;
 
 pub use gear_lib::non_fungible_token::delegated::DelegatedApproveMessage;
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum NFTAction {
     Mint {
         token_metadata: TokenMetadata,
@@ -46,6 +46,8 @@ pub enum NFTAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitNFT {
     pub name: String,
     pub symbol: String,
@@ -54,6 +56,8 @@ pub struct InitNFT {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum NFTEvent {
     Transfer(NFTTransfer),
     TransferPayout(NFTTransferPayout),

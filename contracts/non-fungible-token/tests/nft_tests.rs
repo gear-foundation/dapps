@@ -1,7 +1,6 @@
-use codec::Encode;
 use gear_lib::non_fungible_token::delegated::DelegatedApproveMessage;
 use gear_lib::non_fungible_token::io::*;
-use gstd::ActorId;
+use gstd::{ActorId, Encode};
 use gtest::System;
 mod utils;
 use hex_literal::hex;

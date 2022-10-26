@@ -6,11 +6,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.3] - 2022-10-26
+### Changed
+- Updated `gstd`, `gtest`, `gear-wasm-builder` to the current commit hash (`#d4552434`).
+
 ## [0.2.2] - 2022-10-18
 ### Changed
 - remove `marketplace` and `on-chain-nft` from shared workspace
 - use a temporary `patch` in cargo.toml to build contact
-
 
 ## [0.2.1] - 2022-09-20
 ### Changed
@@ -24,7 +27,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.1...HEAD
+[Unreleased]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.3...HEAD
+[0.2.3]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.2...0.2.3
+[0.2.2]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.1...0.2.2
 [0.2.1]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/gear-dapps/non-fungible-token/compare/0.1.0...0.2.0
 [0.1.0]: https://github.com/gear-dapps/non-fungible-token/compare/ee684b1...0.1.0
