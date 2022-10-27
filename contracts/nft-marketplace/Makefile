@@ -32,6 +32,6 @@ pre-commit: fmt linter test
 
 test: build
 	@if [ ! -f "./target/fungible_token.wasm" ]; then curl -L "https://github.com/gear-dapps/fungible-token/releases/download/0.1.2/fungible_token-0.1.2.opt.wasm" -o "./target/fungible_token.wasm"; fi
-	@if [ ! -f "./target/nft.wasm" ]; then curl -L "https://github.com/gear-dapps/non-fungible-token/releases/download/0.2.2/nft-0.2.2.opt.wasm" -o "./target/nft.wasm"; fi
+	@if [ ! -f "./target/nft.wasm" ]; then curl -L "https://github.com/gear-dapps/non-fungible-token/releases/download/0.2.3/nft-0.2.3.opt.wasm" -o "./target/nft.wasm"; fi
 	@echo ──────────── Run tests ────────────────────────
 	@cargo +nightly test --release

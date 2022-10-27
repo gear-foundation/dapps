@@ -1,27 +1,21 @@
 [package]
 name = "nft-marketplace"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "d4552434" }
 primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"] }
-nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.1" }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.0" }
+nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.3" }
+ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.2" }
 market-io = { path = "io" }
 sp-core-hashing = { version = "4.0.0", default-features = false }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.0" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.1" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
-
-[patch.'https://github.com/gear-tech/gear.git']
-gtest = { git = "https://github.com/gear-dapps/gear.git", rev = "6471eb93" }
-gear-wasm-builder = { git = "https://github.com/gear-dapps/gear.git", rev = "6471eb93" }
-gcore = { git = "https://github.com/gear-dapps/gear.git", features = ["debug"], rev = "6471eb93" }
-gstd = { git = "https://github.com/gear-dapps/gear.git", features = ["debug"], rev = "6471eb93" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
