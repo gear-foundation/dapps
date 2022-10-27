@@ -26,11 +26,11 @@ init:
 
 linter:
 	@echo ──────────── Run linter ───────────────────────
-	@cargo +nightly clippy --all-targets -- --no-deps -D warnings -A "clippy::missing_safety_doc"
+	@cargo +nightly clippy --all-targets -- --no-deps -D warnings
 
 pre-commit: fmt linter test
 
 test: build
-	@if [ ! -f "./target/fungible_token-0.1.0.wasm" ]; then wget "https://github.com/gear-dapps/fungible-token/releases/download/0.1.0/fungible_token-0.1.0.wasm" -O "./target/fungible_token-0.1.0.wasm"; fi
+	@if [ ! -f "./target/fungible_token-0.1.2.wasm" ]; then wget "https://github.com/gear-dapps/fungible-token/releases/download/0.1.2/fungible_token-0.1.2.wasm" -O "./target/fungible_token-0.1.2.wasm"; fi
 	@echo ──────────── Run tests ────────────────────────
 	@cargo +nightly test --release

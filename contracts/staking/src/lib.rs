@@ -6,6 +6,8 @@ use scale_info::TypeInfo;
 use staking_io::*;
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 struct Staking {
     owner: ActorId,
     staking_token_address: ActorId,
@@ -209,7 +211,7 @@ impl Staking {
 }
 
 #[gstd::async_main]
-async unsafe fn main() {
+async fn main() {
     let staking = unsafe { STAKING.get_or_insert(Staking::default()) };
 
     let action: StakingAction = msg::load().expect("Could not load Action");
@@ -235,7 +237,7 @@ async unsafe fn main() {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn init() {
+extern "C" fn init() {
     let config: InitStaking = msg::load().expect("Unable to decode InitConfig");
 
     let mut staking = Staking {
@@ -244,13 +246,13 @@ pub unsafe extern "C" fn init() {
     };
 
     staking.update_staking(config);
-    STAKING = Some(staking);
+    unsafe { STAKING = Some(staking) };
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
+extern "C" fn meta_state() -> *mut [i32; 2] {
     let query: StakingState = msg::load().expect("failed to decode input argument");
-    let staking = STAKING.get_or_insert(Staking::default());
+    let staking = unsafe { STAKING.get_or_insert(Staking::default()) };
 
     let encoded = match query {
         StakingState::GetStakers => StakingStateReply::Stakers(staking.stakers.clone()).encode(),
