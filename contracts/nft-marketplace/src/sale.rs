@@ -5,7 +5,7 @@ use primitive_types::{H256, U256};
 impl Market {
     pub async fn buy_item(&mut self, nft_contract_id: &ActorId, token_id: U256) {
         let contract_and_token_id =
-            format!("{}{}", H256::from_slice(nft_contract_id.as_ref()), token_id);
+            format!("{}{token_id}", H256::from_slice(nft_contract_id.as_ref()));
         let item = self
             .items
             .get_mut(&contract_and_token_id)

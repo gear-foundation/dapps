@@ -1,10 +1,8 @@
 #![no_std]
 
-use codec::{Decode, Encode};
 use gstd::{exec, msg, prelude::*, ActorId};
 pub use market_io::*;
 use primitive_types::{H256, U256};
-use scale_info::TypeInfo;
 pub mod nft_messages;
 use nft_messages::*;
 pub mod auction;
@@ -21,6 +19,8 @@ const MAX_TREASURT_FEE: u8 = 5;
 pub const BASE_PERCENT: u8 = 100;
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Market {
     pub admin_id: ActorId,
     pub treasury_id: ActorId,
@@ -53,7 +53,7 @@ impl Market {
         self.check_approved_nft_contract(nft_contract_id);
         self.check_approved_ft_contract(ft_contract_id);
         let contract_and_token_id =
-            format!("{}{}", H256::from_slice(nft_contract_id.as_ref()), token_id);
+            format!("{}{token_id}", H256::from_slice(nft_contract_id.as_ref()));
         self.on_auction(&contract_and_token_id);
 
         nft_approve(nft_contract_id, &exec::program_id(), token_id).await;
@@ -108,7 +108,7 @@ impl Market {
 }
 
 #[gstd::async_main]
-async unsafe fn main() {
+async fn main() {
     let action: MarketAction = msg::load().expect("Could not load Action");
     let market: &mut Market = unsafe { MARKET.get_or_insert(Market::default()) };
     match action {
@@ -139,7 +139,7 @@ async unsafe fn main() {
             token_id,
         } => {
             let contract_and_token_id =
-                format!("{}{}", H256::from_slice(nft_contract_id.as_ref()), token_id);
+                format!("{}{token_id}", H256::from_slice(nft_contract_id.as_ref()));
             let item = market
                 .items
                 .get(&contract_and_token_id)
@@ -207,7 +207,7 @@ async unsafe fn main() {
 }
 
 #[no_mangle]
-unsafe extern "C" fn init() {
+extern "C" fn init() {
     let config: InitMarket = msg::load().expect("Unable to decode InitConfig");
     if config.treasury_fee == MIN_TREASURY_FEE || config.treasury_fee > MAX_TREASURT_FEE {
         panic!("Wrong treasury fee");
@@ -216,9 +216,9 @@ unsafe extern "C" fn init() {
         admin_id: config.admin_id,
         treasury_id: config.treasury_id,
         treasury_fee: config.treasury_fee,
-        ..Market::default()
+        ..Default::default()
     };
-    MARKET = Some(market);
+    unsafe { MARKET = Some(market) };
 }
 
 gstd::metadata! {
@@ -234,9 +234,9 @@ title: "NFTMarketplace",
 }
 
 #[no_mangle]
-unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
+extern "C" fn meta_state() -> *mut [i32; 2] {
     let state: State = msg::load().expect("failed to decode input argument");
-    let market: &mut Market = MARKET.get_or_insert(Market::default());
+    let market: &mut Market = unsafe { MARKET.get_or_insert(Market::default()) };
     let encoded = match state {
         State::AllItems => StateReply::AllItems(market.items.values().cloned().collect()).encode(),
         State::ItemInfo {
@@ -244,7 +244,7 @@ unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
             token_id,
         } => {
             let contract_and_token_id =
-                format!("{}{}", H256::from_slice(nft_contract_id.as_ref()), token_id);
+                format!("{}{token_id}", H256::from_slice(nft_contract_id.as_ref()));
             if let Some(item) = market.items.get(&contract_and_token_id) {
                 StateReply::ItemInfo(item.clone()).encode()
             } else {

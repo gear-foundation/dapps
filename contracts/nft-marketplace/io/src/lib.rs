@@ -1,8 +1,6 @@
 #![no_std]
-use codec::{Decode, Encode};
 use gstd::{prelude::*, ActorId};
 use primitive_types::{H256, U256};
-use scale_info::TypeInfo;
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub struct InitMarket {
@@ -142,8 +140,8 @@ pub enum MarketAction {
     /// * `nft_contract_id`: the NFT contract address.
     /// * `token_id`: the NFT id.
     /// * `price`: the offered price.
-    ///  
-    /// On success replies [`MarketEvent::BidAdded`].   
+    ///
+    /// On success replies [`MarketEvent::BidAdded`].
     AddBid {
         nft_contract_id: ActorId,
         token_id: U256,
@@ -158,7 +156,7 @@ pub enum MarketAction {
     /// Arguments:
     /// * `nft_contract_id`: the NFT contract address
     /// * `token_id`: the NFT id
-    ///   
+    ///
     /// On successful auction replies [`MarketEvent::AuctionSettled`].
     /// If no bids were made replies [`MarketEvent::AuctionCancelled`].
     SettleAuction {
@@ -181,7 +179,7 @@ pub enum MarketAction {
     /// * `ft_contract_id`: the FT contract address
     /// * `token_id`: the NFT id
     /// * `price`: the offer price
-    ///     
+    ///
     /// On success replies [`MarketEvent::OfferAdded`].
     AddOffer {
         nft_contract_id: ActorId,
@@ -221,7 +219,7 @@ pub enum MarketAction {
     /// * `nft_contract_id`: the NFT contract address
     /// * `token_id`: the NFT id
     /// * `offer_hash`: the offer hash that includes the offer price and the address of fungible token contract.
-    ///      
+    ///
     /// On success replies [`MarketEvent::OfferAccepted`].
     AcceptOffer {
         nft_contract_id: ActorId,

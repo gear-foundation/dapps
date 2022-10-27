@@ -629,7 +629,7 @@ dependencies = [
 
 [[package]]
 name = "market-io"
-version = "0.2.1"
+version = "0.1.0"
 dependencies = [
  "gstd",
  "nft-io",
@@ -677,7 +677,7 @@ dependencies = [
 
 [[package]]
 name = "nft-marketplace"
-version = "0.2.1"
+version = "0.1.0"
 dependencies = [
  "ft-io",
  "gear-lib",
@@ -686,9 +686,7 @@ dependencies = [
  "gtest",
  "market-io",
  "nft-io",
- "parity-scale-codec",
  "primitive-types",
- "scale-info",
  "sp-core-hashing",
 ]
 

@@ -1,7 +1,6 @@
-use codec::Encode;
 use ft_io::*;
 use gear_lib::non_fungible_token::token::*;
-use gstd::ActorId;
+use gstd::{ActorId, Encode};
 use gtest::{Program, System};
 use market_io::*;
 use nft_io::*;

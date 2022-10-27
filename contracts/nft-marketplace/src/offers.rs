@@ -20,7 +20,7 @@ impl Market {
         price: u128,
     ) {
         let contract_and_token_id =
-            format!("{}{}", H256::from_slice(nft_contract_id.as_ref()), token_id);
+            format!("{}{token_id}", H256::from_slice(nft_contract_id.as_ref()));
         self.check_approved_ft_contract(ft_contract_id);
         self.on_auction(&contract_and_token_id);
         let item = self
@@ -77,7 +77,7 @@ impl Market {
         offer_hash: H256,
     ) {
         let contract_and_token_id =
-            format!("{}{}", H256::from_slice(nft_contract_id.as_ref()), token_id);
+            format!("{}{token_id}", H256::from_slice(nft_contract_id.as_ref()));
         self.on_auction(&contract_and_token_id);
         let item = self
             .items
@@ -131,7 +131,7 @@ impl Market {
 
     pub async fn withdraw(&mut self, nft_contract_id: &ActorId, token_id: U256, offer_hash: H256) {
         let contract_and_token_id =
-            format!("{}{}", H256::from_slice(nft_contract_id.as_ref()), token_id);
+            format!("{}{token_id}", H256::from_slice(nft_contract_id.as_ref()));
         let item = self
             .items
             .get_mut(&contract_and_token_id)

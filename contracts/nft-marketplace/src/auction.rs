@@ -22,7 +22,7 @@ impl Market {
         self.check_approved_nft_contract(nft_contract_id);
         self.check_approved_ft_contract(ft_contract_id);
         let contract_and_token_id =
-            format!("{}{}", H256::from_slice(nft_contract_id.as_ref()), token_id);
+            format!("{}{token_id}", H256::from_slice(nft_contract_id.as_ref()));
         self.on_auction(&contract_and_token_id);
         if bid_period < MIN_BID_PERIOD || duration < MIN_BID_PERIOD {
             panic!("bid period or auction duration can't be less than 1 minute");
@@ -74,13 +74,13 @@ impl Market {
     /// Arguments:
     /// * `nft_contract_id`: the NFT contract address
     /// * `token_id`: the NFT id
-    ///   
+    ///
     /// On success auction replies [`MarketEvent::AuctionSettled`].
     /// If no bids were made replies [`MarketEvent::AuctionCancelled`].
 
     pub async fn settle_auction(&mut self, nft_contract_id: &ActorId, token_id: U256) {
         let contract_and_token_id =
-            format!("{}{}", H256::from_slice(nft_contract_id.as_ref()), token_id);
+            format!("{}{token_id}", H256::from_slice(nft_contract_id.as_ref()));
         let item = self
             .items
             .get_mut(&contract_and_token_id)
@@ -141,7 +141,7 @@ impl Market {
 
     pub async fn add_bid(&mut self, nft_contract_id: &ActorId, token_id: U256, price: u128) {
         let contract_and_token_id =
-            format!("{}{}", H256::from_slice(nft_contract_id.as_ref()), token_id);
+            format!("{}{token_id}", H256::from_slice(nft_contract_id.as_ref()));
 
         let item = self
             .items

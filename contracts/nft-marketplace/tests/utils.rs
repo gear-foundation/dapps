@@ -1,6 +1,5 @@
-use codec::Encode;
 use ft_io::*;
-use gstd::ActorId;
+use gstd::{ActorId, Encode};
 use gtest::{Program, System};
 use market_io::*;
 use nft_io::*;
