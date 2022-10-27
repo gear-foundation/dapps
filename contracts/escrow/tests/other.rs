@@ -5,10 +5,37 @@ use utils::*;
 fn two_different_escrows() {
     let system = init_system();
     let escrow_program = init_escrow(&system);
-    let ft_program = init_ft(&system);
+    let ft_program = Program::ftoken(WALLET[0] as u64, FT_PROGRAM_ID, &system);
 
-    mint(&ft_program, BUYER[0], AMOUNT[0] + AMOUNT_REMAINDER);
-    mint(&ft_program, BUYER[1], AMOUNT[1] + AMOUNT_REMAINDER);
+    ft_program.mint(
+        0,
+        WALLET[0] as u64,
+        BUYER[0],
+        AMOUNT[0] + AMOUNT_REMAINDER,
+        false,
+    );
+    ft_program.approve(
+        1,
+        BUYER[0],
+        ESCROW_PROGRAM_ID,
+        AMOUNT[0] + AMOUNT_REMAINDER,
+        false,
+    );
+
+    ft_program.mint(
+        2,
+        WALLET[0] as u64,
+        BUYER[1],
+        AMOUNT[1] + AMOUNT_REMAINDER,
+        false,
+    );
+    ft_program.approve(
+        3,
+        BUYER[1],
+        ESCROW_PROGRAM_ID,
+        AMOUNT[1] + AMOUNT_REMAINDER,
+        false,
+    );
 
     check::create(
         &escrow_program,
@@ -48,8 +75,8 @@ fn two_different_escrows() {
         },
     );
 
-    check::deposit(&escrow_program, WALLET[0], BUYER[0]);
-    check::deposit(&escrow_program, WALLET[1], BUYER[1]);
+    check::deposit(&escrow_program, WALLET[0], BUYER[0], 0);
+    check::deposit(&escrow_program, WALLET[1], BUYER[1], 1);
 
     check::info(
         &escrow_program,
@@ -72,8 +99,8 @@ fn two_different_escrows() {
         },
     );
 
-    check::confirm(&escrow_program, WALLET[0], BUYER[0]);
-    check::confirm(&escrow_program, WALLET[1], BUYER[1]);
+    check::confirm(&escrow_program, WALLET[0], BUYER[0], 2);
+    check::confirm(&escrow_program, WALLET[1], BUYER[1], 3);
 
     check::info(
         &escrow_program,
@@ -96,20 +123,21 @@ fn two_different_escrows() {
         },
     );
 
-    check_balance(&ft_program, BUYER[0], AMOUNT_REMAINDER);
-    check_balance(&ft_program, BUYER[1], AMOUNT_REMAINDER);
+    ft_program.check_balance(BUYER[0], AMOUNT_REMAINDER);
+    ft_program.check_balance(BUYER[1], AMOUNT_REMAINDER);
 
-    check_balance(&ft_program, SELLER[0], AMOUNT[0]);
-    check_balance(&ft_program, SELLER[1], AMOUNT[1]);
+    ft_program.check_balance(SELLER[0], AMOUNT[0]);
+    ft_program.check_balance(SELLER[1], AMOUNT[1]);
 }
 
 #[test]
 fn reuse_after_refund() {
     let system = init_system();
     let escrow_program = init_escrow(&system);
-    let ft_program = init_ft(&system);
+    let ft_program = Program::ftoken(WALLET[0] as u64, FT_PROGRAM_ID, &system);
 
-    mint(&ft_program, BUYER[0], AMOUNT[0]);
+    ft_program.mint(0, WALLET[0] as u64, BUYER[0], AMOUNT[0], false);
+    ft_program.approve(1, BUYER[0], ESCROW_PROGRAM_ID, AMOUNT[0], false);
     check::create(
         &escrow_program,
         WALLET[0],
@@ -118,13 +146,14 @@ fn reuse_after_refund() {
         SELLER[0],
         AMOUNT[0],
     );
-    check::deposit(&escrow_program, WALLET[0], BUYER[0]);
+    check::deposit(&escrow_program, WALLET[0], BUYER[0], 0);
 
-    check::refund(&escrow_program, WALLET[0], SELLER[0]);
-    check_balance(&ft_program, BUYER[0], AMOUNT[0]);
+    check::refund(&escrow_program, WALLET[0], SELLER[0], 1);
+    ft_program.check_balance(BUYER[0], AMOUNT[0]);
 
-    check::deposit(&escrow_program, WALLET[0], BUYER[0]);
-    check::confirm(&escrow_program, WALLET[0], BUYER[0]);
+    ft_program.approve(2, BUYER[0], ESCROW_PROGRAM_ID, AMOUNT[0], false);
+    check::deposit(&escrow_program, WALLET[0], BUYER[0], 2);
+    check::confirm(&escrow_program, WALLET[0], BUYER[0], 3);
 }
 
 #[test]
@@ -132,7 +161,7 @@ fn interact_with_non_existend_wallet() {
     let system = init_system();
     let escrow_program = init_escrow(&system);
 
-    fail::deposit(&escrow_program, NONEXISTENT_WALLET, BUYER[0]);
+    fail::deposit(&escrow_program, NONEXISTENT_WALLET, BUYER[0], false);
     fail::cancel(&escrow_program, NONEXISTENT_WALLET, BUYER[0]);
     fail::refund(&escrow_program, NONEXISTENT_WALLET, BUYER[0]);
     fail::confirm(&escrow_program, NONEXISTENT_WALLET, BUYER[0]);

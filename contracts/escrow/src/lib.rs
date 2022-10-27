@@ -1,14 +1,42 @@
 #![no_std]
 
 use escrow_io::*;
-use ft_io::{FTAction, FTEvent};
+use ft_main_io::*;
 use gstd::{async_main, exec, msg, prelude::*, ActorId};
 
-async fn transfer_tokens(ft_program_id: ActorId, from: ActorId, to: ActorId, amount: u128) {
-    msg::send_for_reply_as::<_, FTEvent>(ft_program_id, FTAction::Transfer { from, to, amount }, 0)
-        .expect("Error during a sending FTAction::Transfer to a FT program")
-        .await
-        .expect("Unable to decode FTEvent");
+/// Transfers `amount` tokens from `sender` account to `recipient` account.
+/// Arguments:
+/// * `transaction_id`: associated transaction id
+/// * `from`: sender account
+/// * `to`: recipient account
+/// * `amount`: amount of tokens
+async fn transfer_tokens(
+    transaction_id: u64,
+    token_address: &ActorId,
+    from: &ActorId,
+    to: &ActorId,
+    amount_tokens: u128,
+) -> Result<(), ()> {
+    let reply = msg::send_for_reply_as::<_, FTokenEvent>(
+        *token_address,
+        FTokenAction::Message {
+            transaction_id,
+            payload: ft_logic_io::Action::Transfer {
+                sender: *from,
+                recipient: *to,
+                amount: amount_tokens,
+            }
+            .encode(),
+        },
+        0,
+    )
+    .expect("Error in sending a message `FTokenAction::Message`")
+    .await;
+
+    match reply {
+        Ok(FTokenEvent::Ok) => Ok(()),
+        _ => Err(()),
+    }
 }
 
 fn get_mut_wallet(wallets: &mut BTreeMap<WalletId, Wallet>, wallet_id: WalletId) -> &mut Wallet {
@@ -48,6 +76,8 @@ struct Escrow {
     ft_program_id: ActorId,
     wallets: BTreeMap<WalletId, Wallet>,
     id_nonce: WalletId,
+    transaction_id: u64,
+    transactions: BTreeMap<u64, Option<EscrowAction>>,
 }
 
 impl Escrow {
@@ -76,55 +106,87 @@ impl Escrow {
         reply(EscrowEvent::Created(wallet_id));
     }
 
-    async fn deposit(&mut self, wallet_id: WalletId) {
+    async fn deposit(&mut self, transaction_id: Option<u64>, wallet_id: WalletId) {
+        let current_transaction_id = self.get_transaction_id(transaction_id);
+
         let wallet = get_mut_wallet(&mut self.wallets, wallet_id);
         check_buyer(wallet.buyer);
         assert_eq!(wallet.state, WalletState::AwaitingDeposit);
 
-        transfer_tokens(
-            self.ft_program_id,
-            wallet.buyer,
-            exec::program_id(),
+        if transfer_tokens(
+            current_transaction_id,
+            &self.ft_program_id,
+            &wallet.buyer,
+            &exec::program_id(),
             wallet.amount,
         )
-        .await;
+        .await
+        .is_err()
+        {
+            self.transactions.remove(&current_transaction_id);
+            reply(EscrowEvent::TransactionFailed);
+            return;
+        }
+
         wallet.state = WalletState::AwaitingConfirmation;
 
-        reply(EscrowEvent::Deposited(wallet_id));
+        self.transactions.remove(&current_transaction_id);
+
+        reply(EscrowEvent::Deposited(current_transaction_id, wallet_id));
     }
 
-    async fn confirm(&mut self, wallet_id: WalletId) {
+    async fn confirm(&mut self, transaction_id: Option<u64>, wallet_id: WalletId) {
+        let current_transaction_id = self.get_transaction_id(transaction_id);
+
         let wallet = get_mut_wallet(&mut self.wallets, wallet_id);
         check_buyer(wallet.buyer);
         assert_eq!(wallet.state, WalletState::AwaitingConfirmation);
 
-        transfer_tokens(
-            self.ft_program_id,
-            exec::program_id(),
-            wallet.seller,
+        if transfer_tokens(
+            current_transaction_id,
+            &self.ft_program_id,
+            &exec::program_id(),
+            &wallet.seller,
             wallet.amount,
         )
-        .await;
-        wallet.state = WalletState::Closed;
+        .await
+        .is_ok()
+        {
+            wallet.state = WalletState::Closed;
 
-        reply(EscrowEvent::Confirmed(wallet_id));
+            self.transactions.remove(&current_transaction_id);
+
+            reply(EscrowEvent::Confirmed(current_transaction_id, wallet_id));
+        } else {
+            reply(EscrowEvent::TransactionFailed);
+        }
     }
 
-    async fn refund(&mut self, wallet_id: WalletId) {
+    async fn refund(&mut self, transaction_id: Option<u64>, wallet_id: WalletId) {
+        let current_transaction_id = self.get_transaction_id(transaction_id);
+
         let wallet = get_mut_wallet(&mut self.wallets, wallet_id);
         check_seller(wallet.seller);
         assert_eq!(wallet.state, WalletState::AwaitingConfirmation);
 
-        transfer_tokens(
-            self.ft_program_id,
-            exec::program_id(),
-            wallet.buyer,
+        if transfer_tokens(
+            current_transaction_id,
+            &self.ft_program_id,
+            &exec::program_id(),
+            &wallet.buyer,
             wallet.amount,
         )
-        .await;
-        wallet.state = WalletState::AwaitingDeposit;
+        .await
+        .is_ok()
+        {
+            wallet.state = WalletState::AwaitingDeposit;
 
-        reply(EscrowEvent::Refunded(wallet_id));
+            self.transactions.remove(&current_transaction_id);
+
+            reply(EscrowEvent::Refunded(current_transaction_id, wallet_id));
+        } else {
+            reply(EscrowEvent::TransactionFailed);
+        }
     }
 
     async fn cancel(&mut self, wallet_id: WalletId) {
@@ -135,6 +197,45 @@ impl Escrow {
         wallet.state = WalletState::Closed;
 
         reply(EscrowEvent::Cancelled(wallet_id));
+    }
+
+    /// Continues cached transaction by `transaction_id`.
+    ///
+    /// Execution makes sense if, when returning from an async message,
+    /// the gas ran out and the state has changed.
+    async fn continue_transaction(&mut self, transaction_id: u64) {
+        let transactions = self.transactions.clone();
+        let payload = &transactions
+            .get(&transaction_id)
+            .expect("Transaction does not exist");
+        if let Some(action) = payload {
+            match action {
+                EscrowAction::Deposit(wallet_id) => {
+                    self.deposit(Some(transaction_id), *wallet_id).await
+                }
+                EscrowAction::Confirm(wallet_id) => {
+                    self.confirm(Some(transaction_id), *wallet_id).await
+                }
+                EscrowAction::Refund(wallet_id) => {
+                    self.refund(Some(transaction_id), *wallet_id).await
+                }
+                _ => unreachable!(),
+            }
+        } else {
+            msg::reply(EscrowEvent::TransactionProcessed, 0)
+                .expect("Error in a reply `EscrowEvent::TransactionProcessed`");
+        }
+    }
+
+    fn get_transaction_id(&mut self, transaction_id: Option<u64>) -> u64 {
+        match transaction_id {
+            Some(transaction_id) => transaction_id,
+            None => {
+                let transaction_id = self.transaction_id;
+                self.transaction_id = self.transaction_id.wrapping_add(1);
+                transaction_id
+            }
+        }
     }
 }
 
@@ -167,10 +268,26 @@ async fn main() {
             seller,
             amount,
         } => escrow.create(buyer, seller, amount),
-        EscrowAction::Deposit(wallet_id) => escrow.deposit(wallet_id).await,
-        EscrowAction::Confirm(wallet_id) => escrow.confirm(wallet_id).await,
-        EscrowAction::Refund(wallet_id) => escrow.refund(wallet_id).await,
+        EscrowAction::Deposit(wallet_id) => {
+            escrow
+                .transactions
+                .insert(escrow.transaction_id, Some(action));
+            escrow.deposit(None, wallet_id).await
+        }
+        EscrowAction::Confirm(wallet_id) => {
+            escrow
+                .transactions
+                .insert(escrow.transaction_id, Some(action));
+            escrow.confirm(None, wallet_id).await
+        }
+        EscrowAction::Refund(wallet_id) => {
+            escrow
+                .transactions
+                .insert(escrow.transaction_id, Some(action));
+            escrow.refund(None, wallet_id).await
+        }
         EscrowAction::Cancel(wallet_id) => escrow.cancel(wallet_id).await,
+        EscrowAction::Continue(transaction_id) => escrow.continue_transaction(transaction_id).await,
     }
 }
 

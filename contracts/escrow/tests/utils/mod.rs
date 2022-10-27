@@ -1,12 +1,14 @@
 pub use escrow_io::*;
-use ft_io::{FTAction, FTEvent, InitConfig as InitFT};
 use gstd::prelude::*;
-use gtest::{Program, System};
+pub use gtest::{Program, System};
+pub use token::*;
 
 pub mod check;
 pub mod fail;
+pub mod token;
 
 pub const FT_PROGRAM_ID: u64 = 2;
+pub const ESCROW_PROGRAM_ID: u64 = 13370;
 pub const FOREIGN_USER: u64 = 1337;
 pub const BUYER: [u64; 2] = [12, 34];
 pub const SELLER: [u64; 2] = [56, 78];
@@ -22,26 +24,8 @@ pub fn init_system() -> System {
     system
 }
 
-pub fn init_ft(sys: &System) -> Program {
-    let ft_program = Program::from_file(sys, "./target/fungible_token-0.1.0.wasm");
-
-    assert!(ft_program
-        .send(
-            FOREIGN_USER,
-            InitFT {
-                name: String::from("MyToken"),
-                symbol: String::from("MTK"),
-                decimals: 18,
-            },
-        )
-        .log()
-        .is_empty());
-
-    ft_program
-}
-
 pub fn init_escrow(sys: &System) -> Program {
-    let escrow_program = Program::current(sys);
+    let escrow_program = Program::current_with_id(sys, ESCROW_PROGRAM_ID);
 
     assert!(escrow_program
         .send(
@@ -54,22 +38,4 @@ pub fn init_escrow(sys: &System) -> Program {
         .is_empty());
 
     escrow_program
-}
-
-pub fn check_balance(ft_program: &Program, from: u64, amount: u128) {
-    assert!(ft_program
-        .send(from, FTAction::BalanceOf(from.into()))
-        .contains(&(from, FTEvent::Balance(amount).encode())));
-}
-
-pub fn mint(ft_program: &Program, from: u64, amount: u128) {
-    assert!(ft_program.send(from, FTAction::Mint(amount)).contains(&(
-        from,
-        FTEvent::Transfer {
-            from: 0.into(),
-            to: from.into(),
-            amount,
-        }
-        .encode()
-    )));
 }

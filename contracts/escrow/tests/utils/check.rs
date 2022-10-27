@@ -20,22 +20,31 @@ pub fn create(
         .contains(&(from, EscrowEvent::Created(wallet_id.into()).encode())));
 }
 
-pub fn deposit(escrow_program: &Program, wallet_id: u128, buyer: u64) {
+pub fn deposit(escrow_program: &Program, wallet_id: u128, buyer: u64, expected_tx_id: u64) {
     assert!(escrow_program
         .send(buyer, EscrowAction::Deposit(wallet_id.into()))
-        .contains(&(buyer, EscrowEvent::Deposited(wallet_id.into()).encode())));
+        .contains(&(
+            buyer,
+            EscrowEvent::Deposited(expected_tx_id, wallet_id.into()).encode()
+        )));
 }
 
-pub fn confirm(escrow_program: &Program, wallet_id: u128, buyer: u64) {
+pub fn confirm(escrow_program: &Program, wallet_id: u128, buyer: u64, expected_tx_id: u64) {
     assert!(escrow_program
         .send(buyer, EscrowAction::Confirm(wallet_id.into()))
-        .contains(&(buyer, EscrowEvent::Confirmed(wallet_id.into()).encode())));
+        .contains(&(
+            buyer,
+            EscrowEvent::Confirmed(expected_tx_id, wallet_id.into()).encode()
+        )));
 }
 
-pub fn refund(escrow_program: &Program, wallet_id: u128, seller: u64) {
+pub fn refund(escrow_program: &Program, wallet_id: u128, seller: u64, expected_tx_id: u64) {
     assert!(escrow_program
         .send(seller, EscrowAction::Refund(wallet_id.into()))
-        .contains(&(seller, EscrowEvent::Refunded(wallet_id.into()).encode())));
+        .contains(&(
+            seller,
+            EscrowEvent::Refunded(expected_tx_id, wallet_id.into()).encode()
+        )));
 }
 
 pub fn cancel(escrow_program: &Program, wallet_id: u128, from: u64) {

@@ -16,7 +16,7 @@ pub struct InitEscrow {
 /// An enum to send the program info about what it should do.
 ///
 /// After a successful processing of this enum, the program replies with [`EscrowEvent`].
-#[derive(Decode, Encode, TypeInfo)]
+#[derive(Clone, Decode, Encode, TypeInfo)]
 pub enum EscrowAction {
     /// Creates one escrow wallet and replies with its ID.
     ///
@@ -91,6 +91,18 @@ pub enum EscrowAction {
         /// A wallet ID.
         WalletId,
     ),
+
+    /// Continues the transaction if it fails due to lack of gas
+    /// or due to an error in the token contract.
+    ///
+    /// # Requirements:
+    /// * `transaction_id` should exists in `transactions` table;
+    ///
+    /// When transaction already processed replies with [`EscrowEvent::TransactionProcessed`].
+    Continue(
+        /// Identifier of suspended transaction.
+        u64,
+    ),
 }
 
 /// An enum that contains a result of processed [`EscrowAction`].
@@ -101,14 +113,20 @@ pub enum EscrowEvent {
         WalletId,
     ),
     Refunded(
+        /// Transaction id.
+        u64,
         /// An ID of a refunded wallet.
         WalletId,
     ),
     Confirmed(
+        /// Transaction id.
+        u64,
         /// An ID of a wallet with a confirmed deal.
         WalletId,
     ),
     Deposited(
+        /// Transaction id.
+        u64,
         /// An ID of a deposited wallet.
         WalletId,
     ),
@@ -116,6 +134,8 @@ pub enum EscrowEvent {
         /// An ID of a created wallet.
         WalletId,
     ),
+    TransactionProcessed,
+    TransactionFailed,
 }
 
 /// An enum for requesting the program state.
