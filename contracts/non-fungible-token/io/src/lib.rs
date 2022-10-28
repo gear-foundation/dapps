@@ -33,6 +33,10 @@ pub enum NFTAction {
         token_id: TokenId,
         amount: u128,
     },
+    NFTPayout {
+        owner: ActorId,
+        amount: u128,
+    },
     Approve {
         transaction_id: u64,
         to: ActorId,
@@ -71,6 +75,7 @@ pub struct InitNFT {
 pub enum NFTEvent {
     Transfer(NFTTransfer),
     TransferPayout(NFTTransferPayout),
+    NFTPayout(Payout),
     Approval(NFTApproval),
     Owner {
         owner: ActorId,
