@@ -87,7 +87,11 @@ unsafe extern "C" fn handle() {
             }
         }
         NFTAction::NFTPayout { owner, amount } => {
-            msg::reply(NFTEvent::NFTPayout(NFTCore::nft_payout(nft, &owner, amount)), 0).expect("Error during replying with `NFTEvent::NFTPayout`");
+            msg::reply(
+                NFTEvent::NFTPayout(NFTCore::nft_payout(nft, &owner, amount)),
+                0,
+            )
+            .expect("Error during replying with `NFTEvent::NFTPayout`");
         }
         NFTAction::Approve {
             transaction_id,
