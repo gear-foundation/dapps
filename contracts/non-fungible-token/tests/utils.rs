@@ -21,10 +21,11 @@ pub fn init_nft(sys: &System) {
     assert!(res.log().is_empty());
 }
 
-pub fn mint(nft: &Program, member: u64) -> RunResult {
+pub fn mint(nft: &Program, transaction_id: u64, member: u64) -> RunResult {
     nft.send(
         member,
         NFTAction::Mint {
+            transaction_id,
             token_metadata: TokenMetadata {
                 name: "CryptoKitty".to_string(),
                 description: "Description".to_string(),
@@ -35,33 +36,27 @@ pub fn mint(nft: &Program, member: u64) -> RunResult {
     )
 }
 
-pub fn mint_to_actor(nft: &Program, member: [u8; 32]) -> RunResult {
-    nft.send(
-        member,
-        NFTAction::Mint {
-            token_metadata: TokenMetadata {
-                name: "CryptoKitty".to_string(),
-                description: "Description".to_string(),
-                media: "http://".to_string(),
-                reference: "http://".to_string(),
-            },
-        },
-    )
-}
-
-pub fn burn(nft: &Program, member: u64, token_id: u64) -> RunResult {
+pub fn burn(nft: &Program, transaction_id: u64, member: u64, token_id: u64) -> RunResult {
     nft.send(
         member,
         NFTAction::Burn {
+            transaction_id,
             token_id: token_id.into(),
         },
     )
 }
 
-pub fn transfer(nft: &Program, from: u64, to: u64, token_id: u64) -> RunResult {
+pub fn transfer(
+    nft: &Program,
+    transaction_id: u64,
+    from: u64,
+    to: u64,
+    token_id: u64,
+) -> RunResult {
     nft.send(
         from,
         NFTAction::Transfer {
+            transaction_id,
             to: to.into(),
             token_id: token_id.into(),
         },
@@ -87,10 +82,11 @@ pub fn is_approved_to(nft: &Program, from: u64, token_id: u64, to: u64) -> RunRe
     )
 }
 
-pub fn approve(nft: &Program, from: u64, to: u64, token_id: u64) -> RunResult {
+pub fn approve(nft: &Program, transaction_id: u64, from: u64, to: u64, token_id: u64) -> RunResult {
     nft.send(
         from,
         NFTAction::Approve {
+            transaction_id,
             to: to.into(),
             token_id: token_id.into(),
         },
@@ -99,10 +95,30 @@ pub fn approve(nft: &Program, from: u64, to: u64, token_id: u64) -> RunResult {
 
 pub fn delegated_approve(
     nft: &Program,
+    transaction_id: u64,
     from: u64,
     message: DelegatedApproveMessage,
     signature: [u8; 64],
 ) -> RunResult {
-    let action = NFTAction::DelegatedApprove { message, signature };
+    let action = NFTAction::DelegatedApprove {
+        transaction_id,
+        message,
+        signature,
+    };
     nft.send(from, action)
+}
+
+pub fn mint_to_actor(nft: &Program, transaction_id: u64, member: [u8; 32]) -> RunResult {
+    nft.send(
+        member,
+        NFTAction::Mint {
+            transaction_id,
+            token_metadata: TokenMetadata {
+                name: "CryptoKitty".to_string(),
+                description: "Description".to_string(),
+                media: "http://".to_string(),
+                reference: "http://".to_string(),
+            },
+        },
+    )
 }

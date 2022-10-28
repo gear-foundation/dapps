@@ -8,31 +8,38 @@ use gear_lib::non_fungible_token::{
 use gstd::{prelude::*, ActorId};
 
 pub use gear_lib::non_fungible_token::delegated::DelegatedApproveMessage;
+use primitive_types::H256;
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum NFTAction {
     Mint {
+        transaction_id: u64,
         token_metadata: TokenMetadata,
     },
     Burn {
+        transaction_id: u64,
         token_id: TokenId,
     },
     Transfer {
+        transaction_id: u64,
         to: ActorId,
         token_id: TokenId,
     },
     TransferPayout {
+        transaction_id: u64,
         to: ActorId,
         token_id: TokenId,
         amount: u128,
     },
     Approve {
+        transaction_id: u64,
         to: ActorId,
         token_id: TokenId,
     },
     DelegatedApprove {
+        transaction_id: u64,
         message: DelegatedApproveMessage,
         signature: [u8; 64],
     },
@@ -42,6 +49,9 @@ pub enum NFTAction {
     IsApproved {
         to: ActorId,
         token_id: TokenId,
+    },
+    Clear {
+        transaction_hash: H256,
     },
 }
 
@@ -71,4 +81,5 @@ pub enum NFTEvent {
         token_id: TokenId,
         approved: bool,
     },
+    TransactionMade,
 }
