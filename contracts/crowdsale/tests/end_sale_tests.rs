@@ -1,9 +1,8 @@
+mod init_ico;
+
 use gstd::Encode;
 use gtest::System;
-
 use ico_io::*;
-
-mod init_ico;
 pub use init_ico::*;
 
 #[test]
@@ -13,11 +12,11 @@ fn end_sale_no_time_left() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 1);
+    start_sale(&ico, 1, 0);
 
     sys.spend_blocks(1001);
 
-    end_sale(&ico);
+    end_sale(&ico, 1);
 }
 
 #[test]
@@ -27,12 +26,12 @@ fn end_sale_zero_tokens() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 1);
+    start_sale(&ico, 1, 0);
 
     let amount: u128 = TOKENS_CNT;
     buy_tokens(&sys, &ico, amount, amount * START_PRICE);
 
-    end_sale(&ico);
+    end_sale(&ico, 1);
 }
 
 #[test]
@@ -43,12 +42,12 @@ fn end_sale_time_and_tokens_left() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 1);
+    start_sale(&ico, 1, 0);
 
     let amount: u128 = TOKENS_CNT - 5;
     buy_tokens(&sys, &ico, amount, amount * START_PRICE);
 
-    end_sale(&ico);
+    end_sale(&ico, 1);
 }
 
 #[test]
@@ -59,12 +58,12 @@ fn not_owner_end_sale() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 1);
+    start_sale(&ico, 1, 0);
 
     sys.spend_blocks(1001);
 
     let res = ico.send(USER_ID, IcoAction::EndSale);
-    assert!(res.contains(&(USER_ID, IcoEvent::SaleEnded.encode())));
+    assert!(res.contains(&(USER_ID, IcoEvent::SaleEnded(1).encode())));
 }
 
 #[test]
@@ -75,7 +74,7 @@ fn end_sale_before_start() {
 
     let ico = sys.get_program(2);
 
-    end_sale(&ico);
+    end_sale(&ico, 0);
 }
 
 #[test]
@@ -86,10 +85,10 @@ fn end_sale_twice() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 1);
+    start_sale(&ico, 1, 0);
 
     sys.spend_blocks(1001);
 
-    end_sale(&ico);
-    end_sale(&ico);
+    end_sale(&ico, 1);
+    end_sale(&ico, 2);
 }

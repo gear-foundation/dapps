@@ -1,12 +1,9 @@
-use core::time::Duration;
-
-use gstd::{Encode, String};
-use gtest::{Program, System};
-
-use ft_io::*;
-use ico_io::*;
-
 mod init_ico;
+
+use core::time::Duration;
+use gstd::Encode;
+use gtest::{Program, System};
+use ico_io::*;
 pub use init_ico::*;
 
 #[test]
@@ -16,7 +13,7 @@ fn start_ico() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 2);
+    start_sale(&ico, 2, 0);
 }
 
 #[test]
@@ -42,6 +39,7 @@ fn not_owner_start_ico() {
     assert!(res.contains(&(
         USER_ID,
         IcoEvent::SaleStarted {
+            transaction_id: 0,
             duration,
             start_price: START_PRICE,
             tokens_goal: TOKENS_CNT,
@@ -60,8 +58,8 @@ fn second_start_ico() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 1);
-    start_sale(&ico, 1);
+    start_sale(&ico, 1, 0);
+    start_sale(&ico, 1, 1);
 }
 
 #[test]
@@ -72,26 +70,13 @@ fn zero_duration_start_ico() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 0);
+    start_sale(&ico, 0, 0);
 }
 
 #[test]
 #[should_panic]
 fn not_minting_tokens() {
     let sys = System::new();
-
-    let ft = Program::from_file(&sys, "./target/fungible_token-0.1.0.wasm");
-
-    let res = ft.send(
-        OWNER_ID,
-        InitConfig {
-            name: String::from("MyToken"),
-            symbol: String::from("MTK"),
-            decimals: 18,
-        },
-    );
-
-    assert!(res.log().is_empty());
 
     let ico = Program::current(&sys);
 
@@ -104,5 +89,5 @@ fn not_minting_tokens() {
     );
     assert!(res.log().is_empty());
 
-    start_sale(&ico, 1);
+    start_sale(&ico, 1, 0);
 }

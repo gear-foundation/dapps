@@ -1,15 +1,13 @@
+mod token;
+
 use core::time::Duration;
-
-use gstd::{Encode, String};
+use gstd::{prelude::*, ActorId, Encode};
 use gtest::{Program, System};
-
-use ft_io::*;
 use ico_io::*;
-
-use gstd::ActorId;
+pub use token::*;
 
 pub const TOKEN_ADDRESS: u64 = 1;
-// pub const ICO_CONTRACT_ID: u64 = 2;
+pub const ICO_CONTRACT_ID: u64 = 2;
 pub const OWNER_ID: u64 = 100001;
 pub const USER_ID: u64 = 12345;
 
@@ -20,30 +18,8 @@ pub const START_PRICE: u128 = 1000;
 pub const PRICE_INCREASE_STEP: u128 = 100;
 pub const TIME_INCREASE_STEP: u128 = 1000;
 
-fn init_fungible_token(sys: &System) {
-    let ft = Program::from_file(sys, "./target/fungible_token-0.1.0.wasm");
-
-    let res = ft.send(
-        OWNER_ID,
-        InitConfig {
-            name: String::from("MyToken"),
-            symbol: String::from("MTK"),
-            decimals: 18,
-        },
-    );
-
-    assert!(res.log().is_empty());
-
-    mint_tokens(&ft);
-}
-
-fn mint_tokens(ft: &Program<'_>) {
-    let res = ft.send(OWNER_ID, FTAction::Mint(TOKENS_CNT));
-    assert!(!res.main_failed());
-}
-
 fn init_ico(sys: &System) {
-    let ico = Program::current(sys);
+    let ico = Program::current_with_id(sys, ICO_CONTRACT_ID);
 
     let res = ico.send(
         OWNER_ID,
@@ -58,12 +34,15 @@ fn init_ico(sys: &System) {
 pub fn init(sys: &System) {
     sys.init_logger();
 
-    init_fungible_token(sys);
+    let ft = Program::ftoken(OWNER_ID, TOKEN_ADDRESS, sys);
+    ft.mint(0, OWNER_ID, OWNER_ID, TOKENS_CNT, false);
+    ft.approve(1, OWNER_ID, ICO_CONTRACT_ID, TOKENS_CNT, false);
+
     init_ico(sys);
     sys.mint_to(USER_ID, 100_000);
 }
 
-pub fn start_sale(ico: &Program, ico_duration: u64) {
+pub fn start_sale(ico: &Program, ico_duration: u64, expected_tx_id: u64) {
     let duration = Duration::from_secs(ico_duration).as_millis() as u64 * 1000;
     let res = ico.send(
         OWNER_ID,
@@ -79,6 +58,7 @@ pub fn start_sale(ico: &Program, ico_duration: u64) {
     assert!(res.contains(&(
         OWNER_ID,
         IcoEvent::SaleStarted {
+            transaction_id: expected_tx_id,
             duration,
             start_price: START_PRICE,
             tokens_goal: TOKENS_CNT,
@@ -89,9 +69,9 @@ pub fn start_sale(ico: &Program, ico_duration: u64) {
     )));
 }
 
-pub fn end_sale(ico: &Program) {
+pub fn end_sale(ico: &Program, expected_tx_id: u64) {
     let res = ico.send(OWNER_ID, IcoAction::EndSale);
-    assert!(res.contains(&(OWNER_ID, IcoEvent::SaleEnded.encode())));
+    assert!(res.contains(&(OWNER_ID, IcoEvent::SaleEnded(expected_tx_id).encode())));
 }
 
 pub fn buy_tokens(_sys: &System, ico: &Program, amount: u128, price: u128) {

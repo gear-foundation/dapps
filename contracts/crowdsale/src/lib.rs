@@ -2,12 +2,10 @@
 
 pub mod messages;
 pub use messages::*;
-
 pub mod asserts;
 
-use ico_io::*;
-
 use gstd::{exec, msg, prelude::*, ActorId};
+use ico_io::*;
 
 #[derive(Default)]
 struct IcoContract {
@@ -20,6 +18,8 @@ struct IcoContract {
     owner: ActorId,
     token_address: ActorId,
     token_holders: BTreeMap<ActorId, u128>,
+    transaction_id: u64,
+    transactions: BTreeMap<ActorId, u64>,
 }
 
 static mut ICO_CONTRACT: Option<IcoContract> = None;
@@ -37,6 +37,16 @@ impl IcoContract {
     /// * `config`: Consists of `duration`, `start_price`, `tokens_goal`, `price_increase_step` and time_increase_step
     ///
     async fn start_ico(&mut self, config: IcoAction) {
+        let source = msg::source();
+
+        let current_transaction_id = *self.transactions.entry(source).or_insert_with(|| {
+            let id = self.transaction_id;
+
+            self.transaction_id = self.transaction_id.wrapping_add(1);
+
+            id
+        });
+
         check_input(&config);
         asserts::owner_message(&self.owner, "start_ico(): Not owner starts ICO");
         assert!(!self.ico_state.ico_started, "start_ico(): Second ICO start");
@@ -54,20 +64,31 @@ impl IcoContract {
             self.price_increase_step = price_increase_step;
             self.time_increase_step = time_increase_step;
 
-            transfer_tokens(
+            if transfer_tokens(
+                current_transaction_id,
                 &self.token_address,
                 &self.owner,
                 &exec::program_id(),
                 self.tokens_goal,
             )
-            .await;
+            .await
+            .is_err()
+            {
+                self.transactions.remove(&source);
+                msg::reply(IcoEvent::TransactionFailed(current_transaction_id), 0)
+                    .expect("Unable to reply!");
+                return;
+            }
 
             self.ico_state.ico_started = true;
             self.ico_state.duration = duration;
             self.ico_state.start_time = exec::block_timestamp();
 
+            self.transactions.remove(&source);
+
             msg::reply(
                 IcoEvent::SaleStarted {
+                    transaction_id: current_transaction_id,
                     duration,
                     start_price,
                     tokens_goal,
@@ -159,6 +180,16 @@ impl IcoContract {
     /// * All tokens must be sold or the ICO duration must end
     ///
     async fn end_sale(&mut self) {
+        let source = msg::source();
+
+        let current_transaction_id = *self.transactions.entry(source).or_insert_with(|| {
+            let id = self.transaction_id;
+
+            self.transaction_id = self.transaction_id.wrapping_add(1);
+
+            id
+        });
+
         let time_now: u64 = exec::block_timestamp();
 
         asserts::owner_message(&self.owner, "end_sale()");
@@ -175,18 +206,46 @@ impl IcoContract {
         }
 
         for (id, val) in &self.token_holders {
-            transfer_tokens(&self.token_address, &exec::program_id(), id, *val).await;
+            let token_holder_transaction_id = *self.transactions.entry(*id).or_insert_with(|| {
+                let id = self.transaction_id;
+
+                self.transaction_id = self.transaction_id.wrapping_add(1);
+
+                id
+            });
+
+            if transfer_tokens(
+                token_holder_transaction_id,
+                &self.token_address,
+                &exec::program_id(),
+                id,
+                *val,
+            )
+            .await
+            .is_err()
+            {
+                msg::reply(IcoEvent::TransactionFailed(token_holder_transaction_id), 0)
+                    .expect("Unable to reply!");
+                return;
+            }
         }
 
         let rest_balance = self.get_balance();
         if rest_balance > 0 {
-            transfer_tokens(
+            if transfer_tokens(
+                current_transaction_id,
                 &self.token_address,
                 &exec::program_id(),
                 &self.owner,
                 rest_balance,
             )
-            .await;
+            .await
+            .is_err()
+            {
+                msg::reply(IcoEvent::TransactionFailed(current_transaction_id), 0)
+                    .expect("Unable to reply!");
+                return;
+            }
 
             self.token_holders
                 .entry(self.owner)
@@ -195,7 +254,10 @@ impl IcoContract {
         }
 
         self.ico_state.ico_ended = true;
-        msg::reply(IcoEvent::SaleEnded, 0).expect("Error in reply");
+
+        self.transactions.remove(&source);
+
+        msg::reply(IcoEvent::SaleEnded(current_transaction_id), 0).expect("Error in reply");
     }
 
     fn get_current_price(&self, time_now: u64) -> u128 {
@@ -209,12 +271,8 @@ impl IcoContract {
     }
 
     fn check_ico_executing(&self, message: &str) {
-        assert!(
-            self.ico_state.ico_started,
-            "{}: ICO wasn't started",
-            message
-        );
-        assert!(!self.ico_state.ico_ended, "{}: ICO was ended", message);
+        assert!(self.ico_state.ico_started, "{message}: ICO wasn't started",);
+        assert!(!self.ico_state.ico_ended, "{message}: ICO was ended");
     }
 }
 

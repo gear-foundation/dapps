@@ -1,9 +1,8 @@
+mod init_ico;
+
 use gstd::Encode;
 use gtest::System;
-
 use ico_io::{IcoAction, IcoEvent};
-
-mod init_ico;
 pub use init_ico::*;
 
 #[test]
@@ -13,7 +12,7 @@ fn common_buy_tokens() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 2);
+    start_sale(&ico, 2, 0);
 
     let amount: u128 = 5;
     buy_tokens(&sys, &ico, amount, amount * START_PRICE);
@@ -26,7 +25,7 @@ fn buy_tokens_with_change() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 2);
+    start_sale(&ico, 2, 0);
 
     let amount: u128 = 5;
     let change = 600;
@@ -53,7 +52,7 @@ fn buy_tokens_after_price_update() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 2);
+    start_sale(&ico, 2, 0);
 
     sys.spend_blocks(TIME_INCREASE_STEP as _);
 
@@ -92,7 +91,7 @@ fn buy_when_no_time_left() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 2);
+    start_sale(&ico, 2, 0);
 
     sys.spend_blocks(3000); // 3 sec
 
@@ -108,7 +107,7 @@ fn wrong_value_sent() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 2);
+    start_sale(&ico, 2, 0);
 
     let amount: u128 = 5;
     buy_tokens(&sys, &ico, amount, amount * START_PRICE - 1);
@@ -122,7 +121,7 @@ fn wrong_value_after_price_update() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 2);
+    start_sale(&ico, 2, 0);
 
     sys.spend_blocks(
         (TIME_INCREASE_STEP + 1)
@@ -142,7 +141,7 @@ fn all_tokens_bought() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 2);
+    start_sale(&ico, 2, 0);
 
     let amount: u128 = TOKENS_CNT;
     buy_tokens(&sys, &ico, amount, amount * START_PRICE);
@@ -170,11 +169,11 @@ fn buy_after_end_sale() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 2);
+    start_sale(&ico, 2, 0);
 
     sys.spend_blocks(1001);
 
-    end_sale(&ico);
+    end_sale(&ico, 1);
 
     let amount: u128 = 5;
     buy_tokens(&sys, &ico, amount, amount * START_PRICE);
@@ -188,7 +187,7 @@ fn buy_more_than_goal_tokens() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 2);
+    start_sale(&ico, 2, 0);
 
     let amount: u128 = TOKENS_CNT + 1;
     buy_tokens(&sys, &ico, amount, amount * START_PRICE);
@@ -202,7 +201,7 @@ fn buy_too_many_tokens() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 2);
+    start_sale(&ico, 2, 0);
 
     let amount: u128 = 5;
     buy_tokens(&sys, &ico, amount, amount * START_PRICE);
@@ -219,7 +218,7 @@ fn buy_zero_tokens() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 2);
+    start_sale(&ico, 2, 0);
 
     let amount: u128 = 0;
     buy_tokens(&sys, &ico, amount, amount * START_PRICE);
@@ -233,7 +232,7 @@ fn overflowing_multiplication_buy() {
 
     let ico = sys.get_program(2);
 
-    start_sale(&ico, 2);
+    start_sale(&ico, 2, 0);
 
     let amount: u128 = u128::MAX / START_PRICE + 1;
     buy_tokens(&sys, &ico, amount, 544);

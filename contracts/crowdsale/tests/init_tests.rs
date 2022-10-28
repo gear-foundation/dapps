@@ -1,11 +1,9 @@
-use core::time::Duration;
+mod init_ico;
 
+use core::time::Duration;
 use gstd::Encode;
 use gtest::{Program, System};
-
 use ico_io::*;
-
-mod init_ico;
 pub use init_ico::*;
 
 #[test]
@@ -66,6 +64,7 @@ fn zero_token_address_init() {
     assert!(res.contains(&(
         OWNER_ID,
         IcoEvent::SaleStarted {
+            transaction_id: 0,
             duration,
             start_price: START_PRICE,
             tokens_goal: TOKENS_CNT,
@@ -109,6 +108,7 @@ fn zero_tokens_goal_init() {
     assert!(res.contains(&(
         OWNER_ID,
         IcoEvent::SaleStarted {
+            transaction_id: 0,
             duration,
             start_price: START_PRICE,
             tokens_goal: 0,
@@ -152,6 +152,7 @@ fn zero_start_price_init() {
     assert!(res.contains(&(
         OWNER_ID,
         IcoEvent::SaleStarted {
+            transaction_id: 0,
             duration,
             start_price: 0,
             tokens_goal: TOKENS_CNT,
@@ -195,6 +196,7 @@ fn zero_price_increase_init() {
     assert!(res.contains(&(
         OWNER_ID,
         IcoEvent::SaleStarted {
+            transaction_id: 0,
             duration,
             start_price: START_PRICE,
             tokens_goal: TOKENS_CNT,
@@ -238,6 +240,7 @@ fn zero_time_increase_init() {
     assert!(res.contains(&(
         OWNER_ID,
         IcoEvent::SaleStarted {
+            transaction_id: 0,
             duration,
             start_price: START_PRICE,
             tokens_goal: TOKENS_CNT,

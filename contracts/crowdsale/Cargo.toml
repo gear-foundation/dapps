@@ -7,8 +7,10 @@ authors = ["Gear Technologies"]
 
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git" }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.0" }
+codec = { package = "parity-scale-codec", version = "3", default-features = false }
 ico-io = { path = "io" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.0" }
+ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.0" }
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git" }
