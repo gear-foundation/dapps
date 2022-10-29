@@ -25,10 +25,10 @@ init:
 
 linter:
 	@echo ──────────── Run linter ───────────────────────
-	@cargo +nightly clippy --all-targets -- --no-deps -D warnings -A "clippy::missing_safety_doc"
+	@cargo +nightly clippy --all-targets -- --no-deps -D warnings
 
 pre-commit: fmt linter test
 
 test: build
 	@echo ──────────── Run tests ────────────────────────
-	@cargo +nightly test --release
+	@cargo +nightly test --features testing

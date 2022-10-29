@@ -1,15 +1,13 @@
 [package]
 name = "gear-lib-derive"
-version = "0.1.0"
+version = "0.4.0"
 edition = "2021"
-license = "GPL-3.0"
+license = "MIT"
 authors = ["Gear Technologies"]
 
 [lib]
 proc-macro = true
 
 [dependencies]
-syn = "1.0"
-quote = "1.0"
-proc-macro2 = "1.0"
-gear-lib-macros = { path = "macros" }
+syn = { version = "1", default-features = false }
+quote = { version = "1", default-features = false }
