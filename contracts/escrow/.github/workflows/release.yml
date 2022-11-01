@@ -38,6 +38,11 @@ jobs:
           toolchain: nightly
           target: wasm32-unknown-unknown
 
+      - name: Install binaryen
+        run: |
+          wget -c https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O - | tar -xz -C .
+          sudo cp binaryen-version_110/bin/wasm-opt /usr/bin/
+
       - name: Build
         run: make build
 
@@ -59,7 +64,7 @@ jobs:
           done
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: ./target/wasm32-unknown-unknown/release/*.wasm
 
@@ -69,10 +74,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
 
       - name: Publish
         uses: softprops/action-gh-release@v1
