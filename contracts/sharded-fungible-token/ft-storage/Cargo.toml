@@ -4,9 +4,9 @@ version = "0.1.1"
 edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
 ft-storage-io = { path = "io" }
 primitive-types = { version = "0.12.0", default-features = false }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
