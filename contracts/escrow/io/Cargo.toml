@@ -1,12 +1,12 @@
 [package]
 name = "escrow-io"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git" }
-codec = { package = "parity-scale-codec", version = "3.1.5", default-features = false }
-primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
-scale-info = { version = "2.3.0", default-features = false }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+parity-scale-codec = { version = "3", default-features = false }
+primitive-types = { version = "0.12", default-features = false }
+scale-info = { version = "2", default-features = false }

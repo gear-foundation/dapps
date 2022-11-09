@@ -85,9 +85,9 @@ checksum = "771fe0050b883fcc3ea2359b1a96bcfbc090b7116eae7c3c512c7a083fdf23d3"
 
 [[package]]
 name = "byte-slice-cast"
-version = "1.2.1"
+version = "1.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "87c5fdd0166095e1d463fc6cc01aa8ce547ad77a4e84d42eb6762b084e28067e"
+checksum = "c3ac9f8b63eca6fd385229b3675f6cc0dc5c8a5c8a54a59d4f52ffd670d87b0c"
 
 [[package]]
 name = "byteorder"
@@ -201,9 +201,9 @@ checksum = "90e5c1c8368803113bf0c9584fc495a58b86dc8a29edbf8fe877d21d9507e797"
 
 [[package]]
 name = "env_logger"
-version = "0.9.1"
+version = "0.9.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c90bf5f19754d10198ccb95b70664fc925bd1fc090a0fd9a6ebc54acc8cd6272"
+checksum = "a12e6657c4c97ebab115a42dcee77225f7f482cdd841cf7088c657a42e9e00e7"
 dependencies = [
  "atty",
  "humantime",
@@ -214,7 +214,7 @@ dependencies = [
 
 [[package]]
 name = "escrow"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "escrow-io",
  "ft-logic-io",
@@ -222,12 +222,11 @@ dependencies = [
  "gear-wasm-builder",
  "gstd",
  "gtest",
- "parity-scale-codec",
 ]
 
 [[package]]
 name = "escrow-io"
-version = "0.1.1"
+version = "0.1.2"
 dependencies = [
  "gstd",
  "parity-scale-codec",
@@ -246,8 +245,8 @@ dependencies = [
 
 [[package]]
 name = "ft-logic-io"
-version = "0.1.0"
-source = "git+https://github.com/gear-dapps/sharded-fungible-token.git?tag=0.1.0#da5b4acfa8a14005f753ce439a681b0636359c72"
+version = "0.1.1"
+source = "git+https://github.com/gear-dapps/sharded-fungible-token.git?tag=0.1.1#31e157adc27c7900bac4dad132033077b0cc73f6"
 dependencies = [
  "gstd",
  "parity-scale-codec",
@@ -257,8 +256,8 @@ dependencies = [
 
 [[package]]
 name = "ft-main-io"
-version = "0.1.0"
-source = "git+https://github.com/gear-dapps/sharded-fungible-token.git?tag=0.1.0#da5b4acfa8a14005f753ce439a681b0636359c72"
+version = "0.1.1"
+source = "git+https://github.com/gear-dapps/sharded-fungible-token.git?tag=0.1.1#31e157adc27c7900bac4dad132033077b0cc73f6"
 dependencies = [
  "ft-logic-io",
  "gstd",
@@ -337,7 +336,7 @@ dependencies = [
 [[package]]
 name = "galloc"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dd1eb4a384327647fe61196e3aa6ceb2f7607adb"
+source = "git+https://github.com/gear-tech/gear.git?rev=d4552434#d4552434b470dad1ade7db3a929eb1aa6204c9ca"
 dependencies = [
  "dlmalloc",
 ]
@@ -345,7 +344,7 @@ dependencies = [
 [[package]]
 name = "gcore"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dd1eb4a384327647fe61196e3aa6ceb2f7607adb"
+source = "git+https://github.com/gear-tech/gear.git?rev=d4552434#d4552434b470dad1ade7db3a929eb1aa6204c9ca"
 dependencies = [
  "gear-core-errors",
  "parity-scale-codec",
@@ -355,7 +354,7 @@ dependencies = [
 [[package]]
 name = "gear-backend-common"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#6e5daee14375fa5c513456c7710e610bbb3806dd"
+source = "git+https://github.com/gear-tech/gear.git?rev=d4552434#d4552434b470dad1ade7db3a929eb1aa6204c9ca"
 dependencies = [
  "derive_more",
  "gear-core",
@@ -368,9 +367,8 @@ dependencies = [
 [[package]]
 name = "gear-backend-wasmi"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#6e5daee14375fa5c513456c7710e610bbb3806dd"
+source = "git+https://github.com/gear-tech/gear.git?rev=d4552434#d4552434b470dad1ade7db3a929eb1aa6204c9ca"
 dependencies = [
- "blake2-rfc",
  "derive_more",
  "gear-backend-common",
  "gear-core",
@@ -384,7 +382,7 @@ dependencies = [
 [[package]]
 name = "gear-core"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#6e5daee14375fa5c513456c7710e610bbb3806dd"
+source = "git+https://github.com/gear-tech/gear.git?rev=d4552434#d4552434b470dad1ade7db3a929eb1aa6204c9ca"
 dependencies = [
  "blake2-rfc",
  "derive_more",
@@ -401,7 +399,7 @@ dependencies = [
 [[package]]
 name = "gear-core-errors"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dd1eb4a384327647fe61196e3aa6ceb2f7607adb"
+source = "git+https://github.com/gear-tech/gear.git?rev=d4552434#d4552434b470dad1ade7db3a929eb1aa6204c9ca"
 dependencies = [
  "derive_more",
  "parity-scale-codec",
@@ -411,9 +409,10 @@ dependencies = [
 [[package]]
 name = "gear-core-processor"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#6e5daee14375fa5c513456c7710e610bbb3806dd"
+source = "git+https://github.com/gear-tech/gear.git?rev=d4552434#d4552434b470dad1ade7db3a929eb1aa6204c9ca"
 dependencies = [
  "anyhow",
+ "blake2-rfc",
  "derive_more",
  "gear-backend-common",
  "gear-core",
@@ -426,7 +425,7 @@ dependencies = [
 [[package]]
 name = "gear-wasm-builder"
 version = "0.1.2"
-source = "git+https://github.com/gear-tech/gear.git#6e5daee14375fa5c513456c7710e610bbb3806dd"
+source = "git+https://github.com/gear-tech/gear.git?rev=d4552434#d4552434b470dad1ade7db3a929eb1aa6204c9ca"
 dependencies = [
  "anyhow",
  "cargo_metadata",
@@ -442,26 +441,15 @@ dependencies = [
 [[package]]
 name = "gear-wasm-instrument"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#6e5daee14375fa5c513456c7710e610bbb3806dd"
+source = "git+https://github.com/gear-tech/gear.git?rev=d4552434#d4552434b470dad1ade7db3a929eb1aa6204c9ca"
 dependencies = [
  "wasm-instrument",
 ]
 
 [[package]]
-name = "getrandom"
-version = "0.2.8"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c05aeb6a22b8f62540c194aac980f2115af067bfe15a0734d7277a768d396b31"
-dependencies = [
- "cfg-if",
- "libc",
- "wasi",
-]
-
-[[package]]
 name = "gstd"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dd1eb4a384327647fe61196e3aa6ceb2f7607adb"
+source = "git+https://github.com/gear-tech/gear.git?rev=d4552434#d4552434b470dad1ade7db3a929eb1aa6204c9ca"
 dependencies = [
  "bs58",
  "futures",
@@ -479,7 +467,7 @@ dependencies = [
 [[package]]
 name = "gstd-codegen"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#dd1eb4a384327647fe61196e3aa6ceb2f7607adb"
+source = "git+https://github.com/gear-tech/gear.git?rev=d4552434#d4552434b470dad1ade7db3a929eb1aa6204c9ca"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -489,7 +477,7 @@ dependencies = [
 [[package]]
 name = "gtest"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#6e5daee14375fa5c513456c7710e610bbb3806dd"
+source = "git+https://github.com/gear-tech/gear.git?rev=d4552434#d4552434b470dad1ade7db3a929eb1aa6204c9ca"
 dependencies = [
  "anyhow",
  "colored",
@@ -506,7 +494,6 @@ dependencies = [
  "log",
  "parity-scale-codec",
  "path-clean",
- "rand",
 ]
 
 [[package]]
@@ -570,9 +557,9 @@ checksum = "e2abad23fbc42b3700f2f279844dc832adb2b2eb069b2df918f455c4e18cc646"
 
 [[package]]
 name = "libc"
-version = "0.2.136"
+version = "0.2.137"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "55edcf6c0bb319052dea84732cf99db461780fd5e8d3eb46ab6ff312ab31f197"
+checksum = "fc7fcc620a3bff7cdd7a365be3376c97191aeaccc2a603e600951e452615bf89"
 
 [[package]]
 name = "libc_print"
@@ -584,9 +571,9 @@ dependencies = [
 
 [[package]]
 name = "libm"
-version = "0.2.5"
+version = "0.2.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "292a948cd991e376cf75541fe5b97a1081d713c618b4f1b9500f8844e49eb565"
+checksum = "348108ab3fba42ec82ff6e9564fc4ca0247bdccdc68dd8af9764bbc79c3c8ffb"
 
 [[package]]
 name = "log"
@@ -668,9 +655,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.15.0"
+version = "1.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e82dad04139b71a90c080c8463fe0dc7902db5192d939bd0950f074d014339e1"
+checksum = "86f0b0d4bf799edbc74508c1e8bf170ff5f41238e5f8225603ca7caaae2b7860"
 
 [[package]]
 name = "page_size"
@@ -745,12 +732,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
-name = "ppv-lite86"
-version = "0.2.16"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "eb9f9e6e233e5c4a35559a617bf40a4ec447db2e84c20b55a6f83167b7e57872"
-
-[[package]]
 name = "primitive-types"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -809,40 +790,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dc33ff2d4973d518d823d61aa239014831e521c75da58e3df4840d3f47749d09"
 
 [[package]]
-name = "rand"
-version = "0.8.5"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "34af8d1a0e25924bc5b7c43c079c942339d8f0a8b57c39049bef581b46327404"
-dependencies = [
- "libc",
- "rand_chacha",
- "rand_core",
-]
-
-[[package]]
-name = "rand_chacha"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6c10a63a0fa32252be49d21e7709d4d4baf8d231c2dbce1eaa8141b9b127d88"
-dependencies = [
- "ppv-lite86",
- "rand_core",
-]
-
-[[package]]
-name = "rand_core"
-version = "0.6.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
-dependencies = [
- "getrandom",
-]
-
-[[package]]
 name = "regex"
-version = "1.6.0"
+version = "1.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4c4eb3267174b8c6c2f654116623910a0fef09c4753f8dd83db29c48a0df988b"
+checksum = "e076559ef8e241f2ae3479e36f97bd5741c0330689e217ad51ce2c76808b868a"
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -851,9 +802,9 @@ dependencies = [
 
 [[package]]
 name = "regex-syntax"
-version = "0.6.27"
+version = "0.6.28"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a3f87b73ce11b1619a3c6332f45341e0047173771e8b8b73f87bfeefb7b56244"
+checksum = "456c603be3e8d448b072f410900c09faf164fbce2d480456f50eea6e25f9c848"
 
 [[package]]
 name = "region"
@@ -1036,12 +987,6 @@ name = "unicode-ident"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "6ceab39d59e4c9499d4e5a8ee0e2735b891bb7308ac83dfb4e80cad195c9f6f3"
-
-[[package]]
-name = "wasi"
-version = "0.11.0+wasi-snapshot-preview1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9c8d87e72b64a3b4db28d11ce29237c246188f4f51057d65a7eab63b7987e423"
 
 [[package]]
 name = "wasm-instrument"
