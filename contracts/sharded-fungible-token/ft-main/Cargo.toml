@@ -1,17 +1,17 @@
 [package]
 name = "ft-main"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 ft-logic-io = { path = "../ft-logic/io" }
 ft-main-io = { path = "io" }
-primitive-types = { version = "0.12.0", default-features = false }
-sp-core-hashing = { version = "4.0.0", default-features = false }
+primitive-types = { version = "0.12.1", default-features = false }
+sp-core-hashing = { version = "5.0.0", default-features = false }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
