@@ -1,5 +1,3 @@
-#![no_std]
-
 use gear_lib::non_fungible_token::{
     io::{NFTApproval, NFTTransfer, NFTTransferPayout},
     royalties::*,

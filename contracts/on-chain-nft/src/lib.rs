@@ -1,10 +1,13 @@
 #![no_std]
 
+pub mod io;
+
 use gear_lib::non_fungible_token::{io::NFTTransfer, nft_core::*, state::*, token::*};
 use gear_lib_derive::{NFTCore, NFTMetaState, NFTStateKeeper};
 use gstd::{msg, prelude::*, ActorId};
-use on_chain_nft_io::*;
 use primitive_types::U256;
+
+use crate::io::*;
 
 #[derive(Debug, Default, NFTStateKeeper, NFTCore, NFTMetaState)]
 pub struct OnChainNFT {
@@ -21,7 +24,7 @@ pub struct OnChainNFT {
 static mut CONTRACT: Option<OnChainNFT> = None;
 
 #[no_mangle]
-unsafe extern "C" fn init() {
+extern "C" fn init() {
     let config: InitOnChainNFT = msg::load().expect("Unable to decode InitOnChainNFT");
     let nft = OnChainNFT {
         token: NFTState {
@@ -35,13 +38,13 @@ unsafe extern "C" fn init() {
         layers: config.layers,
         ..Default::default()
     };
-    CONTRACT = Some(nft);
+    unsafe { CONTRACT = Some(nft) };
 }
 
 #[no_mangle]
-unsafe extern "C" fn handle() {
+extern "C" fn handle() {
     let action: OnChainNFTAction = msg::load().expect("Could not load OnChainNFTAction");
-    let nft = CONTRACT.get_or_insert(Default::default());
+    let nft = unsafe { CONTRACT.get_or_insert(Default::default()) };
     match action {
         OnChainNFTAction::Mint {
             description,
@@ -75,9 +78,9 @@ unsafe extern "C" fn handle() {
 }
 
 #[no_mangle]
-unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
+extern "C" fn meta_state() -> *mut [i32; 2] {
     let query: OnChainNFTQuery = msg::load().expect("failed to decode input argument");
-    let nft = CONTRACT.get_or_insert(OnChainNFT::default());
+    let nft = unsafe { CONTRACT.get_or_insert(OnChainNFT::default()) };
     match query {
         OnChainNFTQuery::TokenURI { token_id } => {
             let encoded = OnChainNFTCore::token_uri(nft, token_id)
