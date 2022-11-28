@@ -1,18 +1,18 @@
 [package]
 name = "multitoken"
-version = "0.3.2"
+version = "0.3.3"
 authors = ["Gear Technologies"]
 license = "MIT"
 edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "d4552434" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.1" }
-gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.1" }
-multitoken-io = { path = "io" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.2" }
+gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.2" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "stable" }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }

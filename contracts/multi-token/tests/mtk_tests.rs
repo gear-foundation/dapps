@@ -1,6 +1,6 @@
 use gstd::ActorId;
 mod utils;
-use multitoken_io::BurnToNFT;
+use multitoken::io::BurnToNFT;
 use utils::*;
 
 const USERS: &[u64] = &[3, 4, 5, 0];

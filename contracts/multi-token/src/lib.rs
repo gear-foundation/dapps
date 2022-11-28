@@ -1,8 +1,12 @@
 #![no_std]
+
+pub mod io;
+
 use gear_lib::multitoken::{io::*, mtk_core::*, state::*};
 use gear_lib_derive::{MTKCore, MTKTokenState, StateKeeper};
 use gstd::{msg, prelude::*, ActorId};
-use multitoken_io::*;
+
+use crate::io::*;
 
 const NFT_COUNT: u128 = 1;
 
