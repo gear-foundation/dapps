@@ -3,9 +3,10 @@
 pub mod messages;
 pub use messages::*;
 pub mod asserts;
+pub mod io;
 
+use crate::io::*;
 use gstd::{exec, msg, prelude::*, ActorId};
-use ico_io::*;
 
 #[derive(Default)]
 struct IcoContract {

@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-dapps/crowdsale-ico" target="_blank">
+  <a href="https://gitpod.io/#https://github.com/gear-dapps/crowdsale" target="_blank">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
@@ -9,11 +9,11 @@
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
 
-[build_badge]: https://github.com/gear-dapps/crowdsale-ico/workflows/Build/badge.svg
-[build_href]: https://github.com/gear-dapps/crowdsale-ico/actions/workflows/build.yml
+[build_badge]: https://github.com/gear-dapps/crowdsale/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-dapps/crowdsale/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-MIT-success
-[lic_href]: https://github.com/gear-dapps/crowdsale-ico/blob/master/LICENSE
+[lic_href]: https://github.com/gear-dapps/crowdsale/blob/master/LICENSE
 
 <!-- Description starts here -->
 
@@ -23,7 +23,7 @@ An example of initial coin offering (ICO).
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/crowdsale-ico/releases).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/crowdsale/releases).
 
 ## Building Locally
 

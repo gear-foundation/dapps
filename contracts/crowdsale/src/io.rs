@@ -1,8 +1,4 @@
-#![no_std]
-
-use codec::{Decode, Encode};
-use gstd::ActorId;
-use scale_info::TypeInfo;
+use gstd::{prelude::*, ActorId};
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
 pub struct IcoState {

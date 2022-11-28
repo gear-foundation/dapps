@@ -1,8 +1,8 @@
 mod init_ico;
 
+use crowdsale::io::*;
 use gstd::Encode;
 use gtest::System;
-use ico_io::*;
 pub use init_ico::*;
 
 #[test]

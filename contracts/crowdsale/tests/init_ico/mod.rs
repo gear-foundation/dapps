@@ -1,9 +1,9 @@
 mod token;
 
 use core::time::Duration;
+use crowdsale::io::*;
 use gstd::{prelude::*, ActorId, Encode};
 use gtest::{Program, System};
-use ico_io::*;
 pub use token::*;
 
 pub const TOKEN_ADDRESS: u64 = 1;
@@ -74,10 +74,8 @@ pub fn end_sale(ico: &Program, expected_tx_id: u64) {
     assert!(res.contains(&(OWNER_ID, IcoEvent::SaleEnded(expected_tx_id).encode())));
 }
 
-pub fn buy_tokens(_sys: &System, ico: &Program, amount: u128, price: u128) {
-    // TODO: Uncomment after updating to the latest `gtest`
-    // https://github.com/gear-dapps/crowdsale-ico/issues/8
-    // sys.mint_to(USER_ID, price);
+pub fn buy_tokens(sys: &System, ico: &Program, amount: u128, price: u128) {
+    sys.mint_to(USER_ID, price);
     let res = ico.send_with_value(USER_ID, IcoAction::Buy(amount), price);
     assert!(res.contains(&(
         USER_ID,
