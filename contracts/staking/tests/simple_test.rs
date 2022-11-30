@@ -1,7 +1,7 @@
 use ft_io::*;
 use gstd::{ActorId, BTreeMap, Encode};
 use gtest::{Program, System};
-use staking_io::*;
+use staking::io::*;
 
 const USERS: &[u64] = &[1, 2, 3, 4, 5, 6, 7, 8];
 const DECIMALS_FACTOR: u128 = 10_u128.pow(20);
@@ -36,7 +36,7 @@ fn init_staking(sys: &System) {
 }
 
 fn init_staking_token(sys: &System) {
-    let st_token = Program::from_file(sys, "./target/fungible_token-0.1.2.wasm");
+    let st_token = Program::from_file(sys, "./target/fungible_token-0.1.3.wasm");
 
     let res = st_token.send(
         USERS[3],
@@ -90,7 +90,7 @@ fn init_staking_token(sys: &System) {
 }
 
 fn init_reward_token(sys: &System) {
-    let rw_token = Program::from_file(sys, "./target/fungible_token-0.1.2.wasm");
+    let rw_token = Program::from_file(sys, "./target/fungible_token-0.1.3.wasm");
 
     let res = rw_token.send(
         USERS[3],

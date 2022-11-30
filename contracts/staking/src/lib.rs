@@ -1,9 +1,11 @@
 #![no_std]
-use codec::{Decode, Encode};
+
+pub mod io;
+
 use ft_io::*;
 use gstd::{exec, msg, prelude::*, ActorId};
-use scale_info::TypeInfo;
-use staking_io::*;
+
+use crate::io::*;
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
