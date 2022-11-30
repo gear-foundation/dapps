@@ -1,13 +1,16 @@
 #![no_std]
 
+pub mod io;
+
 extern crate alloc;
 
 use core::cmp::min;
 use gstd::{exec, msg, prelude::*, ActorId};
-pub use multisig_wallet_io::*;
 use primitive_types::U256;
 pub mod state;
 use state::*;
+
+use crate::io::*;
 
 type TransactionId = U256;
 

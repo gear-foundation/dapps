@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - id: version
-        run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
+        run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
 
       - name: Show version
         run: echo ${{ steps.version.outputs.VERSION }}
@@ -30,7 +30,10 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Cache
-        uses: Swatinem/rust-cache@v1
+        uses: Swatinem/rust-cache@v2
+
+      - name: Remove binaries from cache
+        run: rm -vf target/wasm32-unknown-unknown/release/*.wasm
 
       - name: Install nightly toolchain
         uses: actions-rs/toolchain@v1

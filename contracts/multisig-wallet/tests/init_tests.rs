@@ -1,5 +1,5 @@
 use gtest::{Program, RunResult, System};
-use multisig_wallet_io::*;
+use multisig_wallet::io::*;
 
 const USERS: &[u64] = &[3, 4, 5, 6];
 

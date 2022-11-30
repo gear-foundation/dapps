@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2022-11-30
+### Changed
+- Updated `gstd`, `gtest`, `gear-wasm-builder` to the `stable` branch.
+### Removed
+- `multisig-wallet-io` crate.
+
 ## [0.1.1] - 2022-10-26
 ### Changed
 - Updated `gstd`, `gtest`, `gear-wasm-builder` to the actual revision (`#d4552434`).
@@ -14,6 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/multisig-wallet/compare/0.1.1...HEAD
+[Unreleased]: https://github.com/gear-dapps/multisig-wallet/compare/0.1.2...HEAD
+[0.1.2]: https://github.com/gear-dapps/multisig-wallet/compare/0.1.1...0.1.2
 [0.1.1]: https://github.com/gear-dapps/multisig-wallet/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/gear-dapps/multisig-wallet/compare/59b2f7b...0.1.0
