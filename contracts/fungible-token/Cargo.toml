@@ -1,16 +1,17 @@
 [package]
 name = "fungible-token"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "d4552434" }
+gstd = { git = "https://github.com/gear-tech/gear.git" , branch = "stable" }
 ft-io = { path = "io" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] , branch = "stable" }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
