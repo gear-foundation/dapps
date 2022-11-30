@@ -1,11 +1,14 @@
 #![no_std]
 
-use concert_io::*;
+pub mod io;
+
 use gear_lib::multitoken::io::*;
 use gstd::{msg, prelude::*, ActorId};
 use multitoken_io::*;
 
-const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
+use crate::io::*;
+
+const ZERO_ID: ActorId = ActorId::zero();
 const NFT_COUNT: u128 = 1;
 
 #[derive(Debug, Default)]

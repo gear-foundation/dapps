@@ -1,5 +1,3 @@
-#![no_std]
-
 use gear_lib::multitoken::io::*;
 use gstd::{prelude::*, ActorId};
 
