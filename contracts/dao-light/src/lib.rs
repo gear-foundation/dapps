@@ -1,13 +1,17 @@
 #![no_std]
-use codec::{Decode, Encode};
-pub use dao_light_io::*;
+
 use gstd::{exec, msg, prelude::*, ActorId, String};
-use scale_info::TypeInfo;
+
+pub mod io;
+use crate::io::*;
+
 pub mod state;
-use state::*;
+use crate::state::*;
+
 pub mod ft_messages;
 pub use ft_messages::*;
-const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
+
+const ZERO_ID: ActorId = ActorId::zero();
 
 #[derive(Debug, Default)]
 struct Dao {
@@ -23,6 +27,8 @@ struct Dao {
 }
 
 #[derive(Debug, Default, Clone, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Proposal {
     pub proposer: ActorId,
     pub applicant: ActorId,
@@ -39,6 +45,8 @@ pub struct Proposal {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Member {
     pub shares: u128,
     pub highest_index_yes_vote: Option<u128>,
