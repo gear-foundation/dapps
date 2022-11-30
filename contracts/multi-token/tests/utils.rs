@@ -1,7 +1,7 @@
 pub use gear_lib::multitoken::{io::*, state::*};
 use gstd::{ActorId, Encode, String};
 pub use gtest::{Program, System};
-use multitoken::io::*;
+use multitoken_io::*;
 
 const NFT_COUNT: u128 = 1;
 

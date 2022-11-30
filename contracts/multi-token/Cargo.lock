@@ -700,6 +700,15 @@ dependencies = [
  "gear-wasm-builder",
  "gstd",
  "gtest",
+ "multitoken-io",
+]
+
+[[package]]
+name = "multitoken-io"
+version = "0.3.3"
+dependencies = [
+ "gear-lib",
+ "gstd",
 ]
 
 [[package]]
