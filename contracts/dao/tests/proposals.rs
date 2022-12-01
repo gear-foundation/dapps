@@ -1,4 +1,4 @@
-use dao_io::*;
+use dao::io::*;
 use gtest::{Program, System};
 pub mod utils;
 use utils::*;

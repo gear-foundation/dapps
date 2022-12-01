@@ -1,4 +1,4 @@
-use dao_io::{DaoAction, DaoEvent, InitDao, Vote};
+use dao::io::{DaoAction, DaoEvent, InitDao, Vote};
 use ft_logic_io::Action;
 use ft_main_io::{FTokenAction, FTokenEvent, InitFToken};
 
