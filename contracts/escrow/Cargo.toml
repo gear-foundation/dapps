@@ -6,14 +6,16 @@ license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
-escrow-io = { path = "io" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.1" }
-ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.1" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+codec = { package = "parity-scale-codec", version = "3.2.1", default-features = false }
+primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
+scale-info = { version = "2.3.0", default-features = false }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.2" }
+ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.2" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "d4552434" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }

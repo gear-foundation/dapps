@@ -6,6 +6,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2022-12-02
+### Changed
+- Updated `gstd`, `gtest`, `gear-wasm-builder` to the `stable` branch.
+### Removed
+- `escrow-io` crate.
+
 ## [0.1.2] - 2022-11-09
 ### Added
 - Pinning to the stable commit (#d4552434) in the [`gear`](https://github.com/gear-tech/gear) repo.
