@@ -1,18 +1,19 @@
 [package]
 name = "dex-factory"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 dex-factory-io = { path = "../factory/io" }
 dex-pair-io = { path = "../pair/io" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.0" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.2" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git"}
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }

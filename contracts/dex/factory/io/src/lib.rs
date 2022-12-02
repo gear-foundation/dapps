@@ -1,7 +1,6 @@
 #![no_std]
-use codec::{Decode, Encode};
+
 use gstd::{prelude::*, ActorId};
-use scale_info::TypeInfo;
 
 pub type FungibleId = ActorId;
 

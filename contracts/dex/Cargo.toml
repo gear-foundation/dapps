@@ -4,9 +4,3 @@ members = [
     "factory",
     "pair",
 ]
-
-[patch.'https://github.com/gear-tech/gear.git']
-gtest = { git = "https://github.com/gear-dapps/gear.git", rev = "6471eb93" }
-gear-wasm-builder = { git = "https://github.com/gear-dapps/gear.git", rev = "6471eb93" }
-gcore = { git = "https://github.com/gear-dapps/gear.git", features = ["debug"], rev = "6471eb93" }
-gstd = { git = "https://github.com/gear-dapps/gear.git", features = ["debug"], rev = "6471eb93" }

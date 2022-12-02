@@ -1,8 +1,6 @@
 #![no_std]
 
-use codec::{Decode, Encode};
 use gstd::{prelude::*, ActorId};
-use scale_info::TypeInfo;
 
 pub type FungibleId = ActorId;
 
@@ -12,6 +10,8 @@ pub type FungibleId = ActorId;
 /// * both `FungibleId` MUST be fungible token contracts with a non-zero address.
 /// * factory MUST be a non-zero address.
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitPair {
     /// Factory address which deployed this pair.
     pub factory: ActorId,
@@ -22,6 +22,8 @@ pub struct InitPair {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum PairAction {
     /// Adds liquidity to the pair.
     ///
@@ -109,6 +111,8 @@ pub enum PairAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum PairEvent {
     AddedLiquidity {
         /// The amount of token0 added to liquidity.
@@ -157,6 +161,8 @@ pub enum PairEvent {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum PairStateQuery {
     TokenAddresses,
     Reserves,
@@ -165,6 +171,8 @@ pub enum PairStateQuery {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum PairStateReply {
     TokenAddresses {
         token0: FungibleId,
