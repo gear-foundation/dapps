@@ -14,7 +14,7 @@ pub struct Token {
     pub approved_account_ids: BTreeSet<ActorId>,
 }
 
-#[derive(Debug, Default, Encode, Decode, Clone, TypeInfo, PartialEq, Eq)]
+#[derive(Debug, Default, Encode, Decode, Clone, TypeInfo, PartialEq, Eq, PartialOrd, Ord)]
 pub struct TokenMetadata {
     // ex. "CryptoKitty #100"
     pub name: String,
