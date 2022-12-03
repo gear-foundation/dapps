@@ -277,7 +277,7 @@ dependencies = [
 
 [[package]]
 name = "ft-logic"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "ft-logic-io",
  "ft-storage-io",
@@ -291,7 +291,7 @@ dependencies = [
 
 [[package]]
 name = "ft-logic-io"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "gstd",
  "parity-scale-codec",
@@ -301,7 +301,7 @@ dependencies = [
 
 [[package]]
 name = "ft-main"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "ft-logic-io",
  "ft-main-io",
@@ -314,7 +314,7 @@ dependencies = [
 
 [[package]]
 name = "ft-main-io"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "ft-logic-io",
  "gstd",
@@ -325,7 +325,7 @@ dependencies = [
 
 [[package]]
 name = "ft-storage"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "ft-storage-io",
  "gear-wasm-builder",
@@ -335,7 +335,7 @@ dependencies = [
 
 [[package]]
 name = "ft-storage-io"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "gstd",
  "parity-scale-codec",

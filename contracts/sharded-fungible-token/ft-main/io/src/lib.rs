@@ -17,7 +17,7 @@ pub enum FTokenAction {
     MigrateStorageAddresses,
 }
 
-#[derive(Encode, Decode, TypeInfo)]
+#[derive(Encode, Decode, TypeInfo, PartialEq, Eq, PartialOrd, Ord, Clone, Copy)]
 pub enum FTokenEvent {
     Ok,
     Err,
