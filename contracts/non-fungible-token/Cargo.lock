@@ -785,8 +785,8 @@ dependencies = [
 
 [[package]]
 name = "gear-lib"
-version = "0.3.2"
-source = "git+https://github.com/gear-dapps/gear-lib.git?tag=0.3.2#f78b0e3b9b0a13a3a2ed25710dbc6ad9e99d4257"
+version = "0.3.3"
+source = "git+https://github.com/gear-dapps/gear-lib.git?tag=0.3.3#fd1e05ee79566b1c1c13699624ad2651f44b0f94"
 dependencies = [
  "gear-lib-sr25519",
  "gstd",
@@ -797,8 +797,8 @@ dependencies = [
 
 [[package]]
 name = "gear-lib-derive"
-version = "0.3.2"
-source = "git+https://github.com/gear-dapps/gear-lib.git?tag=0.3.2#f78b0e3b9b0a13a3a2ed25710dbc6ad9e99d4257"
+version = "0.3.3"
+source = "git+https://github.com/gear-dapps/gear-lib.git?tag=0.3.3#fd1e05ee79566b1c1c13699624ad2651f44b0f94"
 dependencies = [
  "gear-lib-macros",
  "proc-macro2",
@@ -809,12 +809,12 @@ dependencies = [
 [[package]]
 name = "gear-lib-macros"
 version = "0.3.2"
-source = "git+https://github.com/gear-dapps/gear-lib.git?tag=0.3.2#f78b0e3b9b0a13a3a2ed25710dbc6ad9e99d4257"
+source = "git+https://github.com/gear-dapps/gear-lib.git?tag=0.3.3#fd1e05ee79566b1c1c13699624ad2651f44b0f94"
 
 [[package]]
 name = "gear-lib-sr25519"
-version = "0.3.2"
-source = "git+https://github.com/gear-dapps/gear-lib.git?tag=0.3.2#f78b0e3b9b0a13a3a2ed25710dbc6ad9e99d4257"
+version = "0.3.3"
+source = "git+https://github.com/gear-dapps/gear-lib.git?tag=0.3.3#fd1e05ee79566b1c1c13699624ad2651f44b0f94"
 dependencies = [
  "schnorrkel 0.10.2",
 ]
@@ -1252,7 +1252,7 @@ dependencies = [
 
 [[package]]
 name = "nft"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "gear-lib",
  "gear-lib-derive",
@@ -1268,7 +1268,7 @@ dependencies = [
 
 [[package]]
 name = "nft-io"
-version = "0.2.4"
+version = "0.2.5"
 dependencies = [
  "gear-lib",
  "gstd",

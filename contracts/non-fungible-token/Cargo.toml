@@ -1,6 +1,6 @@
 [package]
 name = "nft"
-version = "0.2.4"
+version = "0.2.5"
 authors = ["Gear Technologies"]
 edition = "2021"
 
@@ -8,8 +8,8 @@ edition = "2021"
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 primitive-types = { version = "0.12.1", default-features = false }
 nft-io = { path = "io" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.2" }
-gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.2" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.3" }
+gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.3" }
 sp-core-hashing = { version = "5.0.0", default-features = false }
 
 [dev-dependencies]
