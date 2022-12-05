@@ -1,23 +1,27 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-dapps/lottery" target="_blank">
+  <a href="https://gitpod.io/#https://github.com/gear-dapps/game-of-chance" target="_blank">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
 
-# Lottery
+# Game of chance
 
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
+[![Docs][docs_badge]][docs_href]
 
-[build_badge]: https://github.com/gear-dapps/lottery/workflows/Build/badge.svg
-[build_href]: https://github.com/gear-dapps/lottery/actions/workflows/build.yml
+[build_badge]: https://github.com/gear-dapps/game-of-chance/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-dapps/game-of-chance/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-MIT-success
-[lic_href]: https://github.com/gear-dapps/lottery/blob/master/LICENSE
+[lic_href]: https://github.com/gear-dapps/game-of-chance/blob/master/LICENSE
+
+[docs_badge]: https://img.shields.io/badge/docs-online-5023dd
+[docs_href]: https://dapps.gear.rs/game_of_chance
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/lottery/releases).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/game-of-chance/releases).
 
 ## Building Locally
 
@@ -78,4 +82,4 @@ make
 
 ## License
 
-The source code is licensed under [MIT license](LICENSE).
+The source code is licensed under the [MIT license](LICENSE).

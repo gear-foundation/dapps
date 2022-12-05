@@ -26,11 +26,25 @@ init:
 
 linter:
 	@echo ──────────── Run linter ───────────────────────
-	@cargo +nightly clippy --all-targets -- --no-deps -D warnings -A "clippy::missing_safety_doc"
+	@cargo +nightly clippy --all-targets -- --no-deps
 
 pre-commit: fmt linter test
 
 test: build
-	@if [ ! -f "./target/fungible_token-0.1.2.wasm" ]; then wget "https://github.com/gear-dapps/fungible-token/releases/download/0.1.2/fungible_token-0.1.2.wasm" -O "./target/fungible_token-0.1.2.wasm"; fi
+	@if [ ! -f "./target/ft_main.opt.wasm" ]; then\
+	    curl -L\
+	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_main-0.1.3.opt.wasm"\
+	        -o "./target/ft_main.opt.wasm";\
+	fi
+	@if [ ! -f "./target/ft_logic.opt.wasm" ]; then\
+	    curl -L\
+	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_logic-0.1.3.opt.wasm"\
+	        -o "./target/ft_logic.opt.wasm";\
+	fi
+	@if [ ! -f "./target/ft_storage.opt.wasm" ]; then\
+	    curl -L\
+	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_storage-0.1.3.opt.wasm"\
+	        -o "./target/ft_storage.opt.wasm";\
+	fi
 	@echo ──────────── Run tests ────────────────────────
-	@cargo +nightly test --release
+	@cargo +nightly t

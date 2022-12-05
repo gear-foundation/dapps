@@ -1,18 +1,22 @@
 [package]
-name = "lottery"
-version = "0.1.1"
+name = "game-of-chance"
+version = "0.2.0"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "d4552434" }
-sp-core-hashing = { version = "4.0.0", default-features = false }
-lt-io = { path = "io" }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.2" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+parity-scale-codec = { version = "3", default-features = false }
+scale-info = { version = "2", default-features = false }
+rand = { version = "0.8", default-features = false }
+rand_xoshiro = "0.6"
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.3" }
+ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.3" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "stable" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }

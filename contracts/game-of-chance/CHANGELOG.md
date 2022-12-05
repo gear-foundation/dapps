@@ -5,6 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.2.0] - 2022-11-12
+### Added
+- A complete rewrite of a code and tests with a minimal API change.
+- The [SFT](https://github.com/gear-dapps/sharded-fungible-token) support.
+### Changed
+- Renamed the contract from Lottery to Game of chance.
+
 ## [0.1.1] - 2022-10-26
 ### Changed
 - Updated fungible token to v0.1.2.
@@ -14,6 +22,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/lottery/compare/0.1.1...HEAD
+[Unreleased]: https://github.com/gear-dapps/lottery/compare/0.2.0...HEAD
+[0.2.0]: https://github.com/gear-dapps/lottery/compare/0.1.1...0.2.0
 [0.1.1]: https://github.com/gear-dapps/lottery/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/gear-dapps/lottery/compare/60d5a8e...0.1.0
