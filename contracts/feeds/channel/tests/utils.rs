@@ -11,11 +11,10 @@ pub const SUBSCRIBERS: &[u64] = &[10, 11, 12, 13, 14];
 pub trait FeedsChannel {
     fn router(sys: &System) -> Program;
     fn channel(sys: &System) -> Program;
+    fn register(&self);
     fn add_subscriber(&self, subscriber: u64);
-    fn add_subscriber_fail(&self, subscriber: u64);
     fn unsubscribe(&self, subscriber: u64);
-    fn unsubscribe_fail(&self, subscriber: u64);
-    fn post(&self, owner: u64, subscribers: &[u64], text: String, message: Message);
+    fn post(&self, owner: u64, text: String, message: Message);
     fn post_fail(&self, owner: u64, text: String);
     fn check_user_subscriptions(&self, user: u64, expected_subscriptions: BTreeSet<ActorId>);
     fn check_channel_info(&self, channel: Channel);
@@ -39,18 +38,22 @@ impl FeedsChannel for Program<'_> {
     fn channel(sys: &System) -> Program {
         let channel = Program::current(sys);
 
-        let res = channel.send(
+        let res = channel.send(OWNER, 0x00);
+        assert!(!res.main_failed());
+        channel
+    }
+
+    fn register(&self) {
+        let res = self.send(
             OWNER,
-            ChannelInit {
+            ChannelAction::Register {
                 router_contract_id: ROUTER_ID.into(),
             },
         );
         let log = Log::builder()
             .dest(OWNER)
-            .payload(ChannelOutput::SubscriberAdded(OWNER.into()));
+            .payload(ChannelOutput::Registered);
         assert!(res.contains(&log));
-
-        channel
     }
 
     fn add_subscriber(&self, subscriber: u64) {
@@ -61,12 +64,6 @@ impl FeedsChannel for Program<'_> {
         assert!(res.contains(&log));
     }
 
-    fn add_subscriber_fail(&self, subscriber: u64) {
-        assert!(self
-            .send(subscriber, ChannelAction::Subscribe)
-            .main_failed());
-    }
-
     fn unsubscribe(&self, subscriber: u64) {
         let res = self.send(subscriber, ChannelAction::Unsubscribe);
         let log = Log::builder()
@@ -75,28 +72,12 @@ impl FeedsChannel for Program<'_> {
         assert!(res.contains(&log));
     }
 
-    fn unsubscribe_fail(&self, subscriber: u64) {
-        assert!(self
-            .send(subscriber, ChannelAction::Unsubscribe)
-            .main_failed());
-    }
-
-    fn post(&self, owner: u64, subscribers: &[u64], text: String, message: Message) {
+    fn post(&self, owner: u64, text: String, message: Message) {
         let res = self.send(owner, ChannelAction::Post(text));
         let log = Log::builder()
             .dest(OWNER)
-            .payload(ChannelOutput::MessagePosted(message.clone()));
+            .payload(ChannelOutput::MessagePosted(message));
         assert!(res.contains(&log));
-        let log = Log::builder()
-            .dest(OWNER)
-            .payload(ChannelOutput::SingleMessage(message.clone()));
-        assert!(res.contains(&log));
-        for subscriber in subscribers {
-            let log = Log::builder()
-                .dest(*subscriber)
-                .payload(ChannelOutput::SingleMessage(message.clone()));
-            assert!(res.contains(&log));
-        }
     }
     fn post_fail(&self, owner: u64, text: String) {
         assert!(self.send(owner, ChannelAction::Post(text)).main_failed())

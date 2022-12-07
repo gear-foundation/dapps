@@ -14,8 +14,10 @@ fn channels_initialization() {
     let router = Program::router(&sys);
 
     // upload and init 2 channels
-    Program::channel(&sys);
-    Program::channel(&sys);
+    let channel_1 = Program::channel(&sys);
+    channel_1.register();
+    let channel_2 = Program::channel(&sys);
+    channel_2.register();
 
     // check that channels were registered at router contract
     let mut expected_channels: Vec<Channel> = Vec::new();
@@ -41,11 +43,13 @@ fn channels_initialization() {
     router.check_all_channel(expected_channels);
 
     // check that OWNER subscribes to 2 channels
+    channel_1.add_subscriber(OWNER);
+    channel_2.add_subscriber(OWNER);
     let mut expected_subscriptions: BTreeSet<ActorId> = BTreeSet::new();
     expected_subscriptions.insert(2.into());
     expected_subscriptions.insert(3.into());
 
-    router.check_user_subscriptions(OWNER, expected_subscriptions);
+    // router.check_user_subscriptions(OWNER, expected_subscriptions);
 }
 
 #[test]
@@ -55,7 +59,8 @@ fn subscriptions() {
 
     let router = Program::router(&sys);
     let channel = Program::channel(&sys);
-
+    channel.register();
+    channel.add_subscriber(OWNER);
     let channel_id: ActorId = CHANNEL_ID.into();
     // add subscribers
     for subscriber in SUBSCRIBERS {
@@ -64,16 +69,10 @@ fn subscriptions() {
         router.check_user_subscriptions(*subscriber, BTreeSet::from([channel_id]));
     }
 
-    // must fail since already subscribed to the channel
-    channel.add_subscriber_fail(SUBSCRIBERS[0]);
-
     // unsubscribe
     channel.unsubscribe(SUBSCRIBERS[1]);
     // check that subscriptions of SUBSCRIBERS[1] are empty
     router.check_user_subscriptions(SUBSCRIBERS[1], BTreeSet::new());
-
-    // must fail since a sender does not subscribe to channel
-    channel.unsubscribe_fail(SUBSCRIBERS[1]);
 }
 
 #[test]
@@ -86,7 +85,8 @@ fn post() {
 
     // upload and init a channel
     let channel = Program::channel(&sys);
-
+    channel.register();
+    channel.add_subscriber(OWNER);
     let mut expected_messages: Vec<Message> = Vec::new();
     // init message
     let mut message = Message {
@@ -104,7 +104,7 @@ fn post() {
     message.text = String::from("Hello");
     expected_messages.push(message.clone());
 
-    channel.post(OWNER, SUBSCRIBERS, String::from("Hello"), message);
+    channel.post(OWNER, String::from("Hello"), message);
 
     let messages: Vec<Message> = channel.meta_state(()).expect("Meta_state failed");
     assert_eq!(expected_messages, messages);

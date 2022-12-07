@@ -5,12 +5,8 @@ use codec::{Decode, Encode};
 use scale_info::TypeInfo;
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
-pub struct ChannelInit {
-    pub router_contract_id: ActorId,
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum ChannelAction {
+    Register { router_contract_id: ActorId },
     Subscribe,
     Unsubscribe,
     Post(String),
@@ -22,6 +18,7 @@ pub enum ChannelOutput {
     SubscriberRemoved(ActorId),
     MessagePosted(Message),
     SingleMessage(Message),
+    Registered,
 }
 
 #[derive(Clone, Debug, Encode, Decode, TypeInfo, Default, PartialEq, Eq)]
