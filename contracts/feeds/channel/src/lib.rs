@@ -115,7 +115,7 @@ extern "C" fn init() {
         "Channel {:?} initialized successfully!",
         channel.name.clone()
     );
-    CHANNEL = Some(channel);
+    unsafe { CHANNEL = Some(channel) };
 }
 
 #[gstd::async_main]
