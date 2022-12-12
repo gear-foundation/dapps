@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.6] - 2022-12-10
+### Changed
+- Transaction managment logic. Now the cotract doesn't return `NFTEvent::TransactionMade` if some transaction was made, and cached `NFTEvent` returns instead.
+
 ## [0.2.5] - 2022-12-03
 ### Changed
 - Updated `gear-lib`.
@@ -35,8 +39,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.5...HEAD
-[0.2.4]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.4...0.2.5
+[Unreleased]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.6...HEAD
+[0.2.6]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.5...0.2.6
+[0.2.5]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.4...0.2.5
 [0.2.4]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.3...0.2.4
 [0.2.3]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.2...0.2.3
 [0.2.2]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.1...0.2.2

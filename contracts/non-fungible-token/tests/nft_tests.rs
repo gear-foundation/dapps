@@ -188,10 +188,13 @@ fn approve_failures() {
     let nft = sys.get_program(1);
     let mut transaction_id: u64 = 0;
     assert!(!mint(&nft, transaction_id, USERS[0]).main_failed());
+    transaction_id += 1;
     // must fail since the token doesn't exist
     assert!(approve(&nft, transaction_id, USERS[0], USERS[1], 1).main_failed());
+    transaction_id += 1;
     // must fail since the caller is not the token owner
     assert!(approve(&nft, transaction_id, USERS[1], USERS[0], 0).main_failed());
+    transaction_id += 1;
     // must fail since approval to the zero address
     assert!(approve(&nft, transaction_id, USERS[1], ZERO_ID, 0).main_failed());
 

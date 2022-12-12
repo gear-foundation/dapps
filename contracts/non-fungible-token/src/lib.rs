@@ -6,15 +6,13 @@ use gstd::{exec, msg, prelude::*, ActorId};
 use nft_io::*;
 use primitive_types::{H256, U256};
 
-const DELAY: u32 = 600_000;
-
 #[derive(Debug, Default, NFTStateKeeper, NFTCore, NFTMetaState)]
 pub struct NFT {
     #[NFTStateField]
     pub token: NFTState,
     pub token_id: TokenId,
     pub owner: ActorId,
-    pub transactions: BTreeSet<H256>,
+    pub transactions: BTreeMap<H256, NFTEvent>,
 }
 
 static mut CONTRACT: Option<NFT> = None;
@@ -48,29 +46,38 @@ unsafe extern "C" fn handle() {
             transaction_id,
             token_metadata,
         } => {
-            if !nft.transaction_made(transaction_id) {
-                msg::reply(NFTEvent::Transfer(MyNFTCore::mint(nft, token_metadata)), 0)
-                    .expect("Error during replying with `NFTEvent::Transfer`");
-            }
+            msg::reply(
+                nft.process_transaction(transaction_id, |nft| {
+                    NFTEvent::Transfer(MyNFTCore::mint(nft, token_metadata))
+                }),
+                0,
+            )
+            .expect("Error during replying with `NFTEvent::Transfer`");
         }
         NFTAction::Burn {
             transaction_id,
             token_id,
         } => {
-            if !nft.transaction_made(transaction_id) {
-                msg::reply(NFTEvent::Transfer(NFTCore::burn(nft, token_id)), 0)
-                    .expect("Error during replying with `NFTEvent::Transfer`");
-            }
+            msg::reply(
+                nft.process_transaction(transaction_id, |nft| {
+                    NFTEvent::Transfer(NFTCore::burn(nft, token_id))
+                }),
+                0,
+            )
+            .expect("Error during replying with `NFTEvent::Transfer`");
         }
         NFTAction::Transfer {
             transaction_id,
             to,
             token_id,
         } => {
-            if !nft.transaction_made(transaction_id) {
-                msg::reply(NFTEvent::Transfer(NFTCore::transfer(nft, &to, token_id)), 0)
-                    .expect("Error during replying with `NFTEvent::Transfer`");
-            }
+            msg::reply(
+                nft.process_transaction(transaction_id, |nft| {
+                    NFTEvent::Transfer(NFTCore::transfer(nft, &to, token_id))
+                }),
+                0,
+            )
+            .expect("Error during replying with `NFTEvent::Transfer`");
         }
         NFTAction::TransferPayout {
             transaction_id,
@@ -78,13 +85,13 @@ unsafe extern "C" fn handle() {
             token_id,
             amount,
         } => {
-            if !nft.transaction_made(transaction_id) {
-                msg::reply(
-                    NFTEvent::TransferPayout(NFTCore::transfer_payout(nft, &to, token_id, amount)),
-                    0,
-                )
-                .expect("Error during replying with `NFTEvent::TransferPayout`");
-            }
+            msg::reply(
+                nft.process_transaction(transaction_id, |nft| {
+                    NFTEvent::TransferPayout(NFTCore::transfer_payout(nft, &to, token_id, amount))
+                }),
+                0,
+            )
+            .expect("Error during replying with `NFTEvent::TransferPayout`");
         }
         NFTAction::NFTPayout { owner, amount } => {
             msg::reply(
@@ -98,10 +105,13 @@ unsafe extern "C" fn handle() {
             to,
             token_id,
         } => {
-            if !nft.transaction_made(transaction_id) {
-                msg::reply(NFTEvent::Approval(NFTCore::approve(nft, &to, token_id)), 0)
-                    .expect("Error during replying with `NFTEvent::Approval`");
-            }
+            msg::reply(
+                nft.process_transaction(transaction_id, |nft| {
+                    NFTEvent::Approval(NFTCore::approve(nft, &to, token_id))
+                }),
+                0,
+            )
+            .expect("Error during replying with `NFTEvent::Approval`");
         }
         NFTAction::Owner { token_id } => {
             msg::reply(
@@ -129,13 +139,13 @@ unsafe extern "C" fn handle() {
             message,
             signature,
         } => {
-            if !nft.transaction_made(transaction_id) {
-                msg::reply(
-                    NFTEvent::Approval(NFTCore::delegated_approve(nft, message, signature)),
-                    0,
-                )
-                .expect("Error during replying with `NFTEvent::Approval`");
-            }
+            msg::reply(
+                nft.process_transaction(transaction_id, |nft| {
+                    NFTEvent::Approval(NFTCore::delegated_approve(nft, message, signature))
+                }),
+                0,
+            )
+            .expect("Error during replying with `NFTEvent::Approval`");
         }
         NFTAction::Clear { transaction_hash } => nft.clear(transaction_hash),
     };
@@ -163,15 +173,22 @@ impl MyNFTCore for NFT {
 }
 
 impl NFT {
-    fn transaction_made(&mut self, transaction_id: u64) -> bool {
+    fn process_transaction(
+        &mut self,
+        transaction_id: u64,
+        action: impl FnOnce(&mut NFT) -> NFTEvent,
+    ) -> NFTEvent {
         let transaction_hash = get_hash(&msg::source(), transaction_id);
-        send_delayed_clear(transaction_hash);
-        if self.transactions.insert(transaction_hash) {
-            false
+
+        if let Some(nft_event) = self.transactions.get(&transaction_hash) {
+            nft_event.clone()
         } else {
-            msg::reply(NFTEvent::TransactionMade, 0)
-                .expect("Error during replying with `NFTEvent::TransactionMade`");
-            true
+            let nft_event = action(self);
+
+            self.transactions
+                .insert(transaction_hash, nft_event.clone());
+
+            nft_event
         }
     }
 
@@ -201,14 +218,4 @@ pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
     let account: [u8; 32] = (*account).into();
     let transaction_id = transaction_id.to_be_bytes();
     sp_core_hashing::blake2_256(&[account.as_slice(), transaction_id.as_slice()].concat()).into()
-}
-
-fn send_delayed_clear(transaction_hash: H256) {
-    msg::send_delayed(
-        exec::program_id(),
-        NFTAction::Clear { transaction_hash },
-        0,
-        DELAY,
-    )
-    .expect("Error in sending a delayled message `FTStorageAction::Clear`");
 }
