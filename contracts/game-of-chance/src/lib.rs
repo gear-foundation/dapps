@@ -23,7 +23,7 @@ struct Goc {
     prize_fund: u128,
     participation_cost: u128,
 
-    last_winner: ActorId,
+    winner: ActorId,
 
     transactions: BTreeMap<ActorId, u64>,
     transaction_id_nonce: u64,
@@ -48,6 +48,7 @@ impl Goc {
 
         self.players.clear();
 
+        self.winner = ActorId::zero();
         self.prize_fund = 0;
         self.started = exec::block_timestamp();
         self.ending = self.started + duration;
@@ -113,7 +114,7 @@ impl Goc {
             winner
         };
 
-        self.last_winner = winner;
+        self.winner = winner;
         self.started = 0;
 
         GOCEvent::Winner(winner)
@@ -229,24 +230,26 @@ async fn main() {
 #[no_mangle]
 extern "C" fn meta_state() -> *mut [i32; 2] {
     let Goc {
+        admin,
         ft_actor_id,
         started,
         ending,
         players,
         prize_fund,
         participation_cost,
-        last_winner,
+        winner: last_winner,
         ..
     } = contract();
 
     let reply = GOCState {
+        admin: *admin,
         ft_actor_id: *ft_actor_id,
         started: *started,
         ending: *ending,
         players: BTreeSet::from_iter(players.clone()),
         prize_fund: *prize_fund,
         participation_cost: *participation_cost,
-        last_winner: *last_winner,
+        winner: *last_winner,
     };
 
     util::to_leak_ptr(reply.encode())

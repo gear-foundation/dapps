@@ -15,14 +15,17 @@ fn two_rounds_and_meta_state() {
 
     let mut sft = Sft::initialize(&system);
     let mut goc = Goc::initialize(&system, ADMIN).succeed();
+    let admin = ADMIN.into();
+    let winner = ActorId::zero();
 
     goc.meta_state().state().eq(GOCState {
+        admin,
         started: 0,
         ending: 0,
         players: BTreeSet::new(),
         prize_fund: 0,
         participation_cost: 0,
-        last_winner: ActorId::zero(),
+        winner,
         ft_actor_id: None,
     });
 
@@ -39,66 +42,71 @@ fn two_rounds_and_meta_state() {
     goc.start(ADMIN, DURATION, PARTICIPATION_COST, ft_actor_id)
         .contains((ending, PARTICIPATION_COST, ft_actor_id));
     goc.meta_state().state().eq(GOCState {
+        admin,
         started,
         ending,
         players: BTreeSet::new(),
         prize_fund: 0,
         participation_cost: PARTICIPATION_COST,
-        last_winner: ActorId::zero(),
+        winner,
         ft_actor_id,
     });
 
     goc.enter(PLAYERS[0]).contains(PLAYERS[0]);
     sft.balance(goc.actor_id()).contains(PARTICIPATION_COST);
     goc.meta_state().state().eq(GOCState {
+        admin,
         started,
         ending,
         players: BTreeSet::from([PLAYERS[0].into()]),
         prize_fund: PARTICIPATION_COST,
         participation_cost: PARTICIPATION_COST,
-        last_winner: ActorId::zero(),
+        winner,
         ft_actor_id,
     });
 
     goc.enter(PLAYERS[1]).contains(PLAYERS[1]);
     sft.balance(goc.actor_id()).contains(PARTICIPATION_COST * 2);
     goc.meta_state().state().eq(GOCState {
+        admin,
         started,
         ending,
         players: BTreeSet::from([PLAYERS[0].into(), PLAYERS[1].into()]),
         prize_fund: PARTICIPATION_COST * 2,
         participation_cost: PARTICIPATION_COST,
-        last_winner: ActorId::zero(),
+        winner,
         ft_actor_id,
     });
 
     goc.enter(PLAYERS[2]).contains(PLAYERS[2]);
     sft.balance(goc.actor_id()).contains(PARTICIPATION_COST * 3);
     goc.meta_state().state().eq(GOCState {
+        admin,
         started,
         ending,
         players: BTreeSet::from([PLAYERS[0].into(), PLAYERS[1].into(), PLAYERS[2].into()]),
         prize_fund: PARTICIPATION_COST * 3,
         participation_cost: PARTICIPATION_COST,
-        last_winner: ActorId::zero(),
+        winner,
         ft_actor_id,
     });
 
     system.spend_blocks(DURATION_IN_SECS);
 
-    let mut winner = utils::predict_winner(&system, &PLAYERS);
+    let winner = utils::predict_winner(&system, &PLAYERS);
 
     goc.pick_winner(ADMIN).contains(winner.into());
     started = 0;
     sft.balance(winner)
         .contains(PARTICIPATION_COST * 2 + AMOUNT);
     goc.meta_state().state().eq(GOCState {
+        admin,
         started,
         ending,
         players: BTreeSet::from([PLAYERS[0].into(), PLAYERS[1].into(), PLAYERS[2].into()]),
         prize_fund: PARTICIPATION_COST * 3,
         participation_cost: PARTICIPATION_COST,
-        last_winner: winner.into(),
+        winner: winner.into(),
         ft_actor_id,
     });
 
@@ -110,15 +118,18 @@ fn two_rounds_and_meta_state() {
     started = system.block_timestamp();
     ending = started + DURATION;
 
+    let winner = ActorId::zero();
+
     goc.start(ADMIN, DURATION, PARTICIPATION_COST, ft_actor_id)
         .contains((ending, PARTICIPATION_COST, ft_actor_id));
     goc.meta_state().state().eq(GOCState {
+        admin,
         started,
         ending,
         players: BTreeSet::new(),
         prize_fund: 0,
         participation_cost: PARTICIPATION_COST,
-        last_winner: winner.into(),
+        winner,
         ft_actor_id,
     });
 
@@ -129,12 +140,13 @@ fn two_rounds_and_meta_state() {
         PARTICIPATION_COST
     );
     goc.meta_state().state().eq(GOCState {
+        admin,
         started,
         ending,
         players: BTreeSet::from([PLAYERS[0].into()]),
         prize_fund: PARTICIPATION_COST,
         participation_cost: PARTICIPATION_COST,
-        last_winner: winner.into(),
+        winner,
         ft_actor_id,
     });
 
@@ -145,12 +157,13 @@ fn two_rounds_and_meta_state() {
         PARTICIPATION_COST * 2
     );
     goc.meta_state().state().eq(GOCState {
+        admin,
         started,
         ending,
         players: BTreeSet::from([PLAYERS[0].into(), PLAYERS[1].into()]),
         prize_fund: PARTICIPATION_COST * 2,
         participation_cost: PARTICIPATION_COST,
-        last_winner: winner.into(),
+        winner,
         ft_actor_id,
     });
 
@@ -161,29 +174,31 @@ fn two_rounds_and_meta_state() {
         PARTICIPATION_COST * 3
     );
     goc.meta_state().state().eq(GOCState {
+        admin,
         started,
         ending,
         players: BTreeSet::from([PLAYERS[0].into(), PLAYERS[1].into(), PLAYERS[2].into()]),
         prize_fund: PARTICIPATION_COST * 3,
         participation_cost: PARTICIPATION_COST,
-        last_winner: winner.into(),
+        winner,
         ft_actor_id,
     });
 
     system.spend_blocks(DURATION_IN_SECS);
 
-    winner = utils::predict_winner(&system, &PLAYERS);
+    let winner = utils::predict_winner(&system, &PLAYERS);
 
     goc.pick_winner(ADMIN).contains(winner.into());
     system.claim_value_from_mailbox(winner);
     assert_eq!(system.balance_of(winner), PARTICIPATION_COST * 2 + AMOUNT);
     goc.meta_state().state().eq(GOCState {
+        admin,
         started: 0,
         ending,
         players: BTreeSet::from([PLAYERS[0].into(), PLAYERS[1].into(), PLAYERS[2].into()]),
         prize_fund: PARTICIPATION_COST * 3,
         participation_cost: PARTICIPATION_COST,
-        last_winner: winner.into(),
+        winner: winner.into(),
         ft_actor_id,
     });
 }
@@ -287,12 +302,13 @@ fn prize_fund_overflow() {
     goc.enter(PLAYERS[1]).contains(PLAYERS[1]);
 
     goc.meta_state().state().eq(GOCState {
+        admin: ADMIN.into(),
         started,
         ending,
         players: BTreeSet::from([PLAYERS[0].into(), PLAYERS[1].into()]),
         prize_fund: u128::MAX,
         participation_cost: PARTICIPATION_COST,
-        last_winner: ActorId::zero(),
+        winner: ActorId::zero(),
         ft_actor_id,
     })
 }

@@ -321,7 +321,7 @@ dependencies = [
 
 [[package]]
 name = "game-of-chance"
-version = "0.2.0"
+version = "0.2.1"
 dependencies = [
  "ft-logic-io",
  "ft-main-io",
@@ -891,9 +891,9 @@ checksum = "4501abdff3ae82a1c1b477a17252eb69cee9e66eb915c1abaa4f44d873df9f09"
 
 [[package]]
 name = "scale-info"
-version = "2.3.0"
+version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "88d8a765117b237ef233705cc2cc4c6a27fccd46eea6ef0c8c6dae5f3ef407f8"
+checksum = "001cf62ece89779fd16105b5f515ad0e5cedcd5440d3dd806bb067978e7c3608"
 dependencies = [
  "cfg-if",
  "derive_more",
@@ -903,9 +903,9 @@ dependencies = [
 
 [[package]]
 name = "scale-info-derive"
-version = "2.3.0"
+version = "2.3.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "cdcd47b380d8c4541044e341dcd9475f55ba37ddc50c908d945fc036a8642496"
+checksum = "303959cf613a6f6efd19ed4b4ad5bf79966a13352716299ad532cfb115f4205c"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -924,18 +924,18 @@ dependencies = [
 
 [[package]]
 name = "serde"
-version = "1.0.148"
+version = "1.0.150"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e53f64bb4ba0191d6d0676e1b141ca55047d83b74f5607e6d8eb88126c52c2dc"
+checksum = "e326c9ec8042f1b5da33252c8a37e9ffbd2c9bef0155215b6e6c80c790e05f91"
 dependencies = [
  "serde_derive",
 ]
 
 [[package]]
 name = "serde_derive"
-version = "1.0.148"
+version = "1.0.150"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a55492425aa53521babf6137309e7d34c20bbfbbfcfe2c7f3a047fd1f6b92c0c"
+checksum = "42a3df25b0713732468deadad63ab9da1f1fd75a48a15024b50363f128db627e"
 dependencies = [
  "proc-macro2",
  "quote",

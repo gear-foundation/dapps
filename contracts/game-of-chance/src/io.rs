@@ -103,6 +103,8 @@ pub enum GOCEvent {
 /// The current game round state.
 #[derive(Debug, Default, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo)]
 pub struct GOCState {
+    /// See the documentation of [`GOCInit`].
+    pub admin: ActorId,
     /// The start time (in milliseconds) of the current game round and the
     /// players entry stage.
     ///
@@ -119,8 +121,8 @@ pub struct GOCState {
     pub prize_fund: u128,
     /// See the documentation of [`GOCAction::Start`].
     pub participation_cost: u128,
-    /// The winner of the previous game round.
-    pub last_winner: ActorId,
+    /// The winner of the current game round.
+    pub winner: ActorId,
     /// A currency (or a FT contract [`ActorId`]) of the current game round.
     ///
     /// See the documentation of [`GOCAction::Start`].
