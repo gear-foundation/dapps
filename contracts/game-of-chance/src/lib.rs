@@ -38,7 +38,7 @@ impl Goc {
     ) -> GOCEvent {
         self.assert_admin();
 
-        if self.started != 0 {
+        if self.winner.is_zero() {
             panic!("Current game round must be over");
         }
 
@@ -71,7 +71,7 @@ impl Goc {
     async fn pick_winner(&mut self) -> GOCEvent {
         self.assert_admin();
 
-        if self.started == 0 {
+        if !self.winner.is_zero() {
             panic!("Winner mustn't already be picked");
         }
 
@@ -115,7 +115,6 @@ impl Goc {
         };
 
         self.winner = winner;
-        self.started = 0;
 
         GOCEvent::Winner(winner)
     }
@@ -204,6 +203,7 @@ extern "C" fn init() {
 
     let contract = Goc {
         admin,
+        winner: admin,
         ..Default::default()
     };
     unsafe { CONTRACT = Some(contract) }

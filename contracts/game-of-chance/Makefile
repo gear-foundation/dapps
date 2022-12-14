@@ -30,7 +30,7 @@ linter:
 
 pre-commit: fmt linter test
 
-test: build
+test:
 	@if [ ! -f "./target/ft_main.opt.wasm" ]; then\
 	    curl -L\
 	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_main-0.1.3.opt.wasm"\

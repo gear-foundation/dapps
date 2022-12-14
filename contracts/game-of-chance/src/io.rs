@@ -107,8 +107,6 @@ pub struct GOCState {
     pub admin: ActorId,
     /// The start time (in milliseconds) of the current game round and the
     /// players entry stage.
-    ///
-    /// If it equals 0, a winner has picked and the round is over.
     pub started: u64,
     /// See the documentation of [`GOCEvent::Started`].
     pub ending: u64,
@@ -122,6 +120,9 @@ pub struct GOCState {
     /// See the documentation of [`GOCAction::Start`].
     pub participation_cost: u128,
     /// The winner of the current game round.
+    ///
+    /// If it doesn't equal [`ActorId::zero()`], a winner has picked and the
+    /// round is over.
     pub winner: ActorId,
     /// A currency (or a FT contract [`ActorId`]) of the current game round.
     ///
