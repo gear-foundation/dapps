@@ -1,11 +1,11 @@
 # Decentralized Internet
 
-Demonstrates on-chain server-less approach to web sites and web applications hosting. 
+Demonstrates on-chain server-less approach to web sites and web applications hosting.
 DNS smart contract is uploaded on-chain, it lists programs (smart-contracts) that are also uploaded on-chain registered in DNS contract. Hosted programs may have the user interface that resides on IPFS.
 
 ## Connect your dApp to the Decentralized Internet
 
-To connect your program to the Decentralized Internet on Gear Network it's necessary to have a variable of type `Option<DnsMeta>` that will contain metadata of the DNS record.
+To connect your program to the Decentralized Internet on Gear Network it's necessary to have a variable of type `Option<DnsMeta>` in your program that will contain metadata of the DNS record.
 
 ```rust
 pub struct DnsMeta {
@@ -36,7 +36,7 @@ The next step is to send Metadata to your program using the `SetDnsMeta` enum va
 
 To register your dApp in DNS, you need to send a message to the DNS program. You can do it through https://idea.gear-tech.io/ find DNS program and send message `Register` with the id of your program.
 
-Here is the id of DNS program: `0xdd6ebf2548f5f26317f9139e519cdefd7f95479b07dfdd26dab73b9a3c9f3396`
+Here is the id of DNS program: `0xaeda9e4e9196231ef31a62779629f5c3d61824bb3ffb8b57489e9133ae47d7c8`
 
 ## Open and use dApp
 
