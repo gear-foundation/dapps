@@ -78,13 +78,22 @@ jobs:
       - name: Build frontend
         run: sudo yarn build:all
 
+      - name: Copy build
+        run: |
+          cp dns-frontend/build/dns.html .
+          cp goc-frontend/build/goc.html .
+
       - name: Upload artifacts
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v3
         with:
-          path: |
-            ./target/wasm32-unknown-unknown/release/*.wasm
-            ./dns-frontend/build/dns.html
+          path: ./target/wasm32-unknown-unknown/release/*.wasm
+
+      - name: Upload artifacts
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./*.html
 
   upload:
     if: github.event_name == 'push'
