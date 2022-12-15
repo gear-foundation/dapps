@@ -1,0 +1,22 @@
+.select {
+  display: flex;
+  margin-bottom: 3em;
+  margin-top: 0.7em;
+  padding: 10px 16px;
+  border-bottom: 2px solid #3a3d4d;
+  font-weight: bold;
+  letter-spacing: .04em;
+  background-color: #222225;
+  color: #fff;
+  border-radius: 20px;
+
+  &:focus,
+  &:active {
+    outline: 0;
+    color: rgb(48, 48, 48);
+  }
+
+  & option {
+    font-size: 1.2em;
+  }
+}

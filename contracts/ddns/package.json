@@ -1,0 +1,13 @@
+{
+  "name": "dein",
+  "private": true,
+  "packageManager": "yarn@3.3.0",
+  "scripts": {
+    "build:dns": "yarn workspace dns run build",
+    "build:goc": "yarn workspace goc run build"
+  },
+  "workspaces": [
+    "dns-frontend",
+    "goc-frontend"
+  ]
+}
