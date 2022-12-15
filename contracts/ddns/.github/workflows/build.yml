@@ -82,13 +82,9 @@ jobs:
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v3
         with:
-          path: ./target/wasm32-unknown-unknown/release/*.wasm
-
-      - name: Upload frontend artifacts
-        if: github.event_name == 'push'
-        uses: actions/upload-artifact@v3
-        with:
-          path: ./*-frontend/build/*.html
+          path: |
+            ./target/wasm32-unknown-unknown/release/*.wasm
+            ./dns-frontend/build/dns.html
 
   upload:
     if: github.event_name == 'push'
