@@ -115,6 +115,4 @@ jobs:
           tag_name: build
           draft: false
           fail_on_unmatched_files: true
-          files: |
-            artifact/*.wasm
-            artifact/*.html
+          files: artifact/*
