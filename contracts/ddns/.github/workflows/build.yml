@@ -52,12 +52,6 @@ jobs:
       - name: Build
         run: make build
 
-      - name: Upload artifacts
-        if: github.event_name == 'push'
-        uses: actions/upload-artifact@v3
-        with:
-          path: ./target/wasm32-unknown-unknown/release/*.wasm
-
       - name: Setup NodeJS
         uses: actions/setup-node@v2
         with:
@@ -88,9 +82,13 @@ jobs:
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v3
         with:
-          path: |
-            ./dns-frontend/build/dns.html
-            ./goc-frontend/build/goc.html
+          path: ./target/wasm32-unknown-unknown/release/*.wasm
+
+      - name: Upload frontend artifacts
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./*-frontend/build/*.html
 
   upload:
     if: github.event_name == 'push'
