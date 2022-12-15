@@ -341,7 +341,7 @@ dependencies = [
 
 [[package]]
 name = "game-of-chance"
-version = "0.2.1"
+version = "0.1.0"
 dependencies = [
  "ft-logic-io",
  "ft-main-io",

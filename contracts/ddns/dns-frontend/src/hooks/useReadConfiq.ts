@@ -1,35 +1,34 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useReadState } from '@gear-js/react-hooks';
 import { ElementType } from 'types';
-import { CONTRACT } from '../consts';
+import { CONTRACT_ID } from '../consts';
 
 type StateAllConfig = {
   Records: ElementType[];
 };
 type PayloadType = {
-  [key: string | number | symbol]: any
+  [key: string | number | symbol]: any;
 };
 
 export function useReadConfiq(metaBuffer: Buffer, payload: string, payloadText?: string) {
-  const programId = useMemo(() => CONTRACT.CONTRACT_ID, []);
-  const [newPayload, setNewPayload] = useState({ GetAll: null } as {})
+  const programId = useMemo(() => CONTRACT_ID, []);
+  const [newPayload, setNewPayload] = useState({ GetAll: null } as {});
 
   useEffect(() => {
-    const obj: PayloadType = {}
+    const obj: PayloadType = {};
     if (!(payload === 'GetAll')) {
       if (payload && payloadText) {
-        obj[payload] = payloadText || ''
-        setNewPayload(obj)
+        obj[payload] = payloadText || '';
+        setNewPayload(obj);
       }
-
     } else {
-      setNewPayload({ GetAll: null })
+      setNewPayload({ GetAll: null });
     }
-  }, [payload, payloadText])
+  }, [payload, payloadText]);
 
   const stateAll = useReadState<StateAllConfig>(programId, metaBuffer, newPayload);
 
   return {
-    stateAll
+    stateAll,
   };
 }

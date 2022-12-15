@@ -64,10 +64,45 @@ jobs:
             fi
             mv "$WASM" "$NAME-${{ needs.prepare.outputs.version }}.$EXT"
           done
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
           path: ./target/wasm32-unknown-unknown/release/*.wasm
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18
+          cache: yarn
+
+      - name: Install dependencies
+        uses: borales/actions-yarn@v3.0.0
+        with:
+          cmd: install
+
+      - name: Generate dns env file
+        run: node dev/generateEnv.js dns-frontend/.env
+        env:
+          PATH_TO_META: ./target/wasm32-unknown-unknown/release/dns.meta.wasm
+          PROGRAM_ID: ${{ secrets.DNS_PROGRAM_ID }}
+
+      - name: Generate goc env file
+        run: node dev/generateEnv.js goc-frontend/.env
+        env:
+          PATH_TO_META: ./target/wasm32-unknown-unknown/release/game_of_chance.meta.wasm
+          PROGRAM_ID: ${{ secrets.GOC_PROGRAM_ID }}
+
+      - name: Build frontend
+        run: sudo yarn build:all
+
+      - name: Upload artifacts
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v3
+        with:
+          path: |
+            ./dns-frontend/build/dns.html
+            ./goc-frontend/build/goc.html
 
   publish:
     name: Publish binaries
@@ -84,4 +119,3 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: artifact/*
-          body_path: CHANGELOG.md # TODO: Cut piece related to the current version only

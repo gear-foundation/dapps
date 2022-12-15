@@ -6541,6 +6541,14 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dev-684a5f@workspace:dev":
+  version: 0.0.0-use.local
+  resolution: "dev-684a5f@workspace:dev"
+  dependencies:
+    "@gear-js/api": ^0.27.7
+  languageName: unknown
+  linkType: soft
+
 "didyoumean@npm:^1.2.2":
   version: 1.2.2
   resolution: "didyoumean@npm:1.2.2"

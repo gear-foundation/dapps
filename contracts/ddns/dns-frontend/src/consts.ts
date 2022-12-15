@@ -1,13 +1,7 @@
-import { Hex } from "@gear-js/api";
+import { Hex } from '@gear-js/api';
 
-const ADDRESS = {
-  NODE: process.env.REACT_APP_NODE_ADDRESS as string,
-};
-const CONTRACT = {
-  CONTRACT_ID:process.env.REACT_APP_DNS_CONTRACT as Hex,
-}
-const LOCAL_STORAGE = {
-  ACCOUNT: 'account',
-};
+const ADDRESS = process.env.REACT_APP_NODE_ADDRESS as string;
 
-export { ADDRESS, LOCAL_STORAGE, CONTRACT };
+const CONTRACT_ID = process.env.REACT_APP_PROGRAM_ID as Hex;
+
+export { ADDRESS, CONTRACT_ID };
