@@ -22,13 +22,13 @@ async unsafe fn add_record(id: ActorId) -> Option<DnsRecord> {
         panic!("Program already registered");
     }
 
-    let reply: GetMeta = msg::send_bytes_for_reply_as(id, Vec::from([0]), 0)
+    let reply: GetDnsMeta = msg::send_bytes_for_reply_as(id, Vec::from([0]), 0)
         .expect("Error in async")
         .await
         .expect("Unable to get reply");
 
     match reply {
-        GetMeta::Meta(meta) => {
+        GetDnsMeta::DnsMeta(meta) => {
             if let Some(dns_meta) = meta {
                 if RECORDS
                     .iter()
@@ -55,12 +55,13 @@ async unsafe fn add_record(id: ActorId) -> Option<DnsRecord> {
 
 async unsafe fn update_record(id: ActorId) -> Option<DnsRecord> {
     if let Some(record) = RECORDS.iter_mut().find(|r| r.id == id) {
-        let reply: GetMeta = msg::send_bytes_for_reply_as(id, Vec::from([0]), 0)
+        let reply: GetDnsMeta = msg::send_bytes_for_reply_as(id, Vec::from([0]), 0)
             .expect("Error in async")
             .await
             .expect("Unable to get reply");
+
         let result = match reply {
-            GetMeta::Meta(meta) => {
+            GetDnsMeta::DnsMeta(meta) => {
                 if let Some(dns_meta) = meta {
                     record.meta = dns_meta;
 

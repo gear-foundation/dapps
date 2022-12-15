@@ -2,7 +2,8 @@
 resolver = "2"
 
 members = [
-  "dns"
+  "dns",
+  "game-of-chance"
 ]
 
 [profile.release]

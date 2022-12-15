@@ -18,9 +18,9 @@ pub struct DnsMeta {
     pub description: String,
 }
 
-#[derive(Encode, Decode, TypeInfo, Clone)]
-pub enum GetMeta {
-    Meta(Option<DnsMeta>),
+#[derive(Decode, Clone)]
+pub enum GetDnsMeta {
+    DnsMeta(Option<DnsMeta>),
 }
 
 #[derive(Encode, Decode, TypeInfo)]
