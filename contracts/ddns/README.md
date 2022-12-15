@@ -1,7 +1,8 @@
 # Decentralized Internet
 
-Demonstrates on-chain server-less approach to web sites and web applications hosting.
-DNS smart contract is uploaded on-chain, it lists programs (smart-contracts) that are also uploaded on-chain registered in DNS contract. Hosted programs may have the user interface that resides on IPFS.
+Decentralized Internet demonstrates on-chain server-less approach to web sites and web applications hosting. Unlike server-based DNS built on centralized components and services, decentralized solutions running on the blockchain are characterized by boosted data security, enhanced data reconciliation, minimized system weak points, optimized resource allocation, and demonstrated great fault tolerance. It brings all the benefits of decentralization such as censorship resistance, security resilience, high transparency.
+
+Briefly the solution consists of DNS smart contract that is uploaded on-chain. It lists programs (smart-contracts) that are also uploaded on-chain and registered in DNS contract. Hosted programs may have the user interface that resides on IPFS.
 
 ## Connect your dApp to the Decentralized Internet
 
