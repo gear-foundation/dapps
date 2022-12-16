@@ -1,22 +1,8 @@
-[package]
-name = "nft"
-version = "0.2.6"
-authors = ["Gear Technologies"]
-edition = "2021"
+[workspace]
 
-[dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-primitive-types = { version = "0.12.1", default-features = false }
-nft-io = { path = "io" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.4" }
-gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.4" }
-sp-core-hashing = { version = "5.0.0", default-features = false }
+members = ["nft", "rentable_nft"]
 
-[dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "stable" }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-hex-literal = "0.3.4"
-sp-core = { git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
-
-[build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+[patch.crates-io]
+# Two dependecies below goes for subxt v0.22.0
+sp-core = { version = "6.0.0", git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
+sp-runtime = { version = "6.0.0", git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }

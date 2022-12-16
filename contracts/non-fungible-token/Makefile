@@ -36,4 +36,10 @@ test: build
 		-o "./target/fungible_token-0.1.0.wasm"; \
 	fi
 	@echo ──────────── Run tests ────────────────────────
-	@cargo +nightly test --release
+	@cargo test --release --package nft --test nft_tests
+	@wget https://get.gear.rs/gear-nightly-linu\x-x86_64.tar.xz && \
+	tar xvf gear-nightly-linux-x86_64.tar.xz && \
+	rm gear-nightly-linux-x86_64.tar.xz
+	@./gear --dev --tmp > /dev/null 2>&1  & echo "$$!" > gear.pid
+	cat gear.pid;
+	@cargo test --package nft --test node_tests -- --test-threads=1; 	kill `(cat gear.pid)`; rm gear; rm gear.pid
