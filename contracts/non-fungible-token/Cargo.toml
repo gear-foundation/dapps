@@ -1,8 +1,10 @@
 [workspace]
-
-members = ["nft", "rentable_nft"]
+resolver = "2"
+members = [
+    "nft",
+    "rentable-nft",
+]
 
 [patch.crates-io]
-# Two dependecies below goes for subxt v0.22.0
-sp-core = { version = "6.0.0", git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
-sp-runtime = { version = "6.0.0", git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
+sp-core = { git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
+sp-runtime = { git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
