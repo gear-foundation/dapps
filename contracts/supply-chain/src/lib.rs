@@ -6,6 +6,7 @@ use gstd::{async_main, exec, msg, prelude::*, ActorId};
 mod utils;
 
 mod io;
+use hashbrown::{HashMap, HashSet};
 pub use io::*;
 
 #[derive(Default)]
@@ -14,7 +15,7 @@ struct Item {
     shipping_time: u64,
 }
 
-fn get_mut_item(items: &mut BTreeMap<ItemId, Item>, id: ItemId) -> &mut Item {
+fn get_mut_item(items: &mut HashMap<ItemId, Item>, id: ItemId) -> &mut Item {
     items
         .get_mut(&id)
         .unwrap_or_else(|| panic!("Item not found by an ID"))
@@ -47,11 +48,11 @@ async fn receive(ft_program: ActorId, msg_source: ActorId, seller: ActorId, item
 
 #[derive(Default)]
 struct SupplyChain {
-    items: BTreeMap<ItemId, Item>,
+    items: HashMap<ItemId, Item>,
 
-    producers: BTreeSet<ActorId>,
-    distributors: BTreeSet<ActorId>,
-    retailers: BTreeSet<ActorId>,
+    producers: HashSet<ActorId>,
+    distributors: HashSet<ActorId>,
+    retailers: HashSet<ActorId>,
 
     ft_program: ActorId,
     nft_program: ActorId,
@@ -337,7 +338,9 @@ extern "C" fn init() {
     {
         panic!("Each `ActorId` of `producers`, `distributors`, and `retailers` mustn't equal `ActorId::zero()`");
     }
-
+    let producers = HashSet::from_iter(producers.into_iter());
+    let distributors = HashSet::from_iter(distributors.into_iter());
+    let retailers = HashSet::from_iter(retailers.into_iter());
     let supply_chain = SupplyChain {
         producers,
         distributors,
@@ -411,9 +414,9 @@ extern "C" fn meta_state() -> *mut [i32; 2] {
             })
         }
         SupplyChainStateQuery::Participants => SupplyChainStateReply::Participants(Participants {
-            producers: program.producers.clone(),
-            distributors: program.distributors.clone(),
-            retailers: program.retailers.clone(),
+            producers: BTreeSet::from_iter(program.producers.clone().into_iter()),
+            distributors: BTreeSet::from_iter(program.distributors.clone().into_iter()),
+            retailers: BTreeSet::from_iter(program.retailers.clone().into_iter()),
         }),
         SupplyChainStateQuery::FTProgram => SupplyChainStateReply::FTProgram(program.ft_program),
         SupplyChainStateQuery::NFTProgram => SupplyChainStateReply::NFTProgram(program.nft_program),

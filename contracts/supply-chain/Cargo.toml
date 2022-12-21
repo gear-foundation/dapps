@@ -12,6 +12,7 @@ nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "
 ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.0" }
 gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git" }
 scale-info = { version = "2", default-features = false }
+hashbrown = "0.13.1"
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git" }
