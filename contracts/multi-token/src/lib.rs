@@ -3,6 +3,7 @@
 use gear_lib::multitoken::{io::*, mtk_core::*, state::*};
 use gear_lib_derive::{MTKCore, MTKTokenState, StateKeeper};
 use gstd::{msg, prelude::*, ActorId};
+use hashbrown::HashMap;
 use multitoken_io::*;
 
 const NFT_COUNT: u128 = 1;
@@ -13,7 +14,7 @@ pub struct SimpleMTK {
     pub tokens: MTKState,
     pub token_id: TokenId,
     pub owner: ActorId,
-    pub supply: BTreeMap<TokenId, u128>,
+    pub supply: HashMap<TokenId, u128>,
 }
 
 pub trait SimpleMTKCore: MTKCore {
