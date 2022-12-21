@@ -134,7 +134,7 @@ pub struct InitOnChainNFT {
     pub base_image: String,
     /// Layers map - mapping of layerid the list of layer items.
     /// Each layer item is a base64encoded svg.
-    pub layers: BTreeMap<LayerId, Vec<String>>,
+    pub layers: Vec<(LayerId, Vec<String>)>,
     /// Royalties for NFT
     pub royalties: Option<Royalties>,
 }

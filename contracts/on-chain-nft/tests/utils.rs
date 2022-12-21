@@ -10,7 +10,7 @@ pub fn init_nft(sys: &System) {
     sys.init_logger();
     let nft = Program::current(sys);
 
-    let mut layers = BTreeMap::new();
+    let mut layers = vec![];
     let first_layer = vec![
         String::from(
         "PHN2ZyBoZWlnaHQ9JzIxMCcgd2lkdGg9JzUwMCc+PHBvbHlnb24gcG9pbnRzPScxMDAsMTAgNDAsMTk4IDE5MCw3OCAxMCw3OCAxNjAsMTk4JyBzdHlsZT0nZmlsbDpsaW1lO3N0cm9rZTpwdXJwbGU7c3Ryb2tlLXdpZHRoOjU7ZmlsbC1ydWxlOm5vbnplcm87Jy8+PC9zdmc+",
@@ -27,8 +27,8 @@ pub fn init_nft(sys: &System) {
             "PHN2ZyBoZWlnaHQ9JzMwJyB3aWR0aD0nMjAwJz48dGV4dCB4PScwJyB5PScxNScgZmlsbD0nZ3JlZW4nPk9uIENoYWluIE5GVDwvdGV4dD48L3N2Zz4="
         )
     ];
-    layers.insert(0, first_layer);
-    layers.insert(1, second_layer);
+    layers.push((0, first_layer));
+    layers.push((1, second_layer));
     let res = nft.send(
         USERS[0],
         InitOnChainNFT {

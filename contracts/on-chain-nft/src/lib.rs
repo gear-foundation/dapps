@@ -5,6 +5,7 @@ pub mod io;
 use gear_lib::non_fungible_token::{io::NFTTransfer, nft_core::*, state::*, token::*};
 use gear_lib_derive::{NFTCore, NFTMetaState, NFTStateKeeper};
 use gstd::{msg, prelude::*, ActorId};
+use hashbrown::{HashMap, HashSet};
 use primitive_types::U256;
 
 use crate::io::*;
@@ -16,9 +17,9 @@ pub struct OnChainNFT {
     pub token_id: TokenId,
     pub owner: ActorId,
     pub base_image: String,
-    pub layers: BTreeMap<LayerId, Vec<String>>,
-    pub nfts: BTreeMap<TokenId, Vec<ItemId>>,
-    pub nfts_existence: BTreeSet<String>,
+    pub layers: HashMap<LayerId, Vec<String>>,
+    pub nfts: HashMap<TokenId, Vec<ItemId>>,
+    pub nfts_existence: HashSet<String>,
 }
 
 static mut CONTRACT: Option<OnChainNFT> = None;
@@ -35,7 +36,7 @@ extern "C" fn init() {
         },
         owner: msg::source(),
         base_image: config.base_image,
-        layers: config.layers,
+        layers: HashMap::from_iter(config.layers.into_iter()),
         ..Default::default()
     };
     unsafe { CONTRACT = Some(nft) };
