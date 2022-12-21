@@ -1,7 +1,9 @@
 #![no_std]
 
 use codec::Encode;
+use core::iter::FromIterator;
 use gstd::{debug, msg, prelude::*, ActorId};
+use hashbrown::{HashMap, HashSet};
 use router_io::*;
 
 gstd::metadata! {
@@ -16,8 +18,8 @@ title: "GEAR Workshop Router Contract",
 
 #[derive(Default)]
 pub struct Router {
-    pub channels: BTreeMap<ActorId, Channel>,
-    pub subscribers: BTreeMap<ActorId, BTreeSet<ActorId>>,
+    pub channels: HashMap<ActorId, Channel>,
+    pub subscribers: HashMap<ActorId, HashSet<ActorId>>,
 }
 static mut ROUTER: Option<Router> = None;
 
@@ -62,7 +64,7 @@ impl Router {
             .and_modify(|channels| {
                 channels.insert(msg::source());
             })
-            .or_insert_with(|| BTreeSet::from([msg::source()]));
+            .or_insert_with(|| HashSet::from([msg::source()]));
 
         msg::reply(
             RouterEvent::SubscriberAddedToChannel {
@@ -145,9 +147,9 @@ pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
             let channel_ids = router
                 .subscribers
                 .get(&user_id)
-                .unwrap_or(&BTreeSet::new())
+                .unwrap_or(&HashSet::new())
                 .clone();
-            RouterStateReply::SubscribedToChannels(channel_ids)
+            RouterStateReply::SubscribedToChannels(Vec::from_iter(channel_ids.into_iter()))
         }
     }
     .encode();

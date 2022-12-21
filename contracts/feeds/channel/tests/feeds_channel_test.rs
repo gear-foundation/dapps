@@ -1,5 +1,5 @@
 use channel_io::*;
-use gstd::{ActorId, BTreeSet};
+use gstd::ActorId;
 use gtest::{Program, System};
 use router_io::*;
 mod utils;
@@ -45,11 +45,8 @@ fn channels_initialization() {
     // check that OWNER subscribes to 2 channels
     channel_1.add_subscriber(OWNER);
     channel_2.add_subscriber(OWNER);
-    let mut expected_subscriptions: BTreeSet<ActorId> = BTreeSet::new();
-    expected_subscriptions.insert(2.into());
-    expected_subscriptions.insert(3.into());
-
-    // router.check_user_subscriptions(OWNER, expected_subscriptions);
+    let expected_subscriptions: Vec<ActorId> = vec![2.into(), 3.into()];
+    router.check_user_subscriptions(OWNER, expected_subscriptions);
 }
 
 #[test]
@@ -66,13 +63,13 @@ fn subscriptions() {
     for subscriber in SUBSCRIBERS {
         channel.add_subscriber(*subscriber);
         // check a subscription in the router contract
-        router.check_user_subscriptions(*subscriber, BTreeSet::from([channel_id]));
+        router.check_user_subscriptions(*subscriber, vec![channel_id]);
     }
 
     // unsubscribe
     channel.unsubscribe(SUBSCRIBERS[1]);
     // check that subscriptions of SUBSCRIBERS[1] are empty
-    router.check_user_subscriptions(SUBSCRIBERS[1], BTreeSet::new());
+    router.check_user_subscriptions(SUBSCRIBERS[1], vec![]);
 }
 
 #[test]

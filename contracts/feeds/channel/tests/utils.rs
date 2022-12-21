@@ -1,5 +1,5 @@
 use channel_io::*;
-use gstd::{ActorId, BTreeSet};
+use gstd::ActorId;
 use gtest::{Log, Program, System};
 use router_io::*;
 
@@ -16,7 +16,7 @@ pub trait FeedsChannel {
     fn unsubscribe(&self, subscriber: u64);
     fn post(&self, owner: u64, text: String, message: Message);
     fn post_fail(&self, owner: u64, text: String);
-    fn check_user_subscriptions(&self, user: u64, expected_subscriptions: BTreeSet<ActorId>);
+    fn check_user_subscriptions(&self, user: u64, expected_subscriptions: Vec<ActorId>);
     fn check_channel_info(&self, channel: Channel);
     fn check_all_channel(&self, expected_channels: Vec<Channel>);
 }
@@ -82,7 +82,7 @@ impl FeedsChannel for Program<'_> {
     fn post_fail(&self, owner: u64, text: String) {
         assert!(self.send(owner, ChannelAction::Post(text)).main_failed())
     }
-    fn check_user_subscriptions(&self, user: u64, expected_subscriptions: BTreeSet<ActorId>) {
+    fn check_user_subscriptions(&self, user: u64, expected_subscriptions: Vec<ActorId>) {
         let subscriptions: RouterStateReply = self
             .meta_state(RouterState::SubscribedToChannels(user.into()))
             .expect("Meta_state failed");

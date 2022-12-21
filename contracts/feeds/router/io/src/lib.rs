@@ -51,5 +51,5 @@ pub enum RouterState {
 pub enum RouterStateReply {
     AllChannels(Vec<Channel>),
     Channel(Channel),
-    SubscribedToChannels(BTreeSet<ActorId>),
+    SubscribedToChannels(Vec<ActorId>),
 }
