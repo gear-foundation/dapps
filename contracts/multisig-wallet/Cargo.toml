@@ -8,6 +8,7 @@ authors = ["Gear Technologies"]
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
+hashbrown = "0.13.1"
 
 [dev-dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
