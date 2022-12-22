@@ -5,6 +5,7 @@ mod tests;
 
 use ft_io::*;
 use gstd::{debug, exec, msg, prelude::*, ActorId};
+use hashbrown::HashMap;
 
 const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
 
@@ -17,9 +18,9 @@ struct FungibleToken {
     /// Total supply of the token.
     total_supply: u128,
     /// Map to hold balances of token holders.
-    balances: BTreeMap<ActorId, u128>,
+    balances: HashMap<ActorId, u128>,
     /// Map to hold allowance information of token holders.
-    allowances: BTreeMap<ActorId, BTreeMap<ActorId, u128>>,
+    allowances: HashMap<ActorId, HashMap<ActorId, u128>>,
     /// Token's decimals.
     pub decimals: u8,
 }

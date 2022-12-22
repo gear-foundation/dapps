@@ -8,6 +8,7 @@ authors = ["Gear Technologies"]
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git" , branch = "stable" }
 ft-io = { path = "io" }
+hashbrown = "0.13.1"
 
 [dev-dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] , branch = "stable" }
