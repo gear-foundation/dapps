@@ -1,6 +1,7 @@
 #![no_std]
 
 pub mod messages;
+use hashbrown::HashMap;
 pub use messages::*;
 pub mod asserts;
 pub mod io;
@@ -18,9 +19,9 @@ struct IcoContract {
     tokens_goal: u128,
     owner: ActorId,
     token_address: ActorId,
-    token_holders: BTreeMap<ActorId, u128>,
+    token_holders: HashMap<ActorId, u128>,
     transaction_id: u64,
-    transactions: BTreeMap<ActorId, u64>,
+    transactions: HashMap<ActorId, u64>,
 }
 
 static mut ICO_CONTRACT: Option<IcoContract> = None;
@@ -145,9 +146,7 @@ impl IcoContract {
 
         assert!(
             amount_sent >= cost,
-            "buy_tokens(): Wrong amount sent, expect {} get {}",
-            cost,
-            amount_sent
+            "buy_tokens(): Wrong amount sent, expect {cost} get {amount_sent}"
         );
 
         if amount_sent > cost {
