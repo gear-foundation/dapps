@@ -1,6 +1,7 @@
 #![no_std]
 use ft_storage_io::*;
 use gstd::{exec, msg, prelude::*, ActorId};
+use hashbrown::HashMap;
 use primitive_types::H256;
 
 const DELAY: u32 = 600_000;
@@ -8,9 +9,9 @@ const DELAY: u32 = 600_000;
 #[derive(Default)]
 struct FTStorage {
     ft_logic_id: ActorId,
-    transaction_status: BTreeMap<H256, bool>,
-    balances: BTreeMap<ActorId, u128>,
-    approvals: BTreeMap<ActorId, BTreeMap<ActorId, u128>>,
+    transaction_status: HashMap<H256, bool>,
+    balances: HashMap<ActorId, u128>,
+    approvals: HashMap<ActorId, HashMap<ActorId, u128>>,
 }
 
 static mut FT_STORAGE: Option<FTStorage> = None;

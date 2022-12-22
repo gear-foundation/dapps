@@ -56,5 +56,5 @@ pub enum FTLogicState {
 
 #[derive(Encode, Debug, Decode, TypeInfo)]
 pub enum FTLogicStateReply {
-    Storages(BTreeMap<String, ActorId>),
+    Storages(Vec<(String, ActorId)>),
 }

@@ -9,6 +9,7 @@ ft-logic-io = { path = "../ft-logic/io" }
 ft-main-io = { path = "io" }
 primitive-types = { version = "0.12.1", default-features = false }
 sp-core-hashing = { version = "5.0.0", default-features = false }
+hashbrown = { version = "0.13.1" }
 
 [build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }

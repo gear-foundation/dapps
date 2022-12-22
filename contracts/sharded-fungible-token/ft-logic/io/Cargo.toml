@@ -8,3 +8,4 @@ codec = { package = "parity-scale-codec", version = "3.2.1", default-features = 
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 scale-info = { version = "2.3.0", default-features = false }
 primitive-types = { version = "0.12.1", default-features = false }
+hashbrown = { version = "0.13.1" }

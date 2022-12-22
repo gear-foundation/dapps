@@ -2,6 +2,7 @@
 use ft_logic_io::*;
 use ft_main_io::*;
 use gstd::{exec, msg, prelude::*, prog::ProgramGenerator, ActorId};
+use hashbrown::HashMap;
 use primitive_types::H256;
 
 const DELAY: u32 = 600_000;
@@ -10,7 +11,7 @@ const DELAY: u32 = 600_000;
 struct FToken {
     admin: ActorId,
     ft_logic_id: ActorId,
-    transactions: BTreeMap<H256, TransactionStatus>,
+    transactions: HashMap<H256, TransactionStatus>,
 }
 
 static mut FTOKEN: Option<FToken> = None;
