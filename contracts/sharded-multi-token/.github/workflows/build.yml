@@ -1,0 +1,81 @@
+name: Build
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  schedule:
+    - cron: '0 0 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Artifact cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Remove binaries from cache
+        run: rm -vf target/wasm32-unknown-unknown/release/*.wasm
+
+      - name: Install nightly toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          components: clippy, rustfmt
+          target: wasm32-unknown-unknown
+
+      - name: Install binaryen
+        run: |
+          wget -c https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O - | tar -xz -C .
+          sudo cp binaryen-version_110/bin/wasm-opt /usr/bin/
+
+      - name: Check fmt
+        run: make fmt-check
+
+      - name: Run linter
+        run: make linter
+
+      - name: Run tests
+        run: make test
+
+      - name: Build
+        run: make build
+
+      - name: Upload artifacts
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./target/wasm32-unknown-unknown/release/*.wasm
+
+  upload:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Delete previous release
+        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          delete_release: true
+          tag_name: build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true
+          tag_name: build
+          draft: false
+          fail_on_unmatched_files: true
+          files: artifact/*.wasm
