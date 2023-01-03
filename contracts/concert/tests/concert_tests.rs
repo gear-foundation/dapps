@@ -59,7 +59,7 @@ fn buy_tickets() {
         metadata.clone(),
         false,
     );
-    check_buyers(&concert_program, BTreeSet::from([ActorId::from(USER)]));
+    check_buyers(&concert_program, vec![ActorId::from(USER)]);
     check_user_tickets(&concert_program, ActorId::from(USER), metadata);
 }
 

@@ -60,7 +60,7 @@ pub enum ConcertStateReply {
         tickets_left: u128,
     },
     Buyers {
-        accounts: BTreeSet<ActorId>,
+        accounts: Vec<ActorId>,
     },
     UserTickets {
         tickets: Vec<Option<TokenMetadata>>,

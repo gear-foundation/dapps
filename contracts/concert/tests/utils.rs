@@ -130,7 +130,7 @@ pub fn check_current_concert(
             }
         }
         _ => {
-            unreachable!("Unreachable metastate reply for the ConcertStateQuery::CurrentConcert payload has occured")
+            unreachable!("Unreachable metastate reply for the ConcertStateQuery::CurrentConcert payload has occurred")
         }
     }
 }
@@ -149,12 +149,12 @@ pub fn check_user_tickets(
             }
         }
         _ => {
-            unreachable!("Unreachable metastate reply for the ConcertStateQuery::UserTickets payload has occured")
+            unreachable!("Unreachable metastate reply for the ConcertStateQuery::UserTickets payload has occurred")
         }
     }
 }
 
-pub fn check_buyers(concert_program: &Program, buyers: BTreeSet<ActorId>) {
+pub fn check_buyers(concert_program: &Program, buyers: Vec<ActorId>) {
     match concert_program.meta_state(ConcertStateQuery::Buyers) {
         Ok(ConcertStateReply::Buyers {
             accounts: true_buyers,
@@ -165,7 +165,7 @@ pub fn check_buyers(concert_program: &Program, buyers: BTreeSet<ActorId>) {
         }
         _ => {
             unreachable!(
-                "Unreachable metastate reply for the ConcertStateQuery::Buyers payload has occured"
+                "Unreachable metastate reply for the ConcertStateQuery::Buyers payload has occurred"
             )
         }
     }
