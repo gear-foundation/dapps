@@ -6,14 +6,22 @@ license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "d4552434" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "stable" }
 auction-io = { path = "io" }
-primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"] }
-nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.3" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.1" }
+primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
+nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.5" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.3" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+sp-core = { version = "6.0.0", git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
+gclient = { git = "https://github.com/gear-tech/gear.git", branch = "master" }
+tokio = { version = "1.23.0", features = ["full"] }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+
+[patch.crates-io]
+# Two dependecies below goes for subxt v0.22.0
+sp-core = { version = "6.0.0", git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
+sp-runtime = { version = "6.0.0", git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }

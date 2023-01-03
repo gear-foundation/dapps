@@ -36,7 +36,7 @@ pub fn init(sys: &System) -> Program {
 }
 
 pub fn init_nft(sys: &System, owner: u64) {
-    let nft_program = Program::from_file(sys, "./target/nft-0.2.3.opt.wasm");
+    let nft_program = Program::from_file(sys, "./target/nft-0.2.5.opt.wasm");
 
     let res = nft_program.send(
         owner,
@@ -59,6 +59,7 @@ pub fn init_nft(sys: &System, owner: u64) {
                 media: "".to_string(),
                 reference: "".to_string(),
             },
+            transaction_id: 0u64,
         },
     );
 
@@ -76,6 +77,7 @@ pub fn init_nft(sys: &System, owner: u64) {
         nft_io::NFTAction::Approve {
             to: 1.into(),
             token_id: 0.into(),
+            transaction_id: 0u64,
         },
     );
 

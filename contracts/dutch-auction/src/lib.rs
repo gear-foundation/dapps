@@ -50,12 +50,14 @@ impl Auction {
 
         let refund = msg::value() - price;
         let refund = if refund < 500 { 0 } else { refund };
+        let transaction_id = 0u64;
 
         msg::send_for_reply(
             self.nft.contract_id,
             NFTAction::Transfer {
                 to: msg::source(),
                 token_id: self.nft.token_id,
+                transaction_id,
             },
             0,
         )

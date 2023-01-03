@@ -31,6 +31,12 @@ linter:
 pre-commit: fmt linter test
 
 test: build
-	@if [ ! -f "./target/nft-0.2.3.opt.wasm" ]; then wget "https://github.com/gear-dapps/non-fungible-token/releases/download/0.2.3/nft-0.2.3.opt.wasm" -O "./target/nft-0.2.3.opt.wasm"; fi
+	@if [ ! -f "./target/nft-0.2.5.opt.wasm" ]; then wget "https://github.com/gear-dapps/non-fungible-token/releases/download/0.2.5/nft-0.2.5.opt.wasm" -O "./target/nft-0.2.5.opt.wasm"; fi
 	@echo ──────────── Run tests ────────────────────────
-	@cargo +nightly test --release
+	@cargo +nightly test --release --test dutch_auction_tests --test state_tests
+	@wget https://get.gear.rs/gear-nightly-linu\x-x86_64.tar.xz && \
+	tar xvf gear-nightly-linux-x86_64.tar.xz && \
+	rm gear-nightly-linux-x86_64.tar.xz
+	@./gear --dev --tmp > /dev/null 2>&1  & echo "$$!" > gear.pid
+	cat gear.pid;
+	@cargo test -- --test node_tests -- --test-threads=1; 	kill `(cat gear.pid)`; rm gear; rm gear.pid
