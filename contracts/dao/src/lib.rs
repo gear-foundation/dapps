@@ -6,6 +6,7 @@ pub mod state;
 pub mod utils;
 
 use gstd::{exec, msg, prelude::*, ActorId, String};
+use hashbrown::HashMap;
 
 use crate::{ft_messages::*, io::*, state::*};
 
@@ -22,13 +23,13 @@ struct Dao {
     abort_window: u64,
     total_shares: u128,
     balance: u128,
-    members: BTreeMap<ActorId, Member>,
-    member_by_delegate_key: BTreeMap<ActorId, ActorId>,
+    members: HashMap<ActorId, Member>,
+    member_by_delegate_key: HashMap<ActorId, ActorId>,
     proposal_id: u128,
-    proposals: BTreeMap<u128, Proposal>,
+    proposals: HashMap<u128, Proposal>,
     whitelist: Vec<ActorId>,
     transaction_id: u64,
-    transactions: BTreeMap<u64, Option<DaoAction>>,
+    transactions: HashMap<u64, Option<DaoAction>>,
 }
 
 #[derive(Debug, Default, Clone, Decode, Encode, TypeInfo)]
@@ -48,7 +49,7 @@ pub struct Proposal {
     pub details: String,
     pub starting_period: u64,
     pub max_total_shares_at_yes_vote: u128,
-    pub votes_by_member: BTreeMap<ActorId, Vote>,
+    pub votes_by_member: Vec<(ActorId, Vote)>,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
@@ -204,7 +205,11 @@ impl Dao {
                 if exec::block_timestamp() < proposal.starting_period {
                     panic!("voting period has not started");
                 }
-                if proposal.votes_by_member.contains_key(&msg::source()) {
+                if proposal
+                    .votes_by_member
+                    .iter()
+                    .any(|(actor_id, _vote)| msg::source().eq(actor_id))
+                {
                     panic!("account has already voted on this proposal");
                 }
                 if proposal.aborted {
@@ -241,7 +246,7 @@ impl Dao {
                 proposal.no_votes = proposal.no_votes.saturating_add(member.shares);
             }
         }
-        proposal.votes_by_member.insert(msg::source(), vote.clone());
+        proposal.votes_by_member.push((msg::source(), vote.clone()));
 
         msg::reply(
             DaoEvent::SubmitVote {

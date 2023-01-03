@@ -11,6 +11,7 @@ ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git",
 ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.2" }
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 scale-info = { version = "2.3.0", default-features = false }
+hashbrown = "0.13.1"
 
 [dev-dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
