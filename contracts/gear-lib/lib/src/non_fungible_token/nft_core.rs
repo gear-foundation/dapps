@@ -1,5 +1,6 @@
 use crate::non_fungible_token::{delegated::*, io::*, royalties::*, state::*, token::*};
 use gstd::{exec, msg, prelude::*, ActorId};
+use hashbrown::HashSet;
 
 const ZERO_ID: ActorId = ActorId::zero();
 
@@ -164,7 +165,7 @@ pub trait NFTCore: NFTStateKeeper {
             .and_modify(|approvals| {
                 approvals.insert(*to);
             })
-            .or_insert_with(|| BTreeSet::from([*to]));
+            .or_insert_with(|| HashSet::from([*to]));
         NFTApproval {
             owner,
             approved_account: *to,
@@ -229,7 +230,7 @@ pub trait NFTCore: NFTStateKeeper {
             .and_modify(|approvals| {
                 approvals.insert(*to);
             })
-            .or_insert_with(|| BTreeSet::from([*to]));
+            .or_insert_with(|| HashSet::from([*to]));
         NFTApproval {
             owner,
             approved_account: *to,

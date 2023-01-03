@@ -1,15 +1,16 @@
 use crate::non_fungible_token::{royalties::*, token::*};
 use gstd::{prelude::*, ActorId};
+use hashbrown::{HashMap, HashSet};
 
 #[derive(Debug, Default)]
 pub struct NFTState {
     pub name: String,
     pub symbol: String,
     pub base_uri: String,
-    pub owner_by_id: BTreeMap<TokenId, ActorId>,
-    pub token_approvals: BTreeMap<TokenId, BTreeSet<ActorId>>,
-    pub token_metadata_by_id: BTreeMap<TokenId, Option<TokenMetadata>>,
-    pub tokens_for_owner: BTreeMap<ActorId, Vec<TokenId>>,
+    pub owner_by_id: HashMap<TokenId, ActorId>,
+    pub token_approvals: HashMap<TokenId, HashSet<ActorId>>,
+    pub token_metadata_by_id: HashMap<TokenId, Option<TokenMetadata>>,
+    pub tokens_for_owner: HashMap<ActorId, Vec<TokenId>>,
     pub royalties: Option<Royalties>,
 }
 
@@ -64,7 +65,7 @@ pub trait NFTMetaState: NFTStateKeeper {
             token.owner_id = *owner_id;
         }
         if let Some(approved_account_ids) = self.get().token_approvals.get(&token_id) {
-            token.approved_account_ids = approved_account_ids.clone();
+            token.approved_account_ids = approved_account_ids.iter().copied().collect();
         }
         if let Some(Some(metadata)) = self.get().token_metadata_by_id.get(&token_id) {
             token.name = metadata.name.clone();

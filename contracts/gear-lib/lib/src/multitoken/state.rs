@@ -1,16 +1,17 @@
 use crate::multitoken::io::*;
 use gstd::{prelude::*, ActorId};
+use hashbrown::HashMap;
 
 #[derive(Debug, Default)]
 pub struct MTKState {
     pub name: String,
     pub symbol: String,
     pub base_uri: String,
-    pub balances: BTreeMap<TokenId, BTreeMap<ActorId, u128>>,
-    pub approvals: BTreeMap<ActorId, BTreeMap<ActorId, bool>>,
-    pub token_metadata: BTreeMap<TokenId, TokenMetadata>,
+    pub balances: HashMap<TokenId, HashMap<ActorId, u128>>,
+    pub approvals: HashMap<ActorId, HashMap<ActorId, bool>>,
+    pub token_metadata: HashMap<TokenId, TokenMetadata>,
     // owner for nft
-    pub owners: BTreeMap<TokenId, ActorId>,
+    pub owners: HashMap<TokenId, ActorId>,
 }
 
 pub trait StateKeeper {

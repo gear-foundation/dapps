@@ -1,4 +1,5 @@
 use gstd::{prelude::*, ActorId};
+use hashbrown::HashMap;
 
 #[derive(Debug, Default)]
 pub struct FTState {
@@ -11,9 +12,9 @@ pub struct FTState {
     /// Token's decimals.
     pub decimals: u8,
     /// Token holders balances.
-    pub balances: BTreeMap<ActorId, u128>,
+    pub balances: HashMap<ActorId, u128>,
     /// Token holders allowance to manipulate token amounts.
-    pub allowances: BTreeMap<ActorId, BTreeMap<ActorId, u128>>,
+    pub allowances: HashMap<ActorId, HashMap<ActorId, u128>>,
 }
 
 pub trait FTStateKeeper {

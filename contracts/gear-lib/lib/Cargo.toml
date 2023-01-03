@@ -11,3 +11,4 @@ gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
 scale-info = { version = "2.3.0", default-features = false }
 sr25519 = { package = "gear-lib-sr25519", path = "../sr25519" }
+hashbrown = "0.13.1"
