@@ -10,6 +10,7 @@ gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 dex-factory-io = { path = "../factory/io" }
 dex-pair-io = { path = "../pair/io" }
 gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.2" }
+hashbrown = "0.13.1"
 
 [dev-dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }

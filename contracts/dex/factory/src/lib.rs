@@ -3,6 +3,7 @@
 use dex_factory_io::*;
 use dex_pair_io::*;
 use gstd::{exec, msg, prelude::*, prog::ProgramGenerator, ActorId};
+use hashbrown::HashMap;
 
 #[derive(Debug, Default)]
 pub struct Factory {
@@ -13,7 +14,7 @@ pub struct Factory {
     pub fee_to: ActorId,
     pub fee_to_setter: ActorId,
     // (tokenA, tokenB) -> pair_address mapping
-    pub pairs: BTreeMap<(ActorId, ActorId), ActorId>,
+    pub pairs: HashMap<(ActorId, ActorId), ActorId>,
 }
 
 static mut FACTORY: Option<Factory> = None;
