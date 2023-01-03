@@ -62,11 +62,21 @@ pub fn info(escrow_program: &Program, wallet_id: u128, wallet_info: Wallet) {
     )
 }
 
-pub fn created_wallets(escrow_program: &Program, created_wallets: Vec<(WalletId, Wallet)>) {
-    assert_eq!(
-        escrow_program
-            .meta_state::<_, EscrowStateReply>(EscrowState::CreatedWallets)
-            .unwrap(),
-        EscrowStateReply::CreatedWallets(created_wallets)
-    );
+pub fn created_wallets(escrow_program: &Program, mut created_wallets: Vec<(WalletId, Wallet)>) {
+    let reply = escrow_program
+        .meta_state::<_, EscrowStateReply>(EscrowState::CreatedWallets)
+        .unwrap();
+    match reply {
+        EscrowStateReply::CreatedWallets(mut vec) => {
+            vec.sort_by(|(wallet_id_1, _wallet1), (wallet_id_2, _wallet2)| {
+                wallet_id_1.cmp(wallet_id_2)
+            });
+            created_wallets.sort_by(|(wallet_id_1, _wallet1), (wallet_id_2, _wallet2)| {
+                wallet_id_1.cmp(wallet_id_2)
+            });
+
+            assert_eq!(vec, created_wallets)
+        }
+        _ => panic!("wrong reply"),
+    }
 }

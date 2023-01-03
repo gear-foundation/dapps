@@ -47,4 +47,10 @@ test: build
 	        -o "./target/ft_storage.opt.wasm";\
 	fi
 	@echo ──────────── Run tests ────────────────────────
-	@cargo +nightly test --release
+	@cargo +nightly test --package escrow --test cancel --test confirm --test create --test deposit --test other --test refund
+	# @wget https://get.gear.rs/gear-nightly-linu\x-x86_64.tar.xz && \
+	# tar xvf gear-nightly-linux-x86_64.tar.xz && \
+	# rm gear-nightly-linux-x86_64.tar.xz
+	# @./gear --dev --tmp > /dev/null 2>&1  & echo "$$!" > gear.pid
+	# cat gear.pid;
+	# @cargo +nightly test --package escrow --test node_test -- --test-threads=1; 	kill `(cat gear.pid)`; rm gear; rm gear.pid

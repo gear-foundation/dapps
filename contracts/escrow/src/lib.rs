@@ -2,10 +2,10 @@
 
 pub mod io;
 
+use crate::io::*;
 use ft_main_io::*;
 use gstd::{async_main, exec, msg, prelude::*, ActorId};
-
-use crate::io::*;
+use hashbrown::HashMap;
 
 /// Transfers `amount` tokens from `sender` account to `recipient` account.
 /// Arguments:
@@ -42,7 +42,7 @@ async fn transfer_tokens(
     }
 }
 
-fn get_mut_wallet(wallets: &mut BTreeMap<WalletId, Wallet>, wallet_id: WalletId) -> &mut Wallet {
+fn get_mut_wallet(wallets: &mut HashMap<WalletId, Wallet>, wallet_id: WalletId) -> &mut Wallet {
     wallets
         .get_mut(&wallet_id)
         .unwrap_or_else(|| panic_wallet_not_exist(wallet_id))
@@ -77,10 +77,10 @@ fn panic_wallet_not_exist(wallet_id: WalletId) -> ! {
 #[derive(Default)]
 struct Escrow {
     ft_program_id: ActorId,
-    wallets: BTreeMap<WalletId, Wallet>,
+    wallets: HashMap<WalletId, Wallet>,
     id_nonce: WalletId,
     transaction_id: u64,
-    transactions: BTreeMap<u64, Option<EscrowAction>>,
+    transactions: HashMap<u64, Option<EscrowAction>>,
 }
 
 impl Escrow {

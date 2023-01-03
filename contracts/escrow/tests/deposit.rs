@@ -2,7 +2,7 @@ pub mod utils;
 use utils::*;
 
 #[test]
-fn not_enougn_tokens() {
+fn not_enough_tokens() {
     let system = init_system();
 
     let escrow_program = init_escrow(&system);

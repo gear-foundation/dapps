@@ -8,10 +8,11 @@ authors = ["Gear Technologies"]
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 codec = { package = "parity-scale-codec", version = "3.2.1", default-features = false }
-primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
+primitive-types = { version = "0.12.1", default-features = false }
 scale-info = { version = "2.3.0", default-features = false }
 ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.2" }
 ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.2" }
+hashbrown = "0.13.1" 
 
 [build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
@@ -19,3 +20,10 @@ gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "s
 [dev-dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
 gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gclient = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+tokio = "1"
+
+[patch.crates-io]
+# Two dependecies below goes for subxt v0.22.0
+sp-core = { git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
+sp-runtime = { git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
