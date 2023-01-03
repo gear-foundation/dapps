@@ -15,13 +15,13 @@ pub type ItemId = TokenId;
 pub struct InitSupplyChain {
     /// IDs of actors that'll have the right to interact with a supply chain on
     /// behalf of a producer.
-    pub producers: BTreeSet<ActorId>,
+    pub producers: Vec<ActorId>,
     /// IDs of actors that'll have the right to interact with a supply chain on
     /// behalf of a distributor.
-    pub distributors: BTreeSet<ActorId>,
+    pub distributors: Vec<ActorId>,
     /// IDs of actors that'll have the right to interact with a supply chain on
     /// behalf of a retailer.
-    pub retailers: BTreeSet<ActorId>,
+    pub retailers: Vec<ActorId>,
 
     /// A FT program [`ActorId`].
     pub ft_program: ActorId,
@@ -442,7 +442,7 @@ pub enum SupplyChainStateReply {
     /// Should be returned from [`SupplyChainStateQuery::ExistingItems`].
     ExistingItems(BTreeMap<ItemId, ItemInfo>),
     /// Should be returned from [`SupplyChainStateQuery::Roles`].
-    Roles(BTreeSet<Role>),
+    Roles(Vec<Role>),
 }
 
 /// Roles of supply chain [`Participants`].
@@ -505,11 +505,11 @@ pub enum ItemState {
 pub struct Participants {
     /// IDs of actors that have the right to interact with a supply chain on
     /// behalf of a producer.
-    pub producers: BTreeSet<ActorId>,
+    pub producers: Vec<ActorId>,
     /// IDs of actors that have the right to interact with a supply chain on
     /// behalf of a distributor.
-    pub distributors: BTreeSet<ActorId>,
+    pub distributors: Vec<ActorId>,
     /// IDs of actors that have the right to interact with a supply chain on
     /// behalf of a retailer.
-    pub retailers: BTreeSet<ActorId>,
+    pub retailers: Vec<ActorId>,
 }

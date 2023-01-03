@@ -414,9 +414,9 @@ extern "C" fn meta_state() -> *mut [i32; 2] {
             })
         }
         SupplyChainStateQuery::Participants => SupplyChainStateReply::Participants(Participants {
-            producers: BTreeSet::from_iter(program.producers.clone().into_iter()),
-            distributors: BTreeSet::from_iter(program.distributors.clone().into_iter()),
-            retailers: BTreeSet::from_iter(program.retailers.clone().into_iter()),
+            producers: Vec::from_iter(program.producers.iter().copied()),
+            distributors: Vec::from_iter(program.distributors.iter().copied()),
+            retailers: Vec::from_iter(program.retailers.iter().copied()),
         }),
         SupplyChainStateQuery::FTProgram => SupplyChainStateReply::FTProgram(program.ft_program),
         SupplyChainStateQuery::NFTProgram => SupplyChainStateReply::NFTProgram(program.nft_program),
@@ -428,16 +428,16 @@ extern "C" fn meta_state() -> *mut [i32; 2] {
                 .collect(),
         ),
         SupplyChainStateQuery::Roles(actor_id) => {
-            let mut roles = BTreeSet::new();
+            let mut roles = vec![];
 
             if program.producers.contains(&actor_id) {
-                roles.insert(Role::Producer);
+                roles.push(Role::Producer);
             }
             if program.distributors.contains(&actor_id) {
-                roles.insert(Role::Distributor);
+                roles.push(Role::Distributor);
             }
             if program.retailers.contains(&actor_id) {
-                roles.insert(Role::Retailer);
+                roles.push(Role::Retailer);
             }
 
             SupplyChainStateReply::Roles(roles)

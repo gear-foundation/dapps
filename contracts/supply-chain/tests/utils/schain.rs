@@ -321,7 +321,7 @@ impl SupplyChainMetaState<'_> {
         }
     }
 
-    pub fn roles(self, actor_id: u64) -> MetaStateReply<BTreeSet<Role>> {
+    pub fn roles(self, actor_id: u64) -> MetaStateReply<Vec<Role>> {
         if let SupplyChainStateReply::Roles(reply) = self
             .0
             .meta_state(SupplyChainStateQuery::Roles(actor_id.into()))
