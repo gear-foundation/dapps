@@ -29,7 +29,7 @@ pub enum State {
 #[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {
     UserStatus(Role),
-    AllProposals(BTreeMap<u128, Proposal>),
+    AllProposals(Vec<(u128, Proposal)>),
     IsMember(bool),
     ProposalId(u128),
     ProposalInfo(Proposal),

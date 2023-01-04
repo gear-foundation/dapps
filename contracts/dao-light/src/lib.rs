@@ -1,6 +1,7 @@
 #![no_std]
 
 use gstd::{exec, msg, prelude::*, ActorId, String};
+use hashbrown::HashMap;
 
 pub mod io;
 use crate::io::*;
@@ -20,10 +21,10 @@ struct Dao {
     voting_period_length: u64,
     grace_period_length: u64,
     total_shares: u128,
-    members: BTreeMap<ActorId, Member>,
+    members: HashMap<ActorId, Member>,
     proposal_id: u128,
     locked_funds: u128,
-    proposals: BTreeMap<u128, Proposal>,
+    proposals: HashMap<u128, Proposal>,
 }
 
 #[derive(Debug, Default, Clone, Decode, Encode, TypeInfo)]
@@ -41,7 +42,7 @@ pub struct Proposal {
     pub details: String,
     pub starting_period: u64,
     pub ended_at: u64,
-    pub votes_by_member: BTreeMap<ActorId, Vote>,
+    pub votes_by_member: Vec<(ActorId, Vote)>,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
@@ -176,7 +177,11 @@ impl Dao {
                 if exec::block_timestamp() < proposal.starting_period {
                     panic!("voting period has not started");
                 }
-                if proposal.votes_by_member.contains_key(&msg::source()) {
+                if proposal
+                    .votes_by_member
+                    .iter()
+                    .any(|(actor, _vote)| msg::source().eq(actor))
+                {
                     panic!("account has already voted on that proposal");
                 }
                 proposal
@@ -204,7 +209,7 @@ impl Dao {
                 proposal.no_votes = proposal.no_votes.saturating_add(member.shares);
             }
         }
-        proposal.votes_by_member.insert(msg::source(), vote.clone());
+        proposal.votes_by_member.push((msg::source(), vote.clone()));
 
         msg::reply(
             DaoEvent::SubmitVote {
@@ -275,7 +280,7 @@ impl Dao {
         let balance = balance(&self.approved_token_program_id, &exec::program_id()).await;
         if balance == 0 {
             self.total_shares = 0;
-            self.members = BTreeMap::new();
+            self.members = HashMap::new();
         }
     }
 
@@ -423,7 +428,10 @@ pub unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
             };
             StateReply::UserStatus(role).encode()
         }
-        State::AllProposals => StateReply::AllProposals(dao.proposals.clone()).encode(),
+        State::AllProposals => {
+            let proposals = Vec::from_iter(dao.proposals.clone().into_iter());
+            StateReply::AllProposals(proposals).encode()
+        }
         State::IsMember(account) => StateReply::IsMember(dao.is_member(&account)).encode(),
         State::ProposalId => StateReply::ProposalId(dao.proposal_id).encode(),
         State::ProposalInfo(proposal_id) => {
