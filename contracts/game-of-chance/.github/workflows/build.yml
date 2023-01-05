@@ -39,10 +39,15 @@ jobs:
         run: make fmt-check
 
       - name: Run linter
-        run: make linter
+        run: make lint
 
       - name: Run tests
-        run: make test
+        run: |
+          curl -OL https://github.com/gear-tech/gear/releases/download/gear-stable/gear-stable.tar.gz
+          tar -xf gear-stable.tar.gz
+          ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
+          make full-test
+          kill `cat gear.pid`
 
       - name: Build
         run: make build

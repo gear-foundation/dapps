@@ -1,4 +1,4 @@
-use utils::{prelude::*, Sft};
+use utils::{prelude::*, FungibleToken};
 
 mod utils;
 
@@ -13,192 +13,129 @@ const DURATION_IN_SECS: u32 = (DURATION / 1000) as _;
 fn two_rounds_and_meta_state() {
     let system = utils::initialize_system();
 
-    let mut sft = Sft::initialize(&system);
+    let mut sft = FungibleToken::initialize(&system);
     let mut goc = Goc::initialize(&system, ADMIN).succeed();
+
     let admin = ADMIN.into();
 
     goc.meta_state().state().eq(GOCState {
         admin,
-        started: 0,
-        ending: 0,
-        players: BTreeSet::new(),
-        prize_fund: 0,
-        participation_cost: 0,
-        winner: admin,
-        ft_actor_id: None,
+        ..Default::default()
     });
 
-    for player in [0, 1, 2] {
-        sft.mint(PLAYERS[player], AMOUNT);
-
-        sft.approve(PLAYERS[player], goc.actor_id(), PARTICIPATION_COST);
+    for player in PLAYERS {
+        sft.mint(player, AMOUNT);
+        sft.approve(player, goc.actor_id(), PARTICIPATION_COST);
     }
 
     let mut started = system.block_timestamp();
     let mut ending = started + DURATION;
-    let mut ft_actor_id = Some(sft.actor_id());
-    let winner = ActorId::zero();
+    let ft_actor_id = Some(sft.actor_id());
 
     goc.start(ADMIN, DURATION, PARTICIPATION_COST, ft_actor_id)
-        .contains((ending, PARTICIPATION_COST, ft_actor_id));
+        .succeed((ending, PARTICIPATION_COST, ft_actor_id));
     goc.meta_state().state().eq(GOCState {
         admin,
         started,
         ending,
-        players: BTreeSet::new(),
-        prize_fund: 0,
         participation_cost: PARTICIPATION_COST,
-        winner,
         ft_actor_id,
+        ..Default::default()
     });
 
-    goc.enter(PLAYERS[0]).contains(PLAYERS[0]);
-    sft.balance(goc.actor_id()).contains(PARTICIPATION_COST);
-    goc.meta_state().state().eq(GOCState {
-        admin,
-        started,
-        ending,
-        players: BTreeSet::from([PLAYERS[0].into()]),
-        prize_fund: PARTICIPATION_COST,
-        participation_cost: PARTICIPATION_COST,
-        winner,
-        ft_actor_id,
-    });
+    let mut players = vec![];
 
-    goc.enter(PLAYERS[1]).contains(PLAYERS[1]);
-    sft.balance(goc.actor_id()).contains(PARTICIPATION_COST * 2);
-    goc.meta_state().state().eq(GOCState {
-        admin,
-        started,
-        ending,
-        players: BTreeSet::from([PLAYERS[0].into(), PLAYERS[1].into()]),
-        prize_fund: PARTICIPATION_COST * 2,
-        participation_cost: PARTICIPATION_COST,
-        winner,
-        ft_actor_id,
-    });
+    for (index, player) in PLAYERS.into_iter().enumerate() {
+        let prize_fund = PARTICIPATION_COST * (index + 1) as u128;
 
-    goc.enter(PLAYERS[2]).contains(PLAYERS[2]);
-    sft.balance(goc.actor_id()).contains(PARTICIPATION_COST * 3);
-    goc.meta_state().state().eq(GOCState {
-        admin,
-        started,
-        ending,
-        players: BTreeSet::from([PLAYERS[0].into(), PLAYERS[1].into(), PLAYERS[2].into()]),
-        prize_fund: PARTICIPATION_COST * 3,
-        participation_cost: PARTICIPATION_COST,
-        winner,
-        ft_actor_id,
-    });
+        players.push(player.into());
+
+        goc.enter(player).succeed(player);
+        sft.balance(goc.actor_id()).contains(prize_fund);
+        goc.meta_state().state().eq(GOCState {
+            admin,
+            started,
+            ending,
+            players: players.clone(),
+            prize_fund,
+            participation_cost: PARTICIPATION_COST,
+            ft_actor_id,
+            ..Default::default()
+        });
+    }
 
     system.spend_blocks(DURATION_IN_SECS);
 
     let winner = utils::predict_winner(&system, &PLAYERS);
 
-    goc.pick_winner(ADMIN).contains(winner.into());
+    goc.pick_winner(ADMIN).succeed(winner);
     sft.balance(winner)
         .contains(PARTICIPATION_COST * 2 + AMOUNT);
     goc.meta_state().state().eq(GOCState {
         admin,
         started,
         ending,
-        players: BTreeSet::from([PLAYERS[0].into(), PLAYERS[1].into(), PLAYERS[2].into()]),
+        players: players.clone(),
         prize_fund: PARTICIPATION_COST * 3,
         participation_cost: PARTICIPATION_COST,
-        winner: winner.into(),
+        winner,
         ft_actor_id,
     });
 
-    for player in [0, 1, 2] {
-        system.mint_to(PLAYERS[player], AMOUNT);
+    for player in PLAYERS {
+        system.mint_to(player, AMOUNT);
     }
 
-    ft_actor_id = None;
     started = system.block_timestamp();
     ending = started + DURATION;
 
-    let winner = ActorId::zero();
-
-    goc.start(ADMIN, DURATION, PARTICIPATION_COST, ft_actor_id)
-        .contains((ending, PARTICIPATION_COST, ft_actor_id));
+    goc.start(ADMIN, DURATION, PARTICIPATION_COST, None)
+        .succeed((ending, PARTICIPATION_COST, None));
     goc.meta_state().state().eq(GOCState {
         admin,
         started,
         ending,
-        players: BTreeSet::new(),
-        prize_fund: 0,
         participation_cost: PARTICIPATION_COST,
-        winner,
-        ft_actor_id,
+        ..Default::default()
     });
 
-    goc.enter_with_value(PLAYERS[0], PARTICIPATION_COST)
-        .contains(PLAYERS[0]);
-    assert_eq!(
-        system.balance_of(goc.actor_id().as_ref()),
-        PARTICIPATION_COST
-    );
-    goc.meta_state().state().eq(GOCState {
-        admin,
-        started,
-        ending,
-        players: BTreeSet::from([PLAYERS[0].into()]),
-        prize_fund: PARTICIPATION_COST,
-        participation_cost: PARTICIPATION_COST,
-        winner,
-        ft_actor_id,
-    });
+    players.clear();
 
-    goc.enter_with_value(PLAYERS[1], PARTICIPATION_COST)
-        .contains(PLAYERS[1]);
-    assert_eq!(
-        system.balance_of(goc.actor_id().as_ref()),
-        PARTICIPATION_COST * 2
-    );
-    goc.meta_state().state().eq(GOCState {
-        admin,
-        started,
-        ending,
-        players: BTreeSet::from([PLAYERS[0].into(), PLAYERS[1].into()]),
-        prize_fund: PARTICIPATION_COST * 2,
-        participation_cost: PARTICIPATION_COST,
-        winner,
-        ft_actor_id,
-    });
+    for (index, player) in PLAYERS.into_iter().enumerate() {
+        let prize_fund = PARTICIPATION_COST * (index + 1) as u128;
 
-    goc.enter_with_value(PLAYERS[2], PARTICIPATION_COST)
-        .contains(PLAYERS[2]);
-    assert_eq!(
-        system.balance_of(goc.actor_id().as_ref()),
-        PARTICIPATION_COST * 3
-    );
-    goc.meta_state().state().eq(GOCState {
-        admin,
-        started,
-        ending,
-        players: BTreeSet::from([PLAYERS[0].into(), PLAYERS[1].into(), PLAYERS[2].into()]),
-        prize_fund: PARTICIPATION_COST * 3,
-        participation_cost: PARTICIPATION_COST,
-        winner,
-        ft_actor_id,
-    });
+        players.push(player.into());
+
+        goc.enter_with_value(player, PARTICIPATION_COST)
+            .succeed(player);
+        assert_eq!(system.balance_of(goc.actor_id().as_ref()), prize_fund);
+        goc.meta_state().state().eq(GOCState {
+            admin,
+            started,
+            ending,
+            players: players.clone(),
+            prize_fund,
+            participation_cost: PARTICIPATION_COST,
+            ..Default::default()
+        });
+    }
 
     system.spend_blocks(DURATION_IN_SECS);
 
-    let winner = utils::predict_winner(&system, &PLAYERS);
+    let winner: [u8; 32] = utils::predict_winner(&system, &PLAYERS).into();
 
-    goc.pick_winner(ADMIN).contains(winner.into());
+    goc.pick_winner(ADMIN).succeed(winner.into());
     system.claim_value_from_mailbox(winner);
     assert_eq!(system.balance_of(winner), PARTICIPATION_COST * 2 + AMOUNT);
     goc.meta_state().state().eq(GOCState {
         admin,
         started,
         ending,
-        players: BTreeSet::from([PLAYERS[0].into(), PLAYERS[1].into(), PLAYERS[2].into()]),
+        players,
         prize_fund: PARTICIPATION_COST * 3,
         participation_cost: PARTICIPATION_COST,
         winner: winner.into(),
-        ft_actor_id,
+        ..Default::default()
     });
 }
 
@@ -206,108 +143,94 @@ fn two_rounds_and_meta_state() {
 fn failures() {
     let system = utils::initialize_system();
 
-    // Should fail because `admin` mustn't be `ActorId::zero()`.
-    Goc::initialize(&system, ActorId::zero()).failed();
+    Goc::initialize_with_existential_deposit(&system, ActorId::zero())
+        .failed(GOCError::ZeroActorId);
 
     let mut goc = Goc::initialize(&system, ADMIN).succeed();
+    goc.start(FOREIGN_USER, 0, 0, None)
+        .failed(GOCError::AccessRestricted);
 
-    // Should fail because `msg::source()` must be the game administrator.
-    goc.start(FOREIGN_USER, 0, 0, None).failed();
+    goc.start(ADMIN, 0, 0, Some(ActorId::zero()))
+        .failed(GOCError::ZeroActorId);
 
-    // Should fail because `ft_actor_id` mustn't be `ActorId::zero()`.
-    goc.start(ADMIN, 0, 0, Some(ActorId::zero())).failed();
-
-    //Should fail because the players entry stage mustn't be over.
-    goc.enter(PLAYERS[0]).failed();
+    goc.enter(PLAYERS[0]).failed(GOCError::UnexpectedGameStatus);
 
     goc.start(ADMIN, DURATION, PARTICIPATION_COST, None)
-        .contains((
+        .succeed((
             system.block_timestamp() + DURATION,
             PARTICIPATION_COST,
             None,
         ));
-
-    // Should fail because the current game round must be over.
-    goc.start(ADMIN, 0, 0, None).failed();
+    goc.start(ADMIN, 0, 0, None)
+        .failed(GOCError::UnexpectedGameStatus);
 
     system.mint_to(PLAYERS[0], AMOUNT);
     goc.enter_with_value(PLAYERS[0], PARTICIPATION_COST)
-        .contains(PLAYERS[0]);
-
-    // Should fail because `msg::source()` mustn't already participate.
-    goc.enter(PLAYERS[0]).failed();
+        .succeed(PLAYERS[0]);
+    goc.enter(PLAYERS[0]).failed(GOCError::AlreadyParticipating);
 
     system.mint_to(PLAYERS[1], AMOUNT);
-
-    // Should fail because `msg::source()` must send the amount of the native
-    // value exactly equal to a participation cost.
     goc.enter_with_value(PLAYERS[1], PARTICIPATION_COST + 1)
-        .failed();
+        .failed(GOCError::InvalidParticipationCost);
+
+    system.claim_value_from_mailbox(PLAYERS[1]);
     goc.enter_with_value(PLAYERS[1], PARTICIPATION_COST - 1)
-        .failed();
+        .failed(GOCError::InvalidParticipationCost);
 
-    // Should fail because `msg::source()` must be the game administrator.
-    goc.pick_winner(FOREIGN_USER).failed();
+    goc.pick_winner(FOREIGN_USER)
+        .failed(GOCError::AccessRestricted);
 
-    // Should fail because the players entry stage must be over.
-    goc.pick_winner(ADMIN).failed();
+    goc.pick_winner(ADMIN)
+        .failed(GOCError::UnexpectedGameStatus);
 
     system.spend_blocks(DURATION_IN_SECS);
-    goc.pick_winner(ADMIN).contains(PLAYERS[0].into());
-
-    // Should fail because a winner mustn't already be picked.
-    goc.pick_winner(ADMIN).failed();
-
-    // Should fail because the players entry stage mustn't be over.
-    goc.enter(PLAYERS[1]).failed();
+    goc.pick_winner(ADMIN).succeed(PLAYERS[0].into());
+    goc.pick_winner(ADMIN)
+        .failed(GOCError::UnexpectedGameStatus);
 }
 
 #[test]
 fn round_without_players() {
     let system = utils::initialize_system();
-
     let mut goc = Goc::initialize(&system, ADMIN).succeed();
 
     goc.start(ADMIN, 0, 0, None)
-        .contains((system.block_timestamp(), 0, None));
-
-    goc.pick_winner(ADMIN).contains(ActorId::zero());
+        .succeed((system.block_timestamp(), 0, None));
+    goc.pick_winner(ADMIN).succeed(ActorId::zero());
 }
 
 #[test]
-fn prize_fund_overflow() {
+fn overflow() {
     const AMOUNT: u128 = u128::MAX;
     const PARTICIPATION_COST: u128 = u128::MAX;
+    const DURATION: u64 = u64::MAX;
 
     let system = utils::initialize_system();
 
-    let mut sft = Sft::initialize(&system);
+    let mut sft = FungibleToken::initialize(&system);
     let mut goc = Goc::initialize(&system, ADMIN).succeed();
 
-    let started = system.block_timestamp();
-    let ending = started + DURATION;
+    let ending = DURATION;
     let ft_actor_id = Some(sft.actor_id());
 
     goc.start(ADMIN, DURATION, PARTICIPATION_COST, ft_actor_id)
-        .contains((ending, PARTICIPATION_COST, ft_actor_id));
+        .succeed((ending, PARTICIPATION_COST, ft_actor_id));
 
-    sft.mint(PLAYERS[0], AMOUNT);
-    sft.mint(PLAYERS[1], AMOUNT);
+    for player in PLAYERS.into_iter().take(2) {
+        sft.mint(player, AMOUNT);
+        sft.approve(player, goc.actor_id(), PARTICIPATION_COST);
 
-    sft.approve(PLAYERS[0], goc.actor_id(), PARTICIPATION_COST);
-    sft.approve(PLAYERS[1], goc.actor_id(), PARTICIPATION_COST);
-
-    goc.enter(PLAYERS[0]).contains(PLAYERS[0]);
-    goc.enter(PLAYERS[1]).contains(PLAYERS[1]);
+        goc.enter(player).succeed(player);
+    }
 
     goc.meta_state().state().eq(GOCState {
         admin: ADMIN.into(),
-        started,
+        started: system.block_timestamp(),
         ending,
-        players: BTreeSet::from([PLAYERS[0].into(), PLAYERS[1].into()]),
+        players: vec![PLAYERS[0].into(), PLAYERS[1].into()],
         prize_fund: u128::MAX,
         participation_cost: PARTICIPATION_COST,
-        winner: ActorId::zero(),
         ft_actor_id,
+        ..Default::default()
     })
 }

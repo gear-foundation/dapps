@@ -1,10 +1,17 @@
-use gstd::{prelude::*, ActorId};
+use gstd::{errors::ContractError, prelude::*, ActorId};
+
+/// The maximum number of participants for one game round.
+///
+/// The limited number of participants is required because this contract (like
+/// all the others) has a limited amount of memory, so it can't store too many
+/// participants.
+pub const MAX_NUMBER_OF_PLAYERS: usize = 2usize.pow(16);
 
 /// Initializes the Game of chance contract.
 ///
 /// # Requirements
 /// - `admin` mustn't be [`ActorId::zero()`].
-#[derive(Debug, Default, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo)]
+#[derive(Debug, Default, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo)]
 pub struct GOCInit {
     /// [`ActorId`] of the game administrator that'll have the rights to
     /// [start a game round](GOCAction::Start) and
@@ -100,6 +107,46 @@ pub enum GOCEvent {
     PlayerAdded(ActorId),
 }
 
+/// Contract execution error variants.
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo)]
+pub enum GOCError {
+    /// [`msg::source()`](gstd::msg::source) isn't the administrator.
+    AccessRestricted,
+    /// The current game round wasn't in an expected game status.
+    ///
+    /// E.g. the game administrator can't pick a winner if the player entry
+    /// stage isn't over, or an user can't entry a game round if the entry
+    /// stage is over.
+    UnexpectedGameStatus,
+    /// [`ActorId::zero()`] was found where it's forbidden.
+    ZeroActorId,
+    /// The current FT contract failed to complete a transfer transaction.
+    ///
+    /// Most often, the reason is that a user didn't give an approval to the
+    /// Game of chance contract or didn't have enough tokens for participating.
+    TokenTransferFailed,
+    /// The contract reached a limit of protection against the memory overflow.
+    MemoryLimitExceeded,
+    /// [`msg::source()`](gstd::msg::source) is already participating in the
+    /// current game round.
+    AlreadyParticipating,
+    /// [`msg::source()`](gstd::msg::source) sent [`GOCAction::Enter`] with an
+    /// incorrent amount of the native value.
+    ///
+    /// An user should set the value manually because the current game round is
+    /// going without a FT contract (also see the [`GOCAction::Enter`]
+    /// documentation).
+    InvalidParticipationCost,
+    /// See the [`ContractError`] documentation.
+    ContractError(String),
+}
+
+impl From<ContractError> for GOCError {
+    fn from(error: ContractError) -> Self {
+        Self::ContractError(error.to_string())
+    }
+}
+
 /// The current game round state.
 #[derive(Debug, Default, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo)]
 pub struct GOCState {
@@ -111,7 +158,7 @@ pub struct GOCState {
     /// See the documentation of [`GOCEvent::Started`].
     pub ending: u64,
     /// Participants of the current game round.
-    pub players: BTreeSet<ActorId>,
+    pub players: Vec<ActorId>,
     /// The current game round prize fund.
     ///
     /// It's calculated by multiplying `participation_cost` and the number
@@ -120,12 +167,9 @@ pub struct GOCState {
     /// See the documentation of [`GOCAction::Start`].
     pub participation_cost: u128,
     /// The winner of the current game round.
-    ///
-    /// If it doesn't equal [`ActorId::zero()`], a winner has picked and the
-    /// round is over.
     pub winner: ActorId,
     /// A currency (or a FT contract [`ActorId`]) of the current game round.
     ///
-    /// See the documentation of [`GOCAction::Start`].
+    /// Also see the documentation of [`GOCAction::Start`].
     pub ft_actor_id: Option<ActorId>,
 }

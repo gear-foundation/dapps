@@ -1,30 +1,31 @@
-use super::{Program, RunResult, TransactionProgram, FOREIGN_USER};
+use super::{Program, RunResult, TransactionalProgram, FOREIGN_USER};
 use ft_logic_io::Action;
 use ft_main_io::{FTokenAction, FTokenEvent, InitFToken};
 use gstd::{prelude::*, ActorId};
 use gtest::{Log, Program as InnerProgram, RunResult as InnerRunResult, System};
 
-type SFTRunResult<T> = RunResult<T, FTokenEvent>;
+type FungibleTokenRunResult<T> = RunResult<T, FTokenEvent, ()>;
 
-pub struct Sft<'a>(InnerProgram<'a>, u64);
+pub struct FungibleToken<'a>(InnerProgram<'a>, u64);
 
-impl Program for Sft<'_> {
+impl Program for FungibleToken<'_> {
     fn inner_program(&self) -> &InnerProgram {
         &self.0
     }
 }
 
-impl TransactionProgram for Sft<'_> {
+impl TransactionalProgram for FungibleToken<'_> {
     fn previous_mut_transaction_id(&mut self) -> &mut u64 {
         &mut self.1
     }
 }
 
-impl<'a> Sft<'a> {
+impl<'a> FungibleToken<'a> {
+    #[track_caller]
     pub fn initialize(system: &'a System) -> Self {
-        let program = InnerProgram::from_file(system, "target/ft_main.opt.wasm");
-        let storage_code: [u8; 32] = system.submit_code("target/ft_storage.opt.wasm").into();
-        let logic_code: [u8; 32] = system.submit_code("target/ft_logic.opt.wasm").into();
+        let program = InnerProgram::from_file(system, "target/ft_main.wasm");
+        let storage_code: [u8; 32] = system.submit_code("target/ft_storage.wasm").into();
+        let logic_code: [u8; 32] = system.submit_code("target/ft_logic.wasm").into();
 
         assert!(!program
             .send(
@@ -39,6 +40,7 @@ impl<'a> Sft<'a> {
         Self(program, 0)
     }
 
+    #[track_caller]
     pub fn mint(&mut self, recipient: u64, amount: u128) {
         let transaction_id = self.transaction_id();
 
@@ -57,6 +59,7 @@ impl<'a> Sft<'a> {
         )
     }
 
+    #[track_caller]
     pub fn approve(&mut self, from: u64, approved_account: impl Into<ActorId>, amount: u128) {
         let transaction_id = self.transaction_id();
 
@@ -75,8 +78,8 @@ impl<'a> Sft<'a> {
         );
     }
 
-    pub fn balance(&self, actor_id: impl Into<ActorId>) -> SFTRunResult<u128> {
-        RunResult(
+    pub fn balance(&self, actor_id: impl Into<ActorId>) -> FungibleTokenRunResult<u128> {
+        RunResult::new(
             self.0
                 .send(FOREIGN_USER, FTokenAction::GetBalance(actor_id.into())),
             FTokenEvent::Balance,

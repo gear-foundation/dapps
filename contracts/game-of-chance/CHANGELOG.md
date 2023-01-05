@@ -5,6 +5,15 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+## [0.3.0] - 2022-12-19
+### Added
+- The error handling support. Now the contract doesn't panic on every handleable error and gracefully returns a self-describing error. Tests became more reliable.
+- A limit of participants to avoid the contract memory overflow.
+### Changed
+- `BTreeMap` was replaced by `HashMap` for performance reasons.
+- The logic of interaction with the FT contract was updated. Now GOC shouldn't get stuck on failed token transfer transactions.
+- Updated logic of determining a status of the current game round. There were some bugs when a game round ends without participants.
+
 ## [0.2.2] - 2022-12-14
 ### Changed
 - Started time doesn't reset after picking a winner.
@@ -30,7 +39,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/lottery/compare/0.2.2...HEAD
+[Unreleased]: https://github.com/gear-dapps/lottery/compare/0.3.0...HEAD
+[0.3.0]: https://github.com/gear-dapps/lottery/compare/0.2.2...0.3.0
 [0.2.2]: https://github.com/gear-dapps/lottery/compare/0.2.1...0.2.2
 [0.2.1]: https://github.com/gear-dapps/lottery/compare/0.2.0...0.2.1
 [0.2.0]: https://github.com/gear-dapps/lottery/compare/0.1.1...0.2.0
