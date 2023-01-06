@@ -38,8 +38,8 @@ pub enum StakingState {
     GetStaker(ActorId),
 }
 
-#[derive(Debug, Encode, Decode, TypeInfo, PartialEq)]
+#[derive(Debug, TypeInfo, Encode, Decode, PartialEq)]
 pub enum StakingStateReply {
-    Stakers(BTreeMap<ActorId, Staker>),
+    Stakers(Vec<(ActorId, Staker)>),
     Staker(Staker),
 }

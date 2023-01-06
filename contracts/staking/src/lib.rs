@@ -2,14 +2,12 @@
 
 pub mod io;
 
+use crate::io::*;
 use ft_io::*;
 use gstd::{exec, msg, prelude::*, ActorId};
+use hashbrown::HashMap;
 
-use crate::io::*;
-
-#[derive(Debug, Default, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
+#[derive(Debug, Default)]
 struct Staking {
     owner: ActorId,
     staking_token_address: ActorId,
@@ -21,7 +19,7 @@ struct Staking {
     reward_total: u128,
     all_produced: u128,
     reward_produced: u128,
-    stakers: BTreeMap<ActorId, Staker>,
+    stakers: HashMap<ActorId, Staker>,
 }
 
 static mut STAKING: Option<Staking> = None;
@@ -91,7 +89,7 @@ impl Staking {
         (amount * self.tokens_per_stake) / DECIMALS_FACTOR
     }
 
-    /// Calculates the reward of the staker that is currently avaiable
+    /// Calculates the reward of the staker that is currently available
     /// The return value cannot be less than zero according to the algorithm
     fn calc_reward(&mut self) -> u128 {
         let staker = self
@@ -257,7 +255,10 @@ extern "C" fn meta_state() -> *mut [i32; 2] {
     let staking = unsafe { STAKING.get_or_insert(Staking::default()) };
 
     let encoded = match query {
-        StakingState::GetStakers => StakingStateReply::Stakers(staking.stakers.clone()).encode(),
+        StakingState::GetStakers => {
+            let stakers = Vec::from_iter(staking.stakers.clone().into_iter());
+            StakingStateReply::Stakers(stakers).encode()
+        }
 
         StakingState::GetStaker(address) => {
             if let Some(staker) = staking.stakers.get(&address) {

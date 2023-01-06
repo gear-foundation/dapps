@@ -1,13 +1,13 @@
 use ft_io::*;
-use gstd::{ActorId, BTreeMap, Encode};
+use gstd::{ActorId, Encode};
 use gtest::{Program, System};
+use hashbrown::HashMap;
 use staking::io::*;
 
 const USERS: &[u64] = &[1, 2, 3, 4, 5, 6, 7, 8];
 const DECIMALS_FACTOR: u128 = 10_u128.pow(20);
 
-#[derive(Debug, Default, Encode)]
-#[codec(crate = gstd::codec)]
+#[derive(Debug, Default)]
 struct Staking {
     tokens_per_stake: u128,
     total_staked: u128,
@@ -16,7 +16,7 @@ struct Staking {
     reward_total: u128,
     all_produced: u128,
     reward_produced: u128,
-    stakers: BTreeMap<ActorId, Staker>,
+    stakers: HashMap<ActorId, Staker>,
 }
 
 fn init_staking(sys: &System) {
@@ -171,7 +171,7 @@ fn update_reward(staking: &mut Staking, time: u64) {
     }
 }
 
-/// Calculates the reward of the staker that is currently avaiable
+/// Calculates the reward of the staker that is currently available
 fn calc_reward(staking: &mut Staking, source: &ActorId) -> u128 {
     if let Some(staker) = staking.stakers.get(source) {
         return get_max_reward(staking, staker.balance) + staker.reward_allowed
@@ -364,8 +364,9 @@ fn withdraw() {
 
     update_reward(&mut staking, time + 3000);
     let max_reward = get_max_reward(&staking, 500);
-
-    if let Some(staker) = staking.stakers.get_mut(&USERS[4].into()) {
+    let actor_id: &ActorId = &USERS[4].into();
+    let opt = staking.stakers.get_mut(actor_id);
+    if let Some(staker) = opt {
         staker.reward_allowed = staker.reward_allowed.saturating_add(max_reward);
 
         staker.balance = staker.balance.saturating_sub(500);
@@ -450,14 +451,15 @@ fn meta_tests() {
     );
 
     staking.total_staked = 3500;
-
+    let stakers = staking.stakers.clone().into_iter().collect();
     assert_eq!(
         st.meta_state::<_, StakingStateReply>(StakingState::GetStakers)
             .expect("StakingState::GetStakers failure"),
-        StakingStateReply::Stakers(staking.stakers.clone())
+        StakingStateReply::Stakers(stakers)
     );
 
-    let staker = staking.stakers.get(&USERS[4].into()).unwrap();
+    let actor_id: &ActorId = &USERS[4].into();
+    let staker = staking.stakers.get(actor_id).unwrap();
 
     assert_eq!(
         st.meta_state::<_, StakingStateReply>(StakingState::GetStaker(USERS[4].into()))
