@@ -12,11 +12,46 @@ struct FTStorage {
     transaction_status: HashMap<H256, bool>,
     balances: HashMap<ActorId, u128>,
     approvals: HashMap<ActorId, HashMap<ActorId, u128>>,
+    permits: HashMap<ActorId, u128>,
 }
 
 static mut FT_STORAGE: Option<FTStorage> = None;
 
 impl FTStorage {
+    fn get_permit_id(&self, account: &ActorId) {
+        let permit_id = self.permits.get(account).unwrap_or(&0);
+        msg::reply(FTStorageEvent::PermitId(*permit_id), 0).expect("");
+    }
+
+    fn check_and_increment_permit_id(
+        &mut self,
+        transaction_hash: H256,
+        account: &ActorId,
+        signed_permit_id: &u128,
+    ) {
+        self.assert_ft_contract();
+
+        // check transaction status
+        if let Some(status) = self.transaction_status.get(&transaction_hash) {
+            match status {
+                true => reply_ok(),
+                false => reply_err(),
+            };
+            return;
+        }
+
+        if self.permits.get(account).unwrap_or(&0) != signed_permit_id {
+            reply_err();
+            return;
+        }
+
+        self.permits
+            .entry(*account)
+            .and_modify(|id| *id += 1)
+            .or_insert(1);
+        reply_ok();
+    }
+
     fn get_balance(&self, account: &ActorId) {
         let balance = self.balances.get(account).unwrap_or(&0);
         msg::reply(FTStorageEvent::Balance(*balance), 0).expect("");
@@ -188,6 +223,12 @@ unsafe extern "C" fn handle() {
     let storage: &mut FTStorage = FT_STORAGE.get_or_insert(Default::default());
     match action {
         FTStorageAction::GetBalance(account) => storage.get_balance(&account),
+        FTStorageAction::GetPermitId(account) => storage.get_permit_id(&account),
+        FTStorageAction::IncrementPermitId {
+            transaction_hash,
+            account,
+            expected_permit_id,
+        } => storage.check_and_increment_permit_id(transaction_hash, &account, &expected_permit_id),
         FTStorageAction::IncreaseBalance {
             transaction_hash,
             account,

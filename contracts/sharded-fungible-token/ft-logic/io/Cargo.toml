@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3.2.1", default-features = false }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"]}
 scale-info = { version = "2.3.0", default-features = false }
 primitive-types = { version = "0.12.1", default-features = false }
 hashbrown = { version = "0.13.1" }

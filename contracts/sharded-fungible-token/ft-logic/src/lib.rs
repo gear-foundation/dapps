@@ -6,7 +6,7 @@ use instruction::*;
 mod messages;
 use hashbrown::HashMap;
 use messages::*;
-use primitive_types::H256;
+use primitive_types::{H256, H512};
 
 const GAS_STORAGE_CREATION: u64 = 3_000_000_000;
 const DELAY: u32 = 600_000;
@@ -75,6 +75,29 @@ impl FTLogic {
                     } => {
                         self.approve(transaction_hash, account, &approved_account, amount)
                             .await;
+                    }
+                    Action::Permit {
+                        owner_account,
+                        approved_account,
+                        amount,
+                        permit_id,
+                        sign,
+                    } => {
+                        let payload = PermitUnsigned {
+                            owner_account,
+                            approved_account,
+                            amount,
+                            permit_id,
+                        };
+                        self.permit(
+                            transaction_hash,
+                            &owner_account,
+                            &approved_account,
+                            amount,
+                            &sign,
+                            &payload,
+                        )
+                        .await;
                     }
                 }
             }
@@ -260,6 +283,54 @@ impl FTLogic {
         }
     }
 
+    fn check_signature(message: &PermitUnsigned, owner: &ActorId, sign: &H512) -> bool {
+        let message_u8 = message.encode();
+        light_sr25519::verify(sign.as_bytes(), message_u8, owner).is_ok()
+    }
+
+    async fn permit(
+        &mut self,
+        transaction_hash: H256,
+        owner: &ActorId,
+        spender: &ActorId,
+        amount: u128,
+        owner_sign: &H512,
+        message: &PermitUnsigned,
+    ) {
+        if !FTLogic::check_signature(message, owner, owner_sign) {
+            reply_err();
+            return;
+        }
+
+        self.transaction_status
+            .insert(transaction_hash, TransactionStatus::InProgress);
+
+        if !self
+            .check_and_increment_permit_id(transaction_hash, owner, &message.permit_id)
+            .await
+        {
+            self.transaction_status
+                .insert(transaction_hash, TransactionStatus::Failure);
+            reply_err();
+            return;
+        }
+
+        let account_storage = self.get_storage_address(owner);
+        let result = approve(transaction_hash, &account_storage, owner, spender, amount).await;
+        match result {
+            Ok(()) => {
+                self.transaction_status
+                    .insert(transaction_hash, TransactionStatus::Success);
+                reply_ok()
+            }
+            Err(()) => {
+                self.transaction_status
+                    .insert(transaction_hash, TransactionStatus::Failure);
+                reply_err();
+            }
+        }
+    }
+
     fn update_storage_hash(&mut self, storage_code_hash: H256) {
         self.assert_admin();
         self.storage_code_hash = storage_code_hash;
@@ -281,6 +352,34 @@ impl FTLogic {
             self.id_to_storage.insert(id, address);
             address
         }
+    }
+
+    async fn get_permit_id(&self, account: &ActorId) {
+        let encoded = hex::encode(account.as_ref());
+        let id: String = encoded.chars().next().expect("Can't be None").to_string();
+        if let Some(address) = self.id_to_storage.get(&id) {
+            let permit_id = get_permit_id(address, account).await;
+            msg::reply(FTLogicEvent::PermitId(permit_id), 0)
+                .expect("Error in a reply `FTLogicEvent::PermitId`");
+        } else {
+            msg::reply(FTLogicEvent::PermitId(0), 0)
+                .expect("Error in a reply `FTLogicEvent::PermitId`");
+        }
+    }
+
+    async fn check_and_increment_permit_id(
+        &self,
+        transaction_hash: H256,
+        account: &ActorId,
+        expected_id: &u128,
+    ) -> bool {
+        let encoded = hex::encode(account.as_ref());
+        let id: String = encoded.chars().next().expect("Can't be None").to_string();
+        if let Some(address) = self.id_to_storage.get(&id) {
+            return check_and_increment_permit_id(address, transaction_hash, account, *expected_id)
+                .await;
+        }
+        false
     }
 
     async fn get_balance(&self, account: &ActorId) {
@@ -332,6 +431,7 @@ async fn main() {
         }
         FTLogicAction::Clear(transaction_hash) => logic.clear(transaction_hash),
         FTLogicAction::GetBalance(account) => logic.get_balance(&account).await,
+        FTLogicAction::GetPermitId(account) => logic.get_permit_id(&account).await,
         _ => {}
     }
 }

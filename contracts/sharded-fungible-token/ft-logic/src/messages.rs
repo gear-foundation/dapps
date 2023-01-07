@@ -114,6 +114,46 @@ pub async fn transfer(
     }
 }
 
+pub async fn get_permit_id(storage_id: &ActorId, account: &ActorId) -> u128 {
+    let reply = msg::send_for_reply_as::<_, FTStorageEvent>(
+        *storage_id,
+        FTStorageAction::GetPermitId(*account),
+        0,
+    )
+    .expect("Error in sending a message `FTStorageAction::GetPermitId")
+    .await
+    .expect("Unable to decode `FTStorageEvent");
+    if let FTStorageEvent::PermitId(permit_id) = reply {
+        permit_id
+    } else {
+        0
+    }
+}
+
+pub async fn check_and_increment_permit_id(
+    storage_id: &ActorId,
+    transaction_hash: H256,
+    account: &ActorId,
+    expected_permit_id: u128,
+) -> bool {
+    let reply = msg::send_for_reply_as::<_, FTStorageEvent>(
+        *storage_id,
+        FTStorageAction::IncrementPermitId {
+            transaction_hash,
+            account: *account,
+            expected_permit_id,
+        },
+        0,
+    )
+    .expect("Error in sending a message `FTStorageAction::IncrementPermitId")
+    .await
+    .expect("Unable to decode `FTStorageEvent");
+    if let FTStorageEvent::Ok = reply {
+        return true;
+    }
+    false
+}
+
 pub async fn get_balance(storage_id: &ActorId, account: &ActorId) -> u128 {
     let reply = msg::send_for_reply_as::<_, FTStorageEvent>(
         *storage_id,

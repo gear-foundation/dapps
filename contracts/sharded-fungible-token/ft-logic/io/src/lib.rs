@@ -1,6 +1,6 @@
 #![no_std]
 use gstd::{prelude::*, ActorId};
-use primitive_types::H256;
+use primitive_types::{H256, H512};
 
 #[derive(Debug, Encode, Decode, TypeInfo, Clone)]
 pub enum FTLogicAction {
@@ -10,6 +10,7 @@ pub enum FTLogicAction {
         payload: Vec<u8>,
     },
     GetBalance(ActorId),
+    GetPermitId(ActorId),
     Clear(H256),
     UpdateStorageCodeHash(H256),
     MigrateStorages,
@@ -20,6 +21,7 @@ pub enum FTLogicEvent {
     Ok,
     Err,
     Balance(u128),
+    PermitId(u128),
 }
 
 #[derive(Encode, Debug, Decode, TypeInfo, Copy, Clone)]
@@ -41,6 +43,21 @@ pub enum Action {
         approved_account: ActorId,
         amount: u128,
     },
+    Permit {
+        owner_account: ActorId,
+        approved_account: ActorId,
+        amount: u128,
+        permit_id: u128,
+        sign: H512,
+    },
+}
+
+#[derive(Encode, Debug, Decode, TypeInfo, Copy, Clone)]
+pub struct PermitUnsigned {
+    pub owner_account: ActorId,
+    pub approved_account: ActorId,
+    pub amount: u128,
+    pub permit_id: u128,
 }
 
 #[derive(Encode, Decode, TypeInfo)]

@@ -13,6 +13,7 @@ pub enum FTokenAction {
         storage_code_hash: H256,
     },
     GetBalance(ActorId),
+    GetPermitId(ActorId),
     Clear(H256),
     MigrateStorageAddresses,
 }
@@ -22,6 +23,7 @@ pub enum FTokenEvent {
     Ok,
     Err,
     Balance(u128),
+    PermitId(u128),
 }
 
 #[derive(Encode, Decode, TypeInfo)]

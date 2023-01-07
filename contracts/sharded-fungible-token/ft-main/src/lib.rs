@@ -1,4 +1,5 @@
 #![no_std]
+
 use ft_logic_io::*;
 use ft_main_io::*;
 use gstd::{exec, msg, prelude::*, prog::ProgramGenerator, ActorId};
@@ -103,6 +104,21 @@ impl FToken {
         }
     }
 
+    async fn get_permit_id(&self, account: &ActorId) {
+        let reply = msg::send_for_reply_as::<_, FTLogicEvent>(
+            self.ft_logic_id,
+            FTLogicAction::GetPermitId(*account),
+            0,
+        )
+        .expect("Error in sending a message `FTLogic::GetPermitId")
+        .await
+        .expect("Unable to decode `FTLogicEvent");
+        if let FTLogicEvent::PermitId(permit_id) = reply {
+            msg::reply(FTokenEvent::PermitId(permit_id), 0)
+                .expect("Error in a reply `FTokenEvent::PermitId`");
+        }
+    }
+
     fn update_logic_contract(&mut self, ft_logic_code_hash: H256, storage_code_hash: H256) {
         self.assert_admin();
         let (_message_id, ft_logic_id) = ProgramGenerator::create_program(
@@ -145,6 +161,7 @@ async fn main() {
         } => ftoken.update_logic_contract(ft_logic_code_hash, storage_code_hash),
         FTokenAction::Clear(transaction_hash) => ftoken.clear(transaction_hash),
         FTokenAction::GetBalance(account) => ftoken.get_balance(&account).await,
+        FTokenAction::GetPermitId(account) => ftoken.get_permit_id(&account).await,
         _ => {}
     };
 }
