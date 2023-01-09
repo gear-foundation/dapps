@@ -16,7 +16,7 @@ fmt-check:
 	@cargo fmt --all --check
 
 init:
-	@echo ⚙️ Installing a toolchain & a target...
+	@echo ⚙️ Installing a toolchain \& a target...
 	@rustup toolchain add nightly
 	@rustup target add wasm32-unknown-unknown --toolchain nightly
 
