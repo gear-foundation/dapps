@@ -16,7 +16,7 @@ gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.3" }
 gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 sp-core = { version = "6.0.0", git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
 gclient = { git = "https://github.com/gear-tech/gear.git", branch = "master" }
-tokio = { version = "1.23.0", features = ["full"] }
+tokio = { version = "1.24.2", features = ["full"] }
 
 [build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
