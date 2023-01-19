@@ -4,8 +4,8 @@ use gstd::{debug, exec, msg, prelude::*, ActorId};
 use rps_io::*;
 
 mod validations;
+use hashbrown::{HashMap, HashSet};
 use validations::validate_game_config;
-
 mod helper_functions;
 
 static mut RPS_GAME: Option<RPSGame> = None;
@@ -13,11 +13,11 @@ static mut RPS_GAME: Option<RPSGame> = None;
 #[derive(Debug, Default)]
 struct RPSGame {
     owner: ActorId,
-    lobby: BTreeSet<ActorId>,
+    lobby: HashSet<ActorId>,
     game_config: GameConfig,
     stage: GameStage,
-    encrypted_moves: BTreeMap<ActorId, [u8; 32]>,
-    player_moves: BTreeMap<ActorId, Move>,
+    encrypted_moves: HashMap<ActorId, [u8; 32]>,
+    player_moves: HashMap<ActorId, Move>,
     next_game_config: Option<GameConfig>,
     current_stage_start_timestamp: u64,
 }
@@ -74,7 +74,7 @@ impl RPSGame {
                 msg::send(*player, "STOP", self.game_config.bet_size).expect("Can't send reward");
             });
 
-            self.lobby.clone()
+            self.lobby.iter().copied().collect()
         } else {
             let players = self.stage.current_players().expect("Game is not started");
 

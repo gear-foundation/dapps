@@ -85,12 +85,13 @@ fn lobby_list() {
     let sys = System::new();
     let game = common_init_and_register(&sys);
 
-    if let StateReply::LobbyList(lobby) = game.meta_state(State::LobbyList).unwrap() {
+    if let StateReply::LobbyList(mut lobby) = game.meta_state(State::LobbyList).unwrap() {
         let list = COMMON_USERS_SET
             .iter()
             .cloned()
             .map(Into::into)
             .collect::<Vec<ActorId>>();
+        lobby.sort();
         assert_eq!(lobby, list);
     } else {
         panic!("not suitable reply")
@@ -102,12 +103,13 @@ fn lobby_list() {
         &[Move::Rock, Move::Paper, Move::Paper],
     );
 
-    if let StateReply::LobbyList(lobby) = game.meta_state(State::LobbyList).unwrap() {
+    if let StateReply::LobbyList(mut lobby) = game.meta_state(State::LobbyList).unwrap() {
         let list = COMMON_USERS_SET
             .iter()
             .cloned()
             .map(Into::into)
             .collect::<Vec<ActorId>>();
+        lobby.sort();
         assert_eq!(lobby, list);
     } else {
         panic!("not suitable reply")

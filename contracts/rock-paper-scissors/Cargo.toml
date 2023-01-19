@@ -9,6 +9,7 @@ authors = ["Gear Technologies"]
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
 sp-core-hashing = { version = "4.0.0", default-features = false }
 rps-io = { path = "io" }
+hashbrown = "0.13.1"
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git" }

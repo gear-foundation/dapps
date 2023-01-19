@@ -23,8 +23,9 @@ impl RPSGame {
     }
 
     pub(crate) fn transit_to_in_progress_stage_from_preparation(&mut self) {
+        let anticipated_players = self.lobby.iter().copied().collect();
         let progress_description = StageDescription {
-            anticipated_players: self.lobby.clone(),
+            anticipated_players,
             finished_players: Default::default(),
         };
 
