@@ -1,0 +1,89 @@
+name: Release
+
+on:
+  push:
+    tags: ['*']
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  prepare:
+    name: Get version
+    runs-on: ubuntu-latest
+    steps:
+      - id: version
+        run: echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_OUTPUT
+
+      - name: Show version
+        run: echo ${{ steps.version.outputs.VERSION }}
+
+    outputs:
+      version: ${{ steps.version.outputs.VERSION }}
+
+  build:
+    name: Build
+    needs: prepare
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Remove binaries from cache
+        run: rm -vf target/wasm32-unknown-unknown/release/*.wasm
+
+      - name: Install nightly toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: wasm32-unknown-unknown
+
+      - name: Install binaryen
+        run: |
+          wget -c https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O - | tar -xz -C .
+          sudo cp binaryen-version_110/bin/wasm-opt /usr/bin/
+
+      - name: Build
+        run: make build
+
+      - name: Rename binaries according to version
+        run: |
+          cd target/wasm32-unknown-unknown/release
+          for WASM in *.wasm; do
+            if [[ $WASM == *.opt.wasm ]]; then
+              NAME="${WASM%.opt.wasm}"
+              EXT="opt.wasm"
+            elif [[ $WASM == *.meta.wasm ]]; then
+              NAME="${WASM%.meta.wasm}"
+              EXT="meta.wasm"
+            else
+              NAME="${WASM%.wasm}"
+              EXT="wasm"
+            fi
+            mv "$WASM" "$NAME-${{ needs.prepare.outputs.version }}.$EXT"
+          done
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./target/wasm32-unknown-unknown/release/*.wasm
+
+  publish:
+    name: Publish binaries
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Publish
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifact/*
+          body_path: CHANGELOG.md # TODO: Cut piece related to the current version only
