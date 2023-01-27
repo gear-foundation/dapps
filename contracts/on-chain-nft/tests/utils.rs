@@ -2,7 +2,7 @@ use gear_lib::non_fungible_token::{state::*, token::*};
 
 use gstd::{prelude::*, ActorId};
 use gtest::{Program, RunResult, System};
-use on_chain_nft::io::*;
+use onchain_nft_io::{InitOnChainNFT, ItemId, OnChainNFTAction, OnChainNFTQuery, TokenURI};
 
 const USERS: &[u64] = &[3, 4, 5];
 
