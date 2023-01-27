@@ -14,16 +14,21 @@ rand_xoshiro = "0.6"
 ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.3" }
 ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.3" }
 hashbrown = "0.13"
+game-of-chance-io = { path = "io" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gtest = { git = "https://github.com/gear-tech/gear.git" }
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
 gclient = { git = "https://github.com/gear-tech/gear.git" }
 sp-core-hashing = "5"
-subxt = { version = "0.25", default-features = false }
+subxt = { git = "https://github.com/paritytech/subxt", rev = "d41f6574", default-features = false }
 primitive-types = "0.12"
 tokio = "1"
 pretty_assertions = "1"
 
 [build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+game-of-chance-io = { path = "io" }
+
+[features]
+binary-vendor = []

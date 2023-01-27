@@ -1,10 +1,9 @@
 use common::{InitResult, MetaStateReply, Program, RunResult, TransactionalProgram};
+use game_of_chance_io::*;
 use gstd::{prelude::*, ActorId};
 use gtest::{Program as InnerProgram, System, EXISTENTIAL_DEPOSIT};
 use rand::{RngCore, SeedableRng};
 use rand_xoshiro::Xoshiro128PlusPlus;
-
-use game_of_chance::*;
 
 mod ft;
 
@@ -16,7 +15,7 @@ pub use ft::FungibleToken;
 
 pub const FOREIGN_USER: u64 = 9999999;
 
-type GOCRunResult<T> = RunResult<T, GOCEvent, GOCError>;
+type GOCRunResult<T> = RunResult<T, Event, Error>;
 
 pub struct Goc<'a>(InnerProgram<'a>);
 
@@ -27,17 +26,14 @@ impl Program for Goc<'_> {
 }
 
 impl<'a> Goc<'a> {
-    pub fn initialize(
-        system: &'a System,
-        admin: impl Into<ActorId>,
-    ) -> InitResult<Goc<'a>, GOCError> {
+    pub fn initialize(system: &'a System, admin: impl Into<ActorId>) -> InitResult<Goc<'a>, Error> {
         Self::common_initialize(system, admin, |_, _| {})
     }
 
     pub fn initialize_with_existential_deposit(
         system: &'a System,
         admin: impl Into<ActorId>,
-    ) -> InitResult<Goc<'a>, GOCError> {
+    ) -> InitResult<Goc<'a>, Error> {
         Self::common_initialize(system, admin, |system, program| {
             system.mint_to(program.id(), EXISTENTIAL_DEPOSIT)
         })
@@ -47,14 +43,14 @@ impl<'a> Goc<'a> {
         system: &'a System,
         admin: impl Into<ActorId>,
         mint: fn(&System, &InnerProgram),
-    ) -> InitResult<Goc<'a>, GOCError> {
+    ) -> InitResult<Goc<'a>, Error> {
         let program = InnerProgram::current(system);
 
         mint(system, &program);
 
         let result = program.send(
             FOREIGN_USER,
-            GOCInit {
+            Initialize {
                 admin: admin.into(),
             },
         );
@@ -72,21 +68,21 @@ impl<'a> Goc<'a> {
         from: u64,
         duration: u64,
         participation_cost: u128,
-        ft_address: Option<ActorId>,
+        fungible_token: Option<ActorId>,
     ) -> GOCRunResult<(u64, u128, Option<ActorId>)> {
         RunResult::new(
             self.0.send(
                 from,
-                GOCAction::Start {
+                Action::Start {
                     duration,
                     participation_cost,
-                    ft_actor_id: ft_address,
+                    fungible_token,
                 },
             ),
-            |(ending, participation_cost, ft_actor_id)| GOCEvent::Started {
+            |(ending, participation_cost, fungible_token)| Event::Started {
                 ending,
                 participation_cost,
-                ft_actor_id,
+                fungible_token,
             },
         )
     }
@@ -97,25 +93,21 @@ impl<'a> Goc<'a> {
 
     pub fn enter_with_value(&mut self, from: u64, value: u128) -> GOCRunResult<u64> {
         RunResult::new(
-            self.0.send_with_value(from, GOCAction::Enter, value),
-            |actor_id| GOCEvent::PlayerAdded(actor_id.into()),
+            self.0.send_with_value(from, Action::Enter, value),
+            |actor_id| Event::PlayerAdded(actor_id.into()),
         )
     }
 
     pub fn pick_winner(&mut self, from: u64) -> GOCRunResult<ActorId> {
-        RunResult::new(self.0.send(from, GOCAction::PickWinner), GOCEvent::Winner)
+        RunResult::new(self.0.send(from, Action::PickWinner), Event::Winner)
     }
 }
 
 pub struct GOCMetaState<'a>(&'a InnerProgram<'a>);
 
 impl GOCMetaState<'_> {
-    pub fn state(self) -> MetaStateReply<GOCState> {
-        MetaStateReply(
-            self.0
-                .meta_state_empty()
-                .expect("Failed to decode `GOCStateReply`"),
-        )
+    pub fn state(self) -> MetaStateReply<State> {
+        MetaStateReply(self.0.meta_state_empty().unwrap())
     }
 }
 

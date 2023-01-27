@@ -1,8 +1,9 @@
 use fmt::Debug;
-use ft_logic_io::Action;
+use ft_logic_io::Action as FTAction;
 use ft_main_io::{FTokenAction, FTokenEvent, InitFToken};
-use game_of_chance::*;
-use gclient::{Error, EventListener, EventProcessor, GearApi, Result};
+use game_of_chance::WASM_BINARY_OPT;
+use game_of_chance_io::*;
+use gclient::{Error as GclientError, EventListener, EventProcessor, GearApi, Result};
 use gstd::prelude::*;
 use pretty_assertions::assert_eq;
 use primitive_types::H256;
@@ -23,7 +24,7 @@ fn decode<T: Decode>(payload: Vec<u8>) -> Result<T> {
 async fn upload_code(client: &GearApi, path: &str) -> Result<H256> {
     let code_id = match client.upload_code_by_path(path).await {
         Ok((code_id, _)) => code_id.into(),
-        Err(Error::Subxt(SubxtError::Runtime(DispatchError::Module(ModuleError {
+        Err(GclientError::Subxt(SubxtError::Runtime(DispatchError::Module(ModuleError {
             error_data:
                 ModuleErrorData {
                     pallet_index: 14,
@@ -42,15 +43,12 @@ async fn upload_code(client: &GearApi, path: &str) -> Result<H256> {
 async fn upload_program_and_wait_reply<T: Decode>(
     client: &GearApi,
     listener: &mut EventListener,
-    path: &str,
+    code: Vec<u8>,
     payload: impl Encode,
 ) -> Result<([u8; 32], T)> {
-    let (message_id, program_id) = common_upload_program(client, path, payload).await?;
+    let (message_id, program_id) = common_upload_program(client, code, payload).await?;
     let (_, raw_reply, _) = listener.reply_bytes_on(message_id.into()).await?;
-
     let reply = decode(raw_reply.expect("Received an error message instead of a reply"))?;
-
-    println!("Initialized `{path}`.");
 
     Ok((program_id, reply))
 }
@@ -61,7 +59,8 @@ async fn upload_program(
     path: &str,
     payload: impl Encode,
 ) -> Result<[u8; 32]> {
-    let (message_id, program_id) = common_upload_program(client, path, payload).await?;
+    let (message_id, program_id) =
+        common_upload_program(client, gclient::code_from_os(path)?, payload).await?;
 
     assert!(listener
         .message_processed(message_id.into())
@@ -74,23 +73,22 @@ async fn upload_program(
 
 async fn common_upload_program(
     client: &GearApi,
-    path: &str,
+    code: Vec<u8>,
     payload: impl Encode,
 ) -> Result<([u8; 32], [u8; 32])> {
     let encoded_payload = payload.encode();
     let gas_limit = client
-        .calculate_upload_gas(
-            None,
-            gclient::code_from_os(path)?,
-            encoded_payload,
-            0,
-            true,
-            None,
-        )
+        .calculate_upload_gas(None, code.clone(), encoded_payload, 0, true)
         .await?
         .min_limit;
     let (message_id, program_id, _) = client
-        .upload_program_by_path(path, gclient::bytes_now(), payload, gas_limit, 0)
+        .upload_program(
+            code,
+            gclient::now_in_micros().to_le_bytes(),
+            payload,
+            gas_limit,
+            0,
+        )
         .await?;
 
     Ok((message_id.into(), program_id.into()))
@@ -107,7 +105,7 @@ async fn send_message_with_custom_limit<T: Decode>(
     let destination = destination.into();
 
     let gas_limit = client
-        .calculate_handle_gas(None, destination, encoded_payload, 0, true, None)
+        .calculate_handle_gas(None, destination, encoded_payload, 0, true)
         .await?
         .min_limit;
     let modified_gas_limit = modify_gas_limit(gas_limit);
@@ -137,7 +135,7 @@ async fn send_message<T: Decode>(
     payload: impl Encode + Debug,
 ) -> Result<T> {
     Ok(
-        send_message_with_custom_limit(client, listener, destination, payload, |gas| gas * 4)
+        send_message_with_custom_limit(client, listener, destination, payload, |gas| gas * 7)
             .await?
             .expect("Received an error message instead of a reply"),
     )
@@ -148,7 +146,7 @@ async fn send_message_for_goc(
     listener: &mut EventListener,
     destination: [u8; 32],
     payload: impl Encode + Debug,
-) -> Result<Result<GOCEvent, GOCError>> {
+) -> Result<Result<Event, Error>> {
     send_message(client, listener, destination, payload).await
 }
 
@@ -189,11 +187,11 @@ async fn state_consistency() -> Result<()> {
     )
     .await?;
 
-    let (goc_actor_id, reply) = upload_program_and_wait_reply::<Result<(), GOCError>>(
+    let (goc_actor_id, reply) = upload_program_and_wait_reply::<Result<(), Error>>(
         &client,
         &mut listener,
-        "target/wasm32-unknown-unknown/debug/game_of_chance.opt.wasm",
-        GOCInit {
+        WASM_BINARY_OPT.into(),
+        Initialize {
             admin: ALICE.into(),
         },
     )
@@ -210,7 +208,7 @@ async fn state_consistency() -> Result<()> {
                 ft_actor_id,
                 FTokenAction::Message {
                     transaction_id: 0,
-                    payload: Action::Mint {
+                    payload: FTAction::Mint {
                         recipient: ALICE.into(),
                         amount,
                     }
@@ -227,7 +225,7 @@ async fn state_consistency() -> Result<()> {
                 ft_actor_id,
                 FTokenAction::Message {
                     transaction_id: 1,
-                    payload: Action::Approve {
+                    payload: FTAction::Approve {
                         approved_account: goc_actor_id.into(),
                         amount,
                     }
@@ -243,16 +241,16 @@ async fn state_consistency() -> Result<()> {
             &client,
             &mut listener,
             goc_actor_id,
-            GOCAction::Start {
+            Action::Start {
                 duration: 15000,
                 participation_cost: 10000,
-                ft_actor_id: Some(ft_actor_id.into())
+                fungible_token: Some(ft_actor_id.into())
             }
         )
         .await?
     );
 
-    let mut payload = GOCAction::Enter;
+    let mut payload = Action::Enter;
 
     println!(
         "{}",
@@ -260,18 +258,23 @@ async fn state_consistency() -> Result<()> {
     );
     assert_eq!(
         send_message_for_goc(&client, &mut listener, goc_actor_id, payload).await?,
-        Ok(GOCEvent::PlayerAdded(ALICE.into()))
+        Ok(Event::PlayerAdded(ALICE.into()))
     );
 
-    payload = GOCAction::PickWinner;
+    payload = Action::PickWinner;
 
     println!(
         "{}",
         send_message_with_insufficient_gas(&client, &mut listener, goc_actor_id, payload).await?
     );
     assert_eq!(
-        Ok(GOCEvent::Winner(ALICE.into())),
+        Ok(Event::Winner(ALICE.into())),
         send_message_for_goc(&client, &mut listener, goc_actor_id, payload).await?
+    );
+
+    println!(
+        "{:?}",
+        client.read_state::<State>(goc_actor_id.into()).await?
     );
 
     Ok(())

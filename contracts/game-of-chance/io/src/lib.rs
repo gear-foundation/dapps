@@ -1,4 +1,18 @@
+#![no_std]
+
+use gmeta::{InOut, Metadata};
 use gstd::{errors::ContractError, prelude::*, ActorId};
+
+pub struct ContractMetadata;
+
+impl Metadata for ContractMetadata {
+    type Init = InOut<Initialize, Result<(), Error>>;
+    type Handle = InOut<Action, Result<Event, Error>>;
+    type Reply = ();
+    type Others = ();
+    type Signal = ();
+    type State = State;
+}
 
 /// The maximum number of participants for one game round.
 ///
@@ -7,21 +21,22 @@ use gstd::{errors::ContractError, prelude::*, ActorId};
 /// participants.
 pub const MAX_NUMBER_OF_PLAYERS: usize = 2usize.pow(16);
 
-/// Initializes the Game of chance contract.
+/// Initializes the contract.
 ///
 /// # Requirements
 /// - `admin` mustn't be [`ActorId::zero()`].
-#[derive(Debug, Default, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo)]
-pub struct GOCInit {
+#[derive(
+    Debug, Default, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash,
+)]
+pub struct Initialize {
     /// [`ActorId`] of the game administrator that'll have the rights to
-    /// [start a game round](GOCAction::Start) and
-    /// [pick a winner](GOCAction::PickWinner).
+    /// [`Action::Start`] a game round and [`Action::PickWinner`].
     pub admin: ActorId,
 }
 
-/// Sends a contract info about what it should do.
-#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo)]
-pub enum GOCAction {
+/// Sends the contract info about what it should do.
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
+pub enum Action {
     /// Starts a game round and allows to participate in it.
     ///
     /// # Requirements
@@ -29,21 +44,21 @@ pub enum GOCAction {
     /// - The current game round must be over.
     /// - `ft_actor_id` mustn't be [`ActorId::zero()`].
     ///
-    /// On success, replies with [`GOCEvent::Started`].
+    /// On success, replies with [`Event::Started`].
     Start {
         /// The duration (in milliseconds) of the players entry stage.
         ///
         /// After that, no one will be able to enter a game round and a winner
         /// should be picked.
         duration: u64,
-        /// The price of participation in a game round.
+        /// The price of a participation in a game round.
         participation_cost: u128,
         /// A currency (or FT contract [`ActorId`]) of a game round.
         ///
         /// Determines fungible tokens in which a prize fund and a participation
         /// cost will be collected. [`None`] means that the native value will be
         /// used instead of fungible tokens.
-        ft_actor_id: Option<ActorId>,
+        fungible_token: Option<ActorId>,
     },
 
     /// Randomly picks a winner from current game round participants (players)
@@ -63,56 +78,56 @@ pub enum GOCAction {
     /// - The players entry stage must be over.
     /// - A winner mustn't already be picked.
     ///
-    /// On success, replies with [`GOCEvent::Winner`].
+    /// On success, replies with [`Event::Winner`].
     PickWinner,
 
     /// Pays a participation cost and adds [`msg::source()`] to the current game
     /// round participants (players).
     ///
-    /// A participation cost and its currency can be queried by the
-    /// `meta_state()` entry function.
+    /// A participation cost and its currency can be queried from the contract
+    /// state.
     ///
     /// # Requirements
     /// - The players entry stage mustn't be over.
     /// - [`msg::source()`] mustn't already participate.
     /// - [`msg::source()`] must have enough currency to pay a participation
     /// cost.
-    /// - If the current game round currency is the native value (`ft_actor_id`
-    /// is [`None`]), [`msg::source()`] must send this action with the amount of
-    /// the value exactly equal to a participation cost.
+    /// - If the current game round currency is the native value
+    /// (`fungible_token` is [`None`]), [`msg::source()`] must send this action
+    /// with the amount of the value exactly equal to a participation cost.
     ///
-    /// On success, replies with [`GOCEvent::PlayerAdded`].
+    /// On success, replies with [`Event::PlayerAdded`].
     ///
     /// [`msg::source()`]: gstd::msg::source
     Enter,
 }
 
-/// A result of processed [`GOCAction`].
-#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo)]
-pub enum GOCEvent {
-    /// Should be returned from [`GOCAction::Start`].
+/// A result of processed [`Action`].
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
+pub enum Event {
+    /// Should be returned from [`Action::Start`].
     Started {
         /// The end time (in milliseconds) of the players entry stage.
         ///
         /// After that, the game administrator can pick a winner.
         ending: u64,
-        /// See the documentation of [`GOCAction::Start`].
+        /// See [`Action::Start`].
         participation_cost: u128,
-        /// See the documentation of [`GOCAction::Start`].
-        ft_actor_id: Option<ActorId>,
+        /// See [`Action::Start`].
+        fungible_token: Option<ActorId>,
     },
-    /// Should be returned from [`GOCAction::PickWinner`].
+    /// Should be returned from [`Action::PickWinner`].
     Winner(ActorId),
-    /// Should be returned from [`GOCAction::Enter`].
+    /// Should be returned from [`Action::Enter`].
     PlayerAdded(ActorId),
 }
 
 /// Contract execution error variants.
-#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo)]
-pub enum GOCError {
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+pub enum Error {
     /// [`msg::source()`](gstd::msg::source) isn't the administrator.
     AccessRestricted,
-    /// The current game round wasn't in an expected game status.
+    /// The current game round wasn't in an expected status.
     ///
     /// E.g. the game administrator can't pick a winner if the player entry
     /// stage isn't over, or an user can't entry a game round if the entry
@@ -123,53 +138,56 @@ pub enum GOCError {
     /// The current FT contract failed to complete a transfer transaction.
     ///
     /// Most often, the reason is that a user didn't give an approval to the
-    /// Game of chance contract or didn't have enough tokens for participating.
+    /// contract or didn't have enough tokens for participating.
     TokenTransferFailed,
     /// The contract reached a limit of protection against the memory overflow.
     MemoryLimitExceeded,
     /// [`msg::source()`](gstd::msg::source) is already participating in the
     /// current game round.
     AlreadyParticipating,
-    /// [`msg::source()`](gstd::msg::source) sent [`GOCAction::Enter`] with an
-    /// incorrent amount of the native value.
+    /// [`msg::source()`] sent [`Action::Enter`] with an incorrent amount of the
+    /// native value.
     ///
-    /// An user should set the value manually because the current game round is
-    /// going without a FT contract (also see the [`GOCAction::Enter`]
-    /// documentation).
+    /// [`msg::source()`] should set the value manually because the current game
+    /// round is going without a FT contract (also see [`Action::Enter`]).
+    ///
+    /// [`msg::source()`]: gstd::msg::source
     InvalidParticipationCost,
-    /// See the [`ContractError`] documentation.
+    /// See [`ContractError`].
     ContractError(String),
 }
 
-impl From<ContractError> for GOCError {
+impl From<ContractError> for Error {
     fn from(error: ContractError) -> Self {
         Self::ContractError(error.to_string())
     }
 }
 
-/// The current game round state.
-#[derive(Debug, Default, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo)]
-pub struct GOCState {
-    /// See the documentation of [`GOCInit`].
+/// The contract state.
+#[derive(Debug, Default, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+pub struct State {
+    /// See [`Initialize`].
     pub admin: ActorId,
     /// The start time (in milliseconds) of the current game round and the
     /// players entry stage.
     pub started: u64,
-    /// See the documentation of [`GOCEvent::Started`].
+    /// See [`Event::Started`].
     pub ending: u64,
     /// Participants of the current game round.
     pub players: Vec<ActorId>,
     /// The current game round prize fund.
     ///
-    /// It's calculated by multiplying `participation_cost` and the number
-    /// of `players`.
+    /// It's calculated by multiplying `participation_cost` and the number of
+    /// `players`.
     pub prize_fund: u128,
-    /// See the documentation of [`GOCAction::Start`].
+    /// See [`Action::Start`].
     pub participation_cost: u128,
     /// The winner of the current game round.
     pub winner: ActorId,
     /// A currency (or a FT contract [`ActorId`]) of the current game round.
     ///
-    /// Also see the documentation of [`GOCAction::Start`].
-    pub ft_actor_id: Option<ActorId>,
+    /// Also see [`Action::Start`].
+    pub fungible_token: Option<ActorId>,
+    /// Shows if the current game round is active.
+    pub is_active: bool,
 }

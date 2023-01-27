@@ -1,4 +1,4 @@
-.PHONY: all build clean fmt fmt-check init lint pre-commit test full-test
+.PHONY: all build fmt init lint pre-commit test full-test deps
 
 all: init build test
 
@@ -8,10 +8,6 @@ build:
 	@ls -l target/wasm32-unknown-unknown/release/*.wasm
 
 fmt:
-	@echo ⚙️ Formatting...
-	@cargo fmt --all
-
-fmt-check:
 	@echo ⚙️ Checking a format...
 	@cargo fmt --all --check
 
@@ -22,7 +18,8 @@ init:
 
 lint:
 	@echo ⚙️ Running the linter...
-	@cargo +nightly clippy --all-targets -- -D warnings
+	@cargo +nightly clippy -- -D warnings
+	@cargo +nightly clippy --all-targets -Fbinary-vendor -- -D warnings
 
 pre-commit: fmt lint full-test
 
@@ -49,8 +46,8 @@ deps:
 
 test: deps
 	@echo ⚙️ Running unit tests...
-	@cargo +nightly t
+	@cargo +nightly t -Fbinary-vendor
 
 full-test: deps
 	@echo ⚙️ Running all tests...
-	@cargo +nightly t -- --include-ignored
+	@cargo +nightly t -Fbinary-vendor -- --include-ignored

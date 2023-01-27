@@ -35,16 +35,16 @@ jobs:
         run: |
           wget -c https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O - | tar -xz -C .
           sudo cp binaryen-version_110/bin/wasm-opt /usr/bin/
+
       - name: Check fmt
-        run: make fmt-check
+        run: make fmt
 
       - name: Run linter
         run: make lint
 
       - name: Run tests
         run: |
-          curl -OL https://github.com/gear-tech/gear/releases/download/gear-stable/gear-stable.tar.gz
-          tar -xf gear-stable.tar.gz
+          curl -L https://get.gear.rs/gear-nightly-linux-x86_64.tar.xz -o - | tar xJ
           ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
           make full-test
           kill `cat gear.pid`

@@ -13,33 +13,35 @@ const DURATION_IN_SECS: u32 = (DURATION / 1000) as _;
 fn two_rounds_and_meta_state() {
     let system = utils::initialize_system();
 
-    let mut sft = FungibleToken::initialize(&system);
+    let mut fungible_token = FungibleToken::initialize(&system);
     let mut goc = Goc::initialize(&system, ADMIN).succeed();
 
     let admin = ADMIN.into();
 
-    goc.meta_state().state().eq(GOCState {
+    goc.meta_state().state().eq(State {
         admin,
         ..Default::default()
     });
 
     for player in PLAYERS {
-        sft.mint(player, AMOUNT);
-        sft.approve(player, goc.actor_id(), PARTICIPATION_COST);
+        fungible_token.mint(player, AMOUNT);
+        fungible_token.approve(player, goc.actor_id(), PARTICIPATION_COST);
     }
 
     let mut started = system.block_timestamp();
     let mut ending = started + DURATION;
-    let ft_actor_id = Some(sft.actor_id());
+    let ft_actor_id = Some(fungible_token.actor_id());
+    let is_active = true;
 
     goc.start(ADMIN, DURATION, PARTICIPATION_COST, ft_actor_id)
         .succeed((ending, PARTICIPATION_COST, ft_actor_id));
-    goc.meta_state().state().eq(GOCState {
+    goc.meta_state().state().eq(State {
         admin,
         started,
         ending,
         participation_cost: PARTICIPATION_COST,
-        ft_actor_id,
+        fungible_token: ft_actor_id,
+        is_active,
         ..Default::default()
     });
 
@@ -51,15 +53,16 @@ fn two_rounds_and_meta_state() {
         players.push(player.into());
 
         goc.enter(player).succeed(player);
-        sft.balance(goc.actor_id()).contains(prize_fund);
-        goc.meta_state().state().eq(GOCState {
+        fungible_token.balance(goc.actor_id()).contains(prize_fund);
+        goc.meta_state().state().eq(State {
             admin,
             started,
             ending,
             players: players.clone(),
             prize_fund,
             participation_cost: PARTICIPATION_COST,
-            ft_actor_id,
+            fungible_token: ft_actor_id,
+            is_active,
             ..Default::default()
         });
     }
@@ -69,9 +72,10 @@ fn two_rounds_and_meta_state() {
     let winner = utils::predict_winner(&system, &PLAYERS);
 
     goc.pick_winner(ADMIN).succeed(winner);
-    sft.balance(winner)
+    fungible_token
+        .balance(winner)
         .contains(PARTICIPATION_COST * 2 + AMOUNT);
-    goc.meta_state().state().eq(GOCState {
+    goc.meta_state().state().eq(State {
         admin,
         started,
         ending,
@@ -79,7 +83,8 @@ fn two_rounds_and_meta_state() {
         prize_fund: PARTICIPATION_COST * 3,
         participation_cost: PARTICIPATION_COST,
         winner,
-        ft_actor_id,
+        fungible_token: ft_actor_id,
+        ..Default::default()
     });
 
     for player in PLAYERS {
@@ -91,11 +96,12 @@ fn two_rounds_and_meta_state() {
 
     goc.start(ADMIN, DURATION, PARTICIPATION_COST, None)
         .succeed((ending, PARTICIPATION_COST, None));
-    goc.meta_state().state().eq(GOCState {
+    goc.meta_state().state().eq(State {
         admin,
         started,
         ending,
         participation_cost: PARTICIPATION_COST,
+        is_active,
         ..Default::default()
     });
 
@@ -109,13 +115,14 @@ fn two_rounds_and_meta_state() {
         goc.enter_with_value(player, PARTICIPATION_COST)
             .succeed(player);
         assert_eq!(system.balance_of(goc.actor_id().as_ref()), prize_fund);
-        goc.meta_state().state().eq(GOCState {
+        goc.meta_state().state().eq(State {
             admin,
             started,
             ending,
             players: players.clone(),
             prize_fund,
             participation_cost: PARTICIPATION_COST,
+            is_active,
             ..Default::default()
         });
     }
@@ -127,7 +134,7 @@ fn two_rounds_and_meta_state() {
     goc.pick_winner(ADMIN).succeed(winner.into());
     system.claim_value_from_mailbox(winner);
     assert_eq!(system.balance_of(winner), PARTICIPATION_COST * 2 + AMOUNT);
-    goc.meta_state().state().eq(GOCState {
+    goc.meta_state().state().eq(State {
         admin,
         started,
         ending,
@@ -143,17 +150,16 @@ fn two_rounds_and_meta_state() {
 fn failures() {
     let system = utils::initialize_system();
 
-    Goc::initialize_with_existential_deposit(&system, ActorId::zero())
-        .failed(GOCError::ZeroActorId);
+    Goc::initialize_with_existential_deposit(&system, ActorId::zero()).failed(Error::ZeroActorId);
 
     let mut goc = Goc::initialize(&system, ADMIN).succeed();
     goc.start(FOREIGN_USER, 0, 0, None)
-        .failed(GOCError::AccessRestricted);
+        .failed(Error::AccessRestricted);
 
     goc.start(ADMIN, 0, 0, Some(ActorId::zero()))
-        .failed(GOCError::ZeroActorId);
+        .failed(Error::ZeroActorId);
 
-    goc.enter(PLAYERS[0]).failed(GOCError::UnexpectedGameStatus);
+    goc.enter(PLAYERS[0]).failed(Error::UnexpectedGameStatus);
 
     goc.start(ADMIN, DURATION, PARTICIPATION_COST, None)
         .succeed((
@@ -162,31 +168,29 @@ fn failures() {
             None,
         ));
     goc.start(ADMIN, 0, 0, None)
-        .failed(GOCError::UnexpectedGameStatus);
+        .failed(Error::UnexpectedGameStatus);
 
     system.mint_to(PLAYERS[0], AMOUNT);
     goc.enter_with_value(PLAYERS[0], PARTICIPATION_COST)
         .succeed(PLAYERS[0]);
-    goc.enter(PLAYERS[0]).failed(GOCError::AlreadyParticipating);
+    goc.enter(PLAYERS[0]).failed(Error::AlreadyParticipating);
 
     system.mint_to(PLAYERS[1], AMOUNT);
     goc.enter_with_value(PLAYERS[1], PARTICIPATION_COST + 1)
-        .failed(GOCError::InvalidParticipationCost);
+        .failed(Error::InvalidParticipationCost);
 
     system.claim_value_from_mailbox(PLAYERS[1]);
     goc.enter_with_value(PLAYERS[1], PARTICIPATION_COST - 1)
-        .failed(GOCError::InvalidParticipationCost);
+        .failed(Error::InvalidParticipationCost);
 
     goc.pick_winner(FOREIGN_USER)
-        .failed(GOCError::AccessRestricted);
+        .failed(Error::AccessRestricted);
 
-    goc.pick_winner(ADMIN)
-        .failed(GOCError::UnexpectedGameStatus);
+    goc.pick_winner(ADMIN).failed(Error::UnexpectedGameStatus);
 
     system.spend_blocks(DURATION_IN_SECS);
     goc.pick_winner(ADMIN).succeed(PLAYERS[0].into());
-    goc.pick_winner(ADMIN)
-        .failed(GOCError::UnexpectedGameStatus);
+    goc.pick_winner(ADMIN).failed(Error::UnexpectedGameStatus);
 }
 
 #[test]
@@ -207,30 +211,31 @@ fn overflow() {
 
     let system = utils::initialize_system();
 
-    let mut sft = FungibleToken::initialize(&system);
+    let mut fungible_token = FungibleToken::initialize(&system);
     let mut goc = Goc::initialize(&system, ADMIN).succeed();
 
     let ending = DURATION;
-    let ft_actor_id = Some(sft.actor_id());
+    let ft_actor_id = Some(fungible_token.actor_id());
 
     goc.start(ADMIN, DURATION, PARTICIPATION_COST, ft_actor_id)
         .succeed((ending, PARTICIPATION_COST, ft_actor_id));
 
     for player in PLAYERS.into_iter().take(2) {
-        sft.mint(player, AMOUNT);
-        sft.approve(player, goc.actor_id(), PARTICIPATION_COST);
+        fungible_token.mint(player, AMOUNT);
+        fungible_token.approve(player, goc.actor_id(), PARTICIPATION_COST);
 
         goc.enter(player).succeed(player);
     }
 
-    goc.meta_state().state().eq(GOCState {
+    goc.meta_state().state().eq(State {
         admin: ADMIN.into(),
         started: system.block_timestamp(),
         ending,
         players: vec![PLAYERS[0].into(), PLAYERS[1].into()],
         prize_fund: u128::MAX,
         participation_cost: PARTICIPATION_COST,
-        ft_actor_id,
+        fungible_token: ft_actor_id,
+        is_active: true,
         ..Default::default()
     })
 }
