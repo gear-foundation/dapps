@@ -1,9 +1,9 @@
 use gtest::{Program, RunResult, System};
-use multisig_wallet::io::*;
+use multisig_wallet_io::*;
 
 const USERS: &[u64] = &[3, 4, 5, 6];
 
-fn common_init(sys: &System, users: &[u64], required: u64) -> RunResult {
+fn common_init(sys: &System, users: &[u64], required: u32) -> RunResult {
     sys.init_logger();
 
     let wallet = Program::current(sys);

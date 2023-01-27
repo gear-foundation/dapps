@@ -2,9 +2,10 @@
 name = "multisig-wallet-io"
 version = "0.1.1"
 edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
-primitive-types = { version = "0.12.0", default-features = false, features = ["scale-info"] }
+gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
+primitive-types = { version = "0.12", default-features = false }

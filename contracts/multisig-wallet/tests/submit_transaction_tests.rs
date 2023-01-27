@@ -1,11 +1,11 @@
 use gstd::{ActorId, Encode};
 use gtest::{Program, System};
-use multisig_wallet::io::*;
+use multisig_wallet_io::*;
 
 const USERS: &[u64] = &[3, 4, 5, 6];
 const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
 
-fn common_init<'a>(sys: &'a System, users: &[u64], required: u64) -> Program<'a> {
+fn common_init<'a>(sys: &'a System, users: &[u64], required: u32) -> Program<'a> {
     sys.init_logger();
 
     let wallet = Program::current(sys);

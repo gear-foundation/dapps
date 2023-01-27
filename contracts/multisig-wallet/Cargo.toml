@@ -7,12 +7,17 @@ authors = ["Gear Technologies"]
 
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
-hashbrown = "0.13.1"
+multisig-wallet-io = { path = "io" }
+hashbrown = "0.13"
+primitive-types = { version = "0.12", default-features = false }
 
 [dev-dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gtest = { git = "https://github.com/gear-tech/gear.git" }
 
 [build-dependencies]
+multisig-wallet-io = { path = "io" }
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+
+[workspace]
+members = ["state"]
