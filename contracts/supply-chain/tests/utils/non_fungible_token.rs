@@ -7,7 +7,7 @@ use gstd::ActorId;
 use gtest::{Program as InnerProgram, System};
 use nft_io::InitNFT;
 
-pub struct NonFungibleToken<'a>(InnerProgram<'a>);
+pub struct NonFungibleToken<'a>(InnerProgram<'a>, u64);
 
 impl Program for NonFungibleToken<'_> {
     fn inner_program(&self) -> &InnerProgram {
@@ -17,7 +17,7 @@ impl Program for NonFungibleToken<'_> {
 
 impl<'a> NonFungibleToken<'a> {
     pub fn initialize(system: &'a System) -> Self {
-        let program = InnerProgram::from_file(system, "./target/nft-0.1.0.wasm");
+        let program = InnerProgram::from_file(system, "target/nft.wasm");
 
         assert!(!program
             .send(
@@ -31,7 +31,7 @@ impl<'a> NonFungibleToken<'a> {
             )
             .main_failed());
 
-        Self(program)
+        Self(program, 0)
     }
 
     pub fn meta_state(&self) -> NonFungibleTokenMetaState {

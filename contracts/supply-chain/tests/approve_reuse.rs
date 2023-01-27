@@ -1,114 +1,108 @@
-pub mod utils;
 use utils::{prelude::*, FungibleToken, NonFungibleToken};
+
+pub mod utils;
 
 const ITEM_PRICE_BY_PRODUCER: u128 = ITEM_PRICE;
 const ITEM_PRICE_BY_DISTRIBUTOR: u128 = ITEM_PRICE * 2;
-const ITEM_PRICE_BY_RETAILER: u128 = ITEM_PRICE * 3;
 
 #[test]
 fn approve_reuse_and_ft_transfer() {
     let system = utils::initialize_system();
 
-    let ft_program = FungibleToken::initialize(&system);
-    ft_program.mint(DISTRIBUTOR, ITEM_PRICE_BY_PRODUCER);
-    ft_program.mint(RETAILER, ITEM_PRICE_BY_DISTRIBUTOR);
-    ft_program.mint(CONSUMER, ITEM_PRICE_BY_RETAILER);
+    let non_fungible_token = NonFungibleToken::initialize(&system);
+    let mut fungible_token = FungibleToken::initialize(&system);
+    let mut supply_chain = SupplyChain::initialize(
+        &system,
+        fungible_token.actor_id(),
+        non_fungible_token.actor_id(),
+    );
 
-    let nft_program = NonFungibleToken::initialize(&system);
-    let schain_program =
-        SupplyChain::initialize(&system, ft_program.actor_id(), nft_program.actor_id());
+    for (from, amount) in [
+        (DISTRIBUTOR, ITEM_PRICE_BY_PRODUCER),
+        (RETAILER, ITEM_PRICE_BY_DISTRIBUTOR),
+    ] {
+        fungible_token.mint(from, amount);
+        fungible_token.approve(from, supply_chain.actor_id(), amount * 2);
+    }
 
-    schain_program.produce(PRODUCER).check(0);
-    schain_program
+    supply_chain.produce(PRODUCER).succeed(0);
+    supply_chain
         .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE_BY_PRODUCER)
-        .check(0);
-    schain_program
+        .succeed(0);
+    supply_chain
         .meta_state()
         .item_price(0)
-        .check(ITEM_PRICE_BY_PRODUCER);
+        .eq(Some(ITEM_PRICE_BY_PRODUCER));
 
     // There may be a case when a buyer puts an inconvenient delivery time for a
     // seller.
-    schain_program
+    supply_chain
         .purchase_by_distributor(DISTRIBUTOR, 0, DELIVERY_TIME)
-        .check(0);
-    ft_program
-        .balance_of(schain_program.actor_id())
-        .check(ITEM_PRICE_BY_PRODUCER);
-    // Then a seller can cancel this purchase and put its item back up for sale.
-    schain_program
+        .succeed(0);
+    fungible_token
+        .balance(supply_chain.actor_id())
+        .contains(ITEM_PRICE_BY_PRODUCER);
+    // Then the seller can cancel this purchase and put its item back up for
+    // sale.
+    supply_chain
         .approve_by_producer(PRODUCER, 0, false)
-        .check(0);
-    ft_program
-        .balance_of(DISTRIBUTOR)
-        .check(ITEM_PRICE_BY_PRODUCER);
+        .succeed((0, false));
+    fungible_token
+        .balance(DISTRIBUTOR)
+        .contains(ITEM_PRICE_BY_PRODUCER);
     // Thereafter the same buyer or another can purchase this item again and put
-    // a more convenient delivery time for a seller...
-    schain_program
+    // a more convenient delivery time for the seller...
+    supply_chain
         .purchase_by_distributor(DISTRIBUTOR, 0, DELIVERY_TIME)
-        .check(0);
-    ft_program
-        .balance_of(schain_program.actor_id())
-        .check(ITEM_PRICE_BY_PRODUCER);
+        .succeed(0);
+    fungible_token
+        .balance(supply_chain.actor_id())
+        .contains(ITEM_PRICE_BY_PRODUCER);
     // ...who will approve this purchase and ship the item later.
-    schain_program
+    supply_chain
         .approve_by_producer(PRODUCER, 0, true)
-        .check(0);
+        .succeed((0, true));
 
-    schain_program.ship_by_producer(PRODUCER, 0).check(0);
-    schain_program
+    supply_chain.ship_by_producer(PRODUCER, 0).succeed(0);
+    supply_chain
         .receive_by_distributor(DISTRIBUTOR, 0)
-        .check(0);
-    schain_program
-        .process_by_distributor(DISTRIBUTOR, 0)
-        .check(0);
-    schain_program
-        .package_by_distributor(DISTRIBUTOR, 0)
-        .check(0);
-    schain_program
+        .succeed(0);
+    supply_chain.process(DISTRIBUTOR, 0).succeed(0);
+    supply_chain.package(DISTRIBUTOR, 0).succeed(0);
+    supply_chain
         .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE_BY_DISTRIBUTOR)
-        .check(0);
-    schain_program
+        .succeed(0);
+    supply_chain
         .meta_state()
         .item_price(0)
-        .check(ITEM_PRICE_BY_DISTRIBUTOR);
+        .eq(Some(ITEM_PRICE_BY_DISTRIBUTOR));
 
     // There may be a case when a buyer puts an inconvenient delivery time for a
     // seller.
-    schain_program
+    supply_chain
         .purchase_by_retailer(RETAILER, 0, DELIVERY_TIME)
-        .check(0);
-    ft_program
-        .balance_of(schain_program.actor_id())
-        .check(ITEM_PRICE_BY_DISTRIBUTOR);
-    // Then a seller can cancel this purchase and put its item back up for sale.
-    schain_program
+        .succeed(0);
+    fungible_token
+        .balance(supply_chain.actor_id())
+        .contains(ITEM_PRICE_BY_DISTRIBUTOR);
+    // Then the seller can cancel this purchase and put its item back up for
+    // sale.
+    supply_chain
         .approve_by_distributor(DISTRIBUTOR, 0, false)
-        .check(0);
-    ft_program
-        .balance_of(RETAILER)
-        .check(ITEM_PRICE_BY_DISTRIBUTOR);
+        .succeed((0, false));
+    fungible_token
+        .balance(RETAILER)
+        .contains(ITEM_PRICE_BY_DISTRIBUTOR);
     // Thereafter the same buyer or another can purchase this item again and put
-    // a more convenient delivery time for a seller...
-    schain_program
+    // a more convenient delivery time for the seller...
+    supply_chain
         .purchase_by_retailer(RETAILER, 0, DELIVERY_TIME)
-        .check(0);
-    ft_program
-        .balance_of(schain_program.actor_id())
-        .check(ITEM_PRICE_BY_DISTRIBUTOR);
+        .succeed(0);
+    fungible_token
+        .balance(supply_chain.actor_id())
+        .contains(ITEM_PRICE_BY_DISTRIBUTOR);
     // ...who will approve this purchase and ship the item later.
-    schain_program
+    supply_chain
         .approve_by_distributor(DISTRIBUTOR, 0, true)
-        .check(0);
-
-    schain_program.ship_by_distributor(DISTRIBUTOR, 0).check(0);
-    schain_program.receive_by_retailer(RETAILER, 0).check(0);
-    schain_program
-        .put_up_for_sale_by_retailer(RETAILER, 0, ITEM_PRICE_BY_RETAILER)
-        .check(0);
-    schain_program
-        .meta_state()
-        .item_price(0)
-        .check(ITEM_PRICE_BY_RETAILER);
-    schain_program.purchase_by_consumer(CONSUMER, 0).check(0);
+        .succeed((0, true));
 }

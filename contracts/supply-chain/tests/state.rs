@@ -1,115 +1,110 @@
-pub mod utils;
 use utils::{prelude::*, FungibleToken, NonFungibleToken};
+
+pub mod utils;
 
 #[test]
 fn state() {
     let system = utils::initialize_system();
 
-    let ft_program = FungibleToken::initialize(&system);
-    // Double the balances to catch bugs.
-    ft_program.mint(DISTRIBUTOR, ITEM_PRICE * 2);
-    ft_program.mint(RETAILER, ITEM_PRICE * 2);
-    ft_program.mint(CONSUMER, ITEM_PRICE * 2);
+    let non_fungible_token = NonFungibleToken::initialize(&system);
+    let mut fungible_token = FungibleToken::initialize(&system);
+    let mut supply_chain = SupplyChain::initialize(
+        &system,
+        fungible_token.actor_id(),
+        non_fungible_token.actor_id(),
+    );
 
-    let nft_program = NonFungibleToken::initialize(&system);
-    let schain_program =
-        SupplyChain::initialize(&system, ft_program.actor_id(), nft_program.actor_id());
+    for from in [DISTRIBUTOR, RETAILER, CONSUMER] {
+        // Double balances to catch bugs.
+        fungible_token.mint(from, ITEM_PRICE * 2);
+        fungible_token.approve(from, supply_chain.actor_id(), ITEM_PRICE * 2);
+    }
 
-    schain_program.produce(PRODUCER).check(0);
+    supply_chain.produce(PRODUCER).succeed(0);
 
-    schain_program
+    supply_chain
         .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE)
-        .check(0);
-    // Should fail because item's `ItemState` must be `Produced`.
-    schain_program
+        .succeed(0);
+    supply_chain
         .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE)
-        .failed();
+        .failed(Error::UnexpectedItemState);
 
-    schain_program
+    supply_chain
         .purchase_by_distributor(DISTRIBUTOR, 0, DELIVERY_TIME)
-        .check(0);
-    // Should fail because item's `ItemState` must be `ForSaleByProducer`.
-    schain_program
+        .succeed(0);
+    supply_chain
         .purchase_by_distributor(DISTRIBUTOR, 0, DELIVERY_TIME)
-        .failed();
+        .failed(Error::UnexpectedItemState);
 
-    schain_program
+    supply_chain
         .approve_by_producer(PRODUCER, 0, true)
-        .check(0);
-    //Should fail because item's `ItemState` must be `PurchasedByDistributor`.
-    schain_program
+        .succeed((0, true));
+    supply_chain
         .approve_by_producer(PRODUCER, 0, true)
-        .failed();
+        .failed(Error::UnexpectedItemState);
 
-    schain_program.ship_by_producer(PRODUCER, 0).check(0);
-    // Should fail because item's `ItemState` must be `ApprovedByProducer`.
-    schain_program.ship_by_producer(PRODUCER, 0).failed();
+    supply_chain.ship_by_producer(PRODUCER, 0).succeed(0);
+    supply_chain
+        .ship_by_producer(PRODUCER, 0)
+        .failed(Error::UnexpectedItemState);
 
-    schain_program
+    supply_chain
         .receive_by_distributor(DISTRIBUTOR, 0)
-        .check(0);
-    // Should fail because item's `ItemState` must be `ShippedByProducer`.
-    schain_program
+        .succeed(0);
+    supply_chain
         .receive_by_distributor(DISTRIBUTOR, 0)
-        .failed();
+        .failed(Error::UnexpectedItemState);
 
-    schain_program
-        .process_by_distributor(DISTRIBUTOR, 0)
-        .check(0);
-    // Should fail because item's `ItemState` must be `ReceivedByDistributor`.
-    schain_program
-        .process_by_distributor(DISTRIBUTOR, 0)
-        .failed();
+    supply_chain.process(DISTRIBUTOR, 0).succeed(0);
+    supply_chain
+        .process(DISTRIBUTOR, 0)
+        .failed(Error::UnexpectedItemState);
 
-    schain_program
-        .package_by_distributor(DISTRIBUTOR, 0)
-        .check(0);
-    // Should fail because item's `ItemState` must be `ProcessedByDistributor`.
-    schain_program
-        .package_by_distributor(DISTRIBUTOR, 0)
-        .failed();
+    supply_chain.package(DISTRIBUTOR, 0).succeed(0);
+    supply_chain
+        .package(DISTRIBUTOR, 0)
+        .failed(Error::UnexpectedItemState);
 
-    schain_program
+    supply_chain
         .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE)
-        .check(0);
-    // Should fail because item's `ItemState` must be `PackagedByDistributor`.
-    schain_program
+        .succeed(0);
+    supply_chain
         .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE)
-        .failed();
+        .failed(Error::UnexpectedItemState);
 
-    schain_program
+    supply_chain
         .purchase_by_retailer(RETAILER, 0, DELIVERY_TIME)
-        .check(0);
-    // Should fail because item's `ItemState` must be `ForSaleByDistributor`.
-    schain_program
+        .succeed(0);
+    supply_chain
         .purchase_by_retailer(RETAILER, 0, DELIVERY_TIME)
-        .failed();
+        .failed(Error::UnexpectedItemState);
 
-    schain_program
+    supply_chain
         .approve_by_distributor(DISTRIBUTOR, 0, true)
-        .check(0);
-    // Should fail because item's `ItemState` must be `PurchasedByRetailer`.
-    schain_program
+        .succeed((0, true));
+    supply_chain
         .approve_by_distributor(DISTRIBUTOR, 0, true)
-        .failed();
+        .failed(Error::UnexpectedItemState);
 
-    schain_program.ship_by_distributor(DISTRIBUTOR, 0).check(0);
-    // Should fail because item's `ItemState` must be `ApprovedByDistributor`.
-    schain_program.ship_by_distributor(DISTRIBUTOR, 0).failed();
+    supply_chain.ship_by_distributor(DISTRIBUTOR, 0).succeed(0);
+    supply_chain
+        .ship_by_distributor(DISTRIBUTOR, 0)
+        .failed(Error::UnexpectedItemState);
 
-    schain_program.receive_by_retailer(RETAILER, 0).check(0);
-    // Should fail because item's `ItemState` must be `ShippedByDistributor`.
-    schain_program.receive_by_retailer(RETAILER, 0).failed();
+    supply_chain.receive_by_retailer(RETAILER, 0).succeed(0);
+    supply_chain
+        .receive_by_retailer(RETAILER, 0)
+        .failed(Error::UnexpectedItemState);
 
-    schain_program
+    supply_chain
         .put_up_for_sale_by_retailer(RETAILER, 0, ITEM_PRICE)
-        .check(0);
-    // Should fail because item's `ItemState` must be `ReceivedByRetailer`.
-    schain_program
+        .succeed(0);
+    supply_chain
         .put_up_for_sale_by_retailer(RETAILER, 0, ITEM_PRICE)
-        .failed();
+        .failed(Error::UnexpectedItemState);
 
-    schain_program.purchase_by_consumer(CONSUMER, 0).check(0);
-    // Should fail because item's `ItemState` must be `ForSaleByRetailer`.
-    schain_program.purchase_by_consumer(CONSUMER, 0).failed();
+    supply_chain.purchase_by_consumer(CONSUMER, 0).succeed(0);
+    supply_chain
+        .purchase_by_consumer(CONSUMER, 0)
+        .failed(Error::UnexpectedItemState);
 }

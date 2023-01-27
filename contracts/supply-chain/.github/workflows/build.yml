@@ -16,10 +16,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Artifact cache
-        uses: Swatinem/rust-cache@v1
+        uses: Swatinem/rust-cache@v2
+
+      - name: Remove binaries from cache
+        run: rm -vf target/wasm32-unknown-unknown/release/*.wasm
 
       - name: Install nightly toolchain
         uses: actions-rs/toolchain@v1
@@ -28,26 +31,30 @@ jobs:
           components: clippy, rustfmt
           target: wasm32-unknown-unknown
 
-      - name: 'Install binaryen'
+      - name: Install binaryen
         run: |
-          sudo wget -c https://github.com/WebAssembly/binaryen/releases/download/version_105/binaryen-version_105-x86_64-linux.tar.gz -O - | sudo tar -xz -C .
-          sudo cp binaryen-version_105/bin/wasm-opt /usr/bin/
+          wget -c https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O - | tar -xz -C .
+          sudo cp binaryen-version_110/bin/wasm-opt /usr/bin/
 
       - name: Check fmt
-        run: make fmt-check
+        run: make fmt
 
       - name: Run linter
-        run: make linter
+        run: make lint
+
+      - name: Run tests
+        run: |
+          curl -L https://get.gear.rs/gear-nightly-linux-x86_64.tar.xz -o - | tar xJ
+          ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
+          make full-test
+          kill `cat gear.pid`
 
       - name: Build
         run: make build
 
-      - name: Run tests
-        run: make test
-
       - name: Upload artifacts
         if: github.event_name == 'push'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: ./target/wasm32-unknown-unknown/release/*.wasm
 
@@ -57,10 +64,10 @@ jobs:
     needs: build
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
 
       - name: Delete previous release
-        uses: dev-drprasad/delete-tag-and-release@v0.1.3
+        uses: dev-drprasad/delete-tag-and-release@v0.2.0
         with:
           delete_release: true
           tag_name: build

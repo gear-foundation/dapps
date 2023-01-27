@@ -1,95 +1,107 @@
-pub mod utils;
-use gear_lib::non_fungible_token::token::Token;
 use utils::{prelude::*, FungibleToken, NonFungibleToken};
+
+pub mod utils;
 
 #[test]
 fn nft_transfer() {
     let system = utils::initialize_system();
 
-    let ft_program = FungibleToken::initialize(&system);
-    ft_program.mint(DISTRIBUTOR, ITEM_PRICE);
-    ft_program.mint(RETAILER, ITEM_PRICE);
-    ft_program.mint(CONSUMER, ITEM_PRICE);
+    let non_fungible_token = NonFungibleToken::initialize(&system);
+    let mut fungible_token = FungibleToken::initialize(&system);
+    let mut supply_chain = SupplyChain::initialize(
+        &system,
+        fungible_token.actor_id(),
+        non_fungible_token.actor_id(),
+    );
 
-    let nft_program = NonFungibleToken::initialize(&system);
-    let schain_program =
-        SupplyChain::initialize(&system, ft_program.actor_id(), nft_program.actor_id());
+    for from in [DISTRIBUTOR, RETAILER, CONSUMER] {
+        fungible_token.mint(from, ITEM_PRICE);
+        fungible_token.approve(from, supply_chain.actor_id(), ITEM_PRICE);
+    }
 
-    schain_program.produce(PRODUCER).check(0);
-    nft_program.meta_state().owner_id(0).check(PRODUCER.into());
+    supply_chain.produce(PRODUCER).succeed(0);
+    non_fungible_token
+        .meta_state()
+        .owner_id(0)
+        .eq(PRODUCER.into());
 
-    schain_program
+    supply_chain
         .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE)
-        .check(0);
-    nft_program
+        .succeed(0);
+    non_fungible_token
         .meta_state()
         .owner_id(0)
-        .check(schain_program.actor_id());
+        .eq(supply_chain.actor_id());
 
-    schain_program
+    supply_chain
         .purchase_by_distributor(DISTRIBUTOR, 0, DELIVERY_TIME)
-        .check(0);
-    schain_program
+        .succeed(0);
+    supply_chain
         .approve_by_producer(PRODUCER, 0, true)
-        .check(0);
-    schain_program.ship_by_producer(PRODUCER, 0).check(0);
+        .succeed((0, true));
+    supply_chain.ship_by_producer(PRODUCER, 0).succeed(0);
 
-    schain_program
+    supply_chain
         .receive_by_distributor(DISTRIBUTOR, 0)
-        .check(0);
-    nft_program
+        .succeed(0);
+    non_fungible_token
         .meta_state()
         .owner_id(0)
-        .check(DISTRIBUTOR.into());
+        .eq(DISTRIBUTOR.into());
 
-    schain_program
-        .process_by_distributor(DISTRIBUTOR, 0)
-        .check(0);
-    schain_program
-        .package_by_distributor(DISTRIBUTOR, 0)
-        .check(0);
+    supply_chain.process(DISTRIBUTOR, 0).succeed(0);
+    supply_chain.package(DISTRIBUTOR, 0).succeed(0);
 
-    schain_program
+    supply_chain
         .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE)
-        .check(0);
-    nft_program
+        .succeed(0);
+    non_fungible_token
         .meta_state()
         .owner_id(0)
-        .check(schain_program.actor_id());
+        .eq(supply_chain.actor_id());
 
-    schain_program
+    supply_chain
         .purchase_by_retailer(RETAILER, 0, DELIVERY_TIME)
-        .check(0);
-    schain_program
+        .succeed(0);
+    supply_chain
         .approve_by_distributor(DISTRIBUTOR, 0, true)
-        .check(0);
-    schain_program.ship_by_distributor(DISTRIBUTOR, 0).check(0);
+        .succeed((0, true));
+    supply_chain.ship_by_distributor(DISTRIBUTOR, 0).succeed(0);
 
-    schain_program.receive_by_retailer(RETAILER, 0).check(0);
-    nft_program.meta_state().owner_id(0).check(RETAILER.into());
-
-    schain_program
-        .put_up_for_sale_by_retailer(RETAILER, 0, ITEM_PRICE)
-        .check(0);
-    nft_program
+    supply_chain.receive_by_retailer(RETAILER, 0).succeed(0);
+    non_fungible_token
         .meta_state()
         .owner_id(0)
-        .check(schain_program.actor_id());
+        .eq(RETAILER.into());
 
-    schain_program.purchase_by_consumer(CONSUMER, 0).check(0);
-    nft_program.meta_state().owner_id(0).check(CONSUMER.into());
+    supply_chain
+        .put_up_for_sale_by_retailer(RETAILER, 0, ITEM_PRICE)
+        .succeed(0);
+    non_fungible_token
+        .meta_state()
+        .owner_id(0)
+        .eq(supply_chain.actor_id());
 
-    schain_program.meta_state().item_info(0).check(ItemInfo {
+    supply_chain.purchase_by_consumer(CONSUMER, 0).succeed(0);
+    non_fungible_token
+        .meta_state()
+        .owner_id(0)
+        .eq(CONSUMER.into());
+
+    supply_chain.meta_state().item_info(0).eq(Some(ItemInfo {
         producer: PRODUCER.into(),
         distributor: DISTRIBUTOR.into(),
         retailer: RETAILER.into(),
 
-        state: ItemState::PurchasedByConsumer,
+        state: ItemState {
+            state: ItemEventState::Purchased,
+            by: Role::Consumer,
+        },
         price: ITEM_PRICE,
         delivery_time: DELIVERY_TIME,
-    });
-    nft_program.meta_state().token(0).check(Token {
-        owner_id: CONSUMER.into(),
-        ..Default::default()
-    });
+    }));
+    non_fungible_token
+        .meta_state()
+        .owner_id(0)
+        .eq(CONSUMER.into())
 }
