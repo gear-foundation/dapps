@@ -1,8 +1,27 @@
 #![no_std]
-use gstd::{exec, msg, prelude::String, ActorId};
 
-use codec::{Decode, Encode};
-use scale_info::TypeInfo;
+use gmeta::{InOut, Metadata};
+use gstd::{exec, msg, prelude::*, ActorId, Decode, Encode, TypeInfo};
+
+pub struct ChannelMetadata;
+
+impl Metadata for ChannelMetadata {
+    type Init = ();
+    type Handle = InOut<ChannelAction, ChannelOutput>;
+    type Others = ();
+    type Reply = ();
+    type Signal = ();
+    type State = Channel;
+}
+
+#[derive(Default, Clone, Encode, Decode, TypeInfo)]
+pub struct Channel {
+    pub owner_id: ActorId,
+    pub router_id: ActorId,
+    pub name: String,
+    pub description: String,
+    pub messages: Vec<Message>,
+}
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum ChannelAction {

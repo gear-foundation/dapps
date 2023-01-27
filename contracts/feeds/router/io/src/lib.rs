@@ -1,8 +1,24 @@
 #![no_std]
-use gstd::{prelude::*, ActorId};
 
-use codec::{Decode, Encode};
-use scale_info::TypeInfo;
+use gmeta::{InOut, Metadata};
+use gstd::{prelude::*, ActorId, Decode, Encode, TypeInfo};
+
+pub struct RouterMetadata;
+
+impl Metadata for RouterMetadata {
+    type Init = ();
+    type Handle = InOut<RouterAction, RouterEvent>;
+    type Others = ();
+    type Reply = ();
+    type Signal = ();
+    type State = RouterState;
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub struct RouterState {
+    pub channels: Vec<(ActorId, Channel)>,
+    pub subscribers: Vec<(ActorId, Vec<ActorId>)>,
+}
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum RouterAction {
@@ -32,24 +48,11 @@ pub enum RouterEvent {
         channel_id: ActorId,
     },
 }
+
 #[derive(Debug, Encode, Decode, TypeInfo, Default, Clone, PartialEq, Eq)]
 pub struct Channel {
     pub id: ActorId,
     pub name: String,
     pub owner_id: ActorId,
     pub description: String,
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
-pub enum RouterState {
-    AllChannels,
-    Channel(ActorId),
-    SubscribedToChannels(ActorId),
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo, PartialEq, Eq)]
-pub enum RouterStateReply {
-    AllChannels(Vec<Channel>),
-    Channel(Channel),
-    SubscribedToChannels(Vec<ActorId>),
 }

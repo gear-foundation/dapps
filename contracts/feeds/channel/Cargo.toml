@@ -6,7 +6,8 @@ edition = "2021"
 
 [dependencies]
 circular_buffer = { git = "https://github.com/breathx/circular-buffer-rs.git", default-features = false }
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
+async-trait = "0.1.61"
 channel-io = { path = "io" }
 router-io = { path = "../router/io" }
 
@@ -14,4 +15,13 @@ router-io = { path = "../router/io" }
 gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable"  }
+channel-io = { path = "io" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+
+[features]
+# Used for inserting constants with WASM binaries (NOT paths) of the contract in
+# the root crate. Usually these constants used in gclient tests instead of
+# strings with paths to the binaries in the "target" directory. If you don't
+# like this approach or don't use gclient tests, you can freely remove this
+# feature from here and from the rest of the code.
+binary-vendor = []

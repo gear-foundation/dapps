@@ -1,7 +1,5 @@
-use channel_io::*;
-use gstd::ActorId;
+use channel_io::{ChannelAction, ChannelOutput, Message};
 use gtest::{Log, Program, System};
-use router_io::*;
 
 pub const CHANNEL_ID: u64 = 2;
 pub const ROUTER_ID: u64 = 1;
@@ -16,9 +14,9 @@ pub trait FeedsChannel {
     fn unsubscribe(&self, subscriber: u64);
     fn post(&self, owner: u64, text: String, message: Message);
     fn post_fail(&self, owner: u64, text: String);
-    fn check_user_subscriptions(&self, user: u64, expected_subscriptions: Vec<ActorId>);
+    /* fn check_user_subscriptions(&self, user: u64, expected_subscriptions: Vec<ActorId>);
     fn check_channel_info(&self, channel: Channel);
-    fn check_all_channel(&self, expected_channels: Vec<Channel>);
+    fn check_all_channel(&self, expected_channels: Vec<Channel>); */
 }
 
 impl FeedsChannel for Program<'_> {
@@ -79,10 +77,12 @@ impl FeedsChannel for Program<'_> {
             .payload(ChannelOutput::MessagePosted(message));
         assert!(res.contains(&log));
     }
+
     fn post_fail(&self, owner: u64, text: String) {
         assert!(self.send(owner, ChannelAction::Post(text)).main_failed())
     }
-    fn check_user_subscriptions(&self, user: u64, expected_subscriptions: Vec<ActorId>) {
+
+    /* fn check_user_subscriptions(&self, user: u64, expected_subscriptions: Vec<ActorId>) {
         let subscriptions: RouterStateReply = self
             .meta_state(RouterState::SubscribedToChannels(user.into()))
             .expect("Meta_state failed");
@@ -93,7 +93,7 @@ impl FeedsChannel for Program<'_> {
         );
     }
 
-    fn check_channel_info(&self, channel: Channel) {
+    fn check_channel_info(&self, channel: router_io::Channel) {
         let channel_info: RouterStateReply = self
             .meta_state(&RouterState::Channel(channel.id))
             .expect("Meta_state failed");
@@ -105,5 +105,5 @@ impl FeedsChannel for Program<'_> {
             .meta_state(&RouterState::AllChannels)
             .expect("Meta_state failed");
         assert_eq!(channels, RouterStateReply::AllChannels(expected_channels));
-    }
+    } */
 }
