@@ -1,12 +1,7 @@
 use gclient::{EventProcessor, GearApi, Result};
 use gstd::Encode;
-use staking::io::{InitStaking, StakingAction};
-
-#[cfg(debug_assertions)]
-const PATH: &str = "./target/wasm32-unknown-unknown/debug/staking.opt.wasm";
-
-#[cfg(not(debug_assertions))]
-const PATH: &str = "./target/wasm32-unknown-unknown/release/staking.opt.wasm";
+use staking::WASM_BINARY_OPT;
+use staking_io::{InitStaking, StakingAction};
 
 const USERS: &[u64] = &[1, 2, 3, 4, 5, 6, 7, 8];
 
@@ -32,17 +27,16 @@ async fn init() -> Result<()> {
     let gas_info = api
         .calculate_upload_gas(
             None,
-            gclient::code_from_os(PATH)?,
+            WASM_BINARY_OPT.to_vec(),
             staking_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
     let (message_id, _program_id, _hash) = api
-        .upload_program_bytes_by_path(
-            PATH,
+        .upload_program_bytes(
+            WASM_BINARY_OPT.to_vec(),
             gclient::bytes_now(),
             staking_payload,
             gas_info.min_limit,
@@ -77,17 +71,16 @@ async fn stake_failed() -> Result<()> {
     let gas_info = api
         .calculate_upload_gas(
             None,
-            gclient::code_from_os(PATH)?,
+            WASM_BINARY_OPT.to_vec(),
             init_staking_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
     let (message_id, _program_id, _hash) = api
-        .upload_program_bytes_by_path(
-            PATH,
+        .upload_program_bytes(
+            WASM_BINARY_OPT.to_vec(),
             gclient::bytes_now(),
             init_staking_payload,
             gas_info.min_limit,
@@ -104,19 +97,12 @@ async fn stake_failed() -> Result<()> {
     let stake_payload = stake.encode();
 
     let gas_info = api
-        .calculate_upload_gas(
-            None,
-            gclient::code_from_os(PATH)?,
-            stake_payload.clone(),
-            0,
-            true,
-            None,
-        )
+        .calculate_upload_gas(None, WASM_BINARY_OPT.into(), stake_payload.clone(), 0, true)
         .await?;
 
     let (message_id, _program_id, _hash) = api
-        .upload_program_bytes_by_path(
-            PATH,
+        .upload_program_bytes(
+            WASM_BINARY_OPT.to_vec(),
             gclient::bytes_now(),
             stake_payload,
             gas_info.min_limit,

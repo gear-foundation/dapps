@@ -2,7 +2,7 @@ use ft_io::*;
 use gstd::{ActorId, Encode};
 use gtest::{Program, System};
 use hashbrown::HashMap;
-use staking::io::*;
+use staking_io::*;
 
 const USERS: &[u64] = &[1, 2, 3, 4, 5, 6, 7, 8];
 const DECIMALS_FACTOR: u128 = 10_u128.pow(20);

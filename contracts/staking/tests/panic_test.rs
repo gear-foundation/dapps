@@ -4,7 +4,7 @@ extern crate std;
 use ft_io::*;
 use gstd::Encode;
 use gtest::{Program, System};
-use staking::io::*;
+use staking_io::*;
 
 const USERS: &[u64] = &[1, 2, 3, 4, 5, 6, 7, 8];
 

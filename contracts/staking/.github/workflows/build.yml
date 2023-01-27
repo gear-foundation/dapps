@@ -44,8 +44,7 @@ jobs:
 
       - name: Run tests
         run: |
-          curl -OL https://github.com/gear-tech/gear/releases/download/gear-stable/gear-stable.tar.gz
-          tar -xf gear-stable.tar.gz
+          curl -L https://get.gear.rs/gear-nightly-linux-x86_64.tar.xz -o - | tar xJ
           ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
           make full-test
           kill `cat gear.pid`

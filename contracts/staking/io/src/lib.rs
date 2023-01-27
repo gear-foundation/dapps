@@ -1,4 +1,18 @@
+#![no_std]
+
+use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
+
+pub struct StakingMetadata;
+
+impl Metadata for StakingMetadata {
+    type Init = In<InitStaking>;
+    type Handle = InOut<StakingAction, StakingEvent>;
+    type Others = ();
+    type Reply = ();
+    type Signal = ();
+    type State = IoStaking;
+}
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
 pub struct InitStaking {
@@ -42,4 +56,21 @@ pub enum StakingState {
 pub enum StakingStateReply {
     Stakers(Vec<(ActorId, Staker)>),
     Staker(Staker),
+}
+
+#[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct IoStaking {
+    pub owner: ActorId,
+    pub staking_token_address: ActorId,
+    pub reward_token_address: ActorId,
+    pub tokens_per_stake: u128,
+    pub total_staked: u128,
+    pub distribution_time: u64,
+    pub produced_time: u64,
+    pub reward_total: u128,
+    pub all_produced: u128,
+    pub reward_produced: u128,
+    pub stakers: Vec<(ActorId, Staker)>,
 }
