@@ -1,9 +1,10 @@
 mod init_ico;
 
-use crowdsale::io::*;
-use gstd::Encode;
+use crowdsale_io::*;
 use gtest::System;
 pub use init_ico::*;
+
+use gstd::Encode;
 
 #[test]
 fn end_sale_no_time_left() {

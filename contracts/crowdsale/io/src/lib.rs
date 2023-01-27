@@ -1,6 +1,20 @@
-use gstd::{prelude::*, ActorId};
+#![no_std]
 
-#[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
+use gmeta::{InOut, Metadata};
+use gstd::{exec, prelude::*, ActorId};
+
+pub struct CrowdsaleMetadata;
+
+impl Metadata for CrowdsaleMetadata {
+    type Init = ();
+    type Handle = InOut<IcoAction, IcoEvent>;
+    type Others = ();
+    type Reply = ();
+    type Signal = ();
+    type State = State;
+}
+
+#[derive(Debug, Default, Encode, Decode, TypeInfo, Clone, Copy)]
 pub struct IcoState {
     pub ico_started: bool,
     pub start_time: u64,
@@ -98,4 +112,43 @@ pub enum StateIcoReply {
     CurrentPrice(u128),
     TokensLeft(u128),
     BalanceOf { address: ActorId, balance: u128 },
+}
+
+#[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
+pub struct State {
+    pub ico_state: IcoState,
+    pub start_price: u128,
+    pub price_increase_step: u128,
+    pub time_increase_step: u128,
+    pub tokens_sold: u128,
+    pub tokens_goal: u128,
+    pub owner: ActorId,
+    pub token_address: ActorId,
+    pub token_holders: Vec<(ActorId, u128)>,
+    pub transaction_id: u64,
+    pub transactions: Vec<(ActorId, u64)>,
+}
+
+impl State {
+    pub fn get_current_price(&self) -> u128 {
+        let time_now: u64 = exec::block_timestamp();
+        let amount: u128 = (time_now - self.ico_state.start_time).into();
+
+        self.start_price + self.price_increase_step * (amount / self.time_increase_step)
+    }
+
+    pub fn get_balance(&self) -> u128 {
+        self.tokens_goal - self.tokens_sold
+    }
+
+    pub fn balance_of(&self, address: &ActorId) -> u128 {
+        match self
+            .token_holders
+            .iter()
+            .find(|(id, _balance)| id.eq(address))
+        {
+            Some((_id, balance)) => *balance,
+            None => 0,
+        }
+    }
 }

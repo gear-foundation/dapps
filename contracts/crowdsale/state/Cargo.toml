@@ -1,0 +1,16 @@
+[package]
+name = "crowdsale-state"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", branch = "stable" }
+gmeta = { git = "https://github.com/gear-tech/gear", features = ["codegen"] }
+crowdsale-io = { path = "../io" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.4" }
+
+[build-dependencies]
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", features = ["metawasm"] }
+
+[features]
+binary-vendor = []

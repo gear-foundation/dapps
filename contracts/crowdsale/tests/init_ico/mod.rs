@@ -1,8 +1,8 @@
 mod token;
 
 use core::time::Duration;
-use crowdsale::io::*;
-use gstd::{prelude::*, ActorId, Encode};
+use crowdsale_io::*;
+use gstd::{prelude::*, ActorId};
 use gtest::{Program, System};
 pub use token::*;
 

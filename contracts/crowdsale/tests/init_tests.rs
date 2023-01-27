@@ -1,7 +1,7 @@
 mod init_ico;
 
 use core::time::Duration;
-use crowdsale::io::*;
+use crowdsale_io::*;
 use gstd::Encode;
 use gtest::{Program, System};
 pub use init_ico::*;

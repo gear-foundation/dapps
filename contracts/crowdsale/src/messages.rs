@@ -1,6 +1,5 @@
-use codec::Encode;
 use ft_main_io::*;
-use gstd::{msg, ActorId};
+use gstd::{msg, ActorId, Encode};
 
 /// Transfers `amount` tokens from `sender` account to `recipient` account.
 /// Arguments:

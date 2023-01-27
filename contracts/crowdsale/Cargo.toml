@@ -12,10 +12,22 @@ scale-info = { version = "2.3.0", default-features = false }
 ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.2" }
 ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.2" }
 hashbrown = "0.13.1"
+gmeta = { git = "https://github.com/gear-tech/gear.git" }
+crowdsale-io = { path = "io" }
 
 [dev-dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
 gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gclient = { git = "https://github.com/gear-tech/gear.git" }
+tokio = "1"
+crowdsale-state = { path = "state", features = ["binary-vendor"] }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+crowdsale-io = { path = "io" }
+
+[features]
+binary-vendor = []
+
+[workspace]
+members = ["state"]

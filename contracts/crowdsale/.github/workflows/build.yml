@@ -43,7 +43,11 @@ jobs:
         run: make linter
 
       - name: Run tests
-        run: make test
+        run: |
+          curl -L https://get.gear.rs/gear-nightly-linux-x86_64.tar.xz -o - | tar xJ
+          ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
+          make full-test
+          kill `cat gear.pid`
 
       - name: Build
         run: make build
