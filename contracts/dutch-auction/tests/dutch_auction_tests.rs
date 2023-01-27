@@ -1,4 +1,4 @@
-use auction_io::*;
+use auction_io::io::*;
 use gstd::{ActorId, Encode};
 use gtest::{Log, System};
 

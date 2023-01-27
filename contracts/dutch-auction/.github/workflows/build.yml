@@ -37,13 +37,16 @@ jobs:
         run: make fmt-check
 
       - name: Run linter
-        run: make linter
+        run: make lint
 
       - name: Build
         run: make build
 
       - name: Run tests
-        run: make test
+        run: |
+          curl -L https://get.gear.rs/gear-nightly-linux-x86_64.tar.xz -o - | tar xJ
+          ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
+          make full-test
 
       - name: Upload artifacts
         if: github.event_name == 'push'

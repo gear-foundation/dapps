@@ -1,4 +1,4 @@
-use auction_io::*;
+use auction_io::io::{Action, CreateConfig, Duration, Event};
 use gear_lib::non_fungible_token::token::{TokenId, TokenMetadata};
 use gstd::Encode;
 use gtest::{Log, Program, RunResult, System};
