@@ -20,8 +20,8 @@ pub const TOKEN_0_LIQ: u128 = 1000;
 pub const TOKEN_1_LIQ: u128 = 1000;
 pub const LIQUIDITY: u128 = 2000;
 
-fn pre_test(sys: &System, token0_id: u64, token1_id: u64) -> Program {
-    let _factory = utils::init_factory(sys, USER, FEE_SETTER);
+fn pre_test(sys: &System, id: u64, token0_id: u64, token1_id: u64) -> Program {
+    let _factory = utils::init_factory(sys, id, USER, FEE_SETTER);
 
     // MINT TOKEN0
     let token0 = utils::init_ft(
@@ -91,8 +91,8 @@ fn pre_test(sys: &System, token0_id: u64, token1_id: u64) -> Program {
     utils::init_pair(sys, USER, 1.into(), token0_id.into(), token1_id.into())
 }
 
-fn pre_test_add_liquidity(sys: &System) -> Program {
-    let pair = pre_test(sys, TOKEN_0_ID, TOKEN_1_ID);
+fn pre_test_add_liquidity(sys: &System, id: u64) -> Program {
+    let pair = pre_test(sys, id, TOKEN_0_ID, TOKEN_1_ID);
     let res = utils::add_liquidity(
         &pair,
         USER,
@@ -143,7 +143,7 @@ fn pre_test_add_liquidity(sys: &System) -> Program {
 fn add_liquidity() {
     let sys = System::new();
     sys.init_logger();
-    pre_test_add_liquidity(&sys);
+    pre_test_add_liquidity(&sys, 1);
 }
 
 // add_liquidity_failures
@@ -151,7 +151,7 @@ fn add_liquidity() {
 fn add_liquidity_failures() {
     let sys = System::new();
     sys.init_logger();
-    let pair = pre_test(&sys, TOKEN_0_ID, TOKEN_1_ID);
+    let pair = pre_test(&sys, 1, TOKEN_0_ID, TOKEN_1_ID);
     // MUST fail, not enough token0 for a USER
     let res = utils::add_liquidity(
         &pair,
@@ -194,7 +194,7 @@ fn add_liquidity_failures() {
 fn remove_liquidity() {
     let sys = System::new();
     sys.init_logger();
-    let pair = pre_test_add_liquidity(&sys);
+    let pair = pre_test_add_liquidity(&sys, 1);
     let res = utils::remove_liquidity(&pair, USER, 1000, 100, 100, ActorId::from(USER));
     assert!(res.contains(&(
         USER,
@@ -235,7 +235,7 @@ fn remove_liquidity() {
 fn remove_liquidity_failures() {
     let sys = System::new();
     sys.init_logger();
-    let pair = pre_test_add_liquidity(&sys);
+    let pair = pre_test_add_liquidity(&sys, 1);
 
     // MUST fail since not enough token0
     let res = utils::remove_liquidity(&pair, USER, 1000, 251, 100, ActorId::from(USER));
@@ -251,7 +251,7 @@ fn remove_liquidity_failures() {
 fn sync() {
     let sys = System::new();
     sys.init_logger();
-    let pair = pre_test_add_liquidity(&sys);
+    let pair = pre_test_add_liquidity(&sys, 1);
     let res = utils::sync(&pair, USER);
     assert!(res.contains(&(
         USER,
@@ -270,7 +270,7 @@ fn sync() {
 fn skim() {
     let sys = System::new();
     sys.init_logger();
-    let pair = pre_test_add_liquidity(&sys);
+    let pair = pre_test_add_liquidity(&sys, 1);
     let res = utils::skim(&pair, USER, ActorId::from(USER));
     assert!(res.contains(&(
         USER,
@@ -288,7 +288,7 @@ fn skim() {
 fn swap_exact_for() {
     let sys = System::new();
     sys.init_logger();
-    let pair = pre_test_add_liquidity(&sys);
+    let pair = pre_test_add_liquidity(&sys, 1);
 
     let res = utils::swap_exact_for(&pair, USER, ActorId::from(USER), 110);
     assert!(res.contains(&(
@@ -332,7 +332,7 @@ fn swap_exact_for() {
 fn swap_exact_for_failures() {
     let sys = System::new();
     sys.init_logger();
-    let pair = pre_test_add_liquidity(&sys);
+    let pair = pre_test_add_liquidity(&sys, 1);
 
     // MUST fail since the amount_in is 0
     let res = utils::swap_exact_for(&pair, USER, ActorId::from(USER), 0);
@@ -343,7 +343,7 @@ fn swap_exact_for_failures() {
     assert!(res.main_failed());
 
     // MUST fail since the reserve is 0
-    let pair_no_liq = pre_test(&sys, TOKEN_0_ID + 100, TOKEN_1_ID + 100);
+    let pair_no_liq = pre_test(&sys, 3, TOKEN_0_ID + 100, TOKEN_1_ID + 100);
     let res = utils::swap_exact_for(&pair_no_liq, USER, ActorId::from(USER), 100);
     assert!(res.main_failed());
 }
@@ -353,7 +353,7 @@ fn swap_exact_for_failures() {
 fn swap_for_exact() {
     let sys = System::new();
     sys.init_logger();
-    let pair = pre_test_add_liquidity(&sys);
+    let pair = pre_test_add_liquidity(&sys, 1);
 
     // should be 110, since the k is exactly the same an in trading forward
     let res = utils::swap_for_exact(&pair, USER, ActorId::from(USER), 97);
@@ -397,7 +397,7 @@ fn swap_for_exact() {
 fn swap_for_exact_failures() {
     let sys = System::new();
     sys.init_logger();
-    let pair = pre_test_add_liquidity(&sys);
+    let pair = pre_test_add_liquidity(&sys, 1);
 
     // MUST fail since the amount_in is 0
     let res = utils::swap_for_exact(&pair, USER, ActorId::from(USER), 0);
@@ -408,7 +408,7 @@ fn swap_for_exact_failures() {
     assert!(res.main_failed());
 
     // MUST fail since the reserve is 0
-    let pair_no_liq = pre_test(&sys, TOKEN_0_ID + 100, TOKEN_1_ID + 100);
+    let pair_no_liq = pre_test(&sys, 3, TOKEN_0_ID + 100, TOKEN_1_ID + 100);
     let res = utils::swap_for_exact(&pair_no_liq, USER, ActorId::from(USER), 100);
     assert!(res.main_failed());
 }

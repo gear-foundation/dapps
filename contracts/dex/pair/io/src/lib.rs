@@ -1,6 +1,64 @@
 #![no_std]
 
+use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
+
+pub struct ContractMetadata;
+
+impl Metadata for ContractMetadata {
+    type Init = In<InitPair>;
+    type Handle = InOut<PairAction, PairEvent>;
+    type Reply = ();
+    type Others = ();
+    type Signal = ();
+    type State = State;
+}
+
+#[derive(Debug, Default, TypeInfo, Decode, Hash, PartialEq, Eq, PartialOrd, Ord, Clone, Encode)]
+pub struct State {
+    pub ft_balances: Vec<(ActorId, u128)>,
+    /// Factoty address which deployed this pair
+    pub factory: ActorId,
+    /// First FT contract address.
+    pub token0: ActorId,
+    /// Second FT contract address.
+    pub token1: ActorId,
+    /// Last timestamp when the reserves and balances were updated
+    pub last_block_ts: u128,
+    /// Balances of token0 and token1, to get rid of actually querying the balance from the contract.
+    pub balance0: u128,
+    pub balance1: u128,
+    /// Token0 and token1 reserves.
+    pub reserve0: u128,
+    pub reserve1: u128,
+    /// Token prices
+    pub price0_cl: u128,
+    pub price1_cl: u128,
+    /// K which is equal to self.reserve0 * self.reserve1 which is used to amount calculations when performing a swap.
+    pub k_last: u128,
+}
+
+#[doc(hidden)]
+impl State {
+    pub fn token_addresses(self) -> (FungibleId, FungibleId) {
+        (self.token0, self.token1)
+    }
+
+    pub fn reserves(self) -> (u128, u128) {
+        (self.reserve0, self.reserve1)
+    }
+
+    pub fn prices(self) -> (u128, u128) {
+        (self.price0_cl, self.price1_cl)
+    }
+
+    pub fn balance_of(self, address: ActorId) -> u128 {
+        self.ft_balances
+            .into_iter()
+            .find_map(|(some_address, balance)| (some_address == address).then_some(balance))
+            .unwrap_or_default()
+    }
+}
 
 pub type FungibleId = ActorId;
 
@@ -10,8 +68,6 @@ pub type FungibleId = ActorId;
 /// * both `FungibleId` MUST be fungible token contracts with a non-zero address.
 /// * factory MUST be a non-zero address.
 #[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct InitPair {
     /// Factory address which deployed this pair.
     pub factory: ActorId,
@@ -22,8 +78,6 @@ pub struct InitPair {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum PairAction {
     /// Adds liquidity to the pair.
     ///
@@ -111,8 +165,6 @@ pub enum PairAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum PairEvent {
     AddedLiquidity {
         /// The amount of token0 added to liquidity.
@@ -161,8 +213,6 @@ pub enum PairEvent {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum PairStateQuery {
     TokenAddresses,
     Reserves,
@@ -171,20 +221,9 @@ pub enum PairStateQuery {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum PairStateReply {
-    TokenAddresses {
-        token0: FungibleId,
-        token1: FungibleId,
-    },
-    Reserves {
-        reserve0: u128,
-        reserve1: u128,
-    },
-    Prices {
-        price0: u128,
-        price1: u128,
-    },
+    TokenAddresses((FungibleId, FungibleId)),
+    Reserves((u128, u128)),
+    Prices((u128, u128)),
     Balance(u128),
 }

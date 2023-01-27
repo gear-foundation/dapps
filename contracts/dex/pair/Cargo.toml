@@ -7,15 +7,21 @@ authors = ["Gear Technologies"]
 
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-dex-pair-io = { path = "../pair/io" }
+dex-pair-io = { path = "io" }
 dex-factory-io = { path = "../factory/io" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.2" }
-gear-lib-derive = { git = "https://github.com/gear-academy/gear-lib.git", tag = "0.3.2" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.4" }
+gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.4" }
 num = { version = "0.4", default-features = false }
 ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.3" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gtest = { git = "https://github.com/gear-tech/gear.git" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
+dex-factory = { path = "../factory" }
+
+[features]
+binary-vendor = ["dex-factory/binary-vendor"]
 
 [build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+dex-pair-io = { path = "io" }

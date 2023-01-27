@@ -1,40 +1,37 @@
-.PHONY: all build clean fmt fmt-check init linter pre-commit test
+.PHONY: all build fmt init lint pre-commit test deps
 
 all: init build test
 
 build:
-	@echo ──────────── Build release ────────────────────
-	@cargo +nightly build --release
-	@ls -l ./target/wasm32-unknown-unknown/release/*.wasm
-
-clean:
-	@echo ──────────── Clean ────────────────────────────
-	@rm -rvf target
+	@echo ⚙️ Building a release...
+	@cargo +nightly b -r
+	@ls -l target/wasm32-unknown-unknown/release/*.wasm
 
 fmt:
-	@echo ──────────── Format ───────────────────────────
-	@cargo fmt --all
-
-fmt-check:
-	@echo ──────────── Check format ─────────────────────
-	@cargo fmt --all -- --check
+	@echo ⚙️ Checking a format...
+	@cargo fmt --all --check
 
 init:
-	@echo ──────────── Install toolchains ───────────────
+	@echo ⚙️ Installing a toolchain \& a target...
 	@rustup toolchain add nightly
 	@rustup target add wasm32-unknown-unknown --toolchain nightly
 
-linter:
-	@echo ──────────── Run linter ───────────────────────
-	@cargo +nightly clippy --all-targets -- --no-deps -D warnings -A "clippy::missing_safety_doc"
+lint:
+	@echo ⚙️ Running the linter...
+	@cargo +nightly clippy -- -D warnings
+	@cargo +nightly clippy --all-targets -Fbinary-vendor -- -D warnings
 
-pre-commit: fmt linter test
+pre-commit: fmt lint test
 
-test: build
-	@if [ ! -f "./target/fungible_token-0.1.3.wasm" ]; then\
+deps:
+	@echo ⚙️ Downloading dependencies...
+	@path=target/fungible_token.wasm;\
+	if [ ! -f $$path ]; then\
 	    curl -L\
-	        "https://github.com/gear-dapps/fungible-token/releases/download/0.1.3/fungible_token-0.1.3.wasm"\
-	        -o "./target/fungible_token-0.1.3.wasm";\
+	        https://github.com/gear-dapps/fungible-token/releases/download/0.1.3/fungible_token-0.1.3.wasm\
+	        -o $$path;\
 	fi
-	@echo ──────────── Run tests ────────────────────────
-	@cargo +nightly test --release
+
+test: deps
+	@echo ⚙️ Running tests...
+	@cargo +nightly t -Fbinary-vendor

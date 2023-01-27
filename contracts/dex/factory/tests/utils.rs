@@ -36,9 +36,7 @@ pub fn set_fee_to_setter(factory: &Program, user: u64, fee_to_setter: ActorId) -
 
 pub fn check_fee_to(factory: &Program, fee_to: ActorId) {
     match factory.meta_state(FactoryStateQuery::FeeTo) {
-        gstd::Ok(FactoryStateReply::FeeTo {
-            address: true_fee_to,
-        }) => {
+        gstd::Ok(FactoryStateReply::FeeTo(true_fee_to)) => {
             if true_fee_to != fee_to {
                 panic!("FACTORY: Actual fee_to is different");
             }
@@ -53,9 +51,7 @@ pub fn check_fee_to(factory: &Program, fee_to: ActorId) {
 
 pub fn check_fee_to_setter(factory: &Program, fee_to_setter: ActorId) {
     match factory.meta_state(FactoryStateQuery::FeeToSetter) {
-        gstd::Ok(FactoryStateReply::FeeToSetter {
-            address: true_fee_to_setter,
-        }) => {
+        gstd::Ok(FactoryStateReply::FeeToSetter(true_fee_to_setter)) => {
             if true_fee_to_setter != fee_to_setter {
                 panic!("FACTORY: Actual fee_to_setter is different");
             }
@@ -68,9 +64,7 @@ pub fn check_fee_to_setter(factory: &Program, fee_to_setter: ActorId) {
 
 pub fn check_pair_len(factory: &Program, length: u32) {
     match factory.meta_state(FactoryStateQuery::AllPairsLength) {
-        gstd::Ok(FactoryStateReply::AllPairsLength {
-            length: true_length,
-        }) => {
+        gstd::Ok(FactoryStateReply::AllPairsLength(true_length)) => {
             if true_length != length {
                 panic!("FACTORY: Actual length is different");
             }

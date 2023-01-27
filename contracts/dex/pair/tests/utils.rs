@@ -1,3 +1,4 @@
+use dex_factory::WASM_BINARY_OPT;
 use dex_factory_io::*;
 use dex_pair_io::FungibleId;
 use dex_pair_io::*;
@@ -5,12 +6,9 @@ use ft_io::*;
 use gstd::{prelude::*, ActorId};
 use gtest::{Program, RunResult, System};
 
-pub fn init_factory(sys: &System, user: u64, fee_setter: u64) -> Program {
+pub fn init_factory(sys: &System, id: u64, user: u64, fee_setter: u64) -> Program {
     sys.init_logger();
-    let factory = Program::from_file(
-        sys,
-        "../target/wasm32-unknown-unknown/release/dex_factory.wasm",
-    );
+    let factory = Program::from_opt_and_meta_code_with_id(sys, id, WASM_BINARY_OPT.into(), None);
     assert!(factory
         .send(
             user,
@@ -27,7 +25,7 @@ pub fn init_factory(sys: &System, user: u64, fee_setter: u64) -> Program {
 
 pub fn init_ft(sys: &System, user: u64, name: String, symbol: String, id: u64) -> Program {
     sys.init_logger();
-    let ft_program = Program::from_file_with_id(sys, id, "../target/fungible_token-0.1.3.wasm");
+    let ft_program = Program::from_file_with_id(sys, id, "../target/fungible_token.wasm");
     assert!(ft_program
         .send(
             user,
@@ -133,10 +131,7 @@ pub fn swap_for_exact(pair: &Program, user: u64, to: ActorId, amount_out: u128) 
 
 pub fn check_reserves(pair: &Program, reserve0: u128, reserve1: u128) {
     match pair.meta_state(PairStateQuery::Reserves) {
-        gstd::Ok(PairStateReply::Reserves {
-            reserve0: true_reserve0,
-            reserve1: true_reserve1,
-        }) => {
+        gstd::Ok(PairStateReply::Reserves((true_reserve0, true_reserve1))) => {
             if reserve0 != true_reserve0 || reserve1 != true_reserve1 {
                 panic!("PAIR: Actual reserves differ");
             }

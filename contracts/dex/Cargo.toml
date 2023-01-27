@@ -2,5 +2,7 @@
 resolver = "2"
 members = [
     "factory",
+    "factory/state",
     "pair",
+    "pair/state",
 ]

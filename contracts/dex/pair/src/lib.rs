@@ -2,8 +2,8 @@
 
 use dex_pair_io::*;
 use gear_lib::fungible_token::{ft_core::*, state::*};
-use gear_lib_derive::{FTCore, FTMetaState, FTStateKeeper};
-use gstd::{cmp, exec, msg, prelude::*, ActorId};
+use gear_lib_derive::{FTCore, FTStateKeeper};
+use gstd::{cmp, errors::Result, exec, msg, prelude::*, ActorId, MessageId};
 use num::integer::Roots;
 mod internals;
 pub mod math;
@@ -11,29 +11,21 @@ pub mod messages;
 
 const MINIMUM_LIQUIDITY: u128 = 1000;
 
-#[derive(Debug, Default, FTStateKeeper, FTCore, FTMetaState)]
-pub struct Pair {
+#[derive(Default, FTStateKeeper, FTCore)]
+struct Pair {
     #[FTStateField]
-    pub token: FTState,
-    // Factoty address which deployed this pair
-    pub factory: ActorId,
-    // First FT contract address.
-    pub token0: ActorId,
-    // Second FT contract address.
-    pub token1: ActorId,
-    // Last timestamp when the reserves and balances were updated
+    state: FTState,
+    factory: ActorId,
+    token0: ActorId,
+    token1: ActorId,
     last_block_ts: u128,
-    // Balances of token0 and token1, to get rid of actually querying the balance from the contract.
-    pub balance0: u128,
-    pub balance1: u128,
-    // Token0 and token1 reserves.
+    balance0: u128,
+    balance1: u128,
     reserve0: u128,
     reserve1: u128,
-    // Token prices
-    pub price0_cl: u128,
-    pub price1_cl: u128,
-    // K which is equal to self.reserve0 * self.reserve1 which is used to amount calculations when performing a swap.
-    pub k_last: u128,
+    price0_cl: u128,
+    price1_cl: u128,
+    k_last: u128,
 }
 
 static mut PAIR: Option<Pair> = None;
@@ -63,29 +55,23 @@ impl Pair {
         // Update the balances.
         self.balance0 -= self.reserve0;
         self.balance1 -= self.reserve1;
-        msg::reply(
-            PairEvent::Skim {
-                to,
-                amount0: self.balance0,
-                amount1: self.balance1,
-            },
-            0,
-        )
+        reply(PairEvent::Skim {
+            to,
+            amount0: self.balance0,
+            amount1: self.balance1,
+        })
         .expect("Error during a replying with PairEvent::Skim");
     }
 
     /// Forces reserves to match balances.
     pub async fn sync(&mut self) {
         self.update(self.balance0, self.balance1, self.reserve0, self.reserve1);
-        msg::reply(
-            PairEvent::Sync {
-                balance0: self.balance0,
-                balance1: self.balance1,
-                reserve0: self.reserve0,
-                reserve1: self.reserve1,
-            },
-            0,
-        )
+        reply(PairEvent::Sync {
+            balance0: self.balance0,
+            balance1: self.balance1,
+            reserve0: self.reserve0,
+            reserve1: self.reserve1,
+        })
         .expect("Error during a replying with PairEvent::Sync");
     }
 
@@ -137,15 +123,12 @@ impl Pair {
         self.balance1 += amount1;
         // call mint function
         let liquidity = self.mint(to).await;
-        msg::reply(
-            PairEvent::AddedLiquidity {
-                amount0,
-                amount1,
-                liquidity,
-                to,
-            },
-            0,
-        )
+        reply(PairEvent::AddedLiquidity {
+            amount0,
+            amount1,
+            liquidity,
+            to,
+        })
         .expect("Error during a replying with PairEvent::AddedLiquidity");
     }
 
@@ -174,8 +157,6 @@ impl Pair {
         if amount1 < amount1_min {
             panic!("PAIR: Insufficient amount of token 1")
         }
-        // msg::reply(PairEvent::RemovedLiquidity { liquidity, to }, 0)
-        // .expect("Error during a replying with PairEvent::RemovedLiquidity");
     }
 
     /// Swaps exact token0 for some token1
@@ -190,14 +171,11 @@ impl Pair {
         let amount_out = math::get_amount_out(amount_in, self.reserve0, self.reserve1);
 
         self._swap(amount_in, amount_out, to, true).await;
-        msg::reply(
-            PairEvent::SwapExactTokensFor {
-                to,
-                amount_in,
-                amount_out,
-            },
-            0,
-        )
+        reply(PairEvent::SwapExactTokensFor {
+            to,
+            amount_in,
+            amount_out,
+        })
         .expect("Error during a replying with PairEvent::SwapExactTokensFor");
     }
 
@@ -212,14 +190,11 @@ impl Pair {
         let amount_in = math::get_amount_in(amount_out, self.reserve0, self.reserve1);
 
         self._swap(amount_in, amount_out, to, false).await;
-        msg::reply(
-            PairEvent::SwapTokensForExact {
-                to,
-                amount_in,
-                amount_out,
-            },
-            0,
-        )
+        reply(PairEvent::SwapTokensForExact {
+            to,
+            amount_in,
+            amount_out,
+        })
         .expect("Error during a replying with PairEvent::SwapTokensForExact");
     }
 }
@@ -286,35 +261,62 @@ async fn main() {
 #[no_mangle]
 extern "C" fn meta_state() -> *mut [i32; 2] {
     let state: PairStateQuery = msg::load().expect("Unable to decode PairStateQuery");
-    let pair = unsafe { PAIR.get_or_insert(Default::default()) };
+    let pair = common_state();
     let reply = match state {
-        PairStateQuery::TokenAddresses => PairStateReply::TokenAddresses {
-            token0: pair.token0,
-            token1: pair.token1,
-        },
-        PairStateQuery::Reserves => PairStateReply::Reserves {
-            reserve0: pair.reserve0,
-            reserve1: pair.reserve1,
-        },
-        PairStateQuery::Prices => PairStateReply::Prices {
-            price0: pair.price0_cl,
-            price1: pair.price1_cl,
-        },
-        PairStateQuery::BalanceOf(address) => {
-            PairStateReply::Balance(*pair.get().balances.get(&address).unwrap_or(&0))
-        }
+        PairStateQuery::TokenAddresses => PairStateReply::TokenAddresses(pair.token_addresses()),
+        PairStateQuery::Reserves => PairStateReply::Reserves(pair.reserves()),
+        PairStateQuery::Prices => PairStateReply::Prices(pair.prices()),
+        PairStateQuery::BalanceOf(address) => PairStateReply::Balance(pair.balance_of(address)),
     };
     gstd::util::to_leak_ptr(reply.encode())
 }
 
-gstd::metadata! {
-    title: "DEXPair",
-    init:
-        input: InitPair,
-    handle:
-        input: PairAction,
-        output: PairEvent,
-    state:
-        input: PairStateQuery,
-        output: PairStateReply,
+fn common_state() -> State {
+    let Pair {
+        state,
+        factory,
+        token0,
+        token1,
+        last_block_ts,
+        balance0,
+        balance1,
+        reserve0,
+        reserve1,
+        price0_cl,
+        price1_cl,
+        k_last,
+    } = unsafe { PAIR.get_or_insert(Default::default()) };
+
+    State {
+        ft_balances: state.balances.iter().map(|(k, v)| (*k, *v)).collect(),
+        factory: *factory,
+        token0: *token0,
+        token1: *token1,
+        last_block_ts: *last_block_ts,
+        balance0: *balance0,
+        balance1: *balance1,
+        reserve0: *reserve0,
+        reserve1: *reserve1,
+        price0_cl: *price0_cl,
+        price1_cl: *price1_cl,
+        k_last: *k_last,
+    }
+}
+
+#[no_mangle]
+extern "C" fn state() {
+    reply(common_state()).expect(
+        "Failed to encode or reply with `<ContractMetadata as Metadata>::State` from `state()`",
+    );
+}
+
+#[no_mangle]
+extern "C" fn metahash() {
+    let metahash: [u8; 32] = include!("../.metahash");
+
+    reply(metahash).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
+}
+
+fn reply(payload: impl Encode) -> Result<MessageId> {
+    msg::reply(payload, 0)
 }
