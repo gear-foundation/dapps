@@ -1,50 +1,52 @@
-.PHONY: all build clean fmt fmt-check init linter pre-commit test
+.PHONY: all build clean fmt fmt-check init lint pre-commit test full-test
 
 all: init build test
 
 build:
-	@echo ──────────── Build release ────────────────────
-	@cargo +nightly build --release
-	@ls -l ./target/wasm32-unknown-unknown/release/*.wasm
-
-clean:
-	@echo ──────────── Clean ────────────────────────────
-	@rm -rvf target
+	@echo ⚙️ Building a release...
+	@cargo +nightly b -r --workspace
+	@ls -l target/wasm32-unknown-unknown/release/*.wasm
 
 fmt:
-	@echo ──────────── Format ───────────────────────────
-	@cargo fmt --all
-
-fmt-check:
-	@echo ──────────── Check format ─────────────────────
-	@cargo fmt --all -- --check
+	@echo ⚙️ Checking a format...
+	@cargo fmt --all --check
 
 init:
-	@echo ──────────── Install toolchains ───────────────
+	@echo ⚙️ Installing a toolchain \& a target...
 	@rustup toolchain add nightly
 	@rustup target add wasm32-unknown-unknown --toolchain nightly
 
-linter:
-	@echo ──────────── Run linter ───────────────────────
-	@cargo +nightly clippy --all-targets -- --no-deps -D warnings -A "clippy::missing_safety_doc" -D warnings -A "clippy::too_many_arguments"
+lint:
+	@echo ⚙️ Running the linter...
+	@cargo +nightly clippy --workspace --all-targets -- -D warnings
 
-pre-commit: fmt linter test
+pre-commit: fmt lint full-test
 
-test: build
-	@if [ ! -f "./target/ft_main.wasm" ]; then\
+deps:
+	@echo ⚙️ Downloading dependencies...
+	@path=target/ft_main.wasm;\
+	if [ ! -f $$path ]; then\
 	    curl -L\
-	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.2/ft_main-0.1.2.opt.wasm"\
-	        -o "./target/ft_main.wasm";\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_main-0.1.3.opt.wasm\
+	        -o $$path;\
 	fi
-	@if [ ! -f "./target/ft_logic.opt.wasm" ]; then\
+	@path=target/ft_logic.wasm;\
+	if [ ! -f $$path ]; then\
 	    curl -L\
-	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.2/ft_logic-0.1.2.opt.wasm"\
-	        -o "./target/ft_logic.opt.wasm";\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_logic-0.1.3.opt.wasm\
+	        -o $$path;\
 	fi
-	@if [ ! -f "./target/ft_storage.opt.wasm" ]; then\
+	@path=target/ft_storage.wasm;\
+	if [ ! -f $$path ]; then\
 	    curl -L\
-	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.2/ft_storage-0.1.2.opt.wasm"\
-	        -o "./target/ft_storage.opt.wasm";\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_storage-0.1.3.opt.wasm\
+	        -o $$path;\
 	fi
-	@echo ──────────── Run tests ────────────────────────
-	@cargo +nightly test --release
+
+test: deps
+	@echo ⚙️ Running unit tests...
+	@cargo +nightly t
+
+full-test: deps
+	@echo ⚙️ Running all tests...
+	@cargo +nightly t -- --include-ignored

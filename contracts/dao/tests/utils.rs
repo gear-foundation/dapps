@@ -1,4 +1,4 @@
-use dao::io::{DaoAction, DaoEvent, InitDao, Vote};
+use dao_io::{DaoAction, DaoEvent, InitDao, Vote};
 use ft_logic_io::Action;
 use ft_main_io::{FTokenAction, FTokenEvent, InitFToken};
 
@@ -17,6 +17,7 @@ pub const APPLICANTS: &[u64] = &[10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 pub trait Dao {
     fn dao(system: &System) -> Program;
     fn add_to_whitelist(&self, from: u64, account: u64, error: bool);
+    #[allow(clippy::too_many_arguments)]
     fn submit_membership_proposal(
         &self,
         from: u64,
@@ -250,9 +251,8 @@ pub trait FToken {
 impl FToken for Program<'_> {
     fn ftoken(system: &System) -> Program {
         let ftoken = Program::from_file(system, "./target/ft_main.wasm");
-        let storage_code_hash: [u8; 32] = system.submit_code("./target/ft_storage.opt.wasm").into();
-
-        let ft_logic_code_hash: [u8; 32] = system.submit_code("./target/ft_logic.opt.wasm").into();
+        let storage_code_hash: [u8; 32] = system.submit_code("./target/ft_storage.wasm").into();
+        let ft_logic_code_hash: [u8; 32] = system.submit_code("./target/ft_logic.wasm").into();
 
         let res = ftoken.send(
             100,

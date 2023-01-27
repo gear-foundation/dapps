@@ -1,4 +1,112 @@
+#![no_std]
+
+use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
+
+pub struct DaoMetadata;
+
+impl Metadata for DaoMetadata {
+    type Init = In<InitDao>;
+    type Handle = InOut<DaoAction, DaoEvent>;
+    type Others = ();
+    type Reply = ();
+    type Signal = ();
+    type State = DaoState;
+}
+
+#[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+pub struct DaoState {
+    pub admin: ActorId,
+    pub approved_token_program_id: ActorId,
+    pub period_duration: u64,
+    pub voting_period_length: u64,
+    pub grace_period_length: u64,
+    pub dilution_bound: u8,
+    pub abort_window: u64,
+    pub total_shares: u128,
+    pub balance: u128,
+    pub members: Vec<(ActorId, Member)>,
+    pub member_by_delegate_key: Vec<(ActorId, ActorId)>,
+    pub proposal_id: u128,
+    pub proposals: Vec<(u128, Proposal)>,
+    pub whitelist: Vec<ActorId>,
+    pub transaction_id: u64,
+    pub transactions: Vec<(u64, Option<DaoAction>)>,
+}
+
+impl DaoState {
+    pub fn is_member(state: <DaoMetadata as Metadata>::State, account: &ActorId) -> bool {
+        state
+            .members
+            .iter()
+            .any(|(member_account, member)| member_account == account && member.shares != 0)
+    }
+
+    pub fn is_in_whitelist(state: <DaoMetadata as Metadata>::State, account: &ActorId) -> bool {
+        state.whitelist.contains(account)
+    }
+
+    pub fn get_proposal_id(state: <DaoMetadata as Metadata>::State) -> u128 {
+        state.proposal_id
+    }
+
+    pub fn get_proposal_info(
+        state: <DaoMetadata as Metadata>::State,
+        id: u128,
+    ) -> Option<Proposal> {
+        if let Some((_, proposal)) = state
+            .proposals
+            .iter()
+            .find(|(proposal_id, _)| proposal_id == &id)
+        {
+            Some(proposal.clone())
+        } else {
+            None
+        }
+    }
+
+    pub fn get_member_info(
+        state: <DaoMetadata as Metadata>::State,
+        account: &ActorId,
+    ) -> Option<Member> {
+        if let Some((_, member)) = state
+            .members
+            .iter()
+            .find(|(member_account, _)| member_account == account)
+        {
+            Some(member.clone())
+        } else {
+            None
+        }
+    }
+}
+
+#[derive(Debug, Default, Clone, Decode, Encode, TypeInfo)]
+pub struct Proposal {
+    pub proposer: ActorId,
+    pub applicant: ActorId,
+    pub shares_requested: u128,
+    pub yes_votes: u128,
+    pub no_votes: u128,
+    pub quorum: u128,
+    pub is_membership_proposal: bool,
+    pub amount: u128,
+    pub processed: bool,
+    pub passed: bool,
+    pub aborted: bool,
+    pub token_tribute: u128,
+    pub details: String,
+    pub starting_period: u64,
+    pub max_total_shares_at_yes_vote: u128,
+    pub votes_by_member: Vec<(ActorId, Vote)>,
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
+pub struct Member {
+    pub delegate_key: ActorId,
+    pub shares: u128,
+    pub highest_index_yes_vote: u128,
+}
 
 #[derive(Debug, Decode, Encode, TypeInfo, Clone)]
 pub enum DaoAction {

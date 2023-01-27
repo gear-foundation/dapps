@@ -1,4 +1,5 @@
-use crate::*;
+use crate::contract::Dao;
+use gstd::{msg, prelude::*, ActorId};
 
 impl Dao {
     // calculates the funds that the member can redeem based on his shares

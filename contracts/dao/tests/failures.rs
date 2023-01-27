@@ -1,7 +1,8 @@
-use dao::io::*;
-use gtest::{Program, System};
 pub mod utils;
-use utils::*;
+
+use crate::utils::*;
+use dao_io::*;
+use gtest::{Program, System};
 
 #[test]
 fn submit_membership_proposal() {

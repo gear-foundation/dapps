@@ -6,11 +6,10 @@ authors = ["Gear Technologies"]
 license = "MIT"
 
 [dependencies]
-codec = { package = "parity-scale-codec", version = "3.2.1", default-features = false }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.2" }
-ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.2" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.3" }
+ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.3" }
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-scale-info = { version = "2.3.0", default-features = false }
+dao-io = { path = "io" }
 hashbrown = "0.13.1"
 
 [dev-dependencies]
@@ -18,4 +17,20 @@ gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", featu
 gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 
 [build-dependencies]
+dao-io = { path = "io" }
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+
+[features]
+# Used for inserting constants with WASM binaries (NOT paths) of the contract in
+# the root crate. Usually these constants used in gclient tests instead of
+# strings with paths to the binaries in the "target" directory. If you don't
+# like this approach or don't use gclient tests, you can freely remove this
+# feature from here and from the rest of the code.
+binary-vendor = []
+
+# It's necessary to include all metawasm crates in the workspace section,
+# otherwise they'll be ignored by Cargo and won't be built.
+[workspace]
+members = [
+    "state"
+]
