@@ -1,4 +1,4 @@
-use concert::io::*;
+use concert_io::*;
 use gear_lib::multitoken::io::*;
 use gstd::{prelude::*, ActorId, Encode};
 use gtest::{Program, System};
@@ -19,7 +19,7 @@ pub fn init_system() -> System {
 
 pub fn init_concert(sys: &System) -> Program {
     let concert_program = Program::current(sys);
-    let mtk_program = Program::from_file(sys, "./target/multitoken-0.3.3.opt.wasm");
+    let mtk_program = Program::from_file(sys, "target/multi_token.wasm");
     let res = mtk_program.send(
         USER,
         InitConfig {
@@ -106,13 +106,13 @@ pub fn check_current_concert(
     tickets_left: u128,
 ) {
     match concert_program.meta_state(ConcertStateQuery::CurrentConcert) {
-        Ok(ConcertStateReply::CurrentConcert {
+        Ok(ConcertStateReply::CurrentConcert(CurrentConcert {
             name: true_name,
             description: true_description,
             date: true_date,
             number_of_tickets: true_number_of_tickets,
             tickets_left: true_tickets_left,
-        }) => {
+        })) => {
             if name != true_name {
                 panic!("CONCERT: Concert name differs.");
             }
@@ -141,9 +141,7 @@ pub fn check_user_tickets(
     tickets: Vec<Option<TokenMetadata>>,
 ) {
     match concert_program.meta_state(ConcertStateQuery::UserTickets { user }) {
-        Ok(ConcertStateReply::UserTickets {
-            tickets: true_tickets,
-        }) => {
+        Ok(ConcertStateReply::UserTickets(true_tickets)) => {
             if tickets != true_tickets {
                 panic!("CONCERT: User tickets differ.");
             }
@@ -156,9 +154,7 @@ pub fn check_user_tickets(
 
 pub fn check_buyers(concert_program: &Program, buyers: Vec<ActorId>) {
     match concert_program.meta_state(ConcertStateQuery::Buyers) {
-        Ok(ConcertStateReply::Buyers {
-            accounts: true_buyers,
-        }) => {
+        Ok(ConcertStateReply::Buyers(true_buyers)) => {
             if buyers != true_buyers {
                 panic!("CONCERT: Buyers list differs.");
             }

@@ -9,11 +9,16 @@ authors = ["Gear Technologies"]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 multitoken-io = { git = "https://github.com/gear-dapps/multitoken.git", tag = "0.3.3" }
 gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.2" }
-hashbrown = "0.13.1"
+hashbrown = "0.13"
+concert-io = { path = "io" }
 
 [build-dependencies]
+concert-io = { path = "io" }
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "stable" }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
+gtest = { git = "https://github.com/gear-tech/gear.git" }
+
+[workspace]
+members = ["state"]

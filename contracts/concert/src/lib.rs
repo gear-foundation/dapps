@@ -1,38 +1,34 @@
 #![no_std]
 
-pub mod io;
-
+use concert_io::*;
 use gear_lib::multitoken::io::*;
-use gstd::{msg, prelude::*, ActorId};
+use gstd::{errors::Result, msg, prelude::*, ActorId, MessageId};
 use hashbrown::{HashMap, HashSet};
 use multitoken_io::*;
-
-use crate::io::*;
 
 const ZERO_ID: ActorId = ActorId::zero();
 const NFT_COUNT: u128 = 1;
 
-#[derive(Debug, Default)]
-pub struct Concert {
-    pub owner_id: ActorId,
-    pub contract_id: ActorId,
+#[derive(Default)]
+struct Concert {
+    owner_id: ActorId,
+    contract_id: ActorId,
 
-    pub name: String,
-    pub description: String,
+    name: String,
+    description: String,
 
-    pub ticket_ft_id: u128,
-    pub creator: ActorId,
-    pub number_of_tickets: u128,
-    pub tickets_left: u128,
-    pub date: u128,
+    ticket_ft_id: u128,
+    creator: ActorId,
+    number_of_tickets: u128,
+    tickets_left: u128,
+    date: u128,
 
-    pub buyers: HashSet<ActorId>,
+    buyers: HashSet<ActorId>,
 
-    pub id_counter: u128,
-    pub concert_id: u128,
-    pub running: bool,
-    // user to token id to metadata
-    pub metadata: HashMap<ActorId, HashMap<u128, Option<TokenMetadata>>>,
+    id_counter: u128,
+    concert_id: u128,
+    running: bool,
+    metadata: HashMap<ActorId, HashMap<u128, Option<TokenMetadata>>>,
 }
 
 static mut CONTRACT: Option<Concert> = None;
@@ -70,28 +66,16 @@ async unsafe fn main() {
 #[no_mangle]
 extern "C" fn meta_state() -> *mut [i32; 2] {
     let state: ConcertStateQuery = msg::load().expect("Unable to decode ConcertStateQuery");
-    let concert = unsafe { CONTRACT.get_or_insert(Default::default()) };
+    let concert = common_state();
     let reply = match state {
-        ConcertStateQuery::CurrentConcert => ConcertStateReply::CurrentConcert {
-            name: concert.name.clone(),
-            description: concert.description.clone(),
-            date: concert.date,
-            number_of_tickets: concert.number_of_tickets,
-            tickets_left: concert.tickets_left,
-        },
+        ConcertStateQuery::CurrentConcert => {
+            ConcertStateReply::CurrentConcert(concert.current_concert())
+        }
 
-        ConcertStateQuery::Buyers => ConcertStateReply::Buyers {
-            accounts: concert.buyers.iter().copied().collect(),
-        },
-        ConcertStateQuery::UserTickets { user } => ConcertStateReply::UserTickets {
-            tickets: concert
-                .metadata
-                .get(&user)
-                .unwrap_or(&HashMap::new())
-                .values()
-                .cloned()
-                .collect(),
-        },
+        ConcertStateQuery::Buyers => ConcertStateReply::Buyers(concert.buyers),
+        ConcertStateQuery::UserTickets { user } => {
+            ConcertStateReply::UserTickets(concert.user_tickets(user))
+        }
     };
     gstd::util::to_leak_ptr(reply.encode())
 }
@@ -117,15 +101,12 @@ impl Concert {
         self.date = date;
         self.running = true;
         self.tickets_left = number_of_tickets;
-        msg::reply(
-            ConcertEvent::Creation {
-                creator,
-                concert_id: self.concert_id,
-                number_of_tickets,
-                date,
-            },
-            0,
-        )
+        reply(ConcertEvent::Creation {
+            creator,
+            concert_id: self.concert_id,
+            number_of_tickets,
+            date,
+        })
         .expect("Error during a replying with ConcertEvent::Creation");
     }
 
@@ -168,13 +149,10 @@ impl Concert {
         .await
         .expect("CONCERT: Error minting concert tokens");
 
-        msg::reply(
-            ConcertEvent::Purchase {
-                concert_id: self.concert_id,
-                amount,
-            },
-            0,
-        )
+        reply(ConcertEvent::Purchase {
+            concert_id: self.concert_id,
+            amount,
+        })
         .expect("Error during a replying with ConcertEvent::Purchase");
     }
 
@@ -247,24 +225,66 @@ impl Concert {
             }
         }
         self.running = false;
-        msg::reply(
-            ConcertEvent::Hold {
-                concert_id: self.concert_id,
-            },
-            0,
-        )
+        reply(ConcertEvent::Hold {
+            concert_id: self.concert_id,
+        })
         .expect("Error during a replying with ConcertEvent::Hold");
     }
 }
 
-gstd::metadata! {
-    title: "Concert",
-    init:
-        input: InitConcert,
-    handle:
-        input: ConcertAction,
-        output: ConcertEvent,
-    state:
-        input: ConcertStateQuery,
-        output: ConcertStateReply,
+fn common_state() -> State {
+    let Concert {
+        owner_id,
+        contract_id,
+        name,
+        description,
+        ticket_ft_id,
+        creator,
+        number_of_tickets,
+        tickets_left,
+        date,
+        buyers,
+        id_counter,
+        concert_id,
+        running,
+        metadata,
+    } = unsafe { CONTRACT.get_or_insert(Default::default()) };
+
+    State {
+        owner_id: *owner_id,
+        contract_id: *contract_id,
+        name: name.clone(),
+        description: description.clone(),
+        ticket_ft_id: *ticket_ft_id,
+        creator: *creator,
+        number_of_tickets: *number_of_tickets,
+        tickets_left: *tickets_left,
+        date: *date,
+        buyers: buyers.iter().copied().collect(),
+        id_counter: *id_counter,
+        concert_id: *concert_id,
+        running: *running,
+        metadata: metadata
+            .iter()
+            .map(|(k, v)| (*k, v.iter().map(|(k, v)| (*k, v.clone())).collect()))
+            .collect(),
+    }
+}
+
+#[no_mangle]
+extern "C" fn state() {
+    reply(common_state()).expect(
+        "Failed to encode or reply with `<ContractMetadata as Metadata>::State` from `state()`",
+    );
+}
+
+#[no_mangle]
+extern "C" fn metahash() {
+    let metahash: [u8; 32] = include!("../.metahash");
+
+    reply(metahash).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
+}
+
+fn reply(payload: impl Encode) -> Result<MessageId> {
+    msg::reply(payload, 0)
 }
