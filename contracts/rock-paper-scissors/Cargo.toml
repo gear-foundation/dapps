@@ -6,13 +6,24 @@ license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "stable" }
 sp-core-hashing = { version = "4.0.0", default-features = false }
 rps-io = { path = "io" }
-hashbrown = "0.13.2"
+hashbrown = "0.13.1"
+gmeta = { git = "https://github.com/gear-tech/gear" }
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git" }
+rps-state = { path = "state" }
+gclient = { git = "https://github.com/gear-tech/gear.git" }
+tokio = "1"
 
 [build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+rps-io = { path = "io" }
+
+[features]
+binary-vendor = []
+
+[workspace]
+members = ["state"]

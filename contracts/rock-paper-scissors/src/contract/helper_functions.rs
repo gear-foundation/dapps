@@ -1,4 +1,4 @@
-use crate::RPSGame;
+use crate::contract::RPSGame;
 use gstd::{exec, msg, prelude::*, ActorId};
 use rps_io::*;
 
