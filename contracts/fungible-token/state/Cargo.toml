@@ -1,0 +1,12 @@
+[package]
+name = "ft-state"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gstd = { git = "https://github.com/gear-tech/gear" }
+gmeta = { git = "https://github.com/gear-tech/gear", features = ["codegen"] }
+ft-io = { path = "../io" }
+
+[build-dependencies]
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", features = ["metawasm"] }
