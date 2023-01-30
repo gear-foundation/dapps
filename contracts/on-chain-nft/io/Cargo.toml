@@ -4,8 +4,7 @@ version = "0.2.0"
 edition = "2021"
 
 [dependencies]
-# TODO: pin to the "stable" branch before the merge.
-gmeta = { git = "https://github.com/gear-tech/gear.git" }
+gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.4" }
 scale-info = { version = "2", default-features = false }
