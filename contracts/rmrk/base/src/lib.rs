@@ -2,14 +2,23 @@
 
 use base_io::*;
 use gstd::{msg, prelude::*, ActorId};
+use hashbrown::HashMap;
 use types::primitives::*;
 
 #[derive(Debug, Default)]
 pub struct Base {
+    /// Original creator of the Base.
     pub issuer: ActorId,
+
+    /// Specifies how an NFT should be rendered, ie "svg".
     pub base_type: String,
+
+    /// Provided by user during Base creation.
     pub symbol: String,
-    pub parts: BTreeMap<PartId, Part>,
+
+    /// Parts that the base has.
+    /// Mapping from `PartId` to fixed or slot `Part`.
+    pub parts: HashMap<PartId, Part>,
 }
 
 static mut BASE: Option<Base> = None;
@@ -160,43 +169,23 @@ extern "C" fn handle() {
 }
 
 #[no_mangle]
-unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
-    let query: BaseState = msg::load().expect("failed to decode BaseState");
-    let base = BASE.get_or_insert(Default::default());
+extern "C" fn state() {
+    let base = unsafe { BASE.as_ref().expect("Base is not initialized") };
+    let base_state = BaseState {
+        issuer: base.issuer,
+        base_type: base.base_type.clone(),
+        symbol: base.symbol.clone(),
+        parts: base
+            .parts
+            .iter()
+            .map(|(key, value)| (*key, value.clone()))
+            .collect(),
+    };
+    msg::reply(base_state, 0).expect("Failed to share state");
+}
 
-    let encoded = match query {
-        BaseState::Parts => {
-            let parts: Vec<Part> = base.parts.values().cloned().collect();
-            BaseStateReply::Parts(parts)
-        }
-        BaseState::Part(part_id) => {
-            if let Some(part) = base.parts.get(&part_id) {
-                BaseStateReply::Part(Some(part.clone()))
-            } else {
-                BaseStateReply::Part(None)
-            }
-        }
-        BaseState::IsEquippable {
-            part_id,
-            collection_id,
-            token_id,
-        } => {
-            if let Some(Part::Slot(SlotPart { equippable, .. })) = base.parts.get(&part_id) {
-                match equippable {
-                    EquippableList::Custom(collection_and_token) => {
-                        if collection_and_token.contains(&(collection_id, token_id)) {
-                            BaseStateReply::IsEquippable(true)
-                        } else {
-                            BaseStateReply::IsEquippable(false)
-                        }
-                    }
-                    _ => BaseStateReply::IsEquippable(true),
-                }
-            } else {
-                BaseStateReply::IsEquippable(false)
-            }
-        }
-    }
-    .encode();
-    gstd::util::to_leak_ptr(encoded)
+#[no_mangle]
+extern "C" fn metahash() {
+    let metahash: [u8; 32] = include!("../.metahash");
+    msg::reply(metahash, 0).expect("Failed to share metahash");
 }

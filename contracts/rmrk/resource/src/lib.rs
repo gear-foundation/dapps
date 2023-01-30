@@ -2,6 +2,7 @@
 
 use base_io::*;
 use gstd::{msg, prelude::*, ActorId};
+use hashbrown::HashMap;
 use resource_io::*;
 use types::primitives::{PartId, ResourceId};
 
@@ -10,7 +11,7 @@ struct ResourceStorage {
     name: String,
     // the admin is the rmrk contract that initializes the storage contract
     admin: ActorId,
-    resources: BTreeMap<ResourceId, Resource>,
+    resources: HashMap<ResourceId, Resource>,
 }
 
 static mut RESOURCE_STORAGE: Option<ResourceStorage> = None;
@@ -90,20 +91,26 @@ async unsafe fn main() {
 }
 
 #[no_mangle]
-unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
-    let query: ResourceState = msg::load().expect("failed to decode ResourceState");
-    let resource_storage = RESOURCE_STORAGE.get_or_insert(Default::default());
+extern "C" fn state() {
+    let resource = unsafe {
+        RESOURCE_STORAGE
+            .as_ref()
+            .expect("Resource is not initialized")
+    };
+    let resource_state = ResourceState {
+        name: resource.name.clone(),
+        admin: resource.admin,
+        resources: resource
+            .resources
+            .iter()
+            .map(|(key, value)| (*key, value.clone()))
+            .collect(),
+    };
+    msg::reply(resource_state, 0).expect("Failed to share state");
+}
 
-    let encoded = match query {
-        ResourceState::ResourceStorageInfo => ResourceStateReply::ResourceStorageInfo {
-            name: resource_storage.name.clone(),
-            admin: resource_storage.admin,
-            resources: resource_storage.resources.clone(),
-        },
-        ResourceState::ResourceInfo(resource_id) => {
-            ResourceStateReply::ResourceInfo(resource_storage.resources.get(&resource_id).cloned())
-        }
-    }
-    .encode();
-    gstd::util::to_leak_ptr(encoded)
+#[no_mangle]
+extern "C" fn metahash() {
+    let metahash: [u8; 32] = include!("../.metahash");
+    msg::reply(metahash, 0).expect("Failed to share metahash");
 }

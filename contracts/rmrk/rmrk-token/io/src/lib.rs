@@ -1,8 +1,49 @@
 #![no_std]
 
+use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 use resource_io::Resource;
 use types::primitives::*;
+pub struct RMRKMetadata;
+
+impl Metadata for RMRKMetadata {
+    type Init = In<InitRMRK>;
+    type Handle = InOut<RMRKAction, RMRKEvent>;
+    type Others = ();
+    type Reply = ();
+    type Signal = ();
+    type State = RMRKState;
+}
+
+#[derive(Debug, Default, Encode, Decode, TypeInfo)]
+pub struct RMRKState {
+    pub name: String,
+    pub symbol: String,
+    pub admin: ActorId,
+    pub token_approvals: Vec<(TokenId, Vec<ActorId>)>,
+    pub rmrk_owners: Vec<(TokenId, RMRKOwner)>,
+    pub pending_children: Vec<(TokenId, Vec<CollectionAndToken>)>,
+    pub accepted_children: Vec<(TokenId, Vec<CollectionAndToken>)>,
+    pub children_status: Vec<(CollectionAndToken, ChildStatus)>,
+    pub balances: Vec<(ActorId, TokenId)>,
+    pub multiresource: MultiResourceState,
+    pub resource_id: ActorId,
+    pub equipped_tokens: Vec<TokenId>,
+}
+
+#[derive(Debug, Default, PartialEq, Eq, Encode, Decode, TypeInfo, Clone)]
+pub struct RMRKOwner {
+    pub token_id: Option<TokenId>,
+    pub owner_id: ActorId,
+}
+
+#[derive(Debug, Default, Encode, Decode, TypeInfo)]
+pub struct MultiResourceState {
+    pub pending_resources: Vec<(TokenId, Vec<ResourceId>)>,
+    pub active_resources: Vec<(TokenId, Vec<ResourceId>)>,
+    pub resource_overwrites: Vec<(TokenId, Vec<(ResourceId, ResourceId)>)>,
+    pub active_resources_priorities: Vec<(TokenId, Vec<u8>)>,
+}
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
 pub struct InitRMRK {
@@ -520,34 +561,4 @@ pub enum RMRKEvent {
         equippable: CollectionAndToken,
     },
     EquippableIsOk,
-}
-
-#[derive(Debug, Decode, Encode, TypeInfo)]
-pub enum RMRKState {
-    RMRKInfo,
-    Owner(TokenId),
-    Balance(ActorId),
-    PendingChildren(TokenId),
-    AcceptedChildren(TokenId),
-    PendingResources(TokenId),
-    ActiveResources(TokenId),
-}
-
-#[derive(Debug, Decode, Encode, TypeInfo, PartialEq, Eq)]
-pub enum RMRKStateReply {
-    RMRKInfo {
-        name: String,
-        symbol: String,
-        admin: ActorId,
-        resource_id: ActorId,
-    },
-    Owner {
-        token_id: Option<TokenId>,
-        owner_id: ActorId,
-    },
-    Balance(TokenId),
-    PendingChildren(BTreeSet<CollectionAndToken>),
-    AcceptedChildren(BTreeSet<CollectionAndToken>),
-    PendingResources(BTreeSet<ResourceId>),
-    ActiveResources(BTreeSet<ResourceId>),
 }

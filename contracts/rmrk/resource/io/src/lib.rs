@@ -1,7 +1,27 @@
 #![no_std]
 
+use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 use types::primitives::{BaseId, PartId, ResourceId};
+
+pub struct ResourceMetadata;
+
+impl Metadata for ResourceMetadata {
+    type Init = In<InitResource>;
+    type Handle = InOut<ResourceAction, ResourceEvent>;
+    type Others = ();
+    type Reply = ();
+    type Signal = ();
+    type State = ResourceState;
+}
+
+#[derive(Debug, Default, Encode, Decode, TypeInfo)]
+pub struct ResourceState {
+    pub name: String,
+    // the admin is the rmrk contract that initializes the storage contract
+    pub admin: ActorId,
+    pub resources: Vec<(ResourceId, Resource)>,
+}
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
 pub struct BasicResource {
@@ -118,20 +138,4 @@ pub enum ResourceEvent {
     },
     PartIdAddedToResource(PartId),
     Resource(Resource),
-}
-
-#[derive(Debug, Decode, Encode, TypeInfo)]
-pub enum ResourceState {
-    ResourceStorageInfo,
-    ResourceInfo(ResourceId),
-}
-
-#[derive(Debug, Decode, Encode, TypeInfo)]
-pub enum ResourceStateReply {
-    ResourceStorageInfo {
-        name: String,
-        admin: ActorId,
-        resources: BTreeMap<ResourceId, Resource>,
-    },
-    ResourceInfo(Option<Resource>),
 }

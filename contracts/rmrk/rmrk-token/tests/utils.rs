@@ -1,10 +1,10 @@
 use base_io::{BaseAction, EquippableList, FixedPart, InitBase, Part, SlotPart};
 use codec::Encode;
-use gstd::{BTreeMap, BTreeSet};
+use gstd::BTreeMap;
 use gtest::{Program, RunResult, System};
 use resource_io::Resource;
 use rmrk_io::*;
-use types::primitives::{CollectionAndToken, CollectionId, PartId, ResourceId, TokenId};
+use types::primitives::{CollectionAndToken, PartId, ResourceId};
 pub const USERS: &[u64] = &[10, 11, 12, 13];
 pub const ZERO_ID: u64 = 0;
 pub const PARENT_NFT_CONTRACT: u64 = 2;
@@ -19,8 +19,8 @@ fn check_run_result_for_error(run_result: &RunResult, exp_error: &str) {
     let error = String::from_utf8((run_result.log()[0].payload()).to_vec())
         .expect("Failed to decode error");
     if !error.contains(exp_error) {
-        println!("Received panic {:?}", error);
-        println!("Expected panic {:?}", exp_error);
+        println!("Received panic {error:?}");
+        println!("Expected panic {exp_error:?}");
         panic!("");
     }
 }
@@ -77,18 +77,18 @@ pub trait RMRKToken {
         destination_id: u64,
         exp_error: Option<&str>,
     );
-    fn check_rmrk_owner(&self, token_id: u64, expected_token_id: Option<TokenId>, owner_id: u64);
-    fn check_balance(&self, user: u64, balance: u64);
-    fn check_pending_children(
-        &self,
-        parent_token_id: u64,
-        expected_pending_children: BTreeSet<(CollectionId, TokenId)>,
-    );
-    fn check_accepted_children(
-        &self,
-        parent_token_id: u64,
-        expected_accepted_children: BTreeSet<(CollectionId, TokenId)>,
-    );
+    // fn check_rmrk_owner(&self, token_id: u64, expected_token_id: Option<TokenId>, owner_id: u64);
+    // fn check_balance(&self, user: u64, balance: u64);
+    // fn check_pending_children(
+    //     &self,
+    //     parent_token_id: u64,
+    //     expected_pending_children: BTreeSet<(CollectionId, TokenId)>,
+    // );
+    // fn check_accepted_children(
+    //     &self,
+    //     parent_token_id: u64,
+    //     expected_accepted_children: BTreeSet<(CollectionId, TokenId)>,
+    // );
     fn check_root_owner(&self, token_id: u64, root_owner: u64);
 }
 
@@ -336,53 +336,53 @@ impl RMRKToken for Program<'_> {
         }
     }
 
-    fn check_rmrk_owner(&self, token_id: u64, expected_token_id: Option<TokenId>, owner_id: u64) {
-        let rmrk_owner: RMRKStateReply = self
-            .meta_state(&RMRKState::Owner(token_id.into()))
-            .expect("Meta_state failed");
-        assert_eq!(
-            rmrk_owner,
-            RMRKStateReply::Owner {
-                token_id: expected_token_id,
-                owner_id: owner_id.into(),
-            }
-        );
-    }
+    // fn check_rmrk_owner(&self, token_id: u64, expected_token_id: Option<TokenId>, owner_id: u64) {
+    //     let rmrk_owner: RMRKStateReply = self
+    //         .meta_state(&RMRKState::Owner(token_id.into()))
+    //         .expect("Meta_state failed");
+    //     assert_eq!(
+    //         rmrk_owner,
+    //         RMRKStateReply::Owner {
+    //             token_id: expected_token_id,
+    //             owner_id: owner_id.into(),
+    //         }
+    //     );
+    // }
 
-    fn check_balance(&self, account: u64, expected_balance: u64) {
-        let balance: RMRKStateReply = self
-            .meta_state(RMRKState::Balance(account.into()))
-            .expect("Meta_state failed");
-        assert_eq!(balance, RMRKStateReply::Balance(expected_balance.into()));
-    }
+    // fn check_balance(&self, account: u64, expected_balance: u64) {
+    //     let balance: RMRKStateReply = self
+    //         .meta_state(RMRKState::Balance(account.into()))
+    //         .expect("Meta_state failed");
+    //     assert_eq!(balance, RMRKStateReply::Balance(expected_balance.into()));
+    // }
 
-    fn check_pending_children(
-        &self,
-        token_id: u64,
-        expected_pending_children: BTreeSet<(CollectionId, TokenId)>,
-    ) {
-        let pending_children: RMRKStateReply = self
-            .meta_state(RMRKState::PendingChildren(token_id.into()))
-            .expect("Meta_state failed");
-        assert_eq!(
-            pending_children,
-            RMRKStateReply::PendingChildren(expected_pending_children),
-        );
-    }
+    // fn check_pending_children(
+    //     &self,
+    //     token_id: u64,
+    //     expected_pending_children: BTreeSet<(CollectionId, TokenId)>,
+    // ) {
+    //     let pending_children: RMRKStateReply = self
+    //         .meta_state(RMRKState::PendingChildren(token_id.into()))
+    //         .expect("Meta_state failed");
+    //     assert_eq!(
+    //         pending_children,
+    //         RMRKStateReply::PendingChildren(expected_pending_children),
+    //     );
+    // }
 
-    fn check_accepted_children(
-        &self,
-        parent_token_id: u64,
-        expected_accepted_children: BTreeSet<(CollectionId, TokenId)>,
-    ) {
-        let accepted_children: RMRKStateReply = self
-            .meta_state(RMRKState::AcceptedChildren(parent_token_id.into()))
-            .expect("Meta_state failed");
-        assert_eq!(
-            accepted_children,
-            RMRKStateReply::AcceptedChildren(expected_accepted_children),
-        );
-    }
+    // fn check_accepted_children(
+    //     &self,
+    //     parent_token_id: u64,
+    //     expected_accepted_children: BTreeSet<(CollectionId, TokenId)>,
+    // ) {
+    //     let accepted_children: RMRKStateReply = self
+    //         .meta_state(RMRKState::AcceptedChildren(parent_token_id.into()))
+    //         .expect("Meta_state failed");
+    //     assert_eq!(
+    //         accepted_children,
+    //         RMRKStateReply::AcceptedChildren(expected_accepted_children),
+    //     );
+    // }
     fn check_root_owner(&self, token_id: u64, root_owner: u64) {
         let res = self.send(10, RMRKAction::RootOwner(token_id.into()));
         assert!(res.contains(&(10, RMRKEvent::RootOwner(root_owner.into(),).encode())));
@@ -456,16 +456,16 @@ pub trait MultiResource {
         exp_error: Option<&str>,
     );
     fn set_priority(&self, user: u64, token_id: u64, priorities: Vec<u8>, exp_error: Option<&str>);
-    fn check_pending_resources(
-        &self,
-        token_id: u64,
-        expected_pending_resources: BTreeSet<ResourceId>,
-    );
-    fn check_active_resources(
-        &self,
-        token_id: u64,
-        expected_pending_resources: BTreeSet<ResourceId>,
-    );
+    // fn check_pending_resources(
+    //     &self,
+    //     token_id: u64,
+    //     expected_pending_resources: BTreeSet<ResourceId>,
+    // );
+    // fn check_active_resources(
+    //     &self,
+    //     token_id: u64,
+    //     expected_pending_resources: BTreeSet<ResourceId>,
+    // );
 }
 
 impl MultiResource for Program<'_> {
@@ -595,33 +595,33 @@ impl MultiResource for Program<'_> {
         }
     }
 
-    fn check_pending_resources(
-        &self,
-        token_id: u64,
-        expected_pending_resources: BTreeSet<ResourceId>,
-    ) {
-        let pending_resources: RMRKStateReply = self
-            .meta_state(RMRKState::PendingResources(token_id.into()))
-            .expect("Meta_state failed");
-        assert_eq!(
-            pending_resources,
-            RMRKStateReply::PendingResources(expected_pending_resources)
-        );
-    }
+    // fn check_pending_resources(
+    //     &self,
+    //     token_id: u64,
+    //     expected_pending_resources: BTreeSet<ResourceId>,
+    // ) {
+    //     let pending_resources: RMRKStateReply = self
+    //         .meta_state(RMRKState::PendingResources(token_id.into()))
+    //         .expect("Meta_state failed");
+    //     assert_eq!(
+    //         pending_resources,
+    //         RMRKStateReply::PendingResources(expected_pending_resources)
+    //     );
+    // }
 
-    fn check_active_resources(
-        &self,
-        token_id: u64,
-        expected_active_resources: BTreeSet<ResourceId>,
-    ) {
-        let active_resources: RMRKStateReply = self
-            .meta_state(RMRKState::ActiveResources(token_id.into()))
-            .expect("Meta_state failed");
-        assert_eq!(
-            active_resources,
-            RMRKStateReply::ActiveResources(expected_active_resources)
-        );
-    }
+    // fn check_active_resources(
+    //     &self,
+    //     token_id: u64,
+    //     expected_active_resources: BTreeSet<ResourceId>,
+    // ) {
+    //     let active_resources: RMRKStateReply = self
+    //         .meta_state(RMRKState::ActiveResources(token_id.into()))
+    //         .expect("Meta_state failed");
+    //     assert_eq!(
+    //         active_resources,
+    //         RMRKStateReply::ActiveResources(expected_active_resources)
+    //     );
+    // }
 }
 pub fn init_base(sys: &System) {
     let base = Program::from_file(

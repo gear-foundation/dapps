@@ -298,7 +298,7 @@ impl RMRKToken {
                     .and_modify(|children| {
                         children.insert(child_token);
                     })
-                    .or_insert_with(|| BTreeSet::from([child_token]));
+                    .or_insert_with(|| HashSet::from([child_token]));
 
                 self.children_status
                     .insert(child_token, ChildStatus::Pending);
@@ -309,7 +309,7 @@ impl RMRKToken {
                     .and_modify(|children| {
                         children.insert(child_token);
                     })
-                    .or_insert_with(|| BTreeSet::from([child_token]));
+                    .or_insert_with(|| HashSet::from([child_token]));
 
                 self.children_status
                     .insert(child_token, ChildStatus::Accepted);

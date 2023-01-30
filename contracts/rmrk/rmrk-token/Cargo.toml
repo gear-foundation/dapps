@@ -12,9 +12,11 @@ rmrk-io = { path = "io" }
 resource-io = { path = "../resource/io" }
 base-io = { path = "../base/io" }
 types = { path = "../types/" }
+hashbrown = "0.13.1"
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git" }
 
 [build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+rmrk-io = { path = "io" }

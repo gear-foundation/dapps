@@ -6,8 +6,9 @@ license = "GPL-3.0"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
-codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }
-scale-info = { version = "2.2.0", default-features = false, features = ["derive"] }
+gstd = { git = "https://github.com/gear-tech/gear.git" }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
 types = { path = "../../types/" }
 resource-io = { path = "../../resource/io/" }
+gmeta = { git = "https://github.com/gear-tech/gear.git" }

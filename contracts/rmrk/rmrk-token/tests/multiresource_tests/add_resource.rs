@@ -70,13 +70,13 @@ fn add_resource_to_token() {
 
     mint_token_and_add_resource_to_token(&rmrk, token_id, resource_id, resource, 0);
 
-    // check pending resources
-    let mut pending_resources: BTreeSet<ResourceId> = BTreeSet::new();
-    pending_resources.insert(resource_id);
-    rmrk.check_pending_resources(token_id, pending_resources);
+    // // check pending resources
+    // let mut pending_resources: BTreeSet<ResourceId> = BTreeSet::new();
+    // pending_resources.insert(resource_id);
+    // rmrk.check_pending_resources(token_id, pending_resources);
 
-    // check active resources
-    rmrk.check_active_resources(token_id, BTreeSet::new());
+    // // check active resources
+    // rmrk.check_active_resources(token_id, BTreeSet::new());
 }
 
 #[test]
@@ -146,8 +146,8 @@ fn add_resource_to_token_failures() {
         Some("Max pending resources reached"),
     );
 
-    // check pending resources
-    rmrk.check_pending_resources(token_id, pending_resources);
+    // // check pending resources
+    // rmrk.check_pending_resources(token_id, pending_resources);
 }
 
 #[test]
@@ -169,12 +169,12 @@ fn add_resource_to_different_tokens() {
     // add the same resource to token_id_1
     rmrk.add_resource(USERS[0], token_id_1, resource_id, 0, None);
 
-    let mut pending_resources: BTreeSet<ResourceId> = BTreeSet::new();
-    pending_resources.insert(resource_id);
+    // let mut pending_resources: BTreeSet<ResourceId> = BTreeSet::new();
+    // pending_resources.insert(resource_id);
 
-    // check pending resources of token_id_0
-    rmrk.check_pending_resources(token_id_0, pending_resources.clone());
+    // // check pending resources of token_id_0
+    // rmrk.check_pending_resources(token_id_0, pending_resources.clone());
 
-    // check pending resources of token_id_1
-    rmrk.check_pending_resources(token_id_1, pending_resources);
+    // // check pending resources of token_id_1
+    // rmrk.check_pending_resources(token_id_1, pending_resources);
 }

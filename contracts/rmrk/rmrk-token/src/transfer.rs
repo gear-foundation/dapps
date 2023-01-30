@@ -129,7 +129,7 @@ impl RMRKToken {
             .and_modify(|approvals| {
                 approvals.insert(*to);
             })
-            .or_insert_with(|| BTreeSet::from([*to]));
+            .or_insert_with(|| HashSet::from([*to]));
         msg::reply(
             RMRKEvent::Approval {
                 root_owner,

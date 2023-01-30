@@ -1,22 +1,26 @@
 #![no_std]
 
+use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 use types::primitives::*;
 
+pub struct BaseMetadata;
+
+impl Metadata for BaseMetadata {
+    type Init = In<InitBase>;
+    type Handle = InOut<BaseAction, BaseEvent>;
+    type Others = ();
+    type Reply = ();
+    type Signal = ();
+    type State = BaseState;
+}
+
 #[derive(Debug, Default, Encode, Decode, TypeInfo)]
-struct Base {
-    /// Original creator of the Base.
-    issuer: ActorId,
-
-    /// Specifies how an NFT should be rendered, ie "svg".
-    base_type: String,
-
-    /// Provided by user during Base creation.
-    symbol: String,
-
-    /// Parts that the base has.
-    /// Mapping from `PartId` to fixed or slot `Part`.
-    parts: BTreeMap<PartId, Part>,
+pub struct BaseState {
+    pub issuer: ActorId,
+    pub base_type: String,
+    pub symbol: String,
+    pub parts: Vec<(PartId, Part)>,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
@@ -162,22 +166,4 @@ pub enum BaseEvent {
     },
     Part(Part),
     InEquippableList,
-}
-
-#[derive(Debug, Decode, Encode, TypeInfo)]
-pub enum BaseState {
-    Parts,
-    Part(PartId),
-    IsEquippable {
-        part_id: PartId,
-        collection_id: CollectionId,
-        token_id: TokenId,
-    },
-}
-
-#[derive(Debug, Decode, Encode, TypeInfo, Eq, PartialEq)]
-pub enum BaseStateReply {
-    Parts(Vec<Part>),
-    Part(Option<Part>),
-    IsEquippable(bool),
 }

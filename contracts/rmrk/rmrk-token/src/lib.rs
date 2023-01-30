@@ -14,39 +14,23 @@ use messages::*;
 mod mint;
 mod multiresource;
 use multiresource::*;
-
-gstd::metadata! {
-    title: "RMRK",
-    init:
-        input: InitRMRK,
-    handle:
-        input: RMRKAction,
-        output: RMRKEvent,
-    state:
-        input: RMRKState,
-        output: RMRKStateReply,
-}
-
-#[derive(Debug, Default, PartialEq, Eq)]
-struct RMRKOwner {
-    token_id: Option<TokenId>,
-    owner_id: ActorId,
-}
+mod utils;
+use hashbrown::{HashMap, HashSet};
 
 #[derive(Debug, Default)]
 struct RMRKToken {
     name: String,
     symbol: String,
     admin: ActorId,
-    token_approvals: BTreeMap<TokenId, BTreeSet<ActorId>>,
-    rmrk_owners: BTreeMap<TokenId, RMRKOwner>,
-    pending_children: BTreeMap<TokenId, BTreeSet<CollectionAndToken>>,
-    accepted_children: BTreeMap<TokenId, BTreeSet<CollectionAndToken>>,
-    children_status: BTreeMap<CollectionAndToken, ChildStatus>,
-    balances: BTreeMap<ActorId, TokenId>,
+    token_approvals: HashMap<TokenId, HashSet<ActorId>>,
+    rmrk_owners: HashMap<TokenId, RMRKOwner>,
+    pending_children: HashMap<TokenId, HashSet<CollectionAndToken>>,
+    accepted_children: HashMap<TokenId, HashSet<CollectionAndToken>>,
+    children_status: HashMap<CollectionAndToken, ChildStatus>,
+    balances: HashMap<ActorId, TokenId>,
     multiresource: MultiResource,
     resource_id: ActorId,
-    equipped_tokens: BTreeSet<TokenId>,
+    equipped_tokens: HashSet<TokenId>,
 }
 
 static mut RMRK: Option<RMRKToken> = None;
@@ -226,70 +210,14 @@ async unsafe fn main() {
 }
 
 #[no_mangle]
-unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
-    let query: RMRKState = msg::load().expect("failed to decode RMRKState");
-    let rmrk = RMRK.get_or_insert(Default::default());
+extern "C" fn state() {
+    let rmrk = unsafe { RMRK.as_ref().expect("RMRK is not initialized") };
+    let rmrk_state: RMRKState = rmrk.into();
+    msg::reply(rmrk_state, 0).expect("Failed to share state");
+}
 
-    let encoded = match query {
-        RMRKState::RMRKInfo => RMRKStateReply::RMRKInfo {
-            name: rmrk.name.clone(),
-            symbol: rmrk.symbol.clone(),
-            admin: rmrk.admin,
-            resource_id: rmrk.resource_id,
-        },
-        RMRKState::Owner(token_id) => {
-            if let Some(rmrk_owner) = rmrk.rmrk_owners.get(&token_id) {
-                RMRKStateReply::Owner {
-                    token_id: rmrk_owner.token_id,
-                    owner_id: rmrk_owner.owner_id,
-                }
-            } else {
-                RMRKStateReply::Owner {
-                    token_id: None,
-                    owner_id: ActorId::zero(),
-                }
-            }
-        }
-        RMRKState::Balance(account) => {
-            if let Some(balance) = rmrk.balances.get(&account) {
-                RMRKStateReply::Balance(*balance)
-            } else {
-                RMRKStateReply::Balance(0.into())
-            }
-        }
-        RMRKState::PendingChildren(token_id) => {
-            if let Some(children) = rmrk.pending_children.get(&token_id) {
-                RMRKStateReply::PendingChildren(children.clone())
-            } else {
-                RMRKStateReply::PendingChildren(BTreeSet::new())
-            }
-        }
-        RMRKState::AcceptedChildren(token_id) => {
-            if let Some(children) = rmrk.accepted_children.get(&token_id) {
-                RMRKStateReply::AcceptedChildren(children.clone())
-            } else {
-                RMRKStateReply::AcceptedChildren(BTreeSet::new())
-            }
-        }
-        RMRKState::PendingResources(token_id) => {
-            let pending_resources = rmrk
-                .multiresource
-                .pending_resources
-                .get(&token_id)
-                .unwrap_or(&BTreeSet::new())
-                .clone();
-            RMRKStateReply::PendingResources(pending_resources)
-        }
-        RMRKState::ActiveResources(token_id) => {
-            let active_resources = rmrk
-                .multiresource
-                .active_resources
-                .get(&token_id)
-                .unwrap_or(&BTreeSet::new())
-                .clone();
-            RMRKStateReply::ActiveResources(active_resources)
-        }
-    }
-    .encode();
-    gstd::util::to_leak_ptr(encoded)
+#[no_mangle]
+extern "C" fn metahash() {
+    let metahash: [u8; 32] = include!("../.metahash");
+    msg::reply(metahash, 0).expect("Failed to share metahash");
 }
