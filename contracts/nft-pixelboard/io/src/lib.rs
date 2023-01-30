@@ -1,8 +1,38 @@
 #![no_std]
 
 use gear_lib::non_fungible_token::token::{TokenId, TokenMetadata};
+use gmeta::{InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 
+pub struct ContractMetadata;
+
+impl Metadata for ContractMetadata {
+    type Init = InOut<InitNFTPixelboard, Result<(), NFTPixelboardError>>;
+    type Handle = InOut<NFTPixelboardAction, Result<NFTPixelboardEvent, NFTPixelboardError>>;
+    type Reply = ();
+    type Others = ();
+    type Signal = ();
+    type State = NFTPixelboardState;
+}
+
+#[derive(Default, Encode, Decode, TypeInfo)]
+pub struct NFTPixelboardState {
+    pub owner: ActorId,
+    pub block_side_length: BlockSideLength,
+    pub pixel_price: u128,
+    pub resolution: Resolution,
+    pub commission_percentage: u8,
+    pub painting: Vec<Color>,
+
+    pub rectangles_by_token_ids: Vec<(TokenId, Rectangle)>,
+    pub tokens_by_rectangles: Vec<(Rectangle, TokenInfo)>,
+
+    pub ft_program: ActorId,
+    pub nft_program: ActorId,
+
+    pub txs: Vec<(ActorId, (TransactionId, NFTPixelboardAction))>,
+    pub tx_id: TransactionId,
+}
 /// The maximum price that can be set to a pixel.
 ///
 /// This number is calculated to avoid an overflow and precisely calculate a
@@ -23,6 +53,8 @@ pub const MAX_PIXEL_PRICE: u128 = 2u128.pow(96) / 100;
 pub type BlockSideLength = u16;
 /// A pixel color.
 pub type Color = u8;
+/// A transaction id for tracking transactions in the fungible token contract.
+pub type TransactionId = u64;
 
 /// Coordinates of the corners of an NFT rectangle on a canvas.
 #[derive(Decode, Encode, TypeInfo, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Default)]
@@ -93,7 +125,7 @@ pub struct Token(pub Rectangle, pub TokenInfo);
 /// NFT info.
 #[derive(Decode, Encode, TypeInfo, Clone, Copy, Debug, Default, PartialEq, Eq)]
 pub struct TokenInfo {
-    pub token_id: TokenId,
+    pub token_id: Option<TokenId>,
     pub owner: ActorId,
     /// If this field is [`None`], then this NFT isn't for sale, and vice versa.
     ///
@@ -151,7 +183,7 @@ pub struct InitNFTPixelboard {
 }
 
 /// Sends a program info about what it should do.
-#[derive(Decode, Encode, TypeInfo, Clone)]
+#[derive(Decode, Encode, TypeInfo, Clone, PartialEq, Eq)]
 pub enum NFTPixelboardAction {
     /// Mints one NFT on a pixelboard with given `token_metadata` & `painting`.
     ///
@@ -261,7 +293,7 @@ pub enum NFTPixelboardAction {
     },
 }
 
-/// A result of processed [`NFTPixelboardAction`].
+/// A result of processed [`NFTPixelboardAction`] in case of successfull execution.
 #[derive(Decode, Encode, TypeInfo)]
 pub enum NFTPixelboardEvent {
     /// Should be returned from [`NFTPixelboardAction::Mint`].
@@ -274,83 +306,26 @@ pub enum NFTPixelboardEvent {
     Painted(TokenId),
 }
 
-/// Queries a program state.
-///
-/// On failure, returns a [`Default`] value.
+/// A result of processed [`NFTPixelboardAction`] in case of failure.
 #[derive(Decode, Encode, TypeInfo)]
-pub enum NFTPixelboardStateQuery {
-    /// Gets a painting from an entire canvas of a pixelboard.
-    ///
-    /// Returns [`NFTPixelboardStateReply::Painting`].
-    Painting,
-
-    /// Gets a pixelboard (canvas) resolution.
-    ///
-    /// Returns [`NFTPixelboardStateReply::Resolution`].
-    Resolution,
-
-    /// Gets the price of a free pixel.
-    ///
-    /// Returns [`NFTPixelboardStateReply::PixelPrice`].
-    PixelPrice,
-
-    /// Gets a block side length.
-    ///
-    /// For more info about this parameter, see
-    /// [`InitNFTPixelboard#structfield.block_side_length`] documentation.
-    ///
-    /// Returns [`NFTPixelboardStateReply::BlockSideLength`].
-    BlockSideLength,
-
-    /// Gets [`Token`] info by pixel coordinates.
-    ///
-    /// Useful, for example, for inspecting a pixelboard by clicking on
-    /// paintings.
-    ///
-    /// Returns [`NFTPixelboardStateReply::PixelInfo`].
-    PixelInfo(Coordinates),
-
-    /// Gets [`Token`] info by its ID.
-    ///
-    /// Returns [`NFTPixelboardStateReply::TokenInfo`].
-    TokenInfo(TokenId),
-
-    /// Gets a resale commission percentage.
-    ///
-    /// Returns [`NFTPixelboardStateReply::CommissionPercentage`].
-    CommissionPercentage,
-
-    /// Gets an FT program address used by a pixelboard.
-    ///
-    /// Returns [`NFTPixelboardStateReply::FTProgram`].
-    FTProgram,
-
-    /// Gets an NFT program address used by a pixelboard.
-    ///
-    /// Returns [`NFTPixelboardStateReply::NFTProgram`].
-    NFTProgram,
-}
-
-/// A reply for queried [`NFTPixelboardStateQuery`].
-#[derive(Decode, Encode, TypeInfo)]
-pub enum NFTPixelboardStateReply {
-    /// Should be returned from [`NFTPixelboardStateQuery::Painting`].
-    Painting(Vec<Color>),
-    /// Should be returned from [`NFTPixelboardStateQuery::Resolution`].
-    Resolution(Resolution),
-    /// Should be returned from [`NFTPixelboardStateQuery::PixelPrice`].
-    PixelPrice(u128),
-    /// Should be returned from [`NFTPixelboardStateQuery::BlockSideLength`].
-    BlockSideLength(BlockSideLength),
-    /// Should be returned from [`NFTPixelboardStateQuery::PixelInfo`].
-    PixelInfo(Token),
-    /// Should be returned from [`NFTPixelboardStateQuery::TokenInfo`].
-    TokenInfo(Token),
-    /// Should be returned from
-    /// [`NFTPixelboardStateQuery::CommissionPercentage`].
-    CommissionPercentage(u8),
-    /// Should be returned from [`NFTPixelboardStateQuery::FTProgram`].
-    FTProgram(ActorId),
-    /// Should be returned from [`NFTPixelboardStateQuery::NFTProgram`].
-    NFTProgram(ActorId),
+pub enum NFTPixelboardError {
+    ZeroWidthOrHeight,
+    ZeroAddress,
+    ZeroBlockSideLength,
+    WrongResolution,
+    WrongCommissionPercentage,
+    WrongPaintingLength,
+    PixelPriceExceeded,
+    NFTNotFoundById,
+    NFTNotFountByRectangle,
+    NFTIsNotOnSale,
+    NotOwner,
+    CoordinatesNotObserveBlockLayout,
+    CoordinatesWithWrongCorners,
+    CoordinatesOutOfCanvas,
+    CoordinatesCollision,
+    PreviousTxMustBeCompleted,
+    NFTTransferFailed,
+    FTokensTransferFailed,
+    NFTMintFailed,
 }

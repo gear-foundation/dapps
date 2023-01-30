@@ -4,7 +4,7 @@ all: init build test
 
 build:
 	@echo ──────────── Build release ────────────────────
-	@cargo +nightly build --release
+	@cargo +nightly build --release --workspace
 	@ls -l ./target/wasm32-unknown-unknown/release/*.wasm
 
 clean:
@@ -26,20 +26,40 @@ init:
 
 linter:
 	@echo ──────────── Run linter ───────────────────────
-	@cargo +nightly clippy --all-targets -- --no-deps -D warnings
+	@cargo +nightly clippy --workspace --all-targets -- --no-deps -D warnings
 
 pre-commit: fmt linter test
 
 test: build
-	@if [ ! -f "./target/fungible_token-0.1.0.wasm" ]; then\
+	@path=target/ft_main.wasm;\
+	if [ ! -f $$path ]; then\
 	    curl -L\
-	        "https://github.com/gear-dapps/fungible-token/releases/download/0.1.0/fungible_token-0.1.0.wasm"\
-	        -o "./target/fungible_token-0.1.0.wasm";\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_main-0.1.3.opt.wasm\
+	        -o $$path;\
 	fi
-	@if [ ! -f "./target/nft-0.1.0.wasm" ]; then\
+	@path=target/ft_logic.wasm;\
+	if [ ! -f $$path ]; then\
 	    curl -L\
-	        "https://github.com/gear-dapps/non-fungible-token/releases/download/0.1.0/nft-0.1.0.wasm"\
-	        -o "./target/nft-0.1.0.wasm";\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_logic-0.1.3.opt.wasm\
+	        -o $$path;\
+	fi
+	@path=target/ft_storage.wasm;\
+	if [ ! -f $$path ]; then\
+	    curl -L\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_storage-0.1.3.opt.wasm\
+	        -o $$path;\
+	fi
+	@path=target/nft.wasm;\
+	if [ ! -f $$path ]; then\
+	    curl -L\
+	        https://github.com/gear-dapps/non-fungible-token/releases/download/0.2.7/nft-0.2.7.wasm\
+	        -o $$path;\
+	fi
+	@path=target/nft.opt.wasm;\
+	if [ ! -f $$path ]; then\
+	    curl -L\
+	        https://github.com/gear-dapps/non-fungible-token/releases/download/0.2.7/nft-0.2.7.opt.wasm\
+	        -o $$path;\
 	fi
 	@echo ──────────── Run tests ────────────────────────
 	@cargo +nightly test --release

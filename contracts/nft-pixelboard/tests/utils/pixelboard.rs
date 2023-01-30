@@ -1,12 +1,11 @@
-use super::{
-    common::{Action, MetaStateReply},
-    prelude::*,
-};
+use super::common::{InitResult, Program, RunResult};
+use super::{FOREIGN_USER, OWNER};
 use gear_lib::non_fungible_token::token::TokenMetadata;
 use gstd::ActorId;
 use gtest::{Program as InnerProgram, System};
+use nft_pixelboard_io::*;
 
-type ActionNFTPixelboard<T> = Action<T, NFTPixelboardEvent>;
+type NFTPixelboardRunResult<T> = RunResult<T, NFTPixelboardEvent, NFTPixelboardError>;
 
 pub struct NFTPixelboard<'a>(InnerProgram<'a>);
 
@@ -34,16 +33,15 @@ impl<'a> NFTPixelboard<'a> {
         .succeed()
     }
 
-    pub fn initialize_custom(system: &System, config: InitNFTPixelboard) -> NFTPixelboardInit {
+    pub fn initialize_custom(
+        system: &'a System,
+        config: InitNFTPixelboard,
+    ) -> InitResult<NFTPixelboard<'a>, NFTPixelboardError> {
         let program = InnerProgram::current(system);
 
-        let failed = program.send(FOREIGN_USER, config).main_failed();
-
-        NFTPixelboardInit(program, failed)
-    }
-
-    pub fn meta_state(&self) -> NFTPixelboardMetaState {
-        NFTPixelboardMetaState(&self.0)
+        let result = program.send(FOREIGN_USER, config);
+        let is_active = system.is_active_program(program.id());
+        InitResult::new(Self(program), result, is_active)
     }
 
     pub fn mint(
@@ -51,7 +49,7 @@ impl<'a> NFTPixelboard<'a> {
         from: u64,
         painting: Vec<Color>,
         rectangle: Rectangle,
-    ) -> ActionNFTPixelboard<u128> {
+    ) -> NFTPixelboardRunResult<u128> {
         self.mint_with_metadata(from, painting, rectangle, Default::default())
     }
 
@@ -61,8 +59,8 @@ impl<'a> NFTPixelboard<'a> {
         painting: Vec<Color>,
         rectangle: Rectangle,
         token_metadata: TokenMetadata,
-    ) -> ActionNFTPixelboard<u128> {
-        Action(
+    ) -> NFTPixelboardRunResult<u128> {
+        RunResult::new(
             self.0.send(
                 from,
                 NFTPixelboardAction::Mint {
@@ -80,8 +78,8 @@ impl<'a> NFTPixelboard<'a> {
         from: u64,
         token_id: u128,
         pixel_price: Option<u128>,
-    ) -> ActionNFTPixelboard<u128> {
-        Action(
+    ) -> NFTPixelboardRunResult<u128> {
+        RunResult::new(
             self.0.send(
                 from,
                 NFTPixelboardAction::ChangeSaleState {
@@ -93,8 +91,8 @@ impl<'a> NFTPixelboard<'a> {
         )
     }
 
-    pub fn buy(&self, from: u64, token_id: u128) -> ActionNFTPixelboard<u128> {
-        Action(
+    pub fn buy(&self, from: u64, token_id: u128) -> NFTPixelboardRunResult<u128> {
+        RunResult::new(
             self.0.send(from, NFTPixelboardAction::Buy(token_id.into())),
             |token_id| NFTPixelboardEvent::Bought(token_id.into()),
         )
@@ -105,8 +103,8 @@ impl<'a> NFTPixelboard<'a> {
         from: u64,
         token_id: u128,
         painting: Vec<Color>,
-    ) -> ActionNFTPixelboard<u128> {
-        Action(
+    ) -> NFTPixelboardRunResult<u128> {
+        RunResult::new(
             self.0.send(
                 from,
                 NFTPixelboardAction::Paint {
@@ -134,114 +132,120 @@ impl<'a> NFTPixelboardInit<'a> {
     }
 }
 
-pub struct NFTPixelboardMetaState<'a>(&'a InnerProgram<'a>);
+// # TODO: uncomment when new meta will be ready for gtest
 
-impl NFTPixelboardMetaState<'_> {
-    pub fn ft_program(self) -> MetaStateReply<ActorId> {
-        if let NFTPixelboardStateReply::FTProgram(reply) = self
-            .0
-            .meta_state(NFTPixelboardStateQuery::FTProgram)
-            .unwrap()
-        {
-            MetaStateReply(reply)
-        } else {
-            unreachable!();
-        }
-    }
+// pub fn meta_state(&self) -> NFTPixelboardMetaState {
+//     NFTPixelboardMetaState(&self.0)
+// }
 
-    pub fn nft_program(self) -> MetaStateReply<ActorId> {
-        if let NFTPixelboardStateReply::NFTProgram(reply) = self
-            .0
-            .meta_state(NFTPixelboardStateQuery::NFTProgram)
-            .unwrap()
-        {
-            MetaStateReply(reply)
-        } else {
-            unreachable!();
-        }
-    }
+// pub struct NFTPixelboardMetaState<'a>(&'a InnerProgram<'a>);
 
-    pub fn block_side_length(self) -> MetaStateReply<BlockSideLength> {
-        if let NFTPixelboardStateReply::BlockSideLength(reply) = self
-            .0
-            .meta_state(NFTPixelboardStateQuery::BlockSideLength)
-            .unwrap()
-        {
-            MetaStateReply(reply)
-        } else {
-            unreachable!();
-        }
-    }
+// impl NFTPixelboardMetaState<'_> {
+//     pub fn ft_program(self) -> MetaStateReply<ActorId> {
+//         if let NFTPixelboardStateReply::FTProgram(reply) = self
+//             .0
+//             .meta_state(NFTPixelboardStateQuery::FTProgram)
+//             .unwrap()
+//         {
+//             MetaStateReply(reply)
+//         } else {
+//             unreachable!();
+//         }
+//     }
 
-    pub fn painting(self) -> MetaStateReply<Vec<Color>> {
-        if let NFTPixelboardStateReply::Painting(reply) = self
-            .0
-            .meta_state(NFTPixelboardStateQuery::Painting)
-            .unwrap()
-        {
-            MetaStateReply(reply)
-        } else {
-            unreachable!();
-        }
-    }
+//     pub fn nft_program(self) -> MetaStateReply<ActorId> {
+//         if let NFTPixelboardStateReply::NFTProgram(reply) = self
+//             .0
+//             .meta_state(NFTPixelboardStateQuery::NFTProgram)
+//             .unwrap()
+//         {
+//             MetaStateReply(reply)
+//         } else {
+//             unreachable!();
+//         }
+//     }
 
-    pub fn pixel_info(self, coordinates: Coordinates) -> MetaStateReply<Token> {
-        if let NFTPixelboardStateReply::PixelInfo(reply) = self
-            .0
-            .meta_state(NFTPixelboardStateQuery::PixelInfo(coordinates))
-            .unwrap()
-        {
-            MetaStateReply(reply)
-        } else {
-            unreachable!();
-        }
-    }
+//     pub fn block_side_length(self) -> MetaStateReply<BlockSideLength> {
+//         if let NFTPixelboardStateReply::BlockSideLength(reply) = self
+//             .0
+//             .meta_state(NFTPixelboardStateQuery::BlockSideLength)
+//             .unwrap()
+//         {
+//             MetaStateReply(reply)
+//         } else {
+//             unreachable!();
+//         }
+//     }
 
-    pub fn pixel_price(self) -> MetaStateReply<u128> {
-        if let NFTPixelboardStateReply::PixelPrice(reply) = self
-            .0
-            .meta_state(NFTPixelboardStateQuery::PixelPrice)
-            .unwrap()
-        {
-            MetaStateReply(reply)
-        } else {
-            unreachable!();
-        }
-    }
+//     pub fn painting(self) -> MetaStateReply<Vec<Color>> {
+//         if let NFTPixelboardStateReply::Painting(reply) = self
+//             .0
+//             .meta_state(NFTPixelboardStateQuery::Painting)
+//             .unwrap()
+//         {
+//             MetaStateReply(reply)
+//         } else {
+//             unreachable!();
+//         }
+//     }
 
-    pub fn commission_percentage(self) -> MetaStateReply<u8> {
-        if let NFTPixelboardStateReply::CommissionPercentage(reply) = self
-            .0
-            .meta_state(NFTPixelboardStateQuery::CommissionPercentage)
-            .unwrap()
-        {
-            MetaStateReply(reply)
-        } else {
-            unreachable!();
-        }
-    }
+//     pub fn pixel_info(self, coordinates: Coordinates) -> MetaStateReply<Token> {
+//         if let NFTPixelboardStateReply::PixelInfo(reply) = self
+//             .0
+//             .meta_state(NFTPixelboardStateQuery::PixelInfo(coordinates))
+//             .unwrap()
+//         {
+//             MetaStateReply(reply)
+//         } else {
+//             unreachable!();
+//         }
+//     }
 
-    pub fn resolution(self) -> MetaStateReply<Resolution> {
-        if let NFTPixelboardStateReply::Resolution(reply) = self
-            .0
-            .meta_state(NFTPixelboardStateQuery::Resolution)
-            .unwrap()
-        {
-            MetaStateReply(reply)
-        } else {
-            unreachable!();
-        }
-    }
+//     pub fn pixel_price(self) -> MetaStateReply<u128> {
+//         if let NFTPixelboardStateReply::PixelPrice(reply) = self
+//             .0
+//             .meta_state(NFTPixelboardStateQuery::PixelPrice)
+//             .unwrap()
+//         {
+//             MetaStateReply(reply)
+//         } else {
+//             unreachable!();
+//         }
+//     }
 
-    pub fn token_info(self, token_id: u128) -> MetaStateReply<Token> {
-        if let NFTPixelboardStateReply::TokenInfo(reply) = self
-            .0
-            .meta_state(NFTPixelboardStateQuery::TokenInfo(token_id.into()))
-            .unwrap()
-        {
-            MetaStateReply(reply)
-        } else {
-            unreachable!();
-        }
-    }
-}
+//     pub fn commission_percentage(self) -> MetaStateReply<u8> {
+//         if let NFTPixelboardStateReply::CommissionPercentage(reply) = self
+//             .0
+//             .meta_state(NFTPixelboardStateQuery::CommissionPercentage)
+//             .unwrap()
+//         {
+//             MetaStateReply(reply)
+//         } else {
+//             unreachable!();
+//         }
+//     }
+
+//     pub fn resolution(self) -> MetaStateReply<Resolution> {
+//         if let NFTPixelboardStateReply::Resolution(reply) = self
+//             .0
+//             .meta_state(NFTPixelboardStateQuery::Resolution)
+//             .unwrap()
+//         {
+//             MetaStateReply(reply)
+//         } else {
+//             unreachable!();
+//         }
+//     }
+
+//     pub fn token_info(self, token_id: u128) -> MetaStateReply<Token> {
+//         if let NFTPixelboardStateReply::TokenInfo(reply) = self
+//             .0
+//             .meta_state(NFTPixelboardStateQuery::TokenInfo(token_id.into()))
+//             .unwrap()
+//         {
+//             MetaStateReply(reply)
+//         } else {
+//             unreachable!();
+//         }
+//     }
+// }

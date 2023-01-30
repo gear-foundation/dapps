@@ -1,9 +1,10 @@
-use super::{common::Action, prelude::*};
-use ft_io::{FTAction, FTEvent, InitConfig as InitFT};
-use gstd::ActorId;
-use gtest::{Log, Program as InnerProgram, System};
+use super::{Program, RunResult, TransactionalProgram, FOREIGN_USER};
+use ft_logic_io::Action;
+use ft_main_io::{FTokenAction, FTokenEvent, InitFToken};
+use gstd::{prelude::*, ActorId};
+use gtest::{Log, Program as InnerProgram, RunResult as InnerRunResult, System};
 
-pub struct FungibleToken<'a>(InnerProgram<'a>);
+pub struct FungibleToken<'a>(InnerProgram<'a>, u64);
 
 impl Program for FungibleToken<'_> {
     fn inner_program(&self) -> &InnerProgram {
@@ -11,40 +12,79 @@ impl Program for FungibleToken<'_> {
     }
 }
 
+impl TransactionalProgram for FungibleToken<'_> {
+    fn previous_mut_transaction_id(&mut self) -> &mut u64 {
+        &mut self.1
+    }
+}
+
 impl<'a> FungibleToken<'a> {
+    #[track_caller]
     pub fn initialize(system: &'a System) -> Self {
-        let program = InnerProgram::from_file(system, "./target/fungible_token-0.1.0.wasm");
+        let program = InnerProgram::from_file(system, "target/ft_main.wasm");
+        let storage_code_id: [u8; 32] = system.submit_code("target/ft_storage.wasm").into();
+        let logic_code_id: [u8; 32] = system.submit_code("target/ft_logic.wasm").into();
 
         assert!(!program
             .send(
                 FOREIGN_USER,
-                InitFT {
-                    name: Default::default(),
-                    symbol: Default::default(),
-                    decimals: Default::default(),
+                InitFToken {
+                    storage_code_hash: storage_code_id.into(),
+                    ft_logic_code_hash: logic_code_id.into(),
                 },
             )
             .main_failed());
 
-        Self(program)
+        Self(program, 0)
     }
 
-    pub fn mint(&self, from: u64, amount: u128) {
-        assert!(self
-            .0
-            .send(from, FTAction::Mint(amount))
-            .contains(&Log::builder().payload(FTEvent::Transfer {
-                amount,
-                from: ActorId::zero(),
-                to: from.into(),
-            })))
-    }
+    #[track_caller]
+    pub fn mint(&mut self, recipient: u64, amount: u128) {
+        let transaction_id = self.transaction_id();
 
-    pub fn balance(&self, actor_id: u64) -> Action<u128, FTEvent> {
-        Action(
-            self.0
-                .send(FOREIGN_USER, FTAction::BalanceOf(actor_id.into())),
-            FTEvent::Balance,
+        assert_ft_token_event_ok(
+            self.0.send(
+                FOREIGN_USER,
+                FTokenAction::Message {
+                    transaction_id,
+                    payload: Action::Mint {
+                        recipient: recipient.into(),
+                        amount,
+                    }
+                    .encode(),
+                },
+            ),
         )
     }
+
+    #[track_caller]
+    pub fn approve(&mut self, from: u64, approved_account: impl Into<ActorId>, amount: u128) {
+        let transaction_id = self.transaction_id();
+
+        assert_ft_token_event_ok(
+            self.0.send(
+                from,
+                FTokenAction::Message {
+                    transaction_id,
+                    payload: Action::Approve {
+                        approved_account: approved_account.into(),
+                        amount,
+                    }
+                    .encode(),
+                },
+            ),
+        );
+    }
+
+    pub fn balance(&self, actor_id: impl Into<ActorId>) -> RunResult<u128, FTokenEvent, ()> {
+        RunResult::new(
+            self.0
+                .send(FOREIGN_USER, FTokenAction::GetBalance(actor_id.into())),
+            FTokenEvent::Balance,
+        )
+    }
+}
+
+fn assert_ft_token_event_ok(run_result: InnerRunResult) {
+    assert!(run_result.contains(&Log::builder().payload(FTokenEvent::Ok)))
 }
