@@ -47,7 +47,7 @@ async fn init() -> Result<()> {
     let (message_id, _program_id, _hash) = api
         .upload_program_bytes(
             WASM_BINARY_OPT.to_vec(),
-            gclient::bytes_now(),
+            gclient::now_in_micros().to_le_bytes(),
             init_payload,
             gas_info.min_limit,
             0,
@@ -91,7 +91,7 @@ async fn init() -> Result<()> {
 //     let (message_id, _program_id, _hash) = api
 //         .upload_program_bytes(
 //             WASM_BINARY_OPT.to_vec(),
-//             gclient::bytes_now(),
+//             gclient::now_in_micros().to_le_bytes(),
 //             init_staking_payload,
 //             gas_info.min_limit,
 //             0,
@@ -113,7 +113,7 @@ async fn init() -> Result<()> {
 //     let (message_id, _program_id, _hash) = api
 //         .upload_program_bytes(
 //             WASM_BINARY_OPT.to_vec(),
-//             gclient::bytes_now(),
+//             gclient::now_in_micros().to_le_bytes(),
 //             stake_payload,
 //             gas_info.min_limit,
 //             0,
