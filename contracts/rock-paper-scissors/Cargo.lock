@@ -4196,7 +4196,7 @@ dependencies = [
  "hashbrown 0.13.2",
  "rps-io",
  "rps-state",
- "sp-core-hashing 4.0.0",
+ "sp-core-hashing 5.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "tokio",
 ]
 
@@ -5073,20 +5073,6 @@ dependencies = [
 
 [[package]]
 name = "sp-core-hashing"
-version = "4.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ec864a6a67249f0c8dd3d5acab43623a61677e85ff4f2f9b04b802d2fe780e83"
-dependencies = [
- "blake2-rfc",
- "byteorder",
- "sha2 0.9.9",
- "sp-std 4.0.0",
- "tiny-keccak",
- "twox-hash",
-]
-
-[[package]]
-name = "sp-core-hashing"
 version = "5.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "49b9d1daa6aebfc144729b630885e91df92ff00560490ec065a56cb538e8895a"
@@ -5520,12 +5506,6 @@ dependencies = [
  "tracing",
  "trie-root",
 ]
-
-[[package]]
-name = "sp-std"
-version = "4.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "14804d6069ee7a388240b665f17908d98386ffb0b5d39f89a4099fc7a2a4c03f"
 
 [[package]]
 name = "sp-std"
@@ -6106,15 +6086,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tiny-keccak"
-version = "2.0.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2c9d3793400a45f954c52e73d068316d76b6f4e36977e3fcebb13a2721e80237"
-dependencies = [
- "crunchy",
-]
-
-[[package]]
 name = "tinyvec"
 version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6370,7 +6341,7 @@ checksum = "97fee6b57c6a41524a810daee9286c02d7752c4253064d0b05472833a438f675"
 dependencies = [
  "cfg-if",
  "digest 0.10.6",
- "rand 0.8.5",
+ "rand 0.7.3",
  "static_assertions",
 ]
 
