@@ -6,12 +6,11 @@ edition = "2021"
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.4" }
-# TODO: pin to the "stable" branch before the merge.
-gmeta = { git = "https://github.com/gear-tech/gear.git", features = ["codegen"] }
+gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["codegen"] }
 rps-io = { path = "../io" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", features = ["metawasm"], branch = "stable" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["metawasm"] }
 
 [features]
 binary-vendor = []

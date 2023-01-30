@@ -10,7 +10,7 @@ gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], br
 sp-core-hashing = { version = "5.0.0", default-features = false }
 rps-io = { path = "io" }
 hashbrown = "0.13.1"
-gmeta = { git = "https://github.com/gear-tech/gear" }
+gmeta = { git = "https://github.com/gear-tech/gear", branch = "stable" }
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git" }
@@ -19,7 +19,7 @@ gclient = { git = "https://github.com/gear-tech/gear.git" }
 tokio = "1"
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 rps-io = { path = "io" }
 
 [features]
