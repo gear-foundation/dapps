@@ -1,8 +1,8 @@
 use crate::H256;
 use ft_storage_io::{FTStorageAction, FTStorageEvent};
-use gstd::{msg, ActorId};
+use gstd::{msg, prelude::*, ActorId};
 
-#[derive(Debug)]
+#[derive(Debug, Encode, Decode, TypeInfo, Clone)]
 pub enum InstructionState {
     ScheduledRun,
     ScheduledAbort,
@@ -10,12 +10,12 @@ pub enum InstructionState {
     Finished,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Encode, Decode, TypeInfo, Clone)]
 pub struct Instruction {
-    state: InstructionState,
-    address: ActorId,
-    transaction: FTStorageAction,
-    compensation: Option<FTStorageAction>,
+    pub state: InstructionState,
+    pub address: ActorId,
+    pub transaction: FTStorageAction,
+    pub compensation: Option<FTStorageAction>,
 }
 
 impl Instruction {

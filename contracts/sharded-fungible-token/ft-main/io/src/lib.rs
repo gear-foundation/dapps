@@ -1,6 +1,24 @@
 #![no_std]
+use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 use primitive_types::H256;
+pub struct FMainTokenMetadata;
+
+impl Metadata for FMainTokenMetadata {
+    type Init = In<InitFToken>;
+    type Handle = InOut<FTokenAction, FTokenEvent>;
+    type Others = ();
+    type Reply = ();
+    type Signal = ();
+    type State = FTokenState;
+}
+
+#[derive(Default, Encode, Decode, TypeInfo, Debug)]
+pub struct FTokenState {
+    pub admin: ActorId,
+    pub ft_logic_id: ActorId,
+    pub transactions: Vec<(H256, TransactionStatus)>,
+}
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
 pub enum FTokenAction {
@@ -32,21 +50,9 @@ pub struct InitFToken {
     pub ft_logic_code_hash: H256,
 }
 
-#[derive(Encode, Decode, TypeInfo)]
-pub enum FTokenState {
-    TransactionStatus(ActorId, u64),
-    FTLogicId,
-}
-
-#[derive(Encode, Decode, TypeInfo, Copy, Clone)]
+#[derive(Encode, Decode, TypeInfo, Copy, Clone, Debug)]
 pub enum TransactionStatus {
     InProgress,
     Success,
     Failure,
-}
-
-#[derive(Encode, Decode, TypeInfo)]
-pub enum FTokenStateReply {
-    TransactionStatus(Option<TransactionStatus>),
-    FTLogicId(ActorId),
 }

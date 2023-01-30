@@ -1,10 +1,8 @@
 #![no_std]
 use ft_storage_io::*;
-use gstd::{exec, msg, prelude::*, ActorId};
+use gstd::{msg, prelude::*, ActorId};
 use hashbrown::HashMap;
 use primitive_types::H256;
-
-const DELAY: u32 = 600_000;
 
 #[derive(Default)]
 struct FTStorage {
@@ -97,8 +95,6 @@ impl FTStorage {
             return;
         }
 
-        send_delayed_clear(transaction_hash);
-
         match self.decrease(msg_source, sender, amount) {
             true => {
                 self.balances
@@ -128,8 +124,6 @@ impl FTStorage {
             return;
         }
 
-        send_delayed_clear(transaction_hash);
-
         // increase balance
         self.balances
             .entry(*account)
@@ -157,7 +151,6 @@ impl FTStorage {
             return;
         }
 
-        send_delayed_clear(transaction_hash);
         // decrease balance
         match self.decrease(msg_source, account, amount) {
             true => {
@@ -188,7 +181,6 @@ impl FTStorage {
             };
             return;
         }
-        send_delayed_clear(transaction_hash);
 
         self.approvals
             .entry(*msg_source)
@@ -203,10 +195,6 @@ impl FTStorage {
             .or_insert_with(|| [(*account, amount)].into());
 
         reply_ok();
-    }
-
-    fn clear(&mut self, transaction_hash: H256) {
-        self.transaction_status.remove(&transaction_hash);
     }
 
     fn assert_ft_contract(&self) {
@@ -253,7 +241,6 @@ unsafe extern "C" fn handle() {
             recipient,
             amount,
         } => storage.transfer(transaction_hash, &msg_source, &sender, &recipient, amount),
-        FTStorageAction::Clear(transaction_hash) => storage.clear(transaction_hash),
     }
 }
 
@@ -266,31 +253,6 @@ unsafe extern "C" fn init() {
     FT_STORAGE = Some(storage);
 }
 
-#[no_mangle]
-unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
-    let query: FTStorageState = msg::load().expect("Unable to decode `State");
-    let storage: &mut FTStorage = FT_STORAGE.get_or_insert(Default::default());
-
-    let encoded = match query {
-        FTStorageState::Balance(account) => {
-            let balance = storage.balances.get(&account).unwrap_or(&0);
-            FTStorageStateReply::Balance(*balance)
-        }
-    }
-    .encode();
-    gstd::util::to_leak_ptr(encoded)
-}
-
-gstd::metadata! {
-    title: "Storage Fungible Token contract",
-    handle:
-        input: FTStorageAction,
-        output: FTStorageEvent,
-    state:
-        input: FTStorageState,
-        output: FTStorageStateReply,
-}
-
 fn reply_ok() {
     msg::reply(FTStorageEvent::Ok, 0).expect("error in sending a reply `FTStorageEvent::Ok");
 }
@@ -299,12 +261,42 @@ fn reply_err() {
     msg::reply(FTStorageEvent::Err, 0).expect("error in sending a reply `FTStorageEvent::Err");
 }
 
-fn send_delayed_clear(transaction_hash: H256) {
-    msg::send_delayed(
-        exec::program_id(),
-        FTStorageAction::Clear(transaction_hash),
-        0,
-        DELAY,
-    )
-    .expect("Error in sending a delayled message `FTStorageAction::Clear`");
+#[no_mangle]
+extern "C" fn state() {
+    let storage = unsafe { FT_STORAGE.as_ref().expect("Storage is not initialized") };
+    let storage_state = FTStorageState {
+        ft_logic_id: storage.ft_logic_id,
+        transaction_status: storage
+            .transaction_status
+            .iter()
+            .map(|(key, value)| (*key, *value))
+            .collect(),
+        balances: storage
+            .balances
+            .iter()
+            .map(|(key, value)| (*key, *value))
+            .collect(),
+        approvals: storage
+            .approvals
+            .iter()
+            .map(|(key, value)| {
+                (
+                    *key,
+                    value.iter().map(|(key, value)| (*key, *value)).collect(),
+                )
+            })
+            .collect(),
+        permits: storage
+            .permits
+            .iter()
+            .map(|(key, value)| (*key, *value))
+            .collect(),
+    };
+    msg::reply(storage_state, 0).expect("Failed to share state");
+}
+
+#[no_mangle]
+extern "C" fn metahash() {
+    let metahash: [u8; 32] = include!("../.metahash");
+    msg::reply(metahash, 0).expect("Failed to share metahash");
 }

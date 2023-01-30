@@ -2,6 +2,37 @@
 use gstd::{prelude::*, ActorId};
 use primitive_types::{H256, H512};
 
+use gmeta::{In, InOut, Metadata};
+pub struct FLogicMetadata;
+pub mod instruction;
+use instruction::Instruction;
+
+impl Metadata for FLogicMetadata {
+    type Init = In<InitFTLogic>;
+    type Handle = InOut<FTLogicAction, FTLogicEvent>;
+    type Others = InOut<Action, ()>;
+    type Reply = ();
+    type Signal = ();
+    type State = FTLogicState;
+}
+
+#[derive(Encode, Decode, TypeInfo, Debug)]
+pub struct FTLogicState {
+    pub admin: ActorId,
+    pub ftoken_id: ActorId,
+    pub transaction_status: Vec<(H256, TransactionStatus)>,
+    pub instructions: Vec<(H256, (Instruction, Instruction))>,
+    pub storage_code_hash: H256,
+    pub id_to_storage: Vec<(String, ActorId)>,
+}
+
+#[derive(Encode, Decode, TypeInfo, Clone, Debug)]
+pub enum TransactionStatus {
+    InProgress,
+    Success,
+    Failure,
+}
+
 #[derive(Debug, Encode, Decode, TypeInfo, Clone)]
 pub enum FTLogicAction {
     Message {
@@ -64,14 +95,4 @@ pub struct PermitUnsigned {
 pub struct InitFTLogic {
     pub admin: ActorId,
     pub storage_code_hash: H256,
-}
-
-#[derive(Encode, Debug, Decode, TypeInfo)]
-pub enum FTLogicState {
-    Storages,
-}
-
-#[derive(Encode, Debug, Decode, TypeInfo)]
-pub enum FTLogicStateReply {
-    Storages(Vec<(String, ActorId)>),
 }

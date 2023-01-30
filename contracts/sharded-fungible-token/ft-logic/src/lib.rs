@@ -1,8 +1,8 @@
 #![no_std]
+use ft_logic_io::instruction::*;
 use ft_logic_io::*;
 use gstd::{exec, msg, prelude::*, prog::ProgramGenerator, ActorId};
-mod instruction;
-use instruction::*;
+
 mod messages;
 use hashbrown::HashMap;
 use messages::*;
@@ -22,12 +22,6 @@ struct FTLogic {
 }
 
 static mut FT_LOGIC: Option<FTLogic> = None;
-
-pub enum TransactionStatus {
-    InProgress,
-    Success,
-    Failure,
-}
 
 impl FTLogic {
     /// The message received from the main contract.
@@ -467,26 +461,33 @@ fn send_delayed_clear(transaction_hash: H256) {
 }
 
 #[no_mangle]
-unsafe extern "C" fn meta_state() -> *mut [i32; 2] {
-    let query: FTLogicState = msg::load().expect("Unable to decode `State");
-    let logic: &mut FTLogic = FT_LOGIC.get_or_insert(Default::default());
-
-    let encoded = match query {
-        FTLogicState::Storages => {
-            let storages = Vec::from_iter(logic.id_to_storage.clone().into_iter());
-            FTLogicStateReply::Storages(storages)
-        }
-    }
-    .encode();
-    gstd::util::to_leak_ptr(encoded)
+extern "C" fn state() {
+    let logic = unsafe { FT_LOGIC.as_ref().expect("FTLogic is not initialized") };
+    let logic_state = FTLogicState {
+        admin: logic.admin,
+        ftoken_id: logic.ftoken_id,
+        transaction_status: logic
+            .transaction_status
+            .iter()
+            .map(|(key, value)| (*key, value.clone()))
+            .collect(),
+        instructions: logic
+            .instructions
+            .iter()
+            .map(|(key, value)| (*key, value.clone()))
+            .collect(),
+        storage_code_hash: logic.storage_code_hash,
+        id_to_storage: logic
+            .id_to_storage
+            .iter()
+            .map(|(key, value)| (key.clone(), *value))
+            .collect(),
+    };
+    msg::reply(logic_state, 0).expect("Failed to share state");
 }
 
-gstd::metadata! {
-    title: "Logic Fungible Token contract",
-    handle:
-        input: FTLogicAction,
-        output: FTLogicEvent,
-    state:
-        input: FTLogicState,
-        output: FTLogicStateReply,
+#[no_mangle]
+extern "C" fn metahash() {
+    let metahash: [u8; 32] = include!("../.metahash");
+    msg::reply(metahash, 0).expect("Failed to share metahash");
 }
