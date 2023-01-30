@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear" }
-gmeta = { git = "https://github.com/gear-tech/gear", features = ["codegen"] }
+gstd = { git = "https://github.com/gear-tech/gear", branch = "stable" }
+gmeta = { git = "https://github.com/gear-tech/gear", branch = "stable", features = ["codegen"] }
 ft-io = { path = "../io" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", features = ["metawasm"] }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", branch = "stable", features = ["metawasm"] }
