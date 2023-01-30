@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.8] - 2023-01-10
+### Added
+- Separate Rentable NFT program in another repository
+- Add new meta
+
 ## [0.2.7] - 2022-12-17
 ### Added
 - Rentable NFT program.
@@ -43,7 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.7...HEAD
+[Unreleased]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.8...HEAD
+[0.2.8]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.7...0.2.8
 [0.2.7]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.6...0.2.7
 [0.2.6]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.5...0.2.6
 [0.2.5]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.4...0.2.5

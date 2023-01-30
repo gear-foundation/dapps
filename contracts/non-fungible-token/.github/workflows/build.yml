@@ -41,12 +41,17 @@ jobs:
 
       - name: Run linter
         run: make linter
-
-      - name: Run tests
-        run: make test
-
+      
       - name: Build
         run: make build
+
+      - name: Run tests
+        run: |
+          curl -OL https://github.com/gear-tech/gear/releases/download/build/gear
+          chmod +x gear
+          ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
+          make full-test
+          kill `cat gear.pid`
 
       - name: Upload artifacts
         if: github.event_name == 'push'
