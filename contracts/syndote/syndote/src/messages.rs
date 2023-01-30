@@ -2,10 +2,15 @@ use crate::*;
 use gstd::errors::ContractError;
 
 pub async fn take_your_turn(player: &ActorId, game: &Game) -> Result<Vec<u8>, ContractError> {
+    let players = game
+        .players
+        .iter()
+        .map(|(key, value)| (*key, value.clone()))
+        .collect();
     msg::send_for_reply(
         *player,
         YourTurn {
-            players: game.players.clone(),
+            players,
             properties: game.properties.clone(),
         },
         0,

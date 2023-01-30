@@ -1,12 +1,41 @@
 #![no_std]
+use gmeta::{InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 pub type Price = u32;
 pub type Rent = u32;
 pub type Gears = Vec<Gear>;
 #[derive(Encode, Decode, TypeInfo)]
 pub struct YourTurn {
-    pub players: BTreeMap<ActorId, PlayerInfo>,
+    pub players: Vec<(ActorId, PlayerInfo)>,
     pub properties: Vec<Option<(ActorId, Gears, Price, Rent)>>,
+}
+
+pub struct SynMetadata;
+
+impl Metadata for SynMetadata {
+    type Init = InOut<(), ()>;
+    type Handle = InOut<GameAction, GameEvent>;
+    type Reply = InOut<(), ()>;
+    type Others = InOut<(), ()>;
+    type Signal = ();
+    type State = GameState;
+}
+
+#[derive(Clone, Default, Encode, Decode, TypeInfo)]
+pub struct GameState {
+    pub admin: ActorId,
+    pub properties_in_bank: Vec<u8>,
+    pub round: u128,
+    pub players: Vec<(ActorId, PlayerInfo)>,
+    pub players_queue: Vec<ActorId>,
+    pub current_player: ActorId,
+    pub current_step: u64,
+    // mapping from cells to built properties,
+    pub properties: Vec<Option<(ActorId, Gears, u32, u32)>>,
+    // mapping from cells to accounts who have properties on it
+    pub ownership: Vec<ActorId>,
+    pub game_status: GameStatus,
+    pub winner: ActorId,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
@@ -45,7 +74,7 @@ pub enum GameEvent {
     StrategicError,
     StrategicSuccess,
     Step {
-        players: BTreeMap<ActorId, PlayerInfo>,
+        players: Vec<(ActorId, PlayerInfo)>,
         properties: Vec<Option<(ActorId, Gears, Price, Rent)>>,
         current_player: ActorId,
         ownership: Vec<ActorId>,

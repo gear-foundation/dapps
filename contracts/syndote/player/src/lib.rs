@@ -14,13 +14,15 @@ async fn main() {
     //     monopoly_id,
     //     "Only monopoly contract can call strategic contract"
     // );
-    let mut message: YourTurn = msg::load().expect("Unable to decode struct`YourTurn`");
-    let my_player = message
+    let message: YourTurn = msg::load().expect("Unable to decode struct`YourTurn`");
+    let (_, mut player_info) = message
         .players
-        .get_mut(&exec::program_id())
-        .expect("Players: Cant be `None`");
-    if my_player.in_jail {
-        if my_player.balance <= FINE {
+        .iter()
+        .find(|(player, _player_info)| player == &exec::program_id())
+        .expect("Can't find my address")
+        .clone();
+    if player_info.in_jail {
+        if player_info.balance <= FINE {
             let reply: GameEvent = msg::send_for_reply_as(
                 monopoly_id,
                 GameAction::ThrowRoll {
@@ -35,7 +37,7 @@ async fn main() {
 
             if let GameEvent::Jail { in_jail, position } = reply {
                 if !in_jail {
-                    my_player.position = position;
+                    player_info.position = position;
                 } else {
                     msg::reply("", 0).expect("Error in sending a reply to monopoly contract");
                     return;
@@ -59,7 +61,7 @@ async fn main() {
         }
     }
 
-    let position = my_player.position;
+    let position = player_info.position;
 
     // debug!("BALANCE {:?}", my_player.balance);
     let (my_cell, free_cell, gears) =
@@ -134,10 +136,4 @@ async fn main() {
 #[no_mangle]
 unsafe extern "C" fn init() {
     //   MONOPOLY = msg::load::<ActorId>().expect("Unable to decode ActorId");
-}
-
-gstd::metadata! {
-title: "Player",
- //   init:
-   //     input: ActorId,
 }

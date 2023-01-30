@@ -18,13 +18,13 @@ pub mod messages;
 use messages::*;
 const RESERVATION_AMOUNT: u64 = 245_000_000_000;
 const GAS_FOR_ROUND: u64 = 60_000_000_000;
-
-#[derive(Clone, Default, Encode, Decode, TypeInfo)]
+use hashbrown::{HashMap, HashSet};
+#[derive(Clone, Default)]
 pub struct Game {
     admin: ActorId,
-    properties_in_bank: BTreeSet<u8>,
+    properties_in_bank: HashSet<u8>,
     round: u128,
-    players: BTreeMap<ActorId, PlayerInfo>,
+    players: HashMap<ActorId, PlayerInfo>,
     players_queue: Vec<ActorId>,
     current_player: ActorId,
     current_step: u64,
@@ -188,7 +188,11 @@ impl Game {
                 msg::send(
                     self.admin,
                     GameEvent::Step {
-                        players: self.players.clone(),
+                        players: self
+                            .players
+                            .iter()
+                            .map(|(key, value)| (*key, value.clone()))
+                            .collect(),
                         properties: self.properties.clone(),
                         current_player: self.current_player,
                         current_step: self.current_step,
@@ -231,13 +235,6 @@ async fn main() {
 }
 
 #[no_mangle]
-extern "C" fn meta_state() -> *mut [i32; 2] {
-    let game: &mut Game = unsafe { GAME.get_or_insert(Default::default()) };
-    let encoded = game.encode();
-    gstd::util::to_leak_ptr(encoded)
-}
-
-#[no_mangle]
 unsafe extern "C" fn init() {
     let mut game = Game {
         admin: msg::source(),
@@ -247,21 +244,15 @@ unsafe extern "C" fn init() {
     GAME = Some(game);
 }
 
-gstd::metadata! {
-title: "Syncdote",
-    handle:
-        input: GameAction,
-        output: GameEvent,
-   state:
-       output: Game,
+#[no_mangle]
+extern "C" fn state() {
+    let game = unsafe { GAME.as_ref().expect("Game is not initialized") };
+    let game_state: GameState = game.into();
+    msg::reply(game_state, 0).expect("Failed to share state");
 }
 
-// TODO: possible realization with journal handling
-
-#[derive(Clone, Encode, Decode, TypeInfo)]
-pub enum Step {
-    BuyCell { cell: u8, account: ActorId },
-    AddGear { cell: u8 },
-    Upgrade { cell: u8 },
-    Sell { cell: u8 },
+#[no_mangle]
+extern "C" fn metahash() {
+    let metahash: [u8; 32] = include!("../.metahash");
+    msg::reply(metahash, 0).expect("Failed to share metahash");
 }
