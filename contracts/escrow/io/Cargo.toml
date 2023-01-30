@@ -1,0 +1,15 @@
+[package]
+name = "escrow-io"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["codegen"] }
+primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }

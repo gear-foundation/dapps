@@ -31,8 +31,8 @@ pub trait FToken {
 impl FToken for Program<'_> {
     fn ftoken(owner: u64, id: u64, system: &System) -> Program {
         let ftoken = Program::from_file_with_id(system, id, "./target/ft_main.wasm");
-        let storage_code_hash: [u8; 32] = system.submit_code("./target/ft_storage.opt.wasm").into();
-        let ft_logic_code_hash: [u8; 32] = system.submit_code("./target/ft_logic.opt.wasm").into();
+        let storage_code_hash: [u8; 32] = system.submit_code("./target/ft_storage.wasm").into();
+        let ft_logic_code_hash: [u8; 32] = system.submit_code("./target/ft_logic.wasm").into();
 
         let res = ftoken.send(
             owner,

@@ -1,5 +1,28 @@
+#![no_std]
+
+use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 use primitive_types::U256;
+
+pub struct EscrowMetadata;
+
+impl Metadata for EscrowMetadata {
+    type Init = In<InitEscrow>;
+    type Handle = InOut<EscrowAction, EscrowEvent>;
+    type Others = ();
+    type Reply = ();
+    type Signal = ();
+    type State = EscrowState;
+}
+
+#[derive(Default, Encode, Decode, Clone, TypeInfo)]
+pub struct EscrowState {
+    pub ft_program_id: ActorId,
+    pub wallets: Vec<(WalletId, Wallet)>,
+    pub id_nonce: WalletId,
+    pub transaction_id: u64,
+    pub transactions: Vec<(u64, Option<EscrowAction>)>,
+}
 
 /// An escrow wallet ID.
 pub type WalletId = U256;
@@ -134,37 +157,6 @@ pub enum EscrowEvent {
     ),
     TransactionProcessed,
     TransactionFailed,
-}
-
-/// An enum for requesting the program state.
-///
-/// After a successful processing of this enum, the program replies with [`EscrowStateReply`].
-#[derive(Decode, Encode, TypeInfo)]
-pub enum EscrowState {
-    /// Gets wallet info.
-    ///
-    /// On success, returns [`EscrowStateReply::Info`].
-    Info(
-        /// A wallet ID.
-        WalletId,
-    ),
-    /// Gets all created wallets.
-    ///
-    /// On success, returns [`EscrowStateReply::CreatedWallets`].
-    CreatedWallets,
-}
-
-/// An enum that contains a reply for a requested [`EscrowState`].
-#[derive(Decode, Encode, TypeInfo, Debug, PartialEq, Eq)]
-pub enum EscrowStateReply {
-    Info(
-        /// Wallet info.
-        Wallet,
-    ),
-    CreatedWallets(
-        /// All created wallets in the ID-info format.
-        Vec<(WalletId, Wallet)>,
-    ),
 }
 
 /// Escrow wallet information.

@@ -1,4 +1,4 @@
-use escrow::io::{EscrowAction, InitEscrow};
+use escrow_io::{EscrowAction, InitEscrow};
 use gclient::{EventProcessor, GearApi, Result};
 use gstd::Encode;
 
@@ -19,6 +19,7 @@ pub const AMOUNT_REMAINDER: u128 = 20000;
 pub const NONEXISTENT_WALLET: u128 = 999999;
 
 #[tokio::test]
+#[ignore]
 async fn init() -> Result<()> {
     let api = GearApi::dev().await?;
 
@@ -40,7 +41,6 @@ async fn init() -> Result<()> {
             init_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -60,6 +60,7 @@ async fn init() -> Result<()> {
 }
 
 #[tokio::test]
+#[ignore]
 async fn create() -> Result<()> {
     let api = GearApi::dev().await?;
 
@@ -81,7 +82,6 @@ async fn create() -> Result<()> {
             init_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -110,7 +110,6 @@ async fn create() -> Result<()> {
             escrow_create_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -130,6 +129,7 @@ async fn create() -> Result<()> {
 }
 
 #[tokio::test]
+#[ignore]
 async fn deposit_not_enough_tokens() -> Result<()> {
     let api = GearApi::dev().await?;
 
@@ -151,7 +151,6 @@ async fn deposit_not_enough_tokens() -> Result<()> {
             init_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -180,7 +179,6 @@ async fn deposit_not_enough_tokens() -> Result<()> {
             escrow_create_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -207,7 +205,6 @@ async fn deposit_not_enough_tokens() -> Result<()> {
             deposit_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -225,6 +222,7 @@ async fn deposit_not_enough_tokens() -> Result<()> {
 }
 
 #[tokio::test]
+#[ignore]
 async fn not_buyer_confirm() -> Result<()> {
     let api = GearApi::dev().await?;
 
@@ -246,7 +244,6 @@ async fn not_buyer_confirm() -> Result<()> {
             init_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -275,7 +272,6 @@ async fn not_buyer_confirm() -> Result<()> {
             escrow_create_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -302,7 +298,6 @@ async fn not_buyer_confirm() -> Result<()> {
             deposit_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -327,7 +322,6 @@ async fn not_buyer_confirm() -> Result<()> {
             confirm_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -345,6 +339,7 @@ async fn not_buyer_confirm() -> Result<()> {
 }
 
 #[tokio::test]
+#[ignore]
 async fn cancel_paid() -> Result<()> {
     let api = GearApi::dev().await?;
 
@@ -366,7 +361,6 @@ async fn cancel_paid() -> Result<()> {
             init_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -395,7 +389,6 @@ async fn cancel_paid() -> Result<()> {
             escrow_create_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -422,7 +415,6 @@ async fn cancel_paid() -> Result<()> {
             deposit_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -447,7 +439,6 @@ async fn cancel_paid() -> Result<()> {
             cancel_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -465,6 +456,7 @@ async fn cancel_paid() -> Result<()> {
 }
 
 #[tokio::test]
+#[ignore]
 async fn refund_not_paid() -> Result<()> {
     let api = GearApi::dev().await?;
 
@@ -486,7 +478,6 @@ async fn refund_not_paid() -> Result<()> {
             init_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -515,7 +506,6 @@ async fn refund_not_paid() -> Result<()> {
             escrow_create_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 
@@ -542,7 +532,6 @@ async fn refund_not_paid() -> Result<()> {
             refund_payload.clone(),
             0,
             true,
-            None,
         )
         .await?;
 

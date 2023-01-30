@@ -43,8 +43,9 @@ pub fn cancel(escrow_program: &Program, wallet_id: u128, from: u64) {
         .main_failed());
 }
 
-pub fn info(escrow_program: &Program, wallet_id: u128) {
-    escrow_program
-        .meta_state::<_, EscrowStateReply>(EscrowState::Info(wallet_id.into()))
-        .unwrap();
+pub fn info(_escrow_program: &Program, _wallet_id: u128) {
+    unimplemented!("New metawasm state unimplemented!")
+    /* escrow_program
+    .meta_state::<_, EscrowStateReply>(EscrowState::Info(wallet_id.into()))
+    .unwrap(); */
 }

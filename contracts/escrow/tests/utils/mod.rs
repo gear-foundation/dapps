@@ -1,4 +1,4 @@
-pub use escrow::io::*;
+pub use escrow_io::*;
 use gstd::prelude::*;
 pub use gtest::{Program, System};
 pub use token::*;
