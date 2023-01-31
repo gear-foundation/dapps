@@ -7,7 +7,7 @@ authors = ["Gear Technologies"]
 
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "stable" }
-sp-core-hashing = { version = "5.0.0", default-features = false }
+sp-core-hashing = { version = "6.0.0", default-features = false }
 rps-io = { path = "io" }
 hashbrown = "0.13.1"
 gmeta = { git = "https://github.com/gear-tech/gear", branch = "stable" }
