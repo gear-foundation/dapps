@@ -49,4 +49,4 @@ test: deps
 
 full-test: deps
 	@echo ⚙️ Running all tests...
-	@cargo +nightly t -- --include-ignored
+	@cargo +nightly t -- --include-ignored --test-threads=1
