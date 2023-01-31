@@ -337,7 +337,7 @@ extern "C" fn init() {
 
     if is_err {
         exec::exit(ActorId::zero());
-    }   
+    }
 }
 
 fn process_init() -> Result<(), NFTPixelboardError> {
@@ -374,7 +374,7 @@ fn process_init() -> Result<(), NFTPixelboardError> {
     };
 
     if painting.len() != pixel_count {
-       return Err(NFTPixelboardError::WrongPaintingLength);
+        return Err(NFTPixelboardError::WrongPaintingLength);
     }
 
     if resolution.width % block_side_length != 0 || resolution.height % block_side_length != 0 {

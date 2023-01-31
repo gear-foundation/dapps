@@ -26,65 +26,77 @@ fn initialization_failures() {
     let mut failed_pixelboard_config = pixelboard_config.clone();
     failed_pixelboard_config.owner = ActorId::zero();
     // Should fail because `owner` address mustn't be `ActorId::zero()`.
-    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config).failed(NFTPixelboardError::ZeroAddress);
+    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config)
+        .failed(NFTPixelboardError::ZeroAddress);
 
     failed_pixelboard_config = pixelboard_config.clone();
     failed_pixelboard_config.ft_program = ActorId::zero();
     // Should fail because `ft_program` address mustn't be `ActorId::zero()`.
-    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config).failed(NFTPixelboardError::ZeroAddress);
+    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config)
+        .failed(NFTPixelboardError::ZeroAddress);
 
     failed_pixelboard_config = pixelboard_config.clone();
     failed_pixelboard_config.nft_program = ActorId::zero();
     // Should fail because `nft_program` address mustn't be `ActorId::zero()`.
-    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config).failed(NFTPixelboardError::ZeroAddress);
+    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config)
+        .failed(NFTPixelboardError::ZeroAddress);
 
     failed_pixelboard_config = pixelboard_config.clone();
     failed_pixelboard_config.block_side_length = 0;
     // Should fail because `block_side_length` must be more than 0.
-    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config).failed(NFTPixelboardError::ZeroBlockSideLength);
+    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config)
+        .failed(NFTPixelboardError::ZeroBlockSideLength);
 
     failed_pixelboard_config = pixelboard_config.clone();
     failed_pixelboard_config.resolution.width = 0;
     // Should fail because canvas `width` must be more than 0.
-    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config).failed(NFTPixelboardError::ZeroWidthOrHeight);
+    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config)
+        .failed(NFTPixelboardError::ZeroWidthOrHeight);
 
     failed_pixelboard_config = pixelboard_config.clone();
     failed_pixelboard_config.resolution.height = 0;
     // Should fail because canvas `height` must be more than 0.
-    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config).failed(NFTPixelboardError::ZeroWidthOrHeight);
+    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config)
+        .failed(NFTPixelboardError::ZeroWidthOrHeight);
 
     failed_pixelboard_config = pixelboard_config.clone();
     failed_pixelboard_config.resolution = (0, 0).into();
     // Should fail because a width & height of a canvas must be more than 0.
-    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config).failed(NFTPixelboardError::ZeroWidthOrHeight);
+    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config)
+        .failed(NFTPixelboardError::ZeroWidthOrHeight);
 
     failed_pixelboard_config = pixelboard_config.clone();
     failed_pixelboard_config.resolution.width = 15;
     failed_pixelboard_config.painting = vec![1; 150];
     // Should fail because each side of `resolution` must be a multiple of `block_side_length`.
-    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config).failed(NFTPixelboardError::WrongResolution);
+    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config)
+        .failed(NFTPixelboardError::WrongResolution);
 
     failed_pixelboard_config = pixelboard_config.clone();
     failed_pixelboard_config.resolution.height = 15;
     failed_pixelboard_config.painting = vec![1; 150];
     // Should fail because each side of `resolution` must be a multiple of `block_side_length`.
-    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config).failed(NFTPixelboardError::WrongResolution);
+    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config)
+        .failed(NFTPixelboardError::WrongResolution);
 
     failed_pixelboard_config = pixelboard_config.clone();
     failed_pixelboard_config.resolution = (15, 15).into();
     failed_pixelboard_config.painting = vec![1; 225];
     // Should fail because each side of `resolution` must be a multiple of `block_side_length`.
-    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config).failed(NFTPixelboardError::WrongResolution);
+    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config)
+        .failed(NFTPixelboardError::WrongResolution);
 
     failed_pixelboard_config = pixelboard_config.clone();
     failed_pixelboard_config.commission_percentage = 101;
     // Should fail because `commission_percentage` mustn't be more than 100.
-    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config).failed(NFTPixelboardError::WrongCommissionPercentage);
+    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config)
+        .failed(NFTPixelboardError::WrongCommissionPercentage);
 
     failed_pixelboard_config = pixelboard_config;
     failed_pixelboard_config.pixel_price = MAX_PIXEL_PRICE + 1;
     // Should fail because `pixel_price` mustn't be more than `MAX_PIXEL_PRICE`.
-    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config).failed(NFTPixelboardError::PixelPriceExceeded);
+    NFTPixelboard::initialize_custom(&system, failed_pixelboard_config)
+        .failed(NFTPixelboardError::PixelPriceExceeded);
 
     // failed_pixelboard_config = pixelboard_config.clone();
     // failed_pixelboard_config.painting = vec![1; 101];
