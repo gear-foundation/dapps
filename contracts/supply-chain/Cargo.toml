@@ -21,7 +21,7 @@ hashbrown = "0.13"
 gtest = { git = "https://github.com/gear-tech/gear.git"}
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" , features = ["debug"] }
 gclient = { git = "https://github.com/gear-tech/gear.git" }
-sp-core-hashing = "5"
+sp-core-hashing = "6"
 subxt = { git = "https://github.com/paritytech/subxt", rev = "d41f6574", default-features = false }
 primitive-types = "0.12"
 tokio = "1"
