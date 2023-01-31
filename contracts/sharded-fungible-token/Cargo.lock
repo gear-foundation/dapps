@@ -1541,7 +1541,7 @@ dependencies = [
  "primitive-types",
  "scale-info",
  "sp-core 6.0.0",
- "sp-core-hashing 5.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
+ "sp-core-hashing 6.0.0",
  "tokio",
 ]
 
@@ -5257,6 +5257,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "sp-core-hashing"
+version = "6.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "cbc2d1947252b7a4e403b0a260f596920443742791765ec111daa2bbf98eff25"
+dependencies = [
+ "blake2",
+ "byteorder",
+ "digest 0.10.6",
+ "sha2 0.10.6",
+ "sha3",
+ "sp-std 6.0.0",
+ "twox-hash",
+]
+
+[[package]]
 name = "sp-core-hashing-proc-macro"
 version = "5.0.0"
 source = "git+https://github.com/gear-tech/substrate.git?branch=gear-polkadot-v0.9.36#dab82dc6e8ca3fe43616d857b260a42a73ec28ca"
@@ -5729,6 +5744,12 @@ checksum = "cf3fd4c1d304be101e6ebbafd3d4be9a37b320c970ef4e8df188b16873981c93"
 name = "sp-std"
 version = "5.0.0"
 source = "git+https://github.com/gear-tech/substrate.git?branch=gear-polkadot-v0.9.36#dab82dc6e8ca3fe43616d857b260a42a73ec28ca"
+
+[[package]]
+name = "sp-std"
+version = "6.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af0ee286f98455272f64ac5bb1384ff21ac029fbb669afbaf48477faff12760e"
 
 [[package]]
 name = "sp-storage"

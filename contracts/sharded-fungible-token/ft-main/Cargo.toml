@@ -9,7 +9,7 @@ ft-logic-io = { path = "../ft-logic/io" }
 ft-main-io = { path = "io" }
 ft-storage-io = { path = "../ft-storage/io" }
 primitive-types = { version = "0.12.1", default-features = false }
-sp-core-hashing = { version = "5.0.0", default-features = false }
+sp-core-hashing = { version = "6.0.0", default-features = false }
 hashbrown = { version = "0.13.1" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
