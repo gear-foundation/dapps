@@ -22,6 +22,7 @@ ft-main-io = { path = "io" }
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
 light_sr25519 = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 hex-literal = "0.3.4"
 sp-core = { version = "6.0.0", git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
