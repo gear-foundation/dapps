@@ -9,9 +9,9 @@ authors = ["Gear Technologies"]
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "stable" }
 auction-io = { path = "io" }
 primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
-nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", branch = "new_meta" }
+nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.8" }
 gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.4" }
-gmeta = { git = "https://github.com/gear-tech/gear" }
+gmeta = { git = "https://github.com/gear-tech/gear", branch = "stable" }
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
@@ -20,7 +20,7 @@ gclient = { git = "https://github.com/gear-tech/gear.git", branch = "master" }
 tokio = { version = "1.24.2", features = ["full"] }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 auction-io = { path = "io" }
 
 [workspace]

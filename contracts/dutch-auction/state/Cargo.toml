@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear", branch = "stable" }
-gmeta = { git = "https://github.com/gear-tech/gear", features = ["codegen"] }
+gmeta = { git = "https://github.com/gear-tech/gear", branch = "stable", features = ["codegen"] }
 auction-io = { path = "../io" }
 
 [build-dependencies]
