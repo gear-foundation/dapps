@@ -1,7 +1,8 @@
-use dao_light::io::*;
+mod utils;
+
+use dao_light_io::*;
 use gstd::Encode;
 use gtest::System;
-mod utils;
 use utils::*;
 
 #[test]

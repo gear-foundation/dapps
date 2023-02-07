@@ -183,11 +183,32 @@ checksum = "7a81dae078cea95a014a339291cec439d2f232ebe854a9d672b796c6afafa9b7"
 name = "dao-light"
 version = "0.1.1"
 dependencies = [
+ "dao-light-io",
  "ft-io",
  "gear-wasm-builder",
  "gstd",
  "gtest",
  "hashbrown 0.13.2",
+]
+
+[[package]]
+name = "dao-light-io"
+version = "0.1.0"
+dependencies = [
+ "gmeta",
+ "gstd",
+ "parity-scale-codec",
+ "scale-info",
+]
+
+[[package]]
+name = "dao-light-state"
+version = "0.1.0"
+dependencies = [
+ "dao-light-io",
+ "gear-wasm-builder",
+ "gmeta",
+ "gstd",
 ]
 
 [[package]]
@@ -502,9 +523,20 @@ version = "0.1.0"
 source = "git+https://github.com/gear-tech/gear.git?branch=stable#4095c53bcb8a491dfe1430432a2b0730bd833cda"
 dependencies = [
  "blake2-rfc",
+ "gmeta-codegen",
  "hex",
  "parity-scale-codec",
  "scale-info",
+]
+
+[[package]]
+name = "gmeta-codegen"
+version = "0.1.0"
+source = "git+https://github.com/gear-tech/gear.git?branch=stable#4095c53bcb8a491dfe1430432a2b0730bd833cda"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -1164,7 +1196,7 @@ dependencies = [
  "serde",
  "serde_spanned",
  "toml_datetime 0.6.1",
- "toml_edit 0.19.1",
+ "toml_edit 0.19.2",
 ]
 
 [[package]]
@@ -1195,9 +1227,9 @@ dependencies = [
 
 [[package]]
 name = "toml_edit"
-version = "0.19.1"
+version = "0.19.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90a238ee2e6ede22fb95350acc78e21dc40da00bb66c0334bde83de4ed89424e"
+checksum = "1f35c303ea3e062b6131be4de16debe23860b9d3f2396658f13b7af1987fb473"
 dependencies = [
  "indexmap",
  "nom8",

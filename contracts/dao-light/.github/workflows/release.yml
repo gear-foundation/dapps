@@ -45,7 +45,6 @@ jobs:
         run: |
           wget -c https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O - | tar -xz -C .
           sudo cp binaryen-version_110/bin/wasm-opt /usr/bin/
-
       - name: Build
         run: make build
 
@@ -65,7 +64,6 @@ jobs:
             fi
             mv "$WASM" "$NAME-${{ needs.prepare.outputs.version }}.$EXT"
           done
-
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
         with:
