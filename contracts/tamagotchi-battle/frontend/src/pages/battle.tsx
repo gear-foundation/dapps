@@ -9,7 +9,7 @@ export const Battle = () => {
 
   return (
     <>
-      {battle?.state === 'Registration' && isAdmin ? <BattleWaitAdmin /> : <BattleWaitRegistration />}
+      {battle?.state === 'Registration' && (isAdmin ? <BattleWaitAdmin /> : <BattleWaitRegistration />)}
       {battle && Object.keys(battle.players).length > 0 && <BattlePlayersQueue />}
     </>
   );

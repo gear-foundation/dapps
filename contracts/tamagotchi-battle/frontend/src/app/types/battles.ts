@@ -3,7 +3,7 @@ import { TamagotchiState } from './lessons';
 
 export type TamagotchiColor = 'Green' | 'Red' | 'Blue' | 'Purple' | 'Orange' | 'Yellow';
 
-export type BattlePlayerResponse = {
+export type BattlePlayerType = {
   attributes: number[];
   color: TamagotchiColor;
   defence: number;
@@ -26,7 +26,7 @@ export type BattleStatesList = 'Registration' | 'GameIsOn' | 'WaitNextRound' | '
 export type BattleStateResponse = {
   admin: HexString;
   currentWinner: HexString;
-  players: Record<HexString, BattlePlayerResponse>;
+  players: Record<HexString, BattlePlayerType>;
   playersIds: [];
   round: {
     moves: [];

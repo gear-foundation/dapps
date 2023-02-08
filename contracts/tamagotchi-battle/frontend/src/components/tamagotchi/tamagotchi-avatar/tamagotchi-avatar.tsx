@@ -4,13 +4,15 @@ import { Icon } from 'components/ui/icon';
 import { StoreItemsNames } from 'app/types/ft-store';
 import { getTamagotchiAgeDiff } from 'app/utils/get-tamagotchi-age';
 import { TamagotchiAvatarAge, TamagotchiAvatarEmotions } from 'app/types/tamagotchi';
+import { TamagotchiColor } from '../../../app/types/battles';
+import { getTamagotchiColor } from '../../../app/utils/get-tamagotchi-color';
 
 type TamagotchiAvatarProps = {
   emotion?: TamagotchiAvatarEmotions;
   age?: TamagotchiAvatarAge;
   isDead?: boolean;
   hasItem?: StoreItemsNames[];
-  color?: string;
+  color?: TamagotchiColor;
   className?: string;
   isActive?: boolean;
   inBattle?: boolean;
@@ -24,7 +26,7 @@ export const TamagotchiAvatar = ({
   age = 'baby',
   isDead,
   hasItem = [],
-  color,
+  color = 'Green',
   isActive,
   isWinner,
   energy,
@@ -67,14 +69,16 @@ export const TamagotchiAvatar = ({
   const body = `body-${tamagotchiDied ? 'dead' : 'normal'}`;
 
   return (
-    <div className={clsx('relative text-[#16B768]', className ?? 'grow w-full h-30 aspect-square')}>
+    <div className={clsx('relative', getTamagotchiColor(color).body, className ?? 'grow w-full h-30 aspect-square')}>
       {!tamagotchiDied && <Icon name={tail} section={s} className={cn} />}
       {!tamagotchiDied && <Icon name={hands} section={s} className={cn} />}
+      <Icon name="body-stand" section={s} className={cn} />
+      <Icon name="sneakers" section={s} className={clsx(cn, getTamagotchiColor(color).sneakers)} />
       <Icon name={body} section={s} className={cn} />
       {itemsUsed?.includes('bag') && <Icon name="body-bag" section={s} className={cn} />}
       <Icon name={head} section={s} className={cn} />
       <Icon name={mouse} section={s} className={cn} />
-      <Icon name={eye} section={s} className={cn} />
+      <Icon name={eye} section={s} className={clsx(cn, 'text-[#16B768]')} />
       {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
       {!tamagotchiDied && glasses && <Icon name={glasses} section={s} className={cn} />}
       {!tamagotchiDied && itemsUsed?.includes('hat') && <Icon name="head-hat" section={s} className={cn} />}

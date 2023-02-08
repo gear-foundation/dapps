@@ -45,7 +45,7 @@ export function useInitBattleData() {
 
       console.log({ state, players: Object.values(state.players) });
     }
-  }, [state]);
+  }, [state, account]);
 }
 
 export function useBattleMessage() {
