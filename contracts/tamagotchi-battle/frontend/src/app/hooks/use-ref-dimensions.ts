@@ -16,6 +16,7 @@ const useRefDimensions = (ref: MutableRefObject<HTMLElement | null>) => {
 
   useEffect(() => {
     const handleResize = debounce(() => {
+      console.log('????', ref.current);
       if (ref.current) {
         const { width, height } = ref.current.getBoundingClientRect();
         setDimensions([width, height]);
