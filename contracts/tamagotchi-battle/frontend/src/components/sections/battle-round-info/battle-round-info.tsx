@@ -1,12 +1,12 @@
 import { TamagotchiBattleInfoCard } from '../../tamagotchi/tamagotchi-battle-info-card';
 import { useBattle } from 'app/context';
-import { BattleStateResponse } from '../../../app/types/battles';
+import { BattleStateResponse } from 'app/types/battles';
 import { Icon } from '../../ui/icon';
 
 export const BattleRoundInfo = ({ battle }: { battle: BattleStateResponse }) => {
   const { players, currentPlayer } = useBattle();
   return (
-    <div className="relative flex gap-10 justify-between mt-8 xl:mt-10">
+    <div className="relative flex gap-10 justify-between mt-4 xl:mt-7">
       <div className="basis-[445px] flex justify-center">
         <TamagotchiBattleInfoCard tamagotchi={players[0]} isActive={players[0].tmgId === currentPlayer} />
       </div>

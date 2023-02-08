@@ -70,6 +70,63 @@ export const TamagotchiAvatar = ({
 
   return (
     <div className={clsx('relative', getTamagotchiColor(color).body, className ?? 'grow w-full h-30 aspect-square')}>
+      <svg
+        width="530"
+        height="614"
+        viewBox="0 0 530 614"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={clsx(
+          'absolute inset-x-0 top-1/2 w-full h-auto aspect-[450/523] -translate-y-1/2 transition-opacity duration-1000',
+          !isActive && 'opacity-0',
+        )}>
+        <g filter="url(#filter0_f_61_21481)">
+          <ellipse cx="265" cy="513.5" rx="225" ry="60.5" fill="#A6A6A6" />
+        </g>
+        <g style={{ mixBlendMode: 'color-dodge' }} opacity="0.45" filter="url(#filter1_f_61_21481)">
+          <path
+            d="M77.9948 495.748C69.6856 527.441 93.5956 558.428 126.36 558.428H396.715C429.215 558.428 453.078 527.908 445.239 496.368L334.546 50.9987H194.596L77.9948 495.748Z"
+            fill="url(#paint0_linear_61_21481)"
+          />
+        </g>
+        <defs>
+          <filter
+            id="filter0_f_61_21481"
+            x="0"
+            y="413"
+            width="530"
+            height="201"
+            filterUnits="userSpaceOnUse"
+            colorInterpolationFilters="sRGB">
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+            <feGaussianBlur stdDeviation="20" result="effect1_foregroundBlur_61_21481" />
+          </filter>
+          <filter
+            id="filter1_f_61_21481"
+            x="26.3335"
+            y="0.998779"
+            width="470.406"
+            height="607.429"
+            filterUnits="userSpaceOnUse"
+            colorInterpolationFilters="sRGB">
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
+            <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
+            <feGaussianBlur stdDeviation="25" result="effect1_foregroundBlur_61_21481" />
+          </filter>
+          <linearGradient
+            id="paint0_linear_61_21481"
+            x1="245.857"
+            y1="558.428"
+            x2="245.857"
+            y2="50.9987"
+            gradientUnits="userSpaceOnUse">
+            <stop stopColor="#CECECE" stopOpacity="0" />
+            <stop offset="0.350975" stopColor="#CBCBCB" />
+            <stop offset="1" stopColor="#BCBCBC" />
+          </linearGradient>
+        </defs>
+      </svg>
       {!tamagotchiDied && <Icon name={tail} section={s} className={cn} />}
       {!tamagotchiDied && <Icon name={hands} section={s} className={cn} />}
       <Icon name="body-stand" section={s} className={cn} />
@@ -82,17 +139,6 @@ export const TamagotchiAvatar = ({
       {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
       {!tamagotchiDied && glasses && <Icon name={glasses} section={s} className={cn} />}
       {!tamagotchiDied && itemsUsed?.includes('hat') && <Icon name="head-hat" section={s} className={cn} />}
-      {!tamagotchiDied && (isActive || isWinner) && (
-        <div className="absolute top-full -z-1 left-1/2 -translate-x-1/2">
-          <div
-            className={clsx(
-              'animate-pulse opacity-70 blur-2xl w-64 h-40',
-              isActive && 'bg-white',
-              isWinner && 'bg-primary',
-            )}
-          />
-        </div>
-      )}
       {Boolean(damage) && (
         <div className="absolute top-1/4 right-15 w-12 h-12 grid place-items-center">
           <Icon name="damage" section={s} className="absolute inset-0 w-full h-full" />

@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { Icon } from '../../ui/icon';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
 import { useEffect, useState } from 'react';
+import { getTamagotchiAgeDiff } from '../../../app/utils/get-tamagotchi-age';
 
 type TamagotchiBattleInfoCardProps = {
   tamagotchi: BattlePlayerType;
@@ -45,7 +46,7 @@ export const TamagotchiBattleInfoCard = ({ tamagotchi, isActive }: TamagotchiBat
         <TamagotchiAvatar
           inBattle
           className="w-30 xl:w-48 aspect-square -left-1/2"
-          age={'baby'}
+          age={getTamagotchiAgeDiff(tamagotchi.dateOfBirth)}
           hasItem={[]}
           color={tamagotchi.color}
           isDead={dead}

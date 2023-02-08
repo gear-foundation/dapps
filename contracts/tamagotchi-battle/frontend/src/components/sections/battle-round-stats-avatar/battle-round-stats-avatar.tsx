@@ -3,6 +3,7 @@ import { TamagotchiAvatar } from 'components/tamagotchi/tamagotchi-avatar';
 import { BattlePlayerType, BattleStatesList } from 'app/types/battles';
 import { Icon } from 'components/ui/icon';
 import { useEffect, useState } from 'react';
+import { getTamagotchiAgeDiff } from '../../../app/utils/get-tamagotchi-age';
 
 type Props = {
   tamagotchi: BattlePlayerType;
@@ -31,7 +32,7 @@ export const BattleRoundStatsAvatar = ({ isWinner, state, tamagotchi, isReverse,
           <TamagotchiAvatar
             inBattle
             className="w-30 xl:w-48 aspect-square -left-1/2"
-            age={'baby'}
+            age={getTamagotchiAgeDiff(tamagotchi.dateOfBirth)}
             hasItem={[]}
             color={tamagotchi.color}
             isDead={dead}

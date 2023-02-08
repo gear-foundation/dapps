@@ -1,62 +1,90 @@
-export const BattleRoundAvatars = () => {
+import { TamagotchiAvatar } from '../../tamagotchi/tamagotchi-avatar';
+import { useApp, useBattle } from '../../../app/context';
+import { getTamagotchiAgeDiff } from '../../../app/utils/get-tamagotchi-age';
+import clsx from 'clsx';
+import { buttonStyles } from '@gear-js/ui';
+import { BattleStateResponse } from '../../../app/types/battles';
+import { Icon } from '../../ui/icon';
+import { useBattleMessage } from '../../../app/hooks/use-battle';
+import { useEffect, useState } from 'react';
+import { useAccount } from '@gear-js/react-hooks';
+
+export const BattleRoundAvatars = ({ battle }: { battle: BattleStateResponse }) => {
+  const { isPending, setIsPending } = useApp();
+  const { account } = useAccount();
+  const { players, currentPlayer } = useBattle();
+  const [isAllowed, setIsAllowed] = useState<boolean>(false);
+  const handleMessage = useBattleMessage();
+
+  useEffect(() => {
+    if (battle && account && currentPlayer) {
+      setIsAllowed(battle.players[currentPlayer].owner === account.decodedAddress);
+    }
+  }, [account, battle, currentPlayer]);
+
+  const onSuccess = () => setIsPending(false);
+  const onError = () => setIsPending(false);
+  const onAttack = () => {
+    setIsPending(true);
+    handleMessage({ MakeMove: { Attack: null } }, { onSuccess, onError });
+  };
+  const onDefence = () => {
+    setIsPending(true);
+    handleMessage({ MakeMove: { Defence: null } }, { onSuccess, onError });
+  };
+
   return (
     <div className="relative grow grid grid-cols-[repeat(2,minmax(auto,445px))] justify-between gap-10 mt-10 xl:mt-15">
-      {/*<div className="w-full h-full flex flex-col">*/}
-      {/*  <TamagotchiAvatar*/}
-      {/*    inBattle*/}
-      {/*    age={getTamagotchiAgeDiff(warriors[0].dateOfBirth)}*/}
-      {/*    hasItem={[]}*/}
-      {/*    energy={warriors[1]?.energy}*/}
-      {/*    className="grow w-full h-full "*/}
-      {/*    isActive={battle?.currentTurn === 0 && battle?.state !== 'GameIsOver'}*/}
-      {/*    isWinner={battle?.state === 'GameIsOver' && battle.winner === battle.players[0].tmgId}*/}
-      {/*    isDead={battle?.state === 'GameIsOver' && battle.winner !== battle.players[0].tmgId}*/}
-      {/*  />*/}
-      {/*</div>*/}
-      {/*<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-8">*/}
-      {/*  /!*{winner && (*!/*/}
-      {/*  /!*  <p className="flex flex-col items-center">*!/*/}
-      {/*  /!*    <strong className="text-2xl leading-normal xl:typo-h2 text-primary truncate max-w-[9ch]">*!/*/}
-      {/*  /!*      {winner.name}*!/*/}
-      {/*  /!*    </strong>*!/*/}
-      {/*  /!*    <span className="text-[60px] leading-[1.2] font-bold xl:typo-h1">Win</span>*!/*/}
-      {/*  /!*  </p>*!/*/}
-      {/*  /!*)}*!/*/}
-
-      {/*  <button*/}
-      {/*    className={clsx(*/}
-      {/*      'btn items-center gap-2 min-w-[250px]',*/}
-      {/*      battle?.state === 'Moves'*/}
-      {/*        ? 'bg-error text-white hover:bg-red-600 transition-colors'*/}
-      {/*        : battle?.state === 'GameIsOver'*/}
-      {/*        ? buttonStyles.secondary*/}
-      {/*        : buttonStyles.primary,*/}
-      {/*      buttonStyles.button,*/}
-      {/*    )}*/}
-      {/*    onClick={handleAttack}*/}
-      {/*    disabled={isPending}>*/}
-      {/*    <Icon name="swords" className="w-5 h-5" />{' '}*/}
-      {/*    {battle?.state === 'Moves'*/}
-      {/*      ? 'Attack'*/}
-      {/*      : battle?.state === 'Waiting'*/}
-      {/*      ? 'Wait...'*/}
-      {/*      : battle?.state === 'GameIsOver'*/}
-      {/*      ? 'Finish Game'*/}
-      {/*      : ''}*/}
-      {/*  </button>*/}
-      {/*</div>*/}
-      {/*<div className="w-full h-full flex flex-col">*/}
-      {/*  <TamagotchiAvatar*/}
-      {/*    inBattle*/}
-      {/*    age={getTamagotchiAgeDiff(warriors[1].dateOfBirth)}*/}
-      {/*    hasItem={getAttributesById(store, battle.players[1].attributes)}*/}
-      {/*    energy={warriors[0].energy}*/}
-      {/*    className="grow w-full h-full "*/}
-      {/*    isActive={battle?.currentTurn === 1 && battle?.state !== 'GameIsOver'}*/}
-      {/*    isWinner={battle?.state === 'GameIsOver' && battle.winner === battle.players[1].tmgId}*/}
-      {/*    isDead={battle?.state === 'GameIsOver' && battle.winner !== battle.players[1].tmgId}*/}
-      {/*  />*/}
-      {/*</div>*/}
+      <div className="relative w-full h-full flex flex-col">
+        <TamagotchiAvatar
+          inBattle
+          color={players[0].color}
+          age={getTamagotchiAgeDiff(players[0].dateOfBirth)}
+          hasItem={[]}
+          energy={players[0].health}
+          className="grow w-full h-full "
+          isActive={players[0].tmgId === currentPlayer}
+          // isWinner={battle?.state === 'GameIsOver' && battle.winner === battle.players[0].tmgId}
+          isDead={!players[0].health}
+        />
+      </div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 w-full max-w-[250px]">
+        <div className="flex flex-col items-center">
+          <p className="text-2xl leading-normal xl:typo-h2 truncate max-w-[9ch]">
+            {currentPlayer && battle.players[currentPlayer].name}
+          </p>
+        </div>
+        <div className="space-y-3">
+          <button
+            className={clsx(
+              'btn items-center gap-2 w-full bg-error text-white hover:bg-red-600 transition-colors',
+              buttonStyles.button,
+            )}
+            onClick={onAttack}
+            disabled={isPending || !isAllowed}>
+            <Icon name="swords" className="w-5 h-5" /> Attack
+          </button>
+          <button
+            className={clsx('btn items-center gap-2 w-full', buttonStyles.secondary, buttonStyles.button)}
+            onClick={onDefence}
+            disabled={isPending || !isAllowed}>
+            <Icon name="armor" className="w-5 h-5" /> Defence
+          </button>
+        </div>
+      </div>
+      <div className="w-full h-full flex flex-col">
+        <TamagotchiAvatar
+          inBattle
+          color={players[1].color}
+          age={getTamagotchiAgeDiff(players[1].dateOfBirth)}
+          hasItem={[]}
+          energy={players[1].health}
+          className="grow w-full h-full "
+          isActive={players[1].tmgId === currentPlayer}
+          // isWinner={battle?.state === 'GameIsOver' && battle.winner === battle.players[0].tmgId}
+          isDead={!players[1].health}
+        />
+      </div>
     </div>
   );
 };

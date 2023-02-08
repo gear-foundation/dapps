@@ -7,11 +7,13 @@ module.exports = {
     extend: {
       animation: {
         'ping-slow': 'ping 3s linear infinite',
+        'pulse-slow': 'pulse 3s ease-in-out infinite',
+        'pulse-once': 'pulse-once 1.5s ease-in-out',
         wiggle: 'wiggle 1s ease-in-out infinite',
         'battle-turn-1': 'turn 2s linear infinite',
         'battle-turn-2': 'turn 2s linear infinite 400ms',
         'battle-turn-3': 'turn 2s linear infinite 900ms',
-        wave: 'wave 2s linear infinite',
+        wave: 'wave 3s ease-in infinite',
         'wave-2': 'wave 2s linear infinite 500ms',
       },
       keyframes: {
@@ -25,8 +27,12 @@ module.exports = {
           '100%': { opacity: '15%' },
         },
         wave: {
-          '0%': { opacity: 0.5 },
-          '100%': { opacity: 0, transform: 'scale(1.4)' },
+          '0%, 100%': { opacity: 0.75, transform: 'scale(1) translateY(-50%)' },
+          '50%': { opacity: 1, transform: 'scale(1.05) translateY(-50%)' },
+        },
+        'pulse-once': {
+          '0%': { opacity: 0 },
+          '100%': { opacity: 1 },
         },
       },
       colors: {
