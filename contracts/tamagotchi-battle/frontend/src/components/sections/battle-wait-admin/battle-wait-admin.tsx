@@ -29,9 +29,9 @@ export const BattleWaitAdmin = () => {
   return (
     <section className="text-center m-auto">
       <div className="max-w-[368px] mt-6 m-auto">
-        <p className="text-base text-white/80">
+        <p className="font-kanit text-base text-white/80 tracking-wider">
           Participants connected:{' '}
-          <b className="inline-block ml-1 text-xl font-semibold tracking-wider text-white">
+          <b className="inline-block ml-1 text-xl font-semibold text-white">
             {battle ? Object.keys(battle.players).length : 0} / 48
           </b>
         </p>

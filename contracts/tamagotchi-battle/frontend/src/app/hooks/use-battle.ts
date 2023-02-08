@@ -14,7 +14,7 @@ function useReadBattleState<T>() {
 export function useInitBattleData() {
   const { setIsAdmin } = useApp();
   const { account } = useAccount();
-  const { setPlayers, setBattleState } = useBattle();
+  const { setPlayers, setBattleState, setCurrentPlayer } = useBattle();
   const { state } = useReadBattleState<BattleStateResponse>();
 
   useEffect(() => {
@@ -31,6 +31,7 @@ export function useInitBattleData() {
       };
 
       setPlayers(getPlayers());
+      setCurrentPlayer(state.round.tmgIds[state.round.moves.length > 0 ? 1 : 0]);
 
       console.log({ state, players: Object.values(state.players) });
     } else {

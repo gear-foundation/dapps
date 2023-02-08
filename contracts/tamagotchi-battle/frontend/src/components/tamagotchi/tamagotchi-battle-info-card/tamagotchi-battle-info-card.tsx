@@ -4,12 +4,15 @@ import { Icon } from '../../ui/icon';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
 import { useEffect, useState } from 'react';
 
-export const TamagotchiBattleInfoCard = ({ tamagotchi }: { tamagotchi: BattlePlayerType }) => {
+type TamagotchiBattleInfoCardProps = {
+  tamagotchi: BattlePlayerType;
+  isActive: boolean;
+};
+export const TamagotchiBattleInfoCard = ({ tamagotchi, isActive }: TamagotchiBattleInfoCardProps) => {
   const [dead, setDead] = useState(false);
 
   useEffect(() => {
     if (!tamagotchi.health) {
-      console.log('tamagotchi.health: ', tamagotchi);
       setDead(!tamagotchi.health);
     }
   }, [tamagotchi]);
@@ -23,11 +26,11 @@ export const TamagotchiBattleInfoCard = ({ tamagotchi }: { tamagotchi: BattlePla
         xmlns="http://www.w3.org/2000/svg">
         <path
           d="M0 39.7723C0 33.0257 4.23198 27.004 10.5797 24.7184L79.2308 0L149.329 24.7586C155.724 27.0174 160 33.0628 160 39.8452V246H0V39.7723Z"
-          fill="url(#paint0_linear_1687_47860)"
+          fill={`url(#${tamagotchi.tmgId})`}
         />
         <defs>
-          <linearGradient id="paint0_linear_1687_47860" x1="80" y1="0" x2="80" y2="246" gradientUnits="userSpaceOnUse">
-            <stop stopColor={dead ? '#f24a4a' : '#16B768'} />
+          <linearGradient id={tamagotchi.tmgId} x1="80" y1="0" x2="80" y2="246" gradientUnits="userSpaceOnUse">
+            <stop stopColor={dead ? '#f24a4a' : isActive ? '#16B768' : '#858585'} />
             <stop offset="1" stopColor="#29292B" stopOpacity="0" />
           </linearGradient>
         </defs>
@@ -49,7 +52,7 @@ export const TamagotchiBattleInfoCard = ({ tamagotchi }: { tamagotchi: BattlePla
         />
       </div>
       <h3 className="flex justify-center text-center tracking-[0.03em] text-sm font-medium">
-        <span className="block truncate max-w-[10ch]">{tamagotchi.tmgId ? tamagotchi.tmgId : 'Geary'}</span>
+        <span className="block truncate max-w-[10ch]">{tamagotchi?.name ? tamagotchi.name : 'Geary'}</span>
       </h3>
       <div className="w-full max-w-[300px] space-y-3">
         <div className={clsx('relative w-30 px-4 rounded-xl overflow-hidden', dead ? 'bg-error' : 'bg-white/10')}>

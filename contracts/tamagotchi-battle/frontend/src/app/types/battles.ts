@@ -31,7 +31,7 @@ export type BattleStateResponse = {
   players: Record<HexString, BattlePlayerType>;
   playersIds: HexString[];
   round: {
-    moves: [];
+    moves: number[];
     players: HexString[];
     tmgIds: HexString[];
   };
