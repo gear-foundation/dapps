@@ -2,11 +2,29 @@ import clsx from 'clsx';
 import { buttonStyles } from '@gear-js/ui';
 import { Icon } from '../../ui/icon';
 import { useApp, useBattle } from 'app/context';
+import { useBattleMessage } from '../../../app/hooks/use-battle';
 
 export const BattleWaitAdmin = () => {
-  const { isPending } = useApp();
+  const { isPending, setIsPending } = useApp();
   const { battleState: battle } = useBattle();
-  const handler = () => {};
+  const handleMessage = useBattleMessage();
+
+  const handler = () => {
+    setIsPending(true);
+    handleMessage(
+      { StartBattle: null },
+      {
+        onSuccess: () => {
+          setIsPending(false);
+          console.log('Battle started');
+        },
+        onError: () => {
+          setIsPending(false);
+          console.log('Failed to initialize');
+        },
+      },
+    );
+  };
 
   return (
     <section className="text-center m-auto">

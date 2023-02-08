@@ -11,7 +11,7 @@ export const Battle = () => {
   return (
     <>
       {battle?.state === 'Registration' && (isAdmin ? <BattleWaitAdmin /> : <BattleWaitRegistration />)}
-      {battle && ['GameIsOn', 'WaitNextRound', 'StartNewRound', 'GameIsOver'].includes(battle.state) && (
+      {battle && ['GameIsOn', 'WaitNextRound', 'StartNewRound'].includes(battle.state) && (
         <BattleRound battle={battle} />
       )}
       {battle && Object.keys(battle.players).length > 0 && <BattlePlayersQueue />}

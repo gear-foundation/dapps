@@ -41,7 +41,7 @@ export const TamagotchiQueueCard = ({ className, tamagotchi }: TamagotchiQueueCa
         />
       </div>
       <h3 className="flex justify-center text-center tracking-[0.03em] text-sm font-medium">
-        <span className="block truncate max-w-[10ch]">{tamagotchi.tmgId ? tamagotchi.tmgId : 'Geary'}</span>
+        <span className="block truncate max-w-[10ch]">{tamagotchi.name ? tamagotchi.name : 'Geary'}</span>
       </h3>
       <div className="w-full max-w-[300px] space-y-3">
         <div className={clsx('relative w-30 px-4 rounded-xl overflow-hidden', dead ? 'bg-error' : 'bg-white/10')}>
