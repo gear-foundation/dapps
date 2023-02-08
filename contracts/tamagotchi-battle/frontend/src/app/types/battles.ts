@@ -11,6 +11,8 @@ export type BattlePlayerType = {
   power: number;
   owner: HexString;
   tmgId: HexString;
+  name: string;
+  dateOfBirth: number;
 };
 
 export type TamagotchiBattlePlayer = TamagotchiState & {
@@ -27,11 +29,11 @@ export type BattleStateResponse = {
   admin: HexString;
   currentWinner: HexString;
   players: Record<HexString, BattlePlayerType>;
-  playersIds: [];
+  playersIds: HexString[];
   round: {
     moves: [];
-    players: [];
-    tmgIds: [];
+    players: HexString[];
+    tmgIds: HexString[];
   };
   currentTurn: number;
   state: BattleStatesList;

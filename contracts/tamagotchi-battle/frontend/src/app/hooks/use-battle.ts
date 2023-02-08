@@ -1,18 +1,10 @@
 import { useApp, useBattle } from 'app/context';
-import { TamagotchiState } from '../types/lessons';
 import { useEffect } from 'react';
-import { BattleStateResponse } from '../types/battles';
-import { HexString } from '@polkadot/util/types';
+import { BattlePlayerType, BattleStateResponse } from '../types/battles';
 import { useAccount, useReadFullState, useSendMessage } from '@gear-js/react-hooks';
 import { useMetadata } from './use-metadata';
 import metaBattle from 'assets/meta/meta-battle.txt';
-import metaPlayer from 'assets/meta/meta-tmg.txt';
 import { ENV } from '../consts';
-
-function useReadPlayerState<T>(player?: HexString) {
-  const { metadata } = useMetadata(metaPlayer);
-  return useReadFullState<T>(player, metadata);
-}
 
 function useReadBattleState<T>() {
   const { metadata } = useMetadata(metaBattle);
@@ -24,26 +16,25 @@ export function useInitBattleData() {
   const { account } = useAccount();
   const { setPlayers, setBattleState } = useBattle();
   const { state } = useReadBattleState<BattleStateResponse>();
-  // const { state: p1 } = useReadPlayerState<TamagotchiState>(state?.players[0]?.tmgId);
-  // const { state: p2 } = useReadPlayerState<TamagotchiState>(state?.players[1]?.tmgId);
-
-  // useEffect(() => {
-  //   if (p1 && p2 && state) {
-  //     setPlayers([
-  //       { ...p1, ...state.players[0] },
-  //       { ...p2, ...state.players[1] },
-  //     ]);
-  //   } else {
-  //     setPlayers([]);
-  //   }
-  // }, [p1, p2, state]);
 
   useEffect(() => {
     setBattleState(state);
     if (state && account) {
       setIsAdmin(state.admin === account.decodedAddress);
 
+      const getPlayers = () => {
+        const result: BattlePlayerType[] = [];
+        state.round.tmgIds.forEach((player, i) => {
+          if (state.players[player]) result.push(state.players[player]);
+        });
+        return result;
+      };
+
+      setPlayers(getPlayers());
+
       console.log({ state, players: Object.values(state.players) });
+    } else {
+      setPlayers([]);
     }
   }, [state, account]);
 }

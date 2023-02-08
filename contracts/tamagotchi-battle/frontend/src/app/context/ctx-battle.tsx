@@ -1,16 +1,22 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useState } from 'react';
-import { BattleStateResponse, TamagotchiBattlePlayer } from '../types/battles';
+import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from 'react';
+import { BattlePlayerType, BattleStateResponse } from '../types/battles';
 
 type Program = {
   battleState?: BattleStateResponse;
   setBattleState: Dispatch<SetStateAction<BattleStateResponse | undefined>>;
-  players: TamagotchiBattlePlayer[];
-  setPlayers: Dispatch<SetStateAction<TamagotchiBattlePlayer[]>>;
+  players: BattlePlayerType[];
+  setPlayers: Dispatch<SetStateAction<BattlePlayerType[]>>;
 };
 
 const useProgram = (): Program => {
-  const [players, setPlayers] = useState<TamagotchiBattlePlayer[]>([]);
+  const [players, setPlayers] = useState<BattlePlayerType[]>([]);
   const [battleState, setBattleState] = useState<BattleStateResponse>();
+
+  useEffect(() => {
+    console.log('round players: ', players);
+    console.log('round player 1: ', players[0]);
+    console.log('round player 2: ', players[1]);
+  }, [players]);
 
   return {
     battleState,

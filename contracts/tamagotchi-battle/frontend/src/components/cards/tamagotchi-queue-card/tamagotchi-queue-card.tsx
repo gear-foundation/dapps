@@ -21,7 +21,7 @@ export const TamagotchiQueueCard = ({ className, tamagotchi }: TamagotchiQueueCa
   return (
     <div
       className={clsx(
-        'relative grid gap-2 justify-center w-fit py-4 px-5 bg-[#29292B] w-fit rounded-2xl',
+        'relative grid gap-2 justify-center w-fit py-4 px-5 bg-[#29292B] rounded-2xl',
         className,
         dead && 'opacity-30',
       )}>
@@ -44,7 +44,7 @@ export const TamagotchiQueueCard = ({ className, tamagotchi }: TamagotchiQueueCa
         <span className="block truncate max-w-[10ch]">{tamagotchi.tmgId ? tamagotchi.tmgId : 'Geary'}</span>
       </h3>
       <div className="w-full max-w-[300px] space-y-3">
-        <div className={clsx('relative w-30 px-4 rounded-xl overflow-hidden ', dead ? 'bg-error' : 'bg-white/10')}>
+        <div className={clsx('relative w-30 px-4 rounded-xl overflow-hidden', dead ? 'bg-error' : 'bg-white/10')}>
           {!dead && (
             <div className="absolute inset-0 rounded-xl bg-primary" style={{ width: `${tamagotchi.health / 25}%` }} />
           )}
