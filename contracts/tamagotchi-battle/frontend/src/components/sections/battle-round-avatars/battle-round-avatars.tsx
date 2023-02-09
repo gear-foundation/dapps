@@ -34,8 +34,8 @@ export const BattleRoundAvatars = ({ battle }: { battle: BattleStateResponse }) 
   };
 
   return (
-    <div className="relative grow grid grid-cols-[repeat(2,minmax(auto,445px))] justify-between gap-10 mt-10 xl:mt-15">
-      <div className="relative w-full h-full flex flex-col">
+    <div className="relative grow flex justify-between gap-10 mt-10 xl:mt-15">
+      <div className="relative basis-[40%] w-full flex flex-col">
         <TamagotchiAvatar
           inBattle
           color={players[0].color}
@@ -72,7 +72,7 @@ export const BattleRoundAvatars = ({ battle }: { battle: BattleStateResponse }) 
           </button>
         </div>
       </div>
-      <div className="w-full h-full flex flex-col">
+      <div className="relative basis-[40%] w-full flex flex-col">
         <TamagotchiAvatar
           inBattle
           color={players[1].color}

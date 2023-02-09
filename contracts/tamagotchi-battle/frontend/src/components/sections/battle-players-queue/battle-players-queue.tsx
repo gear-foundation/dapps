@@ -58,7 +58,7 @@ export const BattlePlayersQueue = () => {
   };
 
   return (
-    <section ref={ref} className="mt-auto px-5">
+    <section ref={ref} className="mt-auto px-5 overflow-hidden">
       {isSlider ? (
         <div className="grid gap-4 xl:gap-6">
           <div className="flex gap-4 xl:gap-6">
@@ -69,7 +69,7 @@ export const BattlePlayersQueue = () => {
               <Icon name="prev" className="w-3.5 xl:w-4.5 aspect-square rotate-180" />
             </button>
           </div>
-          <ul ref={sliderRef} className="keen-slider">
+          <ul ref={sliderRef} className="keen-slider !overflow-visible">
             {queue.length > 0 &&
               queue.map((item, i) => (
                 <li key={i} className="keen-slider__slide" style={{ width: 160, minWidth: 160 }}>

@@ -21,7 +21,7 @@ export const TamagotchiBattleInfoCard = ({ tamagotchi, isActive }: TamagotchiBat
   return (
     <div className={clsx('relative grid gap-4 justify-center w-fit pt-13 pb-6 px-5', dead && '')}>
       <svg
-        className="absolute inset-x-0 bottom-0 w-full"
+        className="absolute inset-x-0 top-0 w-full"
         viewBox="0 0 160 246"
         fill="none"
         xmlns="http://www.w3.org/2000/svg">

@@ -22,7 +22,7 @@ export const BattleRoundStatsAvatar = ({ isWinner, state, tamagotchi, isReverse,
   }, [tamagotchi]);
 
   return (
-    <div className={clsx('basis-[445px] flex gap-6 items-center', isReverse && 'flex-row-reverse')}>
+    <div className={clsx('basis-[40%] flex gap-6 items-center', isReverse && 'flex-row-reverse')}>
       <div className="relative flex flex-col items-center w-fit">
         <div
           className={clsx(

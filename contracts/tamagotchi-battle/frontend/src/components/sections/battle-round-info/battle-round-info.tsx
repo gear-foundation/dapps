@@ -7,7 +7,7 @@ export const BattleRoundInfo = ({ battle }: { battle: BattleStateResponse }) => 
   const { players, currentPlayer } = useBattle();
   return (
     <div className="relative flex gap-10 justify-between mt-4 xl:mt-7">
-      <div className="basis-[445px] flex justify-center">
+      <div className="basis-[40%] flex justify-center">
         <TamagotchiBattleInfoCard tamagotchi={players[0]} isActive={players[0].tmgId === currentPlayer} />
       </div>
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
@@ -38,7 +38,7 @@ export const BattleRoundInfo = ({ battle }: { battle: BattleStateResponse }) => 
           </div>
         </div>
       </div>
-      <div className="basis-[445px] flex justify-center">
+      <div className="basis-[40%] flex justify-center">
         <TamagotchiBattleInfoCard tamagotchi={players[1]} isActive={players[1].tmgId === currentPlayer} />
       </div>
     </div>
