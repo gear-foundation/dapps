@@ -16,9 +16,9 @@ const useProgram = (): Program => {
   const [battleState, setBattleState] = useState<BattleStateResponse>();
   const [currentPlayer, setCurrentPlayer] = useState<HexString>();
 
-  useEffect(() => {
-    console.log('round players: ', players);
-  }, [players]);
+  // useEffect(() => {
+  //   console.log('round players: ', players);
+  // }, [players]);
 
   return {
     battleState,

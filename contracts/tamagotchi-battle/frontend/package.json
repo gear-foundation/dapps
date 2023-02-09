@@ -8,6 +8,7 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "@fireworks-js/react": "^2.10.1",
     "@gear-js/api": "0.29.1",
     "@gear-js/react-hooks": "0.5.7",
     "@gear-js/ui": "0.5.13",

@@ -3,6 +3,7 @@ import { BattleWaitRegistration } from '../components/sections/battle-wait-regis
 import { useApp, useBattle } from '../app/context';
 import { BattleWaitAdmin } from '../components/sections/battle-wait-admin';
 import { BattleRound } from '../components/sections/battle-round';
+import { BattleWinner } from 'components/sections/battle-winner';
 
 export const Battle = () => {
   const { isAdmin } = useApp();
@@ -14,6 +15,7 @@ export const Battle = () => {
       {battle && ['GameIsOn', 'WaitNextRound', 'StartNewRound'].includes(battle.state) && (
         <BattleRound battle={battle} />
       )}
+      {battle && battle?.state === 'GameIsOver' && <BattleWinner battle={battle} />}
       {battle && Object.keys(battle.players).length > 0 && <BattlePlayersQueue />}
     </>
   );
