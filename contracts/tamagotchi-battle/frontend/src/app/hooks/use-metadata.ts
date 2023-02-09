@@ -16,11 +16,7 @@ export const useMetadata = (source: RequestInfo | URL) => {
     fetch(source)
       .then((res) => res.text() as Promise<string>)
       .then((raw) => getProgramMetadata(`0x${raw}`))
-      .then((meta) => {
-        setData(meta);
-        // console.log(meta.types);
-        // console.log({ meta });
-      });
+      .then((meta) => setData(meta));
   }, [source]);
 
   return { metadata: data };

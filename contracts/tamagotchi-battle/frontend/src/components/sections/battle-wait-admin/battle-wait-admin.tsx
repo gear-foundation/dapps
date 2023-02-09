@@ -14,14 +14,8 @@ export const BattleWaitAdmin = () => {
     handleMessage(
       { StartBattle: null },
       {
-        onSuccess: () => {
-          setIsPending(false);
-          console.log('Battle started');
-        },
-        onError: () => {
-          setIsPending(false);
-          console.log('Failed to initialize');
-        },
+        onSuccess: () => setIsPending(false),
+        onError: () => setIsPending(false),
       },
     );
   };

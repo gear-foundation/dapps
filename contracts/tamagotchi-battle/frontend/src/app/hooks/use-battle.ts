@@ -38,7 +38,7 @@ export function useInitBattleData() {
       setPlayers(getPlayers());
       setCurrentPlayer(state.round.tmgIds[state.round.moves.length > 0 ? 1 : 0]);
 
-      console.log({ state, players: Object.values(state.players) });
+      // console.log({ state, players: Object.values(state.players) });
     } else {
       setPlayers([]);
     }
@@ -58,7 +58,7 @@ export function useInitBattleData() {
         } else {
           const decodedPayload = metadata.createType(5, payload).toJSON();
 
-          console.log({ decodedPayload });
+          // console.log({ decodedPayload });
 
           if (
             decodedPayload &&
