@@ -9,71 +9,62 @@ import { getTamagotchiColor } from '../../../app/utils/get-tamagotchi-color';
 
 type TamagotchiAvatarProps = {
   emotion?: TamagotchiAvatarEmotions;
-  age?: TamagotchiAvatarAge;
+  age?: number;
   isDead?: boolean;
   hasItem?: StoreItemsNames[];
   color?: TamagotchiColor;
   className?: string;
   isActive?: boolean;
-  inBattle?: boolean;
   isWinner?: boolean;
-  energy?: number;
   damage?: number;
 };
 
 export const TamagotchiAvatar = ({
   className,
   emotion = 'happy',
-  age = 'baby',
+  age = 0,
   isDead,
   hasItem = [],
   color = 'Green',
   isActive,
   isWinner,
-  energy,
-  inBattle,
   damage,
 }: TamagotchiAvatarProps) => {
-  const [dead, setDead] = useState<boolean>(Boolean(isDead));
-  const [currentEmotion, setCurrentEmotion] = useState<TamagotchiAvatarEmotions>(emotion);
-  const [itemsUsed, setItemsUsed] = useState<StoreItemsNames[]>(hasItem);
-  const [tamagotchiAge, setTamagotchiAge] = useState<TamagotchiAvatarAge>(age);
+  const tamagotchiAge = getTamagotchiAgeDiff(age);
 
   const s = 'tamagotchi';
   const cn = 'absolute inset-0 w-full h-full';
-  const tamagotchiDied = isDead || dead;
-  const emo: TamagotchiAvatarEmotions = tamagotchiDied ? 'scared' : isWinner ? 'hello' : currentEmotion;
-
+  const emo: TamagotchiAvatarEmotions = isDead ? 'scared' : isWinner ? 'hello' : emotion;
   const mouse = tamagotchiAge === 'baby' ? 'face-baby' : `mouse-${tamagotchiAge}-${emo === 'hello' ? 'happy' : emo}`;
   const head = `head-${tamagotchiAge}`;
   const eye = `eye-${emo === 'hello' ? 'happy' : emo}`;
   const hands = `hands-${
-    itemsUsed?.includes('sword') ? 'sword' : emo === 'hello' ? 'hello' : emo === 'angry' ? 'angry' : 'normal'
+    hasItem?.includes('sword') ? 'sword' : emo === 'hello' ? 'hello' : emo === 'angry' ? 'angry' : 'normal'
   }`;
-  const tail = `tail-${itemsUsed?.includes('sword') ? 'sword' : emo === 'hello' ? 'hello' : 'normal'}`;
-  const glasses = itemsUsed?.includes('glasses') ? 'head-glasses' : tamagotchiAge === 'old' ? 'face-old-glasses' : null;
-  const body = `body-${tamagotchiDied ? 'dead' : 'normal'}`;
+  const tail = `tail-${hasItem?.includes('sword') ? 'sword' : emo === 'hello' ? 'hello' : 'normal'}`;
+  const glasses = hasItem?.includes('glasses') ? 'head-glasses' : tamagotchiAge === 'old' ? 'face-old-glasses' : null;
+  const body = `body-${isDead ? 'dead' : 'normal'}`;
 
   return (
     <div className={clsx('relative', getTamagotchiColor(color).body, className ?? 'grow w-full h-30 aspect-square')}>
       <TamagotchiAvatarActiveScene isActive={Boolean(isActive)} />
       <TamagotchiAvatarWinnerScene isActive={Boolean(isWinner)} />
-      {!tamagotchiDied && <Icon name={tail} section={s} className={cn} />}
-      {!tamagotchiDied && <Icon name={hands} section={s} className={cn} />}
-      {!tamagotchiDied && <Icon name="body-stand" section={s} className={cn} />}
-      {!tamagotchiDied && <Icon name="sneakers" section={s} className={clsx(cn, getTamagotchiColor(color).sneakers)} />}
+      {!isDead && <Icon name={tail} section={s} className={cn} />}
+      {!isDead && <Icon name={hands} section={s} className={cn} />}
+      {!isDead && <Icon name="body-stand" section={s} className={cn} />}
+      {!isDead && <Icon name="sneakers" section={s} className={clsx(cn, getTamagotchiColor(color).sneakers)} />}
       <Icon name={body} section={s} className={cn} />
-      {itemsUsed?.includes('bag') && <Icon name="body-bag" section={s} className={cn} />}
+      {hasItem?.includes('bag') && <Icon name="body-bag" section={s} className={cn} />}
       <Icon name={head} section={s} className={cn} />
       <Icon name={mouse} section={s} className={cn} />
       <Icon name={eye} section={s} className={clsx(cn, 'text-[#16B768]')} />
       {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
-      {!tamagotchiDied && glasses && <Icon name={glasses} section={s} className={cn} />}
-      {!tamagotchiDied && itemsUsed?.includes('hat') && <Icon name="head-hat" section={s} className={cn} />}
-      {Boolean(damage) && (
+      {!isDead && glasses && <Icon name={glasses} section={s} className={cn} />}
+      {!isDead && hasItem?.includes('hat') && <Icon name="head-hat" section={s} className={cn} />}
+      {!isDead && Boolean(damage) && (
         <div className="absolute top-1/4 right-15 w-12 h-12 grid place-items-center">
           <Icon name="damage" section={s} className="absolute inset-0 w-full h-full" />
-          <span className="relative z-1 text-white font-bold">{damage}</span>
+          <span className="relative z-1 text-white font-bold">-{damage}</span>
         </div>
       )}
     </div>
@@ -89,7 +80,7 @@ const TamagotchiAvatarWinnerScene = ({ isActive }: { isActive: boolean }) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={clsx(
-        'absolute inset-x-0 top-1/2 w-full h-auto aspect-[450/523] -translate-y-1/2 transition-opacity duration-1000',
+        'absolute inset-x-0 top-1/2 -z-1 w-full h-auto aspect-[450/523] -translate-y-1/2 transition-opacity duration-1000',
         !isActive && 'opacity-0',
       )}>
       <g opacity="0.7" filter="url(#filter0_f_1316_750739)">
@@ -150,7 +141,7 @@ const TamagotchiAvatarActiveScene = ({ isActive }: { isActive: boolean }) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={clsx(
-        'absolute inset-x-0 top-1/2 w-full h-auto aspect-[450/523] -translate-y-1/2 transition-opacity duration-1000',
+        'absolute inset-x-0 top-1/2 -z-1 w-full h-auto aspect-[450/523] -translate-y-1/2 transition-opacity duration-1000',
         !isActive && 'opacity-0',
       )}>
       <g filter="url(#filter0_f_61_21481)">

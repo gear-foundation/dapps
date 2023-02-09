@@ -12,8 +12,8 @@ export const BattleWinner = ({ battle }: { battle: BattleStateResponse }) => {
   return (
     <section className="container flex flex-col grow">
       <BattleWinnerFireworks />
-      <div className="flex gap-10 justify-center items-center mt-15">
-        <div className="text-center">
+      <div className="flex gap-10 justify-center items-center mt-2 xl:mt-15">
+        <div className="text-center font-bold">
           <p className="text-2xl leading-normal xl:typo-h2 truncate max-w-[19ch]">
             <span className="text-primary">{currentPlayer && battle.players[currentPlayer].name}</span>
             <br />
@@ -21,17 +21,13 @@ export const BattleWinner = ({ battle }: { battle: BattleStateResponse }) => {
           </p>
         </div>
       </div>
-      <div className="relative grow flex justify-center gap-10 mt-10 xl:mt-15">
+      <div className="relative grow flex justify-center gap-10 mt-2 xl:mt-15">
         <div className="relative w-full max-w-[450px] flex flex-col">
           <TamagotchiAvatar
-            inBattle
             color={players[0].color}
-            age={getTamagotchiAgeDiff(players[0].dateOfBirth)}
-            hasItem={[]}
-            energy={players[0].health}
+            age={players[0].dateOfBirth}
             className="grow w-full h-full"
             isWinner
-            // isWinner={battle?.state === 'GameIsOver' && battle.winner === battle.players[0].tmgId}
             isDead={!players[0].health}
           />
         </div>
@@ -70,6 +66,7 @@ const BattleWinnerFireworks = () => {
         height: '100%',
         position: 'fixed',
         background: '',
+        zIndex: '-1',
       }}
     />
   );

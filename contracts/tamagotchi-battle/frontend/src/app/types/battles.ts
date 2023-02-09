@@ -23,7 +23,7 @@ export type TamagotchiBattlePlayer = TamagotchiState & {
   tmgId: HexString;
 };
 
-export type BattleStatesList = 'Registration' | 'GameIsOn' | 'WaitNextRound' | 'StartNewRound' | 'GameIsOver';
+export type BattleStatesList = 'Registration' | 'GameIsOn' | 'WaitNextRound' | 'GameIsOver';
 
 export type BattleStateResponse = {
   admin: HexString;

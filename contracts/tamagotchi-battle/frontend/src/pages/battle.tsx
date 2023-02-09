@@ -12,9 +12,7 @@ export const Battle = () => {
   return (
     <>
       {battle?.state === 'Registration' && (isAdmin ? <BattleWaitAdmin /> : <BattleWaitRegistration />)}
-      {battle && ['GameIsOn', 'WaitNextRound', 'StartNewRound'].includes(battle.state) && (
-        <BattleRound battle={battle} />
-      )}
+      {battle && ['GameIsOn', 'WaitNextRound'].includes(battle.state) && <BattleRound />}
       {battle && battle?.state === 'GameIsOver' && <BattleWinner battle={battle} />}
       {battle && Object.keys(battle.players).length > 0 && <BattlePlayersQueue />}
     </>

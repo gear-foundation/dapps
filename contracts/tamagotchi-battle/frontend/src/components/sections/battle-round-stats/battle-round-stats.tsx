@@ -21,22 +21,26 @@ const BattleTurnArrows = ({ isReverse }: { isReverse: boolean }) => (
   </div>
 );
 
-export const BattleRoundStats = ({ battle }: { battle: BattleStateResponse }) => {
-  const { players, currentPlayer } = useBattle();
+export const BattleRoundStats = () => {
+  const { players, currentPlayer, battleState: battle } = useBattle();
   return (
     <div className="flex gap-10 justify-between items-center">
-      <BattleRoundStatsAvatar
-        state={battle?.state}
-        isWinner={Boolean(battle.players[battle.currentWinner])}
-        tamagotchi={players[0]}
-      />
-      {battle?.state === 'GameIsOn' && <BattleTurnArrows isReverse={players[1].tmgId === currentPlayer} />}
-      <BattleRoundStatsAvatar
-        state={battle?.state}
-        isWinner={Boolean(battle.players[battle.currentWinner])}
-        tamagotchi={players[1]}
-        isReverse
-      />
+      {battle && (
+        <>
+          <BattleRoundStatsAvatar
+            state={battle?.state}
+            isWinner={Boolean(battle.players[battle.currentWinner])}
+            tamagotchi={players[0]}
+          />
+          {battle?.state === 'GameIsOn' && <BattleTurnArrows isReverse={players[1].tmgId === currentPlayer} />}
+          <BattleRoundStatsAvatar
+            state={battle?.state}
+            isWinner={Boolean(battle.players[battle.currentWinner])}
+            tamagotchi={players[1]}
+            isReverse
+          />
+        </>
+      )}
     </div>
   );
 };

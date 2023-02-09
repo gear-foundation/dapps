@@ -1,18 +1,16 @@
 import { TamagotchiAvatar } from '../../tamagotchi/tamagotchi-avatar';
 import { useApp, useBattle } from '../../../app/context';
-import { getTamagotchiAgeDiff } from '../../../app/utils/get-tamagotchi-age';
 import clsx from 'clsx';
 import { buttonStyles } from '@gear-js/ui';
-import { BattleStateResponse } from '../../../app/types/battles';
 import { Icon } from '../../ui/icon';
 import { useBattleMessage } from '../../../app/hooks/use-battle';
 import { useEffect, useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
 
-export const BattleRoundAvatars = ({ battle }: { battle: BattleStateResponse }) => {
-  const { isPending, setIsPending } = useApp();
+export const BattleRoundPlayers = () => {
+  const { isPending, setIsPending, isAdmin } = useApp();
   const { account } = useAccount();
-  const { players, currentPlayer, roundDamage } = useBattle();
+  const { players, currentPlayer, roundDamage, battleState: battle, setRoundDamage } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
 
@@ -26,14 +24,17 @@ export const BattleRoundAvatars = ({ battle }: { battle: BattleStateResponse }) 
   const onError = () => setIsPending(false);
   const onNewRound = () => {
     setIsPending(true);
+    setRoundDamage([]);
     handleMessage({ StartNewRound: null }, { onSuccess, onError });
   };
   const onAttack = () => {
     setIsPending(true);
+    setRoundDamage([]);
     handleMessage({ MakeMove: { Attack: null } }, { onSuccess, onError });
   };
   const onDefence = () => {
     setIsPending(true);
+    setRoundDamage([]);
     handleMessage({ MakeMove: { Defence: null } }, { onSuccess, onError });
   };
 
@@ -41,26 +42,23 @@ export const BattleRoundAvatars = ({ battle }: { battle: BattleStateResponse }) 
     <div className="relative grow flex justify-between gap-10 mt-10 xl:mt-15">
       <div className="relative basis-[40%] w-full flex flex-col">
         <TamagotchiAvatar
-          inBattle
           color={players[0].color}
-          age={getTamagotchiAgeDiff(players[0].dateOfBirth)}
-          hasItem={[]}
-          energy={players[0].health}
+          age={players[0].dateOfBirth}
           className="grow w-full h-full "
-          isActive={battle.state !== 'WaitNextRound' && players[0].tmgId === currentPlayer}
-          isWinner={battle.state === 'WaitNextRound' && battle.currentWinner === players[0].tmgId}
+          isActive={battle?.state !== 'WaitNextRound' && players[0].tmgId === currentPlayer}
+          isWinner={battle?.state === 'WaitNextRound' && battle.currentWinner === players[0].tmgId}
           isDead={!players[0].health}
-          damage={roundDamage && roundDamage[0]}
+          damage={roundDamage.length > 0 ? Math.round(roundDamage[0] / 25) : 0}
         />
       </div>
       <div className="absolute top-1/2 left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 w-full max-w-[250px]">
         <div className="flex flex-col items-center">
           <p className="text-2xl leading-normal xl:typo-h2 truncate max-w-[9ch]">
-            {currentPlayer && battle.players[currentPlayer].name}
+            {currentPlayer && battle?.players[currentPlayer].name}
           </p>
         </div>
         <div className="space-y-3">
-          {battle.state === 'WaitNextRound' && (
+          {battle?.state === 'WaitNextRound' && isAdmin && (
             <button
               className={clsx(
                 'btn items-center gap-2 w-full transition-colors',
@@ -72,7 +70,7 @@ export const BattleRoundAvatars = ({ battle }: { battle: BattleStateResponse }) 
               Start New Round
             </button>
           )}
-          {battle.state === 'GameIsOn' && (
+          {battle?.state === 'GameIsOn' && (
             <>
               <button
                 className={clsx(
@@ -95,16 +93,13 @@ export const BattleRoundAvatars = ({ battle }: { battle: BattleStateResponse }) 
       </div>
       <div className="relative basis-[40%] w-full flex flex-col">
         <TamagotchiAvatar
-          inBattle
           color={players[1].color}
-          age={getTamagotchiAgeDiff(players[1].dateOfBirth)}
-          hasItem={[]}
-          energy={players[1].health}
+          age={players[1].dateOfBirth}
           className="grow w-full h-full "
-          isActive={battle.state !== 'WaitNextRound' && players[1].tmgId === currentPlayer}
-          isWinner={battle.state === 'WaitNextRound' && battle.currentWinner === players[1].tmgId}
+          isActive={battle?.state !== 'WaitNextRound' && players[1].tmgId === currentPlayer}
+          isWinner={battle?.state === 'WaitNextRound' && battle.currentWinner === players[1].tmgId}
           isDead={!players[1].health}
-          damage={roundDamage && roundDamage[1]}
+          damage={roundDamage.length > 0 ? Math.round(roundDamage[1] / 25) : 0}
         />
       </div>
     </div>

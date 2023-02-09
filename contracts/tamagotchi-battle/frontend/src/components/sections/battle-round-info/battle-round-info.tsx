@@ -1,10 +1,9 @@
 import { TamagotchiBattleInfoCard } from '../../tamagotchi/tamagotchi-battle-info-card';
 import { useBattle } from 'app/context';
-import { BattleStateResponse } from 'app/types/battles';
 import { Icon } from '../../ui/icon';
 
-export const BattleRoundInfo = ({ battle }: { battle: BattleStateResponse }) => {
-  const { players, currentPlayer } = useBattle();
+export const BattleRoundInfo = () => {
+  const { players, currentPlayer, battleState: battle } = useBattle();
   return (
     <div className="relative flex gap-10 justify-between mt-4 xl:mt-7">
       <div className="basis-[40%] flex justify-center">
@@ -14,7 +13,9 @@ export const BattleRoundInfo = ({ battle }: { battle: BattleStateResponse }) => 
         <div className="border border-white/10 bg-white/[3%] backdrop-blur-md p-6 pt-5 rounded-2xl font-kanit text-base text-white/60 tracking-wider">
           <h3 className="font-normal text-center">
             Participants:{' '}
-            <b className="inline-block ml-1 text-xl font-semibold text-white">{Object.keys(battle.players).length}</b>
+            <b className="inline-block ml-1 text-xl font-semibold text-white">
+              {battle ? Object.keys(battle.players).length : 0}
+            </b>
           </h3>
           <div className="flex items-center gap-12 mt-4">
             <div className="flex items-center gap-2">
@@ -22,7 +23,7 @@ export const BattleRoundInfo = ({ battle }: { battle: BattleStateResponse }) => 
               <p className="flex items-center">
                 Alive:{' '}
                 <b className="inline-block ml-1 text-xl font-semibold text-white">
-                  {Object.values(battle.players).filter((el) => el.health).length}
+                  {battle && Object.values(battle.players).filter((el) => el.health).length}
                 </b>
               </p>
             </div>
@@ -31,7 +32,7 @@ export const BattleRoundInfo = ({ battle }: { battle: BattleStateResponse }) => 
               <p className="flex items-center">
                 Dead:{' '}
                 <b className="inline-block ml-1 text-xl font-semibold text-white">
-                  {Object.values(battle.players).filter((el) => !el.health).length}
+                  {battle && Object.values(battle.players).filter((el) => !el.health).length}
                 </b>
               </p>
             </div>

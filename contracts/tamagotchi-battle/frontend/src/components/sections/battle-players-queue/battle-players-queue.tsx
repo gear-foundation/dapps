@@ -7,6 +7,8 @@ import { useBattle } from 'app/context';
 import { BattlePlayerType } from '../../../app/types/battles';
 import { useRefDimensions } from '../../../app/hooks/use-ref-dimensions';
 
+const SPACING = 8;
+const CARD_WIDTH = 160;
 export const BattlePlayersQueue = () => {
   const { battleState: battle } = useBattle();
   const [queue, setQueue] = useState<BattlePlayerType[]>([]);
@@ -24,7 +26,9 @@ export const BattlePlayersQueue = () => {
   }, [battle]);
 
   useEffect(() => {
-    setIsSlider(queue.length > Math.floor(w / ((queue.length * 160 + (queue.length - 1) * 15) / queue.length)));
+    setIsSlider(
+      queue.length > Math.floor(w / ((queue.length * CARD_WIDTH + (queue.length - 1) * SPACING) / queue.length)),
+    );
   }, [queue, w]);
 
   const options = useMemo(
@@ -34,7 +38,7 @@ export const BattlePlayersQueue = () => {
         mode: 'snap',
         slides: {
           perView: 'auto',
-          spacing: 15,
+          spacing: SPACING,
         },
         created() {},
       } as KeenSliderOptions<{}, {}, KeenSliderHooks> | undefined),
@@ -72,7 +76,7 @@ export const BattlePlayersQueue = () => {
           <ul ref={sliderRef} className="keen-slider !overflow-visible">
             {queue.length > 0 &&
               queue.map((item, i) => (
-                <li key={i} className="keen-slider__slide" style={{ width: 160, minWidth: 160 }}>
+                <li key={i} className="keen-slider__slide" style={{ width: CARD_WIDTH, minWidth: CARD_WIDTH }}>
                   <div className="w-40">
                     <TamagotchiQueueCard className="" tamagotchi={item} />
                   </div>
@@ -84,7 +88,7 @@ export const BattlePlayersQueue = () => {
         <ul className="flex gap-4">
           {queue.length > 0 &&
             queue.map((item, i) => (
-              <li key={i} className="w-40" style={{ width: 160 }}>
+              <li key={i} className="w-40" style={{ width: CARD_WIDTH }}>
                 <TamagotchiQueueCard tamagotchi={item} />
               </li>
             ))}

@@ -1,12 +1,13 @@
 import { useApp, useBattle } from 'app/context';
 import { useEffect } from 'react';
 import { BattlePlayerType, BattleStateResponse } from '../types/battles';
-import { useAccount, useApi, useReadFullState, useSendMessage } from '@gear-js/react-hooks';
+import { useAccount, useApi, useReadFullState } from '@gear-js/react-hooks';
 import { useMetadata } from './use-metadata';
 import metaBattle from 'assets/meta/meta-battle.txt';
 import { ENV } from '../consts';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { UserMessageSent } from '@gear-js/api';
+import { useSendMessage } from './useSendMessage';
 
 function useReadBattleState<T>() {
   const { metadata } = useMetadata(metaBattle);
@@ -49,25 +50,23 @@ export function useInitBattleData() {
     if (metadata && state) {
       unsub = api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data }: UserMessageSent) => {
         const {
-          message: { payload },
+          message: { payload, details },
         } = data;
 
-        const decodedPayload = metadata.createType(5, payload).toJSON();
+        if (details.isSome && details.unwrap().isReply && !details.unwrap().asReply.statusCode.eq(0)) {
+          console.log(payload.toHuman());
+        } else {
+          const decodedPayload = metadata.createType(5, payload).toJSON();
 
-        console.log({ decodedPayload });
+          console.log({ decodedPayload });
 
-        console.log({
-          decodedPayload,
-          isObject: typeof decodedPayload === 'object',
-          includes: decodedPayload && Object.keys(decodedPayload).includes('RoundResult'),
-        });
-
-        if (
-          decodedPayload &&
-          typeof decodedPayload === 'object' &&
-          Object.keys(decodedPayload).includes('RoundResult')
-        ) {
-          setRoundDamage(Object.values(decodedPayload) as number[]);
+          if (
+            decodedPayload &&
+            typeof decodedPayload === 'object' &&
+            Object.keys(decodedPayload).includes('roundResult')
+          ) {
+            setRoundDamage(Object.values(decodedPayload)[0] as number[]);
+          }
         }
       });
     }

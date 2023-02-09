@@ -16,9 +16,8 @@ export const BattleRoundStatsAvatar = ({ isWinner, state, tamagotchi, isReverse,
   const [dead, setDead] = useState(false);
 
   useEffect(() => {
-    if (!tamagotchi.health) {
-      setDead(!tamagotchi.health);
-    }
+    setDead(!tamagotchi.health);
+    return () => setDead(false);
   }, [tamagotchi]);
 
   return (
@@ -30,9 +29,8 @@ export const BattleRoundStatsAvatar = ({ isWinner, state, tamagotchi, isReverse,
             dead ? 'bg-error ring-error' : 'bg-white ring-white',
           )}>
           <TamagotchiAvatar
-            inBattle
             className="w-30 xl:w-48 aspect-square -left-1/2"
-            age={getTamagotchiAgeDiff(tamagotchi.dateOfBirth)}
+            age={tamagotchi.dateOfBirth}
             hasItem={[]}
             color={tamagotchi.color}
             isDead={dead}
@@ -46,7 +44,7 @@ export const BattleRoundStatsAvatar = ({ isWinner, state, tamagotchi, isReverse,
           )}
           <div className="relative flex gap-1 items-center justify-center">
             <Icon name="health" className="w-3.5 h-3.5" />
-            <span className="font-kanit text-xs font-medium leading-5">{Math.round(tamagotchi.health / 250)} / 10</span>
+            <span className="font-kanit text-xs font-medium leading-5">{Math.round(tamagotchi.health / 25)} / 100</span>
           </div>
         </div>
         <div className={clsx('flex gap-3', isReverse && 'flex-row-reverse')}>

@@ -14,9 +14,8 @@ export const TamagotchiQueueCard = ({ className, tamagotchi }: TamagotchiQueueCa
   const [dead, setDead] = useState(false);
 
   useEffect(() => {
-    if (!tamagotchi.health) {
-      setDead(!tamagotchi.health);
-    }
+    setDead(!tamagotchi.health);
+    return () => setDead(false);
   }, [tamagotchi]);
 
   return (
@@ -33,10 +32,8 @@ export const TamagotchiQueueCard = ({ className, tamagotchi }: TamagotchiQueueCa
           dead ? 'bg-error ring-error' : 'bg-white ring-white',
         )}>
         <TamagotchiAvatar
-          inBattle
           className="w-30 xl:w-48 aspect-square -left-1/2"
-          age={getTamagotchiAgeDiff(tamagotchi.dateOfBirth)}
-          hasItem={[]}
+          age={tamagotchi.dateOfBirth}
           color={tamagotchi.color}
           isDead={dead}
         />
@@ -51,7 +48,7 @@ export const TamagotchiQueueCard = ({ className, tamagotchi }: TamagotchiQueueCa
           )}
           <div className="relative flex gap-1 items-center justify-center">
             <Icon name="health" className="w-3.5 h-3.5" />
-            <span className="font-kanit text-xs font-medium leading-5">{Math.round(tamagotchi.health / 250)} / 10</span>
+            <span className="font-kanit text-xs font-medium leading-5">{Math.round(tamagotchi.health / 25)} / 100</span>
           </div>
         </div>
       </div>

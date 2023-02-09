@@ -1,14 +1,13 @@
-import { BattleStateResponse } from 'app/types/battles';
 import { BattleRoundInfo } from '../battle-round-info';
 import { BattleRoundStats } from '../battle-round-stats';
-import { BattleRoundAvatars } from '../battle-round-avatars';
+import { BattleRoundPlayers } from '../battle-round-players';
 
-export const BattleRound = ({ battle }: { battle: BattleStateResponse }) => {
+export const BattleRound = () => {
   return (
     <section className="container grow flex flex-col">
-      <BattleRoundStats battle={battle} />
-      <BattleRoundAvatars battle={battle} />
-      <BattleRoundInfo battle={battle} />
+      <BattleRoundStats />
+      <BattleRoundPlayers />
+      <BattleRoundInfo />
     </section>
   );
 };
