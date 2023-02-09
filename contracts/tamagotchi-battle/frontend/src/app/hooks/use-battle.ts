@@ -17,7 +17,7 @@ export function useInitBattleData() {
   const { api } = useApi();
   const { setIsAdmin } = useApp();
   const { account } = useAccount();
-  const { setPlayers, setBattleState, setCurrentPlayer } = useBattle();
+  const { setPlayers, setBattleState, setCurrentPlayer, setRoundDamage } = useBattle();
   const { state } = useReadBattleState<BattleStateResponse>();
   const { metadata } = useMetadata(metaBattle);
 
@@ -47,24 +47,29 @@ export function useInitBattleData() {
     let unsub: UnsubscribePromise | undefined;
 
     if (metadata && state) {
-      const decodedPayload = metadata.getTypeName(12);
+      unsub = api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data }: UserMessageSent) => {
+        const {
+          message: { payload },
+        } = data;
 
-      console.log({ decodedPayload });
+        const decodedPayload = metadata.createType(5, payload).toJSON();
 
-      // unsub = api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data }: UserMessageSent) => {
-      //   const {
-      //     message: { payload },
-      //   } = data;
-      //
-      //   const decodedPayload = metadata.createType(8, payload).toHuman();
-      //
-      //   console.log({ decodedPayload });
-      //
-      //   // if (tamagotchi && ['WantToSleep', 'PlayWithMe', 'FeedMe'].includes(decodedPayload)) {
-      //   //   // const update = getNotificationTypeValue(decodedPayload, tamagotchi);
-      //   //   // setNotification((prev) => ({ ...prev, ...update }));
-      //   // }
-      // });
+        console.log({ decodedPayload });
+
+        console.log({
+          decodedPayload,
+          isObject: typeof decodedPayload === 'object',
+          includes: decodedPayload && Object.keys(decodedPayload).includes('RoundResult'),
+        });
+
+        if (
+          decodedPayload &&
+          typeof decodedPayload === 'object' &&
+          Object.keys(decodedPayload).includes('RoundResult')
+        ) {
+          setRoundDamage(Object.values(decodedPayload) as number[]);
+        }
+      });
     }
 
     return () => {

@@ -37,7 +37,11 @@ export const BattleWaitAdmin = () => {
         </p>
         <div className="mt-12">
           <button
-            className={clsx('btn items-center gap-2 min-w-[250px] transition-colors', buttonStyles.primary)}
+            className={clsx(
+              'btn items-center gap-2 min-w-[250px] transition-colors',
+              buttonStyles.primary,
+              buttonStyles.button,
+            )}
             onClick={handler}
             disabled={isPending}>
             <Icon name="swords" className="w-5 h-5" /> <span>Start Battle</span>

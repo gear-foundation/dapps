@@ -18,6 +18,7 @@ type TamagotchiAvatarProps = {
   inBattle?: boolean;
   isWinner?: boolean;
   energy?: number;
+  damage?: number;
 };
 
 export const TamagotchiAvatar = ({
@@ -31,27 +32,12 @@ export const TamagotchiAvatar = ({
   isWinner,
   energy,
   inBattle,
+  damage,
 }: TamagotchiAvatarProps) => {
   const [dead, setDead] = useState<boolean>(Boolean(isDead));
   const [currentEmotion, setCurrentEmotion] = useState<TamagotchiAvatarEmotions>(emotion);
-  const [damage, setDamage] = useState<number>(0);
   const [itemsUsed, setItemsUsed] = useState<StoreItemsNames[]>(hasItem);
-  const info = useRef({ isReady: false, energy: 0 });
   const [tamagotchiAge, setTamagotchiAge] = useState<TamagotchiAvatarAge>(age);
-
-  useEffect(() => {
-    if (energy && !isActive) {
-      if (info.current.isReady) {
-        if (info.current.energy !== energy) {
-          setDamage(Math.round((energy - info.current.energy) / 100));
-          info.current.energy = energy;
-        }
-      } else {
-        info.current.isReady = true;
-        info.current.energy = energy;
-      }
-    } else setDamage(0);
-  }, [energy, isActive]);
 
   const s = 'tamagotchi';
   const cn = 'absolute inset-0 w-full h-full';
@@ -74,8 +60,8 @@ export const TamagotchiAvatar = ({
       <TamagotchiAvatarWinnerScene isActive={Boolean(isWinner)} />
       {!tamagotchiDied && <Icon name={tail} section={s} className={cn} />}
       {!tamagotchiDied && <Icon name={hands} section={s} className={cn} />}
-      <Icon name="body-stand" section={s} className={cn} />
-      <Icon name="sneakers" section={s} className={clsx(cn, getTamagotchiColor(color).sneakers)} />
+      {!tamagotchiDied && <Icon name="body-stand" section={s} className={cn} />}
+      {!tamagotchiDied && <Icon name="sneakers" section={s} className={clsx(cn, getTamagotchiColor(color).sneakers)} />}
       <Icon name={body} section={s} className={cn} />
       {itemsUsed?.includes('bag') && <Icon name="body-bag" section={s} className={cn} />}
       <Icon name={head} section={s} className={cn} />

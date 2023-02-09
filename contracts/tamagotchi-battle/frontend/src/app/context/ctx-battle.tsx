@@ -9,16 +9,22 @@ type Program = {
   setPlayers: Dispatch<SetStateAction<BattlePlayerType[]>>;
   currentPlayer?: HexString;
   setCurrentPlayer: Dispatch<SetStateAction<HexString | undefined>>;
+  roundDamage?: number[];
+  setRoundDamage: Dispatch<SetStateAction<number[]>>;
 };
 
 const useProgram = (): Program => {
   const [players, setPlayers] = useState<BattlePlayerType[]>([]);
   const [battleState, setBattleState] = useState<BattleStateResponse>();
   const [currentPlayer, setCurrentPlayer] = useState<HexString>();
+  const [roundDamage, setRoundDamage] = useState<number[]>([]);
 
-  // useEffect(() => {
-  //   console.log('round players: ', players);
-  // }, [players]);
+  useEffect(() => {
+    console.log('round players: ', players);
+  }, [players]);
+  useEffect(() => {
+    console.log({ roundDamage });
+  }, [roundDamage]);
 
   return {
     battleState,
@@ -27,6 +33,8 @@ const useProgram = (): Program => {
     setPlayers,
     currentPlayer,
     setCurrentPlayer,
+    roundDamage,
+    setRoundDamage,
   };
 };
 
