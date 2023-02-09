@@ -43,7 +43,7 @@ export const BattleWaitAdmin = () => {
               buttonStyles.button,
             )}
             onClick={handler}
-            disabled={isPending}>
+            disabled={isPending || Object.keys(battle?.players ?? []).length < 1}>
             <Icon name="swords" className="w-5 h-5" /> <span>Start Battle</span>
           </button>
         </div>

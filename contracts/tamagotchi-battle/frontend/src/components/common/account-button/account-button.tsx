@@ -11,10 +11,14 @@ type Props = {
 };
 
 export const AccountButton = ({ address, name, onClick, isActive }: Props) => (
-  <Button
-    className={clsx('w-full !justify-start', isActive ? buttonStyles.primary : buttonStyles.light)}
-    text={name}
-    onClick={onClick}
-    icon={() => <Identicon value={address} className={buttonStyles.icon} theme="polkadot" size={28} />}
-  />
+  <button
+    className={clsx(
+      'btn gap-2 w-full !justify-start',
+      isActive ? buttonStyles.primary : buttonStyles.light,
+      buttonStyles.button,
+    )}
+    onClick={onClick}>
+    <Identicon value={address} className={buttonStyles.icon} theme="polkadot" size={20} />
+    <span className="truncate">{name}</span>
+  </button>
 );
