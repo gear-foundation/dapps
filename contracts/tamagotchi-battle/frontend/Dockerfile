@@ -5,7 +5,7 @@ ARG REACT_APP_NODE_ADDRESS  \
 ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
     REACT_APP_BATTLE_ADDRESS=${REACT_APP_BATTLE_ADDRESS}
     
-COPY package.json yarn.lock tsconfig.json .
+COPY package.json tsconfig.json .
 
 WORKDIR tamagotchi
 
