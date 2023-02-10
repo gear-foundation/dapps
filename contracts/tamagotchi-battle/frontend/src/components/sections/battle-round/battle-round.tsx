@@ -1,6 +1,6 @@
-import { BattleRoundInfo } from '../battle-round-info';
-import { BattleRoundStats } from '../battle-round-stats';
-import { BattleRoundPlayers } from '../battle-round-players';
+import { BattleRoundInfo } from 'components/sections/battle-round-info';
+import { BattleRoundStats } from 'components/sections/battle-round-stats';
+import { BattleRoundPlayers } from 'components/sections/battle-round-players';
 
 export const BattleRound = () => {
   return (

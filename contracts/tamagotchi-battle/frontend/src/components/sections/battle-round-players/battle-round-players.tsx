@@ -1,8 +1,8 @@
-import { TamagotchiAvatar } from '../../tamagotchi/tamagotchi-avatar';
+import { TamagotchiAvatar } from 'components/tamagotchi/tamagotchi-avatar';
 import { useApp, useBattle } from 'app/context';
 import clsx from 'clsx';
 import { buttonStyles } from '@gear-js/ui';
-import { Icon } from '../../ui/icon';
+import { Icon } from 'components/ui/icon';
 import { useBattleMessage } from 'app/hooks/use-battle';
 import { useEffect, useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';

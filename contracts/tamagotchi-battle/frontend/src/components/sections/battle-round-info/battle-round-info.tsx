@@ -1,6 +1,6 @@
-import { TamagotchiBattleInfoCard } from '../../tamagotchi/tamagotchi-battle-info-card';
+import { TamagotchiBattleInfoCard } from 'components/tamagotchi/tamagotchi-battle-info-card';
 import { useBattle } from 'app/context';
-import { Icon } from '../../ui/icon';
+import { Icon } from 'components/ui/icon';
 
 export const BattleRoundInfo = () => {
   const { players, currentPlayer, battleState: battle } = useBattle();

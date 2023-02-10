@@ -1,5 +1,5 @@
 import { Button } from '@gear-js/ui';
-import { SelectAccountPopup } from '../../popups/select-account-popup';
+import { SelectAccountPopup } from 'components/popups/select-account-popup';
 import { useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
 

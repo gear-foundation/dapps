@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { buttonStyles } from '@gear-js/ui';
-import { Icon } from '../../ui/icon';
+import { Icon } from 'components/ui/icon';
 import { useApp, useBattle } from 'app/context';
 import { useBattleMessage } from 'app/hooks/use-battle';
 

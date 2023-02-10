@@ -1,6 +1,6 @@
-import { TamagotchiAvatar } from '../../tamagotchi/tamagotchi-avatar';
+import { TamagotchiAvatar } from 'components/tamagotchi/tamagotchi-avatar';
 import clsx from 'clsx';
-import { Icon } from '../../ui/icon';
+import { Icon } from 'components/ui/icon';
 import { BattlePlayerType } from 'app/types/battles';
 import { useEffect, useState } from 'react';
 
