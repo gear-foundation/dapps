@@ -60,8 +60,12 @@ export const TamagotchiAvatar = ({
       {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
       {!isDead && glasses && <Icon name={glasses} section={s} className={cn} />}
       {!isDead && hasItem?.includes('hat') && <Icon name="head-hat" section={s} className={cn} />}
-      {!isDead && Boolean(damage) && (
-        <div className="absolute top-1/4 right-15 w-12 h-12 grid place-items-center">
+      {!isDead && (
+        <div
+          className={clsx(
+            'absolute top-1/4 right-15 w-12 h-12 grid place-items-center transition-[opacity,transform] pointer-events-none',
+            !damage ? 'opacity-0' : '-translate-y-5',
+          )}>
           <Icon name="damage" section={s} className="absolute inset-0 w-full h-full" />
           <span className="relative z-1 text-white font-bold">-{damage}</span>
         </div>

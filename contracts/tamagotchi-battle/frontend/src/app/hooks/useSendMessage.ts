@@ -66,7 +66,12 @@ export function useSendMessage(destination: HexString, metadata: ProgramMetadata
         .handle(decodedAddress, destination, payload, value, isOtherPanicsAllowed, metadata)
         .then(getAutoGasLimit)
         .then((gasLimit) => ({ destination, gasLimit, payload, value }))
-        .then((message) => api.message.send(message, metadata) && web3FromSource(source))
+        .then((message) => {
+          console.log({ ...message, gasLimit: bnToBn(250000000000) } as typeof message);
+          return (
+            api.message.send({ ...message, gasLimit: bnToBn(250_000_000_000) }, metadata) && web3FromSource(source)
+          );
+        })
         .then(({ signer }) =>
           api.message.signAndSend(address, { signer }, (result) => handleStatus(result, onSuccess, onError)),
         )
