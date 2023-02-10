@@ -18,7 +18,7 @@ const getAutoGasLimit = ({ waited, min_limit }: GasInfo) => {
   return waited ? min_limit.add(min_limit.mul(bnToBn(0.2))) : min_limit.add(min_limit.mul(bnToBn(0.1)));
 };
 
-function useSendMessage(destination: HexString, metadata: ProgramMetadata | undefined) {
+export function useSendMessage(destination: HexString, metadata: ProgramMetadata | undefined) {
   const { api } = useApi();
   const { account } = useAccount();
   const alert = useAlert();
@@ -54,7 +54,7 @@ function useSendMessage(destination: HexString, metadata: ProgramMetadata | unde
     }
   };
 
-  const sendMessage = (payload: AnyJson, options?: SendMessageOptions) => {
+  return (payload: AnyJson, options?: SendMessageOptions) => {
     if (account && metadata) {
       loadingAlertId.current = alert.loading('Sign In', { title });
 
@@ -76,8 +76,4 @@ function useSendMessage(destination: HexString, metadata: ProgramMetadata | unde
         });
     }
   };
-
-  return sendMessage;
 }
-
-export { useSendMessage };
