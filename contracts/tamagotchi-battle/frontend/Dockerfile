@@ -9,5 +9,4 @@ COPY . /tamagotchi
 WORKDIR /tamagotchi/frontend
 
 RUN yarn install
-RUN yarn build
-CMD ["yarn", "run"]
+CMD ["yarn", "start"]
