@@ -9,8 +9,6 @@ export const Battle = () => {
   const { isAdmin } = useApp();
   const { battleState: battle, players, currentPlayer } = useBattle();
 
-  console.log(document.body.offsetWidth);
-
   return (
     <>
       {battle?.state === 'Registration' && (isAdmin ? <BattleWaitAdmin /> : <BattleWaitRegistration />)}
