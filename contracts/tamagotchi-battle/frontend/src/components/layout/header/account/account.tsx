@@ -4,8 +4,8 @@ import { Button, buttonStyles } from '@gear-js/ui';
 import { GasWallet } from 'components/common/gas-wallet';
 import { SelectAccountPopup } from 'components/popups/select-account-popup';
 import { AccountButton } from 'components/common/account-button';
-import { useApp, useBattle } from '../../../../app/context';
-import { useBattleMessage } from '../../../../app/hooks/use-battle';
+import { useApp, useBattle } from 'app/context';
+import { useBattleMessage } from 'app/hooks/use-battle';
 import { Link, useLocation } from 'react-router-dom';
 import clsx from 'clsx';
 

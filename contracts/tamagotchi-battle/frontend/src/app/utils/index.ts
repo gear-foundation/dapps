@@ -1,8 +1,8 @@
 import { AlertContainerFactory } from '@gear-js/react-hooks';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
-import { LOCAL_STORAGE } from '../consts';
-import { NotificationResponseTypes, NotificationType, TamagotchiState } from '../types/lessons';
-import { ItemsStoreResponse, StoreItemsNames, StoreItemType } from '../types/ft-store';
+import { LOCAL_STORAGE } from 'app/consts';
+import { NotificationResponseTypes, NotificationType, TamagotchiState } from 'app/types/lessons';
+import { ItemsStoreResponse, StoreItemsNames, StoreItemType } from 'app/types/ft-store';
 import { HexString } from '@polkadot/util/types';
 
 export const copyToClipboard = async (key: string, alert: AlertContainerFactory, successfulText?: string) => {

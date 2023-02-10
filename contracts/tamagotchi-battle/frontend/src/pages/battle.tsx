@@ -1,8 +1,8 @@
-import { BattlePlayersQueue } from '../components/sections/battle-players-queue';
-import { BattleWaitRegistration } from '../components/sections/battle-wait-registration';
-import { useApp, useBattle } from '../app/context';
-import { BattleWaitAdmin } from '../components/sections/battle-wait-admin';
-import { BattleRound } from '../components/sections/battle-round';
+import { BattlePlayersQueue } from 'components/sections/battle-players-queue';
+import { BattleWaitRegistration } from 'components/sections/battle-wait-registration';
+import { useApp, useBattle } from 'app/context';
+import { BattleWaitAdmin } from 'components/sections/battle-wait-admin';
+import { BattleRound } from 'components/sections/battle-round';
 import { BattleWinner } from 'components/sections/battle-winner';
 
 export const Battle = () => {

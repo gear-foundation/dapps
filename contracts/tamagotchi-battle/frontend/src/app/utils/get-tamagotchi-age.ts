@@ -1,6 +1,6 @@
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import { TamagotchiAvatarAge } from '../types/tamagotchi';
+import { TamagotchiAvatarAge } from 'app/types/tamagotchi';
 
 export const getTamagotchiAge = (v: number) => {
   dayjs.extend(relativeTime);

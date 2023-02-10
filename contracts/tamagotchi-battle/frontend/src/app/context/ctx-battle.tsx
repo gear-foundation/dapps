@@ -1,5 +1,5 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useEffect, useState } from 'react';
-import { BattlePlayerType, BattleStateResponse } from '../types/battles';
+import { createContext, Dispatch, ReactNode, SetStateAction, useState } from 'react';
+import { BattlePlayerType, BattleStateResponse } from 'app/types/battles';
 import { HexString } from '@polkadot/util/types';
 
 type Program = {

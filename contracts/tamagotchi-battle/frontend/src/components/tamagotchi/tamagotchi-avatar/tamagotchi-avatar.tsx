@@ -3,8 +3,8 @@ import { Icon } from 'components/ui/icon';
 import { StoreItemsNames } from 'app/types/ft-store';
 import { getTamagotchiAgeDiff } from 'app/utils/get-tamagotchi-age';
 import { TamagotchiAvatarEmotions } from 'app/types/tamagotchi';
-import { TamagotchiColor } from '../../../app/types/battles';
-import { getTamagotchiColor } from '../../../app/utils/get-tamagotchi-color';
+import { TamagotchiColor } from 'app/types/battles';
+import { getTamagotchiColor } from 'app/utils/get-tamagotchi-color';
 
 type TamagotchiAvatarProps = {
   emotion?: TamagotchiAvatarEmotions;

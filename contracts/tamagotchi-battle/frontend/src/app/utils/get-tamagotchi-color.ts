@@ -1,4 +1,4 @@
-import { TamagotchiColor } from '../types/battles';
+import { TamagotchiColor } from 'app/types/battles';
 
 export const getTamagotchiColor = (color: TamagotchiColor): { body: string; sneakers: string } => {
   switch (color) {

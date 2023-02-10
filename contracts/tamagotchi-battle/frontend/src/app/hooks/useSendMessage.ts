@@ -3,7 +3,7 @@ import { web3FromSource } from '@polkadot/extension-dapp';
 import { EventRecord } from '@polkadot/types/interfaces';
 import { AnyJson, ISubmittableResult } from '@polkadot/types/types';
 import { HexString } from '@polkadot/util/types';
-import { useContext, useRef } from 'react';
+import { useRef } from 'react';
 import { DEFAULT_ERROR_OPTIONS, DEFAULT_SUCCESS_OPTIONS, useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { bnToBn } from '@polkadot/util';
 
@@ -15,8 +15,7 @@ type SendMessageOptions = {
 };
 
 const getAutoGasLimit = ({ waited, min_limit }: GasInfo) => {
-  // console.log({ waited });
-  return waited ? min_limit.add(min_limit.mul(bnToBn(0.1))) : min_limit;
+  return waited ? min_limit.add(min_limit.mul(bnToBn(0.2))) : min_limit.add(min_limit.mul(bnToBn(0.1)));
 };
 
 function useSendMessage(destination: HexString, metadata: ProgramMetadata | undefined) {

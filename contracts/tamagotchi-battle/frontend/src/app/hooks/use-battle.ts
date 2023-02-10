@@ -1,12 +1,12 @@
 import { useApp, useBattle } from 'app/context';
 import { useEffect } from 'react';
-import { BattlePlayerType, BattleStateResponse } from '../types/battles';
+import type { BattlePlayerType, BattleStateResponse } from 'app/types/battles';
 import { useAccount, useApi, useReadFullState } from '@gear-js/react-hooks';
 import { useMetadata } from './use-metadata';
 import metaBattle from 'assets/meta/meta-battle.txt';
-import { ENV } from '../consts';
-import { UnsubscribePromise } from '@polkadot/api/types';
-import { UserMessageSent } from '@gear-js/api';
+import { ENV } from 'app/consts';
+import type { UnsubscribePromise } from '@polkadot/api/types';
+import type { UserMessageSent } from '@gear-js/api';
 import { useSendMessage } from './useSendMessage';
 
 function useReadBattleState<T>() {

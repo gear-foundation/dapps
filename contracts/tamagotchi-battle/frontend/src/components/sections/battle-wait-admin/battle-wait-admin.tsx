@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import { buttonStyles } from '@gear-js/ui';
 import { Icon } from '../../ui/icon';
 import { useApp, useBattle } from 'app/context';
-import { useBattleMessage } from '../../../app/hooks/use-battle';
+import { useBattleMessage } from 'app/hooks/use-battle';
 
 export const BattleWaitAdmin = () => {
   const { isPending, setIsPending } = useApp();

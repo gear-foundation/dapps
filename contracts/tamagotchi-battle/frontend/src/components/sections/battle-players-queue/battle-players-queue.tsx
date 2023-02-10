@@ -1,11 +1,11 @@
-import { TamagotchiQueueCard } from '../../cards/tamagotchi-queue-card';
+import { TamagotchiQueueCard } from 'components/cards/tamagotchi-queue-card';
 import 'keen-slider/keen-slider.min.css';
 import { KeenSliderHooks, KeenSliderOptions, useKeenSlider } from 'keen-slider/react';
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Icon } from '../../ui/icon';
+import { Icon } from 'components/ui/icon';
 import { useBattle } from 'app/context';
-import { BattlePlayerType } from '../../../app/types/battles';
-import { useRefDimensions } from '../../../app/hooks/use-ref-dimensions';
+import { BattlePlayerType } from 'app/types/battles';
+import { useRefDimensions } from 'app/hooks/use-ref-dimensions';
 
 const SPACING = 8;
 const CARD_WIDTH = 160;

@@ -1,7 +1,7 @@
 import { TamagotchiAvatar } from '../../tamagotchi/tamagotchi-avatar';
 import clsx from 'clsx';
 import { Icon } from '../../ui/icon';
-import { BattlePlayerType } from '../../../app/types/battles';
+import { BattlePlayerType } from 'app/types/battles';
 import { useEffect, useState } from 'react';
 
 type TamagotchiQueueCardProps = {

@@ -1,5 +1,5 @@
 import { BattleStateResponse } from 'app/types/battles';
-import { useBattle } from '../../../app/context';
+import { useBattle } from 'app/context';
 import { TamagotchiBattleInfoCard } from '../../tamagotchi/tamagotchi-battle-info-card';
 import { TamagotchiAvatar } from '../../tamagotchi/tamagotchi-avatar';
 import Fireworks, { FireworksHandlers } from '@fireworks-js/react';

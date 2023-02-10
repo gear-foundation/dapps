@@ -1,4 +1,4 @@
-import { BattlePlayerType } from '../../../app/types/battles';
+import { BattlePlayerType } from 'app/types/battles';
 import clsx from 'clsx';
 import { Icon } from '../../ui/icon';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';

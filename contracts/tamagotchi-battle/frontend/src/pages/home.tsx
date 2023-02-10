@@ -1,7 +1,7 @@
 import { useAccount } from '@gear-js/react-hooks';
 import clsx from 'clsx';
-import { CreateTamagotchiForm } from '../components/forms/create-tamagotchi-form';
-import { LoginSection } from '../components/sections/login-section';
+import { CreateTamagotchiForm } from 'components/forms/create-tamagotchi-form';
+import { LoginSection } from 'components/sections/login-section';
 
 export const Home = () => {
   const { account } = useAccount();
