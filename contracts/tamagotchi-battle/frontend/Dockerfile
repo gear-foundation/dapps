@@ -5,10 +5,7 @@ ARG REACT_APP_NODE_ADDRESS  \
 ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
     REACT_APP_BATTLE_ADDRESS=${REACT_APP_BATTLE_ADDRESS}
     
-COPY package.json .
-COPY yarn.lock .
-COPY tsconfig.json .
-
+COPY . /tamagotchi
 
 RUN yarn install
-CMD ["yarn", "start"]
+CMD ["sleep", "3600"]
