@@ -6,7 +6,7 @@ import { SelectAccountPopup } from 'components/popups/select-account-popup';
 import { AccountButton } from 'components/common/account-button';
 import { useApp, useBattle } from 'app/context';
 import { useBattleMessage } from 'app/hooks/use-battle';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 
 export const AccountComponent = () => {
@@ -15,12 +15,16 @@ export const AccountComponent = () => {
   const { battleState: battle } = useBattle();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
   const handleMessage = useBattleMessage();
 
-  const onSuccess = () => setIsPending(false);
+  const onSuccess = () => {
+    navigate('/');
+    setIsPending(false);
+  };
   const onError = () => setIsPending(false);
   const handler = () => {
     setIsPending(true);

@@ -15,7 +15,7 @@ type SendMessageOptions = {
 };
 
 const getAutoGasLimit = ({ waited, min_limit }: GasInfo) => {
-  return waited ? min_limit.add(min_limit.mul(bnToBn(0.2))) : min_limit.add(min_limit.mul(bnToBn(0.1)));
+  return waited ? min_limit.add(min_limit.mul(bnToBn(0.3))) : min_limit.add(min_limit.mul(bnToBn(0.2)));
 };
 
 export function useSendMessage(destination: HexString, metadata: ProgramMetadata | undefined) {

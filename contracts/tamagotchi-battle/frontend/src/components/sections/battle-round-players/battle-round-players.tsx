@@ -53,7 +53,7 @@ export const BattleRoundPlayers = () => {
       </div>
       <div className="absolute top-1/2 left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 w-full max-w-[250px]">
         <div className="flex flex-col items-center">
-          <p className="text-2xl leading-normal xl:typo-h2 truncate max-w-[9ch]">
+          <p className="text-2xl leading-normal xl:typo-h2 truncate max-w-[13ch]">
             {currentPlayer && battle?.players[currentPlayer].name}
           </p>
         </div>
