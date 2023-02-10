@@ -5,9 +5,9 @@ ARG REACT_APP_NODE_ADDRESS  \
 ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
     REACT_APP_BATTLE_ADDRESS=${REACT_APP_BATTLE_ADDRESS}
     
-COPY . /src
+COPY . /tamagotchi
 
-WORKDIR src
+WORKDIR tamagotchi
 
 RUN yarn install
 CMD ["yarn", "start"]
