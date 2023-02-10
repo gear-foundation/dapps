@@ -7,15 +7,15 @@ const BattleTurnArrows = ({ isReverse }: { isReverse: boolean }) => (
   <div className={clsx('flex', isReverse && 'rotate-180')}>
     <Icon
       name="battle-next-step"
-      className="w-6 xl:w-10 aspect-[1/2] text-white animate-battle-turn-1 transition-opacity"
+      className="w-6 xxl:w-10 aspect-[1/2] text-white animate-battle-turn-1 transition-opacity"
     />
     <Icon
       name="battle-next-step"
-      className="w-6 xl:w-10 aspect-[1/2] text-white animate-battle-turn-2 transition-opacity"
+      className="w-6 xxl:w-10 aspect-[1/2] text-white animate-battle-turn-2 transition-opacity"
     />
     <Icon
       name="battle-next-step"
-      className="w-6 xl:w-10 aspect-[1/2] text-white animate-battle-turn-3 transition-opacity"
+      className="w-6 xxl:w-10 aspect-[1/2] text-white animate-battle-turn-3 transition-opacity"
     />
   </div>
 );

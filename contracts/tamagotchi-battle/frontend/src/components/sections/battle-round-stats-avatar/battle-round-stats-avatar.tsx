@@ -24,11 +24,11 @@ export const BattleRoundStatsAvatar = ({ isWinner, state, tamagotchi, isReverse,
       <div className="relative flex flex-col items-center w-fit">
         <div
           className={clsx(
-            'relative w-15 xl:w-24 aspect-square rounded-full overflow-hidden ring-2 ring-opacity-50',
+            'relative w-15 xxl:w-24 aspect-square rounded-full overflow-hidden ring-2 ring-opacity-50',
             dead ? 'bg-error ring-error' : 'bg-white ring-white',
           )}>
           <TamagotchiAvatar
-            className="w-30 xl:w-48 aspect-square -left-1/2"
+            className="w-30 xxl:w-48 aspect-square -left-1/2"
             age={tamagotchi.dateOfBirth}
             color={tamagotchi.color}
             isDead={dead}

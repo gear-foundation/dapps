@@ -41,11 +41,11 @@ export const TamagotchiBattleInfoCard = ({ tamagotchi, isActive }: TamagotchiBat
       {dead && <Icon name="message-rip" width={25} height={25} className="absolute top-10 right-2" />}
       <div
         className={clsx(
-          'relative w-15 xl:w-24 aspect-square m-auto rounded-full overflow-hidden ring-4 ring-opacity-10',
+          'relative w-15 xxl:w-24 aspect-square m-auto rounded-full overflow-hidden ring-4 ring-opacity-10',
           dead ? 'bg-error ring-error' : 'bg-white ring-white',
         )}>
         <TamagotchiAvatar
-          className="w-30 xl:w-48 aspect-square -left-1/2"
+          className="w-30 xxl:w-48 aspect-square -left-1/2"
           age={tamagotchi.dateOfBirth}
           color={tamagotchi.color}
           isDead={dead}

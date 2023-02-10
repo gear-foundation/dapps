@@ -64,13 +64,13 @@ export const BattlePlayersQueue = () => {
   return (
     <section ref={ref} className="mt-auto px-5 overflow-hidden">
       {isSlider ? (
-        <div className="grid gap-4 xl:gap-6">
-          <div className="flex gap-4 xl:gap-6">
-            <button onClick={handlePrev} className="btn btn--primary-outline text-primary p-2 xl:p-2.5 rounded-lg">
-              <Icon name="prev" className="w-3.5 xl:w-4.5 aspect-square" />
+        <div className="grid gap-4 xxl:gap-6">
+          <div className="flex gap-4 xxl:gap-6">
+            <button onClick={handlePrev} className="btn btn--primary-outline text-primary p-2 xxl:p-2.5 rounded-lg">
+              <Icon name="prev" className="w-3.5 xxl:w-4.5 aspect-square" />
             </button>
-            <button onClick={handleNext} className="btn btn--primary-outline text-primary p-2 xl:p-2.5 rounded-lg">
-              <Icon name="prev" className="w-3.5 xl:w-4.5 aspect-square rotate-180" />
+            <button onClick={handleNext} className="btn btn--primary-outline text-primary p-2 xxl:p-2.5 rounded-lg">
+              <Icon name="prev" className="w-3.5 xxl:w-4.5 aspect-square rotate-180" />
             </button>
           </div>
           <ul ref={sliderRef} className="keen-slider !overflow-visible">

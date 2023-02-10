@@ -5,7 +5,7 @@ import { Icon } from 'components/ui/icon';
 export const BattleRoundInfo = () => {
   const { players, currentPlayer, battleState: battle } = useBattle();
   return (
-    <div className="relative flex gap-10 justify-between mt-4 xl:mt-7">
+    <div className="relative flex gap-10 justify-between mt-4 xxl:mt-7">
       <div className="basis-[40%] flex justify-center">
         <TamagotchiBattleInfoCard tamagotchi={players[0]} isActive={players[0].tmgId === currentPlayer} />
       </div>
