@@ -1,12 +1,11 @@
 import { BattleStateResponse } from 'app/types/battles';
-import { useBattle } from 'app/context';
 import { TamagotchiBattleInfoCard } from 'components/tamagotchi/tamagotchi-battle-info-card';
 import { TamagotchiAvatar } from 'components/tamagotchi/tamagotchi-avatar';
 import Fireworks, { FireworksHandlers } from '@fireworks-js/react';
 import { useRef } from 'react';
 
 export const BattleWinner = ({ battle }: { battle: BattleStateResponse }) => {
-  const { players, currentPlayer } = useBattle();
+  const winner = battle.players[battle.currentWinner];
 
   return (
     <section className="container flex flex-col grow">
@@ -14,7 +13,7 @@ export const BattleWinner = ({ battle }: { battle: BattleStateResponse }) => {
       <div className="flex gap-10 justify-center items-center mt-2 xxl:mt-15">
         <div className="text-center font-bold">
           <p className="text-2xl leading-normal xxl:typo-h2 truncate max-w-[19ch]">
-            <span className="text-primary">{currentPlayer && battle.players[currentPlayer].name}</span>
+            <span className="text-primary">{winner.name}</span>
             <br />
             Winner
           </p>
@@ -23,16 +22,16 @@ export const BattleWinner = ({ battle }: { battle: BattleStateResponse }) => {
       <div className="relative grow flex justify-center gap-10 mt-2 xxl:mt-15">
         <div className="relative w-full max-w-[450px] flex flex-col">
           <TamagotchiAvatar
-            color={players[0].color}
-            age={players[0].dateOfBirth}
+            color={winner.color}
+            age={winner.dateOfBirth}
             className="grow w-full h-full"
             isWinner
-            isDead={!players[0].health}
+            isDead={!winner.health}
           />
         </div>
       </div>
       <div className="relative flex gap-10 justify-center mt-4 xxl:mt-7">
-        <TamagotchiBattleInfoCard tamagotchi={players[0]} isActive={players[0].tmgId === currentPlayer} />
+        <TamagotchiBattleInfoCard tamagotchi={winner} isActive={winner.tmgId === battle.currentWinner} />
       </div>
     </section>
   );
