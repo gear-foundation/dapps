@@ -2,7 +2,6 @@ import { BattleStateResponse } from 'app/types/battles';
 import { useBattle } from '../../../app/context';
 import { TamagotchiBattleInfoCard } from '../../tamagotchi/tamagotchi-battle-info-card';
 import { TamagotchiAvatar } from '../../tamagotchi/tamagotchi-avatar';
-import { getTamagotchiAgeDiff } from '../../../app/utils/get-tamagotchi-age';
 import Fireworks, { FireworksHandlers } from '@fireworks-js/react';
 import { useRef } from 'react';
 

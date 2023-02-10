@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { Icon } from '../../ui/icon';
 import { BattlePlayerType } from '../../../app/types/battles';
 import { useEffect, useState } from 'react';
-import { getTamagotchiAgeDiff } from '../../../app/utils/get-tamagotchi-age';
 
 type TamagotchiQueueCardProps = {
   className?: string;

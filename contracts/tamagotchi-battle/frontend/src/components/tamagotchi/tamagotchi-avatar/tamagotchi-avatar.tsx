@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Icon } from 'components/ui/icon';
 import { StoreItemsNames } from 'app/types/ft-store';
 import { getTamagotchiAgeDiff } from 'app/utils/get-tamagotchi-age';
-import { TamagotchiAvatarAge, TamagotchiAvatarEmotions } from 'app/types/tamagotchi';
+import { TamagotchiAvatarEmotions } from 'app/types/tamagotchi';
 import { TamagotchiColor } from '../../../app/types/battles';
 import { getTamagotchiColor } from '../../../app/utils/get-tamagotchi-color';
 

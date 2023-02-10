@@ -2,7 +2,6 @@ import clsx from 'clsx';
 import { BattleRoundStatsAvatar } from 'components/sections/battle-round-stats-avatar';
 import { Icon } from 'components/ui/icon';
 import { useBattle } from 'app/context';
-import { BattleStateResponse } from 'app/types/battles';
 
 const BattleTurnArrows = ({ isReverse }: { isReverse: boolean }) => (
   <div className={clsx('flex', isReverse && 'rotate-180')}>
@@ -28,13 +27,13 @@ export const BattleRoundStats = () => {
       {battle && (
         <>
           <BattleRoundStatsAvatar
-            state={battle?.state}
+            state={battle.state}
             isWinner={Boolean(battle.players[battle.currentWinner])}
             tamagotchi={players[0]}
           />
-          {battle?.state === 'GameIsOn' && <BattleTurnArrows isReverse={players[1].tmgId === currentPlayer} />}
+          {battle.state === 'GameIsOn' && <BattleTurnArrows isReverse={players[1].tmgId === currentPlayer} />}
           <BattleRoundStatsAvatar
-            state={battle?.state}
+            state={battle.state}
             isWinner={Boolean(battle.players[battle.currentWinner])}
             tamagotchi={players[1]}
             isReverse

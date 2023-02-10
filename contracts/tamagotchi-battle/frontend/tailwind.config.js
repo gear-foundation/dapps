@@ -55,6 +55,7 @@ module.exports = {
         lg: ['18px', '20px'],
         xl: ['24px', '32px'],
         '2xl': ['28px', '32px'],
+        h2: ['40px', { lineHeight: '48px', fontWeight: 700, letterSpacing: '-0.02em' }],
       },
       opacity: {
         15: '.15',

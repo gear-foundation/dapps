@@ -3,7 +3,6 @@ import { TamagotchiAvatar } from 'components/tamagotchi/tamagotchi-avatar';
 import { BattlePlayerType, BattleStatesList } from 'app/types/battles';
 import { Icon } from 'components/ui/icon';
 import { useEffect, useState } from 'react';
-import { getTamagotchiAgeDiff } from '../../../app/utils/get-tamagotchi-age';
 
 type Props = {
   tamagotchi: BattlePlayerType;
@@ -31,7 +30,6 @@ export const BattleRoundStatsAvatar = ({ isWinner, state, tamagotchi, isReverse,
           <TamagotchiAvatar
             className="w-30 xl:w-48 aspect-square -left-1/2"
             age={tamagotchi.dateOfBirth}
-            hasItem={[]}
             color={tamagotchi.color}
             isDead={dead}
           />
@@ -47,20 +45,14 @@ export const BattleRoundStatsAvatar = ({ isWinner, state, tamagotchi, isReverse,
             <span className="font-kanit text-xs font-medium leading-5">{Math.round(tamagotchi.health / 25)} / 100</span>
           </div>
         </div>
-        <div className={clsx('flex gap-3', isReverse && 'flex-row-reverse')}>
-          <div className="relative flex gap-1 items-center font-kanit text-xs font-medium leading-5 bg-white/10 py-0.5 px-4 rounded-xl">
+        <div className={clsx('flex gap-3 tracking-[0.03em]', isReverse && 'flex-row-reverse')}>
+          <div className="relative flex gap-1.5 items-center font-medium font-kanit text-xs leading-5 bg-white/10 py-0.5 px-4 rounded-xl">
             <Icon name="armor" className="w-3.5 h-3.5" />
-            {/*<h4>Defence: </h4>*/}
-            <p className="flex gap-1 items-center">
-              <span>{Math.round(tamagotchi.defence / 1000)}</span>
-            </p>
+            <b className="font-bold">{Math.round(tamagotchi.defence / 1000)}</b> Armor
           </div>
-          <div className="relative flex gap-1 items-center font-kanit text-xs font-medium leading-5 bg-white/10 py-0.5 px-4 rounded-xl">
+          <div className="relative flex gap-1.5 items-center font-medium font-kanit text-xs leading-5 bg-white/10 py-0.5 px-4 rounded-xl">
             <Icon name="wins" className="w-3.5 h-3.5" />
-            {/*<h4>Strength: </h4>*/}
-            <p className="flex gap-1 items-center">
-              <span>{Math.round(tamagotchi.power / 1000)}</span>
-            </p>
+            <b className="font-bold">{Math.round(tamagotchi.power / 1000)}</b> Strength
           </div>
         </div>
       </div>

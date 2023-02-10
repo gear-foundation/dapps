@@ -1226,7 +1226,7 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@fireworks-js/react@^2.10.1":
+"@fireworks-js/react@2.10.1":
   version "2.10.1"
   resolved "https://registry.yarnpkg.com/@fireworks-js/react/-/react-2.10.1.tgz#74b4624d3100592d4e567d94106ef632f24f203e"
   integrity sha512-6FayZiI4tq4w9RPlC3lktMDlrjQoopl0A9ND2i6dtBBBn22rP4e8pqVrySVZ8eRZZSqmH1SB/w6Oc9kdiqM8ig==
@@ -1257,10 +1257,10 @@
   resolved "https://registry.yarnpkg.com/@gear-js/api/-/api-0.29.1.tgz#0438cb74febca7bc2bb46e11696bfb33efeed865"
   integrity sha512-K6fa9gGI4IoeLw8Q7deu1QDQu7JevtMS2RUdRne+vdZrS3tXl0lC5aPXNHcoxQ7TyVXVvfOc9DJJo1NQ7UqhVw==
 
-"@gear-js/react-hooks@0.5.7":
-  version "0.5.7"
-  resolved "https://registry.yarnpkg.com/@gear-js/react-hooks/-/react-hooks-0.5.7.tgz#45406999bddb48f93972d4e89b991159a379e736"
-  integrity sha512-qIuspn40ShdnM7WgiVV8/D6TJbg+1Ga1Wfgb8S3K+pGblZmuoR56ctlpU/Ptf30f4SLnLQ5696i3TIWC886F3g==
+"@gear-js/react-hooks@0.5.8":
+  version "0.5.8"
+  resolved "https://registry.yarnpkg.com/@gear-js/react-hooks/-/react-hooks-0.5.8.tgz#bf5bc18521c8cdcde56b4fe43d313ef836e347c5"
+  integrity sha512-P10T8e2N5N3D4liHnc4nYRHwS1yyd2hmF3R8wvxpgqgLEel4+ZxpK88fOGZJHZJ3pEtY9lq99CPPpyuq4WE31A==
 
 "@gear-js/ui@0.5.13":
   version "0.5.13"
@@ -3239,7 +3239,7 @@ at-least-node@^1.0.0:
   resolved "https://registry.yarnpkg.com/at-least-node/-/at-least-node-1.0.0.tgz#602cd4b46e844ad4effc92a8011a3c46e0238dc2"
   integrity sha512-+q/t7Ekv1EDY2l6Gda6LLiX14rU9TV20Wa3ofeQmwPFZbOMo9DXrLbOjFaaclkXKWidIaopwAObQDqwWtGUjqg==
 
-autoprefixer@^10.4.13:
+autoprefixer@10.4.13, autoprefixer@^10.4.13:
   version "10.4.13"
   resolved "https://registry.yarnpkg.com/autoprefixer/-/autoprefixer-10.4.13.tgz#b5136b59930209a321e9fa3dca2e7c4d223e83a8"
   integrity sha512-49vKpMqcZYsJjwotvt4+h/BCjJVnhGwcLpDt5xkcaOG3eLrG/HUYLagrihYsQ+qrIBgIzX1Rw7a6L8I/ZA1Atg==
@@ -4756,7 +4756,7 @@ eslint-config-prettier@8.5.0:
   resolved "https://registry.yarnpkg.com/eslint-config-prettier/-/eslint-config-prettier-8.5.0.tgz#5a81680ec934beca02c7b1a61cf8ca34b66feab1"
   integrity sha512-obmWKLUNCnhtQRKc+tmnYuQl0pFU1ibYJQ5BGhTVB08bHe9wC8qUeG7c08dj9XX+AuPj1YSGSQIHl1pnDHZR0Q==
 
-eslint-config-react-app@^7.0.1:
+eslint-config-react-app@7.0.1, eslint-config-react-app@^7.0.1:
   version "7.0.1"
   resolved "https://registry.yarnpkg.com/eslint-config-react-app/-/eslint-config-react-app-7.0.1.tgz#73ba3929978001c5c86274c017ea57eb5fa644b4"
   integrity sha512-K6rNzvkIeHaTd8m/QEh1Zko0KI7BACWkkneSs6s9cKZC/J27X3eZR6Upt1jkmZ/4FK+XUOPPxMEN7+lbUXfSlA==
@@ -6895,7 +6895,7 @@ jsonpointer@^5.0.0:
     array-includes "^3.1.5"
     object.assign "^4.1.3"
 
-keen-slider@^6.8.5:
+keen-slider@6.8.5:
   version "6.8.5"
   resolved "https://registry.yarnpkg.com/keen-slider/-/keen-slider-6.8.5.tgz#1d96ff3ab77f195fc6cacd2e5aecc35d8ceb9702"
   integrity sha512-9yoosfffgTCrkmbX8kCUMWsn9KDgPSkxBof5/0yXde001D1xao7i9ppfxQCCK0MLnoCa+Rdssby0jFbTTUM4rw==
@@ -8549,7 +8549,7 @@ react-scripts@5.0.1:
   optionalDependencies:
     fsevents "^2.3.2"
 
-react-transition-group@^4.4.5:
+react-transition-group@4.4.5:
   version "4.4.5"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-4.4.5.tgz#e53d4e3f3344da8521489fbef8f2581d42becdd1"
   integrity sha512-pZcd1MCJoiKiBR2NRxeCRg13uCXbydPnmB4EOeRrY7480qNWO8IIgQG6zlDkm6uRMsURXPuKq0GWtiM59a5Q6g==

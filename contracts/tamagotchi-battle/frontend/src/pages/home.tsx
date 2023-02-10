@@ -1,4 +1,3 @@
-import { TamagotchiAvatar } from '../components/tamagotchi/tamagotchi-avatar';
 import { useAccount } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 import { CreateTamagotchiForm } from '../components/forms/create-tamagotchi-form';
