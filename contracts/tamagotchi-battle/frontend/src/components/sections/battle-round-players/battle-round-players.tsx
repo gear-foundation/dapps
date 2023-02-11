@@ -16,7 +16,7 @@ export const BattleRoundPlayers = () => {
 
   useEffect(() => {
     if (battle && account && currentPlayer) {
-      setIsAllowed(isAdmin || battle.players[currentPlayer].owner === account.decodedAddress);
+      setIsAllowed(battle.players[currentPlayer].owner === account.decodedAddress);
     }
   }, [account, battle, currentPlayer, isAdmin]);
 
@@ -63,7 +63,7 @@ export const BattleRoundPlayers = () => {
                 buttonStyles.button,
               )}
               onClick={onNewRound}
-              disabled={isPending || !isAllowed}>
+              disabled={isPending || isAdmin ? false : !isAllowed}>
               Start New Round
             </button>
           )}
