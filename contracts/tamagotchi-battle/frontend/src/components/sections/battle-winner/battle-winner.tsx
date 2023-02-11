@@ -31,7 +31,7 @@ export const BattleWinner = ({ battle }: { battle: BattleStateResponse }) => {
         </div>
       </div>
       <div className="relative flex gap-10 justify-center mt-4 xxl:mt-7">
-        <TamagotchiBattleInfoCard tamagotchi={winner} isActive={winner.tmgId === battle.currentWinner} />
+        <TamagotchiBattleInfoCard tamagotchi={winner} isActive />
       </div>
     </section>
   );
