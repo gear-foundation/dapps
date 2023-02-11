@@ -58,7 +58,7 @@ export const BattleRoundPlayers = () => {
           </p>
         </div>
         <div className="space-y-3">
-          {battle?.state === 'WaitNextRound' && isAdmin && (
+          {battle?.state === 'WaitNextRound' && (
             <button
               className={clsx(
                 'btn items-center gap-2 w-full transition-colors',
