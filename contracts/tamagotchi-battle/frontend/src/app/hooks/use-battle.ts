@@ -18,7 +18,7 @@ export function useInitBattleData() {
   const { api } = useApi();
   const { setIsAdmin } = useApp();
   const { account } = useAccount();
-  const { setPlayers, setBattleState, setCurrentPlayer, setRoundDamage } = useBattle();
+  const { setPlayers, setBattleState, setCurrentPlayer, setRoundDamage, roundDamage } = useBattle();
   const { state } = useReadBattleState<BattleStateResponse>();
   const { metadata } = useMetadata(metaBattle);
 
@@ -71,6 +71,19 @@ export function useInitBattleData() {
       if (unsub) unsub.then((unsubCallback) => unsubCallback());
     };
   }, [metadata, state]);
+
+  useEffect(() => {
+    if (state) {
+      if (state.round.steps && !state.round.moves.length) {
+        // console.log('show damage');
+      } else {
+        if (roundDamage.length) {
+          // console.log('hide damage');
+          setRoundDamage([]);
+        }
+      }
+    }
+  }, [roundDamage, state]);
 }
 
 export function useBattleMessage() {

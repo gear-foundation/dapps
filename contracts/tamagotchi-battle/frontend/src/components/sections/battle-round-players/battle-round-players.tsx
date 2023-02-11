@@ -8,33 +8,30 @@ import { useAccount } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
 
 export const BattleRoundPlayers = () => {
-  const { isPending, setIsPending } = useApp();
+  const { isPending, setIsPending, isAdmin } = useApp();
   const { account } = useAccount();
-  const { players, currentPlayer, roundDamage, battleState: battle, setRoundDamage } = useBattle();
+  const { players, currentPlayer, roundDamage, battleState: battle } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
 
   useEffect(() => {
     if (battle && account && currentPlayer) {
-      setIsAllowed(battle.players[currentPlayer].owner === account.decodedAddress);
+      setIsAllowed(isAdmin || battle.players[currentPlayer].owner === account.decodedAddress);
     }
-  }, [account, battle, currentPlayer]);
+  }, [account, battle, currentPlayer, isAdmin]);
 
   const onSuccess = () => setIsPending(false);
   const onError = () => setIsPending(false);
   const onNewRound = () => {
     setIsPending(true);
-    setRoundDamage([]);
     handleMessage({ StartNewRound: null }, { onSuccess, onError });
   };
   const onAttack = () => {
     setIsPending(true);
-    setRoundDamage([]);
     handleMessage({ MakeMove: { Attack: null } }, { onSuccess, onError });
   };
   const onDefence = () => {
     setIsPending(true);
-    setRoundDamage([]);
     handleMessage({ MakeMove: { Defence: null } }, { onSuccess, onError });
   };
 

@@ -1,5 +1,4 @@
 import { HexString } from '@polkadot/util/types';
-import { TamagotchiState } from './lessons';
 
 export type TamagotchiColor = 'Green' | 'Red' | 'Blue' | 'Purple' | 'Orange' | 'Yellow';
 
@@ -15,15 +14,8 @@ export type BattlePlayerType = {
   dateOfBirth: number;
 };
 
-export type TamagotchiBattlePlayer = TamagotchiState & {
-  attributes: number[];
-  energy: number;
-  owner: HexString;
-  power: number;
-  tmgId: HexString;
-};
-
-export type BattleStatesList = 'Registration' | 'GameIsOn' | 'WaitNextRound' | 'GameIsOver';
+export type BattleCurrentStateVariants = 'Registration' | 'GameIsOn' | 'WaitNextRound' | 'GameIsOver';
+export type BattleRoundMoveVariants = 'Defence' | 'Attack';
 
 export type BattleStateResponse = {
   admin: HexString;
@@ -31,11 +23,12 @@ export type BattleStateResponse = {
   players: Record<HexString, BattlePlayerType>;
   playersIds: HexString[];
   round: {
-    moves: number[];
+    moves: BattleRoundMoveVariants[];
     players: HexString[];
     tmgIds: HexString[];
+    steps: number;
   };
   currentTurn: number;
-  state: BattleStatesList;
+  state: BattleCurrentStateVariants;
   tmgStoreId: HexString;
 };
