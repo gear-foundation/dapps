@@ -83,7 +83,7 @@ const TamagotchiAvatarWinnerScene = ({ isActive }: { isActive: boolean }) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={clsx(
-        'absolute inset-x-0 top-1/2 -z-1 w-full h-auto aspect-[450/523] -translate-y-1/2 transition-opacity duration-1000',
+        'absolute inset-x-0 top-1/2 -z-1 w-full h-auto max-h-[153%] aspect-[450/523] -translate-y-1/2 transition-opacity duration-1000',
         !isActive && 'opacity-0',
       )}>
       <g opacity="0.7" filter="url(#filter0_f_1316_750739)">
@@ -144,7 +144,7 @@ const TamagotchiAvatarActiveScene = ({ isActive }: { isActive: boolean }) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={clsx(
-        'absolute inset-x-0 top-1/2 -z-1 w-full h-auto aspect-[450/523] -translate-y-1/2 transition-opacity duration-1000',
+        'absolute inset-x-0 top-1/2 -z-1 w-full h-auto max-h-[153%] aspect-[450/523] -translate-y-1/2 transition-opacity duration-1000',
         !isActive && 'opacity-0',
       )}>
       <g filter="url(#filter0_f_61_21481)">
