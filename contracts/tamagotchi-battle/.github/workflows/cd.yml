@@ -12,7 +12,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  KUBE_NAMESPACE: dev
+  KUBE_NAMESPACE: dev-1
 
 jobs:
   wait-previous-run:
@@ -45,7 +45,7 @@ jobs:
         with:
           file: frontend/Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-tamagotchi:dev
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
           build-args: |
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
             REACT_APP_BATTLE_ADDRESS=${{ secrets.REACT_APP_BATTLE_ADDRESS }}
