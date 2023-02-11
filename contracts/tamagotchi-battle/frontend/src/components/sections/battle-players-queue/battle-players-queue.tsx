@@ -85,7 +85,7 @@ export const BattlePlayersQueue = () => {
           </ul>
         </div>
       ) : (
-        <ul className="flex gap-4">
+        <ul className="flex gap-4 justify-center">
           {queue.length > 0 &&
             queue.map((item, i) => (
               <li key={i} className="w-40" style={{ width: CARD_WIDTH }}>
