@@ -1,4 +1,4 @@
-import { TamagotchiAvatar } from 'components/tamagotchi/tamagotchi-avatar';
+import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
 import clsx from 'clsx';
 import { Icon } from 'components/ui/icon';
 import { BattlePlayerType } from 'app/types/battles';

@@ -1,6 +1,6 @@
 import { BattleStateResponse } from 'app/types/battles';
-import { TamagotchiBattleInfoCard } from 'components/tamagotchi/tamagotchi-battle-info-card';
-import { TamagotchiAvatar } from 'components/tamagotchi/tamagotchi-avatar';
+import { TamagotchiBattleInfoCard } from 'components/cards/tamagotchi-battle-info-card';
+import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
 import Fireworks, { FireworksHandlers } from '@fireworks-js/react';
 import { useRef } from 'react';
 

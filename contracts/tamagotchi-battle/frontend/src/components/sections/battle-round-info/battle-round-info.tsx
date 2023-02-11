@@ -1,4 +1,4 @@
-import { TamagotchiBattleInfoCard } from 'components/tamagotchi/tamagotchi-battle-info-card';
+import { TamagotchiBattleInfoCard } from 'components/cards/tamagotchi-battle-info-card';
 import { useBattle } from 'app/context';
 import { Icon } from 'components/ui/icon';
 

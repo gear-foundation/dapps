@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { TamagotchiAvatar } from 'components/tamagotchi/tamagotchi-avatar';
+import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
 import { BattlePlayerType, BattleStatesList } from 'app/types/battles';
 import { Icon } from 'components/ui/icon';
 import { useEffect, useState } from 'react';
