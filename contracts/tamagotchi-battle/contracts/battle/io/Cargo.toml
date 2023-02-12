@@ -1,0 +1,10 @@
+[package]
+name = "battle-io"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] , branch = "stable"}
+codec = { package = "parity-scale-codec", version = "3.2.1", default-features = false }
+gmeta = {  git = "https://github.com/gear-tech/gear.git" }
+scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
