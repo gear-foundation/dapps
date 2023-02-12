@@ -10,7 +10,7 @@ import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
 export const BattleRoundPlayers = () => {
   const { isPending, setIsPending, isAdmin } = useApp();
   const { account } = useAccount();
-  const { players, currentPlayer, roundDamage, battleState: battle } = useBattle();
+  const { players, currentPlayer, roundDamage, battle } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
 

@@ -3,7 +3,7 @@ import { useBattle } from 'app/context';
 import { Icon } from 'components/ui/icon';
 
 export const BattleRoundInfo = () => {
-  const { players, currentPlayer, battleState: battle } = useBattle();
+  const { players, currentPlayer, battle } = useBattle();
   return (
     <div className="relative flex gap-10 justify-between mt-4 xxl:mt-7">
       <div className="basis-[40%] flex justify-center">

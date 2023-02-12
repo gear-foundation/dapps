@@ -7,7 +7,7 @@ import { BattleWinner } from 'components/sections/battle-winner';
 
 export const Battle = () => {
   const { isAdmin } = useApp();
-  const { battleState: battle, players, currentPlayer } = useBattle();
+  const { battle, players, currentPlayer } = useBattle();
 
   return (
     <>

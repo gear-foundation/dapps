@@ -12,7 +12,7 @@ import clsx from 'clsx';
 export const AccountComponent = () => {
   const { account, accounts } = useAccount();
   const { isAdmin, isPending, setIsPending } = useApp();
-  const { battleState: battle, setRoundDamage } = useBattle();
+  const { battle, setRoundDamage } = useBattle();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();

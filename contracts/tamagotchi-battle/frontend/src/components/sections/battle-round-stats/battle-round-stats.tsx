@@ -21,7 +21,7 @@ const BattleTurnArrows = ({ isReverse }: { isReverse: boolean }) => (
 );
 
 export const BattleRoundStats = () => {
-  const { players, currentPlayer, battleState: battle } = useBattle();
+  const { players, currentPlayer, battle } = useBattle();
   return (
     <div className="flex gap-10 justify-between items-center">
       {battle && (

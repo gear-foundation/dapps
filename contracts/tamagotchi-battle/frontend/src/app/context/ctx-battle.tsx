@@ -3,8 +3,8 @@ import { BattlePlayerType, BattleStateResponse } from 'app/types/battles';
 import { HexString } from '@polkadot/util/types';
 
 type Program = {
-  battleState?: BattleStateResponse;
-  setBattleState: Dispatch<SetStateAction<BattleStateResponse | undefined>>;
+  battle?: BattleStateResponse;
+  setBattle: Dispatch<SetStateAction<BattleStateResponse | undefined>>;
   players: BattlePlayerType[];
   setPlayers: Dispatch<SetStateAction<BattlePlayerType[]>>;
   currentPlayer?: HexString;
@@ -15,13 +15,13 @@ type Program = {
 
 const useProgram = (): Program => {
   const [players, setPlayers] = useState<BattlePlayerType[]>([]);
-  const [battleState, setBattleState] = useState<BattleStateResponse>();
+  const [battle, setBattle] = useState<BattleStateResponse>();
   const [currentPlayer, setCurrentPlayer] = useState<HexString>();
   const [roundDamage, setRoundDamage] = useState<number[]>([]);
 
   return {
-    battleState,
-    setBattleState,
+    battle,
+    setBattle,
     players,
     setPlayers,
     currentPlayer,

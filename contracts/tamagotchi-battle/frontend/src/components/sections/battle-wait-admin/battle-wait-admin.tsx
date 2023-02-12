@@ -6,7 +6,7 @@ import { useBattleMessage } from 'app/hooks/use-battle';
 
 export const BattleWaitAdmin = () => {
   const { isPending, setIsPending } = useApp();
-  const { battleState: battle } = useBattle();
+  const { battle } = useBattle();
   const handleMessage = useBattleMessage();
 
   const handler = () => {
@@ -26,7 +26,7 @@ export const BattleWaitAdmin = () => {
         <p className="font-kanit text-base text-white/80 tracking-wider">
           Participants connected:{' '}
           <b className="inline-block ml-1 text-xl font-semibold text-white">
-            {battle ? Object.keys(battle.players).length : 0} / 48
+            {battle ? Object.keys(battle.players).length : 0} / 50
           </b>
         </p>
         <div className="mt-12">

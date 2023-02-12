@@ -6,7 +6,8 @@ import { AccountButton } from 'components/common/account-button';
 import { Icon } from 'components/ui/icon';
 import { LOCAL_STORAGE } from 'app/consts';
 import { copyToClipboard, isLoggedIn } from 'app/utils';
-import { useApp } from 'app/context';
+import { useApp, useBattle } from 'app/context';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   list: InjectedAccountWithMeta[];
@@ -14,19 +15,22 @@ type Props = {
 };
 
 export const AccountsList = ({ list, onChange }: Props) => {
-  const { logout, login } = useAccount();
   const alert = useAlert();
   const { setIsAdmin } = useApp();
+  const { battle } = useBattle();
+  const { logout, login } = useAccount();
+  const navigate = useNavigate();
 
-  const handleAccountButtonClick = async (account: InjectedAccountWithMeta) => {
+  const onClick = async (account: InjectedAccountWithMeta) => {
     await logout();
     await login(account);
     localStorage.setItem(LOCAL_STORAGE.ACCOUNT, account.address);
     onChange();
     setIsAdmin(false);
+    if (battle?.state === 'Registration') navigate('/');
   };
 
-  const handleCopy = (address: string) => {
+  const onCopy = (address: string) => {
     const decodedAddress = decodeAddress(address);
     copyToClipboard(decodedAddress, alert);
   };
@@ -39,12 +43,12 @@ export const AccountsList = ({ list, onChange }: Props) => {
             address={account.address}
             name={account.meta.name}
             isActive={isLoggedIn(account)}
-            onClick={() => handleAccountButtonClick(account)}
+            onClick={() => onClick(account)}
           />
           <Button
             icon={() => <Icon name="copy" className="w-5 h-5" />}
             color="transparent"
-            onClick={() => handleCopy(account.address)}
+            onClick={() => onCopy(account.address)}
           />
         </li>
       ))}

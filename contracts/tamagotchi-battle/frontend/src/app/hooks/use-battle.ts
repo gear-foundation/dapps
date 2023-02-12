@@ -18,12 +18,12 @@ export function useInitBattleData() {
   const { api } = useApi();
   const { setIsAdmin } = useApp();
   const { account } = useAccount();
-  const { setPlayers, setBattleState, setCurrentPlayer, setRoundDamage, roundDamage } = useBattle();
+  const { setPlayers, setBattle, setCurrentPlayer, setRoundDamage, roundDamage } = useBattle();
   const { state } = useReadBattleState<BattleStateResponse>();
   const { metadata } = useMetadata(metaBattle);
 
   useEffect(() => {
-    setBattleState(state);
+    setBattle(state);
     if (state && account) {
       setIsAdmin(state.admin === account.decodedAddress);
 
