@@ -10,7 +10,9 @@ type Props = {
 export const SelectAccountPopup = ({ accounts, close }: Props) => (
   <Modal heading="Connect" close={close}>
     {accounts ? (
-      <AccountsList list={accounts} onChange={close} />
+      <div className="overflow-y-scroll max-h-96 -m-8 p-8">
+        <AccountsList list={accounts} onChange={close} />
+      </div>
     ) : (
       <p>
         Polkadot extension was not found or disabled. Please,{' '}
