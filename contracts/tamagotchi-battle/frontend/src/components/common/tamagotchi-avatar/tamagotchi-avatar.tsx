@@ -77,9 +77,10 @@ export const TamagotchiAvatar = ({
       {!isDead && !isWinner && (
         <div
           className={clsx(
-            'absolute top-0 text-white transition-[opacity,transform] pointer-events-none',
+            'absolute top-0 py-0.5 px-4 leading-4 rounded-full text-white transition-[opacity,transform] pointer-events-none',
             reverse ? 'left-0' : 'right-0',
             !action ? 'opacity-0 translate-y-5' : 'translate-y-0',
+            action === 'Defence' ? 'bg-[#1852FF]' : 'bg-[#F70200]',
           )}>
           <span className="font-bold">{action}</span>
         </div>
