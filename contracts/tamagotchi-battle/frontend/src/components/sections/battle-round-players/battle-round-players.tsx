@@ -45,7 +45,8 @@ export const BattleRoundPlayers = () => {
           isActive={battle?.state !== 'WaitNextRound' && rivals[0].tmgId === currentPlayer}
           isWinner={battle?.state === 'WaitNextRound' && battle.currentWinner === rivals[0].tmgId}
           isDead={!rivals[0].health}
-          damage={roundDamage.length > 0 ? Math.round(roundDamage[0] / 25) : 0}
+          damage={roundDamage ? Math.round(roundDamage[0] / 25) : 0}
+          action={roundDamage && roundDamage[2]}
         />
       </div>
       <div className="absolute top-1/2 left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 w-full max-w-[250px]">
@@ -96,7 +97,9 @@ export const BattleRoundPlayers = () => {
           isActive={battle?.state !== 'WaitNextRound' && rivals[1].tmgId === currentPlayer}
           isWinner={battle?.state === 'WaitNextRound' && battle.currentWinner === rivals[1].tmgId}
           isDead={!rivals[1].health}
-          damage={roundDamage.length > 0 ? Math.round(roundDamage[1] / 25) : 0}
+          damage={roundDamage ? Math.round(roundDamage[1] / 25) : 0}
+          action={roundDamage && roundDamage[3]}
+          reverse
         />
       </div>
     </div>

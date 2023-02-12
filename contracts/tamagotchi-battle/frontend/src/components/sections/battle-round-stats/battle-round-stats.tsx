@@ -20,7 +20,7 @@ const BattleTurnArrows = ({ isReverse }: { isReverse: boolean }) => {
         className="w-6 xxl:w-10 aspect-[1/2] text-white animate-battle-turn-3 transition-opacity"
       />
       {battle && battle.round.steps >= 0 && (
-        <span className="absolute top-full left-1/2 -translate-x-1/2 whitespace-nowrap">
+        <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap">
           Round: {battle?.round.steps + 1}
         </span>
       )}

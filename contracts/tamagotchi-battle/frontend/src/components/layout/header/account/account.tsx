@@ -12,7 +12,7 @@ import clsx from 'clsx';
 export const AccountComponent = () => {
   const { account, accounts } = useAccount();
   const { isAdmin, isPending, setIsPending } = useApp();
-  const { battle, setRoundDamage } = useBattle();
+  const { battle } = useBattle();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -29,7 +29,6 @@ export const AccountComponent = () => {
   const handler = () => {
     setIsPending(true);
     handleMessage({ StartNewGame: null }, { onSuccess, onError });
-    setRoundDamage([]);
   };
 
   return (

@@ -8,6 +8,7 @@ import { ENV } from 'app/consts';
 import type { UnsubscribePromise } from '@polkadot/api/types';
 import type { UserMessageSent } from '@gear-js/api';
 import { useSendMessage } from './useSendMessage';
+import { RoundDamageType } from 'app/types/battles';
 
 function useReadBattleState<T>() {
   const { metadata } = useMetadata(metaBattle);
@@ -63,7 +64,8 @@ export function useInitBattleData() {
             typeof decodedPayload === 'object' &&
             Object.keys(decodedPayload).includes('roundResult')
           ) {
-            setRoundDamage(Object.values(decodedPayload)[0] as number[]);
+            console.log({ decodedPayload });
+            setRoundDamage(Object.values(decodedPayload)[0] as RoundDamageType);
           }
         }
       });
@@ -79,9 +81,9 @@ export function useInitBattleData() {
       if (state.round.steps && !state.round.moves.length) {
         // console.log('show damage');
       } else {
-        if (roundDamage.length) {
+        if (roundDamage) {
           // console.log('hide damage');
-          setRoundDamage([]);
+          setRoundDamage(undefined);
         }
       }
     }

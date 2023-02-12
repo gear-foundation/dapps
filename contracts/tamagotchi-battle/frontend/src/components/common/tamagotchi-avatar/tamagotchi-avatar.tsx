@@ -3,7 +3,7 @@ import { Icon } from 'components/ui/icon';
 import { StoreItemsNames } from 'app/types/ft-store';
 import { getTamagotchiAgeDiff } from 'app/utils/get-tamagotchi-age';
 import { TamagotchiAvatarEmotions } from 'app/types/tamagotchi';
-import { TamagotchiColor } from 'app/types/battles';
+import { BattleRoundMoveVariants, TamagotchiColor } from 'app/types/battles';
 import { getTamagotchiColor } from 'app/utils/get-tamagotchi-color';
 
 type TamagotchiAvatarProps = {
@@ -16,6 +16,8 @@ type TamagotchiAvatarProps = {
   isActive?: boolean;
   isWinner?: boolean;
   damage?: number;
+  action?: BattleRoundMoveVariants;
+  reverse?: boolean;
 };
 
 export const TamagotchiAvatar = ({
@@ -28,6 +30,8 @@ export const TamagotchiAvatar = ({
   isActive,
   isWinner,
   damage,
+  action,
+  reverse,
 }: TamagotchiAvatarProps) => {
   const tamagotchiAge = getTamagotchiAgeDiff(age);
 
@@ -60,14 +64,24 @@ export const TamagotchiAvatar = ({
       {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
       {!isDead && glasses && <Icon name={glasses} section={s} className={cn} />}
       {!isDead && hasItem?.includes('hat') && <Icon name="head-hat" section={s} className={cn} />}
-      {!isDead && (
+      {!isDead && !isWinner && (
         <div
           className={clsx(
-            'absolute top-1/4 right-15 w-12 h-12 grid place-items-center transition-[opacity,transform] pointer-events-none',
-            !damage ? 'opacity-0' : '-translate-y-5',
+            'absolute top-1/4 right-15 w-12 h-12 grid place-items-center transition-[opacity,transform] delay-200 pointer-events-none',
+            !damage ? 'opacity-0 translate-y-5' : 'translate-y-0',
           )}>
           <Icon name="damage" section={s} className="absolute inset-0 w-full h-full" />
           <span className="relative z-1 text-white font-bold">-{damage}</span>
+        </div>
+      )}
+      {!isDead && !isWinner && (
+        <div
+          className={clsx(
+            'absolute top-0 text-white transition-[opacity,transform] pointer-events-none',
+            reverse ? 'left-0' : 'right-0',
+            !action ? 'opacity-0 translate-y-5' : 'translate-y-0',
+          )}>
+          <span className="font-bold">{action}</span>
         </div>
       )}
     </div>

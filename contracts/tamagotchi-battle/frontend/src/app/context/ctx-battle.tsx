@@ -1,5 +1,5 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useState } from 'react';
-import { BattlePlayerType, BattleStateResponse } from 'app/types/battles';
+import { BattlePlayerType, BattleStateResponse, RoundDamageType } from 'app/types/battles';
 import { HexString } from '@polkadot/util/types';
 
 type Program = {
@@ -11,8 +11,8 @@ type Program = {
   setRivals: Dispatch<SetStateAction<BattlePlayerType[]>>;
   currentPlayer?: HexString;
   setCurrentPlayer: Dispatch<SetStateAction<HexString | undefined>>;
-  roundDamage: number[];
-  setRoundDamage: Dispatch<SetStateAction<number[]>>;
+  roundDamage?: RoundDamageType;
+  setRoundDamage: Dispatch<SetStateAction<RoundDamageType | undefined>>;
 };
 
 const useProgram = (): Program => {
@@ -20,7 +20,7 @@ const useProgram = (): Program => {
   const [players, setPlayers] = useState<BattlePlayerType[]>([]);
   const [rivals, setRivals] = useState<BattlePlayerType[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState<HexString>();
-  const [roundDamage, setRoundDamage] = useState<number[]>([]);
+  const [roundDamage, setRoundDamage] = useState<RoundDamageType>();
 
   return {
     battle,
