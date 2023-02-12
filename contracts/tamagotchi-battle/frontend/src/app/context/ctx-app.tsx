@@ -5,6 +5,8 @@ type Program = {
   setIsPending: Dispatch<SetStateAction<boolean>>;
   isAdmin: boolean;
   setIsAdmin: Dispatch<SetStateAction<boolean>>;
+  isDataReady: boolean;
+  setIsDataReady: Dispatch<SetStateAction<boolean>>;
 };
 
 export const AppCtx = createContext({} as Program);
@@ -12,12 +14,15 @@ export const AppCtx = createContext({} as Program);
 const useProgram = (): Program => {
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isDataReady, setIsDataReady] = useState<boolean>(false);
 
   return {
     isPending,
     setIsPending,
     isAdmin,
     setIsAdmin,
+    isDataReady,
+    setIsDataReady,
   };
 };
 

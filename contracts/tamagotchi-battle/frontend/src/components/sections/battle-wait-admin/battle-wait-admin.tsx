@@ -6,7 +6,7 @@ import { useBattleMessage } from 'app/hooks/use-battle';
 
 export const BattleWaitAdmin = () => {
   const { isPending, setIsPending } = useApp();
-  const { battle } = useBattle();
+  const { players } = useBattle();
   const handleMessage = useBattleMessage();
 
   const handler = () => {
@@ -25,9 +25,7 @@ export const BattleWaitAdmin = () => {
       <div className="max-w-[368px] mt-6 m-auto">
         <p className="font-kanit text-base text-white/80 tracking-wider">
           Participants connected:{' '}
-          <b className="inline-block ml-1 text-xl font-semibold text-white">
-            {battle ? Object.keys(battle.players).length : 0} / 50
-          </b>
+          <b className="inline-block ml-1 text-xl font-semibold text-white">{players.length} / 50</b>
         </p>
         <div className="mt-12">
           <button
@@ -37,7 +35,7 @@ export const BattleWaitAdmin = () => {
               buttonStyles.button,
             )}
             onClick={handler}
-            disabled={isPending || Object.values(battle?.players ?? []).length < 2}>
+            disabled={isPending || players.length < 2}>
             <Icon name="swords" className="w-5 h-5" /> <span>Start Battle</span>
           </button>
         </div>

@@ -1,17 +1,14 @@
 import clsx from 'clsx';
 import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
-import { BattlePlayerType, BattleCurrentStateVariants } from 'app/types/battles';
+import { BattlePlayerType } from 'app/types/battles';
 import { Icon } from 'components/ui/icon';
 import { useEffect, useState } from 'react';
 
 type Props = {
   tamagotchi: BattlePlayerType;
-  isWinner?: boolean;
-  state: BattleCurrentStateVariants;
   isReverse?: boolean;
-  children?: JSX.Element;
 };
-export const BattleRoundStatsAvatar = ({ isWinner, state, tamagotchi, isReverse, children }: Props) => {
+export const BattleRoundStatsAvatar = ({ tamagotchi, isReverse }: Props) => {
   const [dead, setDead] = useState(false);
 
   useEffect(() => {

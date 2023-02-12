@@ -7,13 +7,13 @@ import { BattleWinner } from 'components/sections/battle-winner';
 
 export const Battle = () => {
   const { isAdmin } = useApp();
-  const { battle, players, currentPlayer } = useBattle();
+  const { battle, rivals, currentPlayer } = useBattle();
 
   return (
     <>
       {battle?.state === 'Registration' && (isAdmin ? <BattleWaitAdmin /> : <BattleWaitRegistration />)}
-      {battle && ['GameIsOn', 'WaitNextRound'].includes(battle.state) && players.length && <BattleRound />}
-      {battle && battle?.state === 'GameIsOver' && players.length && currentPlayer && <BattleWinner battle={battle} />}
+      {battle && ['GameIsOn', 'WaitNextRound'].includes(battle.state) && rivals.length && <BattleRound />}
+      {battle && battle?.state === 'GameIsOver' && rivals.length && currentPlayer && <BattleWinner battle={battle} />}
       {battle && Object.keys(battle.players).length > 0 && <BattlePlayersQueue />}
     </>
   );

@@ -16,9 +16,9 @@ function useReadBattleState<T>() {
 
 export function useInitBattleData() {
   const { api } = useApi();
-  const { setIsAdmin } = useApp();
+  const { setIsAdmin, setIsDataReady } = useApp();
   const { account } = useAccount();
-  const { setPlayers, setBattle, setCurrentPlayer, setRoundDamage, roundDamage } = useBattle();
+  const { roundDamage, setRivals, setBattle, setCurrentPlayer, setRoundDamage, setPlayers } = useBattle();
   const { state } = useReadBattleState<BattleStateResponse>();
   const { metadata } = useMetadata(metaBattle);
 
@@ -35,10 +35,12 @@ export function useInitBattleData() {
         return result;
       };
 
-      setPlayers(getPlayers());
+      setPlayers(Object.values(state.players));
+      setRivals(getPlayers());
       setCurrentPlayer(state.round.tmgIds[state.round.moves.length > 0 ? 1 : 0]);
     } else {
       setPlayers([]);
+      setRivals([]);
     }
   }, [state, account]);
 

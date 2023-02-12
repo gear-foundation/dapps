@@ -10,7 +10,7 @@ import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
 export const BattleRoundPlayers = () => {
   const { isPending, setIsPending, isAdmin } = useApp();
   const { account } = useAccount();
-  const { players, currentPlayer, roundDamage, battle } = useBattle();
+  const { rivals, currentPlayer, roundDamage, battle } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
 
@@ -39,12 +39,12 @@ export const BattleRoundPlayers = () => {
     <div className="relative grow flex justify-between gap-10 mt-10 xxl:mt-15">
       <div className="relative basis-[40%] w-full flex flex-col">
         <TamagotchiAvatar
-          color={players[0].color}
-          age={players[0].dateOfBirth}
+          color={rivals[0].color}
+          age={rivals[0].dateOfBirth}
           className="grow w-full h-full "
-          isActive={battle?.state !== 'WaitNextRound' && players[0].tmgId === currentPlayer}
-          isWinner={battle?.state === 'WaitNextRound' && battle.currentWinner === players[0].tmgId}
-          isDead={!players[0].health}
+          isActive={battle?.state !== 'WaitNextRound' && rivals[0].tmgId === currentPlayer}
+          isWinner={battle?.state === 'WaitNextRound' && battle.currentWinner === rivals[0].tmgId}
+          isDead={!rivals[0].health}
           damage={roundDamage.length > 0 ? Math.round(roundDamage[0] / 25) : 0}
         />
       </div>
@@ -90,12 +90,12 @@ export const BattleRoundPlayers = () => {
       </div>
       <div className="relative basis-[40%] w-full flex flex-col">
         <TamagotchiAvatar
-          color={players[1].color}
-          age={players[1].dateOfBirth}
+          color={rivals[1].color}
+          age={rivals[1].dateOfBirth}
           className="grow w-full h-full "
-          isActive={battle?.state !== 'WaitNextRound' && players[1].tmgId === currentPlayer}
-          isWinner={battle?.state === 'WaitNextRound' && battle.currentWinner === players[1].tmgId}
-          isDead={!players[1].health}
+          isActive={battle?.state !== 'WaitNextRound' && rivals[1].tmgId === currentPlayer}
+          isWinner={battle?.state === 'WaitNextRound' && battle.currentWinner === rivals[1].tmgId}
+          isDead={!rivals[1].health}
           damage={roundDamage.length > 0 ? Math.round(roundDamage[1] / 25) : 0}
         />
       </div>
