@@ -8,3 +8,4 @@ gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
+enum-iterator = "1.3.0"
