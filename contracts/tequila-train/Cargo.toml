@@ -1,0 +1,36 @@
+[package]
+name = "app"
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+[dependencies]
+app-io = { path = "io" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+hashbrown = "0.13"
+
+[build-dependencies]
+app-io = { path = "io" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+
+[dev-dependencies]
+app-state = { path = "state" }
+gtest = { git = "https://github.com/gear-tech/gear.git" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
+tokio = "1"
+gclient = { git = "https://github.com/gear-tech/gear.git" }
+
+[features]
+# Used for inserting constants with WASM binaries (NOT paths) of the contract in
+# the root crate. Usually these constants used in gclient tests instead of
+# strings with paths to the binaries in the "target" directory. If you don't
+# like this approach or don't use gclient tests, you can freely remove this
+# feature from here and from the rest of the code.
+binary-vendor = ["app-state/binary-vendor"]
+
+# It's necessary to include all metawasm crates in the workspace section,
+# otherwise they'll be ignored by Cargo and won't be built.
+[workspace]
+members = ["state"]
