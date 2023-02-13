@@ -1,0 +1,14 @@
+@use 'assets/styles';
+@use '@gear-js/ui/variables' as *;
+
+:root {
+  --color-secondary: #{red($textColorSecondary) green($textColorSecondary) blue($textColorSecondary)};
+  --color-primary: #{red($successColor) green($successColor) blue($successColor)};
+  --color-error: #{red($errorColor) green($errorColor) blue($errorColor)};
+  --color-dark-500: 41 41 43;
+  --color-light: 209 209 209;
+}
+
+html {
+  background-color: #1e1e1e;
+}
