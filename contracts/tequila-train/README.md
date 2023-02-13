@@ -1,49 +1,37 @@
-<p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-dapps/app" target="_blank">
-    <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
-  </a>
-</p>
-
-# Gear Template App
+#  Tequila Train Game
 
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
 
-[build_badge]: https://github.com/gear-dapps/app/workflows/Build/badge.svg
-[build_href]: https://github.com/gear-dapps/app/actions/workflows/build.yml
+[build_badge]: https://github.com/gear-dapps/tequila-train/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-dapps/tequila-train/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-MIT-success
-[lic_href]: https://github.com/gear-dapps/app/blob/master/LICENSE
+[lic_href]: https://github.com/gear-dapps/tequila-train/blob/master/LICENSE
 
 <!-- Description starts here -->
 
-Template application. Use this repository as a template when creating a new application repo.
+The tequila train game is quite similar to the Mexican train game but has several differences in rules.
 
-> https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template
+🥃🚂 https://tequila-train.com
 
 <!-- End of description -->
 
-## Initial checklist after creating a new repo
-
-- [ ] Change app name in `Cargo.toml`
-- [ ] Fix Gitpod/badge/releases links in `README.md` (replace `gear-dapps/app` with `gear-dapps/<my-new-app>`)
-- [ ] Add description in `README.md`
-- [ ] Fix dates, links, and initial commit hash in `CHANGELOG.md`
-- [ ] Remove this section
-
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/app/releases).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/tequila-train/releases).
 
 ## Building Locally
 
-### ⚙️ Install Rust
+### Smart Contract
+
+#### ⚙️ Install Rust
 
 ```shell
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
-### ⚒️ Add specific toolchains
+#### ⚒️ Add specific toolchains
 
 ```shell
 rustup toolchain add nightly
@@ -53,22 +41,23 @@ rustup target add wasm32-unknown-unknown --toolchain nightly
 ... or ...
 
 ```shell
-make init
+make init-contracts
 ```
 
-### 🏗️ Build
+#### 🏗️ Build
 
 ```shell
+cd contracts
 cargo build --release
 ```
 
 ... or ...
 
 ```shell
-make build
+make contracts
 ```
 
-### ✅ Run tests
+#### ✅ Run tests
 
 ```shell
 cargo test --release
@@ -77,16 +66,54 @@ cargo test --release
 ... or ...
 
 ```shell
-make test
+make test-contracts
 ```
 
-### 🚀 Run everything with one command
+### Frontend
+
+#### Install yarn
 
 ```shell
-make all
+npm install --global yarn
 ```
 
-... or just ...
+#### ⚒️ Install deps
+
+```shell
+cd frontend && yarn
+```
+
+... or ...
+
+```shell
+make init-frontend
+```
+
+#### 🏗️ Build
+
+```shell
+cd frontend && yarn build
+```
+
+... or ...
+
+```shell
+make frontend
+```
+
+#### 🐱‍💻 Serve
+
+```shell
+cd frontend && yarn start
+```
+
+... or ...
+
+```shell
+make serve
+```
+
+## 🚀 Run everything with one command
 
 ```shell
 make

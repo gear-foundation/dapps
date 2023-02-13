@@ -76,10 +76,7 @@ pub struct Tile {
 
 impl Tile {
     pub fn new(first: Face, second: Face) -> Self {
-        Self {
-            first,
-            second,
-        }
+        Self { first, second }
     }
 
     pub fn is_double(&self) -> bool {
@@ -98,30 +95,23 @@ impl Tile {
 pub fn build_tile_collection() -> Vec<Tile> {
     enum_iterator::all::<Face>()
         .enumerate()
-        .map(|(i, face_first)| {
+        .flat_map(|(i, face_first)| {
             enum_iterator::all::<Face>()
                 .skip(i)
-                .map(move |face_second| {
-                    Tile::new(face_first, face_second)
-                })
+                .map(move |face_second| Tile::new(face_first, face_second))
         })
-        .flatten()
         .collect()
 }
 
-
 pub struct Players {
-    first: ActorId,
-    second: ActorId,
-    others: Vec<ActorId>,
+    _first: ActorId,
+    _second: ActorId,
+    _others: Vec<ActorId>,
 }
 
 pub enum Command {
     Skip,
-    Place {
-        tile_id: u32,
-        track_id: u32,
-    }
+    Place { tile_id: u32, track_id: u32 },
 }
 
 pub struct TrackData {
@@ -153,7 +143,7 @@ impl TrackData {
 pub struct GameState {
     players: Vec<ActorId>,
     tracks: Vec<(TrackData, bool)>,
-    start_tile: u32,
+    _start_tile: u32,
     current_player: u32,
 }
 
@@ -164,8 +154,8 @@ impl GameState {
             unreachable!("it is not your turn");
         }
 
-        self.current_player = i + 1;
-        tracks[i].1 = true;
+        self.current_player = i as u32 + 1;
+        self.tracks[i].1 = true;
 
         self.post_actions();
     }
@@ -174,7 +164,7 @@ impl GameState {
         todo!()
     }
 
-    pub fn make_turn(&mut self, player: ActorId, tile_id: u32, track_id: u32) {
+    pub fn make_turn(&mut self, player: ActorId, _tile_id: u32, _track_id: u32) {
         let i = self.current_player as usize;
         if self.players[i] != player {
             unreachable!("it is not your turn");

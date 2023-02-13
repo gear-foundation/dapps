@@ -1,8 +1,8 @@
-use app::WASM_BINARY_OPT as WASM;
-use app_io::*;
-use app_state::{WASM_BINARY as META_WASM, WASM_EXPORTS as META_WASM_FNS};
 use gclient::{EventProcessor, GearApi, Result};
 use gstd::{prelude::*, ActorId};
+use tequila_io::*;
+use tequila_state::{WASM_BINARY as META_WASM, WASM_EXPORTS as META_WASM_FNS};
+use tequila_train::WASM_BINARY_OPT as WASM;
 
 const ALICE: [u8; 32] = [
     212, 53, 147, 199, 21, 253, 211, 28, 97, 20, 26, 189, 4, 169, 159, 214, 130, 44, 133, 88, 133,

@@ -1,6 +1,6 @@
-use app_io::*;
 use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
+use tequila_io::*;
 
 #[metawasm]
 pub trait Metawasm {

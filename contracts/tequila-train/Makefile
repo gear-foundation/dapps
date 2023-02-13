@@ -1,36 +1,49 @@
-.PHONY: all build fmt init lint pre-commit test full-test deps
+.PHONY: all contracts fmt fmt-check frontend  full-test init-contracts init-frontend lint pre-commit test test-contracts serve
 
-all: init build test
+all: contracts
 
-build:
-	@echo ⚙️ Building a release...
-	@cargo +nightly b -r --workspace
-	@ls -l target/wasm32-unknown-unknown/release/*.wasm
+contracts:
+	@echo 🚂 Building contracts...
+	@cd contracts && cargo +nightly b -r --workspace
+	@ls -l contracts/target/wasm32-unknown-unknown/release/*.wasm
 
 fmt:
-	@echo ⚙️ Checking a format...
-	@cargo fmt --all --check
+	@echo 🚂 Formatting...
+	@cd contracts && cargo fmt
 
-init:
-	@echo ⚙️ Installing a toolchain \& a target...
+fmt-check:
+	@echo 🚂 Checking a format...
+	@cd contracts && cargo fmt --all --check
+
+frontend:
+	@echo 🚂 Building frontend...
+	@cd frontend && yarn build
+
+init-contracts:
+	@echo 🚂 Installing a toolchain and a target...
 	@rustup toolchain add nightly
 	@rustup target add wasm32-unknown-unknown --toolchain nightly
 
+init-frontend:
+	@echo 🚂 Installing frontent deps...
+	@cd frontend && yarn
+
 lint:
-	@echo ⚙️ Running the linter...
-	@cargo +nightly clippy --workspace -- -D warnings
-	@cargo +nightly clippy \
-	--all-targets \
-	--workspace \
-	-Fbinary-vendor \
-	-- -D warnings
+	@echo 🚂 Running the linter...
+	@cd contracts && cargo +nightly clippy --workspace -- -D warnings
 
-pre-commit: fmt lint full-test
+pre-commit: fmt lint test
 
-test:
-	@echo ⚙️ Running unit tests...
-	@cargo +nightly t -Fbinary-vendor
+test: test-contracts
+
+test-contracts:
+	@echo 🚂 Running unit tests...
+	@cd contracts && cargo +nightly t -Fbinary-vendor
 
 full-test:
-	@echo ⚙️ Running all tests...
-	@cargo +nightly t -Fbinary-vendor -- --include-ignored --test-threads=1
+	@echo 🚂 Running all tests...
+	@cd contracts && cargo +nightly t -Fbinary-vendor -- --include-ignored --test-threads=1
+
+serve:
+	@echo 🚂 Running server...
+	@cd frontend && yarn start

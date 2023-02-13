@@ -1,5 +1,5 @@
-use app_io::*;
 use gtest::{Log, Program, System};
+use tequila_io::*;
 
 #[test]
 fn test() {

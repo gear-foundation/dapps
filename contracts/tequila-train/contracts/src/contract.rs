@@ -1,4 +1,3 @@
-use app_io::*;
 use gmeta::Metadata;
 use gstd::{
     errors::{ContractError, Result as GstdResult},
@@ -7,6 +6,7 @@ use gstd::{
     util, ActorId, MessageId,
 };
 use hashbrown::HashMap;
+use tequila_io::*;
 
 static mut STATE: Option<HashMap<ActorId, u128>> = None;
 
