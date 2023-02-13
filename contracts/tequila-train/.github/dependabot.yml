@@ -1,12 +1,16 @@
 version: 2
 updates:
   - package-ecosystem: "cargo"
-    directory: "/"
-    labels: ["A4-insubstantial"]
+    directory: "/contracts/"
     schedule:
       interval: "daily"
+
+  - package-ecosystem: "npm"
+    directory: "/frontend/"
+    schedule:
+      interval: "daily"
+
   - package-ecosystem: "github-actions"
     directory: "/"
-    labels: ["A4-insubstantial"]
     schedule:
       interval: "daily"

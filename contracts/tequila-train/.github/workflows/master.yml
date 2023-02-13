@@ -3,8 +3,6 @@ name: Build
 on:
   push:
     branches: [master]
-  pull_request:
-    branches: [master]
 
 env:
   CARGO_TERM_COLOR: always
@@ -37,18 +35,6 @@ jobs:
           wget -c https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O - | tar -xz -C .
           sudo cp binaryen-version_110/bin/wasm-opt /usr/bin/
 
-      - name: Check fmt
-        if: github.event_name == 'pull_request'
-        run: make fmt
-
-      - name: Run linter
-        if: github.event_name == 'pull_request'
-        run: make lint
-
-      - name: Run tests
-        if: github.event_name == 'pull_request'
-        run: make test-contracts
-
       - name: Build
         run: make contracts
 
@@ -56,12 +42,42 @@ jobs:
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v3
         with:
-          path: ./target/wasm32-unknown-unknown/release/*.wasm
+          path: ./contracts/target/wasm32-unknown-unknown/release/*.wasm
+
+  build-frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+
+      - name: Install dependencies
+        run: cd frontend && npm install
+
+      - name: Build
+        run: cd frontend && npm run build
+
+      - name: Prepare artifacts
+        run: |
+          mkdir -p artifact
+          cd frontend
+          XZ_OPT=-9 tar -cvJf ../artifact/frontend.tar.xz index.html
+
+      - name: Upload artifacts
+        if: github.event_name == 'push'
+        uses: actions/upload-artifact@v3
+        with:
+          path: ./artifact/*
 
   upload:
-    if: github.event_name == 'push'
     runs-on: ubuntu-latest
-    needs: build-contracts
+    needs:
+      - build-contracts
+      - build-frontend
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3

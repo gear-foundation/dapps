@@ -3,3 +3,4 @@
 .vscode
 target
 .metahash
+node_modules
