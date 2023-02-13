@@ -264,9 +264,9 @@ checksum = "7fcaabb2fef8c910e7f4c7ce9f67a1283a1715879a7c230ca9d6d1ae31f16d91"
 
 [[package]]
 name = "enum-iterator"
-version = "1.2.0"
+version = "1.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "91a4ec26efacf4aeff80887a175a419493cb6f8b5480d26387eb0bd038976187"
+checksum = "9ea166b3f7dc1032f7866d13f8d8e02c8d87507b61750176b86554964dc6a7bf"
 dependencies = [
  "enum-iterator-derive",
 ]
@@ -537,24 +537,7 @@ dependencies = [
  "anyhow",
  "cargo_metadata",
  "colored",
- "gmeta 0.1.0 (git+https://github.com/gear-tech/gear.git?branch=stable)",
- "log",
- "pathdiff",
- "pwasm-utils",
- "thiserror",
- "toml",
- "which",
-]
-
-[[package]]
-name = "gear-wasm-builder"
-version = "0.1.2"
-source = "git+https://github.com/gear-tech/gear.git#d293c53ec6bc2c346403e9880c21121c3eabdd2c"
-dependencies = [
- "anyhow",
- "cargo_metadata",
- "colored",
- "gmeta 0.1.0 (git+https://github.com/gear-tech/gear.git)",
+ "gmeta",
  "log",
  "pathdiff",
  "pwasm-utils",
@@ -599,17 +582,6 @@ version = "0.1.0"
 source = "git+https://github.com/gear-tech/gear.git?branch=stable#4095c53bcb8a491dfe1430432a2b0730bd833cda"
 dependencies = [
  "blake2-rfc",
- "hex",
- "parity-scale-codec",
- "scale-info",
-]
-
-[[package]]
-name = "gmeta"
-version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#d293c53ec6bc2c346403e9880c21121c3eabdd2c"
-dependencies = [
- "blake2-rfc",
  "gmeta-codegen",
  "hex",
  "parity-scale-codec",
@@ -619,7 +591,7 @@ dependencies = [
 [[package]]
 name = "gmeta-codegen"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear.git#d293c53ec6bc2c346403e9880c21121c3eabdd2c"
+source = "git+https://github.com/gear-tech/gear.git?branch=stable#4095c53bcb8a491dfe1430432a2b0730bd833cda"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -674,7 +646,7 @@ dependencies = [
  "gear-core",
  "gear-core-errors",
  "gear-core-processor",
- "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear.git?branch=stable)",
+ "gear-wasm-builder",
  "gear-wasm-instrument",
  "hex",
  "log",
@@ -889,7 +861,7 @@ dependencies = [
  "ft-logic-io",
  "ft-main-io",
  "gear-lib",
- "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear.git)",
+ "gear-wasm-builder",
  "gstd",
  "gtest",
  "nft-io",
@@ -901,7 +873,7 @@ name = "nft-pixelboard-io"
 version = "0.1.0"
 dependencies = [
  "gear-lib",
- "gmeta 0.1.0 (git+https://github.com/gear-tech/gear.git)",
+ "gmeta",
  "gstd",
  "parity-scale-codec",
  "scale-info",
@@ -912,8 +884,8 @@ name = "nft-pixelboard-state"
 version = "0.2.0"
 dependencies = [
  "gear-lib",
- "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear.git)",
- "gmeta 0.1.0 (git+https://github.com/gear-tech/gear.git)",
+ "gear-wasm-builder",
+ "gmeta",
  "gstd",
  "nft-pixelboard-io",
 ]
