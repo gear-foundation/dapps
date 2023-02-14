@@ -1,38 +1,33 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useState } from 'react';
-import { BattlePlayerType, BattleStateResponse, RoundDamageType } from 'app/types/battles';
 import { HexString } from '@polkadot/util/types';
+import { GameStateResponse, GameWasmStateResponse } from '../types/game';
 
 type Program = {
-  battle?: BattleStateResponse;
-  setBattle: Dispatch<SetStateAction<BattleStateResponse | undefined>>;
-  players: BattlePlayerType[];
-  setPlayers: Dispatch<SetStateAction<BattlePlayerType[]>>;
-  rivals: BattlePlayerType[];
-  setRivals: Dispatch<SetStateAction<BattlePlayerType[]>>;
-  currentPlayer?: HexString;
-  setCurrentPlayer: Dispatch<SetStateAction<HexString | undefined>>;
-  roundDamage?: RoundDamageType;
-  setRoundDamage: Dispatch<SetStateAction<RoundDamageType | undefined>>;
+  game?: GameStateResponse;
+  setGame: Dispatch<SetStateAction<GameStateResponse | undefined>>;
+  gameWasm?: GameWasmStateResponse;
+  setGameWasm: Dispatch<SetStateAction<GameWasmStateResponse | undefined>>;
+  players: HexString[];
+  setPlayers: Dispatch<SetStateAction<HexString[]>>;
+  currentPlayer?: number;
+  setCurrentPlayer: Dispatch<SetStateAction<number | undefined>>;
 };
 
 const useProgram = (): Program => {
-  const [battle, setBattle] = useState<BattleStateResponse>();
-  const [players, setPlayers] = useState<BattlePlayerType[]>([]);
-  const [rivals, setRivals] = useState<BattlePlayerType[]>([]);
-  const [currentPlayer, setCurrentPlayer] = useState<HexString>();
-  const [roundDamage, setRoundDamage] = useState<RoundDamageType>();
+  const [game, setGame] = useState<GameStateResponse>();
+  const [gameWasm, setGameWasm] = useState<GameWasmStateResponse>();
+  const [players, setPlayers] = useState<HexString[]>([]);
+  const [currentPlayer, setCurrentPlayer] = useState<number>();
 
   return {
-    battle,
-    setBattle,
+    game,
+    setGame,
+    gameWasm,
+    setGameWasm,
     players,
     setPlayers,
-    rivals,
-    setRivals,
     currentPlayer,
     setCurrentPlayer,
-    roundDamage,
-    setRoundDamage,
   };
 };
 

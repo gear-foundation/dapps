@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { getBgColors } from 'app/utils';
 import { DominoItem } from '../../common/domino-item';
 import { DominoZone } from '../../common/domino-zone';
+import { DominoTileType } from 'app/types/game';
 
 const players = ['Rojo', 'Oscuro', 'Naranja', 'Amarillo', 'Gris', 'Verde', 'Azul', 'Morado'];
 
@@ -11,8 +12,9 @@ type Props = {
   train?: boolean;
   isUserTrain?: boolean;
   active?: boolean;
+  tiles?: DominoTileType[];
 };
-export const PlayerRowSection = ({ index, train, isUserTrain, active }: Props) => {
+export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }: Props) => {
   return (
     <div
       className={clsx(
@@ -41,8 +43,9 @@ export const PlayerRowSection = ({ index, train, isUserTrain, active }: Props) =
         </span>
       </div>
       <div className="relative flex items-center gap-0.5">
-        <DominoItem row />
-        {active && <DominoZone light={!getBgColors(index).isLight} />}
+        {tiles && tiles.map((tile, i) => <DominoItem row tile={tile} key={i} />)}
+
+        {(active || train) && <DominoZone light={active && !getBgColors(index).isLight} />}
       </div>
     </div>
   );

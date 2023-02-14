@@ -36,5 +36,5 @@ export const useWasmMetadata = (source: RequestInfo | URL) => {
     }
   }, [source]);
 
-  return data;
+  return { buffer: data?.buffer, meta: data?.meta };
 };
