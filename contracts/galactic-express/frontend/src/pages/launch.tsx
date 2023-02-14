@@ -32,8 +32,8 @@ export const Launch = () => {
 
   function moveRacePostition(id: string, step: number): void {
     const updateState = state.map(rocket => {
-      if (rocket.id === id && rocket.xoffset <= 90) {
-        return { ...rocket, xoffset: rocket.xoffset + 15 }
+      if (rocket.id === id && rocket.xoffset <= 85) {
+        return { ...rocket, xoffset: rocket.xoffset + 8 }
       } else {
         return rocket
       }
@@ -53,7 +53,7 @@ export const Launch = () => {
 
   return (
     <div className="flex flex-col items-center w-11/12 mx-auto" style={{ height: '85vh' }}>
-      {/*<div><button onClick={() => moveRacePostition('1', 15)}>moveForward_1</button></div>*/}
+      <div><button onClick={() => moveRacePostition('1', 15)}>moveForward_1</button></div>
       <div className="w-full h-1/2 border-b-gray-900">
         {state.map(rocket => RocketRace(rocket))}
       </div>
@@ -67,13 +67,13 @@ export const Launch = () => {
           <div>
             <div className="flex flex-row">
               <div className='border-2 w-3/6 p-1'>
-                <h1>{'↓ position'}</h1>
+                <h1 style={{ color: 'green' }}>{'↓ position'}</h1>
               </div>
               <div className='border-2 w-3/6 p-1'>
-                <h1>fuel left</h1>
+                <h1 style={{ color: 'green' }}>fuel left</h1>
               </div>
               <div className='border-2 w-3/6 p-1'>
-                <h1>altitude</h1>
+                <h1 style={{ color: 'green' }}>altitude</h1>
               </div>
             </div>
             <div className="flex flex-col overflow-auto text-center border-b">
