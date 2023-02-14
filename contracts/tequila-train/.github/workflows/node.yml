@@ -1,0 +1,57 @@
+name: Build Node
+
+on:
+  workflow_dispatch:
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          repository: gear-tech/gear
+          ref: 983e979928b
+
+      - name: Install toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          target: wasm32-unknown-unknown
+          profile: minimal
+
+      - name: "Install: Build deps"
+        run: |
+          sudo apt update -y
+          sudo apt install -y git clang curl libssl-dev llvm libudev-dev cmake protobuf-compiler wget bzip2
+
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build production binaries
+        run: cargo build --release
+
+      - name: Prepare artifacts
+        run: |
+          mkdir -p artifact
+          cp target/release/gear artifact/
+          strip artifact/gear || true
+
+      - name: Delete previous release
+        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        with:
+          delete_release: true
+          tag_name: node
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload
+        uses: softprops/action-gh-release@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          prerelease: true
+          tag_name: node
+          files: artifact/*

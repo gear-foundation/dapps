@@ -71,7 +71,7 @@ jobs:
         run: |
           mkdir -p artifact
           cd frontend/build
-          XZ_OPT=-9 tar -cvJf ../artifact/frontend.tar.xz *
+          XZ_OPT=-9 tar -cvJf ../../artifact/frontend.tar.xz *
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
