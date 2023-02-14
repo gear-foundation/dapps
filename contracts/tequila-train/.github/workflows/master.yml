@@ -45,7 +45,8 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           path: |
-            contracts/target/wasm32-unknown-unknown/release/*.wasm
+            contracts/target/wasm32-unknown-unknown/release/tequila_state.meta.wasm
+            contracts/target/wasm32-unknown-unknown/release/tequila_train.opt.wasm
             contracts/target/wasm32-unknown-unknown/release/meta.txt
 
   build-frontend:

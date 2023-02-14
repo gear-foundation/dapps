@@ -1,8 +1,14 @@
 ---
-- name: Configure Nginx
+- name: Configure Gear node
   hosts: all
   vars:
     email: admin@gtequila-train.com
+    user: gear
+    node_name: TEQUILA_TRAIN
+    port_http: 9933
+    port_ws: 9944
+    port_p2p: 30333
+    telemetry: ws://telemetry.rs
 
   tasks:
     - name: Install extra
@@ -39,16 +45,17 @@
         group: root
         mode: '0755'
 
-    - name: Copy frontend files
+    - name: Copy index.html
       become: yes
       copy:
-        src: ../frontend/index.html
-        dest: /var/www/{{ inventory_hostname }}/html/
+        remote_src: yes
+        src: /usr/share/nginx/html/index.html
+        dest: /var/www/{{ inventory_hostname }}/html/index.html
 
     - name: Copy Nginx configuration
       become: yes
       template:
-        src: static-server-block.j2
+        src: wss-server-block.j2
         dest: /etc/nginx/conf.d/{{ inventory_hostname }}.conf
 
     - name: Reload Nginx
@@ -64,7 +71,6 @@
         -d {{ inventory_hostname }}
         -m {{ email }}
         --agree-tos --noninteractive --redirect
-
     - name: Reload Nginx again
       become: yes
       service:
@@ -77,3 +83,44 @@
         name: Renew letsencrypt
         special_time: monthly
         job: /usr/bin/certbot renew
+
+    - name: Create group
+      become: yes
+      group:
+        name: '{{ user }}'
+        state: present
+
+    - name: Create user
+      become: yes
+      user:
+        name: '{{ user }}'
+        groups: '{{ user }}'
+        shell: /sbin/nologin
+        append: yes
+        state: present
+
+    - name: Copy SystemD config
+      become: yes
+      template:
+        src: gear-node.service.j2
+        dest: /etc/systemd/system/gear-node.service
+        owner: root
+        group: root
+
+    - name: Download the Gear node executable
+      become: yes
+      get_url:
+        url: https://github.com/gear-dapps/tequila-train/releases/download/node/gear
+        dest: /usr/local/bin
+        mode: '0755'
+        force: yes
+        owner: root
+        group: root
+
+    - name: Restart service
+      become: yes
+      systemd:
+        name: gear-node
+        state: restarted
+        enabled: yes
+        daemon_reload: yes

@@ -1,4 +1,4 @@
-.PHONY: all contracts deploy fmt fmt-check frontend full-test init-contracts init-frontend lint nginx pre-commit test test-contracts serve
+.PHONY: all contracts deploy fmt fmt-check frontend full-test init-contracts init-frontend lint nginx node pre-commit restart test test-contracts serve
 
 all: contracts
 
@@ -45,7 +45,15 @@ nginx:
 	@echo 🚂 Configuring Nginx...
 	@ansible-playbook ansible/configure-nginx.yml -i tequila-train.com, -u ec2-user
 
+node:
+	@echo 🚂 Configuring Gear node...
+	@ansible-playbook ansible/configure-node.yml -i node.tequila-train.com, -u ec2-user
+
 pre-commit: fmt lint test
+
+restart:
+	@echo 🚂 Restarting Gear node...
+	@ansible-playbook ansible/restart-node.yml -i node.tequila-train.com, -u ec2-user
 
 test: test-contracts
 
