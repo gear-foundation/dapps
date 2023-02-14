@@ -1,57 +1,35 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata};
+use gmeta::{In, Metadata};
 use gstd::{prelude::*, ActorId};
-
-#[derive(Encode, Decode, TypeInfo, Hash, PartialEq, PartialOrd, Eq, Ord, Clone, Copy, Debug)]
-pub enum PingPong {
-    Ping,
-    Pong,
-}
 
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
-    type Init = ();
-    type Handle = InOut<PingPong, PingPong>;
+    type Init = In<Vec<ActorId>>;
+    type Handle = In<Command>;
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = State;
+    type State = GameState;
 }
 
 #[derive(Encode, Decode, TypeInfo, Hash, PartialEq, PartialOrd, Eq, Ord, Clone, Debug, Default)]
 pub struct State(pub Vec<(ActorId, u128)>);
 
-#[doc(hidden)]
-impl State {
-    pub fn pingers(self) -> Vec<ActorId> {
-        self.0.into_iter().map(|pingers| pingers.0).collect()
-    }
-
-    pub fn ping_count(self, actor: ActorId) -> u128 {
-        self.0
-            .into_iter()
-            .find_map(|(pinger, ping_count)| (pinger == actor).then_some(ping_count))
-            .unwrap_or_default()
-    }
-}
-
-#[derive(Encode, Decode, TypeInfo, Hash, PartialEq, PartialOrd, Eq, Ord, Clone, Copy, Debug)]
-pub enum StateQuery {
-    AllState,
-    Pingers,
-    PingCount(ActorId),
-}
-
-#[derive(Encode, Decode, TypeInfo, Hash, PartialEq, PartialOrd, Eq, Ord, Clone, Debug)]
-pub enum StateQueryReply {
-    AllState(<ContractMetadata as Metadata>::State),
-    Pingers(Vec<ActorId>),
-    PingCount(u128),
-}
-
-#[derive(Debug, Clone, Copy, Ord, PartialOrd, Eq, PartialEq, enum_iterator::Sequence)]
+#[derive(
+    Debug,
+    Clone,
+    Copy,
+    Ord,
+    PartialOrd,
+    Eq,
+    PartialEq,
+    enum_iterator::Sequence,
+    TypeInfo,
+    Encode,
+    Decode,
+)]
 pub enum Face {
     Zero,
     One,
@@ -68,7 +46,7 @@ pub enum Face {
     Twelve,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, TypeInfo, Encode, Decode)]
 pub struct Tile {
     left: Face,
     right: Face,
@@ -121,12 +99,13 @@ pub enum Command {
     },
 }
 
-#[derive(Clone, Debug, Default)]
+#[derive(Debug, TypeInfo, Encode, Decode, Clone, Default)]
 pub struct TrackData {
     tiles: Vec<Tile>,
     has_train: bool,
 }
 
+#[derive(Debug, TypeInfo, Encode, Decode, Clone)]
 pub struct GameState {
     players: Vec<ActorId>,
     tracks: Vec<TrackData>,
@@ -148,7 +127,7 @@ fn tiles_per_person(players_amount: usize) -> usize {
     match players_amount {
         2..=4 => 8,
         5..=8 => 12 - players_amount,
-        _ => unreachable!("Invalid player amount reached")
+        _ => unreachable!("Invalid player amount reached"),
     }
 }
 
