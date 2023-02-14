@@ -24,10 +24,10 @@ export const Launch = () => {
   // const { battle, rivals, currentPlayer } = useBattle();
   const [texts, setTexts] = useState<string[]>([])
   const [state, setState] = useState<RacePosition[]>([
-    { id: '1', xoffset: 0, backgroundColor: '#19E676', status: RaceStatus.Registration },
-    { id: '2', xoffset: 0, backgroundColor: '#1751CB', status: RaceStatus.Registration },
-    { id: '3', xoffset: 0, backgroundColor: '#DD26C5', status: RaceStatus.Registration },
-    { id: '4', xoffset: 0, backgroundColor: '#ADB2AF', status: RaceStatus.Registration },
+    { id: '1', xoffset: 5, backgroundColor: '#19E676', status: RaceStatus.Registration },
+    { id: '2', xoffset: 5, backgroundColor: '#1751CB', status: RaceStatus.Registration },
+    { id: '3', xoffset: 5, backgroundColor: '#DD26C5', status: RaceStatus.Registration },
+    { id: '4', xoffset: 5, backgroundColor: '#ADB2AF', status: RaceStatus.Registration },
   ])
 
   function moveRacePostition(id: string, step: number): void {
@@ -52,7 +52,7 @@ export const Launch = () => {
   }, [])
 
   return (
-    <div className="flex flex-col items-center" style={{ height: '85vh' }}>
+    <div className="flex flex-col items-center w-11/12 mx-auto" style={{ height: '85vh' }}>
       {/*<div><button onClick={() => moveRacePostition('1', 15)}>moveForward_1</button></div>*/}
       <div className="w-full h-1/2 border-b-gray-900">
         {state.map(rocket => RocketRace(rocket))}
