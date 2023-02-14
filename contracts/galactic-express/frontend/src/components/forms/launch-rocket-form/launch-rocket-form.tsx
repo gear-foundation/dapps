@@ -16,7 +16,6 @@ export const LaunchRocketForm = () => {
   const handleMessage = useLaunchMessage();
   const navigate = useNavigate();
   const form = useForm({
-    initialValues: createLauncheInitial,
     validate: validate,
     validateInputOnChange: true,
   });
