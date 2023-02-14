@@ -6,7 +6,7 @@ import { AccountButton } from 'components/common/account-button';
 import { Icon } from 'components/ui/icon';
 import { LOCAL_STORAGE } from 'app/consts';
 import { copyToClipboard, isLoggedIn } from 'app/utils';
-import { useApp, useBattle } from 'app/context';
+import { useApp, useLounch } from 'app/context';
 import { useNavigate } from 'react-router-dom';
 
 type Props = {
@@ -17,9 +17,7 @@ type Props = {
 export const AccountsList = ({ list, onChange }: Props) => {
   const alert = useAlert();
   const { setIsAdmin } = useApp();
-  const { battle } = useBattle();
   const { logout, login } = useAccount();
-  const navigate = useNavigate();
 
   const onClick = async (account: InjectedAccountWithMeta) => {
     await logout();
@@ -27,7 +25,6 @@ export const AccountsList = ({ list, onChange }: Props) => {
     localStorage.setItem(LOCAL_STORAGE.ACCOUNT, account.address);
     onChange();
     setIsAdmin(false);
-    if (battle?.state === 'Registration') navigate('/');
   };
 
   const onCopy = (address: string) => {

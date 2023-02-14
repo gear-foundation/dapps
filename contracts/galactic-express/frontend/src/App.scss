@@ -46,3 +46,12 @@ body {
   border: 2px solid rgb(255, 255, 255);
   font-family: "Silkscreen", cursive;
 }
+
+.panel {
+  background: #c0c0c0;
+  box-shadow: 0 -2px #fffdfc, 0 -4px #cce9eb;
+  color: #202022;
+  font-size: 2em;
+  font-family: "Silkscreen", cursive;
+  padding: 10px;
+}

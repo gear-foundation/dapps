@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import { Home } from './home';
 import { Battle } from './battle';
-import { useInitBattleData } from 'app/hooks/use-battle';
+import { useInitLouncheData } from 'app/hooks/use-battle';
 
 const routes = [
   { path: '/', Page: Home },
@@ -9,7 +9,7 @@ const routes = [
 ];
 
 export const Routing = () => {
-  useInitBattleData();
+  useInitLouncheData();
 
   return (
     <Routes>

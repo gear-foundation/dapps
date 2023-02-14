@@ -34,3 +34,43 @@ export type BattleStateResponse = {
   state: BattleCurrentStateVariants;
   tmgStoreId: HexString;
 };
+
+export type SessionData = {
+  id_session: string;
+  distanse: string;
+  risk: string;
+  reward: string;
+}
+
+type EventData = {
+  alive: boolean;
+  fuelLeft: number;
+  halt: any
+  lastAltitude: number
+  participant: HexString
+  payload: number
+}
+
+export type Participant = {
+  [key: HexString]: {
+    balance: number;
+    name: string;
+  }
+}
+
+export enum SessionStatus {
+  SESSION_IS_OVER = "SessionIsOver",
+  REGISTRATION = "Registration",
+}
+
+export type LouncheStateResponse = {
+  currentSession: SessionData | null;
+  events: {
+    [key: string]: EventData[]
+  };
+  name: string;
+  owner: HexString;
+  participants: Participant;
+  sessionId: number;
+  state: SessionStatus;
+}

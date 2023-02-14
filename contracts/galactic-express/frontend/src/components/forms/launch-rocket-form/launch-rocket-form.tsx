@@ -1,7 +1,7 @@
 import { Button, Input } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
 import { numberRequired } from 'app/utils/form-validations';
-import { createTamagotchiInitial } from 'app/consts';
+import { createLauncheInitial } from 'app/consts';
 import { useApp } from 'app/context';
 import { useBattleMessage } from 'app/hooks/use-battle';
 import { useNavigate } from 'react-router-dom';
@@ -16,7 +16,7 @@ export const LaunchRocketForm = () => {
   const handleMessage = useBattleMessage();
   const navigate = useNavigate();
   const form = useForm({
-    initialValues: createTamagotchiInitial,
+    initialValues: createLauncheInitial,
     validate: validate,
     validateInputOnChange: true,
   });

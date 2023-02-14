@@ -1,8 +1,11 @@
 import styles from './board.module.scss';
 import clsx from 'clsx';
+import { useLounch } from 'app/context';
 
 export const SessionBoard = () => {
+
   return (
+
     <div className={clsx('w-1/3', styles.board)}>
       <h2 className={styles.session}>Session #33</h2>
       <div className="flex flex-col">
