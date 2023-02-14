@@ -9,7 +9,12 @@ use tequila_io::*;
 static mut GAME_STATE: Option<GameState> = None;
 
 #[no_mangle]
-extern "C" fn init() {}
+extern "C" fn init() {
+    let players_init: Players = msg::load().expect("Failed to decode `Players'");
+
+    // All game initializing logic is inside GameState constructor
+    unsafe { GAME_STATE = GameState::new(&players_init) }
+}
 
 #[no_mangle]
 extern "C" fn handle() {

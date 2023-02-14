@@ -131,9 +131,31 @@ fn tiles_per_person(players_amount: usize) -> usize {
     }
 }
 
+/// Get random number from BTreeSet
 fn get_random_from_set<T: Copy>(set: &BTreeSet<T>) -> T {
     let index = 0; // TODO: Make it random
     *set.iter().nth(index).unwrap()
+}
+
+/// Check if 'current_tile' tile is double and bigger than 'stored_tile'
+fn is_double_tile_bigger(
+    current_tile_id: u32,
+    stored_tile_id: Option<u32>,
+    tiles: &[Tile],
+) -> bool {
+    let current_tile = tiles.get(current_tile_id as usize).unwrap();
+    if current_tile.left != current_tile.right {
+        return false;
+    }
+
+    if let Some(stored_id) = stored_tile_id {
+        let stored_tile = tiles.get(stored_id as usize).unwrap();
+        if stored_tile.left >= current_tile.left {
+            return false;
+        }
+    }
+
+    true
 }
 
 impl GameState {
@@ -145,10 +167,7 @@ impl GameState {
             return None;
         }
 
-        let start_tile: u32 = 0; // TODO: identify
-        let current_player: u32 = 0; // TODO: identify
         let mut tile_to_player: BTreeMap<u32, u32> = Default::default();
-        let shots = vec![0u32; players_amount];
 
         // Build all possible tiles
         let tiles = build_tile_collection();
@@ -159,7 +178,7 @@ impl GameState {
 
         // Spread tiles to players
         let tiles_per_person = tiles_per_person(players_amount);
-        for (player_index, _) in initial_data.players.iter().enumerate() {
+        for player_index in 0..initial_data.players.len() {
             for _ in 1..=tiles_per_person {
                 let tile_id = get_random_from_set(&remaining_tiles);
                 remaining_tiles.remove(&tile_id);
@@ -168,12 +187,25 @@ impl GameState {
             }
         }
 
+        // Recognize starting person and tile
+        let mut starting_person: Option<u32> = None;
+        let mut starting_tile: Option<u32> = None;
+
+        for (tile_index, player_index) in &tile_to_player {
+            if is_double_tile_bigger(*tile_index, starting_tile, &tiles) {
+                starting_tile = Some(*tile_index);
+                starting_person = Some(*player_index);
+            }
+        }
+
+        // TODO: Add tiles if no matching starting tile exists
+
         Some(GameState {
             players: initial_data.players.clone(),
             tracks: vec![Default::default(); players_amount],
-            shots,
-            start_tile,
-            current_player,
+            shots: vec![0u32; players_amount],
+            start_tile: starting_tile.unwrap(),
+            current_player: starting_person.unwrap() + 1,
             tile_to_player,
             tiles,
             _remaining_tiles: remaining_tiles,
