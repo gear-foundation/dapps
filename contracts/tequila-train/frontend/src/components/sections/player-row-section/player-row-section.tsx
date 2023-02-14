@@ -29,15 +29,15 @@ export const PlayerRowSection = ({ index, train, isUserTrain, active }: Props) =
             name="train"
             width={43}
             height={35}
-            className={clsx"w-full h-auto"', train ?"text-[#FFCE4A]"' : getBgColors(index).train)}
+            className={clsx('w-full h-auto', train ? 'text-[#FFCE4A]' : getBgColors(index).train)}
           />
         )}
         <span
           className={clsx(
-           "uppercase leading-4 font-semibold tracking-[0.03em] w-min"',
-            active && !getBgColors(index).isLight &&"text-white",
+            'uppercase leading-4 font-semibold tracking-[0.03em] w-min',
+            active && !getBgColors(index).isLight && 'text-white',
           )}>
-          {train ?"Tequila Train"' : `Señor ${players[index]}`}
+          {train ? 'Tequila Train' : `Señor ${players[index]}`}
         </span>
       </div>
       <div className="flex items-center gap-0.5">
