@@ -1,11 +1,13 @@
 import { Route, Routes } from 'react-router-dom';
 import { Home } from './home';
-import { Battle } from './battle';
+import { Launch } from './launch';
 import { useInitLouncheData } from 'app/hooks/use-battle';
+import { LeaderBoard } from "./leader-board";
 
 const routes = [
   { path: '/', Page: Home },
-  { path: '/battle', Page: Battle },
+  { path: '/launch', Page: Launch },
+  { path: '/leader-board', Page: LeaderBoard },
 ];
 
 export const Routing = () => {
