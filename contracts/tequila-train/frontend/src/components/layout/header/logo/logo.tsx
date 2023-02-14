@@ -12,7 +12,7 @@ export const Logo = () => {
         </Link>
       ) : (
         <span className="inline-flex items-end gap-3">
-          <Icon name="train" width={43} height={35} className="w-auto h-9" />
+          <Icon name="train" width={43} height={35} className="w-auto h-9 text-[#FFCE4A]" />
           <Icon name="logo-game" width={140} height={21} className="w-auto h-5 mb-1" />
         </span>
       )}

@@ -9,11 +9,11 @@ export const LoginSection = () => {
   const closeModal = () => setOpen(false);
 
   return (
-    <>
+    <div className="flex justify-center">
       <button className="btn btn--primary" onClick={openModal}>
         Connect account
       </button>
       {open && <SelectAccountPopup accounts={accounts} close={closeModal} />}
-    </>
+    </div>
   );
 };

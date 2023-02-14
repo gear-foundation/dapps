@@ -25,6 +25,10 @@ body.body {
   .container {
     @apply w-full max-w-[1150px] mx-auto px-5;
   }
+
+  .container-xl {
+    @apply w-full max-w-[1480px] mx-auto px-5;
+  }
 }
 
 @layer components {
