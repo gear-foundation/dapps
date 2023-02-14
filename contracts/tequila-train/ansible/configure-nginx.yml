@@ -1,0 +1,79 @@
+---
+- name: Configure Nginx
+  hosts: all
+  vars:
+    - email: admin@gtequila-train.com
+
+  tasks:
+    - name: Install extra
+      become: yes
+      yum:
+        name: amazon-linux-extras
+        state: latest
+        update_cache: yes
+
+    - name: Enable EPEL
+      become: yes
+      command: amazon-linux-extras install epel -y
+
+    - name: Install Nginx, Certbot et al.
+      become: yes
+      yum:
+        name: [nginx, certbot, python-certbot-nginx]
+        state: latest
+        update_cache: yes
+
+    - name: Start Nginx
+      become: yes
+      service:
+        name: nginx
+        state: started
+        enabled: yes
+
+    - name: Create WWW directory
+      become: yes
+      file:
+        path: /var/www/{{ inventory_hostname }}/html
+        state: directory
+        owner: root
+        group: root
+        mode: '0755'
+
+    - name: Copy frontend files
+      become: yes
+      copy:
+        src: ../frontend/index.html
+        dest: /var/www/{{ inventory_hostname }}/html/
+
+    - name: Copy Nginx configuration
+      become: yes
+      template:
+        src: static-server-block.j2
+        dest: /etc/nginx/conf.d/{{ inventory_hostname }}.conf
+
+    - name: Reload Nginx
+      become: yes
+      service:
+        name: nginx
+        state: reloaded
+
+    - name: Install a certificate
+      become: yes
+      command: >
+        certbot --nginx
+        -d {{ inventory_hostname }}
+        -m {{ email }}
+        --agree-tos --noninteractive --redirect
+
+    - name: Reload Nginx again
+      become: yes
+      service:
+        name: nginx
+        state: reloaded
+
+    - name: Set cron job for auto renewal
+      become: yes
+      cron:
+        name: Renew letsencrypt
+        special_time: monthly
+        job: /usr/bin/certbot renew

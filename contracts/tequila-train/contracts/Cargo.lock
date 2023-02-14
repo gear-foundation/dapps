@@ -5836,6 +5836,8 @@ dependencies = [
  "gear-wasm-builder",
  "gmeta",
  "gstd",
+ "parity-scale-codec",
+ "scale-info",
  "tequila-io",
 ]
 

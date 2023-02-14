@@ -1,13 +1,10 @@
-name: Frontend PR
+name: Deploy
 
 on:
-  pull_request:
-    branches: [master]
-    paths:
-      - frontend/**
+  workflow_dispatch:
 
 jobs:
-  build-frontend:
+  deploy-fronend:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -23,3 +20,12 @@ jobs:
 
       - name: Build
         run: cd frontend && npm run build
+
+      - name: Deploy
+        uses: dawidd6/action-ansible-playbook@v2
+        with:
+          directory: ansible
+          playbook: deploy.yml
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          options: -u ec2-user
+          inventory: tequila-train.com

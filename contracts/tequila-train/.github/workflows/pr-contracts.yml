@@ -1,4 +1,4 @@
-name: Build
+name: Contracts PR
 
 on:
   pull_request:

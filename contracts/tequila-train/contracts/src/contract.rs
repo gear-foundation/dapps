@@ -1,26 +1,19 @@
-use gmeta::Metadata;
 use gstd::{
     errors::{ContractError, Result as GstdResult},
     msg,
     prelude::*,
-    util, ActorId, MessageId,
+    MessageId,
 };
-use hashbrown::HashMap;
 use tequila_io::*;
 
-static mut STATE: Option<HashMap<ActorId, u128>> = None;
 static mut GAME_STATE: Option<GameState> = None;
-
-fn static_mut_state() -> &'static mut HashMap<ActorId, u128> {
-    match unsafe { &mut STATE } {
-        Some(state) => state,
-        None => unreachable!("State can't be uninitialized"),
-    }
-}
 
 #[no_mangle]
 extern "C" fn init() {
-    unsafe { STATE = Some(HashMap::new()) }
+    let players_init: Players = msg::load().expect("Failed to decode `Players'");
+
+    // All game initializing logic is inside GameState constructor
+    unsafe { GAME_STATE = GameState::new(&players_init) }
 }
 
 #[no_mangle]
@@ -31,14 +24,18 @@ extern "C" fn handle() {
 
 fn process_handle() -> Result<(), ContractError> {
     let game_state = unsafe { GAME_STATE.as_mut().unwrap() };
-    let check_winner = |game_state: &GameState| {
-        if let Some(winner) = game_state.winner() {
+    let check_winner = |game_state: &GameState| match game_state.state() {
+        State::Stalled => {
+            msg::reply_bytes("The game stalled. No one is able to make a turn", 0)
+                .expect("failed to reply");
+            true
+        }
+        State::Winner(winner) => {
             let response = format!("The game is already finished. The winner is: {winner:?}");
             msg::reply_bytes(response.as_bytes(), 0).expect("failed to reply");
-            return true;
+            true
         }
-
-        false
+        State::Playing => false,
     };
 
     if check_winner(game_state) {
@@ -65,40 +62,15 @@ fn process_handle() -> Result<(), ContractError> {
     Ok(())
 }
 
-fn common_state() -> <ContractMetadata as Metadata>::State {
-    State(
-        static_mut_state()
-            .iter()
-            .map(|(pinger, ping_count)| (*pinger, *ping_count))
-            .collect(),
-    )
-}
-
-#[no_mangle]
-extern "C" fn meta_state() -> *const [i32; 2] {
-    let query = msg::load().expect("Failed to load or decode `StateQuery` from `meta_state()`");
-    let state = common_state();
-
-    let reply = match query {
-        StateQuery::AllState => StateQueryReply::AllState(state),
-        StateQuery::Pingers => StateQueryReply::Pingers(state.pingers()),
-        StateQuery::PingCount(actor) => StateQueryReply::PingCount(state.ping_count(actor)),
-    };
-
-    util::to_leak_ptr(reply.encode())
-}
-
 #[no_mangle]
 extern "C" fn state() {
-    reply(common_state()).expect(
-        "Failed to encode or reply with `<ContractMetadata as Metadata>::State` from `state()`",
-    );
+    reply(unsafe { GAME_STATE.as_ref().expect("Game state is not initialized") })
+        .expect("Failed to encode or reply with the game state");
 }
 
 #[no_mangle]
 extern "C" fn metahash() {
     let metahash: [u8; 32] = include!("../.metahash");
-
     reply(metahash).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
 }
 
