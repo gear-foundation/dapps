@@ -4,3 +4,4 @@
 target
 .metahash
 node_modules
+.idea
