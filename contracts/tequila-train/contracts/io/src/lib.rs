@@ -139,7 +139,69 @@ pub struct GameState {
     winner: Option<ActorId>,
 }
 
+/// - 2..4 players: 8 tiles
+/// - 5 players: 7 tiles
+/// - 6 players: 6 tiles
+/// - 7 players: 5 tiles
+/// - 8 players: 4 tiles
+fn tiles_per_person(players_amount: usize) -> usize {
+    match players_amount {
+        2..=4 => 8,
+        5..=8 => 12 - players_amount,
+        _ => unreachable!("Invalid player amount reached")
+    }
+}
+
+fn get_random_from_set<T: Copy>(set: &BTreeSet<T>) -> T {
+    let index = 0; // TODO: Make it random
+    *set.iter().nth(index).unwrap()
+}
+
 impl GameState {
+    // TODO: cover it with tests
+    pub fn new(initial_data: &Players) -> Option<GameState> {
+        // Check that players amount is allowed
+        let players_amount = initial_data.players.len();
+        if !(2..=8).contains(&players_amount) {
+            return None;
+        }
+
+        let start_tile: u32 = 0; // TODO: identify
+        let current_player: u32 = 0; // TODO: identify
+        let mut tile_to_player: BTreeMap<u32, u32> = Default::default();
+        let shots = vec![0u32; players_amount];
+
+        // Build all possible tiles
+        let tiles = build_tile_collection();
+        let mut remaining_tiles: BTreeSet<u32> = Default::default();
+        for index in 0..tiles.len() {
+            remaining_tiles.insert(index as u32);
+        }
+
+        // Spread tiles to players
+        let tiles_per_person = tiles_per_person(players_amount);
+        for (player_index, _) in initial_data.players.iter().enumerate() {
+            for _ in 1..=tiles_per_person {
+                let tile_id = get_random_from_set(&remaining_tiles);
+                remaining_tiles.remove(&tile_id);
+
+                tile_to_player.insert(tile_id, player_index as u32);
+            }
+        }
+
+        Some(GameState {
+            players: initial_data.players.clone(),
+            tracks: vec![Default::default(); players_amount],
+            shots,
+            start_tile,
+            current_player,
+            tile_to_player,
+            tiles,
+            _remaining_tiles: remaining_tiles,
+            winner: None,
+        })
+    }
+
     pub fn winner(&self) -> Option<ActorId> {
         self.winner
     }
