@@ -7,6 +7,10 @@ export enum RaceStatus {
   GameIsOn = 'GameIsOn'
 }
 
+export enum WeatherRisk {
+
+}
+
 interface RacePosition {
   id: string;
   xoffset: number;
@@ -15,7 +19,7 @@ interface RacePosition {
   status: RaceStatus,
 }
 
-export const Battle = () => {
+export const Launch = () => {
   // const { isAdmin } = useApp();
   // const { battle, rivals, currentPlayer } = useBattle();
   const [texts, setTexts] = useState<string[]>([])
@@ -47,17 +51,45 @@ export const Battle = () => {
 
   }, [])
 
-
-
   return (
-    <div className="flex flex-col" style={{ height: '85vh' }}>
+    <div className="flex flex-col items-center" style={{ height: '85vh' }}>
       {/*<div><button onClick={() => moveRacePostition('1', 15)}>moveForward_1</button></div>*/}
-      <div className="w-full h-1/2 border-2 border-lime-200">
+      <div className="w-full h-1/2 border-b-gray-900">
         {state.map(rocket => RocketRace(rocket))}
       </div>
-      <div className="w-full h-1/2 border-2 border-lime-600 logs">
-        <div className="h-full flex flex-col overflow-auto">
-          {texts.length >= 1 && texts.map(text => <span className=''>{`> ${text}`}</span>)}
+      <div className="flex flex-row w-full h-1/2 logs">
+        <div className="w-9/12 flex flex-col overflow-auto border-2 p-1">
+          {texts.length >= 1 && texts.map(text => {
+            return <div><span className='text-green-400'>{'>'}</span> <span>{text}</span></div>
+          })}
+        </div>
+        <div className="flex flex-col w-1/4 text-center">
+          <div>
+            <div className="flex flex-row">
+              <div className='border-2 w-3/6 p-1'>
+                <h1>{'↓ position'}</h1>
+              </div>
+              <div className='border-2 w-3/6 p-1'>
+                <h1>fuel left</h1>
+              </div>
+              <div className='border-2 w-3/6 p-1'>
+                <h1>altitude</h1>
+              </div>
+            </div>
+            <div className="flex flex-col overflow-auto text-center border-b">
+              {state.map(race => {
+                return (<div className='flex flex-row'>
+                  <span className='w-3/6 p-1'>{race.id}</span>
+                  <span className='w-3/6 p-1'>{race.status}</span>
+                  <span className='w-3/6 p-1'>{race.xoffset}</span>
+                </div>)
+              })}
+            </div>
+          </div>
+          <div className='flex flex-col '>
+            <div className='border-b'>{`weather`}</div>
+            <span className='text-xl'>{'SOME_WEATHER_❄️'}</span>
+          </div>
         </div>
       </div>
     </div>
