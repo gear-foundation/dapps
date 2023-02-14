@@ -7,6 +7,8 @@ edition = "2021"
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["codegen"] }
 tequila-io = { path = "../io" }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
 
 [build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["metawasm"] }
