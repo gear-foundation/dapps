@@ -64,13 +64,8 @@ fn process_handle() -> Result<(), ContractError> {
 
 #[no_mangle]
 extern "C" fn state() {
-    reply(unsafe {
-        GAME_STATE
-            .as_ref()
-            .expect("Game state is not initialized")
-            .clone()
-    })
-    .expect("Failed to encode or reply with the game state");
+    reply(unsafe { GAME_STATE.as_ref().expect("Game state is not initialized") })
+        .expect("Failed to encode or reply with the game state");
 }
 
 #[no_mangle]
