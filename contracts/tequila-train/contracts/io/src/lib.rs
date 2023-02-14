@@ -109,7 +109,7 @@ pub struct GameState {
     pub shots: Vec<u32>,
     pub start_tile: u32,
     pub current_player: u32,
-    tile_to_player: BTreeMap<u32, u32>,
+    pub tile_to_player: BTreeMap<u32, u32>,
     pub tiles: Vec<Tile>,
     _remaining_tiles: BTreeSet<u32>,
     state: State,

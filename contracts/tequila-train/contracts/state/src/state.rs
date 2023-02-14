@@ -1,6 +1,6 @@
 use gmeta::metawasm;
 use gstd::{prelude::*, ActorId};
-use tequila_io::GameState as GameStateRaw;
+use tequila_io::{GameState as GameStateRaw, TrackData};
 
 use self::helpers::map_tile_face_into_u32;
 
@@ -12,8 +12,8 @@ pub struct GameState {
     pub current_player: u32,
     /// Start tile of the game
     pub start_tile: (u32, u32),
-    /// Tracks with trains
-    pub trains_on_board: Vec<bool>,
+    /// Tracks
+    pub tracks: Vec<TrackData>,
     /// Tiles on tracks
     pub players_tiles: Vec<Vec<(u32, u32)>>,
     /// Shot counters
@@ -26,6 +26,13 @@ pub trait Metawasm {
 
     fn game_state(state: Self::State) -> GameState {
         let current_tile = state.tiles[state.start_tile as usize];
+        let mut players_tiles = vec![Vec::<(u32, u32)>::new(); state.players.len()];
+        for pair in state.tile_to_player.iter() {
+            players_tiles[*pair.1 as usize].push((
+                map_tile_face_into_u32(state.tiles[*pair.0 as usize].left),
+                map_tile_face_into_u32(state.tiles[*pair.0 as usize].right),
+            ));
+        }
         GameState {
             players: state.players,
             current_player: state.current_player,
@@ -33,22 +40,8 @@ pub trait Metawasm {
                 map_tile_face_into_u32(current_tile.left),
                 map_tile_face_into_u32(current_tile.right),
             ),
-            trains_on_board: state.tracks.iter().map(|td| td.has_train).collect(),
-            players_tiles: state
-                .tracks
-                .iter()
-                .map(|td| {
-                    td.tiles
-                        .iter()
-                        .map(|t| {
-                            (
-                                map_tile_face_into_u32(t.left),
-                                map_tile_face_into_u32(t.right),
-                            )
-                        })
-                        .collect()
-                })
-                .collect(),
+            tracks: state.tracks,
+            players_tiles,
             shot_counters: state.shots,
         }
     }
