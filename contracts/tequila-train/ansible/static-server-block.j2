@@ -1,0 +1,13 @@
+server {
+    listen 80;
+    listen [::]:80;
+
+    root /var/www/{{ inventory_hostname }}/html;
+    index index.html index.htm;
+
+    server_name {{ inventory_hostname }} www.{{ inventory_hostname }};
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+}

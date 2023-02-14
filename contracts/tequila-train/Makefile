@@ -1,4 +1,4 @@
-.PHONY: all contracts fmt fmt-check frontend  full-test init-contracts init-frontend lint pre-commit test test-contracts serve
+.PHONY: all contracts deploy fmt fmt-check frontend full-test init-contracts init-frontend lint nginx pre-commit test test-contracts serve
 
 all: contracts
 
@@ -6,6 +6,10 @@ contracts:
 	@echo 🚂 Building contracts...
 	@cd contracts && cargo +nightly b -r --workspace
 	@ls -l contracts/target/wasm32-unknown-unknown/release/*.wasm
+
+deploy:
+	@echo 🚂 Deploy frontend...
+	@ansible-playbook ansible/deploy.yml -i tequila-train.com, -u ec2-user
 
 fmt:
 	@echo 🚂 Formatting...
@@ -31,6 +35,10 @@ init-frontend:
 lint:
 	@echo 🚂 Running the linter...
 	@cd contracts && cargo +nightly clippy --workspace -- -D warnings
+
+nginx:
+	@echo 🚂 Configuring Nginx...
+	@ansible-playbook ansible/configure-nginx.yml -i tequila-train.com, -u ec2-user
 
 pre-commit: fmt lint test
 
