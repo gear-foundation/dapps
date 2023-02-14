@@ -9,6 +9,7 @@ use hashbrown::HashMap;
 use tequila_io::*;
 
 static mut STATE: Option<HashMap<ActorId, u128>> = None;
+static mut GAME_STATE: Option<GameState> = None;
 
 fn static_mut_state() -> &'static mut HashMap<ActorId, u128> {
     match unsafe { &mut STATE } {
@@ -29,17 +30,32 @@ extern "C" fn handle() {
 }
 
 fn process_handle() -> Result<(), ContractError> {
-    let payload = msg::load()?;
+    let game_state = unsafe { GAME_STATE.as_mut().unwrap() };
+    let check_winner = |game_state: &GameState| {
+        if let Some(winner) = game_state.winner() {
+            let response = format!("The game is already finished. The winner is: {winner:?}");
+            msg::reply_bytes(response.as_bytes(), 0);
+            return true;
+        }
 
-    if let PingPong::Ping = payload {
-        let pingers = static_mut_state();
+        false
+    };
 
-        pingers
-            .entry(msg::source())
-            .and_modify(|ping_count| *ping_count = ping_count.saturating_add(1))
-            .or_insert(1);
+    if check_winner(game_state) {
+        return Ok(());
+    }
 
-        reply(PingPong::Pong)?;
+    let command = msg::load()?;
+    let player = msg::source();
+    match command {
+        Command::Skip => game_state.skip_turn(player),
+        Command::Place { tile_id, track_id } => {
+            game_state.make_turn(player, tile_id, track_id);
+        }
+    }
+
+    if check_winner(game_state) {
+        return Ok(());
     }
 
     Ok(())
