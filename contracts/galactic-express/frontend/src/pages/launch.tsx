@@ -1,40 +1,28 @@
-import { useEffect, useState } from "react";
-import { RocketRace } from "../components/common/rocket-race";
-import { useLounch } from 'app/context';
-import { WEATHER } from 'app/consts';
-import { Loader } from 'components/loaders/loader'
+import {useEffect, useState} from "react";
+import {RocketRace} from "../components/common/rocket-race";
+import {useLounch} from 'app/context';
+import {WEATHER} from 'app/consts';
 
-export enum RaceStatus {
-  Registration = 'Registration',
-  GameIsOver = 'GameIsOver',
-  GameIsOn = 'GameIsOn'
-}
+import {Loader} from 'components/loaders/loader'
+import {ParticipantDataType} from "../app/types/battles";
 
-export enum WeatherRisk {
-
-}
-
-interface RacePosition {
+export interface RacePosition {
   id: string;
-  xoffset: number;
-  backgroundColor: string;
+  xoffset: number; //default 5
+  bgColor: string;
+  fuel: number | null;
+  payload: number | null;
   eventEmoji?: null | string;
-  status: RaceStatus,
 }
 
 export const Launch = () => {
   const { launch } = useLounch();
 
 
-  console.log(launch)
-
   const [texts, setTexts] = useState<string[]>([])
-  const [state, setState] = useState<RacePosition[]>([
-    { id: '1', xoffset: 5, backgroundColor: '#19E676', status: RaceStatus.Registration },
-    { id: '2', xoffset: 5, backgroundColor: '#1751CB', status: RaceStatus.Registration },
-    { id: '3', xoffset: 5, backgroundColor: '#DD26C5', status: RaceStatus.Registration },
-    { id: '4', xoffset: 5, backgroundColor: '#ADB2AF', status: RaceStatus.Registration },
-  ])
+  const [state, setState] = useState<RacePosition[]>([])
+
+  const currentSessionRegisteredKeys = launch && Object.keys(launch.currentSession!.registered);
 
   function moveRacePostition(id: string, step: number): void {
     const updateState = state.map(rocket => {
@@ -47,6 +35,24 @@ export const Launch = () => {
 
     setState(updateState)
   }
+
+  useEffect(() => {
+    const updateState = [];
+    if(launch && currentSessionRegisteredKeys!.length >= 1) {
+      // @ts-ignore
+      for(const key of currentSessionRegisteredKeys) {
+        // @ts-ignore
+        const { fuel, payload } = launch!.currentSession!.registered[key] as ParticipantDataType;
+
+        const register: RacePosition = { id: key, bgColor: '#ADB2AF', fuel, payload, xoffset: 5,  }
+
+        updateState.push(register)
+      }
+
+      // setState(prevState => [...prevState, register])
+      setState(updateState)
+    }
+  }, [launch])
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -63,7 +69,6 @@ export const Launch = () => {
         <Loader />
       ) : (
         <>
-          <div><button onClick={() => moveRacePostition('1', 15)}>moveForward_1</button></div>
           <div className="w-full h-1/2 border-b-gray-900">
             {state.map(rocket => RocketRace(rocket))}
           </div>
@@ -87,11 +92,11 @@ export const Launch = () => {
                   </div>
                 </div>
                 <div className="flex flex-col overflow-auto text-center border-b">
-                  {state.map(race => {
+                  {state.map((race, index) => {
                     return (<div className='flex flex-row'>
-                      <span className='w-3/6 p-1'>{race.id}</span>
-                      <span className='w-3/6 p-1'>{race.status}</span>
-                      <span className='w-3/6 p-1'>{race.xoffset}</span>
+                      <span className='w-3/6 p-1'>{index}</span>
+                      <span className='w-3/6 p-1'>{race.fuel}</span>
+                      <span className='w-3/6 p-1'>{race.payload}</span>
                     </div>)
                   })}
                 </div>

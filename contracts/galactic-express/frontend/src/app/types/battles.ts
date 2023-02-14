@@ -52,11 +52,13 @@ type EventData = {
   payload: number
 }
 
+export type ParticipantDataType = {
+  fuel: number;
+  payload: number;
+}
+
 export type Participant = {
-  [key: HexString]: {
-    balance: number;
-    name: string;
-  }
+  [key: HexString]: ParticipantDataType
 }
 
 export enum SessionStatus {

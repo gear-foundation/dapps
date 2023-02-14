@@ -1,23 +1,18 @@
-import {RaceStatus} from "../../../pages/launch";
+import {RacePosition} from "../../../pages/launch";
 
-interface Props {
-    id: string;
-    xoffset: number;
-    backgroundColor: string;
-    eventEmoji?: null | string;
-    status: RaceStatus,
-}
+interface Props  extends RacePosition {}
 
 export const RocketRace = (props: Props) => {
-    const { xoffset = 0, backgroundColor = '#ADB2AF', status } = props;
+    const { xoffset = 0, bgColor = '#ADB2AF', id } = props;
 
     return (
         <div className="h-1/4 w-full border-2 border-b-gray-900"
-             style={{background: status === RaceStatus.Registration ? '#ADB2AF' : backgroundColor}}>
+             key={id}
+             style={{background: bgColor}}>
                 <span className="text-h2" style={{
                     position: "absolute",
                     left: `${xoffset}%`,
-                }}>{"🚀"}</span>
+                }}>{`🚀 ${id.slice(1, 5)}...${id.slice(-5)}`}</span>
         </div>
     )
 }
