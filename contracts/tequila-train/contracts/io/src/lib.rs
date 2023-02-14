@@ -1,7 +1,7 @@
 #![no_std]
 
 use gmeta::{In, Metadata};
-use gstd::{prelude::*, ActorId};
+use gstd::{exec, prelude::*, ActorId};
 
 pub struct ContractMetadata;
 
@@ -122,6 +122,13 @@ pub enum State {
     Winner(ActorId),
 }
 
+/// Get random u8
+fn get_random_number() -> u8 {
+    let salt = [0u8; 32];
+    let (hash, num) = exec::random(salt).expect("internal error: random call failed");
+    hash[(num % 32) as usize]
+}
+
 /// - 2..4 players: 8 tiles
 /// - 5 players: 7 tiles
 /// - 6 players: 6 tiles
@@ -137,29 +144,58 @@ fn tiles_per_person(players_amount: usize) -> usize {
 
 /// Get random number from BTreeSet
 fn get_random_from_set<T: Copy>(set: &BTreeSet<T>) -> T {
-    let index = 0; // TODO: Make it random
+    let max_index = set.len();
+    let index = (get_random_number() as usize) % max_index;
     *set.iter().nth(index).unwrap()
 }
 
 /// Check if 'current_tile' tile is double and bigger than 'stored_tile'
 fn is_double_tile_bigger(
     current_tile_id: u32,
-    stored_tile_id: Option<u32>,
+    stored_tile_id: Option<(u32, u32)>,
     tiles: &[Tile],
 ) -> bool {
-    let current_tile = tiles.get(current_tile_id as usize).unwrap();
-    if current_tile.left != current_tile.right {
+    let current_tile = tiles[current_tile_id as usize];
+    if !current_tile.is_double() {
         return false;
     }
 
-    if let Some(stored_id) = stored_tile_id {
-        let stored_tile = tiles.get(stored_id as usize).unwrap();
+    if let Some((stored_id, _)) = stored_tile_id {
+        let stored_tile = tiles[stored_id as usize];
         if stored_tile.left >= current_tile.left {
             return false;
         }
     }
 
     true
+}
+
+/// Gives everyone 1 tile
+/// Stops if someone get double
+///
+/// Returns matching tile id if it's given
+/// otherwise returns None
+fn give_tiles_until_double(
+    remaining_tiles: &mut BTreeSet<u32>,
+    tiles: &[Tile],
+    tile_to_player: &mut BTreeMap<u32, u32>,
+    players: &Vec<ActorId>,
+) -> Option<(u32, u32)> {
+    let mut starting_pair = None;
+
+    for player_index in 0..players.len() {
+        // giving a new tile to player
+        let tile_id = get_random_from_set(remaining_tiles);
+        remaining_tiles.remove(&tile_id);
+        tile_to_player.insert(tile_id, player_index as u32);
+
+        // check if it matchs or not
+        if is_double_tile_bigger(tile_id, starting_pair, tiles) {
+            starting_pair = Some((tile_id, player_index as u32));
+        }
+    }
+
+    starting_pair
 }
 
 impl GameState {
@@ -192,24 +228,30 @@ impl GameState {
         }
 
         // Recognize starting person and tile
-        let mut starting_person: Option<u32> = None;
-        let mut starting_tile: Option<u32> = None;
+        let mut starting_pair: Option<(u32, u32)> = None;
 
-        for (tile_index, player_index) in &tile_to_player {
-            if is_double_tile_bigger(*tile_index, starting_tile, &tiles) {
-                starting_tile = Some(*tile_index);
-                starting_person = Some(*player_index);
+        for (tile_index, person_index) in &tile_to_player {
+            if is_double_tile_bigger(*tile_index, starting_pair, &tiles) {
+                starting_pair = Some((*tile_index, *person_index));
             }
         }
 
-        // TODO: Add tiles if no matching starting tile exists
+        // Add tiles if no matching starting tile exists
+        while starting_pair.is_none() {
+            starting_pair = give_tiles_until_double(
+                &mut remaining_tiles,
+                &tiles,
+                &mut tile_to_player,
+                &initial_data.players,
+            );
+        }
 
         Some(GameState {
             players: initial_data.players.clone(),
             tracks: vec![Default::default(); players_amount],
             shots: vec![0u32; players_amount],
-            start_tile: starting_tile.unwrap(),
-            current_player: starting_person.unwrap() + 1,
+            start_tile: starting_pair.unwrap().0,
+            current_player: starting_pair.unwrap().1 + 1,
             tile_to_player,
             tiles,
             _remaining_tiles: remaining_tiles,
