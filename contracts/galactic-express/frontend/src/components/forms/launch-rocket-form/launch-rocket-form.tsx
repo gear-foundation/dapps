@@ -3,7 +3,7 @@ import { useForm } from '@mantine/form';
 import { numberRequired } from 'app/utils/form-validations';
 import { createLauncheInitial } from 'app/consts';
 import { useApp } from 'app/context';
-import { useBattleMessage } from 'app/hooks/use-battle';
+import { useLaunchMessage } from 'app/hooks/use-battle';
 import { useNavigate } from 'react-router-dom';
 
 const validate: Record<string, typeof numberRequired> = {
@@ -13,7 +13,7 @@ const validate: Record<string, typeof numberRequired> = {
 
 export const LaunchRocketForm = () => {
   const { isPending } = useApp();
-  const handleMessage = useBattleMessage();
+  const handleMessage = useLaunchMessage();
   const navigate = useNavigate();
   const form = useForm({
     initialValues: createLauncheInitial,
@@ -23,17 +23,21 @@ export const LaunchRocketForm = () => {
   const { getInputProps, errors } = form;
   const handleSubmit = form.onSubmit((values) => {
     console.log(values)
-    navigate('/battle');
-    // handleMessage(
-    //   { Register: { tmg_id: values.programId } },
-    //   {
-    //     onSuccess: () => {
-    //       form.reset();
-    //       navigate('/battle');
-    //     },
-    //     onError: () => form.reset(),
-    //   },
-    // );
+    handleMessage(
+      {
+        RegisterOnLaunch: {
+          fuel_amount: values.fuel,
+          payload_amount: values.payload
+        }
+      },
+      {
+        onSuccess: () => {
+          form.reset();
+          navigate('/launch');
+        },
+        onError: () => form.reset(),
+      },
+    );
   });
 
   return (

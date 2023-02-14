@@ -1,24 +1,22 @@
 import { useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
-import { Button, buttonStyles } from '@gear-js/ui';
+import { Button } from '@gear-js/ui';
 import { GasWallet } from 'components/common/gas-wallet';
 import { SelectAccountPopup } from 'components/popups/select-account-popup';
 import { AccountButton } from 'components/common/account-button';
-import { useApp, useLounch } from 'app/context';
-import { useBattleMessage } from 'app/hooks/use-battle';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
-import clsx from 'clsx';
+import { useApp } from 'app/context';
+import { useLaunchMessage } from 'app/hooks/use-battle';
+import { useNavigate } from 'react-router-dom';
 
 export const AccountComponent = () => {
   const { account, accounts } = useAccount();
-  const { isAdmin, isPending, setIsPending } = useApp();
+  const { setIsPending } = useApp();
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
-  const handleMessage = useBattleMessage();
+  const handleMessage = useLaunchMessage();
 
   const onSuccess = () => {
     navigate('/');

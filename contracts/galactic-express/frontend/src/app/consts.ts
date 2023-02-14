@@ -5,7 +5,8 @@ export const LOCAL_STORAGE = {
 };
 
 export const createLauncheInitial = {
-  currentStep: 1,
+  fuel: 0,
+  payload: 0
 };
 
 export const ENV = {
@@ -21,3 +22,13 @@ export const MULTIPLIER = {
   MINUTES: 60,
   HOURS: 24,
 };
+
+
+export const WEATHER = [
+  'Sunny ☀️',
+  'Cloudy ☁️',
+  'Rainy 🌧',
+  'Storm 🌩',
+  'Thunder ⛈',
+  'Tornado 🌪'
+]

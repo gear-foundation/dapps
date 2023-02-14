@@ -54,3 +54,49 @@ body {
   font-family: "Silkscreen", cursive;
   padding: 25px;
 }
+
+.panel2 {
+  margin-top: 20px;
+  background: #c0c0c0;
+  box-shadow: 0 -2px #fffdfc, 0 -4px #cce9eb;
+  color: #202022;
+  font-family: "Silkscreen", cursive;
+  padding: 5px;
+}
+
+.reg {
+  font-size: 1.5em;
+}
+
+.blink {
+  animation: blinker 0.6s linear infinite;
+  color: blue;
+  background-color: #c0c0c0;
+  padding: 3px;
+}
+
+@keyframes blinker {
+  50% {
+    opacity: 0;
+  }
+}
+
+.blink-one {
+  animation: blinker-one 1s linear infinite;
+}
+
+@keyframes blinker-one {
+  0% {
+    opacity: 0;
+  }
+}
+
+.blink-two {
+  animation: blinker-two 1.4s linear infinite;
+}
+
+@keyframes blinker-two {
+  100% {
+    opacity: 0;
+  }
+}

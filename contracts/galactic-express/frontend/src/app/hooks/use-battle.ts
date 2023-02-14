@@ -1,14 +1,13 @@
 import { useApp, useLounch } from 'app/context';
 import { useEffect } from 'react';
-import type { BattlePlayerType, BattleStateResponse, LouncheStateResponse } from 'app/types/battles';
-import { useAccount, useApi, useReadFullState } from '@gear-js/react-hooks';
+import type { LouncheStateResponse } from 'app/types/battles';
+import { useAccount, useReadFullState } from '@gear-js/react-hooks';
 import { useMetadata } from './use-metadata';
 import metaBattle from 'assets/meta/meta.txt';
 import { ENV } from 'app/consts';
 import type { UnsubscribePromise } from '@polkadot/api/types';
 import type { UserMessageSent } from '@gear-js/api';
 import { useSendMessage } from './useSendMessage';
-import { RoundDamageType } from 'app/types/battles';
 
 function useReadLouncheState<T>() {
   const { metadata } = useMetadata(metaBattle);
@@ -17,7 +16,7 @@ function useReadLouncheState<T>() {
 
 export function useInitLouncheData() {
 
-  const { setIsAdmin, setIsDataReady } = useApp();
+  const { setIsAdmin } = useApp();
   const { setLaunch, setSessionIsOver } = useLounch();
   const { account } = useAccount();
   const { state } = useReadLouncheState<LouncheStateResponse>();
@@ -98,21 +97,9 @@ export function useInitLouncheData() {
 //     };
 //   }, [metadata, state]);
 
-//   useEffect(() => {
-//     if (state) {
-//       if (state.round.steps && !state.round.moves.length) {
-//         // console.log('show damage');
-//       } else {
-//         if (roundDamage) {
-//           // console.log('hide damage');
-//           setRoundDamage(undefined);
-//         }
-//       }
-//     }
-//   }, [roundDamage, state]);
 // }
 
-export function useBattleMessage() {
+export function useLaunchMessage() {
   const { metadata } = useMetadata(metaBattle);
   return useSendMessage(ENV.contract, metadata);
 }

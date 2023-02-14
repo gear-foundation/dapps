@@ -36,10 +36,11 @@ export type BattleStateResponse = {
 };
 
 export type SessionData = {
-  id_session: string;
-  distanse: string;
-  risk: string;
-  reward: string;
+  altitude: number;
+  fuelPrice: number;
+  payloadValue: 93
+  registered: Participant
+  weather: number;
 }
 
 type EventData = {
