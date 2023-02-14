@@ -16,6 +16,12 @@
   --base-font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
+
+.test::before {
+  background: linear-gradient(270.95deg, rgba(255, 255, 255, 0) 85.3%, #ffffff 102.87%);
+  opacity: 50%;
+}
+
 body.body {
   background-color: #ebf1ee;
   color: #4f4f4f;
@@ -66,6 +72,10 @@ body.body {
 
   .btn--white {
     @apply text-black bg-white hover:bg-[#DEDEDE] active:bg-neutral-300 transition-colors
+  }
+
+  .btn--black {
+    @apply text-white bg-dark-500 hover:bg-dark-400 active:bg-opacity-80 transition-colors
   }
 
   .btn--error {

@@ -8,7 +8,7 @@ const socials = [
 ];
 
 export const Footer = () => (
-  <footer className="container flex items-center gap-4 justify-between py-7.5">
+  <footer className="container flex items-center gap-4 justify-between py-4">
     <ul className="flex gap-5">
       {socials.map(({ href, icon }) => (
         <li key={icon}>
