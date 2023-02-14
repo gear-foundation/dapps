@@ -86,6 +86,14 @@ pub struct Players {
     players: Vec<ActorId>,
 }
 
+impl<const N: usize> From<[ActorId; N]> for Players {
+    fn from(s: [ActorId; N]) -> Players {
+        Players {
+            players: s.to_vec(),
+        }
+    }
+}
+
 #[derive(Encode, Decode, TypeInfo, Hash, PartialEq, PartialOrd, Eq, Ord, Clone, Copy, Debug)]
 pub enum Command {
     Skip,

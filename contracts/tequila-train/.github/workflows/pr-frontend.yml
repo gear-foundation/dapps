@@ -6,6 +6,9 @@ on:
     paths:
       - frontend/**
 
+env:
+  CI: false
+
 jobs:
   build-frontend:
     runs-on: ubuntu-latest

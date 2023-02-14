@@ -1,3 +1,4 @@
+use gstd::ActorId;
 use gtest::{Log, Program, System};
 use tequila_io::*;
 
@@ -8,7 +9,8 @@ fn test() {
     system.init_logger();
 
     let program = Program::current(&system);
-    let mut result = program.send_bytes(2, []);
+    let players: Players = [ActorId::zero(), ActorId::zero()].into();
+    let mut result = program.send(2, players);
 
     assert!(!result.main_failed());
 

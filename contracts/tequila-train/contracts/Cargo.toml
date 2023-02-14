@@ -18,8 +18,6 @@ gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "s
 [dev-dependencies]
 tequila-state = { path = "state" }
 gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-tokio = "1"
-gclient = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in
