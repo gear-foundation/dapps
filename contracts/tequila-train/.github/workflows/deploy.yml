@@ -3,8 +3,11 @@ name: Deploy
 on:
   workflow_dispatch:
 
+env:
+  CI: false
+
 jobs:
-  deploy-fronend:
+  deploy-frontend:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -15,11 +18,13 @@ jobs:
         with:
           node-version: 16
 
-      - name: Install dependencies
-        run: cd frontend && npm install
+      - name: Install yarn
+        run: sudo npm i yarn -g
 
       - name: Build
-        run: cd frontend && npm run build
+        run: |
+          make init-frontend
+          make frontend
 
       - name: Deploy
         uses: dawidd6/action-ansible-playbook@v2

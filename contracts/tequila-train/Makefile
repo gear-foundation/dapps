@@ -7,7 +7,7 @@ contracts:
 	@cd contracts && cargo +nightly b -r --workspace
 	@ls -l contracts/target/wasm32-unknown-unknown/release/*.wasm
 
-deploy:
+deploy: frontend
 	@echo 🚂 Deploy frontend...
 	@ansible-playbook ansible/deploy.yml -i tequila-train.com, -u ec2-user
 
@@ -21,7 +21,12 @@ fmt-check:
 
 frontend:
 	@echo 🚂 Building frontend...
+	@cp frontend/.env.example.local frontend/.env
 	@cd frontend && yarn build
+
+full-test:
+	@echo 🚂 Running all tests...
+	@cd contracts && cargo +nightly t -Fbinary-vendor -- --include-ignored --test-threads=1
 
 init-contracts:
 	@echo 🚂 Installing a toolchain and a target...
@@ -48,10 +53,6 @@ test-contracts:
 	@echo 🚂 Running unit tests...
 	@cd contracts && cargo +nightly t -Fbinary-vendor
 
-full-test:
-	@echo 🚂 Running all tests...
-	@cd contracts && cargo +nightly t -Fbinary-vendor -- --include-ignored --test-threads=1
-
-serve:
+serve: frontend
 	@echo 🚂 Running server...
 	@cd frontend && yarn start

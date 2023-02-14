@@ -5,8 +5,8 @@
   tasks:
     - name: Copy frontend files
       become: yes
-      copy:
-        src: ../frontend/index.html
+      synchronize:
+        src: ../frontend/build/
         dest: /var/www/{{ inventory_hostname }}/html/
 
     - name: Reload Nginx
