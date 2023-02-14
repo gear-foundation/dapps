@@ -1,8 +1,8 @@
-import { useApp, useBattle } from 'app/context';
+import { useApp, useGame } from 'app/context';
 
 export const Battle = () => {
   const { isAdmin } = useApp();
-  const { battle, rivals, currentPlayer } = useBattle();
+  const { battle, rivals, currentPlayer } = useGame();
 
   return (
     <>

@@ -1,11 +1,11 @@
-import { useApp, useBattle } from 'app/context';
+import { useApp, useGame } from 'app/context';
 import { useEffect } from 'react';
 import type { BattlePlayerType, BattleStateResponse } from 'app/types/battles';
 import { useAccount, useReadFullState } from '@gear-js/react-hooks';
 import { useMetadata } from './use-metadata';
 import meta from 'assets/meta/meta.txt';
 import { ENV } from 'app/consts';
-import { useSendMessage } from './useSendMessage';
+import { useSendMessage } from './use-send-message';
 
 function useReadGameState<T>() {
   const { metadata } = useMetadata(meta);
@@ -15,12 +15,13 @@ function useReadGameState<T>() {
 export function useInitGame() {
   const { setIsAdmin } = useApp();
   const { account } = useAccount();
-  const { setRivals, setBattle, setCurrentPlayer, setPlayers } = useBattle();
+  const { setRivals, setBattle, setCurrentPlayer, setPlayers } = useGame();
   const { state } = useReadGameState<BattleStateResponse>();
 
   useEffect(() => {
     setBattle(state);
     if (state && account) {
+      console.log({ state });
       // setIsAdmin(state.admin === account.decodedAddress);
       // const getPlayers = () => {
       // const result: BattlePlayerType[] = [];

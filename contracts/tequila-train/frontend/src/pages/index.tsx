@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import { Home } from './home';
 import { Battle } from './battle';
-import { useInitGame } from 'app/hooks/use-battle';
+import { useInitGame } from 'app/hooks/use-game';
 
 const routes = [
   { path: '/', Page: Home },

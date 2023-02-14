@@ -6,7 +6,7 @@ import { AccountButton } from 'components/common/account-button';
 import { Icon } from 'components/ui/icon';
 import { LOCAL_STORAGE } from 'app/consts';
 import { copyToClipboard, isLoggedIn } from 'app/utils';
-import { useApp, useBattle } from 'app/context';
+import { useApp, useGame } from 'app/context';
 import { useNavigate } from 'react-router-dom';
 
 type Props = {
@@ -17,7 +17,7 @@ type Props = {
 export const AccountsList = ({ list, onChange }: Props) => {
   const alert = useAlert();
   const { setIsAdmin } = useApp();
-  const { battle } = useBattle();
+  const { battle } = useGame();
   const { logout, login } = useAccount();
   const navigate = useNavigate();
 

@@ -36,9 +36,9 @@ const useProgram = (): Program => {
   };
 };
 
-export const BattleCtx = createContext({} as Program);
+export const GameCtx = createContext({} as Program);
 
-export function BattleProvider({ children }: { children: ReactNode }) {
-  const { Provider } = BattleCtx;
+export function GameProvider({ children }: { children: ReactNode }) {
+  const { Provider } = GameCtx;
   return <Provider value={useProgram()}>{children}</Provider>;
 }

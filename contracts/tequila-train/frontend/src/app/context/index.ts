@@ -1,9 +1,9 @@
 import { useContext } from 'react';
-import { BattleCtx } from './ctx-battle';
+import { GameCtx } from './ctx-game';
 import { AppCtx } from './ctx-app';
 
-export const useBattle = () => useContext(BattleCtx);
+export const useGame = () => useContext(GameCtx);
 export const useApp = () => useContext(AppCtx);
 
-export { BattleCtx, BattleProvider } from './ctx-battle';
+export { GameCtx, GameProvider } from './ctx-game';
 export { AppCtx, AppProvider } from './ctx-app';

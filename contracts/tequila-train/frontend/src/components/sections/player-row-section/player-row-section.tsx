@@ -40,7 +40,7 @@ export const PlayerRowSection = ({ index, train, isUserTrain, active }: Props) =
           {train ? 'Tequila Train' : `Señor ${players[index]}`}
         </span>
       </div>
-      <div className="flex items-center gap-0.5">
+      <div className="relative flex items-center gap-0.5">
         <DominoItem row />
         {active && <DominoZone light={!getBgColors(index).isLight} />}
       </div>
