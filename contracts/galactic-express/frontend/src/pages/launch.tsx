@@ -82,7 +82,7 @@ export const Launch = () => {
               <div>
                 <div className="flex flex-row">
                   <div className='border-2 w-3/6 p-1'>
-                    <h1 style={{ color: 'green' }}>{'↓ position'}</h1>
+                    <h1 style={{ color: 'green' }}>{'↓ register'}</h1>
                   </div>
                   <div className='border-2 w-3/6 p-1'>
                     <h1 style={{ color: 'green' }}>fuel left</h1>
@@ -92,9 +92,9 @@ export const Launch = () => {
                   </div>
                 </div>
                 <div className="flex flex-col overflow-auto text-center border-b">
-                  {state.map((race, index) => {
-                    return (<div className='flex flex-row'>
-                      <span className='w-3/6 p-1'>{index}</span>
+                  {state.map((race) => {
+                    return (<div className='flex flex-row' key={race.id}>
+                      <span className='w-3/6 p-1'>{`${race.id.slice(1, 3)}-${race.id.slice(-3)}`}</span>
                       <span className='w-3/6 p-1'>{race.fuel}</span>
                       <span className='w-3/6 p-1'>{race.payload}</span>
                     </div>)
