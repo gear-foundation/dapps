@@ -36,13 +36,16 @@ jobs:
           sudo cp binaryen-version_110/bin/wasm-opt /usr/bin/
 
       - name: Build
-        run: make contracts
+        run: |
+          make contracts
+          cp contracts/meta.txt contracts/target/wasm32-unknown-unknown/release/
 
       - name: Upload artifacts
-        if: github.event_name == 'push'
         uses: actions/upload-artifact@v3
         with:
-          path: ./contracts/target/wasm32-unknown-unknown/release/*.wasm
+          path: |
+            contracts/target/wasm32-unknown-unknown/release/*.wasm
+            contracts/target/wasm32-unknown-unknown/release/meta.txt
 
   build-frontend:
     runs-on: ubuntu-latest
@@ -68,7 +71,6 @@ jobs:
           XZ_OPT=-9 tar -cvJf ../artifact/frontend.tar.xz index.html
 
       - name: Upload artifacts
-        if: github.event_name == 'push'
         uses: actions/upload-artifact@v3
         with:
           path: ./artifact/*
