@@ -1,7 +1,10 @@
-import { isHex } from '@polkadot/util';
+import { isNumber } from '@polkadot/util';
 
+function isNumeric(value: string) {
+  return /^-?\d+$/.test(value);
+}
 export const isExists = (value: string) => (!value ? 'Field is required' : null);
-export const isHexValue = (value: string) => (!isHex(value) ? 'String must be in Hex format' : null);
+export const isNumberValue = (value: string) => (!isNumeric(value) ? 'String must be number' : null);
 
-export const hexRequired = (value: string) =>
-  !value ? 'Field is required' : !isHex(value) ? 'String must be in Hex format' : null;
+export const numberRequired = (value: string) =>
+  !value ? 'Field is required' : !isNumeric(value) ? 'String must be number' : null;

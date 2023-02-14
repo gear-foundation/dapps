@@ -1,5 +1,6 @@
 @use 'assets/styles';
 @use '@gear-js/ui/variables' as *;
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@800&family=Silkscreen&display=swap');
 
 :root {
   --color-secondary: #{red($textColorSecondary) green($textColorSecondary) blue($textColorSecondary)};
@@ -11,4 +12,28 @@
 
 html {
   background-color: #1e1e1e;
+}
+
+body {
+  background: $bgColor url(assets/images/bg.gif);
+  background-size: cover;
+}
+
+.start-launch-container {
+  padding: 20px;
+  background: #202022;
+  border: 2px solid rgb(255, 255, 255);
+  font-family: "Silkscreen", cursive;
+}
+
+.rk-btn {
+  border-radius: 0 !important;
+  font-family: "Silkscreen", cursive !important;
+  background-color: #910d9a !important;
+}
+
+.rk-btn:hover {
+  border-radius: 0 !important;
+  font-family: "Silkscreen", cursive !important;
+  background-color: #6f0c76 !important;
 }
