@@ -42,7 +42,7 @@
     - name: Copy frontend files
       become: yes
       copy:
-        src: ../frontend/index.html
+        src: ../frontend/build/
         dest: /var/www/{{ inventory_hostname }}/html/
 
     - name: Copy Nginx configuration

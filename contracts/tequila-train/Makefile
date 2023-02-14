@@ -9,7 +9,7 @@ contracts:
 
 deploy: frontend
 	@echo 🚂 Deploy frontend...
-	@ansible-playbook ansible/deploy.yml -i tequila-train.com, -u ec2-user
+	@ansible-playbook ansible/deploy.yml -i tequila.rs, -u ec2-user
 
 fmt:
 	@echo 🚂 Formatting...
@@ -43,7 +43,7 @@ lint:
 
 nginx:
 	@echo 🚂 Configuring Nginx...
-	@ansible-playbook ansible/configure-nginx.yml -i tequila-train.com, -u ec2-user
+	@ansible-playbook ansible/configure-nginx.yml -i tequila.rs, -u ec2-user
 
 node:
 	@echo 🚂 Configuring Gear node...
