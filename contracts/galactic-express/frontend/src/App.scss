@@ -12,6 +12,7 @@
 
 html {
   background-color: #1e1e1e;
+  font-family: "Silkscreen", cursive;
 }
 
 body {
@@ -36,4 +37,12 @@ body {
   border-radius: 0 !important;
   font-family: "Silkscreen", cursive !important;
   background-color: #6f0c76 !important;
+}
+
+.logs {
+  background: #202022;
+  padding: 10px;
+  font-size: 15px;
+  border: 2px solid rgb(255, 255, 255);
+  font-family: "Silkscreen", cursive;
 }
