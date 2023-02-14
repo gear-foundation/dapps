@@ -18,8 +18,10 @@ jobs:
         with:
           node-version: 16
 
-      - name: Install dependencies
-        run: cd frontend && npm install
+      - name: Install yarn
+        run: sudo npm i yarn -g
 
       - name: Build
-        run: cd frontend && npm run build
+        run: |
+          make init-frontend
+          make frontend

@@ -27,10 +27,9 @@ jobs:
           make frontend
 
       - name: Deploy
-        uses: dawidd6/action-ansible-playbook@v2
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          directory: ansible
-          playbook: deploy.yml
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          options: -u ec2-user
-          inventory: tequila-train.com
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: frontend/build
+          cname: tequila-train.com
+          force_orphan: true
