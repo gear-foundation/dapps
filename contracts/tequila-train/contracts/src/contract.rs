@@ -24,14 +24,18 @@ extern "C" fn handle() {
 
 fn process_handle() -> Result<(), ContractError> {
     let game_state = unsafe { GAME_STATE.as_mut().unwrap() };
-    let check_winner = |game_state: &GameState| {
-        if let Some(winner) = game_state.winner() {
+    let check_winner = |game_state: &GameState| match game_state.state() {
+        State::Stalled => {
+            msg::reply_bytes("The game stalled. No one is able to make a turn", 0)
+                .expect("failed to reply");
+            true
+        }
+        State::Winner(winner) => {
             let response = format!("The game is already finished. The winner is: {winner:?}");
             msg::reply_bytes(response.as_bytes(), 0).expect("failed to reply");
-            return true;
+            true
         }
-
-        false
+        State::Playing => false,
     };
 
     if check_winner(game_state) {

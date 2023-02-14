@@ -14,9 +14,6 @@ impl Metadata for ContractMetadata {
     type State = GameState;
 }
 
-#[derive(Encode, Decode, TypeInfo, Hash, PartialEq, PartialOrd, Eq, Ord, Clone, Debug, Default)]
-pub struct State(pub Vec<(ActorId, u128)>);
-
 #[derive(
     Debug,
     Clone,
@@ -115,7 +112,14 @@ pub struct GameState {
     tile_to_player: BTreeMap<u32, u32>,
     pub tiles: Vec<Tile>,
     _remaining_tiles: BTreeSet<u32>,
-    winner: Option<ActorId>,
+    state: State,
+}
+
+#[derive(Clone, Copy, Debug, Encode, Decode, TypeInfo)]
+pub enum State {
+    Playing,
+    Stalled,
+    Winner(ActorId),
 }
 
 /// - 2..4 players: 8 tiles
@@ -209,12 +213,12 @@ impl GameState {
             tile_to_player,
             tiles,
             _remaining_tiles: remaining_tiles,
-            winner: None,
+            state: State::Playing,
         })
     }
 
-    pub fn winner(&self) -> Option<ActorId> {
-        self.winner
+    pub fn state(&self) -> State {
+        self.state
     }
 
     pub fn skip_turn(&mut self, player: ActorId) {
@@ -229,13 +233,77 @@ impl GameState {
     }
 
     fn post_actions(&mut self) {
-        let i = self.current_player as usize;
-        self.current_player = match i + 1 >= self.players.len() {
-            true => 0,
-            false => (i + 1) as u32,
-        };
+        // check if the current player wins
+        let remaining_tiles = self
+            .tile_to_player
+            .values()
+            .filter(|&player| *player == self.current_player)
+            .count();
+        if remaining_tiles == 0 {
+            self.state = State::Winner(self.players[self.current_player as usize]);
+            return;
+        }
 
-        todo!()
+        // check if any next player is able to make a turn
+        let players_to_check = self.players.len();
+        let check_result = (0..players_to_check).try_fold(self.current_player, |player, _| {
+            let next_player = self.next_player(player);
+            let remaining_tiles = self
+                .tile_to_player
+                .iter()
+                .filter_map(|(&tile, &player)| (player == next_player).then_some(tile as usize))
+                .collect::<Vec<_>>();
+
+            let player_index = next_player as usize;
+            let available_tracks =
+                [player_index]
+                    .iter()
+                    .copied()
+                    .chain(self.tracks.iter().enumerate().filter_map(|(i, track)| {
+                        (i != player_index && track.has_train).then_some(i)
+                    }))
+                    .collect::<Vec<_>>();
+            if self.check_tiles(&remaining_tiles, &available_tracks) {
+                self.current_player = next_player;
+                return None;
+            }
+
+            if self.tracks[player_index].has_train {
+                // give the player randomly chosen tile
+                todo!()
+            } else {
+                self.tracks[player_index].has_train = true;
+            }
+
+            Some(next_player)
+        });
+
+        if check_result.is_some() {
+            // no one can make turn. Game is over
+            self.state = State::Stalled;
+        }
+    }
+
+    fn next_player(&self, current_player: u32) -> u32 {
+        let i = current_player as usize + 1;
+        match i < self.players.len() {
+            true => i as u32,
+            false => 0,
+        }
+    }
+
+    // Helper function to check if any of the tiles can be put on any track.
+    fn check_tiles(&self, tiles: &[usize], tracks: &[usize]) -> bool {
+        for tile_index in tiles {
+            let tile = self.tiles[*tile_index];
+            for track_id in tracks {
+                if self.can_put_tile(tile, *track_id).is_some() {
+                    return true;
+                }
+            }
+        }
+
+        false
     }
 
     pub fn make_turn(&mut self, player: ActorId, tile_id: u32, track_id: u32, remove_train: bool) {
@@ -262,8 +330,10 @@ impl GameState {
         }
 
         let tile = self.tiles[tile_id as usize];
-        if !self.put_tile(tile, track_id as usize) {
-            unreachable!("invalid tile");
+        let track_index = track_id as usize;
+        match self.can_put_tile(tile, track_index) {
+            Some(tile) => self.tracks[track_index].tiles.push(tile),
+            None => unreachable!("invalid tile"),
         }
 
         // remove train if all criterea met
@@ -278,24 +348,22 @@ impl GameState {
         self.post_actions();
     }
 
-    fn put_tile(&mut self, tile: Tile, track_id: usize) -> bool {
-        let track = &mut self.tracks[track_id];
+    fn can_put_tile(&self, tile: Tile, track_id: usize) -> Option<Tile> {
+        let track = &self.tracks[track_id];
         let last_tile = match track.tiles.last() {
             None => &self.tiles[self.start_tile as usize],
             Some(tile) => tile,
         };
 
         if last_tile.can_adjoin(&tile) {
-            track.tiles.push(tile);
-            return true;
+            return Some(tile);
         }
 
         let tile = tile.swap();
         if last_tile.can_adjoin(&tile) {
-            track.tiles.push(tile);
-            return true;
+            return Some(tile);
         }
 
-        false
+        None
     }
 }
