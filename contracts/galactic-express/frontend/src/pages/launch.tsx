@@ -32,8 +32,8 @@ export const Launch = () => {
 
   function moveRacePostition(id: string, step: number): void {
     const updateState = state.map(rocket => {
-      if (rocket.id === id && rocket.xoffset <= 88) {
-        return { ...rocket, xoffset: rocket.xoffset + 15 }
+      if (rocket.id === id && rocket.xoffset <= 85) {
+        return { ...rocket, xoffset: rocket.xoffset + 8 }
       } else {
         return rocket
       }
