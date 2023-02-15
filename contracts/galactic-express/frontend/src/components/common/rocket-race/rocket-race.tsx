@@ -6,7 +6,7 @@ interface Props  extends RacePosition {
 }
 
 export const RocketRace = (props: Props) => {
-    const { xoffset = 0, bgColor = '#ADB2AF', id, sessionStatus } = props;
+    const { xoffset = 0, bgColor = '#ADB2AF', id, sessionStatus, payload } = props;
 
     function handleAddressBySessionStatus(sessionStatus: SessionStatus): string {
         if(sessionStatus === SessionStatus.REGISTRATION) {
@@ -23,7 +23,7 @@ export const RocketRace = (props: Props) => {
                 <span className="text-h2" style={{
                     position: "absolute",
                     left: `${xoffset}%`,
-                }}>{`🚀${handleAddressBySessionStatus(sessionStatus)}`}</span>
+                }}>{`${payload === 0 ? '🔥' : '🚀'}  ${handleAddressBySessionStatus(sessionStatus)}`}</span>
         </div>
     )
 }
