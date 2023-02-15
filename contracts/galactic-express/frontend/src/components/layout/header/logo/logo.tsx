@@ -8,11 +8,11 @@ export const Logo = () => {
     <>
       {pathname !== '/' ? (
         <Link to="/" className="inline-flex text-white transition-colors hover:text-opacity-70">
-          <Icon name="logo" width={180} height={44} className="h-10" />
+          <img src="images/gasa.png" style={{ width: '100px' }}></img>
         </Link>
       ) : (
         <span className="inline-flex text-white">
-          <Icon name="logo" width={180} height={44} className="h-10" />
+          <img src="images/gasa.png" style={{ width: '100px' }}></img>
         </span>
       )}
     </>

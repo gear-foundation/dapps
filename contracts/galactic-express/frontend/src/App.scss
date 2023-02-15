@@ -41,7 +41,7 @@ body {
 
 .logs {
   background: #202022;
-  font-size: 15px;
+  font-size: 13px;
   border: 2px solid rgb(255, 255, 255);
   font-family: "Silkscreen", cursive;
 }
@@ -111,5 +111,18 @@ body {
 }
 
 .player {
-  color: red;
+  color: green;
+}
+
+.players-ready {
+  color: black;
+  font-size: 2em;
+  padding-left: 10px;
+}
+
+.range {
+  padding: 5px;
+  height: 30px;
+  line-height: 20px;
+  margin-bottom: 20px;
 }
