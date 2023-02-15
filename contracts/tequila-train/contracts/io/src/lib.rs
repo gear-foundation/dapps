@@ -340,6 +340,7 @@ impl GameState {
                 self.remaining_tiles.remove(&tile_id);
 
                 self.tile_to_player.insert(tile_id, next_player);
+                self.current_player = next_player;
 
                 return None;
             }
@@ -396,7 +397,7 @@ impl GameState {
 
         // check tile can be put on the track
         if track_id != self.current_player
-            && self
+            && !self
                 .tracks
                 .get(track_id as usize)
                 .map_or(false, |data| data.has_train)
