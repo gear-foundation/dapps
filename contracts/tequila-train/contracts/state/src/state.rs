@@ -1,8 +1,14 @@
 use gmeta::metawasm;
 use gstd::{prelude::*, ActorId};
-use tequila_io::{GameState as GameStateRaw, State, TrackData};
+use tequila_io::{GameState as GameStateRaw, State};
 
 use self::helpers::map_tile_face_into_u32;
+
+#[derive(Encode, Decode, TypeInfo)]
+pub struct TrackData {
+    pub tiles: Vec<(u32, u32)>,
+    pub has_train: bool,
+}
 
 #[derive(Encode, Decode, TypeInfo)]
 pub struct GameState {
@@ -43,7 +49,23 @@ pub trait Metawasm {
                 map_tile_face_into_u32(current_tile.left),
                 map_tile_face_into_u32(current_tile.right),
             ),
-            tracks: state.tracks,
+            tracks: state
+                .tracks
+                .iter()
+                .map(|td| TrackData {
+                    has_train: td.has_train,
+                    tiles: td
+                        .tiles
+                        .iter()
+                        .map(|t| {
+                            (
+                                map_tile_face_into_u32(t.left),
+                                map_tile_face_into_u32(t.right),
+                            )
+                        })
+                        .collect(),
+                })
+                .collect(),
             players_tiles,
             shot_counters: state.shots,
             state: current_state,
