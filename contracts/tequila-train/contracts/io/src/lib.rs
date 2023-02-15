@@ -1,7 +1,7 @@
 #![no_std]
 
 use gmeta::{In, Metadata};
-use gstd::{exec, prelude::*, ActorId, msg};
+use gstd::{exec, msg, prelude::*, ActorId};
 
 pub struct ContractMetadata;
 
