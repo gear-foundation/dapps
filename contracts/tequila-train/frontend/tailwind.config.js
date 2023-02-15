@@ -126,6 +126,9 @@ module.exports = {
         1: '1',
         2: '2',
       },
+      borderWidth: {
+        6: '6px',
+      },
     },
   },
   corePlugins: {

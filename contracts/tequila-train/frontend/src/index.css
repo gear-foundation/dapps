@@ -8,12 +8,16 @@
   --black: 0 0 0;
   --color-secondary: #858585;
   --color-primary: 103 203 77;
-  --color-error: #f24a4a;
+  --color-error: 242 74 74;
   --color-dark-500: 53 53 53;
   --color-dark-400: 79 79 79;
   --color-light: 209 209 209;
 
   --base-font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+#alert-root {
+  color: white;
 }
 
 
@@ -51,43 +55,43 @@ body.body {
   }
 
   .btn--primary {
-    @apply text-white bg-primary hover:bg-[#57b53f] active:bg-[#3f9829] transition-colors;
+    @apply text-white bg-primary enabled:hover:bg-[#57b53f] enabled:active:bg-[#3f9829] transition-colors;
   }
 
   .btn--primary-light {
-    @apply text-white bg-primary bg-opacity-50 hover:bg-[#57b53f] active:bg-[#3f9829] transition-colors;
+    @apply text-white bg-primary bg-opacity-50 enabled:hover:bg-[#57b53f] enabled:active:bg-[#3f9829] transition-colors;
   }
 
   .btn--primary-outline {
-    @apply text-white bg-primary bg-opacity-10 hover:bg-opacity-20 active:bg-opacity-30 border border-primary border-opacity-20 transition-colors;
+    @apply text-white bg-primary bg-opacity-10 enabled:hover:bg-opacity-20 enabled:active:bg-opacity-30 border border-primary border-opacity-20 transition-colors;
   }
 
   .btn--gray {
-    @apply text-black bg-secondary-500 hover:bg-secondary-600 active:bg-secondary-700 transition-colors
+    @apply text-black bg-secondary-500 enabled:hover:bg-secondary-600 enabled:active:bg-secondary-700 transition-colors
   }
 
   .btn--ghost {
-    @apply text-white bg-white/10 hover:bg-white/30 active:bg-white/50 transition-colors
+    @apply text-white bg-white/10 enabled:hover:bg-white/30 enabled:active:bg-white/50 transition-colors
   }
 
   .btn--white {
-    @apply text-black bg-white hover:bg-[#DEDEDE] active:bg-neutral-300 transition-colors
+    @apply text-black bg-white enabled:hover:bg-[#DEDEDE] enabled:active:bg-neutral-300 transition-colors
   }
 
   .btn--black {
-    @apply text-white bg-dark-500 hover:bg-dark-400 active:bg-opacity-80 transition-colors
+    @apply text-white bg-dark-500 enabled:hover:bg-dark-400 enabled:active:bg-opacity-80 transition-colors
   }
 
   .btn--error {
-    @apply text-white bg-red-500 hover:bg-red-600 active:bg-red-700 transition-colors
+    @apply text-white bg-red-500 enabled:hover:bg-red-600 enabled:active:bg-red-700 transition-colors
   }
 
   .btn--blue {
-    @apply text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 transition-colors;
+    @apply text-white bg-blue-600 enabled:hover:bg-blue-700 enabled:active:bg-blue-800 transition-colors;
   }
 
   .btn:disabled {
-    @apply cursor-not-allowed
+    @apply cursor-not-allowed;
   }
 
   .btn--loading {
@@ -106,4 +110,12 @@ body.body {
   background: #ffffff;
   opacity: 0.7;
   filter: blur(50px);
+}
+
+.text-transparent-primary {
+  background: radial-gradient(136.03% 142.06% at 47.37% 6.07%, #52d88c 0%, #4dc383 7.98%, #42946e 27.89%, #3a725f 45.54%, #355e56 60.07%, #335653 69.7%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-fill-color: transparent;
 }

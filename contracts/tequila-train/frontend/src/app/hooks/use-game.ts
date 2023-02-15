@@ -17,30 +17,26 @@ function useReadGameState<T>() {
 }
 
 export function useInitGame() {
-  const { setIsAllowed } = useApp();
+  const { setIsAllowed, setOpenWinnerPopup } = useApp();
   const { account } = useAccount();
-  const { setGame, setCurrentPlayer, setPlayers } = useGame();
+  const { setGame, setPlayers } = useGame();
   const { state } = useReadGameState<GameStateResponse>();
 
   useEffect(() => {
     setGame(state);
     if (state && account) {
-      console.log({ state });
-      // setIsAdmin(state.admin === account.decodedAddress);
-      // const getPlayers = () => {
-      //   const result: BattlePlayerType[] = [];
-      //   state.round.tmgIds.forEach((player, i) => {
-      //     if (state.players[player]) result.push(state.players[player]);
-      //   });
-      //   return result;
-      // };
+      // console.log({ state });
       setPlayers(state.players);
-      setCurrentPlayer(state.currentPlayer);
-      setIsAllowed(account.decodedAddress === state.players[state.currentPlayer - 1]);
+      setIsAllowed(account.decodedAddress === state.players[state.currentPlayer]);
+
+      if (state.state?.Winner || state.state?.winner) {
+        setOpenWinnerPopup(true);
+      }
     } else {
-      // setPlayers([]);
-      // setRivals([]);
+      setPlayers([]);
+      setIsAllowed(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, account]);
 }
 
@@ -51,7 +47,7 @@ export function useGameMessage() {
 
 export function useWasmState(payload?: AnyJson, isReadOnError?: boolean) {
   const { api } = useApi();
-  const { setGameWasm } = useGame();
+  const { setGameWasm, setPlayerTiles, playerChoice } = useGame();
   const alert = useAlert();
   const [state, setState] = useState<GameWasmStateResponse>();
   const [error, setError] = useState('');
@@ -118,7 +114,18 @@ export function useWasmState(payload?: AnyJson, isReadOnError?: boolean) {
   }, [api, programId, wasm, functionName]);
 
   useEffect(() => {
-    console.log('wasm state: ', state);
+    // console.log('wasm state: ', state);
     setGameWasm(state);
+
+    if (state) {
+      setPlayerTiles(state.playersTiles[state.currentPlayer]);
+    } else {
+      setPlayerTiles(undefined);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state]);
+
+  // useEffect(() => {
+  //   console.log({ playerChoice });
+  // }, [playerChoice]);
 }

@@ -1,6 +1,6 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useState } from 'react';
 import { HexString } from '@polkadot/util/types';
-import { GameStateResponse, GameWasmStateResponse } from '../types/game';
+import { DominoTileType, GameStateResponse, GameWasmStateResponse, PlayerChoiceType } from '../types/game';
 
 type Program = {
   game?: GameStateResponse;
@@ -9,15 +9,21 @@ type Program = {
   setGameWasm: Dispatch<SetStateAction<GameWasmStateResponse | undefined>>;
   players: HexString[];
   setPlayers: Dispatch<SetStateAction<HexString[]>>;
-  currentPlayer?: number;
-  setCurrentPlayer: Dispatch<SetStateAction<number | undefined>>;
+  playerTiles?: DominoTileType[];
+  setPlayerTiles: Dispatch<SetStateAction<DominoTileType[] | undefined>>;
+  selectedDomino?: [number, DominoTileType];
+  setSelectedDomino: Dispatch<SetStateAction<[number, DominoTileType] | undefined>>;
+  playerChoice?: PlayerChoiceType;
+  setPlayerChoice: Dispatch<SetStateAction<PlayerChoiceType | undefined>>;
 };
 
 const useProgram = (): Program => {
   const [game, setGame] = useState<GameStateResponse>();
   const [gameWasm, setGameWasm] = useState<GameWasmStateResponse>();
   const [players, setPlayers] = useState<HexString[]>([]);
-  const [currentPlayer, setCurrentPlayer] = useState<number>();
+  const [selectedDomino, setSelectedDomino] = useState<[number, DominoTileType]>();
+  const [playerTiles, setPlayerTiles] = useState<DominoTileType[]>();
+  const [playerChoice, setPlayerChoice] = useState<PlayerChoiceType>();
 
   return {
     game,
@@ -26,8 +32,12 @@ const useProgram = (): Program => {
     setGameWasm,
     players,
     setPlayers,
-    currentPlayer,
-    setCurrentPlayer,
+    playerTiles,
+    setPlayerTiles,
+    selectedDomino,
+    setSelectedDomino,
+    playerChoice,
+    setPlayerChoice,
   };
 };
 
