@@ -1,11 +1,11 @@
-import {useEffect, useState} from "react";
-import {RocketRace} from "../components/common/rocket-race";
-import {useLounch} from 'app/context';
-import {WEATHER} from 'app/consts';
+import { useEffect, useState } from "react";
+import { RocketRace } from "../components/common/rocket-race";
+import { useLounch } from 'app/context';
+import { WEATHER } from 'app/consts';
 
-import {Loader} from 'components/loaders/loader'
-import {EventData, ParticipantDataType, SessionStatus} from "../app/types/battles";
-import {logger} from "@polkadot/util";
+import { Loader } from 'components/loaders/loader'
+import { EventData, ParticipantDataType, SessionStatus } from "../app/types/battles";
+import { logger } from "@polkadot/util";
 
 export interface RacePosition {
   id: string;
@@ -16,7 +16,7 @@ export interface RacePosition {
   eventEmoji?: null | string;
 }
 
-let events =  {
+let events = {
   "0": [
     {
       "participant": "0x98ac3a9e3fb7256e36722a38a34046267776ab935130a073c8cc58ba8892266a",
@@ -51,7 +51,7 @@ let events =  {
       "halt": null
     }
   ],
-      "1": [
+  "1": [
     {
       "participant": "0x98ac3a9e3fb7256e36722a38a34046267776ab935130a073c8cc58ba8892266a",
       "alive": true,
@@ -77,7 +77,7 @@ let events =  {
       "halt": null
     }
   ],
-      "2": [
+  "2": [
     {
       "participant": "0x98ac3a9e3fb7256e36722a38a34046267776ab935130a073c8cc58ba8892266a",
       "alive": true,
@@ -163,10 +163,10 @@ export const Launch = () => {
 
   console.log(launch)
 
-  const [readLogs, setReadLogs] = useState<{sessionNum: number, event: EventData }[]>([])
+  const [readLogs, setReadLogs] = useState<{ sessionNum: number, event: EventData }[]>([])
   const [statusSessionRace, setStatusSessionRace] = useState<SessionStatus>(SessionStatus.INIT)
   const [state, setState] = useState<RacePosition[]>([])
-  const [logs, setLogs] = useState<{sessionNum: number, events: EventData[]}[]>([])
+  const [logs, setLogs] = useState<{ sessionNum: number, events: EventData[] }[]>([])
   const [count, setCount] = useState(0);
   const [animationState, setAnimationState] = useState([])
 
@@ -185,14 +185,14 @@ export const Launch = () => {
   }
 
   useEffect(() => {
-    if(launch && currentSessionRegisteredKeys!.length >= 1) {
+    if (launch && currentSessionRegisteredKeys!.length >= 1) {
       const updateState = [];
       // @ts-ignore
-      for(const key of currentSessionRegisteredKeys) {
+      for (const key of currentSessionRegisteredKeys) {
         // @ts-ignore
         const { fuel, payload } = launch!.currentSession!.registered[key] as ParticipantDataType;
 
-        const register: RacePosition = { id: key, bgColor: '#ADB2AF', fuel, payload, xoffset: 5,  }
+        const register: RacePosition = { id: key, bgColor: '#ADB2AF', fuel, payload, xoffset: 5, }
 
         updateState.push(register)
       }
@@ -201,15 +201,15 @@ export const Launch = () => {
       setState(updateState)
     }
 
-    if(launch && launch.state === SessionStatus.REGISTRATION) {
+    if (launch && launch.state === SessionStatus.REGISTRATION) {
       setStatusSessionRace(SessionStatus.REGISTRATION)
     }
 
-    if(launch && launch.state === SessionStatus.SESSION_IS_OVER) {
-        const keysEvents = Object.keys(launch.events)
-        let state = []
+    if (launch && launch.state === SessionStatus.SESSION_IS_OVER) {
+      const keysEvents = Object.keys(launch.events)
+      let state = []
       //Логи
-      for(const sessionKey of keysEvents) {
+      for (const sessionKey of keysEvents) {
         // @ts-ignore
         const sessionEventData = launch.events[sessionKey];
         const createSessionEventLogs = { sessionNum: Number(sessionKey), events: sessionEventData as EventData[] }
@@ -223,10 +223,10 @@ export const Launch = () => {
   useEffect(() => {
     let counter = count;
     let interval: any
-    console.log('__________>' ,logs)
+    console.log('__________>', logs)
 
-    if(launch && launch.state === SessionStatus.SESSION_IS_OVER && logs.length >= 1) {
-       interval = setInterval(() => {
+    if (launch && launch.state === SessionStatus.SESSION_IS_OVER && logs.length >= 1) {
+      interval = setInterval(() => {
         if (logs && counter >= logs.length) {
           clearInterval(interval);
         } else {
@@ -235,7 +235,7 @@ export const Launch = () => {
           const dataLogs = logs[counter];
           let setLogsList = [];
 
-          for(const event of dataLogs.events) {
+          for (const event of dataLogs.events) {
             setLogsList.push({ sessionNum: dataLogs.sessionNum, event })
             // setReadLogs([...readLogs, { sessionNum: dataLogs.sessionNum, event }])
           }
@@ -245,7 +245,7 @@ export const Launch = () => {
 
           counter++;
         }
-      },   1000);
+      }, 1000);
     }
 
     return () => clearInterval(interval);
@@ -273,19 +273,27 @@ export const Launch = () => {
       ) : (
         <>
           <div className="w-full h-1/2 border-b-gray-900">
-            {state.map(rocket => RocketRace({...rocket, sessionStatus: statusSessionRace}))}
+            {state.map(rocket => RocketRace({ ...rocket, sessionStatus: statusSessionRace }))}
           </div>
           <div className="flex flex-row w-full h-1/2 logs">
             <div className="w-9/12 flex flex-col overflow-auto border-2 p-1">
               {readLogs.length >= 1 && readLogs.map(logs => {
-                console.log('__________________>' ,logs.event)
+                console.log('__________________>', logs.event)
 
                 return (<div>
-                  <span className='text-green-400'>{'>'}</span>
-                  <span>{`Session: ${logs.sessionNum}`}</span>
-                  <span>{`Data: ${logs.event.payload}`}</span>
-                  <span>{`Data: ${logs.event.alive}`}</span>
-                  <span>{`Data: ${logs.event.halt}`}</span>
+                  <div>
+                    <span className='arrow'>{'>'}</span>
+                    <span className='sessionId'>{`Session: ${logs.sessionNum}`}</span>
+                  </div>
+                  <div>
+                    <span className='arrow'>{'>'}</span>
+                    <span>Player: </span>
+                    <span className='player'>{`${logs.event.participant.slice(1, 5)}...${logs.event.participant.slice(-4)}`}</span>
+                  </div>
+                  <div>
+                    <span className='arrow'>{'>'}</span>
+                    {`Data###: Alive: ${logs.event.alive}, Fuel left: ${logs.event.fuelLeft}, Last Altitude: ${logs.event.lastAltitude} Payload: ${logs.event.payload}, Halt: ${logs.event.halt}`}
+                  </div>
                 </div>)
               })}
             </div>
