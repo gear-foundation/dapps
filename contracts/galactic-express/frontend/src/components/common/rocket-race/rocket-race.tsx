@@ -6,7 +6,7 @@ interface Props extends RacePosition {
 }
 
 export const RocketRace = (props: Props) => {
-    const { xoffset = 10, bgColor = '#ADB2AF', id, sessionStatus, payload } = props;
+    const { xoffset = 10, bgColor = '#ADB2AF', id, sessionStatus, payload, alive } = props;
 
     function handleAddressBySessionStatus(sessionStatus: SessionStatus): string {
         if (sessionStatus === SessionStatus.REGISTRATION) {
@@ -19,11 +19,11 @@ export const RocketRace = (props: Props) => {
     return (
         <div className="h-1/4 w-full border-2 border-b-gray-900"
             key={id}
-            style={{ background: bgColor }}>
+            style={{ background: alive ? bgColor : '#7b0015'}}>
             <span className="text-h2" style={{
                 position: "absolute",
                 left: `${xoffset}%`,
-            }}>{`${payload === 0 ? '🔥' : '🚀'}`}</span><span className="players-ready"> {`${handleAddressBySessionStatus(sessionStatus)}`}</span>
+            }}>{`${!alive ? '🔥' : '🚀'}`}</span><span className="players-ready"> {`${handleAddressBySessionStatus(sessionStatus)}`}</span>
         </div>
     )
 }

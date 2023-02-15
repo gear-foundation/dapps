@@ -13,6 +13,7 @@ export interface RacePosition {
   fuel: number | null;
   payload: number | null;
   eventEmoji?: null | string;
+  alive: boolean;
 }
 
 export const Launch = () => {
@@ -36,7 +37,7 @@ export const Launch = () => {
         // @ts-ignore
         const { fuel, payload } = launch!.currentSession!.registered[key] as ParticipantDataType;
 
-        const register: RacePosition = { id: key, bgColor: '#ADB2AF', fuel, payload, xoffset: 5, }
+        const register: RacePosition = { id: key, bgColor: '#ADB2AF', fuel, payload, xoffset: 5, alive: true }
 
         updateState.push(register)
       }
@@ -86,6 +87,7 @@ export const Launch = () => {
               id: event.participant,
               payload: event.payload,
               fuel: event.fuelLeft,
+              alive: event.alive,
             } as RacePosition)
           }
           setReadLogs([...readLogs, ...setLogsList])
@@ -177,7 +179,7 @@ function getOffsetBySession(session: number): number {
 
 function getEmptyTemplateByEventsLength(eventsLength: number): RacePosition[] {
   let res = []
-  const emptyTemplate: RacePosition = { id: '', fuel: 0, payload: 0, xoffset: 10, bgColor: '#7b0015' }
+  const emptyTemplate: RacePosition = { id: '', fuel: 0, payload: 0, xoffset: 10, bgColor: '#7b0015', alive: false }
   if (eventsLength === 2) {
     res.push(...[emptyTemplate, emptyTemplate])
   }
