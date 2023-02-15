@@ -3,6 +3,9 @@
 use gmeta::{In, Metadata};
 use gstd::{exec, msg, prelude::*, ActorId};
 
+#[cfg(test)]
+mod test;
+
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
@@ -43,7 +46,7 @@ pub enum Face {
     Twelve,
 }
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq, TypeInfo, Encode, Decode)]
+#[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord, TypeInfo, Encode, Decode)]
 pub struct Tile {
     pub left: Face,
     pub right: Face,
@@ -130,10 +133,17 @@ pub enum State {
     Winner(ActorId),
 }
 
+#[cfg(not(test))]
 fn get_random_u32() -> u32 {
     let salt = msg::id();
     let (hash, _num) = exec::random(salt.into()).expect("internal error: random call failed");
     u32::from_le_bytes([hash[0], hash[1], hash[2], hash[3]])
+}
+
+/// mock for test
+#[cfg(test)]
+fn get_random_u32() -> u32 {
+    0u32
 }
 
 /// - 2..4 players: 8 tiles
@@ -186,11 +196,11 @@ fn give_tiles_until_double(
     remaining_tiles: &mut BTreeSet<u32>,
     tiles: &[Tile],
     tile_to_player: &mut BTreeMap<u32, u32>,
-    players: &Vec<ActorId>,
+    players_amount: usize,
 ) -> Option<(u32, u32)> {
     let mut starting_pair = None;
 
-    for player_index in 0..players.len() {
+    for player_index in 0..players_amount {
         // giving a new tile to player
         let tile_id = get_random_from_set(remaining_tiles);
         remaining_tiles.remove(&tile_id);
@@ -249,11 +259,15 @@ impl GameState {
                 &mut remaining_tiles,
                 &tiles,
                 &mut tile_to_player,
-                &initial_data.players,
+                players_amount,
             );
         }
 
-        let (start_tile, start_player) = starting_pair.expect("failed to determine initial game state");
+        let (start_tile, start_player) =
+            starting_pair.expect("failed to determine initial game state");
+
+        // Remove starting tile from set
+        tile_to_player.remove(&start_tile);
 
         Some(GameState {
             players: initial_data.players.clone(),

@@ -59,7 +59,7 @@ test: test-contracts
 
 test-contracts:
 	@echo 🚂 Running unit tests...
-	@cd contracts && cargo +nightly t -Fbinary-vendor
+	@cd contracts && cargo +nightly t -Fbinary-vendor && cargo test -p tequila-io
 
 serve: frontend
 	@echo 🚂 Running server...
