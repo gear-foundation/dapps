@@ -1,7 +1,7 @@
 #![no_std]
 
 use gmeta::{In, Metadata};
-use gstd::{exec, prelude::*, ActorId};
+use gstd::{exec, prelude::*, ActorId, msg};
 
 pub struct ContractMetadata;
 
@@ -119,7 +119,7 @@ pub struct GameState {
     pub current_player: u32,
     pub tile_to_player: BTreeMap<u32, u32>,
     pub tiles: Vec<Tile>,
-    _remaining_tiles: BTreeSet<u32>,
+    remaining_tiles: BTreeSet<u32>,
     state: State,
 }
 
@@ -130,11 +130,10 @@ pub enum State {
     Winner(ActorId),
 }
 
-/// Get random u8
-fn get_random_number() -> u8 {
-    let salt = [0u8; 32];
-    let (hash, num) = exec::random(salt).expect("internal error: random call failed");
-    hash[(num % 32) as usize]
+fn get_random_u32() -> u32 {
+    let salt = msg::id();
+    let (hash, _num) = exec::random(salt.into()).expect("internal error: random call failed");
+    u32::from_le_bytes([hash[0], hash[1], hash[2], hash[3]])
 }
 
 /// - 2..4 players: 8 tiles
@@ -153,7 +152,7 @@ fn tiles_per_person(players_amount: usize) -> usize {
 /// Get random number from BTreeSet
 fn get_random_from_set<T: Copy>(set: &BTreeSet<T>) -> T {
     let max_index = set.len();
-    let index = (get_random_number() as usize) % max_index;
+    let index = (get_random_u32() as usize) % max_index;
     *set.iter().nth(index).unwrap()
 }
 
@@ -262,7 +261,7 @@ impl GameState {
             current_player: starting_pair.unwrap().1 + 1,
             tile_to_player,
             tiles,
-            _remaining_tiles: remaining_tiles,
+            remaining_tiles,
             state: State::Playing,
         })
     }
@@ -298,6 +297,7 @@ impl GameState {
         let players_to_check = self.players.len();
         let check_result = (0..players_to_check).try_fold(self.current_player, |player, _| {
             let next_player = self.next_player(player);
+
             let remaining_tiles = self
                 .tile_to_player
                 .iter()
@@ -320,10 +320,15 @@ impl GameState {
 
             if self.tracks[player_index].has_train {
                 // give the player randomly chosen tile
-                todo!()
-            } else {
-                self.tracks[player_index].has_train = true;
+                let tile_id = get_random_from_set(&self.remaining_tiles);
+                self.remaining_tiles.remove(&tile_id);
+
+                self.tile_to_player.insert(tile_id, next_player);
+
+                return None;
             }
+
+            self.tracks[player_index].has_train = true;
 
             Some(next_player)
         });
