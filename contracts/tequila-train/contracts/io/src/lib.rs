@@ -253,12 +253,14 @@ impl GameState {
             );
         }
 
+        let (start_tile, start_player) = starting_pair.expect("failed to determine initial game state");
+
         Some(GameState {
             players: initial_data.players.clone(),
             tracks: vec![Default::default(); players_amount],
             shots: vec![0u32; players_amount],
-            start_tile: starting_pair.unwrap().0,
-            current_player: starting_pair.unwrap().1 + 1,
+            start_tile,
+            current_player: Self::next_player_impl(players_amount, start_player),
             tile_to_player,
             tiles,
             remaining_tiles,
@@ -340,8 +342,12 @@ impl GameState {
     }
 
     fn next_player(&self, current_player: u32) -> u32 {
+        Self::next_player_impl(self.players.len(), current_player)
+    }
+
+    fn next_player_impl(player_count: usize, current_player: u32) -> u32 {
         let i = current_player as usize + 1;
-        match i < self.players.len() {
+        match i < player_count {
             true => i as u32,
             false => 0,
         }
