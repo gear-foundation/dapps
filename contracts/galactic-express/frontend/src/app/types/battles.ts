@@ -43,7 +43,7 @@ export type SessionData = {
   weather: number;
 }
 
-type EventData = {
+export type EventData = {
   alive: boolean;
   fuelLeft: number;
   halt: any
@@ -64,6 +64,7 @@ export type Participant = {
 export enum SessionStatus {
   SESSION_IS_OVER = "SessionIsOver",
   REGISTRATION = "Registration",
+  INIT = 'Init'
 }
 
 export type LouncheStateResponse = {
