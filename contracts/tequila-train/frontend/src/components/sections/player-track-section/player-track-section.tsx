@@ -37,9 +37,9 @@ export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }:
       const temp = tiles;
       const space = Math.floor(w / (CARD_WIDTH + (tiles?.length - 1) * SPACING));
 
-      if (space <= tiles.length) {
+      if (tiles.length > space) {
         setArr(temp.slice((space - 2) * -1));
-      }
+      } else setArr(tiles);
     }
   }, [w, tiles]);
 
