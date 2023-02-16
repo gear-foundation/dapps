@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "@gear-js/api": "0.29.1",
-    "@gear-js/react-hooks": "0.5.8",
+    "@gear-js/react-hooks": "0.5.9",
     "@gear-js/ui": "0.5.13",
     "@headlessui/react": "1.7.11",
     "@polkadot/api": "9.13.2",
