@@ -1235,10 +1235,10 @@
     minimatch "^3.1.2"
     strip-json-comments "^3.1.1"
 
-"@gear-js/api@0.29.1":
-  version "0.29.1"
-  resolved "https://registry.yarnpkg.com/@gear-js/api/-/api-0.29.1.tgz#0438cb74febca7bc2bb46e11696bfb33efeed865"
-  integrity sha512-K6fa9gGI4IoeLw8Q7deu1QDQu7JevtMS2RUdRne+vdZrS3tXl0lC5aPXNHcoxQ7TyVXVvfOc9DJJo1NQ7UqhVw==
+"@gear-js/api@0.29.5":
+  version "0.29.5"
+  resolved "https://registry.yarnpkg.com/@gear-js/api/-/api-0.29.5.tgz#96b03818f27ba7ca2a4eec219ffa06fef1dc308a"
+  integrity sha512-5F25IPLp9nhHr5ZTmdg9XAk2cCDpPZHENETZPm/81mf2iFFnhsejkMcxFrbhKXbwW4cEutOHWbnNiX8cCAABAQ==
 
 "@gear-js/react-hooks@0.5.9":
   version "0.5.9"
