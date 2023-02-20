@@ -1,6 +1,9 @@
 import Identicon from '@polkadot/react-identicon';
 import clsx from 'clsx';
 import { Button, buttonStyles } from '@gear-js/ui';
+import { Icon } from '../../ui/icon';
+import { decodeAddress } from '@gear-js/api';
+import { copyToClipboard } from '../../../app/utils';
 
 type Props = {
   address: string;
@@ -10,15 +13,30 @@ type Props = {
   block?: boolean;
 };
 
-export const AccountButton = ({ address, name, onClick, isActive }: Props) => (
-  <button
-    className={clsx(
-      'btn gap-2 w-full !justify-start',
-      isActive ? buttonStyles.primary : buttonStyles.light,
-      buttonStyles.button,
-    )}
-    onClick={onClick}>
-    <Identicon value={address} className={buttonStyles.icon} theme="polkadot" size={20} />
-    <span className="truncate">{name}</span>
-  </button>
-);
+export const AccountButton = ({ address, name, onClick, isActive }: Props) => {
+  const onCopy = async () => {
+    const decodedAddress = decodeAddress(address);
+    await copyToClipboard(decodedAddress, alert);
+  };
+
+  return (
+    <div className="flex items-center gap-4">
+      <button
+        className={clsx(
+          'btn gap-2 !justify-start !grid grid-cols-[20px_1fr_20px]',
+          isActive ? buttonStyles.primary : buttonStyles.light,
+          buttonStyles.button,
+        )}
+        onClick={onClick}>
+        <Identicon value={address} className={buttonStyles.icon} theme="polkadot" size={20} />
+        <span className="truncate w-full">{name}</span>
+      </button>
+      <button
+        type="button"
+        onClick={onCopy}
+        className="shrink-0 grow-0 transition-colors text-white text-opacity-80 hover:text-opacity-100 active:text-opacity-60">
+        <Icon name="copy" className="w-5 h-5" />
+      </button>
+    </div>
+  );
+};

@@ -30,25 +30,15 @@ export const AccountsList = ({ list, onChange }: Props) => {
     if (battle?.state === 'Registration') navigate('/');
   };
 
-  const onCopy = (address: string) => {
-    const decodedAddress = decodeAddress(address);
-    copyToClipboard(decodedAddress, alert);
-  };
-
   return list.length > 0 ? (
-    <ul className="space-y-4">
+    <ul className="space-y-4 w-full">
       {list.map((account) => (
-        <li key={account.address} className="flex items-center gap-2">
+        <li key={account.address}>
           <AccountButton
             address={account.address}
             name={account.meta.name}
             isActive={isLoggedIn(account)}
             onClick={() => onClick(account)}
-          />
-          <Button
-            icon={() => <Icon name="copy" className="w-5 h-5" />}
-            color="transparent"
-            onClick={() => onCopy(account.address)}
           />
         </li>
       ))}

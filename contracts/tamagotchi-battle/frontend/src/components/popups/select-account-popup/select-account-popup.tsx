@@ -10,7 +10,7 @@ type Props = {
 export const SelectAccountPopup = ({ accounts, close }: Props) => (
   <Modal heading="Connect" close={close}>
     {accounts ? (
-      <div className="overflow-y-scroll max-h-96 -m-8 p-8">
+      <div className="bg-dark-500 overflow-y-auto max-h-96 -m-8 p-8 rounded-b-[20px]">
         <AccountsList list={accounts} onChange={close} />
       </div>
     ) : (
