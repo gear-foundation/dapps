@@ -10,10 +10,10 @@ type Props = {
   name: string | undefined;
   onClick: () => void;
   isActive?: boolean;
-  block?: boolean;
+  simple?: boolean;
 };
 
-export const AccountButton = ({ address, name, onClick, isActive }: Props) => {
+export const AccountButton = ({ address, name, onClick, isActive, simple }: Props) => {
   const onCopy = async () => {
     const decodedAddress = decodeAddress(address);
     await copyToClipboard(decodedAddress, alert);
@@ -23,7 +23,8 @@ export const AccountButton = ({ address, name, onClick, isActive }: Props) => {
     <div className="flex items-center gap-4">
       <button
         className={clsx(
-          'btn gap-2 !justify-start !grid grid-cols-[20px_1fr_20px]',
+          'grow btn gap-2 !justify-start ',
+          simple ? 'items-center' : '!grid grid-cols-[20px_1fr_20px]',
           isActive ? buttonStyles.primary : buttonStyles.light,
           buttonStyles.button,
         )}
@@ -31,12 +32,14 @@ export const AccountButton = ({ address, name, onClick, isActive }: Props) => {
         <Identicon value={address} className={buttonStyles.icon} theme="polkadot" size={20} />
         <span className="truncate w-full">{name}</span>
       </button>
-      <button
-        type="button"
-        onClick={onCopy}
-        className="shrink-0 grow-0 transition-colors text-white text-opacity-80 hover:text-opacity-100 active:text-opacity-60">
-        <Icon name="copy" className="w-5 h-5" />
-      </button>
+      {!simple && (
+        <button
+          type="button"
+          onClick={onCopy}
+          className="shrink-0 grow-0 transition-colors text-white text-opacity-80 hover:text-opacity-100 active:text-opacity-60">
+          <Icon name="copy" className="w-5 h-5" />
+        </button>
+      )}
     </div>
   );
 };
