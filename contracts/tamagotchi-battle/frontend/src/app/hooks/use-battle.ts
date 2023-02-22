@@ -1,6 +1,6 @@
 import { useApp, useBattle } from 'app/context';
 import { useEffect } from 'react';
-import type { BattlePlayerType, BattleStateResponse } from 'app/types/battles';
+import type { BattleStatePlayer, BattleStateResponse } from 'app/types/battles';
 import { useAccount, useApi, useReadFullState } from '@gear-js/react-hooks';
 import { useMetadata } from './use-metadata';
 import metaBattle from 'assets/meta/meta-battle.txt';
@@ -17,33 +17,39 @@ function useReadBattleState<T>() {
 
 export function useInitBattleData() {
   const { api } = useApi();
-  const { setIsAdmin, setIsDataReady } = useApp();
+  const { setIsAdmin } = useApp();
   const { account } = useAccount();
-  const { roundDamage, setRivals, setBattle, setCurrentPlayer, setRoundDamage, setPlayers } = useBattle();
+  const { roundDamage, currentPairIdx, setRivals, setBattle, setCurrentPlayer, setRoundDamage, setPlayers } =
+    useBattle();
   const { state } = useReadBattleState<BattleStateResponse>();
   const { metadata } = useMetadata(metaBattle);
 
   useEffect(() => {
     setBattle(state);
     if (state && account) {
+      const activePair = Object.values(state.pairs)[currentPairIdx];
+      console.log({ state });
       setIsAdmin(state.admin === account.decodedAddress);
 
-      const getPlayers = () => {
-        const result: BattlePlayerType[] = [];
-        state.round.tmgIds.forEach((player, i) => {
+      const getRivals = () => {
+        const result: BattleStatePlayer[] = [];
+        activePair.tmgIds.forEach((player, i) => {
           if (state.players[player]) result.push(state.players[player]);
         });
+        console.log({ rivals: result });
         return result;
       };
 
       setPlayers(Object.values(state.players));
-      setRivals(getPlayers());
-      setCurrentPlayer(state.round.tmgIds[state.round.moves.length > 0 ? 1 : 0]);
+      setRivals(getRivals());
+      setCurrentPlayer(activePair.tmgIds[activePair.moves.length > 0 ? 1 : 0]);
     } else {
+      setIsAdmin(false);
       setPlayers([]);
       setRivals([]);
+      setCurrentPlayer(undefined);
     }
-  }, [state, account]);
+  }, [state, account, currentPairIdx]);
 
   useEffect(() => {
     let unsub: UnsubscribePromise | undefined;
@@ -78,7 +84,8 @@ export function useInitBattleData() {
 
   useEffect(() => {
     if (state) {
-      if (state.round.steps && !state.round.moves.length) {
+      const activePair = Object.values(state.pairs)[currentPairIdx];
+      if (activePair.rounds && !activePair.moves.length) {
         // console.log('show damage');
       } else {
         if (roundDamage) {
@@ -87,7 +94,7 @@ export function useInitBattleData() {
         }
       }
     }
-  }, [roundDamage, state]);
+  }, [currentPairIdx, roundDamage, state]);
 }
 
 export function useBattleMessage() {

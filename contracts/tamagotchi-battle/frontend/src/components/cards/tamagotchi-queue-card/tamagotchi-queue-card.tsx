@@ -1,12 +1,12 @@
 import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
 import clsx from 'clsx';
 import { Icon } from 'components/ui/icon';
-import { BattlePlayerType } from 'app/types/battles';
+import { BattlePlayerType, BattleStatePlayer } from 'app/types/battles';
 import { useEffect, useState } from 'react';
 
 type TamagotchiQueueCardProps = {
   className?: string;
-  tamagotchi: BattlePlayerType;
+  tamagotchi: BattleStatePlayer;
 };
 
 export const TamagotchiQueueCard = ({ className, tamagotchi }: TamagotchiQueueCardProps) => {

@@ -23,8 +23,8 @@ export const Home = () => {
         <div className="flex flex-col items-center gap-9 text-center w-full">
           <div className="space-y-6">
             {account ? (
-              <h2 className="typo-h2 max-w-[415px] mx-auto">
-                Insert program ID to <span className="text-primary">create a character</span>
+              <h2 className="typo-h2 max-w-[430px] mx-auto">
+                Insert program ID to&nbsp;<span className="text-primary">create a character</span>
               </h2>
             ) : (
               <p className="text-[#D1D1D1]">Connect your account to start the game</p>

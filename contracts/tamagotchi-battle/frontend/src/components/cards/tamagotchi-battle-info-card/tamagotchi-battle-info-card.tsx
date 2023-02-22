@@ -1,11 +1,11 @@
-import { BattlePlayerType } from 'app/types/battles';
+import { BattleStatePlayer } from 'app/types/battles';
 import clsx from 'clsx';
 import { Icon } from 'components/ui/icon';
 import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
 import { useEffect, useState } from 'react';
 
 type TamagotchiBattleInfoCardProps = {
-  tamagotchi: BattlePlayerType;
+  tamagotchi: BattleStatePlayer;
   isActive: boolean;
 };
 export const TamagotchiBattleInfoCard = ({ tamagotchi, isActive }: TamagotchiBattleInfoCardProps) => {
@@ -29,7 +29,7 @@ export const TamagotchiBattleInfoCard = ({ tamagotchi, isActive }: TamagotchiBat
         />
         <defs>
           <linearGradient id={tamagotchi.tmgId} x1="80" y1="0" x2="80" y2="246" gradientUnits="userSpaceOnUse">
-            <stop stopColor={dead ? '#f24a4a' : isActive ? '#16B768' : '#1852FF'} />
+            <stop stopColor={dead ? '#f24a4a' : isActive ? '#16b768' : '#1852ff'} />
             <stop offset="1" stopColor="#29292B" stopOpacity="0" />
           </linearGradient>
         </defs>
