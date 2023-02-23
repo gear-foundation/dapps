@@ -67,10 +67,15 @@ export const TamagotchiAvatar = ({
       {!isDead && !isWinner && (
         <div
           className={clsx(
-            'absolute top-1/4 right-15 w-12 h-12 grid place-items-center transition-[opacity,transform] delay-200 pointer-events-none',
+            'absolute top-1/4 w-12 h-12 grid place-items-center transition-[opacity,transform] delay-200 pointer-events-none',
+            reverse ? 'right-15' : 'left-15',
             !damage ? 'opacity-0 translate-y-5' : 'translate-y-0',
           )}>
-          <Icon name="damage" section={s} className="absolute inset-0 w-full h-full" />
+          <Icon
+            name="damage"
+            section={s}
+            className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
+          />
           <span className="relative z-1 text-white font-bold">-{damage}</span>
         </div>
       )}

@@ -4,12 +4,9 @@ import { motion, useAnimation } from 'framer-motion';
 import { Icon } from '../../ui/icon';
 import clsx from 'clsx';
 import { useBattle } from '../../../app/context';
-import { BattleStatePair, BattleStatePlayer } from '../../../app/types/battles';
-import { nanoid } from 'nanoid';
+import { BattleStatePlayer } from '../../../app/types/battles';
 import * as ScrollArea from '@radix-ui/react-scroll-area';
 import { TamagotchiAvatar } from '../../common/tamagotchi-avatar';
-
-type PairData = { players: BattleStatePlayer[]; pair: BattleStatePair; id: string; idx: number };
 
 export const BattleTableChampions = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -17,7 +14,7 @@ export const BattleTableChampions = () => {
   const [isActive, setIsActive] = useState<boolean>(false);
   const controls = useAnimation();
 
-  const transition = { type: 'spring', damping: 60, stiffness: 180 };
+  const transition = { type: 'spring', damping: 20, stiffness: 160 };
 
   const onClick = useCallback(async () => {
     setIsActive((prev) => !prev);
@@ -51,14 +48,14 @@ export const BattleTableChampions = () => {
         <button className="inline-flex self-start my-10 px-2.5 py-8 btn--red bg-red rounded-l-[6px]" onClick={onClick}>
           <span className="flex items-center gap-2.5 vertical-lr -rotate-180">
             <Icon name="double-arrows" className={clsx('w-4 h-4 text-white', !isActive && 'rotate-180')} />
-            <span className="font-kanit font-semibold uppercase tracking-[0.04em]">Show battles</span>
+            <span className="font-kanit font-semibold uppercase tracking-[0.04em]">Show champions</span>
             <Icon name="double-arrows" className={clsx('w-4 h-4 text-white', !isActive && 'rotate-180')} />
           </span>
         </button>
 
         <section
           ref={ref}
-          className="relative grow p-8 px-6 border-2 border-red rounded-l-[20px] shadow after:absolute after:inset-0 after:-z-2 after:bg-[#1D1D1D] after:rounded-l-[20px]">
+          className="relative grow p-8 px-6 border-2 border-r-transparent border-red rounded-l-[20px] shadow after:absolute after:inset-0 after:-z-2 after:bg-[#1D1D1D] after:rounded-l-[20px]">
           <div className="relative space-y-4">
             <h2 className="text-[28px] leading-8 text-red font-kanit font-semibold tracking-[0.02em]">Champions</h2>
             <div className="flex items-center justify-between gap-5 px-4 text-xs leading-6 font-kanit tracking-[0.08em] text-white/60 uppercase bg-white/5 rounded-[30px]">
@@ -70,27 +67,49 @@ export const BattleTableChampions = () => {
             </div>
           </div>
 
-          <div className="absolute top-0 left-6 -z-1 w-[min(100%,306px)] blur-lg" aria-hidden>
+          <motion.div
+            className="absolute top-0 left-6 -z-1 w-[min(100%,306px)] blur-lg"
+            animate={controls}
+            variants={{
+              active: {
+                opacity: 0,
+              },
+              inactive: {
+                opacity: 1,
+              },
+            }}
+            aria-hidden>
             <Icon name="decorative-bubble" className="w-full aspect-[306/48] text-red opacity-80" />
-          </div>
+          </motion.div>
         </section>
       </motion.div>
     </motion.div>
   );
 };
 
-type IChampion = BattleStatePlayer & {
-  position: number;
-};
 const BattleTableList = () => {
   const { players } = useBattle();
+
+  useEffect(() => {
+    const arr = [
+      { name: 'test1', k: 0 },
+      { name: 'test2', k: 1 },
+      { name: 'test3', k: 0 },
+      { name: 'test4', k: 0 },
+      { name: 'test5', k: 1 },
+    ];
+
+    // const test = players.sort((p, c) => p.victories - c.victories);
+    const test = arr.sort((p, c) => c.k - p.k);
+    console.log({ test });
+  }, [players]);
 
   return (
     <ScrollArea.Root className="relative h-45 overflow-hidden pr-3 -mr-3" type="auto">
       <ScrollArea.Viewport className="w-full h-full">
         <ul className="leading-4 space-y-1.5">
           {players
-            .sort((p, c) => p.victories - c.victories)
+            .sort((p, c) => c.victories - p.victories)
             .map((player, i) => (
               <li key={i}>
                 <BattleTablePairsRow player={player} position={i} />
@@ -118,7 +137,7 @@ const BattleTablePairsRow = ({ player, position }: { player: BattleStatePlayer; 
     <div
       className={clsx(
         'flex items-center gap-4 w-full py-1 px-4 rounded-[30px] overflow-hidden',
-        player.victories > 0 && position > 2 ? 'bg-gradient-to-b from-red to-transparent' : 'bg-white/10',
+        player.victories > 0 && position < 3 ? 'bg-gradient-to-b from-red to-transparent' : 'bg-white/10',
       )}>
       <Icon
         name={
@@ -149,7 +168,7 @@ const BattleTablePairsRow = ({ player, position }: { player: BattleStatePlayer; 
       <div className="flex items-center gap-3 tracking-[0.03em] font-medium">
         <span className="w-20 truncate">{player.name}</span>
       </div>
-      <p className="ml-auto text-2xl leading-none font-kanit font-medium">{player.victories}</p>
+      <p className="ml-auto text-2xl leading-none font-kanit font-medium w-7 text-center">{player.victories}</p>
     </div>
   );
 };

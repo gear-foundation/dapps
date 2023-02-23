@@ -16,7 +16,7 @@ export const BattleTablePairs = () => {
   const [isActive, setIsActive] = useState<boolean>(false);
   const controls = useAnimation();
 
-  const transition = { type: 'spring', damping: 60, stiffness: 180 };
+  const transition = { type: 'spring', damping: 20, stiffness: 160 };
 
   const onClick = useCallback(async () => {
     setIsActive((prev) => !prev);
@@ -49,7 +49,7 @@ export const BattleTablePairs = () => {
       <motion.div className="flex overflow-hidden" animate={controls} variants={panel} transition={transition}>
         <section
           ref={ref}
-          className="relative p-8 px-6 border-2 border-primary rounded-r-[20px] shadow after:absolute after:inset-0 after:-z-2 after:bg-[#1D1D1D] after:rounded-r-[20px]">
+          className="relative p-8 px-6 border-2 border-l-transparent border-primary rounded-r-[20px] shadow after:absolute after:inset-0 after:-z-2 after:bg-[#1D1D1D] after:rounded-r-[20px]">
           <div className="relative space-y-4">
             <h2 className="text-[28px] leading-8 text-primary font-kanit font-semibold tracking-[0.02em]">Battles</h2>
             <div className="flex items-center justify-between gap-5 px-4 text-xs leading-6 font-kanit tracking-[0.08em] text-white/60 uppercase bg-white/5 rounded-[30px]">
@@ -168,9 +168,21 @@ const BattleTablePairsRow = ({ data: { pair, players, idx } }: { data: PairData 
         )}
       />
       <span className="flex items-center gap-3 text-[12px] leading-[18px]">
-        <span className="w-20 truncate text-right">{players[0].name}</span>
+        <span
+          className={clsx(
+            'w-20 truncate text-right',
+            pair.gameIsOver ? (pair.winner === players[0].tmgId ? 'text-primary' : 'text-error') : '',
+          )}>
+          {players[0].name}
+        </span>
         <Icon name="swords" className="w-3.5 h-3.5" />
-        <span className="w-20 truncate text-left">{players[1].name}</span>
+        <span
+          className={clsx(
+            'w-20 truncate text-left',
+            pair.gameIsOver ? (pair.winner === players[1].tmgId ? 'text-primary' : 'text-error') : '',
+          )}>
+          {players[1].name}
+        </span>
       </span>
       {pair.gameIsOver ? (
         <span className="btn py-1.5 px-4 text-[12px] leading-none uppercase tracking-[.04em] font-kanit italic">

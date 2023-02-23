@@ -70,8 +70,12 @@ export function useInitBattleData() {
             typeof decodedPayload === 'object' &&
             Object.keys(decodedPayload).includes('roundResult')
           ) {
-            console.log({ decodedPayload });
-            setRoundDamage(Object.values(decodedPayload)[0] as RoundDamageType);
+            const notification = Object.values(decodedPayload)[0] as RoundDamageType;
+
+            if (currentPairIdx === notification[0]) {
+              console.log({ decodedPayload });
+              setRoundDamage(notification);
+            }
           }
         }
       });
@@ -80,7 +84,7 @@ export function useInitBattleData() {
     return () => {
       if (unsub) unsub.then((unsubCallback) => unsubCallback());
     };
-  }, [metadata, state]);
+  }, [metadata, state, currentPairIdx]);
 
   useEffect(() => {
     if (state) {
