@@ -46,10 +46,10 @@ export const BattleRoundPairs = ({ width = 200 }) => {
         y: '-50%',
       }}
       transition={{ ...transition, delay: 0.5 }}>
-      <motion.div className="flex" animate={controls} variants={panel} transition={transition}>
+      <motion.div className="flex overflow-hidden" animate={controls} variants={panel} transition={transition}>
         <section
           ref={ref}
-          className="relative p-8 px-6 border-2 border-primary rounded-r-[20px] shadow after:absolute after:inset-0 after:-z-2 after:bg-[#1D1D1D] after:rounded-r-[20px] overflow-hidden">
+          className="relative p-8 px-6 border-2 border-primary rounded-r-[20px] shadow after:absolute after:inset-0 after:-z-2 after:bg-[#1D1D1D] after:rounded-r-[20px]">
           <div className="relative space-y-4">
             <h2 className="text-[28px] leading-8 text-primary font-kanit font-semibold tracking-[0.02em]">Battles</h2>
             <div className="flex items-center justify-between gap-5 px-4 text-xs leading-6 font-kanit tracking-[0.08em] text-white/60 uppercase bg-white/5 rounded-[30px]">
@@ -73,19 +73,7 @@ export const BattleRoundPairs = ({ width = 200 }) => {
         </button>
 
         <div className="absolute top-0 left-6 -z-1 w-[min(100%,306px)] blur-lg" aria-hidden>
-          <svg
-            className="w-full"
-            width="306"
-            height="48"
-            viewBox="0 0 306 48"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-            aria-hidden>
-            <path
-              className="fill-primary opacity-80"
-              d="M306 48.0001L120.558 29.1584C119.524 29.0533 118.48 29.0831 117.453 29.247L13.892 45.782C6.60217 46.9459 -2.02008e-07 41.3143 -1.67579e-07 33.9321L-6.58521e-08 12.1199C-3.1341e-08 4.72008 6.63214 -0.916317 13.9351 0.276981L306 48.0001Z"
-            />
-          </svg>
+          <Icon name="decorative-bubble" className="w-full aspect-[306/48] text-primary opacity-80" />
         </div>
       </motion.div>
     </motion.div>
