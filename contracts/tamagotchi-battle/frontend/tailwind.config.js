@@ -40,6 +40,7 @@ module.exports = {
         current: 'currentColor',
         secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
         primary: 'rgb(var(--color-primary) / <alpha-value>)',
+        red: 'rgb(var(--red) / <alpha-value>)',
         error: 'rgb(var(--color-error) / <alpha-value>)',
         'dark-500': 'rgb(var(--color-dark-500) / <alpha-value>)',
         light: 'rgb(var(--color-light) / <alpha-value>)',

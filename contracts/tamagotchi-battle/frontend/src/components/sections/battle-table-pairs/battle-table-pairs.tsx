@@ -10,7 +10,7 @@ import { nanoid } from 'nanoid';
 
 type PairData = { players: BattleStatePlayer[]; pair: BattleStatePair; id: string; idx: number };
 
-export const BattleRoundPairs = ({ width = 200 }) => {
+export const BattleTablePairs = () => {
   const ref = useRef<HTMLDivElement>(null);
   const [w] = useRefDimensions(ref);
   const [isActive, setIsActive] = useState<boolean>(false);
@@ -45,7 +45,7 @@ export const BattleRoundPairs = ({ width = 200 }) => {
         x: 0,
         y: '-50%',
       }}
-      transition={{ ...transition, delay: 0.5 }}>
+      transition={{ delay: 0.5 }}>
       <motion.div className="flex overflow-hidden" animate={controls} variants={panel} transition={transition}>
         <section
           ref={ref}
@@ -57,8 +57,12 @@ export const BattleRoundPairs = ({ width = 200 }) => {
               <span>Status</span>
             </div>
             <div className="mt-2.5">
-              <BattlePairsList />
+              <BattleTableList />
             </div>
+          </div>
+
+          <div className="absolute top-0 left-6 -z-1 w-[min(100%,306px)] blur-lg" aria-hidden>
+            <Icon name="decorative-bubble" className="w-full aspect-[306/48] text-primary opacity-80" />
           </div>
         </section>
 
@@ -71,10 +75,6 @@ export const BattleRoundPairs = ({ width = 200 }) => {
             <Icon name="double-arrows" className={clsx('w-4 h-4 text-white', isActive && 'rotate-180')} />
           </span>
         </button>
-
-        <div className="absolute top-0 left-6 -z-1 w-[min(100%,306px)] blur-lg" aria-hidden>
-          <Icon name="decorative-bubble" className="w-full aspect-[306/48] text-primary opacity-80" />
-        </div>
       </motion.div>
     </motion.div>
   );
@@ -104,7 +104,7 @@ export const BattleRoundPairs = ({ width = 200 }) => {
 //   }
 // }}
 
-const BattlePairsList = () => {
+const BattleTableList = () => {
   const { battle } = useBattle();
   const [pairs, setPairs] = useState<PairData[]>([]);
 
@@ -135,7 +135,7 @@ const BattlePairsList = () => {
         <ul className="leading-4 space-y-1.5">
           {pairs.map((pair) => (
             <li key={pair.id}>
-              <BattleRoundPairsRow data={pair} />
+              <BattleTablePairsRow data={pair} />
             </li>
           ))}
         </ul>
@@ -155,7 +155,7 @@ const BattlePairsList = () => {
   );
 };
 
-const BattleRoundPairsRow = ({ data: { pair, players, idx } }: { data: PairData }) => {
+const BattleTablePairsRow = ({ data: { pair, players, idx } }: { data: PairData }) => {
   const { setCurrentPair } = useBattle();
   return (
     <button
