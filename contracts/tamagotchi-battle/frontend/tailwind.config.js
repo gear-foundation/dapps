@@ -1,3 +1,4 @@
+const plugin = require('tailwindcss/plugin');
 const defaultTheme = require('tailwindcss/defaultTheme');
 
 /** @type {import('tailwindcss').Config} */
@@ -131,5 +132,20 @@ module.exports = {
     container: false,
     // preflight: false,
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ addUtilities, addComponents, e, prefix, config }) {
+      const newUtilities = {
+        '.horizontal-tb': {
+          writingMode: 'horizontal-tb',
+        },
+        '.vertical-rl': {
+          writingMode: 'vertical-rl',
+        },
+        '.vertical-lr': {
+          writingMode: 'vertical-lr',
+        },
+      };
+      addUtilities(newUtilities);
+    }),
+  ],
 };

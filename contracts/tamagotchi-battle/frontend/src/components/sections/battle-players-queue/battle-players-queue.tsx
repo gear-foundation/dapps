@@ -5,20 +5,26 @@ import { useEffect, useRef, useState } from 'react';
 import { Icon } from 'components/ui/icon';
 import { useBattle } from 'app/context';
 import { useRefDimensions } from 'app/hooks/use-ref-dimensions';
+import { useIsLarge } from '../../../app/hooks/use-media';
 
 const SPACING = 8;
+const SPACING_MOBILE = 6;
 const CARD_WIDTH = 160;
+const CARD_WIDTH_MOBILE = 140;
 
 export const BattlePlayersQueue = () => {
   const { players } = useBattle();
   const [isSlider, setIsSlider] = useState(false);
   const ref = useRef<HTMLElement>(null);
   const [w] = useRefDimensions(ref);
+  const isFull = useIsLarge();
+
+  const width = isFull ? CARD_WIDTH : CARD_WIDTH_MOBILE;
+  const space = isFull ? SPACING : SPACING_MOBILE;
 
   useEffect(() => {
     setIsSlider(
-      players.length >
-        Math.floor(w / ((players.length * CARD_WIDTH + (players.length - 1) * SPACING) / players.length)),
+      players.length > Math.floor(w / ((players.length * width + (players.length - 1) * space) / players.length)),
     );
   }, [players, w]);
 
@@ -29,10 +35,10 @@ export const BattlePlayersQueue = () => {
       {isSlider ? (
         <QueueSlider />
       ) : (
-        <ul className="flex gap-4 justify-center">
+        <ul className="flex gap-3 xxl:gap-2 justify-center">
           {players.length > 0 &&
             players.map((item, i) => (
-              <li key={i} className="w-40" style={{ width: CARD_WIDTH }}>
+              <li key={i} className="w-35 xxl:w-40" style={{ width: width }}>
                 <TamagotchiQueueCard tamagotchi={item} />
               </li>
             ))}
@@ -55,9 +61,13 @@ const options: KeenSliderOptions = {
 const QueueSlider = () => {
   const { players } = useBattle();
   const [sliderRef, instanceRef] = useKeenSlider(options);
+  const isFull = useIsLarge();
+
+  const width = isFull ? CARD_WIDTH : CARD_WIDTH_MOBILE;
+  const space = isFull ? SPACING : SPACING_MOBILE;
 
   useEffect(() => {
-    instanceRef.current?.update(options);
+    instanceRef.current?.update({ ...options, slides: { perView: 'auto', spacing: space } });
   }, [instanceRef]);
 
   const handlePrev = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -83,8 +93,8 @@ const QueueSlider = () => {
       <ul ref={sliderRef} className="keen-slider !overflow-visible">
         {players.length > 0 &&
           players.map((item, i) => (
-            <li key={i} className="keen-slider__slide" style={{ width: CARD_WIDTH, minWidth: CARD_WIDTH }}>
-              <div className="w-40">
+            <li key={i} className="keen-slider__slide" style={{ width: width, minWidth: width }}>
+              <div className="w-35 xxl:w-40">
                 <TamagotchiQueueCard tamagotchi={item} />
               </div>
             </li>

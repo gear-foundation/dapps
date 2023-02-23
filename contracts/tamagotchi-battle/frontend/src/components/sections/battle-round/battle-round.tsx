@@ -1,6 +1,7 @@
 import { BattleRoundInfo } from 'components/sections/battle-round-info';
 import { BattleRoundStats } from 'components/sections/battle-round-stats';
 import { BattleRoundPlayers } from 'components/sections/battle-round-players';
+import { BattleRoundPairs } from '../battle-round-pairs';
 
 export const BattleRound = () => {
   return (
@@ -8,6 +9,8 @@ export const BattleRound = () => {
       <BattleRoundStats />
       <BattleRoundPlayers />
       <BattleRoundInfo />
+
+      <BattleRoundPairs />
     </section>
   );
 };

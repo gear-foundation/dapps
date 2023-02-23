@@ -49,7 +49,7 @@
   }
 
   .btn--primary {
-    @apply text-white bg-primary hover:bg-primary active:bg-primary transition-colors;
+    @apply text-white bg-primary hover:bg-[#168b4e] active:bg-green-800 transition-colors;
   }
 
   .btn--primary-outline {
@@ -96,4 +96,9 @@
   background: #ffffff;
   opacity: 0.7;
   filter: blur(50px);
+}
+
+.bg-battle-row {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
+  backdrop-filter: blur(4px);
 }

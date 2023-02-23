@@ -33,7 +33,7 @@ export function useInitBattleData() {
 
       const getRivals = () => {
         const result: BattleStatePlayer[] = [];
-        activePair.tmgIds.forEach((player, i) => {
+        activePair.tmgIds.forEach((player) => {
           if (state.players[player]) result.push(state.players[player]);
         });
         console.log({ rivals: result });
