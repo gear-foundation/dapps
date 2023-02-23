@@ -29,7 +29,7 @@ export const TamagotchiBattleInfoCard = ({ tamagotchi, isActive }: TamagotchiBat
         />
         <defs>
           <linearGradient id={tamagotchi.tmgId} x1="80" y1="0" x2="80" y2="246" gradientUnits="userSpaceOnUse">
-            <stop stopColor={dead ? '#f24a4a' : isActive ? '#16b768' : '#1852ff'} />
+            <stop stopColor={dead ? '#1852ff' : isActive ? '#16b768' : '#1852ff'} />
             <stop offset="1" stopColor="#29292B" stopOpacity="0" />
           </linearGradient>
         </defs>

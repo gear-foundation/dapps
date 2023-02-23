@@ -44,6 +44,7 @@ module.exports = {
         error: 'rgb(var(--color-error) / <alpha-value>)',
         'dark-500': 'rgb(var(--color-dark-500) / <alpha-value>)',
         light: 'rgb(var(--color-light) / <alpha-value>)',
+        'theme-blue': 'rgb(var(--theme-blue) / <alpha-value>)',
       },
       fontFamily: {
         kanit: ['Kanit', ...defaultTheme.fontFamily.sans],

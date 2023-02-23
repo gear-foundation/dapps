@@ -12,7 +12,7 @@ export const BattleRoundStats = () => {
       {battle && (
         <>
           <BattleRoundStatsAvatar tamagotchi={rivals[0]} />
-          {battle.state === 'GameIsOn' && (
+          {battle.state === 'GameIsOn' && !battle.pairs[currentPairIdx].gameIsOver && (
             <div className="relative shrink-0">
               <BattleTurnArrows isReverse={rivals[1].tmgId === currentPlayer} />
               {battle && battle.pairs[currentPairIdx].rounds >= 0 && (
@@ -34,19 +34,13 @@ export const BattleRoundStats = () => {
   );
 };
 
-const BattleTurnArrows = ({ isReverse }: { isReverse: boolean }) => (
-  <div className={clsx('relative flex', isReverse && 'rotate-180')}>
-    <Icon
-      name="battle-next-step"
-      className="w-8 xxl:w-10 aspect-[1/2] text-white animate-battle-turn-1 transition-opacity"
-    />
-    <Icon
-      name="battle-next-step"
-      className="w-8 xxl:w-10 aspect-[1/2] text-white animate-battle-turn-2 transition-opacity"
-    />
-    <Icon
-      name="battle-next-step"
-      className="w-8 xxl:w-10 aspect-[1/2] text-white animate-battle-turn-3 transition-opacity"
-    />
-  </div>
-);
+const BattleTurnArrows = ({ isReverse }: { isReverse: boolean }) => {
+  const cn = 'w-7.5 xxl:w-10 aspect-[1/2] text-white transition-opacity';
+  return (
+    <div className={clsx('relative flex', isReverse && 'rotate-180')}>
+      <Icon name="battle-next-step" className={clsx(cn, 'animate-battle-turn-1')} />
+      <Icon name="battle-next-step" className={clsx(cn, 'animate-battle-turn-2')} />
+      <Icon name="battle-next-step" className={clsx(cn, 'animate-battle-turn-3')} />
+    </div>
+  );
+};

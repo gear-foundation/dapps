@@ -15,7 +15,7 @@
   --dark: 34 36 36;
   --dark-600: 36 38 37;
   --light-grey: 222 222 222;
-  --blue: 24 82 255;
+  --theme-blue: 24 82 255;
   --blue-light: 42 94 250;
   --secondary-500: 240 240 240;
   --secondary-600: 227 227 227;
@@ -81,7 +81,7 @@
   }
 
   .btn--blue {
-    @apply text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 transition-colors;
+    @apply text-white bg-theme-blue hover:bg-blue-600 active:bg-blue-700 transition-colors;
   }
 
   .btn:disabled {
