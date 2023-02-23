@@ -71,7 +71,7 @@ export const TamagotchiAvatar = ({
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ ease: [0.1, 0.4, 0.8, 1], duration: 0.2 }}
+          transition={{ y: { ease: [0, 0.1, 0.1, 1], duration: 0.3 } }}
           className={clsx(
             'absolute top-1/4 w-12 h-12 grid place-items-center transition-[opacity,transform] pointer-events-none',
             reverse ? 'right-15' : 'left-15',

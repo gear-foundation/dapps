@@ -105,7 +105,7 @@ export const BattleTablePairs = () => {
 // }}
 
 const BattleTableList = () => {
-  const { battle } = useBattle();
+  const { battle, currentPairIdx } = useBattle();
   const [pairs, setPairs] = useState<PairData[]>([]);
 
   useEffect(() => {
@@ -133,9 +133,9 @@ const BattleTableList = () => {
     <ScrollArea.Root className="relative h-45 overflow-hidden pr-3 -mr-3" type="auto">
       <ScrollArea.Viewport className="w-full h-full">
         <ul className="leading-4 space-y-1.5">
-          {pairs.map((pair) => (
+          {pairs.map((pair, i) => (
             <li key={pair.id}>
-              <BattleTablePairsRow data={pair} />
+              <BattleTablePairsRow data={pair} isActive={i === currentPairIdx} />
             </li>
           ))}
         </ul>
@@ -155,11 +155,14 @@ const BattleTableList = () => {
   );
 };
 
-const BattleTablePairsRow = ({ data: { pair, players, idx } }: { data: PairData }) => {
+const BattleTablePairsRow = ({ data: { pair, players, idx }, isActive }: { data: PairData; isActive: boolean }) => {
   const { setCurrentPair } = useBattle();
   return (
     <button
-      className="flex items-center gap-2 w-full py-1 pr-2 pl-4 bg-battle-row hover:bg-white/5 transition-colors rounded-[30px] overflow-hidden"
+      className={clsx(
+        'flex items-center gap-2 w-full py-1 pr-2 pl-4 bg-gradient-to-b to-transparent transition-colors rounded-[30px] overflow-hidden',
+        isActive ? 'from-primary hover:bg-primary/15' : 'from-white/15 hover:bg-white/15',
+      )}
       onClick={() => setCurrentPair(idx)}>
       <span
         className={clsx(
@@ -184,15 +187,15 @@ const BattleTablePairsRow = ({ data: { pair, players, idx } }: { data: PairData 
           {players[1].name}
         </span>
       </span>
-      {pair.gameIsOver ? (
-        <span className="btn py-1.5 px-4 text-[12px] leading-none uppercase tracking-[.04em] font-kanit italic">
-          Finished
-        </span>
-      ) : (
-        <span className="btn bg-primary py-1.5 px-4 text-[12px] leading-none uppercase tracking-[.04em] font-kanit">
-          ongoing
-        </span>
-      )}
+      <span className="inline-flex justify-center items-center ml-auto min-w-[90px] text-center uppercase tracking-[.04em] font-kanit">
+        {isActive ? (
+          <span className="btn py-1.5 px-4 text-[12px] leading-none italic">Live</span>
+        ) : pair.gameIsOver ? (
+          <span className="btn py-1.5 px-4 text-[12px] leading-none italic">Finished</span>
+        ) : (
+          <span className="btn py-1.5 px-4 text-[12px] leading-none bg-primary">ongoing</span>
+        )}
+      </span>
     </button>
   );
 };

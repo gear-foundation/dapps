@@ -2,6 +2,8 @@ import clsx from 'clsx';
 import { BattleRoundStatsAvatar } from 'components/sections/battle-round-stats-avatar';
 import { Icon } from 'components/ui/icon';
 import { useBattle } from 'app/context';
+import { Countdown } from './counter';
+import dayjs from 'dayjs';
 
 export const BattleRoundStats = () => {
   const { rivals, currentPlayer, battle, currentPairIdx } = useBattle();
@@ -14,9 +16,14 @@ export const BattleRoundStats = () => {
             <div className="relative shrink-0">
               <BattleTurnArrows isReverse={rivals[1].tmgId === currentPlayer} />
               {battle && battle.pairs[currentPairIdx].rounds >= 0 && (
-                <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 whitespace-nowrap">
-                  Round: {battle.pairs[currentPairIdx].rounds + 1}
-                </span>
+                <div className="absolute top-full left-1/2 -translate-x-1/2 flex flex-col mt-1.5 whitespace-nowrap">
+                  <p className="flex flex-col gap-1.5 text-center">
+                    <span className="font-semibold uppercase text-[#D2D2D3] text-opacity-60 tracking-[.04em]">
+                      Time left
+                    </span>
+                    <Countdown endTime={dayjs(battle.pairs[currentPairIdx].moveDeadline)} />
+                  </p>
+                </div>
               )}
             </div>
           )}

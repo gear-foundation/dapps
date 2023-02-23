@@ -6,7 +6,6 @@ import { useBattleMessage } from 'app/hooks/use-battle';
 import { useEffect, useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
-import { json } from 'react-router-dom';
 
 export const BattleRoundPlayers = () => {
   const { isPending, setIsPending, isAdmin } = useApp();
@@ -29,11 +28,11 @@ export const BattleRoundPlayers = () => {
   };
   const onAttack = () => {
     setIsPending(true);
-    handleMessage({ MakeMove: { [currentPairIdx]: { Attack: null } } }, { onSuccess, onError });
+    handleMessage({ MakeMove: { pair_id: currentPairIdx, tmg_move: { Attack: null } } }, { onSuccess, onError });
   };
   const onDefence = () => {
     setIsPending(true);
-    handleMessage({ MakeMove: { [currentPairIdx]: { Defence: null } } }, { onSuccess, onError });
+    handleMessage({ MakeMove: { pair_id: currentPairIdx, tmg_move: { Defence: null } } }, { onSuccess, onError });
   };
 
   return (
@@ -52,7 +51,10 @@ export const BattleRoundPlayers = () => {
         />
       </div>
       <div className="absolute top-1/2 left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 w-full max-w-[250px]">
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center gap-2">
+          <p className="font-semibold uppercase text-[#D2D2D3] text-opacity-60 text-center tracking-[.04em]">
+            Round: {battle && battle.pairs[currentPairIdx].rounds + 1}
+          </p>
           <p className="text-2xl leading-normal xxl:typo-h2 truncate max-w-[13ch] font-bold">
             {currentPlayer && battle?.players[currentPlayer].name}
           </p>
