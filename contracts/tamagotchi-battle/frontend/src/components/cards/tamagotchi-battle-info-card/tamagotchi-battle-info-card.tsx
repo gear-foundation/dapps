@@ -35,7 +35,9 @@ export const TamagotchiBattleInfoCard = ({ tamagotchi, isActive }: TamagotchiBat
         </defs>
       </svg>
 
-      {dead && <Icon name="message-rip" width={25} height={25} className="absolute top-10 right-2" />}
+      {dead && (
+        <Icon name="message-rip" className="absolute top-6 right-3 xxl:top-10 xxl:right-2 w-5 xxl:w-6 h-5 xxl:h-6" />
+      )}
       <div
         className={clsx(
           'relative w-15 xxl:w-24 aspect-square m-auto rounded-full overflow-hidden ring-4 ring-opacity-10',

@@ -77,7 +77,7 @@
   }
 
   .btn--error {
-    @apply text-white bg-red-500 hover:bg-red-600 active:bg-red-700 transition-colors
+    @apply text-white bg-tertiary hover:bg-red-600 active:bg-red-700 transition-colors
   }
 
   .btn--blue {

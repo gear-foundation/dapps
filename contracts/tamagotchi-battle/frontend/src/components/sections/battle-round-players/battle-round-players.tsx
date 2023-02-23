@@ -6,11 +6,12 @@ import { useBattleMessage } from 'app/hooks/use-battle';
 import { useEffect, useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
+import { json } from 'react-router-dom';
 
 export const BattleRoundPlayers = () => {
   const { isPending, setIsPending, isAdmin } = useApp();
   const { account } = useAccount();
-  const { rivals, currentPlayer, roundDamage, battle } = useBattle();
+  const { rivals, currentPlayer, currentPairIdx, roundDamage, battle } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
 
@@ -28,11 +29,11 @@ export const BattleRoundPlayers = () => {
   };
   const onAttack = () => {
     setIsPending(true);
-    handleMessage({ MakeMove: { Attack: null } }, { onSuccess, onError });
+    handleMessage({ MakeMove: { [currentPairIdx]: { Attack: null } } }, { onSuccess, onError });
   };
   const onDefence = () => {
     setIsPending(true);
-    handleMessage({ MakeMove: { Defence: null } }, { onSuccess, onError });
+    handleMessage({ MakeMove: { [currentPairIdx]: { Defence: null } } }, { onSuccess, onError });
   };
 
   return (
@@ -47,6 +48,7 @@ export const BattleRoundPlayers = () => {
           isDead={!rivals[0].health}
           damage={roundDamage ? Math.round(roundDamage[1] / 25) : 0}
           action={roundDamage && roundDamage[3]}
+          asPlayer
         />
       </div>
       <div className="absolute top-1/2 left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 w-full max-w-[250px]">
@@ -72,7 +74,7 @@ export const BattleRoundPlayers = () => {
             <>
               <button
                 className={clsx(
-                  'btn items-center gap-2 w-full bg-error text-white hover:bg-red-600 transition-colors',
+                  'btn btn--error items-center gap-2 w-full bg-error text-white transition-colors',
                   buttonStyles.button,
                 )}
                 onClick={onAttack}
@@ -100,6 +102,7 @@ export const BattleRoundPlayers = () => {
           damage={roundDamage ? Math.round(roundDamage[2] / 25) : 0}
           action={roundDamage && roundDamage[4]}
           reverse
+          asPlayer
         />
       </div>
     </div>

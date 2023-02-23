@@ -45,7 +45,9 @@ export const BattleTableChampions = () => {
       }}
       transition={{ delay: 0.5 }}>
       <motion.div className="flex w-full overflow-hidden" animate={controls} variants={panel} transition={transition}>
-        <button className="inline-flex self-start my-10 px-2.5 py-8 btn--red bg-red rounded-l-[6px]" onClick={onClick}>
+        <button
+          className="inline-flex self-start my-10 px-2.5 py-8 btn--error bg-tertiary rounded-l-[6px]"
+          onClick={onClick}>
           <span className="flex items-center gap-2.5 vertical-lr -rotate-180">
             <Icon name="double-arrows" className={clsx('w-4 h-4 text-white', !isActive && 'rotate-180')} />
             <span className="font-kanit font-semibold uppercase tracking-[0.04em]">Show champions</span>
@@ -55,9 +57,11 @@ export const BattleTableChampions = () => {
 
         <section
           ref={ref}
-          className="relative grow p-8 px-6 border-2 border-r-transparent border-red rounded-l-[20px] shadow after:absolute after:inset-0 after:-z-2 after:bg-[#1D1D1D] after:rounded-l-[20px]">
+          className="relative grow p-8 px-6 border-2 border-r-transparent border-tertiary rounded-l-[20px] shadow after:absolute after:inset-0 after:-z-2 after:bg-[#1D1D1D] after:rounded-l-[20px]">
           <div className="relative space-y-4">
-            <h2 className="text-[28px] leading-8 text-red font-kanit font-semibold tracking-[0.02em]">Champions</h2>
+            <h2 className="text-[28px] leading-8 text-tertiary font-kanit font-semibold tracking-[0.02em]">
+              Champions
+            </h2>
             <div className="flex items-center justify-between gap-5 px-4 text-xs leading-6 font-kanit tracking-[0.08em] text-white/60 uppercase bg-white/5 rounded-[30px]">
               <span>Player</span>
               <span>Kills</span>
@@ -79,7 +83,7 @@ export const BattleTableChampions = () => {
               },
             }}
             aria-hidden>
-            <Icon name="decorative-bubble" className="w-full aspect-[306/48] text-red opacity-80" />
+            <Icon name="decorative-bubble" className="w-full aspect-[306/48] text-tertiary opacity-80" />
           </motion.div>
         </section>
       </motion.div>
@@ -89,20 +93,6 @@ export const BattleTableChampions = () => {
 
 const BattleTableList = () => {
   const { players } = useBattle();
-
-  useEffect(() => {
-    const arr = [
-      { name: 'test1', k: 0 },
-      { name: 'test2', k: 1 },
-      { name: 'test3', k: 0 },
-      { name: 'test4', k: 0 },
-      { name: 'test5', k: 1 },
-    ];
-
-    // const test = players.sort((p, c) => p.victories - c.victories);
-    const test = arr.sort((p, c) => c.k - p.k);
-    console.log({ test });
-  }, [players]);
 
   return (
     <ScrollArea.Root className="relative h-45 overflow-hidden pr-3 -mr-3" type="auto">
@@ -137,7 +127,7 @@ const BattleTablePairsRow = ({ player, position }: { player: BattleStatePlayer; 
     <div
       className={clsx(
         'flex items-center gap-4 w-full py-1 px-4 rounded-[30px] overflow-hidden',
-        player.victories > 0 && position < 3 ? 'bg-gradient-to-b from-red to-transparent' : 'bg-white/10',
+        player.victories > 0 && position < 3 ? 'bg-gradient-to-b from-tertiary to-transparent' : 'bg-white/10',
       )}>
       <Icon
         name={
