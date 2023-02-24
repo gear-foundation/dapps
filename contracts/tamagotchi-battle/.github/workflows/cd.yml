@@ -48,7 +48,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:stage
           build-args: |
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            REACT_APP_BATTLE_ADDRESS=${{ secrets.REACT_APP_BATTLE_ADDRESS }}
+            REACT_APP_BATTLE_ADDRESS=${{ secrets.REACT_APP_BATTLE_ADDRESS_STAGE }}
   
   deploy-tamagotchi-k8s:
     needs: [build-and-push-tamagotchi-image]
