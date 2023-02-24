@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git",features = ["debug"], branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git",features = ["debug"], branch = "testnet" }
 codec = { package = "parity-scale-codec", version = "3.2.1", default-features = false }
 battle-io = { path = "io" }
 tmg-io = { path = "../tamagotchi/io" }
@@ -12,12 +12,12 @@ scale-info = { version = "2.0.1", default-features = false, features = ["derive"
 hex-literal = "0.3.4"
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git"}
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet"}
 battle-io = { path = "io" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable"}
-gclient = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet"}
+gclient = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 tokio = "1"
 hex = "0.4"
 battle-state = { path = "state" }

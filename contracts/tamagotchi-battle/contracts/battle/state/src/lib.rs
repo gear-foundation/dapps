@@ -4,10 +4,10 @@ use gmeta::metawasm;
 use gstd::{prelude::*, ActorId};
 
 #[metawasm]
-pub trait Metawasm {
-    type State = Battle;
+pub mod metafns {
+    pub type State = Battle;
 
-    fn player(tmg_id: ActorId, state: Self::State) -> Player {
+    pub fn player(state: State, tmg_id: ActorId) -> Player {
         state
             .players
             .get(&tmg_id)
@@ -15,7 +15,7 @@ pub trait Metawasm {
             .clone()
     }
 
-    fn power_and_health(tmg_id: ActorId, state: Self::State) -> (u16, u16) {
+    pub fn power_and_health(state: State, tmg_id: ActorId) -> (u16, u16) {
         let player = state
             .players
             .get(&tmg_id)
@@ -24,11 +24,11 @@ pub trait Metawasm {
         (player.power, player.health)
     }
 
-    fn round(state: Self::State) -> Round {
+    pub fn round(state: State) -> Round {
         state.round
     }
 
-    fn battle_state(state: Self::State) -> BattleState {
+    pub fn battle_state(state: State) -> BattleState {
         state.state
     }
 }
