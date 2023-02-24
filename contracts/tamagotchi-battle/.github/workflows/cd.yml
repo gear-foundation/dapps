@@ -2,7 +2,7 @@ name: Deploy tamagotchi to k8s stage
 
 on:
   push:
-    branches: ['master']
+    branches: ['staging']
   workflow_dispatch:
 
 env:
@@ -45,7 +45,7 @@ jobs:
         with:
           file: frontend/Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:stage
           build-args: |
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
             REACT_APP_BATTLE_ADDRESS=${{ secrets.REACT_APP_BATTLE_ADDRESS }}
@@ -65,4 +65,4 @@ jobs:
       - name: Deploy to k8s
         uses: sergeyfilyanin/kubectl-aws-eks@master
         with:
-          args: rollout restart deployment tamagotchi -n $KUBE_NAMESPACE
+          args: rollout restart deployment tamagotchi-stage -n $KUBE_NAMESPACE
