@@ -1,15 +1,41 @@
 [package]
-name = "app"
-version = "0.1.0"
-edition = "2021"
-license = "MIT"
+name = "rentable-nft"
+version = "0.2.7"
 authors = ["Gear Technologies"]
+edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+primitive-types = { version = "0.12.1", default-features = false }
+nft-io = { path = "io" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.5" }
+gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.5" }
+
+sp-core-hashing = { version = "6.0.0", default-features = false }
+hashbrown = "0.13.1"
+gmeta = { git = "https://github.com/gear-tech/gear", branch = "testnet" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "testnet" }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+hex-literal = "0.3.4"
+sp-core = { git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
+blake2-rfc = { version = "0.2.18", default-features = false }
+# TODO! Uncomment after fix gclient pipeline
+#gclient = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+#tokio = { version = "1.23.0", features = ["full"] }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+nft-io = { path = "io" }
+
+[features]
+# Used for inserting constants with WASM binaries (NOT paths) of the contract in
+# the root crate. Usually these constants used in gclient tests instead of
+# strings with paths to the binaries in the "target" directory. If you don't
+# like this approach or don't use gclient tests, you can freely remove this
+# feature from here and from the rest of the code.
+binary-vendor = []
+
+[workspace]
+members = ["state"]
