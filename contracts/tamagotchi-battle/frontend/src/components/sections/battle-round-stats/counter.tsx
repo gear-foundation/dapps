@@ -1,42 +1,59 @@
-import dayjs, { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { useBattle } from 'app/context';
 
 dayjs.extend(duration);
 
-interface CountdownProps {
-  endTime: Dayjs;
-}
-
-export const Countdown = ({ endTime }: CountdownProps) => {
+export const Countdown = () => {
   const [time, setTime] = useState<string>('00');
+  const { battle, currentPairIdx } = useBattle();
+  const timer = useRef<NodeJS.Timer | undefined>(undefined);
+  const prevTime = useRef<number | undefined>(undefined);
 
   useEffect(() => {
-    const ms = 1000;
-    const now = dayjs();
-    const delta = endTime.unix() - now.unix();
-    const diff = dayjs.duration(delta * 1000, 'milliseconds');
-    const twoDP = (n: number) => (n > 9 ? n : '0' + n);
+    console.log({ time });
+  }, [time]);
 
-    let interval: NodeJS.Timer | undefined;
+  useEffect(() => {
+    if (battle) {
+      const deadline = battle.pairs[currentPairIdx].moveDeadline;
+      const ms = 1000;
+      const getDiff = () => dayjs.duration(dayjs(deadline).diff(dayjs()));
+      const toSeconds = (n: number) => {
+        const N = Math.abs(n);
+        return N < 10 ? `0${N}` : `${N}`;
+      };
 
-    if (diff.seconds() > 0) {
-      interval = setInterval(function () {
-        const duration = dayjs.duration(diff.asMilliseconds() - ms, 'milliseconds');
-        const sec = duration.seconds();
+      if (prevTime.current !== deadline) {
+        console.log('time is not equal');
+        if (getDiff().seconds() > 0 && !timer.current) {
+          timer.current = setInterval(function () {
+            console.log('timer counts');
+            const d = getDiff();
 
-        if (sec <= 0) {
-          clearInterval(interval);
-          setTime(`00`);
-        } else setTime(`${twoDP(sec)}`);
-      }, ms);
+            if (d.asMilliseconds() <= 0) {
+              clearInterval(timer.current);
+              setTime(`00`);
+              return;
+            }
+
+            console.log(d.seconds());
+            setTime(toSeconds(d.seconds()));
+          }, ms);
+        } else setTime(`00`);
+
+        prevTime.current = deadline;
+      }
     }
 
     return () => {
-      setTime('00');
-      interval && clearInterval(interval);
+      if (timer.current) {
+        setTime('00');
+        clearInterval(timer.current);
+      }
     };
-  }, [endTime]);
+  }, [battle, currentPairIdx]);
 
   return (
     <span className="inline-flex gap-1 font-kanit font-medium text-[28px] xxl:text-[40px] leading-none text-white text-center">

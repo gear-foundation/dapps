@@ -31,18 +31,22 @@ export function useInitBattleData() {
       console.log({ state });
       setIsAdmin(state.admin === account.decodedAddress);
 
-      const getRivals = () => {
-        const result: BattleStatePlayer[] = [];
-        activePair.tmgIds.forEach((player) => {
-          if (state.players[player]) result.push(state.players[player]);
-        });
-        console.log({ rivals: result });
-        return result;
-      };
+      const players = Object.values(state.players);
+      players && setPlayers(players);
 
-      setPlayers(Object.values(state.players));
-      setRivals(getRivals());
-      setCurrentPlayer(activePair.tmgIds[activePair.moves.length > 0 ? 1 : 0]);
+      if (activePair) {
+        const getRivals = () => {
+          const result: BattleStatePlayer[] = [];
+          activePair.tmgIds.forEach((player) => {
+            if (state.players[player]) result.push(state.players[player]);
+          });
+          console.log({ rivals: result });
+          return result;
+        };
+
+        setRivals(getRivals());
+        setCurrentPlayer(activePair.tmgIds[activePair.moves.length > 0 ? 1 : 0]);
+      }
     } else {
       setIsAdmin(false);
       setPlayers([]);
@@ -89,7 +93,7 @@ export function useInitBattleData() {
   useEffect(() => {
     if (state) {
       const activePair = Object.values(state.pairs)[currentPairIdx];
-      if (activePair.rounds && !activePair.moves.length) {
+      if (activePair && activePair.rounds && !activePair.moves.length) {
         // console.log('show damage');
       } else {
         if (roundDamage) {

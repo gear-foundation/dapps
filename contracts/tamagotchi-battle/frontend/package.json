@@ -21,6 +21,7 @@
     "@polkadot/types": "9.14.2",
     "@polkadot/util": "10.4.2",
     "@polkadot/wasm-crypto": "6.4.1",
+    "@radix-ui/react-scroll-area": "1.0.2",
     "clsx": "1.2.1",
     "dayjs": "1.11.7",
     "framer-motion": "9.0.7",

@@ -8,7 +8,7 @@ import { getTamagotchiColor } from 'app/utils/get-tamagotchi-color';
 import { motion } from 'framer-motion';
 
 const transition = {
-  duration: 0.8,
+  duration: 1,
   delay: 0.5,
   ease: [0, 0.71, 0.2, 1.01],
 };
@@ -51,7 +51,7 @@ export const TamagotchiAvatar = ({
   const tamagotchiAge = getTamagotchiAgeDiff(age);
 
   const s = 'tamagotchi';
-  const cn = 'absolute inset-0 w-auto h-full aspect-square';
+  const cn = 'absolute inset-0 w-auto h-full max-w-full aspect-square';
   const emo: TamagotchiAvatarEmotions = isDead ? 'scared' : isWinner ? 'hello' : emotion;
   const mouse = tamagotchiAge === 'baby' ? 'face-baby' : `mouse-${tamagotchiAge}-${emo === 'hello' ? 'happy' : emo}`;
   const head = `head-${tamagotchiAge}`;
@@ -74,7 +74,7 @@ export const TamagotchiAvatar = ({
       <Icon name={body} section={s} className={cn} />
       {hasItem?.includes('bag') && <Icon name="body-bag" section={s} className={cn} />}
       <Icon name={head} section={s} className={cn} />
-      <Icon name={mouse} section={s} className="relative w-auto h-full aspect-square" />
+      <Icon name={mouse} section={s} className="relative w-auto h-full max-w-full aspect-square" />
       <Icon name={eye} section={s} className={clsx(cn, 'text-[#16B768]')} />
       {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
       {!isDead && glasses && <Icon name={glasses} section={s} className={cn} />}
@@ -98,13 +98,13 @@ export const TamagotchiAvatar = ({
           <Icon name="death" section={s} className="relative z-1 w-[45%] aspect-square text-white" />
         </motion.div>
       )}
-      {!isDead && !isWinner && damage && (
+      {!isDead && !isWinner && !!damage && (
         <motion.div
           variants={variants}
           // initial={{ opacity: 0, y: 50 }}
           animate="center"
           exit="exit"
-          transition={{ ...transition, delay: 0.7 }}
+          transition={{ ...transition }}
           className={clsx(
             'absolute top-1/4 w-12 h-12 grid place-items-center pointer-events-none',
             reverse ? 'right-[10%]' : 'left-[10%]',
@@ -124,12 +124,16 @@ export const TamagotchiAvatar = ({
           // initial={{ opacity: 0, y: 50 }}
           animate="center"
           exit="exit"
-          transition={{ ...transition, delay: 0.7 }}
-          className={clsx(
-            'absolute top-0 left-1/2 -translate-x-1/2 py-0.5 px-4 leading-4 rounded-full text-white pointer-events-none',
-            action === 'Defence' ? 'bg-theme-blue' : 'bg-tertiary',
-          )}>
-          <span className="font-bold">{action}</span>
+          transition={{ ...transition, delay: 1 }}
+          className="absolute -top-4 inset-0 h-fit leading-4 text-center text-white"
+          aria-hidden>
+          <span
+            className={clsx(
+              'inline-flex py-0.5 px-4 font-bold rounded-full',
+              action === 'Defence' ? 'bg-theme-blue' : 'bg-tertiary',
+            )}>
+            {action}
+          </span>
         </motion.div>
       )}
     </div>

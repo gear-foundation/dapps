@@ -36,7 +36,7 @@ export const BattleRoundPlayers = () => {
   };
 
   const cnWrapper = 'relative flex flex-col';
-  const cnT = 'grow h-full mx-auto w-fit';
+  const cnT = 'grow h-full mx-auto w-fit max-w-full';
 
   return (
     <>
@@ -62,7 +62,7 @@ export const BattleRoundPlayers = () => {
                   <p className="font-semibold uppercase text-[#D2D2D3] text-opacity-60 text-center tracking-[.04em]">
                     Round: {battle && battle.pairs[currentPairIdx].rounds + 1}
                   </p>
-                  <p className="text-2xl leading-none xxl:typo-h2 truncate max-w-[13ch] font-bold">
+                  <p className="text-2xl leading-tight xxl:typo-h2 truncate max-w-[13ch] font-bold">
                     {currentPlayer && battle.players[currentPlayer].name}
                   </p>
                 </>

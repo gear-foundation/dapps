@@ -21,7 +21,7 @@ export const BattleRoundStats = () => {
                     <span className="font-semibold uppercase text-[#D2D2D3] text-opacity-60 tracking-[.04em]">
                       Time left
                     </span>
-                    <Countdown endTime={dayjs(battle.pairs[currentPairIdx].moveDeadline)} />
+                    <Countdown />
                   </p>
                 </div>
               )}
