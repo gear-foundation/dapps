@@ -24,7 +24,7 @@ export const BattleRoundPlayers = () => {
   const onError = () => setIsPending(false);
   const onNewRound = () => {
     setIsPending(true);
-    handleMessage({ StartNewRound: null }, { onSuccess, onError });
+    handleMessage({ StartBattle: null }, { onSuccess, onError });
   };
   const onAttack = () => {
     setIsPending(true);

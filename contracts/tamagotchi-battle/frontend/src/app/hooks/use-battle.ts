@@ -7,7 +7,7 @@ import metaBattle from 'assets/meta/meta-battle.txt';
 import { ENV } from 'app/consts';
 import type { UnsubscribePromise } from '@polkadot/api/types';
 import type { UserMessageSent } from '@gear-js/api';
-import { useSendMessage } from './useSendMessage';
+import { useSendMessage } from './use-send-message';
 import { RoundDamageType } from 'app/types/battles';
 
 function useReadBattleState<T>() {

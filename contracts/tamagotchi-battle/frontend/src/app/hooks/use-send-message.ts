@@ -15,7 +15,8 @@ type SendMessageOptions = {
 };
 
 const getAutoGasLimit = ({ waited, min_limit }: GasInfo) => {
-  return waited ? min_limit.add(min_limit.mul(bnToBn(0.3))) : min_limit.add(min_limit.mul(bnToBn(0.2)));
+  return min_limit;
+  // return waited ? min_limit.add(min_limit.mul(bnToBn(0.3))) : min_limit.add(min_limit.mul(bnToBn(0.2)));
 };
 
 export function useSendMessage(destination: HexString, metadata: ProgramMetadata | undefined) {
@@ -62,27 +63,31 @@ export function useSendMessage(destination: HexString, metadata: ProgramMetadata
       const { address, decodedAddress, meta } = account;
       const { source } = meta;
 
-      api.program.calculateGas
-        .handle(decodedAddress, destination, payload, value, isOtherPanicsAllowed, metadata)
-        .then(getAutoGasLimit)
-        .then((gasLimit) => ({ destination, gasLimit, payload, value }))
-        .then(
-          (message) =>
-            api.message.send(
-              {
-                ...message,
-                gasLimit: bnToBn(250_000_000_000),
-              },
-              metadata,
-            ) && web3FromSource(source),
-        )
-        .then(({ signer }) =>
-          api.message.signAndSend(address, { signer }, (result) => handleStatus(result, onSuccess, onError)),
-        )
-        .catch(({ message }: Error) => {
-          alert.update(loadingAlertId.current, message, DEFAULT_ERROR_OPTIONS);
-          onError && onError();
-        });
+      // api.program.calculateGas
+      //   .handle(decodedAddress, destination, payload, value, isOtherPanicsAllowed, metadata)
+      //   .then(getAutoGasLimit)
+      //   .then((gasLimit) => ({ destination, gasLimit, payload, value }))
+      //   .then(
+      //     (message) =>
+      //       ,
+      //   )
+
+      api.message.send(
+        {
+          destination,
+          payload,
+          gasLimit: bnToBn(250_000_000_000),
+        },
+        metadata,
+      ) &&
+        web3FromSource(source)
+          .then(({ signer }) =>
+            api.message.signAndSend(address, { signer }, (result) => handleStatus(result, onSuccess, onError)),
+          )
+          .catch(({ message }: Error) => {
+            alert.update(loadingAlertId.current, message, DEFAULT_ERROR_OPTIONS);
+            onError && onError();
+          });
     }
   };
 }
