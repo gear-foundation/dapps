@@ -5,14 +5,14 @@ use gstd::{prelude::*, ActorId};
 use router_io::*;
 
 #[metawasm]
-pub trait Metawasm {
-    type State = <RouterMetadata as Metadata>::State;
+pub mod metafns {
+    pub type State = <RouterMetadata as Metadata>::State;
 
-    fn all_channels(state: Self::State) -> Vec<Channel> {
+    pub fn all_channels(state: State) -> Vec<Channel> {
         state.channels.iter().map(|(_, c)| c.clone()).collect()
     }
 
-    fn channel(id: ActorId, state: Self::State) -> Channel {
+    pub fn channel(state: State, id: ActorId) -> Channel {
         let (_, channel) = state
             .channels
             .iter()
@@ -22,7 +22,7 @@ pub trait Metawasm {
         channel.clone()
     }
 
-    fn subscribed_to_channels(id: ActorId, state: Self::State) -> Vec<ActorId> {
+    pub fn subscribed_to_channels(state: State, id: ActorId) -> Vec<ActorId> {
         let (_, subs) = state
             .subscribers
             .iter()

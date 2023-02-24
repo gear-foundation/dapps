@@ -5,10 +5,10 @@ use gmeta::{metawasm, Metadata};
 use gstd::prelude::*;
 
 #[metawasm]
-pub trait Metawasm {
-    type State = <ChannelMetadata as Metadata>::State;
+pub mod metafns {
+    pub type State = <ChannelMetadata as Metadata>::State;
 
-    fn all_messages(state: Self::State) -> Vec<Message> {
+    pub fn all_messages(state: State) -> Vec<Message> {
         state.messages
     }
 }

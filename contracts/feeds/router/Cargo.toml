@@ -5,13 +5,13 @@ authors = ["Gear Technologies"]
 edition = "2018"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["debug"] }
 router-io = { path = "io" }
 hashbrown = "0.13.1" 
 
 [build-dependencies]
 router-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in
