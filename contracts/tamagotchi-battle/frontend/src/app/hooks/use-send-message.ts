@@ -72,22 +72,23 @@ export function useSendMessage(destination: HexString, metadata: ProgramMetadata
       //       ,
       //   )
 
-      api.message.send(
-        {
-          destination,
-          payload,
-          gasLimit: bnToBn(250_000_000_000),
-        },
-        metadata,
-      ) &&
-        web3FromSource(source)
-          .then(({ signer }) =>
-            api.message.signAndSend(address, { signer }, (result) => handleStatus(result, onSuccess, onError)),
-          )
-          .catch(({ message }: Error) => {
-            alert.update(loadingAlertId.current, message, DEFAULT_ERROR_OPTIONS);
-            onError && onError();
-          });
+      Promise.resolve(
+        api.message.send(
+          {
+            destination,
+            payload,
+            gasLimit: bnToBn(250_000_000_000),
+          },
+          metadata,
+        ) && web3FromSource(source),
+      )
+        .then(({ signer }) =>
+          api.message.signAndSend(address, { signer }, (result) => handleStatus(result, onSuccess, onError)),
+        )
+        .catch(({ message }: Error) => {
+          alert.update(loadingAlertId.current, message, DEFAULT_ERROR_OPTIONS);
+          onError && onError();
+        });
     }
   };
 }
