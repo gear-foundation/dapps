@@ -57,3 +57,8 @@ export const getAttributesById = (state: ItemsStoreResponse | undefined, ids: nu
   }
   return result;
 };
+
+export const toSeconds = (n: number) => {
+  const N = Math.abs(n);
+  return N < 10 ? `0${N}` : `${N}`;
+};

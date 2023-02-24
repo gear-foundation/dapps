@@ -188,10 +188,10 @@ const BattleTablePairsRow = ({ data: { pair, players, idx }, isActive }: { data:
         </span>
       </span>
       <span className="inline-flex justify-center items-center ml-auto min-w-[90px] text-center uppercase tracking-[.04em] font-kanit">
-        {isActive ? (
-          <span className="btn py-1.5 px-4 text-[12px] leading-none italic">Live</span>
-        ) : pair.gameIsOver ? (
+        {pair.gameIsOver ? (
           <span className="btn py-1.5 px-4 text-[12px] leading-none italic">Finished</span>
+        ) : isActive ? (
+          <span className="btn py-1.5 px-4 text-[12px] leading-none italic">Live</span>
         ) : (
           <span className="btn py-1.5 px-4 text-[12px] leading-none bg-primary">ongoing</span>
         )}

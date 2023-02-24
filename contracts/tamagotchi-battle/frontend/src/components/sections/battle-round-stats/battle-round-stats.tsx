@@ -3,7 +3,6 @@ import { BattleRoundStatsAvatar } from 'components/sections/battle-round-stats-a
 import { Icon } from 'components/ui/icon';
 import { useBattle } from 'app/context';
 import { Countdown } from './counter';
-import dayjs from 'dayjs';
 
 export const BattleRoundStats = () => {
   const { rivals, currentPlayer, battle, currentPairIdx } = useBattle();
@@ -15,14 +14,9 @@ export const BattleRoundStats = () => {
           {battle.state === 'GameIsOn' && !battle.pairs[currentPairIdx].gameIsOver && (
             <div className="relative shrink-0">
               <BattleTurnArrows isReverse={rivals[1].tmgId === currentPlayer} />
-              {battle && battle.pairs[currentPairIdx].rounds >= 0 && (
+              {battle && battle.pairs[currentPairIdx].moveDeadline && (
                 <div className="absolute top-full left-1/2 -translate-x-1/2 flex flex-col mt-1.5 whitespace-nowrap">
-                  <p className="flex flex-col gap-1.5 text-center">
-                    <span className="font-semibold uppercase text-[#D2D2D3] text-opacity-60 tracking-[.04em]">
-                      Time left
-                    </span>
-                    <Countdown />
-                  </p>
+                  <Countdown />
                 </div>
               )}
             </div>

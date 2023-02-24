@@ -40,7 +40,7 @@ export function useInitBattleData() {
           activePair.tmgIds.forEach((player) => {
             if (state.players[player]) result.push(state.players[player]);
           });
-          console.log({ rivals: result });
+          // console.log({ rivals: result });
           return result;
         };
 
