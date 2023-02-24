@@ -5,14 +5,14 @@ use gear_lib::non_fungible_token::{
     token::{Token, TokenId},
 };
 use gmeta::{metawasm, Metadata};
-use gstd::{ActorId, ToString, Vec};
+use gstd::{ActorId, Vec};
 use nft_io::NFTMetadata;
 
 #[metawasm]
-pub trait Metawasm {
-    type State = <NFTMetadata as Metadata>::State;
+pub mod metafns {
+    pub type State = <NFTMetadata as Metadata>::State;
 
-    fn info(state: Self::State) -> NFTQueryReply {
+    pub fn info(state: State) -> NFTQueryReply {
         NFTQueryReply::NFTInfo {
             name: state.token.name.clone(),
             symbol: state.token.symbol.clone(),
@@ -20,11 +20,11 @@ pub trait Metawasm {
         }
     }
 
-    fn token(token_id: TokenId, state: Self::State) -> Token {
+    pub fn token(state: State, token_id: TokenId) -> Token {
         token_helper(&token_id, &state)
     }
 
-    fn tokens_for_owner(owner: ActorId, state: Self::State) -> Vec<Token> {
+    pub fn tokens_for_owner(state: State, owner: ActorId) -> Vec<Token> {
         let mut tokens: Vec<Token> = Vec::new();
         if let Some((_owner, token_ids)) = state
             .token
@@ -38,11 +38,11 @@ pub trait Metawasm {
         }
         tokens
     }
-    fn total_supply(state: Self::State) -> u128 {
+    pub fn total_supply(state: State) -> u128 {
         state.token.owner_by_id.len() as u128
     }
 
-    fn supply_for_owner(owner: ActorId, state: Self::State) -> u128 {
+    pub fn supply_for_owner(state: State, owner: ActorId) -> u128 {
         let tokens = state
             .token
             .tokens_for_owner
@@ -54,7 +54,7 @@ pub trait Metawasm {
             .unwrap_or(0)
     }
 
-    fn all_tokens(state: Self::State) -> Vec<Token> {
+    pub fn all_tokens(state: State) -> Vec<Token> {
         state
             .token
             .owner_by_id
@@ -63,7 +63,7 @@ pub trait Metawasm {
             .collect()
     }
 
-    fn approved_tokens(account: ActorId, state: Self::State) -> Vec<Token> {
+    pub fn approved_tokens(state: State, account: ActorId) -> Vec<Token> {
         state
             .token
             .owner_by_id
