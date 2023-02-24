@@ -28,8 +28,8 @@ export function useSendMessage(destination: HexString, metadata: ProgramMetadata
 
   const handleEventsStatus = (events: EventRecord[], onSuccess?: () => void, onError?: () => void) => {
     events.forEach(({ event: { method, section } }) => {
-      if (method === 'MessageQueued') {
-        alert.success(`${section}.MessageQueued`);
+      if (method === 'MessageEnqueued') {
+        alert.success(`${section}.MessageEnqueued`);
         onSuccess && onSuccess();
       } else if (method === 'ExtrinsicFailed') {
         alert.error('Extrinsic Failed', { title });

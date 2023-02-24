@@ -1,4 +1,3 @@
-const plugin = require('tailwindcss/plugin');
 const defaultTheme = require('tailwindcss/defaultTheme');
 
 /** @type {import('tailwindcss').Config} */
@@ -40,11 +39,9 @@ module.exports = {
         current: 'currentColor',
         secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
         primary: 'rgb(var(--color-primary) / <alpha-value>)',
-        tertiary: 'rgb(var(--red) / <alpha-value>)',
         error: 'rgb(var(--color-error) / <alpha-value>)',
         'dark-500': 'rgb(var(--color-dark-500) / <alpha-value>)',
         light: 'rgb(var(--color-light) / <alpha-value>)',
-        'theme-blue': 'rgb(var(--theme-blue) / <alpha-value>)',
       },
       fontFamily: {
         kanit: ['Kanit', ...defaultTheme.fontFamily.sans],
@@ -134,20 +131,5 @@ module.exports = {
     container: false,
     // preflight: false,
   },
-  plugins: [
-    plugin(function ({ addUtilities, addComponents, e, prefix, config }) {
-      const newUtilities = {
-        '.horizontal-tb': {
-          writingMode: 'horizontal-tb',
-        },
-        '.vertical-rl': {
-          writingMode: 'vertical-rl',
-        },
-        '.vertical-lr': {
-          writingMode: 'vertical-lr',
-        },
-      };
-      addUtilities(newUtilities);
-    }),
-  ],
+  plugins: [],
 };

@@ -1,11 +1,11 @@
 import clsx from 'clsx';
 import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
-import { BattleStatePlayer } from 'app/types/battles';
+import { BattlePlayerType } from 'app/types/battles';
 import { Icon } from 'components/ui/icon';
 import { useEffect, useState } from 'react';
 
 type Props = {
-  tamagotchi: BattleStatePlayer;
+  tamagotchi: BattlePlayerType;
   isReverse?: boolean;
 };
 export const BattleRoundStatsAvatar = ({ tamagotchi, isReverse }: Props) => {
@@ -31,10 +31,6 @@ export const BattleRoundStatsAvatar = ({ tamagotchi, isReverse }: Props) => {
             isDead={dead}
           />
         </div>
-
-        <div className="absolute top-[calc(100%-8px)] inline-flex gap-2 items-center py-0.5 px-2.5 xxl:py-1 xxl:px-5 tracking-widest font-kanit font-semibold xxl:text-base leading-4 xxl:leading-5 bg-[#404040] rounded-lg">
-          <Icon name="wins" className="w-3.5 h-3.5 xxl:w-5 xxl:h-5" /> {tamagotchi.victories}
-        </div>
       </div>
       <div className="w-full max-w-[300px] space-y-3">
         <div className={clsx('relative py-0.5 px-4 rounded-xl overflow-hidden', dead ? 'bg-error' : 'bg-white/10')}>
@@ -44,18 +40,18 @@ export const BattleRoundStatsAvatar = ({ tamagotchi, isReverse }: Props) => {
               style={{ width: `${tamagotchi.health / 25}%` }}
             />
           )}
-          <div className="relative flex gap-2 items-center justify-center">
-            <Icon name="health" className="w-3 xxl:w-3.5 aspect-square" />
+          <div className="relative flex gap-1 items-center justify-center">
+            <Icon name="health" className="w-3.5 h-3.5" />
             <span className="font-kanit text-xs font-medium leading-5">{Math.round(tamagotchi.health / 25)} / 100</span>
           </div>
         </div>
         <div className={clsx('flex gap-3 tracking-[0.03em]', isReverse && 'flex-row-reverse')}>
           <div className="relative flex gap-1.5 items-center font-medium font-kanit text-xs leading-5 bg-white/10 py-0.5 px-4 rounded-xl">
-            <Icon name="armor" className="w-3 xxl:w-3.5 aspect-square" />
+            <Icon name="armor" className="w-3.5 h-3.5" />
             <b className="font-bold">{Math.round(tamagotchi.defence / 100)}</b> Armor
           </div>
           <div className="relative flex gap-1.5 items-center font-medium font-kanit text-xs leading-5 bg-white/10 py-0.5 px-4 rounded-xl">
-            <Icon name="strength" className="w-3 xxl:w-3.5 aspect-square" />
+            <Icon name="wins" className="w-3.5 h-3.5" />
             <b className="font-bold">{Math.round(tamagotchi.power / 100)}</b> Strength
           </div>
         </div>

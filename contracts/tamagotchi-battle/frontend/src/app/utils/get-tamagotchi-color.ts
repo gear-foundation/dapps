@@ -11,7 +11,7 @@ export const getTamagotchiColor = (color: TamagotchiColor): { body: string; snea
     case 'Purple':
       return { body: 'text-[#8316B7]', sneakers: 'text-[#B71663]' };
     case 'Red':
-      return { body: 'text-[#E34675]', sneakers: 'text-theme-blue' };
+      return { body: 'text-[#E34675]', sneakers: 'text-[#1852FF]' };
     case 'Blue':
       return { body: 'text-[#16ADB7]', sneakers: 'text-[#2253FF]' };
     default:

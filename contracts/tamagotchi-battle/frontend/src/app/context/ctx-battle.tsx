@@ -1,16 +1,14 @@
 import { createContext, Dispatch, ReactNode, SetStateAction, useState } from 'react';
-import { BattleStatePlayer, BattleStateResponse, RoundDamageType } from 'app/types/battles';
+import { BattlePlayerType, BattleStateResponse, RoundDamageType } from 'app/types/battles';
 import { HexString } from '@polkadot/util/types';
 
 type Program = {
   battle?: BattleStateResponse;
   setBattle: Dispatch<SetStateAction<BattleStateResponse | undefined>>;
-  currentPairIdx: number;
-  setCurrentPair: Dispatch<SetStateAction<number>>;
-  players: BattleStatePlayer[];
-  setPlayers: Dispatch<SetStateAction<BattleStatePlayer[]>>;
-  rivals: BattleStatePlayer[];
-  setRivals: Dispatch<SetStateAction<BattleStatePlayer[]>>;
+  players: BattlePlayerType[];
+  setPlayers: Dispatch<SetStateAction<BattlePlayerType[]>>;
+  rivals: BattlePlayerType[];
+  setRivals: Dispatch<SetStateAction<BattlePlayerType[]>>;
   currentPlayer?: HexString;
   setCurrentPlayer: Dispatch<SetStateAction<HexString | undefined>>;
   roundDamage?: RoundDamageType;
@@ -19,15 +17,12 @@ type Program = {
 
 const useProgram = (): Program => {
   const [battle, setBattle] = useState<BattleStateResponse>();
-  const [rivals, setRivals] = useState<BattleStatePlayer[]>([]);
-  const [players, setPlayers] = useState<BattleStatePlayer[]>([]);
-  const [currentPairIdx, setCurrentPair] = useState<number>(0);
+  const [players, setPlayers] = useState<BattlePlayerType[]>([]);
+  const [rivals, setRivals] = useState<BattlePlayerType[]>([]);
   const [currentPlayer, setCurrentPlayer] = useState<HexString>();
   const [roundDamage, setRoundDamage] = useState<RoundDamageType>();
 
   return {
-    currentPairIdx,
-    setCurrentPair,
     battle,
     setBattle,
     players,

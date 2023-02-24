@@ -1,12 +1,12 @@
 import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
 import clsx from 'clsx';
 import { Icon } from 'components/ui/icon';
-import { BattlePlayerType, BattleStatePlayer } from 'app/types/battles';
+import { BattlePlayerType } from 'app/types/battles';
 import { useEffect, useState } from 'react';
 
 type TamagotchiQueueCardProps = {
   className?: string;
-  tamagotchi: BattleStatePlayer;
+  tamagotchi: BattlePlayerType;
 };
 
 export const TamagotchiQueueCard = ({ className, tamagotchi }: TamagotchiQueueCardProps) => {
@@ -20,7 +20,7 @@ export const TamagotchiQueueCard = ({ className, tamagotchi }: TamagotchiQueueCa
   return (
     <div
       className={clsx(
-        'relative grid gap-2 justify-center w-full pt-3 pb-4 xxl:py-4 px-5 bg-[#29292B] rounded-2xl',
+        'relative grid gap-2 justify-center w-fit py-4 px-5 bg-[#29292B] rounded-2xl',
         className,
         dead && 'opacity-30',
       )}>
@@ -41,16 +41,12 @@ export const TamagotchiQueueCard = ({ className, tamagotchi }: TamagotchiQueueCa
         <span className="block truncate max-w-[10ch]">{tamagotchi.name ? tamagotchi.name : 'Geary'}</span>
       </h3>
       <div className="w-full max-w-[300px] space-y-3">
-        <div
-          className={clsx(
-            'relative w-full xxl:w-30 px-4 rounded-xl overflow-hidden',
-            dead ? 'bg-error' : 'bg-white/10',
-          )}>
+        <div className={clsx('relative w-30 px-4 rounded-xl overflow-hidden', dead ? 'bg-error' : 'bg-white/10')}>
           {!dead && (
             <div className="absolute inset-0 rounded-xl bg-primary" style={{ width: `${tamagotchi.health / 25}%` }} />
           )}
           <div className="relative flex gap-1 items-center justify-center">
-            <Icon name="health" className="w-3 xxl:w-3.5 aspect-square" />
+            <Icon name="health" className="w-3.5 h-3.5" />
             <span className="font-kanit text-xs font-medium leading-5">{Math.round(tamagotchi.health / 25)} / 100</span>
           </div>
         </div>

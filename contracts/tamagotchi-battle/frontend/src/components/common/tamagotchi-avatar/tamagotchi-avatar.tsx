@@ -5,7 +5,6 @@ import { getTamagotchiAgeDiff } from 'app/utils/get-tamagotchi-age';
 import { TamagotchiAvatarEmotions } from 'app/types/tamagotchi';
 import { BattleRoundMoveVariants, TamagotchiColor } from 'app/types/battles';
 import { getTamagotchiColor } from 'app/utils/get-tamagotchi-color';
-import { motion } from 'framer-motion';
 
 type TamagotchiAvatarProps = {
   emotion?: TamagotchiAvatarEmotions;
@@ -19,7 +18,6 @@ type TamagotchiAvatarProps = {
   damage?: number;
   action?: BattleRoundMoveVariants;
   reverse?: boolean;
-  asPlayer?: boolean;
 };
 
 export const TamagotchiAvatar = ({
@@ -34,7 +32,6 @@ export const TamagotchiAvatar = ({
   damage,
   action,
   reverse,
-  asPlayer,
 }: TamagotchiAvatarProps) => {
   const tamagotchiAge = getTamagotchiAgeDiff(age);
 
@@ -67,45 +64,23 @@ export const TamagotchiAvatar = ({
       {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
       {!isDead && glasses && <Icon name={glasses} section={s} className={cn} />}
       {!isDead && hasItem?.includes('hat') && <Icon name="head-hat" section={s} className={cn} />}
-      {isDead && asPlayer && (
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ y: { ease: [0, 0.1, 0.1, 1], duration: 0.3 } }}
-          className={clsx(
-            'absolute top-1/4 w-12 h-12 grid place-items-center transition-[opacity,transform] pointer-events-none',
-            reverse ? 'right-15' : 'left-15',
-          )}>
-          <Icon
-            name="damage"
-            section={s}
-            className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
-          />
-          <Icon name="death" section={s} className="relative z-1 w-5 h-5 text-white" />
-        </motion.div>
-      )}
       {!isDead && !isWinner && (
         <div
           className={clsx(
-            'absolute top-1/4 w-12 h-12 grid place-items-center transition-[opacity,transform] delay-200 pointer-events-none',
-            reverse ? 'right-15' : 'left-15',
+            'absolute top-1/4 right-15 w-12 h-12 grid place-items-center transition-[opacity,transform] delay-200 pointer-events-none',
             !damage ? 'opacity-0 translate-y-5' : 'translate-y-0',
           )}>
-          <Icon
-            name="damage"
-            section={s}
-            className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
-          />
+          <Icon name="damage" section={s} className="absolute inset-0 w-full h-full" />
           <span className="relative z-1 text-white font-bold">-{damage}</span>
         </div>
       )}
       {!isDead && !isWinner && (
         <div
           className={clsx(
-            'absolute top-0 left-1/2 -translate-x-1/2 py-0.5 px-4 leading-4 rounded-full text-white transition-[opacity,transform] pointer-events-none',
+            'absolute top-0 py-0.5 px-4 leading-4 rounded-full text-white transition-[opacity,transform] pointer-events-none',
             reverse ? 'left-0' : 'right-0',
             !action ? 'opacity-0 translate-y-5' : 'translate-y-0',
-            action === 'Defence' ? 'bg-theme-blue' : 'bg-tertiary',
+            action === 'Defence' ? 'bg-[#1852FF]' : 'bg-[#F70200]',
           )}>
           <span className="font-bold">{action}</span>
         </div>

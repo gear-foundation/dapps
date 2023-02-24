@@ -10,7 +10,7 @@ import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
 export const BattleRoundPlayers = () => {
   const { isPending, setIsPending, isAdmin } = useApp();
   const { account } = useAccount();
-  const { rivals, currentPlayer, currentPairIdx, roundDamage, battle } = useBattle();
+  const { rivals, currentPlayer, roundDamage, battle } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
 
@@ -28,99 +28,80 @@ export const BattleRoundPlayers = () => {
   };
   const onAttack = () => {
     setIsPending(true);
-    handleMessage({ MakeMove: { pair_id: currentPairIdx, tmg_move: { Attack: null } } }, { onSuccess, onError });
+    handleMessage({ MakeMove: { Attack: null } }, { onSuccess, onError });
   };
   const onDefence = () => {
     setIsPending(true);
-    handleMessage({ MakeMove: { pair_id: currentPairIdx, tmg_move: { Defence: null } } }, { onSuccess, onError });
+    handleMessage({ MakeMove: { Defence: null } }, { onSuccess, onError });
   };
 
   return (
-    <>
-      {battle && (
-        <div className="relative grow flex justify-between gap-10 mt-10 xxl:mt-15">
-          <div className="relative basis-[40%] w-full flex flex-col">
-            <TamagotchiAvatar
-              color={rivals[0].color}
-              age={rivals[0].dateOfBirth}
-              className="grow w-full h-full "
-              isActive={battle.state !== 'WaitNextRound' && rivals[0].tmgId === currentPlayer}
-              isWinner={battle.state === 'WaitNextRound' && battle.currentWinner === rivals[0].tmgId}
-              isDead={!rivals[0].health}
-              damage={roundDamage ? Math.round(roundDamage[1] / 25) : 0}
-              action={roundDamage && roundDamage[3]}
-              asPlayer
-            />
-          </div>
-          <div className="absolute top-1/2 left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 w-full max-w-[250px]">
-            <div className="flex flex-col items-center gap-2">
-              {!battle.pairs[currentPairIdx].gameIsOver ? (
-                <>
-                  <p className="font-semibold uppercase text-[#D2D2D3] text-opacity-60 text-center tracking-[.04em]">
-                    Round: {battle && battle.pairs[currentPairIdx].rounds + 1}
-                  </p>
-                  <p className="text-2xl leading-normal xxl:typo-h2 truncate max-w-[13ch] font-bold">
-                    {currentPlayer && battle.players[currentPlayer].name}
-                  </p>
-                </>
-              ) : (
-                <p className="text-center text-2xl leading-normal xxl:typo-h2 truncate max-w-[13ch] font-bold">
-                  <span className="text-primary">{battle.players[battle.pairs[currentPairIdx].winner].name}</span>
-                  <br />
-                  Winner
-                </p>
-              )}
-            </div>
-            <div className="space-y-3">
-              {battle.state === 'WaitNextRound' && (
-                <button
-                  className={clsx(
-                    'btn items-center gap-2 w-full transition-colors',
-                    buttonStyles.primary,
-                    buttonStyles.button,
-                  )}
-                  onClick={onNewRound}
-                  disabled={isPending || isAdmin ? false : !isAllowed}>
-                  Start New Round
-                </button>
-              )}
-              {battle.state === 'GameIsOn' && !battle.pairs[currentPairIdx].gameIsOver && (
-                <>
-                  <button
-                    className={clsx(
-                      'btn btn--error items-center gap-2 w-full bg-error text-white transition-colors',
-                      buttonStyles.button,
-                    )}
-                    onClick={onAttack}
-                    disabled={isPending || !isAllowed}>
-                    <Icon name="swords" className="w-5 h-5" /> Attack
-                  </button>
-                  <button
-                    className={clsx('btn items-center gap-2 w-full', buttonStyles.secondary, buttonStyles.button)}
-                    onClick={onDefence}
-                    disabled={isPending || !isAllowed}>
-                    <Icon name="armor" className="w-5 h-5" /> Defence
-                  </button>
-                </>
-              )}
-            </div>
-          </div>
-          <div className="relative basis-[40%] w-full flex flex-col">
-            <TamagotchiAvatar
-              color={rivals[1].color}
-              age={rivals[1].dateOfBirth}
-              className="grow w-full h-full "
-              isActive={battle.state !== 'WaitNextRound' && rivals[1].tmgId === currentPlayer}
-              isWinner={battle.state === 'WaitNextRound' && battle.currentWinner === rivals[1].tmgId}
-              isDead={!rivals[1].health}
-              damage={roundDamage ? Math.round(roundDamage[2] / 25) : 0}
-              action={roundDamage && roundDamage[4]}
-              reverse
-              asPlayer
-            />
-          </div>
+    <div className="relative grow flex justify-between gap-10 mt-10 xxl:mt-15">
+      <div className="relative basis-[40%] w-full flex flex-col">
+        <TamagotchiAvatar
+          color={rivals[0].color}
+          age={rivals[0].dateOfBirth}
+          className="grow w-full h-full "
+          isActive={battle?.state !== 'WaitNextRound' && rivals[0].tmgId === currentPlayer}
+          isWinner={battle?.state === 'WaitNextRound' && battle.currentWinner === rivals[0].tmgId}
+          isDead={!rivals[0].health}
+          damage={roundDamage ? Math.round(roundDamage[0] / 25) : 0}
+          action={roundDamage && roundDamage[2]}
+        />
+      </div>
+      <div className="absolute top-1/2 left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 w-full max-w-[250px]">
+        <div className="flex flex-col items-center">
+          <p className="text-2xl leading-normal xxl:typo-h2 truncate max-w-[13ch]">
+            {currentPlayer && battle?.players[currentPlayer].name}
+          </p>
         </div>
-      )}
-    </>
+        <div className="space-y-3">
+          {battle?.state === 'WaitNextRound' && (
+            <button
+              className={clsx(
+                'btn items-center gap-2 w-full transition-colors',
+                buttonStyles.primary,
+                buttonStyles.button,
+              )}
+              onClick={onNewRound}
+              disabled={isPending || isAdmin ? false : !isAllowed}>
+              Start New Round
+            </button>
+          )}
+          {battle?.state === 'GameIsOn' && (
+            <>
+              <button
+                className={clsx(
+                  'btn items-center gap-2 w-full bg-error text-white hover:bg-red-600 transition-colors',
+                  buttonStyles.button,
+                )}
+                onClick={onAttack}
+                disabled={isPending || !isAllowed}>
+                <Icon name="swords" className="w-5 h-5" /> Attack
+              </button>
+              <button
+                className={clsx('btn items-center gap-2 w-full', buttonStyles.secondary, buttonStyles.button)}
+                onClick={onDefence}
+                disabled={isPending || !isAllowed}>
+                <Icon name="armor" className="w-5 h-5" /> Defence
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+      <div className="relative basis-[40%] w-full flex flex-col">
+        <TamagotchiAvatar
+          color={rivals[1].color}
+          age={rivals[1].dateOfBirth}
+          className="grow w-full h-full "
+          isActive={battle?.state !== 'WaitNextRound' && rivals[1].tmgId === currentPlayer}
+          isWinner={battle?.state === 'WaitNextRound' && battle.currentWinner === rivals[1].tmgId}
+          isDead={!rivals[1].health}
+          damage={roundDamage ? Math.round(roundDamage[1] / 25) : 0}
+          action={roundDamage && roundDamage[3]}
+          reverse
+        />
+      </div>
+    </div>
   );
 };
