@@ -8,32 +8,36 @@ export const BattleWinner = ({ battle }: { battle: BattleStateResponse }) => {
   const winner = battle.players[battle.currentWinner];
 
   return (
-    <section className="container flex flex-col grow">
-      <BattleWinnerFireworks />
-      <div className="flex gap-10 justify-center items-center mt-2 xxl:mt-15">
-        <div className="text-center font-bold">
-          <p className="text-2xl leading-normal xxl:typo-h2 truncate max-w-[19ch]">
-            <span className="text-primary">{winner.name}</span>
-            <br />
-            Winner
-          </p>
-        </div>
-      </div>
-      <div className="relative grow flex justify-center gap-10 mt-2 xxl:mt-15">
-        <div className="relative w-full max-w-[450px] flex flex-col">
-          <TamagotchiAvatar
-            color={winner.color}
-            age={winner.dateOfBirth}
-            className="grow w-full h-full"
-            isWinner
-            isDead={!winner.health}
-          />
-        </div>
-      </div>
-      <div className="relative flex gap-10 justify-center mt-4 xxl:mt-7">
-        <TamagotchiBattleInfoCard tamagotchi={winner} isActive />
-      </div>
-    </section>
+    <>
+      {winner && (
+        <section className="container flex flex-col grow">
+          <BattleWinnerFireworks />
+          <div className="flex gap-10 justify-center items-center mt-2 xxl:mt-15">
+            <div className="text-center font-bold">
+              <p className="text-2xl leading-normal xxl:typo-h2 truncate max-w-[19ch]">
+                <span className="text-primary">{winner.name}</span>
+                <br />
+                Winner
+              </p>
+            </div>
+          </div>
+          <div className="relative grow flex justify-center gap-10 mt-2 xxl:mt-15">
+            <div className="relative w-full max-w-[450px] flex flex-col">
+              <TamagotchiAvatar
+                color={winner.color}
+                age={winner.dateOfBirth}
+                className="grow w-full h-full"
+                isWinner
+                isDead={!winner.health}
+              />
+            </div>
+          </div>
+          <div className="relative flex gap-10 justify-center mt-4 xxl:mt-7">
+            <TamagotchiBattleInfoCard tamagotchi={winner} isActive />
+          </div>
+        </section>
+      )}
+    </>
   );
 };
 

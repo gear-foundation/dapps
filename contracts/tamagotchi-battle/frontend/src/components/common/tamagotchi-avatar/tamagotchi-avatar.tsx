@@ -5,7 +5,7 @@ import { getTamagotchiAgeDiff } from 'app/utils/get-tamagotchi-age';
 import { TamagotchiAvatarEmotions } from 'app/types/tamagotchi';
 import { BattleRoundMoveVariants, TamagotchiColor } from 'app/types/battles';
 import { getTamagotchiColor } from 'app/utils/get-tamagotchi-color';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 
 const transition = {
   duration: 1,
@@ -64,79 +64,84 @@ export const TamagotchiAvatar = ({
   const body = `body-${isDead ? 'dead' : 'normal'}`;
 
   return (
-    <div className={clsx('relative', getTamagotchiColor(color).body, className ?? 'grow w-full h-30 aspect-square')}>
-      <TamagotchiAvatarActiveScene isActive={Boolean(isActive)} />
-      <TamagotchiAvatarWinnerScene isActive={Boolean(isWinner)} />
-      {!isDead && <Icon name={tail} section={s} className={cn} />}
-      {!isDead && <Icon name={hands} section={s} className={cn} />}
-      {!isDead && <Icon name="body-stand" section={s} className={cn} />}
-      {!isDead && <Icon name="sneakers" section={s} className={clsx(cn, getTamagotchiColor(color).sneakers)} />}
-      <Icon name={body} section={s} className={cn} />
-      {hasItem?.includes('bag') && <Icon name="body-bag" section={s} className={cn} />}
-      <Icon name={head} section={s} className={cn} />
-      <Icon name={mouse} section={s} className="relative w-auto h-full max-w-full aspect-square" />
-      <Icon name={eye} section={s} className={clsx(cn, 'text-[#16B768]')} />
-      {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
-      {!isDead && glasses && <Icon name={glasses} section={s} className={cn} />}
-      {!isDead && hasItem?.includes('hat') && <Icon name="head-hat" section={s} className={cn} />}
-      {isDead && asPlayer && (
-        <motion.div
-          variants={variants}
-          // initial={{ opacity: 0, y: 50 }}
-          animate="center"
-          exit="exit"
-          transition={transition}
-          className={clsx(
-            'absolute bottom-[70%] w-10 xxl:w-12 aspect-square grid place-items-center pointer-events-none',
-            reverse ? 'right-[8%]' : 'left-[8%]',
-          )}>
-          <Icon
-            name="damage"
-            section={s}
-            className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
-          />
-          <Icon name="death" section={s} className="relative z-1 w-[45%] aspect-square text-white" />
-        </motion.div>
-      )}
-      {!isDead && !isWinner && !!damage && (
-        <motion.div
-          variants={variants}
-          // initial={{ opacity: 0, y: 50 }}
-          animate="center"
-          exit="exit"
-          transition={{ ...transition }}
-          className={clsx(
-            'absolute top-1/4 w-12 h-12 grid place-items-center pointer-events-none',
-            reverse ? 'right-[10%]' : 'left-[10%]',
-            // !damage ? 'opacity-0 translate-y-5' : 'translate-y-0',
-          )}>
-          <Icon
-            name="damage"
-            section={s}
-            className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
-          />
-          <span className="relative z-1 text-white font-bold">-{damage}</span>
-        </motion.div>
-      )}
-      {!isDead && !isWinner && action && (
-        <motion.div
-          variants={variants}
-          // initial={{ opacity: 0, y: 50 }}
-          animate="center"
-          exit="exit"
-          transition={{ ...transition, delay: 1 }}
-          className="absolute -top-4 inset-0 h-fit leading-4 text-center text-white"
-          aria-hidden>
-          <span
+    <AnimatePresence>
+      <div className={clsx('relative', getTamagotchiColor(color).body, className ?? 'grow w-full h-30 aspect-square')}>
+        <TamagotchiAvatarActiveScene isActive={Boolean(isActive)} />
+        <TamagotchiAvatarWinnerScene isActive={Boolean(isWinner)} />
+        {!isDead && <Icon name={tail} section={s} className={cn} />}
+        {!isDead && <Icon name={hands} section={s} className={cn} />}
+        {!isDead && <Icon name="body-stand" section={s} className={cn} />}
+        {!isDead && <Icon name="sneakers" section={s} className={clsx(cn, getTamagotchiColor(color).sneakers)} />}
+        <Icon name={body} section={s} className={cn} />
+        {hasItem?.includes('bag') && <Icon name="body-bag" section={s} className={cn} />}
+        <Icon name={head} section={s} className={cn} />
+        <Icon name={mouse} section={s} className="relative w-auto h-full max-w-full aspect-square" />
+        <Icon name={eye} section={s} className={clsx(cn, 'text-[#16B768]')} />
+        {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
+        {!isDead && glasses && <Icon name={glasses} section={s} className={cn} />}
+        {!isDead && hasItem?.includes('hat') && <Icon name="head-hat" section={s} className={cn} />}
+        {isDead && asPlayer && (
+          <motion.div
+            key="death"
+            variants={variants}
+            initial={{ opacity: 0, y: 50 }}
+            animate="center"
+            exit="exit"
+            transition={transition}
             className={clsx(
-              'inline-flex py-0.5 px-4 font-bold rounded-full',
-              action === 'Defence' ? 'bg-theme-blue' : 'bg-tertiary',
+              'absolute bottom-[70%] w-10 xxl:w-12 aspect-square grid place-items-center pointer-events-none',
+              reverse ? 'right-[8%]' : 'left-[8%]',
             )}>
-            {action}
-          </span>
-        </motion.div>
-      )}
-    </div>
+            <Icon
+              name="damage"
+              section={s}
+              className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
+            />
+            <Icon name="death" section={s} className="relative z-1 w-[45%] aspect-square text-white" />
+          </motion.div>
+        )}
+        {!isDead && !isWinner && !!damage && (
+          <motion.div
+            key="damage"
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ ...transition }}
+            className={clsx(
+              'absolute top-1/4 w-12 h-12 grid place-items-center pointer-events-none',
+              reverse ? 'right-[10%]' : 'left-[10%]',
+              // !damage ? 'opacity-0 translate-y-5' : 'translate-y-0',
+            )}>
+            <Icon
+              name="damage"
+              section={s}
+              className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
+            />
+            <span className="relative z-1 text-white font-bold">-{damage}</span>
+          </motion.div>
+        )}
+        {!isDead && !isWinner && action && (
+          <motion.div
+            key="action"
+            variants={variants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            transition={{ ...transition, delay: 1 }}
+            className="absolute -top-4 inset-0 h-fit leading-4 text-center text-white"
+            aria-hidden>
+            <span
+              className={clsx(
+                'inline-flex py-0.5 px-4 font-bold rounded-full',
+                action === 'Defence' ? 'bg-theme-blue' : 'bg-tertiary',
+              )}>
+              {action}
+            </span>
+          </motion.div>
+        )}
+      </div>
+    </AnimatePresence>
   );
 };
 
