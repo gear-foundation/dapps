@@ -35,15 +35,18 @@ export const BattleRoundPlayers = () => {
     handleMessage({ MakeMove: { pair_id: currentPairIdx, tmg_move: { Defence: null } } }, { onSuccess, onError });
   };
 
+  const cnWrapper = 'relative flex flex-col';
+  const cnT = 'grow h-full mx-auto w-fit';
+
   return (
     <>
       {battle && (
-        <div className="relative grow flex justify-between gap-10 mt-10 xxl:mt-15">
-          <div className="relative basis-[40%] w-full flex flex-col">
+        <div className="relative grow grid grid-cols-[40%_40%] justify-between gap-10 mt-10 xxl:mt-15">
+          <div className={cnWrapper}>
             <TamagotchiAvatar
               color={rivals[0].color}
               age={rivals[0].dateOfBirth}
-              className="grow w-full h-full "
+              className={cnT}
               isActive={battle.state !== 'WaitNextRound' && rivals[0].tmgId === currentPlayer}
               isWinner={battle.state === 'WaitNextRound' && battle.currentWinner === rivals[0].tmgId}
               isDead={!rivals[0].health}
@@ -52,14 +55,14 @@ export const BattleRoundPlayers = () => {
               asPlayer
             />
           </div>
-          <div className="absolute top-1/2 left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-6 w-full max-w-[250px]">
-            <div className="flex flex-col items-center gap-2">
+          <div className="absolute top-1/2 left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-3 xxl:gap-6 w-full max-w-[200px] xxl:max-w-[250px]">
+            <div className="flex flex-col items-center gap-1 xxl:gap-2">
               {!battle.pairs[currentPairIdx].gameIsOver ? (
                 <>
                   <p className="font-semibold uppercase text-[#D2D2D3] text-opacity-60 text-center tracking-[.04em]">
                     Round: {battle && battle.pairs[currentPairIdx].rounds + 1}
                   </p>
-                  <p className="text-2xl leading-normal xxl:typo-h2 truncate max-w-[13ch] font-bold">
+                  <p className="text-2xl leading-none xxl:typo-h2 truncate max-w-[13ch] font-bold">
                     {currentPlayer && battle.players[currentPlayer].name}
                   </p>
                 </>
@@ -71,7 +74,7 @@ export const BattleRoundPlayers = () => {
                 </p>
               )}
             </div>
-            <div className="space-y-3">
+            <div className="space-y-2 xxl:space-y-3">
               {battle.state === 'WaitNextRound' && (
                 <button
                   className={clsx(
@@ -105,11 +108,11 @@ export const BattleRoundPlayers = () => {
               )}
             </div>
           </div>
-          <div className="relative basis-[40%] w-full flex flex-col">
+          <div className={cnWrapper}>
             <TamagotchiAvatar
               color={rivals[1].color}
               age={rivals[1].dateOfBirth}
-              className="grow w-full h-full "
+              className={cnT}
               isActive={battle.state !== 'WaitNextRound' && rivals[1].tmgId === currentPlayer}
               isWinner={battle.state === 'WaitNextRound' && battle.currentWinner === rivals[1].tmgId}
               isDead={!rivals[1].health}

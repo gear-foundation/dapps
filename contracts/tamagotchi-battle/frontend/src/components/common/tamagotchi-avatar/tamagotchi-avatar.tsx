@@ -7,6 +7,12 @@ import { BattleRoundMoveVariants, TamagotchiColor } from 'app/types/battles';
 import { getTamagotchiColor } from 'app/utils/get-tamagotchi-color';
 import { motion } from 'framer-motion';
 
+const transition = {
+  duration: 0.8,
+  delay: 0.5,
+  ease: [0, 0.71, 0.2, 1.01],
+};
+
 type TamagotchiAvatarProps = {
   emotion?: TamagotchiAvatarEmotions;
   age?: number;
@@ -20,6 +26,12 @@ type TamagotchiAvatarProps = {
   action?: BattleRoundMoveVariants;
   reverse?: boolean;
   asPlayer?: boolean;
+};
+
+const variants = {
+  enter: { opacity: 0, y: 50 },
+  center: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: 50 },
 };
 
 export const TamagotchiAvatar = ({
@@ -39,7 +51,7 @@ export const TamagotchiAvatar = ({
   const tamagotchiAge = getTamagotchiAgeDiff(age);
 
   const s = 'tamagotchi';
-  const cn = 'absolute inset-0 w-full h-full';
+  const cn = 'absolute inset-0 w-auto h-full aspect-square';
   const emo: TamagotchiAvatarEmotions = isDead ? 'scared' : isWinner ? 'hello' : emotion;
   const mouse = tamagotchiAge === 'baby' ? 'face-baby' : `mouse-${tamagotchiAge}-${emo === 'hello' ? 'happy' : emo}`;
   const head = `head-${tamagotchiAge}`;
@@ -62,34 +74,41 @@ export const TamagotchiAvatar = ({
       <Icon name={body} section={s} className={cn} />
       {hasItem?.includes('bag') && <Icon name="body-bag" section={s} className={cn} />}
       <Icon name={head} section={s} className={cn} />
-      <Icon name={mouse} section={s} className={cn} />
+      <Icon name={mouse} section={s} className="relative w-auto h-full aspect-square" />
       <Icon name={eye} section={s} className={clsx(cn, 'text-[#16B768]')} />
       {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
       {!isDead && glasses && <Icon name={glasses} section={s} className={cn} />}
       {!isDead && hasItem?.includes('hat') && <Icon name="head-hat" section={s} className={cn} />}
       {isDead && asPlayer && (
         <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ y: { ease: [0, 0.1, 0.1, 1], duration: 0.3 } }}
+          variants={variants}
+          // initial={{ opacity: 0, y: 50 }}
+          animate="center"
+          exit="exit"
+          transition={transition}
           className={clsx(
-            'absolute top-1/4 w-12 h-12 grid place-items-center transition-[opacity,transform] pointer-events-none',
-            reverse ? 'right-15' : 'left-15',
+            'absolute bottom-[70%] w-10 xxl:w-12 aspect-square grid place-items-center pointer-events-none',
+            reverse ? 'right-[8%]' : 'left-[8%]',
           )}>
           <Icon
             name="damage"
             section={s}
             className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
           />
-          <Icon name="death" section={s} className="relative z-1 w-5 h-5 text-white" />
+          <Icon name="death" section={s} className="relative z-1 w-[45%] aspect-square text-white" />
         </motion.div>
       )}
-      {!isDead && !isWinner && (
-        <div
+      {!isDead && !isWinner && damage && (
+        <motion.div
+          variants={variants}
+          // initial={{ opacity: 0, y: 50 }}
+          animate="center"
+          exit="exit"
+          transition={{ ...transition, delay: 0.7 }}
           className={clsx(
-            'absolute top-1/4 w-12 h-12 grid place-items-center transition-[opacity,transform] delay-200 pointer-events-none',
-            reverse ? 'right-15' : 'left-15',
-            !damage ? 'opacity-0 translate-y-5' : 'translate-y-0',
+            'absolute top-1/4 w-12 h-12 grid place-items-center pointer-events-none',
+            reverse ? 'right-[10%]' : 'left-[10%]',
+            // !damage ? 'opacity-0 translate-y-5' : 'translate-y-0',
           )}>
           <Icon
             name="damage"
@@ -97,18 +116,21 @@ export const TamagotchiAvatar = ({
             className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
           />
           <span className="relative z-1 text-white font-bold">-{damage}</span>
-        </div>
+        </motion.div>
       )}
-      {!isDead && !isWinner && (
-        <div
+      {!isDead && !isWinner && action && (
+        <motion.div
+          variants={variants}
+          // initial={{ opacity: 0, y: 50 }}
+          animate="center"
+          exit="exit"
+          transition={{ ...transition, delay: 0.7 }}
           className={clsx(
-            'absolute top-0 left-1/2 -translate-x-1/2 py-0.5 px-4 leading-4 rounded-full text-white transition-[opacity,transform] pointer-events-none',
-            reverse ? 'left-0' : 'right-0',
-            !action ? 'opacity-0 translate-y-5' : 'translate-y-0',
+            'absolute top-0 left-1/2 -translate-x-1/2 py-0.5 px-4 leading-4 rounded-full text-white pointer-events-none',
             action === 'Defence' ? 'bg-theme-blue' : 'bg-tertiary',
           )}>
           <span className="font-bold">{action}</span>
-        </div>
+        </motion.div>
       )}
     </div>
   );

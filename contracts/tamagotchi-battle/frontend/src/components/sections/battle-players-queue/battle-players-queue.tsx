@@ -81,7 +81,7 @@ const QueueSlider = () => {
   };
 
   return (
-    <div className="grow w-full space-y-6">
+    <div className="grow w-full space-y-3 xxl:space-y-6">
       <div className="flex gap-4 xxl:gap-6">
         <button onClick={handlePrev} className="btn btn--primary-outline text-primary p-2 xxl:p-2.5 rounded-lg">
           <Icon name="prev" className="w-3.5 xxl:w-4.5 aspect-square" />
