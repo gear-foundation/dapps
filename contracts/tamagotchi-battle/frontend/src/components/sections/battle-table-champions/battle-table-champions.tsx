@@ -5,8 +5,8 @@ import { Icon } from '../../ui/icon';
 import clsx from 'clsx';
 import { useBattle } from 'app/context';
 import { BattleStatePlayer } from 'app/types/battles';
-import * as ScrollArea from '@radix-ui/react-scroll-area';
 import { TamagotchiAvatar } from '../../common/tamagotchi-avatar';
+import { ScrollWrapper } from '../../common/scroll-wrapper/scroll-wrapper';
 
 export const BattleTableChampions = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -63,7 +63,7 @@ export const BattleTableChampions = () => {
 
         <section
           ref={ref}
-          className="relative grow p-8 px-6 border-2 border-r-transparent border-tertiary rounded-l-[20px] shadow after:absolute after:inset-0 after:-z-2 after:bg-[#1D1D1D] after:rounded-l-[20px]">
+          className="relative grow p-8 px-6 bg-[#1D1D1D] border-2 border-r-transparent border-tertiary rounded-l-[20px] shadow">
           <div className="relative space-y-4">
             <h2 className="text-[28px] leading-8 text-tertiary font-kanit font-semibold tracking-[0.02em]">
               Champions
@@ -79,7 +79,7 @@ export const BattleTableChampions = () => {
 
           <motion.div
             key="table-champions-bubble"
-            className="absolute top-0 left-6 -z-1 w-[min(100%,306px)] blur-lg"
+            className="absolute top-0 left-6 w-[min(100%,306px)] blur-lg"
             animate={controls}
             variants={{
               active: {
@@ -102,30 +102,17 @@ const BattleTableList = () => {
   const { players } = useBattle();
 
   return (
-    <ScrollArea.Root className="relative h-45 overflow-hidden pr-3 -mr-3" type="auto">
-      <ScrollArea.Viewport className="w-full h-full">
-        <ul className="leading-4 space-y-1.5">
-          {players
-            .sort((p, c) => c.victories - p.victories)
-            .map((player, i) => (
-              <li key={i}>
-                <BattleTablePairsRow player={player} position={i} />
-              </li>
-            ))}
-        </ul>
-      </ScrollArea.Viewport>
-      <ScrollArea.Scrollbar
-        className="mr-px flex select-none touch-none bg-white/10 transition-colors duration-[160ms] ease-out hover:bg-white/20 data-[orientation=vertical]:w-px data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-px"
-        orientation="vertical">
-        <ScrollArea.Thumb className="flex-1 bg-white rounded-[10px] relative -mx-px" />
-      </ScrollArea.Scrollbar>
-      <ScrollArea.Scrollbar
-        className="flex select-none touch-none p-0.5 bg-white/10 transition-colors duration-[160ms] ease-out hover:bg-white/20 data-[orientation=vertical]:w-2.5 data-[orientation=horizontal]:flex-col data-[orientation=horizontal]:h-2.5"
-        orientation="horizontal">
-        <ScrollArea.Thumb className="flex-1 bg-mauve10 rounded-[10px] relative before:content-[''] before:absolute before:top-1/2 before:left-1/2 before:-translate-x-1/2 before:-translate-y-1/2 before:w-full before:h-full before:min-w-[44px] before:min-h-[44px]" />
-      </ScrollArea.Scrollbar>
-      <ScrollArea.Corner className="bg-white/20" />
-    </ScrollArea.Root>
+    <ScrollWrapper className="max-h-80 pr-3 -mr-3">
+      <ul className="leading-4 space-y-1.5">
+        {players
+          .sort((p, c) => c.victories - p.victories)
+          .map((player, i) => (
+            <li key={i}>
+              <BattleTablePairsRow player={player} position={i} />
+            </li>
+          ))}
+      </ul>
+    </ScrollWrapper>
   );
 };
 
