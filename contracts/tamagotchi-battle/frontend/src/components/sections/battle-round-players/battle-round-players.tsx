@@ -48,7 +48,7 @@ export const BattleRoundPlayers = () => {
               age={rivals[0].dateOfBirth}
               className={cnT}
               isActive={battle.state !== 'WaitNextRound' && rivals[0].tmgId === currentPlayer}
-              isWinner={battle.state === 'WaitNextRound' && battle.currentWinner === rivals[0].tmgId}
+              isWinner={battle.state === 'WaitNextRound' && battle.pairs[currentPairIdx].winner === rivals[0].tmgId}
               isDead={!rivals[0].health}
               damage={roundDamage ? Math.round(roundDamage[1] / 25) : 0}
               action={roundDamage && roundDamage[3]}
@@ -114,7 +114,7 @@ export const BattleRoundPlayers = () => {
               age={rivals[1].dateOfBirth}
               className={cnT}
               isActive={battle.state !== 'WaitNextRound' && rivals[1].tmgId === currentPlayer}
-              isWinner={battle.state === 'WaitNextRound' && battle.currentWinner === rivals[1].tmgId}
+              isWinner={battle.state === 'WaitNextRound' && battle.pairs[currentPairIdx].winner === rivals[1].tmgId}
               isDead={!rivals[1].health}
               damage={roundDamage ? Math.round(roundDamage[2] / 25) : 0}
               action={roundDamage && roundDamage[4]}

@@ -3,6 +3,7 @@ import { useBattle } from 'app/context';
 import { Icon } from 'components/ui/icon';
 
 import { AnimatePresence, motion } from 'framer-motion';
+
 export const BattleRoundInfo = () => {
   const { rivals, currentPlayer, currentPairIdx, battle } = useBattle();
   return (
@@ -15,7 +16,14 @@ export const BattleRoundInfo = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 120 }}
           transition={{ duration: 0.5 }}>
-          <TamagotchiBattleInfoCard tamagotchi={rivals[0]} isActive={rivals[0].tmgId === currentPlayer} />
+          <TamagotchiBattleInfoCard
+            tamagotchi={rivals[0]}
+            isActive={
+              battle?.pairs[currentPairIdx].gameIsOver
+                ? rivals[0].tmgId === battle?.pairs[currentPairIdx].winner
+                : rivals[0].tmgId === currentPlayer
+            }
+          />
         </motion.div>
         <motion.div
           key="stats-info"
@@ -35,7 +43,11 @@ export const BattleRoundInfo = () => {
           transition={{ duration: 0.5 }}>
           <TamagotchiBattleInfoCard
             tamagotchi={rivals[1]}
-            isActive={rivals[1].tmgId === currentPlayer || rivals[1].tmgId === battle?.pairs[currentPairIdx].winner}
+            isActive={
+              battle?.pairs[currentPairIdx].gameIsOver
+                ? rivals[1].tmgId === battle?.pairs[currentPairIdx].winner
+                : rivals[1].tmgId === currentPlayer
+            }
           />
         </motion.div>
       </div>
