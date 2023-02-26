@@ -146,9 +146,13 @@ export const TamagotchiAvatar = ({
 };
 
 const TamagotchiAvatarWinnerScene = ({ isActive }: { isActive: boolean }) => (
-  <div className="absolute -top-[2%] -inset-x-[8%] -bottom-[16.5%]">
+  <div
+    className={clsx(
+      'absolute -top-[2%] -inset-x-[8%] -bottom-[16.5%] transition-opacity duration-1000',
+      !isActive && 'opacity-0',
+    )}>
     <svg
-      className="w-full h-full"
+      className="w-full h-full overflow-visible"
       width="550"
       height="586"
       viewBox="0 0 550 586"
