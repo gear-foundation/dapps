@@ -40,7 +40,10 @@ export const BattleRoundStatsAvatar = ({ tamagotchi, isReverse }: Props) => {
         <div className={clsx('relative py-0.5 px-4 rounded-xl overflow-hidden', dead ? 'bg-error' : 'bg-white/10')}>
           {!dead && (
             <div
-              className="absolute inset-0 rounded-xl bg-primary transition-[width]"
+              className={clsx(
+                'absolute w-full h-full rounded-xl bg-primary transition-[width]',
+                isReverse ? 'right-0' : 'left-0',
+              )}
               style={{ width: `${tamagotchi.health / 25}%` }}
             />
           )}
