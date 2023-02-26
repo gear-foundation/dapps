@@ -28,7 +28,7 @@ export const AccountComponent = () => {
   const onError = () => setIsPending(false);
   const handler = () => {
     setIsPending(true);
-    handleMessage({ StartBattle: null }, { onSuccess, onError });
+    handleMessage({ StartRegistration: null }, { onSuccess, onError });
   };
 
   return (

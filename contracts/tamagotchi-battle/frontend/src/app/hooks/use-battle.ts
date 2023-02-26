@@ -32,7 +32,13 @@ export function useInitBattleData() {
       console.log({ state });
       setIsAdmin(state.admin === account.decodedAddress);
 
-      const players = Object.values(state.players);
+      const getCurrentQueue = () => {
+        const queue: BattleStatePlayer[] = [];
+        const players = Object.values(state.playersIds);
+        players.forEach((p) => queue.push(state.players[p]));
+        return queue;
+      };
+      const players = getCurrentQueue();
       players && setPlayers(players);
 
       if (activePair) {
@@ -69,7 +75,7 @@ export function useInitBattleData() {
           console.log(payload.toHuman());
           alert.error(`${payload.toHuman()}`, { title: 'Error during program execution' });
         } else {
-          const decodedPayload = metadata.createType(5, payload).toJSON();
+          const decodedPayload = metadata.createType(6, payload).toJSON();
 
           if (
             decodedPayload &&

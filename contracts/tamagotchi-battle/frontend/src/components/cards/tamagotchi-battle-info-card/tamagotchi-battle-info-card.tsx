@@ -10,7 +10,12 @@ type TamagotchiBattleInfoCardProps = {
 export const TamagotchiBattleInfoCard = ({ tamagotchi, isActive }: TamagotchiBattleInfoCardProps) => {
   return (
     <div className="relative grid gap-1.5 xxl:gap-4 justify-center w-35 xxl:w-40 pt-7 xxl:pt-13 pb-6 px-3 xxl:px-5 ">
-      <div className="absolute inset-x-0 top-0 -z-1 w-full h-full bg-dark-500 card-mask before:absolute before:inset-0 before:bg-gradient-to-b from-primary to-transparent" />
+      <div
+        className={clsx(
+          'absolute inset-x-0 top-0 -z-1 w-full h-full bg-dark-500 card-mask before:absolute before:inset-0 before:bg-gradient-to-b  before:to-transparent',
+          isActive ? 'before:from-primary' : 'before:from-[#1852ff]',
+        )}
+      />
 
       {/*<svg*/}
       {/*  className="absolute inset-x-0 top-0 w-full transition-opacity duration-1000 opacity-100"*/}

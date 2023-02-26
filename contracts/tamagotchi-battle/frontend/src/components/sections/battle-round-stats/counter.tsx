@@ -81,10 +81,10 @@ const usePairCountdown = () => {
     }
 
     return () => {
-      console.log('umount from dynamic');
+      // console.log('umount from dynamic');
       prevTime.current = undefined;
       if (timer.current) {
-        console.log('destroy timer dynamic');
+        // console.log('destroy timer dynamic');
         clearInterval(timer.current);
         timer.current = undefined;
         setTime('59');
@@ -92,9 +92,9 @@ const usePairCountdown = () => {
     };
   }, [battle, currentPairIdx]);
 
-  useEffect(() => {
-    console.log({ time });
-  }, [time]);
+  // useEffect(() => {
+  //   console.log({ time });
+  // }, [time]);
 
   // useEffect(() => {
   //   return () => {
