@@ -14,7 +14,7 @@ const Component = () => {
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex flex-col flex-1 pt-3 pb-5">
+      <main className="flex flex-col flex-1 gap-4 xxl:gap-8 pt-3 pb-5">
         {isApiReady && isAccountReady ? <Routing /> : <ApiLoader />}
       </main>
       {pathname === '/' && <Footer />}

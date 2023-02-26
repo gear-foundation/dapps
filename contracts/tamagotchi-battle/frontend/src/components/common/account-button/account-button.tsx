@@ -4,6 +4,7 @@ import { Button, buttonStyles } from '@gear-js/ui';
 import { Icon } from '../../ui/icon';
 import { decodeAddress } from '@gear-js/api';
 import { copyToClipboard } from '../../../app/utils';
+import { useAlert } from '@gear-js/react-hooks';
 
 type Props = {
   address: string;
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export const AccountButton = ({ address, name, onClick, isActive, simple }: Props) => {
+  const alert = useAlert();
   const onCopy = async () => {
     const decodedAddress = decodeAddress(address);
     await copyToClipboard(decodedAddress, alert);

@@ -32,6 +32,7 @@ export const BattleTableChampions = () => {
 
   return (
     <motion.div
+      key="table-champions"
       className="absolute left-full top-1/2 z-20 flex w-full max-w-[400px]"
       animate={{
         opacity: 1,
@@ -44,7 +45,12 @@ export const BattleTableChampions = () => {
         y: '-50%',
       }}
       transition={{ delay: 0.5 }}>
-      <motion.div className="flex w-full overflow-hidden" animate={controls} variants={panel} transition={transition}>
+      <motion.div
+        key="table-champions-panel"
+        className="flex w-full overflow-hidden"
+        animate={controls}
+        variants={panel}
+        transition={transition}>
         <button
           className="inline-flex self-start my-10 px-2.5 py-8 btn--error bg-tertiary rounded-l-[6px]"
           onClick={onClick}>
@@ -72,6 +78,7 @@ export const BattleTableChampions = () => {
           </div>
 
           <motion.div
+            key="table-champions-bubble"
             className="absolute top-0 left-6 -z-1 w-[min(100%,306px)] blur-lg"
             animate={controls}
             variants={{

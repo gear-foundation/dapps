@@ -2,6 +2,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 import { CreateTamagotchiForm } from 'components/forms/create-tamagotchi-form';
 import { LoginSection } from 'components/sections/login-section';
+import { Link } from 'react-router-dom';
 
 export const Home = () => {
   const { account } = useAccount();
@@ -31,6 +32,9 @@ export const Home = () => {
             )}
           </div>
           <div className=" w-full">{account ? <CreateTamagotchiForm /> : <LoginSection />}</div>
+          <div className=" w-full">
+            <Link to={'/test'}>Test page</Link>
+          </div>
         </div>
       </div>
     </section>

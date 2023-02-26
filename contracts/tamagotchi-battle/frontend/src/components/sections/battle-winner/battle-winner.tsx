@@ -21,18 +21,19 @@ export const BattleWinner = ({ battle }: { battle: BattleStateResponse }) => {
               </p>
             </div>
           </div>
-          <div className="relative grow flex justify-center gap-10 mt-2 xxl:mt-15">
-            <div className="relative w-full max-w-[450px] flex flex-col">
+          <div className="relative grow grid gap-10 mt-2 xxl:mt-15">
+            <div className="grow grid max-h-full my-auto h-full">
               <TamagotchiAvatar
                 color={winner.color}
                 age={winner.dateOfBirth}
-                className="grow h-full mx-auto w-fit max-w-full"
+                className="max-w-full"
+                // className="grow h-full mx-auto w-fit max-w-full"
                 isWinner
                 isDead={!winner.health}
               />
             </div>
           </div>
-          <div className="relative flex gap-10 justify-center mt-4 xxl:mt-7">
+          <div className="relative z-1 flex gap-10 justify-center mt-4 xxl:mt-7">
             <TamagotchiBattleInfoCard tamagotchi={winner} isActive />
           </div>
         </section>

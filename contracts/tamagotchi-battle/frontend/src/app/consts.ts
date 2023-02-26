@@ -23,3 +23,14 @@ export const MULTIPLIER = {
   MINUTES: 60,
   HOURS: 24,
 };
+
+export const PLAYER_CARD = {
+  spacing: {
+    desktop: 8,
+    mobile: 6,
+  },
+  width: {
+    desktop: 160,
+    mobile: 140,
+  },
+};

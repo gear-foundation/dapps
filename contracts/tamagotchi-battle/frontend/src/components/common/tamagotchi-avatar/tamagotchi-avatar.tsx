@@ -51,7 +51,8 @@ export const TamagotchiAvatar = ({
   const tamagotchiAge = getTamagotchiAgeDiff(age);
 
   const s = 'tamagotchi';
-  const cn = 'absolute inset-0 w-auto h-full max-w-full aspect-square';
+  const t = 'max-w-full w-full h-full';
+  const cn = `absolute inset-0 ${t}`;
   const emo: TamagotchiAvatarEmotions = isDead ? 'scared' : isWinner ? 'hello' : emotion;
   const mouse = tamagotchiAge === 'baby' ? 'face-baby' : `mouse-${tamagotchiAge}-${emo === 'hello' ? 'happy' : emo}`;
   const head = `head-${tamagotchiAge}`;
@@ -65,7 +66,7 @@ export const TamagotchiAvatar = ({
 
   return (
     <AnimatePresence initial={false}>
-      <div className={clsx('relative', getTamagotchiColor(color).body, className ?? 'grow w-full h-30 aspect-square')}>
+      <div className={clsx('relative', getTamagotchiColor(color).body, className)}>
         <TamagotchiAvatarActiveScene isActive={Boolean(isActive)} />
         <TamagotchiAvatarWinnerScene isActive={Boolean(isWinner)} />
         {!isDead && <Icon name={tail} section={s} className={cn} />}
@@ -75,7 +76,7 @@ export const TamagotchiAvatar = ({
         <Icon name={body} section={s} className={cn} />
         {hasItem?.includes('bag') && <Icon name="body-bag" section={s} className={cn} />}
         <Icon name={head} section={s} className={cn} />
-        <Icon name={mouse} section={s} className="relative w-auto h-full max-w-full aspect-square" />
+        <Icon name={mouse} section={s} className={clsx('relative', t)} />
         <Icon name={eye} section={s} className={clsx(cn, 'text-[#16B768]')} />
         {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
         {!isDead && glasses && <Icon name={glasses} section={s} className={cn} />}
@@ -144,30 +145,27 @@ export const TamagotchiAvatar = ({
   );
 };
 
-const TamagotchiAvatarWinnerScene = ({ isActive }: { isActive: boolean }) => {
-  return (
+const TamagotchiAvatarWinnerScene = ({ isActive }: { isActive: boolean }) => (
+  <div className="absolute -top-[2%] -inset-x-[8%] -bottom-[16.5%]">
     <svg
+      className="w-full h-full"
       width="550"
-      height="638"
-      viewBox="0 0 550 638"
+      height="586"
+      viewBox="0 0 550 586"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={clsx(
-        'absolute inset-x-0 top-1/2 -z-1 w-full h-auto max-h-[153%] aspect-[450/523] -translate-y-1/2 transition-opacity duration-1000',
-        !isActive && 'opacity-0',
-      )}>
-      <g opacity="0.7" filter="url(#filter0_f_1316_750739)">
+      xmlns="http://www.w3.org/2000/svg">
+      <g opacity="0.7" filter="url(#filter0_f_160_17759)">
         <ellipse cx="275" cy="497.5" rx="225" ry="60.5" fill="#22C43D" />
       </g>
-      <g style={{ mixBlendMode: 'color-dodge' }} filter="url(#filter1_f_1316_750739)">
+      <g className="" filter="url(#filter1_f_160_17759)">
         <path
           d="M91.7511 509.897C83.5554 541.555 107.454 572.429 140.155 572.429H405.909C438.348 572.429 462.2 542.016 454.468 510.511L345.126 64.9997H206.93L91.7511 509.897Z"
-          fill="url(#paint0_linear_1316_750739)"
+          fill="url(#paint0_linear_160_17759)"
         />
       </g>
       <defs>
         <filter
-          id="filter0_f_1316_750739"
+          id="filter0_f_160_17759"
           x="0"
           y="387"
           width="550"
@@ -176,22 +174,22 @@ const TamagotchiAvatarWinnerScene = ({ isActive }: { isActive: boolean }) => {
           colorInterpolationFilters="sRGB">
           <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-          <feGaussianBlur stdDeviation="25" result="effect1_foregroundBlur_1316_750739" />
+          <feGaussianBlur stdDeviation="25" result="effect1_foregroundBlur_160_17759" />
         </filter>
         <filter
-          id="filter1_f_1316_750739"
-          x="25.1289"
-          y="-0.000274658"
-          width="495.804"
+          id="filter1_f_160_17759"
+          x="25.1294"
+          y="0"
+          width="495.803"
           height="637.429"
           filterUnits="userSpaceOnUse"
           colorInterpolationFilters="sRGB">
           <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-          <feGaussianBlur stdDeviation="32.5" result="effect1_foregroundBlur_1316_750739" />
+          <feGaussianBlur stdDeviation="32.5" result="effect1_foregroundBlur_160_17759" />
         </filter>
         <linearGradient
-          id="paint0_linear_1316_750739"
+          id="paint0_linear_160_17759"
           x1="257.549"
           y1="572.429"
           x2="257.549"
@@ -203,8 +201,37 @@ const TamagotchiAvatarWinnerScene = ({ isActive }: { isActive: boolean }) => {
         </linearGradient>
       </defs>
     </svg>
-  );
-};
+
+    {/*<svg*/}
+    {/*  className="w-full h-full"*/}
+    {/*  width="450"*/}
+    {/*  height="508"*/}
+    {/*  viewBox="0 0 450 508"*/}
+    {/*  fill="none"*/}
+    {/*  xmlns="http://www.w3.org/2000/svg">*/}
+    {/*  <ellipse className="blur-lg" opacity="0.7" cx="225" cy="432.5" rx="225" ry="60.5" fill="#22C43D" />*/}
+    {/*  <g className="blur-[32px]">*/}
+    {/*    <path*/}
+    {/*      d="M41.7511 444.897C33.5554 476.555 57.4543 507.429 90.1553 507.429H355.909C388.348 507.429 412.2 477.016 404.468 445.511L295.126 -0.000279844H156.93L41.7511 444.897Z"*/}
+    {/*      fill="url(#paint0_linear_153_3424)"*/}
+    {/*    />*/}
+    {/*  </g>*/}
+    {/*  <defs>*/}
+    {/*    <linearGradient*/}
+    {/*      id="paint0_linear_153_3424"*/}
+    {/*      x1="207.549"*/}
+    {/*      y1="507.429"*/}
+    {/*      x2="207.549"*/}
+    {/*      y2="-0.000274658"*/}
+    {/*      gradientUnits="userSpaceOnUse">*/}
+    {/*      <stop stopColor="#16B768" stopOpacity="0" />*/}
+    {/*      <stop offset="0.350975" stopColor="#16B768" />*/}
+    {/*      <stop offset="1" stopColor="#16B768" />*/}
+    {/*    </linearGradient>*/}
+    {/*  </defs>*/}
+    {/*</svg>*/}
+  </div>
+);
 const TamagotchiAvatarActiveScene = ({ isActive }: { isActive: boolean }) => {
   return (
     <svg
@@ -214,7 +241,7 @@ const TamagotchiAvatarActiveScene = ({ isActive }: { isActive: boolean }) => {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       className={clsx(
-        'absolute inset-x-0 top-1/2 -z-1 w-full h-auto max-h-[153%] aspect-[450/523] -translate-y-1/2 transition-opacity duration-1000',
+        'absolute left-1/2 top-1/2 -z-1 w-auto h-[120%] aspect-[450/523] -translate-y-1/2 -translate-x-1/2 transition-opacity duration-1000',
         !isActive && 'opacity-0',
       )}>
       <g filter="url(#filter0_f_61_21481)">

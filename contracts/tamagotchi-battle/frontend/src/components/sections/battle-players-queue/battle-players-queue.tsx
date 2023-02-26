@@ -6,11 +6,7 @@ import { Icon } from 'components/ui/icon';
 import { useBattle } from 'app/context';
 import { useRefDimensions } from 'app/hooks/use-ref-dimensions';
 import { useIsLarge } from '../../../app/hooks/use-media';
-
-const SPACING = 8;
-const SPACING_MOBILE = 6;
-const CARD_WIDTH = 160;
-const CARD_WIDTH_MOBILE = 140;
+import { PLAYER_CARD } from '../../../app/consts';
 
 export const BattlePlayersQueue = () => {
   const { players } = useBattle();
@@ -19,8 +15,8 @@ export const BattlePlayersQueue = () => {
   const [w] = useRefDimensions(ref);
   const isFull = useIsLarge();
 
-  const width = isFull ? CARD_WIDTH : CARD_WIDTH_MOBILE;
-  const space = isFull ? SPACING : SPACING_MOBILE;
+  const width = isFull ? PLAYER_CARD.width.desktop : PLAYER_CARD.width.mobile;
+  const space = isFull ? PLAYER_CARD.spacing.desktop : PLAYER_CARD.spacing.mobile;
 
   useEffect(() => {
     setIsSlider(
@@ -31,7 +27,7 @@ export const BattlePlayersQueue = () => {
   return (
     <section
       ref={ref}
-      className="flex justify-center items-end mt-auto px-5 overflow-hidden min-h-[164px] xxl:min-h-[208px]">
+      className="flex justify-center items-end mt-auto px-5 overflow-hidden min-h-[144px] xxl:min-h-[208px]">
       {isSlider ? (
         <QueueSlider />
       ) : (
@@ -53,7 +49,7 @@ const options: KeenSliderOptions = {
   mode: 'snap',
   slides: {
     perView: 'auto',
-    spacing: SPACING,
+    spacing: PLAYER_CARD.spacing.desktop,
   },
   created() {},
 };
@@ -63,8 +59,8 @@ const QueueSlider = () => {
   const [sliderRef, instanceRef] = useKeenSlider(options);
   const isFull = useIsLarge();
 
-  const width = isFull ? CARD_WIDTH : CARD_WIDTH_MOBILE;
-  const space = isFull ? SPACING : SPACING_MOBILE;
+  const width = isFull ? PLAYER_CARD.width.desktop : PLAYER_CARD.width.mobile;
+  const space = isFull ? PLAYER_CARD.spacing.desktop : PLAYER_CARD.spacing.mobile;
 
   useEffect(() => {
     instanceRef.current?.update({ ...options, slides: { perView: 'auto', spacing: space } });

@@ -34,6 +34,7 @@ export const BattleTablePairs = () => {
 
   return (
     <motion.div
+      key="table-pairs"
       className="absolute right-full top-1/2 z-20 flex"
       animate={{
         opacity: 1,
@@ -46,7 +47,12 @@ export const BattleTablePairs = () => {
         y: '-50%',
       }}
       transition={{ delay: 0.5 }}>
-      <motion.div className="flex overflow-hidden" animate={controls} variants={panel} transition={transition}>
+      <motion.div
+        key="table-pairs-panel"
+        className="flex overflow-hidden"
+        animate={controls}
+        variants={panel}
+        transition={transition}>
         <section
           ref={ref}
           className="relative p-8 px-6 border-2 border-l-transparent border-primary rounded-r-[20px] shadow after:absolute after:inset-0 after:-z-2 after:bg-[#1D1D1D] after:rounded-r-[20px]">
