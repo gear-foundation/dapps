@@ -64,7 +64,7 @@ export const TamagotchiAvatar = ({
   const body = `body-${isDead ? 'dead' : 'normal'}`;
 
   return (
-    <AnimatePresence>
+    <AnimatePresence initial={false}>
       <div className={clsx('relative', getTamagotchiColor(color).body, className ?? 'grow w-full h-30 aspect-square')}>
         <TamagotchiAvatarActiveScene isActive={Boolean(isActive)} />
         <TamagotchiAvatarWinnerScene isActive={Boolean(isWinner)} />
@@ -111,7 +111,6 @@ export const TamagotchiAvatar = ({
             className={clsx(
               'absolute top-1/4 w-12 h-12 grid place-items-center pointer-events-none',
               reverse ? 'right-[10%]' : 'left-[10%]',
-              // !damage ? 'opacity-0 translate-y-5' : 'translate-y-0',
             )}>
             <Icon
               name="damage"

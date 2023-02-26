@@ -1,7 +1,7 @@
 import { useApp, useBattle } from 'app/context';
 import { useEffect } from 'react';
 import type { BattleStatePlayer, BattleStateResponse } from 'app/types/battles';
-import { useAccount, useApi, useReadFullState } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useApi, useReadFullState } from '@gear-js/react-hooks';
 import { useMetadata } from './use-metadata';
 import metaBattle from 'assets/meta/meta-battle.txt';
 import { ENV } from 'app/consts';
@@ -23,6 +23,7 @@ export function useInitBattleData() {
     useBattle();
   const { state } = useReadBattleState<BattleStateResponse>();
   const { metadata } = useMetadata(metaBattle);
+  const alert = useAlert();
 
   useEffect(() => {
     setBattle(state);
@@ -66,6 +67,7 @@ export function useInitBattleData() {
 
         if (details.isSome && details.unwrap().isReply && !details.unwrap().asReply.statusCode.eq(0)) {
           console.log(payload.toHuman());
+          alert.error(`${payload.toHuman()}`, { title: 'Error during program execution' });
         } else {
           const decodedPayload = metadata.createType(5, payload).toJSON();
 

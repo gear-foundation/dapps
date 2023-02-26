@@ -1,10 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { useRefDimensions } from '../../../app/hooks/use-ref-dimensions';
+import { useCallback, useRef, useState } from 'react';
+import { useRefDimensions } from 'app/hooks/use-ref-dimensions';
 import { motion, useAnimation } from 'framer-motion';
 import { Icon } from '../../ui/icon';
 import clsx from 'clsx';
-import { useBattle } from '../../../app/context';
-import { BattleStatePlayer } from '../../../app/types/battles';
+import { useBattle } from 'app/context';
+import { BattleStatePlayer } from 'app/types/battles';
 import * as ScrollArea from '@radix-ui/react-scroll-area';
 import { TamagotchiAvatar } from '../../common/tamagotchi-avatar';
 
@@ -143,16 +143,11 @@ const BattleTablePairsRow = ({ player, position }: { player: BattleStatePlayer; 
         }
         className="w-5 h-5"
       />
-      <div
-        className={clsx(
-          'relative w-10 aspect-square rounded-full overflow-hidden ring-4 ring-opacity-10',
-          !player.health ? 'bg-error ring-error' : 'bg-white ring-white',
-        )}>
+      <div className="relative w-10 aspect-square rounded-full overflow-hidden ring-4 ring-opacity-10 bg-white ring-white">
         <TamagotchiAvatar
           className="w-20 aspect-square -left-1/2 pointer-events-none"
           age={player.dateOfBirth}
           color={player.color}
-          isDead={!player.health}
         />
       </div>
       <div className="flex items-center gap-3 tracking-[0.03em] font-medium">

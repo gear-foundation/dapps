@@ -26,7 +26,7 @@ export const BattleWinner = ({ battle }: { battle: BattleStateResponse }) => {
               <TamagotchiAvatar
                 color={winner.color}
                 age={winner.dateOfBirth}
-                className="grow w-full h-full"
+                className="grow h-full mx-auto w-fit max-w-full"
                 isWinner
                 isDead={!winner.health}
               />

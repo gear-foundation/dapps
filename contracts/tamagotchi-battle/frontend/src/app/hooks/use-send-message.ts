@@ -14,10 +14,10 @@ type SendMessageOptions = {
   onError?: () => void;
 };
 
-const getAutoGasLimit = ({ waited, min_limit }: GasInfo) => {
-  return min_limit;
-  // return waited ? min_limit.add(min_limit.mul(bnToBn(0.3))) : min_limit.add(min_limit.mul(bnToBn(0.2)));
-};
+// const getAutoGasLimit = ({ waited, min_limit }: GasInfo) => {
+//   return min_limit;
+//   // return waited ? min_limit.add(min_limit.mul(bnToBn(0.3))) : min_limit.add(min_limit.mul(bnToBn(0.2)));
+// };
 
 export function useSendMessage(destination: HexString, metadata: ProgramMetadata | undefined) {
   const { api } = useApi();

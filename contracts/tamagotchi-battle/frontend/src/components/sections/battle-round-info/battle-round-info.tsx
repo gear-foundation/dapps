@@ -3,7 +3,7 @@ import { useBattle } from 'app/context';
 import { Icon } from 'components/ui/icon';
 
 export const BattleRoundInfo = () => {
-  const { rivals, currentPlayer, players } = useBattle();
+  const { rivals, currentPlayer, players, currentPairIdx, battle } = useBattle();
   return (
     <div className="relative flex gap-10 justify-between mt-4 xxl:mt-7">
       <div className="basis-[40%] flex justify-center">
@@ -37,7 +37,10 @@ export const BattleRoundInfo = () => {
         </div>
       </div>
       <div className="basis-[40%] flex justify-center">
-        <TamagotchiBattleInfoCard tamagotchi={rivals[1]} isActive={rivals[1].tmgId === currentPlayer} />
+        <TamagotchiBattleInfoCard
+          tamagotchi={rivals[1]}
+          isActive={rivals[1].tmgId === currentPlayer || rivals[1].tmgId === battle?.pairs[currentPairIdx].winner}
+        />
       </div>
     </div>
   );
