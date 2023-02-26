@@ -75,7 +75,7 @@ export const BattleRoundPlayers = () => {
               )}
             </div>
             <div className="space-y-2 xxl:space-y-3">
-              {battle.state === 'WaitNextRound' && (
+              {battle.state === 'WaitNextRound' && isAdmin && (
                 <button
                   className={clsx(
                     'btn items-center gap-2 w-full transition-colors',
@@ -83,7 +83,7 @@ export const BattleRoundPlayers = () => {
                     buttonStyles.button,
                   )}
                   onClick={onNewRound}
-                  disabled={isPending || isAdmin ? false : !isAllowed}>
+                  disabled={isPending}>
                   Start New Round
                 </button>
               )}
