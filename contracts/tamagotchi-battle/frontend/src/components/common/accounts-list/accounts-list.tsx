@@ -1,11 +1,8 @@
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
-import { decodeAddress } from '@gear-js/api';
-import { Button } from '@gear-js/ui';
-import { useAccount, useAlert } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 import { AccountButton } from 'components/common/account-button';
-import { Icon } from 'components/ui/icon';
 import { LOCAL_STORAGE } from 'app/consts';
-import { copyToClipboard, isLoggedIn } from 'app/utils';
+import { isLoggedIn } from 'app/utils';
 import { useApp, useBattle } from 'app/context';
 import { useNavigate } from 'react-router-dom';
 
@@ -15,7 +12,6 @@ type Props = {
 };
 
 export const AccountsList = ({ list, onChange }: Props) => {
-  const alert = useAlert();
   const { setIsAdmin } = useApp();
   const { battle } = useBattle();
   const { logout, login } = useAccount();

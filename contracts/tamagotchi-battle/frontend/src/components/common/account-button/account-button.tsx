@@ -1,9 +1,9 @@
 import Identicon from '@polkadot/react-identicon';
 import clsx from 'clsx';
-import { Button, buttonStyles } from '@gear-js/ui';
+import { buttonStyles } from '@gear-js/ui';
 import { Icon } from '../../ui/icon';
 import { decodeAddress } from '@gear-js/api';
-import { copyToClipboard } from '../../../app/utils';
+import { copyToClipboard } from 'app/utils';
 import { useAlert } from '@gear-js/react-hooks';
 
 type Props = {
@@ -16,9 +16,9 @@ type Props = {
 
 export const AccountButton = ({ address, name, onClick, isActive, simple }: Props) => {
   const alert = useAlert();
-  const onCopy = async () => {
+  const onCopy = () => {
     const decodedAddress = decodeAddress(address);
-    await copyToClipboard(decodedAddress, alert);
+    copyToClipboard(decodedAddress, alert);
   };
 
   return (
