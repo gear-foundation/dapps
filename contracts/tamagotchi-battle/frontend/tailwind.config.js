@@ -1,7 +1,7 @@
 const plugin = require('tailwindcss/plugin');
 const defaultTheme = require('tailwindcss/defaultTheme');
 
-/** @type {import('tailwindcss').Config} */
+/** @type {import("tailwindcss").Config} */
 module.exports = {
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
@@ -16,6 +16,10 @@ module.exports = {
         'battle-turn-3': 'turn 2s linear infinite 900ms',
         wave: 'wave 3s ease-in infinite',
         'wave-2': 'wave 2s linear infinite 500ms',
+        deadTamagotchi: 'deadTamagotchi 3s linear infinite 1500ms',
+        deadTamagotchiIcon: 'deadTamagotchiIcon 2s linear infinite 1500ms',
+        deadTamagotchiShadow: 'deadTamagotchiShadow 3s linear infinite 1500ms',
+        tBreath: '10s tamagotchiBreath ease-in infinite',
       },
       keyframes: {
         wiggle: {
@@ -34,6 +38,32 @@ module.exports = {
         'pulse-once': {
           '0%': { opacity: 0 },
           '100%': { opacity: 1 },
+        },
+        deadTamagotchi: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(20px)' },
+        },
+        deadTamagotchiShadow: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.2)' },
+        },
+        tamagotchiBreath: {
+          '0%': { transform: 'scale(1)' },
+          '3%': { transform: 'scale(1.008)' },
+          '5%': { transform: 'scale(1.01)' },
+          '7%': { transform: 'scale(1)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        deadTamagotchiIcon: {
+          '0%': { transform: 'rotate(0)' },
+          '45%': { transform: 'rotate(0)' },
+          '50%': { transform: 'rotate(8deg)' },
+          '55%': { transform: 'rotate(-5deg)' },
+          '60%': { transform: 'rotate(0)' },
+          '63%': { transform: 'rotate(7deg)' },
+          '64%': { transform: 'rotate(-5deg)' },
+          '65%': { transform: 'rotate(0)' },
+          '100%': { transform: 'rotate(0)' },
         },
       },
       colors: {

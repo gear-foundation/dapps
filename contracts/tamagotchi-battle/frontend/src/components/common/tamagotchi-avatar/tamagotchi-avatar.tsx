@@ -69,38 +69,49 @@ export const TamagotchiAvatar = ({
       <div className={clsx('relative', getTamagotchiColor(color).body, className)}>
         <TamagotchiAvatarActiveScene isActive={Boolean(isActive)} />
         <TamagotchiAvatarWinnerScene isActive={Boolean(isWinner)} />
-        {!isDead && <Icon name={tail} section={s} className={cn} />}
-        {!isDead && <Icon name={hands} section={s} className={cn} />}
-        {!isDead && <Icon name="body-stand" section={s} className={cn} />}
-        {!isDead && <Icon name="sneakers" section={s} className={clsx(cn, getTamagotchiColor(color).sneakers)} />}
-        <Icon name={body} section={s} className={cn} />
-        {hasItem?.includes('bag') && <Icon name="body-bag" section={s} className={cn} />}
-        <Icon name={head} section={s} className={cn} />
-        <Icon name={mouse} section={s} className={clsx('relative', t)} />
-        <Icon name={eye} section={s} className={clsx(cn, 'text-[#16B768]')} />
-        {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
-        {!isDead && glasses && <Icon name={glasses} section={s} className={cn} />}
-        {!isDead && hasItem?.includes('hat') && <Icon name="head-hat" section={s} className={cn} />}
+
         {isDead && asPlayer && (
-          <motion.div
-            key="death"
-            variants={variants}
-            initial={{ opacity: 0, y: 50 }}
-            animate="center"
-            exit="exit"
-            transition={transition}
-            className={clsx(
-              'absolute bottom-[70%] w-10 xxl:w-12 aspect-square grid place-items-center pointer-events-none',
-              reverse ? 'right-[8%]' : 'left-[8%]',
-            )}>
-            <Icon
-              name="damage"
-              section={s}
-              className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
-            />
-            <Icon name="death" section={s} className="relative z-1 w-[45%] aspect-square text-white" />
-          </motion.div>
+          <Icon name="dead-shadow" section={s} className="absolute bottom-0 w-auto h-5 animate-deadTamagotchiShadow" />
         )}
+
+        <div
+          className={clsx('relative h-full w-full', isDead && asPlayer ? 'animate-deadTamagotchi' : 'animate-tBreath')}>
+          {!isDead && <Icon name={tail} section={s} className={cn} />}
+          {!isDead && <Icon name={hands} section={s} className={cn} />}
+          {!isDead && <Icon name="body-stand" section={s} className={cn} />}
+          {!isDead && <Icon name="sneakers" section={s} className={clsx(cn, getTamagotchiColor(color).sneakers)} />}
+          <Icon name={body} section={s} className={cn} />
+          {hasItem?.includes('bag') && <Icon name="body-bag" section={s} className={cn} />}
+          <Icon name={head} section={s} className={cn} />
+          <Icon name={mouse} section={s} className={clsx('relative', t)} />
+          <Icon name={eye} section={s} className={clsx(cn, 'text-[#16B768]')} />
+          {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
+          {!isDead && glasses && <Icon name={glasses} section={s} className={cn} />}
+          {!isDead && hasItem?.includes('hat') && <Icon name="head-hat" section={s} className={cn} />}
+
+          {isDead && asPlayer && (
+            <motion.div
+              key="death"
+              variants={variants}
+              initial={{ opacity: 0, y: 50 }}
+              animate="center"
+              exit="exit"
+              transition={transition}
+              className={clsx(
+                'absolute bottom-[70%] w-10 xxl:w-12 aspect-square grid place-items-center pointer-events-none',
+                reverse ? 'right-[8%]' : 'left-[8%]',
+                'animate-deadTamagotchiIcon',
+              )}>
+              <Icon
+                name="damage"
+                section={s}
+                className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
+              />
+              <Icon name="death" section={s} className="relative z-1 w-[45%] aspect-square text-white" />
+            </motion.div>
+          )}
+        </div>
+
         {!isDead && !isWinner && !!damage && (
           <motion.div
             key="damage"
