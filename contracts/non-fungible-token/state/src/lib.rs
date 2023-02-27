@@ -63,6 +63,15 @@ pub mod metafns {
             .collect()
     }
 
+    pub fn token_by_id(state: State, id: TokenId) -> Option<Token> {
+        state
+            .token
+            .owner_by_id
+            .iter()
+            .find(|(i, _)| id.eq(i))
+            .map(|(token_id, _)| token_helper(token_id, &state))
+    }
+
     pub fn approved_tokens(state: State, account: ActorId) -> Vec<Token> {
         state
             .token
