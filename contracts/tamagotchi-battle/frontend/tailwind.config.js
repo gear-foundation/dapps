@@ -20,6 +20,7 @@ module.exports = {
         deadTamagotchiIcon: 'deadTamagotchiIcon 2s linear infinite 1500ms',
         deadTamagotchiShadow: 'deadTamagotchiShadow 3s linear infinite 1500ms',
         tBreath: '10s tamagotchiBreath ease-in infinite',
+        tBreath2: '10s tamagotchiBreath ease-in infinite 5s',
       },
       keyframes: {
         wiggle: {

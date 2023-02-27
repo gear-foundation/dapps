@@ -5,7 +5,7 @@ import { getTamagotchiAgeDiff } from 'app/utils/get-tamagotchi-age';
 import { TamagotchiAvatarEmotions } from 'app/types/tamagotchi';
 import { BattleRoundMoveVariants, TamagotchiColor } from 'app/types/battles';
 import { getTamagotchiColor } from 'app/utils/get-tamagotchi-color';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 const transition = {
   duration: 1,
@@ -66,10 +66,9 @@ export const TamagotchiAvatar = ({
   const body = `body-${isDead ? 'dead' : 'normal'}`;
 
   return (
-    <AnimatePresence initial={false}>
+    <>
       <div className={clsx('relative', getTamagotchiColor(color).body, className)}>
-        <TamagotchiAvatarActiveScene isActive={Boolean(isActive)} />
-        <TamagotchiAvatarWinnerScene isActive={Boolean(isWinner)} />
+        {(isActive || isWinner) && <BackdropScene isWinner={Boolean(isWinner)} />}
 
         {isDead && asPlayer && (
           <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center items-center h-full">
@@ -81,11 +80,16 @@ export const TamagotchiAvatar = ({
           </div>
         )}
 
-        <div
+        <motion.div
+          key="tamagotchi-avatar"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0, transition: { delay: 0 } }}
+          transition={{ duration: 0.5, delay: 0.5 }}
           className={clsx(
             'relative flex flex-col h-full max-h-full',
             maxH,
-            isDead && asPlayer ? 'animate-deadTamagotchi' : 'animate-tBreath',
+            isDead && asPlayer ? 'animate-deadTamagotchi' : reverse ? 'animate-tBreath2' : 'animate-tBreath',
           )}>
           <div className="relative flex flex-col my-auto h-full">
             <div className="relative aspect-square h-full max-w-full mx-auto">
@@ -125,7 +129,7 @@ export const TamagotchiAvatar = ({
               )}
             </div>
           </div>
-        </div>
+        </motion.div>
 
         {!isDead && !isWinner && !!damage && (
           <motion.div
@@ -167,153 +171,60 @@ export const TamagotchiAvatar = ({
           </motion.div>
         )}
       </div>
-    </AnimatePresence>
+    </>
   );
 };
 
-const TamagotchiAvatarWinnerScene = ({ isActive }: { isActive: boolean }) => (
-  <div
-    className={clsx(
-      'absolute -top-[12%] -inset-x-[8%] -bottom-[16.5%] transition-opacity duration-1000 opacity-100',
-      !isActive && '!opacity-0',
-    )}>
+const BackdropScene = ({ isWinner }: { isWinner: boolean }) => (
+  <motion.div
+    key="tamagotchi-backdrop-scene"
+    initial={{ opacity: 0 }}
+    animate={{ opacity: 1 }}
+    exit={{ opacity: 0, transition: { delay: 0 } }}
+    transition={{ duration: 0.5, delay: 1 }}
+    className="absolute -top-[12%] -inset-x-[8%] -bottom-[16.5%] -z-1 overflow-visible">
     <svg
       className="w-full h-full overflow-visible"
-      width="550"
-      height="586"
-      viewBox="0 0 550 586"
+      width="450"
+      height="508"
+      viewBox="0 0 450 508"
       fill="none"
       xmlns="http://www.w3.org/2000/svg">
-      <g opacity="0.7" filter="url(#filter0_f_160_17759)">
-        <ellipse cx="275" cy="497.5" rx="225" ry="60.5" fill="#22C43D" />
-      </g>
-      <g className="" filter="url(#filter1_f_160_17759)">
+      <ellipse
+        className={isWinner ? 'blur-lg' : 'blur-[20px]'}
+        opacity={isWinner ? 0.7 : 1}
+        cx="225"
+        cy="432.5"
+        rx="225"
+        ry="60.5"
+        fill={isWinner ? '#22c43d' : '#a6a6a6'}
+      />
+      <g
+        className={clsx('mix-blend-color-dodge', isWinner ? 'blur-[32px]' : 'blur-[25px]')}
+        opacity={isWinner ? 1 : 0.45}>
         <path
-          d="M91.7511 509.897C83.5554 541.555 107.454 572.429 140.155 572.429H405.909C438.348 572.429 462.2 542.016 454.468 510.511L345.126 64.9997H206.93L91.7511 509.897Z"
-          fill="url(#paint0_linear_160_17759)"
+          d="M41.7511 444.897C33.5554 476.555 57.4543 507.429 90.1553 507.429H355.909C388.348 507.429 412.2 477.016 404.468 445.511L295.126 -0.000279844H156.93L41.7511 444.897Z"
+          fill={`url(#${isWinner ? '__winner' : '__active'})`}
         />
       </g>
       <defs>
-        <filter
-          id="filter0_f_160_17759"
-          x="0"
-          y="387"
-          width="550"
-          height="221"
-          filterUnits="userSpaceOnUse"
-          colorInterpolationFilters="sRGB">
-          <feFlood floodOpacity="0" result="BackgroundImageFix" />
-          <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-          <feGaussianBlur stdDeviation="25" result="effect1_foregroundBlur_160_17759" />
-        </filter>
-        <filter
-          id="filter1_f_160_17759"
-          x="25.1294"
-          y="0"
-          width="495.803"
-          height="637.429"
-          filterUnits="userSpaceOnUse"
-          colorInterpolationFilters="sRGB">
-          <feFlood floodOpacity="0" result="BackgroundImageFix" />
-          <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-          <feGaussianBlur stdDeviation="32.5" result="effect1_foregroundBlur_160_17759" />
-        </filter>
         <linearGradient
-          id="paint0_linear_160_17759"
-          x1="257.549"
-          y1="572.429"
-          x2="257.549"
-          y2="64.9997"
+          id="__winner"
+          x1="207.549"
+          y1="507.429"
+          x2="207.549"
+          y2="-0.000274658"
           gradientUnits="userSpaceOnUse">
           <stop stopColor="#16B768" stopOpacity="0" />
           <stop offset="0.350975" stopColor="#16B768" />
           <stop offset="1" stopColor="#16B768" />
         </linearGradient>
-      </defs>
-    </svg>
-
-    {/*<svg*/}
-    {/*  className="w-full h-full"*/}
-    {/*  width="450"*/}
-    {/*  height="508"*/}
-    {/*  viewBox="0 0 450 508"*/}
-    {/*  fill="none"*/}
-    {/*  xmlns="http://www.w3.org/2000/svg">*/}
-    {/*  <ellipse className="blur-lg" opacity="0.7" cx="225" cy="432.5" rx="225" ry="60.5" fill="#22C43D" />*/}
-    {/*  <g className="blur-[32px]">*/}
-    {/*    <path*/}
-    {/*      d="M41.7511 444.897C33.5554 476.555 57.4543 507.429 90.1553 507.429H355.909C388.348 507.429 412.2 477.016 404.468 445.511L295.126 -0.000279844H156.93L41.7511 444.897Z"*/}
-    {/*      fill="url(#paint0_linear_153_3424)"*/}
-    {/*    />*/}
-    {/*  </g>*/}
-    {/*  <defs>*/}
-    {/*    <linearGradient*/}
-    {/*      id="paint0_linear_153_3424"*/}
-    {/*      x1="207.549"*/}
-    {/*      y1="507.429"*/}
-    {/*      x2="207.549"*/}
-    {/*      y2="-0.000274658"*/}
-    {/*      gradientUnits="userSpaceOnUse">*/}
-    {/*      <stop stopColor="#16B768" stopOpacity="0" />*/}
-    {/*      <stop offset="0.350975" stopColor="#16B768" />*/}
-    {/*      <stop offset="1" stopColor="#16B768" />*/}
-    {/*    </linearGradient>*/}
-    {/*  </defs>*/}
-    {/*</svg>*/}
-  </div>
-);
-const TamagotchiAvatarActiveScene = ({ isActive }: { isActive: boolean }) => {
-  return (
-    <svg
-      width="530"
-      height="614"
-      viewBox="0 0 530 614"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={clsx(
-        'absolute left-1/2 top-1/2 -z-1 w-auto h-[120%] aspect-[450/523] -translate-y-1/2 -translate-x-1/2 transition-opacity duration-1000',
-        !isActive && 'opacity-0',
-      )}>
-      <g filter="url(#filter0_f_61_21481)">
-        <ellipse cx="265" cy="513.5" rx="225" ry="60.5" fill="#A6A6A6" />
-      </g>
-      <g style={{ mixBlendMode: 'color-dodge' }} opacity="0.45" filter="url(#filter1_f_61_21481)">
-        <path
-          d="M77.9948 495.748C69.6856 527.441 93.5956 558.428 126.36 558.428H396.715C429.215 558.428 453.078 527.908 445.239 496.368L334.546 50.9987H194.596L77.9948 495.748Z"
-          fill="url(#paint0_linear_61_21481)"
-        />
-      </g>
-      <defs>
-        <filter
-          id="filter0_f_61_21481"
-          x="0"
-          y="413"
-          width="530"
-          height="201"
-          filterUnits="userSpaceOnUse"
-          colorInterpolationFilters="sRGB">
-          <feFlood floodOpacity="0" result="BackgroundImageFix" />
-          <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-          <feGaussianBlur stdDeviation="20" result="effect1_foregroundBlur_61_21481" />
-        </filter>
-        <filter
-          id="filter1_f_61_21481"
-          x="26.3335"
-          y="0.998779"
-          width="470.406"
-          height="607.429"
-          filterUnits="userSpaceOnUse"
-          colorInterpolationFilters="sRGB">
-          <feFlood floodOpacity="0" result="BackgroundImageFix" />
-          <feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape" />
-          <feGaussianBlur stdDeviation="25" result="effect1_foregroundBlur_61_21481" />
-        </filter>
         <linearGradient
-          id="paint0_linear_61_21481"
-          x1="245.857"
-          y1="558.428"
-          x2="245.857"
-          y2="50.9987"
+          id="__active"
+          x1="207.549"
+          y1="507.429"
+          x2="207.549"
+          y2="-0.000274658"
           gradientUnits="userSpaceOnUse">
           <stop stopColor="#CECECE" stopOpacity="0" />
           <stop offset="0.350975" stopColor="#CBCBCB" />
@@ -321,5 +232,5 @@ const TamagotchiAvatarActiveScene = ({ isActive }: { isActive: boolean }) => {
         </linearGradient>
       </defs>
     </svg>
-  );
-};
+  </motion.div>
+);

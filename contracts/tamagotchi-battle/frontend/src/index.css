@@ -113,5 +113,6 @@
 
 
 .card-mask {
-  mask-size: cover;
-  mask-image: url("data:image/svg+xml,%3Csvg width='160' height='246' viewBox='0 0 160 246' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 39.7723C0 33.0257 4.23198 27.004 10.5797 24.7184L79.2308 0L149.329 24.7586C155.724 27.0174 160 33.0628 160 39.8452V246H0V39.7723Z' fill='white'/%3E%3C/svg%3E");}
+  mask-size: 100%;
+  mask-image: url("data:image/svg+xml,%3Csvg width='160' height='246' viewBox='0 0 160 246' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 39.7723C0 33.0257 4.23198 27.004 10.5797 24.7184L79.2308 0L149.329 24.7586C155.724 27.0174 160 33.0628 160 39.8452V246H0V39.7723Z' fill='black'/%3E%3C/svg%3E");
+}

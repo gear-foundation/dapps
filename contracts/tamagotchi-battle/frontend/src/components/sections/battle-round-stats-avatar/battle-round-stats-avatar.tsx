@@ -65,11 +65,11 @@ export const BattleRoundStatsAvatar = ({ tamagotchi, isReverse }: Props) => {
           </div>
         </div>
         <div className={clsx('flex gap-3 tracking-[0.03em]', isReverse && 'flex-row-reverse')}>
-          <div className="relative flex gap-1.5 items-center font-medium font-kanit text-xs leading-5 bg-white/10 py-0.5 px-4 rounded-xl">
+          <div className="relative z-1 flex gap-1.5 items-center font-medium font-kanit text-xs leading-5 bg-white/10 py-0.5 px-4 rounded-xl">
             <Icon name="armor" className="w-3 xxl:w-3.5 aspect-square" />
             <b className="font-bold">{Math.round(tamagotchi.defence / 100)}</b> Armor
           </div>
-          <div className="relative flex gap-1.5 items-center font-medium font-kanit text-xs leading-5 bg-white/10 py-0.5 px-4 rounded-xl">
+          <div className="relative z-1 flex gap-1.5 items-center font-medium font-kanit text-xs leading-5 bg-white/10 py-0.5 px-4 rounded-xl">
             <Icon name="strength" className="w-3 xxl:w-3.5 aspect-square" />
             <b className="font-bold">{Math.round(tamagotchi.power / 100)}</b> Strength
           </div>

@@ -9,13 +9,12 @@ type TamagotchiBattleInfoCardProps = {
 };
 export const TamagotchiBattleInfoCard = ({ tamagotchi, isActive }: TamagotchiBattleInfoCardProps) => {
   return (
-    <div className="relative grid gap-1.5 xxl:gap-4 justify-center w-35 xxl:w-40 pt-7 xxl:pt-13 pb-6 px-3 xxl:px-5 ">
+    <div className="relative grid gap-1.5 xxl:gap-4 justify-center w-35 xxl:w-40 pt-7 xxl:pt-11 pb-6 px-3 xxl:px-5 ">
       <div
         className={clsx(
-          'absolute inset-x-0 -top-2 xxl:-top-5 bottom-0 -z-1 w-full',
-          'bg-gradient-to-b from-dark-500 via-[var(--dark-500)_50%] to-transparent card-mask',
-          'before:absolute before:inset-0 before:bg-gradient-to-b before:to-transparent',
-          isActive ? 'before:from-primary' : 'before:from-theme-blue',
+          'absolute inset-x-0 -top-2 xxl:-top-0 bottom-0 w-full card-mask overflow-visible',
+          'bg-gradient-to-b to-transparent',
+          isActive ? 'from-[#16B768]' : 'from-theme-blue',
         )}
       />
 
@@ -34,7 +33,7 @@ export const TamagotchiBattleInfoCard = ({ tamagotchi, isActive }: TamagotchiBat
           isDead={!tamagotchi.health}
         />
       </div>
-      <h3 className="flex justify-center text-center tracking-[0.03em] text-lg font-medium leading-7">
+      <h3 className="relative flex justify-center text-center tracking-[0.03em] text-lg font-medium leading-7">
         <span className="block truncate max-w-[10ch]">{tamagotchi?.name ? tamagotchi.name : 'Geary'}</span>
       </h3>
       <div
