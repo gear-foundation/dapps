@@ -53,7 +53,7 @@ export const BattleRoundStatsAvatar = ({ tamagotchi, isReverse }: Props) => {
           {!dead && (
             <div
               className={clsx(
-                'absolute w-full h-full rounded-xl bg-primary transition-[width]',
+                'absolute inset-y-0 w-full rounded-xl bg-primary transition-[width]',
                 isReverse ? 'right-0' : 'left-0',
               )}
               style={{ width: `${tamagotchi.health / 25}%` }}
