@@ -70,15 +70,57 @@ export const TamagotchiAvatar = ({
       <div className={clsx('relative', getTamagotchiColor(color).body, className)}>
         {(isActive || isWinner) && <BackdropScene isWinner={Boolean(isWinner)} />}
 
-        {isDead && asPlayer && (
-          <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center items-center h-full">
-            <div className="w-full">
-              <div className={clsx('mx-auto aspect-square flex justify-center items-end', maxH)}>
+        <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center items-center h-full">
+          <div className="w-full">
+            <div className={clsx('relative mx-auto aspect-square flex justify-center items-end', maxH)}>
+              {isDead && asPlayer && (
                 <Icon name="dead-shadow" section={s} className="w-auto h-5 mb-[3.72%] animate-deadTamagotchiShadow" />
-              </div>
+              )}
+
+              {!isDead && !isWinner && !!damage && (
+                <motion.div
+                  key="damage"
+                  variants={variants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ ...transition }}
+                  className={clsx(
+                    'absolute top-1/4 w-12 h-12 grid place-items-center pointer-events-none animate-damageIcon',
+                    reverse ? 'right-[10%]' : 'left-[10%]',
+                  )}>
+                  <Icon
+                    name="damage"
+                    section={s}
+                    className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
+                  />
+                  <span className="relative z-1 text-white font-bold">-{damage}</span>
+                </motion.div>
+              )}
+              {!isDead && !isWinner && action && (
+                <motion.div
+                  key="action"
+                  variants={variants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ ...transition, delay: 1 }}
+                  className="absolute -top-4 inset-0 h-fit leading-4 text-center text-white"
+                  aria-hidden>
+                  <p
+                    className={clsx(
+                      'inline-flex py-1 px-4 font-bold rounded-full',
+                      action === 'Defence' && 'bg-theme-blue',
+                      action === 'Attack' && 'bg-tertiary',
+                      action === 'Skipped' && 'bg-white/20',
+                    )}>
+                    {action}
+                  </p>
+                </motion.div>
+              )}
             </div>
           </div>
-        )}
+        </div>
 
         <motion.div
           key="tamagotchi-avatar"
@@ -130,48 +172,6 @@ export const TamagotchiAvatar = ({
             </div>
           </div>
         </motion.div>
-
-        {!isDead && !isWinner && !!damage && (
-          <motion.div
-            key="damage"
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ ...transition }}
-            className={clsx(
-              'absolute top-1/4 w-12 h-12 grid place-items-center pointer-events-none animate-damageIcon',
-              reverse ? 'right-[10%]' : 'left-[10%]',
-            )}>
-            <Icon
-              name="damage"
-              section={s}
-              className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
-            />
-            <span className="relative z-1 text-white font-bold">-{damage}</span>
-          </motion.div>
-        )}
-        {!isDead && !isWinner && action && (
-          <motion.div
-            key="action"
-            variants={variants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={{ ...transition, delay: 1 }}
-            className="absolute -top-4 inset-0 h-fit leading-4 text-center text-white"
-            aria-hidden>
-            <span
-              className={clsx(
-                'inline-flex py-0.5 px-4 font-bold rounded-full',
-                action === 'Defence' && 'bg-theme-blue',
-                action === 'Attack' && 'bg-tertiary',
-                action === 'Skipped' && 'bg-white/20',
-              )}>
-              {action}
-            </span>
-          </motion.div>
-        )}
       </div>
     </>
   );
