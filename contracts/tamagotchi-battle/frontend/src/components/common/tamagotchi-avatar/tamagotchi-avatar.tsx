@@ -140,7 +140,7 @@ export const TamagotchiAvatar = ({
             exit="exit"
             transition={{ ...transition }}
             className={clsx(
-              'absolute top-1/4 w-12 h-12 grid place-items-center pointer-events-none',
+              'absolute top-1/4 w-12 h-12 grid place-items-center pointer-events-none animate-damageIcon',
               reverse ? 'right-[10%]' : 'left-[10%]',
             )}>
             <Icon
@@ -164,7 +164,9 @@ export const TamagotchiAvatar = ({
             <span
               className={clsx(
                 'inline-flex py-0.5 px-4 font-bold rounded-full',
-                action === 'Defence' ? 'bg-theme-blue' : 'bg-tertiary',
+                action === 'Defence' && 'bg-theme-blue',
+                action === 'Attack' && 'bg-tertiary',
+                action === 'Skipped' && 'bg-white/20',
               )}>
               {action}
             </span>
@@ -184,7 +186,7 @@ const BackdropScene = ({ isWinner }: { isWinner: boolean }) => (
     transition={{ duration: 0.5, delay: 1 }}
     className="absolute -top-[12%] -inset-x-[8%] -bottom-[16.5%] -z-1 overflow-visible">
     <svg
-      className="w-full h-full overflow-visible"
+      className="w-full h-full overflow-visible bg-[#1e1e1e]"
       width="450"
       height="508"
       viewBox="0 0 450 508"

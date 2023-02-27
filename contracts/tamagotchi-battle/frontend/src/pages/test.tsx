@@ -80,8 +80,8 @@ export const Test = () => {
                         isActive={!active}
                         isWinner={false}
                         isDead={!rivals[0].health}
-                        damage={0}
-                        action={undefined}
+                        damage={10}
+                        action={'Skipped'}
                         asPlayer
                       />
                     </div>
@@ -147,10 +147,10 @@ export const Test = () => {
                         age={rivals[1].dateOfBirth}
                         className={cnT}
                         isActive={active}
-                        isWinner={!false}
+                        isWinner={false}
                         isDead={!rivals[1].health}
-                        damage={0}
-                        action={undefined}
+                        damage={20}
+                        action={'Skipped'}
                         reverse
                         asPlayer
                       />

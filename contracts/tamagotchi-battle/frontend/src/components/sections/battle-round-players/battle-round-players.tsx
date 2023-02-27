@@ -51,7 +51,7 @@ export const BattleRoundPlayers = () => {
               isWinner={battle.state === 'WaitNextRound' && battle.pairs[currentPairIdx].winner === rivals[0].tmgId}
               isDead={!rivals[0].health}
               damage={roundDamage ? Math.round(roundDamage[1] / 25) : 0}
-              action={roundDamage && roundDamage[3]}
+              action={roundDamage && (roundDamage[3] === null ? 'Skipped' : roundDamage[3])}
               asPlayer
             />
           </div>
@@ -117,7 +117,7 @@ export const BattleRoundPlayers = () => {
               isWinner={battle.state === 'WaitNextRound' && battle.pairs[currentPairIdx].winner === rivals[1].tmgId}
               isDead={!rivals[1].health}
               damage={roundDamage ? Math.round(roundDamage[2] / 25) : 0}
-              action={roundDamage && roundDamage[4]}
+              action={roundDamage && (roundDamage[4] === null ? 'Skipped' : roundDamage[4])}
               reverse
               asPlayer
             />

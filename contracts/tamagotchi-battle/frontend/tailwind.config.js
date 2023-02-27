@@ -21,6 +21,7 @@ module.exports = {
         deadTamagotchiShadow: 'deadTamagotchiShadow 3s linear infinite 1500ms',
         tBreath: '10s tamagotchiBreath ease-in infinite',
         tBreath2: '10s tamagotchiBreath ease-in infinite 5s',
+        damageIcon: 'damageTamagotchiIcon 8s linear infinite',
       },
       keyframes: {
         wiggle: {
@@ -65,6 +66,17 @@ module.exports = {
           '64%': { transform: 'rotate(-5deg)' },
           '65%': { transform: 'rotate(0)' },
           '100%': { transform: 'rotate(0)' },
+        },
+        damageTamagotchiIcon: {
+          '0%': { opacity: 1 },
+          '15%': { opacity: 1 },
+          '17%': { opacity: 0 },
+          '20%': { opacity: 1 },
+          '22%': { opacity: 0 },
+          '24%': { opacity: 1 },
+          '26%': { opacity: 0 },
+          '28%': { opacity: 1 },
+          '100%': { opacity: 1 },
         },
       },
       colors: {

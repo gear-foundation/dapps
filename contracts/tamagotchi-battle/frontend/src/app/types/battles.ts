@@ -16,7 +16,7 @@ export type BattlePlayerType = {
 };
 
 export type BattleCurrentStateVariants = 'Registration' | 'GameIsOn' | 'WaitNextRound' | 'GameIsOver';
-export type BattleRoundMoveVariants = 'Defence' | 'Attack';
+export type BattleRoundMoveVariants = 'Defence' | 'Attack' | 'Skipped';
 
 export type RoundDamageType = [number, number, number, BattleRoundMoveVariants, BattleRoundMoveVariants];
 
