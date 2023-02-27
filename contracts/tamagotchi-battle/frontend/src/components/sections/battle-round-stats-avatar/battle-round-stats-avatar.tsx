@@ -3,6 +3,7 @@ import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
 import { BattleStatePlayer } from 'app/types/battles';
 import { Icon } from 'components/ui/icon';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
 type Props = {
   tamagotchi: BattleStatePlayer;
@@ -17,19 +18,30 @@ export const BattleRoundStatsAvatar = ({ tamagotchi, isReverse }: Props) => {
   }, [tamagotchi]);
 
   return (
-    <div className={clsx('basis-[40%] flex gap-6 items-center', isReverse && 'flex-row-reverse')}>
+    <motion.div
+      initial={{ opacity: 0, x: isReverse ? 100 : -100 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: isReverse ? 100 : -100 }}
+      transition={{ duration: 0.5 }}
+      className={clsx('basis-[40%] flex gap-6 items-center', isReverse && 'flex-row-reverse')}>
       <div className="relative flex flex-col items-center w-fit">
         <div
           className={clsx(
             'relative w-15 xxl:w-24 aspect-square rounded-full overflow-hidden ring-2 ring-opacity-50',
             dead ? 'bg-error ring-error' : 'bg-white ring-white',
           )}>
-          <TamagotchiAvatar
-            className="w-30 xxl:w-48 aspect-square -left-1/2"
-            age={tamagotchi.dateOfBirth}
-            color={tamagotchi.color}
-            isDead={dead}
-          />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}>
+            <TamagotchiAvatar
+              className="w-30 xxl:w-48 aspect-square -left-1/2"
+              age={tamagotchi.dateOfBirth}
+              color={tamagotchi.color}
+              isDead={dead}
+            />
+          </motion.div>
         </div>
 
         <div className="absolute top-[calc(100%-8px)] inline-flex gap-2 items-center py-0.5 px-2.5 xxl:py-1 xxl:px-5 tracking-widest font-kanit font-semibold xxl:text-base leading-4 xxl:leading-5 bg-[#404040] rounded-lg">
@@ -63,6 +75,6 @@ export const BattleRoundStatsAvatar = ({ tamagotchi, isReverse }: Props) => {
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 };

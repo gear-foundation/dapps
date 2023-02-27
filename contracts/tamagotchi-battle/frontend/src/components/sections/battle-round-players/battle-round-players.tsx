@@ -36,7 +36,7 @@ export const BattleRoundPlayers = () => {
   };
 
   const cnWrapper = 'relative flex flex-col';
-  const cnT = 'grow h-full mx-auto w-fit max-w-full';
+  const cnT = 'm-auto h-full w-full max-w-full';
 
   return (
     <>

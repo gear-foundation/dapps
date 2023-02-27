@@ -38,12 +38,13 @@ export const Test = () => {
   const [show, setShow] = useState(false);
 
   return (
-    <div className="container grid grow">
+    <div className="container flex flex-col grow">
       <button onClick={() => setShow((prev) => !prev)}>Show tmg</button>
 
       <AnimatePresence>
         {show && (
           <>
+            {/*Current Pair Stats*/}
             <div className="flex gap-10 justify-between items-center">
               <BattleRoundStatsAvatar tamagotchi={rivals[0]} />
               <div className="relative shrink-0">
@@ -54,7 +55,9 @@ export const Test = () => {
               </div>
               <BattleRoundStatsAvatar tamagotchi={rivals[1]} isReverse />
             </div>
+            {/*Current Pair Battle*/}
             <div className="grow"></div>
+            {/*Current Pair Cards*/}
             <div className="relative flex gap-10 justify-between mt-4 xxl:mt-7">
               <motion.div
                 key="test-info-1"
@@ -110,12 +113,17 @@ export const Test = () => {
 };
 
 const BattleTurnArrows = ({ isReverse }: { isReverse: boolean }) => {
-  const cn = 'w-7.5 xxl:w-10 aspect-[1/2] text-white transition-opacity';
+  const cn = 'w-7.5 xxl:w-10 aspect-[1/2] text-white';
   return (
-    <div className={clsx('relative flex', isReverse && 'rotate-180')}>
+    <motion.div
+      className={clsx('relative flex', isReverse && 'rotate-180')}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 20 }}
+      transition={{ duration: 0.5 }}>
       <Icon name="battle-next-step" className={clsx(cn, 'animate-battle-turn-1')} />
       <Icon name="battle-next-step" className={clsx(cn, 'animate-battle-turn-2')} />
       <Icon name="battle-next-step" className={clsx(cn, 'animate-battle-turn-3')} />
-    </div>
+    </motion.div>
   );
 };
