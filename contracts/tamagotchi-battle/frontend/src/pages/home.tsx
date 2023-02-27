@@ -32,9 +32,9 @@ export const Home = () => {
             )}
           </div>
           <div className=" w-full">{account ? <CreateTamagotchiForm /> : <LoginSection />}</div>
-          <div className=" w-full">
-            <Link to={'/test'}>Test page</Link> <Link to={'/battle'}>Battle page</Link>
-          </div>
+          {/*<div className=" w-full">*/}
+          {/*  <Link to={'/test'}>Test page</Link> <Link to={'/battle'}>Battle page</Link>*/}
+          {/*</div>*/}
         </div>
       </div>
     </section>
