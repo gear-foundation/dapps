@@ -14,14 +14,14 @@ module.exports = {
         'battle-turn-1': 'turn 2s linear infinite',
         'battle-turn-2': 'turn 2s linear infinite 400ms',
         'battle-turn-3': 'turn 2s linear infinite 900ms',
-        wave: 'wave 3s ease-in infinite',
+        wave: 'wave 2s linear infinite',
         'wave-2': 'wave 2s linear infinite 500ms',
         deadTamagotchi: 'deadTamagotchi 3s linear infinite 1500ms',
         deadTamagotchiIcon: 'deadTamagotchiIcon 2s linear infinite 1500ms',
         deadTamagotchiShadow: 'deadTamagotchiShadow 3s linear infinite 1500ms',
         tBreath: '10s tamagotchiBreath ease-in infinite',
         tBreath2: '10s tamagotchiBreath ease-in infinite 5s',
-        damageIcon: 'damageTamagotchiIcon 8s linear infinite',
+        damageIcon: 'damageTamagotchiIcon 8s linear 1.5s',
       },
       keyframes: {
         wiggle: {
@@ -34,8 +34,8 @@ module.exports = {
           '100%': { opacity: '15%' },
         },
         wave: {
-          '0%, 100%': { opacity: 0.75, transform: 'scale(1) translateY(-50%)' },
-          '50%': { opacity: 1, transform: 'scale(1.05) translateY(-50%)' },
+          '0%': { opacity: 0.5 },
+          '100%': { opacity: 0, transform: 'scale(1.4)' },
         },
         'pulse-once': {
           '0%': { opacity: 0 },

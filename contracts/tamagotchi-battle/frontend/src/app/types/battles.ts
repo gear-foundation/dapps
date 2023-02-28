@@ -49,13 +49,6 @@ export type BattleStateResponse = {
   pairs: Record<string, BattleStatePair>;
   players: Record<HexString, BattleStatePlayer>;
   playersIds: HexString[];
-  // round: {
-  //   moves: BattleRoundMoveVariants[];
-  //   players: HexString[];
-  //   tmgIds: HexString[];
-  //   steps: number;
-  // };
-  // currentTurn: number;
+  currentPlayers: HexString[];
   state: BattleCurrentStateVariants;
-  // tmgStoreId: HexString;
 };

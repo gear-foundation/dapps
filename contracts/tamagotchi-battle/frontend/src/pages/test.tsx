@@ -64,7 +64,20 @@ export const Test = () => {
                     transition={{ duration: 0.5 }}>
                     <BattleTurnArrows isReverse={active} />
                     <div className="absolute top-full left-1/2 -translate-x-1/2 flex flex-col mt-1.5 whitespace-nowrap">
-                      <Countdown />
+                      <p className="flex flex-col gap-1.5 text-center">
+                        <span className="font-semibold uppercase text-[#D2D2D3] text-opacity-60 tracking-[.04em]">
+                          Time left
+                        </span>
+
+                        <span className="inline-flex gap-1 font-kanit font-medium text-[28px] xxl:text-[40px] leading-none text-white text-center">
+                          <span className="py-2 px-1 w-[42px] xxl:w-[50px] backdrop-blur-sm rounded-lg bg-gradient-to-b from-white/15 to-transparent">
+                            0
+                          </span>
+                          <span className="py-2 px-1 w-[42px] xxl:w-[50px] backdrop-blur-sm rounded-lg bg-gradient-to-b from-white/15 to-transparent">
+                            0
+                          </span>
+                        </span>
+                      </p>
                     </div>
                   </motion.div>
                   <BattleRoundStatsAvatar tamagotchi={rivals[1]} isReverse />

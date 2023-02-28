@@ -78,7 +78,9 @@ export const BattleRoundPlayers = () => {
               {battle.state === 'WaitNextRound' && isAdmin && (
                 <button
                   className={clsx(
-                    'btn items-center gap-2 w-full transition-colors',
+                    'relative btn items-center gap-2 w-full transition-colors',
+                    'before:absolute before:-inset-1 before:border before:border-primary/50 before:rounded-[90px] before:animate-wave-2',
+                    'after:absolute after:-inset-2 after:border after:border-primary/30 after:rounded-[90px] after:animate-wave',
                     buttonStyles.primary,
                     buttonStyles.button,
                   )}

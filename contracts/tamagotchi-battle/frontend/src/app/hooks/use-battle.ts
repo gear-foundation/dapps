@@ -34,8 +34,7 @@ export function useInitBattleData() {
 
       const getCurrentQueue = () => {
         const queue: BattleStatePlayer[] = [];
-        const players = Object.values(state.playersIds);
-        players.forEach((p) => queue.push(state.players[p]));
+        state.currentPlayers.forEach((p) => queue.push(state.players[p]));
         return queue;
       };
       const players = getCurrentQueue();
