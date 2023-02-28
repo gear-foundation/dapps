@@ -5,7 +5,6 @@ import { HexString } from '@polkadot/util/types';
 import { PlayerColor } from '../app/types/battles';
 import { AnimatePresence, motion } from 'framer-motion';
 import { BattleRoundStatsAvatar } from '../components/sections/battle-round-stats-avatar';
-import { Countdown } from '../components/sections/battle-round-stats/counter';
 import clsx from 'clsx';
 import { TamagotchiAvatar } from '../components/common/tamagotchi-avatar';
 import { buttonStyles } from '@gear-js/ui';
@@ -86,17 +85,17 @@ export const Test = () => {
                 <div className="grow flex flex-col">
                   <div className="relative grow grid grid-cols-[40%_40%] justify-between gap-10 mt-10 xxl:mt-15">
                     <div className={cnWrapper}>
-                      <TamagotchiAvatar
-                        color={rivals[0].color}
-                        age={rivals[0].dateOfBirth}
-                        className={cnT}
-                        isActive={!active}
-                        isWinner={false}
-                        isDead={!rivals[0].health}
-                        damage={10}
-                        action={'Skipped'}
-                        asPlayer
-                      />
+                      {/*<TamagotchiAvatar*/}
+                      {/*  color={rivals[0].color}*/}
+                      {/*  age={rivals[0].dateOfBirth}*/}
+                      {/*  className={cnT}*/}
+                      {/*  isActive={!active}*/}
+                      {/*  isWinner={false}*/}
+                      {/*  isDead={!rivals[0].health}*/}
+                      {/*  damage={10}*/}
+                      {/*  action={'Skipped'}*/}
+                      {/*  asPlayer*/}
+                      {/*/>*/}
                     </div>
                     <motion.div
                       initial={{ opacity: 0 }}
@@ -107,8 +106,8 @@ export const Test = () => {
                       <div className="flex flex-col items-center gap-1 xxl:gap-2">
                         {!false ? (
                           <>
-                            <p className="font-semibold uppercase text-[#D2D2D3] text-opacity-60 text-center tracking-[.04em]">
-                              Round: 1
+                            <p className="font-semibold font-sans uppercase text-[#D2D2D3] text-opacity-60 text-center tracking-[.04em]">
+                              Round: 1 <span className="normal-case">of</span> 5
                             </p>
                             <p className="text-2xl leading-tight xxl:typo-h2 truncate max-w-[13ch] font-bold">
                               {rivals[0].name}

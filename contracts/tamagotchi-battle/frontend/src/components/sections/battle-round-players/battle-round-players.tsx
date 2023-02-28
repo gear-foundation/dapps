@@ -59,8 +59,8 @@ export const BattleRoundPlayers = () => {
             <div className="flex flex-col items-center gap-1 xxl:gap-2">
               {!battle.pairs[currentPairIdx].gameIsOver ? (
                 <>
-                  <p className="font-semibold uppercase text-[#D2D2D3] text-opacity-60 text-center tracking-[.04em]">
-                    Round: {battle && battle.pairs[currentPairIdx].rounds + 1}
+                  <p className="font-semibold font-sans uppercase text-[#D2D2D3] text-opacity-60 text-center tracking-[.04em]">
+                    Round: {battle && battle.pairs[currentPairIdx].rounds + 1}/5
                   </p>
                   <p className="text-2xl leading-tight xxl:typo-h2 truncate max-w-[13ch] font-bold">
                     {currentPlayer && battle.players[currentPlayer].name}

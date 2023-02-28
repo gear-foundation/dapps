@@ -74,18 +74,19 @@ export function useInitBattleData() {
           console.log(payload.toHuman());
           alert.error(`${payload.toHuman()}`, { title: 'Error during program execution' });
         } else {
-          const decodedPayload = metadata.createType(6, payload).toJSON();
+          if (metadata.types.handle.output) {
+            const decodedPayload = metadata.createType(metadata.types.handle.output, payload).toJSON();
+            if (
+              decodedPayload &&
+              typeof decodedPayload === 'object' &&
+              Object.keys(decodedPayload).includes('roundResult')
+            ) {
+              const notification = Object.values(decodedPayload)[0] as RoundDamageType;
 
-          if (
-            decodedPayload &&
-            typeof decodedPayload === 'object' &&
-            Object.keys(decodedPayload).includes('roundResult')
-          ) {
-            const notification = Object.values(decodedPayload)[0] as RoundDamageType;
-
-            if (currentPairIdx === notification[0]) {
-              console.log({ decodedPayload });
-              setRoundDamage(notification);
+              if (currentPairIdx === notification[0]) {
+                console.log({ decodedPayload });
+                setRoundDamage(notification);
+              }
             }
           }
         }

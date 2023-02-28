@@ -1,4 +1,4 @@
-import { GasInfo, ProgramMetadata } from '@gear-js/api';
+import { ProgramMetadata } from '@gear-js/api';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import { EventRecord } from '@polkadot/types/interfaces';
 import { AnyJson, ISubmittableResult } from '@polkadot/types/types';
@@ -13,11 +13,6 @@ type SendMessageOptions = {
   onSuccess?: () => void;
   onError?: () => void;
 };
-
-// const getAutoGasLimit = ({ waited, min_limit }: GasInfo) => {
-//   return min_limit;
-//   // return waited ? min_limit.add(min_limit.mul(bnToBn(0.3))) : min_limit.add(min_limit.mul(bnToBn(0.2)));
-// };
 
 export function useSendMessage(destination: HexString, metadata: ProgramMetadata | undefined) {
   const { api } = useApi();
@@ -59,18 +54,9 @@ export function useSendMessage(destination: HexString, metadata: ProgramMetadata
     if (account && metadata) {
       loadingAlertId.current = alert.loading('Sign In', { title });
 
-      const { value = 0, isOtherPanicsAllowed = false, onSuccess, onError } = options || {};
-      const { address, decodedAddress, meta } = account;
+      const { onSuccess, onError } = options || {};
+      const { address, meta } = account;
       const { source } = meta;
-
-      // api.program.calculateGas
-      //   .handle(decodedAddress, destination, payload, value, isOtherPanicsAllowed, metadata)
-      //   .then(getAutoGasLimit)
-      //   .then((gasLimit) => ({ destination, gasLimit, payload, value }))
-      //   .then(
-      //     (message) =>
-      //       ,
-      //   )
 
       Promise.resolve(
         api.message.send(

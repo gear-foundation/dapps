@@ -8,9 +8,9 @@ import { HexString } from '@polkadot/util/types';
 export const copyToClipboard = async (key: string, alert: AlertContainerFactory, successfulText?: string) => {
   try {
     await navigator.clipboard.writeText(key);
-    alert.success(successfulText || 'Copied');
+    await alert.success(successfulText || 'Copied');
   } catch (err) {
-    alert.error('Copy error');
+    await alert.error('Copy error');
   }
 };
 export const isLoggedIn = ({ address }: InjectedAccountWithMeta) => localStorage[LOCAL_STORAGE.ACCOUNT] === address;
