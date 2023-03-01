@@ -1,10 +1,10 @@
 [package]
 name = "ft-main"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "testnet" }
 ft-logic-io = { path = "../ft-logic/io" }
 ft-main-io = { path = "io" }
 ft-storage-io = { path = "../ft-storage/io" }
@@ -17,14 +17,14 @@ blake2-rfc = { version = "0.2.18", default-features = false }
 gear-core = { git = "https://github.com/gear-tech/gear.git" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable"}
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet"}
 ft-main-io = { path = "io" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
-light_sr25519 = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["debug"] }
+light_sr25519 = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 hex-literal = "0.3.4"
 sp-core = { version = "6.0.0", git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
-gclient = { git = "https://github.com/gear-tech/gear.git"}
+gclient = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 tokio = "1"

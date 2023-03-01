@@ -1,14 +1,14 @@
 [package]
 name = "ft-storage"
-version = "0.1.3"
+version = "0.1.4"
 edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 ft-storage-io = { path = "io" }
 primitive-types = { version = "0.12.1", default-features = false }
 hashbrown = { version = "0.13.1" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 ft-storage-io = { path = "io" }
