@@ -1,5 +1,5 @@
 import { useApp, useBattle } from 'app/context';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import type { BattleStatePlayer, BattleStateResponse } from 'app/types/battles';
 import { useAccount, useAlert, useApi, useReadFullState } from '@gear-js/react-hooks';
 import { useMetadata } from './use-metadata';
@@ -8,7 +8,8 @@ import { ENV } from 'app/consts';
 import type { UnsubscribePromise } from '@polkadot/api/types';
 import type { UserMessageSent } from '@gear-js/api';
 import { useSendMessage } from './use-send-message';
-import { RoundDamageType } from 'app/types/battles';
+import { BattleCurrentStateVariants, RoundDamageType } from 'app/types/battles';
+import { useNavigate } from 'react-router-dom';
 
 function useReadBattleState<T>() {
   const { metadata } = useMetadata(metaBattle);
@@ -17,13 +18,15 @@ function useReadBattleState<T>() {
 
 export function useInitBattleData() {
   const { api } = useApi();
+  const alert = useAlert();
+  const navigate = useNavigate();
   const { setIsAdmin } = useApp();
   const { account } = useAccount();
   const { roundDamage, currentPairIdx, setRivals, setBattle, setCurrentPlayer, setRoundDamage, setPlayers } =
     useBattle();
   const { state } = useReadBattleState<BattleStateResponse>();
   const { metadata } = useMetadata(metaBattle);
-  const alert = useAlert();
+  const prevBattleState = useRef<BattleCurrentStateVariants | undefined>();
 
   useEffect(() => {
     setBattle(state);
@@ -98,6 +101,16 @@ export function useInitBattleData() {
     };
   }, [metadata, state, currentPairIdx]);
 
+  // track state updates
+  useEffect(() => {
+    if (state) {
+      if (prevBattleState.current === 'GameIsOver' && state.state === 'Registration') navigate('/');
+
+      if (prevBattleState.current !== state.state) prevBattleState.current = state.state;
+    }
+  }, [navigate, state]);
+
+  // track damage updates
   useEffect(() => {
     if (state) {
       const activePair = Object.values(state.pairs)[currentPairIdx];

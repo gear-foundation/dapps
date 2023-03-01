@@ -51,7 +51,7 @@ export const BattlePlayersQueue = () => {
     <section
       ref={ref}
       className="flex justify-center items-end mt-auto px-5 overflow-hidden min-h-[144px] xxl:min-h-[208px]">
-      <AnimatePresence>
+      <AnimatePresence key="battle-players-queue">
         {init.current &&
           (isSlider ? (
             <QueueSlider />
@@ -64,7 +64,11 @@ export const BattlePlayersQueue = () => {
               className="flex gap-3 xxl:gap-2 justify-center">
               {players.length > 0 &&
                 players.map((item, i) => (
-                  <motion.li key={i} className="w-35 xxl:w-40" style={{ width: width }} variants={itemV}>
+                  <motion.li
+                    key={`queue-c-item-${i}`}
+                    className="w-35 xxl:w-40"
+                    style={{ width: width }}
+                    variants={itemV}>
                     <TamagotchiQueueCard tamagotchi={item} />
                   </motion.li>
                 ))}
@@ -118,17 +122,17 @@ const QueueSlider = () => {
         </button>
       </div>
       <motion.ol
+        key="queue-slider-list"
         variants={container}
         initial="hidden"
         animate="show"
-        key="queue-slider-list"
         ref={sliderRef}
         className="keen-slider !overflow-visible">
         {players.length > 0 &&
           players.map((item, i) => (
             <motion.li
+              key={`queue-s-item-${i}`}
               variants={itemV}
-              key={i}
               className="keen-slider__slide"
               style={{ width: width, minWidth: width }}>
               <div className="w-35 xxl:w-40">

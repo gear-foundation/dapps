@@ -1,5 +1,4 @@
 import { Icon } from 'components/ui/icon';
-import { Link } from 'react-router-dom';
 
 const socials = [
   { href: 'https://twitter.com/gear_techs', icon: 'twitter' },

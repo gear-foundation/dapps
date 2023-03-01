@@ -3,7 +3,6 @@ import { useBattle } from 'app/context';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { BattleStatePair, BattleStatePlayer } from 'app/types/battles';
 import clsx from 'clsx';
-import * as ScrollArea from '@radix-ui/react-scroll-area';
 import { useAnimation, motion } from 'framer-motion';
 import { useRefDimensions } from 'app/hooks/use-ref-dimensions';
 import { nanoid } from 'nanoid';

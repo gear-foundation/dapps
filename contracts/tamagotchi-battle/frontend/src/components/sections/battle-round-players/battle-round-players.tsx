@@ -60,7 +60,7 @@ export const BattleRoundPlayers = () => {
               {!battle.pairs[currentPairIdx].gameIsOver ? (
                 <>
                   <p className="font-semibold font-sans uppercase text-[#D2D2D3] text-opacity-60 text-center tracking-[.04em]">
-                    Round: {battle && battle.pairs[currentPairIdx].rounds + 1}/5
+                    Round: {battle && battle.pairs[currentPairIdx].rounds + 1} <span className="normal-case">of</span> 5
                   </p>
                   <p className="text-2xl leading-tight xxl:typo-h2 truncate max-w-[13ch] font-bold">
                     {currentPlayer && battle.players[currentPlayer].name}

@@ -7,7 +7,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 export const BattleRoundInfo = () => {
   const { rivals, currentPlayer, currentPairIdx, battle } = useBattle();
   return (
-    <AnimatePresence>
+    <AnimatePresence key="round-info">
       <div className="relative flex gap-10 justify-between mt-4 xxl:mt-7">
         <motion.div
           key="player-info-1"
