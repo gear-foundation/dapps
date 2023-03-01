@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { buttonStyles } from '@gear-js/ui';
 import { Icon } from '../../ui/icon';
 import { decodeAddress } from '@gear-js/api';
+import { copyToClipboard } from 'app/utils';
 import { useAlert } from '@gear-js/react-hooks';
 
 type Props = {
