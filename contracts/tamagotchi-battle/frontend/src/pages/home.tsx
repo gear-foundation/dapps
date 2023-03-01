@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { CreateTamagotchiForm } from 'components/forms/create-tamagotchi-form';
 import { LoginSection } from 'components/sections/login-section';
 import { Link } from 'react-router-dom';
-import { useBattle } from '../app/context';
+import { useBattle } from 'app/context';
 
 export const Home = () => {
   const { battle } = useBattle();
@@ -26,7 +26,8 @@ export const Home = () => {
         <div className="flex flex-col items-center gap-9 text-center w-full">
           <div className="space-y-6">
             {account ? (
-              battle && battle.state === 'Registration' ? (
+              battle &&
+              (battle.state === 'Registration' ? (
                 <h2 className="typo-h2 max-w-[430px] mx-auto">
                   Insert program ID to&nbsp;<span className="text-primary">create a character</span>
                 </h2>
@@ -37,13 +38,13 @@ export const Home = () => {
                     battle page
                   </Link>
                 </h2>
-              )
+              ))
             ) : (
               <p className="text-[#D1D1D1]">Connect your account to start the game</p>
             )}
           </div>
           <div className="w-full">
-            {account ? battle?.state === 'Registration' && <CreateTamagotchiForm /> : <LoginSection />}
+            {account ? battle && battle.state === 'Registration' && <CreateTamagotchiForm /> : <LoginSection />}
           </div>
           {/*<div className="w-full">*/}
           {/*  <Link to={'/test'}>Test page</Link> <Link to={'/battle'}>Battle page</Link>*/}

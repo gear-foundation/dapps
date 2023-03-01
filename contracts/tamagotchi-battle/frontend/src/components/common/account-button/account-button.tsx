@@ -3,7 +3,6 @@ import clsx from 'clsx';
 import { buttonStyles } from '@gear-js/ui';
 import { Icon } from '../../ui/icon';
 import { decodeAddress } from '@gear-js/api';
-import { copyToClipboard } from 'app/utils';
 import { useAlert } from '@gear-js/react-hooks';
 
 type Props = {
@@ -18,7 +17,11 @@ export const AccountButton = ({ address, name, onClick, isActive, simple }: Prop
   const alert = useAlert();
   const onCopy = () => {
     const decodedAddress = decodeAddress(address);
-    copyToClipboard(decodedAddress, alert);
+
+    navigator.clipboard
+      .writeText(decodedAddress)
+      .then(() => alert.success('Copied'))
+      .catch(() => alert.error('Copy error'));
   };
 
   return (
