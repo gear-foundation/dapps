@@ -70,8 +70,8 @@ export const TamagotchiAvatar = ({
 
   return (
     <>
-      <div className={clsx('relative', getTamagotchiColor(color).body, className)}>
-        <AnimatePresence key="pres-scene">
+      <div className={clsx('relative flex flex-col', getTamagotchiColor(color).body, className)}>
+        <AnimatePresence key="ap-scene">
           {showScene && (
             <motion.div
               key="tamagotchi-backdrop-scene"
@@ -88,7 +88,7 @@ export const TamagotchiAvatar = ({
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-center items-center h-full">
           <div className="w-full">
             <div className={clsx('relative mx-auto aspect-square flex justify-center items-end', maxH)}>
-              <AnimatePresence key="damages">
+              <AnimatePresence key="ap-damages">
                 {isDead && asPlayer && (
                   <Icon
                     name="dead-shadow"
@@ -106,8 +106,8 @@ export const TamagotchiAvatar = ({
                     exit="exit"
                     transition={{ ...transition }}
                     className={clsx(
-                      'absolute top-1/4 w-12 h-12 pointer-events-none',
-                      reverse ? 'right-[10%]' : 'left-[10%]',
+                      'absolute top-1/4 smh:w-9 w-12 aspect-square pointer-events-none',
+                      reverse ? 'smh:right-[5%] right-[10%]' : 'smh:left-[5%] left-[10%]',
                     )}>
                     <div className="grid place-items-center w-full h-full animate-damageIcon">
                       <Icon
@@ -115,7 +115,7 @@ export const TamagotchiAvatar = ({
                         section={s}
                         className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
                       />
-                      <span className="relative z-1 text-white font-bold">-{damage}</span>
+                      <span className="relative z-1 text-white font-bold smh:text-xs text-sm">-{damage}</span>
                     </div>
                   </motion.div>
                 )}
@@ -152,48 +152,44 @@ export const TamagotchiAvatar = ({
           exit={{ opacity: 0, transition: { delay: 0 } }}
           transition={{ duration: 0.5, delay: 0.5 }}
           className={clsx(
-            'relative flex flex-col h-full max-h-full',
+            'absolute inset-0 grow',
             maxH,
             isDead && asPlayer ? 'animate-deadTamagotchi' : reverse ? 'animate-tBreath2' : 'animate-tBreath',
           )}>
-          <div className="relative flex flex-col my-auto h-full">
-            <div className="relative aspect-square h-full max-w-full mx-auto">
-              {!isDead && <Icon name={tail} section={s} className={cn} />}
-              {!isDead && <Icon name={hands} section={s} className={cn} />}
-              {!isDead && <Icon name="body-stand" section={s} className={cn} />}
-              {!isDead && <Icon name="sneakers" section={s} className={clsx(cn, getTamagotchiColor(color).sneakers)} />}
-              <Icon name={body} section={s} className={cn} />
-              {hasItem?.includes('bag') && <Icon name="body-bag" section={s} className={cn} />}
-              <Icon name={head} section={s} className={cn} />
-              <Icon name={mouse} section={s} className={clsx('relative', t)} />
-              <Icon name={eye} section={s} className={clsx(cn, 'text-[#16B768]')} />
-              {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
-              {!isDead && glasses && <Icon name={glasses} section={s} className={cn} />}
-              {!isDead && hasItem?.includes('hat') && <Icon name="head-hat" section={s} className={cn} />}
+          {!isDead && <Icon name={tail} section={s} className={cn} />}
+          {!isDead && <Icon name={hands} section={s} className={cn} />}
+          {!isDead && <Icon name="body-stand" section={s} className={cn} />}
+          {!isDead && <Icon name="sneakers" section={s} className={clsx(cn, getTamagotchiColor(color).sneakers)} />}
+          <Icon name={body} section={s} className={cn} />
+          {hasItem?.includes('bag') && <Icon name="body-bag" section={s} className={cn} />}
+          <Icon name={head} section={s} className={cn} />
+          <Icon name={mouse} section={s} className={cn} />
+          <Icon name={eye} section={s} className={clsx(cn, 'text-[#16B768]')} />
+          {emo === 'crying' && <Icon name="tears" section={s} className={cn} />}
+          {!isDead && glasses && <Icon name={glasses} section={s} className={cn} />}
+          {!isDead && hasItem?.includes('hat') && <Icon name="head-hat" section={s} className={cn} />}
 
-              {isDead && asPlayer && (
-                <motion.div
-                  key="death"
-                  variants={variants}
-                  initial={{ opacity: 0, y: 50 }}
-                  animate="center"
-                  exit="exit"
-                  transition={transition}
-                  className={clsx(
-                    'absolute bottom-[70%] w-10 xxl:w-12 aspect-square grid place-items-center pointer-events-none',
-                    reverse ? 'right-[8%]' : 'left-[8%]',
-                    'animate-deadTamagotchiIcon',
-                  )}>
-                  <Icon
-                    name="damage"
-                    section={s}
-                    className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
-                  />
-                  <Icon name="death" section={s} className="relative z-1 w-[45%] aspect-square text-white" />
-                </motion.div>
-              )}
-            </div>
-          </div>
+          {isDead && asPlayer && (
+            <motion.div
+              key="death"
+              variants={variants}
+              initial={{ opacity: 0, y: 50 }}
+              animate="center"
+              exit="exit"
+              transition={transition}
+              className={clsx(
+                'absolute bottom-[70%] w-10 xxl:w-12 aspect-square grid place-items-center pointer-events-none',
+                reverse ? 'right-[8%]' : 'left-[8%]',
+                'animate-deadTamagotchiIcon',
+              )}>
+              <Icon
+                name="damage"
+                section={s}
+                className={clsx('absolute inset-0 w-full h-full', !reverse && '-scale-x-100')}
+              />
+              <Icon name="death" section={s} className="relative z-1 w-[45%] aspect-square text-white" />
+            </motion.div>
+          )}
         </motion.div>
       </div>
     </>

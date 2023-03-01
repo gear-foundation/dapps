@@ -5,12 +5,12 @@ import { NotificationResponseTypes, NotificationType, TamagotchiState } from 'ap
 import { ItemsStoreResponse, StoreItemsNames, StoreItemType } from 'app/types/ft-store';
 import { HexString } from '@polkadot/util/types';
 
-export const copyToClipboard = async (key: string, alert: AlertContainerFactory, successfulText?: string) => {
+export const copyToClipboard = (key: string, alert: AlertContainerFactory, successfulText?: string) => {
   try {
-    await navigator.clipboard.writeText(key);
-    await alert.success(successfulText || 'Copied');
+    navigator.clipboard.writeText(key);
+    alert.success(successfulText || 'Copied');
   } catch (err) {
-    await alert.error('Copy error');
+    alert.error('Copy error');
   }
 };
 export const isLoggedIn = ({ address }: InjectedAccountWithMeta) => localStorage[LOCAL_STORAGE.ACCOUNT] === address;

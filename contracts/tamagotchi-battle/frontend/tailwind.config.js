@@ -115,11 +115,13 @@ module.exports = {
         xl: '1280px',
         xxl: '1540px',
         xl2k: '1920px',
+        mxxl: { max: '1539px' },
         mxl: { max: '1279px' },
         mlg: { max: '1023px' },
         mmd: { max: '767px' },
         msm: { max: '474px' },
         mxs: { max: '374px' },
+        smh: { raw: '(max-height: 820px)' },
       },
       spacing: {
         2.5: '0.625rem',

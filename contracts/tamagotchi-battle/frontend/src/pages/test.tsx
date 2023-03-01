@@ -48,7 +48,7 @@ export const Test = () => {
         <button className="fixed top-5 left-1/2" onClick={() => setShow((prev) => !prev)}>
           Show tmg
         </button>
-        <div className="flex flex-col flex-1 gap-0 xxl:gap-8">
+        <div className="flex flex-col flex-1">
           <AnimatePresence>
             {show && (
               <>
@@ -85,17 +85,17 @@ export const Test = () => {
                 <div className="grow flex flex-col">
                   <div className="relative grow grid grid-cols-[40%_40%] justify-between gap-10 mt-10 xxl:mt-15">
                     <div className={cnWrapper}>
-                      {/*<TamagotchiAvatar*/}
-                      {/*  color={rivals[0].color}*/}
-                      {/*  age={rivals[0].dateOfBirth}*/}
-                      {/*  className={cnT}*/}
-                      {/*  isActive={!active}*/}
-                      {/*  isWinner={false}*/}
-                      {/*  isDead={!rivals[0].health}*/}
-                      {/*  damage={10}*/}
-                      {/*  action={'Skipped'}*/}
-                      {/*  asPlayer*/}
-                      {/*/>*/}
+                      <TamagotchiAvatar
+                        color={rivals[0].color}
+                        age={rivals[0].dateOfBirth}
+                        className={cnT}
+                        isActive={!active}
+                        isWinner={false}
+                        isDead={!rivals[0].health}
+                        damage={10}
+                        action={'Skipped'}
+                        asPlayer
+                      />
                     </div>
                     <motion.div
                       initial={{ opacity: 0 }}
