@@ -1,167 +1,454 @@
-use crate::{nft_messages::*, payment::*, Market, BASE_PERCENT};
+use crate::{
+    contract::{BASE_PERCENT, MINIMUM_VALUE},
+    nft_messages::*,
+    payment::*,
+};
 use gstd::{exec, msg, prelude::*, ActorId};
-use market_io::*;
-use primitive_types::{H256, U256};
+use market_io::{
+    ContractId, Item, Market, MarketErr, MarketEvent, MarketTx, Price, TokenId, TransactionId,
+};
 
-pub fn get_hash(ft_contract_id: Option<ActorId>, price: u128) -> H256 {
-    let price = price.to_be_bytes();
-    let ft_id_vec: Vec<u8> = ft_contract_id
-        .map(|id| <[u8; 32]>::from(id).into())
-        .unwrap_or_default();
-    sp_core_hashing::blake2_256(&[&ft_id_vec[..], &price[..]].concat()).into()
+#[async_trait::async_trait]
+pub trait OffersHandler {
+    async fn add_offer(
+        &mut self,
+        nft_contract_id: &ContractId,
+        ft_contract_id: Option<ContractId>,
+        token_id: TokenId,
+        price: Price,
+    ) -> Result<MarketEvent, MarketErr>;
+
+    async fn accept_offer(
+        &mut self,
+        nft_contract_id: &ContractId,
+        token_id: TokenId,
+        ft_contract_id: Option<ContractId>,
+        price: Price,
+    ) -> Result<MarketEvent, MarketErr>;
+
+    async fn withdraw(
+        &mut self,
+        nft_contract_id: &ContractId,
+        token_id: TokenId,
+        ft_contract_id: Option<ContractId>,
+        price: Price,
+    ) -> Result<MarketEvent, MarketErr>;
 }
 
-impl Market {
-    pub async fn add_offer(
+#[async_trait::async_trait]
+impl OffersHandler for Market {
+    async fn add_offer(
         &mut self,
-        nft_contract_id: &ActorId,
-        ft_contract_id: Option<ActorId>,
-        token_id: U256,
-        price: u128,
-    ) {
-        let contract_and_token_id =
-            format!("{}{token_id}", H256::from_slice(nft_contract_id.as_ref()));
-        self.check_approved_ft_contract(ft_contract_id);
-        self.on_auction(&contract_and_token_id);
+        nft_contract_id: &ContractId,
+        ft_contract_id: Option<ContractId>,
+        token_id: TokenId,
+        price: Price,
+    ) -> Result<MarketEvent, MarketErr> {
+        let contract_and_token_id = (*nft_contract_id, token_id);
+
+        if let Some(ft_contract_id) = &ft_contract_id {
+            let is_ft_approved = self.approved_ft_contracts.contains(ft_contract_id);
+            if !is_ft_approved {
+                return Err(MarketErr::ContractNotApproved);
+            }
+        }
+
+        #[allow(clippy::absurd_extreme_comparisons)]
+        if ft_contract_id.is_some() && price <= 0
+            || ft_contract_id.is_none() && price <= MINIMUM_VALUE.into()
+        {
+            return Err(MarketErr::WrongPrice);
+        }
+
+        if ft_contract_id.is_none() && msg::value() != price {
+            return Err(MarketErr::WrongPrice);
+        }
+
         let item = self
             .items
             .get_mut(&contract_and_token_id)
-            .expect("Item does not exist");
-        if price == 0 {
-            panic!("Cant offer zero price");
+            .ok_or(MarketErr::ItemDoesNotExists)?;
+        if item.auction.is_some() {
+            return Err(MarketErr::AuctionIsAlreadyExists);
         }
 
-        let hash: H256 = get_hash(ft_contract_id, price);
-        let mut offers = item.offers.clone();
-        if offers.iter().any(|offer| offer.hash == hash) {
-            panic!("the offer with these params already exists");
-        }
+        if item.offers.contains_key(&(ft_contract_id, price)) {
+            return Err(MarketErr::OfferAlreadyExists);
+        };
 
-        check_attached_value(ft_contract_id, price);
-
-        transfer_payment(&msg::source(), &exec::program_id(), ft_contract_id, price).await;
-
-        offers.push(Offer {
-            hash,
-            id: msg::source(),
-            ft_contract_id,
-            price,
-        });
-        item.offers = offers;
-        msg::reply(
-            MarketEvent::OfferAdded {
+        let ft_id = if let Some(ft_id) = ft_contract_id {
+            ft_id
+        } else {
+            item.offers.insert((None, price), msg::source());
+            return Ok(MarketEvent::OfferAdded {
                 nft_contract_id: *nft_contract_id,
                 ft_contract_id,
                 token_id,
                 price,
+            });
+        };
+
+        if let Some((tx_id, tx)) = item.tx.clone() {
+            match tx {
+                MarketTx::Offer {
+                    ft_id,
+                    price,
+                    account,
+                } => {
+                    let new_price = price;
+                    let new_ft_id = ft_id;
+                    let result =
+                        add_offer_tx(tx_id, item, nft_contract_id, &ft_id, token_id, price).await;
+                    if account == msg::source() && new_price == price && new_ft_id == ft_id {
+                        return result;
+                    }
+                }
+                _ => {
+                    return Err(MarketErr::WrongTransaction);
+                }
+            }
+        }
+
+        let tx_id = self.tx_id;
+        self.tx_id = self.tx_id.wrapping_add(1);
+        item.tx = Some((
+            tx_id,
+            MarketTx::Offer {
+                ft_id,
+                price,
+                account: msg::source(),
             },
-            0,
-        )
-        .expect("Error in reply [MarketEvent::OfferAdded]");
+        ));
+
+        add_offer_tx(tx_id, item, nft_contract_id, &ft_id, token_id, price).await
     }
 
-    /// Accepts an offer
-    /// Requirements:
-    /// * NFT item must be listed on the marketplace
-    /// * Only owner can accept offer
-    /// * There must be no ongoing auction
-    /// * The offer with indicated hash must exist
-    /// Arguments:
-    /// * `nft_contract_id`: the NFT contract address
-    /// * `token_id`: the NFT id
-    /// * `offer_hash`: the offer hash
-    pub async fn accept_offer(
+    async fn accept_offer(
         &mut self,
-        nft_contract_id: &ActorId,
-        token_id: U256,
-        offer_hash: H256,
-    ) {
-        let contract_and_token_id =
-            format!("{}{token_id}", H256::from_slice(nft_contract_id.as_ref()));
-        self.on_auction(&contract_and_token_id);
+        nft_contract_id: &ContractId,
+        token_id: TokenId,
+        ft_contract_id: Option<ContractId>,
+        price: Price,
+    ) -> Result<MarketEvent, MarketErr> {
+        let contract_and_token_id = (*nft_contract_id, token_id);
+
         let item = self
             .items
             .get_mut(&contract_and_token_id)
-            .expect("Item does not exist");
-        if item.owner_id != msg::source() {
-            panic!("only owner can accept offer");
-        }
-        let mut offers = item.offers.clone();
-        if let Some(offer) = offers.clone().iter().find(|offer| offer.hash == offer_hash) {
-            let treasury_fee =
-                offer.price * (self.treasury_fee * BASE_PERCENT) as u128 / 10_000u128;
-            transfer_payment(
-                &exec::program_id(),
-                &self.treasury_id,
-                offer.ft_contract_id,
-                treasury_fee,
-            )
-            .await;
+            .ok_or(MarketErr::ItemDoesNotExists)?;
 
-            // transfer NFT and pay royalties
-            let payouts = nft_transfer(
-                nft_contract_id,
-                &offer.id,
+        if item.auction.is_some() {
+            return Err(MarketErr::AuctionIsOpened);
+        }
+
+        if item.owner != msg::source() {
+            return Err(MarketErr::OfferShouldAcceptedByOwner);
+        }
+
+        assert!(
+            item.price.is_none(),
+            "Remove the item from the sale when accepting the offer"
+        );
+        let offers = item.offers.clone();
+
+        let account = offers
+            .get(&(ft_contract_id, price))
+            .ok_or(MarketErr::OfferIsNotExists)?;
+
+        // calculate fee for treasury
+        let treasury_fee = price * (self.treasury_fee * BASE_PERCENT) as u128 / 10_000u128;
+
+        // payouts for NFT sale (includes royalty accounts and seller)
+        let mut payouts = payouts(nft_contract_id, &item.owner, price - treasury_fee).await;
+        payouts.insert(self.treasury_id, treasury_fee);
+
+        if let Some((tx_id, tx)) = item.tx.clone() {
+            match tx {
+                MarketTx::AcceptOffer => {
+                    return accept_offer_tx(
+                        tx_id,
+                        item,
+                        nft_contract_id,
+                        ft_contract_id,
+                        account,
+                        token_id,
+                        price,
+                        &payouts,
+                    )
+                    .await;
+                }
+                _ => {
+                    return Err(MarketErr::WrongTransaction);
+                }
+            }
+        }
+
+        let tx_id = self.tx_id;
+        self.tx_id = self.tx_id.wrapping_add(1);
+        item.tx = Some((tx_id, MarketTx::AcceptOffer));
+
+        accept_offer_tx(
+            tx_id,
+            item,
+            nft_contract_id,
+            ft_contract_id,
+            account,
+            token_id,
+            price,
+            &payouts,
+        )
+        .await
+    }
+
+    async fn withdraw(
+        &mut self,
+        nft_contract_id: &ContractId,
+        token_id: TokenId,
+        ft_contract_id: Option<ContractId>,
+        price: Price,
+    ) -> Result<MarketEvent, MarketErr> {
+        let contract_and_token_id = (*nft_contract_id, token_id);
+
+        let item = self
+            .items
+            .get_mut(&contract_and_token_id)
+            .ok_or(MarketErr::ItemDoesNotExists)?;
+
+        let account = if let Some(account) = item.offers.get(&(ft_contract_id, price)) {
+            *account
+        } else {
+            return Err(MarketErr::OfferIsNotExists);
+        };
+
+        if account != msg::source() {
+            return Err(MarketErr::InvalidCaller);
+        }
+
+        let ft_id = if let Some(ft_id) = ft_contract_id {
+            ft_id
+        } else {
+            msg::send(account, MarketEvent::TransferValue, price).expect("Error in sending value");
+            return Ok(MarketEvent::Withdraw {
+                nft_contract_id: *nft_contract_id,
                 token_id,
-                offer.price - treasury_fee,
-            )
-            .await;
-            for (account, amount) in payouts.iter() {
-                transfer_payment(&exec::program_id(), account, offer.ft_contract_id, *amount).await;
-            }
+                price,
+            });
+        };
 
-            offers.retain(|offer| offer.hash != offer_hash);
-            item.offers = offers;
-            item.price = None;
-            item.owner_id = offer.id;
-            msg::reply(
-                MarketEvent::OfferAccepted {
-                    nft_contract_id: *nft_contract_id,
-                    token_id,
-                    new_owner: offer.id,
-                    price: offer.price,
-                },
-                0,
-            )
-            .expect("Error in reply [MarketEvent::OfferAccepted]");
-        } else {
-            panic!("The offer with that hash does not exist");
+        if let Some((tx_id, tx)) = item.tx.clone() {
+            match tx {
+                MarketTx::Withdraw {
+                    ft_id,
+                    price,
+                    account,
+                } => {
+                    let new_price = price;
+                    let new_ft_id = ft_id;
+                    let result = withdraw_tx(
+                        tx_id,
+                        item,
+                        nft_contract_id,
+                        &ft_id,
+                        token_id,
+                        &account,
+                        price,
+                    )
+                    .await;
+                    if account == msg::source() && new_price == price && new_ft_id == ft_id {
+                        return result;
+                    }
+                }
+                _ => {
+                    return Err(MarketErr::WrongTransaction);
+                }
+            }
+        }
+
+        let tx_id = self.tx_id;
+        self.tx_id = self.tx_id.wrapping_add(1);
+        item.tx = Some((
+            tx_id,
+            MarketTx::Withdraw {
+                ft_id,
+                price,
+                account: msg::source(),
+            },
+        ));
+        withdraw_tx(
+            tx_id,
+            item,
+            nft_contract_id,
+            &ft_id,
+            token_id,
+            &account,
+            price,
+        )
+        .await
+    }
+}
+
+async fn add_offer_tx(
+    tx_id: TransactionId,
+    item: &mut Item,
+    nft_contract_id: &ContractId,
+    ft_contract_id: &ContractId,
+    token_id: TokenId,
+    price: Price,
+) -> Result<MarketEvent, MarketErr> {
+    let ft_id = Some(*ft_contract_id);
+    if transfer_tokens(
+        tx_id,
+        ft_contract_id,
+        &msg::source(),
+        &exec::program_id(),
+        price,
+    )
+    .await
+    .is_err()
+    {
+        item.tx = None;
+        return Err(MarketErr::TokenTransferFailed);
+    }
+    item.tx = None;
+    item.offers.insert((ft_id, price), msg::source());
+    Ok(MarketEvent::OfferAdded {
+        nft_contract_id: *nft_contract_id,
+        ft_contract_id: ft_id,
+        token_id,
+        price,
+    })
+}
+
+#[allow(clippy::too_many_arguments)]
+async fn accept_offer_tx(
+    mut tx_id: TransactionId,
+    item: &mut Item,
+    nft_contract_id: &ContractId,
+    ft_contract_id: Option<ContractId>,
+    new_owner: &ActorId,
+    token_id: TokenId,
+    price: Price,
+    payouts: &Payout,
+) -> Result<MarketEvent, MarketErr> {
+    let ft_id = if let Some(ft_contract_id) = ft_contract_id {
+        ft_contract_id
+    } else {
+        return accept_offer_tx_with_value(
+            tx_id,
+            item,
+            nft_contract_id,
+            new_owner,
+            token_id,
+            price,
+            payouts,
+        )
+        .await;
+    };
+
+    // transfer NFT to the marketplace account
+    if nft_transfer(tx_id, nft_contract_id, &exec::program_id(), token_id)
+        .await
+        .is_err()
+    {
+        item.tx = None;
+        return Err(MarketErr::NFTTransferFailed);
+    }
+
+    // send tokens to the seller, royalties and tresuary account
+    // since tokens are on the marketplace account, the error can be only due the lack of gas
+    for (account, amount) in payouts.iter() {
+        tx_id = tx_id.wrapping_add(1);
+        if transfer_tokens(tx_id, &ft_id, &exec::program_id(), account, *amount)
+            .await
+            .is_err()
+        {
+            return Err(MarketErr::RerunTransaction);
+        };
+    }
+
+    // transfer NFT to the buyer
+    if nft_transfer(tx_id, nft_contract_id, new_owner, token_id)
+        .await
+        .is_err()
+    {
+        return Err(MarketErr::RerunTransaction);
+    }
+
+    item.owner = *new_owner;
+    item.price = None;
+    item.tx = None;
+    item.offers.remove(&(ft_contract_id, price));
+
+    Ok(MarketEvent::OfferAccepted {
+        nft_contract_id: *nft_contract_id,
+        token_id,
+        new_owner: *new_owner,
+        price,
+    })
+}
+
+pub async fn accept_offer_tx_with_value(
+    tx_id: TransactionId,
+    item: &mut Item,
+    nft_contract_id: &ContractId,
+    new_owner: &ActorId,
+    token_id: TokenId,
+    price: Price,
+    payouts: &Payout,
+) -> Result<MarketEvent, MarketErr> {
+    // transfer NFT to the
+    if nft_transfer(tx_id, nft_contract_id, new_owner, token_id)
+        .await
+        .is_err()
+    {
+        item.tx = None;
+        return Err(MarketErr::NFTTransferFailed);
+    }
+
+    // send tokens to the seller, royalties and tresuary account
+    // since tokens are on the marketplace account, the error can be only due the lack of gas
+    for (account, amount) in payouts.iter() {
+        if account != &exec::program_id() && price > MINIMUM_VALUE.into() {
+            msg::send(*account, "", *amount).expect("Error in sending value");
         }
     }
 
-    pub async fn withdraw(&mut self, nft_contract_id: &ActorId, token_id: U256, offer_hash: H256) {
-        let contract_and_token_id =
-            format!("{}{token_id}", H256::from_slice(nft_contract_id.as_ref()));
-        let item = self
-            .items
-            .get_mut(&contract_and_token_id)
-            .expect("Item does not exist");
+    item.owner = *new_owner;
+    item.price = None;
+    item.tx = None;
 
-        let mut offers = item.offers.clone();
-        if let Some(offer) = offers.clone().iter().find(|offer| offer.hash == offer_hash) {
-            if msg::source() != offer.id {
-                panic!("can't withdraw other user's tokens");
-            }
-            transfer_payment(
-                &exec::program_id(),
-                &msg::source(),
-                offer.ft_contract_id,
-                offer.price,
-            )
-            .await;
-            offers.retain(|offer| offer.hash != offer_hash);
-            item.offers = offers;
-            msg::reply(
-                MarketEvent::TokensWithdrawn {
-                    nft_contract_id: *nft_contract_id,
-                    token_id,
-                    price: offer.price,
-                },
-                0,
-            )
-            .expect("Error in reply [MarketEvent::TokensWithdrawn]");
-        } else {
-            panic!("The offer with that hash does not exist");
-        }
+    item.offers.remove(&(None, price));
+
+    Ok(MarketEvent::OfferAccepted {
+        nft_contract_id: *nft_contract_id,
+        token_id,
+        new_owner: *new_owner,
+        price,
+    })
+}
+
+async fn withdraw_tx(
+    tx_id: TransactionId,
+    item: &mut Item,
+    nft_contract_id: &ContractId,
+    ft_contract_id: &ContractId,
+    token_id: TokenId,
+    account: &ActorId,
+    price: Price,
+) -> Result<MarketEvent, MarketErr> {
+    if transfer_tokens(tx_id, ft_contract_id, &exec::program_id(), account, price)
+        .await
+        .is_err()
+    {
+        item.tx = None;
+        return Err(MarketErr::TokenTransferFailed);
     }
+
+    item.tx = None;
+    item.offers.remove(&(Some(*ft_contract_id), price));
+    Ok(MarketEvent::Withdraw {
+        nft_contract_id: *nft_contract_id,
+        token_id,
+        price,
+    })
 }

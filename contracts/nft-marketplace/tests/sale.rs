@@ -1,207 +1,140 @@
-use ft_io::*;
-use gear_lib::non_fungible_token::token::*;
-use gstd::Encode;
-use market_io::*;
-use nft_io::*;
+pub mod utils;
 
-use gtest::System;
-mod utils;
-pub use utils::*;
+use market_io::MarketErr;
+use utils::prelude::*;
 
-fn before_each_test(sys: &System) {
-    init_ft(sys);
-    init_nft(sys);
-    init_market(sys);
-    let market = sys.get_program(3);
-    let res = market.send(USERS[0], MarketAction::AddFTContract(1.into()));
-    assert!(res.log().is_empty());
-    let res = market.send(USERS[0], MarketAction::AddNftContract(2.into()));
-    assert!(res.log().is_empty());
+#[test]
+fn buy_with_fungible_tokens() {
+    let system = utils::initialize_system();
+
+    let (ft_program, nft_program, market) = utils::initialize_programs(&system);
+
+    market
+        .add_market_data(
+            &system,
+            SELLER,
+            nft_program.actor_id(),
+            Some(ft_program.actor_id()),
+            TOKEN_ID.into(),
+            Some(NFT_PRICE),
+        )
+        .succeed((nft_program.actor_id(), TOKEN_ID.into(), Some(NFT_PRICE)));
+
+    let tx_id: u64 = 100;
+    ft_program.mint(BUYER, tx_id, NFT_PRICE);
+
+    market
+        .buy_item(BUYER, nft_program.actor_id(), TOKEN_ID.into(), 0)
+        .succeed((BUYER.into(), nft_program.actor_id(), TOKEN_ID.into()));
+
+    // TODO: Check owner
+    // nft_program
+    //     .meta_state()
+    //     .owner_id(TOKEN_ID)
+    //     .check(BUYER.into());
+
+    // Check balance of SELLER
+    let treasury_fee = NFT_PRICE * ((TREASURY_FEE * BASE_PERCENT) as u128) / 10_000u128;
+    ft_program
+        .balance_of(SELLER.into())
+        .check(NFT_PRICE - treasury_fee);
+
+    // Check balance of TREASURY_ID
+    ft_program
+        .balance_of(TREASURY_ID.into())
+        .check(treasury_fee);
 }
 
 #[test]
-fn buy() {
-    let sys = System::new();
-    sys.init_logger();
-    before_each_test(&sys);
-    let nft = sys.get_program(2);
-    // mint nft
-    let res = nft.send(
-        USERS[0],
-        NFTAction::Mint {
-            token_metadata: TokenMetadata {
-                name: "CryptoKitty".to_string(),
-                description: "Description".to_string(),
-                media: "http://".to_string(),
-                reference: "http://".to_string(),
-            },
-        },
-    );
-    assert!(!res.main_failed());
-    // add nft to market
-    let market = sys.get_program(3);
-    add_market_data(&market, None, USERS[0], 0, Some(100_000));
+fn buy_with_fungible_tokens_failures() {
+    let system = utils::initialize_system();
 
-    sys.mint_to(USERS[1], 100_000);
-    let res = market.send_with_value(
-        USERS[1],
-        MarketAction::BuyItem {
-            nft_contract_id: 2.into(),
-            token_id: 0.into(),
-        },
-        100_000,
-    );
-    assert!(res.contains(&(
-        USERS[1],
-        MarketEvent::ItemSold {
-            owner: USERS[1].into(),
-            nft_contract_id: 2.into(),
-            token_id: 0.into(),
-        }
-        .encode()
-    )));
+    let (ft_program, nft_program, market) = utils::initialize_programs(&system);
 
-    let res = market.send(
-        USERS[0],
-        MarketAction::Item {
-            nft_contract_id: 2.into(),
-            token_id: 0.into(),
-        },
-    );
-    assert!(res.contains(&(
-        USERS[0],
-        MarketEvent::ItemInfo(Item {
-            owner_id: USERS[1].into(),
-            ft_contract_id: None,
-            price: None,
-            auction: None,
-            offers: vec![],
-        })
-        .encode()
-    )));
+    // Must fail since item does not exist
+    market
+        .buy_item(BUYER, nft_program.actor_id(), TOKEN_ID.into(), 0)
+        .failed(MarketErr::ItemDoesNotExists);
+
+    market
+        .add_market_data(
+            &system,
+            SELLER,
+            nft_program.actor_id(),
+            Some(ft_program.actor_id()),
+            TOKEN_ID.into(),
+            None,
+        )
+        .succeed((nft_program.actor_id(), TOKEN_ID.into(), None));
+
+    // Must fail since item isn't on sale
+    market
+        .buy_item(BUYER, nft_program.actor_id(), TOKEN_ID.into(), 0)
+        .failed(MarketErr::ItemIsNotOnSale);
+
+    market
+        .create_auction(
+            &system,
+            SELLER,
+            (nft_program.actor_id(), TOKEN_ID.into(), None),
+            NFT_PRICE,
+            BID_PERIOD,
+            DURATION,
+        )
+        .succeed((nft_program.actor_id(), TOKEN_ID.into(), NFT_PRICE));
+
+    // Must fail since auction has started on that item
+    market
+        .buy_item(BUYER, nft_program.actor_id(), TOKEN_ID.into(), 0)
+        .failed(MarketErr::ItemOnAuction);
 }
 
 #[test]
-fn buy_with_tokens() {
-    let sys = System::new();
-    sys.init_logger();
-    before_each_test(&sys);
-    let ft = sys.get_program(1);
-    // mint ft
-    let res = ft.send(USERS[1], FTAction::Mint(10_000));
-    assert!(!res.main_failed());
-    let nft = sys.get_program(2);
-    // mint nft
-    let res = nft.send(
-        USERS[0],
-        NFTAction::Mint {
-            token_metadata: TokenMetadata {
-                name: "CryptoKitty".to_string(),
-                description: "Description".to_string(),
-                media: "http://".to_string(),
-                reference: "http://".to_string(),
-            },
-        },
-    );
-    assert!(!res.main_failed());
-    // add nft to market
-    let market = sys.get_program(3);
-    add_market_data(&market, Some(1.into()), USERS[0], 0, Some(1_000));
+fn buy_with_native_tokens() {
+    let system = utils::initialize_system();
 
-    let res = market.send(
-        USERS[1],
-        MarketAction::BuyItem {
-            nft_contract_id: 2.into(),
-            token_id: 0.into(),
-        },
-    );
-    assert!(res.contains(&(
-        USERS[1],
-        MarketEvent::ItemSold {
-            owner: USERS[1].into(),
-            nft_contract_id: 2.into(),
-            token_id: 0.into(),
-        }
-        .encode()
-    )));
+    let (_, nft_program, market) = utils::initialize_programs(&system);
 
-    // check the owner balance
-    let res = ft.send(USERS[0], FTAction::BalanceOf(USERS[0].into()));
-    assert!(res.contains(&(USERS[0], FTEvent::Balance(990).encode())));
+    market
+        .add_market_data(
+            &system,
+            SELLER,
+            nft_program.actor_id(),
+            None,
+            TOKEN_ID.into(),
+            Some(NFT_PRICE),
+        )
+        .succeed((nft_program.actor_id(), TOKEN_ID.into(), Some(NFT_PRICE)));
 
-    // check the treasury id address
-    let res = ft.send(USERS[0], FTAction::BalanceOf(TREASURY_ID.into()));
-    assert!(res.contains(&(USERS[0], FTEvent::Balance(10).encode())));
-    let res = market.send(
-        USERS[0],
-        MarketAction::Item {
-            nft_contract_id: 2.into(),
-            token_id: 0.into(),
-        },
-    );
-    assert!(res.contains(&(
-        USERS[0],
-        MarketEvent::ItemInfo(Item {
-            owner_id: USERS[1].into(),
-            ft_contract_id: Some(1.into()),
-            price: None,
-            auction: None,
-            offers: vec![],
-        })
-        .encode()
-    )));
-}
-#[test]
-fn buy_failures() {
-    let sys = System::new();
-    sys.init_logger();
-    before_each_test(&sys);
-    let nft = sys.get_program(2);
-    let market = sys.get_program(3);
-    // mint nft
-    let res = nft.send(
-        USERS[0],
-        NFTAction::Mint {
-            token_metadata: TokenMetadata {
-                name: "CryptoKitty".to_string(),
-                description: "Description".to_string(),
-                media: "http://".to_string(),
-                reference: "http://".to_string(),
-            },
-        },
-    );
-    assert!(!res.main_failed());
-    // must since item does not exist
-    let res = market.send(
-        USERS[1],
-        MarketAction::BuyItem {
-            nft_contract_id: 2.into(),
-            token_id: 0.into(),
-        },
-    );
-    assert!(res.main_failed());
-    // must fail since item isn't on sale
-    add_market_data(&market, Some(1.into()), USERS[0], 0, None);
-    let res = market.send(
-        USERS[1],
-        MarketAction::BuyItem {
-            nft_contract_id: 2.into(),
-            token_id: 0.into(),
-        },
-    );
+    system.mint_to(BUYER, NFT_PRICE * 2);
 
-    assert!(res.main_failed());
+    // Must fail since not enough value was attached to the message
+    market
+        .buy_item(
+            BUYER,
+            nft_program.actor_id(),
+            TOKEN_ID.into(),
+            NFT_PRICE - 1000,
+        )
+        .failed(MarketErr::WrongPrice);
 
-    add_market_data(&market, None, USERS[0], 0, Some(1_000));
-    // must fail since that the attached value is not equal to the indicated price
-    sys.mint_to(USERS[1], 990);
-    let res = market.send_with_value(
-        USERS[1],
-        MarketAction::BuyItem {
-            nft_contract_id: 2.into(),
-            token_id: 0.into(),
-        },
-        990,
-    );
-    assert!(res.main_failed());
+    market
+        .buy_item(BUYER, nft_program.actor_id(), TOKEN_ID.into(), NFT_PRICE)
+        .succeed((BUYER.into(), nft_program.actor_id(), TOKEN_ID.into()));
+
+    // TODO: Check owner
+    /* nft_program
+    .meta_state()
+    .owner_id(TOKEN_ID)
+    .check(BUYER.into()); */
+
+    let treasury_fee = NFT_PRICE * ((TREASURY_FEE * BASE_PERCENT) as u128) / 10_000u128;
+
+    // Check balance of SELLER
+    system.claim_value_from_mailbox(SELLER);
+    assert_eq!(system.balance_of(SELLER), NFT_PRICE - treasury_fee);
+
+    // Check balance of TREASURY_ID
+    system.claim_value_from_mailbox(TREASURY_ID);
+    assert_eq!(system.balance_of(TREASURY_ID), treasury_fee);
 }

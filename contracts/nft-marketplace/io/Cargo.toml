@@ -6,9 +6,9 @@ license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
-codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false }
-scale-info = { version = "2.2.0", default-features = false }
-primitive-types = { version = "0.11.1", default-features = false, features = ["scale-info"] }
-nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.3" }
-sp-core-hashing = { version = "4.0.0", default-features = false }
+gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
+primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
+nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.7" }

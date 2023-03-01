@@ -1,37 +1,59 @@
 use gstd::{msg, prelude::*, ActorId};
-use primitive_types::U256;
-pub type Payout = BTreeMap<ActorId, u128>;
+use market_io::{ContractId, TokenId, TransactionId};
 use nft_io::*;
+use primitive_types::U256;
+
+pub type Payout = BTreeMap<ActorId, u128>;
 
 pub async fn nft_transfer(
+    transaction_id: TransactionId,
     nft_program_id: &ActorId,
     to: &ActorId,
     token_id: U256,
-    amount: u128,
-) -> Payout {
-    let response: NFTEvent = msg::send_for_reply_as(
+) -> Result<(), ()> {
+    msg::send_for_reply_as::<NFTAction, NFTEvent>(
         *nft_program_id,
-        NFTAction::TransferPayout {
+        NFTAction::Transfer {
+            transaction_id,
             to: *to,
             token_id,
+        },
+        0,
+    )
+    .expect("Error in sending a message `NFTAction::Transfer`")
+    .await
+    .map(|_| ())
+    .map_err(|_| ())
+}
+
+pub async fn payouts(nft_program_id: &ActorId, owner: &ActorId, amount: u128) -> Payout {
+    let reply: NFTEvent = msg::send_for_reply_as(
+        *nft_program_id,
+        NFTAction::NFTPayout {
+            owner: *owner,
             amount,
         },
         0,
     )
-    .unwrap()
+    .expect("Error in sending a message `NFTAction::NFTPayout`")
     .await
-    .expect("error in transfer");
-    let decoded_response = if let NFTEvent::TransferPayout(transfer_payout) = response {
-        transfer_payout
-    } else {
-        unreachable!("Error in decoding payouts");
-    };
-    decoded_response.payouts
+    .expect("Unable to decode `NFTEvent`");
+
+    match reply {
+        NFTEvent::NFTPayout(payout) => payout,
+        _ => panic!("Wrong received reply"),
+    }
 }
 
-pub async fn nft_approve(nft_program_id: &ActorId, to: &ActorId, token_id: U256) {
-    msg::send_for_reply(*nft_program_id, NFTAction::Approve { to: *to, token_id }, 0)
-        .unwrap()
-        .await
-        .expect("error in transfer");
+pub async fn get_owner(nft_contract_id: &ContractId, token_id: TokenId) -> ActorId {
+    let reply: NFTEvent =
+        msg::send_for_reply_as(*nft_contract_id, NFTAction::Owner { token_id }, 0)
+            .expect("Error in sending a message `NFTAction::Owner`")
+            .await
+            .expect("Unable to decode `NFTEvent`");
+
+    match reply {
+        NFTEvent::Owner { owner, token_id: _ } => owner,
+        _ => panic!("Wrong received message"),
+    }
 }
