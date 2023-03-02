@@ -1,28 +1,28 @@
 [package]
 name = "nft-marketplace"
-version = "0.1.1"
+version = "0.2.0"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
-nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.7" }
+nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.9" }
 market-io = { path = "io" }
-sp-core-hashing = { version = "6.0.0", default-features = false }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.3" }
-ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.3" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.4" }
-async-trait = "0.1.60"
+sp-core-hashing = { version = "7.0.0", default-features = false }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
+ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.5" }
+async-trait = "0.1.64"
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "stable" }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "testnet" }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 
 [build-dependencies]
 market-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in

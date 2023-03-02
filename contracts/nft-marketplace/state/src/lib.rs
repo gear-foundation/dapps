@@ -5,14 +5,14 @@ use gstd::prelude::*;
 use market_io::*;
 
 #[metawasm]
-pub trait Metawasm {
-    type State = <MarketMetadata as Metadata>::State;
+pub mod metafns {
+    pub type State = <MarketMetadata as Metadata>::State;
 
-    fn all_items(state: Self::State) -> Vec<Item> {
+    pub fn all_items(state: State) -> Vec<Item> {
         market_io::all_items(state)
     }
 
-    fn item_info(args: ItemInfoArgs, state: Self::State) -> Item {
+    pub fn item_info(state: State, args: ItemInfoArgs) -> Item {
         market_io::item_info(state, &args).expect("Item not found")
     }
 }
