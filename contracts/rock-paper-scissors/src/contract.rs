@@ -125,24 +125,6 @@ extern "C" fn handle() {
     }
 }
 
-#[no_mangle]
-extern "C" fn meta_state() -> *mut [i32; 2] {
-    let query: State = msg::load().expect("failed to decode input argument");
-    let game: &RPSGame = unsafe { RPS_GAME.get_or_insert(RPSGame::default()) };
-
-    let encoded = match query {
-        State::Config => StateReply::Config(game.game_config.clone()),
-        State::LobbyList => StateReply::LobbyList(game.lobby.clone().into_iter().collect()),
-        State::GameStage => StateReply::GameStage(game.stage.clone()),
-        State::CurrentStageTimestamp => {
-            StateReply::CurrentStageTimestamp(game.current_stage_start_timestamp)
-        }
-    }
-    .encode();
-
-    gstd::util::to_leak_ptr(encoded)
-}
-
 fn common_state() -> <ContractMetadata as Metadata>::State {
     let state = static_mut_state();
     let RPSGame {

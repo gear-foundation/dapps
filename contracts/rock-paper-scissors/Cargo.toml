@@ -1,25 +1,25 @@
 [package]
 name = "rock-paper-scissors"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "stable" }
-sp-core-hashing = { version = "6.0.0", default-features = false }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "testnet" }
+sp-core-hashing = { version = "7.0.0", default-features = false }
 rps-io = { path = "io" }
 hashbrown = "0.13.1"
-gmeta = { git = "https://github.com/gear-tech/gear", branch = "stable" }
+gmeta = { git = "https://github.com/gear-tech/gear", branch = "testnet" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git" }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 rps-state = { path = "state" }
-gclient = { git = "https://github.com/gear-tech/gear.git" }
+gclient = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 tokio = "1"
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 rps-io = { path = "io" }
 
 [features]

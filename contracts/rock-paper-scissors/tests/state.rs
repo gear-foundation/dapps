@@ -8,6 +8,10 @@
 use gstd::ActorId;
 use gtest::System;
 use rps_io::*;
+// use rps_state::state::metafns::{
+//     config, current_stage_start_timestamp, game_stage, lobby_list, State,
+// };
+
 use std::collections::BTreeSet;
 
 mod routines;
@@ -26,11 +30,8 @@ fn common_config_tests() {
     };
     check_change_next_game_config(&game, USERS[0], next_config.clone());
 
-    if let StateReply::Config(config) = game.meta_state(State::Config).unwrap() {
-        assert_eq!(config, COMMON_CONFIG);
-    } else {
-        panic!("not suitable reply")
-    }
+    let state: ContractState = game.read_state().expect("Not suitable reply");
+    assert_eq!(COMMON_CONFIG, state.game_config);
 
     play_round(
         &game,
@@ -38,11 +39,8 @@ fn common_config_tests() {
         &[Move::Rock, Move::Paper, Move::Rock],
     );
 
-    if let StateReply::Config(config) = game.meta_state(State::Config).unwrap() {
-        assert_eq!(config, next_config);
-    } else {
-        panic!("not suitable reply")
-    }
+    let state: ContractState = game.read_state().expect("Not suitable reply");
+    assert_eq!(next_config, state.game_config);
 }
 
 #[test]
@@ -50,52 +48,58 @@ fn common_stage_tests() {
     let sys = System::new();
     let game = common_init_and_register(&sys);
 
-    if let StateReply::GameStage(stage) = game.meta_state(State::GameStage).unwrap() {
-        match stage {
-            GameStage::Preparation => {}
-            GameStage::Reveal(_) | GameStage::InProgress(_) => panic!("wrong"),
-        }
-    } else {
-        panic!("not suitable reply")
+    let state: ContractState = game.read_state().expect("Not suitable reply");
+    let stage = state.stage;
+    match stage {
+        GameStage::Preparation => {}
+        GameStage::Reveal(_) | GameStage::InProgress(_) => panic!("wrong"),
     }
 
     check_user_move(&game, USERS[0], Move::Rock);
 
-    if let StateReply::GameStage(stage) = game.meta_state(State::GameStage).unwrap() {
-        match stage {
-            GameStage::InProgress(description) => {
-                let mut anticipated = COMMON_USERS_SET
-                    .iter()
-                    .cloned()
-                    .map(Into::into)
-                    .collect::<BTreeSet<ActorId>>();
-                let done = anticipated.take(&USERS[0].into()).unwrap();
-                assert_eq!(description.anticipated_players, anticipated);
-                assert_eq!(description.finished_players, BTreeSet::from([done]));
-            }
-            GameStage::Reveal(_) | GameStage::Preparation => panic!("wrong"),
+    let state: ContractState = game.read_state().expect("Not suitable reply");
+
+    let list = COMMON_USERS_SET
+        .iter()
+        .cloned()
+        .map(Into::into)
+        .collect::<Vec<ActorId>>();
+    let mut lobby = state.lobby;
+    lobby.sort();
+    assert_eq!(lobby, list);
+
+    let state: ContractState = game.read_state().expect("Not suitable reply");
+    let stage = state.stage;
+    match stage {
+        GameStage::InProgress(description) => {
+            let mut anticipated = COMMON_USERS_SET
+                .iter()
+                .cloned()
+                .map(Into::into)
+                .collect::<BTreeSet<ActorId>>();
+            let done = anticipated.take(&USERS[0].into()).unwrap();
+            assert_eq!(description.anticipated_players, anticipated);
+            assert_eq!(description.finished_players, BTreeSet::from([done]));
         }
-    } else {
-        panic!("not suitable reply")
+        GameStage::Reveal(_) | GameStage::Preparation => panic!("wrong"),
     }
 }
 
 #[test]
-fn lobby_list() {
+fn lobby_list_test() {
     let sys = System::new();
     let game = common_init_and_register(&sys);
 
-    if let StateReply::LobbyList(mut lobby) = game.meta_state(State::LobbyList).unwrap() {
-        let list = COMMON_USERS_SET
-            .iter()
-            .cloned()
-            .map(Into::into)
-            .collect::<Vec<ActorId>>();
-        lobby.sort();
-        assert_eq!(lobby, list);
-    } else {
-        panic!("not suitable reply")
-    }
+    let state: ContractState = game.read_state().expect("Not suiable reply");
+
+    let list = COMMON_USERS_SET
+        .iter()
+        .cloned()
+        .map(Into::into)
+        .collect::<Vec<ActorId>>();
+    let mut lobby = state.lobby;
+    lobby.sort();
+    assert_eq!(lobby, list);
 
     play_round(
         &game,
@@ -103,15 +107,14 @@ fn lobby_list() {
         &[Move::Rock, Move::Paper, Move::Paper],
     );
 
-    if let StateReply::LobbyList(mut lobby) = game.meta_state(State::LobbyList).unwrap() {
-        let list = COMMON_USERS_SET
-            .iter()
-            .cloned()
-            .map(Into::into)
-            .collect::<Vec<ActorId>>();
-        lobby.sort();
-        assert_eq!(lobby, list);
-    } else {
-        panic!("not suitable reply")
-    }
+    let state: ContractState = game.read_state().expect("Not suiable reply");
+
+    let list = COMMON_USERS_SET
+        .iter()
+        .cloned()
+        .map(Into::into)
+        .collect::<Vec<ActorId>>();
+    let mut lobby = state.lobby;
+    lobby.sort();
+    assert_eq!(lobby, list);
 }

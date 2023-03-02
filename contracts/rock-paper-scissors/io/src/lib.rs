@@ -1,12 +1,12 @@
 #![no_std]
 
-use gmeta::Metadata;
+use gmeta::{In, Metadata};
 use gstd::{prelude::*, ActorId};
 
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
-    type Init = ();
+    type Init = In<GameConfig>;
     type Handle = ();
     type Reply = ();
     type Others = ();
