@@ -1,32 +1,27 @@
 [package]
 name = "escrow"
-version = "0.1.2"
+version = "0.1.4"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.3" }
-ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.3" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
+ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
 async-trait = "0.1.64"
 hashbrown = "0.13.1"
 escrow-io = { path = "io" }
 
 [build-dependencies]
 escrow-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 
 [dev-dependencies]
-gclient = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gclient = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["debug"] }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 tokio = "1"
-
-[patch.crates-io]
-# Two dependecies below goes for subxt v0.22.0
-sp-core = { git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
-sp-runtime = { git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in

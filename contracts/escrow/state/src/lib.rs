@@ -6,10 +6,10 @@ use gstd::prelude::*;
 use primitive_types::U256;
 
 #[metawasm]
-pub trait Metawasm {
-    type State = <EscrowMetadata as Metadata>::State;
+pub mod metafns {
+    pub type State = <EscrowMetadata as Metadata>::State;
 
-    fn info(wallet_id: U256, state: Self::State) -> Wallet {
+    pub fn info(state: State, wallet_id: U256) -> Wallet {
         let (_, wallet) = *state
             .wallets
             .iter()
@@ -19,7 +19,7 @@ pub trait Metawasm {
         wallet
     }
 
-    fn created_wallets(state: Self::State) -> Vec<(WalletId, Wallet)> {
+    pub fn created_wallets(state: State) -> Vec<(WalletId, Wallet)> {
         state
             .wallets
             .iter()
