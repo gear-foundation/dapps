@@ -25,9 +25,10 @@ pre-commit: fmt lint full-test
 deps:
 	@echo ⚙️ Downloading dependencies...
 	@path=target/ft.wasm;\
+	mkdir -p target && \
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/fungible-token/releases/download/0.1.3/fungible_token-0.1.3.wasm\
+	        https://github.com/gear-dapps/fungible-token/releases/download/0.1.4/fungible_token-0.1.4.wasm\
 			-o $$path;\
 	fi
 

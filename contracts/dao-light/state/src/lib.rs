@@ -5,10 +5,10 @@ use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 
 #[metawasm]
-pub trait Metawasm {
-    type State = <DaoLightMetadata as Metadata>::State;
+pub mod metafns {
+    pub type State = <DaoLightMetadata as Metadata>::State;
 
-    fn user_status(account: ActorId, state: Self::State) -> Role {
+    pub fn user_status(state: State, account: ActorId) -> Role {
         if state.is_member(&account) {
             Role::Member
         } else {
@@ -16,7 +16,7 @@ pub trait Metawasm {
         }
     }
 
-    fn all_proposals(state: Self::State) -> Vec<Proposal> {
+    pub fn all_proposals(state: State) -> Vec<Proposal> {
         state
             .proposals
             .iter()
@@ -24,15 +24,15 @@ pub trait Metawasm {
             .collect()
     }
 
-    fn is_member(account: ActorId, state: Self::State) -> bool {
+    pub fn is_member(state: State, account: ActorId) -> bool {
         state.is_member(&account)
     }
 
-    fn proposal_id(state: Self::State) -> u128 {
+    pub fn proposal_id(state: State) -> u128 {
         state.proposal_id
     }
 
-    fn proposal_info(proposal_id: u128, state: Self::State) -> Proposal {
+    pub fn proposal_info(state: State, proposal_id: u128) -> Proposal {
         let (_, proposal) = state
             .proposals
             .iter()
@@ -41,7 +41,7 @@ pub trait Metawasm {
         proposal.clone()
     }
 
-    fn member_info(account: ActorId, state: Self::State) -> Member {
+    pub fn member_info(state: State, account: ActorId) -> Member {
         let (_, member) = state
             .members
             .iter()
@@ -51,7 +51,7 @@ pub trait Metawasm {
         member.clone()
     }
 
-    fn member_power(account: ActorId, state: Self::State) -> u128 {
+    pub fn member_power(state: State, account: ActorId) -> u128 {
         let (_, member) = state
             .members
             .iter()
