@@ -1,6 +1,6 @@
 [package]
 name = "dao-state"
-version = "0.1.0"
+version = "0.2.2"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
@@ -8,9 +8,9 @@ authors = ["Gear Technologies"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", branch = "stable" }
-gmeta = { git = "https://github.com/gear-tech/gear", branch = "stable", features = ["codegen"] }
+gstd = { git = "https://github.com/gear-tech/gear", branch = "testnet" }
+gmeta = { git = "https://github.com/gear-tech/gear", branch = "testnet", features = ["codegen"] }
 dao-io = { path = "../io" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", branch = "stable", features = ["metawasm"] }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", branch = "testnet", features = ["metawasm"] }

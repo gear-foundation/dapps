@@ -5,26 +5,26 @@ use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 
 #[metawasm]
-pub trait Metawasm {
-    type State = <DaoMetadata as Metadata>::State;
+pub mod metafns {
+    pub type State = <DaoMetadata as Metadata>::State;
 
-    fn is_member(account: ActorId, state: Self::State) -> bool {
+    pub fn is_member(state: State, account: ActorId) -> bool {
         DaoState::is_member(state, &account)
     }
 
-    fn is_in_whitelist(account: ActorId, state: Self::State) -> bool {
+    pub fn is_in_whitelist(state: State, account: ActorId) -> bool {
         DaoState::is_in_whitelist(state, &account)
     }
 
-    fn get_proposal_id(state: Self::State) -> u128 {
+    pub fn get_proposal_id(state: State) -> u128 {
         DaoState::get_proposal_id(state)
     }
 
-    fn get_proposal_info(id: u128, state: Self::State) -> Proposal {
+    pub fn get_proposal_info(state: State, id: u128) -> Proposal {
         DaoState::get_proposal_info(state, id).expect("Invalid proposal id")
     }
 
-    fn get_member_info(account: ActorId, state: Self::State) -> Member {
+    pub fn get_member_info(state: State, account: ActorId) -> Member {
         DaoState::get_member_info(state, &account).expect("Invalid member account")
     }
 }

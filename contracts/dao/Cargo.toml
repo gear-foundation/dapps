@@ -1,24 +1,24 @@
 [package]
 name = "dao"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 authors = ["Gear Technologies"]
 license = "MIT"
 
 [dependencies]
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.3" }
-ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.3" }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
+ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 dao-io = { path = "io" }
 hashbrown = "0.13.1"
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["debug"] }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 
 [build-dependencies]
 dao-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in
