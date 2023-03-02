@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.9] - 2023-03-02
+### Changed
+- Update gclient branch to `testnet`
+- Update gear-lib version
+
 ## [0.2.8] - 2023-01-10
 ### Added
 - Separate Rentable NFT program in another repository
@@ -48,7 +53,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.8...HEAD
+[Unreleased]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.9...HEAD
+[0.2.9]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.8...0.2.9
 [0.2.8]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.7...0.2.8
 [0.2.7]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.6...0.2.7
 [0.2.6]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.5...0.2.6
