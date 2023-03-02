@@ -6,7 +6,7 @@ license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-codec = { package = "parity-scale-codec", version = "3.2.1", default-features = false }
+codec = { package = "parity-scale-codec", version = "3.4", default-features = false }
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
 scale-info = { version = "2", default-features = false }

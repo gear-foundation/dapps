@@ -5,6 +5,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+## [0.3.5] - 2023-03-02
+### Changed
+- Updated `gstd`, `gtest`, `gear-wasm-builder` to the `testnet` branch.
+
+### Added
+- Derived the `Clone` trait for NFT's IO types.
 ## [0.3.4] - 2022-12-12
 ### Added
 - Derived the `Clone` trait for NFT's IO types.
