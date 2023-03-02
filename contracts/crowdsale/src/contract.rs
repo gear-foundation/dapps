@@ -1,7 +1,5 @@
 use crate::{asserts, messages::transfer_tokens};
-use crowdsale_io::{
-    CrowdsaleMetadata, IcoAction, IcoEvent, IcoInit, IcoState, State, StateIco, StateIcoReply,
-};
+use crowdsale_io::{CrowdsaleMetadata, IcoAction, IcoEvent, IcoInit, IcoState, State};
 use gmeta::Metadata;
 use gstd::{errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId};
 use hashbrown::HashMap;
@@ -324,38 +322,6 @@ extern "C" fn init() {
     };
 
     unsafe { ICO_CONTRACT = Some(ico) };
-}
-
-#[no_mangle]
-extern "C" fn meta_state() -> *mut [i32; 2] {
-    let time_now: u64 = exec::block_timestamp();
-
-    let state: StateIco = msg::load().expect("failed to decode State");
-    let ico: &mut IcoContract = unsafe { ICO_CONTRACT.get_or_insert(IcoContract::default()) };
-
-    let encoded = match state {
-        StateIco::CurrentPrice => {
-            StateIcoReply::CurrentPrice(ico.get_current_price(time_now)).encode()
-        }
-        StateIco::TokensLeft => StateIcoReply::TokensLeft(ico.get_balance()).encode(),
-        StateIco::BalanceOf(address) => {
-            if let Some(val) = ico.token_holders.get(&address) {
-                StateIcoReply::BalanceOf {
-                    address,
-                    balance: *val,
-                }
-                .encode()
-            } else {
-                StateIcoReply::BalanceOf {
-                    address,
-                    balance: 0,
-                }
-                .encode()
-            }
-        }
-    };
-
-    gstd::util::to_leak_ptr(encoded)
 }
 
 fn static_mut_state() -> &'static mut IcoContract {

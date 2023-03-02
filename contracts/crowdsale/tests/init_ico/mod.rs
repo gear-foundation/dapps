@@ -89,14 +89,10 @@ pub fn buy_tokens(sys: &System, ico: &Program, amount: u128, price: u128) {
 }
 
 pub fn balance_of(ico: &Program, amount: u128) {
-    let res: StateIcoReply = ico
-        .meta_state(StateIco::BalanceOf(USER_ID.into()))
-        .expect("Error in meta_state");
-
-    if let StateIcoReply::BalanceOf { address, balance } = res {
-        assert!(
-            address == USER_ID.into() && balance == amount,
-            "Error in balance_of()"
-        );
-    }
+    let state: State = ico.read_state().unwrap();
+    assert_eq!(
+        amount,
+        state.balance_of(&USER_ID.into()),
+        "Error in balance_of()"
+    );
 }

@@ -1,16 +1,16 @@
 [package]
 name = "crowdsale-io"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gmeta = { git = "https://github.com/gear-tech/gear", branch = "stable" }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gmeta = { git = "https://github.com/gear-tech/gear", branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
 hashbrown = "0.13.1"
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.2" }
-ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.2" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
+ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }

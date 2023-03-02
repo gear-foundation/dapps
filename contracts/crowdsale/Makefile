@@ -8,7 +8,7 @@ clean:
 
 build:
 	@echo ⚙️ Building a release...
-	@cargo +nightly b -r --workspace
+	@cargo +nightly b -r --workspace -Fbinary-vendor
 	@ls -l target/wasm32-unknown-unknown/release/*.wasm
 
 fmt:
@@ -36,25 +36,26 @@ lint:
 pre-commit: fmt lint full-test
 
 deps:
+	@mkdir -p target; 
 	@if [ ! -f "./target/ft_main.opt.wasm" ]; then\
 	    curl -L\
-	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.2/ft_main-0.1.2.opt.wasm"\
+	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.4/ft_main-0.1.4.opt.wasm"\
 	        -o "./target/ft_main.opt.wasm";\
 	fi
 	@if [ ! -f "./target/ft_logic.opt.wasm" ]; then\
 	    curl -L\
-	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.2/ft_logic-0.1.2.opt.wasm"\
+	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.4/ft_logic-0.1.4.opt.wasm"\
 	        -o "./target/ft_logic.opt.wasm";\
 	fi
 	@if [ ! -f "./target/ft_storage.opt.wasm" ]; then\
 	    curl -L\
-	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.2/ft_storage-0.1.2.opt.wasm"\
+	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.4/ft_storage-0.1.4.opt.wasm"\
 	        -o "./target/ft_storage.opt.wasm";\
 	fi
 
 test: build deps
 	@echo ⚙️ Running unit tests...
-	@cargo +nightly test --release
+	@cargo +nightly t --release -Fbinary-vendor
 
 node-test: build deps
 	@echo ⚙️ Running node tests...
@@ -63,10 +64,10 @@ node-test: build deps
 	rm gear-nightly-linux-x86_64.tar.xz
 	@./gear --dev --tmp > /dev/null 2>&1  & echo "$$!" > gear.pid
 	cat gear.pid;
-	@cargo +nightly t -Fbinary-vendor -- --include-ignored --test node_tests --test-threads=1 kill `(cat gear.pid)`;
+	@cargo +nightly t -r --workspace -Fbinary-vendor -- --include-ignored --test node_tests --test-threads=1 kill `(cat gear.pid)`;
 	rm gear; rm gear.pid
 
 
 full-test: deps
 	@echo ⚙️ Running all tests...
-	@cargo +nightly t --release -Fbinary-vendor -- --include-ignored --test-threads=1
+	@cargo +nightly t -r --workspace -Fbinary-vendor -- --include-ignored --test-threads=1

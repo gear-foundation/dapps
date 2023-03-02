@@ -18,7 +18,7 @@ pub const TIME_INCREASE_STEP: u128 = 1000;
 // const USERS: &[u64] = &[1, 2, 3, 4, 5, 6, 7, 8];
 
 #[tokio::test]
-
+#[ignore]
 async fn init() -> Result<()> {
     let api = GearApi::dev().await?;
 

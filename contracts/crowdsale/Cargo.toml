@@ -1,29 +1,29 @@
 [package]
 name = "crowdsale"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 codec = { package = "parity-scale-codec", version = "3", default-features = false }
 scale-info = { version = "2.3.0", default-features = false }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.2" }
-ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.2" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
+ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
 hashbrown = "0.13.1"
-gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 crowdsale-io = { path = "io" }
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-gclient = { git = "https://github.com/gear-tech/gear.git" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["debug"] }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gclient = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 tokio = "1"
 crowdsale-state = { path = "state", features = ["binary-vendor"] }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 crowdsale-io = { path = "io" }
 
 [features]

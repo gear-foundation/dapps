@@ -3,18 +3,18 @@ use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 
 #[metawasm]
-pub trait Metawasm {
-    type State = <CrowdsaleMetadata as Metadata>::State;
+pub mod metafns {
+    pub type State = <CrowdsaleMetadata as Metadata>::State;
 
-    fn current_price(state: Self::State) -> u128 {
+    pub fn current_price(state: State) -> u128 {
         state.get_current_price()
     }
 
-    fn tokens_left(state: Self::State) -> u128 {
+    pub fn tokens_left(state: State) -> u128 {
         state.get_balance()
     }
 
-    fn balance_of(address: ActorId, state: Self::State) -> u128 {
+    pub fn balance_of(state: State, address: ActorId) -> u128 {
         state.balance_of(&address)
     }
 }

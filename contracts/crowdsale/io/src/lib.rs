@@ -1,12 +1,12 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata};
+use gmeta::{In, InOut, Metadata};
 use gstd::{exec, prelude::*, ActorId};
 
 pub struct CrowdsaleMetadata;
 
 impl Metadata for CrowdsaleMetadata {
-    type Init = ();
+    type Init = In<IcoInit>;
     type Handle = InOut<IcoAction, IcoEvent>;
     type Others = ();
     type Reply = ();
