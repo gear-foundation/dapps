@@ -11,6 +11,11 @@ build:
 	@cargo +nightly b -r --workspace -Fbinary-vendor
 	@ls -l target/wasm32-unknown-unknown/release/*.wasm
 
+debug-build:
+	@echo ──────────── Build debug ────────────────────
+	@cargo +nightly build
+	@ls -l ./target/wasm32-unknown-unknown/debug/*.wasm
+
 fmt:
 	@echo ⚙️ Formatting...
 	@cargo fmt --all
