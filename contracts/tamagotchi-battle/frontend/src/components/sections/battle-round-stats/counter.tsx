@@ -44,34 +44,34 @@ const usePairCountdown = () => {
 
   useEffect(() => {
     if (battle && battle.pairs[currentPairIdx].moveDeadline) {
-      console.log('mount and update data');
+      // console.log('mount and update data');
       const now = dayjs();
       const deadline = dayjs(battle.pairs[currentPairIdx].moveDeadline);
       // const deadline = now.add(60, 'seconds');
 
-      console.log({
-        test: deadline.format('HH:mm:ss'),
-        dif: dayjs.duration(dayjs(deadline).diff(now)).format('HH:mm:ss'),
-        difvalue: dayjs.duration(dayjs(deadline).diff(now)).asMilliseconds(),
-        deadline: deadline.millisecond(),
-        prev: prevTime.current?.millisecond(),
-      });
+      // console.log({
+      //   test: deadline.format('HH:mm:ss'),
+      //   dif: dayjs.duration(dayjs(deadline).diff(now)).format('HH:mm:ss'),
+      //   difvalue: dayjs.duration(dayjs(deadline).diff(now)).asMilliseconds(),
+      //   deadline: deadline.millisecond(),
+      //   prev: prevTime.current?.millisecond(),
+      // });
 
       if (prevTime.current?.millisecond() !== deadline.millisecond()) {
         const getDiff = () => dayjs.duration(dayjs(deadline).diff(now));
         const d = getDiff();
-        console.log('time is not equal', d.asSeconds());
-        console.log({ good_diff: d.asSeconds() > 0, good_ref: !timer.current });
+        // console.log('time is not equal', d.asSeconds());
+        // console.log({ good_diff: d.asSeconds() > 0, good_ref: !timer.current });
 
         if (d.asSeconds() > 0 && !timer.current) {
-          console.log('init timer');
+          // console.log('init timer');
           const timerHandler = () => {
             const getDiff = () => dayjs.duration(dayjs(deadline).diff(dayjs()));
-            console.log('timer counts');
+            // console.log('timer counts');
             const d = getDiff();
 
             if (d.asSeconds() <= 0) {
-              console.log('clean timer');
+              // console.log('clean timer');
               clearInterval(timer.current);
               setTime(`00`);
               return;

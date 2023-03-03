@@ -40,7 +40,7 @@ export function useInitBattleData() {
     setBattle(state);
     if (state && account) {
       const activePair = Object.values(state.pairs)[currentPairIdx];
-      console.log({ state });
+      // console.log({ state });
       setIsAdmin(state.admin === account.decodedAddress);
 
       const getCurrentQueue = () => {
@@ -82,8 +82,8 @@ export function useInitBattleData() {
         } = data;
 
         if (details.isSome && details.unwrap().isReply && !details.unwrap().asReply.statusCode.eq(0)) {
-          console.log(payload.toHuman());
-          alert.error(`${payload.toHuman()}`, { title: 'Error during program execution' });
+          // console.log(payload.toHuman());
+          // alert.error(`${payload.toHuman()}`, { title: 'Error during program execution' });
         } else {
           if (metadata.types.handle.output) {
             const decodedPayload = metadata.createType(metadata.types.handle.output, payload).toJSON();
@@ -95,7 +95,7 @@ export function useInitBattleData() {
               const notification = Object.values(decodedPayload)[0] as RoundDamageType;
 
               if (currentPairIdx === notification[0]) {
-                console.log({ decodedPayload });
+                // console.log({ decodedPayload });
                 setRoundDamage(notification);
               }
             }
