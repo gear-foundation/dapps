@@ -1,4 +1,4 @@
-use auction_io::io::*;
+use auction_io::auction::*;
 use dutch_auction::WASM_BINARY_OPT;
 use gclient::{EventProcessor, GearApi, Result};
 use gear_lib::non_fungible_token::token::TokenMetadata;
@@ -6,7 +6,7 @@ use gstd::prelude::*;
 use gstd::{ActorId, Encode};
 use nft_io::*;
 
-const NFT_PATH: &str = "target/nft-0.2.5.opt.wasm";
+const NFT_PATH: &str = "target/nft-0.2.9.opt.wasm";
 
 #[tokio::test]
 #[ignore]

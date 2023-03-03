@@ -1,7 +1,11 @@
-use auction_io::io::{Action, CreateConfig, Duration, Event};
-use gear_lib::non_fungible_token::token::{TokenId, TokenMetadata};
+use auction_io::auction::{Action, CreateConfig, Duration, Error, Event};
+use gear_lib::non_fungible_token::{
+    io::NFTApproval,
+    token::{TokenId, TokenMetadata},
+};
 use gstd::Encode;
 use gtest::{Log, Program, RunResult, System};
+use nft_io::NFTEvent;
 
 pub const USERS: &[u64] = &[4, 5, 6];
 #[allow(dead_code)]
@@ -21,14 +25,18 @@ pub fn init(sys: &System) -> Program {
 
     init_nft(sys, owner_user);
     let result = update_auction(&auction_program, owner_user, 2, 1_000_000_000);
-    println!("{:?}", result.decoded_log::<Event>());
+    println!(
+        "update_auction result = {:?}",
+        result.decoded_log::<Result<Event, Error>>()
+    );
+
     assert!(result.contains(&(
         owner_user,
-        Event::AuctionStarted {
+        Ok::<auction_io::auction::Event, Error>(Event::AuctionStarted {
             token_owner: owner_user.into(),
             price: 1_000_000_000,
             token_id: 0.into(),
-        }
+        })
         .encode()
     )));
 
@@ -36,7 +44,7 @@ pub fn init(sys: &System) -> Program {
 }
 
 pub fn init_nft(sys: &System, owner: u64) {
-    let nft_program = Program::from_file(sys, "./target/nft-0.2.5.opt.wasm");
+    let nft_program = Program::from_file(sys, "./target/nft-0.2.9.opt.wasm");
 
     let res = nft_program.send(
         owner,
@@ -77,11 +85,20 @@ pub fn init_nft(sys: &System, owner: u64) {
         nft_io::NFTAction::Approve {
             to: 1.into(),
             token_id: 0.into(),
-            transaction_id: 0u64,
+            transaction_id: 1u64,
         },
     );
-
+    let approval = NFTApproval {
+        owner: owner.into(),
+        approved_account: 1.into(),
+        token_id: 0.into(),
+    };
+    let log = Log::builder()
+        .dest(owner)
+        .payload(nft_io::NFTEvent::Approval(approval));
     assert!(!res.main_failed());
+    println!("approve result = {:?}", res.decoded_log::<NFTEvent>());
+    assert!(res.contains(&log));
 }
 
 pub fn update_auction(

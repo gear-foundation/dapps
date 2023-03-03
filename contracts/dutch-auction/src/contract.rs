@@ -1,8 +1,8 @@
+use auction_io::auction::{
+    Action, AuctionInfo, CreateConfig, Error, Event, Status, Transaction, TransactionId,
+};
+use auction_io::io::AuctionMetadata;
 use core::cmp::min;
-
-use crate::state::{State, StateReply};
-use auction_io::auction::{AuctionInfo, Status};
-use auction_io::io::*;
 use gmeta::Metadata;
 use gstd::ActorId;
 use gstd::{errors::Result as GstdResult, exec, msg, prelude::*, MessageId};
@@ -27,31 +27,33 @@ pub struct Auction {
     pub status: Status,
     pub started_at: u64,
     pub expires_at: u64,
+
+    pub transactions: BTreeMap<ActorId, Transaction<Action>>,
+    pub current_tid: TransactionId,
 }
 
 impl Auction {
-    pub async fn buy(&mut self) {
-        if !self.is_active() {
-            panic!("already bought or auction expired");
+    pub async fn buy(&mut self, transaction_id: TransactionId) -> Result<(Event, u128), Error> {
+        if !matches!(self.status, Status::IsRunning) {
+            return Err(Error::AlreadyStopped);
         }
 
         if exec::block_timestamp() >= self.expires_at {
-            panic!("auction expired");
+            return Err(Error::Expired);
         }
 
         let price = self.token_price();
 
         if msg::value() < price {
-            panic!("value < price, {:?} < {:?}", msg::value(), price);
+            return Err(Error::InsufficientMoney);
         }
 
         self.status = Status::Purchased { price };
 
         let refund = msg::value() - price;
         let refund = if refund < 500 { 0 } else { refund };
-        let transaction_id = 0u64;
 
-        msg::send_for_reply(
+        let reply = match msg::send_for_reply(
             self.nft.contract_id,
             NFTAction::Transfer {
                 to: msg::source(),
@@ -59,13 +61,21 @@ impl Auction {
                 transaction_id,
             },
             0,
-        )
-        .unwrap()
-        .await
-        .expect("Error in nft transfer");
+        ) {
+            Ok(reply) => reply,
+            Err(_e) => {
+                return Err(Error::NftTransferFailed);
+            }
+        };
 
-        msg::send(self.nft.owner, "REWARD", price).expect("Couldn't send payment for nft owner");
-        msg::reply(Event::Bought { price }, refund).expect("Can't send refund and reply");
+        match reply.await {
+            Ok(_reply) => {}
+            Err(_e) => {
+                return Err(Error::NftTransferFailed);
+            }
+        }
+
+        Ok((Event::Bought { price }, refund))
     }
 
     pub fn token_price(&self) -> u128 {
@@ -79,56 +89,86 @@ impl Auction {
         self.starting_price - discount
     }
 
-    pub async fn renew_contract(&mut self, config: CreateConfig) {
-        if self.is_active() {
-            panic!("already in use")
+    pub async fn renew_contract(
+        &mut self,
+        transaction_id: TransactionId,
+        config: &CreateConfig,
+    ) -> Result<Event, Error> {
+        if matches!(self.status, Status::IsRunning) {
+            return Err(Error::AlreadyRunning);
         }
 
         let minutes_count = config.duration.hours * 60 + config.duration.minutes;
         let duration_in_seconds = minutes_count * 60 + config.duration.seconds;
 
         if config.starting_price < config.discount_rate * (duration_in_seconds as u128) {
-            panic!("starting price < min");
+            return Err(Error::StartPriceLessThatMinimal);
         }
-
         self.validate_nft_approve(config.nft_contract_actor_id, config.token_id)
-            .await;
-
+            .await?;
         self.status = Status::IsRunning;
         self.started_at = exec::block_timestamp();
         self.expires_at = self.started_at + duration_in_seconds * 1000;
         self.nft.token_id = config.token_id;
         self.nft.contract_id = config.nft_contract_actor_id;
-        self.nft.owner = Self::get_token_owner(config.nft_contract_actor_id, config.token_id).await;
+        self.nft.owner =
+            Self::get_token_owner(config.nft_contract_actor_id, config.token_id).await?;
 
         self.discount_rate = config.discount_rate;
         self.starting_price = config.starting_price;
 
-        msg::reply(
-            Event::AuctionStarted {
-                token_owner: self.nft.owner,
-                price: self.starting_price,
+        msg::send_for_reply(
+            self.nft.contract_id,
+            NFTAction::Transfer {
+                transaction_id,
+                to: exec::program_id(),
                 token_id: self.nft.token_id,
             },
             0,
         )
-        .unwrap();
+        .expect("Send NFTAction::Transfer at renew contract")
+        .await
+        .map_err(|_e| Error::NftTransferFailed)?;
+        Ok(Event::AuctionStarted {
+            token_owner: self.owner,
+            price: self.starting_price,
+            token_id: self.nft.token_id,
+        })
     }
 
-    pub async fn get_token_owner(contract_id: ActorId, token_id: U256) -> ActorId {
+    pub async fn reward(&mut self) -> Result<Event, Error> {
+        let price = match self.status {
+            Status::Purchased { price } => price,
+            _ => return Err(Error::WrongState),
+        };
+        if msg::source().ne(&self.nft.owner) {
+            return Err(Error::IncorrectRewarder);
+        }
+
+        if let Err(_e) = msg::send(self.nft.owner, "REWARD", price) {
+            return Err(Error::RewardSendFailed);
+        }
+        Ok(Event::Rewarded { price })
+    }
+
+    pub async fn get_token_owner(contract_id: ActorId, token_id: U256) -> Result<ActorId, Error> {
         let reply: NFTEvent = msg::send_for_reply_as(contract_id, NFTAction::Owner { token_id }, 0)
-            .expect("Can't send message")
+            .map_err(|_e| Error::SendingError)?
             .await
-            .expect("Unable to decode `NFTEvent`");
+            .map_err(|_e| Error::NftOwnerFailed)?;
 
         if let NFTEvent::Owner { owner, .. } = reply {
-            owner
+            Ok(owner)
         } else {
-            panic!("Wrong received message!")
+            Err(Error::WrongReply)
         }
     }
 
-    pub async fn validate_nft_approve(&self, contract_id: ActorId, token_id: U256) {
+    pub async fn validate_nft_approve(
+        &self,
+        contract_id: ActorId,
+        token_id: U256,
+    ) -> Result<(), Error> {
         let reply: NFTEvent = msg::send_for_reply_as(
             contract_id,
             NFTAction::IsApproved {
@@ -137,50 +177,56 @@ impl Auction {
             },
             0,
         )
-        .expect("Can't send message")
+        .map_err(|_e| Error::SendingError)?
         .await
-        .expect("Unable to decode `NFTEvent`");
+        .map_err(|_e| Error::NftNotApproved)?;
 
         if let NFTEvent::IsApproved { approved, .. } = reply {
             if !approved {
-                panic!("You must approve your NFT to this contract before")
+                return Err(Error::NftNotApproved);
             }
         } else {
-            panic!("Wrong received message!")
+            return Err(Error::WrongReply);
         }
+        Ok(())
     }
 
     pub fn stop_if_time_is_over(&mut self) {
-        if self.is_active() && exec::block_timestamp() >= self.expires_at {
+        if matches!(self.status, Status::IsRunning) && exec::block_timestamp() >= self.expires_at {
             self.status = Status::Expired;
         }
     }
 
-    pub fn is_active(&self) -> bool {
-        match self.status {
-            Status::None | Status::Purchased { .. } | Status::Expired | Status::Stopped => false,
-            Status::IsRunning => true,
-        }
-    }
-
-    pub fn force_stop(&mut self) {
+    pub async fn force_stop(&mut self, transaction_id: TransactionId) -> Result<Event, Error> {
         if msg::source() != self.owner {
-            panic!("Can't stop if sender is not owner")
+            return Err(Error::NotOwner);
         }
 
-        self.status = Status::Stopped;
-
-        msg::reply(
-            Event::AuctionStoped {
-                token_owner: self.owner,
+        if let Err(_e) = msg::send_for_reply(
+            self.nft.contract_id,
+            NFTAction::Transfer {
+                transaction_id,
+                to: self.nft.owner,
                 token_id: self.nft.token_id,
             },
             0,
         )
-        .unwrap();
+        .expect("Can't send NFTAction::Transfer at force stop")
+        .await
+        {
+            return Err(Error::NftTransferFailed);
+        }
+
+        self.status = Status::Stopped;
+
+        Ok(Event::AuctionStopped {
+            token_owner: self.owner,
+            token_id: self.nft.token_id,
+        })
     }
 
-    pub fn info(&self) -> AuctionInfo {
+    pub fn info(&mut self) -> AuctionInfo {
+        self.stop_if_time_is_over();
         AuctionInfo {
             nft_contract_actor_id: self.nft.contract_id,
             token_id: self.nft.token_id,
@@ -192,6 +238,8 @@ impl Auction {
             time_left: self.expires_at.saturating_sub(exec::block_timestamp()),
             expires_at: self.expires_at,
             status: self.status.clone(),
+            transactions: self.transactions.clone(),
+            current_tid: self.current_tid,
         }
     }
 }
@@ -213,11 +261,59 @@ async fn main() {
 
     auction.stop_if_time_is_over();
 
-    match action {
-        Action::Buy => auction.buy().await,
-        Action::Create(config) => auction.renew_contract(config).await,
-        Action::ForceStop => auction.force_stop(),
-    }
+    let msg_source = msg::source();
+
+    let r: Result<Action, Error> = Err(Error::PreviousTxMustBeCompleted);
+    let transaction_id = if let Some(Transaction {
+        id: tid,
+        action: pend_action,
+    }) = auction.transactions.get(&msg_source)
+    {
+        if action != *pend_action {
+            reply(r, 0).expect("Failed to encode or reply with `Result<Action, Error>`");
+            return;
+        }
+        *tid
+    } else {
+        let transaction_id = auction.current_tid;
+        auction.transactions.insert(
+            msg_source,
+            Transaction {
+                id: transaction_id,
+                action: action.clone(),
+            },
+        );
+        auction.current_tid = auction.current_tid.wrapping_add(1);
+        transaction_id
+    };
+
+    let (result, value) = match &action {
+        Action::Buy => {
+            let reply = auction.buy(transaction_id).await;
+            let result = match reply {
+                Ok((event, refund)) => (Ok(event), refund),
+                Err(_e) => (Err(_e), 0),
+            };
+            auction.transactions.remove(&msg_source);
+            result
+        }
+        Action::Create(config) => {
+            let result = (auction.renew_contract(transaction_id, config).await, 0);
+            auction.transactions.remove(&msg_source);
+            result
+        }
+        Action::ForceStop => {
+            let result = (auction.force_stop(transaction_id).await, 0);
+            auction.transactions.remove(&msg_source);
+            result
+        }
+        Action::Reward => {
+            let result = (auction.reward().await, 0);
+            auction.transactions.remove(&msg_source);
+            result
+        }
+    };
+    reply(result, value).expect("Failed to encode or reply with `Result<Event, Error>`");
 }
 
 fn common_state() -> <AuctionMetadata as Metadata>::State {
@@ -230,7 +326,7 @@ fn static_mut_state() -> &'static mut Auction {
 
 #[no_mangle]
 extern "C" fn state() {
-    reply(common_state()).expect(
+    reply(common_state(), 0).expect(
         "Failed to encode or reply with `<AuctionMetadata as Metadata>::State` from `state()`",
     );
 }
@@ -238,24 +334,9 @@ extern "C" fn state() {
 #[no_mangle]
 extern "C" fn metahash() {
     let metahash: [u8; 32] = include!("../.metahash");
-    reply(metahash).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
+    reply(metahash, 0).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
 }
 
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
-}
-
-#[no_mangle]
-extern "C" fn meta_state() -> *mut [i32; 2] {
-    let query: State = msg::load().expect("failed to decode input argument");
-    let auction: &mut Auction = unsafe { AUCTION.get_or_insert(Auction::default()) };
-
-    auction.stop_if_time_is_over();
-
-    let encoded = match query {
-        State::Info => StateReply::Info(auction.info()),
-    }
-    .encode();
-
-    gstd::util::to_leak_ptr(encoded)
+fn reply(payload: impl Encode, value: u128) -> GstdResult<MessageId> {
+    msg::reply(payload, value)
 }

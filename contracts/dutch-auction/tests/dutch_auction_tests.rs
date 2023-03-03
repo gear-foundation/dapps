@@ -1,7 +1,6 @@
-use auction_io::io::*;
+use auction_io::auction::{Action, Error, Event};
 use gstd::{ActorId, Encode};
 use gtest::{Log, System};
-
 mod routines;
 use routines::*;
 
@@ -13,14 +12,14 @@ fn buy() {
 
     let nft_program = sys.get_program(2);
     let token_id: u64 = 0;
-
     let result = auction.send_with_value(USERS[1], Action::Buy, 1_000_000_000);
 
+    println!("{:?}", result.decoded_log::<Result<Event, Error>>());
     assert!(result.contains(&(
         USERS[1],
-        Event::Bought {
+        Ok::<Event, Error>(Event::Bought {
             price: 1_000_000_000,
-        }
+        })
         .encode()
     )));
 
@@ -38,6 +37,9 @@ fn buy() {
 
     sys.claim_value_from_mailbox(USERS[0]);
 
+    auction.send_with_value(USERS[0], Action::Reward, 0);
+    sys.claim_value_from_mailbox(USERS[0]);
+
     let buyer_balance = sys.balance_of(USERS[1]);
     let seller_balance = sys.balance_of(USERS[0]);
 
@@ -53,8 +55,14 @@ fn buy_later_with_lower_price() {
     sys.spend_blocks(100_000);
     let result = auction.send_with_value(USERS[1], Action::Buy, 900_000_000);
 
-    assert!(result.contains(&(USERS[1], Event::Bought { price: 900_000_000 }.encode())));
+    assert!(result.contains(&(
+        USERS[1],
+        Ok::<Event, Error>(Event::Bought { price: 900_000_000 }).encode()
+    )));
 
+    sys.claim_value_from_mailbox(USERS[0]);
+
+    auction.send_with_value(USERS[0], Action::Reward, 0);
     sys.claim_value_from_mailbox(USERS[0]);
 
     let buyer_balance = sys.balance_of(USERS[1]);
@@ -71,8 +79,11 @@ fn buy_two_times() {
     let auction = init(&sys);
     auction.send_with_value(USERS[1], Action::Buy, 1_000_000_000);
     let result = auction.send_with_value(USERS[2], Action::Buy, 1_000_000_000);
-
-    assert!(result.main_failed());
+    println!("{:?}", result.decoded_log::<Result<Event, Error>>());
+    assert!(result.contains(&(
+        USERS[2],
+        Err::<Event, Error>(Error::AlreadyStopped).encode()
+    )));
 }
 
 #[test]
@@ -83,7 +94,10 @@ fn buy_too_late() {
     sys.spend_blocks(DURATION);
     let result = auction.send_with_value(USERS[1], Action::Buy, 1_000_000_000);
 
-    assert!(result.main_failed());
+    assert!(result.contains(&(
+        USERS[1],
+        Err::<Event, Error>(Error::AlreadyStopped).encode()
+    )));
 }
 
 #[test]
@@ -93,7 +107,10 @@ fn buy_with_less_money() {
     let auction = init(&sys);
     let result = auction.send_with_value(USERS[1], Action::Buy, 999_000_000);
 
-    assert!(result.main_failed());
+    assert!(result.contains(&(
+        USERS[1],
+        Err::<Event, Error>(Error::InsufficientMoney).encode()
+    )));
 }
 
 #[test]
@@ -104,25 +121,31 @@ fn create_auction_twice_in_a_row() {
     init_nft(&sys, USERS[1]);
     let result = update_auction(&auction, USERS[1], 3, 999_000_000);
 
-    assert!(result.main_failed());
+    assert!(result.contains(&(
+        USERS[1],
+        Err::<Event, Error>(Error::AlreadyRunning).encode()
+    )));
 }
 
 #[test]
-fn create_auction_twice_after_time() {
+fn create_auction_twice_after_time_and_stop() {
     let sys = System::new();
 
     let auction = init(&sys);
     sys.spend_blocks(DURATION);
+    let owner_user = USERS[0];
     init_nft(&sys, USERS[1]);
     let result = update_auction(&auction, USERS[1], 3, 999_000_000);
+    println!("{:?}", result.decoded_log::<Result<Event, Error>>());
+
+    let result = auction.send(owner_user, Action::ForceStop);
 
     assert!(result.contains(&(
-        USERS[1],
-        Event::AuctionStarted {
-            token_owner: USERS[1].into(),
-            price: 999_000_000,
+        owner_user,
+        Ok::<Event, Error>(Event::AuctionStopped {
+            token_owner: owner_user.into(),
             token_id: 0.into(),
-        }
+        })
         .encode()
     )));
 }
@@ -135,7 +158,10 @@ fn create_auction_with_low_price() {
     init_nft(&sys, USERS[1]);
     let result = update_auction(&auction, USERS[1], 3, (DURATION / 1000 - 1).into());
 
-    assert!(result.main_failed());
+    assert!(result.contains(&(
+        USERS[1],
+        Err::<Event, Error>(Error::AlreadyRunning).encode()
+    )));
 }
 
 #[test]
@@ -148,10 +174,10 @@ fn create_and_stop() {
 
     assert!(result.contains(&(
         owner_user,
-        Event::AuctionStoped {
+        Ok::<Event, Error>(Event::AuctionStopped {
             token_owner: owner_user.into(),
             token_id: 0.into(),
-        }
+        })
         .encode()
     )));
 }

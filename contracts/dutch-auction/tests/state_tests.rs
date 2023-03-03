@@ -1,5 +1,4 @@
-use auction_io::{auction::*, io::Action};
-use dutch_auction::state::{State, StateReply};
+use auction_io::auction::*;
 use gtest::System;
 
 mod routines;
@@ -12,8 +11,9 @@ fn is_not_active_after_time_is_over() {
     let auction = init(&sys);
     sys.spend_blocks(DURATION);
 
-    if let Ok(StateReply::Info(info)) = auction.meta_state(State::Info) {
-        assert!(!matches!(info.status, Status::IsRunning))
+    if let Ok(AuctionInfo { status, .. }) = auction.read_state() {
+        dbg!(&status);
+        assert!(!matches!(status, Status::IsRunning))
     }
 }
 
@@ -23,8 +23,9 @@ fn is_active_before_deal() {
 
     let auction = init(&sys);
 
-    if let Ok(StateReply::Info(info)) = auction.meta_state(State::Info) {
-        assert!(matches!(info.status, Status::IsRunning));
+    if let Ok(AuctionInfo { status, .. }) = auction.read_state() {
+        dbg!(&status);
+        assert!(matches!(status, Status::IsRunning));
     } else {
         panic!("Can't get state");
     }
@@ -37,9 +38,10 @@ fn is_not_active_after_deal() {
     let auction = init(&sys);
     auction.send_with_value(USERS[1], Action::Buy, 1_000_000_000);
 
-    if let Ok(StateReply::Info(info)) = auction.meta_state(State::Info) {
+    if let Ok(AuctionInfo { status, .. }) = auction.read_state() {
+        dbg!(&status);
         assert!(matches!(
-            info.status,
+            status,
             Status::Purchased {
                 price: 1_000_000_000
             }

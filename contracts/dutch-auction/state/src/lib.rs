@@ -8,10 +8,10 @@ use gmeta::{metawasm, Metadata};
 use gstd::{exec, prelude::*};
 
 #[metawasm]
-pub trait Metawasm {
-    type State = <AuctionMetadata as Metadata>::State;
+pub mod metafns {
+    pub type State = <AuctionMetadata as Metadata>::State;
 
-    fn info(mut state: Self::State) -> AuctionInfo {
+    pub fn info(mut state: State) -> AuctionInfo {
         if matches!(state.status, Status::IsRunning) && exec::block_timestamp() >= state.expires_at
         {
             state.status = Status::Expired
