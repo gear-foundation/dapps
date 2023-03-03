@@ -2,7 +2,7 @@ name: Deploy tamagotchi to k8s stage
 
 on:
   push:
-    branches: ['staging']
+    branches: ['master']
   workflow_dispatch:
 
 env:
@@ -21,7 +21,7 @@ jobs:
       - uses: mktcode/consecutive-workflow-action@v1 # please read security note
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-     
+
   build-and-push-tamagotchi-image:
     runs-on: ubuntu-latest
     needs: [wait-previous-run]
@@ -48,8 +48,8 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:stage
           build-args: |
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            REACT_APP_BATTLE_ADDRESS=${{ secrets.REACT_APP_BATTLE_ADDRESS_STAGE }}
-  
+            REACT_APP_BATTLE_ADDRESS=${{ secrets.REACT_APP_BATTLE_ADDRESS }}
+
   deploy-tamagotchi-k8s:
     needs: [build-and-push-tamagotchi-image]
     runs-on: ubuntu-latest
