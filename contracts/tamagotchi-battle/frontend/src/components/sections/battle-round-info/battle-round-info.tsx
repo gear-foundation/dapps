@@ -1,8 +1,7 @@
-import { TamagotchiBattleInfoCard } from 'components/cards/tamagotchi-battle-info-card';
 import { useBattle } from 'app/context';
 import { Icon } from 'components/ui/icon';
-
 import { AnimatePresence, motion } from 'framer-motion';
+import { TamagotchiQueueCard } from '../../cards/tamagotchi-queue-card';
 
 export const BattleRoundInfo = () => {
   const { rivals, currentPlayer, currentPairIdx, battle } = useBattle();
@@ -16,13 +15,14 @@ export const BattleRoundInfo = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 120 }}
           transition={{ duration: 0.5 }}>
-          <TamagotchiBattleInfoCard
+          <TamagotchiQueueCard
             tamagotchi={rivals[0]}
             isActive={
               battle?.pairs[currentPairIdx].gameIsOver
                 ? rivals[0].tmgId === battle?.pairs[currentPairIdx].winner
                 : rivals[0].tmgId === currentPlayer
             }
+            asPlayer
           />
         </motion.div>
         <motion.div
@@ -41,13 +41,14 @@ export const BattleRoundInfo = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 120 }}
           transition={{ duration: 0.5 }}>
-          <TamagotchiBattleInfoCard
+          <TamagotchiQueueCard
             tamagotchi={rivals[1]}
             isActive={
               battle?.pairs[currentPairIdx].gameIsOver
                 ? rivals[1].tmgId === battle?.pairs[currentPairIdx].winner
                 : rivals[1].tmgId === currentPlayer
             }
+            asPlayer
           />
         </motion.div>
       </div>
@@ -59,25 +60,28 @@ const BattleRoundInfoBanner = () => {
   const { players } = useBattle();
 
   return (
-    <div className="border border-white/10 bg-white/[3%] backdrop-blur-md p-6 pt-5 rounded-2xl font-kanit text-base text-white/60 tracking-wider">
+    <div className="border border-white/10 bg-white/[3%] backdrop-blur-md p-6 pt-5 rounded-2xl font-kanit smh:typo-text text-base text-white/60 tracking-wider">
       <h3 className="font-normal text-center">
-        Participants: <b className="inline-block ml-1 text-xl font-semibold text-white">{players.length}</b>
+        Participants:{' '}
+        <b className="inline-block ml-1 smh:text-[20px] smh:leading-none text-xl font-semibold text-white">
+          {players.length}
+        </b>
       </h3>
       <div className="flex items-center gap-12 mt-4">
         <div className="flex items-center gap-2">
-          <Icon name="participants-alive" className="w-6 h-6 shrink-0" />
+          <Icon name="participants-alive" className="smh:w-5 w-6 aspect-square shrink-0" />
           <p className="flex items-center">
             Alive:{' '}
-            <b className="inline-block ml-1 text-xl font-semibold text-white">
+            <b className="inline-block ml-1 smh:text-[20px] smh:leading-none text-xl font-semibold text-white">
               {players.filter((el) => el.health).length}
             </b>
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Icon name="participants-dead" className="w-6 h-6 shrink-0" />
+          <Icon name="participants-dead" className="smh:w-5 w-6 aspect-square shrink-0" />
           <p className="flex items-center">
             Dead:{' '}
-            <b className="inline-block ml-1 text-xl font-semibold text-white">
+            <b className="inline-block ml-1 smh:text-[20px] smh:leading-none text-xl font-semibold text-white">
               {players.filter((el) => !el.health).length}
             </b>
           </p>

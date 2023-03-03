@@ -52,6 +52,10 @@
     @apply font-kanit text-[40px] leading-[48px] font-bold tracking-[0.04em]
   }
 
+  .typo-text {
+    @apply text-[14px] leading-[21px]
+  }
+
   .btn {
     @apply inline-flex justify-center items-center text-center py-2.5 px-8 text-[14px] font-semibold text-center leading-5 tracking-[0.08em] rounded-full whitespace-nowrap cursor-pointer select-none;
   }

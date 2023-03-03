@@ -1,8 +1,8 @@
 import { BattleStateResponse } from 'app/types/battles';
-import { TamagotchiBattleInfoCard } from 'components/cards/tamagotchi-battle-info-card';
 import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
 import Fireworks, { FireworksHandlers } from '@fireworks-js/react';
 import { useRef } from 'react';
+import { TamagotchiQueueCard } from '../../cards/tamagotchi-queue-card';
 
 export const BattleWinner = ({ battle }: { battle: BattleStateResponse }) => {
   const winner = battle.players[battle.currentWinner];
@@ -34,7 +34,7 @@ export const BattleWinner = ({ battle }: { battle: BattleStateResponse }) => {
             </div>
           </div>
           <div className="relative z-1 flex gap-10 justify-center mt-4 xxl:mt-7">
-            <TamagotchiBattleInfoCard tamagotchi={winner} isActive />
+            <TamagotchiQueueCard tamagotchi={winner} isActive asPlayer />
           </div>
         </section>
       )}

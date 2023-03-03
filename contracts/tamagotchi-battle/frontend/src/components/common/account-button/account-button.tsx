@@ -16,13 +16,8 @@ type Props = {
 
 export const AccountButton = ({ address, name, onClick, isActive, simple }: Props) => {
   const alert = useAlert();
-  const onCopy = () => {
-    const decodedAddress = decodeAddress(address);
-
-    navigator.clipboard
-      .writeText(decodedAddress)
-      .then(() => alert.success('Copied'))
-      .catch(() => alert.error('Copy error'));
+  const onCopy = async () => {
+    copyToClipboard(await decodeAddress(address), alert);
   };
 
   return (

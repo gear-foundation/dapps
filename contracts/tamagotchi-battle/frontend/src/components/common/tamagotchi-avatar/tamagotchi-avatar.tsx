@@ -52,7 +52,7 @@ export const TamagotchiAvatar = ({
   const s = 'tamagotchi';
   const t = 'max-w-full w-full h-full';
   const cn = `absolute inset-0 ${t}`;
-  const maxH = `max-h-[calc(100vh_-_12px_-_80px_-_60px_-_40px_-_188px_-_16px_-_144px_-_20px)]`;
+  const maxH = `max-h-[calc(100vh_-_12px_-_80px_-_60px_-_40px_-_140px_-_16px_-_132px_-_20px)]`;
   const emo: TamagotchiAvatarEmotions = isDead ? 'scared' : isWinner ? 'hello' : emotion;
   const mouse = tamagotchiAge === 'baby' ? 'face-baby' : `mouse-${tamagotchiAge}-${emo === 'hello' ? 'happy' : emo}`;
   const head = `head-${tamagotchiAge}`;

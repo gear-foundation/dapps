@@ -1,4 +1,3 @@
-import { TamagotchiBattleInfoCard } from '../components/cards/tamagotchi-battle-info-card';
 import { Icon } from '../components/ui/icon';
 import { useState } from 'react';
 import { HexString } from '@polkadot/util/types';
@@ -9,6 +8,7 @@ import clsx from 'clsx';
 import { TamagotchiAvatar } from '../components/common/tamagotchi-avatar';
 import { buttonStyles } from '@gear-js/ui';
 import { BattlePlayersQueue } from '../components/sections/battle-players-queue';
+import { TamagotchiQueueCard } from '../components/cards/tamagotchi-queue-card';
 
 const rivals = [
   {
@@ -63,16 +63,20 @@ export const Test = () => {
                     transition={{ duration: 0.5 }}>
                     <BattleTurnArrows isReverse={active} />
                     <div className="absolute top-full left-1/2 -translate-x-1/2 flex flex-col mt-1.5 whitespace-nowrap">
-                      <p className="flex flex-col gap-1.5 text-center">
-                        <span className="font-semibold uppercase text-[#D2D2D3] text-opacity-60 tracking-[.04em]">
-                          Time left
+                      <p className="flex flex-col items-center gap-1.5 text-center">
+                        <span className="font-semibold uppercase text-center text-[#D2D2D3] text-opacity-60 tracking-[.04em]">
+                          <span className="smh:hidden">Time left</span>
+
+                          <span className="smh:inline-block hidden">
+                            Round: 1 <span className="normal-case">of</span> 5
+                          </span>
                         </span>
 
                         <span className="inline-flex gap-1 font-kanit font-medium text-[28px] xxl:text-[40px] leading-none text-white text-center">
-                          <span className="py-2 px-1 w-[42px] xxl:w-[50px] backdrop-blur-sm rounded-lg bg-gradient-to-b from-white/15 to-transparent">
+                          <span className="py-2 px-1 w-[40px] xxl:w-[50px] backdrop-blur-sm rounded-lg bg-gradient-to-b from-white/15 to-transparent">
                             0
                           </span>
-                          <span className="py-2 px-1 w-[42px] xxl:w-[50px] backdrop-blur-sm rounded-lg bg-gradient-to-b from-white/15 to-transparent">
+                          <span className="py-2 px-1 w-[40px] xxl:w-[50px] backdrop-blur-sm rounded-lg bg-gradient-to-b from-white/15 to-transparent">
                             0
                           </span>
                         </span>
@@ -102,14 +106,14 @@ export const Test = () => {
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0, transition: { delay: 0 } }}
                       transition={{ duration: 0.5, delay: 0.5 }}
-                      className="absolute top-1/2 left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-3 xxl:gap-6 w-full max-w-[200px] xxl:max-w-[250px]">
+                      className="absolute top-1/2 left-1/2 z-1 -translate-x-1/2 -translate-y-1/2 flex flex-col gap-3 xxl:gap-6 w-full smh:mt-5 max-w-[200px] xxl:max-w-[250px]">
                       <div className="flex flex-col items-center gap-1 xxl:gap-2">
                         {!false ? (
                           <>
-                            <p className="font-semibold font-sans uppercase text-[#D2D2D3] text-opacity-60 text-center tracking-[.04em]">
+                            <p className="smh:hidden font-semibold font-sans uppercase text-[#D2D2D3] text-opacity-60 text-center tracking-[.04em]">
                               Round: 1 <span className="normal-case">of</span> 5
                             </p>
-                            <p className="text-2xl leading-tight xxl:typo-h2 truncate max-w-[13ch] font-bold">
+                            <p className="smh:text-[26px] text-2xl leading-tight xxl:typo-h2 truncate max-w-[13ch] font-bold">
                               {rivals[0].name}
                             </p>
                           </>
@@ -178,7 +182,7 @@ export const Test = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 120 }}
                     transition={{ duration: 0.5 }}>
-                    <TamagotchiBattleInfoCard tamagotchi={rivals[0]} isActive={!active} />
+                    <TamagotchiQueueCard tamagotchi={rivals[0]} isActive={!active} asPlayer />
                   </motion.div>
                   <motion.div
                     key="test-info-stat"
@@ -187,21 +191,30 @@ export const Test = () => {
                     animate={{ opacity: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.5 }}>
-                    <div className="border border-white/10 bg-white/[3%] backdrop-blur-md p-6 pt-5 rounded-2xl font-kanit text-base text-white/60 tracking-wider">
+                    <div className="border border-white/10 bg-white/[3%] backdrop-blur-md p-6 pt-5 rounded-2xl font-kanit smh:typo-text text-base text-white/60 tracking-wider">
                       <h3 className="font-normal text-center">
-                        Participants: <b className="inline-block ml-1 text-xl font-semibold text-white">{43}</b>
+                        Participants:{' '}
+                        <b className="inline-block ml-1 smh:text-[20px] smh:leading-none  text-xl font-semibold text-white">
+                          {43}
+                        </b>
                       </h3>
                       <div className="flex items-center gap-12 mt-4">
                         <div className="flex items-center gap-2">
-                          <Icon name="participants-alive" className="w-6 h-6 shrink-0" />
+                          <Icon name="participants-alive" className="smh:w-5 w-6 aspect-square shrink-0" />
                           <p className="flex items-center">
-                            Alive: <b className="inline-block ml-1 text-xl font-semibold text-white">10</b>
+                            Alive:{' '}
+                            <b className="inline-block ml-1 smh:text-[20px] smh:leading-none  text-xl font-semibold text-white">
+                              10
+                            </b>
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Icon name="participants-dead" className="w-6 h-6 shrink-0" />
+                          <Icon name="participants-dead" className="smh:w-5 w-6 aspect-square shrink-0" />
                           <p className="flex items-center">
-                            Dead: <b className="inline-block ml-1 text-xl font-semibold text-white">33</b>
+                            Dead:{' '}
+                            <b className="inline-block ml-1 smh:text-[20px] smh:leading-none  text-xl font-semibold text-white">
+                              33
+                            </b>
                           </p>
                         </div>
                       </div>
@@ -214,7 +227,7 @@ export const Test = () => {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 120 }}
                     transition={{ duration: 0.5 }}>
-                    <TamagotchiBattleInfoCard tamagotchi={rivals[1]} isActive={active} />
+                    <TamagotchiQueueCard tamagotchi={rivals[1]} isActive={active} asPlayer />
                   </motion.div>
                 </div>
               </>
@@ -228,7 +241,7 @@ export const Test = () => {
 };
 
 const BattleTurnArrows = ({ isReverse }: { isReverse: boolean }) => {
-  const cn = 'w-7.5 xxl:w-10 aspect-[1/2] text-white';
+  const cn = 'smh:w-6 w-7.5 xxl:w-10 aspect-[1/2] text-white';
   return (
     <div className={clsx('relative flex', isReverse && 'rotate-180')}>
       <Icon name="battle-next-step" className={clsx(cn, 'animate-battle-turn-1')} />

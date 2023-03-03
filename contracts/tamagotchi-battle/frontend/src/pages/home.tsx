@@ -43,9 +43,19 @@ export const Home = () => {
               <p className="text-[#D1D1D1]">Connect your account to start the game</p>
             )}
           </div>
-          <div className="w-full">
-            {account ? battle && battle.state === 'Registration' && <CreateTamagotchiForm /> : <LoginSection />}
-          </div>
+          {account ? (
+            battle &&
+            battle.state === 'Registration' && (
+              <div className="w-full">
+                <CreateTamagotchiForm />
+              </div>
+            )
+          ) : (
+            <div className="w-full">
+              <LoginSection />
+            </div>
+          )}
+
           {/*<div className="w-full">*/}
           {/*  <Link to={'/test'}>Test page</Link> <Link to={'/battle'}>Battle page</Link>*/}
           {/*</div>*/}

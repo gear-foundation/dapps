@@ -7,19 +7,26 @@ import { toSeconds } from 'app/utils';
 dayjs.extend(duration);
 
 export const Countdown = () => {
+  const { battle, currentPairIdx } = useBattle();
   const { time, isActive } = usePairCountdown();
 
   return (
     <>
       {isActive && (
-        <p className="flex flex-col gap-1.5 text-center">
-          <span className="font-semibold uppercase text-[#D2D2D3] text-opacity-60 tracking-[.04em]">Time left</span>
+        <p className="flex flex-col items-center gap-1.5 text-center">
+          <span className="font-semibold uppercase text-center text-[#D2D2D3] text-opacity-60 tracking-[.04em]">
+            <span className="smh:hidden">Time left</span>
+
+            <span className="smh:inline-block hidden">
+              Round: {battle && battle.pairs[currentPairIdx].rounds + 1} <span className="normal-case">of</span> 5
+            </span>
+          </span>
 
           <span className="inline-flex gap-1 font-kanit font-medium text-[28px] xxl:text-[40px] leading-none text-white text-center">
-            <span className="py-2 px-1 w-[42px] xxl:w-[50px] backdrop-blur-sm rounded-lg bg-gradient-to-b from-white/15 to-transparent">
+            <span className="py-2 px-1 w-[40px] xxl:w-[50px] backdrop-blur-sm rounded-lg bg-gradient-to-b from-white/15 to-transparent">
               {time.split('')[0]}
             </span>
-            <span className="py-2 px-1 w-[42px] xxl:w-[50px] backdrop-blur-sm rounded-lg bg-gradient-to-b from-white/15 to-transparent">
+            <span className="py-2 px-1 w-[40px] xxl:w-[50px] backdrop-blur-sm rounded-lg bg-gradient-to-b from-white/15 to-transparent">
               {time.split('')[1]}
             </span>
           </span>

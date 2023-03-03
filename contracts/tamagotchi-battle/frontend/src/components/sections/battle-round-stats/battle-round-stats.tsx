@@ -35,7 +35,7 @@ export const BattleRoundStats = () => {
 };
 
 const BattleTurnArrows = ({ isReverse }: { isReverse: boolean }) => {
-  const cn = 'w-7.5 xxl:w-10 aspect-[1/2] text-white';
+  const cn = 'smh:w-6 w-7.5 xxl:w-10 aspect-[1/2] text-white';
   return (
     <div className={clsx('relative flex', isReverse && 'rotate-180')}>
       <Icon name="battle-next-step" className={clsx(cn, 'animate-battle-turn-1')} />

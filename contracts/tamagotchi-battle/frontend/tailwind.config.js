@@ -121,7 +121,8 @@ module.exports = {
         mmd: { max: '767px' },
         msm: { max: '474px' },
         mxs: { max: '374px' },
-        smh: { raw: '(max-height: 820px)' },
+        smh: { raw: '(max-height: 770px)' },
+        xsh: { raw: '(max-height: 720px)' },
       },
       spacing: {
         2.5: '0.625rem',
