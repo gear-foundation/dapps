@@ -1,12 +1,37 @@
 #![no_std]
 
 use gear_lib::multitoken::io::*;
+use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
+
+pub struct MultitokenMetadata;
+
+impl Metadata for MultitokenMetadata {
+    type Init = In<InitMTK>;
+    type Handle = InOut<MyMTKAction, ()>;
+    type Others = ();
+    type Reply = ();
+    type Signal = ();
+    type State = State;
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+pub struct State {
+    pub name: String,
+    pub symbol: String,
+    pub base_uri: String,
+    pub balances: Vec<(TokenId, Vec<(ActorId, u128)>)>,
+    pub approvals: Vec<(ActorId, Vec<(ActorId, bool)>)>,
+    pub token_metadata: Vec<(TokenId, TokenMetadata)>,
+    // owner for nft
+    pub owners: Vec<(TokenId, ActorId)>,
+    pub token_id: TokenId,
+    pub owner: ActorId,
+    pub supply: Vec<(TokenId, u128)>,
+}
 
 /// Transform to NFT piece of data.
 #[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct BurnToNFT {
     /// To which account mint NFTs.
     pub account: ActorId,
@@ -17,8 +42,6 @@ pub struct BurnToNFT {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum MyMTKAction {
     /// Mints a token.
     ///
@@ -175,8 +198,6 @@ pub enum MyMTKAction {
 /// Initializes a Multitoken.
 ///
 #[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct InitMTK {
     /// Multitoken name.
     pub name: String,
@@ -184,4 +205,31 @@ pub struct InitMTK {
     pub symbol: String,
     /// Multitoken base URI.
     pub base_uri: String,
+}
+
+impl State {
+    pub fn tokens_ids_for_owner(&self, owner: &ActorId) -> Vec<TokenId> {
+        let mut tokens: Vec<TokenId> = Vec::new();
+        let balances = &self.balances;
+        for (token, bals) in balances {
+            if bals.iter().any(|(id, _b)| owner.eq(id)) {
+                tokens.push(*token);
+            }
+        }
+        tokens
+    }
+    pub fn get_balance(&self, account: &ActorId, id: &TokenId) -> u128 {
+        if let Some((_token_id, balances)) = self
+            .balances
+            .iter()
+            .find(|(token_id, _balances)| id.eq(token_id))
+        {
+            if let Some((_owner, balance)) =
+                balances.iter().find(|(owner, _balance)| account.eq(owner))
+            {
+                return *balance;
+            }
+        }
+        0
+    }
 }

@@ -272,32 +272,20 @@ pub fn transform_internal(
 }
 
 pub fn check_token_ids_for_owner(mtk: &Program, account: u64, ids: Vec<u128>) {
-    match mtk.meta_state::<_, MTKQueryReply>(MTKQuery::TokensIDsForOwner(ActorId::from(account))) {
-        Ok(MTKQueryReply::TokensIDsForOwner(true_ids)) => {
-            if true_ids != ids {
-                panic!("Token ids for ({account:?}) differs. In tests: ({ids:?}), actually: ({true_ids:?}).");
-            }
-        }
-        _ => {
-            unreachable!(
-                "Unreachable metastate reply for the MTKQuery::Balance payload has occured"
-            );
-        }
+    let state: State = mtk.read_state().expect("Can't read state");
+    let true_ids = state.tokens_ids_for_owner(&ActorId::from(account));
+    if true_ids != ids {
+        panic!(
+            "Token ids for ({account:?}) differs. In tests: ({ids:?}), actually: ({true_ids:?})."
+        );
     }
 }
 
 pub fn check_balance(mtk: &Program, account: u64, token_id: u128, balance: u128) {
-    match mtk.meta_state::<_, MTKQueryReply>(MTKQuery::BalanceOf(ActorId::from(account), token_id))
-    {
-        Ok(MTKQueryReply::Balance(true_balance)) => {
-            if balance != true_balance {
-                panic!("Balance for ({token_id:?}) differs for ({account:?}). In tests: ({balance:?}), actually: ({true_balance:?})");
-            }
-        }
-        _ => {
-            unreachable!(
-                "Unreachable metastate reply for the MTKQuery::Balance payload has occured"
-            );
-        }
+    let state: State = mtk.read_state().expect("Can't read state");
+    let true_balance = state.get_balance(&ActorId::from(account), &token_id);
+
+    if balance != true_balance {
+        panic!("Balance for ({token_id:?}) differs for ({account:?}). In tests: ({balance:?}), actually: ({true_balance:?})");
     }
 }
