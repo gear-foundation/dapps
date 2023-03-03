@@ -7,7 +7,6 @@ edition = "2021"
 gstd = { git = "https://github.com/gear-tech/gear", branch = "testnet" }
 gmeta = { git = "https://github.com/gear-tech/gear", branch = "testnet", features = ["codegen"] }
 crowdsale-io = { path = "../io" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.5" }
 
 [build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["metawasm"] }
