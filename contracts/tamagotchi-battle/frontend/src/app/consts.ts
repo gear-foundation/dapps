@@ -31,6 +31,6 @@ export const PLAYER_CARD = {
   },
   width: {
     desktop: 160,
-    mobile: 132,
+    mobile: 140,
   },
 };

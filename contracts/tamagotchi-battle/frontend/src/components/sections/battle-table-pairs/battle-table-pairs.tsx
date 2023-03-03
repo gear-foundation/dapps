@@ -149,14 +149,14 @@ const BattleTableList = () => {
 };
 
 const BattleTablePairsRow = ({ data: { pair, players, idx }, isActive }: { data: PairData; isActive: boolean }) => {
-  const { setCurrentPair } = useBattle();
+  const { setCurrentPairIdx } = useBattle();
   return (
     <button
       className={clsx(
         'flex items-center gap-2 w-full py-1 pr-2 pl-4 bg-gradient-to-b to-transparent transition-colors rounded-[30px] overflow-hidden',
         isActive ? 'from-primary hover:bg-primary/15' : 'from-white/15 hover:bg-white/15',
       )}
-      onClick={() => setCurrentPair(idx)}>
+      onClick={() => setCurrentPairIdx(idx)}>
       <span
         className={clsx(
           'w-2 h-2 rounded-full',

@@ -6,7 +6,7 @@ type Program = {
   battle?: BattleStateResponse;
   setBattle: Dispatch<SetStateAction<BattleStateResponse | undefined>>;
   currentPairIdx: number;
-  setCurrentPair: Dispatch<SetStateAction<number>>;
+  setCurrentPairIdx: Dispatch<SetStateAction<number>>;
   players: BattleStatePlayer[];
   setPlayers: Dispatch<SetStateAction<BattleStatePlayer[]>>;
   rivals: BattleStatePlayer[];
@@ -21,13 +21,13 @@ const useProgram = (): Program => {
   const [battle, setBattle] = useState<BattleStateResponse>();
   const [rivals, setRivals] = useState<BattleStatePlayer[]>([]);
   const [players, setPlayers] = useState<BattleStatePlayer[]>([]);
-  const [currentPairIdx, setCurrentPair] = useState<number>(0);
+  const [currentPairIdx, setCurrentPairIdx] = useState<number>(0);
   const [currentPlayer, setCurrentPlayer] = useState<HexString>();
   const [roundDamage, setRoundDamage] = useState<RoundDamageType>();
 
   return {
     currentPairIdx,
-    setCurrentPair,
+    setCurrentPairIdx,
     battle,
     setBattle,
     players,

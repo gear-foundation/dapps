@@ -22,8 +22,16 @@ export function useInitBattleData() {
   const navigate = useNavigate();
   const { setIsAdmin } = useApp();
   const { account } = useAccount();
-  const { roundDamage, currentPairIdx, setRivals, setBattle, setCurrentPlayer, setRoundDamage, setPlayers } =
-    useBattle();
+  const {
+    roundDamage,
+    currentPairIdx,
+    setRivals,
+    setBattle,
+    setCurrentPlayer,
+    setCurrentPairIdx,
+    setRoundDamage,
+    setPlayers,
+  } = useBattle();
   const { state } = useReadBattleState<BattleStateResponse>();
   const { metadata } = useMetadata(metaBattle);
   const prevBattleState = useRef<BattleCurrentStateVariants | undefined>();
@@ -104,6 +112,8 @@ export function useInitBattleData() {
   // track state updates
   useEffect(() => {
     if (state) {
+      if (prevBattleState.current === 'WaitNextRound' && state.state === 'GameIsOn') setCurrentPairIdx(0);
+
       if (prevBattleState.current === 'GameIsOver' && state.state === 'Registration') navigate('/');
 
       if (prevBattleState.current !== state.state) prevBattleState.current = state.state;

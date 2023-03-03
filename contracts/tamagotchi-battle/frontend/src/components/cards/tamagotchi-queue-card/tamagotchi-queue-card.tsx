@@ -24,7 +24,7 @@ export const TamagotchiQueueCard = ({ className, tamagotchi, asPlayer, isActive 
       {asPlayer && (
         <div
           className={clsx(
-            'absolute inset-x-0 -top-4 xxl:-top-8 -bottom-2 -z-1 w-full card-mask overflow-visible',
+            'absolute inset-x-0 -top-4 xxl:-top-7 -bottom-2 -z-1 w-full card-mask overflow-visible',
             'bg-gradient-to-b to-transparent',
             isActive ? 'from-[#16B768]' : 'from-theme-blue',
           )}
@@ -32,7 +32,7 @@ export const TamagotchiQueueCard = ({ className, tamagotchi, asPlayer, isActive 
       )}
 
       {dead && (
-        <Icon name="message-rip" className="absolute top-6 right-3 xxl:top-10 xxl:right-2 w-5 xxl:w-6 aspect-square" />
+        <Icon name="message-rip" className="absolute top-2 right-3 xxl:top-10 xxl:right-2 w-5 xxl:w-6 aspect-square" />
       )}
       <div className="relative w-14 xxl:w-24 aspect-square m-auto rounded-full overflow-hidden bg-white ring-white ring-4 ring-opacity-10">
         <TamagotchiAvatar

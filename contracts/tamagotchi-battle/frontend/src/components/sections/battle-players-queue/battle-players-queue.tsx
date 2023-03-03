@@ -48,9 +48,7 @@ export const BattlePlayersQueue = () => {
   }, [players, w]);
 
   return (
-    <section
-      ref={ref}
-      className="flex justify-center items-end mt-auto px-5 overflow-hidden min-h-[132px] xxl:min-h-[208px]">
+    <section ref={ref} className="flex justify-center items-end mt-auto px-5  min-h-[132px] xxl:min-h-[208px]">
       <AnimatePresence key="battle-players-queue">
         {init.current &&
           (isSlider ? (
@@ -99,7 +97,7 @@ const QueueSlider = () => {
 
   useEffect(() => {
     instanceRef.current?.update({ ...options, slides: { perView: 'auto', spacing: space } });
-  }, [instanceRef]);
+  }, [instanceRef, space]);
 
   const handlePrev = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
@@ -112,8 +110,8 @@ const QueueSlider = () => {
   };
 
   return (
-    <div className="grow w-full space-y-3 xxl:space-y-6">
-      <div className="flex gap-4 xxl:gap-6">
+    <div className="relative grow w-full">
+      <div className="absolute bottom-full z-1 mb-3 xxl:mb-6 flex gap-4 xxl:gap-6">
         <button onClick={handlePrev} className="btn btn--primary-outline text-primary p-2 xxl:p-2.5 rounded-lg">
           <Icon name="prev" className="w-3.5 xxl:w-4.5 aspect-square" />
         </button>

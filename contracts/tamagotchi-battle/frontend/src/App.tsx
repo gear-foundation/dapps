@@ -12,9 +12,9 @@ const Component = () => {
   const { isAccountReady } = useAccount();
   const { pathname } = useLocation();
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen w-screen overflow-hidden">
       <Header />
-      <main className="flex flex-col flex-1 smh:gap-1 gap-4 xxl:gap-8 w-screen pt-3 pb-5 overflow-hidden">
+      <main className="flex flex-col flex-1 smh:gap-1 gap-4 xxl:gap-8 pt-3 pb-5">
         {isApiReady && isAccountReady ? <Routing /> : <ApiLoader />}
       </main>
       {pathname === '/' && <Footer />}
