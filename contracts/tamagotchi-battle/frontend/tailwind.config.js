@@ -1,6 +1,7 @@
+const plugin = require('tailwindcss/plugin');
 const defaultTheme = require('tailwindcss/defaultTheme');
 
-/** @type {import('tailwindcss').Config} */
+/** @type {import("tailwindcss").Config} */
 module.exports = {
   content: ['./src/**/*.{ts,tsx}'],
   theme: {
@@ -13,8 +14,14 @@ module.exports = {
         'battle-turn-1': 'turn 2s linear infinite',
         'battle-turn-2': 'turn 2s linear infinite 400ms',
         'battle-turn-3': 'turn 2s linear infinite 900ms',
-        wave: 'wave 3s ease-in infinite',
+        wave: 'wave 2s linear infinite',
         'wave-2': 'wave 2s linear infinite 500ms',
+        deadTamagotchi: 'deadTamagotchi 3s linear infinite 1500ms',
+        deadTamagotchiIcon: 'deadTamagotchiIcon 2s linear infinite 1500ms',
+        deadTamagotchiShadow: 'deadTamagotchiShadow 3s linear infinite 1500ms',
+        tBreath: '10s tamagotchiBreath ease-in infinite',
+        tBreath2: '10s tamagotchiBreath ease-in infinite 5s',
+        damageIcon: 'damageTamagotchiIcon 8s linear 1.5s',
       },
       keyframes: {
         wiggle: {
@@ -27,11 +34,48 @@ module.exports = {
           '100%': { opacity: '15%' },
         },
         wave: {
-          '0%, 100%': { opacity: 0.75, transform: 'scale(1) translateY(-50%)' },
-          '50%': { opacity: 1, transform: 'scale(1.05) translateY(-50%)' },
+          '0%': { opacity: 0.5 },
+          '100%': { opacity: 0, transform: 'scale(1.4)' },
         },
         'pulse-once': {
           '0%': { opacity: 0 },
+          '100%': { opacity: 1 },
+        },
+        deadTamagotchi: {
+          '0%, 100%': { transform: 'translateY(0)' },
+          '50%': { transform: 'translateY(20px)' },
+        },
+        deadTamagotchiShadow: {
+          '0%, 100%': { transform: 'scale(1)' },
+          '50%': { transform: 'scale(1.2)' },
+        },
+        tamagotchiBreath: {
+          '0%': { transform: 'scale(1)' },
+          '3%': { transform: 'scale(1.008)' },
+          '5%': { transform: 'scale(1.01)' },
+          '7%': { transform: 'scale(1)' },
+          '100%': { transform: 'scale(1)' },
+        },
+        deadTamagotchiIcon: {
+          '0%': { transform: 'rotate(0)' },
+          '45%': { transform: 'rotate(0)' },
+          '50%': { transform: 'rotate(8deg)' },
+          '55%': { transform: 'rotate(-5deg)' },
+          '60%': { transform: 'rotate(0)' },
+          '63%': { transform: 'rotate(7deg)' },
+          '64%': { transform: 'rotate(-5deg)' },
+          '65%': { transform: 'rotate(0)' },
+          '100%': { transform: 'rotate(0)' },
+        },
+        damageTamagotchiIcon: {
+          '0%': { opacity: 1 },
+          '15%': { opacity: 1 },
+          '17%': { opacity: 0 },
+          '20%': { opacity: 1 },
+          '22%': { opacity: 0 },
+          '24%': { opacity: 1 },
+          '26%': { opacity: 0 },
+          '28%': { opacity: 1 },
           '100%': { opacity: 1 },
         },
       },
@@ -39,9 +83,11 @@ module.exports = {
         current: 'currentColor',
         secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
         primary: 'rgb(var(--color-primary) / <alpha-value>)',
+        tertiary: 'rgb(var(--red) / <alpha-value>)',
         error: 'rgb(var(--color-error) / <alpha-value>)',
         'dark-500': 'rgb(var(--color-dark-500) / <alpha-value>)',
         light: 'rgb(var(--color-light) / <alpha-value>)',
+        'theme-blue': 'rgb(var(--theme-blue) / <alpha-value>)',
       },
       fontFamily: {
         kanit: ['Kanit', ...defaultTheme.fontFamily.sans],
@@ -69,11 +115,14 @@ module.exports = {
         xl: '1280px',
         xxl: '1540px',
         xl2k: '1920px',
+        mxxl: { max: '1539px' },
         mxl: { max: '1279px' },
         mlg: { max: '1023px' },
         mmd: { max: '767px' },
         msm: { max: '474px' },
         mxs: { max: '374px' },
+        smh: { raw: '(max-height: 770px)' },
+        xsh: { raw: '(max-height: 720px)' },
       },
       spacing: {
         2.5: '0.625rem',
@@ -131,5 +180,20 @@ module.exports = {
     container: false,
     // preflight: false,
   },
-  plugins: [],
+  plugins: [
+    plugin(function ({ addUtilities, addComponents, e, prefix, config }) {
+      const newUtilities = {
+        '.horizontal-tb': {
+          writingMode: 'horizontal-tb',
+        },
+        '.vertical-rl': {
+          writingMode: 'vertical-rl',
+        },
+        '.vertical-lr': {
+          writingMode: 'vertical-lr',
+        },
+      };
+      addUtilities(newUtilities);
+    }),
+  ],
 };

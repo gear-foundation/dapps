@@ -1,4 +1,4 @@
-import { GasInfo, ProgramMetadata } from '@gear-js/api';
+import { ProgramMetadata } from '@gear-js/api';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import { EventRecord } from '@polkadot/types/interfaces';
 import { AnyJson, ISubmittableResult } from '@polkadot/types/types';
@@ -14,10 +14,6 @@ type SendMessageOptions = {
   onError?: () => void;
 };
 
-const getAutoGasLimit = ({ waited, min_limit }: GasInfo) => {
-  return waited ? min_limit.add(min_limit.mul(bnToBn(0.3))) : min_limit.add(min_limit.mul(bnToBn(0.2)));
-};
-
 export function useSendMessage(destination: HexString, metadata: ProgramMetadata | undefined) {
   const { api } = useApi();
   const { account } = useAccount();
@@ -28,8 +24,8 @@ export function useSendMessage(destination: HexString, metadata: ProgramMetadata
 
   const handleEventsStatus = (events: EventRecord[], onSuccess?: () => void, onError?: () => void) => {
     events.forEach(({ event: { method, section } }) => {
-      if (method === 'MessageEnqueued') {
-        alert.success(`${section}.MessageEnqueued`);
+      if (method === 'MessageQueued') {
+        alert.success(`${section}.MessageQueued`);
         onSuccess && onSuccess();
       } else if (method === 'ExtrinsicFailed') {
         alert.error('Extrinsic Failed', { title });
@@ -58,24 +54,20 @@ export function useSendMessage(destination: HexString, metadata: ProgramMetadata
     if (account && metadata) {
       loadingAlertId.current = alert.loading('Sign In', { title });
 
-      const { value = 0, isOtherPanicsAllowed = false, onSuccess, onError } = options || {};
-      const { address, decodedAddress, meta } = account;
+      const { onSuccess, onError } = options || {};
+      const { address, meta } = account;
       const { source } = meta;
 
-      api.program.calculateGas
-        .handle(decodedAddress, destination, payload, value, isOtherPanicsAllowed, metadata)
-        .then(getAutoGasLimit)
-        .then((gasLimit) => ({ destination, gasLimit, payload, value }))
-        .then(
-          (message) =>
-            api.message.send(
-              {
-                ...message,
-                gasLimit: bnToBn(250_000_000_000),
-              },
-              metadata,
-            ) && web3FromSource(source),
-        )
+      Promise.resolve(
+        api.message.send(
+          {
+            destination,
+            payload,
+            gasLimit: bnToBn(250_000_000_000),
+          },
+          metadata,
+        ) && web3FromSource(source),
+      )
         .then(({ signer }) =>
           api.message.signAndSend(address, { signer }, (result) => handleStatus(result, onSuccess, onError)),
         )

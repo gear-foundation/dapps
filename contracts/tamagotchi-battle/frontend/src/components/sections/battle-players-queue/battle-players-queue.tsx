@@ -5,39 +5,76 @@ import { useEffect, useRef, useState } from 'react';
 import { Icon } from 'components/ui/icon';
 import { useBattle } from 'app/context';
 import { useRefDimensions } from 'app/hooks/use-ref-dimensions';
+import { useIsLarge } from '../../../app/hooks/use-media';
+import { PLAYER_CARD } from '../../../app/consts';
+import { AnimatePresence, motion } from 'framer-motion';
 
-const SPACING = 8;
-const CARD_WIDTH = 160;
+const container = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.5,
+    },
+  },
+};
+
+const itemV = {
+  hidden: { opacity: 0, y: 20 },
+  show: { opacity: 1, y: 0 },
+};
 
 export const BattlePlayersQueue = () => {
   const { players } = useBattle();
   const [isSlider, setIsSlider] = useState(false);
   const ref = useRef<HTMLElement>(null);
+  const init = useRef(false);
   const [w] = useRefDimensions(ref);
+  const isFull = useIsLarge();
+
+  const width = isFull ? PLAYER_CARD.width.desktop : PLAYER_CARD.width.mobile;
+  const space = isFull ? PLAYER_CARD.spacing.desktop : PLAYER_CARD.spacing.mobile;
 
   useEffect(() => {
     setIsSlider(
-      players.length >
-        Math.floor(w / ((players.length * CARD_WIDTH + (players.length - 1) * SPACING) / players.length)),
+      players.length > Math.floor(w / ((players.length * width + (players.length - 1) * space) / players.length)),
     );
+  }, [players, space, w, width]);
+
+  useEffect(() => {
+    if (!init.current && players && w) {
+      init.current = true;
+    }
   }, [players, w]);
 
   return (
     <section
       ref={ref}
-      className="flex justify-center items-end mt-auto px-5 overflow-hidden min-h-[164px] xxl:min-h-[208px]">
-      {isSlider ? (
-        <QueueSlider />
-      ) : (
-        <ul className="flex gap-4 justify-center">
-          {players.length > 0 &&
-            players.map((item, i) => (
-              <li key={i} className="w-40" style={{ width: CARD_WIDTH }}>
-                <TamagotchiQueueCard tamagotchi={item} />
-              </li>
-            ))}
-        </ul>
-      )}
+      className="flex justify-center items-end mt-auto px-5 overflow-hidden min-h-[132px] xxl:min-h-[208px]">
+      <AnimatePresence key="battle-players-queue">
+        {init.current &&
+          (isSlider ? (
+            <QueueSlider />
+          ) : (
+            <motion.ol
+              key="queue-container"
+              variants={container}
+              initial="hidden"
+              animate="show"
+              className="flex gap-3 xxl:gap-2 justify-center">
+              {players.length > 0 &&
+                players.map((item, i) => (
+                  <motion.li
+                    key={`queue-c-item-${i}`}
+                    className="w-35 xxl:w-40"
+                    style={{ width: width }}
+                    variants={itemV}>
+                    <TamagotchiQueueCard tamagotchi={item} />
+                  </motion.li>
+                ))}
+            </motion.ol>
+          ))}
+      </AnimatePresence>
     </section>
   );
 };
@@ -47,7 +84,7 @@ const options: KeenSliderOptions = {
   mode: 'snap',
   slides: {
     perView: 'auto',
-    spacing: SPACING,
+    spacing: PLAYER_CARD.spacing.desktop,
   },
   created() {},
 };
@@ -55,9 +92,13 @@ const options: KeenSliderOptions = {
 const QueueSlider = () => {
   const { players } = useBattle();
   const [sliderRef, instanceRef] = useKeenSlider(options);
+  const isFull = useIsLarge();
+
+  const width = isFull ? PLAYER_CARD.width.desktop : PLAYER_CARD.width.mobile;
+  const space = isFull ? PLAYER_CARD.spacing.desktop : PLAYER_CARD.spacing.mobile;
 
   useEffect(() => {
-    instanceRef.current?.update(options);
+    instanceRef.current?.update({ ...options, slides: { perView: 'auto', spacing: space } });
   }, [instanceRef]);
 
   const handlePrev = (e: React.MouseEvent<HTMLButtonElement>) => {
@@ -71,7 +112,7 @@ const QueueSlider = () => {
   };
 
   return (
-    <div className="grid gap-4 xxl:gap-6 grow">
+    <div className="grow w-full space-y-3 xxl:space-y-6">
       <div className="flex gap-4 xxl:gap-6">
         <button onClick={handlePrev} className="btn btn--primary-outline text-primary p-2 xxl:p-2.5 rounded-lg">
           <Icon name="prev" className="w-3.5 xxl:w-4.5 aspect-square" />
@@ -80,16 +121,26 @@ const QueueSlider = () => {
           <Icon name="prev" className="w-3.5 xxl:w-4.5 aspect-square rotate-180" />
         </button>
       </div>
-      <ul ref={sliderRef} className="keen-slider !overflow-visible">
+      <motion.ol
+        key="queue-slider-list"
+        variants={container}
+        initial="hidden"
+        animate="show"
+        ref={sliderRef}
+        className="keen-slider !overflow-visible">
         {players.length > 0 &&
           players.map((item, i) => (
-            <li key={i} className="keen-slider__slide" style={{ width: CARD_WIDTH, minWidth: CARD_WIDTH }}>
-              <div className="w-40">
+            <motion.li
+              key={`queue-s-item-${i}`}
+              variants={itemV}
+              className="keen-slider__slide"
+              style={{ width: width, minWidth: width }}>
+              <div className="w-35 xxl:w-40">
                 <TamagotchiQueueCard tamagotchi={item} />
               </div>
-            </li>
+            </motion.li>
           ))}
-      </ul>
+      </motion.ol>
     </div>
   );
 };
