@@ -6,18 +6,18 @@ use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 
 #[metawasm]
-pub trait Metawasm {
-    type State = <ContractMetadata as Metadata>::State;
+pub mod metafns {
+    pub type State = <ContractMetadata as Metadata>::State;
 
-    fn current_concert(state: Self::State) -> CurrentConcert {
+    pub fn current_concert(state: State) -> CurrentConcert {
         state.current_concert()
     }
 
-    fn buyers(state: Self::State) -> Vec<ActorId> {
+    pub fn buyers(state: State) -> Vec<ActorId> {
         state.buyers
     }
 
-    fn user_tickets(user: ActorId, state: Self::State) -> Vec<Option<TokenMetadata>> {
+    pub fn user_tickets(state: State, user: ActorId) -> Vec<Option<TokenMetadata>> {
         state.user_tickets(user)
     }
 }

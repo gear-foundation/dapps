@@ -1,5 +1,5 @@
 use concert_io::*;
-use gear_lib::multitoken::io::*;
+use gear_lib::multitoken::io::{InitConfig, TokenMetadata};
 use gstd::{prelude::*, ActorId, Encode};
 use gtest::{Program, System};
 
@@ -105,33 +105,28 @@ pub fn check_current_concert(
     number_of_tickets: u128,
     tickets_left: u128,
 ) {
-    match concert_program.meta_state(ConcertStateQuery::CurrentConcert) {
-        Ok(ConcertStateReply::CurrentConcert(CurrentConcert {
-            name: true_name,
-            description: true_description,
-            date: true_date,
-            number_of_tickets: true_number_of_tickets,
-            tickets_left: true_tickets_left,
-        })) => {
-            if name != true_name {
-                panic!("CONCERT: Concert name differs.");
-            }
-            if description != true_description {
-                panic!("CONCERT: Concert description differs.");
-            }
-            if date != true_date {
-                panic!("CONCERT: Concert date differs.");
-            }
-            if number_of_tickets != true_number_of_tickets {
-                panic!("CONCERT: Concert number of tickets differs.");
-            }
-            if tickets_left != true_tickets_left {
-                panic!("CONCERT: Concert number of tickets left differs.");
-            }
-        }
-        _ => {
-            unreachable!("Unreachable metastate reply for the ConcertStateQuery::CurrentConcert payload has occurred")
-        }
+    let state: State = concert_program.read_state().expect("Can't read state");
+    let CurrentConcert {
+        name: true_name,
+        description: true_description,
+        date: true_date,
+        number_of_tickets: true_number_of_tickets,
+        tickets_left: true_tickets_left,
+    } = state.current_concert();
+    if name != true_name {
+        panic!("CONCERT: Concert name differs.");
+    }
+    if description != true_description {
+        panic!("CONCERT: Concert description differs.");
+    }
+    if date != true_date {
+        panic!("CONCERT: Concert date differs.");
+    }
+    if number_of_tickets != true_number_of_tickets {
+        panic!("CONCERT: Concert number of tickets differs.");
+    }
+    if tickets_left != true_tickets_left {
+        panic!("CONCERT: Concert number of tickets left differs.");
     }
 }
 
@@ -140,29 +135,16 @@ pub fn check_user_tickets(
     user: ActorId,
     tickets: Vec<Option<TokenMetadata>>,
 ) {
-    match concert_program.meta_state(ConcertStateQuery::UserTickets { user }) {
-        Ok(ConcertStateReply::UserTickets(true_tickets)) => {
-            if tickets != true_tickets {
-                panic!("CONCERT: User tickets differ.");
-            }
-        }
-        _ => {
-            unreachable!("Unreachable metastate reply for the ConcertStateQuery::UserTickets payload has occurred")
-        }
+    let state: State = concert_program.read_state().expect("Can't read state");
+    let true_tickets = state.user_tickets(user);
+    if tickets != true_tickets {
+        panic!("CONCERT: User tickets differ.");
     }
 }
 
 pub fn check_buyers(concert_program: &Program, buyers: Vec<ActorId>) {
-    match concert_program.meta_state(ConcertStateQuery::Buyers) {
-        Ok(ConcertStateReply::Buyers(true_buyers)) => {
-            if buyers != true_buyers {
-                panic!("CONCERT: Buyers list differs.");
-            }
-        }
-        _ => {
-            unreachable!(
-                "Unreachable metastate reply for the ConcertStateQuery::Buyers payload has occurred"
-            )
-        }
+    let state: State = concert_program.read_state().expect("Can't read state");
+    if buyers != state.buyers {
+        panic!("CONCERT: Buyers list differs.");
     }
 }
