@@ -1255,10 +1255,10 @@
   resolved "https://registry.yarnpkg.com/@gear-js/ui/-/ui-0.5.16.tgz#8aac3a44343a6d3afd208b4fbd5f16586419150e"
   integrity sha512-y4WGIQ93TxDNqtMjrd199GgvO3FZi0UTmDDn8+/qyBg/il08Fb0I1wLspHnuVNtCR3CX59kHByxGRPp2lvLPAA==
 
-"@headlessui/react@1.7.11":
-  version "1.7.11"
-  resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-1.7.11.tgz#1cc5750226abe5af2c94f72e975c0c8d2f5cc5a6"
-  integrity sha512-EaDbVgcyiylhtskZZf4Qb/JiiByY7cYbd0qgZ9xm2pm2X7hKojG0P4TaQYKgPOV3vojPhd/pZyQh3nmRkkcSyw==
+"@headlessui/react@1.7.13":
+  version "1.7.13"
+  resolved "https://registry.yarnpkg.com/@headlessui/react/-/react-1.7.13.tgz#fd150b394954e9f1d86ed2340cffd1217d6e7628"
+  integrity sha512-9n+EQKRtD9266xIHXdY5MfiXPDfYwl7zBM7KOx2Ae3Gdgxy8QML1FkCMjq6AsOf0l6N9uvI4HcFtuFlenaldKg==
   dependencies:
     client-only "^0.0.1"
 

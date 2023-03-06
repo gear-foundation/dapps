@@ -11,7 +11,7 @@
     "@gear-js/api": "0.29.5",
     "@gear-js/react-hooks": "0.5.9",
     "@gear-js/ui": "0.5.16",
-    "@headlessui/react": "1.7.11",
+    "@headlessui/react": "1.7.13",
     "@polkadot/api": "9.14.2",
     "@polkadot/extension-dapp": "0.44.9",
     "@polkadot/react-identicon": "2.12.1",
