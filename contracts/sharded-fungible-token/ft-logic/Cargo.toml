@@ -14,7 +14,7 @@ hashbrown = "0.13.1"
 
 [dev-dependencies]
 gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
-tokio = { version = "1.22.0", features = ["full"] }
+tokio = { version = "1.26.0", features = ["full"] }
 
 [build-dependencies]
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
