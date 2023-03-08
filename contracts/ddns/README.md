@@ -37,8 +37,6 @@ The next step is to send Metadata to your program using the `SetDnsMeta` enum va
 
 To register your dApp in DNS, you need to send a message to the DNS program. You can do it through https://idea.gear-tech.io/ find DNS program and send message `Register` with the id of your program.
 
-Here is the id of DNS program: `0xaeda9e4e9196231ef31a62779629f5c3d61824bb3ffb8b57489e9133ae47d7c8`
-
 ## Open and use dApp
 
 Firstly you need to download the dns.html file from releases and open it in your browser.
