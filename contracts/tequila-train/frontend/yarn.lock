@@ -1250,10 +1250,10 @@
   resolved "https://registry.yarnpkg.com/@gear-js/react-hooks/-/react-hooks-0.5.9.tgz#a157f1944446c24af45613cb48967aa2fe7e73dc"
   integrity sha512-E3IxfCLt0yMKfmmT+52c25SBEG+htA5zjtg5NwbFPdH5Zhw7aQdzbwo/FL8HEiGWjxpo/0FWI2/dPl+UFJmWeg==
 
-"@gear-js/ui@0.5.16":
-  version "0.5.16"
-  resolved "https://registry.yarnpkg.com/@gear-js/ui/-/ui-0.5.16.tgz#8aac3a44343a6d3afd208b4fbd5f16586419150e"
-  integrity sha512-y4WGIQ93TxDNqtMjrd199GgvO3FZi0UTmDDn8+/qyBg/il08Fb0I1wLspHnuVNtCR3CX59kHByxGRPp2lvLPAA==
+"@gear-js/ui@0.5.17":
+  version "0.5.17"
+  resolved "https://registry.yarnpkg.com/@gear-js/ui/-/ui-0.5.17.tgz#47d87085ef303719c6123d9e98a26a03d23398d5"
+  integrity sha512-vfbyu0f09G/IAYYSawBhSSW36mllTQ4RqKoGJhcERWbcVHa8V4g46lvebsPYlAWIO07e8V8MEtBblD7ktGPhGQ==
 
 "@headlessui/react@1.7.13":
   version "1.7.13"
