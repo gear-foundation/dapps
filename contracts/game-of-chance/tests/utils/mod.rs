@@ -5,13 +5,13 @@ use gtest::{Program as InnerProgram, System, EXISTENTIAL_DEPOSIT};
 use rand::{RngCore, SeedableRng};
 use rand_xoshiro::Xoshiro128PlusPlus;
 
-mod ft;
+mod fungible_token;
 
 pub mod common;
 pub mod prelude;
 
 pub use common::initialize_system;
-pub use ft::FungibleToken;
+pub use fungible_token::FungibleToken;
 
 pub const FOREIGN_USER: u64 = 9999999;
 
@@ -59,7 +59,7 @@ impl<'a> Goc<'a> {
         InitResult::new(Self(program), result, is_active)
     }
 
-    pub fn meta_state(&self) -> GOCMetaState {
+    pub fn state(&self) -> GOCMetaState {
         GOCMetaState(&self.0)
     }
 
@@ -106,8 +106,8 @@ impl<'a> Goc<'a> {
 pub struct GOCMetaState<'a>(&'a InnerProgram<'a>);
 
 impl GOCMetaState<'_> {
-    pub fn state(self) -> MetaStateReply<State> {
-        MetaStateReply(self.0.meta_state_empty().unwrap())
+    pub fn all(self) -> MetaStateReply<State> {
+        MetaStateReply(self.0.read_state().unwrap())
     }
 }
 

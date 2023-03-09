@@ -18,36 +18,36 @@ init:
 
 lint:
 	@echo ⚙️ Running the linter...
-	@cargo +nightly clippy -- -D warnings
-	@cargo +nightly clippy --all-targets -Fbinary-vendor -- -D warnings
+	@cargo +nightly clippy --all-targets --workspace -- -D warnings
 
 pre-commit: fmt lint full-test
 
 deps:
+	@mkdir -p target
 	@echo ⚙️ Downloading dependencies...
-	@path=target/ft_main.wasm;\
+	@path=target/ft-main.wasm;\
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_main-0.1.3.opt.wasm\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.5/ft_main-0.1.5.opt.wasm\
 	        -o $$path;\
 	fi
-	@path=target/ft_logic.wasm;\
+	@path=target/ft-logic.wasm;\
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_logic-0.1.3.opt.wasm\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.5/ft_logic-0.1.5.opt.wasm\
 	        -o $$path;\
 	fi
-	@path=target/ft_storage.wasm;\
+	@path=target/ft-storage.wasm;\
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_storage-0.1.3.opt.wasm\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.5/ft_storage-0.1.5.opt.wasm\
 	        -o $$path;\
 	fi
 
 test: deps
 	@echo ⚙️ Running unit tests...
-	@cargo +nightly t -Fbinary-vendor
+	@cargo +nightly t
 
 full-test: deps
 	@echo ⚙️ Running all tests...
-	@cargo +nightly t -Fbinary-vendor -- --include-ignored
+	@cargo +nightly t -- --include-ignored

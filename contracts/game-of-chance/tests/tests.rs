@@ -18,7 +18,7 @@ fn two_rounds_and_meta_state() {
 
     let admin = ADMIN.into();
 
-    goc.meta_state().state().eq(State {
+    goc.state().all().eq(State {
         admin,
         ..Default::default()
     });
@@ -35,7 +35,7 @@ fn two_rounds_and_meta_state() {
 
     goc.start(ADMIN, DURATION, PARTICIPATION_COST, ft_actor_id)
         .succeed((ending, PARTICIPATION_COST, ft_actor_id));
-    goc.meta_state().state().eq(State {
+    goc.state().all().eq(State {
         admin,
         started,
         ending,
@@ -54,7 +54,7 @@ fn two_rounds_and_meta_state() {
 
         goc.enter(player).succeed(player);
         fungible_token.balance(goc.actor_id()).contains(prize_fund);
-        goc.meta_state().state().eq(State {
+        goc.state().all().eq(State {
             admin,
             started,
             ending,
@@ -75,7 +75,7 @@ fn two_rounds_and_meta_state() {
     fungible_token
         .balance(winner)
         .contains(PARTICIPATION_COST * 2 + AMOUNT);
-    goc.meta_state().state().eq(State {
+    goc.state().all().eq(State {
         admin,
         started,
         ending,
@@ -96,7 +96,7 @@ fn two_rounds_and_meta_state() {
 
     goc.start(ADMIN, DURATION, PARTICIPATION_COST, None)
         .succeed((ending, PARTICIPATION_COST, None));
-    goc.meta_state().state().eq(State {
+    goc.state().all().eq(State {
         admin,
         started,
         ending,
@@ -115,7 +115,7 @@ fn two_rounds_and_meta_state() {
         goc.enter_with_value(player, PARTICIPATION_COST)
             .succeed(player);
         assert_eq!(system.balance_of(goc.actor_id().as_ref()), prize_fund);
-        goc.meta_state().state().eq(State {
+        goc.state().all().eq(State {
             admin,
             started,
             ending,
@@ -134,7 +134,7 @@ fn two_rounds_and_meta_state() {
     goc.pick_winner(ADMIN).succeed(winner.into());
     system.claim_value_from_mailbox(winner);
     assert_eq!(system.balance_of(winner), PARTICIPATION_COST * 2 + AMOUNT);
-    goc.meta_state().state().eq(State {
+    goc.state().all().eq(State {
         admin,
         started,
         ending,
@@ -227,7 +227,7 @@ fn overflow() {
         goc.enter(player).succeed(player);
     }
 
-    goc.meta_state().state().eq(State {
+    goc.state().all().eq(State {
         admin: ADMIN.into(),
         started: system.block_timestamp(),
         ending,

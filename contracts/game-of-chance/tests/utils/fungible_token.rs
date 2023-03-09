@@ -4,8 +4,6 @@ use ft_main_io::{FTokenAction, FTokenEvent, InitFToken};
 use gstd::{prelude::*, ActorId};
 use gtest::{Log, Program as InnerProgram, RunResult as InnerRunResult, System};
 
-type FungibleTokenRunResult<T> = RunResult<T, FTokenEvent, ()>;
-
 pub struct FungibleToken<'a>(InnerProgram<'a>, u64);
 
 impl Program for FungibleToken<'_> {
@@ -23,16 +21,16 @@ impl TransactionalProgram for FungibleToken<'_> {
 impl<'a> FungibleToken<'a> {
     #[track_caller]
     pub fn initialize(system: &'a System) -> Self {
-        let program = InnerProgram::from_file(system, "target/ft_main.wasm");
-        let storage_code: [u8; 32] = system.submit_code("target/ft_storage.wasm").into();
-        let logic_code: [u8; 32] = system.submit_code("target/ft_logic.wasm").into();
+        let program = InnerProgram::from_file(system, "target/ft-main.wasm");
+        let storage_code_id: [u8; 32] = system.submit_code("target/ft-storage.wasm").into();
+        let logic_code_id: [u8; 32] = system.submit_code("target/ft-logic.wasm").into();
 
         assert!(!program
             .send(
                 FOREIGN_USER,
                 InitFToken {
-                    storage_code_hash: storage_code.into(),
-                    ft_logic_code_hash: logic_code.into(),
+                    storage_code_hash: storage_code_id.into(),
+                    ft_logic_code_hash: logic_code_id.into(),
                 },
             )
             .main_failed());
@@ -78,7 +76,7 @@ impl<'a> FungibleToken<'a> {
         );
     }
 
-    pub fn balance(&self, actor_id: impl Into<ActorId>) -> FungibleTokenRunResult<u128> {
+    pub fn balance(&self, actor_id: impl Into<ActorId>) -> RunResult<u128, FTokenEvent, ()> {
         RunResult::new(
             self.0
                 .send(FOREIGN_USER, FTokenAction::GetBalance(actor_id.into())),

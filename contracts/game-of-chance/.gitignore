@@ -3,3 +3,5 @@
 target
 .vscode
 .metahash
+meta.txt
+!frontend/**
