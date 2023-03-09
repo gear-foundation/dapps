@@ -69,7 +69,7 @@ jobs:
 
       - name: Rename binaries
         run: |
-          cd artifact
+          cd artifact/target/wasm32-unknown-unknown
           for WASM in */*; do
             BUILD_TYPE=${WASM%/*}
             NAME=`basename $WASM`
@@ -93,5 +93,5 @@ jobs:
       - name: Publish
         uses: softprops/action-gh-release@v1
         with:
-          files: artifact/*
+          files: artifact/**
           body_path: CHANGELOG.md # TODO: Cut piece related to the current version only

@@ -78,7 +78,7 @@ jobs:
 
       - name: Rename binaries
         run: |
-          cd artifact
+          cd artifact/target/wasm32-unknown-unknown
           for WASM in */*; do
             BUILD_TYPE=${WASM%/*}
             NAME=`basename $WASM`
@@ -106,4 +106,4 @@ jobs:
           prerelease: true
           tag_name: build
           draft: false
-          files: artifact/*
+          files: artifact/**
