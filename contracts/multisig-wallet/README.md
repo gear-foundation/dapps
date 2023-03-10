@@ -4,22 +4,22 @@
   </a>
 </p>
 
-# Gear Template App
+# Multisig wallet
 
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
+[![Docs][docs_badge]][docs_href]
 
-[build_badge]: https://github.com/gear-dapps/multisig-wallet/workflows/Build/badge.svg
+[build_badge]: https://img.shields.io/github/actions/workflow/status/gear-dapps/multisig-wallet/build.yml?label=Build
 [build_href]: https://github.com/gear-dapps/multisig-wallet/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-MIT-success
 [lic_href]: https://github.com/gear-dapps/multisig-wallet/blob/master/LICENSE
 
-<!-- Description starts here -->
+[docs_badge]: https://img.shields.io/badge/docs-online-5023dd
+[docs_href]: https://dapps.gear.rs/multisig_wallet
 
 Multisignature wallets are cryptocurrency wallets that require one or more private keys to sign and send a transaction.
-
-<!-- End of description -->
 
 ## Prebuilt Binaries
 
