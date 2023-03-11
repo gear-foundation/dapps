@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["debug"] }
 gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.5" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
