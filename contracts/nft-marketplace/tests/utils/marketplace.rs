@@ -272,12 +272,8 @@ impl<'a> Market<'a> {
 pub struct MarketMetaState<'a>(&'a InnerProgram<'a>);
 
 impl MarketMetaState<'_> {
-    pub fn item_info(
-        self,
-        _nft_contract_id: ContractId,
-        _token_id: TokenId,
-    ) -> MetaStateReply<Item> {
-        unreachable!();
+    pub fn state(&self) -> MetaStateReply<market_io::Market> {
+        MetaStateReply(self.0.read_state().expect("Unexpected invalid state."))
     }
 }
 

@@ -12,7 +12,7 @@ pub mod metafns {
         market_io::all_items(state)
     }
 
-    pub fn item_info(state: State, args: ItemInfoArgs) -> Item {
-        market_io::item_info(state, &args).expect("Item not found")
+    pub fn item_info(state: State, args: ItemInfoArgs) -> Option<Item> {
+        market_io::item_info(state, &args)
     }
 }

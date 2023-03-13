@@ -309,8 +309,10 @@ async fn add_offer_tx(
         item.tx = None;
         return Err(MarketErr::TokenTransferFailed);
     }
+
     item.tx = None;
     item.offers.insert((ft_id, price), msg::source());
+
     Ok(MarketEvent::OfferAdded {
         nft_contract_id: *nft_contract_id,
         ft_contract_id: ft_id,
@@ -345,7 +347,7 @@ async fn accept_offer_tx(
         .await;
     };
 
-    // transfer NFT to the marketplace account
+    // Transfer NFT to the marketplace account
     if nft_transfer(tx_id, nft_contract_id, &exec::program_id(), token_id)
         .await
         .is_err()
@@ -354,7 +356,7 @@ async fn accept_offer_tx(
         return Err(MarketErr::NFTTransferFailed);
     }
 
-    // send tokens to the seller, royalties and tresuary account
+    // Send tokens to the seller, royalties and tresuary account
     // since tokens are on the marketplace account, the error can be only due the lack of gas
     for (account, amount) in payouts.iter() {
         tx_id = tx_id.wrapping_add(1);
@@ -366,7 +368,7 @@ async fn accept_offer_tx(
         };
     }
 
-    // transfer NFT to the buyer
+    // Transfer NFT to the buyer
     if nft_transfer(tx_id, nft_contract_id, new_owner, token_id)
         .await
         .is_err()
@@ -446,6 +448,7 @@ async fn withdraw_tx(
 
     item.tx = None;
     item.offers.remove(&(Some(*ft_contract_id), price));
+
     Ok(MarketEvent::Withdraw {
         nft_contract_id: *nft_contract_id,
         token_id,

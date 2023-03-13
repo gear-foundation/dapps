@@ -36,13 +36,11 @@ fn buy_with_fungible_tokens() {
     // Check balance of SELLER
     let treasury_fee = NFT_PRICE * ((TREASURY_FEE * BASE_PERCENT) as u128) / 10_000u128;
     ft_program
-        .balance_of(SELLER.into())
+        .balance_of(SELLER)
         .check(NFT_PRICE - treasury_fee);
 
     // Check balance of TREASURY_ID
-    ft_program
-        .balance_of(TREASURY_ID.into())
-        .check(treasury_fee);
+    ft_program.balance_of(TREASURY_ID).check(treasury_fee);
 }
 
 #[test]

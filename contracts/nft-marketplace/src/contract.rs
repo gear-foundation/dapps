@@ -68,6 +68,7 @@ impl MarketHandler for Market {
                 item.ft_contract_id = ft_contract_id
             })
             .or_insert(Item {
+                token_id,
                 owner,
                 ft_contract_id,
                 price,

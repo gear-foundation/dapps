@@ -18,9 +18,9 @@ init:
 
 lint:
 	@echo ⚙️ Running the linter...
-	@cargo +nightly clippy --workspace -- -D warnings
+	@cargo +nightly clippy --workspace --all-targets -- -D warnings
 
-pre-commit: fmt lint test
+pre-commit: fmt lint full-test
 
 deps:
 	@echo ⚙️ Downloading dependencies...
@@ -55,4 +55,4 @@ test: deps
 
 full-test: deps
 	@echo ⚙️ Running all tests...
-	@cargo +nightly t -- --include-ignored
+	@cargo +nightly t -- --include-ignored --test-threads=1

@@ -63,19 +63,10 @@ fn offers() {
         offers.insert((Some(ft_program.actor_id()), offered_price), BUYER.into());
     }
 
-    // TODO: Check item state
-    // let mut item = Item {
-    //     owner: SELLER.into(),
-    //     ft_contract_id: Some(ft_program.actor_id()),
-    //     price: Some(NFT_PRICE),
-    //     auction: None,
-    //     offers,
-    //     tx: None
-    // };
-    // market
-    //     .meta_state()
-    //     .item_info(nft_program.actor_id(), TOKEN_ID.into())
-    //     .check(item.clone());
+    let market_state = market.meta_state().state().0;
+    assert!(market_state
+        .items
+        .contains_key(&(nft_program.actor_id(), TOKEN_ID.into())));
 
     // Accept offer (for fungible tokens)
     let accepted_price = 10_000 * 15;
@@ -94,12 +85,6 @@ fn offers() {
             accepted_price,
         ));
 
-    // TODO: Check owner
-    // nft_program
-    //     .meta_state()
-    //     .owner_id(TOKEN_ID)
-    //     .check(BUYER.into());
-
     let treasury_fee = accepted_price * ((TREASURY_FEE * BASE_PERCENT) as u128) / 10_000u128;
 
     // Check balance of SELLER
@@ -110,18 +95,16 @@ fn offers() {
     // Check balance of TREASURY_ID
     ft_program.balance_of(TREASURY_ID).check(treasury_fee);
 
-    // TODO: Check item state
-    // item.owner = BUYER.into();
-    // item.price = None;
-    // item.offers
-    //     .remove(&(Some(ft_program.actor_id()), accepted_price));
-    // market
-    //     .meta_state()
-    //     .item_info(nft_program.actor_id(), TOKEN_ID.into())
-    //     .check(item.clone());
+    let market_state = market.meta_state().state().0;
+    assert!(!market_state
+        .items
+        .get(&(nft_program.actor_id(), TOKEN_ID.into()))
+        .expect("Unexpected invalid item.")
+        .offers
+        .contains_key(&(Some(ft_program.actor_id()), accepted_price)));
 
-    // TODO: Withdraw tokens
-    /* let withdrawn_tokens = 10_000 * 12_u128;
+    // Withdraw tokens
+    let withdrawn_tokens = 110_000;
     market
         .withdraw(
             BUYER.into(),
@@ -130,18 +113,7 @@ fn offers() {
             Some(ft_program.actor_id()),
             withdrawn_tokens,
         )
-        .succeed((nft_program.actor_id(), TOKEN_ID.into(), withdrawn_tokens)); */
-
-    // Check balance of BUYER after tokens withdrawal
-    // ft_program.balance_of(BUYER).check(withdrawn_tokens);
-
-    // TODO: Check item state
-    // item.offers
-    //     .remove(&(Some(ft_program.actor_id()), withdrawn_tokens));
-    // market
-    //     .meta_state()
-    //     .item_info(nft_program.actor_id(), TOKEN_ID.into())
-    //     .check(item.clone());
+        .succeed((nft_program.actor_id(), TOKEN_ID.into(), withdrawn_tokens));
 
     // Withdraw native tokens
     let withdrawn_tokens = 10_000 * 2_u128;
@@ -154,13 +126,6 @@ fn offers() {
             withdrawn_tokens,
         )
         .succeed((nft_program.actor_id(), TOKEN_ID.into(), withdrawn_tokens));
-
-    // TODO: Check item state
-    // item.offers.remove(&(None, withdrawn_tokens));
-    // market
-    //     .meta_state()
-    //     .item_info(nft_program.actor_id(), TOKEN_ID.into())
-    //     .check(item.clone());
 
     // Check balance of SELLER after tokens withdrawal
     system.claim_value_from_mailbox(BUYER);

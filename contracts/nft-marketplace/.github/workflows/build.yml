@@ -14,6 +14,8 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GEAR_NODE_PATH: ./gear
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -22,7 +24,7 @@ jobs:
         uses: Swatinem/rust-cache@v2
 
       - name: Remove binaries from cache
-        run: rm -vf target/wasm32-unknown-unknown/release/*.wasm
+        run: rm -vfr target/wasm32-unknown-unknown/*
 
       - name: Install nightly toolchain
         uses: actions-rs/toolchain@v1
@@ -45,9 +47,7 @@ jobs:
       - name: Run tests
         run: |
           curl -L https://get.gear.rs/gear-nightly-linux-x86_64.tar.xz -o - | tar xJ
-          ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
           make full-test
-          kill `cat gear.pid`
 
       - name: Build
         run: make build
@@ -56,7 +56,9 @@ jobs:
         if: github.event_name == 'push'
         uses: actions/upload-artifact@v3
         with:
-          path: ./target/wasm32-unknown-unknown/release/*.wasm
+          path: |
+            target/wasm32-unknown-unknown/*
+            meta.txt
 
   upload:
     if: github.event_name == 'push'
@@ -74,6 +76,29 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Rename binaries
+        run: |
+          cd artifact/target/wasm32-unknown-unknown
+          for WASM in */*; do
+            BUILD_TYPE=${WASM%/*}
+            NAME=`basename $WASM`
+            if [[ $NAME == *.opt.wasm ]]; then
+              NAME=${NAME%.opt.wasm}
+              EXT=opt.wasm
+            elif [[ $NAME == *.meta.wasm ]]; then
+              NAME=${NAME%.meta.wasm}
+              EXT=meta.wasm
+            else
+              NAME=${NAME%.wasm}
+              EXT=wasm
+            fi
+            if [ $BUILD_TYPE == debug ]; then
+              mv $WASM $NAME.debug.$EXT
+            else
+              mv $WASM $NAME.$EXT
+            fi
+          done
+
       - name: Upload
         uses: softprops/action-gh-release@v1
         with:
@@ -81,5 +106,4 @@ jobs:
           prerelease: true
           tag_name: build
           draft: false
-          fail_on_unmatched_files: true
-          files: artifact/*.wasm
+          files: artifact/**

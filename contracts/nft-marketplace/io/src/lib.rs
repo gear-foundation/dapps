@@ -44,7 +44,7 @@ pub struct InitMarket {
     pub treasury_fee: u16,
 }
 
-#[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
+#[derive(Debug, PartialEq, Eq, Default, Encode, Decode, TypeInfo, Clone)]
 pub struct Auction {
     pub bid_period: u64,
     pub started_at: u64,
@@ -77,8 +77,9 @@ pub enum MarketTx {
     },
 }
 
-#[derive(Debug, Encode, Decode, TypeInfo, Clone, Default)]
+#[derive(Debug, PartialEq, Eq, Encode, Decode, TypeInfo, Clone, Default)]
 pub struct Item {
+    pub token_id: TokenId,
     pub owner: ActorId,
     pub ft_contract_id: Option<ContractId>,
     pub price: Option<Price>,
