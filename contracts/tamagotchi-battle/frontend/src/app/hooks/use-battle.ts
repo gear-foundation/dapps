@@ -1,7 +1,7 @@
 import { useApp, useBattle } from 'app/context';
 import { useEffect, useRef } from 'react';
 import type { BattleStatePlayer, BattleStateResponse } from 'app/types/battles';
-import { useAccount, useAlert, useApi, useReadFullState } from '@gear-js/react-hooks';
+import { useAccount, useApi, useReadFullState } from '@gear-js/react-hooks';
 import { useMetadata } from './use-metadata';
 import metaBattle from 'assets/meta/meta-battle.txt';
 import { ENV } from 'app/consts';
@@ -18,7 +18,7 @@ function useReadBattleState<T>() {
 
 export function useInitBattleData() {
   const { api } = useApi();
-  const alert = useAlert();
+  // const alert = useAlert();
   const navigate = useNavigate();
   const { setIsAdmin } = useApp();
   const { account } = useAccount();
@@ -35,6 +35,12 @@ export function useInitBattleData() {
   const { state } = useReadBattleState<BattleStateResponse>();
   const { metadata } = useMetadata(metaBattle);
   const prevBattleState = useRef<BattleCurrentStateVariants | undefined>();
+
+  useEffect(() => {
+    if (window) {
+      (window as any).BattleAddress = process.env.REACT_APP_BATTLE_ADDRESS;
+    }
+  }, []);
 
   useEffect(() => {
     setBattle(state);
