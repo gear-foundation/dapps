@@ -170,7 +170,7 @@ fn query_roles() {
         },
     )
     .succeed();
-    supply_chain.meta_state().roles(FOREIGN_USER).eq([
+    supply_chain.state().roles(FOREIGN_USER).eq([
         Role::Consumer,
         Role::Producer,
         Role::Distributor,
@@ -191,7 +191,7 @@ fn query_roles() {
     )
     .succeed();
     supply_chain
-        .meta_state()
+        .state()
         .roles(FOREIGN_USER)
         .eq([Role::Consumer].into());
 }

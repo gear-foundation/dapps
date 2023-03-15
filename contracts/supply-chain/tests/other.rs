@@ -59,11 +59,8 @@ fn interact_with_unexistent_item() {
         .purchase_by_consumer(CONSUMER, NONEXISTENT_ITEM)
         .failed(Error::ItemNotFound);
 
-    supply_chain
-        .meta_state()
-        .item_info(NONEXISTENT_ITEM)
-        .eq(None);
-    supply_chain.meta_state().existing_items().eq([].into());
+    supply_chain.state().item_info(NONEXISTENT_ITEM).eq(None);
+    supply_chain.state().existing_items().eq([].into());
 }
 
 #[test]
@@ -96,17 +93,17 @@ fn initialization() {
     let supply_chain =
         SupplyChain::initialize_custom(&system, supply_chain_config.clone()).succeed();
 
-    supply_chain.meta_state().participants().eq(Participants {
+    supply_chain.state().participants().eq(Participants {
         producers: supply_chain_config.producers,
         distributors: supply_chain_config.distributors,
         retailers: supply_chain_config.retailers,
     });
     supply_chain
-        .meta_state()
+        .state()
         .fungible_token()
         .eq(fungible_token.actor_id());
     supply_chain
-        .meta_state()
+        .state()
         .non_fungible_token()
         .eq(non_fungible_token.actor_id());
 }
@@ -145,5 +142,5 @@ fn query_existing_items() {
         })
         .collect();
 
-    supply_chain.meta_state().existing_items().eq(item_infos);
+    supply_chain.state().existing_items().eq(item_infos);
 }

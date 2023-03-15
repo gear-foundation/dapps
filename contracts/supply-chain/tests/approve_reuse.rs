@@ -30,7 +30,7 @@ fn approve_reuse_and_ft_transfer() {
         .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE_BY_PRODUCER)
         .succeed(0);
     supply_chain
-        .meta_state()
+        .state()
         .item_price(0)
         .eq(Some(ITEM_PRICE_BY_PRODUCER));
 
@@ -73,7 +73,7 @@ fn approve_reuse_and_ft_transfer() {
         .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE_BY_DISTRIBUTOR)
         .succeed(0);
     supply_chain
-        .meta_state()
+        .state()
         .item_price(0)
         .eq(Some(ITEM_PRICE_BY_DISTRIBUTOR));
 

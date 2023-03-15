@@ -1,8 +1,9 @@
-use common::{InitResult, MetaStateReply, Program, RunResult, TransactionalProgram};
+use common::{InitResult, Program, RunResult, StateReply, TransactionalProgram};
 use gstd::{prelude::*, ActorId};
 use gtest::{Program as InnerProgram, System, EXISTENTIAL_DEPOSIT};
 use hashbrown::{HashMap, HashSet};
 use supply_chain_io::*;
+use supply_chain_state::{WASM_BINARY, WASM_EXPORTS};
 
 mod common;
 mod fungible_token;
@@ -53,26 +54,26 @@ impl<'a> SupplyChain<'a> {
         system: &'a System,
         config: Initialize,
     ) -> InitResult<SupplyChain<'a>, Error> {
-        Self::common_initialize_custom(system, config, |_, _| {})
+        Self::common_initialize_custom(system, config, false)
     }
 
     pub fn initialize_custom_with_existential_deposit(
         system: &'a System,
         config: Initialize,
     ) -> InitResult<SupplyChain<'a>, Error> {
-        Self::common_initialize_custom(system, config, |system, program| {
-            system.mint_to(program.id(), EXISTENTIAL_DEPOSIT)
-        })
+        Self::common_initialize_custom(system, config, true)
     }
 
     fn common_initialize_custom(
         system: &'a System,
         config: Initialize,
-        mint: fn(&System, &InnerProgram),
+        is_exdep_needed: bool,
     ) -> InitResult<SupplyChain<'a>, Error> {
         let program = InnerProgram::current(system);
 
-        mint(system, &program);
+        if is_exdep_needed {
+            system.mint_to(program.id(), EXISTENTIAL_DEPOSIT);
+        }
 
         let result = program.send(FOREIGN_USER, config);
         let is_active = system.is_active_program(program.id());
@@ -80,8 +81,8 @@ impl<'a> SupplyChain<'a> {
         InitResult::new(Self(program), result, is_active)
     }
 
-    pub fn meta_state(&self) -> SupplyChainMetaState {
-        SupplyChainMetaState(&self.0)
+    pub fn state(&self) -> SupplyChainState {
+        SupplyChainState(&self.0)
     }
 
     pub fn produce(&mut self, from: u64) -> SupplyChainRunResult<u128> {
@@ -399,80 +400,70 @@ impl<'a> SupplyChain<'a> {
     }
 }
 
-pub struct SupplyChainMetaState<'a>(&'a InnerProgram<'a>);
+pub struct SupplyChainState<'a>(&'a InnerProgram<'a>);
 
-impl SupplyChainMetaState<'_> {
-    pub fn item_price(self, item_id: u128) -> MetaStateReply<Option<u128>> {
-        MetaStateReply(self.item_info(item_id).0.map(|item_info| item_info.price))
+impl SupplyChainState<'_> {
+    fn query_state_common<A: Encode, T: Decode>(
+        self,
+        fn_index: usize,
+        argument: Option<A>,
+    ) -> StateReply<T> {
+        StateReply(
+            self.0
+                .read_state_using_wasm(WASM_EXPORTS[fn_index], WASM_BINARY.into(), argument)
+                .unwrap(),
+        )
     }
 
-    pub fn item_info(self, item_id: u128) -> MetaStateReply<Option<ItemInfo>> {
-        if let StateReply::ItemInfo(reply) = self
-            .0
-            .meta_state(StateQuery::ItemInfo(item_id.into()))
-            .unwrap()
-        {
-            MetaStateReply(reply)
-        } else {
-            unreachable!()
-        }
+    fn query_state_with_argument<A: Encode, T: Decode>(
+        self,
+        fn_index: usize,
+        argument: A,
+    ) -> StateReply<T> {
+        self.query_state_common(fn_index, Some(argument))
     }
 
-    pub fn participants(self) -> MetaStateReply<Participants> {
-        if let StateReply::Participants(reply) =
-            self.0.meta_state(StateQuery::Participants).unwrap()
-        {
-            MetaStateReply(reply)
-        } else {
-            unreachable!()
-        }
+    fn query_state<T: Decode>(self, fn_index: usize) -> StateReply<T> {
+        self.query_state_common::<(), _>(fn_index, None)
     }
 
-    pub fn fungible_token(self) -> MetaStateReply<ActorId> {
-        if let StateReply::FungibleToken(reply) =
-            self.0.meta_state(StateQuery::FungibleToken).unwrap()
-        {
-            MetaStateReply(reply)
-        } else {
-            unreachable!()
-        }
+    pub fn item_price(self, item_id: u128) -> StateReply<Option<u128>> {
+        StateReply(self.item_info(item_id).0.map(|item_info| item_info.price))
     }
 
-    pub fn non_fungible_token(self) -> MetaStateReply<ActorId> {
-        if let StateReply::NonFungibleToken(reply) =
-            self.0.meta_state(StateQuery::NonFungibleToken).unwrap()
-        {
-            MetaStateReply(reply)
-        } else {
-            unreachable!()
-        }
+    pub fn item_info(self, item_id: u128) -> StateReply<Option<ItemInfo>> {
+        self.query_state_with_argument(1, ItemId::from(item_id))
     }
 
-    pub fn existing_items(self) -> MetaStateReply<HashMap<ItemId, ItemInfo>> {
-        if let StateReply::ExistingItems(reply) =
-            self.0.meta_state(StateQuery::ExistingItems).unwrap()
-        {
-            MetaStateReply(reply.into_iter().collect())
-        } else {
-            unreachable!()
-        }
+    pub fn participants(self) -> StateReply<Participants> {
+        self.query_state(2)
     }
 
-    pub fn roles(self, actor_id: u64) -> MetaStateReply<HashSet<Role>> {
-        if let StateReply::Roles(reply) = self
-            .0
-            .meta_state(StateQuery::Roles(actor_id.into()))
-            .unwrap()
-        {
-            MetaStateReply(reply.into_iter().collect())
-        } else {
-            unreachable!()
-        }
+    pub fn existing_items(self) -> StateReply<HashMap<ItemId, ItemInfo>> {
+        let result: StateReply<Vec<_>> = self.query_state(4);
+
+        result.into()
+    }
+
+    pub fn fungible_token(self) -> StateReply<ActorId> {
+        self.query_state(5)
+    }
+
+    pub fn non_fungible_token(self) -> StateReply<ActorId> {
+        self.query_state(6)
+    }
+
+    pub fn roles(self, actor_id: u64) -> StateReply<HashSet<Role>> {
+        let result: StateReply<Vec<_>> = self.query_state_with_argument(3, ActorId::from(actor_id));
+
+        result.into()
     }
 }
 
 fn bool_to_event(is_approved: bool) -> ItemEventState {
-    const EVENTS: [ItemEventState; 2] = [ItemEventState::ForSale, ItemEventState::Approved];
-
-    EVENTS[is_approved as usize]
+    if is_approved {
+        ItemEventState::Approved
+    } else {
+        ItemEventState::ForSale
+    }
 }

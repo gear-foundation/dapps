@@ -29,52 +29,13 @@ pub struct State {
     pub fungible_token: ActorId,
     pub non_fungible_token: ActorId,
 
-    /// Used by [`StateQuery::IsActionCached`]. Also see [`TransactionKind`].
+    /// Used by
+    /// [`is_action_cached()`](../supply_chain_state/metafns/fn.is_action_cached.html).
+    /// Also see [`TransactionKind`].
     pub cached_actions: Vec<(ActorId, CachedAction)>,
 }
 
-#[doc(hidden)]
-impl State {
-    pub fn item_info(self, item_id: ItemId) -> Option<ItemInfo> {
-        self.items
-            .into_iter()
-            .find_map(|(some_item_id, item_info)| (some_item_id == item_id).then_some(item_info))
-    }
-
-    pub fn participants(self) -> Participants {
-        Participants {
-            producers: self.producers,
-            distributors: self.distributors,
-            retailers: self.retailers,
-        }
-    }
-
-    pub fn roles(self, actor: ActorId) -> Vec<Role> {
-        let mut roles = vec![Role::Consumer];
-
-        if self.producers.contains(&actor) {
-            roles.push(Role::Producer);
-        }
-        if self.distributors.contains(&actor) {
-            roles.push(Role::Distributor);
-        }
-        if self.retailers.contains(&actor) {
-            roles.push(Role::Retailer);
-        }
-
-        roles
-    }
-
-    pub fn is_action_cached(self, actor: ActorId, action: InnerAction) -> bool {
-        if let Some(action) = action.into() {
-            self.cached_actions.contains(&(actor, action))
-        } else {
-            false
-        }
-    }
-}
-
-/// A counterpart for caching of some [`InnerAction`]'s variants.
+/// A counterpart of [`InnerAction`] for caching of some its variants.
 ///
 /// See the source code of
 /// [`impl From<InnerAction> for Option<CachedAction>`](enum.InnerAction.html#impl-From<InnerAction>-for-Option<CachedAction>)
@@ -195,8 +156,9 @@ pub enum InnerAction {
 /// [`msg::source()`](gstd::msg::source) is cached.
 /// - Non-asynchronous actions are never cached.
 /// - There's no guarantee every underprocessed asynchronous action will be
-/// cached. Use [`StateQuery::IsActionCached`] to check if some action is cached
-/// for some [`ActorId`].
+/// cached. Use
+/// [`is_action_cached()`](../supply_chain_state/metafns/fn.is_action_cached.html)
+/// to check if some action is cached for some [`ActorId`].
 /// - It's possible to send a retry action with a different payload, and it'll
 /// continue with it because, for some action, not all payload is saved in the
 /// cache (see [`CachedAction`]).
@@ -521,14 +483,14 @@ pub enum ConsumerAction {
     Purchase(ItemId),
 }
 
-/// A result of processed [`Action`].
+/// A result of successfully processed [`Action`].
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
 pub struct Event {
     pub item_id: ItemId,
     pub item_state: ItemState,
 }
 
-/// Contract execution error variants.
+/// A result of **un**successfully processed [`Action`].
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub enum Error {
     /// [`ActorId::zero()`] was found where it's forbidden.
@@ -544,8 +506,7 @@ pub enum Error {
     /// The FT contract failed to complete a transfer transaction.
     ///
     /// Most often, the reason is that a user didn't give an approval to the
-    /// Supply chain contract or didn't have enough tokens for a requested
-    /// action.
+    /// contract or didn't have enough tokens for a requested action.
     FTTransferFailed,
     /// The NFT contract failed to complete a transfer transaction.
     NFTTransferFailed,
@@ -597,32 +558,6 @@ pub enum Role {
     Retailer,
     #[default]
     Consumer,
-}
-
-/// Queries the contract state.
-///
-/// Replies with [`StateReply`].
-#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
-pub enum StateQuery {
-    ItemInfo(ItemId),
-    Participants,
-    Roles(ActorId),
-    ExistingItems,
-    FungibleToken,
-    NonFungibleToken,
-    IsActionCached(ActorId, InnerAction),
-}
-
-/// A reply for [`StateQuery`].
-#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
-pub enum StateReply {
-    ItemInfo(Option<ItemInfo>),
-    Participants(Participants),
-    FungibleToken(ActorId),
-    NonFungibleToken(ActorId),
-    ExistingItems(Vec<(ItemId, ItemInfo)>),
-    Roles(Vec<Role>),
-    IsActionCached(bool),
 }
 
 /// Supply chain patricipants.

@@ -1,4 +1,4 @@
-use crate::contract::tx_manager::TransactionGuard;
+use super::tx_manager::TransactionGuard;
 use ft_logic_io::Action;
 use ft_main_io::{FTokenAction, FTokenEvent};
 use gear_lib::non_fungible_token::{

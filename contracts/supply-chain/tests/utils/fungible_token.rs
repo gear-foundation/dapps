@@ -1,4 +1,5 @@
 use super::{Program, RunResult, TransactionalProgram, FOREIGN_USER};
+use deploy::{FT_LOGIC, FT_MAIN, FT_STORAGE};
 use ft_logic_io::Action;
 use ft_main_io::{FTokenAction, FTokenEvent, InitFToken};
 use gstd::{prelude::*, ActorId};
@@ -21,9 +22,9 @@ impl TransactionalProgram for FungibleToken<'_> {
 impl<'a> FungibleToken<'a> {
     #[track_caller]
     pub fn initialize(system: &'a System) -> Self {
-        let program = InnerProgram::from_file(system, "target/ft_main.wasm");
-        let storage_code_id: [u8; 32] = system.submit_code("target/ft_storage.wasm").into();
-        let logic_code_id: [u8; 32] = system.submit_code("target/ft_logic.wasm").into();
+        let program = InnerProgram::from_file(system, FT_MAIN);
+        let storage_code_id: [u8; 32] = system.submit_code(FT_STORAGE).into();
+        let logic_code_id: [u8; 32] = system.submit_code(FT_LOGIC).into();
 
         assert!(!program
             .send(

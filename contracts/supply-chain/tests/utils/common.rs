@@ -2,7 +2,10 @@ use convert::identity;
 use fmt::Debug;
 use gstd::{prelude::*, ActorId};
 use gtest::{Log, Program as InnerProgram, RunResult as InnerRunResult, System};
+use hash::Hash;
+use hashbrown::HashSet;
 use marker::PhantomData;
+use pretty_assertions::assert_eq;
 
 pub fn initialize_system() -> System {
     let system = System::new();
@@ -35,12 +38,24 @@ pub trait TransactionalProgram {
 }
 
 #[must_use]
-pub struct MetaStateReply<T>(pub T);
+pub struct StateReply<T>(pub T);
 
-impl<T: Debug + PartialEq> MetaStateReply<T> {
+impl<T: Debug + PartialEq> StateReply<T> {
     #[track_caller]
     pub fn eq(self, value: T) {
         assert_eq!(self.0, value);
+    }
+}
+
+impl<T: Eq + Hash> From<StateReply<Vec<T>>> for StateReply<HashSet<T>> {
+    fn from(value: StateReply<Vec<T>>) -> Self {
+        Self(value.0.into_iter().collect())
+    }
+}
+
+impl<K: Eq + Hash, V> From<StateReply<Vec<(K, V)>>> for StateReply<HashMap<K, V>> {
+    fn from(value: StateReply<Vec<(K, V)>>) -> Self {
+        Self(value.0.into_iter().collect())
     }
 }
 

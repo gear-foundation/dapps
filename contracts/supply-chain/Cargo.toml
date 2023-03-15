@@ -7,33 +7,30 @@ authors = ["Gear Technologies"]
 
 [dependencies]
 supply-chain-io = { path = "io" }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-parity-scale-codec = { version = "3", default-features = false }
-nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.7" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.3" }
-ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.3" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.4" }
-scale-info = { version = "2", default-features = false }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.9" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
+ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.5" }
 hashbrown = "0.13"
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git"}
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" , features = ["debug"] }
+# TODO: unpin after closing https://github.com/gear-tech/gear/issues/2392.
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["debug"] }
 gclient = { git = "https://github.com/gear-tech/gear.git" }
-sp-core-hashing = "6"
-subxt = { git = "https://github.com/paritytech/subxt", rev = "d41f6574", default-features = false }
-primitive-types = "0.12"
 tokio = "1"
 pretty_assertions = "1"
 supply-chain-state = { path = "state" }
+deploy = { path = "deploy" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 supply-chain-io = { path = "io" }
 
 [features]
-binary-vendor = ["supply-chain-state/binary-vendor"]
+default = ["binary-vendor"]
+binary-vendor = []
 
 [workspace]
-members = ["state"]
+members = ["state", "deploy"]

@@ -88,7 +88,7 @@ fn nft_transfer() {
         .owner_id(0)
         .eq(CONSUMER.into());
 
-    supply_chain.meta_state().item_info(0).eq(Some(ItemInfo {
+    supply_chain.state().item_info(0).eq(Some(ItemInfo {
         producer: PRODUCER.into(),
         distributor: DISTRIBUTOR.into(),
         retailer: RETAILER.into(),
