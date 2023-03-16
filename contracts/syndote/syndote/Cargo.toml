@@ -1,18 +1,18 @@
 [package]
 name = "syndote"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
-codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false }
-scale-info = { version = "2.2.0", default-features = false }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["debug"] }
+codec = { package = "parity-scale-codec", version = "3", default-features = false }
+scale-info = { version = "2", default-features = false }
 syndote-io = { path = "io" }
-hashbrown = "0.13.1"
+hashbrown = "0.13"
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git" }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 syndote-io = { path = "io" }
