@@ -13,7 +13,7 @@
     "@gear-js/ui": "0.5.17",
     "@headlessui/react": "1.7.13",
     "@polkadot/api": "9.14.2",
-    "@polkadot/extension-dapp": "0.44.9",
+    "@polkadot/extension-dapp": "0.45.2",
     "@polkadot/react-identicon": "3.0.1",
     "@polkadot/types": "10.0.1",
     "@polkadot/util": "11.0.1",
