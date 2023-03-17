@@ -5,17 +5,18 @@ use gstd::{prelude::*, ActorId};
 use staking_io::{Staker, StakingMetadata};
 
 #[metawasm]
-pub trait Metawasm {
-    type State = <StakingMetadata as Metadata>::State;
+pub mod metafns {
+    pub type State = <StakingMetadata as Metadata>::State;
 
-    fn get_stakers(state: Self::State) -> Vec<(ActorId, Staker)> {
+    pub fn get_stakers(state: State) -> Vec<(ActorId, Staker)> {
         state.stakers
     }
 
-    fn get_staker(address: ActorId, state: Self::State) -> Staker {
-        match state.stakers.iter().find(|(id, _staker)| address.eq(id)) {
-            Some((_id, staker)) => staker.clone(),
-            None => panic!("Staker with the ID = {address:?} doesn't exists"),
-        }
+    pub fn get_staker(state: State, address: ActorId) -> Option<Staker> {
+        state
+            .stakers
+            .iter()
+            .find(|(id, _staker)| address.eq(id))
+            .map(|(_, staker)| staker.clone())
     }
 }

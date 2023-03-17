@@ -1,111 +1,53 @@
-#[cfg(test)]
-extern crate std;
-
-use ft_io::*;
-use gstd::Encode;
+use gstd::{ActorId, Encode};
 use gtest::{Program, System};
 use staking_io::*;
 
-const USERS: &[u64] = &[1, 2, 3, 4, 5, 6, 7, 8];
+mod utils;
+use utils::{FungibleToken, PROGRAMS};
 
 fn init_staking(sys: &System) {
     let staking = Program::current(sys);
 
     let res = staking.send(
-        USERS[3],
+        4,
         InitStaking {
-            staking_token_address: USERS[1].into(),
-            reward_token_address: USERS[2].into(),
+            staking_token_address: PROGRAMS[1].into(),
+            reward_token_address: PROGRAMS[2].into(),
             distribution_time: 10000,
             reward_total: 1000,
         },
     );
 
-    assert!(res.log().is_empty());
+    assert!(res.contains(&(4, Ok::<StakingEvent, Error>(StakingEvent::Updated).encode())));
 }
 
-fn init_staking_token(sys: &System) {
-    let st_token = Program::from_file(sys, "./target/fungible_token-0.1.3.wasm");
+fn init_staking_token(sys: &System) -> FungibleToken {
+    let mut st_token = FungibleToken::initialize(sys);
 
-    let res = st_token.send(
-        USERS[3],
-        InitConfig {
-            name: String::from("StakingToken"),
-            symbol: String::from("STK"),
-            decimals: 18,
-        },
-    );
+    st_token.mint(1, 100000);
+    st_token.balance(1).contains(100000);
 
-    assert!(res.log().is_empty());
+    st_token.mint(5, 10000);
+    st_token.balance(5).contains(10000);
 
-    let res = st_token.send(USERS[3], FTAction::Mint(100000));
-    assert!(!res.main_failed());
-    let res = st_token.send(
-        USERS[3],
-        FTAction::Transfer {
-            from: USERS[3].into(),
-            to: USERS[0].into(),
-            amount: 100000,
-        },
-    );
-    assert!(!res.main_failed());
+    st_token.mint(6, 20000);
+    st_token.balance(6).contains(20000);
 
-    let res = st_token.send(USERS[3], FTAction::BalanceOf(USERS[0].into()));
-    assert!(res.contains(&(USERS[3], FTEvent::Balance(100000).encode())));
+    st_token.mint(7, 20000);
+    st_token.balance(7).contains(20000);
 
-    let res = st_token.send(USERS[4], FTAction::Mint(10000));
-    assert!(!res.main_failed());
+    st_token.mint(8, 20000);
+    st_token.balance(8).contains(20000);
 
-    let res = st_token.send(USERS[3], FTAction::BalanceOf(USERS[4].into()));
-    assert!(res.contains(&(USERS[3], FTEvent::Balance(10000).encode())));
-
-    let res = st_token.send(USERS[5], FTAction::Mint(20000));
-    assert!(!res.main_failed());
-
-    let res = st_token.send(USERS[3], FTAction::BalanceOf(USERS[5].into()));
-    assert!(res.contains(&(USERS[3], FTEvent::Balance(20000).encode())));
-
-    let res = st_token.send(USERS[6], FTAction::Mint(20000));
-    assert!(!res.main_failed());
-
-    let res = st_token.send(USERS[3], FTAction::BalanceOf(USERS[6].into()));
-    assert!(res.contains(&(USERS[3], FTEvent::Balance(20000).encode())));
-
-    let res = st_token.send(USERS[7], FTAction::Mint(20000));
-    assert!(!res.main_failed());
-
-    let res = st_token.send(USERS[3], FTAction::BalanceOf(USERS[7].into()));
-    assert!(res.contains(&(USERS[3], FTEvent::Balance(20000).encode())));
+    st_token
 }
 
 fn init_reward_token(sys: &System) {
-    let rw_token = Program::from_file(sys, "./target/fungible_token-0.1.3.wasm");
+    let mut rw_token = FungibleToken::initialize(sys);
 
-    let res = rw_token.send(
-        USERS[3],
-        InitConfig {
-            name: String::from("RewardToken"),
-            symbol: String::from("RTK"),
-            decimals: 18,
-        },
-    );
+    rw_token.mint(1, 100000);
 
-    assert!(res.log().is_empty());
-
-    let res = rw_token.send(USERS[3], FTAction::Mint(100000));
-    assert!(!res.main_failed());
-    let res = rw_token.send(
-        USERS[3],
-        FTAction::Transfer {
-            from: USERS[3].into(),
-            to: USERS[0].into(),
-            amount: 100000,
-        },
-    );
-    assert!(!res.main_failed());
-
-    let res = rw_token.send(USERS[3], FTAction::BalanceOf(USERS[0].into()));
-    assert!(res.contains(&(USERS[3], FTEvent::Balance(100000).encode())));
+    rw_token.balance(1).contains(100000);
 }
 
 #[test]
@@ -115,8 +57,8 @@ fn stake() {
     sys.init_logger();
     let staking = sys.get_program(1);
 
-    let res = staking.send(USERS[4], StakingAction::Stake(0));
-    assert!(res.main_failed());
+    let res = staking.send(5, StakingAction::Stake(0));
+    assert!(res.contains(&(5, Err::<StakingEvent, Error>(Error::ZeroAmount).encode())));
 }
 
 #[test]
@@ -127,37 +69,38 @@ fn update_staking() {
     let staking = sys.get_program(1);
 
     let res = staking.send(
-        USERS[4],
+        5,
         StakingAction::UpdateStaking(InitStaking {
-            staking_token_address: USERS[1].into(),
-            reward_token_address: USERS[2].into(),
+            staking_token_address: PROGRAMS[1].into(),
+            reward_token_address: PROGRAMS[2].into(),
             distribution_time: 10000,
             reward_total: 1000,
         }),
     );
-    assert!(res.main_failed());
+    assert!(res.contains(&(5, Err::<StakingEvent, Error>(Error::NotOwner).encode())));
 
     let res = staking.send(
-        USERS[3],
+        4,
         StakingAction::UpdateStaking(InitStaking {
-            staking_token_address: USERS[1].into(),
-            reward_token_address: USERS[2].into(),
+            staking_token_address: PROGRAMS[1].into(),
+            reward_token_address: PROGRAMS[2].into(),
             distribution_time: 10000,
             reward_total: 0,
         }),
     );
-    assert!(res.main_failed());
+    assert!(res.contains(&(4, Err::<StakingEvent, Error>(Error::ZeroReward).encode())));
 
     let res = staking.send(
-        USERS[3],
+        4,
         StakingAction::UpdateStaking(InitStaking {
-            staking_token_address: USERS[1].into(),
-            reward_token_address: USERS[2].into(),
+            staking_token_address: PROGRAMS[1].into(),
+            reward_token_address: PROGRAMS[2].into(),
             distribution_time: 0,
             reward_total: 1000,
         }),
     );
-    assert!(res.main_failed());
+    println!("{:?}", res.decoded_log::<Result<StakingEvent, Error>>());
+    assert!(res.contains(&(4, Err::<StakingEvent, Error>(Error::ZeroTime).encode())));
 }
 
 #[test]
@@ -169,8 +112,12 @@ fn send_reward() {
     sys.init_logger();
     let staking = sys.get_program(1);
 
-    let res = staking.send(USERS[4], StakingAction::GetReward);
-    assert!(res.main_failed());
+    let res = staking.send(5, StakingAction::GetReward);
+
+    assert!(res.contains(&(
+        5,
+        Err::<StakingEvent, Error>(Error::StakerNotFound).encode()
+    )));
 }
 
 #[test]
@@ -178,23 +125,38 @@ fn withdraw() {
     let sys = System::new();
 
     init_staking(&sys);
-    init_staking_token(&sys);
+    let mut st_token = init_staking_token(&sys);
     init_reward_token(&sys);
     sys.init_logger();
     let staking = sys.get_program(1);
 
-    let res = staking.send(USERS[4], StakingAction::Stake(1500));
-    assert!(res.contains(&(USERS[4], StakingEvent::StakeAccepted(1500).encode())));
+    let id: ActorId = staking.id().into_bytes().into();
+    st_token.approve(5, id, 1500);
 
-    let res = staking.send(USERS[5], StakingAction::Stake(2000));
-    assert!(res.contains(&(USERS[5], StakingEvent::StakeAccepted(2000).encode())));
+    let res = staking.send(5, StakingAction::Stake(1500));
+    assert!(res.contains(&(
+        5,
+        Ok::<StakingEvent, Error>(StakingEvent::StakeAccepted(1500)).encode()
+    )));
+    st_token.approve(6, id, 2000);
+    let res = staking.send(6, StakingAction::Stake(2000));
+    assert!(res.contains(&(
+        6,
+        Ok::<StakingEvent, Error>(StakingEvent::StakeAccepted(2000)).encode()
+    )));
 
-    let res = staking.send(USERS[4], StakingAction::Withdraw(0));
-    assert!(res.main_failed());
+    let res = staking.send(5, StakingAction::Withdraw(0));
+    assert!(res.contains(&(5, Err::<StakingEvent, Error>(Error::ZeroAmount).encode())));
 
-    let res = staking.send(USERS[6], StakingAction::Withdraw(1000));
-    assert!(res.main_failed());
+    let res = staking.send(7, StakingAction::Withdraw(1000));
+    assert!(res.contains(&(
+        7,
+        Err::<StakingEvent, Error>(Error::StakerNotFound).encode()
+    )));
 
-    let res = staking.send(USERS[5], StakingAction::Withdraw(5000));
-    assert!(res.main_failed());
+    let res = staking.send(6, StakingAction::Withdraw(5000));
+    assert!(res.contains(&(
+        6,
+        Err::<StakingEvent, Error>(Error::InsufficentBalance).encode()
+    )));
 }

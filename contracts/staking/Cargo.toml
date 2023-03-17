@@ -1,28 +1,29 @@
 [package]
 name = "staking"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
-codec = { package = "parity-scale-codec", version = "3.2.1", default-features = false }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "testnet" }
+codec = { package = "parity-scale-codec", version = "3.4", default-features = false }
 staking-io = { path = "io" }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", branch = "new_meta" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.5" }
+ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.5" }
 scale-info = { version = "2.3.1", default-features = false }
-hashbrown = "0.13.1"
-gmeta = { git = "https://github.com/gear-tech/gear" }
+hashbrown = "0.13"
+gmeta = { git = "https://github.com/gear-tech/gear", branch = "testnet" }
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "testnet" }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 sp-core = { git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
 gclient = { git = "https://github.com/gear-tech/gear.git" }
 tokio = "1"
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 staking-io = { path = "io" }
 
 [features]

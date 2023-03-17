@@ -36,10 +36,21 @@ lint:
 pre-commit: fmt lint full-test
 
 deps:
-	@echo ⚙️ Downloading dependencies...
-	@if [ ! -f "./target/fungible_token-0.1.3.wasm" ]; then\
-		wget "https://github.com/gear-dapps/fungible-token/releases/download/0.1.3/fungible_token-0.1.3.wasm"\
-			-O "./target/fungible_token-0.1.3.wasm";\
+	@mkdir -p target; 
+	@if [ ! -f "./target/ft_main.opt.wasm" ]; then\
+	    curl -L\
+	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.5/ft_main-0.1.5.opt.wasm"\
+	        -o "./target/ft_main.opt.wasm";\
+	fi
+	@if [ ! -f "./target/ft_logic.opt.wasm" ]; then\
+	    curl -L\
+	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.5/ft_logic-0.1.5.opt.wasm"\
+	        -o "./target/ft_logic.opt.wasm";\
+	fi
+	@if [ ! -f "./target/ft_storage.opt.wasm" ]; then\
+	    curl -L\
+	        "https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.5/ft_storage-0.1.5.opt.wasm"\
+	        -o "./target/ft_storage.opt.wasm";\
 	fi
 
 test: deps
