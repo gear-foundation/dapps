@@ -5,8 +5,6 @@ import { useAccount, useReadFullState } from '@gear-js/react-hooks';
 import { useMetadata } from './use-metadata';
 import metaBattle from 'assets/meta/meta.txt';
 import { ENV } from 'app/consts';
-import type { UnsubscribePromise } from '@polkadot/api/types';
-import type { UserMessageSent } from '@gear-js/api';
 import { useSendMessage } from './useSendMessage';
 
 function useReadLouncheState<T>() {

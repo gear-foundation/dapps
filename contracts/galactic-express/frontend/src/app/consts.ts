@@ -12,17 +12,9 @@ export const createLauncheInitial = {
 export const ENV = {
   store: process.env.REACT_APP_STORE_ADDRESS as HexString,
   balance: process.env.REACT_APP_FT_ADDRESS as HexString,
-  contract: process.env.REACT_APP_BATTLE_ADDRESS as HexString,
+  contract: process.env.REACT_APP_CONTRACT_ADDRESS as HexString,
   NODE: process.env.REACT_APP_NODE_ADDRESS as string,
 };
-
-export const MULTIPLIER = {
-  MILLISECONDS: 1000,
-  SECONDS: 60,
-  MINUTES: 60,
-  HOURS: 24,
-};
-
 
 export const WEATHER = [
   'Sunny ☀️',
