@@ -6,7 +6,7 @@ license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "d4552434" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 gear-lib-derive = { path = "derive", optional = true }
 parity-scale-codec = { version = "3", default-features = false }
 scale-info = { version = "2", default-features = false }
@@ -19,6 +19,6 @@ derive = ["gear-lib-derive"]
 testing = []
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "d4552434" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "testnet" }
 trybuild = { version = "1", features = ["diff"] }
 pretty_assertions = { version = "1", default-features = false, features = ["alloc"] }

@@ -15,7 +15,7 @@ pub mod base;
 pub mod extensions;
 
 /// The default implementation's state.
-#[derive(Debug, Default, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo)]
+#[derive(Debug, Default, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub struct FTState {
     pub total_supply: Amount,
     pub balances: BTreeMap<Owner, Amount>,
@@ -95,10 +95,6 @@ pub trait FungibleToken: StorageProvider<FTState> {
     }
 
     fn transfer_from(&mut self, from: Owner, to: ActorId, amount: Amount) -> Result<(), FTError> {
-        if from.is_zero() {
-            return Err(FTError::ZeroSenderAddress);
-        }
-
         let state = self.storage_mut();
         let msg_source = msg::source();
         let approved_amount =
@@ -175,10 +171,6 @@ pub trait FungibleToken: StorageProvider<FTState> {
     fn reply_approval(&self, approval: FTApproval) -> Result<(), FTError>;
 
     fn mint(&mut self, to: ActorId, amount: Amount) -> Result<(), FTError> {
-        if to.is_zero() {
-            return Err(FTError::ZeroRecipientAddress);
-        }
-
         let state = self.storage_mut();
 
         if let Some(total_supply) = state.total_supply.checked_add(amount) {
@@ -218,9 +210,6 @@ pub trait FungibleToken: StorageProvider<FTState> {
     }
 
     fn _transfer(&mut self, from: Owner, to: ActorId, amount: Amount) -> Result<(), FTError> {
-        if to.is_zero() {
-            return Err(FTError::ZeroRecipientAddress);
-        }
 
         let state = self.storage_mut();
 
