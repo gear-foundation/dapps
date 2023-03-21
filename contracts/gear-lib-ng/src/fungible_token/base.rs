@@ -9,7 +9,6 @@ pub trait FTCore {
     fn allowance(&self, owner: Owner, operator: Operator) -> Amount;
 
     /// # Returns
-    /// - [`FTError::ZeroRecipientAddress`], if `to` is [`ActorId::zero()`].
     /// - [`FTError::InsufficientAmount`], if
     /// [`msg::source()`](gstd::msg::source) doesn't have enough tokens for a
     /// requested transfer.
@@ -17,7 +16,6 @@ pub trait FTCore {
 
     /// # Returns
     /// - [`FTError::ZeroSenderAddress`], if `from` is [`ActorId::zero()`].
-    /// - [`FTError::ZeroRecipientAddress`], if `to` is [`ActorId::zero()`].
     /// - [`FTError::InsufficientAmount`], if `from` doesn't have enough tokens
     /// for a requested transfer.
     /// - [`FTError::InsufficientAllowance`], if `from` doesn't approve enough

@@ -4,7 +4,6 @@ use gstd::{prelude::*, ActorId};
 
 pub trait FTMint {
     /// # Returns
-    /// - [`FTError::ZeroRecipientAddress`], if `to` is [`ActorId::zero()`].
     /// - [`FTError::InsufficientAmount`], if a resulted total supply is greater
     /// than [`Amount::MAX`].
     fn mint(&mut self, to: ActorId, amount: Amount) -> Result<(), FTError>;
