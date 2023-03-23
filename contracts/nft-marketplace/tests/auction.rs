@@ -60,27 +60,6 @@ fn auction_with_native_tokens() {
     // check balance of nft marketplace contract
     assert_eq!(system.balance_of(MARKET_ID), winner_price);
 
-    // TODO: Check item state
-    // let mut item = Item {
-    //     owner: SELLER.into(),
-    //     ft_contract_id: None,
-    //     price: None,
-    //     auction: Some(Auction {
-    //         bid_period: BID_PERIOD,
-    //         started_at: system.block_timestamp(),
-    //         ended_at: system.block_timestamp() + DURATION,
-    //         current_price: winner_price,
-    //         current_winner: winner.into(),
-    //     }),
-    //     offers: BTreeMap::new(),
-    //     tx: None,
-    // };
-
-    // market
-    //     .meta_state()
-    //     .item_info(nft_program.actor_id(), TOKEN_ID.into())
-    //     .check(item.clone());
-
     system.spend_blocks((DURATION / 1000) as u32);
 
     market
@@ -90,21 +69,6 @@ fn auction_with_native_tokens() {
             token_id: TOKEN_ID.into(),
             price: winner_price,
         });
-
-    // item.auction = None;
-    // item.owner = winner.into();
-
-    // TODO: Check item state
-    // market
-    //     .meta_state()
-    //     .item_info(nft_program.actor_id(), TOKEN_ID.into())
-    //     .check(item);
-
-    // TODO: Check owner
-    // nft_program
-    //     .meta_state()
-    //     .owner_id(TOKEN_ID)
-    //     .check(winner.into());
 
     let treasury_fee = winner_price * ((TREASURY_FEE * BASE_PERCENT) as u128) / 10_000u128;
 
@@ -217,27 +181,6 @@ fn auction_with_fungible_tokens() {
     // Check balance of nft marketplace contract
     ft_program.balance_of(MARKET_ID).check(winner_price);
 
-    // TODO: Check item state
-    // let mut item = Item {
-    //     owner: SELLER.into(),
-    //     ft_contract_id: Some(ft_program.actor_id()),
-    //     price: None,
-    //     auction: Some(Auction {
-    //         bid_period: BID_PERIOD,
-    //         started_at: system.block_timestamp(),
-    //         ended_at: system.block_timestamp() + DURATION,
-    //         current_price: winner_price,
-    //         current_winner: winner.into(),
-    //     }),
-    //     offers: BTreeMap::new(),
-    //     tx: None,
-    // };
-
-    // market
-    //     .meta_state()
-    //     .item_info(nft_program.actor_id(), TOKEN_ID.into())
-    //     .check(item.clone());
-
     system.spend_blocks((DURATION / 1000) as u32);
 
     market
@@ -247,21 +190,6 @@ fn auction_with_fungible_tokens() {
             token_id: TOKEN_ID.into(),
             price: winner_price,
         });
-
-    // item.auction = None;
-    // item.owner = winner.into();
-
-    // TODO: Check item state
-    // market
-    //     .meta_state()
-    //     .item_info(nft_program.actor_id(), TOKEN_ID.into())
-    //     .check(item);
-
-    // TODO: Check owner
-    // nft_program
-    //     .meta_state()
-    //     .owner_id(TOKEN_ID)
-    //     .check(winner.into());
 
     let treasury_fee = winner_price * ((TREASURY_FEE * BASE_PERCENT) as u128) / 10_000u128;
 

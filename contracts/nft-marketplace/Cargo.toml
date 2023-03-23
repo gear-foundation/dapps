@@ -1,6 +1,6 @@
 [package]
 name = "nft-marketplace"
-version = "0.2.1"
+version = "0.2.2"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
@@ -14,11 +14,15 @@ sp-core-hashing = { version = "7.0.0", default-features = false }
 ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.5" }
 ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.5" }
 gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.5" }
-async-trait = "0.1.66"
+async-trait = "0.1.67"
 
 [dev-dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "testnet" }
 gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+subxt = { version = "0.27", default-features = false }
+gclient = { git = "https://github.com/gear-tech/gear.git", branch = "master" }
+tokio = "1"
+blake2-rfc = { version = "0.2.18", default-features = false }
 
 [build-dependencies]
 market-io = { path = "io" }

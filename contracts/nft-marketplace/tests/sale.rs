@@ -27,12 +27,6 @@ fn buy_with_fungible_tokens() {
         .buy_item(BUYER, nft_program.actor_id(), TOKEN_ID.into(), 0)
         .succeed((BUYER.into(), nft_program.actor_id(), TOKEN_ID.into()));
 
-    // TODO: Check owner
-    // nft_program
-    //     .meta_state()
-    //     .owner_id(TOKEN_ID)
-    //     .check(BUYER.into());
-
     // Check balance of SELLER
     let treasury_fee = NFT_PRICE * ((TREASURY_FEE * BASE_PERCENT) as u128) / 10_000u128;
     ft_program
@@ -119,12 +113,6 @@ fn buy_with_native_tokens() {
     market
         .buy_item(BUYER, nft_program.actor_id(), TOKEN_ID.into(), NFT_PRICE)
         .succeed((BUYER.into(), nft_program.actor_id(), TOKEN_ID.into()));
-
-    // TODO: Check owner
-    /* nft_program
-    .meta_state()
-    .owner_id(TOKEN_ID)
-    .check(BUYER.into()); */
 
     let treasury_fee = NFT_PRICE * ((TREASURY_FEE * BASE_PERCENT) as u128) / 10_000u128;
 
