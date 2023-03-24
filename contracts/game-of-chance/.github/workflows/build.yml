@@ -58,7 +58,7 @@ jobs:
         with:
           path: |
             target/wasm32-unknown-unknown/*
-            meta.txt
+            *.meta.txt
 
   upload:
     if: github.event_name == 'push'
@@ -69,7 +69,7 @@ jobs:
         uses: actions/download-artifact@v3
 
       - name: Delete previous release
-        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        uses: dev-drprasad/delete-tag-and-release@v0.2
         with:
           delete_release: true
           tag_name: build

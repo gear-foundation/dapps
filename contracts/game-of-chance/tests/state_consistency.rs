@@ -3,7 +3,7 @@ use ft_logic_io::Action as FTAction;
 use ft_main_io::{FTokenAction, FTokenEvent, InitFToken};
 use game_of_chance::WASM_BINARY_OPT;
 use game_of_chance_io::*;
-use gclient::{Error as GclientError, EventListener, EventProcessor, GearApi, Node, Result};
+use gclient::{Error as GclientError, EventListener, EventProcessor, GearApi, Result};
 use gstd::prelude::*;
 use pretty_assertions::assert_eq;
 use primitive_types::H256;
@@ -170,9 +170,7 @@ async fn send_message_with_insufficient_gas(
 #[tokio::test]
 #[ignore]
 async fn state_consistency() -> Result<()> {
-    // TODO: replace `.unwrap()` with `?`.
-    let node = Node::try_from_path(env!("GEAR_NODE_PATH")).unwrap();
-    let client = GearApi::node(&node).await?;
+    let client = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
     let mut listener = client.subscribe().await?;
 
     let storage_code_hash = upload_code(&client, "target/ft-storage.wasm").await?;
