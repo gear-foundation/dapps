@@ -1,35 +1,31 @@
-.PHONY: all build clean fmt fmt-check init linter pre-commit test
+.PHONY: all build fmt init lint pre-commit test full-test deps
 
 all: init build test
 
 build:
-	@echo ──────────── Build release ────────────────────
-	@cargo +nightly build --release
-	@ls -l ./target/wasm32-unknown-unknown/release/*.wasm
-
-clean:
-	@echo ──────────── Clean ────────────────────────────
-	@rm -rvf target
+	@echo ⚙️ Building a release...
+	@cargo +nightly b -r --workspace
+	@ls -l target/wasm32-unknown-unknown/release/*.wasm
 
 fmt:
-	@echo ──────────── Format ───────────────────────────
-	@cargo fmt --all
-
-fmt-check:
-	@echo ──────────── Check format ─────────────────────
-	@cargo fmt --all -- --check
+	@echo ⚙️ Checking a format...
+	@cargo fmt --all --check
 
 init:
-	@echo ──────────── Install toolchains ───────────────
+	@echo ⚙️ Installing a toolchain \& a target...
 	@rustup toolchain add nightly
 	@rustup target add wasm32-unknown-unknown --toolchain nightly
 
-linter:
-	@echo ──────────── Run linter ───────────────────────
-	@cargo +nightly clippy --all-targets -- --no-deps -D warnings
+lint:
+	@echo ⚙️ Running the linter...
+	@cargo +nightly clippy --all-targets --workspace -- -D warnings
 
-pre-commit: fmt linter test
+pre-commit: fmt lint full-test
 
 test:
-	@echo ──────────── Run tests ────────────────────────
+	@echo ⚙️ Running unit tests...
 	@cargo +nightly t
+
+full-test:
+	@echo ⚙️ Running all tests...
+	@cargo +nightly t -- --include-ignored --test-threads=1

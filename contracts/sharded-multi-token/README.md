@@ -1,39 +1,31 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-dapps/app" target="_blank">
+  <a href="https://gitpod.io/#https://github.com/gear-dapps/sharded-multitoken" target="_blank">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
 
-# Gear Template App
+# Sharded Multitoken
 
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
 
-[build_badge]: https://github.com/gear-dapps/app/workflows/Build/badge.svg
-[build_href]: https://github.com/gear-dapps/app/actions/workflows/build.yml
+[build_badge]: https://github.com/gear-dapps/sharded-multitoken/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-dapps/sharded-multitoken/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-MIT-success
-[lic_href]: https://github.com/gear-dapps/app/blob/master/LICENSE
+[lic_href]: https://github.com/gear-dapps/sharded-multitoken/blob/master/LICENSE
 
-<!-- Description starts here -->
+## Description
 
-Template application. Use this repository as a template when creating a new application repo.
+Sharded version of multitoken contract.
 
-> https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template
+Tokens standards like ERC-20 and ERC-721 require a separate contract to be deployed for each token type or collection. This places a lot of redundant bytecode on the Ethereum blockchain and limits certain functionality by the nature of separating each token contract into its own permissioned address. With the rise of blockchain games and platforms like Enjin Coin, game developers may be creating thousands of token types, and a new type of token standard is needed to support them. However, ERC-1155 is not specific to games and many other applications can benefit from this flexibility.
 
-<!-- End of description -->
-
-## Initial checklist after creating a new repo
-
-- [ ] Change app name in `Cargo.toml`
-- [ ] Fix Gitpod/badge/releases links in `README.md` (replace `gear-dapps/app` with `gear-dapps/<my-new-app>`)
-- [ ] Add description in `README.md`
-- [ ] Fix dates, links, and initial commit hash in `CHANGELOG.md`
-- [ ] Remove this section
+New functionality is possible with this design such as transferring multiple token types at once, saving on transaction costs. Trading (escrow / atomic swaps) of multiple tokens can be built on top of this standard and it removes the need to “approve” individual token contracts separately. It is also easy to describe and mix multiple fungible or non-fungible token types in a single contract.
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/app/releases).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/sharded-multitoken/releases).
 
 ## Building Locally
 

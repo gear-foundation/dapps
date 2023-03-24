@@ -1,15 +1,7 @@
-[package]
-name = "app"
-version = "0.1.0"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
-
-[dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-
-[dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-
-[build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+[workspace]
+resolver = "2"
+members = [
+    "mt-logic",
+    "mt-main",
+    "mt-storage",
+]

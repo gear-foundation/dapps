@@ -2,3 +2,6 @@
 .DS_Store
 .vscode
 target/
+.metahash
+meta.txt
+*.meta.txt
