@@ -1,0 +1,93 @@
+wsAddress: wss://node-workshop.gear.rs
+
+accounts:
+  alice: //Alice
+
+
+programs:
+  - name: Syndote
+    id: 4
+    path_to_wasm: ./programs/syndote.opt.wasm
+    path_to_meta: ./programs/meta.txt
+    payload: 0x00
+      
+transactions:
+
+  - type: upload_program
+    program: 4
+    account: alice
+  
+  - type: send_message
+    program: 4
+    account: alice
+    payload:
+      ChangeAdmin: "0xc4406937dd46aad223aae39dd83981807fa24aff2dd1af72f795c9f1627b0c71"
+    value: 0
+
+  - type: send_message
+    program: 4
+    account: alice
+    payload:
+      ReserveGas: 0x00
+    value: 0
+
+  - type: send_message
+    program: 4
+    account: alice
+    payload:
+      ReserveGas: 0x00
+    value: 0
+
+  - type: send_message
+    program: 4
+    account: alice
+    payload:
+      ReserveGas: 0x00
+    value: 0
+
+
+  - type: send_message
+    program: 4
+    account: alice
+    payload:
+      ReserveGas: 0x00
+    value: 0
+
+
+  - type: send_message
+    program: 4
+    account: alice
+    payload:
+      ReserveGas: 0x00
+    value: 0
+
+  - type: send_message
+    program: 4
+    account: alice
+    payload:
+      ReserveGas: 0x00
+    value: 0
+
+  - type: send_message
+    program: 4
+    account: alice
+    payload:
+      ReserveGas: 0x00
+    value: 0
+
+  - type: send_message
+    program: 4
+    account: alice
+    payload:
+      ReserveGas: 0x00
+    value: 0
+
+  - type: send_message
+    program: 4
+    account: alice
+    payload:
+      ReserveGas: 0x00
+    value: 0
+  
+
+ 

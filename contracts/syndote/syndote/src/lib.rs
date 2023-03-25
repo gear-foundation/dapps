@@ -40,9 +40,14 @@ static mut GAME: Option<Game> = None;
 static mut RESERVATION: Option<Vec<ReservationId>> = None;
 
 impl Game {
+    fn change_admin(&mut self, admin: &ActorId) {
+        assert_eq!(msg::source(), self.admin);
+        self.admin = *admin;
+        msg::reply(GameEvent::AdminChanged, 0).expect("Error in a reply `GameEvent::AdminChanged`");
+    }
     fn reserve_gas(&self) {
         unsafe {
-            let reservation_id = ReservationId::reserve(RESERVATION_AMOUNT, 864000)
+            let reservation_id = ReservationId::reserve(RESERVATION_AMOUNT, 600)
                 .expect("reservation across executions");
             let reservations = RESERVATION.get_or_insert(Default::default());
             reservations.push(reservation_id);
@@ -91,6 +96,18 @@ impl Game {
         );
 
         while self.game_status == GameStatus::Play {
+            if self.players_queue.len() <= 1 {
+                self.winner = self.players_queue[0];
+                self.game_status = GameStatus::Finished;
+                msg::reply(
+                    GameEvent::GameFinished {
+                        winner: self.winner,
+                    },
+                    0,
+                )
+                .expect("Error in sending a reply `GameEvent::GameFinished`");
+                break;
+            }
             if exec::gas_available() <= GAS_FOR_ROUND {
                 unsafe {
                     let reservations = RESERVATION.get_or_insert(Default::default());
@@ -106,31 +123,31 @@ impl Game {
                 }
             }
 
-            // check penalty and debt of the players for the previous round
-            // if penalty is equal to 5 points we remove the player from the game
-            // if a player has a debt and he has not enough balance to pay it
-            // he is also removed from the game
-            bankrupt_and_penalty(
-                &self.admin,
-                &mut self.players,
-                &mut self.players_queue,
-                &mut self.properties,
-                &mut self.properties_in_bank,
-                &mut self.ownership,
-            );
+            // // check penalty and debt of the players for the previous round
+            // // if penalty is equal to 5 points we remove the player from the game
+            // // if a player has a debt and he has not enough balance to pay it
+            // // he is also removed from the game
+            // bankrupt_and_penalty(
+            //     &self.admin,
+            //     &mut self.players,
+            //     &mut self.players_queue,
+            //     &mut self.properties,
+            //     &mut self.properties_in_bank,
+            //     &mut self.ownership,
+            // );
 
-            if self.players_queue.len() <= 1 {
-                self.winner = self.players_queue[0];
-                self.game_status = GameStatus::Finished;
-                msg::reply(
-                    GameEvent::GameFinished {
-                        winner: self.winner,
-                    },
-                    0,
-                )
-                .expect("Error in sending a reply `GameEvent::GameFinished`");
-                break;
-            }
+            // if self.players_queue.len() <= 1 {
+            //     self.winner = self.players_queue[0];
+            //     self.game_status = GameStatus::Finished;
+            //     msg::reply(
+            //         GameEvent::GameFinished {
+            //             winner: self.winner,
+            //         },
+            //         0,
+            //     )
+            //     .expect("Error in sending a reply `GameEvent::GameFinished`");
+            //     break;
+            // }
             self.round = self.round.wrapping_add(1);
             for player in self.players_queue.clone() {
                 self.current_player = player;
@@ -185,6 +202,19 @@ impl Game {
                     }
                 }
 
+                // check penalty and debt of the players for the previous round
+                // if penalty is equal to 5 points we remove the player from the game
+                // if a player has a debt and he has not enough balance to pay it
+                // he is also removed from the game
+                bankrupt_and_penalty(
+                    &self.admin,
+                    &mut self.players,
+                    &mut self.players_queue,
+                    &mut self.properties,
+                    &mut self.properties_in_bank,
+                    &mut self.ownership,
+                );
+
                 msg::send(
                     self.admin,
                     GameEvent::Step {
@@ -231,6 +261,7 @@ async fn main() {
         GameAction::PayRent {
             properties_for_sale,
         } => game.pay_rent(properties_for_sale),
+        GameAction::ChangeAdmin(admin) => game.change_admin(&admin),
     }
 }
 

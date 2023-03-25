@@ -1,6 +1,4 @@
 use crate::*;
-use core::array;
-
 impl Game {
     pub fn check_status(&self, game_status: GameStatus) {
         assert_eq!(self.game_status, game_status, "Wrong game status");
@@ -65,8 +63,13 @@ pub fn sell_property(
     Ok(())
 }
 
+static mut SEED: u8 = 0;
 pub fn get_rolls() -> (u8, u8) {
-    let random_input: [u8; 32] = array::from_fn(|i| i as u8 + 1);
+    let seed = unsafe {
+        SEED = SEED.wrapping_add(1);
+        SEED
+    };
+    let random_input: [u8; 32] = [seed; 32];
     let (random, _) = exec::random(random_input).expect("Error in getting random number");
     let r1: u8 = random[0] % 6 + 1;
     let r2: u8 = random[1] % 6 + 1;
@@ -102,8 +105,9 @@ pub fn bankrupt_and_penalty(
     }
 
     for (player, mut player_info) in players.clone() {
-        if player_info.penalty >= PENALTY || player_info.debt > 0 {
+        if (player_info.penalty >= PENALTY || player_info.debt > 0) && players_queue.len() > 1 {
             player_info.lost = true;
+            player_info.balance = 0;
             players_queue.retain(|&p| p != player);
             for cell in &player_info.cells.clone() {
                 ownership[*cell as usize] = *admin;

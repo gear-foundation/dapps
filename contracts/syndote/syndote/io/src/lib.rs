@@ -15,8 +15,8 @@ pub struct SynMetadata;
 impl Metadata for SynMetadata {
     type Init = InOut<(), ()>;
     type Handle = InOut<GameAction, GameEvent>;
-    type Reply = InOut<(), ()>;
-    type Others = InOut<(), ()>;
+    type Reply = ();
+    type Others = ();
     type Signal = ();
     type State = GameState;
 }
@@ -62,6 +62,7 @@ pub enum GameAction {
     PayRent {
         properties_for_sale: Option<Vec<u8>>,
     },
+    ChangeAdmin(ActorId),
 }
 
 #[derive(Encode, Decode, TypeInfo)]
@@ -86,6 +87,7 @@ pub enum GameEvent {
     },
     GasReserved,
     NextRoundFromReservation,
+    AdminChanged,
 }
 #[derive(Default, Debug, Clone, Encode, Decode, TypeInfo)]
 pub struct PlayerInfo {
