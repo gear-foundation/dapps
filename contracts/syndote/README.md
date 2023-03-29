@@ -51,6 +51,7 @@ If everything goes well, your working directory should now have a `target` direc
 ```
 target
     ├── CACHEDIR.TAG
+    ├── meta.txt
     ├── release
     │   └── ...
     └── wasm32-unknown-unknown
@@ -58,10 +59,8 @@ target
             ├── ...
             ├── syndote.wasm      <---- this is built .wasm file
             ├── syndote.opt.wasm  <---- this is optimized .wasm file
-            ├── syndote.meta.wasm <---- this is meta .wasm file
             ├── player.wasm       <---- this is built .wasm file
             ├── player.opt.wasm   <---- this is optimized .wasm file
-            └── player.meta.wasm  <---- this is meta .wasm file
 ```
 
 ### Register players and reserve gas
