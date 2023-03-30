@@ -8,10 +8,10 @@ pub type TransactionId = u64;
 pub struct ProgramMetadata;
 
 impl Metadata for ProgramMetadata {
-    type Init = InOut<String, ()>;
-    type Handle = InOut<TmgAction, TmgEvent>;
-    type Reply = InOut<(), ()>;
-    type Others = InOut<(), ()>;
+    type Init = ();
+    type Handle = InOut<TmgAction, TmgReply>;
+    type Reply = ();
+    type Others = ();
     type Signal = ();
     type State = Tamagotchi;
 }
@@ -23,22 +23,16 @@ pub enum TmgAction {
     Feed,
     Play,
     Sleep,
-    Transfer(ActorId),
-    Approve(ActorId),
-    RevokeApproval,
     TmgInfo,
 }
 
 #[derive(Encode, Debug, PartialEq, Eq, Decode, TypeInfo)]
-pub enum TmgEvent {
+pub enum TmgReply {
     Name(String),
     Age(u64),
     Fed,
     Entertained,
     Slept,
-    Transfer(ActorId),
-    Approve(ActorId),
-    RevokeApproval,
     TmgInfo {
         owner: ActorId,
         name: String,

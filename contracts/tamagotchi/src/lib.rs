@@ -29,14 +29,6 @@ pub struct Tamagotchi {
 static mut TAMAGOTCHI: Option<Tamagotchi> = None;
 
 impl Tamagotchi {
-    fn name(&self) {
-        msg::reply(TmgEvent::Name(self.name.clone()), 0)
-            .expect("Error in a reply `TmgEvent::Name`");
-    }
-    fn age(&self) {
-        let age = exec::block_timestamp() - self.date_of_birth;
-        msg::reply(TmgEvent::Age(age), 0).expect("Error in a reply `TmgEvent::Age`");
-    }
     fn feed(&mut self) {
         assert!(!self.tmg_is_dead(), "Tamagotchi has died");
         self.fed_block = exec::block_timestamp();
@@ -46,7 +38,7 @@ impl Tamagotchi {
         } else {
             self.fed
         };
-        msg::reply(TmgEvent::Fed, 0).expect("Error in a reply `TmgEvent::Fed`");
+        msg::reply(TmgReply::Fed, 0).expect("Error in a reply `TmgEvent::Fed`");
     }
 
     fn play(&mut self) {
@@ -58,7 +50,7 @@ impl Tamagotchi {
         } else {
             self.entertained
         };
-        msg::reply(TmgEvent::Entertained, 0).expect("Error in a reply `TmgEvent::Entertained`");
+        msg::reply(TmgReply::Entertained, 0).expect("Error in a reply `TmgEvent::Entertained`");
     }
 
     fn sleep(&mut self) {
@@ -70,38 +62,7 @@ impl Tamagotchi {
         } else {
             self.rested
         };
-        msg::reply(TmgEvent::Slept, 0).expect("Error in a reply `TmgEvent::Slept`");
-    }
-
-    fn transfer(&mut self, new_owner: &ActorId) {
-        assert!(
-            self.owner == msg::source() || self.allowed_account == Some(msg::source()),
-            "Not allowed to change the owner"
-        );
-        self.owner = *new_owner;
-        self.allowed_account = None;
-        msg::reply(TmgEvent::Transfer(*new_owner), 0)
-            .expect("Error in a reply `TmgEvent::OwnerChanged`");
-    }
-
-    fn approve(&mut self, allowed_account: &ActorId) {
-        assert_eq!(
-            self.owner,
-            msg::source(),
-            "Only owner can allow another account to change the owner"
-        );
-        assert!(self.owner != *allowed_account, "Approve to owner");
-
-        self.allowed_account = Some(*allowed_account);
-        msg::reply(TmgEvent::Approve(*allowed_account), 0)
-            .expect("Error in a reply `TmgEvent::AllowedAccount`");
-    }
-
-    fn revoke_approval(&mut self) {
-        assert_eq!(self.owner, msg::source(), "Only owner can revoke approval");
-        self.allowed_account = None;
-        msg::reply(TmgEvent::RevokeApproval, 0)
-            .expect("Error in a reply `TmgEvent::ApprovalRevoked`");
+        msg::reply(TmgReply::Slept, 0).expect("Error in a reply `TmgEvent::Slept`");
     }
 
     fn calculate_hunger(&self) -> u64 {
@@ -118,7 +79,7 @@ impl Tamagotchi {
 
     fn tmg_info(&self) {
         msg::reply(
-            TmgEvent::TmgInfo {
+            TmgReply::TmgInfo {
                 owner: self.owner,
                 name: self.name.clone(),
                 date_of_birth: self.date_of_birth,
@@ -141,23 +102,29 @@ async fn main() {
     let action: TmgAction = msg::load().expect("Unable to decode `TmgAction`");
     let tmg = unsafe { TAMAGOTCHI.get_or_insert(Default::default()) };
     match action {
-        TmgAction::Name => tmg.name(),
-        TmgAction::Age => tmg.age(),
+        TmgAction::Name => {
+            msg::reply(TmgReply::Name(tmg.name.clone()), 0)
+                .expect("Error in a reply `TmgEvent::Name`");
+        }
+        TmgAction::Age => {
+            let age = exec::block_timestamp() - tmg.date_of_birth;
+            // ⚠️ TODO: Send a reply about the Tamagotchi age
+            // Hint: the message payload must be TmgReply::Age(age)
+        }
         TmgAction::Feed => tmg.feed(),
         TmgAction::Play => tmg.play(),
         TmgAction::Sleep => tmg.sleep(),
-        TmgAction::Transfer(new_owner) => tmg.transfer(&new_owner),
-        TmgAction::Approve(allowed_account) => tmg.approve(&allowed_account),
-        TmgAction::RevokeApproval => tmg.revoke_approval(),
         TmgAction::TmgInfo => tmg.tmg_info(),
     }
 }
 
 #[no_mangle]
 unsafe extern "C" fn init() {
-    let name: String = String::from_utf8(msg::load_bytes().expect("Cant load init message"))
-        .expect("Error in decoding");
+    // ⚠️ TODO: Change the tamagotchi name
+    let name = String::from("Best-Tamagotchi");
+
     let current_block = exec::block_timestamp();
+
     let tmg = Tamagotchi {
         name,
         date_of_birth: current_block,
