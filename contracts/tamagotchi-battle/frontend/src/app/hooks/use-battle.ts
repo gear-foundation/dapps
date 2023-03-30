@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 import type { BattleStatePlayer, BattleStateResponse } from 'app/types/battles';
 import { useAccount, useApi, useReadFullState } from '@gear-js/react-hooks';
 import { useMetadata } from './use-metadata';
-import metaBattle from 'assets/meta/meta-battle.txt';
+import metaBattle from 'assets/meta/battle.meta.txt';
 import { ENV } from 'app/consts';
 import type { UnsubscribePromise } from '@polkadot/api/types';
 import type { UserMessageSent } from '@gear-js/api';
