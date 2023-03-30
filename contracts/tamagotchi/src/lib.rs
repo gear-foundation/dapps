@@ -97,8 +97,8 @@ impl Tamagotchi {
     }
 }
 
-#[gstd::async_main]
-async fn main() {
+#[no_mangle]
+extern "C" fn handle() {
     let action: TmgAction = msg::load().expect("Unable to decode `TmgAction`");
     let tmg = unsafe { TAMAGOTCHI.get_or_insert(Default::default()) };
     match action {
