@@ -47,7 +47,7 @@ export function useInitBattleData() {
     if (state && account) {
       const activePair = Object.values(state.pairs)[currentPairIdx];
       // console.log({ state });
-      setIsAdmin(state.admin === account.decodedAddress);
+      setIsAdmin(state.admins.includes(account.decodedAddress));
 
       const getCurrentQueue = () => {
         const queue: BattleStatePlayer[] = [];

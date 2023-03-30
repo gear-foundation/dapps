@@ -43,7 +43,7 @@ export type BattleStatePlayer = {
 };
 
 export type BattleStateResponse = {
-  admin: HexString;
+  admins: HexString[];
   completedGames: number;
   currentWinner: HexString;
   pairs: Record<string, BattleStatePair>;
