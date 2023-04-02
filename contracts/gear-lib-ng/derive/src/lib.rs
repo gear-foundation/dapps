@@ -39,14 +39,12 @@ pub fn storage_provider(tokens: TokenStream) -> TokenStream {
                         }
                     }),
             ),
-            Fields::Unit => {
-                return Error::new(
-                    derive_input.span(),
-                    "`StorageProvider` deriving does nothing for unit (empty) structs, add some fields",
-                )
-                .into_compile_error()
-                .into()
-            }
+            Fields::Unit => return Error::new(
+                derive_input.span(),
+                "`StorageProvider` deriving does nothing for unit (empty) structs, add some fields",
+            )
+            .into_compile_error()
+            .into(),
         },
         Data::Enum(DataEnum {
             enum_token: Enum { span },
