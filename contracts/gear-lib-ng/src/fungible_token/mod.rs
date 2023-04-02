@@ -210,7 +210,6 @@ pub trait FungibleToken: StorageProvider<FTState> {
     }
 
     fn _transfer(&mut self, from: Owner, to: ActorId, amount: Amount) -> Result<(), FTError> {
-
         let state = self.storage_mut();
 
         state.burn_balance(from, amount)?;
