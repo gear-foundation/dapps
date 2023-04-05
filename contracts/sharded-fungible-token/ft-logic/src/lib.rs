@@ -1,6 +1,7 @@
 #![no_std]
 use ft_logic_io::instruction::*;
 use ft_logic_io::*;
+use ft_main_io::LogicAction;
 use gstd::{exec, msg, prelude::*, prog::ProgramGenerator, ActorId};
 
 mod messages;
@@ -32,7 +33,8 @@ impl FTLogic {
     /// * `action`: the message payload.
     async fn message(&mut self, transaction_hash: H256, account: &ActorId, payload: &[u8]) {
         self.assert_main_contract();
-        let action = Action::decode(&mut &payload[..]).expect("Can't decode `Action`");
+        let action = LogicAction::decode(&mut &payload[..]).expect("Can't decode `Action`");
+
         let transaction_status = self
             .transaction_status
             .get(&transaction_hash)
@@ -49,13 +51,13 @@ impl FTLogic {
                 self.transaction_status
                     .insert(transaction_hash, TransactionStatus::InProgress);
                 match action {
-                    Action::Mint { recipient, amount } => {
+                    LogicAction::Mint { recipient, amount } => {
                         self.mint(transaction_hash, &recipient, amount).await;
                     }
-                    Action::Burn { sender, amount } => {
+                    LogicAction::Burn { sender, amount } => {
                         self.burn(transaction_hash, account, &sender, amount).await;
                     }
-                    Action::Transfer {
+                    LogicAction::Transfer {
                         sender,
                         recipient,
                         amount,
@@ -63,14 +65,14 @@ impl FTLogic {
                         self.transfer(transaction_hash, account, &sender, &recipient, amount)
                             .await;
                     }
-                    Action::Approve {
+                    LogicAction::Approve {
                         approved_account,
                         amount,
                     } => {
                         self.approve(transaction_hash, account, &approved_account, amount)
                             .await;
                     }
-                    Action::Permit {
+                    LogicAction::Permit {
                         owner_account,
                         approved_account,
                         amount,

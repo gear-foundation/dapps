@@ -1,7 +1,6 @@
-use ft_logic_io::{Action, FTLogicEvent};
 use ft_main_io::*;
 use gstd::{prelude::*, ActorId};
-use gtest::{Program, System};
+use gtest::{Log, Program, System};
 use sp_core::sr25519::Signature;
 
 pub trait FToken {
@@ -68,11 +67,10 @@ impl FToken for Program<'_> {
     }
 
     fn mint(&self, transaction_id: u64, from: u64, account: u64, amount: u128, error: bool) {
-        let payload = Action::Mint {
+        let payload = LogicAction::Mint {
             recipient: account.into(),
             amount,
-        }
-        .encode();
+        };
         self.send_message_and_check_res(
             from,
             FTokenAction::Message {
@@ -84,11 +82,10 @@ impl FToken for Program<'_> {
     }
 
     fn burn(&self, transaction_id: u64, from: u64, account: u64, amount: u128, error: bool) {
-        let payload = Action::Burn {
+        let payload = LogicAction::Burn {
             sender: account.into(),
             amount,
-        }
-        .encode();
+        };
         self.send_message_and_check_res(
             from,
             FTokenAction::Message {
@@ -108,12 +105,11 @@ impl FToken for Program<'_> {
         amount: u128,
         error: bool,
     ) {
-        let payload = Action::Transfer {
+        let payload = LogicAction::Transfer {
             sender: sender.into(),
             recipient: recipient.into(),
             amount,
-        }
-        .encode();
+        };
         self.send_message_and_check_res(
             from,
             FTokenAction::Message {
@@ -132,11 +128,10 @@ impl FToken for Program<'_> {
         amount: u128,
         error: bool,
     ) {
-        let payload = Action::Approve {
+        let payload = LogicAction::Approve {
             approved_account: approved_account.into(),
             amount,
-        }
-        .encode();
+        };
         self.send_message_and_check_res(
             from,
             FTokenAction::Message {
@@ -158,14 +153,13 @@ impl FToken for Program<'_> {
         sign: Signature,
         error: bool,
     ) {
-        let payload = Action::Permit {
+        let payload = LogicAction::Permit {
             owner_account: owner,
             approved_account,
             amount,
             permit_id,
             sign: sign.into(),
-        }
-        .encode();
+        };
         self.send_message_and_check_res(
             from,
             FTokenAction::Message {
@@ -178,14 +172,18 @@ impl FToken for Program<'_> {
 
     fn check_balance(&self, account: impl Into<ActorId>, expected_amount: u128) {
         let res = self.send(HARDCODED_ACCOUNT, FTokenAction::GetBalance(account.into()));
-        let reply = FTLogicEvent::Balance(expected_amount).encode();
-        assert!(res.contains(&(HARDCODED_ACCOUNT, reply)));
+        let payload = Log::builder()
+            .dest(HARDCODED_ACCOUNT)
+            .payload(FTokenEvent::Balance(expected_amount));
+        assert!(res.contains(&payload));
     }
 
     fn check_permit_id(&self, account: [u8; 32], expected_permit_id: u128) {
         let res = self.send(HARDCODED_ACCOUNT, FTokenAction::GetPermitId(account.into()));
-        let reply = FTLogicEvent::PermitId(expected_permit_id).encode();
-        assert!(res.contains(&(HARDCODED_ACCOUNT, reply)));
+        let payload = Log::builder()
+            .dest(HARDCODED_ACCOUNT)
+            .payload(FTokenEvent::PermitId(expected_permit_id));
+        assert!(res.contains(&payload));
     }
 
     fn send_message_and_check_res(&self, from: u64, payload: FTokenAction, error: bool) {

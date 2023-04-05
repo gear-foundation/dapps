@@ -4,8 +4,9 @@ version = "0.1.5"
 edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["debug"] }
 ft-logic-io = { path = "io" }
+ft-main-io = { path = "../ft-main/io" }
 ft-storage-io = { path = "../ft-storage/io" }
 primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"]}
 hex = { version = "0.4.3", default-features = false, features = ["alloc"] }

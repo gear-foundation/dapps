@@ -1,8 +1,8 @@
 #![no_std]
-use gstd::{prelude::*, ActorId};
-use primitive_types::{H256, H512};
-
+use ft_main_io::LogicAction;
 use gmeta::{In, InOut, Metadata};
+use gstd::{prelude::*, ActorId};
+use primitive_types::H256;
 pub struct FLogicMetadata;
 pub mod instruction;
 use instruction::Instruction;
@@ -10,7 +10,7 @@ use instruction::Instruction;
 impl Metadata for FLogicMetadata {
     type Init = In<InitFTLogic>;
     type Handle = InOut<FTLogicAction, FTLogicEvent>;
-    type Others = InOut<Action, ()>;
+    type Others = InOut<LogicAction, ()>;
     type Reply = ();
     type Signal = ();
     type State = FTLogicState;
@@ -53,34 +53,6 @@ pub enum FTLogicEvent {
     Err,
     Balance(u128),
     PermitId(u128),
-}
-
-#[derive(Encode, Debug, Decode, TypeInfo, Copy, Clone)]
-pub enum Action {
-    Mint {
-        recipient: ActorId,
-        amount: u128,
-    },
-    Burn {
-        sender: ActorId,
-        amount: u128,
-    },
-    Transfer {
-        sender: ActorId,
-        recipient: ActorId,
-        amount: u128,
-    },
-    Approve {
-        approved_account: ActorId,
-        amount: u128,
-    },
-    Permit {
-        owner_account: ActorId,
-        approved_account: ActorId,
-        amount: u128,
-        permit_id: u128,
-        sign: H512,
-    },
 }
 
 #[derive(Encode, Debug, Decode, TypeInfo, Copy, Clone)]
