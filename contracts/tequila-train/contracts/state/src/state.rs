@@ -29,10 +29,10 @@ pub struct GameState {
 }
 
 #[metawasm]
-pub trait Metawasm {
-    type State = GameStateRaw;
+pub mod metafns {
+    pub type State = GameStateRaw;
 
-    fn game_state(state: Self::State) -> GameState {
+    pub fn game_state(state: State) -> GameState {
         let current_tile = state.tiles[state.start_tile as usize];
         let mut players_tiles = vec![Vec::<(u32, u32)>::new(); state.players.len()];
         for pair in state.tile_to_player.iter() {

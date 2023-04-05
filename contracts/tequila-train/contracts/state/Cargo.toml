@@ -4,14 +4,14 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["codegen"] }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["codegen"] }
 tequila-io = { path = "../io" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["metawasm"] }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["metawasm", "wasm-opt"] }
 
 [features]
 binary-vendor = []

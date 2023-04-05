@@ -1,7 +1,10 @@
 #![no_std]
 
 use gmeta::{In, Metadata};
-use gstd::{exec, msg, prelude::*, ActorId};
+use gstd::{prelude::*, ActorId};
+
+#[cfg(not(test))]
+use gstd::{exec, msg};
 
 #[cfg(test)]
 mod test;

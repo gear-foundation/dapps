@@ -7,6 +7,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   CI: false
+  NIGHTLY_TOOLCHAIN_VERSION: ${{ secrets.NIGHTLY_TOOLCHAIN_VERSION }}
 
 jobs:
   build-contracts:
@@ -31,15 +32,28 @@ jobs:
           components: clippy, rustfmt
           target: wasm32-unknown-unknown
 
-      - name: Install binaryen
+      - name: Show specific nightly version
+        if: ${{ env.NIGHTLY_TOOLCHAIN_VERSION != '' }}
+        run: echo $NIGHTLY_TOOLCHAIN_VERSION | sed 's/-/ - /g'
+
+      - name: Install specific nightly toolchain
+        if: ${{ env.NIGHTLY_TOOLCHAIN_VERSION != '' }}
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-${{ env.NIGHTLY_TOOLCHAIN_VERSION }}
+          components: clippy, rustfmt
+          target: wasm32-unknown-unknown
+
+      - name: Pin to specific nightly toolchain
+        if: ${{ env.NIGHTLY_TOOLCHAIN_VERSION != '' }}
         run: |
-          wget -c https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O - | tar -xz -C .
-          sudo cp binaryen-version_110/bin/wasm-opt /usr/bin/
+          rm -rf ~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu
+          ln -s ~/.rustup/toolchains/nightly-$NIGHTLY_TOOLCHAIN_VERSION-x86_64-unknown-linux-gnu ~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu
 
       - name: Build
         run: |
           make contracts
-          cp contracts/meta.txt contracts/target/wasm32-unknown-unknown/release/
+          cp contracts/tequila_train.meta.txt contracts/target/wasm32-unknown-unknown/release/
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v3
@@ -47,7 +61,7 @@ jobs:
           path: |
             contracts/target/wasm32-unknown-unknown/release/tequila_state.meta.wasm
             contracts/target/wasm32-unknown-unknown/release/tequila_train.opt.wasm
-            contracts/target/wasm32-unknown-unknown/release/meta.txt
+            contracts/target/wasm32-unknown-unknown/release/tequila_train.meta.txt
 
   build-frontend:
     runs-on: ubuntu-latest

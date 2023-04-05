@@ -7,17 +7,17 @@ authors = ["Gear Technologies"]
 
 [dependencies]
 tequila-io = { path = "io" }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", feature = ["debug"] }
-gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 hashbrown = "0.13"
 
 [build-dependencies]
 tequila-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["wasm-opt"] }
 
 [dev-dependencies]
 tequila-state = { path = "state" }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in
