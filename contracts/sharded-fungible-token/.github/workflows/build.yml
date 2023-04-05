@@ -66,12 +66,35 @@ jobs:
         uses: actions/download-artifact@v3
 
       - name: Delete previous release
-        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        uses: dev-drprasad/delete-tag-and-release@v0.2.1
         with:
           delete_release: true
           tag_name: build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Rename binaries
+        run: |
+          cd artifact/target/wasm32-unknown-unknown
+          for WASM in */*; do
+            BUILD_TYPE=${WASM%/*}
+            NAME=`basename $WASM`
+            if [[ $NAME == *.opt.wasm ]]; then
+              NAME=${NAME%.opt.wasm}
+              EXT=opt.wasm
+            elif [[ $NAME == *.meta.wasm ]]; then
+              NAME=${NAME%.meta.wasm}
+              EXT=meta.wasm
+            else
+              NAME=${NAME%.wasm}
+              EXT=wasm
+            fi
+            if [ $BUILD_TYPE == debug ]; then
+              mv $WASM $NAME.debug.$EXT
+            else
+              mv $WASM $NAME.$EXT
+            fi
+          done
 
       - name: Upload
         uses: softprops/action-gh-release@v1
@@ -80,5 +103,4 @@ jobs:
           prerelease: true
           tag_name: build
           draft: false
-          fail_on_unmatched_files: true
-          files: artifact/*.wasm
+          files: artifact/**
