@@ -1,5 +1,4 @@
 use super::{prelude::*, MetaStateReply};
-use ft_logic_io::Action;
 use ft_main_io::*;
 use gstd::ActorId;
 use gtest::{Log, Program as InnerProgram, System};
@@ -32,11 +31,11 @@ impl<'a> FungibleToken<'a> {
     }
 
     pub fn mint(&self, transaction_id: u64, from: u64, amount: u128) {
-        let payload = Action::Mint {
+        let payload = LogicAction::Mint {
             recipient: from.into(),
             amount,
-        }
-        .encode();
+        };
+
         assert!(self
             .0
             .send(
@@ -71,11 +70,11 @@ impl<'a> FungibleToken<'a> {
     }
 
     pub fn approve(&self, transaction_id: u64, from: u64, to: ActorId, amount: u128) {
-        let payload = Action::Approve {
+        let payload = LogicAction::Approve {
             approved_account: to,
             amount,
-        }
-        .encode();
+        };
+
         assert!(self
             .0
             .send(

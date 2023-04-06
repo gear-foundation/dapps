@@ -1,6 +1,5 @@
 use super::common;
-use ft_logic_io::Action;
-use ft_main_io::{FTokenAction, FTokenEvent, InitFToken};
+use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use gclient::{EventListener, EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
 
@@ -64,11 +63,10 @@ pub async fn mint(
         program_id,
         FTokenAction::Message {
             transaction_id: tx_id,
-            payload: Action::Mint {
+            payload: LogicAction::Mint {
                 recipient: *recipient,
                 amount,
-            }
-            .encode(),
+            },
         },
     )
     .await?;
@@ -112,11 +110,10 @@ pub async fn approve(
         program_id,
         FTokenAction::Message {
             transaction_id: tx_id,
-            payload: Action::Approve {
+            payload: LogicAction::Approve {
                 approved_account: *approved_account,
                 amount,
-            }
-            .encode(),
+            },
         },
     )
     .await?;
