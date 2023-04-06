@@ -1,6 +1,6 @@
 [package]
 name = "ft-logic"
-version = "2.0.0"
+version = "2.1.0"
 edition = "2021"
 
 [dependencies]
@@ -8,7 +8,7 @@ gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", feat
 ft-logic-io = { path = "io" }
 ft-main-io = { path = "../ft-main/io" }
 ft-storage-io = { path = "../ft-storage/io" }
-primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"]}
+primitive-types = { version = "0.12", default-features = false, features = ["scale-info"]}
 hex = { version = "0.4.3", default-features = false, features = ["alloc"] }
 light_sr25519 = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 hashbrown = "0.13.1"
