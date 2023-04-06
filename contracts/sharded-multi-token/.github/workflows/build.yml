@@ -33,6 +33,9 @@ jobs:
           components: clippy, rustfmt
           target: wasm32-unknown-unknown
 
+      - name: Pin toolchain
+        run: make pin-toolchain-linux
+
       - name: Install binaryen
         run: |
           wget -c https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O - | tar -xz -C .

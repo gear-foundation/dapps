@@ -1,6 +1,6 @@
 [package]
 name = "mt-main"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
@@ -10,7 +10,7 @@ gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 mt-logic-io = { path = "../mt-logic/io" }
 mt-main-io = { path = "io" }
 primitive-types = { version = "0.12.1", default-features = false }
-sp-core-hashing = { version = "7.0.0", default-features = false }
+sp-core-hashing = { version = "8.0.0", default-features = false }
 hashbrown = { version = "0.13.2" }
 
 [build-dependencies]
