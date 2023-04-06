@@ -29,6 +29,7 @@ pin-toolchain:
 	@rustup target add wasm32-unknown-unknown --toolchain nightly-2023-03-14
 	@rm -rf ~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu
 	@ln -s ~/.rustup/toolchains/nightly-2023-03-14-x86_64-unknown-linux-gnu ~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu
+	@rustup component add clippy --toolchain nightly-x86_64-unknown-linux-gnu
 
 linter:
 	@echo ──────────── Run linter ───────────────────────
