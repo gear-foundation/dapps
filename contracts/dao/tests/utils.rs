@@ -1,6 +1,5 @@
 use dao_io::{DaoAction, DaoEvent, InitDao, Vote};
-use ft_logic_io::Action;
-use ft_main_io::{FTokenAction, FTokenEvent, InitFToken};
+use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 
 use gstd::prelude::*;
 use gtest::{Program, System};
@@ -266,11 +265,11 @@ impl FToken for Program<'_> {
     }
 
     fn mint(&self, transaction_id: u64, from: u64, account: u64, amount: u128) {
-        let payload = Action::Mint {
+        let payload = LogicAction::Mint {
             recipient: account.into(),
             amount,
-        }
-        .encode();
+        };
+
         self.send_message_and_check_res(
             from,
             FTokenAction::Message {
@@ -281,11 +280,11 @@ impl FToken for Program<'_> {
     }
 
     fn approve(&self, transaction_id: u64, from: u64, approved_account: u64, amount: u128) {
-        let payload = Action::Approve {
+        let payload = LogicAction::Approve {
             approved_account: approved_account.into(),
             amount,
-        }
-        .encode();
+        };
+
         self.send_message_and_check_res(
             from,
             FTokenAction::Message {

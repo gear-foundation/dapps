@@ -1,20 +1,23 @@
 [package]
 name = "dao"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 authors = ["Gear Technologies"]
 license = "MIT"
 
 [dependencies]
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
-ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.0" }
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
 dao-io = { path = "io" }
-hashbrown = "0.13.1"
+hashbrown = "0.13.2"
 
 [dev-dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["debug"] }
 gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gclient = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+subxt = { version = "0.27", default-features = false }
+tokio = "1"
+blake2-rfc = { version = "0.2.18", default-features = false }
 
 [build-dependencies]
 dao-io = { path = "io" }

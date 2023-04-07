@@ -1,11 +1,9 @@
 [package]
 name = "dao-io"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
 gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }

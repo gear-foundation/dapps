@@ -1,5 +1,4 @@
-use ft_logic_io::Action;
-use ft_main_io::{FTokenAction, FTokenEvent};
+use ft_main_io::{FTokenAction, FTokenEvent, LogicAction};
 use gstd::{msg, prelude::*, ActorId};
 
 pub async fn transfer_tokens(
@@ -13,12 +12,11 @@ pub async fn transfer_tokens(
         *token_id,
         FTokenAction::Message {
             transaction_id,
-            payload: Action::Transfer {
+            payload: LogicAction::Transfer {
                 sender: *sender,
                 recipient: *recipient,
                 amount,
-            }
-            .encode(),
+            },
         },
         0,
     )
