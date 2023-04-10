@@ -1,0 +1,21 @@
+[package]
+name = "varatube"
+version = "0.1.1"
+edition = "2021"
+
+# TODO [release] Add fields as it's done in gear-dapps
+
+[dependencies]
+varatube-io = { path = "io" }
+ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.3" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "stable" }
+gmeta = { git = "https://github.com/gear-tech/gear", branch = "stable" }
+
+[build-dependencies]
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+varatube-io = { path = "io" }
+
+[workspace]
+members = [
+    "state"
+]
