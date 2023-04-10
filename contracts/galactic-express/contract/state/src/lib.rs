@@ -1,18 +1,36 @@
 #![no_std]
 use gmeta::metawasm;
-use gstd::{prelude::*, exec};
-use launch_io::LaunchSiteState;
+use gstd::{prelude::*, ActorId};
+use launch_io::*;
+
+#[derive(Encode, Decode, TypeInfo)]
+pub struct ParticipantInfo {
+    address: ActorId,
+    name: String,
+    balance: u32,
+}
 
 #[metawasm]
-pub trait Metawasm {
-    type State = Rocket;
+pub mod metafns {
+    pub type State = LaunchSite;
 
-    fn current_state(state: Self::State) -> LaunchSiteState {
-        LaunchSiteState {
-            // todo: populate
-            name: state.name,
-            current_session: None,
-            participants: vec![],
-        }
+    pub fn session_info(state: State) -> Option<CurrentSession> {
+       state.current_session
+    }
+
+    pub fn launch_status(state: State) -> SessionState {
+        state.state
+    }
+
+    pub fn participants(state: State) -> Vec<ParticipantInfo> {
+        let mut participants = Vec::new();
+        for (address, info) in state.participants {
+            participants.push(ParticipantInfo{
+                address,
+                name: info.name,
+                balance: info.balance,
+            })
+        };
+        participants
     }
 }
