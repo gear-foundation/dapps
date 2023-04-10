@@ -4,10 +4,10 @@ version = "0.1.0"
 edition = "2018"
 
 [dependencies]
-gmeta = {  git = "https://github.com/gear-tech/gear.git", features = ["codegen"], branch = "stable" }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }
-scale-info = { version = "2.0.1", default-features = false, features = ["derive"] }
+gmeta = {  git = "https://github.com/gear-tech/gear.git", features = ["codegen"], branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+parity-scale-codec = { version = "3", default-features = false }
+scale-info = { version = "2", default-features = false }
 launch-io = { path = "../io" }
 
 [build-dependencies]
