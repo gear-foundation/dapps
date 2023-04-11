@@ -1,6 +1,6 @@
 use escrow_io::*;
 use ft_main_io::*;
-use gstd::{async_main, exec, msg, prelude::*, ActorId, Encode};
+use gstd::{async_main, exec, msg, prelude::*, ActorId};
 use hashbrown::HashMap;
 
 /// Transfers `amount` tokens from `sender` account to `recipient` account.
@@ -20,12 +20,11 @@ async fn transfer_tokens(
         *token_address,
         FTokenAction::Message {
             transaction_id,
-            payload: ft_logic_io::Action::Transfer {
+            payload: LogicAction::Transfer {
                 sender: *from,
                 recipient: *to,
                 amount: amount_tokens,
-            }
-            .encode(),
+            },
         },
         0,
     )

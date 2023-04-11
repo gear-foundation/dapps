@@ -47,7 +47,7 @@ async fn init() -> Result<()> {
     let (message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             init_payload,
             gas_info.min_limit,
             0,
@@ -88,7 +88,7 @@ async fn create() -> Result<()> {
     let (_message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             init_payload,
             gas_info.min_limit,
             0,
@@ -116,7 +116,7 @@ async fn create() -> Result<()> {
     let (message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             escrow_create_payload,
             gas_info.min_limit,
             0,
@@ -157,7 +157,7 @@ async fn deposit_not_enough_tokens() -> Result<()> {
     let (_message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             init_payload,
             gas_info.min_limit,
             0,
@@ -185,7 +185,7 @@ async fn deposit_not_enough_tokens() -> Result<()> {
     let (message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             escrow_create_payload,
             gas_info.min_limit,
             0,
@@ -211,7 +211,7 @@ async fn deposit_not_enough_tokens() -> Result<()> {
     let (_message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             deposit_payload,
             gas_info.min_limit,
             0,
@@ -250,7 +250,7 @@ async fn not_buyer_confirm() -> Result<()> {
     let (_message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             init_payload,
             gas_info.min_limit,
             0,
@@ -278,7 +278,7 @@ async fn not_buyer_confirm() -> Result<()> {
     let (message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             escrow_create_payload,
             gas_info.min_limit,
             0,
@@ -304,7 +304,7 @@ async fn not_buyer_confirm() -> Result<()> {
     let (_message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             deposit_payload,
             gas_info.min_limit,
             0,
@@ -328,7 +328,7 @@ async fn not_buyer_confirm() -> Result<()> {
     let (_message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             confirm_payload,
             gas_info.min_limit,
             0,
@@ -367,7 +367,7 @@ async fn cancel_paid() -> Result<()> {
     let (_message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             init_payload,
             gas_info.min_limit,
             0,
@@ -395,7 +395,7 @@ async fn cancel_paid() -> Result<()> {
     let (message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             escrow_create_payload,
             gas_info.min_limit,
             0,
@@ -421,7 +421,7 @@ async fn cancel_paid() -> Result<()> {
     let (_message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             deposit_payload,
             gas_info.min_limit,
             0,
@@ -445,7 +445,7 @@ async fn cancel_paid() -> Result<()> {
     let (_message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             cancel_payload,
             gas_info.min_limit,
             0,
@@ -484,7 +484,7 @@ async fn refund_not_paid() -> Result<()> {
     let (_message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             init_payload,
             gas_info.min_limit,
             0,
@@ -512,7 +512,7 @@ async fn refund_not_paid() -> Result<()> {
     let (message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             escrow_create_payload,
             gas_info.min_limit,
             0,
@@ -538,7 +538,7 @@ async fn refund_not_paid() -> Result<()> {
     let (_message_id, _program_id, _hash) = api
         .upload_program_bytes_by_path(
             PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             refund_payload,
             gas_info.min_limit,
             0,

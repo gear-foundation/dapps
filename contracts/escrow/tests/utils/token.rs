@@ -1,4 +1,3 @@
-use ft_logic_io::{Action, FTLogicEvent};
 use ft_main_io::*;
 use gstd::prelude::*;
 use gtest::{Program, System};
@@ -41,16 +40,17 @@ impl FToken for Program<'_> {
                 ft_logic_code_hash: ft_logic_code_hash.into(),
             },
         );
+
         assert!(!res.main_failed());
         ftoken
     }
 
     fn mint(&self, transaction_id: u64, from: u64, account: u64, amount: u128, error: bool) {
-        let payload = Action::Mint {
+        let payload = LogicAction::Mint {
             recipient: account.into(),
             amount,
-        }
-        .encode();
+        };
+
         self.send_message_and_check_res(
             from,
             FTokenAction::Message {
@@ -62,11 +62,11 @@ impl FToken for Program<'_> {
     }
 
     fn burn(&self, transaction_id: u64, from: u64, account: u64, amount: u128, error: bool) {
-        let payload = Action::Burn {
+        let payload = LogicAction::Burn {
             sender: account.into(),
             amount,
-        }
-        .encode();
+        };
+
         self.send_message_and_check_res(
             from,
             FTokenAction::Message {
@@ -86,12 +86,12 @@ impl FToken for Program<'_> {
         amount: u128,
         error: bool,
     ) {
-        let payload = Action::Transfer {
+        let payload = LogicAction::Transfer {
             sender: sender.into(),
             recipient: recipient.into(),
             amount,
-        }
-        .encode();
+        };
+
         self.send_message_and_check_res(
             from,
             FTokenAction::Message {
@@ -110,11 +110,11 @@ impl FToken for Program<'_> {
         amount: u128,
         error: bool,
     ) {
-        let payload = Action::Approve {
+        let payload = LogicAction::Approve {
             approved_account: approved_account.into(),
             amount,
-        }
-        .encode();
+        };
+
         self.send_message_and_check_res(
             from,
             FTokenAction::Message {
@@ -127,7 +127,7 @@ impl FToken for Program<'_> {
 
     fn check_balance(&self, account: u64, expected_amount: u128) {
         let res = self.send(100, FTokenAction::GetBalance(account.into()));
-        let reply = FTLogicEvent::Balance(expected_amount).encode();
+        let reply = FTokenEvent::Balance(expected_amount).encode();
         assert!(res.contains(&(100, reply)));
     }
 

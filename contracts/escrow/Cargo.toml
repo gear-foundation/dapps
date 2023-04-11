@@ -1,16 +1,15 @@
 [package]
 name = "escrow"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
-ft-logic-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.4" }
-async-trait = "0.1.64"
-hashbrown = "0.13.1"
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.0" }
+async-trait = "0.1.68"
+hashbrown = "0.13.2"
 escrow-io = { path = "io" }
 
 [build-dependencies]
