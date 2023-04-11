@@ -1,4 +1,3 @@
-use ft_logic_io::Action;
 use ft_main_io::*;
 use gmeta::Metadata;
 use gstd::{errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId};
@@ -39,12 +38,11 @@ impl Staking {
         to: &ActorId,
         amount_tokens: u128,
     ) -> Result<(), Error> {
-        let payload = Action::Transfer {
+        let payload = LogicAction::Transfer {
             sender: *from,
             recipient: *to,
             amount: amount_tokens,
-        }
-        .encode();
+        };
 
         let transaction_id = self.current_tid;
         self.current_tid = self.current_tid.saturating_add(99);
