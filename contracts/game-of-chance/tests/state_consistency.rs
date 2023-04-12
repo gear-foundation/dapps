@@ -1,6 +1,5 @@
 use fmt::Debug;
-use ft_logic_io::Action as FTAction;
-use ft_main_io::{FTokenAction, FTokenEvent, InitFToken};
+use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use game_of_chance::WASM_BINARY_OPT;
 use game_of_chance_io::*;
 use gclient::{Error as GclientError, EventListener, EventProcessor, GearApi, Result};
@@ -173,13 +172,13 @@ async fn state_consistency() -> Result<()> {
     let client = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
     let mut listener = client.subscribe().await?;
 
-    let storage_code_hash = upload_code(&client, "target/ft-storage.wasm").await?;
-    let ft_logic_code_hash = upload_code(&client, "target/ft-logic.wasm").await?;
+    let storage_code_hash = upload_code(&client, "target/ft_storage.wasm").await?;
+    let ft_logic_code_hash = upload_code(&client, "target/ft_logic.wasm").await?;
 
     let ft_actor_id = upload_program(
         &client,
         &mut listener,
-        "target/ft-main.wasm",
+        "target/ft_main.wasm",
         InitFToken {
             storage_code_hash,
             ft_logic_code_hash,
@@ -208,11 +207,10 @@ async fn state_consistency() -> Result<()> {
                 ft_actor_id,
                 FTokenAction::Message {
                     transaction_id: 0,
-                    payload: FTAction::Mint {
+                    payload: LogicAction::Mint {
                         recipient: ALICE.into(),
                         amount,
-                    }
-                    .encode(),
+                    },
                 },
             )
             .await?
@@ -225,11 +223,10 @@ async fn state_consistency() -> Result<()> {
                 ft_actor_id,
                 FTokenAction::Message {
                     transaction_id: 1,
-                    payload: FTAction::Approve {
+                    payload: LogicAction::Approve {
                         approved_account: goc_actor_id.into(),
                         amount,
-                    }
-                    .encode(),
+                    },
                 },
             )
             .await?

@@ -1,6 +1,5 @@
 use super::{Program, RunResult, TransactionalProgram, FOREIGN_USER};
-use ft_logic_io::Action;
-use ft_main_io::{FTokenAction, FTokenEvent, InitFToken};
+use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use gstd::{prelude::*, ActorId};
 use gtest::{Log, Program as InnerProgram, RunResult as InnerRunResult, System};
 
@@ -21,9 +20,9 @@ impl TransactionalProgram for FungibleToken<'_> {
 impl<'a> FungibleToken<'a> {
     #[track_caller]
     pub fn initialize(system: &'a System) -> Self {
-        let program = InnerProgram::from_file(system, "target/ft-main.wasm");
-        let storage_code_id: [u8; 32] = system.submit_code("target/ft-storage.wasm").into();
-        let logic_code_id: [u8; 32] = system.submit_code("target/ft-logic.wasm").into();
+        let program = InnerProgram::from_file(system, "target/ft_main.wasm");
+        let storage_code_id: [u8; 32] = system.submit_code("target/ft_storage.wasm").into();
+        let logic_code_id: [u8; 32] = system.submit_code("target/ft_logic.wasm").into();
 
         assert!(!program
             .send(
@@ -42,38 +41,32 @@ impl<'a> FungibleToken<'a> {
     pub fn mint(&mut self, recipient: u64, amount: u128) {
         let transaction_id = self.transaction_id();
 
-        assert_ft_token_event_ok(
-            self.0.send(
-                FOREIGN_USER,
-                FTokenAction::Message {
-                    transaction_id,
-                    payload: Action::Mint {
-                        recipient: recipient.into(),
-                        amount,
-                    }
-                    .encode(),
+        assert_ft_token_event_ok(self.0.send(
+            FOREIGN_USER,
+            FTokenAction::Message {
+                transaction_id,
+                payload: LogicAction::Mint {
+                    recipient: recipient.into(),
+                    amount,
                 },
-            ),
-        )
+            },
+        ))
     }
 
     #[track_caller]
     pub fn approve(&mut self, from: u64, approved_account: impl Into<ActorId>, amount: u128) {
         let transaction_id = self.transaction_id();
 
-        assert_ft_token_event_ok(
-            self.0.send(
-                from,
-                FTokenAction::Message {
-                    transaction_id,
-                    payload: Action::Approve {
-                        approved_account: approved_account.into(),
-                        amount,
-                    }
-                    .encode(),
+        assert_ft_token_event_ok(self.0.send(
+            from,
+            FTokenAction::Message {
+                transaction_id,
+                payload: LogicAction::Approve {
+                    approved_account: approved_account.into(),
+                    amount,
                 },
-            ),
-        );
+            },
+        ));
     }
 
     pub fn balance(&self, actor_id: impl Into<ActorId>) -> RunResult<u128, FTokenEvent, ()> {

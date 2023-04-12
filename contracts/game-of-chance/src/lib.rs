@@ -1,7 +1,6 @@
 #![no_std]
 
-use ft_logic_io::Action as FTAction;
-use ft_main_io::{FTokenAction, FTokenEvent};
+use ft_main_io::{FTokenAction, FTokenEvent, LogicAction};
 use game_of_chance_io::*;
 use gstd::{errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId};
 use hashbrown::HashMap;
@@ -174,12 +173,11 @@ impl Contract {
             fungible_token,
             FTokenAction::Message {
                 transaction_id,
-                payload: FTAction::Transfer {
+                payload: LogicAction::Transfer {
                     sender,
                     recipient,
                     amount,
-                }
-                .encode(),
+                },
             },
             0,
         )?
