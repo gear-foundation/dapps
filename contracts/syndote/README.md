@@ -21,6 +21,8 @@ To launch the game, you need to:
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 ```
 
+_Note: This step is required if you're using local environment. Skip it if you are using Gitpod._
+
 ### ⚒️ Add specific toolchains
 
 ```shell
@@ -46,22 +48,26 @@ cargo build --release
 make build
 ```
 
-If everything goes well, your working directory should now have a `target` directory that looks like this:
+If everything goes well, your working directory should now have a `target` and `syndote` directories that contain the following files:
 
 ```
-target
-    ├── CACHEDIR.TAG
+syndote
     ├── meta.txt
-    ├── release
-    │   └── ...
+    ├── syndote.meta.txt
+target
     └── wasm32-unknown-unknown
-        └── release
-            ├── ...
-            ├── syndote.wasm      <---- this is built .wasm file
-            ├── syndote.opt.wasm  <---- this is optimized .wasm file
-            ├── player.wasm       <---- this is built .wasm file
-            ├── player.opt.wasm   <---- this is optimized .wasm file
+        ├── syndote.wasm      <---- this is built .wasm file
+        ├── syndote.opt.wasm  <---- this is optimized .wasm file
+        ├── player.wasm       <---- this is built .wasm file
+        ├── player.opt.wasm   <---- this is optimized .wasm file
 ```
+
+In case of building error, try to run:
+
+```shell
+cargo update
+```
+and buld the program again.
 
 ### Register players and reserve gas
 
