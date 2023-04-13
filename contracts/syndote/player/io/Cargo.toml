@@ -1,5 +1,5 @@
 [package]
-name = "syndote-io"
+name = "player-io"
 version = "0.1.2"
 edition = "2021"
 
@@ -8,3 +8,4 @@ gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", feat
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
 gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+syndote-io = { path = "../../syndote/io" }

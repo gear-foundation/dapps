@@ -2,4 +2,6 @@
 .DS_Store
 .vscode
 target/
-syndote/.metahash
+.metahash
+*.meta.txt
+meta.txt

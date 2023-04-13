@@ -13,7 +13,7 @@ pub struct YourTurn {
 pub struct SynMetadata;
 
 impl Metadata for SynMetadata {
-    type Init = InOut<(), ()>;
+    type Init = ();
     type Handle = InOut<GameAction, GameEvent>;
     type Reply = ();
     type Others = ();
