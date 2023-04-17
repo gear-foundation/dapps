@@ -51,8 +51,9 @@ make build
 If everything goes well, your working directory should now have a `target` and `syndote` directories that contain the following files:
 
 ```
+player
+    ├── player.meta.txt
 syndote
-    ├── meta.txt
     ├── syndote.meta.txt
 target
     └── wasm32-unknown-unknown
