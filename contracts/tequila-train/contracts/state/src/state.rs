@@ -13,7 +13,7 @@ pub struct TrackData {
 #[derive(Encode, Decode, TypeInfo)]
 pub struct GameState {
     /// List of all players
-    pub players: Vec<ActorId>,
+    pub players: Vec<(ActorId, String)>,
     /// Index of a current player inside the `players` list
     pub current_player: u32,
     /// Start tile of the game

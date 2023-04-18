@@ -87,20 +87,28 @@ pub fn build_tile_collection() -> Vec<Tile> {
         .collect()
 }
 
-#[derive(Encode, Decode, TypeInfo, Hash, PartialEq, PartialOrd, Eq, Ord, Clone, Debug)]
+#[derive(Encode, Decode, Default, TypeInfo, Hash, PartialEq, PartialOrd, Eq, Ord, Clone, Debug)]
 pub struct Players {
-    players: Vec<ActorId>,
+    players: Vec<(ActorId, String)>,
 }
 
-impl<const N: usize> From<[ActorId; N]> for Players {
-    fn from(s: [ActorId; N]) -> Players {
+impl<const N: usize> From<[(ActorId, String); N]> for Players {
+    fn from(s: [(ActorId, String); N]) -> Players {
         Players {
             players: s.to_vec(),
         }
     }
 }
 
-#[derive(Encode, Decode, TypeInfo, Hash, PartialEq, PartialOrd, Eq, Ord, Clone, Copy, Debug)]
+impl From<&[(ActorId, String)]> for Players {
+    fn from(s: &[(ActorId, String)]) -> Players {
+        Players {
+            players: s.to_vec(),
+        }
+    }
+}
+
+#[derive(Encode, Decode, TypeInfo, Hash, PartialEq, PartialOrd, Eq, Ord, Clone, Debug)]
 pub enum Command {
     Skip,
     Place {
@@ -108,6 +116,11 @@ pub enum Command {
         track_id: u32,
         remove_train: bool,
     },
+    Register {
+        player: ActorId,
+        name: String,
+    },
+    StartGame,
 }
 
 #[derive(Debug, TypeInfo, Encode, Decode, Clone, Default)]
@@ -118,7 +131,7 @@ pub struct TrackData {
 
 #[derive(Debug, TypeInfo, Encode, Decode, Clone)]
 pub struct GameState {
-    pub players: Vec<ActorId>,
+    pub players: Vec<(ActorId, String)>,
     pub tracks: Vec<TrackData>,
     pub shots: Vec<u32>,
     pub start_tile: u32,
@@ -129,11 +142,33 @@ pub struct GameState {
     pub state: State,
 }
 
-#[derive(Clone, Copy, Debug, Encode, Decode, TypeInfo)]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
 pub enum State {
     Playing,
     Stalled,
-    Winner(ActorId),
+    Winner((ActorId, String)),
+}
+
+#[derive(Debug, Clone, Default, TypeInfo, Encode, Decode)]
+pub struct GameLauncher {
+    pub game_state: Option<GameState>,
+    pub players: Players,
+    pub is_started: bool,
+}
+
+impl GameLauncher {
+    pub fn start(&mut self) {
+        assert!(!self.is_started);
+
+        self.is_started = true;
+        self.game_state = GameState::new(&self.players);
+    }
+
+    pub fn register(&mut self, player: ActorId, name: String) {
+        assert!(!self.is_started);
+
+        self.players.players.push((player, name));
+    }
 }
 
 #[cfg(not(test))]
@@ -286,12 +321,12 @@ impl GameState {
     }
 
     pub fn state(&self) -> State {
-        self.state
+        self.state.clone()
     }
 
     pub fn skip_turn(&mut self, player: ActorId) {
         let i = self.current_player as usize;
-        if self.players[i] != player {
+        if self.players[i].0 != player {
             unreachable!("it is not your turn");
         }
 
@@ -308,7 +343,7 @@ impl GameState {
             .filter(|&player| *player == self.current_player)
             .count();
         if remaining_tiles == 0 {
-            self.state = State::Winner(self.players[self.current_player as usize]);
+            self.state = State::Winner(self.players[self.current_player as usize].clone());
             return;
         }
 
@@ -387,7 +422,7 @@ impl GameState {
 
     pub fn make_turn(&mut self, player: ActorId, tile_id: u32, track_id: u32, remove_train: bool) {
         let i = self.current_player as usize;
-        if self.players[i] != player {
+        if self.players[i].0 != player {
             unreachable!("it is not your turn");
         }
 

@@ -178,13 +178,13 @@ fn test_give_tiles_until_double_3() {
 fn test_game_state_fail_init() {
     let actor1 = ActorId::new([1u8; 32]);
     let players = Players {
-        players: vec![actor1],
+        players: vec![(actor1, "A".to_owned())],
     };
     let game_state = GameState::new(&players);
     assert!(game_state.is_none());
 
     let players = Players {
-        players: vec![actor1; 9],
+        players: vec![(actor1, "B".to_owned()); 9],
     };
     let game_state = GameState::new(&players);
     assert!(game_state.is_none());
@@ -195,7 +195,7 @@ fn test_game_state() {
     let actor1 = ActorId::new([1u8; 32]);
     let actor2 = ActorId::new([2u8; 32]);
     let players = Players {
-        players: vec![actor1, actor2],
+        players: vec![(actor1, "A".to_owned()), (actor2, "B".to_owned())],
     };
 
     let game_state = GameState::new(&players).unwrap();

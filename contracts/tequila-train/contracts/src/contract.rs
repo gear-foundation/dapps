@@ -6,14 +6,12 @@ use gstd::{
 };
 use tequila_io::*;
 
-static mut GAME_STATE: Option<GameState> = None;
+/// All game initializing logic is inside `GameState` constructor.
+static mut GAME_LAUNCHER: Option<GameLauncher> = None;
 
 #[no_mangle]
 extern "C" fn init() {
-    let players_init: Players = msg::load().expect("Failed to decode `Players'");
-
-    // All game initializing logic is inside GameState constructor
-    unsafe { GAME_STATE = GameState::new(&players_init) }
+    unsafe { GAME_LAUNCHER = Some(GameLauncher::default()) }
 }
 
 #[no_mangle]
@@ -23,7 +21,11 @@ extern "C" fn handle() {
 }
 
 fn process_handle() -> Result<(), ContractError> {
-    let game_state = unsafe { GAME_STATE.as_mut().unwrap() };
+    let game_launcher = unsafe {
+        GAME_LAUNCHER
+            .as_mut()
+            .expect("The contract is not initialized")
+    };
     let check_winner = |game_state: &GameState| match game_state.state() {
         State::Stalled => {
             msg::reply_bytes("The game stalled. No one is able to make a turn", 0)
@@ -38,25 +40,45 @@ fn process_handle() -> Result<(), ContractError> {
         State::Playing => false,
     };
 
-    if check_winner(game_state) {
-        return Ok(());
+    if let Some(game_state) = &game_launcher.game_state {
+        if check_winner(game_state) {
+            return Ok(());
+        }
     }
 
     let command = msg::load()?;
     let player = msg::source();
     match command {
-        Command::Skip => game_state.skip_turn(player),
+        Command::Skip => {
+            if let Some(game_state) = &mut game_launcher.game_state {
+                game_state.skip_turn(player)
+            } else {
+                panic!("Game is not started!");
+            }
+        }
         Command::Place {
             tile_id,
             track_id,
             remove_train,
         } => {
-            game_state.make_turn(player, tile_id, track_id, remove_train);
+            if let Some(game_state) = &mut game_launcher.game_state {
+                game_state.make_turn(player, tile_id, track_id, remove_train);
+            } else {
+                panic!("Game is not started!");
+            }
+        }
+        Command::Register { player, name } => {
+            game_launcher.register(player, name);
+        }
+        Command::StartGame => {
+            game_launcher.start();
         }
     }
 
-    if check_winner(game_state) {
-        return Ok(());
+    if let Some(game_state) = &game_launcher.game_state {
+        if check_winner(game_state) {
+            return Ok(());
+        }
     }
 
     Ok(())
@@ -64,8 +86,15 @@ fn process_handle() -> Result<(), ContractError> {
 
 #[no_mangle]
 extern "C" fn state() {
-    reply(unsafe { GAME_STATE.as_ref().expect("Game state is not initialized") })
-        .expect("Failed to encode or reply with the game state");
+    reply(unsafe {
+        GAME_LAUNCHER
+            .as_ref()
+            .expect("Game launcher is not initialized")
+            .game_state
+            .clone()
+            .expect("Game state is not initialized")
+    })
+    .expect("Failed to encode or reply with the game state");
 }
 
 #[no_mangle]
