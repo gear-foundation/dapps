@@ -44,4 +44,39 @@ fn test() {
             (ActorId::zero(), "B".to_owned())
         ]
     );
+
+    let result = program.send(2, Command::RestartGame);
+    assert!(!result.main_failed());
+
+    let result = program.send(
+        2,
+        Command::Register {
+            player: ActorId::zero(),
+            name: "C".to_owned(),
+        },
+    );
+    assert!(!result.main_failed());
+
+    let result = program.send(
+        2,
+        Command::Register {
+            player: ActorId::zero(),
+            name: "D".to_owned(),
+        },
+    );
+    assert!(!result.main_failed());
+
+    let result = program.send(2, Command::StartGame);
+    assert!(!result.main_failed());
+
+    let state: GameState = program
+        .read_state()
+        .expect("Unexpected invalid game state.");
+    assert_eq!(
+        state.players,
+        vec![
+            (ActorId::zero(), "C".to_owned()),
+            (ActorId::zero(), "D".to_owned())
+        ]
+    );
 }

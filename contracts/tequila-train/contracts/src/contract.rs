@@ -73,6 +73,9 @@ fn process_handle() -> Result<(), ContractError> {
         Command::StartGame => {
             game_launcher.start();
         }
+        Command::RestartGame => {
+            game_launcher.restart();
+        }
     }
 
     if let Some(game_state) = &game_launcher.game_state {

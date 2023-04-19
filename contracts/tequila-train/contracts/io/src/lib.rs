@@ -121,6 +121,7 @@ pub enum Command {
         name: String,
     },
     StartGame,
+    RestartGame,
 }
 
 #[derive(Debug, TypeInfo, Encode, Decode, Clone, Default)]
@@ -162,6 +163,14 @@ impl GameLauncher {
 
         self.is_started = true;
         self.game_state = GameState::new(&self.players);
+    }
+
+    pub fn restart(&mut self) {
+        assert!(self.is_started);
+
+        self.is_started = false;
+        self.game_state = None;
+        self.players.players.clear();
     }
 
     pub fn register(&mut self, player: ActorId, name: String) {
