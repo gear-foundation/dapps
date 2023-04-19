@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { useAnimation, motion } from 'framer-motion';
 import { useRefDimensions } from 'app/hooks/use-ref-dimensions';
 import { nanoid } from 'nanoid';
-import { ScrollWrapper } from '../../common/scroll-wrapper/scroll-wrapper';
+import { ScrollArea } from '../../ui/scroll-area';
 
 type PairData = { players: BattleStatePlayer[]; pair: BattleStatePair; id: string; idx: number };
 
@@ -136,7 +136,7 @@ const BattleTableList = () => {
   }, [battle]);
 
   return (
-    <ScrollWrapper className="max-h-80 pr-3 -mr-3">
+    <ScrollArea className="max-h-80 pr-3 -mr-3">
       <ul className="leading-4 space-y-1.5">
         {pairs.map((pair, i) => (
           <li key={pair.id}>
@@ -144,7 +144,7 @@ const BattleTableList = () => {
           </li>
         ))}
       </ul>
-    </ScrollWrapper>
+    </ScrollArea>
   );
 };
 

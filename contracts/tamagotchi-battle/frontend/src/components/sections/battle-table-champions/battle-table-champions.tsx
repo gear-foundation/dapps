@@ -6,7 +6,7 @@ import clsx from 'clsx';
 import { useBattle } from 'app/context';
 import { BattleStatePlayer } from 'app/types/battles';
 import { TamagotchiAvatar } from '../../common/tamagotchi-avatar';
-import { ScrollWrapper } from '../../common/scroll-wrapper/scroll-wrapper';
+import { ScrollArea } from 'components/ui/scroll-area';
 
 export const BattleTableChampions = () => {
   const ref = useRef<HTMLDivElement>(null);
@@ -102,7 +102,7 @@ const BattleTableList = () => {
   const { players } = useBattle();
 
   return (
-    <ScrollWrapper className="max-h-80 pr-3 -mr-3">
+    <ScrollArea className="max-h-80 pr-3 -mr-3">
       <ul className="leading-4 space-y-1.5">
         {players
           .sort((p, c) => c.victories - p.victories)
@@ -112,7 +112,7 @@ const BattleTableList = () => {
             </li>
           ))}
       </ul>
-    </ScrollWrapper>
+    </ScrollArea>
   );
 };
 

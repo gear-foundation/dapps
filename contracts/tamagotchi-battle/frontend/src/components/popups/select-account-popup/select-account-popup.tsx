@@ -1,7 +1,7 @@
 import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import { Modal } from '@gear-js/ui';
 import { AccountsList } from 'components/common/accounts-list';
-import { ScrollWrapper } from '../../common/scroll-wrapper/scroll-wrapper';
+import { ScrollArea } from '../../ui/scroll-area';
 
 type Props = {
   accounts: InjectedAccountWithMeta[] | undefined;
@@ -11,11 +11,9 @@ type Props = {
 export const SelectAccountPopup = ({ accounts, close }: Props) => (
   <Modal heading="Connect" close={close}>
     {accounts ? (
-      <div className="flex flex-col grow bg-dark-500 -m-8 p-8 rounded-b-[20px]">
-        <ScrollWrapper>
-          <AccountsList list={accounts} onChange={close} />
-        </ScrollWrapper>
-      </div>
+      <ScrollArea className="max-h-80 pr-5 -mr-5" type="auto">
+        <AccountsList list={accounts} onChange={close} />
+      </ScrollArea>
     ) : (
       <p>
         Polkadot extension was not found or disabled. Please,{' '}
