@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.10] - 2023-04-26
+- Pin gear and substrate crates to concrete revisions
+
 ## [0.2.9] - 2023-03-02
 ### Changed
 - Update gclient branch to `testnet`
@@ -53,7 +56,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.9...HEAD
+[Unreleased]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.10...HEAD
+[0.2.9]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.9...0.2.10
 [0.2.9]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.8...0.2.9
 [0.2.8]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.7...0.2.8
 [0.2.7]: https://github.com/gear-dapps/non-fungible-token/compare/0.2.6...0.2.7
