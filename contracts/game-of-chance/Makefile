@@ -15,7 +15,7 @@ init:
 	@echo ⚙️ Installing a toolchain \& a target...
 ifeq ($(shell uname -s),Linux)
 	@echo Linux detected..
-	pin-toolchain-linux
+	make pin-toolchain-linux
 else ifeq ($(shell uname -s),Darwin)
 	@echo Macos detected..
 	make pin-toolchain-mac-m1

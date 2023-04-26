@@ -136,7 +136,7 @@ async fn send_message<T: Decode>(
     payload: impl Encode + Debug,
 ) -> Result<T> {
     Ok(
-        send_message_with_custom_limit(client, listener, destination, payload, |gas| gas * 7)
+        send_message_with_custom_limit(client, listener, destination, payload, |gas| gas * 9)
             .await?
             .expect("action failed, received an error message instead of a reply"),
     )
