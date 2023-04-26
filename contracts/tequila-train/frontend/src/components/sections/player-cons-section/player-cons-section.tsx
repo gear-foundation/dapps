@@ -2,13 +2,15 @@ import { useApp, useGame } from 'app/context';
 import { useGameMessage } from 'app/hooks/use-game';
 import { PlayerDomino } from '../../common/player-domino';
 import { DominoTileType } from 'app/types/game';
-import { getTileId } from 'app/utils';
-import { useEffect } from 'react';
+import { cn, getTileId } from 'app/utils';
+import { useEffect, useState } from 'react';
 
 export const PlayerConsSection = () => {
   const { setIsPending, isPending, setOpenEmptyPopup } = useApp();
   const { game, gameWasm: wasm, setSelectedDomino, selectedDomino, setPlayerChoice, playerChoice } = useGame();
   const handleMessage = useGameMessage();
+  const [turnPending, setTurnPending] = useState(false);
+  const [passPending, setPassPending] = useState(false);
 
   useEffect(() => {
     return () => {
@@ -17,8 +19,16 @@ export const PlayerConsSection = () => {
     };
   }, []);
 
-  const onSuccess = () => setIsPending(false);
-  const onError = () => setIsPending(false);
+  const onSuccess = () => {
+    setTurnPending(false);
+    setPassPending(false);
+    setIsPending(false);
+  };
+  const onError = () => {
+    setTurnPending(false);
+    setPassPending(false);
+    setIsPending(false);
+  };
 
   const onSelect = ([i, tile]: [number, DominoTileType]) => {
     if (selectedDomino) {
@@ -27,17 +37,17 @@ export const PlayerConsSection = () => {
       setSelectedDomino([i, tile]);
     }
 
-    if (game) {
+    if (game?.gameState) {
       if (playerChoice) {
         playerChoice.tile !== tile
-          ? setPlayerChoice({ ...playerChoice, tile, tile_id: getTileId(tile, game.tiles) })
+          ? setPlayerChoice({ ...playerChoice, tile, tile_id: getTileId(tile, game.gameState?.tiles) })
           : setPlayerChoice({
               ...playerChoice,
               tile: undefined,
               tile_id: undefined,
             });
       } else {
-        setPlayerChoice({ tile, tile_id: getTileId(tile, game.tiles) });
+        setPlayerChoice({ tile, tile_id: getTileId(tile, game.gameState?.tiles) });
       }
     }
   };
@@ -48,6 +58,7 @@ export const PlayerConsSection = () => {
 
       if (track_id >= 0 && tile_id >= 0) {
         setIsPending((prev) => !prev);
+        setTurnPending(true);
         handleMessage({ Place: { tile_id, track_id, remove_train } }, { onSuccess, onError });
       }
     } else {
@@ -57,11 +68,12 @@ export const PlayerConsSection = () => {
 
   const onPass = () => {
     setIsPending((prev) => !prev);
+    setPassPending(true);
     handleMessage({ Skip: null }, { onSuccess, onError });
   };
 
   return (
-    <div className="flex justify-between bg-[#D6FE51] py-3 px-7 rounded-2xl border border-dark-500 border-opacity-15">
+    <div className="relative flex justify-between bg-[#D6FE51] py-3 px-7 rounded-2xl before:absolute before:-inset-px before:-z-1 before:rounded-[17px] before:border before:border-dark-500/15">
       <div className="flex flex-wrap items-center gap-2 min-h-[72px]">
         {wasm &&
           wasm.playersTiles[wasm.currentPlayer].map((tile, i) => (
@@ -74,10 +86,16 @@ export const PlayerConsSection = () => {
           ))}
       </div>
       <div className="py-1 border-l border-primary pl-6 flex flex-col gap-3 min-w-[175px]">
-        <button className="btn btn--primary text-dark-500 py-1.5" onClick={onTurn} disabled={isPending}>
+        <button
+          className={cn('btn btn--primary text-dark-500 py-1.5', turnPending && 'btn--loading')}
+          onClick={onTurn}
+          disabled={isPending}>
           Turn
         </button>
-        <button className="btn btn--black my-auto py-1.5" onClick={onPass} disabled={isPending}>
+        <button
+          className={cn('btn btn--black my-auto py-1.5', passPending && 'btn--loading')}
+          onClick={onPass}
+          disabled={isPending}>
           Pass
         </button>
       </div>

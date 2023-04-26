@@ -30,7 +30,8 @@ export const DominoZone = ({ light, id, disabled, reverse }: Props) => {
     <button
       className={clsx(
         'inline-flex justify-center items-center w-18 h-9 -m-mx border border-dashed rounded-lg transition-colors',
-        'disabled:bg-error/15 disabled:border-error',
+        light ? 'disabled:bg-red-800/15 disabled:border-red-800' : 'disabled:bg-red-600/15 disabled:border-red-600',
+        'disabled:cursor-not-allowed',
         playerChoice?.track_id === id
           ? 'enabled:hover:bg-primary/30 enabled:hover:border-primary'
           : 'enabled:hover:bg-primary/15 enabled:hover:border-primary',

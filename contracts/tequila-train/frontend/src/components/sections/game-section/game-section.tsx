@@ -52,7 +52,7 @@ export const GameSection = () => {
         <ul className="flex gap-4 justify-center">
           {players.map((p, i) => (
             <li key={i}>
-              <PlayerCardSection index={i} />
+              <PlayerCardSection index={i} active={isAllowed && state?.currentPlayer === i} />
             </li>
           ))}
         </ul>

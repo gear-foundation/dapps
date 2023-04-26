@@ -4,22 +4,17 @@
 
 
 :root {
-  --white: 255 255 255;
-  --black: 0 0 0;
   --color-secondary: #858585;
   --color-primary: 103 203 77;
   --color-error: 242 74 74;
   --color-dark-500: 53 53 53;
   --color-dark-400: 79 79 79;
   --color-light: 209 209 209;
-
-  --base-font: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
 #alert-root {
   color: white;
 }
-
 
 .test::before {
   background: linear-gradient(270.95deg, rgba(255, 255, 255, 0) 85.3%, #ffffff 102.87%);
@@ -51,7 +46,7 @@ body.body {
   }
 
   .btn {
-    @apply inline-flex justify-center items-center text-center py-2.5 px-8 text-[14px] font-semibold text-center leading-5 tracking-[0.08em] rounded-full whitespace-nowrap cursor-pointer select-none;
+    @apply inline-flex justify-center items-center text-center py-2.5 px-8 text-[14px] font-semibold leading-5 tracking-[0.08em] rounded-full whitespace-nowrap cursor-pointer select-none;
   }
 
   .btn--primary {
@@ -90,12 +85,12 @@ body.body {
     @apply text-white bg-blue-600 enabled:hover:bg-blue-700 enabled:active:bg-blue-800 transition-colors;
   }
 
-  .btn:disabled {
-    @apply cursor-not-allowed;
+  .btn[disabled] {
+    @apply cursor-not-allowed bg-neutral-400 text-neutral-100;
   }
 
   .btn--loading {
-    @apply opacity-90 gap-2 before:w-4 before:h-4 before:border-2 before:border-neutral-400 before:rounded-full before:border-l-transparent before:border-t-transparent before:animate-spin;
+    @apply opacity-90 gap-2 before:w-4 before:h-4 before:border-2 before:border-neutral-500 before:rounded-full before:border-l-transparent before:border-t-transparent before:animate-spin;
   }
 }
 
@@ -118,4 +113,9 @@ body.body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-fill-color: transparent;
+}
+
+
+.bg-register-section {
+  background: radial-gradient(42.35% 52.35% at 50.87% 70.86%, rgba(0, 255, 196, 0.2) 0%, rgba(0, 255, 196, 0) 100%), #242625;
 }

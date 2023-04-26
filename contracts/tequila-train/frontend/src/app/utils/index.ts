@@ -2,8 +2,13 @@ import { AlertContainerFactory } from '@gear-js/react-hooks';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import { LOCAL_STORAGE } from 'app/consts';
 import { DominoTileType, StateDominoTileType } from '../types/game';
-import { useGame } from '../context';
-import { useEffect, useState } from 'react';
+import { isHex } from '@polkadot/util';
+import { ClassValue, clsx } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs));
+}
 
 export const copyToClipboard = async (key: string, alert: AlertContainerFactory, successfulText?: string) => {
   try {
@@ -61,3 +66,7 @@ export const getTileId = (tile: DominoTileType, tiles: StateDominoTileType[]): n
 
 export const isSubset = (array1: any[], array2: any[]) => array2.every((element) => array1.includes(element));
 export const isPartialSubset = (array1: any[], array2: any[]) => array2.some((element) => array1.includes(element));
+
+export const hexRequired = (value: string) =>
+  !value ? 'Field is required' : !isHex(value) ? 'String must be in Hex format' : null;
+export const stringRequired = (value: string) => (!value ? 'Field is required' : null);

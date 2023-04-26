@@ -9,8 +9,7 @@ import { useApp, useGame } from '../../../app/context';
 import { PlayerTrain } from '../../common/player-train';
 import { useAccount } from '@gear-js/react-hooks';
 import { useRefDimensions } from '../../../app/hooks/use-ref-dimensions';
-
-const players = ['Rojo', 'Oscuro', 'Naranja', 'Amarillo', 'Gris', 'Verde', 'Azul', 'Morado'];
+import { TooltipWrapper } from '@gear-js/ui';
 
 type Props = {
   index: number;
@@ -104,13 +103,18 @@ export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }:
               className={clsx('w-full h-auto', train ? 'text-[#FFCE4A]' : getBgColors(index).train)}
             />
           ))}
-        <span
+        <h3
           className={clsx(
-            'uppercase leading-4 font-semibold tracking-[0.03em] w-min',
+            'uppercase leading-4 font-semibold tracking-[0.03em] w-min min-w-[60px]',
             active && !getBgColors(index).isLight && 'text-white',
+            !isUserTrain && 'col-span-2',
           )}>
-          {train ? 'Tequila Train' : `Señor ${players[index]}`}
-        </span>
+          <TooltipWrapper
+            text={wasm?.players[index][1] || ''}
+            className="after:text-dark-500 after:!bg-primary after:!transition-none after:!shadow-md">
+            <span className="line-clamp-2">{train ? 'Tequila Train' : `${wasm?.players[index][1]}`}</span>
+          </TooltipWrapper>
+        </h3>
       </div>
 
       <div className="relative flex overflow-auto max-w-full" ref={ref}>
