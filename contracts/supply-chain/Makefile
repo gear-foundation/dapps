@@ -4,7 +4,7 @@ all: init build test
 
 build:
 	@echo ⚙️ Building a release...
-	@cargo +nightly b -r --workspace
+	@cargo +nightly b -r --workspace --exclude deploy
 	@ls -l target/wasm32-unknown-unknown/release/*.wasm
 
 fmt:
