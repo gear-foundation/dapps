@@ -13,7 +13,22 @@
 [docs_badge]: https://img.shields.io/badge/docs-online-5023dd
 [docs_href]: https://dapps.gear.rs/gear_lib
 
-The library to be used in programs.
+This library provides standard functions used in the implementation of contracts
+- fungible token
+- non fungible token
+- multitoken
+- etc
+
+To use the default implementation you should include the packages into your Cargo.toml file:
+```toml
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git" }
+gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git" }
+```
+
+```rs
+use derive_traits::{NFTStateKeeper, NFTCore, NFTMetaState};
+use gear_contract_libraries::non_fungible_token::{nft_core::*, state::*, token::*};
+```
 
 ## License
 
