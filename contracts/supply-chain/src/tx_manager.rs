@@ -75,8 +75,8 @@ impl<T: PartialEq + Clone> TransactionManager<T> {
         };
 
         Ok(TransactionGuard {
-            manager: self,
-            msg_source,
+            _manager: self,
+            _msg_source: msg_source,
             tx_id,
 
             step: 0,
@@ -117,8 +117,8 @@ impl<T: PartialEq + Clone> TransactionManager<T> {
 }
 
 pub struct TransactionGuard<'a, T> {
-    manager: &'a mut TransactionManager<T>,
-    msg_source: ActorId,
+    _manager: &'a mut TransactionManager<T>,
+    _msg_source: ActorId,
     tx_id: u64,
 
     step: u8,
@@ -137,12 +137,5 @@ impl<T> TransactionGuard<'_, T> {
         } else {
             Err(TransactionCacheError::StepOverflow)
         }
-    }
-}
-
-impl<T> Drop for TransactionGuard<'_, T> {
-    fn drop(&mut self) {
-        self.manager.txs_for_actor.remove(&self.tx_id);
-        self.manager.actors_for_tx.remove(&self.msg_source);
     }
 }

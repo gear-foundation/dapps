@@ -4,15 +4,15 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-gclient = { git = "https://github.com/gear-tech/gear.git" }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gclient = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 subxt = { version = "0.27", default-features = false }
 supply-chain-io = { path = "../io" }
 supply-chain-state = { path = "../state" }
 supply-chain = { path = ".." }
 sp-core-hashing = "6"
 primitive-types = "0.12"
-nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.9" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "0.1.5" }
+nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.10" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.1" }
 tokio = "1"
 clap = { version = "4", default-features = false, features = ["std"] }

@@ -1,10 +1,8 @@
-use std::ops::Deref;
-
-use fmt::Debug;
-use gclient::{
-    Error as GclientError, EventListener, EventProcessor, GearApi, GearApiWithNode, Node, Result,
+use gclient::{Error as GclientError, EventListener, EventProcessor, GearApi, Result};
+use gstd::{
+    prelude::{fmt::Debug, *},
+    ActorId,
 };
-use gstd::{prelude::*, ActorId};
 use primitive_types::H256;
 use subxt::{
     error::{DispatchError, ModuleError, ModuleErrorData},
@@ -18,54 +16,32 @@ pub const FT_STORAGE: &str = "target/ft-storage.wasm";
 pub const FT_LOGIC: &str = "target/ft-logic.wasm";
 pub const NFT_BINARY: &str = "target/nft.wasm";
 
-pub struct GearApiWrapper(GearApi);
-
-impl Deref for GearApiWrapper {
-    type Target = GearApi;
-
-    fn deref(&self) -> &Self::Target {
-        &self.0
-    }
-}
-
-pub struct Client<T: Deref<Target = GearApi>> {
-    client: T,
+pub struct Client {
+    client: GearApi,
     listener: EventListener,
 }
 
-impl Client<GearApiWrapper> {
+impl Client {
     pub async fn global() -> Result<Self> {
         let client = GearApi::gear().await?;
-        let listener = client.subscribe().await?;
-
-        Ok(Self {
-            client: GearApiWrapper(client),
-            listener,
-        })
-    }
-
-    pub async fn login(mut self, suri: impl AsRef<str>) -> Result<Self> {
-        self.client = GearApiWrapper(self.client.0.with(suri)?);
-
-        Ok(self)
-    }
-}
-
-impl<'a> Client<GearApiWithNode<'a>> {
-    pub async fn local(node: &'a Node) -> Result<Client<GearApiWithNode<'a>>> {
-        let client = GearApi::node(node).await?;
         let listener = client.subscribe().await?;
 
         Ok(Self { client, listener })
     }
 
-    pub fn node() -> Node {
-        // TODO: replace `.unwrap()` with `?`.
-        Node::try_from_path(env!("GEAR_NODE_PATH")).unwrap()
-    }
-}
+    pub fn login(mut self, suri: impl AsRef<str>) -> Result<Self> {
+        self.client = self.client.with(suri)?;
 
-impl<T: Deref<Target = GearApi>> Client<T> {
+        Ok(self)
+    }
+
+    pub async fn local() -> Result<Self> {
+        let client = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+        let listener = client.subscribe().await?;
+
+        Ok(Self { client, listener })
+    }
+
     pub async fn upload_code(&self, path: &str) -> Result<H256> {
         let code_id = match self.client.upload_code_by_path(path).await {
             Ok((code_id, _)) => code_id.into(),

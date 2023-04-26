@@ -33,6 +33,9 @@ jobs:
           components: clippy, rustfmt
           target: wasm32-unknown-unknown
 
+      - name: Pin toolchain
+        run: make pin-toolchain-linux
+
       - name: Install binaryen
         run: |
           wget -c https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O - | tar -xz -C .
@@ -58,7 +61,7 @@ jobs:
         with:
           path: |
             target/wasm32-unknown-unknown/*
-            meta.txt
+            *.meta.txt
 
   upload:
     if: github.event_name == 'push'
@@ -69,7 +72,7 @@ jobs:
         uses: actions/download-artifact@v3
 
       - name: Delete previous release
-        uses: dev-drprasad/delete-tag-and-release@v0.2.0
+        uses: dev-drprasad/delete-tag-and-release@v0.2.1
         with:
           delete_release: true
           tag_name: build

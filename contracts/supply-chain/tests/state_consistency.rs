@@ -1,6 +1,5 @@
 use deploy::*;
-use ft_logic_io::Action as FTAction;
-use ft_main_io::{FTokenAction, FTokenEvent, InitFToken};
+use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use gclient::Result;
 use gear_lib::non_fungible_token::token::TokenMetadata;
 use gstd::prelude::*;
@@ -11,8 +10,7 @@ use supply_chain_io::*;
 #[tokio::test]
 #[ignore]
 async fn state_consistency() -> Result<()> {
-    let node = Client::node();
-    let mut client = Client::local(&node).await?;
+    let mut client = Client::local().await?;
 
     let storage_code_hash = client.upload_code(FT_STORAGE).await?;
     let ft_logic_code_hash = client.upload_code(FT_LOGIC).await?;
@@ -69,11 +67,10 @@ async fn state_consistency() -> Result<()> {
                     ft_actor_id,
                     FTokenAction::Message {
                         transaction_id: 0,
-                        payload: FTAction::Mint {
+                        payload: LogicAction::Mint {
                             recipient: ALICE.into(),
                             amount: price
-                        }
-                        .encode(),
+                        },
                     },
                 )
                 .await?
@@ -85,11 +82,10 @@ async fn state_consistency() -> Result<()> {
                     ft_actor_id,
                     FTokenAction::Message {
                         transaction_id: 1,
-                        payload: FTAction::Approve {
+                        payload: LogicAction::Approve {
                             approved_account: supply_chain_actor_id.into(),
                             amount: price * 3,
-                        }
-                        .encode(),
+                        },
                     },
                 )
                 .await?
@@ -201,11 +197,6 @@ async fn state_consistency() -> Result<()> {
                 by: Role::Producer
             }
         })
-    );
-    assert!(
-        !client
-            .is_action_cached(supply_chain_actor_id, payload)
-            .await?
     );
 
     // InnerAction::Producer(ProducerAction::Ship)
@@ -376,11 +367,6 @@ async fn state_consistency() -> Result<()> {
                 by: Role::Distributor
             }
         }),
-    );
-    assert!(
-        !client
-            .is_action_cached(supply_chain_actor_id, payload)
-            .await?
     );
 
     // InnerAction::Distributor(DistributorAction::Ship)

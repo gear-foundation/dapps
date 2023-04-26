@@ -1,7 +1,6 @@
 use super::{Program, RunResult, TransactionalProgram, FOREIGN_USER};
 use deploy::{FT_LOGIC, FT_MAIN, FT_STORAGE};
-use ft_logic_io::Action;
-use ft_main_io::{FTokenAction, FTokenEvent, InitFToken};
+use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use gstd::{prelude::*, ActorId};
 use gtest::{Log, Program as InnerProgram, RunResult as InnerRunResult, System};
 
@@ -43,38 +42,32 @@ impl<'a> FungibleToken<'a> {
     pub fn mint(&mut self, recipient: u64, amount: u128) {
         let transaction_id = self.transaction_id();
 
-        assert_ft_token_event_ok(
-            self.0.send(
-                FOREIGN_USER,
-                FTokenAction::Message {
-                    transaction_id,
-                    payload: Action::Mint {
-                        recipient: recipient.into(),
-                        amount,
-                    }
-                    .encode(),
+        assert_ft_token_event_ok(self.0.send(
+            FOREIGN_USER,
+            FTokenAction::Message {
+                transaction_id,
+                payload: LogicAction::Mint {
+                    recipient: recipient.into(),
+                    amount,
                 },
-            ),
-        )
+            },
+        ))
     }
 
     #[track_caller]
     pub fn approve(&mut self, from: u64, approved_account: impl Into<ActorId>, amount: u128) {
         let transaction_id = self.transaction_id();
 
-        assert_ft_token_event_ok(
-            self.0.send(
-                from,
-                FTokenAction::Message {
-                    transaction_id,
-                    payload: Action::Approve {
-                        approved_account: approved_account.into(),
-                        amount,
-                    }
-                    .encode(),
+        assert_ft_token_event_ok(self.0.send(
+            from,
+            FTokenAction::Message {
+                transaction_id,
+                payload: LogicAction::Approve {
+                    approved_account: approved_account.into(),
+                    amount,
                 },
-            ),
-        );
+            },
+        ));
     }
 
     pub fn balance(&self, actor_id: impl Into<ActorId>) -> RunResult<u128, FTokenEvent, ()> {

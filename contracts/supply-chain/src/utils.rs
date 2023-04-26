@@ -1,6 +1,5 @@
 use super::tx_manager::TransactionGuard;
-use ft_logic_io::Action;
-use ft_main_io::{FTokenAction, FTokenEvent};
+use ft_main_io::{FTokenAction, FTokenEvent, LogicAction};
 use gear_lib::non_fungible_token::{
     io::NFTTransfer,
     token::{TokenId, TokenMetadata},
@@ -82,12 +81,11 @@ pub async fn transfer_ftokens<T>(
 ) -> Result<(), Error> {
     let payload = FTokenAction::Message {
         transaction_id: tx_guard.step()?,
-        payload: Action::Transfer {
+        payload: LogicAction::Transfer {
             sender,
             recipient,
             amount,
-        }
-        .encode(),
+        },
     };
 
     if FTokenEvent::Ok != send(fungible_token, payload)?.await? {

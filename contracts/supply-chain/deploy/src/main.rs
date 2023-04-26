@@ -1,9 +1,7 @@
-use std::ops::Deref;
-
-use clap::{Arg, ArgAction, ArgMatches, Command};
+use clap::{Arg, ArgAction, Command};
 use deploy::*;
 use ft_main_io::InitFToken;
-use gclient::{GearApi, Result};
+use gclient::Result;
 use nft_io::InitNFT;
 use primitive_types::U256;
 use supply_chain::WASM_BINARY_OPT as WASM_BINARY;
@@ -17,28 +15,16 @@ async fn main() -> Result<()> {
         .arg(Arg::new("full").short('f').action(ArgAction::SetTrue))
         .get_matches();
 
-    if matches.get_flag("local") {
-        if matches.contains_id("logic") {
-            // FIXME: https://github.com/gear-tech/gear/issues/2397.
-            panic!("`GearApiWithNode` doesn't support logging in");
-        }
-
-        process(Client::local(&Client::node()).await?, matches).await
+    let mut client = if matches.get_flag("local") {
+        Client::local().await
     } else {
-        let mut client = Client::global().await?;
+        Client::global().await
+    }?;
 
-        if let Some(login) = matches.get_one::<String>("login") {
-            client = client.login(login).await?
-        }
-
-        process(client, matches).await
+    if let Some(login) = matches.get_one::<String>("login") {
+        client = client.login(login)?
     }
-}
 
-async fn process<T: Deref<Target = GearApi>>(
-    mut client: Client<T>,
-    matches: ArgMatches,
-) -> Result<()> {
     let storage_code_hash = client.upload_code(FT_STORAGE).await?;
     let ft_logic_code_hash = client.upload_code(FT_LOGIC).await?;
 
