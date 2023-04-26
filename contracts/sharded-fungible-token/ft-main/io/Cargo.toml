@@ -1,11 +1,11 @@
 [package]
 name = "ft-main-io"
-version = "2.1.0"
+version = "2.1.1"
 edition = "2021"
 
 [dependencies]
-gmeta = {  git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
 primitive-types = { version = "0.12.1", default-features = false }

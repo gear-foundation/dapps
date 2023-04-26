@@ -42,7 +42,7 @@ jobs:
           target: wasm32-unknown-unknown
 
       - name: Pin toolchain
-        run: make pin-toolchain
+        run: make pin-toolchain-linux
 
       - name: Install binaryen
         run: |
