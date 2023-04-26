@@ -6,6 +6,7 @@ import { useGame } from '../app/context';
 import { RegistrationSection } from '../components/sections/registration-section';
 import { Loader } from '../components/loaders/loader';
 import { cn } from '../app/utils';
+// import { useEffect } from 'react';
 
 export const Home = () => {
   useInitGame();
@@ -13,6 +14,10 @@ export const Home = () => {
 
   const { account } = useAccount();
   const { game, gameWasm } = useGame();
+
+  // useEffect(() => {
+  //   console.log({ game, gameWasm });
+  // }, [game, gameWasm]);
 
   return (
     <section className={cn('grid grow', !account && 'place-items-center')}>

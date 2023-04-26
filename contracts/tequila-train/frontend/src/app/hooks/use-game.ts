@@ -19,13 +19,20 @@ function useReadGameState<T>() {
 export function useInitGame() {
   const { setIsAllowed, setOpenWinnerPopup } = useApp();
   const { account } = useAccount();
-  const { setGame, setPlayers } = useGame();
+  const { setGame, setPlayers, gameWasm } = useGame();
   const { state } = useReadGameState<IGameState>();
 
   useEffect(() => {
     setGame(state);
-    if (state && account && state.isStarted) {
+    if (state && account && state.isStarted && gameWasm) {
       setPlayers(state.players);
+      // console.log({
+      //   isAllowed: account.decodedAddress === state.players[state.gameState?.currentPlayer][0],
+      //   accountCurrent: account.decodedAddress,
+      //   playerCurrent: state.players[state.gameState?.currentPlayer][0],
+      // });
+
+      console.log(account.decodedAddress === state.players[state.gameState?.currentPlayer][0]);
       setIsAllowed(account.decodedAddress === state.players[state.gameState?.currentPlayer][0]);
 
       if (state.gameState?.state?.winner) {
@@ -35,8 +42,8 @@ export function useInitGame() {
       setPlayers([]);
       setIsAllowed(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, account]);
+    //
+  }, [state, account, gameWasm]);
 }
 
 export function useGameMessage() {
@@ -112,7 +119,7 @@ export function useWasmState(payload?: AnyJson, isReadOnError?: boolean) {
       unsub?.then((unsubCallback) => unsubCallback());
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [api, programId, wasm, functionName]);
+  }, [api, programId, wasm, functionName, game?.isStarted]);
 
   useEffect(() => {
     // console.log('wasm state: ', state);
