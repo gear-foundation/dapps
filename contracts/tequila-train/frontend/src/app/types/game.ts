@@ -52,9 +52,7 @@ export type IGameState = {
     tracks: StatePlayerTrackType[];
     winner: null | HexString;
   };
-  players: {
-    players: IPlayer[];
-  };
+  players: IPlayer[];
   isStarted: boolean;
   maybeLimit: number;
 };

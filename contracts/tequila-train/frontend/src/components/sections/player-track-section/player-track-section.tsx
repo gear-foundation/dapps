@@ -93,7 +93,7 @@ export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }:
           />
         )}
         {isUserTrain &&
-          (account?.decodedAddress === wasm?.players[index] && !isDisabled && playerChoice?.tile_id !== undefined ? (
+          (account?.decodedAddress === wasm?.players[index][0] && !isDisabled && playerChoice?.tile_id !== undefined ? (
             <PlayerTrain index={index} />
           ) : (
             <Icon

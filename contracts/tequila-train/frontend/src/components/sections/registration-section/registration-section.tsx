@@ -22,7 +22,7 @@ export function RegistrationSection() {
         <div className="basis-[540px] grow lg:grow-0">
           <h2 className="text-[52px] leading-none font-semibold tracking-[0.08em]">Registration...</h2>
           <p className="mt-3 text-white/60 tracking-[0.08em]">
-            Players ({game?.players.players.length || 0}/{game?.maybeLimit || 8}). Waiting for other players...{' '}
+            Players ({game?.players.length || 0}/{game?.maybeLimit || 8}). Waiting for other players...{' '}
           </p>
 
           <div className="mt-6">

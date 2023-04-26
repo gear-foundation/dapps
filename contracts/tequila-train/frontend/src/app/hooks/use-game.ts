@@ -25,8 +25,8 @@ export function useInitGame() {
   useEffect(() => {
     setGame(state);
     if (state && account && state.isStarted) {
-      setPlayers(state.players.players);
-      setIsAllowed(account.decodedAddress === state.players.players[state.gameState?.currentPlayer][0]);
+      setPlayers(state.players);
+      setIsAllowed(account.decodedAddress === state.players[state.gameState?.currentPlayer][0]);
 
       if (state.gameState?.state?.winner) {
         setOpenWinnerPopup(true);
