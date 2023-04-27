@@ -1,25 +1,25 @@
 [package]
 name = "escrow"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.0" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.1" }
 async-trait = "0.1.68"
 hashbrown = "0.13.2"
 escrow-io = { path = "io" }
 
 [build-dependencies]
 escrow-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 
 [dev-dependencies]
-gclient = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gclient = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 tokio = "1"
 
 [features]

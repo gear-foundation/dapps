@@ -1,16 +1,16 @@
 [package]
 name = "escrow-state"
-version = "0.1.5"
+version = "0.1.6"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", branch = "testnet" }
-gmeta = { git = "https://github.com/gear-tech/gear", branch = "testnet", features = ["codegen"] }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["codegen"] }
 primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
 scale-info = { version = "2", default-features = false }
 escrow-io = { path = "../io" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", branch = "testnet", features = ["metawasm"] }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["metawasm"] }
