@@ -1,28 +1,28 @@
 [package]
 name = "staking"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 codec = { package = "parity-scale-codec", version = "3.4", default-features = false }
 staking-io = { path = "io" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.0" }
-scale-info = { version = "2.5.0", default-features = false }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.1" }
+scale-info = { version = "2.6.0", default-features = false }
 hashbrown = "0.13"
-gmeta = { git = "https://github.com/gear-tech/gear", branch = "testnet" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "testnet" }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
-sp-core = { git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
-gclient = { git = "https://github.com/gear-tech/gear.git" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+sp-core = { git = "https://github.com/gear-tech/substrate.git", rev = "36699c4478ce8ae05517bb42a1b115403313e083" }
+gclient = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 tokio = "1"
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 staking-io = { path = "io" }
 
 [features]

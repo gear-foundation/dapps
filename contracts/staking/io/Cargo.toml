@@ -1,10 +1,10 @@
 [package]
 name = "staking-io"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", features = ["debug"], branch = "testnet" }
-gmeta = { git = "https://github.com/gear-tech/gear", branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }

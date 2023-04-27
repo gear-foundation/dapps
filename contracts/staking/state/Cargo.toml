@@ -1,12 +1,12 @@
 [package]
 name = "staking-state"
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", features = ["debug"], branch = "testnet" }
-gmeta = { git = "https://github.com/gear-tech/gear", features = ["codegen"], branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gmeta = { git = "https://github.com/gear-tech/gear", features = ["codegen"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 staking-io = { path = "../io" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", features = ["metawasm"], branch = "testnet" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", features = ["metawasm"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
