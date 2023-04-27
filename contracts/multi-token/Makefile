@@ -1,4 +1,4 @@
-.PHONY: all build clean fmt fmt-check init linter pre-commit test
+.PHONY: all build clean fmt fmt-check init linter pre-commit test full-test
 
 all: init build full-test
 
@@ -26,8 +26,26 @@ fmt-check:
 
 init:
 	@echo ⚙️ Installing a toolchain \& a target...
-	@rustup toolchain add nightly
-	@rustup target add wasm32-unknown-unknown --toolchain nightly
+ifeq ($(shell uname -s),Linux)
+	@echo Linux detected..
+	make pin-toolchain-linux
+else ifeq ($(shell uname -s),Darwin)
+	@echo Macos detected..
+	make pin-toolchain-mac-m1
+endif
+
+pin-toolchain-mac-m1:
+	@rustup toolchain install nightly-2023-03-14 --component llvm-tools-preview
+	@rustup target add wasm32-unknown-unknown --toolchain nightly-2023-03-14
+	@rm -rf ~/.rustup/toolchains/nightly-aarch64-apple-darwin
+	@ln -s ~/.rustup/toolchains/nightly-2023-03-14-aarch64-apple-darwin ~/.rustup/toolchains/nightly-aarch64-apple-darwin
+
+pin-toolchain-linux:
+	@rustup toolchain install nightly-2023-03-14 --component llvm-tools-preview
+	@rustup target add wasm32-unknown-unknown --toolchain nightly-2023-03-14
+	@rm -rf ~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu
+	@ln -s ~/.rustup/toolchains/nightly-2023-03-14-x86_64-unknown-linux-gnu ~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu
+	@rustup component add clippy --toolchain nightly-x86_64-unknown-linux-gnu
 
 lint:
 	@echo ⚙️ Running the linter...
@@ -43,17 +61,6 @@ pre-commit: fmt lint full-test
 test:
 	@echo ⚙️ Running unit tests...
 	@cargo +nightly t --release -Fbinary-vendor
-
-node-test: deps
-	@echo ⚙️ Running node tests...
-	@wget https://get.gear.rs/gear-nightly-linu\x-x86_64.tar.xz && \
-	tar xvf gear-nightly-linux-x86_64.tar.xz && \
-	rm gear-nightly-linux-x86_64.tar.xz
-	@./gear --dev --tmp > /dev/null 2>&1  & echo "$$!" > gear.pid
-	cat gear.pid;
-	@cargo +nightly t -r --workspace -Fbinary-vendor -- --include-ignored --test node_tests --test-threads=1 kill `(cat gear.pid)`;
-	rm gear; rm gear.pid
-
 
 full-test:
 	@echo ⚙️ Running all tests...

@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.5] - 2023-04-27
+### Changed
+- Gear's dependencies pinned to the "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" commit.
+
 ## [0.3.4] - 2023-03-03
 ### Changed
 - Updated `gstd`, `gtest`, `gear-wasm-builder` to the `testnet` branch.
@@ -44,8 +48,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/multitoken/compare/0.3.4...HEAD
-[0.3.4]: https://github.com/gear-dapps/multitoken/compare/0.3.4...0.3.4
+[Unreleased]: https://github.com/gear-dapps/multitoken/compare/0.3.5...HEAD
+[0.3.5]: https://github.com/gear-dapps/multitoken/compare/0.3.4...0.3.5
+[0.3.4]: https://github.com/gear-dapps/multitoken/compare/0.3.3...0.3.4
 [0.3.3]: https://github.com/gear-dapps/multitoken/compare/0.3.2...0.3.3
 [0.3.2]: https://github.com/gear-dapps/multitoken/compare/0.3.1...0.3.2
 [0.3.1]: https://github.com/gear-dapps/multitoken/compare/0.3.0...0.3.1

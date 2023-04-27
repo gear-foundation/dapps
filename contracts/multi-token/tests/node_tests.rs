@@ -46,7 +46,7 @@ async fn init() -> Result<()> {
     let (message_id, _program_id, _hash) = api
         .upload_program_bytes(
             WASM_BINARY_OPT.to_vec(),
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             init_payload,
             gas_info.min_limit,
             0,
