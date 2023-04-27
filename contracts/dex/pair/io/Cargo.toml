@@ -6,7 +6,7 @@ license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }

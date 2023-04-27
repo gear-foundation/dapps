@@ -2,6 +2,7 @@ use dex_factory::WASM_BINARY_OPT;
 use dex_factory_io::*;
 use dex_pair_io::FungibleId;
 use dex_pair_io::*;
+use dex_pair_state::WASM_BINARY;
 use ft_io::*;
 use gstd::{prelude::*, ActorId};
 use gtest::{Program, RunResult, System};
@@ -130,8 +131,8 @@ pub fn swap_for_exact(pair: &Program, user: u64, to: ActorId, amount_out: u128) 
 }
 
 pub fn check_reserves(pair: &Program, reserve0: u128, reserve1: u128) {
-    match pair.meta_state(PairStateQuery::Reserves) {
-        gstd::Ok(PairStateReply::Reserves((true_reserve0, true_reserve1))) => {
+    match pair.read_state_using_wasm::<(), (u128, u128)>("reserves", WASM_BINARY.into(), None) {
+        Ok((true_reserve0, true_reserve1)) => {
             if reserve0 != true_reserve0 || reserve1 != true_reserve1 {
                 panic!("PAIR: Actual reserves differ");
             }
@@ -151,8 +152,12 @@ pub fn check_ft_balance(token: &Program, user: u64, address: ActorId, balance: u
 }
 
 pub fn check_pair_balance(pair: &Program, address: ActorId, balance: u128) {
-    match pair.meta_state(PairStateQuery::BalanceOf(address)) {
-        gstd::Ok(PairStateReply::Balance(true_balance)) => {
+    match pair.read_state_using_wasm::<ActorId, u128>(
+        "balance_of",
+        WASM_BINARY.into(),
+        Some(address),
+    ) {
+        Ok(true_balance) => {
             if true_balance != balance {
                 panic!("PAIR: Actual balances differ");
             }

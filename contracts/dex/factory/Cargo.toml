@@ -6,18 +6,19 @@ license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 dex-factory-io = { path = "io" }
 dex-pair-io = { path = "../pair/io" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.4" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
 hashbrown = "0.13"
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+dex-factory-state = { path = "state" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 dex-factory-io = { path = "io" }
 
 [features]

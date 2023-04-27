@@ -1,6 +1,8 @@
 use dex_factory_io::*;
+use dex_factory_state::WASM_BINARY;
 use gstd::{prelude::*, ActorId};
 use gtest::{Program, RunResult, System};
+
 pub const USER: u64 = 10;
 pub const FEE_SETTER: u64 = 11;
 
@@ -35,8 +37,8 @@ pub fn set_fee_to_setter(factory: &Program, user: u64, fee_to_setter: ActorId) -
 }
 
 pub fn check_fee_to(factory: &Program, fee_to: ActorId) {
-    match factory.meta_state(FactoryStateQuery::FeeTo) {
-        gstd::Ok(FactoryStateReply::FeeTo(true_fee_to)) => {
+    match factory.read_state_using_wasm::<(), ActorId>("fee_to", WASM_BINARY.into(), None) {
+        Ok(true_fee_to) => {
             if true_fee_to != fee_to {
                 panic!("FACTORY: Actual fee_to is different");
             }
@@ -50,8 +52,8 @@ pub fn check_fee_to(factory: &Program, fee_to: ActorId) {
 }
 
 pub fn check_fee_to_setter(factory: &Program, fee_to_setter: ActorId) {
-    match factory.meta_state(FactoryStateQuery::FeeToSetter) {
-        gstd::Ok(FactoryStateReply::FeeToSetter(true_fee_to_setter)) => {
+    match factory.read_state_using_wasm::<(), ActorId>("fee_to_setter", WASM_BINARY.into(), None) {
+        Ok(true_fee_to_setter) => {
             if true_fee_to_setter != fee_to_setter {
                 panic!("FACTORY: Actual fee_to_setter is different");
             }
@@ -63,8 +65,8 @@ pub fn check_fee_to_setter(factory: &Program, fee_to_setter: ActorId) {
 }
 
 pub fn check_pair_len(factory: &Program, length: u32) {
-    match factory.meta_state(FactoryStateQuery::AllPairsLength) {
-        gstd::Ok(FactoryStateReply::AllPairsLength(true_length)) => {
+    match factory.read_state_using_wasm::<(), u32>("all_pairs_length", WASM_BINARY.into(), None) {
+        Ok(true_length) => {
             if true_length != length {
                 panic!("FACTORY: Actual length is different");
             }

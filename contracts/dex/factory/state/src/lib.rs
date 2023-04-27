@@ -4,29 +4,30 @@ use dex_factory_io::*;
 use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 
-#[metawasm]
-pub trait Metawasm {
-    type State = <ContractMetadata as Metadata>::State;
+#[cfg(feature = "binary-vendor")]
+include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-    fn fee_to(state: Self::State) -> ActorId {
+#[metawasm]
+pub mod metafns {
+    pub type State = <ContractMetadata as Metadata>::State;
+
+    pub fn fee_to(state: State) -> ActorId {
         state.fee_to
     }
 
-    fn fee_to_setter(state: Self::State) -> ActorId {
+    pub fn fee_to_setter(state: State) -> ActorId {
         state.fee_to_setter
     }
 
-    fn pair_address(pair: Pair, state: Self::State) -> ActorId {
+    pub fn pair_address(state: State, pair: (FungibleId, FungibleId)) -> ActorId {
         state.pair_address(pair.0, pair.1)
     }
 
-    fn all_pairs_length(state: Self::State) -> u32 {
+    pub fn all_pairs_length(state: State) -> u32 {
         state.all_pairs_length()
     }
 
-    fn owner(state: Self::State) -> ActorId {
+    pub fn owner(state: State) -> ActorId {
         state.owner_id
     }
 }
-
-type Pair = (FungibleId, FungibleId);

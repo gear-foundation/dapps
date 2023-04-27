@@ -4,23 +4,26 @@ use dex_pair_io::*;
 use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 
-#[metawasm]
-pub trait Metawasm {
-    type State = <ContractMetadata as Metadata>::State;
+#[cfg(feature = "binary-vendor")]
+include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-    fn token_addresses(state: Self::State) -> (FungibleId, FungibleId) {
+#[metawasm]
+pub mod metafns {
+    pub type State = <ContractMetadata as Metadata>::State;
+
+    pub fn token_addresses(state: State) -> (FungibleId, FungibleId) {
         state.token_addresses()
     }
 
-    fn reserves(state: Self::State) -> (u128, u128) {
+    pub fn reserves(state: State) -> (u128, u128) {
         state.reserves()
     }
 
-    fn prices(state: Self::State) -> (u128, u128) {
+    pub fn prices(state: State) -> (u128, u128) {
         state.prices()
     }
 
-    fn balance_of(address: ActorId, state: Self::State) -> u128 {
+    pub fn balance_of(state: State, address: ActorId) -> u128 {
         state.balance_of(address)
     }
 }
