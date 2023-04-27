@@ -11,6 +11,13 @@
   box-sizing: content-box;
 }
 
+#modal-root {
+  div div {
+    max-height: 75vh;
+    overflow-y: auto;
+  }
+}
+
 main {
   flex: 1;
   display: flex;
@@ -29,6 +36,6 @@ body {
   transition: opacity 150ms ease-in;
 
   &:hover {
-    opacity: .5;
+    opacity: 0.5;
   }
 }

@@ -1,9 +1,4 @@
-import {
-  SendMessageOptions,
-  useAccount,
-  useReadWasmState,
-  useSendMessage,
-} from '@gear-js/react-hooks';
+import { SendMessageOptions, useAccount, useReadWasmState, useSendMessage } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 import { HexString } from '@polkadot/util/types';
 import { LOCAL_STORAGE } from 'consts';
@@ -20,29 +15,18 @@ function useSupplyChainMetadata() {
 function useSupplyChainState<T>(functionName: string, payload: AnyJson) {
   const buffer = useBuffer(stateWasm);
 
-  return useReadWasmState<T>(
-    localStorage[LOCAL_STORAGE.PROGRAM],
-    buffer,
-    functionName,
-    payload
-  );
+  return useReadWasmState<T>(localStorage[LOCAL_STORAGE.PROGRAM], buffer, functionName, payload);
 }
 
 function useItem(itemId: string) {
   const payload = itemId || undefined;
-  const { state, isStateRead } = useSupplyChainState<Item>(
-    'item_info',
-    payload
-  );
+  const { state, isStateRead } = useSupplyChainState<Item>('item_info', payload);
 
   return { item: state, isItemRead: isStateRead };
 }
 
 function useItems() {
-  const { state, isStateRead } = useSupplyChainState<Items>(
-    'existing_items',
-    null
-  );
+  const { state, isStateRead } = useSupplyChainState<Items>('existing_items', null);
 
   return { items: state, isEachItemRead: isStateRead };
 }
@@ -51,10 +35,7 @@ function useRoles() {
   const { account } = useAccount();
   const { decodedAddress } = account || {};
 
-  const { state, isStateRead } = useSupplyChainState<string[]>(
-    'roles',
-    decodedAddress
-  );
+  const { state, isStateRead } = useSupplyChainState<string[]>('roles', decodedAddress);
 
   return { roles: state, isEachRoleRead: isStateRead };
 }
@@ -70,32 +51,17 @@ function useNft(tokenId: string) {
   const nftStateBuffer = useBuffer(nftStateWasm);
 
   const payload = tokenId || undefined;
-  const { state, isStateRead } = useReadWasmState<Token>(
-    nftProgramId,
-    nftStateBuffer,
-    'token',
-    payload
-  );
+  const { state, isStateRead } = useReadWasmState<Token>(nftProgramId, nftStateBuffer, 'token', payload);
 
   return { nft: state, isNftRead: isStateRead };
 }
 
 function useSupplyChainMessage() {
   const metadata = useSupplyChainMetadata();
-  const sendMessage = useSendMessage(
-    localStorage[LOCAL_STORAGE.PROGRAM],
-    metadata
-  );
+  const sendMessage = useSendMessage(localStorage[LOCAL_STORAGE.PROGRAM], metadata, true);
 
   return (payload: AnyJson, options?: SendMessageOptions) =>
     sendMessage({ action: payload, kind: { New: null } }, options);
 }
 
-export {
-  useItem,
-  useItems,
-  useRoles,
-  useNft,
-  useSupplyChainMessage,
-  useSupplyChainMetadata,
-};
+export { useItem, useItems, useRoles, useNft, useSupplyChainMessage, useSupplyChainMetadata };

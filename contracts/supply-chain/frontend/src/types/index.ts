@@ -1,8 +1,8 @@
 import { HexString } from '@polkadot/util/types';
 
 type InitPayload = {
-  ftProgramId: HexString;
-  nftProgramId: HexString;
+  fungible_token: HexString;
+  non_fungible_token: HexString;
   producers: HexString[];
   distributors: HexString[];
   retailers: HexString[];

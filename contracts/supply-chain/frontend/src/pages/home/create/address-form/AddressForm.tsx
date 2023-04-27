@@ -9,7 +9,7 @@ import styles from './AddressForm.module.scss';
 
 type Props = {
   id: string;
-  onSubmit: (value: { nftProgramId: HexString; ftProgramId: HexString }) => void;
+  onSubmit: (value: { non_fungible_token: HexString; fungible_token: HexString }) => void;
 };
 
 const initialValues = { ftProgramId: '' as HexString, nftProgramId: '' as HexString };
@@ -34,7 +34,7 @@ function AddressForm({ id, onSubmit }: Props) {
       return;
     }
 
-    onSubmit({ nftProgramId, ftProgramId });
+    onSubmit({ non_fungible_token: nftProgramId, fungible_token: ftProgramId });
   });
 
   return (
