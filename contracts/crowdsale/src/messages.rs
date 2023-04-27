@@ -1,5 +1,5 @@
 use ft_main_io::*;
-use gstd::{msg, ActorId, Encode};
+use gstd::{msg, ActorId};
 
 /// Transfers `amount` tokens from `sender` account to `recipient` account.
 /// Arguments:
@@ -18,12 +18,11 @@ pub async fn transfer_tokens(
         *token_address,
         FTokenAction::Message {
             transaction_id,
-            payload: ft_logic_io::Action::Transfer {
+            payload: LogicAction::Transfer {
                 sender: *from,
                 recipient: *to,
                 amount: amount_tokens,
-            }
-            .encode(),
+            },
         },
         0,
     )
