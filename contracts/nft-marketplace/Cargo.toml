@@ -1,31 +1,31 @@
 [package]
 name = "nft-marketplace"
-version = "0.2.3"
+version = "0.2.4"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
-nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.9" }
+nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.10" }
 market-io = { path = "io" }
 sp-core-hashing = { version = "8.0.0", default-features = false }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.0.0" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.5" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.1" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
 async-trait = "0.1.68"
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "testnet" }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 subxt = { version = "0.27", default-features = false }
-gclient = { git = "https://github.com/gear-tech/gear.git", branch = "master" }
+gclient = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 tokio = "1"
 blake2-rfc = { version = "0.2.18", default-features = false }
 
 [build-dependencies]
 market-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in

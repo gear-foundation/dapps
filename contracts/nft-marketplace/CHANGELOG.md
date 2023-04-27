@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.4] - 2023-04-27
+### Changed
+- Update dependencies.
+- Pin gear crates version to `#5c685d0`.
+
 ## [0.2.3] - 2023-03-28
 ### Changed
 - Update dependencies.
@@ -38,7 +43,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/nft-marketplace/compare/0.2.3...HEAD
+[Unreleased]: https://github.com/gear-dapps/nft-marketplace/compare/0.2.4...HEAD
+[0.2.4]: https://github.com/gear-dapps/nft-marketplace/compare/0.2.3...0.2.4
 [0.2.3]: https://github.com/gear-dapps/nft-marketplace/compare/0.2.2...0.2.3
 [0.2.2]: https://github.com/gear-dapps/nft-marketplace/compare/0.2.1...0.2.2
 [0.2.1]: https://github.com/gear-dapps/nft-marketplace/compare/0.2.0...0.2.1
