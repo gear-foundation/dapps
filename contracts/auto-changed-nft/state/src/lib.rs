@@ -6,7 +6,7 @@ use gear_lib::non_fungible_token::{
 };
 use gmeta::{metawasm, Metadata};
 use gstd::{ActorId, Vec};
-use nft_io::NFTMetadata;
+use auto_changed_nft_io::NFTMetadata;
 
 #[metawasm]
 pub mod metafns {

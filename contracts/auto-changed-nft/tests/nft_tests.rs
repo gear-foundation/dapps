@@ -216,17 +216,17 @@ fn auto_change_success() {
     
     sys.spend_blocks(DELAY);
     let state: IoNFT = nft.read_state().unwrap();
-    let expected_dynamic_data = format!("Rest Update Periods: 2").as_bytes().to_vec();
+    let expected_dynamic_data = b"Rest Update Periods: 2".to_vec();
     assert_eq!(expected_dynamic_data, state.dynamic_data);
 
     sys.spend_blocks(DELAY);
     let state: IoNFT = nft.read_state().unwrap();
-    let expected_dynamic_data = format!("Rest Update Periods: 1").as_bytes().to_vec();
+    let expected_dynamic_data = b"Rest Update Periods: 1".to_vec();
     assert_eq!(expected_dynamic_data, state.dynamic_data);
 
     sys.spend_blocks(DELAY);
     let state: IoNFT = nft.read_state().unwrap();
-    let expected_dynamic_data = format!("Expired").as_bytes().to_vec();
+    let expected_dynamic_data = b"Expired".to_vec();
     assert_eq!(expected_dynamic_data, state.dynamic_data);
 }
 

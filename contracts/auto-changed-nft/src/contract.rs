@@ -192,7 +192,7 @@ unsafe extern "C" fn handle() {
                     msg::send_delayed(exec::program_id(), payload, 0, DELAY)
                         .expect("Can't send delayed");
                 } else {
-                    nft.dynamic_data = format!("Expired").as_bytes().to_vec();
+                    nft.dynamic_data = "Expired".as_bytes().to_vec();
                 }
                 NFTEvent::Updated { data_hash }
             });
