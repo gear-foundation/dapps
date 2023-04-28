@@ -5,24 +5,24 @@ authors = ["Gear Technologies"]
 edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 primitive-types = { version = "0.12.1", default-features = false }
 dynamic-nft-io = { path = "io" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.5" }
-gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.5" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
+gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
 sp-core-hashing = { version = "8.0.0", default-features = false }
 hashbrown = "0.13"
-gmeta = { git = "https://github.com/gear-tech/gear", branch = "testnet", features = ["codegen"] }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["codegen"] }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 hex-literal = "0.3.4"
-sp-core = { version = "6.0.0", git = "https://github.com/gear-tech/substrate.git", branch = "gear-stable" }
+sp-core = { git = "https://github.com/gear-tech/substrate.git", rev = "36699c4478ce8ae05517bb42a1b115403313e083" }
 gclient = { git = "https://github.com/gear-tech/gear.git" }
 tokio = { version = "1", features = ["full"] }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 dynamic-nft-io = { path = "io" }
 
 [workspace]
