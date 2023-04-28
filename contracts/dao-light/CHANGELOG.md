@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2023-04-28
+### Changed
+- Update dependencies.
+- Pin gear crates to `#5c685d0`.
+
 ## [0.1.2] - 2023-03-02
 ### Changed
 - Updated `gstd`, `gtest`, `gear-wasm-builder` to the `testnet` branch.
@@ -20,7 +25,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/dao-light/compare/0.1.2...HEAD
+[Unreleased]: https://github.com/gear-dapps/dao-light/compare/0.1.3...HEAD
+[0.1.3]: https://github.com/gear-dapps/dao-light/compare/0.1.2...0.1.3
 [0.1.2]: https://github.com/gear-dapps/dao-light/compare/0.1.1...0.1.2
 [0.1.1]: https://github.com/gear-dapps/dao-light/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/gear-dapps/dao-light/compare/57153c6...0.1.0

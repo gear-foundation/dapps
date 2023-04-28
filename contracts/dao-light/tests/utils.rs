@@ -32,9 +32,9 @@ pub fn init_dao(sys: &System) {
         MEMBERS[0],
         InitDao {
             approved_token_program_id: 1.into(),
-            period_duration: 10000000,
-            grace_period_length: 10000000,
-            voting_period_length: 100000000,
+            period_duration: 100000,
+            grace_period_length: 100000,
+            voting_period_length: 1000000,
         },
     );
     assert!(res.log().is_empty());

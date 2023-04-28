@@ -133,7 +133,7 @@ fn vote_on_proposal_failures() {
     // must fail since account has already voted on that proposal
     assert!(vote(&dao, MEMBERS[1], 0, Vote::Yes).main_failed());
 
-    sys.spend_blocks(1000000001);
+    sys.spend_blocks(1000001);
 
     // must fail since proposal voting period has expired
     assert!(vote(&dao, MEMBERS[0], 0, Vote::Yes).main_failed());
@@ -161,7 +161,7 @@ fn process_proposal() {
     // votes NO
     assert!(!vote(&dao, MEMBERS[1], 0, Vote::No).main_failed());
 
-    sys.spend_blocks(1000000001);
+    sys.spend_blocks(1000001);
 
     let res = process(&dao, MEMBERS[0], 0);
     assert!(res.contains(&(
@@ -184,7 +184,7 @@ fn process_proposal() {
     assert!(!vote(&dao, MEMBERS[3], 1, Vote::Yes).main_failed());
     assert!(!vote(&dao, MEMBERS[1], 1, Vote::Yes).main_failed());
 
-    sys.spend_blocks(1000000001);
+    sys.spend_blocks(1000001);
 
     let res = process(&dao, MEMBERS[0], 1);
     assert!(res.contains(&(
@@ -215,7 +215,7 @@ fn process_proposal_failures() {
     //must fail since previous proposal must be processed
     assert!(process(&dao, MEMBERS[0], 1).main_failed());
 
-    sys.spend_blocks(1000000001);
+    sys.spend_blocks(1000001);
 
     assert!(!process(&dao, MEMBERS[0], 0).main_failed());
     //must fail since proposal does not exist
@@ -258,7 +258,7 @@ fn ragequit_dao() {
     assert!(!vote(&dao, MEMBERS[2], 0, Vote::Yes).main_failed());
     assert!(!vote(&dao, MEMBERS[3], 0, Vote::Yes).main_failed());
 
-    sys.spend_blocks(1000000001);
+    sys.spend_blocks(1000001);
 
     assert!(!process(&dao, MEMBERS[0], 0).main_failed());
 
