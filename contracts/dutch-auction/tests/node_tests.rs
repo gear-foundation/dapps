@@ -6,7 +6,7 @@ use gstd::prelude::*;
 use gstd::{ActorId, Encode};
 use nft_io::*;
 
-const NFT_PATH: &str = "target/nft-0.2.9.opt.wasm";
+const NFT_PATH: &str = "target/nft-0.2.10.opt.wasm";
 
 #[tokio::test]
 #[ignore]
@@ -36,7 +36,7 @@ async fn create_and_stop() -> Result<()> {
     let (message_id, program_id, _hash) = api
         .upload_program_bytes_by_path(
             NFT_PATH,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             init_nft,
             gas_info.min_limit,
             0,
@@ -103,7 +103,7 @@ async fn create_and_stop() -> Result<()> {
     let (message_id, program_id, _hash) = api
         .upload_program(
             WASM_BINARY_OPT.to_vec(),
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             action_payload.clone(),
             gas_info.min_limit,
             0,

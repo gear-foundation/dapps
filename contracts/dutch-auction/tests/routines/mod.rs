@@ -9,7 +9,7 @@ use nft_io::NFTEvent;
 
 pub const USERS: &[u64] = &[4, 5, 6];
 #[allow(dead_code)]
-pub const DURATION: u32 = 7 * 24 * 60 * 60 * 1000;
+pub const DURATION: u32 = 169 * 60 * 60;
 
 pub fn init(sys: &System) -> Program {
     USERS
@@ -44,7 +44,7 @@ pub fn init(sys: &System) -> Program {
 }
 
 pub fn init_nft(sys: &System, owner: u64) {
-    let nft_program = Program::from_file(sys, "./target/nft-0.2.9.opt.wasm");
+    let nft_program = Program::from_file(sys, "./target/nft-0.2.10.opt.wasm");
 
     let res = nft_program.send(
         owner,
