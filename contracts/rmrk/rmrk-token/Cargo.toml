@@ -1,22 +1,22 @@
 [package]
 name = "rmrk"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "GPL-3.0"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"] }
-codec = { package = "parity-scale-codec", version = "3.1.2", default-features = false, features = ["derive", "full"] }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+codec = { package = "parity-scale-codec", version = "3.4", default-features = false, features = ["derive", "full"] }
 rmrk-io = { path = "io" }
 resource-io = { path = "../resource/io" }
 base-io = { path = "../base/io" }
 types = { path = "../types/" }
-hashbrown = "0.13.1"
+hashbrown = "0.13"
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 rmrk-io = { path = "io" }
