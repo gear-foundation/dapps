@@ -1,65 +1,75 @@
-.PHONY: all build clean fmt fmt-check init linter pre-commit test
+.PHONY: all build fmt init lint pre-commit test
 
 all: init build test
 
 build:
-	@echo ──────────── Build release ────────────────────
-	@cargo +nightly build --release --workspace
-	@ls -l ./target/wasm32-unknown-unknown/release/*.wasm
-
-clean:
-	@echo ──────────── Clean ────────────────────────────
-	@rm -rvf target
+	@echo ⚙️ Building a release...
+	@cargo +nightly b -r --workspace
+	@ls -l target/wasm32-unknown-unknown/release/*.wasm
 
 fmt:
-	@echo ──────────── Format ───────────────────────────
-	@cargo fmt --all
-
-fmt-check:
-	@echo ──────────── Check format ─────────────────────
-	@cargo fmt --all -- --check
+	@echo ⚙️ Checking a format...
+	@cargo fmt --all --check
 
 init:
-	@echo ──────────── Install toolchains ───────────────
-	@rustup toolchain add nightly
-	@rustup target add wasm32-unknown-unknown --toolchain nightly
+	@echo ⚙️ Installing a toolchain \& a target...
+ifeq ($(shell uname -s),Linux)
+	@echo Linux detected..
+	make pin-toolchain-linux
+else ifeq ($(shell uname -s),Darwin)
+	@echo Macos detected..
+	make pin-toolchain-mac-m1
+endif
 
-linter:
-	@echo ──────────── Run linter ───────────────────────
-	@cargo +nightly clippy --workspace --all-targets -- --no-deps -D warnings
+pin-toolchain-mac-m1:
+	@rustup toolchain install nightly-2023-03-14 --component llvm-tools-preview
+	@rustup target add wasm32-unknown-unknown --toolchain nightly-2023-03-14
+	@rm -rf ~/.rustup/toolchains/nightly-aarch64-apple-darwin
+	@ln -s ~/.rustup/toolchains/nightly-2023-03-14-aarch64-apple-darwin ~/.rustup/toolchains/nightly-aarch64-apple-darwin
 
-pre-commit: fmt linter test
+pin-toolchain-linux:
+	@rustup toolchain install nightly-2023-03-14 --component llvm-tools-preview
+	@rustup target add wasm32-unknown-unknown --toolchain nightly-2023-03-14
+	@rm -rf ~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu
+	@ln -s ~/.rustup/toolchains/nightly-2023-03-14-x86_64-unknown-linux-gnu ~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu
+	@rustup component add clippy --toolchain nightly-x86_64-unknown-linux-gnu
 
-test: build
+lint:
+	@echo ⚙️ Running the linter...
+	@cargo +nightly clippy --workspace --all-targets -- -D warnings
+
+pre-commit: fmt lint test
+
+test:
 	@path=target/ft_main.wasm;\
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_main-0.1.3.opt.wasm\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.1/ft_main.opt.wasm\
 	        -o $$path;\
 	fi
 	@path=target/ft_logic.wasm;\
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_logic-0.1.3.opt.wasm\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.1/ft_logic.opt.wasm\
 	        -o $$path;\
 	fi
 	@path=target/ft_storage.wasm;\
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/0.1.3/ft_storage-0.1.3.opt.wasm\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.1/ft_storage.opt.wasm\
 	        -o $$path;\
 	fi
-	@path=target/nft.wasm;\
+	@path=target/nft_state.wasm;\
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/non-fungible-token/releases/download/0.2.7/nft-0.2.7.wasm\
+	        https://github.com/gear-dapps/non-fungible-token/releases/download/0.2.10/nft_state-0.2.10.meta.wasm \
 	        -o $$path;\
 	fi
 	@path=target/nft.opt.wasm;\
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/non-fungible-token/releases/download/0.2.7/nft-0.2.7.opt.wasm\
+	        https://github.com/gear-dapps/non-fungible-token/releases/download/0.2.10/nft-0.2.10.opt.wasm\
 	        -o $$path;\
 	fi
-	@echo ──────────── Run tests ────────────────────────
-	@cargo +nightly test --release
+	@echo ⚙️ Running tests...
+	@cargo +nightly t

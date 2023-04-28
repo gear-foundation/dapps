@@ -1,6 +1,5 @@
 use crate::contract::NFTPixelboard;
-use ft_logic_io::Action;
-use ft_main_io::{FTokenAction, FTokenEvent};
+use ft_main_io::{FTokenAction, FTokenEvent, LogicAction};
 use gear_lib::non_fungible_token::token::{TokenId, TokenMetadata};
 use gstd::{msg, prelude::*, ActorId};
 use nft_io::{NFTAction, NFTEvent};
@@ -17,12 +16,11 @@ pub async fn transfer_ftokens(
         *ft_contract_id,
         FTokenAction::Message {
             transaction_id,
-            payload: Action::Transfer {
+            payload: LogicAction::Transfer {
                 sender: *sender,
                 recipient: *recipient,
                 amount,
-            }
-            .encode(),
+            },
         },
         0,
     )

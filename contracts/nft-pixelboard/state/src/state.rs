@@ -4,30 +4,30 @@ use gstd::{prelude::*, ActorId};
 use nft_pixelboard_io::*;
 
 #[metawasm]
-pub trait Metawasm {
-    type State = <ContractMetadata as Metadata>::State;
+pub mod metafns {
+    pub type State = <ContractMetadata as Metadata>::State;
 
-    fn painting(state: Self::State) -> Vec<Color> {
+    pub fn painting(state: State) -> Vec<Color> {
         state.painting
     }
 
-    fn resolution(state: Self::State) -> Resolution {
+    pub fn resolution(state: State) -> Resolution {
         state.resolution
     }
 
-    fn pixel_price(state: Self::State) -> u128 {
+    pub fn pixel_price(state: State) -> u128 {
         state.pixel_price
     }
 
-    fn block_side_length(state: Self::State) -> BlockSideLength {
+    pub fn block_side_length(state: State) -> BlockSideLength {
         state.block_side_length
     }
 
-    fn commission_percentage(state: Self::State) -> u8 {
+    pub fn commission_percentage(state: State) -> u8 {
         state.commission_percentage
     }
 
-    fn pixel_info(coordinates: Coordinates, state: Self::State) -> Token {
+    pub fn pixel_info(state: State, coordinates: Coordinates) -> Token {
         let mut token = Default::default();
 
         if coordinates.x < state.resolution.width && coordinates.y < state.resolution.height {
@@ -43,7 +43,7 @@ pub trait Metawasm {
         token
     }
 
-    fn token_info(token_id: TokenId, state: Self::State) -> Token {
+    pub fn token_info(state: State, token_id: TokenId) -> Token {
         let mut token = Default::default();
 
         if let Some((_, rectangle)) = state
@@ -62,11 +62,11 @@ pub trait Metawasm {
         token
     }
 
-    fn ft_program(state: Self::State) -> ActorId {
+    pub fn ft_program(state: State) -> ActorId {
         state.ft_program
     }
 
-    fn nft_program(state: Self::State) -> ActorId {
+    pub fn nft_program(state: State) -> ActorId {
         state.nft_program
     }
 }

@@ -1,11 +1,9 @@
 use super::{prelude::*, MetaStateReply, FOREIGN_USER};
-use gear_lib::non_fungible_token::{
-    state::{NFTQuery, NFTQueryReply},
-    token::Token,
-};
+use gear_lib::non_fungible_token::token::{Token, TokenId};
 use gstd::ActorId;
 use gtest::{Program as InnerProgram, System};
 use nft_io::InitNFT;
+use std::fs;
 
 pub struct NonFungibleToken<'a>(InnerProgram<'a>, u64);
 
@@ -17,7 +15,7 @@ impl Program for NonFungibleToken<'_> {
 
 impl<'a> NonFungibleToken<'a> {
     pub fn initialize(system: &'a System) -> Self {
-        let program = InnerProgram::from_file(system, "target/nft.wasm");
+        let program = InnerProgram::from_file(system, "target/nft.opt.wasm");
 
         assert!(!program
             .send(
@@ -47,14 +45,12 @@ impl NonFungibleTokenMetaState<'_> {
     }
 
     pub fn token(self, token_id: u128) -> MetaStateReply<Token> {
-        if let NFTQueryReply::Token { token: reply } = self
-            .0
-            .meta_state(NFTQuery::Token {
-                token_id: token_id.into(),
-            })
-            .unwrap()
-        {
-            MetaStateReply(reply)
+        if let Ok(token) = self.0.read_state_using_wasm::<TokenId, Token>(
+            "token",
+            fs::read("target/nft_state.wasm").unwrap(),
+            Some(token_id.into()),
+        ) {
+            MetaStateReply(token)
         } else {
             unreachable!();
         }

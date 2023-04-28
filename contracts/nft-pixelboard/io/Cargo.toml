@@ -6,8 +6,8 @@ license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.4" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
 codec = { package = "parity-scale-codec", version = "3", default-features = false }
 scale-info = { version = "2", default-features = false }
-gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
