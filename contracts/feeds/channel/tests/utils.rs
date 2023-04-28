@@ -23,7 +23,7 @@ impl FeedsChannel for Program<'_> {
     fn router(sys: &System) -> Program {
         let router = Program::from_file(
             sys,
-            "../target/wasm32-unknown-unknown/release/gear_feeds_router.wasm",
+            "../target/wasm32-unknown-unknown/debug/gear_feeds_router.wasm",
         );
 
         let res = router.send_bytes(OWNER, "INIT");
