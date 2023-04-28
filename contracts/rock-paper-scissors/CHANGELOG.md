@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2023-04-28
+- Pin crates to concrete revision
+
 ## [0.1.1] - 2023-03-03
 ### Changed
 - Updated `gstd`, `gtest`, `gear-wasm-builder` to the `testnet` branch.
