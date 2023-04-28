@@ -5,10 +5,10 @@ use gstd::prelude::*;
 use onchain_nft_io::*;
 
 #[metawasm]
-pub trait Metawasm {
-    type State = <ContractMetadata as Metadata>::State;
+pub mod metafns {
+    pub type State = <ContractMetadata as Metadata>::State;
 
-    fn token_uri(token_id: TokenId, state: Self::State) -> Option<Vec<u8>> {
+    pub fn token_uri(state: State, token_id: TokenId) -> Option<Vec<u8>> {
         let metadata = state
             .token
             .token_metadata_by_id
@@ -36,7 +36,7 @@ pub trait Metawasm {
         Some(TokenURI { metadata, content }.encode())
     }
 
-    fn base(query: NFTQuery, state: Self::State) -> Option<Vec<u8>> {
+    pub fn base(state: State, query: NFTQuery) -> Option<Vec<u8>> {
         let encoded = match query {
             NFTQuery::NFTInfo => NFTQueryReply::NFTInfo {
                 name: state.token.name.clone(),

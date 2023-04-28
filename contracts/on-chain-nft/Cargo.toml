@@ -5,25 +5,25 @@ authors = ["Gear Technologies"]
 edition = "2021"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
-primitive-types = { version = "0.12.1", default-features = false }
-codec = { package = "parity-scale-codec", version = "3.2.1", default-features = false }
-scale-info = { version = "2.3.0", default-features = false }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.4" }
-gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.4" }
-hashbrown = "0.13.1"
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+primitive-types = { version = "0.12", default-features = false }
+codec = { package = "parity-scale-codec", version = "3", default-features = false }
+scale-info = { version = "2", default-features = false }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
+gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
+hashbrown = "0.13"
 onchain-nft-io = { path = "io" }
-gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "stable" }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 gclient = { git = "https://github.com/gear-tech/gear.git" }
 onchain-nft-state = { path = "state", features = ["binary-vendor"] }
 tokio = "1"
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "stable" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 onchain-nft-io = { path = "io" }
 
 [features]
