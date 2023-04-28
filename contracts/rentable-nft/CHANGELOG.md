@@ -6,9 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.8] - 2023-04-28
+- Pin gear crates to concrete revision
+
 ## [0.1.0] - 2022-07-13
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/app/compare/0.1.0...HEAD
+[Unreleased]: https://github.com/gear-dapps/app/compare/0.2.8...HEAD
+[0.2.8]: https://github.com/gear-dapps/app/compare/0.0.1...0.2.8
 [0.1.0]: https://github.com/gear-dapps/app/compare/a40d727...0.1.0
