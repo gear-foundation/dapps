@@ -4,8 +4,7 @@ static mut MESSAGE_LOG: Vec<String> = vec![];
 
 #[no_mangle]
 extern "C" fn handle() {
-    let new_msg = String::from_utf8(msg::load_bytes().expect("Invalid message"))
-        .expect("Unable to create string");
+    let new_msg: String = msg::load().expect("Unable to create string");
 
     if new_msg == "PING" {
         msg::reply_bytes("PONG", 0).expect("Unable to reply");
@@ -38,6 +37,7 @@ extern "C" fn metahash() {
 mod tests {
     extern crate std;
 
+    use gstd::{Encode, String};
     use gtest::{Log, Program, System};
 
     #[test]
@@ -50,7 +50,7 @@ mod tests {
         let res = program.send_bytes(42, "INIT");
         assert!(res.log().is_empty());
 
-        let res = program.send_bytes(42, "PING");
+        let res = program.send_bytes(42, String::from("PING").encode());
         let log = Log::builder().source(1).dest(42).payload_bytes("PONG");
         assert!(res.contains(&log));
     }
