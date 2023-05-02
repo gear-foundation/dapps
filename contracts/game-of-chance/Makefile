@@ -45,19 +45,19 @@ deps:
 	@path=target/ft_main.wasm;\
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.0/ft_main.wasm\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.1/ft_main.wasm\
 	        -o $$path;\
 	fi
 	@path=target/ft_logic.wasm;\
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.0/ft_logic.wasm\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.1/ft_logic.wasm\
 	        -o $$path;\
 	fi
 	@path=target/ft_storage.wasm;\
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.0/ft_storage.wasm\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.1/ft_storage.wasm\
 	        -o $$path;\
 	fi
 

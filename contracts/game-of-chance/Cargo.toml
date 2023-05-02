@@ -1,25 +1,24 @@
 [package]
 name = "game-of-chance"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 parity-scale-codec = { version = "3", default-features = false }
 scale-info = { version = "2", default-features = false }
 rand = { version = "0.8", default-features = false }
 rand_xoshiro = "0.6"
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.0" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.1" }
 hashbrown = "0.13"
 game-of-chance-io = { path = "io" }
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
-# TODO: Remove rev(70e6ade) pin, when core-team update `testnet` gear crates
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "70e6ade" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 sp-core-hashing = "8.0.0"
 subxt = { version = "0.27", default-features = false }
 primitive-types = "0.12"
@@ -28,7 +27,7 @@ pretty_assertions = "1"
 
 [build-dependencies]
 game-of-chance-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 
 [features]
 binary-vendor = []
