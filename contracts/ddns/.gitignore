@@ -1,4 +1,4 @@
-target/
+target
 .binpath
 .DS_Store
 .pnp.*
@@ -11,3 +11,5 @@ target/
 .vscode/
 node_modules/
 .editorconfig
+.metahash
+*.meta.txt

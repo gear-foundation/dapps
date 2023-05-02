@@ -1,8 +1,20 @@
 #![no_std]
 
 use codec::{Decode, Encode};
+use gmeta::{InOut, Metadata};
 use gstd::{prelude::*, ActorId, Clone, Vec};
 use scale_info::TypeInfo;
+
+pub struct ContractMetadata;
+
+impl Metadata for ContractMetadata {
+    type Init = ();
+    type Handle = InOut<DnsAction, DnsReply>;
+    type Reply = ();
+    type Others = ();
+    type Signal = ();
+    type State = Vec<DnsRecord>;
+}
 
 #[derive(Encode, Decode, TypeInfo, Clone)]
 pub struct DnsRecord {
@@ -39,18 +51,51 @@ pub enum DnsReply {
     Records(Vec<DnsRecord>),
 }
 
-#[derive(Encode, Decode, TypeInfo)]
-pub enum QueryAction {
-    GetAll,
-    GetById(ActorId),
-    GetByName(String),
-    GetByCreator(ActorId),
-    GetByDescription(String),
-    GetByPattern(String),
+pub trait Dns {
+    fn get_by_id(&self, id: ActorId) -> Option<DnsRecord>;
+
+    fn get_by_name(&self, name: String) -> Vec<DnsRecord>;
+
+    fn get_by_description(&self, description: String) -> Vec<DnsRecord>;
+
+    fn get_by_creator(&self, creator: ActorId) -> Vec<DnsRecord>;
+
+    fn get_by_pattern(&self, pattern: String) -> Vec<DnsRecord>;
 }
 
-#[derive(Encode, Decode, TypeInfo)]
-pub enum QueryResult {
-    Record(Option<DnsRecord>),
-    Records(Vec<DnsRecord>),
+impl Dns for Vec<DnsRecord> {
+    fn get_by_id(&self, id: ActorId) -> Option<DnsRecord> {
+        self.iter().find(|&r| r.id == id).cloned()
+    }
+
+    fn get_by_name(&self, name: String) -> Vec<DnsRecord> {
+        self.iter()
+            .filter(|r| r.meta.name == name)
+            .cloned()
+            .collect()
+    }
+
+    fn get_by_description(&self, description: String) -> Vec<DnsRecord> {
+        self.iter()
+            .filter(|&r| r.meta.description.as_str().contains(description.as_str()))
+            .cloned()
+            .collect()
+    }
+
+    fn get_by_creator(&self, creator: ActorId) -> Vec<DnsRecord> {
+        self.iter()
+            .filter(|&r| r.created_by == creator)
+            .cloned()
+            .collect()
+    }
+
+    fn get_by_pattern(&self, pattern: String) -> Vec<DnsRecord> {
+        self.iter()
+            .filter(|&r| {
+                r.meta.name.as_str().contains(pattern.as_str())
+                    || r.meta.description.as_str().contains(pattern.as_str())
+            })
+            .cloned()
+            .collect()
+    }
 }
