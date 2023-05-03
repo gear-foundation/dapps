@@ -15,10 +15,15 @@ init:
 	@echo ⚙️ Installing a toolchain \& a target...
 ifeq ($(shell uname -s),Linux)
 	@echo Linux detected..
-	pin-toolchain-linux
+	make pin-toolchain-linux
 else ifeq ($(shell uname -s),Darwin)
-	@echo Macos detected..
+ifeq ($(shell uname -m),arm64)
+	@echo MacOS with M1 detected..
 	make pin-toolchain-mac-m1
+else
+	@echo MacOS with Intel detected..
+	make pin-toolchain-mac-intel
+endif
 endif
 
 pin-toolchain-mac-m1:
@@ -26,6 +31,12 @@ pin-toolchain-mac-m1:
 	@rustup target add wasm32-unknown-unknown --toolchain nightly-2023-03-14
 	@rm -rf ~/.rustup/toolchains/nightly-aarch64-apple-darwin
 	@ln -s ~/.rustup/toolchains/nightly-2023-03-14-aarch64-apple-darwin ~/.rustup/toolchains/nightly-aarch64-apple-darwin
+
+pin-toolchain-mac-intel:
+	@rustup toolchain install nightly-2023-03-14 --component llvm-tools-preview
+	@rustup target add wasm32-unknown-unknown --toolchain nightly-2023-03-14
+	@rm -rf ~/.rustup/toolchains/nightly-x86_64-apple-darwin
+	@ln -s ~/.rustup/toolchains/nightly-2023-03-14-x86_64-apple-darwin ~/.rustup/toolchains/nightly-x86_64-apple-darwin
 
 pin-toolchain-linux:
 	@rustup toolchain install nightly-2023-03-14 --component llvm-tools-preview

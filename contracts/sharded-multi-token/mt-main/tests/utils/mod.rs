@@ -1,7 +1,6 @@
 use gstd::{prelude::*, ActorId};
 use gtest::{Program, System};
-use mt_logic_io::{Action, TokenId};
-use mt_main_io::{InitMToken, MTokenAction, MTokenEvent};
+use mt_main_io::{InitMToken, LogicAction, MTokenAction, MTokenEvent, TokenId};
 
 pub const ROOT_ACCOUNT: u64 = 100;
 
@@ -96,13 +95,12 @@ impl MToken for Program<'_> {
         amount: u128,
         error: bool,
     ) {
-        let payload = Action::Transfer {
+        let payload = LogicAction::Transfer {
             token_id,
             sender: from.into(),
             recipient: to.into(),
             amount,
-        }
-        .encode();
+        };
 
         self.send_message_and_check_res(
             from,
@@ -115,11 +113,10 @@ impl MToken for Program<'_> {
     }
 
     fn approve(&self, tx_id: u64, from: u64, account: u64, is_approved: bool, error: bool) {
-        let payload = Action::Approve {
+        let payload = LogicAction::Approve {
             account: account.into(),
             is_approved,
-        }
-        .encode();
+        };
 
         self.send_message_and_check_res(
             from,
@@ -140,12 +137,11 @@ impl MToken for Program<'_> {
         is_nft: bool,
         error: bool,
     ) {
-        let payload = Action::Create {
+        let payload = LogicAction::Create {
             initial_amount,
             uri,
             is_nft,
-        }
-        .encode();
+        };
 
         self.send_message_and_check_res(
             from,
@@ -166,12 +162,11 @@ impl MToken for Program<'_> {
         amounts: Vec<u128>,
         error: bool,
     ) {
-        let payload = Action::MintBatchFT {
+        let payload = LogicAction::MintBatchFT {
             token_id,
             to: to.iter().map(|id| Into::<ActorId>::into(*id)).collect(),
             amounts,
-        }
-        .encode();
+        };
 
         self.send_message_and_check_res(
             from,
@@ -184,11 +179,10 @@ impl MToken for Program<'_> {
     }
 
     fn mint_batch_nft(&self, tx_id: u64, from: u64, token_id: TokenId, to: Vec<u64>, error: bool) {
-        let payload = Action::MintBatchNFT {
+        let payload = LogicAction::MintBatchNFT {
             token_id,
             to: to.iter().map(|id| Into::<ActorId>::into(*id)).collect(),
-        }
-        .encode();
+        };
 
         self.send_message_and_check_res(
             from,
@@ -209,15 +203,14 @@ impl MToken for Program<'_> {
         amounts: Vec<u128>,
         error: bool,
     ) {
-        let payload = Action::BurnBatchFT {
+        let payload = LogicAction::BurnBatchFT {
             token_id,
             burn_from: burn_from
                 .iter()
                 .map(|id| Into::<ActorId>::into(*id))
                 .collect(),
             amounts,
-        }
-        .encode();
+        };
 
         self.send_message_and_check_res(
             from,
@@ -230,11 +223,10 @@ impl MToken for Program<'_> {
     }
 
     fn burn_nft(&self, tx_id: u64, from: u64, token_id: TokenId, burn_from: u64, error: bool) {
-        let payload = Action::BurnNFT {
+        let payload = LogicAction::BurnNFT {
             token_id,
             from: burn_from.into(),
-        }
-        .encode();
+        };
 
         self.send_message_and_check_res(
             from,

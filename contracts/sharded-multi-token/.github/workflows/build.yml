@@ -49,7 +49,7 @@ jobs:
 
       - name: Run tests
         run: |
-          curl -L https://get.gear.rs/gear-nightly-linux-x86_64.tar.xz -o - | tar xJ
+          curl -L https://get.gear.rs/gear-stable-env-linux-x86_64.tar.xz -o - | tar xJ
           chmod +x gear
           ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
           make full-test

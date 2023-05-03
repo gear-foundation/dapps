@@ -187,7 +187,10 @@ async fn main() {
         MTokenAction::Message {
             transaction_id,
             payload,
-        } => mtoken.message(transaction_id, &payload).await,
+        } => {
+            let payload_encoded = payload.encode();
+            mtoken.message(transaction_id, &payload_encoded).await
+        }
         MTokenAction::UpdateLogicContract {
             mt_logic_code_hash,
             storage_code_hash,

@@ -1,15 +1,16 @@
 [package]
 name = "mt-logic-io"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
 parity-scale-codec = { version = "3", default-features = false }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 scale-info = { version = "2", default-features = false }
 primitive-types = { version = "0.12.1", default-features = false }
 hashbrown = { version = "0.13.2" }
-gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 mt-storage-io = { path = "../../mt-storage/io" }
+mt-main-io = { path = "../../mt-main/io" }

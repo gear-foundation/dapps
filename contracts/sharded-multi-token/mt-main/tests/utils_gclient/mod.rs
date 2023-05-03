@@ -3,8 +3,7 @@
 use blake2_rfc::blake2b;
 use gclient::{EventListener, EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
-use mt_logic_io::{Action, TokenId};
-use mt_main_io::{InitMToken, MTokenAction, MTokenEvent};
+use mt_main_io::{InitMToken, LogicAction, MTokenAction, MTokenEvent, TokenId};
 
 const MT_LOGIC_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/mt_logic.opt.wasm";
 const MT_STORAGE_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/mt_storage.opt.wasm";
@@ -122,11 +121,11 @@ pub async fn send_mtoken_message(
     listener: &mut EventListener,
     program_id: &ActorId,
     tx_id: u64,
-    mtoken_action: Action,
+    mtoken_action: LogicAction,
 ) -> gclient::Result<()> {
     let payload = MTokenAction::Message {
         transaction_id: tx_id,
-        payload: mtoken_action.encode(),
+        payload: mtoken_action,
     };
 
     let program_id: Hash = program_id
@@ -166,7 +165,7 @@ pub async fn mtoken_create(
         listener,
         program_id,
         tx_id,
-        Action::Create {
+        LogicAction::Create {
             initial_amount,
             uri: uri.as_ref().to_owned(),
             is_nft,
@@ -192,7 +191,7 @@ pub async fn mtoken_transfer(
         listener,
         program_id,
         tx_id,
-        Action::Transfer {
+        LogicAction::Transfer {
             token_id,
             sender: from,
             recipient: to,
@@ -216,7 +215,7 @@ pub async fn mtoken_approve(
         listener,
         program_id,
         tx_id,
-        Action::Approve {
+        LogicAction::Approve {
             account,
             is_approved,
         },
@@ -239,7 +238,7 @@ pub async fn mtoken_mint_batch_ft(
         listener,
         program_id,
         tx_id,
-        Action::MintBatchFT {
+        LogicAction::MintBatchFT {
             token_id,
             to,
             amounts,
@@ -262,7 +261,7 @@ pub async fn mtoken_mint_batch_nft(
         listener,
         program_id,
         tx_id,
-        Action::MintBatchNFT { token_id, to },
+        LogicAction::MintBatchNFT { token_id, to },
     )
     .await
 }
@@ -282,7 +281,7 @@ pub async fn mtoken_burn_batch_ft(
         listener,
         program_id,
         tx_id,
-        Action::BurnBatchFT {
+        LogicAction::BurnBatchFT {
             token_id,
             burn_from,
             amounts,
@@ -305,7 +304,7 @@ pub async fn mtoken_burn_nft(
         listener,
         program_id,
         tx_id,
-        Action::BurnNFT { token_id, from },
+        LogicAction::BurnNFT { token_id, from },
     )
     .await
 }

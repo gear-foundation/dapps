@@ -6,6 +6,7 @@ use gstd::{msg, prelude::*, prog::ProgramGenerator, ActorId};
 use hashbrown::HashMap;
 use messages::*;
 use mt_logic_io::*;
+use mt_main_io::LogicAction;
 use mt_storage_io::TokenId;
 use primitive_types::H256;
 
@@ -31,7 +32,7 @@ impl MTLogic {
     async fn message(&mut self, transaction_hash: H256, msg_source: &ActorId, payload: &[u8]) {
         self.assert_main_contract();
 
-        let action = Action::decode(&mut &payload[..]).expect("Can't decode `Action`");
+        let action = LogicAction::decode(&mut &payload[..]).expect("Can't decode `Action`");
         let transaction_status = self
             .transaction_status
             .get(&transaction_hash)
@@ -48,7 +49,7 @@ impl MTLogic {
                     .insert(transaction_hash, TransactionStatus::InProgress);
 
                 match action {
-                    Action::Transfer {
+                    LogicAction::Transfer {
                         token_id,
                         sender,
                         recipient,
@@ -64,14 +65,14 @@ impl MTLogic {
                         )
                         .await
                     }
-                    Action::Approve {
+                    LogicAction::Approve {
                         account,
                         is_approved,
                     } => {
                         self.approve(transaction_hash, msg_source, &account, is_approved)
                             .await
                     }
-                    Action::Create {
+                    LogicAction::Create {
                         initial_amount,
                         uri,
                         is_nft,
@@ -80,7 +81,7 @@ impl MTLogic {
                             .create(transaction_hash, msg_source, initial_amount, uri, is_nft)
                             .await;
                     }
-                    Action::MintBatchFT {
+                    LogicAction::MintBatchFT {
                         token_id,
                         to,
                         amounts,
@@ -88,11 +89,11 @@ impl MTLogic {
                         self.mint_batch_ft(transaction_hash, token_id, msg_source, &to, amounts)
                             .await
                     }
-                    Action::MintBatchNFT { token_id, to } => {
+                    LogicAction::MintBatchNFT { token_id, to } => {
                         self.mint_batch_nft(transaction_hash, token_id, msg_source, &to)
                             .await
                     }
-                    Action::BurnBatchFT {
+                    LogicAction::BurnBatchFT {
                         token_id,
                         burn_from,
                         amounts,
@@ -106,7 +107,7 @@ impl MTLogic {
                         )
                         .await
                     }
-                    Action::BurnNFT { token_id, from } => {
+                    LogicAction::BurnNFT { token_id, from } => {
                         self.burn_nft(transaction_hash, token_id, msg_source, &from)
                             .await
                     }

@@ -5,6 +5,7 @@ mod instruction;
 use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId, Decode, Encode, TypeInfo};
 pub use instruction::*;
+use mt_main_io::LogicAction;
 pub use mt_storage_io::TokenId;
 use primitive_types::H256;
 
@@ -22,7 +23,7 @@ pub struct MTLogicMetadata;
 impl Metadata for MTLogicMetadata {
     type Init = In<InitMTLogic>;
     type Handle = InOut<MTLogicAction, MTLogicEvent>;
-    type Others = InOut<Action, ()>;
+    type Others = InOut<LogicAction, ()>;
     type Reply = ();
     type Signal = ();
     type State = MTLogicState;
@@ -119,105 +120,6 @@ pub enum MTLogicEvent {
     Balance(u128),
     /// Should be returned from [`MTLogicAction::GetApproval`].
     Approval(bool),
-}
-
-/// High-level token-related operations.
-#[derive(Encode, Debug, Decode, TypeInfo, Clone)]
-pub enum Action {
-    /// Transfer `amount` of `token_id` tokens from `sender` to `recipient`.
-    ///
-    /// # Requirements
-    /// - `sender` must be equal to `msg_source` or `msg_source` must be approved by `sender`.
-    /// - `sender` must have enough `amount` of `token_id` tokens.
-    ///
-    /// On success, replies with [`MTLogicEvent::Ok`].
-    Transfer {
-        /// Identifier of the token with which transfer will be performed.
-        token_id: u128,
-        /// Account from which tokens will be transferred.
-        sender: ActorId,
-        /// Transfer recipient.
-        recipient: ActorId,
-        /// Tokens amount for transfer.
-        amount: u128,
-    },
-    /// Gives `approve` to `account` for various token-related operations.
-    ///
-    /// On success, replies with [`MTLogicEvent::Ok`].
-    Approve {
-        /// Account to which access is granted.
-        account: ActorId,
-        /// Approve flag.
-        is_approved: bool,
-    },
-    /// Creates new token.
-    ///
-    /// On success, replies with [`MTLogicEvent::Ok`].
-    Create {
-        /// Initial token amount which will be minted to [`msg::source()`](gstd::msg::source), if `is_nft` flag is set, then ignored.
-        initial_amount: u128,
-        /// Base URI with token metadata.
-        uri: String,
-        /// Indicates if this token is nft.
-        is_nft: bool,
-    },
-    /// Mints new fungible `token_id` tokens for `to` with `amounts`.
-    ///
-    /// # Requirements
-    /// - `token_id` must be fungible.
-    /// - `amounts` must be equal to `to`.
-    ///
-    /// On success, replies with [`MTLogicEvent::Ok`].
-    MintBatchFT {
-        /// Identifier of the token with which mint will be performed.
-        token_id: TokenId,
-        /// Vector with recipients.
-        to: Vec<ActorId>,
-        /// Vector with amounts.
-        amounts: Vec<u128>,
-    },
-    /// Mints new non-fungible `token_id` tokens for `to`.
-    ///
-    /// # Requirements
-    /// - `token_id` must be non-fungible.
-    ///
-    /// On success, replies with [`MTLogicEvent::Ok`].
-    MintBatchNFT {
-        /// Identifier of the token with which mint will be performed.
-        token_id: TokenId,
-        /// Vector with recipients.
-        to: Vec<ActorId>,
-    },
-    /// Burns new fungible `token_id` tokens from `burn_from` for `amounts`.
-    ///
-    /// # Requirements
-    /// - `token_id` must be fungible.
-    /// - `amounts` must be equal to `burn_from`.
-    /// - `burn_from` must approve [`msg::source()`](gstd::msg::source) if not equal.
-    ///
-    /// On success, replies with [`MTLogicEvent::Ok`].
-    BurnBatchFT {
-        /// Identifier of the token with which burn will be performed.
-        token_id: TokenId,
-        /// Vector with targets.
-        burn_from: Vec<ActorId>,
-        /// Vector with burn amounts.
-        amounts: Vec<u128>,
-    },
-    /// Burns new non-fungible `token_id` token from `from`.
-    ///
-    /// # Requirements
-    /// - `token_id` must be non-fungible.
-    /// - `from` must approve [`msg::source()`](gstd::msg::source) if not equal.
-    /// - `from` must be owner of `token_id`.
-    ///
-    /// On success, replies with [`MTLogicEvent::Ok`].
-    BurnNFT {
-        /// Identifier of the token with which burn will be performed.
-        token_id: TokenId,
-        /// Burn target(account).
-        from: ActorId,
-    },
 }
 
 /// Initializes the contract.
