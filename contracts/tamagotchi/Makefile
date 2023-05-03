@@ -1,5 +1,8 @@
 .PHONY: all build clean fmt fmt-check init linter pre-commit test
 
+NIGHTLY_TOOLCHAIN_VERSION ?= 2023-03-14
+TARGET = `rustc -Vv | grep 'host: ' | sed 's/^host: \(.*\)/\1/'`
+
 all: init build full-test
 
 clean:
@@ -21,12 +24,10 @@ fmt-check:
 
 init:
 	@echo ⚙️ Installing a toolchain \& a target...
-	@rustup toolchain add nightly
-	@rustup target add wasm32-unknown-unknown --toolchain nightly
-	@rustup toolchain install nightly-2023-03-14 --component llvm-tools-preview
-	@rustup target add wasm32-unknown-unknown --toolchain nightly-2023-03-14
-	@rm -rf ~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu
-	@ln -s ~/.rustup/toolchains/nightly-2023-03-14-x86_64-unknown-linux-gnu ~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu
+	@rustup toolchain install nightly-$(NIGHTLY_TOOLCHAIN_VERSION) --component llvm-tools-preview --component clippy
+	@rustup target add wasm32-unknown-unknown --toolchain nightly-$(NIGHTLY_TOOLCHAIN_VERSION)
+	@rm -rf ~/.rustup/toolchains/nightly-$(TARGET)
+	@ln -s ~/.rustup/toolchains/nightly-$(NIGHTLY_TOOLCHAIN_VERSION)-$(TARGET) ~/.rustup/toolchains/nightly-$(TARGET)
 	
 lint:
 	@echo ⚙️ Running the linter...

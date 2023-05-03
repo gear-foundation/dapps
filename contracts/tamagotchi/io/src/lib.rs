@@ -8,7 +8,7 @@ pub type TransactionId = u64;
 pub struct ProgramMetadata;
 
 impl Metadata for ProgramMetadata {
-    type Init = ();
+    type Init = InOut<String, ()>;
     type Handle = InOut<TmgAction, TmgReply>;
     type Reply = ();
     type Others = ();
