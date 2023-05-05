@@ -1,5 +1,0 @@
-error: `StorageProvider` deriving does nothing if no field has the `#[storage_field]` attribute
- --> tests/derive/2-no-fields.rs:7:5
-  |
-7 |     storage: Storage,
-  |     ^^^^^^^^^^^^^^^^^
