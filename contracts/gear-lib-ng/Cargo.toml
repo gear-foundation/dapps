@@ -1,24 +1,19 @@
 [package]
 name = "gear-lib"
-version = "0.4.0"
+version = "0.4.1"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
-gear-lib-derive = { path = "derive", optional = true }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 parity-scale-codec = { version = "3", default-features = false }
 scale-info = { version = "2", default-features = false }
-primitive-types = { version = "0.12", default-features = false }
-
-[features]
-default = ["derive"]
-derive = ["gear-lib-derive"]
-# Do NOT enable this feature. It's intended for the internal library testing.
-testing = []
+# FIXME: fails to build with `gstd` due to the unmanagable automatic `std`
+# detecting. Should be fixed in the next major `indexmap` version.
+indexmap = { git = "https://github.com/bluss/indexmap", rev = "11ac52c3c828a42d69c5fb3248198511836bfd2f", default-features = false }
+ahash = { version = "0.8", default-features = false, features = ["compile-time-rng"] }
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], branch = "testnet" }
-trybuild = { version = "1", features = ["diff"] }
-pretty_assertions = { version = "1", default-features = false, features = ["alloc"] }
+pretty_assertions = "1"
+gstd = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }

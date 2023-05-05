@@ -1,5 +1,0 @@
-error: `StorageProvider` deriving does nothing for unit (empty) structs, add some fields
- --> tests/derive/4-union-struct.rs:4:1
-  |
-4 | struct Contract;
-  | ^^^^^^^^^^^^^^^^
