@@ -1,6 +1,6 @@
 [package]
 name = "on-chain-nft"
-version = "0.1.0"
+version = "0.2.0"
 authors = ["Gear Technologies"]
 edition = "2021"
 
@@ -18,7 +18,7 @@ gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab
 [dev-dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gclient = { git = "https://github.com/gear-tech/gear.git" }
+gclient = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 onchain-nft-state = { path = "state", features = ["binary-vendor"] }
 tokio = "1"
 
