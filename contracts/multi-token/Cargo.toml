@@ -1,6 +1,6 @@
 [package]
 name = "multitoken"
-version = "0.3.5"
+version = "0.3.6"
 authors = ["Gear Technologies"]
 license = "MIT"
 edition = "2021"
