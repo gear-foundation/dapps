@@ -94,4 +94,3 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: artifact/**
-          body_path: CHANGELOG.md # TODO: Cut piece related to the current version only
