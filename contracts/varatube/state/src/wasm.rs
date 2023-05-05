@@ -1,12 +1,12 @@
-use gear_subscription_io::{SubscriberDataState, SubscriptionMetadata};
 use gmeta::{metawasm, BTreeMap, Metadata};
-use gstd::{ActorId, ToString};
+use gstd::ActorId;
+use varatube_io::{SubscriberDataState, SubscriptionMetadata};
 
 #[metawasm]
-pub trait Metawasm {
-    type State = <SubscriptionMetadata as Metadata>::State;
+pub mod metafns {
+    pub type State = <SubscriptionMetadata as Metadata>::State;
 
-    fn all_subscriptions(state: Self::State) -> BTreeMap<ActorId, SubscriberDataState> {
+    pub fn all_subscriptions(state: State) -> BTreeMap<ActorId, SubscriberDataState> {
         state
             .subscribers
             .iter()
@@ -19,7 +19,7 @@ pub trait Metawasm {
                         is_active: true,
                         start_date,
                         start_block,
-                        end_date: start_date + period.to_millis(),
+                        end_date: start_date + period.as_millis(),
                         end_block: start_block + period.to_blocks(),
                         period,
                         will_renew,

@@ -1,8 +1,8 @@
 #![no_std]
 
 use ft_io::{FTAction, FTEvent};
-use varatube_io::{Actions, Period, Price, SubscriberData, SubscriptionState};
 use gstd::{async_main, exec, msg, prelude::*, ActorId};
+use varatube_io::{Actions, Period, Price, SubscriberData, SubscriptionState};
 
 // TODO [cleanness] control tokens are of erc20 standard
 // TODO [cleanness] error workflow done by eco-system guys
@@ -103,7 +103,7 @@ async fn main() {
                 FTAction::Transfer {
                     from: subscriber,
                     to: exec::program_id(),
-                    amount: price * period.to_units(),
+                    amount: price * period.as_units(),
                 },
                 0,
             )
@@ -128,7 +128,7 @@ async fn main() {
                 let start_block = exec::block_height();
                 let renewal_date = if with_renewal {
                     Some((
-                        start_date + period.to_millis(),
+                        start_date + period.as_millis(),
                         start_block + period.to_blocks(),
                     ))
                 } else {
@@ -179,7 +179,7 @@ async fn main() {
                     FTAction::Transfer {
                         from: subscriber,
                         to: this_program,
-                        amount: price * period.to_units(),
+                        amount: price * period.as_units(),
                     },
                     0,
                 )
@@ -210,7 +210,7 @@ async fn main() {
                             period,
                             subscription_start: Some((current_date, current_block)),
                             renewal_date: Some((
-                                current_date + period.to_millis(),
+                                current_date + period.as_millis(),
                                 current_block + period.to_blocks(),
                             )),
                         },
@@ -277,7 +277,7 @@ async fn main() {
                             period,
                             subscription_start: Some((current_date, current_block)),
                             renewal_date: Some((
-                                current_date + period.to_millis(),
+                                current_date + period.as_millis(),
                                 current_block + period.to_blocks(),
                             )),
                         },
@@ -290,7 +290,7 @@ async fn main() {
                         FTAction::Transfer {
                             from: this_program,
                             to: subscriber,
-                            amount: price * period.to_units(),
+                            amount: price * period.as_units(),
                         },
                         0,
                     )
