@@ -1,4 +1,6 @@
-/target
 .binpath
-meta.txt
+.DS_Store
+.vscode
+target
 .metahash
+*.meta.txt

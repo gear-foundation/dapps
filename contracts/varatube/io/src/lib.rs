@@ -62,7 +62,7 @@ impl Period {
         Self::Month
     }
 
-    pub fn to_units(&self) -> u128 {
+    pub fn as_units(&self) -> u128 {
         match self {
             Period::Year => 12,
             Period::NineMonths => 9,
@@ -73,19 +73,19 @@ impl Period {
     }
 
     pub fn to_blocks(&self) -> u32 {
-        self.to_secs() / Self::TARGET_BLOCK_TIME
+        self.as_secs() / Self::TARGET_BLOCK_TIME
     }
 
-    pub fn to_millis(&self) -> u64 {
-        self.to_secs() as u64 * 1000
+    pub fn as_millis(&self) -> u64 {
+        self.as_secs() as u64 * 1000
     }
 
-    fn to_secs(&self) -> u32 {
+    fn as_secs(&self) -> u32 {
         match self {
-            Period::Year => Self::Month.to_secs() * 12,
-            Period::NineMonths => Self::Month.to_secs() * 9,
-            Period::SixMonths => Self::Month.to_secs() * 6,
-            Period::ThreeMonths => Self::Month.to_secs() * 3,
+            Period::Year => Self::Month.as_secs() * 12,
+            Period::NineMonths => Self::Month.as_secs() * 9,
+            Period::SixMonths => Self::Month.as_secs() * 6,
+            Period::ThreeMonths => Self::Month.as_secs() * 3,
             Period::Month => Self::SECOND * 30,
         }
     }
