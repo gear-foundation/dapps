@@ -1,11 +1,11 @@
 [package]
 name = "tequila-io"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 
 [dependencies]
-gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
 enum-iterator = "1.4"

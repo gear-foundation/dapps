@@ -1,23 +1,24 @@
 [package]
 name = "tequila-train"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
 tequila-io = { path = "io" }
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
-gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
+gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
 hashbrown = "0.13"
 
 [build-dependencies]
 tequila-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["wasm-opt"] }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0", features = ["wasm-opt"] }
 
 [dev-dependencies]
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0", features = ["debug"] }
 tequila-state = { path = "state" }
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in

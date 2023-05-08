@@ -12,12 +12,12 @@ mod test;
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
-    type Init = In<Vec<ActorId>>;
+    type Init = In<Option<u64>>;
     type Handle = In<Command>;
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = GameState;
+    type State = GameLauncher;
 }
 
 #[derive(
@@ -92,6 +92,16 @@ pub struct Players {
     players: Vec<(ActorId, String)>,
 }
 
+impl Players {
+    pub fn get(&self) -> Vec<(ActorId, String)> {
+        self.players.clone()
+    }
+
+    pub fn count(&self) -> u64 {
+        self.players.len() as u64
+    }
+}
+
 impl<const N: usize> From<[(ActorId, String); N]> for Players {
     fn from(s: [(ActorId, String); N]) -> Players {
         Players {
@@ -121,7 +131,10 @@ pub enum Command {
         name: String,
     },
     StartGame,
-    RestartGame,
+    RestartGame(
+        /// Optional players limit.
+        Option<u64>,
+    ),
 }
 
 #[derive(Debug, TypeInfo, Encode, Decode, Clone, Default)]
@@ -130,7 +143,7 @@ pub struct TrackData {
     pub has_train: bool,
 }
 
-#[derive(Debug, TypeInfo, Encode, Decode, Clone)]
+#[derive(Debug, TypeInfo, Encode, Decode, Clone, Default)]
 pub struct GameState {
     pub players: Vec<(ActorId, String)>,
     pub tracks: Vec<TrackData>,
@@ -143,40 +156,76 @@ pub struct GameState {
     pub state: State,
 }
 
-#[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo, Default, PartialEq, Eq)]
 pub enum State {
     Playing,
     Stalled,
     Winner((ActorId, String)),
+    #[default]
+    Registration,
 }
 
 #[derive(Debug, Clone, Default, TypeInfo, Encode, Decode)]
 pub struct GameLauncher {
     pub game_state: Option<GameState>,
-    pub players: Players,
+    pub players: Vec<(ActorId, String)>,
     pub is_started: bool,
+    pub maybe_limit: Option<u64>,
 }
 
 impl GameLauncher {
-    pub fn start(&mut self) {
-        assert!(!self.is_started);
-
-        self.is_started = true;
-        self.game_state = GameState::new(&self.players);
+    fn assert_limit_range(maybe_limit: Option<u64>) {
+        if let Some(limit) = maybe_limit {
+            assert!((2..=8).contains(&limit));
+        }
     }
 
-    pub fn restart(&mut self) {
+    fn assert_players_count(&self) {
+        assert!((2..=8).contains(&(self.players.len() as u32)))
+    }
+
+    pub fn new_with_limit(limit: u64) -> Self {
+        Self::assert_limit_range(Some(limit));
+
+        GameLauncher {
+            maybe_limit: Some(limit),
+            ..Default::default()
+        }
+    }
+
+    pub fn start(&mut self) {
+        assert!(!self.is_started);
+        self.assert_players_count();
+
+        self.is_started = true;
+        self.game_state = GameState::new(&Players {
+            players: self.players.clone(),
+        });
+
+        assert!(self.game_state.is_some());
+    }
+
+    pub fn restart(&mut self, maybe_limit: Option<u64>) {
         assert!(self.is_started);
+        Self::assert_limit_range(maybe_limit);
 
         self.is_started = false;
         self.game_state = None;
-        self.players.players.clear();
+        self.maybe_limit = maybe_limit;
+        self.players.clear();
     }
 
     pub fn register(&mut self, player: ActorId, name: String) {
         assert!(!self.is_started);
+        assert!(!self.players.iter().any(|(p, n)| p == &player || n == &name));
 
-        self.players.players.push((player, name));
+        if let Some(limit) = self.maybe_limit {
+            assert!((self.players.len() as u64) < limit);
+        } else {
+            assert!(self.players.len() < 8);
+        }
+
+        self.players.push((player, name));
     }
 }
 
