@@ -1,6 +1,6 @@
 import { Button } from '@gear-js/ui';
 import { useAccount } from '@gear-js/react-hooks';
-import { Hex } from '@gear-js/api';
+import { HexString } from '@polkadot/util/types';
 import { Content } from 'components';
 import { DashboardProps } from 'types';
 import { useLotteryMessage } from 'hooks';
@@ -14,18 +14,28 @@ type Props = {
   isOwner: boolean;
   dashboard: DashboardProps;
   prizeFund: string;
-  players: Hex[];
+  players: HexString[];
   cost: string;
   onResetButtonClick: () => void;
 };
 
-function Pending({ isOwner, dashboard, prizeFund, players, cost, onResetButtonClick }: Props) {
+function Pending({
+  isOwner,
+  dashboard,
+  prizeFund,
+  players,
+  cost,
+  onResetButtonClick,
+}: Props) {
   const { account } = useAccount();
   const sendMessage = useLotteryMessage();
-  const pickWinner = () => sendMessage({ PickWinner: null }, { value: getNumber(prizeFund) });
+  const pickWinner = () =>
+    sendMessage({ PickWinner: null }, { value: getNumber(prizeFund) });
 
   const { startTime, endTime, status, winner, countdown } = dashboard;
-  const subheading = winner ? `Uhhu! ${winner} is the winner!` : SUBHEADING.PENDING;
+  const subheading = winner
+    ? `Uhhu! ${winner} is the winner!`
+    : SUBHEADING.PENDING;
   const isLotteryActive = status === STATUS.PENDING;
   const isPlayerStatus = !isOwner && winner;
   const isPlayerWinner = winner === account?.decodedAddress;
@@ -37,9 +47,19 @@ function Pending({ isOwner, dashboard, prizeFund, players, cost, onResetButtonCl
         (winner || (!isLotteryActive && !isAnyPlayer) ? (
           <Button text="Start new Game" onClick={onResetButtonClick} />
         ) : (
-          <Button text="Pick random winner" disabled={isLotteryActive} onClick={pickWinner} />
+          <Button
+            text="Pick random winner"
+            disabled={isLotteryActive}
+            onClick={pickWinner}
+          />
         ))}
-      <Dashboard startTime={startTime} endTime={endTime} status={status} winner={winner} countdown={countdown} />
+      <Dashboard
+        startTime={startTime}
+        endTime={endTime}
+        status={status}
+        winner={winner}
+        countdown={countdown}
+      />
       {isPlayerStatus && <PlayerStatus isWinner={isPlayerWinner} />}
       <Players list={players} balance={cost} />
     </Content>

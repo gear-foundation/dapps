@@ -1,9 +1,9 @@
-import { Hex } from '@gear-js/api';
+import { HexString } from '@polkadot/util/types';
 import clsx from 'clsx';
 import styles from './Players.module.scss';
 
 type Props = {
-  list: Hex[];
+  list: HexString[];
   balance: string;
 };
 
@@ -34,7 +34,9 @@ function Players({ list, balance }: Props) {
       {isAnyPlayer ? (
         <ul>{getPlayers()}</ul>
       ) : (
-        <p className={textClassName}>There aren&apos;t any players at the moment.</p>
+        <p className={textClassName}>
+          There aren&apos;t any players at the moment.
+        </p>
       )}
     </div>
   );

@@ -1,21 +1,21 @@
-import { Hex } from '@gear-js/api';
+import { HexString } from '@polkadot/util/types';
 
 type Lottery = {
-  admin: Hex;
+  admin: HexString;
   started: string;
   ending: string;
   participationCost: string;
   prizeFund: string;
-  players: Hex[];
-  winner: Hex;
-  fungibleToken: Hex | null;
+  players: HexString[];
+  winner: HexString;
+  fungibleToken: HexString | null;
 };
 
 type DashboardProps = {
   startTime: string;
   endTime: string;
   status: string;
-  winner: Hex;
+  winner: HexString;
   countdown: string;
 };
 

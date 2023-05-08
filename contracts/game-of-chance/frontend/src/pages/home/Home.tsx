@@ -1,5 +1,5 @@
-import { Hex } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
+import { HexString } from '@polkadot/util/types';
 import { Content, Loader } from 'components';
 import { useLotteryState, useLotteryStatus } from 'hooks';
 import { getDate, getNumber, isWinner } from 'utils';
@@ -17,9 +17,12 @@ function Home() {
   const cost = state?.participationCost || '';
   const prizeFund = state?.prizeFund || '';
   const players = state?.players || [];
-  const winner = state && isWinner(state.winner) ? state.winner : ('' as Hex);
+  const winner =
+    state && isWinner(state.winner) ? state.winner : ('' as HexString);
   const isOwner = account?.decodedAddress === admin;
-  const isPlayer = players.some((playerId) => playerId === account?.decodedAddress);
+  const isPlayer = players.some(
+    (playerId) => playerId === account?.decodedAddress
+  );
   const isParticipant = isPlayer || isOwner;
 
   const startTime = getNumber(started || '');
@@ -28,7 +31,13 @@ function Home() {
   const { status, countdown, resetStatus } = useLotteryStatus(endTime);
   const isLotteryStarted = status !== STATUS.AWAIT;
   const isLotteryActive = status === STATUS.PENDING;
-  const dashboard = { startTime: getDate(startTime), endTime: getDate(endTime), status, winner, countdown };
+  const dashboard = {
+    startTime: getDate(startTime),
+    endTime: getDate(endTime),
+    status,
+    winner,
+    countdown,
+  };
 
   return isStateRead ? (
     <>
@@ -44,8 +53,12 @@ function Home() {
       )}
 
       {!isLotteryStarted && isOwner && <OwnerStart />}
-      {isLotteryActive && !isParticipant && <PlayerStart cost={cost} isToken={!!fungibleToken} />}
-      {!isLotteryActive && !isParticipant && <Content subheading={SUBHEADING.AWAIT} />}
+      {isLotteryActive && !isParticipant && (
+        <PlayerStart cost={cost} isToken={!!fungibleToken} />
+      )}
+      {!isLotteryActive && !isParticipant && (
+        <Content subheading={SUBHEADING.AWAIT} />
+      )}
     </>
   ) : (
     <Loader />
