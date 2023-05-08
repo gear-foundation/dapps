@@ -42,7 +42,6 @@ else ifeq ($(shell uname -s),Darwin)
 	make pin-toolchain-mac-m1
 endif
 
-
 lint:
 	@echo ⚙️ Running the linter...
 	@cargo +nightly clippy -- -D warnings
@@ -60,15 +59,15 @@ test:
 
 node-test: build
 	@echo ⚙️ Running mpde tests...
-	@if [ ! -f "./target/fungible_token-0.1.0.wasm" ]; then \
-		curl -L "https://github.com/gear-dapps/fungible-token/releases/download/0.1.0/fungible_token-0.1.0.wasm" \
-		-o "./target/fungible_token-0.1.0.wasm"; \
+	@if [ ! -f "./target/fungible_token-0.1.5.wasm" ]; then \
+		curl -L "https://github.com/gear-dapps/fungible-token/releases/download/0.1.5/fungible_token.wasm" \
+		-o "./target/fungible_token.wasm"; \
 	fi
 	@echo ──────────── Run tests ────────────────────────
-	@cargo +nightly test --release --package nft --test nft_tests
-	@wget https://get.gear.rs/gear-nightly-linu\x-x86_64.tar.xz && \
-	tar xvf gear-nightly-linux-x86_64.tar.xz && \
-	rm gear-nightly-linux-x86_64.tar.xz
+	@cargo +nightly test --release --test simple-test
+	@wget https://get.gear.rs/vara-testnet-linux-x86_64.tar.xz && \
+	tar xvf vara-testnet-linux-x86_64.tar.xz && \
+	rm vara-testnet-linux-x86_64.tar.xz
 	@./gear --dev --tmp > /dev/null 2>&1  & echo "$$!" > gear.pid
 	cat gear.pid;
 	@cargo +nightly t -Fbinary-vendor -- --include-ignored --test node_tests --test-threads=1 kill `(cat gear.pid)`;

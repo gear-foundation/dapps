@@ -113,6 +113,7 @@ async fn main() {
                 panic!("RegisterSubscription: token transfer ended up with an error {e:?}")
             });
 
+            gstd::debug!("Before delayed msg");
             // Send delayed message for state invalidation:
             // - subscription renewal
             // - subscription deletion
@@ -124,6 +125,7 @@ async fn main() {
             )
             .is_ok()
             {
+                gstd::debug!("Delayed ok");
                 let start_date = exec::block_timestamp();
                 let start_block = exec::block_height();
                 let renewal_date = if with_renewal {
@@ -148,6 +150,7 @@ async fn main() {
                 // If this "sanity" message sending was failed, then we consider subscriber
                 // as pending, so he can enable/withdraw his subscription receiving back
                 // money.
+                gstd::debug!("Delayed NOT ok");
                 Subscribers::add_pending_subscriber(subscriber, (currency_id, period));
             }
         }

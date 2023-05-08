@@ -50,9 +50,10 @@ jobs:
 
       - name: Run tests
         run: |
-          curl -OL https://github.com/gear-tech/gear/releases/download/build/gear
+          curl -L https://get.gear.rs/vara-testnet-linux-x86_64.tar.xz | tar xJ
           chmod +x gear
           ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
+          curl -L "https://github.com/gear-dapps/fungible-token/releases/download/0.1.5/fungible_token.wasm" -o "./target/fungible_token.wasm"; 
           make full-test
           kill `cat gear.pid`
 
