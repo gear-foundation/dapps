@@ -1,11 +1,10 @@
-import { getProgramMetadata } from '@gear-js/api';
 import { useAccount, useReadFullState, useReadWasmState, useSendMessage } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
-import { useState, useEffect } from 'react';
-import stateWasm from 'assets/gear_subscription_state.meta.wasm';
-import { ADDRESS, META_HEX } from 'consts';
-
-const metadata = getProgramMetadata(META_HEX.SUBSCRIPTION);
+import stateWasm from 'assets/state/varatube_state.meta.wasm';
+import varatubeMeta from 'assets/state/varatube_meta.txt';
+import ftMeta from 'assets/state/ft_meta.txt';
+import { ADDRESS } from 'consts';
+import { useBuffer, useProgramMetadata } from './metadata';
 
 type FullSubState = {
   [key: HexString]: {
@@ -23,21 +22,15 @@ type FullSubState = {
 };
 
 function useSubscriptions() {
-  const [buffer, setBuffer] = useState<Buffer>();
-
-  useEffect(() => {
-    fetch(stateWasm)
-      .then((result) => result.arrayBuffer())
-      .then((arrBuffer) => Buffer.from(arrBuffer))
-      .then((res) => setBuffer(res));
-  }, []);
-
+  const buffer = useBuffer(stateWasm);
   const { state, isStateRead } = useReadWasmState<FullSubState>(ADDRESS.CONTRACT, buffer, 'all_subscriptions', null);
 
   return { subscriptionsState: state, isSubscriptionsStateRead: isStateRead };
 }
 
 function useSubscriptionsMessage() {
+  const metadata = useProgramMetadata(varatubeMeta);
+
   return useSendMessage(ADDRESS.CONTRACT, metadata, true);
 }
 
@@ -47,7 +40,7 @@ function useFTBalance() {
   const { account } = useAccount();
   const { decodedAddress } = account || {};
 
-  const meta = getProgramMetadata(META_HEX.FT);
+  const meta = useProgramMetadata(ftMeta);
   const { state, isStateRead } = useReadFullState<FTState>(ADDRESS.FT_CONTRACT, meta);
 
   const balances = state?.balances;
