@@ -50,7 +50,7 @@ jobs:
 
       - name: Run tests
         run: |
-          curl -L https://get.gear.rs/gear-nightly-linux-x86_64.tar.xz -o - | tar xJ
+          curl -L https://get.gear.rs/vara-testnet-linux-x86_64.tar.xz -o - | tar xJ
           ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
           make full-test
           kill `cat gear.pid`
@@ -72,7 +72,7 @@ jobs:
         uses: actions/download-artifact@v3
 
       - name: Delete previous release
-        uses: dev-drprasad/delete-tag-and-release@v0.1.3
+        uses: dev-drprasad/delete-tag-and-release@v0.2.1
         with:
           delete_release: true
           tag_name: build

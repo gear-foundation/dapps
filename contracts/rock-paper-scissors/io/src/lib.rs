@@ -1,13 +1,13 @@
 #![no_std]
 
-use gmeta::{In, Metadata};
+use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
     type Init = In<GameConfig>;
-    type Handle = ();
+    type Handle = InOut<Action, Event>;
     type Reply = ();
     type Others = ();
     type Signal = ();
