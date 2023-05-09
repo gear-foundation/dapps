@@ -2,7 +2,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { Content, Loader } from 'components';
 import { useLotteryState, useLotteryStatus } from 'hooks';
-import { getDate, getNumber, isWinner } from 'utils';
+import { getDate, isWinner } from 'utils';
 import { STATUS, SUBHEADING } from 'consts';
 import { OwnerStart } from './owner-start';
 import { PlayerStart } from './player-start';
@@ -14,8 +14,10 @@ function Home() {
   const { state, isStateRead } = useLotteryState();
   const { admin, started, ending, fungibleToken } = state || {};
 
-  const cost = state?.participationCost || '';
-  const prizeFund = state?.prizeFund || '';
+  const startTime = started || 0;
+  const endTime = ending || 0;
+  const cost = state?.participationCost || 0;
+  const prizeFund = state?.prizeFund || 0;
   const players = state?.players || [];
   const winner =
     state && isWinner(state.winner) ? state.winner : ('' as HexString);
@@ -25,12 +27,10 @@ function Home() {
   );
   const isParticipant = isPlayer || isOwner;
 
-  const startTime = getNumber(started || '');
-  const endTime = getNumber(ending || '');
-
   const { status, countdown, resetStatus } = useLotteryStatus(endTime);
   const isLotteryStarted = status !== STATUS.AWAIT;
   const isLotteryActive = status === STATUS.PENDING;
+
   const dashboard = {
     startTime: getDate(startTime),
     endTime: getDate(endTime),

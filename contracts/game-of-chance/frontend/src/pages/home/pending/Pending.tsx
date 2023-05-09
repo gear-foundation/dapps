@@ -5,7 +5,6 @@ import { Content } from 'components';
 import { DashboardProps } from 'types';
 import { useLotteryMessage } from 'hooks';
 import { STATUS, SUBHEADING } from 'consts';
-import { getNumber } from 'utils';
 import { Dashboard } from './dashboard';
 import { Players } from './players';
 import { PlayerStatus } from './player-status';
@@ -13,9 +12,9 @@ import { PlayerStatus } from './player-status';
 type Props = {
   isOwner: boolean;
   dashboard: DashboardProps;
-  prizeFund: string;
+  prizeFund: number;
   players: HexString[];
-  cost: string;
+  cost: number;
   onResetButtonClick: () => void;
 };
 
@@ -30,7 +29,7 @@ function Pending({
   const { account } = useAccount();
   const sendMessage = useLotteryMessage();
   const pickWinner = () =>
-    sendMessage({ PickWinner: null }, { value: getNumber(prizeFund) });
+    sendMessage({ PickWinner: null }, { value: prizeFund });
 
   const { startTime, endTime, status, winner, countdown } = dashboard;
   const subheading = winner

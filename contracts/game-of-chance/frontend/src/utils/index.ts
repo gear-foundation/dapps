@@ -8,7 +8,6 @@ const isLoggedIn = ({ address }: InjectedAccountWithMeta) =>
 
 const isWinner = (value: HexString) => !value.startsWith('0x00');
 
-const getNumber = (value: string) => +value.replaceAll(',', '');
 const getDate = (value: number) => new Date(value).toLocaleString();
 
-export { isLoggedIn, isWinner, getNumber, getDate, getStatus, getCountdown };
+export { isLoggedIn, isWinner, getDate, getStatus, getCountdown };

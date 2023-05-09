@@ -4,7 +4,7 @@ import styles from './Players.module.scss';
 
 type Props = {
   list: HexString[];
-  balance: string;
+  balance: number;
 };
 
 function Players({ list, balance }: Props) {
