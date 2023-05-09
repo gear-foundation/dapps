@@ -95,3 +95,10 @@ async unsafe fn main() {
 unsafe extern "C" fn state() {
     msg::reply(RECORDS.clone(), 0).expect("failed to reply");
 }
+
+#[no_mangle]
+extern "C" fn metahash() {
+    let metahash: [u8; 32] = include!("../.metahash");
+
+    msg::reply(metahash, 0).expect("failed to encode or reply from `metahash()`");
+}
