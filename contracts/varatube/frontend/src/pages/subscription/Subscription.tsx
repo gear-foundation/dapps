@@ -33,7 +33,7 @@ function Subscription() {
     sendMessage(
       {
         RegisterSubscription: {
-          payment_method: ADDRESS.FT_CONTRACT,
+          currency_id: ADDRESS.FT_CONTRACT,
           period: { [values.period]: null },
           with_renewal: values.isRenewal,
         },
