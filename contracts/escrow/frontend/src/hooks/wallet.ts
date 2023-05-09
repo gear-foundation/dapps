@@ -8,8 +8,6 @@ import { LOCAL_STORAGE } from 'consts';
 import { getProgramId } from 'utils';
 import { useEscrowMetadata } from './api';
 
-const initWalletId = (localStorage[LOCAL_STORAGE.WALLET] as string) || '';
-
 function useWalletId() {
   const { api } = useApi();
 
@@ -18,9 +16,12 @@ function useWalletId() {
 
   const meta = useEscrowMetadata();
 
-  const [walletId, setWalletId] = useState(initWalletId);
+  // TODO: walletId should be number
+  const [walletId, setWalletId] = useState<string | undefined>(
+    localStorage[LOCAL_STORAGE.WALLET]
+  );
 
-  const resetWalletId = () => setWalletId('');
+  const resetWalletId = () => setWalletId(undefined);
 
   const getDecodedPayload = (payload: Vec<u8>) => {
     // handle_output is specific for escrow contract
@@ -31,7 +32,10 @@ function useWalletId() {
 
   const getWalletId = (payload: Vec<u8>) => {
     const decodedPayload = getDecodedPayload(payload);
-    const isWalletCreated = Object.prototype.hasOwnProperty.call(decodedPayload, 'Created');
+    const isWalletCreated = Object.prototype.hasOwnProperty.call(
+      decodedPayload,
+      'Created'
+    );
 
     if (isPlainObject(decodedPayload) && isWalletCreated)
       // @ts-ignore
@@ -54,7 +58,10 @@ function useWalletId() {
     let unsub: UnsubscribePromise | undefined;
 
     if (api && decodedAddress) {
-      unsub = api.gearEvents.subscribeToGearEvent('UserMessageSent', handleEvents);
+      unsub = api.gearEvents.subscribeToGearEvent(
+        'UserMessageSent',
+        handleEvents
+      );
     }
 
     return () => {

@@ -11,6 +11,13 @@
   box-sizing: content-box;
 }
 
+#modal-root {
+  > div > div > div {
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+}
+
 main {
   display: flex;
   align-items: center;
@@ -27,6 +34,6 @@ body {
   transition: opacity 150ms ease-in;
 
   &:hover {
-    opacity: .5;
+    opacity: 0.5;
   }
 }

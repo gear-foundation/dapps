@@ -6,25 +6,33 @@ import { Wallet } from 'types';
 
 type Props = {
   wallets: Wallet[] | undefined;
-  onSubmit: (value: string) => void;
+  onSubmit: (value: string | undefined) => void;
 };
 
 function SelectWallet({ wallets, onSubmit }: Props) {
   // TODO: take a look after gear-js/ui update for undefined select value
-  const initialValues = { id: wallets?.[0]?.[0] };
+  const initialValues = { id: wallets?.[0]?.[0].toString() };
   const isAnyWallet = !!wallets?.length;
 
   const form = useForm({ initialValues });
   const { getInputProps } = form;
 
-  const handleSubmit = ({ id }: typeof initialValues) => onSubmit(id as string);
+  const handleSubmit = ({ id }: typeof initialValues) => onSubmit(id);
 
-  const getOptions = () => wallets?.map(([id]) => ({ label: id, value: id }));
+  // TODO: walletId should be number
+  const getOptions = () =>
+    wallets?.map(([id]) => ({ label: id.toString(), value: id.toString() }));
   const options = getOptions() || [];
 
   return isAnyWallet ? (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-      <Select label="Wallet ID" options={options} color="light" direction="y" {...getInputProps('id')} />
+      <Select
+        label="Wallet ID"
+        options={options}
+        color="light"
+        direction="y"
+        {...getInputProps('id')}
+      />
       <Button type="submit" text="Continue" icon={check} block />
     </form>
   ) : (

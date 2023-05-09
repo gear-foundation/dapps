@@ -12,15 +12,10 @@ function useEscrowMetadata() {
 function useEscrowState<T>(functionName: string, payload?: any) {
   const { buffer } = useWasmMetadata(stateMetaWasm);
 
-  return useReadWasmState<T>(
-    getProgramId(),
-    buffer,
-    functionName,
-    payload,
-  );
+  return useReadWasmState<T>(getProgramId(), buffer, functionName, payload);
 }
 
-function useEscrow(id: string) {
+function useEscrow(id: string | undefined) {
   const { state, isStateRead } = useEscrowState<Escrow>('info', id);
 
   const escrow = id ? state : undefined;
@@ -29,9 +24,13 @@ function useEscrow(id: string) {
   return { escrow, isEscrowRead };
 }
 
-function useWallets() {
-  const { state, isStateRead } = useEscrowState<Wallet[]>('created_wallets', null);
-  const isWalletsStateRead = state ? isStateRead : true;
+function useWallets(walletId: string | undefined) {
+  const { state, isStateRead } = useEscrowState<Wallet[]>(
+    'created_wallets',
+    null
+  );
+
+  const isWalletsStateRead = walletId ? isStateRead : true;
 
   return { wallets: state, isWalletsStateRead };
 }

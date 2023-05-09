@@ -6,9 +6,9 @@ type Escrow = {
   buyer: HexString;
   seller: HexString;
   state: string;
-  amount: string;
+  amount: number;
 };
 
-type Wallet = [string, Escrow];
+type Wallet = [number, Escrow];
 
 export type { CreateFormValues, Escrow, Wallet };
