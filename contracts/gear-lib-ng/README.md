@@ -1,17 +1,17 @@
-# Gear library for programs
+# Gear helper library for dApps
 
-[![Build][build_badge]][build_href]
-[![License][lic_badge]][lic_href]
 [![Docs][docs_badge]][docs_href]
+[![Actions][actions_badge]][actions_url]
+[![License][lic_badge]][lic_href]
 
-[build_badge]: https://img.shields.io/github/workflow/status/gear-dapps/supply-chain/Build
-[build_href]: https://github.com/gear-dapps/gear-lib/actions/workflows/build.yml
+[docs_badge]: https://img.shields.io/badge/Docs-online-5023dd
+[docs_href]: https://dapps.gear.rs/gear_lib
+
+[actions_badge]: https://img.shields.io/github/actions/workflow/status/gear-dapps/gear-lib/ci.yml?label=CI
+[actions_url]: https://github.com/gear-dapps/gear-lib/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-MIT-success
 [lic_href]: LICENSE
-
-[docs_badge]: https://img.shields.io/badge/docs-online-5023dd
-[docs_href]: https://dapps.gear.rs/gear_lib
 
 The library to be used in programs.
 
