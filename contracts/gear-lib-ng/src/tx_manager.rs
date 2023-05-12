@@ -24,10 +24,7 @@
 
 use ahash::AHasher;
 use core::num::{NonZeroU32, NonZeroUsize};
-use gstd::{
-    prelude::{hash::BuildHasherDefault, *},
-    ActorId,
-};
+use gstd::{hash::BuildHasherDefault, prelude::*, ActorId};
 use indexmap::{map::MutableKeys, IndexMap};
 use offset::Offset;
 
@@ -114,7 +111,7 @@ impl<T> TransactionManager<T> {
     /// - Only one transaction for each `msg_source` is cached. Hence an attempt
     /// to save a [new](TransactionKind::New) transaction over a failed one will
     /// delete the failed one, so it'll be **impossible** to
-    /// [retry](TransactionKind::Retry) it.
+    /// [retry](TransactionKind::Retry) the latter.
     /// - There's no guarantee every underprocessed asynchronous action will
     /// result in a cached transaction. Usually caching occurs after the first
     /// blocking `.await` during action processing.
@@ -128,8 +125,8 @@ impl<T> TransactionManager<T> {
     ///
     /// # Panics
     /// If `msg_source` is [`ActorId::zero()`]. [`msg::source()`] can't be
-    /// [`ActorId::zero()`], so the manager use it for shadowing old transaction
-    /// data.
+    /// [`ActorId::zero()`] because the manager use it for shadowing old
+    /// transaction data.
     ///
     /// [`msg::source()`]: gstd::msg::source
     pub fn asquire_transaction(
@@ -429,7 +426,7 @@ impl Stepper {
     }
 }
 
-/// The generic action type with the [`TransactionManager`] support.
+/// The generic action type for use with [`TransactionManager`].
 #[derive(
     Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash,
 )]
@@ -457,7 +454,7 @@ impl<T> Action<T> {
 /// A kind of [`Action`].
 ///
 /// The same as [`TransactionKind`], but without the data field. Should be used
-/// instead of [`TransactionKind`] in the public interface.
+/// instead of [`TransactionKind`] in a public interface.
 #[derive(
     Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash,
 )]

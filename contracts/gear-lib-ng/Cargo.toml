@@ -13,6 +13,8 @@ scale-info = { version = "2", default-features = false }
 # detecting. Should be fixed in the next major `indexmap` version.
 indexmap = { git = "https://github.com/bluss/indexmap", rev = "11ac52c3c828a42d69c5fb3248198511836bfd2f", default-features = false }
 ahash = { version = "0.8", default-features = false, features = ["compile-time-rng"] }
+primitive-types = { version = "0.12", default-features = false }
+hashbrown = "0.13"
 
 [dev-dependencies]
 pretty_assertions = "1"
