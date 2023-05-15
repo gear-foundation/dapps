@@ -1,4 +1,4 @@
-use super::ADMIN;
+use super::{ADMIN, FT_ID};
 use ft_main_io::*;
 use gstd::prelude::*;
 use gtest::{Program, System};
@@ -13,7 +13,7 @@ pub trait FToken {
 
 impl FToken for Program<'_> {
     fn ftoken(system: &System) -> Program {
-        let ftoken = Program::from_file(system, "../target/ft_main.wasm");
+        let ftoken = Program::from_file_with_id(system, FT_ID, "../target/ft_main.wasm");
         let storage_code_hash: [u8; 32] = system.submit_code("../target/ft_storage.wasm").into();
         let ft_logic_code_hash: [u8; 32] = system.submit_code("../target/ft_logic.wasm").into();
 
