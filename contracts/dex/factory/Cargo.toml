@@ -1,25 +1,18 @@
 [package]
 name = "dex-factory"
-version = "0.1.1"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-dex-factory-io = { path = "io" }
-dex-pair-io = { path = "../pair/io" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
-hashbrown = "0.13"
-
-[dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-dex-factory-state = { path = "state" }
+gstd.workspace = true
+dex-factory-io.workspace = true
+dex-pair-io.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-dex-factory-io = { path = "io" }
+gear-wasm-builder.workspace = true
+dex-factory-io.workspace = true
 
 [features]
 binary-vendor = []

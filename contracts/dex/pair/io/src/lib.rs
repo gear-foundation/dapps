@@ -1,229 +1,463 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
-use gstd::{prelude::*, ActorId};
+use gear_lib::tx_manager;
+use gmeta::{InOut, Metadata};
+use gstd::{errors::ContractError, prelude::*, ActorId};
+use primitive_types::U256;
+
+pub use gear_lib::{
+    tokens::{
+        fungible::{encodable::FTState, FTError, FTTransfer},
+        types::Amount,
+    },
+    tx_manager::TransactionManagerError,
+};
+
+/// The minimal liquidity amount.
+///
+/// To ameliorate rounding errors and increase the theoretical minimum tick size
+/// for liquidity provision, the contract burns this amount of liquidity tokens
+/// on the first mint (first [`InnerAction::AddLiquidity`]).
+pub const MINIMUM_LIQUIDITY: u64 = 10u64.pow(3);
 
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
-    type Init = In<InitPair>;
-    type Handle = InOut<PairAction, PairEvent>;
+    type Init = InOut<(ActorId, ActorId), Result<(), Error>>;
+    type Handle = InOut<Action, Result<Event, Error>>;
     type Reply = ();
     type Others = ();
     type Signal = ();
     type State = State;
 }
 
-#[derive(Debug, Default, TypeInfo, Decode, Hash, PartialEq, Eq, PartialOrd, Ord, Clone, Encode)]
+/// The contract state.
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub struct State {
-    pub ft_balances: Vec<(ActorId, u128)>,
-    /// Factoty address which deployed this pair
+    /// [`ActorId`] of the Factory contract from which [`ActorId`] of the fee
+    /// receiver (`fee_to`) is obtained.
     pub factory: ActorId,
-    /// First FT contract address.
-    pub token0: ActorId,
-    /// Second FT contract address.
-    pub token1: ActorId,
-    /// Last timestamp when the reserves and balances were updated
-    pub last_block_ts: u128,
-    /// Balances of token0 and token1, to get rid of actually querying the balance from the contract.
-    pub balance0: u128,
-    pub balance1: u128,
-    /// Token0 and token1 reserves.
-    pub reserve0: u128,
-    pub reserve1: u128,
-    /// Token prices
-    pub price0_cl: u128,
-    pub price1_cl: u128,
-    /// K which is equal to self.reserve0 * self.reserve1 which is used to amount calculations when performing a swap.
-    pub k_last: u128,
+
+    /// The pair of SFT [ActorId]s that are used for swaps.
+    pub token: (ActorId, ActorId),
+    /// The record of tokens reserve in the SFT pair (`token`).
+    pub reserve: (u128, u128),
+    /// https://docs.uniswap.org/contracts/v2/concepts/core-concepts/oracles
+    pub cumulative_price: (U256, U256),
+    /// A timestamp of the last block where `reserve`s were changed.
+    pub last_block_ts: u64,
+    /// A product of `reserve`s. Used for the 0.05% commission calculation.
+    pub k_last: U256,
+    pub ft_state: FTState,
+
+    pub cached_actions: Vec<(ActorId, CachedAction)>,
+}
+
+/// A part of [`Action`].
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
+pub enum InnerAction {
+    /// Adds liquidity to the contract from [`msg::source()`]'s fungible tokens
+    /// and mints liquidity tokens to it.
+    ///
+    /// # Requirements
+    /// - `amount_a_desired` & `amount_b_desired` mustn't equal to 0.
+    /// - On the first addition (first mint), a resulted amount of pool tokens
+    /// must be more than [`MINIMUM_LIQUIDITY`].
+    ///
+    /// On success, replies with [`Event::AddedLiquidity`].
+    AddLiquidity {
+        /// An amount of the A tokens to add as liquidity if the B/A price is <=
+        /// `amount_b_desired`/`amount_a_desired` (A depreciates).
+        amount_a_desired: u128,
+        /// An amount of the B tokens to add as liquidity if the A/B price is <=
+        /// `amount_a_desired`/`amount_b_desired` (B depreciates).
+        amount_b_desired: u128,
+        /// Bounds an extent to which the B/A price can go up before this action
+        /// reverts. Must be <= `amount_a_desired`.
+        amount_a_min: u128,
+        /// Bounds an extent to which the A/B price can go up before this action
+        /// reverts. Must be <= `amount_b_desired`.
+        amount_b_min: u128,
+        /// A recipient of minted liquidity tokens.
+        to: ActorId,
+        /// Timestamp (in ms) after which this action will revert.
+        deadline: u64,
+    },
+
+    /// Removes liquidity from the contract by burning [`msg::source()`]'s
+    /// liquidity tokens and transferring an appropriate amount of fungible
+    /// tokens from the contract to it.
+    ///
+    /// # Requirements
+    /// - [`msg::source()`] must have the same or a greater amount of liquidity
+    /// tokens than a given one.
+    ///
+    /// On success, replies with [`Event::RemovedLiquidity`].
+    RemoveLiquidity {
+        /// An amount of liquidity tokens to remove.
+        liquidity: Amount,
+        /// A minimum amount of the A tokens that must be received for this
+        /// action not to revert.
+        amount_a_min: u128,
+        /// A minimum amount of the B tokens that must be received for this
+        /// action not to revert.
+        amount_b_min: u128,
+        /// A recipient of returned fungible tokens.
+        to: ActorId,
+        /// Timestamp (in ms) after which this action will revert.
+        deadline: u64,
+    },
+
+    // Swaps an exact amount of input tokens for as many output tokens as
+    // possible.
+    ///
+    /// # Requirements
+    /// - `to` mustn't equal to the contract's SFT pair.
+    /// - `amount_in` mustn't equal to 0.
+    ///
+    /// On success, replies with [`Event::Swap`].
+    SwapExactTokensForTokens {
+        swap_kind: SwapKind,
+        amount_in: u128,
+        /// A minimum amount of output tokens that must be received for this
+        /// action not to revert.
+        amount_out_min: u128,
+        /// A recipient of output tokens.
+        to: ActorId,
+        /// Timestamp (in ms) after which this action will revert.
+        deadline: u64,
+    },
+
+    /// Swaps an exact amount of output tokens for as few input tokens as
+    /// possible.
+    ///
+    /// # Requirements
+    /// - `to` mustn't equal to the contract's SFT pair.
+    /// - `amount_out` mustn't equal to 0.
+    ///
+    /// On success, replies with [`Event::Swap`].
+    SwapTokensForExactTokens {
+        swap_kind: SwapKind,
+        amount_out: u128,
+        /// A maximum amount of input tokens that must be received for this
+        /// action not to revert.
+        amount_in_max: u128,
+        /// A recipient of output tokens.
+        to: ActorId,
+        /// Timestamp (in ms) after which this action will revert.
+        deadline: u64,
+    },
+
+    /// Syncs the contract's tokens reserve with actual contract's balances by
+    /// transferring excess tokens to some [`ActorId`].
+    ///
+    /// On success, replies with [`Event::Skim`].
+    Skim(
+        /// A recipient of excess tokens.
+        ActorId,
+    ),
+
+    /// Syncs the contract's tokens reserve with actual contract's balances by
+    /// setting the reserve equal to the balances.
+    ///
+    /// On success, replies with [`Event::Sync`].
+    Sync,
+
+    /// Transfers liquidity tokens from [`msg::source()`].
+    ///
+    /// # Requirements
+    /// - [`msg::source()`] must have the same or a greater amount of liquidity
+    /// tokens than a given one.
+    ///
+    /// On success, replies with [`Event::Transfer`].
+    Transfer { to: ActorId, amount: Amount },
+}
+
+/// Sends the contract info about what it should do.
+pub type Action = tx_manager::Action<InnerAction>;
+
+/// A result of successfully processed [`Action`].
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
+pub enum Event {
+    /// Should be returned from [`InnerAction::AddLiquidity`].
+    AddedLiquidity {
+        sender: ActorId,
+        /// An amount of the A token sent to the contract.
+        amount_a: u128,
+        /// An amount of the B token sent to the contract.
+        amount_b: u128,
+        /// An amount of liquidity tokens minted.
+        liquidity: Amount,
+    },
+    /// Should be returned from [`InnerAction::RemoveLiquidity`].
+    RemovedLiquidity {
+        sender: ActorId,
+        /// An amount of the A token returned from the contract.
+        amount_a: u128,
+        /// An amount of the B token returned from the contract.
+        amount_b: u128,
+        /// A recipient of returned fungible tokens.
+        to: ActorId,
+    },
+    /// Should be returned from
+    /// [`InnerAction::SwapExactTokensForTokens`]/[`InnerAction::SwapTokensForExactTokens`].
+    Swap {
+        kind: SwapKind,
+        sender: ActorId,
+        in_amount: u128,
+        out_amount: u128,
+        to: ActorId,
+    },
+    /// Should be returned from [`InnerAction::Sync`].
+    Sync {
+        /// The current amount of the A token in the contract's reserve.
+        reserve_a: u128,
+        /// The current amount of the B token in the contract's reserve.
+        reserve_b: u128,
+    },
+    /// Should be returned from [`InnerAction::Skim`].
+    Skim {
+        /// A skimmed amount of the A token.
+        amount_a: u128,
+        /// A skimmed amount of the A token.
+        amount_b: u128,
+        /// A recipient of skimmed tokens.
+        to: ActorId,
+    },
+    /// Should be returned from [`InnerAction::Transfer`].
+    Transfer(FTTransfer),
+}
+
+impl From<FTTransfer> for Event {
+    fn from(value: FTTransfer) -> Self {
+        Self::Transfer(value)
+    }
+}
+
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
+pub enum SwapKind {
+    AForB,
+    BForA,
+}
+
+/// Error variants of failed [`Action`].
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+pub enum Error {
+    /// See [`ContractError`].
+    ContractError(String),
+    /// An insufficient amount of the A or B token was provided.
+    InsufficientAmount,
+    /// A specified amount limit of the former tokens has been exceeded.
+    InsufficientFormerAmount,
+    /// A specified amount limit of the latter tokens has been exceeded.
+    InsufficientLatterAmount,
+    /// An insufficient amount of liquidity tokens was provided, or the contract
+    /// doesn't have enough of them to continue an action.
+    InsufficientLiquidity,
+    /// An invalid recipient was specified.
+    InvalidRecipient,
+    /// [`ActorId::zero()`] was found where it's forbidden.
+    ZeroActorId,
+    /// One of the contract's FT contracts failed to complete a transfer
+    /// action.
+    ///
+    /// Most often, the reason is that a user didn't give an approval to the
+    /// contract or didn't have enough tokens to transfer.
+    TransferFailed,
+    /// An overflow occurred during calculations.
+    Overflow,
+    /// A specified deadline for an action was exceeded.
+    DeadlineExceeded,
+    /// SFT [`ActorId`]s in a given pair to create the Pair contract are equal.
+    IdenticalTokens,
+    FTError(FTError),
+    /// The contract failed to get fee receiver (`fee_to`) [`ActorId`] from the
+    /// linked Factory contract.
+    FeeToGettingFailed,
+    TxCacheError(TransactionManagerError),
+}
+
+impl From<ContractError> for Error {
+    fn from(error: ContractError) -> Self {
+        Self::ContractError(error.to_string())
+    }
+}
+
+impl From<TransactionManagerError> for Error {
+    fn from(error: TransactionManagerError) -> Self {
+        Self::TxCacheError(error)
+    }
+}
+
+impl From<FTError> for Error {
+    fn from(error: FTError) -> Self {
+        Self::FTError(error)
+    }
+}
+
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
+pub enum CachedAction {
+    Swap(u128),
+    AddLiquidity((u128, u128)),
+    RemovedLiquidity { amount: Amount, is_burned: bool },
+    Other,
 }
 
 #[doc(hidden)]
-impl State {
-    pub fn token_addresses(self) -> (FungibleId, FungibleId) {
-        (self.token0, self.token1)
+pub mod hidden {
+    use super::*;
+
+    pub fn quote(amount: u128, reserve: (u128, u128)) -> Result<u128, Error> {
+        if let Err(error) = perform_precalculate_check(amount, reserve) {
+            Err(error)
+        } else {
+            quote_unchecked(amount, reserve)
+        }
     }
 
-    pub fn reserves(self) -> (u128, u128) {
-        (self.reserve0, self.reserve1)
+    pub fn quote_unchecked(amount: u128, reserve: (u128, u128)) -> Result<u128, Error> {
+        let U256PairTuple(reserve) = reserve.into();
+
+        (U256::from(amount) * reserve.1 / reserve.0)
+            .try_into()
+            .map_or(Err(Error::Overflow), Ok)
     }
 
-    pub fn prices(self) -> (u128, u128) {
-        (self.price0_cl, self.price1_cl)
+    pub fn quote_reserve_unchecked(amount: u128, reserve: (u128, u128)) -> Result<u128, Error> {
+        if amount == 0 {
+            Err(Error::InsufficientAmount)
+        } else {
+            quote_unchecked(amount, reserve)
+        }
     }
 
-    pub fn balance_of(self, address: ActorId) -> u128 {
-        self.ft_balances
-            .into_iter()
-            .find_map(|(some_address, balance)| (some_address == address).then_some(balance))
-            .unwrap_or_default()
+    pub fn calculate_out_amount(in_amount: u128, reserve: (u128, u128)) -> Result<u128, Error> {
+        perform_precalculate_check(in_amount, reserve)?;
+
+        let amount_with_fee: U256 = U256::from(in_amount) * 997;
+
+        amount_with_fee
+            .checked_mul(reserve.1.into())
+            .map_or(Err(Error::Overflow), |numerator| {
+                // Shouldn't overflow.
+                let denominator = U256::from(reserve.0) * 1000 + amount_with_fee;
+
+                // Shouldn't be more than u128::MAX, so casting doesn't lose data.
+                Ok((numerator / denominator).low_u128())
+            })
     }
-}
 
-pub type FungibleId = ActorId;
+    pub fn calculate_in_amount(out_amount: u128, reserve: (u128, u128)) -> Result<u128, Error> {
+        perform_precalculate_check(out_amount, reserve)?;
 
-/// Initializes a pair.
-///
-/// # Requirements:
-/// * both `FungibleId` MUST be fungible token contracts with a non-zero address.
-/// * factory MUST be a non-zero address.
-#[derive(Debug, Encode, Decode, TypeInfo)]
-pub struct InitPair {
-    /// Factory address which deployed this pair.
-    pub factory: ActorId,
-    /// The first FT token address.
-    pub token0: FungibleId,
-    /// The second FT token address.
-    pub token1: FungibleId,
-}
+        // The `u64` suffix is needed for a faster conversion.
+        let numerator =
+            (U256::from(reserve.0) * U256::from(out_amount)).checked_mul(1000u64.into());
 
-#[derive(Debug, Encode, Decode, TypeInfo)]
-pub enum PairAction {
-    /// Adds liquidity to the pair.
-    ///
-    /// Adds a specified amount of both tokens to the pair contract.
-    /// # Requirements:
-    /// * all the values MUST non-zero numbers.
-    /// * `to` MUST be a non-zero adddress.
-    ///
-    /// On success returns `PairEvent::AddedLiquidity`.
-    AddLiquidity {
-        /// The amount of token 0 which is desired by a user.
-        amount0_desired: u128,
-        /// The amount of token 1 which is desired by a user.
-        amount1_desired: u128,
-        /// The minimum amount of token 0 which a user is willing to add.
-        amount0_min: u128,
-        /// The minimum amount of token 1 which a user is willing to add.
-        amount1_min: u128,
-        /// Who is adding the liquidity.
-        to: ActorId,
-    },
+        if let (Some(numerator), Some(amount)) = (numerator, reserve.1.checked_sub(out_amount)) {
+            if amount == 0 {
+                Err(Error::Overflow)
+            } else {
+                let denominator = U256::from(amount) * 997;
 
-    /// Removes liquidity from the pair.
-    ///
-    /// Removes a specified amount of liquidity from the pair contact.
-    /// # Requirements:
-    /// * all the values MUST non-zero numbers.
-    /// * `to` MUST be a non-zero adddress.
-    ///
-    /// On success returns `PairEvent::RemovedLiquidity`.
-    RemoveLiquidity {
-        /// Liquidity amount to be removed.
-        liquidity: u128,
-        /// The minimal amount of token 0 a user is willing to get.
-        amount0_min: u128,
-        /// The minimal amount of token 1 a user is willing to get.
-        amount1_min: u128,
-        // Who is removing liquidity.
-        to: ActorId,
-    },
+                // Adding 1 here to avoid abuse of the case when a calculated input
+                // amount will equal 0.
+                (numerator / denominator + 1)
+                    .try_into()
+                    .map_or(Err(Error::Overflow), Ok)
+            }
+        } else {
+            Err(Error::Overflow)
+        }
+    }
 
-    /// Forces the reserves to match the balances.
-    ///
-    /// On success returns `PairEvent::Sync`.
-    Sync,
+    pub const fn perform_precalculate_check(
+        amount: u128,
+        reserve: (u128, u128),
+    ) -> Result<(), Error> {
+        if reserve.0 == 0 || reserve.1 == 0 {
+            Err(Error::InsufficientLiquidity)
+        } else if amount == 0 {
+            Err(Error::InsufficientAmount)
+        } else {
+            Ok(())
+        }
+    }
 
-    /// Forces the reserves to match the balances.
-    ///
-    /// Forces the reserves to match the balances while sending all the extra tokens to a specified user.
-    /// On success returns `PairEvent::Skim`
-    Skim {
-        /// Who will get extra tokens.
-        to: ActorId,
-    },
+    pub struct U256PairTuple(pub (U256, U256));
 
-    /// Swaps token 0 for token 1.
-    ///
-    /// Swaps the provided amount of token 0 for token 1.
-    /// Requirements:
-    /// * `to` - MUST be a non-zero address.
-    /// * `amount_in` - MUST be a non-zero number and less than the liquidity of token 0.
-    ///
-    /// On success returns `PairEvent::SwapExactTokensFor`.
-    SwapExactTokensFor {
-        /// Who is performing a swap.
-        to: ActorId,
-        /// Amount of token0 you wish to trade.
-        amount_in: u128,
-    },
+    impl From<(u128, u128)> for U256PairTuple {
+        fn from(value: (u128, u128)) -> Self {
+            Self((value.0.into(), value.1.into()))
+        }
+    }
 
-    /// Swaps token 1 for token 0.
-    ///
-    /// Swaps the provided amount of token 1 for token 0.
-    /// Requirements:
-    /// * `to` - MUST be a non-zero address.
-    /// * `amount_out` - MUST be a non-zero number and less than the liquidity of token 1.
-    ///
-    /// On sucess returns `PairEvent::SwapTokensForExact`.
-    SwapTokensForExact {
-        /// Who is performing a swap.
-        to: ActorId,
-        /// Amount of token 0 the user with to trade.
-        amount_out: u128,
-    },
-}
+    #[cfg(test)]
+    mod tests {
+        use super::{calculate_in_amount, calculate_out_amount, quote_unchecked, Error};
 
-#[derive(Debug, Encode, Decode, TypeInfo)]
-pub enum PairEvent {
-    AddedLiquidity {
-        /// The amount of token0 added to liquidity.
-        amount0: u128,
-        /// The amount of token1 added to liquidity.
-        amount1: u128,
-        /// Overall liquidity amount that has been added.
-        liquidity: u128,
-        /// Liquidity provider.
-        to: ActorId,
-    },
-    Sync {
-        /// The balance of token0.
-        balance0: u128,
-        /// The balance of token1.
-        balance1: u128,
-        /// The amount of token0 stored on the contract.
-        reserve0: u128,
-        /// The amount of token1 stored on the contract.
-        reserve1: u128,
-    },
-    Skim {
-        /// Fee collector.
-        to: ActorId,
-        /// The amount of extra token0.
-        amount0: u128,
-        /// The amount of extra token1.
-        amount1: u128,
-    },
-    SwapExactTokensFor {
-        /// Swap performer.
-        to: ActorId,
-        /// The amount of token0 a user is providing.
-        amount_in: u128,
-        /// The amount of token1 a user is getting.
-        amount_out: u128,
-    },
-    SwapTokensForExact {
-        /// Swap performed.
-        to: ActorId,
-        /// The amount of token0 a user is getting.
-        amount_in: u128,
-        /// The amount of token1 a user is providing.
-        amount_out: u128,
-    },
-}
+        #[test]
+        fn quote() {
+            assert_eq!(quote_unchecked(5000, (10000, 10000)), Ok(5000));
+            assert_eq!(quote_unchecked(1234, (54321, 12345)), Ok(280));
+        }
 
-#[derive(Debug, Encode, Decode, TypeInfo)]
-pub enum PairStateQuery {
-    TokenAddresses,
-    Reserves,
-    Prices,
-    BalanceOf(ActorId),
-}
+        #[test]
+        fn calculate_oa() {
+            assert_eq!(
+                calculate_out_amount(0, (0, 1)),
+                Err(Error::InsufficientLiquidity)
+            );
+            assert_eq!(
+                calculate_out_amount(0, (1, 0)),
+                Err(Error::InsufficientLiquidity)
+            );
+            assert_eq!(
+                calculate_out_amount(0, (1, 1)),
+                Err(Error::InsufficientAmount)
+            );
 
-#[derive(Debug, Encode, Decode, TypeInfo)]
-pub enum PairStateReply {
-    TokenAddresses((FungibleId, FungibleId)),
-    Reserves((u128, u128)),
-    Prices((u128, u128)),
-    Balance(u128),
+            assert_eq!(
+                calculate_out_amount(u128::MAX, (1, u128::MAX)),
+                Err(Error::Overflow)
+            );
+
+            // (10000 * 997) * 10000 // (10000 * 1000 + (10000 * 997))
+            assert_eq!(calculate_out_amount(10000, (10000, 10000)), Ok(4992));
+            // (1234 * 997) * 54321 // (12345 * 1000 + (1234 * 997))
+            assert_eq!(calculate_out_amount(1234, (12345, 54321)), Ok(4922));
+        }
+
+        #[test]
+        fn calculate_ia() {
+            assert_eq!(
+                calculate_in_amount(0, (0, 1)),
+                Err(Error::InsufficientLiquidity)
+            );
+            assert_eq!(
+                calculate_in_amount(0, (1, 0)),
+                Err(Error::InsufficientLiquidity)
+            );
+            assert_eq!(
+                calculate_in_amount(0, (1, 1)),
+                Err(Error::InsufficientAmount)
+            );
+
+            assert_eq!(
+                calculate_in_amount(u128::MAX, (u128::MAX, 1)),
+                Err(Error::Overflow)
+            );
+            // reserve.1 - out_amount == 0
+            assert_eq!(calculate_in_amount(12345, (1, 12345)), Err(Error::Overflow));
+            assert_eq!(
+                calculate_in_amount(u128::MAX / 100 - 1, (u128::MAX / 100, u128::MAX / 100)),
+                Err(Error::Overflow)
+            );
+
+            // 5000 * 10000 * 1000 // ((10000 - 5000) * 997) + 1
+            assert_eq!(calculate_in_amount(5000, (10000, 10000)), Ok(10031));
+            // 1234 * 12345 * 1000 // ((54321 - 1234) * 997) + 1
+            assert_eq!(calculate_in_amount(1234, (12345, 54321)), Ok(288));
+        }
+    }
 }

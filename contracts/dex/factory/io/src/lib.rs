@@ -1,135 +1,154 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
-use gstd::{prelude::*, ActorId};
-
-pub use dex_pair_io::FungibleId;
+use gmeta::{InOut, Metadata};
+use gstd::{errors::ContractError, prelude::*, ActorId, CodeId};
 
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
-    type Init = In<InitFactory>;
-    type Handle = InOut<FactoryAction, FactoryEvent>;
+    type Init = InOut<Initialize, Result<(), Error>>;
+    type Handle = InOut<Action, Result<Event, Error>>;
     type Reply = ();
     type Others = ();
     type Signal = ();
     type State = State;
 }
 
-#[derive(Debug, Default, Hash, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Encode, Decode)]
+/// The contract state.
+///
+/// For more info about fields, see [`Initialize`].
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub struct State {
-    /// CodeHash to deploy a pair contract from factory.
-    pub pair_code_hash: [u8; 32],
-    pub owner_id: ActorId,
-    /// Who gets the fee
+    pub pair: CodeId,
     pub fee_to: ActorId,
     pub fee_to_setter: ActorId,
-    /// (tokenA, tokenB) -> pair_address mapping
     pub pairs: Vec<((ActorId, ActorId), ActorId)>,
 }
 
-#[doc(hidden)]
 impl State {
-    pub fn pair_address(self, token_a: FungibleId, token_b: FungibleId) -> ActorId {
-        let (t1, t2) = if token_a > token_b {
-            (token_b, token_a)
-        } else {
-            (token_a, token_b)
-        };
+    pub fn pair(&self, mut pair: (ActorId, ActorId)) -> ActorId {
+        if pair.1 > pair.0 {
+            pair = (pair.1, pair.0);
+        }
 
         self.pairs
-            .into_iter()
-            .find_map(|(pair, address)| (pair == (t1, t2)).then_some(address))
+            .iter()
+            .find_map(|(existing_pair, actor)| (*existing_pair == pair).then_some(*actor))
             .unwrap_or_default()
     }
+}
 
-    pub fn all_pairs_length(self) -> u32 {
-        self.pairs.len() as u32
+/// Initializes the contract.
+#[derive(
+    Default, Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash,
+)]
+pub struct Initialize {
+    /// The actor that'll receive the 0.05% commission per trade.
+    ///
+    /// If it'll equal to [`ActorId::zero()`], the commission will be disabled.
+    pub fee_to: ActorId,
+    /// The actor that'll have the right to set `fee_to` & `fee_to_setter`.
+    pub fee_to_setter: ActorId,
+    /// The identifier of the Pair contract.
+    pub pair: CodeId,
+}
+
+/// Sends the contract info about what it should do.
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
+pub enum Action {
+    /// Creates a Pair contract instance from a pair of
+    /// (SFT)[https://github.com/gear-dapps/sharded-fungible-token]
+    /// [`ActorId`]s.
+    ///
+    /// # Requirements:
+    /// - [`ActorId`]s mustn't be identical.
+    /// - [`ActorId`]s mustn't equal to [`ActorId::zero()`].
+    /// - Pair with given [`ActorId`]s mustn't already exist.
+    ///
+    /// On success, replies with [`Event::PairCreated`].
+    CreatePair(ActorId, ActorId),
+
+    /// Sets [`ActorId`] of the fee receiver (`fee_to`).
+    ///
+    /// Setting the fee receiver to [`ActorId::zero()`] disables the 0.05%
+    /// commission.
+    ///
+    /// # Requirements:
+    /// - [`msg::source`](gstd::msg::source) must have the right to set the fee
+    /// receiver (must be equal to `fee_to_setter`).
+    ///
+    /// On success, replies with [`Event::FeeToSet`].
+    FeeTo(ActorId),
+
+    /// Sets [`ActorId`] that'll have the right to set `fee_to` &
+    /// `fee_to_setter`.
+    ///
+    /// # Requirements:
+    /// - [`msg::source`](gstd::msg::source) must be equal to current
+    /// `fee_to_setter`.
+    ///
+    /// On success, replies with [`Event::FeeToSetterSet`].
+    FeeToSetter(ActorId),
+
+    /// Gets [`ActorId`] of the current fee receiver.
+    ///
+    /// If it equals [`ActorId::zero()`], the 0.05% commission is disabled.
+    ///
+    /// On success, replies with [`Event::FeeToSet`].
+    GetFeeTo,
+}
+
+/// A result of successfully processed [`Action`].
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
+pub enum Event {
+    /// Should be returned from [`Action::CreatePair`].
+    PairCreated {
+        /// A pair of SFT [`ActorId`]s.
+        token_pair: (ActorId, ActorId),
+        /// [`ActorId`] of a created Pair contract.
+        pair_actor: ActorId,
+        /// A number of Pair contracts (including a created one) inside the
+        /// Factory contract.
+        pair_number: u32,
+    },
+
+    /// Should be returned from [`Action::FeeToSetter`].
+    FeeToSetterSet(
+        /// New `fee_to_setter`.
+        ActorId,
+    ),
+
+    /// Should be returned from [`Action::FeeTo`].
+    FeeToSet(
+        /// New `fee_to`.
+        ActorId,
+    ),
+}
+
+/// Error variants of failed [`Action`].
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+pub enum Error {
+    /// See [`ContractError`].
+    ContractError(String),
+    /// [`msg::source()`](gstd::msg::source) doesn't equal to `fee_to_setter`.
+    AccessRestricted,
+    /// [`ActorId::zero()`] was found where it's forbidden.
+    ZeroActorId,
+    /// SFT [`ActorId`]s in a given pair to create the Pair contract are equal.
+    IdenticalTokens,
+    /// A pair contract with given SFT [`ActorId`]s already exist.
+    PairExist,
+    PairCreationFailed(dex_pair_io::Error),
+}
+
+impl From<ContractError> for Error {
+    fn from(error: ContractError) -> Self {
+        Self::ContractError(error.to_string())
     }
 }
 
-/// Initializes a factory.
-#[derive(Debug, Encode, Decode, TypeInfo)]
-pub struct InitFactory {
-    /// The address that can actually set the fee.
-    pub fee_to_setter: ActorId,
-    /// Code hash to successfully deploy a pair with this contract.
-    pub pair_code_hash: [u8; 32],
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
-pub enum FactoryAction {
-    /// Creates an exchange pair
-    ///
-    /// Deploys a pair exchange contract and saves the info about it.
-    /// # Requirements:
-    /// * both `FungibleId` MUST be non-zero addresss and represent the actual fungible-token contracts
-    ///
-    /// On success returns `FactoryEvery::PairCreated`
-    CreatePair(FungibleId, FungibleId),
-
-    /// Sets fee_to variable
-    ///
-    /// Sets an address where the fees will be sent.
-    /// # Requirements:
-    /// * `fee_to` MUST be non-zero address
-    /// * action sender MUST be the same as `fee_to_setter` in this contract
-    ///
-    /// On success returns `FactoryEvery::FeeToSet`
-    SetFeeTo(ActorId),
-
-    /// Sets fee_to_setter variable
-    ///
-    /// Sets an address that will be able to change fee_to
-    /// # Requirements:
-    /// * `fee_to_setter` MUST be non-zero address
-    /// * action sender MUST be the same as `fee_to_setter` in this contract
-    ///
-    /// On success returns `FactoryEvery::FeeToSetterSet`
-    SetFeeToSetter(ActorId),
-
-    /// Returns a `fee_to` variables.
-    ///
-    /// Just returns a variable `fee_to` from the state.
-    ///
-    /// On success returns `FactoryEvery::FeeTo`
-    FeeTo,
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
-pub enum FactoryEvent {
-    PairCreated {
-        /// The first token address
-        token_a: FungibleId,
-        /// The second token address
-        token_b: FungibleId,
-        /// Pair address (the pair exchange contract).
-        pair_address: ActorId,
-        /// The amount of pairs that already were deployed though this factory.
-        pairs_length: u32,
-    },
-    FeeToSet(ActorId),
-    FeeToSetterSet(ActorId),
-    FeeTo(ActorId),
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
-pub enum FactoryStateQuery {
-    FeeTo,
-    FeeToSetter,
-    PairAddress {
-        token_a: FungibleId,
-        token_b: FungibleId,
-    },
-    AllPairsLength,
-    Owner,
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
-pub enum FactoryStateReply {
-    FeeTo(ActorId),
-    FeeToSetter(ActorId),
-    PairAddress(ActorId),
-    AllPairsLength(u32),
-    Owner(ActorId),
+impl From<dex_pair_io::Error> for Error {
+    fn from(error: dex_pair_io::Error) -> Self {
+        Self::PairCreationFailed(error)
+    }
 }
