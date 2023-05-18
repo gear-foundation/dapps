@@ -1,6 +1,6 @@
 .PHONY: all build fmt init lint pre-commit test full-test deps
 
-NIGHTLY_TOOLCHAIN_VERSION ?= 2023-03-14
+NIGHTLY_TOOLCHAIN_VERSION = 2023-03-14
 TARGET = `rustc -Vv | grep 'host: ' | sed 's/^host: \(.*\)/\1/'`
 
 all: init build test

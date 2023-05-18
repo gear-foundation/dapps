@@ -1,8 +1,8 @@
 #![no_std]
 
-use app_io::*;
 use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
+use student_nft_io::*;
 
 #[cfg(feature = "binary-vendor")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
@@ -11,14 +11,19 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 pub mod metafns {
     pub type State = <ContractMetadata as Metadata>::State;
 
-    pub fn pingers(state: State) -> Vec<ActorId> {
-        state.into_iter().map(|(pinger, _)| pinger).collect()
+    pub fn get_nfts(state: State) -> Vec<(NftId, Nft)> {
+        state.nfts
     }
 
-    pub fn ping_count(state: State, actor: ActorId) -> u128 {
-        state
-            .into_iter()
-            .find_map(|(pinger, ping_count)| (pinger == actor).then_some(ping_count))
-            .unwrap_or_default()
+    pub fn get_nft_owners(state: State) -> Vec<(ActorId, NftId)> {
+        state.nft_owners
+    }
+
+    pub fn get_courses(state: State) -> Vec<(CourseId, Course)> {
+        state.courses
+    }
+
+    pub fn get_emotes(state: State) -> Vec<(EmoteId, EmoteState)> {
+        state.emotes
     }
 }

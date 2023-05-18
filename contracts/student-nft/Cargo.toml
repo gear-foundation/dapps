@@ -1,22 +1,22 @@
 [package]
-name = "app"
+name = "student-nft"
 version = "0.1.0"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-app-io = { path = "io" }
+student-nft-io = { path = "io" }
 gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
 gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
 hashbrown = "0.13"
 
 [build-dependencies]
-app-io = { path = "io" }
+student-nft-io = { path = "io" }
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
 
 [dev-dependencies]
-app-state = { path = "state" }
+student-nft-state = { path = "state" }
 gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
 gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0", features = ["debug"] }
 tokio = "1"
