@@ -47,7 +47,6 @@ pub enum Status {
 #[derive(Debug, Default, Clone, Copy, Encode, Decode, TypeInfo)]
 pub struct Config {
     pub operator: ActorId,
-    pub reward_token_id: ActorId,
 
     /// Should be scaled by `reward_token_id` precision.
     pub tokens_per_gold_coin: u64,
@@ -64,9 +63,7 @@ pub struct Config {
 
 impl Config {
     pub fn is_valid(&self) -> bool {
-        !self.operator.is_zero()
-            && !self.reward_token_id.is_zero()
-            && self.gold_coins + self.silver_coins <= MAP_CELLS as u64
+        !self.operator.is_zero() && self.gold_coins + self.silver_coins <= MAP_CELLS as u64
     }
 
     pub fn get_reward_scale_bps(&self, level: Level) -> u16 {

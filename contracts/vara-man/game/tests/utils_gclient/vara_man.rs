@@ -5,12 +5,11 @@ use vara_man_io::{Config, Level, Status, VaraMan, VaraManAction, VaraManEvent, V
 
 const VARA_MAN_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/vara_man_game.opt.wasm";
 
-pub async fn init(api: &GearApi, reward_token_id: &ActorId) -> gclient::Result<ActorId> {
+pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     init_with_config(
         api,
         Config {
             operator: common::get_current_actor_id(api),
-            reward_token_id: *reward_token_id,
             tokens_per_gold_coin: 1,
             tokens_per_silver_coin: 1,
             easy_reward_scale_bps: 0,

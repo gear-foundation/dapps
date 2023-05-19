@@ -1,4 +1,3 @@
-use super::ft_messages;
 use gstd::{exec, msg, prelude::*, ActorId};
 use hashbrown::HashMap;
 use vara_man_io::{
@@ -12,21 +11,6 @@ struct VaraMan {
     pub players: HashMap<ActorId, Player>,
     pub status: Status,
     pub config: Config,
-    pub transaction_id: u64,
-    pub transactions: HashMap<u64, Option<VaraManAction>>,
-}
-
-impl VaraMan {
-    pub fn lazy_get_transaction_id(&mut self, transaction_id: Option<u64>) -> u64 {
-        match transaction_id {
-            Some(transaction_id) => transaction_id,
-            None => {
-                let transaction_id = self.transaction_id;
-                self.transaction_id = self.transaction_id.wrapping_add(1);
-                transaction_id
-            }
-        }
-    }
 }
 
 impl From<&VaraMan> for VaraManState {
@@ -51,26 +35,12 @@ async fn main() {
     let action: VaraManAction = msg::load().expect("Unexpected invalid action payload.");
     let vara_man: &mut VaraMan = unsafe { VARA_MAN.get_or_insert(VaraMan::default()) };
 
-    if let VaraManAction::ClaimReward {
-        game_id: _,
-        silver_coins: _,
-        gold_coins: _,
-    } = &action
-    {
-        vara_man
-            .transactions
-            .insert(vara_man.transaction_id, Some(action.clone()));
-    }
+    let result = process_handle(action, vara_man).await;
 
-    let result = process_handle(None, action, vara_man).await;
     msg::reply(result, 0).expect("Unexpected invalid reply result.");
 }
 
-async fn process_handle(
-    transaction_id: Option<u64>,
-    action: VaraManAction,
-    vara_man: &mut VaraMan,
-) -> VaraManEvent {
+async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraManEvent {
     match action {
         VaraManAction::RegisterPlayer { name } => {
             let actor_id = msg::source();
@@ -83,9 +53,10 @@ async fn process_handle(
                 return VaraManEvent::Error("Username is empty.".to_owned());
             }
 
-            if vara_man
-                .players
-                .insert(
+            if vara_man.players.contains_key(&actor_id) {
+                VaraManEvent::Error("Player is already registered.".to_owned())
+            } else {
+                vara_man.players.insert(
                     actor_id,
                     Player {
                         name,
@@ -93,11 +64,8 @@ async fn process_handle(
                         claimed_gold_coins: 0,
                         claimed_silver_coins: 0,
                     },
-                )
-                .is_some()
-            {
-                VaraManEvent::Error("Player is already registered.".to_owned())
-            } else {
+                );
+
                 VaraManEvent::PlayerRegistered(actor_id)
             }
         }
@@ -134,7 +102,6 @@ async fn process_handle(
             silver_coins,
             gold_coins,
         } => {
-            let current_transaction_id = vara_man.lazy_get_transaction_id(transaction_id);
             if let Some(game) = vara_man.games.get_mut(game_id as usize) {
                 let player_address = msg::source();
 
@@ -196,21 +163,9 @@ async fn process_handle(
                     )
                     .expect("Math overflow!");
 
-                if ft_messages::transfer_tokens(
-                    current_transaction_id,
-                    &vara_man.config.reward_token_id,
-                    &exec::program_id(),
-                    &player_address,
-                    tokens_amount.into(),
-                )
-                .await
-                .is_err()
-                {
-                    vara_man.transactions.remove(&current_transaction_id);
-                    return VaraManEvent::Error(format!(
-                        "Transaction failed: {current_transaction_id}"
-                    ));
-                };
+                if msg::send(player_address, 0u8, tokens_amount as u128).is_err() {
+                    return VaraManEvent::Error("Native tokens transfer failed.".to_owned());
+                }
 
                 player.claimed_gold_coins += player
                     .claimed_gold_coins
@@ -223,7 +178,6 @@ async fn process_handle(
 
                 game.is_claimed = true;
 
-                vara_man.transactions.remove(&current_transaction_id);
                 VaraManEvent::RewardClaimed {
                     player_address,
                     game_id,
@@ -231,7 +185,6 @@ async fn process_handle(
                     gold_coins,
                 }
             } else {
-                vara_man.transactions.remove(&current_transaction_id);
                 VaraManEvent::Error("Invalid game id.".to_owned())
             }
         }

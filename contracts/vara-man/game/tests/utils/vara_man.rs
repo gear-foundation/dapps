@@ -31,7 +31,6 @@ impl VaraMan for Program<'_> {
             system,
             Config {
                 operator: ADMIN.into(),
-                reward_token_id: ADMIN.into(),
                 gold_coins: 5,
                 silver_coins: 20,
                 ..Default::default()
@@ -100,7 +99,7 @@ impl VaraMan for Program<'_> {
             }
         });
 
-        assert_eq!(maybe_error.is_some(), error);
+        assert_eq!(maybe_error.is_some(), error, "Error: {:#?}", maybe_error);
     }
 
     fn get_state(&self) -> VaraManState {

@@ -2,7 +2,7 @@ mod utils;
 
 use gstd::ActorId;
 use gtest::{Program, System};
-use utils::{FToken, VaraMan};
+use utils::VaraMan;
 use vara_man_io::{Player, Status};
 
 #[test]
@@ -10,7 +10,6 @@ fn success() {
     let system = System::new();
     system.init_logger();
 
-    let _ft = Program::ftoken(&system);
     let vara_man = Program::vara_man(&system);
     vara_man.change_status(Status::Started);
 
@@ -62,7 +61,6 @@ fn fail_player_already_registered() {
     let system = System::new();
     system.init_logger();
 
-    let _ft = Program::ftoken(&system);
     let vara_man = Program::vara_man(&system);
     vara_man.change_status(Status::Started);
 

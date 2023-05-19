@@ -9,7 +9,7 @@ use vara_man_io::{Level, Status};
 async fn success_register_player() -> gclient::Result<()> {
     let api = GearApi::dev().await?;
 
-    let (_ft_id, vara_man_id) = utils_gclient::common::init(&api).await?;
+    let vara_man_id = utils_gclient::common::init(&api).await?;
     utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, false).await?;
 
     {
@@ -31,7 +31,7 @@ async fn success_register_player() -> gclient::Result<()> {
 async fn success_start_game() -> gclient::Result<()> {
     let api = GearApi::dev().await?;
 
-    let (_ft_id, vara_man_id) = utils_gclient::common::init(&api).await?;
+    let vara_man_id = utils_gclient::common::init(&api).await?;
     utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, false).await?;
 
     {

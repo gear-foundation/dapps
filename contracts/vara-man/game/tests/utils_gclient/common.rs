@@ -1,4 +1,4 @@
-use super::{ft, vara_man};
+use super::vara_man;
 use blake2_rfc::blake2b;
 use gclient::GearApi;
 use gstd::{prelude::*, ActorId};
@@ -7,9 +7,8 @@ use vara_man_io::Config;
 pub const HASH_LENGTH: usize = 32;
 pub type Hash = [u8; HASH_LENGTH];
 
-pub async fn init(api: &GearApi) -> gclient::Result<(ActorId, ActorId)> {
-    let ft_id = ft::init(api).await?;
-    let vara_man = vara_man::init(api, &ft_id).await?;
+pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
+    let vara_man = vara_man::init(api).await?;
 
     // Fund users
     let destination = get_user_to_actor_id("//Peter")
@@ -20,24 +19,13 @@ pub async fn init(api: &GearApi) -> gclient::Result<(ActorId, ActorId)> {
     api.transfer(destination, api.total_balance(api.account_id()).await? / 2)
         .await?;
 
-    Ok((ft_id, vara_man))
+    Ok(vara_man)
 }
 
-pub async fn init_with_config(
-    api: &GearApi,
-    config: Config,
-) -> gclient::Result<(ActorId, ActorId)> {
-    let ft_id = ft::init(api).await?;
-    let vara_man = vara_man::init_with_config(
-        api,
-        Config {
-            reward_token_id: ft_id,
-            ..config
-        },
-    )
-    .await?;
+pub async fn init_with_config(api: &GearApi, config: Config) -> gclient::Result<ActorId> {
+    let vara_man = vara_man::init_with_config(api, config).await?;
 
-    Ok((ft_id, vara_man))
+    Ok(vara_man)
 }
 
 pub fn get_current_actor_id(api: &GearApi) -> ActorId {

@@ -1,7 +1,7 @@
 mod utils;
 
 use gtest::{Program, System};
-use utils::{FToken, VaraMan};
+use utils::VaraMan;
 use vara_man_io::{Config, Level, Status};
 
 #[test]
@@ -9,12 +9,10 @@ fn success() {
     let system = System::new();
     system.init_logger();
 
-    let ft = Program::ftoken(&system);
     let vara_man = Program::vara_man_with_config(
         &system,
         Config {
             operator: utils::ADMIN.into(),
-            reward_token_id: utils::FT_ID.into(),
             // 10 tokens per gold coin, with 6 decimals precision
             tokens_per_gold_coin: 10000000,
             // 1 token per silver coin, with 6 decimals precision
@@ -27,7 +25,7 @@ fn success() {
         },
     );
 
-    ft.mint(0, utils::ADMIN, utils::VARA_MAN_ID, 100_000_000);
+    system.mint_to(utils::VARA_MAN_ID, utils::VARA_MAN_FUND);
 
     vara_man.change_status(Status::Started);
 
@@ -39,10 +37,12 @@ fn success() {
 
     system.spend_blocks(301);
 
-    ft.check_balance(utils::PLAYERS[0], 0);
+    assert_eq!(system.balance_of(utils::PLAYERS[0]), 0);
     vara_man.claim_reward(utils::PLAYERS[0], 0, 10, 1, false);
+
     // 20 tokens total, with 6 decimals precision
-    ft.check_balance(utils::PLAYERS[0], 20000000);
+    system.claim_value_from_mailbox(utils::PLAYERS[0]);
+    assert_eq!(system.balance_of(utils::PLAYERS[0]), 20000000);
 }
 
 #[test]
@@ -50,12 +50,10 @@ fn success_reward_scale() {
     let system = System::new();
     system.init_logger();
 
-    let ft = Program::ftoken(&system);
     let vara_man = Program::vara_man_with_config(
         &system,
         Config {
             operator: utils::ADMIN.into(),
-            reward_token_id: utils::FT_ID.into(),
             // 10 tokens per gold coin, with 6 decimals precision
             tokens_per_gold_coin: 10000000,
             // 1 token per silver coin, with 6 decimals precision
@@ -69,7 +67,7 @@ fn success_reward_scale() {
         },
     );
 
-    ft.mint(0, utils::ADMIN, utils::VARA_MAN_ID, 100_000_000);
+    system.mint_to(utils::VARA_MAN_ID, utils::VARA_MAN_FUND);
 
     vara_man.change_status(Status::Started);
 
@@ -81,10 +79,12 @@ fn success_reward_scale() {
 
     system.spend_blocks(301);
 
-    ft.check_balance(utils::PLAYERS[0], 0);
+    assert_eq!(system.balance_of(utils::PLAYERS[0]), 0);
     vara_man.claim_reward(utils::PLAYERS[0], 0, 10, 1, false);
+
     // 20 tokens total, with 6 decimals precision
-    ft.check_balance(utils::PLAYERS[0], 22000000);
+    system.claim_value_from_mailbox(utils::PLAYERS[0]);
+    assert_eq!(system.balance_of(utils::PLAYERS[0]), 22000000);
 }
 
 #[test]
@@ -92,12 +92,10 @@ fn fail_rewards_already_claimed() {
     let system = System::new();
     system.init_logger();
 
-    let ft = Program::ftoken(&system);
     let vara_man = Program::vara_man_with_config(
         &system,
         Config {
             operator: utils::ADMIN.into(),
-            reward_token_id: utils::FT_ID.into(),
             // 10 tokens per gold coin, with 6 decimals precision
             tokens_per_gold_coin: 10000000,
             // 1 token per silver coin, with 6 decimals precision
@@ -110,7 +108,7 @@ fn fail_rewards_already_claimed() {
         },
     );
 
-    ft.mint(0, utils::ADMIN, utils::VARA_MAN_ID, 100_000_000);
+    system.mint_to(utils::VARA_MAN_ID, utils::VARA_MAN_FUND);
 
     vara_man.change_status(Status::Started);
 
@@ -122,13 +120,16 @@ fn fail_rewards_already_claimed() {
 
     system.spend_blocks(301);
 
-    ft.check_balance(utils::PLAYERS[0], 0);
-
+    assert_eq!(system.balance_of(utils::PLAYERS[0]), 0);
     vara_man.claim_reward(utils::PLAYERS[0], 0, 10, 1, false);
-    ft.check_balance(utils::PLAYERS[0], 20000000);
+
+    system.claim_value_from_mailbox(utils::PLAYERS[0]);
+    assert_eq!(system.balance_of(utils::PLAYERS[0]), 20000000);
 
     vara_man.claim_reward(utils::PLAYERS[0], 0, 10, 1, true);
-    ft.check_balance(utils::PLAYERS[0], 20000000);
+
+    system.claim_value_from_mailbox(utils::PLAYERS[0]);
+    assert_eq!(system.balance_of(utils::PLAYERS[0]), 20000000);
 }
 
 #[test]
@@ -136,12 +137,10 @@ fn fail_coin_amount_is_gt_than_allowed() {
     let system = System::new();
     system.init_logger();
 
-    let ft = Program::ftoken(&system);
     let vara_man = Program::vara_man_with_config(
         &system,
         Config {
             operator: utils::ADMIN.into(),
-            reward_token_id: utils::FT_ID.into(),
             // 10 tokens per gold coin, with 6 decimals precision
             tokens_per_gold_coin: 10000000,
             // 1 token per silver coin, with 6 decimals precision
@@ -154,7 +153,7 @@ fn fail_coin_amount_is_gt_than_allowed() {
         },
     );
 
-    ft.mint(0, utils::ADMIN, utils::VARA_MAN_ID, 100_000_000);
+    system.mint_to(utils::VARA_MAN_ID, utils::VARA_MAN_FUND);
 
     vara_man.change_status(Status::Started);
 
@@ -166,7 +165,7 @@ fn fail_coin_amount_is_gt_than_allowed() {
 
     system.spend_blocks(301);
 
-    ft.check_balance(utils::PLAYERS[0], 0);
+    assert_eq!(system.balance_of(utils::PLAYERS[0]), 0);
     vara_man.claim_reward(utils::PLAYERS[0], 0, 10000, 10000, true);
 }
 
@@ -175,12 +174,10 @@ fn fail_game_is_not_ended() {
     let system = System::new();
     system.init_logger();
 
-    let ft = Program::ftoken(&system);
     let vara_man = Program::vara_man_with_config(
         &system,
         Config {
             operator: utils::ADMIN.into(),
-            reward_token_id: utils::FT_ID.into(),
             // 10 tokens per gold coin, with 6 decimals precision
             tokens_per_gold_coin: 10000000,
             // 1 token per silver coin, with 6 decimals precision
@@ -193,7 +190,7 @@ fn fail_game_is_not_ended() {
         },
     );
 
-    ft.mint(0, utils::ADMIN, utils::VARA_MAN_ID, 100_000_000);
+    system.mint_to(utils::VARA_MAN_ID, utils::VARA_MAN_FUND);
 
     vara_man.change_status(Status::Started);
 
