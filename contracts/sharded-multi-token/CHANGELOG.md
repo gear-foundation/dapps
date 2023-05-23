@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2023-05-22
+### Added
+- Update dependencies.
+
 ## [0.1.2] - 2023-05-01
 ### Added
 - Update dependencies.
@@ -20,7 +24,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/sharded-multitoken/compare/0.1.2...HEAD
+[Unreleased]: https://github.com/gear-dapps/sharded-multitoken/compare/0.1.3...HEAD
+[0.1.3]: https://github.com/gear-dapps/sharded-multitoken/compare/0.1.2...0.1.3
 [0.1.2]: https://github.com/gear-dapps/sharded-multitoken/compare/0.1.1...0.1.2
 [0.1.1]: https://github.com/gear-dapps/sharded-multitoken/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/gear-dapps/sharded-multitoken/compare/dbffede...0.1.0
