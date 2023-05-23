@@ -19,7 +19,7 @@ export const Footer = () => (
       ))}
     </ul>
     <p className="text-white text-opacity-60 text-xs">
-      &copy; {new Date().getFullYear()} Gear Technologies, Inc. All Rights Reserved.
+      &copy; {new Date().getFullYear()} Gear Foundation, Inc. All Rights Reserved.
     </p>
   </footer>
 );

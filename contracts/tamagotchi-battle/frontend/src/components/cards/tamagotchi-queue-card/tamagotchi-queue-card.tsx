@@ -2,6 +2,7 @@ import { TamagotchiAvatar } from 'components/common/tamagotchi-avatar';
 import clsx from 'clsx';
 import { Icon } from 'components/ui/icon';
 import type { BattleStatePlayer } from 'app/types/battles';
+import { Tooltip, TooltipWrapper } from '@gear-js/ui';
 
 type TamagotchiQueueCardProps = {
   className?: string;
@@ -47,7 +48,9 @@ export const TamagotchiQueueCard = ({ className, tamagotchi, asPlayer, isActive 
           'flex justify-center text-center tracking-[0.03em] font-medium',
           asPlayer ? 'text-lg leading-7' : 'text-sm',
         )}>
-        <span className="block truncate max-w-[10ch]">{tamagotchi.name ? tamagotchi.name : 'Geary'}</span>
+        <TooltipWrapper text={tamagotchi.name ? tamagotchi.name : 'Geary'}>
+          <span className="block truncate max-w-[10ch]">{tamagotchi.name ? tamagotchi.name : 'Geary'}</span>
+        </TooltipWrapper>
       </h3>
       <div
         className={clsx('relative w-full xxl:w-30 px-4 rounded-xl overflow-hidden', dead ? 'bg-error' : 'bg-white/10')}>
