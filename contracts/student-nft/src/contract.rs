@@ -101,6 +101,57 @@ fn process_create_course(
     }
 }
 
+fn process_add_course_helper(
+    student_nft: &mut StudentNFT,
+    owner: &ActorId,
+    id: CourseId,
+    helper: ActorId,
+) -> StudentNftEvent {
+    if let Some(course) = student_nft.courses.get_mut(&id) {
+        if owner != &course.owner {
+            return StudentNftEvent::Error("Only owner can add more helpers.".to_owned());
+        }
+
+        if course.owner_helpers.contains(&helper) {
+            return StudentNftEvent::Error("Helper already added.".to_owned());
+        }
+
+        course.owner_helpers.push(helper);
+        StudentNftEvent::CourseHelperAdded { id, helper }
+    } else {
+        StudentNftEvent::Error("Provided course does not exist.".to_owned())
+    }
+}
+
+fn process_remove_course_helper(
+    student_nft: &mut StudentNFT,
+    owner: &ActorId,
+    id: CourseId,
+    helper: ActorId,
+) -> StudentNftEvent {
+    if let Some(course) = student_nft.courses.get_mut(&id) {
+        if owner != &course.owner {
+            return StudentNftEvent::Error("Only owner can remove helpers.".to_owned());
+        }
+
+        if !course.owner_helpers.contains(&helper) {
+            return StudentNftEvent::Error("Helper not found.".to_owned());
+        }
+
+        let helpers: Vec<ActorId> = course
+            .owner_helpers
+            .iter()
+            .filter(|&h| h != &helper)
+            .copied()
+            .collect();
+
+        course.owner_helpers = helpers;
+        StudentNftEvent::CourseHelperRemoved { id, helper }
+    } else {
+        StudentNftEvent::Error("Provided course does not exist.".to_owned())
+    }
+}
+
 fn process_add_lesson(
     student_nft: &mut StudentNFT,
     source: &ActorId,
@@ -108,8 +159,10 @@ fn process_add_lesson(
     lesson: Lesson,
 ) -> StudentNftEvent {
     if let Some(course) = student_nft.courses.get_mut(&id) {
-        if source != &course.owner {
-            return StudentNftEvent::Error("Only owner can add more lessons.".to_owned());
+        if source != &course.owner && !course.owner_helpers.contains(source) {
+            return StudentNftEvent::Error(
+                "Only owner or helpers can add more lessons.".to_owned(),
+            );
         }
 
         if course.is_finished {
@@ -172,8 +225,8 @@ fn process_approve_hw(
     rate: u8,
 ) -> StudentNftEvent {
     if let Some(course) = student_nft.courses.get_mut(&course_id) {
-        if source != &course.owner {
-            return StudentNftEvent::Error("Only owner can approve hw.".to_owned());
+        if source != &course.owner && !course.owner_helpers.contains(source) {
+            return StudentNftEvent::Error("Only owner or helpers can approve hw.".to_owned());
         }
 
         if let Some(lesson) = course.lessons.get(lesson_id as usize) {
@@ -226,8 +279,8 @@ fn process_finish_course(
     course_id: CourseId,
 ) -> StudentNftEvent {
     if let Some(course) = student_nft.courses.get_mut(&course_id) {
-        if source != &course.owner {
-            return StudentNftEvent::Error("Only owner can finish course.".to_owned());
+        if source != &course.owner && !course.owner_helpers.contains(source) {
+            return StudentNftEvent::Error("Only owner or helpers can finish course.".to_owned());
         }
 
         if course.is_finished {
@@ -381,6 +434,12 @@ extern "C" fn handle() {
         StudentNftAction::Mint => process_mint(student_nft, &user),
         StudentNftAction::CreateCourse { name, description } => {
             process_create_course(student_nft, &user, name, description)
+        }
+        StudentNftAction::AddCourseHelper { course_id, helper } => {
+            process_add_course_helper(student_nft, &user, course_id, helper)
+        }
+        StudentNftAction::RemoveCourseHelper { course_id, helper } => {
+            process_remove_course_helper(student_nft, &user, course_id, helper)
         }
         StudentNftAction::StartCourse { course_id } => {
             process_start_course(student_nft, &user, course_id)

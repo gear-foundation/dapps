@@ -11,6 +11,8 @@ pub trait StudentNft {
     fn mint(&self, from: u64, error: bool);
     fn create_course(&self, from: u64, name: &str, description: &str, error: bool);
     fn start_course(&self, from: u64, course_id: CourseId, error: bool);
+    fn add_course_helper(&self, from: u64, course_id: CourseId, helper: u64, error: bool);
+    fn remove_course_helper(&self, from: u64, course_id: CourseId, helper: u64, error: bool);
     fn add_lesson(&self, from: u64, course_id: CourseId, lesson: &Lesson, error: bool);
     #[allow(clippy::too_many_arguments)]
     fn approve_hw(
@@ -64,6 +66,28 @@ impl StudentNft for Program<'_> {
 
     fn start_course(&self, from: u64, course_id: CourseId, error: bool) {
         self.send_tx(from, StudentNftAction::StartCourse { course_id }, error);
+    }
+
+    fn add_course_helper(&self, from: u64, course_id: CourseId, helper: u64, error: bool) {
+        self.send_tx(
+            from,
+            StudentNftAction::AddCourseHelper {
+                course_id,
+                helper: helper.into(),
+            },
+            error,
+        );
+    }
+
+    fn remove_course_helper(&self, from: u64, course_id: CourseId, helper: u64, error: bool) {
+        self.send_tx(
+            from,
+            StudentNftAction::RemoveCourseHelper {
+                course_id,
+                helper: helper.into(),
+            },
+            error,
+        );
     }
 
     fn add_lesson(&self, from: u64, course_id: CourseId, lesson: &Lesson, error: bool) {
