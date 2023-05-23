@@ -1,13 +1,12 @@
 [package]
 name = "vara-man-game"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.1" }
 hashbrown = "0.13.2"
 vara-man-io = { path = "../io" }
 

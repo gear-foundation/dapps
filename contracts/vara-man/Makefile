@@ -1,4 +1,4 @@
-.PHONY: all build fmt init lint pre-commit test full-test deps
+.PHONY: all build fmt init lint pre-commit test full-test
 
 NIGHTLY_TOOLCHAIN_VERSION = 2023-03-14
 TARGET = `rustc -Vv | grep 'host: ' | sed 's/^host: \(.*\)/\1/'`
@@ -27,31 +27,10 @@ lint:
 
 pre-commit: fmt lint full-test
 
-deps:
-	@echo ⚙️ Downloading dependencies...
-	@path=target/ft_main.wasm;\
-	if [ ! -f $$path ]; then\
-	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.1/ft_main.wasm\
-	        -o $$path;\
-	fi
-	@path=target/ft_logic.wasm;\
-	if [ ! -f $$path ]; then\
-	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.1/ft_logic.wasm\
-	        -o $$path;\
-	fi
-	@path=target/ft_storage.wasm;\
-	if [ ! -f $$path ]; then\
-	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.1/ft_storage.wasm\
-	        -o $$path;\
-	fi
-
-test: deps
+test:
 	@echo ⚙️ Running unit tests...
 	@cargo +nightly t
 
-full-test: deps
+full-test:
 	@echo ⚙️ Running all tests...
 	@cargo +nightly t -- --include-ignored --test-threads=1

@@ -49,9 +49,14 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                 return VaraManEvent::Error("Incorrect whole game status.".to_owned());
             }
 
-            if vara_man
-                .players
-                .insert(
+            if name.is_empty() {
+                return VaraManEvent::Error("Username is empty.".to_owned());
+            }
+
+            if vara_man.players.contains_key(&actor_id) {
+                VaraManEvent::Error("Player is already registered.".to_owned())
+            } else {
+                vara_man.players.insert(
                     actor_id,
                     Player {
                         name,
@@ -59,11 +64,8 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                         claimed_gold_coins: 0,
                         claimed_silver_coins: 0,
                     },
-                )
-                .is_some()
-            {
-                VaraManEvent::Error("Player is already registered.".to_owned())
-            } else {
+                );
+
                 VaraManEvent::PlayerRegistered(actor_id)
             }
         }
@@ -84,8 +86,10 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
 
             player.retries += 1;
 
-            vara_man.games.push(GameInstance::new(
+            vara_man.games.push(GameInstance::new_with_coins(
                 level,
+                vara_man.config.gold_coins,
+                vara_man.config.silver_coins,
                 player_address,
                 exec::block_timestamp() as i64,
                 seed,
@@ -101,10 +105,12 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
             if let Some(game) = vara_man.games.get_mut(game_id as usize) {
                 let player_address = msg::source();
 
+                // Check that game is not paused
                 if vara_man.status == Status::Paused {
                     return VaraManEvent::Error("Incorrect whole game status.".to_owned());
                 }
 
+                // Check that player is registered
                 let Some(player) = vara_man.players.get_mut(&player_address) else {
                     return VaraManEvent::Error("Player must be registered to claim.".to_owned());
                 };
@@ -126,29 +132,14 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                     return VaraManEvent::Error("Rewards are already claimed.".to_owned());
                 }
 
+                // Check passed coins range
+                if silver_coins > game.silver_coins || gold_coins > game.gold_coins {
+                    return VaraManEvent::Error("Coin(s) amount is gt than allowed.".to_owned());
+                }
+
                 let reward_scale_bps = vara_man.config.get_reward_scale_bps(game.level);
 
-                let gold_coins = gold_coins
-                    .checked_add(
-                        gold_coins
-                            .checked_mul(reward_scale_bps.into())
-                            .expect("Math overflow!")
-                            .checked_div(BPS_SCALE.into())
-                            .expect("Math overflow!"),
-                    )
-                    .expect("Math overflow!");
-
-                let silver_coins = silver_coins
-                    .checked_add(
-                        silver_coins
-                            .checked_mul(reward_scale_bps.into())
-                            .expect("Math overflow!")
-                            .checked_div(BPS_SCALE.into())
-                            .expect("Math overflow!"),
-                    )
-                    .expect("Math overflow!");
-
-                let _tokens_amount = vara_man
+                let base_tokens_amount = vara_man
                     .config
                     .tokens_per_gold_coin
                     .checked_mul(gold_coins)
@@ -162,7 +153,19 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                     )
                     .expect("Math overflow!");
 
-                // TODO: Transfer tokens
+                let tokens_amount = base_tokens_amount
+                    .checked_add(
+                        base_tokens_amount
+                            .checked_mul(reward_scale_bps.into())
+                            .expect("Math overflow!")
+                            .checked_div(BPS_SCALE.into())
+                            .expect("Math overflow!"),
+                    )
+                    .expect("Math overflow!");
+
+                if msg::send(player_address, 0u8, tokens_amount as u128).is_err() {
+                    return VaraManEvent::Error("Native tokens transfer failed.".to_owned());
+                }
 
                 player.claimed_gold_coins += player
                     .claimed_gold_coins
@@ -196,6 +199,8 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
         VaraManAction::ChangeConfig(config) => {
             if msg::source() != vara_man.config.operator {
                 VaraManEvent::Error("Only operator can change whole game config.".to_owned())
+            } else if !config.is_valid() {
+                VaraManEvent::Error("Provided config is invalid.".to_owned())
             } else {
                 vara_man.config = config;
                 VaraManEvent::ConfigChanged(config)
@@ -207,6 +212,8 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
 #[no_mangle]
 extern "C" fn init() {
     let init: VaraManInit = msg::load().expect("Unexpected invalid init payload.");
+
+    assert!(init.config.is_valid());
 
     unsafe {
         VARA_MAN = Some(VaraMan {
