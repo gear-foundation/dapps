@@ -1,31 +1,45 @@
 [package]
 name = "multitoken"
-version = "0.3.6"
-authors = ["Gear Technologies"]
-license = "MIT"
-edition = "2021"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
-gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
-multitoken-io = { path = "io" }
+gstd.workspace = true
+gear-lib.workspace = true
+gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.7" }
+multitoken-io.workspace = true
 hashbrown = "0.13"
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gmeta.workspace = true
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gstd = { workspace = true, features = ["debug"] }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
 multitoken-state = { path = "state", features = ["binary-vendor"] }
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 tokio = "1"
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-multitoken-io = { path = "io" }
+gear-wasm-builder.workspace = true
+multitoken-io.workspace = true
+gmeta.workspace = true
 
 [features]
 binary-vendor = []
 
 [workspace]
 members = ["state"]
+
+[workspace.package]
+version = "0.3.7"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.7" }
+multitoken-io = { path = "io" }
