@@ -1,6 +1,6 @@
 [package]
 name = "gear-lib-macros"
-version = "0.3.6"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
