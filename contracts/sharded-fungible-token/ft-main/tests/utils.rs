@@ -48,11 +48,11 @@ impl FToken for Program<'_> {
     fn ftoken(system: &System) -> Program {
         let ftoken = Program::current(system);
         let storage_code_hash: [u8; 32] = system
-            .submit_code("../target/wasm32-unknown-unknown/release/ft_storage.opt.wasm")
+            .submit_code("../target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm")
             .into();
 
         let ft_logic_code_hash: [u8; 32] = system
-            .submit_code("../target/wasm32-unknown-unknown/release/ft_logic.opt.wasm")
+            .submit_code("../target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm")
             .into();
 
         let res = ftoken.send(

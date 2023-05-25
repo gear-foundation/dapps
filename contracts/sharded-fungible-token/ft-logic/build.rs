@@ -1,3 +1,7 @@
+use gear_wasm_builder::WasmBuilder;
+
 fn main() {
-    gear_wasm_builder::build_with_metadata::<ft_logic_io::FLogicMetadata>();
+    WasmBuilder::with_meta(<ft_logic_io::FLogicMetadata as gmeta::Metadata>::repr())
+        .exclude_features(vec!["binary-vendor"])
+        .build();
 }

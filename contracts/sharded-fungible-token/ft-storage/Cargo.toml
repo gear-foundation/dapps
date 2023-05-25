@@ -1,14 +1,17 @@
 [package]
 name = "ft-storage"
-version = "2.1.1"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-ft-storage-io = { path = "io" }
-primitive-types = { version = "0.12", default-features = false }
-hashbrown = { version = "0.13" }
+gstd.workspace = true
+ft-storage-io.workspace = true
+primitive-types.workspace = true
+hashbrown.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-ft-storage-io = { path = "io" }
+gmeta.workspace = true
+gear-wasm-builder.workspace = true
+ft-storage-io.workspace = true

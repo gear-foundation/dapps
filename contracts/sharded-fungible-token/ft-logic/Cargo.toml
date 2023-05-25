@@ -1,22 +1,28 @@
 [package]
 name = "ft-logic"
-version = "2.1.1"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-ft-logic-io = { path = "io" }
-ft-main-io = { path = "../ft-main/io" }
-ft-storage-io = { path = "../ft-storage/io" }
-primitive-types = { version = "0.12", default-features = false, features = ["scale-info"]}
-hex = { version = "0.4.3", default-features = false, features = ["alloc"] }
-light_sr25519 = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-hashbrown = "0.13.1"
+gmeta.workspace = true
+gstd.workspace = true
+scale-info.workspace = true
+parity-scale-codec.workspace = true
+ft-logic-io.workspace = true
+ft-main-io.workspace = true
+ft-storage-io.workspace = true
+primitive-types.workspace = true
+light_sr25519.workspace = true
+hashbrown.workspace = true
+hex = { version = "0.4", default-features = false, features = ["alloc"] }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-tokio = { version = "1.26.0", features = ["full"] }
+gtest.workspace = true
+tokio.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-ft-logic-io = { path = "io" }
+gmeta.workspace = true
+gear-wasm-builder.workspace = true
+ft-logic-io.workspace = true

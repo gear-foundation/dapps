@@ -1,3 +1,7 @@
+use gear_wasm_builder::WasmBuilder;
+
 fn main() {
-    gear_wasm_builder::build_with_metadata::<ft_main_io::FMainTokenMetadata>();
+    WasmBuilder::with_meta(<ft_main_io::FMainTokenMetadata as gmeta::Metadata>::repr())
+        .exclude_features(vec!["binary-vendor"])
+        .build();
 }

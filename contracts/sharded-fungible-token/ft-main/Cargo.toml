@@ -1,30 +1,33 @@
 [package]
 name = "ft-main"
-version = "2.1.1"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-ft-logic-io = { path = "../ft-logic/io" }
-ft-main-io = { path = "io" }
-ft-storage-io = { path = "../ft-storage/io" }
-primitive-types = { version = "0.12", default-features = false }
+gstd.workspace = true
+ft-main-io.workspace = true
+ft-logic-io.workspace = true
+ft-storage-io.workspace = true
+gmeta.workspace = true
+hashbrown.workspace = true
+primitive-types.workspace = true
 sp-core-hashing = { version = "8.0.0", default-features = false }
-hashbrown = { version = "0.13" }
-scale-info = { version = "2", default-features = false }
-parity-scale-codec = { version = "3", default-features = false }
-blake2-rfc = { version = "0.2.18", default-features = false }
-gear-core = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-
-[build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-ft-main-io = { path = "io" }
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-light_sr25519 = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-hex-literal = "0.4.1"
-sp-core = { git = "https://github.com/gear-tech/substrate.git", rev = "36699c4478ce8ae05517bb42a1b115403313e083" }
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-tokio = "1"
+gtest.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+gclient.workspace = true
+tokio.workspace = true
+light_sr25519.workspace = true
+sp-core.workspace = true
+hex-literal = "0.3.4"
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+gmeta.workspace = true
+ft-main-io.workspace = true
+
+[features]
+binary-vendor = []
