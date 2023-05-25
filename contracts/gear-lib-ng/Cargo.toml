@@ -6,7 +6,7 @@ license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
 parity-scale-codec = { version = "3", default-features = false }
 scale-info = { version = "2", default-features = false }
 # FIXME: fails to build with `gstd` due to the unmanagable automatic `std`
@@ -18,4 +18,4 @@ hashbrown = "0.13"
 
 [dev-dependencies]
 pretty_assertions = "1"
-gstd = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07", features = ["debug"] }
