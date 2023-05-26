@@ -1,27 +1,26 @@
 [package]
-name = "app"
-version = "0.1.0"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+name = "nft-master"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-app-io = { path = "io" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-hashbrown = "0.13"
+nft-master-io.workspace = true
+gstd.workspace = true
+gmeta.workspace = true
+hashbrown.workspace = true
 
 [build-dependencies]
-app-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+nft-master-io.workspace = true
+gear-wasm-builder.workspace = true
+gmeta.workspace = true
 
 [dev-dependencies]
-app-state = { path = "state" }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07", features = ["debug"] }
-tokio = "1"
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gtest.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+tokio.workspace = true
+gclient.workspace = true
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in
@@ -30,9 +29,27 @@ gclient = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
 # like this approach or don't use gclient tests, you can freely remove this
 # feature from here and from the rest of the code.
 binary-vendor = []
-default = ["binary-vendor"]
 
 # It's necessary to include all metawasm crates in the workspace section,
 # otherwise they'll be ignored by Cargo and won't be built.
 [workspace]
 members = ["state"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+authors = ["Gear Technologies"]
+license = "MIT"
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+nft-master-io = { path = "io" }
+nft-master-state = { path = "state" }
+hashbrown = "0.13"
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+tokio = "1"
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
