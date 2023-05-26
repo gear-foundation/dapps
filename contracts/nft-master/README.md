@@ -19,8 +19,6 @@
 
 Generic router for standardized gNFT's (gRC-721). It provides list of approved gNFT's with metadata to gives more flexibility with marketplace and other integrations. Operators decide to add or remove addresses from list.
 
-> https://docs.github.com/en/repositories/creating-and-managing-repositories/creating-a-repository-from-a-template
-
 <!-- End of description -->
 
 ## Prebuilt Binaries
