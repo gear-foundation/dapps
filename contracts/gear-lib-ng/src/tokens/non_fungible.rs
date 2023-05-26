@@ -1,9 +1,13 @@
+//! The non-fungible token.
+
 use super::types::{Amount, Id, Operator, Owner};
 use gstd::{prelude::*, ActorId};
 use hashbrown::{HashMap, HashSet};
 
+pub mod encodable;
+
 #[cfg(test)]
-use super::tests::msg;
+use super::test_helper::msg;
 #[cfg(not(test))]
 use gstd::msg;
 
@@ -20,6 +24,7 @@ struct TokenOwner {
     balance: Amount,
 }
 
+/// The non-fungible token implementation.
 #[derive(Default, Debug, PartialEq, Eq, Clone)]
 pub struct NFTState {
     owners: HashMap<Owner, TokenOwner>,
@@ -32,10 +37,12 @@ impl NFTState {
         Self::default()
     }
 
+    /// Gets the current total token supply.
     pub const fn total_supply(&self) -> Amount {
         self.total_supply
     }
 
+    /// Returns a balance of `owner`'s tokens.
     pub fn balance_of(&self, owner: Owner) -> Amount {
         self.owners
             .get(&owner)
@@ -43,6 +50,7 @@ impl NFTState {
             .unwrap_or_default()
     }
 
+    /// Returns [`Owner`] of the token with given `id`.
     pub fn owner_of(&self, id: &Id) -> Owner {
         self.internal_owner_of(id).unwrap_or_default()
     }
@@ -54,10 +62,18 @@ impl NFTState {
             .ok_or(NFTError::TokenNotExists)
     }
 
+    /// Returns [`true`] if `operator` is allowed to transfer all `owner`'s
+    /// tokens or the token with given `id`.
+    ///
+    /// - If `id` is [`Some`], firstly checks if `operator` is allowed for all
+    /// `owner`'s tokens, and if not, whether `operator` is allowed for the
+    /// token with this `id`.
+    /// - If `id` is [`None`], only checks if `operator` is allowed for all
+    /// `owner`'s tokens.
     pub fn allowance(&self, owner: Owner, operator: Operator, id: Option<&Id>) -> bool {
         Self::inner_allowance(
             &self.owners,
-            id.map(|id| (&self.tokens, id)),
+            id.map(|unwrapped_id| (&self.tokens, unwrapped_id)),
             owner,
             operator,
         )
@@ -69,17 +85,28 @@ impl NFTState {
         owner: Owner,
         operator: Operator,
     ) -> bool {
-        owners.get(&owner).map_or(false, |token_owner| {
-            match (token_owner.operators.contains(&operator), tokens_and_id) {
-                (true, _) => true,
-                (false, Some((tokens, id))) => {
-                    tokens.get(id).unwrap().approvals.contains(&operator)
-                }
-                (false, _) => false,
-            }
-        })
+        owners
+            .get(&owner)
+            .map(|token_owner| {
+                token_owner.operators.contains(&operator)
+                    || tokens_and_id
+                        .map(|(tokens, id)| tokens.get(id).unwrap().approvals.contains(&operator))
+                        .unwrap_or_default()
+            })
+            .unwrap_or_default()
     }
 
+    /// Transfers the token with given `id` to `to`.
+    ///
+    /// If [`msg::source()`] isn't the owner of the token, [`msg::source()`]
+    /// must be an operator of all token's owner's tokens or the token with
+    /// given `id`.
+    ///
+    /// # Errors
+    /// - [`NFTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
+    /// - [`NFTError::TokenNotExists`] if the token doesn't exist.
+    /// - [`NFTError::NotApproved`] if [`msg::source()`] isn't the owner of the
+    /// token and doesn't have any allowance for its transfer.
     pub fn transfer(&mut self, to: ActorId, id: Id) -> Result<NFTTransfer, NFTError> {
         if to.is_zero() {
             return Err(NFTError::ZeroRecipientAddress);
@@ -107,6 +134,23 @@ impl NFTState {
         Ok(NFTTransfer { from, to, id })
     }
 
+    /// Allows or disallows `operator` to transfer all [`msg::source()`]'s
+    /// tokens or only the one with given `id`.
+    ///
+    /// - If `id` is [`Some`], sets an approval only for the token with this
+    /// `id`.
+    /// - If `id` is [`None`], sets an approval for all [`msg::source()`]'s
+    /// tokens.
+    ///
+    /// If [`msg::source()`] is an operator of all tokens of the owner of the
+    /// token with given `id`, [`msg::source()`] can also set approval for them.
+    ///
+    /// # Errors
+    /// - [`NFTError::ZeroRecipientAddress`] if `operator` is
+    /// [`ActorId::zero()`].
+    /// - [`NFTError::TokenNotExists`] if the token doesn't exist.
+    /// - [`NFTError::NotApproved`] if [`msg::source()`] isn't the owner of the
+    /// token and operator of token's owner's tokens.
     pub fn approve(
         &mut self,
         operator: Operator,
@@ -120,8 +164,8 @@ impl NFTState {
         let msg_source = msg::source();
         let mut owner = msg_source;
 
-        let operators = if let Some(id) = &id {
-            let current_owner = self.internal_owner_of(id)?;
+        let operators = if let Some(ref unwrapped_id) = id {
+            let current_owner = self.internal_owner_of(unwrapped_id)?;
 
             if current_owner != owner {
                 if !self.allowance(current_owner, owner, None) {
@@ -131,7 +175,7 @@ impl NFTState {
                 owner = current_owner;
             }
 
-            &mut self.tokens.get_mut(id).unwrap().approvals
+            &mut self.tokens.get_mut(unwrapped_id).unwrap().approvals
         } else {
             &mut self.owners.entry(owner).or_default().operators
         };
@@ -162,6 +206,13 @@ impl NFTState {
         *self.balance_of_mut(owner) -= Amount::one();
     }
 
+    /// Mints to `to` the token with given `id`.
+    ///
+    /// # Errors
+    /// - [`NFTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
+    /// - [`NFTError::TokenNotExists`] if the total supply of tokens reached the
+    /// maximum limit of the [`Amount`] type.
+    /// - [`NFTError::TokenExists`] if the token with given `id` already exists.
     pub fn mint(&mut self, to: ActorId, id: Id) -> Result<NFTTransfer, NFTError> {
         if to.is_zero() {
             return Err(NFTError::ZeroRecipientAddress);
@@ -193,6 +244,11 @@ impl NFTState {
         })
     }
 
+    /// Burns from `from` the token with given `id`.
+    ///
+    /// # Errors
+    /// - [`NFTError::ZeroSenderAddress`] if `from` is [`ActorId::zero()`].
+    /// - [`NFTError::TokenNotExists`] if the token doesn't exist.
     pub fn burn(&mut self, from: Owner, id: Id) -> Result<NFTTransfer, NFTError> {
         if from.is_zero() {
             return Err(NFTError::ZeroSenderAddress);
@@ -211,14 +267,34 @@ impl NFTState {
         })
     }
 
+    /// Gets an attribute with given `key` for the token with given `id`.
+    ///
+    /// Returns [`None`] if an attribute with given `key` doesn't exist.
+    ///
+    /// To set an attribute, use [`NFTState::set_attribute()`].
+    ///
+    /// # Errors
+    /// - [`NFTError::TokenNotExists`] if the token doesn't exist.
     pub fn get_attribute(&self, id: &Id, key: &Vec<u8>) -> Result<Option<&Vec<u8>>, NFTError> {
         self.tokens
             .get(id)
-            .map_or(Err(NFTError::TokenNotExists), |token| {
-                Ok(token.attributes.get(key))
-            })
+            .ok_or(NFTError::TokenNotExists)
+            .map(|token| token.attributes.get(key))
     }
 
+    /// Sets an attribute with given `key` & `value` for the token with given
+    /// `id`.
+    ///
+    /// Returns [`None`] if an attribute with given `key` doesn't exist,
+    /// otherwise replaces the old value with given one and returns [`Some`]
+    /// with the old one.
+    ///
+    /// Note that it's impossible to remove a set attribute, only overwrite it.
+    ///
+    /// To get an attribute, use [`NFTState::get_attribute()`].
+    ///
+    /// # Errors
+    /// - [`NFTError::TokenNotExists`] if the token doesn't exist.
     pub fn set_attribute(
         &mut self,
         id: &Id,
@@ -227,33 +303,50 @@ impl NFTState {
     ) -> Result<Option<Vec<u8>>, NFTError> {
         self.tokens
             .get_mut(id)
-            .map_or(Err(NFTError::TokenNotExists), |token| {
-                Ok(token.attributes.insert(key, value))
-            })
+            .ok_or(NFTError::TokenNotExists)
+            .map(|token| token.attributes.insert(key, value))
     }
 }
 
+/// The non-fungible token transfer event.
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub struct NFTTransfer {
+    /// A sender address.
+    ///
+    /// It equals [`ActorId::zero()`], if it's retrieved after token minting.
     pub from: ActorId,
+    /// A recipient address.
+    ///
+    /// It equals [`ActorId::zero()`], if it's retrieved after token burning.
     pub to: ActorId,
+    /// A token ID.
     pub id: Id,
 }
 
+/// The non-fungible token approval event.
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo)]
 pub struct NFTApproval {
     pub owner: Owner,
     pub operator: Operator,
+    /// If it's [`Some`], it means this approval is only for the token with this
+    /// `id`, if it's [`None`] - this approval is for all `owner`s tokens.
     pub id: Option<Id>,
     pub approved: bool,
 }
 
+/// Non-fungible token error variants.
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
 pub enum NFTError {
+    /// [`msg::source()`] doesn't have any allowance to make a transfer/approval
+    /// for the token.
     NotApproved,
+    /// The token already exists.
     TokenExists,
+    /// The token doesn't exist.
     TokenNotExists,
+    /// A recipient/operator address is [`ActorId::zero()`].
     ZeroRecipientAddress,
+    /// A sender address is [`ActorId::zero()`].
     ZeroSenderAddress,
 }
 
@@ -263,8 +356,8 @@ mod tests {
 
     #[test]
     fn meta() {
-        let key: Vec<u8> = "Name".into();
-        let data: Vec<u8> = "Nuclear Fish Tank".into();
+        let key: Vec<_> = "Name".into();
+        let data: Vec<_> = "Nuclear Fish Tank".into();
         let mut state = NFTState::new();
 
         assert_eq!(
@@ -275,8 +368,12 @@ mod tests {
         state.mint(1.into(), 0u8.into()).unwrap();
 
         assert_eq!(
-            state.set_attribute(&0u8.into(), key.clone(), data.clone()),
+            state.set_attribute(&0u8.into(), key.clone(), "NFT".into()),
             Ok(None)
+        );
+        assert_eq!(
+            state.set_attribute(&0u8.into(), key.clone(), data.clone()),
+            Ok(Some("NFT".into()))
         );
         assert_eq!(state.get_attribute(&0u8.into(), &key), Ok(Some(&data)));
         assert_eq!(
@@ -303,8 +400,8 @@ mod tests {
         );
 
         assert_eq!(state.owner_of(&0u8.into()), 1.into());
-        assert_eq!(state.balance_of(1.into()), 1.into());
-        assert_eq!(state.total_supply(), 1.into());
+        assert_eq!(state.balance_of(1.into()), 1u64.into());
+        assert_eq!(state.total_supply(), 1u64.into());
     }
 
     #[test]
@@ -312,7 +409,7 @@ mod tests {
         let mut state = NFTState::new();
 
         assert_eq!(
-            state.mint(0.into(), 0u8.into()),
+            state.mint(ActorId::zero(), 0u8.into()),
             Err(NFTError::ZeroRecipientAddress)
         );
 
@@ -343,8 +440,8 @@ mod tests {
             })
         );
         assert_eq!(state.owner_of(&0u8.into()), ActorId::zero());
-        assert_eq!(state.balance_of(1.into()), 0.into());
-        assert_eq!(state.total_supply(), 0.into());
+        assert_eq!(state.balance_of(1.into()), 0u64.into());
+        assert_eq!(state.total_supply(), 0u64.into());
     }
 
     #[test]
@@ -376,8 +473,8 @@ mod tests {
                 id: 0u8.into()
             })
         );
-        assert_eq!(state.balance_of(1.into()), 0.into());
-        assert_eq!(state.balance_of(2.into()), 1.into());
+        assert_eq!(state.balance_of(1.into()), 0u64.into());
+        assert_eq!(state.balance_of(2.into()), 1u64.into());
         assert_eq!(state.owner_of(&0u8.into()), 2.into());
     }
 

@@ -1,3 +1,5 @@
+//! Token primitives.
+
 use gstd::{prelude::*, ActorId};
 use primitive_types::U256;
 
@@ -8,7 +10,7 @@ pub type Operator = ActorId;
 /// An amount of some tokens.
 pub type Amount = U256;
 
-/// The simple & flexible identifier for different types of tokens.
+/// The simple & flexible identifier type for different types of tokens.
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub enum Id {
     U8(u8),

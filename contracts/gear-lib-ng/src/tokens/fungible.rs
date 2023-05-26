@@ -1,9 +1,11 @@
+//! The fungible token.
+
 use super::types::{Amount, Operator, Owner};
 use gstd::{prelude::*, ActorId};
 use hashbrown::HashMap;
 
 #[cfg(test)]
-use super::tests::msg;
+use super::test_helper::msg;
 #[cfg(not(test))]
 use gstd::msg;
 
@@ -16,6 +18,7 @@ struct OwnerData {
     allowances: HashMap<Operator, Amount>,
 }
 
+/// The fungible token implementation.
 #[derive(Default, Debug, PartialEq, Eq, Clone)]
 pub struct FTState {
     total_supply: Amount,
@@ -27,10 +30,16 @@ impl FTState {
         Self::default()
     }
 
+    /// Gets the current total token supply.
     pub const fn total_supply(&self) -> Amount {
         self.total_supply
     }
 
+    /// Allows `operator` to spend `amount` of [`msg::source()`]'s tokens.
+    ///
+    /// # Errors
+    /// - [`FTError::ZeroRecipientAddress`] if `operator` is
+    /// [`ActorId::zero()`].
     pub fn approve(&mut self, operator: Operator, amount: Amount) -> Result<FTApproval, FTError> {
         self.internal_approve(msg::source(), operator, amount)
     }
@@ -62,13 +71,15 @@ impl FTState {
         })
     }
 
+    /// Returns a balance of `owner`'s tokens.
     pub fn balance_of(&self, owner: Owner) -> Amount {
         self.owners
             .get(&owner)
-            .map(|owner| owner.balance)
+            .map(|owner_data| owner_data.balance)
             .unwrap_or_default()
     }
 
+    /// Returns an allowance of `owner`'s tokens for `operator`.
     pub fn allowance(&self, owner: Owner, operator: Operator) -> Amount {
         self.internal_allowance(owner, operator)
             .copied()
@@ -78,9 +89,15 @@ impl FTState {
     fn internal_allowance(&self, owner: Owner, operator: Operator) -> Option<&Amount> {
         self.owners
             .get(&owner)
-            .and_then(|owner| owner.allowances.get(&operator))
+            .and_then(|owner_data| owner_data.allowances.get(&operator))
     }
 
+    /// Transfers `amount` of tokens from [`msg::source()`] to `to`.
+    ///
+    /// # Errors
+    /// - [`FTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
+    /// - [`FTError::InsufficientAmount`] if [`msg::source()`] doesn't have
+    /// given `amount` of tokens.
     pub fn transfer(&mut self, to: ActorId, amount: Amount) -> Result<FTTransfer, FTError> {
         self.internal_transfer(msg::source(), to, amount)
     }
@@ -114,11 +131,25 @@ impl FTState {
                 owner
                     .balance
                     .checked_sub(amount)
-                    .map(|amount| owner.balance = amount)
+                    .map(|total_amount| owner.balance = total_amount)
             })
             .ok_or(FTError::InsufficientAmount)
     }
 
+    /// Transfers `amount` of tokens from `from` to `to`.
+    ///
+    /// Requires an allowance for [`msg::source()`] to transfer `amount` or a
+    /// larger amount of `from`'s tokens. Note that this function will **not**
+    /// work as an equivalent of [`FTState::transfer()`] if [`msg::source()`]
+    /// equals `from`.
+    ///
+    /// # Errors
+    /// - [`FTError::ZeroSenderAddress`] if `from` is [`ActorId::zero()`].
+    /// - [`FTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
+    /// - [`FTError::InsufficientAllowance`] if [`msg::source()`] doesn't have
+    /// an allowance for given `amount` of tokens.
+    /// - [`FTError::InsufficientAmount`] if `from` doesn't have given `amount`
+    /// of tokens.
     pub fn transfer_from(
         &mut self,
         from: Owner,
@@ -139,32 +170,60 @@ impl FTState {
         self.internal_transfer(from, to, amount)
     }
 
+    fn change_allowance(
+        &mut self,
+        msg_source: ActorId,
+        operator: Operator,
+        delta_amount: Amount,
+        checked_op: impl FnOnce(Amount, Amount) -> Option<Amount>,
+    ) -> Result<Amount, FTError> {
+        self.internal_allowance(msg_source, operator)
+            .and_then(|allowance| checked_op(*allowance, delta_amount))
+            .ok_or(FTError::InsufficientAllowance)
+    }
+
+    /// Increases by `delta_amount` an allowance for `operator` to spend
+    /// [`msg::source()`]'s tokens.
+    ///
+    /// # Errors
+    /// - [`FTError::InsufficientAllowance`] if given `delta_amount` with the
+    /// current allowance overflows the [`Amount`] type.
     pub fn increase_allowance(
         &mut self,
         operator: Operator,
         delta_amount: Amount,
     ) -> Result<FTApproval, FTError> {
         let msg_source = msg::source();
-        let amount = self
-            .allowance(msg_source, operator)
-            .saturating_add(delta_amount);
+        let amount =
+            self.change_allowance(msg_source, operator, delta_amount, Amount::checked_add)?;
 
         self.internal_approve(msg_source, operator, amount)
     }
 
+    /// Decreases by `delta_amount` an allowance for `operator` to spend
+    /// [`msg::source()`]'s tokens.
+    ///
+    /// # Errors
+    /// - [`FTError::InsufficientAllowance`] if `operator` doesn't have given
+    /// `delta_amount` of an allowance.
     pub fn decrease_allowance(
         &mut self,
         operator: Operator,
         delta_amount: Amount,
     ) -> Result<FTApproval, FTError> {
         let msg_source = msg::source();
-        let amount = self
-            .allowance(msg_source, operator)
-            .saturating_sub(delta_amount);
+        let amount =
+            self.change_allowance(msg_source, operator, delta_amount, Amount::checked_sub)?;
 
         self.internal_approve(msg_source, operator, amount)
     }
 
+    /// Mints to `to` `amount` of tokens.
+    ///
+    /// # Errors
+    /// - [`FTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
+    /// - [`FTError::InsufficientAmount`] if given `amount` with the current
+    /// total token supply overflows the [`Amount`] type.
     pub fn mint(&mut self, to: ActorId, amount: Amount) -> Result<FTTransfer, FTError> {
         if to.is_zero() {
             return Err(FTError::ZeroRecipientAddress);
@@ -185,6 +244,12 @@ impl FTState {
         })
     }
 
+    /// Burns from `from` `amount` of tokens.
+    ///
+    /// # Errors
+    /// - [`FTError::ZeroSenderAddress`] if `from` is [`ActorId::zero()`].
+    /// - [`FTError::InsufficientAmount`] if `from` doesn't have given `amount`
+    /// of tokens.
     pub fn burn(&mut self, from: Owner, amount: Amount) -> Result<FTTransfer, FTError> {
         if from.is_zero() {
             return Err(FTError::ZeroSenderAddress);
@@ -201,29 +266,46 @@ impl FTState {
     }
 }
 
+/// Fungible token error variants.
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
 pub enum FTError {
+    /// Token owner doesn't have a sufficient amount of tokens. Or there was the
+    /// [`Amount`] overflow during token minting.
     InsufficientAmount,
+    /// [`msg::source()`] or operator doesn't have a sufficient allowance of
+    /// tokens. Or there was the [`Amount`] overflow during allowance
+    /// increasing.
     InsufficientAllowance,
+    /// A recipient/operator address is [`ActorId::zero()`].
     ZeroRecipientAddress,
+    /// A sender address is [`ActorId::zero()`].
     ZeroSenderAddress,
 }
 
+/// The fungible token transfer event.
 #[derive(
     Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash,
 )]
 pub struct FTTransfer {
+    /// A sender address.
+    ///
+    /// It equals [`ActorId::zero()`], if it's retrieved after token minting.
     pub from: ActorId,
+    /// A recipient address.
+    ///
+    /// It equals [`ActorId::zero()`], if it's retrieved after token burning.
     pub to: ActorId,
     pub amount: Amount,
 }
 
+/// The fungible token approval event.
 #[derive(
     Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash,
 )]
 pub struct FTApproval {
     pub owner: Owner,
     pub operator: Operator,
+    /// An amount of a total token allowance.
     pub amount: Amount,
 }
 
@@ -259,7 +341,7 @@ mod tests {
             Err(FTError::ZeroRecipientAddress)
         );
 
-        state.mint(1.into(), 1.into()).unwrap();
+        state.mint(1.into(), 1u64.into()).unwrap();
 
         assert_eq!(
             state.mint(1.into(), Amount::MAX),
@@ -365,25 +447,19 @@ mod tests {
             })
         );
         assert_eq!(state.allowance(1.into(), 2.into()), (AMOUNT * 2).into());
-        assert_eq!(
-            state.increase_allowance(2.into(), Amount::MAX),
-            Ok(FTApproval {
-                owner: 1.into(),
-                operator: 2.into(),
-                amount: Amount::MAX
-            })
-        );
-        assert_eq!(state.allowance(1.into(), 2.into()), Amount::MAX);
 
         assert_eq!(
             state.decrease_allowance(2.into(), REMAINDER.into()),
             Ok(FTApproval {
                 owner: 1.into(),
                 operator: 2.into(),
-                amount: Amount::MAX - REMAINDER
+                amount: ((AMOUNT * 2) - REMAINDER).into()
             })
         );
-        assert_eq!(state.allowance(1.into(), 2.into()), Amount::MAX - REMAINDER);
+        assert_eq!(
+            state.allowance(1.into(), 2.into()),
+            ((AMOUNT * 2) - REMAINDER).into()
+        );
     }
 
     #[test]
@@ -393,6 +469,18 @@ mod tests {
         assert_eq!(
             state.approve(ActorId::zero(), Amount::default()),
             Err(FTError::ZeroRecipientAddress)
+        );
+
+        msg::set_source(1.into());
+        state.approve(2.into(), 1u64.into()).unwrap();
+
+        assert_eq!(
+            state.increase_allowance(2.into(), Amount::MAX),
+            Err(FTError::InsufficientAllowance)
+        );
+        assert_eq!(
+            state.decrease_allowance(2.into(), 2u64.into()),
+            Err(FTError::InsufficientAllowance)
         );
     }
 

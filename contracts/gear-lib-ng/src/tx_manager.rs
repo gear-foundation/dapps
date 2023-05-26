@@ -105,7 +105,7 @@ impl<T> TransactionManager<T> {
         }
     }
 
-    /// Asquires the transaction for a given [`msg::source()`].
+    /// Acquires the transaction for a given [`msg::source()`].
     ///
     /// Important notes:
     /// - Only one transaction for each `msg_source` is cached. Hence an attempt
@@ -129,7 +129,7 @@ impl<T> TransactionManager<T> {
     /// transaction data.
     ///
     /// [`msg::source()`]: gstd::msg::source
-    pub fn asquire_transaction(
+    pub fn acquire_transaction(
         &mut self,
         msg_source: ActorId,
         kind: TransactionKind<T>,
@@ -477,7 +477,6 @@ impl ActionKind {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use pretty_assertions::assert_eq;
 
     #[test]
     fn new_custom() {
@@ -493,7 +492,7 @@ mod tests {
     #[should_panic = "`ActorId::zero()` in `msg_source` is forbidden in the transaction manager"]
     fn forbidden_zero() {
         TransactionManager::<()>::new()
-            .asquire_transaction(ActorId::zero(), TransactionKind::default())
+            .acquire_transaction(ActorId::zero(), TransactionKind::default())
             .unwrap();
     }
 
@@ -507,7 +506,7 @@ mod tests {
 
         for offset in 1..101 {
             guard = manager
-                .asquire_transaction(ActorId::from(1), TransactionKind::New(228))
+                .acquire_transaction(ActorId::from(1), TransactionKind::New(228))
                 .unwrap();
 
             assert_eq!(
@@ -516,7 +515,7 @@ mod tests {
             );
 
             guard = manager
-                .asquire_transaction(ActorId::from(1), TransactionKind::Retry)
+                .acquire_transaction(ActorId::from(1), TransactionKind::Retry)
                 .unwrap();
 
             assert_eq!(
@@ -540,7 +539,7 @@ mod tests {
         manager.offset = (MAX_TX_LIMIT.get() - 1).try_into().unwrap();
 
         guard = manager
-            .asquire_transaction(ActorId::from(1), TransactionKind::New(123))
+            .acquire_transaction(ActorId::from(1), TransactionKind::New(123))
             .unwrap();
 
         assert_eq!(
@@ -558,7 +557,7 @@ mod tests {
         );
 
         guard = manager
-            .asquire_transaction(ActorId::from(1), TransactionKind::New(123))
+            .acquire_transaction(ActorId::from(1), TransactionKind::New(123))
             .unwrap();
 
         assert_eq!(
@@ -589,7 +588,7 @@ mod tests {
 
         for offset in 1..6 {
             guard = manager
-                .asquire_transaction(ActorId::from(1), TransactionKind::New(228))
+                .acquire_transaction(ActorId::from(1), TransactionKind::New(228))
                 .unwrap();
 
             txs.push((ActorId::from(1), 228));
@@ -600,7 +599,7 @@ mod tests {
             );
 
             guard = manager
-                .asquire_transaction(ActorId::from(1), TransactionKind::Retry)
+                .acquire_transaction(ActorId::from(1), TransactionKind::Retry)
                 .unwrap();
 
             assert_eq!(
@@ -627,13 +626,13 @@ mod tests {
         }
 
         let mut guard = manager
-            .asquire_transaction(ActorId::from(2), TransactionKind::New(77))
+            .acquire_transaction(ActorId::from(2), TransactionKind::New(77))
             .unwrap();
 
         assert_eq!((*guard.tx_data.0, guard.stepper.tx_id), (77, 5 * 255));
 
         guard = manager
-            .asquire_transaction(ActorId::from(2), TransactionKind::Retry)
+            .acquire_transaction(ActorId::from(2), TransactionKind::Retry)
             .unwrap();
 
         assert_eq!((*guard.tx_data.0, guard.stepper.tx_id), (77, 5 * 255));
@@ -671,7 +670,7 @@ mod tests {
         ]));
 
         let mut guard = manager
-            .asquire_transaction(ActorId::from(1), TransactionKind::Retry)
+            .acquire_transaction(ActorId::from(1), TransactionKind::Retry)
             .unwrap();
 
         assert_eq!(
@@ -680,19 +679,19 @@ mod tests {
         );
 
         guard = manager
-            .asquire_transaction(ActorId::from(2), TransactionKind::Retry)
+            .acquire_transaction(ActorId::from(2), TransactionKind::Retry)
             .unwrap();
 
         assert_eq!((*guard.tx_data.0, guard.stepper.tx_id), (234, 0));
 
         guard = manager
-            .asquire_transaction(ActorId::from(3), TransactionKind::Retry)
+            .acquire_transaction(ActorId::from(3), TransactionKind::Retry)
             .unwrap();
 
         assert_eq!((*guard.tx_data.0, guard.stepper.tx_id), (345, 255));
 
         guard = manager
-            .asquire_transaction(ActorId::from(1), TransactionKind::New(7654))
+            .acquire_transaction(ActorId::from(1), TransactionKind::New(7654))
             .unwrap();
 
         assert_eq!((*guard.tx_data.0, guard.stepper.tx_id), (7654, 255 * 2));
