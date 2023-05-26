@@ -1,5 +1,9 @@
 use ft_io::FungibleTokenMetadata;
+use gear_wasm_builder::WasmBuilder;
+use gmeta::Metadata;
 
 fn main() {
-    gear_wasm_builder::build_with_metadata::<FungibleTokenMetadata>();
+    WasmBuilder::with_meta(FungibleTokenMetadata::repr())
+        .exclude_features(["binary-vendor"])
+        .build();
 }

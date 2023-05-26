@@ -1,23 +1,38 @@
 [package]
 name = "fungible-token"
-version = "0.1.5"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[workspace.package]
+version = "0.1.6"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-ft-io = { path = "io" }
-hashbrown = "0.13.1"
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+ft-io.workspace = true
+gstd.workspace = true
+hashbrown.workspace = true
+gmeta.workspace = true
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+ft-io.workspace = true
+gmeta.workspace = true
+gear-wasm-builder = { workspace = true }
+
+[workspace.dependencies]
 ft-io = { path = "io" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+hashbrown = "0.13"
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in
