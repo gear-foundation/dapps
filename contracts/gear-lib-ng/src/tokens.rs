@@ -1,9 +1,12 @@
+//! Basic token implementations & primitives.
+
 pub mod fungible;
 pub mod non_fungible;
+pub mod multi;
 pub mod types;
 
 #[cfg(test)]
-mod tests {
+mod test_helper {
     extern crate std;
 
     use gstd::{cell::Cell, ActorId};
