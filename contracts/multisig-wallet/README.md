@@ -17,7 +17,7 @@
 [lic_href]: https://github.com/gear-dapps/multisig-wallet/blob/master/LICENSE
 
 [docs_badge]: https://img.shields.io/badge/docs-online-5023dd
-[docs_href]: https://dapps.gear.rs/multisig_wallet
+[docs_href]: https://dapp.rs/multisig-wallet
 
 Multisignature wallets are cryptocurrency wallets that require one or more private keys to sign and send a transaction.
 
