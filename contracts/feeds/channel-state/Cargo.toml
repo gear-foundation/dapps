@@ -3,7 +3,7 @@ name = "channel-state"
 version = "0.1.1"
 edition = "2021"
 authors = ["Gear Technologies"]
-license = "GPL-3.0"
+license = "MIT"
 
 [dependencies]
 gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
