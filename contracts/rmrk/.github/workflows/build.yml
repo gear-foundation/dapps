@@ -53,9 +53,11 @@ jobs:
 
       - name: Upload artifacts
         if: github.event_name == 'push'
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
-          path: ./target/wasm32-unknown-unknown/release/*.wasm
+          path: |
+            target/wasm32-unknown-unknown/*
+            *.meta.txt
 
   upload:
     if: github.event_name == 'push'
@@ -63,7 +65,7 @@ jobs:
     needs: build
     steps:
       - name: Download artifacts
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
 
       - name: Delete previous release
         uses: dev-drprasad/delete-tag-and-release@v0.2.1
