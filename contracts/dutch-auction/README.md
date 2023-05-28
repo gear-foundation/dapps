@@ -17,7 +17,7 @@
 [lic_href]: https://github.com/gear-dapps/dutch-auction/blob/master/LICENSE
 
 [docs_badge]: https://img.shields.io/badge/Docs-online-5023dd
-[docs_href]: https://dapp.rs/ducth-auction
+[docs_href]: https://dapp.rs/dutch-auction
 
 <!-- Description starts here -->
 
