@@ -8,12 +8,16 @@
 
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]
+[![Docs][docs_badge]][docs_href]
 
 [build_badge]: https://img.shields.io/github/actions/workflow/status/gear-dapps/student-nft/build.yml?label=Build
 [build_href]: https://github.com/gear-dapps/student-nft/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-MIT-success
 [lic_href]: https://github.com/gear-dapps/student-nft/blob/master/LICENSE
+
+[docs_badge]: https://img.shields.io/badge/Docs-online-5023dd
+[docs_href]: https://dapp.rs/student-nft
 
 <!-- Description starts here -->
 
