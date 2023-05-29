@@ -1,5 +1,11 @@
+@use 'utils' as *;
+
 .socials {
   display: flex;
+
+  svg {
+    @include svgColor(#000);
+  }
 
   & > *:not(:last-child) {
     margin-right: 24px;

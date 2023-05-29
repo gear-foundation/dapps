@@ -1,0 +1,93 @@
+@use 'utils' as *;
+
+.list {
+  @include gap(16px);
+
+  .walletButton {
+    width: 100%;
+    min-height: 48px;
+    padding-right: 20px;
+    padding-left: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #fff;
+  }
+}
+
+.status {
+  text-align: right;
+
+  &Text {
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 12px;
+    color: #a2a2a2;
+  }
+
+  &Accounts {
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 10px;
+    letter-spacing: 0.02em;
+    color: #02f8bf;
+  }
+}
+
+.account {
+  @include gap(10px, right);
+  display: flex;
+  align-items: center;
+
+  &Button {
+    @include gap(12px, right);
+    width: 100%;
+    padding: 14px 16px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: 600;
+    font-size: 16px;
+    line-height: 18px;
+    color: #000;
+    background-color: #fff;
+
+    &.active {
+      background-color: #56ffd8;
+    }
+  }
+
+  &CopyButton {
+    svg {
+      @include svgColor(#000);
+    }
+  }
+}
+
+.footer {
+  margin-top: 22px;
+  display: flex;
+  justify-content: space-between;
+
+  .walletButton {
+    @include gap(8px, right);
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+  }
+}
+
+.changeText {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #00b387;
+}
+
+.logoutButton {
+  color: #000;
+
+  svg {
+    @include svgColor(#000);
+  }
+}

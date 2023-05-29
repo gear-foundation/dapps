@@ -1,16 +1,12 @@
+import { Wallet } from 'features/wallet';
 import { Logo } from './logo';
-import { Account } from './account';
 import styles from './Header.module.scss';
 
-type Props = {
-  isAccountVisible: boolean;
-};
-
-function Header({ isAccountVisible }: Props) {
+function Header() {
   return (
     <header className={styles.header}>
       <Logo />
-      {isAccountVisible && <Account />}
+      <Wallet />
     </header>
   );
 }

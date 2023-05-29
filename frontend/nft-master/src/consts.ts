@@ -4,6 +4,7 @@ const ADDRESS = {
 
 const LOCAL_STORAGE = {
   ACCOUNT: 'account',
+  WALLET: 'wallet',
 };
 
 export { ADDRESS, LOCAL_STORAGE };

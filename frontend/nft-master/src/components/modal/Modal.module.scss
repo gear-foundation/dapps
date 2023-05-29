@@ -1,0 +1,29 @@
+.modal {
+  width: 100%;
+  max-width: 500px;
+  padding: 0;
+  border-radius: 4px;
+  background-color: #f6f8f8;
+
+  &::backdrop {
+    background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
+  }
+}
+
+.wrapper {
+  padding: 32px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 120%;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+  color: #222424;
+}

@@ -1,8 +1,8 @@
 @use '@gear-js/ui/variables' as *;
-@use 'assets/styles/shared' as *;
+@use 'utils' as *;
 
 .loader {
-  @extend %absoluteCenter;
+  @include absoluteCenter;
   font-size: $fontSizeLarge;
 
   &::after {

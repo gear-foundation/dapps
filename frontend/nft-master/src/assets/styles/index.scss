@@ -1,2 +1,12 @@
 @use '@gear-js/ui/resets';
 @use '@gear-js/ui/typography';
+
+*,
+::after,
+::before {
+  border: none;
+}
+
+button:not(:disabled) {
+  cursor: pointer;
+}

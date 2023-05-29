@@ -1,8 +1,8 @@
 @use '@gear-js/ui/mixins' as *;
-@use 'assets/styles/shared' as *;
+@use 'utils' as utils;
 
 .loader {
-  @extend %absoluteCenter;
+  @include utils.absoluteCenter;
   display: flex;
   align-items: center;
 
