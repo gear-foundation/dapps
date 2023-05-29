@@ -1,9 +1,8 @@
-use gclient::{EventListener, EventProcessor, GearApi, Result, WSAddress};
-
 use fmt::Debug;
+use gclient::{EventListener, EventProcessor, GearApi, Result};
 use gstd::{prelude::*, ActorId};
 use launch_io::*;
-const PATH: &str = "./target/wasm32-unknown-unknown/release/launch_site.opt.wasm";
+use launch_site::WASM_BINARY_OPT;
 
 pub const PLAYERS: &[&str] = &[
     "//John", "//Mike", "//Dan", "//Bot", "//Jack", "//Mops", "//Alex",
@@ -50,7 +49,7 @@ async fn common_upload_program(
     let (message_id, program_id, _) = client
         .upload_program(
             code,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             payload,
             gas_limit,
             0,
@@ -62,11 +61,10 @@ async fn common_upload_program(
 async fn upload_program(
     client: &GearApi,
     listener: &mut EventListener,
-    path: &str,
+    code: Vec<u8>,
     payload: impl Encode,
 ) -> Result<[u8; 32]> {
-    let (message_id, program_id) =
-        common_upload_program(client, gclient::code_from_os(path)?, payload).await?;
+    let (message_id, program_id) = common_upload_program(client, code, payload).await?;
 
     assert!(listener
         .message_processed(message_id.into())
@@ -114,7 +112,7 @@ async fn send_message<T: Decode>(
 }
 
 #[tokio::test]
-async fn laucnh() -> Result<()> {
+async fn launch() -> Result<()> {
     //let address = WSAddress::new("wss://node-workshop.gear.rs", 443);
     //let client = GearApi::init_with(address, "//Alice").await?;
     let client = GearApi::dev().await?.with("//Alice")?;
@@ -140,13 +138,13 @@ async fn laucnh() -> Result<()> {
     let mut listener = client.subscribe().await?;
 
     //upload contract
-    let launch_id = upload_program(&client, &mut listener, PATH, "").await?;
+    let launch_id = upload_program(&client, &mut listener, WASM_BINARY_OPT.to_vec(), "").await?;
 
     // start session
     let event = send_message::<Event>(
         &client,
         &mut listener,
-        launch_id.into(),
+        launch_id,
         Action::StartNewSession,
         true,
     )
@@ -155,16 +153,16 @@ async fn laucnh() -> Result<()> {
     println!(" Session started with {:#?}", event);
 
     // register users
-    for i in 0..PLAYERS.len() {
+    for player in PLAYERS {
         let client = client
             .clone()
-            .with(PLAYERS[i])
+            .with(player)
             .expect("Unable to change signer.");
         let event = send_message::<Event>(
             &client,
             &mut listener,
             launch_id,
-            Action::RegisterParticipant(PLAYERS[i].to_string()),
+            Action::RegisterParticipant(player.to_string()),
             true,
         )
         .await?;

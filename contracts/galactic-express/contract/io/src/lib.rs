@@ -138,15 +138,10 @@ pub enum RocketHalt {
     EngineError,
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug, Clone, PartialEq, Eq)]
+#[derive(Default, Encode, Decode, TypeInfo, Debug, Clone, PartialEq, Eq)]
 pub enum SessionState {
     SessionIsOver,
+    #[default]
     NoSession,
     Registration,
-}
-
-impl Default for SessionState {
-    fn default() -> Self {
-        SessionState::NoSession
-    }
 }
