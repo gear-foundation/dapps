@@ -1,10 +1,12 @@
 [package]
-name = "app-io"
-version = "0.1.0"
-edition = "2021"
+name = "nft-master-io"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-scale-info = { version = "2", default-features = false }
-parity-scale-codec = { version = "3", default-features = false }
+gmeta.workspace = true
+gstd.workspace = true
+scale-info.workspace = true
+parity-scale-codec.workspace = true
