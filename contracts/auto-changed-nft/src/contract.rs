@@ -189,8 +189,16 @@ unsafe extern "C" fn handle() {
                         transaction_id: transaction_id + 1,
                         data,
                     };
-                    msg::send_delayed(exec::program_id(), payload, 0, DELAY)
-                        .expect("Can't send delayed");
+                    let reservation_id = gstd::ReservationId::reserve(1_000_000_000, DELAY)
+                        .expect("reservation across executions");
+                    msg::send_delayed_from_reservation(
+                        reservation_id,
+                        exec::program_id(),
+                        payload,
+                        0,
+                        DELAY,
+                    )
+                    .expect("Can't send delayed");
                 } else {
                     nft.dynamic_data = "Expired".as_bytes().to_vec();
                 }

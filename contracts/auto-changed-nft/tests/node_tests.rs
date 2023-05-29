@@ -1,12 +1,12 @@
-use gclient::{EventProcessor, GearApi, Result};
-use gstd::{ActorId, Encode};
 use auto_changed_nft::WASM_BINARY_OPT;
 use auto_changed_nft_io::*;
+use gclient::{EventProcessor, GearApi, Result};
+use gstd::{ActorId, Encode};
 
 #[tokio::test]
 #[ignore]
 async fn mint_test() -> Result<()> {
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -68,7 +68,7 @@ async fn mint_test() -> Result<()> {
 #[tokio::test]
 #[ignore]
 async fn burn_test() -> Result<()> {
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -167,7 +167,7 @@ async fn burn_test() -> Result<()> {
 #[tokio::test]
 #[ignore]
 async fn transfer_test() -> Result<()> {
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -249,7 +249,7 @@ async fn transfer_test() -> Result<()> {
 #[tokio::test]
 #[ignore]
 async fn owner_test() -> Result<()> {
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -325,7 +325,7 @@ async fn owner_test() -> Result<()> {
 #[tokio::test]
 #[ignore]
 async fn approved() -> Result<()> {
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 

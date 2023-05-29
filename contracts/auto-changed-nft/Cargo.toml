@@ -1,29 +1,55 @@
 [package]
 name = "auto-changed-nft"
-version = "0.1.0"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[workspace.package]
+version = "0.1.1"
 authors = ["Gear Technologies"]
 edition = "2021"
+license = "MIT"
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-primitive-types = { version = "0.12.1", default-features = false }
-auto-changed-nft-io = { path = "io" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
-gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
-sp-core-hashing = { version = "8.0.0", default-features = false }
-hashbrown = "0.13"
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["codegen"] }
+gstd = { workspace = true, features = ["debug"] }
+primitive-types.workspace = true
+auto-changed-nft-io.workspace = true
+gear-lib.workspace = true
+gear-lib-derive.workspace = true
+sp-core-hashing.workspace = true
+hashbrown.workspace = true
+gmeta.workspace = true
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-hex-literal = "0.3.4"
-sp-core = { git = "https://github.com/gear-tech/substrate.git", rev = "36699c4478ce8ae05517bb42a1b115403313e083" }
-gclient = { git = "https://github.com/gear-tech/gear.git" }
-tokio = { version = "1", features = ["full"] }
+gtest.workspace = true
+hex-literal.workspace = true
+sp-core.workspace = true
+gclient.workspace = true
+tokio.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gear-wasm-builder.workspace = true
+auto-changed-nft-io.workspace = true
+gmeta.workspace = true
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+primitive-types = { version = "0.12", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
+scale-info = { version = "2", default-features = false }
 auto-changed-nft-io = { path = "io" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.7" }
+gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.7" }
+sp-core-hashing = { version = "8.0.0", default-features = false }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+hex-literal = "0.4"
+sp-core = { git = "https://github.com/gear-tech/substrate.git", rev = "36699c4478ce8ae05517bb42a1b115403313e083" }
+gclient = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+tokio = "1"
+hashbrown = "0.13"
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
 
 [workspace]
 members = ["state"]
