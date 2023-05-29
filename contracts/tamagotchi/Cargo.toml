@@ -1,17 +1,33 @@
 [package]
 name = "tmg"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0" }
+gstd = { workspace = true, features = ["debug"] }
+scale-info.workspace = true
+parity-scale-codec.workspace = true
+tmg-io.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+tmg-io.workspace = true
+
+[workspace]
+members = ["state"]
+
+[workspace.package]
+version = "0.1.1"
+edition = "2021"
+authors = ["Gear Technologies"]
+license = "MIT"
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
 tmg-io = { path = "io" }
-
-[build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" , rev = "5c685d0" }
-tmg-io = { path = "io" }
-
-[dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" , rev = "78dfa07" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
