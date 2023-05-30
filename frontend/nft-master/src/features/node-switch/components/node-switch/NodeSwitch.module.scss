@@ -1,0 +1,19 @@
+@use 'utils' as *;
+
+.button {
+  @include gap(10px, right);
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 26px;
+  letter-spacing: 0.03em;
+  background-color: transparent;
+
+  &::before {
+    @include circle(7px);
+    content: '';
+    margin-right: 10px;
+    background-color: #00ffc4;
+  }
+}

@@ -1,12 +1,13 @@
 import Identicon from '@polkadot/react-identicon';
 import { decodeAddress } from '@gear-js/api';
+import { useAccount } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/ui';
 import clsx from 'clsx';
 import { copyToClipBoard } from 'utils';
 import { Modal } from 'components';
-import { useAccount } from '@gear-js/react-hooks';
-import { Button } from '@gear-js/ui';
-import { CopySVG, ExitSVG } from '../../assets';
-import { ReactComponent as EditSVG } from '../../assets/images/edit.svg';
+import { ReactComponent as EditSVG } from 'assets/images/icons/edit.svg';
+import { ReactComponent as CopySVG } from 'assets/images/icons/copy.svg';
+import { ExitSVG } from '../../assets';
 import { WALLETS } from '../../consts';
 import { useWallet } from '../../hooks';
 import { WalletItem } from '../wallet-item';
@@ -74,7 +75,7 @@ function WalletModal({ onClose }: Props) {
             <span>{meta.name}</span>
           </button>
 
-          <Button icon={CopySVG} color="transparent" onClick={handleCopyClick} className={styles.accountCopyButton} />
+          <Button icon={CopySVG} color="transparent" onClick={handleCopyClick} />
         </li>
       );
     });

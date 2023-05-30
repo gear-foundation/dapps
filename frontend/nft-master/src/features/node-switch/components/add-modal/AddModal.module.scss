@@ -1,0 +1,5 @@
+@use 'utils' as *;
+
+.form {
+  @include gap(32px);
+}

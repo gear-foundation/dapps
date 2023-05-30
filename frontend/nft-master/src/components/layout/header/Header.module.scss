@@ -1,6 +1,14 @@
+@use 'utils' as *;
+
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 20px 0;
+}
+
+.config {
+  @include gap(24px, right);
+  display: flex;
+  align-items: center;
 }

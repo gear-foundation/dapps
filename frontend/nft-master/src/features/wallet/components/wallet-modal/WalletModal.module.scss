@@ -56,12 +56,6 @@
       background-color: #56ffd8;
     }
   }
-
-  &CopyButton {
-    svg {
-      @include svgColor(#000);
-    }
-  }
 }
 
 .footer {

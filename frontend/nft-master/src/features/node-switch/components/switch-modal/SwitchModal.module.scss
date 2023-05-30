@@ -1,0 +1,29 @@
+@use 'utils' as *;
+
+.list {
+  @include gap(24px);
+  margin-bottom: 24px;
+}
+
+.section {
+  @include gap(8px);
+}
+
+.caption {
+  margin-bottom: 4px;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 140%;
+  letter-spacing: 0.02em;
+}
+
+.buttons {
+  @include gap(20px, right);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  > *:first-child {
+    width: 100%;
+  }
+}
