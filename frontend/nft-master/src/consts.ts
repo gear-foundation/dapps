@@ -3,6 +3,7 @@ const LOCAL_STORAGE = {
   WALLET: 'wallet',
   NODE: 'node',
   NODES: 'nodes',
+  CONTRACT_ADDRESS: 'simple-nft-contract-address',
 };
 
 const ADDRESS = {
