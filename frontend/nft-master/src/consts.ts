@@ -7,7 +7,7 @@ const LOCAL_STORAGE = {
 };
 
 const ADDRESS = {
-  NODE: localStorage[LOCAL_STORAGE.NODE] || (process.env.REACT_APP_NODE_ADDRESS as string),
+  DETAULT_NODE: process.env.REACT_APP_NODE_ADDRESS as string,
   DEFAULT_NODES: process.env.REACT_APP_DEFAULT_NODES_URL as string,
 };
 

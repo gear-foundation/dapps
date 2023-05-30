@@ -7,10 +7,12 @@ import {
 import { Alert, alertStyles } from '@gear-js/ui';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { ADDRESS } from 'consts';
+import { useNodeAddress } from 'features/node-switch';
 
 function ApiProvider({ children }: ProviderProps) {
-  return <GearApiProvider providerAddress={ADDRESS.NODE}>{children}</GearApiProvider>;
+  const nodeAddress = useNodeAddress();
+
+  return <GearApiProvider providerAddress={nodeAddress}>{children}</GearApiProvider>;
 }
 
 function AlertProvider({ children }: ProviderProps) {

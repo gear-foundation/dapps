@@ -1,47 +1,36 @@
 import { Button, radioStyles } from '@gear-js/ui';
 import clsx from 'clsx';
-import { ADDRESS } from 'consts';
-import { copyToClipBoard } from 'utils';
 import { ReactComponent as CopySVG } from 'assets/images/icons/copy.svg';
+import { SVGComponent } from 'types';
+import { copyToClipBoard } from 'utils';
 import { ReactComponent as TrashSVG } from '../../assets/trash.svg';
-import { ICON } from '../../consts';
-import { Node as NodeType } from '../../types';
 import styles from './Node.module.scss';
 
-type Props = NodeType & {
-  selectedNode: string;
-  selectNode: (address: string) => void;
-  removeLocalNode: (address: string) => void;
+type Props = {
+  address: string;
+  isChecked: boolean;
+  isActive: boolean;
+  isCustom: boolean;
+  SVG: SVGComponent;
+  onChange: (value: string) => void;
+  onRemove: (value: string) => void;
 };
 
 function Node(props: Props) {
-  const { address, isCustom, selectedNode, selectNode, removeLocalNode, icon = 'gear' } = props;
+  const { address, isChecked, isActive, isCustom, SVG, onChange, onRemove } = props;
 
-  const SVG = ICON[icon as keyof typeof ICON].NETWORK;
+  const labelClassName = clsx(styles.radio, isActive && styles.current);
+  const radioClassName = clsx(radioStyles.input, styles.input);
 
-  const isCurrentNode = ADDRESS.NODE === address;
-
+  const handleChange = () => onChange(address);
   const handleCopy = () => copyToClipBoard(address);
-
-  const handleChange = () => selectNode(address);
-
-  const handleRemove = () => {
-    if (isCurrentNode) return;
-
-    removeLocalNode(address);
-  };
+  const handleRemove = () => !isActive && onRemove(address);
 
   return (
-    <li id={address} className={styles.node}>
+    <li className={styles.node}>
       {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-      <label className={clsx(styles.radio, isCurrentNode && styles.current)}>
-        <input
-          type="radio"
-          name="node"
-          checked={selectedNode === address}
-          onChange={handleChange}
-          className={clsx(radioStyles.input, styles.input)}
-        />
+      <label className={labelClassName}>
+        <input type="radio" name="node" checked={isChecked} onChange={handleChange} className={radioClassName} />
 
         <SVG className={styles.icon} />
 
@@ -61,7 +50,7 @@ function Node(props: Props) {
           <Button
             icon={TrashSVG}
             color="transparent"
-            disabled={isCurrentNode}
+            disabled={isActive}
             aria-label="Remove node address"
             onClick={handleRemove}
           />

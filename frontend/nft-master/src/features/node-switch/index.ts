@@ -1,3 +1,4 @@
-import { NodeSwitch } from './components/node-switch';
+import { NodeSwitch } from './components';
+import { useNodeAddress } from './hooks';
 
-export { NodeSwitch };
+export { NodeSwitch, useNodeAddress };

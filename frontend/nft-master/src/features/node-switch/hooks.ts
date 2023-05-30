@@ -1,49 +1,50 @@
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
+import { useAtom } from 'jotai';
 import { useAlert } from '@gear-js/react-hooks';
 import { ADDRESS, LOCAL_STORAGE } from 'consts';
 import { NodeSection } from './types';
 import { concatNodes, isDevSection, getLocalNodes, getLocalNodesFromLS } from './utils';
-import { DEVELOPMENT_SECTION } from './consts';
+import { DEVELOPMENT_SECTION, NODE_ADDRESS_ATOM } from './consts';
 
-const useNodes = () => {
+function useNodeAddress() {
+  const [address] = useAtom(NODE_ADDRESS_ATOM);
+
+  return address;
+}
+
+function useNodes() {
   const alert = useAlert();
 
   const [nodeSections, setNodeSections] = useState<NodeSection[]>([]);
   const [isNodesLoading, setIsNodesLoading] = useState(true);
 
-  const addLocalNode = useCallback(
-    (address: string) => {
-      const newLocalNode = { isCustom: true, address };
+  const addNode = (address: string) => {
+    const newLocalNode = { isCustom: true, address };
 
-      const allNodes = concatNodes(nodeSections, newLocalNode);
+    const allNodes = concatNodes(nodeSections, newLocalNode);
 
-      const devSection = allNodes.find(isDevSection);
-      const localNodes = devSection ? getLocalNodes(devSection.nodes) : [newLocalNode];
+    const devSection = allNodes.find(isDevSection);
+    const localNodes = devSection ? getLocalNodes(devSection.nodes) : [newLocalNode];
 
-      setNodeSections(allNodes);
+    setNodeSections(allNodes);
 
-      localStorage.setItem(LOCAL_STORAGE.NODES, JSON.stringify(localNodes));
-    },
-    [nodeSections],
-  );
+    localStorage.setItem(LOCAL_STORAGE.NODES, JSON.stringify(localNodes));
+  };
 
-  const removeLocalNode = useCallback(
-    (address: string) =>
-      setNodeSections((prevState) =>
-        prevState.map((section) => {
-          if (isDevSection(section)) {
-            const filtredNodes = section.nodes.filter((node) => node.address !== address);
+  const removeNode = (address: string) =>
+    setNodeSections((prevState) =>
+      prevState.map((section) => {
+        if (isDevSection(section)) {
+          const filtredNodes = section.nodes.filter((node) => node.address !== address);
 
-            localStorage.setItem(LOCAL_STORAGE.NODES, JSON.stringify(filtredNodes.filter(({ isCustom }) => isCustom)));
+          localStorage.setItem(LOCAL_STORAGE.NODES, JSON.stringify(filtredNodes.filter(({ isCustom }) => isCustom)));
 
-            return { caption: section.caption, nodes: filtredNodes };
-          }
+          return { caption: section.caption, nodes: filtredNodes };
+        }
 
-          return section;
-        }),
-      ),
-    [],
-  );
+        return section;
+      }),
+    );
 
   useEffect(() => {
     fetch(ADDRESS.DEFAULT_NODES)
@@ -65,7 +66,7 @@ const useNodes = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return { nodeSections, isNodesLoading, addLocalNode, removeLocalNode };
-};
+  return { nodeSections, isNodesLoading, addNode, removeNode };
+}
 
-export { useNodes };
+export { useNodes, useNodeAddress };
