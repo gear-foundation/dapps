@@ -181,26 +181,6 @@ fn approve_success() {
     assert!(!transfer(&nft, transaction_id, USERS[1], USERS[2], 0).main_failed());
 }
 
-// #[test]
-// fn update_success() {
-//     let sys = System::new();
-//     init_nft(&sys);
-//     let nft = sys.get_program(1);
-//     let mut transaction_id: u64 = 0;
-//     assert!(!mint(&nft, transaction_id, USERS[0]).main_failed());
-//     transaction_id += 1;
-
-//     let data = vec![6, 6, 6, 6, 6, 6];
-//     let data_hash = primitive_types::H256::from(sp_core_hashing::blake2_256(&data));
-
-//     let res = update(&nft, transaction_id, USERS[0], data);
-
-//     let message = NFTEvent::Updated { data_hash }.encode();
-//     let expected_log = (USERS[0], message);
-
-//     assert!(res.contains(&expected_log));
-// }
-
 #[test]
 fn auto_change_success() {
     let sys = System::new();
@@ -210,24 +190,46 @@ fn auto_change_success() {
     assert!(!mint(&nft, transaction_id, USERS[0]).main_failed());
 
     let state: IoNFT = nft.read_state().unwrap();
-    let expected_dynamic_data: Vec<u8> = vec![];
-    assert_eq!(expected_dynamic_data, state.dynamic_data);
-    const DELAY: u32 = 5;
+    let expected_dynamic_data: Vec<String> = vec![];
+    assert_eq!(expected_dynamic_data, state.links);
 
-    sys.spend_blocks(DELAY);
-    let state: IoNFT = nft.read_state().unwrap();
-    let expected_dynamic_data = b"Rest Update Periods: 2".to_vec();
-    assert_eq!(expected_dynamic_data, state.dynamic_data);
+    let link1 = "link 1";
+    let link2 = "link 2";
+    let link3 = "link 3";
+    let link4 = "link 4";
 
-    sys.spend_blocks(DELAY);
-    let state: IoNFT = nft.read_state().unwrap();
-    let expected_dynamic_data = b"Rest Update Periods: 1".to_vec();
-    assert_eq!(expected_dynamic_data, state.dynamic_data);
+    assert!(!add_url(&nft, link1, USERS[0]).main_failed());
+    assert!(!add_url(&nft, link2, USERS[0]).main_failed());
+    assert!(!add_url(&nft, link3, USERS[0]).main_failed());
+    assert!(!add_url(&nft, link4, USERS[0]).main_failed());
 
-    sys.spend_blocks(DELAY);
-    let state: IoNFT = nft.read_state().unwrap();
-    let expected_dynamic_data = b"Expired".to_vec();
-    assert_eq!(expected_dynamic_data, state.dynamic_data);
+    let updates_count = 4;
+    let updates_period = 5;
+    assert!(!start_auto_changing(&nft, updates_count, updates_period, USERS[0]).main_failed());
+
+    let res = nft.send(USERS[0], NFTAction::CurrentUrl);
+    let expected_message = NFTEvent::CurrentUrl(link1.to_string()).encode();
+    dbg!(&res);
+    assert!(res.contains(&(USERS[0], expected_message)));
+    sys.spend_blocks(updates_period);
+
+    let res = nft.send(USERS[0], NFTAction::CurrentUrl);
+    dbg!(&res);
+    let expected_message = NFTEvent::CurrentUrl(link4.to_string()).encode();
+    assert!(res.contains(&(USERS[0], expected_message)));
+    sys.spend_blocks(updates_period);
+
+    let res = nft.send(USERS[0], NFTAction::CurrentUrl);
+    dbg!(&res);
+    let expected_message = NFTEvent::CurrentUrl(link3.to_string()).encode();
+    assert!(res.contains(&(USERS[0], expected_message)));
+    sys.spend_blocks(updates_period);
+
+    let res = nft.send(USERS[0], NFTAction::CurrentUrl);
+    dbg!(&res);
+    let expected_message = NFTEvent::CurrentUrl(link2.to_string()).encode();
+    assert!(res.contains(&(USERS[0], expected_message)));
+    sys.spend_blocks(updates_period);
 }
 
 #[test]

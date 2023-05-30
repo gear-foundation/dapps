@@ -68,10 +68,15 @@ pub enum NFTAction {
     Clear {
         transaction_hash: H256,
     },
-    UpdateDynamicData {
-        transaction_id: u64,
-        data: Vec<u8>,
+    AddUrl(String),
+    StartAutoChanging {
+        updates_count: u32,
+        update_period: u32,
     },
+    Update {
+        rest_updates_count: u32,
+    },
+    CurrentUrl,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
@@ -100,6 +105,7 @@ pub enum NFTEvent {
     Updated {
         data_hash: H256,
     },
+    CurrentUrl(String),
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
@@ -120,8 +126,8 @@ pub struct IoNFT {
     pub token_id: TokenId,
     pub owner: ActorId,
     pub transactions: Vec<(H256, NFTEvent)>,
-    pub dynamic_data: Vec<u8>,
-    pub update_periods: u32,
+    pub links: Vec<String>,
+    pub update_number: u32,
 }
 
 impl From<&NFTState> for IoNFTState {

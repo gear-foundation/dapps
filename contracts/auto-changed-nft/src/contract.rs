@@ -5,15 +5,12 @@ use gmeta::Metadata;
 use gstd::{
     errors::Result as GstdResult,
     exec::{self},
-    msg,
+    msg::{self, send_delayed, send_delayed_from_reservation},
     prelude::*,
-    ActorId, MessageId,
+    ActorId, MessageId, ReservationId,
 };
 use hashbrown::HashMap;
 use primitive_types::{H256, U256};
-
-const DELAY: u32 = 5;
-const DEFAULT_UPDATE_PERIODS: u32 = 2;
 
 #[derive(Debug, Default, NFTStateKeeper, NFTCore, NFTMetaState)]
 pub struct AutoChangedNft {
@@ -22,8 +19,10 @@ pub struct AutoChangedNft {
     pub token_id: TokenId,
     pub owner: ActorId,
     pub transactions: HashMap<H256, NFTEvent>,
-    pub dynamic_data: Vec<u8>,
-    pub rest_update_periods: u32,
+    pub urls: Vec<String>,
+    pub rest_updates_count: u32,
+    pub update_period: u32,
+    pub reservations: Vec<ReservationId>,
 }
 
 static mut CONTRACT: Option<AutoChangedNft> = None;
@@ -43,22 +42,10 @@ unsafe extern "C" fn init() {
             ..Default::default()
         },
         owner: msg::source(),
-        rest_update_periods: DEFAULT_UPDATE_PERIODS,
         ..Default::default()
     };
 
-    let periods = nft.rest_update_periods;
     CONTRACT = Some(nft);
-
-    let data = format!("Rest Update Periods: {}", periods)
-        .as_bytes()
-        .to_vec();
-
-    let payload = NFTAction::UpdateDynamicData {
-        transaction_id: 1,
-        data,
-    };
-    msg::send_delayed(exec::program_id(), payload, 0, DELAY).expect("Cant send delayed msg");
 }
 
 #[no_mangle]
@@ -172,39 +159,45 @@ unsafe extern "C" fn handle() {
             .expect("Error during replying with `NFTEvent::Approval`");
         }
         NFTAction::Clear { transaction_hash } => nft.clear(transaction_hash),
-        NFTAction::UpdateDynamicData {
-            transaction_id,
-            data,
+        NFTAction::AddUrl(link) => nft.urls.push(link),
+        NFTAction::Update { rest_updates_count } => {
+            nft.rest_updates_count = rest_updates_count - 1;
+            let action = NFTAction::Update {
+                rest_updates_count: nft.rest_updates_count,
+            };
+            let reservation_id = nft.reservations[nft.rest_updates_count as usize];
+            send_delayed_from_reservation(
+                reservation_id,
+                exec::program_id(),
+                action,
+                0,
+                nft.update_period,
+            )
+            .expect("Can't send delayed");
+        }
+        NFTAction::StartAutoChanging {
+            updates_count,
+            update_period,
         } => {
-            let payload = nft.process_transaction(transaction_id, |nft| {
-                let data_hash = H256::from(sp_core_hashing::blake2_256(&data));
-                if nft.rest_update_periods > 0 {
-                    nft.dynamic_data = data;
-                    nft.rest_update_periods -= 1;
-                    let periods = nft.rest_update_periods;
-                    let data = format!("Rest Update Periods: {}", periods)
-                        .as_bytes()
-                        .to_vec();
-                    let payload = NFTAction::UpdateDynamicData {
-                        transaction_id: transaction_id + 1,
-                        data,
-                    };
-                    let reservation_id = gstd::ReservationId::reserve(1_000_000_000, DELAY)
-                        .expect("reservation across executions");
-                    msg::send_delayed_from_reservation(
-                        reservation_id,
-                        exec::program_id(),
-                        payload,
-                        0,
-                        DELAY,
-                    )
-                    .expect("Can't send delayed");
-                } else {
-                    nft.dynamic_data = "Expired".as_bytes().to_vec();
-                }
-                NFTEvent::Updated { data_hash }
-            });
-            msg::reply(payload, 0).expect("Error during replying with `NFTEvent::Updated`");
+            nft.rest_updates_count = updates_count;
+            nft.update_period = update_period;
+            for i in 1..=updates_count {
+                let duration = update_period * i;
+                let reservation_id = ReservationId::reserve(1_000_000_000, duration)
+                    .expect("reservation across executions");
+                nft.reservations.push(reservation_id);
+            }
+            let payload = NFTAction::Update {
+                rest_updates_count: updates_count,
+            };
+            send_delayed(exec::program_id(), payload, 0, update_period)
+                .expect("Can't send delayed");
+        }
+        NFTAction::CurrentUrl => {
+            let index = nft.rest_updates_count as usize % nft.urls.len();
+            let link = nft.urls[index].clone();
+
+            msg::reply(NFTEvent::CurrentUrl(link), 0).expect("Can't reply");
         }
     };
 }
@@ -288,8 +281,10 @@ impl From<&AutoChangedNft> for IoNFT {
             token_id,
             owner,
             transactions,
-            dynamic_data,
-            rest_update_periods: update_periods,
+            urls: links,
+            rest_updates_count: update_number,
+            update_period: _,
+            reservations: _,
         } = value;
 
         let transactions = transactions
@@ -301,8 +296,8 @@ impl From<&AutoChangedNft> for IoNFT {
             token_id: *token_id,
             owner: *owner,
             transactions,
-            dynamic_data: dynamic_data.clone(),
-            update_periods: *update_periods,
+            links: links.clone(),
+            update_number: *update_number,
         }
     }
 }

@@ -36,6 +36,25 @@ pub fn mint(nft: &Program, transaction_id: u64, member: u64) -> RunResult {
     )
 }
 
+pub fn add_url(nft: &Program, link: &str, member: u64) -> RunResult {
+    nft.send(member, NFTAction::AddUrl(link.to_string()))
+}
+
+pub fn start_auto_changing(
+    nft: &Program,
+    updates_count: u32,
+    update_period: u32,
+    member: u64,
+) -> RunResult {
+    nft.send(
+        member,
+        NFTAction::StartAutoChanging {
+            updates_count,
+            update_period,
+        },
+    )
+}
+
 pub fn burn(nft: &Program, transaction_id: u64, member: u64, token_id: u64) -> RunResult {
     nft.send(
         member,
