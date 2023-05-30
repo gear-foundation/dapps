@@ -1,34 +1,58 @@
 [package]
 name = "game-of-chance"
-version = "0.3.3"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-parity-scale-codec = { version = "3", default-features = false }
-scale-info = { version = "2", default-features = false }
-rand = { version = "0.8", default-features = false }
-rand_xoshiro = "0.6"
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.1" }
-hashbrown = "0.13"
-game-of-chance-io = { path = "io" }
+gstd.workspace = true
+parity-scale-codec.workspace = true
+scale-info.workspace = true
+rand.workspace = true
+rand_xoshiro.workspace = true
+ft-main-io.workspace = true
+hashbrown.workspace = true
+game-of-chance-io.workspace = true
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-sp-core-hashing = "8.0.0"
-subxt = { version = "0.27", default-features = false }
-primitive-types = "0.12"
-tokio = "1"
-pretty_assertions = "1"
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+gclient.workspace = true
+sp-core-hashing.workspace = true
+subxt.workspace = true
+primitive-types.workspace = true
+tokio.workspace = true
 
 [build-dependencies]
-game-of-chance-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+game-of-chance-io.workspace = true
+gear-wasm-builder.workspace = true
+gmeta.workspace = true
 
 [features]
 binary-vendor = []
 default = ["binary-vendor"]
+
+[workspace.package]
+version = "0.3.4"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+parity-scale-codec = { version = "3", default-features = false }
+scale-info = { version = "2", default-features = false }
+rand = { version = "0.8", default-features = false }
+rand_xoshiro = "0.6"
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.2" }
+hashbrown = "0.13"
+game-of-chance-io = { path = "io" }
+sp-core-hashing = "8.0.0"
+subxt = { version = "0.27", default-features = false }
+primitive-types = "0.12"
+tokio = "1"

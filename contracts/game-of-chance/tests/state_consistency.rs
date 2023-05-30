@@ -4,7 +4,6 @@ use game_of_chance::WASM_BINARY_OPT;
 use game_of_chance_io::*;
 use gclient::{Error as GclientError, EventListener, EventProcessor, GearApi, Result};
 use gstd::prelude::*;
-use pretty_assertions::assert_eq;
 use primitive_types::H256;
 use subxt::{
     error::{DispatchError, ModuleError, ModuleErrorData},
