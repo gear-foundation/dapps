@@ -15,9 +15,10 @@ import styles from './WalletModal.module.scss';
 
 type Props = {
   onClose: () => void;
+  onSelect?: () => void;
 };
 
-function WalletModal({ onClose }: Props) {
+function WalletModal({ onClose, onSelect }: Props) {
   const { extensions, account, login, logout } = useAccount();
 
   const { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts, saveWallet, removeWallet } =
@@ -59,6 +60,8 @@ function WalletModal({ onClose }: Props) {
         login(_account);
         saveWallet();
         onClose();
+
+        if (onSelect) onSelect();
       };
 
       const handleCopyClick = () => {

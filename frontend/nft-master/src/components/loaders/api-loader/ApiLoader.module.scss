@@ -4,6 +4,7 @@
 .loader {
   @include absoluteCenter;
   font-size: $fontSizeLarge;
+  color: #fff;
 
   &::after {
     content: '.';

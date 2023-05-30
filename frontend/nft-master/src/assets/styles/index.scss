@@ -13,4 +13,9 @@ button:not(:disabled) {
 
 body {
   color: #000;
+  background: #fff center/cover url(/assets/images/bg.png) no-repeat;
+
+  &.contract {
+    background: #fff center/cover url(/assets/images/bg-active.png) no-repeat;
+  }
 }
