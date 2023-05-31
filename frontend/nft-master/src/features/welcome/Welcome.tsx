@@ -1,6 +1,7 @@
 import { Button } from '@gear-js/ui';
 import { useAccount } from '@gear-js/react-hooks';
 import { useState } from 'react';
+import { Container } from 'components';
 import { WalletModal } from '../wallet';
 import { useContractAddress, ContractAddressModal } from '../contract-address';
 import styles from './Welcome.module.scss';
@@ -21,20 +22,24 @@ function Welcome() {
   const handleButtonClick = account ? openContractModal : openWalletModal;
 
   return (
-    <div className={styles.welcome}>
-      <h2 className={styles.heading}>
-        Vara <span className={styles.nftText}>NFT</span>
-      </h2>
+    <>
+      <Container>
+        <div className={styles.welcome}>
+          <h2 className={styles.heading}>
+            Vara <span className={styles.nftText}>NFT</span>
+          </h2>
 
-      <p className={styles.text}>
-        A simple application that shows user&apos;s NFTs in different gear networks and contracts
-      </p>
+          <p className={styles.text}>
+            A simple application that shows user&apos;s NFTs in different gear networks and contracts
+          </p>
 
-      {!contractAddress && <Button text={buttonText} onClick={handleButtonClick} className={styles.button} />}
+          {!contractAddress && <Button text={buttonText} onClick={handleButtonClick} className={styles.button} />}
+        </div>
+      </Container>
 
       {isWalletModalOpen && <WalletModal onClose={closeWalletModal} onSelect={openContractModal} />}
       {isContractModalOpen && <ContractAddressModal onClose={closeContractModal} />}
-    </div>
+    </>
   );
 }
 

@@ -6,7 +6,7 @@ function Home() {
   return (
     <>
       <Welcome />
-      <NFTs />
+      <NFTs slider />
     </>
   );
 }

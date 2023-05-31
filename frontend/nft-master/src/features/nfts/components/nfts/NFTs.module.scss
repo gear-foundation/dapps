@@ -81,3 +81,34 @@
   background-color: #09ffc6;
   border-radius: 2px;
 }
+
+.embla {
+  overflow: hidden;
+
+  &Container {
+    display: flex;
+  }
+
+  &Slide {
+    margin-right: 30px;
+    flex: 0 0 24%;
+    min-width: 0;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.leftButton,
+.rightButton {
+  @include circle(40px);
+  border: 1px solid #000000;
+  background-color: transparent;
+}
+
+.rightButton {
+  transform: rotate(180deg);
+  margin-left: 20px;
+}

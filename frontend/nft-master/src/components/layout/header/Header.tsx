@@ -3,23 +3,26 @@ import { NodeSwitch } from 'features/node-switch';
 import { ContractAddress, useContractAddress } from 'features/contract-address';
 import { Logo } from './logo';
 import styles from './Header.module.scss';
+import { Container } from '../container';
 
 function Header() {
   const contractAddress = useContractAddress();
 
   return (
-    <header className={styles.header}>
-      <Logo />
+    <header>
+      <Container className={styles.container}>
+        <Logo />
 
-      <div className={styles.wrapper}>
-        <div className={styles.addresses}>
-          <ContractAddress />
-          {contractAddress && <span className={styles.separator} />}
-          <NodeSwitch />
+        <div className={styles.wrapper}>
+          <div className={styles.addresses}>
+            <ContractAddress />
+            {contractAddress && <span className={styles.separator} />}
+            <NodeSwitch />
+          </div>
+
+          <Wallet />
         </div>
-
-        <Wallet />
-      </div>
+      </Container>
     </header>
   );
 }
