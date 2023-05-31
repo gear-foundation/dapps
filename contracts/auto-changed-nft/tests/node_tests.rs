@@ -474,75 +474,66 @@ async fn auto_changed() -> Result<()> {
         assert!(listener.blocks_running().await?);
     }
 
+    let update_period = 5;
     // Start auto changing
     let payload = NFTAction::StartAutoChanging {
         token_ids: vec![token_id],
         updates_count: 8,
-        update_period: 1,
+        update_period,
     };
-    let gas_info = api
-        .calculate_handle_gas(None, program_id, payload.encode(), 0, true)
-        .await?;
     let (message_id, _) = api
-        .send_message(program_id, payload, gas_info.min_limit, 0)
+        .send_message(program_id, payload, 250_000_000_000, 0)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
 
     // Start update
     assert_eq!(
+        current_media(&api, program_id.into_bytes(), token_id).await,
+        links[3]
+    );
+
+    std::thread::sleep(std::time::Duration::from_secs(5));
+    assert_eq!(
+        current_media(&api, program_id.into_bytes(), token_id).await,
+        links[2]
+    );
+
+    std::thread::sleep(std::time::Duration::from_secs(5));
+    assert_eq!(
+        current_media(&api, program_id.into_bytes(), token_id).await,
+        links[1]
+    );
+    std::thread::sleep(std::time::Duration::from_secs(5));
+    assert_eq!(
         dbg!(current_media(&api, program_id.into_bytes(), token_id).await),
         dbg!(links[0])
     );
-    
-    skip_blocks(&mut listener, 5).await;
-    // assert_eq!(
-    //     current_media(&api, program_id.into_bytes(), token_id).await,
-    //     links[3]
-    // );
 
-    // // std::thread::sleep(std::time::Duration::from_secs(6));
-    // skip_blocks(&mut listener, 5).await;
-    // assert_eq!(
-    //     current_media(&api, program_id.into_bytes(), token_id).await,
-    //     links[2]
-    // );
+    // Media rotation happens
+    std::thread::sleep(std::time::Duration::from_secs(5));
+    assert_eq!(
+        current_media(&api, program_id.into_bytes(), token_id).await,
+        links[3]
+    );
 
-    // // std::thread::sleep(std::time::Duration::from_secs(5));
-    // skip_blocks(&mut listener, 5).await;
-    // assert_eq!(
-    //     current_media(&api, program_id.into_bytes(), token_id).await,
-    //     links[1]
-    // );
+    std::thread::sleep(std::time::Duration::from_secs(5));
+    assert_eq!(
+        current_media(&api, program_id.into_bytes(), token_id).await,
+        links[2]
+    );
 
-    // // Media rotation happens
-    // // std::thread::sleep(std::time::Duration::from_secs(5));
-    // skip_blocks(&mut listener, 5).await;
-    // assert_eq!(
-    //     current_media(&api, program_id.into_bytes(), token_id).await,
-    //     links[0]
-    // );
+    std::thread::sleep(std::time::Duration::from_secs(5));
+    assert_eq!(
+        current_media(&api, program_id.into_bytes(), token_id).await,
+        links[1]
+    );
 
-    // // std::thread::sleep(std::time::Duration::from_secs(5));
-    // skip_blocks(&mut listener, 5).await;
-    // assert_eq!(
-    //     current_media(&api, program_id.into_bytes(), token_id).await,
-    //     links[3]
-    // );
-
-    // // std::thread::sleep(std::time::Duration::from_secs(5));
-    // skip_blocks(&mut listener, 5).await;
-    // assert_eq!(
-    //     current_media(&api, program_id.into_bytes(), token_id).await,
-    //     links[2]
-    // );
-
-    // // std::thread::sleep(std::time::Duration::from_secs(5));
-    // skip_blocks(&mut listener, 5).await;
-    // assert_eq!(
-    //     current_media(&api, program_id.into_bytes(), token_id).await,
-    //     links[1]
-    // );
+    std::thread::sleep(std::time::Duration::from_secs(5));
+    assert_eq!(
+        current_media(&api, program_id.into_bytes(), token_id).await,
+        links[0]
+    );
 
     Ok(())
 }
@@ -558,12 +549,5 @@ pub async fn current_media(api: &GearApi, program_id: [u8; 32], token_id: TokenI
     match metadata {
         Some(metadata) => metadata.media.clone(),
         None => unreachable!(),
-    }
-}
-
-async fn skip_blocks(listener: &mut gclient::EventListener, count: u64) {
-    for _ in 0..count {
-        let hash = listener.next_block_hash().await.unwrap();
-        println!("next_block_hash: {:?}", hash);
     }
 }

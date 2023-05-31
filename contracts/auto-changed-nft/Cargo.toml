@@ -23,8 +23,6 @@ gmeta.workspace = true
 
 [dev-dependencies]
 gtest.workspace = true
-hex-literal.workspace = true
-sp-core.workspace = true
 gclient.workspace = true
 tokio.workspace = true
 
@@ -44,8 +42,6 @@ gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0
 sp-core-hashing = { version = "8.0.0", default-features = false }
 gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
 gtest = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-hex-literal = "0.4"
-sp-core = { git = "https://github.com/gear-tech/substrate.git", rev = "36699c4478ce8ae05517bb42a1b115403313e083" }
 gclient = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
 tokio = "1"
 hashbrown = "0.13"

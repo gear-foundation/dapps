@@ -52,6 +52,7 @@ unsafe extern "C" fn init() {
 unsafe extern "C" fn handle() {
     let action: NFTAction = msg::load().expect("Could not load NFTAction");
     let nft = CONTRACT.get_or_insert(Default::default());
+    gstd::debug!("AZOYAN NFTAction: {:?}", &action);
     match action {
         NFTAction::Mint {
             transaction_id,
@@ -165,6 +166,9 @@ unsafe extern "C" fn handle() {
             );
             nft.rest_updates_count = rest_updates_count - 1;
             nft.update_media(&token_ids);
+            if nft.rest_updates_count == 0 {
+                return;
+            }
             let action = NFTAction::Update {
                 rest_updates_count: nft.rest_updates_count,
                 token_ids,
@@ -182,12 +186,9 @@ unsafe extern "C" fn handle() {
                     nft.update_period,
                 )
                 .expect("Can't send delayed from reservation");
-                // msg::send_from_reservation(reservation_id, exec::program_id(), action, 0)
-                //     .expect("Can't send delayed from reservation");
             } else {
                 send_delayed(exec::program_id(), action, 0, nft.update_period)
                     .expect("Can't send delayed");
-                // msg::send(exec::program_id(), action, 0).expect("Can't send delayed");
             }
         }
         NFTAction::StartAutoChanging {
@@ -197,19 +198,21 @@ unsafe extern "C" fn handle() {
         } => {
             nft.rest_updates_count = updates_count;
             nft.update_period = update_period;
-            nft.reserve_gas();
+
             nft.update_media(&token_ids);
 
             let payload = NFTAction::Update {
                 rest_updates_count: updates_count,
                 token_ids: token_ids.clone(),
             };
-            send_delayed(exec::program_id(), &payload, 0, update_period)
+            // let gas1 = exec::gas_available();
+            let message_id = send_delayed(exec::program_id(), &payload, 0, update_period)
                 .expect("Can't send delayed");
-            // msg::send(exec::program_id(), &payload, 0).expect("Can't send delayed");
+            nft.reserve_gas();
+            // let gas2 = exec::gas_available();
             gstd::debug!(
-                "AZOYAN send_delayed payload: {:?}, update_period: {} token_ids: {:?}",
-                payload,
+                "AZOYAN send_delayed payload: message_id: {:?}, {:?}, update_period: {} token_ids: {:?}",
+                message_id, payload,
                 update_period,
                 token_ids
             );
