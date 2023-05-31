@@ -84,7 +84,6 @@ pub struct InitNFT {
     pub name: String,
     pub symbol: String,
     pub base_uri: String,
-    pub royalties: Option<Royalties>,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, Clone)]

@@ -12,8 +12,8 @@ use gstd::{
 use hashbrown::HashMap;
 use primitive_types::{H256, U256};
 
-const RESERVATION_AMOUNT: u64 = 245_000_000_000;
-const GAS_FOR_UPDATE: u64 = 3_000_000_000;
+const RESERVATION_AMOUNT: u64 = 240_000_000_000;
+const GAS_FOR_UPDATE: u64 = 4_000_000_000;
 
 #[derive(Debug, Default, NFTStateKeeper, NFTCore, NFTMetaState)]
 pub struct AutoChangedNft {
@@ -33,15 +33,12 @@ static mut RESERVATION: Vec<ReservationId> = vec![];
 #[no_mangle]
 unsafe extern "C" fn init() {
     let config: InitNFT = msg::load().expect("Unable to decode InitNFT");
-    if config.royalties.is_some() {
-        config.royalties.as_ref().expect("Unable to g").validate();
-    }
     let nft = AutoChangedNft {
         token: NFTState {
             name: config.name,
             symbol: config.symbol,
             base_uri: config.base_uri,
-            royalties: config.royalties,
+            royalties: None,
             ..Default::default()
         },
         owner: msg::source(),
@@ -161,6 +158,11 @@ unsafe extern "C" fn handle() {
             rest_updates_count,
             token_ids,
         } => {
+            gstd::debug!(
+                "AZOYAN Update rest_updates_count: {}, token_ids: {:?}",
+                rest_updates_count,
+                token_ids
+            );
             nft.rest_updates_count = rest_updates_count - 1;
             nft.update_media(&token_ids);
             let action = NFTAction::Update {
@@ -168,6 +170,7 @@ unsafe extern "C" fn handle() {
                 token_ids,
             };
             let gas_available = exec::gas_available();
+            gstd::debug!("AZOYAN Update. gas_available: {}", gas_available);
             if gas_available <= GAS_FOR_UPDATE {
                 let reservations = unsafe { &mut RESERVATION };
                 let reservation_id = reservations.pop().expect("Need more gas");
@@ -179,9 +182,12 @@ unsafe extern "C" fn handle() {
                     nft.update_period,
                 )
                 .expect("Can't send delayed from reservation");
+                // msg::send_from_reservation(reservation_id, exec::program_id(), action, 0)
+                //     .expect("Can't send delayed from reservation");
             } else {
                 send_delayed(exec::program_id(), action, 0, nft.update_period)
                     .expect("Can't send delayed");
+                // msg::send(exec::program_id(), action, 0).expect("Can't send delayed");
             }
         }
         NFTAction::StartAutoChanging {
@@ -196,10 +202,17 @@ unsafe extern "C" fn handle() {
 
             let payload = NFTAction::Update {
                 rest_updates_count: updates_count,
-                token_ids,
+                token_ids: token_ids.clone(),
             };
-            send_delayed(exec::program_id(), payload, 0, update_period)
+            send_delayed(exec::program_id(), &payload, 0, update_period)
                 .expect("Can't send delayed");
+            // msg::send(exec::program_id(), &payload, 0).expect("Can't send delayed");
+            gstd::debug!(
+                "AZOYAN send_delayed payload: {:?}, update_period: {} token_ids: {:?}",
+                payload,
+                update_period,
+                token_ids
+            );
         }
     };
 }
@@ -251,7 +264,13 @@ impl AutoChangedNft {
                 let urls_for_token = &self.urls[token_id];
                 let index = self.rest_updates_count as usize % urls_for_token.len();
                 let media = urls_for_token[index].clone();
-
+                gstd::debug!(
+                    "AZOYAN update_media(): urls.len(): {}, token_id: {}, index: {}, media: {}",
+                    urls_for_token.len(),
+                    token_id,
+                    index,
+                    media
+                );
                 meta.media = media
             }
         }
@@ -261,7 +280,7 @@ impl AutoChangedNft {
         let reservation_id =
             ReservationId::reserve(RESERVATION_AMOUNT, 600).expect("reservation across executions");
         reservations.push(reservation_id);
-        msg::reply(NFTEvent::GasReserved, 0).expect("");
+        // msg::reply(NFTEvent::GasReserved, 0).expect("");
     }
 }
 

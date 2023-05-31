@@ -14,7 +14,6 @@ pub fn init_nft(sys: &System) {
             name: String::from("MyToken"),
             symbol: String::from("MTK"),
             base_uri: String::from(""),
-            royalties: None,
         },
     );
 
