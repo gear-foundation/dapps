@@ -113,3 +113,26 @@
   transform: rotate(180deg);
   margin-left: 20px;
 }
+
+.placeholder {
+  padding: 170px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: url('../../assets/placeholder.svg') center/100% 100% no-repeat;
+
+  &Heading {
+    margin-bottom: 10px;
+    font-weight: 500;
+    font-size: 28px;
+    line-height: 120%;
+  }
+
+  &Text {
+    max-width: 400px;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 140%;
+  }
+}

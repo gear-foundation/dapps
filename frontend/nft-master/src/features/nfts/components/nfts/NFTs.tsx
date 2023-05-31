@@ -82,34 +82,47 @@ function NFTs({ slider }: Props) {
       );
     });
 
+  const isAnyNFT = false;
+
   return (
     <div>
-      <Container>
-        <header className={styles.header}>
-          <h3 className={styles.heading}>NFTs:</h3>
+      {isAnyNFT ? (
+        <>
+          <Container>
+            <header className={styles.header}>
+              <h3 className={styles.heading}>NFTs:</h3>
 
-          {slider && (
-            <div>
-              <button type="button" className={styles.leftButton} onClick={prevSlide}>
-                <ArrowLeftSVG />
-              </button>
+              {slider && (
+                <div>
+                  <button type="button" className={styles.leftButton} onClick={prevSlide}>
+                    <ArrowLeftSVG />
+                  </button>
 
-              <button type="button" className={styles.rightButton} onClick={nextSlide}>
-                <ArrowLeftSVG />
-              </button>
+                  <button type="button" className={styles.rightButton} onClick={nextSlide}>
+                    <ArrowLeftSVG />
+                  </button>
+                </div>
+              )}
+            </header>
+          </Container>
+
+          {slider ? (
+            <div className={styles.embla} ref={emblaRef}>
+              <ul className={styles.emblaContainer}>{getNFTs()}</ul>
             </div>
+          ) : (
+            <Container>
+              <ul className={styles.list}>{getNFTs()}</ul>
+            </Container>
           )}
-        </header>
-      </Container>
-
-      {slider ? (
-        <div className={styles.embla} ref={emblaRef}>
-          <ul className={styles.emblaContainer}>{getNFTs()}</ul>
-        </div>
+        </>
       ) : (
-        <Container>
-          <ul className={styles.list}>{getNFTs()}</ul>
-        </Container>
+        <div className={styles.placeholder}>
+          <p className={styles.placeholderHeading}>No NFTs found for this account</p>
+          <p className={styles.placeholderText}>
+            Suggest to specify custom contract address or switch to another network
+          </p>
+        </div>
       )}
     </div>
   );
