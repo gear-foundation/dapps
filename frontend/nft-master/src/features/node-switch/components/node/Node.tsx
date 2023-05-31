@@ -2,7 +2,7 @@ import { Button, radioStyles } from '@gear-js/ui';
 import clsx from 'clsx';
 import { ReactComponent as CopySVG } from 'assets/images/icons/copy.svg';
 import { SVGComponent } from 'types';
-import { copyToClipBoard } from 'utils';
+import { copyToClipboard } from 'utils';
 import { ReactComponent as TrashSVG } from '../../assets/trash.svg';
 import styles from './Node.module.scss';
 
@@ -23,7 +23,7 @@ function Node(props: Props) {
   const radioClassName = clsx(radioStyles.input, styles.input);
 
   const handleChange = () => onChange(address);
-  const handleCopy = () => copyToClipBoard(address);
+  const handleCopy = () => copyToClipboard(address);
   const handleRemove = () => !isActive && onRemove(address);
 
   return (

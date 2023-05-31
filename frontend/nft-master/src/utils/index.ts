@@ -1,8 +1,7 @@
-import type { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
-import { LOCAL_STORAGE } from 'consts';
+import { ADDRESS } from 'consts';
 
-const copyToClipBoard = (value: string) => navigator.clipboard.writeText(value).then(() => console.log('Copied!'));
+const copyToClipboard = (value: string) => navigator.clipboard.writeText(value).then(() => console.log('Copied!'));
 
-const isLoggedIn = ({ address }: InjectedAccountWithMeta) => localStorage[LOCAL_STORAGE.ACCOUNT] === address;
+const getIpfsAddress = (cid: string) => `${ADDRESS.IPFS_GATEWAY}/${cid}`;
 
-export { isLoggedIn, copyToClipBoard };
+export { copyToClipboard, getIpfsAddress };

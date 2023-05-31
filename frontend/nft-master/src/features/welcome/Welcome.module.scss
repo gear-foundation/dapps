@@ -1,5 +1,13 @@
 .welcome {
   max-width: 375px;
+  min-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  &:not(:last-child) {
+    margin-bottom: 50px;
+  }
 }
 
 .heading {

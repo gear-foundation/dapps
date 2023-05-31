@@ -3,7 +3,7 @@ import { decodeAddress } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
 import clsx from 'clsx';
-import { copyToClipBoard } from 'utils';
+import { copyToClipboard } from 'utils';
 import { Modal } from 'components';
 import { ReactComponent as EditSVG } from 'assets/images/icons/edit.svg';
 import { ReactComponent as CopySVG } from 'assets/images/icons/copy.svg';
@@ -67,7 +67,7 @@ function WalletModal({ onClose, onSelect }: Props) {
       const handleCopyClick = () => {
         const decodedAddress = decodeAddress(address);
 
-        copyToClipBoard(decodedAddress);
+        copyToClipboard(decodedAddress);
         onClose();
       };
 
