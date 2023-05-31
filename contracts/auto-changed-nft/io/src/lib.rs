@@ -68,15 +68,19 @@ pub enum NFTAction {
     Clear {
         transaction_hash: H256,
     },
-    AddUrl(String),
+    AddMedia {
+        token_id: TokenId,
+        media: String,
+    },
     StartAutoChanging {
+        token_ids: Vec<TokenId>,
         updates_count: u32,
         update_period: u32,
     },
     Update {
+        token_ids: Vec<TokenId>,
         rest_updates_count: u32,
     },
-    CurrentUrl,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
@@ -126,7 +130,7 @@ pub struct IoNFT {
     pub token_id: TokenId,
     pub owner: ActorId,
     pub transactions: Vec<(H256, NFTEvent)>,
-    pub links: Vec<String>,
+    pub urls: Vec<(TokenId, Vec<String>)>,
     pub update_number: u32,
 }
 

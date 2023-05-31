@@ -36,12 +36,19 @@ pub fn mint(nft: &Program, transaction_id: u64, member: u64) -> RunResult {
     )
 }
 
-pub fn add_url(nft: &Program, link: &str, member: u64) -> RunResult {
-    nft.send(member, NFTAction::AddUrl(link.to_string()))
+pub fn add_url(nft: &Program, token_id: TokenId, url: &str, member: u64) -> RunResult {
+    nft.send(
+        member,
+        NFTAction::AddMedia {
+            token_id,
+            media: url.to_string(),
+        },
+    )
 }
 
 pub fn start_auto_changing(
     nft: &Program,
+    token_ids: Vec<TokenId>,
     updates_count: u32,
     update_period: u32,
     member: u64,
@@ -51,6 +58,7 @@ pub fn start_auto_changing(
         NFTAction::StartAutoChanging {
             updates_count,
             update_period,
+            token_ids,
         },
     )
 }
@@ -140,4 +148,18 @@ pub fn mint_to_actor(nft: &Program, transaction_id: u64, member: [u8; 32]) -> Ru
             },
         },
     )
+}
+
+pub fn current_media(nft: &Program, token_id: TokenId) -> String {
+    let state: IoNFT = nft.read_state().unwrap();
+    let (_token_id, metadata) = state
+        .token
+        .token_metadata_by_id
+        .iter()
+        .find(|(id, _meta)| token_id.eq(id))
+        .unwrap();
+    match metadata {
+        Some(metadata) => metadata.media.clone(),
+        None => unreachable!(),
+    }
 }

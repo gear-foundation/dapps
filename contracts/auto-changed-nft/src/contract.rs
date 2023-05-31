@@ -19,7 +19,7 @@ pub struct AutoChangedNft {
     pub token_id: TokenId,
     pub owner: ActorId,
     pub transactions: HashMap<H256, NFTEvent>,
-    pub urls: Vec<String>,
+    pub urls: HashMap<TokenId, Vec<String>>,
     pub rest_updates_count: u32,
     pub update_period: u32,
     pub reservations: Vec<ReservationId>,
@@ -159,45 +159,54 @@ unsafe extern "C" fn handle() {
             .expect("Error during replying with `NFTEvent::Approval`");
         }
         NFTAction::Clear { transaction_hash } => nft.clear(transaction_hash),
-        NFTAction::AddUrl(link) => nft.urls.push(link),
-        NFTAction::Update { rest_updates_count } => {
+        NFTAction::AddMedia { token_id, media } => {
+            if let Some(urls) = nft.urls.get_mut(&token_id) {
+                urls.push(media);
+            } else {
+                nft.urls.insert(token_id, vec![media]);
+            }
+        }
+        NFTAction::Update {
+            rest_updates_count,
+            token_ids,
+        } => {
             nft.rest_updates_count = rest_updates_count - 1;
+            nft.update_media(&token_ids);
             let action = NFTAction::Update {
                 rest_updates_count: nft.rest_updates_count,
+                token_ids,
             };
-            let reservation_id = nft.reservations[nft.rest_updates_count as usize];
-            send_delayed_from_reservation(
-                reservation_id,
-                exec::program_id(),
-                action,
-                0,
-                nft.update_period,
-            )
-            .expect("Can't send delayed");
+            if let Some(reservation_id) = nft.reservations.last() {
+                send_delayed_from_reservation(
+                    *reservation_id,
+                    exec::program_id(),
+                    action,
+                    0,
+                    nft.update_period,
+                )
+                .expect("Can't send delayed");
+            }
         }
         NFTAction::StartAutoChanging {
             updates_count,
             update_period,
+            token_ids,
         } => {
             nft.rest_updates_count = updates_count;
             nft.update_period = update_period;
-            for i in 1..=updates_count {
-                let duration = update_period * i;
-                let reservation_id = ReservationId::reserve(1_000_000_000, duration)
-                    .expect("reservation across executions");
-                nft.reservations.push(reservation_id);
-            }
+
+            let duration = update_period * updates_count;
+            let reservation_id = ReservationId::reserve(240_000_000_000, duration)
+                .expect("reservation across executions");
+            nft.reservations.push(reservation_id);
+
+            nft.update_media(&token_ids);
             let payload = NFTAction::Update {
                 rest_updates_count: updates_count,
+                token_ids,
             };
             send_delayed(exec::program_id(), payload, 0, update_period)
                 .expect("Can't send delayed");
-        }
-        NFTAction::CurrentUrl => {
-            let index = nft.rest_updates_count as usize % nft.urls.len();
-            let link = nft.urls[index].clone();
-
-            msg::reply(NFTEvent::CurrentUrl(link), 0).expect("Can't reply");
         }
     };
 }
@@ -242,6 +251,17 @@ impl AutoChangedNft {
         );
         self.transactions.remove(&transaction_hash);
     }
+
+    fn update_media(&mut self, token_ids: &Vec<TokenId>) {
+        for token_id in token_ids {
+            if let Some(Some(meta)) = self.token.token_metadata_by_id.get_mut(token_id) {
+                let urls_for_token = &self.urls[token_id];
+                let index = self.rest_updates_count as usize % urls_for_token.len();
+                let media = urls_for_token[index].clone();
+                meta.media = media
+            }
+        }
+    }
 }
 
 #[no_mangle]
@@ -281,7 +301,7 @@ impl From<&AutoChangedNft> for IoNFT {
             token_id,
             owner,
             transactions,
-            urls: links,
+            urls,
             rest_updates_count: update_number,
             update_period: _,
             reservations: _,
@@ -291,12 +311,16 @@ impl From<&AutoChangedNft> for IoNFT {
             .iter()
             .map(|(key, event)| (*key, event.clone()))
             .collect();
+        let urls = urls
+            .iter()
+            .map(|(token_id, urls)| (*token_id, urls.clone()))
+            .collect();
         Self {
             token: token.into(),
             token_id: *token_id,
             owner: *owner,
             transactions,
-            links: links.clone(),
+            urls,
             update_number: *update_number,
         }
     }

@@ -1,5 +1,6 @@
 use gear_lib::non_fungible_token::delegated::DelegatedApproveMessage;
 use gear_lib::non_fungible_token::io::*;
+use gear_lib::non_fungible_token::token::TokenId;
 use gstd::{ActorId, Encode};
 use gtest::System;
 mod utils;
@@ -189,47 +190,52 @@ fn auto_change_success() {
     let transaction_id: u64 = 0;
     assert!(!mint(&nft, transaction_id, USERS[0]).main_failed());
 
-    let state: IoNFT = nft.read_state().unwrap();
-    let expected_dynamic_data: Vec<String> = vec![];
-    assert_eq!(expected_dynamic_data, state.links);
-
     let link1 = "link 1";
     let link2 = "link 2";
     let link3 = "link 3";
     let link4 = "link 4";
 
-    assert!(!add_url(&nft, link1, USERS[0]).main_failed());
-    assert!(!add_url(&nft, link2, USERS[0]).main_failed());
-    assert!(!add_url(&nft, link3, USERS[0]).main_failed());
-    assert!(!add_url(&nft, link4, USERS[0]).main_failed());
+    let token_id = TokenId::default();
+    assert!(!add_url(&nft, token_id, link1, USERS[0]).main_failed());
+    assert!(!add_url(&nft, token_id, link2, USERS[0]).main_failed());
+    assert!(!add_url(&nft, token_id, link3, USERS[0]).main_failed());
+    assert!(!add_url(&nft, token_id, link4, USERS[0]).main_failed());
 
-    let updates_count = 4;
+    let updates_count = 8;
     let updates_period = 5;
-    assert!(!start_auto_changing(&nft, updates_count, updates_period, USERS[0]).main_failed());
+    assert!(!start_auto_changing(
+        &nft,
+        vec![token_id],
+        updates_count,
+        updates_period,
+        USERS[0]
+    )
+    .main_failed());
 
-    let res = nft.send(USERS[0], NFTAction::CurrentUrl);
-    let expected_message = NFTEvent::CurrentUrl(link1.to_string()).encode();
-    dbg!(&res);
-    assert!(res.contains(&(USERS[0], expected_message)));
-    sys.spend_blocks(updates_period);
+    // Begin update
+    assert_eq!(current_media(&nft, token_id), link1);
 
-    let res = nft.send(USERS[0], NFTAction::CurrentUrl);
-    dbg!(&res);
-    let expected_message = NFTEvent::CurrentUrl(link4.to_string()).encode();
-    assert!(res.contains(&(USERS[0], expected_message)));
     sys.spend_blocks(updates_period);
+    assert_eq!(current_media(&nft, token_id), link4);
 
-    let res = nft.send(USERS[0], NFTAction::CurrentUrl);
-    dbg!(&res);
-    let expected_message = NFTEvent::CurrentUrl(link3.to_string()).encode();
-    assert!(res.contains(&(USERS[0], expected_message)));
     sys.spend_blocks(updates_period);
+    assert_eq!(current_media(&nft, token_id), link3);
 
-    let res = nft.send(USERS[0], NFTAction::CurrentUrl);
-    dbg!(&res);
-    let expected_message = NFTEvent::CurrentUrl(link2.to_string()).encode();
-    assert!(res.contains(&(USERS[0], expected_message)));
     sys.spend_blocks(updates_period);
+    assert_eq!(current_media(&nft, token_id), link2);
+
+    // Media rotation happens
+    sys.spend_blocks(updates_period);
+    assert_eq!(current_media(&nft, token_id), link1);
+
+    sys.spend_blocks(updates_period);
+    assert_eq!(current_media(&nft, token_id), link4);
+
+    sys.spend_blocks(updates_period);
+    assert_eq!(current_media(&nft, token_id), link3);
+
+    sys.spend_blocks(updates_period);
+    assert_eq!(current_media(&nft, token_id), link2);
 }
 
 #[test]
