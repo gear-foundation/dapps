@@ -13,9 +13,16 @@ button:not(:disabled) {
 
 body {
   color: #000;
-  background: #fff top/100% url(/assets/images/bg.png) no-repeat;
+  background-color: #fff;
+  background-position: top;
+  background-size: 100%;
+  background-repeat: no-repeat;
 
-  &.contract {
-    background: #fff top/100% url(/assets/images/bg-active.png) no-repeat;
+  &.setup {
+    background-image: url(/assets/images/bg.png);
+  }
+
+  &.active {
+    background-image: url(/assets/images/bg-active.png);
   }
 }

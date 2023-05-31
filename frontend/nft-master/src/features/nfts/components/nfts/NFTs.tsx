@@ -82,7 +82,7 @@ function NFTs({ slider }: Props) {
       );
     });
 
-  const isAnyNFT = false;
+  const isAnyNFT = LIST.length > 0;
 
   return (
     <div>
