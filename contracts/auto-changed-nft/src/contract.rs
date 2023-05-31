@@ -12,6 +12,9 @@ use gstd::{
 use hashbrown::HashMap;
 use primitive_types::{H256, U256};
 
+const RESERVATION_AMOUNT: u64 = 245_000_000_000;
+const GAS_FOR_UPDATE: u64 = 3_000_000_000;
+
 #[derive(Debug, Default, NFTStateKeeper, NFTCore, NFTMetaState)]
 pub struct AutoChangedNft {
     #[NFTStateField]
@@ -22,10 +25,10 @@ pub struct AutoChangedNft {
     pub urls: HashMap<TokenId, Vec<String>>,
     pub rest_updates_count: u32,
     pub update_period: u32,
-    pub reservations: Vec<ReservationId>,
 }
 
 static mut CONTRACT: Option<AutoChangedNft> = None;
+static mut RESERVATION: Vec<ReservationId> = vec![];
 
 #[no_mangle]
 unsafe extern "C" fn init() {
@@ -145,19 +148,7 @@ unsafe extern "C" fn handle() {
             )
             .expect("Error during replying with `NFTEvent::IsApproved`");
         }
-        NFTAction::DelegatedApprove {
-            transaction_id,
-            message,
-            signature,
-        } => {
-            msg::reply(
-                nft.process_transaction(transaction_id, |nft| {
-                    NFTEvent::Approval(NFTCore::delegated_approve(nft, message, signature))
-                }),
-                0,
-            )
-            .expect("Error during replying with `NFTEvent::Approval`");
-        }
+        NFTAction::ReserveGas => nft.reserve_gas(),
         NFTAction::Clear { transaction_hash } => nft.clear(transaction_hash),
         NFTAction::AddMedia { token_id, media } => {
             if let Some(urls) = nft.urls.get_mut(&token_id) {
@@ -176,15 +167,21 @@ unsafe extern "C" fn handle() {
                 rest_updates_count: nft.rest_updates_count,
                 token_ids,
             };
-            if let Some(reservation_id) = nft.reservations.last() {
+            let gas_available = exec::gas_available();
+            if gas_available <= GAS_FOR_UPDATE {
+                let reservations = unsafe { &mut RESERVATION };
+                let reservation_id = reservations.pop().expect("Need more gas");
                 send_delayed_from_reservation(
-                    *reservation_id,
+                    reservation_id,
                     exec::program_id(),
                     action,
                     0,
                     nft.update_period,
                 )
-                .expect("Can't send delayed");
+                .expect("Can't send delayed from reservation");
+            } else {
+                send_delayed(exec::program_id(), action, 0, nft.update_period)
+                    .expect("Can't send delayed");
             }
         }
         NFTAction::StartAutoChanging {
@@ -194,13 +191,9 @@ unsafe extern "C" fn handle() {
         } => {
             nft.rest_updates_count = updates_count;
             nft.update_period = update_period;
-
-            let duration = update_period * updates_count;
-            let reservation_id = ReservationId::reserve(240_000_000_000, duration)
-                .expect("reservation across executions");
-            nft.reservations.push(reservation_id);
-
+            nft.reserve_gas();
             nft.update_media(&token_ids);
+
             let payload = NFTAction::Update {
                 rest_updates_count: updates_count,
                 token_ids,
@@ -258,9 +251,17 @@ impl AutoChangedNft {
                 let urls_for_token = &self.urls[token_id];
                 let index = self.rest_updates_count as usize % urls_for_token.len();
                 let media = urls_for_token[index].clone();
+
                 meta.media = media
             }
         }
+    }
+    fn reserve_gas(&self) {
+        let reservations = unsafe { &mut RESERVATION };
+        let reservation_id =
+            ReservationId::reserve(RESERVATION_AMOUNT, 600).expect("reservation across executions");
+        reservations.push(reservation_id);
+        msg::reply(NFTEvent::GasReserved, 0).expect("");
     }
 }
 
@@ -304,7 +305,6 @@ impl From<&AutoChangedNft> for IoNFT {
             urls,
             rest_updates_count: update_number,
             update_period: _,
-            reservations: _,
         } = value;
 
         let transactions = transactions

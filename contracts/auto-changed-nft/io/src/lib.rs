@@ -53,11 +53,6 @@ pub enum NFTAction {
         to: ActorId,
         token_id: TokenId,
     },
-    DelegatedApprove {
-        transaction_id: u64,
-        message: DelegatedApproveMessage,
-        signature: [u8; 64],
-    },
     Owner {
         token_id: TokenId,
     },
@@ -81,6 +76,7 @@ pub enum NFTAction {
         token_ids: Vec<TokenId>,
         rest_updates_count: u32,
     },
+    ReserveGas,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
@@ -110,6 +106,7 @@ pub enum NFTEvent {
         data_hash: H256,
     },
     CurrentUrl(String),
+    GasReserved,
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]

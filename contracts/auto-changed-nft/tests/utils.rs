@@ -120,36 +120,6 @@ pub fn approve(nft: &Program, transaction_id: u64, from: u64, to: u64, token_id:
     )
 }
 
-pub fn delegated_approve(
-    nft: &Program,
-    transaction_id: u64,
-    from: u64,
-    message: DelegatedApproveMessage,
-    signature: [u8; 64],
-) -> RunResult {
-    let action = NFTAction::DelegatedApprove {
-        transaction_id,
-        message,
-        signature,
-    };
-    nft.send(from, action)
-}
-
-pub fn mint_to_actor(nft: &Program, transaction_id: u64, member: [u8; 32]) -> RunResult {
-    nft.send(
-        member,
-        NFTAction::Mint {
-            transaction_id,
-            token_metadata: TokenMetadata {
-                name: "CryptoKitty".to_string(),
-                description: "Description".to_string(),
-                media: "http://".to_string(),
-                reference: "http://".to_string(),
-            },
-        },
-    )
-}
-
 pub fn current_media(nft: &Program, token_id: TokenId) -> String {
     let state: IoNFT = nft.read_state().unwrap();
     let (_token_id, metadata) = state
