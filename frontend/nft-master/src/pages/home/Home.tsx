@@ -1,12 +1,14 @@
 import { Welcome } from 'features/welcome';
 import { NFTs } from 'features/nfts';
-import styles from './Home.module.scss';
+import { useContractAddress } from 'features/contract-address';
 
 function Home() {
+  const contractAddress = useContractAddress();
+
   return (
     <>
       <Welcome />
-      <NFTs slider />
+      {contractAddress && <NFTs />}
     </>
   );
 }
