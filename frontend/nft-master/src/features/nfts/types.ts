@@ -8,6 +8,12 @@ type Token = {
   attribUrl: string;
 };
 
+type NFT = Token & {
+  id: string;
+  collection: string;
+  programId: HexString;
+};
+
 type Collection = {
   name: string;
   description: string;
@@ -23,4 +29,4 @@ type NFTContractState = {
   collection: Collection;
 };
 
-export type { MasterContractState, NFTContractState };
+export type { NFT, MasterContractState, NFTContractState };

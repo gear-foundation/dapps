@@ -1,36 +1,25 @@
-import { HexString } from '@polkadot/util/types';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { getIpfsAddress } from 'utils';
 import { Container } from 'components';
 import { ReactComponent as SearchSVG } from '../../assets/search.svg';
 import { ReactComponent as BackArrowSVG } from '../../assets/back-arrow.svg';
-import { useNFTsState } from '../../hooks';
+import { NFT as NFTType } from '../../types';
 import styles from './NFT.module.scss';
 
-type Params = {
-  programId: HexString;
-  id: string;
+type Props = {
+  item: NFTType | undefined;
 };
 
-function NFT() {
-  const { programId, id } = useParams() as Params;
-
-  const nftStates = useNFTsState();
-
-  const { tokens, collection } = nftStates?.find(({ programId: _programId }) => _programId === programId) || {};
-  const nftState = tokens?.find(([tokenId]) => tokenId === id);
-  const nft = nftState?.[1];
-
-  const collectionName = collection?.name;
-  const { name, owner, mediaUrl, description, attribUrl } = nft || {};
-
-  const [details, setDetails] = useState<string[]>([]);
-
-  const [searchQuery, setSearchQuery] = useState('');
+function NFT({ item }: Props) {
+  const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const src = mediaUrl ? getIpfsAddress(mediaUrl) : '';
+  const [details, setDetails] = useState<string[]>([]);
+  const [searchQuery, setSearchQuery] = useState('');
+
+  const { name, collection, description, owner, mediaUrl, attribUrl } = item || {};
+  const src = getIpfsAddress(mediaUrl || '');
 
   useEffect(() => {
     if (!attribUrl) return;
@@ -42,9 +31,18 @@ function NFT() {
       .then((result) => setDetails(result));
   }, [attribUrl]);
 
+  useEffect(() => {
+    setSearchQuery('');
+  }, [pathname]);
+
   const getDetails = () =>
     details
-      .filter((detail) => detail.includes(searchQuery))
+      .filter((detail) => {
+        const lowerCaseDetail = detail.toLocaleLowerCase();
+        const lowerCaseQuery = searchQuery.toLocaleLowerCase();
+
+        return lowerCaseDetail.includes(lowerCaseQuery);
+      })
       .map((detail) => (
         <li key={detail} className={styles.detail}>
           {detail}
@@ -74,7 +72,7 @@ function NFT() {
       <div>
         <div>
           <h2 className={styles.name}>{name}</h2>
-          <p className={styles.collection}>{collectionName}</p>
+          <p className={styles.collection}>{collection}</p>
           <p className={styles.description}>{description}</p>
 
           <div>

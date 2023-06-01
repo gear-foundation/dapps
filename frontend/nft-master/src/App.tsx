@@ -1,7 +1,8 @@
 import { useApi, useAccount } from '@gear-js/react-hooks';
-import { Header, Footer, ApiLoader } from 'components';
+import { Header, Footer, ApiLoader, Loader } from 'components';
 import { Routing } from 'pages';
 import { withProviders } from 'hocs';
+import { useNFTsState } from 'features/nfts';
 import 'App.scss';
 
 function Component() {
@@ -9,10 +10,21 @@ function Component() {
   const { isAccountReady } = useAccount();
   const isAppReady = isApiReady && isAccountReady;
 
+  const isNFTsStateReady = useNFTsState();
+
   return (
     <>
       <Header />
-      <main>{isAppReady ? <Routing /> : <ApiLoader />}</main>
+      <main>
+        {isAppReady ? (
+          <>
+            {isNFTsStateReady && <Routing />}
+            {!isNFTsStateReady && <Loader />}
+          </>
+        ) : (
+          <ApiLoader />
+        )}
+      </main>
       <Footer />
     </>
   );

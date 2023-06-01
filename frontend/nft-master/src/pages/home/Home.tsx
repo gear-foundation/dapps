@@ -1,10 +1,11 @@
-import { Welcome } from 'features/welcome';
-import { NFTs } from 'features/nfts';
-import { useContractAddress } from 'features/contract-address';
 import { useLayoutEffect } from 'react';
+import { Welcome } from 'features/welcome';
+import { NFTs, useNFTs } from 'features/nfts';
+import { useContractAddress } from 'features/contract-address';
 
 function Home() {
   const contractAddress = useContractAddress();
+  const list = useNFTs();
 
   useLayoutEffect(() => {
     if (!contractAddress) return document.body.classList.add('setup');
@@ -19,7 +20,7 @@ function Home() {
   return (
     <>
       <Welcome />
-      {contractAddress && <NFTs />}
+      {contractAddress && <NFTs list={list} />}
     </>
   );
 }

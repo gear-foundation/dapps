@@ -4,54 +4,49 @@ import clsx from 'clsx';
 import { getIpfsAddress } from 'utils';
 import { Container } from 'components';
 import { ReactComponent as ArrowLeftSVG } from '../../assets/arrow-left.svg';
-import { useNFTsState } from '../../hooks';
+import { NFT } from '../../types';
 import styles from './NFTs.module.scss';
 
 type Props = {
+  list: NFT[];
   slider?: boolean;
 };
 
-function NFTs({ slider }: Props) {
-  const nftStates = useNFTsState();
+function NFTs({ list, slider }: Props) {
+  const isAnyNFT = list.length > 0;
+
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'center', loop: true });
 
   const prevSlide = () => emblaApi?.scrollPrev();
   const nextSlide = () => emblaApi?.scrollNext();
 
   const getNFTs = () =>
-    nftStates?.map(({ tokens, collection, programId }) =>
-      tokens.map(([id, token]) => {
-        const collectionName = collection.name;
-        const { name, mediaUrl, owner } = token;
+    list.map(({ id, programId, name, owner, mediaUrl, collection }) => {
+      const style = { backgroundImage: `url(${getIpfsAddress(mediaUrl)})` };
+      const to = `/${programId}/${id}`;
 
-        const style = { backgroundImage: `url(${getIpfsAddress(mediaUrl)})` };
-        const to = `/${programId}/${id}`;
+      return (
+        <li key={to} className={clsx(styles.nft, slider && styles.emblaSlide)}>
+          <header>
+            <p className={styles.collection}>{collection}</p>
+            <p className={styles.name}>{name}</p>
+          </header>
 
-        return (
-          <li key={id} className={clsx(styles.nft, slider && styles.emblaSlide)}>
-            <header>
-              <p className={styles.collection}>{collectionName}</p>
-              <p className={styles.name}>{name}</p>
-            </header>
+          <div className={styles.media} style={style}>
+            <footer className={styles.footer}>
+              <p className={styles.owner}>
+                <span className={styles.ownerHeading}>Owner:</span>
+                <span className={styles.ownerText}>{owner}</span>
+              </p>
 
-            <div className={styles.media} style={style}>
-              <footer className={styles.footer}>
-                <p className={styles.owner}>
-                  <span className={styles.ownerHeading}>Owner:</span>
-                  <span className={styles.ownerText}>{owner}</span>
-                </p>
-
-                <Link to={to} className={styles.link}>
-                  View More
-                </Link>
-              </footer>
-            </div>
-          </li>
-        );
-      }),
-    );
-
-  const isAnyNFT = !!nftStates?.length;
+              <Link to={to} className={styles.link}>
+                View More
+              </Link>
+            </footer>
+          </div>
+        </li>
+      );
+    });
 
   return (
     <div>
@@ -59,7 +54,7 @@ function NFTs({ slider }: Props) {
         <>
           <Container>
             <header className={styles.header}>
-              <h3 className={styles.heading}>NFTs:</h3>
+              <h3 className={styles.heading}>My NFTs:</h3>
 
               {slider && (
                 <div>
