@@ -4,7 +4,6 @@ import { useApi } from '@gear-js/react-hooks';
 import { isHex } from '@polkadot/util';
 import { useAtom } from 'jotai';
 import { Modal } from 'components';
-import { LOCAL_STORAGE } from 'consts';
 import { CONTRACT_ADDRESS_ATOM } from '../../consts';
 import styles from './ContractAddressModal.module.scss';
 
@@ -29,7 +28,6 @@ function ContractAddressModal({ onClose }: Props) {
         if (!isProgramExists) throw new Error('Program not found in the storage');
 
         setAddress(address);
-        localStorage.setItem(LOCAL_STORAGE.CONTRACT_ADDRESS, address);
         onClose();
       })
       .catch(({ message }) => setFieldError('address', message));
