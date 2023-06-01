@@ -1,5 +1,7 @@
 import { getIpfsAddress } from 'utils';
 import { Container } from 'components';
+import { useNavigate } from 'react-router-dom';
+import { ChangeEvent, useState } from 'react';
 import { ReactComponent as SearchSVG } from './assets/search.svg';
 import { ReactComponent as LeftArrowSVG } from './assets/arrow-left.svg';
 import styles from './NFT.module.scss';
@@ -14,38 +16,33 @@ const ITEM = {
     'lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum',
 
   details: [
-    'first lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum',
+    'lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum',
+    'first',
     'second',
     'third',
-    'fourth',
-    'fourth',
-    'fourth',
-    'fourth',
-    'fourth',
-    'fourth',
-    'fourth',
-    'fourth',
-    'fourth',
-    'fourth',
-    'fourth',
-    'fourth',
-    'fourth',
-    'fourth',
-    'fourth',
     'fourth',
   ],
 };
 
 function NFT() {
   const { collection, name, owner, media, description, details } = ITEM;
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
+
   const src = getIpfsAddress(media);
 
   const getDetails = () =>
-    details.map((detail) => (
-      <li key={detail} className={styles.detail}>
-        {detail}
-      </li>
-    ));
+    details
+      .filter((detail) => detail.includes(searchQuery))
+      .map((detail) => (
+        <li key={detail} className={styles.detail}>
+          {detail}
+        </li>
+      ));
+
+  const handleSearchInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => setSearchQuery(target.value);
+  const handleBackButtonClick = () => navigate(-1);
 
   return (
     <Container className={styles.container}>
@@ -79,7 +76,7 @@ function NFT() {
 
               <div className={styles.inputWrapper}>
                 <SearchSVG />
-                <input type="text" placeholder="Search" id="search" />
+                <input type="text" placeholder="Search" id="search" onChange={handleSearchInputChange} />
               </div>
             </header>
 
@@ -87,7 +84,7 @@ function NFT() {
           </div>
         </div>
 
-        <button type="button" className={styles.backButton}>
+        <button type="button" className={styles.backButton} onClick={handleBackButtonClick}>
           <LeftArrowSVG />
           <span>Back</span>
         </button>
