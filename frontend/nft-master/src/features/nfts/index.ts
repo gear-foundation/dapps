@@ -1,3 +1,3 @@
-import { NFTs } from './components';
+import { NFTs, NFT } from './components';
 
-export { NFTs };
+export { NFTs, NFT };

@@ -17,7 +17,7 @@ function useContractAddress() {
   }, [address]);
 
   useEffect(() => {
-    if (isAccountReady && !accountAddress) setAddress('');
+    if (isAccountReady && !accountAddress) setAddress(undefined);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAccountReady, accountAddress]);
 

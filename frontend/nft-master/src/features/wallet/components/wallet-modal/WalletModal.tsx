@@ -98,7 +98,7 @@ function WalletModal({ onClose, onSelect }: Props) {
           <button type="button" className={styles.walletButton} onClick={resetWalletId}>
             <WalletItem icon={wallet.SVG} name={wallet.name} />
 
-            <Button icon={EditSVG} color="transparent" onClick={resetWalletId} />
+            <EditSVG />
           </button>
 
           {account && (

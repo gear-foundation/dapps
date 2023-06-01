@@ -7,6 +7,15 @@
   box-sizing: content-box;
 }
 
+#alert-root {
+  color: #fff;
+
+  > div > div > div {
+    border: none;
+    border-radius: 0;
+  }
+}
+
 main {
   flex: 1;
   padding: 50px 0 70px;

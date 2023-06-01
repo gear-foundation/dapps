@@ -14,6 +14,7 @@
 }
 
 .nft {
+  max-width: 380px;
   padding: 30px;
   background: url(../../assets/bg.svg) center/100% 100% no-repeat;
 }
@@ -53,6 +54,7 @@
   background: rgba(255, 255, 255, 0.07);
   backdrop-filter: blur(10px);
   border-radius: 2px;
+  overflow: hidden;
 }
 
 .owner {
@@ -60,6 +62,7 @@
   flex-direction: column;
   color: #fff;
   line-height: 120%;
+  overflow: hidden;
 
   &Heading {
     font-weight: 500;
@@ -67,6 +70,7 @@
   }
 
   &Text {
+    @include textOverflow;
     font-weight: 700;
     font-size: 14px;
     letter-spacing: 0.04em;
@@ -79,6 +83,7 @@
   font-size: 14px;
   line-height: 18px;
   letter-spacing: 0.03em;
+  white-space: nowrap;
   background-color: #09ffc6;
   border-radius: 2px;
 }

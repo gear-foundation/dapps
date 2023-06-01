@@ -6,7 +6,7 @@ import { NFT } from './nft';
 
 const routes = [
   { path: '/', Page: Home },
-  { path: '/nft/:id', Page: NFT },
+  { path: '/:programId/:id', Page: NFT },
 ];
 
 function Routing() {

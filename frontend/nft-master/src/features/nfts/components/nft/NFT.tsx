@@ -1,36 +1,46 @@
+import { HexString } from '@polkadot/util/types';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ChangeEvent, useEffect, useState } from 'react';
 import { getIpfsAddress } from 'utils';
 import { Container } from 'components';
-import { useNavigate } from 'react-router-dom';
-import { ChangeEvent, useState } from 'react';
-import { ReactComponent as SearchSVG } from './assets/search.svg';
-import { ReactComponent as LeftArrowSVG } from './assets/arrow-left.svg';
+import { ReactComponent as SearchSVG } from '../../assets/search.svg';
+import { ReactComponent as BackArrowSVG } from '../../assets/back-arrow.svg';
+import { useNFTsState } from '../../hooks';
 import styles from './NFT.module.scss';
 
-const ITEM = {
-  id: '4',
-  collection: 'collection',
-  name: 'name',
-  owner: 'owner',
-  media: 'QmcXwaEzSrhjrnXGYxqv2ce3DXz2GDnXv1Z1V7mpkcEYfE',
-  description:
-    'lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum',
-
-  details: [
-    'lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum',
-    'first',
-    'second',
-    'third',
-    'fourth',
-  ],
+type Params = {
+  programId: HexString;
+  id: string;
 };
 
 function NFT() {
-  const { collection, name, owner, media, description, details } = ITEM;
+  const { programId, id } = useParams() as Params;
+
+  const nftStates = useNFTsState();
+
+  const { tokens, collection } = nftStates?.find(({ programId: _programId }) => _programId === programId) || {};
+  const nftState = tokens?.find(([tokenId]) => tokenId === id);
+  const nft = nftState?.[1];
+
+  const collectionName = collection?.name;
+  const { name, owner, mediaUrl, description, attribUrl } = nft || {};
+
+  const [details, setDetails] = useState<string[]>([]);
 
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
 
-  const src = getIpfsAddress(media);
+  const src = mediaUrl ? getIpfsAddress(mediaUrl) : '';
+
+  useEffect(() => {
+    if (!attribUrl) return;
+
+    const url = getIpfsAddress(attribUrl);
+
+    fetch(url)
+      .then((response) => response.json())
+      .then((result) => setDetails(result));
+  }, [attribUrl]);
 
   const getDetails = () =>
     details
@@ -64,7 +74,7 @@ function NFT() {
       <div>
         <div>
           <h2 className={styles.name}>{name}</h2>
-          <p className={styles.collection}>{collection}</p>
+          <p className={styles.collection}>{collectionName}</p>
           <p className={styles.description}>{description}</p>
 
           <div>
@@ -85,7 +95,7 @@ function NFT() {
         </div>
 
         <button type="button" className={styles.backButton} onClick={handleBackButtonClick}>
-          <LeftArrowSVG />
+          <BackArrowSVG />
           <span>Back</span>
         </button>
       </div>

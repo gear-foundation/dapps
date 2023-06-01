@@ -4,85 +4,54 @@ import clsx from 'clsx';
 import { getIpfsAddress } from 'utils';
 import { Container } from 'components';
 import { ReactComponent as ArrowLeftSVG } from '../../assets/arrow-left.svg';
+import { useNFTsState } from '../../hooks';
 import styles from './NFTs.module.scss';
-
-const LIST = [
-  {
-    id: '0',
-    collection: 'collection',
-    name: 'name',
-    owner: 'owner',
-    media: 'QmcXwaEzSrhjrnXGYxqv2ce3DXz2GDnXv1Z1V7mpkcEYfE',
-  },
-  {
-    id: '1',
-    collection: 'collection',
-    name: 'name',
-    owner: 'owner',
-    media: 'QmcXwaEzSrhjrnXGYxqv2ce3DXz2GDnXv1Z1V7mpkcEYfE',
-  },
-  {
-    id: '2',
-    collection: 'collection',
-    name: 'name',
-    owner: 'owner',
-    media: 'QmcXwaEzSrhjrnXGYxqv2ce3DXz2GDnXv1Z1V7mpkcEYfE',
-  },
-  {
-    id: '3',
-    collection: 'collection',
-    name: 'name',
-    owner: 'owner',
-    media: 'QmcXwaEzSrhjrnXGYxqv2ce3DXz2GDnXv1Z1V7mpkcEYfE',
-  },
-  {
-    id: '4',
-    collection: 'collection',
-    name: 'name',
-    owner: 'owner',
-    media: 'QmcXwaEzSrhjrnXGYxqv2ce3DXz2GDnXv1Z1V7mpkcEYfE',
-  },
-];
 
 type Props = {
   slider?: boolean;
 };
 
 function NFTs({ slider }: Props) {
+  const nftStates = useNFTsState();
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'center', loop: true });
 
   const prevSlide = () => emblaApi?.scrollPrev();
   const nextSlide = () => emblaApi?.scrollNext();
 
   const getNFTs = () =>
-    LIST.map(({ id, collection, name, owner, media }) => {
-      const style = { backgroundImage: `url(${getIpfsAddress(media)})` };
-      const to = `/nft/${id}`;
+    nftStates?.map(({ tokens, collection, programId }) =>
+      tokens.map(([id, token]) => {
+        const collectionName = collection.name;
+        const { name, mediaUrl, owner } = token;
 
-      return (
-        <li key={id} className={clsx(styles.nft, slider && styles.emblaSlide)}>
-          <header>
-            <p className={styles.collection}>{collection}</p>
-            <p className={styles.name}>{name}</p>
-          </header>
+        const style = { backgroundImage: `url(${getIpfsAddress(mediaUrl)})` };
+        const to = `/${programId}/${id}`;
 
-          <div className={styles.media} style={style}>
-            <footer className={styles.footer}>
-              <p className={styles.owner}>
-                <span className={styles.ownerHeading}>Owner:</span>
-                <span className={styles.ownerText}>{owner}</span>
-              </p>
+        return (
+          <li key={id} className={clsx(styles.nft, slider && styles.emblaSlide)}>
+            <header>
+              <p className={styles.collection}>{collectionName}</p>
+              <p className={styles.name}>{name}</p>
+            </header>
 
-              <Link to={to} className={styles.link}>
-                View More
-              </Link>
-            </footer>
-          </div>
-        </li>
-      );
-    });
+            <div className={styles.media} style={style}>
+              <footer className={styles.footer}>
+                <p className={styles.owner}>
+                  <span className={styles.ownerHeading}>Owner:</span>
+                  <span className={styles.ownerText}>{owner}</span>
+                </p>
 
-  const isAnyNFT = LIST.length > 0;
+                <Link to={to} className={styles.link}>
+                  View More
+                </Link>
+              </footer>
+            </div>
+          </li>
+        );
+      }),
+    );
+
+  const isAnyNFT = !!nftStates?.length;
 
   return (
     <div>

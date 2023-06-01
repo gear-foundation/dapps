@@ -6,6 +6,7 @@
   margin-bottom: 100px;
 
   > div {
+    max-width: 50%;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -14,11 +15,15 @@
 }
 
 .imageWrapper {
+  width: 100%;
+  flex: 1;
   margin-bottom: 25px;
   padding: 32px;
-  background: url(./assets/bg.svg) center/ 100% 100% no-repeat;
+  background: url(../../assets/bg-secondary.svg) center/ 100% 100% no-repeat;
 
   img {
+    width: 100%;
+    height: auto;
     border-radius: 10px;
   }
 }
@@ -28,6 +33,7 @@
   color: #fff;
   background: linear-gradient(183.24deg, rgba(0, 0, 0, 0.2) 32.24%, rgba(14, 211, 163, 0.2) 91.35%), #000000;
   border-radius: 4px;
+  overflow: hidden;
 
   &Wrapper {
     width: 100%;
@@ -42,12 +48,14 @@
   font-weight: 500;
   line-height: 120%;
   color: #fff;
+  overflow: hidden;
 
   &Heading {
     font-size: 12px;
   }
 
   &Text {
+    @include textOverflow;
     font-size: 18px;
   }
 }
@@ -124,7 +132,7 @@
     content: '';
     flex-shrink: 0;
     margin-right: 10px;
-    background-image: url(./assets/badge.svg);
+    background-image: url(../../assets/badge.svg);
   }
 
   &:not(:last-child) {

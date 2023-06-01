@@ -1,6 +1,4 @@
-import { NFTs } from 'features/nfts';
-import { NFT as NFTFeature } from 'features/nft';
-import styles from './NFT.module.scss';
+import { NFTs, NFT as NFTFeature } from 'features/nfts';
 
 function NFT() {
   return (
