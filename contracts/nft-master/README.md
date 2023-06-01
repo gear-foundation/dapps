@@ -17,9 +17,9 @@
 
 <!-- Description starts here -->
 
-This smart contract serves as a generic router for standardized gNFT (gRC-721) contracts in the blockchain network. Its main function is to provide an approved list of addresses for gNFT smart contracts that have been uploaded to Gear-powered networks. Only smart contract operators can change the approved address list.
+This smart contract serves as a generic router for standardized gNFT (gRC-721) contracts on the blockchain network. Its main function is to provide an approved list of addresses for gNFT smart contracts that have been uploaded to Gear-powered networks. Only smart contract operators can change the approved address list.
 
-In general this smart contact allow to change whole gNFT contract logic, add new awesome features and create new collections without losing backward compatibility. This allows the web application to dynamically load the necessary gNFT's with all updates without writing any extra frontend code or redeploying.
+In general, this smart contract allows for the modification of the entire gNFT contract logic, addition of new features, and creation of new collections without sacrificing backward compatibility. This enables the web application to dynamically load the necessary gNFTs with all updates, without requiring any additional frontend code or redeployment.
 
 <!-- End of description -->
 
