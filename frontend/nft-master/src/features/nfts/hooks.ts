@@ -1,5 +1,5 @@
 import { getProgramMetadata } from '@gear-js/api';
-import { useAlert, useApi } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
 import metaTxt from 'assets/nft_master.meta.txt';
@@ -58,9 +58,12 @@ function useNFTsState() {
 }
 
 function useNFTs() {
+  const { account } = useAccount();
+  const accountAddress = account?.decodedAddress;
+
   const [NFTs] = useAtom(NFTS_ATOM);
 
-  return NFTs || [];
+  return NFTs?.filter(({ owner }) => owner === accountAddress) || [];
 }
 
 export { useNFTsState, useNFTs };

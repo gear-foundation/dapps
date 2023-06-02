@@ -19,7 +19,7 @@ function NFT() {
 
   return (
     <>
-      <NFTFeature item={item} />
+      {item && <NFTFeature item={item} />}
       <NFTs list={list} slider />
     </>
   );

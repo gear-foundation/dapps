@@ -8,7 +8,7 @@ import { NFT as NFTType } from '../../types';
 import styles from './NFT.module.scss';
 
 type Props = {
-  item: NFTType | undefined;
+  item: NFTType;
 };
 
 function NFT({ item }: Props) {
@@ -18,12 +18,10 @@ function NFT({ item }: Props) {
   const [details, setDetails] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const { name, collection, description, owner, mediaUrl, attribUrl } = item || {};
-  const src = getIpfsAddress(mediaUrl || '');
+  const { name, collection, description, owner, mediaUrl, attribUrl } = item;
+  const src = getIpfsAddress(mediaUrl);
 
   useEffect(() => {
-    if (!attribUrl) return;
-
     const url = getIpfsAddress(attribUrl);
 
     fetch(url)
