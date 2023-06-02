@@ -1,5 +1,28 @@
 @use '@gear-js/ui/resets';
-@use '@gear-js/ui/typography';
+
+@font-face {
+  font-family: 'Anuphan', sans-serif;
+  font-weight: 300;
+  src: url('../fonts/anuphan-400.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Anuphan', sans-serif;
+  font-weight: 400;
+  src: url('../fonts/anuphan-500.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Anuphan', sans-serif;
+  font-weight: 500;
+  src: url('../fonts/anuphan-600.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Anuphan', sans-serif;
+  font-weight: 600;
+  src: url('../fonts/anuphan-700.woff2') format('woff2');
+}
 
 *,
 ::after,
@@ -16,6 +39,7 @@ button {
 }
 
 body {
+  font-family: 'Anuphan', sans-serif;
   color: #000;
   background-color: #fff;
   background-position: top;
