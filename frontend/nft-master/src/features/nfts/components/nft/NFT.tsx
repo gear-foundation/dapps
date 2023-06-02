@@ -82,7 +82,13 @@ function NFT({ item }: Props) {
 
               <div className={styles.inputWrapper}>
                 <SearchSVG />
-                <input type="text" placeholder="Search" id="search" onChange={handleSearchInputChange} />
+                <input
+                  type="text"
+                  placeholder="Search"
+                  id="search"
+                  value={searchQuery}
+                  onChange={handleSearchInputChange}
+                />
               </div>
             </header>
 

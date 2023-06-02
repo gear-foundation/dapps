@@ -1,4 +1,3 @@
-import { Button, Input } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
 import { Modal } from 'components';
 import { NodeSection } from '../../types';
@@ -15,7 +14,8 @@ const initialValues = { address: '' };
 
 function AddModal({ sections, onClose, onSubmit }: Props) {
   const form = useForm({ initialValues });
-  const { getInputProps, setFieldError } = form;
+  const { getInputProps, setFieldError, errors } = form;
+  const error = errors.address;
 
   const handleSubmit = form.onSubmit(({ address }) => {
     if (!isNodeAddressValid(address)) return setFieldError('address', 'Address not valid');
@@ -28,9 +28,15 @@ function AddModal({ sections, onClose, onSubmit }: Props) {
   return (
     <Modal heading="Add Network" onClose={onClose}>
       <form className={styles.form} onSubmit={handleSubmit}>
-        <Input placeholder="wss://address.rs" {...getInputProps('address')} />
+        <div>
+          {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+          <input placeholder="wss://address.rs" {...getInputProps('address')} className={styles.input} />
+          {error && <p className={styles.error}>{error}</p>}
+        </div>
 
-        <Button type="submit" text="OK" block />
+        <button type="submit" className={styles.button}>
+          Submit
+        </button>
       </form>
     </Modal>
   );

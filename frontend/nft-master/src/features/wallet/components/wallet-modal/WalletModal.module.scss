@@ -12,6 +12,11 @@
     justify-content: space-between;
     align-items: center;
     background-color: #fff;
+    transition: all 0.3s;
+
+    &:hover {
+      background-color: #eee;
+    }
   }
 }
 
@@ -51,9 +56,14 @@
     line-height: 18px;
     color: #000;
     background-color: #fff;
+    transition: all 0.3s;
 
     &.active {
       background-color: #56ffd8;
+    }
+
+    &:hover {
+      background-color: #eee;
     }
   }
 }
@@ -68,6 +78,11 @@
     display: flex;
     align-items: center;
     background-color: transparent;
+    transition: all 0.3s;
+
+    &:hover {
+      opacity: 0.5;
+    }
   }
 }
 

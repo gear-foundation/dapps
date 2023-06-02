@@ -158,4 +158,9 @@
   background-color: transparent;
   border: 2px solid #000000;
   border-radius: 2px;
+  transition: all 0.3s;
+
+  &:hover {
+    opacity: 0.5;
+  }
 }

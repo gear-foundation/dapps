@@ -7,8 +7,12 @@
   border: none;
 }
 
-button:not(:disabled) {
+button {
   cursor: pointer;
+
+  &:disabled {
+    pointer-events: none;
+  }
 }
 
 body {

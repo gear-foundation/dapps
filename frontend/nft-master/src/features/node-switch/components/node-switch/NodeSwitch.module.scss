@@ -9,6 +9,11 @@
   line-height: 26px;
   letter-spacing: 0.03em;
   background-color: transparent;
+  transition: all 0.3s;
+
+  &:hover {
+    opacity: 0.6;
+  }
 
   &::before {
     @include circle(7px);

@@ -9,6 +9,11 @@
   font-size: 16px;
   line-height: 26px;
   letter-spacing: 0.03em;
+  transition: all 0.3s;
+
+  &:hover {
+    opacity: 0.6;
+  }
 
   span {
     @include textOverflow;

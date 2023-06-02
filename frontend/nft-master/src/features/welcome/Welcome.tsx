@@ -1,4 +1,3 @@
-import { Button } from '@gear-js/ui';
 import { useAccount } from '@gear-js/react-hooks';
 import { useState } from 'react';
 import { Container } from 'components';
@@ -33,7 +32,11 @@ function Welcome() {
             A simple application that shows user&apos;s NFTs in different gear networks and contracts
           </p>
 
-          {!contractAddress && <Button text={buttonText} onClick={handleButtonClick} className={styles.button} />}
+          {!contractAddress && (
+            <button type="button" onClick={handleButtonClick} className={styles.button}>
+              {buttonText}
+            </button>
+          )}
         </div>
       </Container>
 

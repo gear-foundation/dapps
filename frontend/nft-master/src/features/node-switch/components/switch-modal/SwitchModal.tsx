@@ -1,4 +1,3 @@
-import { Button } from '@gear-js/ui';
 import { Modal } from 'components';
 import { LOCAL_STORAGE } from 'consts';
 import { useEffect, useState } from 'react';
@@ -69,8 +68,13 @@ function SwitchModal(props: Props) {
       <ul className={styles.list}>{getSections()}</ul>
 
       <div className={styles.buttons}>
-        <Button icon={SwitchSVG} text="Switch" disabled={isCurrentNode} onClick={switchNode} />
-        <Button icon={PlusSVG} color="secondary" onClick={onAdd} />
+        <button type="button" disabled={isCurrentNode} onClick={switchNode} className={styles.switchButton}>
+          <SwitchSVG /> <span>Switch</span>
+        </button>
+
+        <button type="button" onClick={onAdd} className={styles.addButton}>
+          <PlusSVG />
+        </button>
       </div>
     </Modal>
   );
