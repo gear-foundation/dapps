@@ -1,5 +1,7 @@
-import { getProgramMetadata } from '@gear-js/api';
+import { MessagesDispatched, getProgramMetadata } from '@gear-js/api';
 import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
+import { HexString } from '@polkadot/util/types';
+import { UnsubscribePromise } from '@polkadot/api/types';
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
 import metaTxt from 'assets/nft_master.meta.txt';
@@ -18,7 +20,14 @@ function useNFTsState() {
   const [NFTContracts, setNFTContracts] = useState<MasterContractState['nfts']>();
   const [NFTs, setNFTs] = useAtom(NFTS_ATOM);
 
-  useEffect(() => {
+  const handleStateChange = ({ data }: MessagesDispatched, programId: HexString, onChange: () => void) => {
+    const changedIDs = data.stateChanges.toHuman() as HexString[];
+    const isAnyChange = changedIDs.some((id) => id === programId);
+
+    if (isAnyChange) onChange();
+  };
+
+  const readMasterContractState = () => {
     if (!isApiReady || !masterContractAddress || !masterMetadata) return;
 
     const programId = masterContractAddress;
@@ -28,11 +37,25 @@ function useNFTsState() {
       .then((codec) => codec.toHuman() as MasterContractState)
       .then(({ nfts }) => setNFTContracts(nfts))
       .catch(({ message }: Error) => alert.error(message));
+  };
+
+  useEffect(() => {
+    if (!isApiReady || !masterContractAddress || !masterMetadata) return setNFTContracts(undefined);
+
+    readMasterContractState();
+
+    const unsub = api.gearEvents.subscribeToGearEvent('MessagesDispatched', (event) =>
+      handleStateChange(event, masterContractAddress, readMasterContractState),
+    );
+
+    return () => {
+      unsub.then((unsubCallback) => unsubCallback());
+    };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isApiReady, masterContractAddress, masterMetadata]);
 
-  useEffect(() => {
+  const readNFTContractsStates = () => {
     if (!NFTContracts) return;
 
     const promises = NFTContracts.map(([programId, metaRaw]) => {
@@ -50,11 +73,34 @@ function useNFTsState() {
     Promise.all(promises)
       .then((result) => setNFTs(result.flat()))
       .catch(({ message }: Error) => alert.error(message));
+  };
+
+  useEffect(() => {
+    if (!NFTContracts) return;
+
+    readNFTContractsStates();
+
+    const unsubs: UnsubscribePromise[] = [];
+
+    // TODO: if state of any contract changes,
+    // we reread every single one specified in master contract.
+    // need to find the way to optimize
+    NFTContracts.forEach(([programId]) => {
+      const unsub = api.gearEvents.subscribeToGearEvent('MessagesDispatched', (event) =>
+        handleStateChange(event, programId, readNFTContractsStates),
+      );
+
+      unsubs.push(unsub);
+    });
+
+    return () => {
+      unsubs.map((unsub) => unsub.then((unsubCallback) => unsubCallback()));
+    };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [NFTContracts]);
 
-  return !!NFTs;
+  return masterContractAddress ? !!NFTs : true;
 }
 
 function useNFTs() {
