@@ -15,12 +15,12 @@ use primitive_types::H256;
 pub struct NFTMetadata;
 
 impl Metadata for NFTMetadata {
-    type Init = In<InitNFT>;
+    type Init = In<InitNFT2>;
     type Handle = InOut<NFTAction, NFTEvent>;
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = IoNFT;
+    type State = NFTState2;
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
@@ -174,4 +174,74 @@ impl From<&NFTState> for IoNFTState {
             royalties: royalties.clone(),
         }
     }
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub struct Nft2 {
+    pub owner: ActorId,
+    pub name: String,
+    pub description: String,
+    pub media_url: String,
+    pub attrib_url: String,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+pub struct NFTState2 {
+    pub tokens: Vec<(TokenId, Nft2)>,
+    pub owners: Vec<(ActorId, TokenId)>,
+    pub collection: Collection,
+    pub nonce: TokenId,
+}
+
+#[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+pub struct Collection {
+    pub name: String,
+    pub description: String,
+}
+
+// impl From<&NFTState> for NFTState2 {
+//     fn from(value: &NFTState) -> Self {
+//         let NFTState {
+//             name,
+//             symbol,
+//             base_uri,
+//             owner_by_id,
+//             token_approvals,
+//             token_metadata_by_id,
+//             tokens_for_owner,
+//             royalties,
+//         } = value;
+
+//         let owners = owner_by_id
+//             .iter()
+//             .map(|(hash, actor_id)| (*actor_id, *hash))
+//             .collect();
+
+//         let token_metadata_by_id = token_metadata_by_id
+//             .iter()
+//             .map(|(id, metadata)| {
+//                 let metadata = metadata.as_ref().unwrap();
+//                 let nft = Nft2 {
+//                     owner: owner_by_id.get(id).unwrap().clone(),
+//                     name: metadata.name.clone(),
+//                     description: metadata.description.clone(),
+//                     media_url: metadata.media.clone(),
+//                     attrib_url: metadata.reference.clone(),
+//                 };
+//                 (*id, nft)
+//             })
+//             .collect();
+
+//         Self {
+//             tokens: token_metadata_by_id,
+//             owners,
+//             collection: todo!(),
+//             nonce: TokenId::default(),
+//         }
+//     }
+// }
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+pub struct InitNFT2 {
+    pub collection: Collection,
 }

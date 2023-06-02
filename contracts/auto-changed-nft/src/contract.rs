@@ -1,4 +1,4 @@
-use auto_changed_nft_io::{InitNFT, IoNFT, NFTAction, NFTEvent, NFTMetadata};
+use auto_changed_nft_io::{Collection, InitNFT2, IoNFT, NFTAction, NFTEvent, NFTMetadata, Nft2, NFTState2};
 use gear_lib::non_fungible_token::{io::NFTTransfer, nft_core::*, state::*, token::*};
 use gear_lib_derive::{NFTCore, NFTMetaState, NFTStateKeeper};
 use gmeta::Metadata;
@@ -25,6 +25,7 @@ pub struct AutoChangedNft {
     pub urls: HashMap<TokenId, Vec<String>>,
     pub rest_updates_count: u32,
     pub update_period: u32,
+    pub collection: Collection,
 }
 
 static mut CONTRACT: Option<AutoChangedNft> = None;
@@ -32,15 +33,16 @@ static mut RESERVATION: Vec<ReservationId> = vec![];
 
 #[no_mangle]
 unsafe extern "C" fn init() {
-    let config: InitNFT = msg::load().expect("Unable to decode InitNFT");
+    let config: InitNFT2 = msg::load().expect("Unable to decode InitNFT");
     let nft = AutoChangedNft {
         token: NFTState {
-            name: config.name,
-            symbol: config.symbol,
-            base_uri: config.base_uri,
+            name: config.collection.name.clone(),
+            symbol: "".to_string(),
+            base_uri: "".to_string(),
             royalties: None,
             ..Default::default()
         },
+        collection: config.collection,
         owner: msg::source(),
         ..Default::default()
     };
@@ -327,6 +329,7 @@ impl From<&AutoChangedNft> for IoNFT {
             urls,
             rest_updates_count: update_number,
             update_period: _,
+            collection: _,
         } = value;
 
         let transactions = transactions
@@ -344,6 +347,59 @@ impl From<&AutoChangedNft> for IoNFT {
             transactions,
             urls,
             update_number: *update_number,
+        }
+    }
+}
+
+impl From<&AutoChangedNft> for NFTState2 {
+    fn from(value: &AutoChangedNft) -> Self {
+        let AutoChangedNft {
+            token,
+            token_id,
+            owner,
+            transactions,
+            urls,
+            rest_updates_count: update_number,
+            update_period: _,
+            collection,
+        } = value;
+
+        // let transactions = transactions
+        //     .iter()
+        //     .map(|(key, event)| (*key, event.clone()))
+        //     .collect();
+        // let urls = urls
+        //     .iter()
+        //     .map(|(token_id, urls)| (*token_id, urls.clone()))
+        //     .collect();
+
+        let owners = token
+            .owner_by_id
+            .iter()
+            .map(|(hash, actor_id)| (*actor_id, *hash))
+            .collect();
+
+        let token_metadata_by_id = token
+            .token_metadata_by_id
+            .iter()
+            .map(|(id, metadata)| {
+                let metadata = metadata.as_ref().unwrap();
+                let nft = Nft2 {
+                    owner: token.owner_by_id.get(id).unwrap().clone(),
+                    name: metadata.name.clone(),
+                    description: metadata.description.clone(),
+                    media_url: metadata.media.clone(),
+                    attrib_url: metadata.reference.clone(),
+                };
+                (*id, nft)
+            })
+            .collect();
+
+        Self {
+            tokens: token_metadata_by_id,
+            collection: collection.clone(),
+            nonce: token_id.clone(),
+            owners,
         }
     }
 }

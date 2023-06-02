@@ -534,7 +534,7 @@ async fn auto_changed() -> Result<()> {
         current_media(&api, program_id.into_bytes(), token_id).await,
         links[0]
     );
-
+    
     Ok(())
 }
 
