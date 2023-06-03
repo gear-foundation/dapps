@@ -45,3 +45,25 @@ jobs:
           file: Dockerfile
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+  deploy-to-k8s:
+    needs: build-simple-nft-image
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Deploy to k8s
+        uses: sergeyfilyanin/kubectl-aws-eks@master
+        with:
+          args: rollout restart deployment simple-nft -n gear-dapps
+
+      - name: Check k8s deployments
+        uses: sergeyfilyanin/kubectl-aws-eks@master
+        with:
+          args: get deployment -o name -n gear-dapps | xargs -n1 -t kubectl rollout status -n gear-dapps --timeout=120s
