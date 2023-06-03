@@ -3,6 +3,7 @@ import { Header, Footer, ApiLoader, Loader } from 'components';
 import { Routing } from 'pages';
 import { withProviders } from 'hocs';
 import { useNFTsState } from 'features/nfts';
+import { useContractAddressLocalStorage } from 'features/contract-address';
 import 'App.scss';
 
 function Component() {
@@ -10,6 +11,7 @@ function Component() {
   const { isAccountReady } = useAccount();
   const isAppReady = isApiReady && isAccountReady;
 
+  useContractAddressLocalStorage();
   const isNFTsStateReady = useNFTsState();
 
   return (

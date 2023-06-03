@@ -1,9 +1,11 @@
+import { useAccount } from '@gear-js/react-hooks';
 import { useLayoutEffect } from 'react';
 import { Welcome } from 'features/welcome';
 import { NFTs, useNFTs } from 'features/nfts';
 import { useContractAddress } from 'features/contract-address';
 
 function Home() {
+  const { account } = useAccount();
   const contractAddress = useContractAddress();
   const list = useNFTs();
 
@@ -20,7 +22,7 @@ function Home() {
   return (
     <>
       <Welcome />
-      {contractAddress && <NFTs list={list} />}
+      {account && contractAddress && <NFTs list={list} />}
     </>
   );
 }
