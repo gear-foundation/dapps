@@ -14,7 +14,7 @@ const getMintPayload = (name: string, description: string, imgCid: CID, detailsC
     reference: detailsCid ? detailsCid.toString() : '',
   };
 
-  return { Mint: { tokenMetadata } };
+  return { Mint: { tokenMetadata, transaction_id: Math.floor(Math.random() * 1000) } };
 };
 
 export { getMintDetails, getMintPayload };
