@@ -16,4 +16,8 @@ const LOCAL_STORAGE = {
   CONTRACT_ADDRESS: 'simple-nft-contract-address',
 };
 
-export { ADDRESS, LOCAL_STORAGE };
+const SEARCH_PARAMS = {
+  MASTER_CONTRACT_ID: 'master',
+};
+
+export { ADDRESS, LOCAL_STORAGE, SEARCH_PARAMS };
