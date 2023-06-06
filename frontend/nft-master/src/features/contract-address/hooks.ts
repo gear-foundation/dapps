@@ -16,7 +16,7 @@ function useContractAddressSetup() {
   const address = useContractAddress();
 
   useEffect(() => {
-    if (!address) return localStorage.removeItem(LOCAL_STORAGE.CONTRACT_ADDRESS);
+    if (!address) return;
 
     localStorage.setItem(LOCAL_STORAGE.CONTRACT_ADDRESS, address);
 
