@@ -1,5 +1,8 @@
+use gear_wasm_builder::WasmBuilder;
 use staking_io::StakingMetadata;
 
 fn main() {
-    gear_wasm_builder::build_with_metadata::<StakingMetadata>();
+    WasmBuilder::with_meta(<StakingMetadata as gmeta::Metadata>::repr())
+        .exclude_features(vec!["binary-vendor"])
+        .build();
 }

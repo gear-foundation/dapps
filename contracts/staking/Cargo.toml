@@ -1,29 +1,29 @@
 [package]
 name = "staking"
-version = "0.1.5"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-codec = { package = "parity-scale-codec", version = "3.4", default-features = false }
-staking-io = { path = "io" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.1" }
-scale-info = { version = "2.6.0", default-features = false }
-hashbrown = "0.13"
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gstd.workspace = true
+staking-io.workspace = true
+ft-main-io.workspace = true
+scale-info.workspace = true
+hashbrown.workspace = true
+gmeta.workspace = true
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-sp-core = { git = "https://github.com/gear-tech/substrate.git", rev = "36699c4478ce8ae05517bb42a1b115403313e083" }
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-tokio = "1"
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+sp-core.workspace = true
+gclient.workspace = true
+tokio.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-staking-io = { path = "io" }
+gmeta.workspace = true
+gear-wasm-builder.workspace = true
+staking-io.workspace = true
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in
@@ -35,3 +35,25 @@ binary-vendor = []
 
 [workspace]
 members = ["state"]
+
+[workspace.package]
+version = "0.1.6"
+edition = "2021"
+authors = ["Gear Technologies"]
+license = "MIT"
+
+[workspace.dependencies]
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.2" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+staking-io = { path = "io" }
+staking-state = { path = "state" }
+hashbrown = "0.13"
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+subxt = { version = "0.27", default-features = false }
+sp-core = { git = "https://github.com/gear-tech/substrate.git", rev = "36699c4478ce8ae05517bb42a1b115403313e083" }
+tokio = "1"
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
