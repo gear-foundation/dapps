@@ -1,16 +1,18 @@
 [package]
 name = "concert-state"
-version = "0.1.2"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["codegen"] }
-concert-io = { path = "../io" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
+gstd = { workspace = true, features = ["debug"] }
+gmeta = { workspace = true, features = ["codegen"] }
+concert-io.workspace = true
+gear-lib.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["metawasm"] }
+gear-wasm-builder = { workspace = true, features = ["metawasm"] }
 
 [features]
 binary-vendor = []

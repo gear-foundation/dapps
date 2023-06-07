@@ -10,7 +10,7 @@ pub const MTK_ID: u64 = 2;
 #[tokio::test]
 #[ignore]
 async fn init() -> Result<()> {
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
     let multitoken_program = code_from_os("target/multi_token.wasm")?;
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
