@@ -1,9 +1,7 @@
-import { HexString } from '@polkadot/util/types';
 import { atom } from 'jotai';
-import { ADDRESS, LOCAL_STORAGE } from 'consts';
+import { ADDRESS } from 'consts';
+import { getLocalStorageMasterId, getSearchParamsMasterId } from './utils';
 
-const CONTRACT_ADDRESS_ATOM = atom(
-  (localStorage[LOCAL_STORAGE.CONTRACT_ADDRESS] as HexString | null) || ADDRESS.DEFAULT_CONTRACT,
-);
+const CONTRACT_ADDRESS_ATOM = atom(getSearchParamsMasterId() || getLocalStorageMasterId() || ADDRESS.DEFAULT_CONTRACT);
 
 export { CONTRACT_ADDRESS_ATOM };

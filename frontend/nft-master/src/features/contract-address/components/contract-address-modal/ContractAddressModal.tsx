@@ -1,8 +1,8 @@
 import { useForm } from '@mantine/form';
 import { useApi } from '@gear-js/react-hooks';
-import { isHex } from '@polkadot/util';
 import { useAtom } from 'jotai';
 import { Modal } from 'components';
+import { isProgramIdValid } from 'utils';
 import { CONTRACT_ADDRESS_ATOM } from '../../consts';
 import styles from './ContractAddressModal.module.scss';
 
@@ -20,7 +20,7 @@ function ContractAddressModal({ onClose }: Props) {
   const error = errors.address;
 
   const handleSubmit = onSubmit(async ({ address }) => {
-    if (!isHex(address)) return setFieldError('address', 'Address should be hex');
+    if (!isProgramIdValid(address)) return setFieldError('address', 'Address should be hex (256 bits)');
 
     api.program
       .exists(address)
