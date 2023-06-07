@@ -42,7 +42,7 @@ jobs:
 
       - name: Run tests
         run: |
-          curl -L https://get.gear.rs/vara-testnet-linux-x86_64.tar.xz -o - | tar xJ
+          curl -L https://get.gear.rs/vara-testnet-v1.1-x86_64-unknown-linux-gnu.tar.xz -o - | tar xJ
           chmod +x gear
           ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
           make full-test

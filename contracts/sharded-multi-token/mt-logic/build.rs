@@ -1,3 +1,8 @@
+use gear_wasm_builder::WasmBuilder;
+use mt_logic_io::MTLogicMetadata;
+
 fn main() {
-    gear_wasm_builder::build_with_metadata::<mt_logic_io::MTLogicMetadata>();
+    WasmBuilder::with_meta(<MTLogicMetadata as gmeta::Metadata>::repr())
+        .exclude_features(vec!["binary-vendor"])
+        .build();
 }

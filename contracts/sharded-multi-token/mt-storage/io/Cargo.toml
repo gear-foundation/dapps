@@ -1,13 +1,13 @@
 [package]
 name = "mt-storage-io"
-version = "0.1.3"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-parity-scale-codec = { version = "3", default-features = false }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-scale-info = { version = "2", default-features = false }
-primitive-types = { version = "0.12.1", default-features = false }
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+parity-scale-codec.workspace = true
+gstd.workspace = true
+scale-info.workspace = true
+primitive-types.workspace = true
+gmeta.workspace = true

@@ -2,6 +2,34 @@
 resolver = "2"
 members = [
     "mt-logic",
+    "mt-logic/io",
     "mt-main",
+    "mt-main/io",
     "mt-storage",
+    "mt-storage/io",
 ]
+
+[workspace.package]
+version = "0.1.4"
+edition = "2021"
+authors = ["Gear Technologies"]
+license = "MIT"
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+mt-logic-io = { path = "mt-logic/io" }
+mt-main-io = { path = "mt-main/io" }
+mt-storage-io = { path = "mt-storage/io" }
+hashbrown = "0.13"
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+subxt = { version = "0.27", default-features = false }
+tokio = "1"
+blake2-rfc = { version = "0.2.18", default-features = false }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
+hex = { version = "0.4.3", default-features = false }
+primitive-types = { version = "0.12.1", default-features = false }
+sp-core-hashing = { version = "8.0.0", default-features = false }

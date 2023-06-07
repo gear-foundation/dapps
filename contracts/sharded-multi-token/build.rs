@@ -1,3 +1,7 @@
+use gear_wasm_builder::WasmBuilder;
+
 fn main() {
-    gear_wasm_builder::build();
+    WasmBuilder::new_metawasm()
+        .exclude_features(vec!["binary-vendor"])
+        .build();
 }
