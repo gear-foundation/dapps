@@ -1,5 +1,9 @@
+use gear_wasm_builder::WasmBuilder;
+use gmeta::Metadata;
 use onchain_nft_io::ContractMetadata;
 
 fn main() {
-    gear_wasm_builder::build_with_metadata::<ContractMetadata>();
+    WasmBuilder::with_meta(ContractMetadata::repr())
+        .exclude_features(["binary-vendor"])
+        .build();
 }

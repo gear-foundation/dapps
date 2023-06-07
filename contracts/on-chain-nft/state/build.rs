@@ -1,3 +1,5 @@
 fn main() {
-    gear_wasm_builder::build_metawasm();
+    gear_wasm_builder::WasmBuilder::new_metawasm()
+        .exclude_features(["binary-vendor"])
+        .build();
 }
