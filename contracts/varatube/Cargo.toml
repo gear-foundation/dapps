@@ -1,33 +1,45 @@
 [package]
 name = "varatube"
-version = "0.1.1"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[workspace.package]
+version = "0.1.2"
 edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
 
 # TODO [release] Add fields as it's done in gear-dapps
 
 [dependencies]
-varatube-io = { path = "io" }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.5" }
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-
+varatube-io.workspace = true
+ft-io.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+gmeta.workspace = true
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-varatube-io = { path = "io" }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.5" }
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-
+gstd = { workspace = true }
+varatube-io.workspace = true
+ft-io.workspace = true
+gtest.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gear-wasm-builder.workspace = true
+varatube-io.workspace = true
+gmeta.workspace = true
+
+[workspace.dependencies]
 varatube-io = { path = "io" }
+ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.6" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
 
 [workspace]
-members = [
-    "state"
-]
+members = ["state"]
 
 [features]
 binary-vendor = []
