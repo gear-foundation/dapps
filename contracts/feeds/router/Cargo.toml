@@ -1,17 +1,19 @@
 [package]
 name = "gear-feeds-router"
-version = "0.1.1"
-authors = ["Gear Technologies"]
-edition = "2018"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-router-io = { path = "io" }
-hashbrown = "0.13.1" 
+gstd = { workspace = true, features = ["debug"] }
+router-io.workspace = true
+hashbrown.workspace = true
 
 [build-dependencies]
-router-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gmeta.workspace = true
+router-io.workspace = true
+gear-wasm-builder.workspace = true
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in

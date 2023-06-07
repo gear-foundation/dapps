@@ -1,22 +1,24 @@
 [package]
 name = "gear-feeds-channel"
-version = "0.1.1"
-authors = ["Gear Technologies"]
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-circular_buffer = { git = "https://github.com/breathx/circular-buffer-rs.git", default-features = false }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-async-trait = "0.1.64"
-channel-io = { path = "io" }
-router-io = { path = "../router/io" }
+circular_buffer.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+async-trait.workspace = true
+channel-io.workspace = true
+router-io.workspace = true
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gtest.workspace = true
 
 [build-dependencies]
-channel-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gmeta.workspace = true
+channel-io.workspace = true
+gear-wasm-builder.workspace = true
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in

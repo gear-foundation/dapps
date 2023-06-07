@@ -1,3 +1,8 @@
+use channel_io::ChannelMetadata;
+use gear_wasm_builder::WasmBuilder;
+
 fn main() {
-    gear_wasm_builder::build_with_metadata::<channel_io::ChannelMetadata>();
+    WasmBuilder::with_meta(<ChannelMetadata as gmeta::Metadata>::repr())
+        .exclude_features(vec!["binary-vendor"])
+        .build();
 }
