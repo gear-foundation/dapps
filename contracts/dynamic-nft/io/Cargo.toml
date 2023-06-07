@@ -1,12 +1,12 @@
 [package]
 name = "dynamic-nft-io"
-version = "0.1.0"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
-primitive-types = { version = "0.12", default-features = false }
-gmeta = { git = "https://github.com/gear-tech/gear.git", features = ["codegen"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gstd.workspace = true
+gear-lib.workspace = true
+primitive-types.workspace = true
+gmeta = { workspace = true, features = ["codegen"] }
