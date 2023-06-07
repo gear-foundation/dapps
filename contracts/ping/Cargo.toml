@@ -1,31 +1,35 @@
 [package]
 name = "demo-ping"
-version = "0.1.0"
-authors = ["Gear Technologies"]
-edition = "2021"
-license = "MIT"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
+gstd.workspace = true
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gtest.workspace = true
 
 [build-dependencies]
-demo-ping-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+demo-ping-io.workspace = true
+gear-wasm-builder.workspace = true
 
 [features]
-# Used for inserting constants with WASM binaries (NOT paths) of the contract in
-# the root crate. Usually these constants used in gclient tests instead of
-# strings with paths to the binaries in the "target" directory. If you don't
-# like this approach or don't use gclient tests, you can freely remove this
-# feature from here and from the rest of the code.
 binary-vendor = []
 
-# It's necessary to include all metawasm crates in the workspace section,
-# otherwise they'll be ignored by Cargo and won't be built.
 [workspace]
-members = [
-    "state"
-]
+members = ["state"]
+
+[workspace.package]
+version = "0.1.1"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+demo-ping-io = { path = "io" }
