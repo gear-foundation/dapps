@@ -1,12 +1,14 @@
 [package]
 name = "dns-state"
-version = "0.1.1"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["codegen"] }
-dns-io = { path = "../io" }
+gstd.workspace = true
+gmeta = { workspace = true, features = ["codegen"] }
+dns-io.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["metawasm"] }
+gear-wasm-builder = { workspace = true, features = ["metawasm"] }

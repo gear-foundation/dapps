@@ -1,15 +1,16 @@
 [package]
 name = "dns"
-version = "0.1.1"
-edition = "2021"
-authors = ["Gear Technologies"]
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-scale-info = { version = "2", default-features = false, features = ["derive"] }
-codec = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive", "full"] }
-dns-io = { path = "io" }
+gstd.workspace = true
+scale-info.workspace = true
+parity-scale-codec.workspace = true
+dns-io.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-dns-io = { path = "io" }
+gear-wasm-builder.workspace = true
+dns-io.workspace = true

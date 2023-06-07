@@ -4,9 +4,23 @@ resolver = "2"
 members = [
   "dns",
   "dns/state",
-  "game-of-chance"
 ]
 
 [profile.release]
 lto = true
 opt-level = 's'
+
+[workspace.package]
+version = "0.1.2"
+edition = "2021"
+authors = ["Gear Technologies"]
+license = "MIT"
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+dns-io.path = "dns/io"
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }

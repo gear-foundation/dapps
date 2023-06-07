@@ -28,15 +28,8 @@ jobs:
       - name: Remove binaries from cache
         run: rm -vfr target/wasm32-unknown-unknown/*
 
-      - name: Install nightly toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          components: clippy, rustfmt
-          target: wasm32-unknown-unknown
-
       - name: Pin toolchain
-        run: make pin-toolchain-linux
+        run: make init
 
       - name: Check fmt
         run: make fmt
