@@ -1,5 +1,9 @@
 use crowdsale_io::CrowdsaleMetadata;
+use gear_wasm_builder::WasmBuilder;
+use gmeta::Metadata;
 
 fn main() {
-    gear_wasm_builder::build_with_metadata::<CrowdsaleMetadata>();
+    WasmBuilder::with_meta(CrowdsaleMetadata::repr())
+        .exclude_features(["binary-vendor"])
+        .build();
 }

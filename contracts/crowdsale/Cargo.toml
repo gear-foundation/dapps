@@ -1,32 +1,53 @@
 [package]
 name = "crowdsale"
-version = "0.1.3"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-codec = { package = "parity-scale-codec", version = "3", default-features = false }
-scale-info = { version = "2.3.0", default-features = false }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.1" }
-hashbrown = "0.13.1"
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-crowdsale-io = { path = "io" }
+gstd.workspace = true
+parity-scale-codec.workspace = true
+scale-info.workspace = true
+ft-main-io.workspace = true
+hashbrown.workspace = true
+gmeta.workspace = true
+crowdsale-io.workspace = true
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-tokio = "1"
-crowdsale-state = { path = "state", features = ["binary-vendor"] }
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+gclient.workspace = true
+crowdsale-state = { workspace = true, features = ["binary-vendor"] }
+tokio.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-crowdsale-io = { path = "io" }
+gear-wasm-builder.workspace = true
+crowdsale-io.workspace = true
+gmeta.workspace = true
 
 [features]
 binary-vendor = []
 
 [workspace]
 members = ["state"]
+
+[workspace.package]
+version = "0.1.4"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+parity-scale-codec = { version = "3", default-features = false }
+scale-info = { version = "2", default-features = false }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.2" }
+hashbrown = "0.13"
+gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+crowdsale-io = { path = "io" }
+crowdsale-state = { path = "state" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gclient = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+tokio = "1"
