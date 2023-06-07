@@ -1,14 +1,14 @@
 [package]
 name = "nft-io"
-version = "0.2.7"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
-primitive-types = { version = "0.12.1", default-features = false }
-scale-info = { version = "2", default-features = false }
-parity-scale-codec = { version = "3", default-features = false }
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["codegen"] }
+gstd.workspace = true
+gear-lib.workspace = true
+primitive-types.workspace = true
+gmeta = { workspace = true, features = ["codegen"] }
+parity-scale-codec.workspace = true
+scale-info.workspace = true
