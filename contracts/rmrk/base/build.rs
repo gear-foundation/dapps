@@ -1,3 +1,8 @@
+use base_io::BaseMetadata;
+use gear_wasm_builder::WasmBuilder;
+
 fn main() {
-    gear_wasm_builder::build_with_metadata::<base_io::BaseMetadata>();
+    WasmBuilder::with_meta(<BaseMetadata as gmeta::Metadata>::repr())
+        .exclude_features(vec!["binary-vendor"])
+        .build();
 }

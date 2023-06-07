@@ -1,6 +1,5 @@
 use base_io::{BaseAction, EquippableList, FixedPart, InitBase, Part, SlotPart};
-use codec::Encode;
-use gstd::BTreeMap;
+use gstd::{prelude::*, BTreeMap};
 use gtest::{Program, RunResult, System};
 use resource_io::Resource;
 use rmrk_io::*;
@@ -624,10 +623,7 @@ impl MultiResource for Program<'_> {
     // }
 }
 pub fn init_base(sys: &System) {
-    let base = Program::from_file(
-        sys,
-        "../target/wasm32-unknown-unknown/release/rmrk_base.wasm",
-    );
+    let base = Program::from_file(sys, "../target/wasm32-unknown-unknown/debug/rmrk_base.wasm");
     let res = base.send(
         USERS[0],
         InitBase {

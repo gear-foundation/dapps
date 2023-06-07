@@ -1,6 +1,5 @@
 use base_io::*;
-use codec::Encode;
-use gstd::{BTreeMap, BTreeSet};
+use gstd::{prelude::*, BTreeMap, BTreeSet};
 use gtest::{Program, RunResult, System};
 use types::primitives::PartId;
 pub const ISSUER: u64 = 10;

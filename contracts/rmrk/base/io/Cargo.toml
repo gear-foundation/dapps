@@ -1,13 +1,13 @@
 [package]
 name = "base-io"
-version = "0.1.1"
-edition = "2021"
-license = "GPL-3.0"
-authors = ["Gear Technologies"]
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-scale-info = { version = "2", default-features = false }
-parity-scale-codec = { version = "3", default-features = false }
-types = { path = "../../types/" }
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gstd.workspace = true
+scale-info.workspace = true
+parity-scale-codec.workspace = true
+types.workspace = true
+gmeta.workspace = true

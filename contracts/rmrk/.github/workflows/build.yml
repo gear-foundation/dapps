@@ -6,17 +6,20 @@ on:
   pull_request:
     branches: [master]
   schedule:
-    - cron: "0 0 * * *"
+    - cron: '0 0 * * *'
 
 env:
   CARGO_TERM_COLOR: always
+  NIGHTLY_TOOLCHAIN_VERSION: ${{ secrets.NIGHTLY_TOOLCHAIN_VERSION }}
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GEAR_NODE_PATH: ./gear
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Artifact cache
         uses: Swatinem/rust-cache@v2
@@ -24,32 +27,29 @@ jobs:
       - name: Remove binaries from cache
         run: rm -vfr target/wasm32-unknown-unknown/*
 
-      - name: Install nightly toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          components: clippy, rustfmt
-          target: wasm32-unknown-unknown
+      - name: Show specific nightly version
+        if: ${{ env.NIGHTLY_TOOLCHAIN_VERSION != '' }}
+        run: echo $NIGHTLY_TOOLCHAIN_VERSION | sed 's/-/ - /g'
 
-      - name: Pin toolchain
-        run: make pin-toolchain-linux
-
-      - name: "Install binaryen"
-        run: |
-          sudo wget -c https://github.com/WebAssembly/binaryen/releases/download/version_105/binaryen-version_105-x86_64-linux.tar.gz -O - | sudo tar -xz -C .
-          sudo cp binaryen-version_105/bin/wasm-opt /usr/bin/
+      - name: Install specific nightly toolchain
+        run: make init
 
       - name: Check fmt
-        run: make fmt-check
+        run: make fmt
 
       - name: Run linter
-        run: make linter
+        run: make lint
+
+      - name: Run tests
+        run: |
+          curl -L https://get.gear.rs/vara-testnet-v1.1-x86_64-unknown-linux-gnu.tar.xz -o - | tar xJ
+          chmod +x gear
+          ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
+          make full-test
+          kill `cat gear.pid`
 
       - name: Build
         run: make build
-
-      - name: Run tests
-        run: make test
 
       - name: Upload artifacts
         if: github.event_name == 'push'

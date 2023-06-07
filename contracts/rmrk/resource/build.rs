@@ -1,3 +1,8 @@
+use gear_wasm_builder::WasmBuilder;
+use resource_io::ResourceMetadata;
+
 fn main() {
-    gear_wasm_builder::build_with_metadata::<resource_io::ResourceMetadata>();
+    WasmBuilder::with_meta(<ResourceMetadata as gmeta::Metadata>::repr())
+        .exclude_features(vec!["binary-vendor"])
+        .build();
 }

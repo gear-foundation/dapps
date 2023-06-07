@@ -1,3 +1,8 @@
+use gear_wasm_builder::WasmBuilder;
+use rmrk_io::RMRKMetadata;
+
 fn main() {
-    gear_wasm_builder::build_with_metadata::<rmrk_io::RMRKMetadata>();
+    WasmBuilder::with_meta(<RMRKMetadata as gmeta::Metadata>::repr())
+        .exclude_features(vec!["binary-vendor"])
+        .build();
 }

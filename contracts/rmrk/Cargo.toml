@@ -5,4 +5,33 @@ members = [
     "rmrk-token",
     "resource",
     "types",
+    "base/io",
+    "rmrk-token/io",
+    "resource/io",
 ]
+
+[workspace.package]
+version = "0.1.2"
+edition = "2021"
+authors = ["Gear Technologies"]
+license = "MIT"
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+base = { path = "base" }
+base-io = { path = "base/io" }
+rmrk-token = { path = "rmrk-token" }
+rmrk-io = { path = "rmrk-token/io" }
+resource = { path = "resource" }
+resource-io = { path = "resource/io" }
+types = { path = "types" }
+hashbrown = "0.13"
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+subxt = { version = "0.27", default-features = false }
+tokio = "1"
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
+primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }

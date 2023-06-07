@@ -11,7 +11,7 @@ fn add_resource_entry_simple() {
 
     // Prepare resource
     let code_hash_stored =
-        sys.submit_code("../target/wasm32-unknown-unknown/release/rmrk_resource.opt.wasm");
+        sys.submit_code("../target/wasm32-unknown-unknown/debug/rmrk_resource.opt.wasm");
 
     let rmrk = Program::rmrk(&sys, Some(code_hash_stored.into()));
 
@@ -28,7 +28,7 @@ fn add_resource_entry_failures() {
     sys.init_logger();
     // Prepare resource
     let code_hash_stored =
-        sys.submit_code("../target/wasm32-unknown-unknown/release/rmrk_resource.opt.wasm");
+        sys.submit_code("../target/wasm32-unknown-unknown/debug/rmrk_resource.opt.wasm");
 
     let rmrk = Program::rmrk(&sys, Some(code_hash_stored.into()));
 
@@ -60,7 +60,7 @@ fn add_resource_to_token() {
     let sys = System::new();
     // Prepare resource
     let code_hash_stored =
-        sys.submit_code("../target/wasm32-unknown-unknown/release/rmrk_resource.opt.wasm");
+        sys.submit_code("../target/wasm32-unknown-unknown/debug/rmrk_resource.opt.wasm");
 
     let rmrk = Program::rmrk(&sys, Some(code_hash_stored.into()));
 
@@ -85,7 +85,7 @@ fn add_resource_to_token_failures() {
     sys.init_logger();
     // Prepare resource
     let code_hash_stored =
-        sys.submit_code("../target/wasm32-unknown-unknown/release/rmrk_resource.opt.wasm");
+        sys.submit_code("../target/wasm32-unknown-unknown/debug/rmrk_resource.opt.wasm");
 
     let rmrk = Program::rmrk(&sys, Some(code_hash_stored.into()));
 
@@ -155,7 +155,7 @@ fn add_resource_to_different_tokens() {
     let sys = System::new();
     // Prepare resource
     let code_hash_stored =
-        sys.submit_code("../target/wasm32-unknown-unknown/release/rmrk_resource.opt.wasm");
+        sys.submit_code("../target/wasm32-unknown-unknown/debug/rmrk_resource.opt.wasm");
     let rmrk = Program::rmrk(&sys, Some(code_hash_stored.into()));
     let token_id_0: u64 = 10;
     let token_id_1: u64 = 11;
