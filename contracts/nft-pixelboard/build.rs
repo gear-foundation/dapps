@@ -1,3 +1,8 @@
+use gear_wasm_builder::WasmBuilder;
+use nft_pixelboard_io::ContractMetadata;
+
 fn main() {
-    gear_wasm_builder::build_with_metadata::<nft_pixelboard_io::ContractMetadata>();
+    WasmBuilder::with_meta(<ContractMetadata as gmeta::Metadata>::repr())
+        .exclude_features(vec!["binary-vendor"])
+        .build();
 }

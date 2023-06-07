@@ -1,23 +1,57 @@
 [package]
 name = "nft-pixelboard"
-version = "0.1.1"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-nft-pixelboard-io = { path = "io" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.6" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.1" }
-nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.10" }
+gstd.workspace = true
+nft-pixelboard-io.workspace = true
+gear-lib.workspace = true
+ft-main-io.workspace = true
+nft-io.workspace = true
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+gclient.workspace = true
+tokio.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-nft-pixelboard-io = { path = "io" }
+gmeta.workspace = true
+nft-pixelboard-io.workspace = true
+gear-wasm-builder.workspace = true
+
+[features]
+# Used for inserting constants with WASM binaries (NOT paths) of the contract in
+# the root crate. Usually these constants used in gclient tests instead of
+# strings with paths to the binaries in the "target" directory. If you don't
+# like this approach or don't use gclient tests, you can freely remove this
+# feature from here and from the rest of the code.
+binary-vendor = []
 
 [workspace]
 members = ["state"]
+
+[workspace.package]
+version = "0.1.2"
+edition = "2021"
+authors = ["Gear Technologies"]
+license = "MIT"
+
+[workspace.dependencies]
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.2" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+nft-pixelboard-io = { path = "io" }
+nft-pixelboard-state = { path = "state" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.7" }
+nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.11" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+subxt = { version = "0.27", default-features = false }
+tokio = "1"
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }

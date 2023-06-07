@@ -1,13 +1,13 @@
 [package]
 name = "nft-pixelboard-io"
-version = "0.1.1"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
-codec = { package = "parity-scale-codec", version = "3", default-features = false }
-scale-info = { version = "2", default-features = false }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gstd.workspace = true
+gear-lib.workspace = true
+parity-scale-codec.workspace = true
+scale-info.workspace = true
+gmeta.workspace = true
