@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2023-05-27
+### Changed
+- Update dependencies.
+- Pin gear crates to `#78dfa07`.
+
 ## [0.1.3] - 2023-04-27
 - Pin gear and substrate crates to concrete revision
 
@@ -24,7 +29,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/dutch-auction/compare/0.1.3...HEAD
+[Unreleased]: https://github.com/gear-dapps/dutch-auction/compare/0.1.4...HEAD
+[0.1.4]: https://github.com/gear-dapps/dutch-auction/compare/0.1.3...0.1.4
 [0.1.3]: https://github.com/gear-dapps/dutch-auction/compare/0.1.2...0.1.3
 [0.1.2]: https://github.com/gear-dapps/dutch-auction/compare/0.1.1...0.1.2
 [0.1.1]: https://github.com/gear-dapps/dutch-auction/compare/0.1.0...0.1.1

@@ -43,14 +43,14 @@ impl Auction {
         }
 
         let price = self.token_price();
-
-        if msg::value() < price {
+        let value = msg::value();
+        if value < price {
             return Err(Error::InsufficientMoney);
         }
 
         self.status = Status::Purchased { price };
 
-        let refund = msg::value() - price;
+        let refund = value - price;
         let refund = if refund < 500 { 0 } else { refund };
 
         let reply = match msg::send_for_reply(
@@ -148,6 +148,7 @@ impl Auction {
         if let Err(_e) = msg::send(self.nft.owner, "REWARD", price) {
             return Err(Error::RewardSendFailed);
         }
+        self.status = Status::Rewarded { price };
         Ok(Event::Rewarded { price })
     }
 
@@ -169,17 +170,12 @@ impl Auction {
         contract_id: ActorId,
         token_id: U256,
     ) -> Result<(), Error> {
-        let reply: NFTEvent = msg::send_for_reply_as(
-            contract_id,
-            NFTAction::IsApproved {
-                token_id,
-                to: exec::program_id(),
-            },
-            0,
-        )
-        .map_err(|_e| Error::SendingError)?
-        .await
-        .map_err(|_e| Error::NftNotApproved)?;
+        let to = exec::program_id();
+        let reply: NFTEvent =
+            msg::send_for_reply_as(contract_id, NFTAction::IsApproved { token_id, to }, 0)
+                .map_err(|_e| Error::SendingError)?
+                .await
+                .map_err(|_e| Error::NftNotApproved)?;
 
         if let NFTEvent::IsApproved { approved, .. } = reply {
             if !approved {
@@ -201,7 +197,17 @@ impl Auction {
         if msg::source() != self.owner {
             return Err(Error::NotOwner);
         }
+        if let Status::Purchased { price: _ } = self.status {
+            return Err(Error::NotRewarded);
+        }
 
+        let stopped = Event::AuctionStopped {
+            token_owner: self.owner,
+            token_id: self.nft.token_id,
+        };
+        if let Status::Rewarded { price: _ } = self.status {
+            return Ok(stopped);
+        }
         if let Err(_e) = msg::send_for_reply(
             self.nft.contract_id,
             NFTAction::Transfer {
@@ -219,10 +225,7 @@ impl Auction {
 
         self.status = Status::Stopped;
 
-        Ok(Event::AuctionStopped {
-            token_owner: self.owner,
-            token_id: self.nft.token_id,
-        })
+        Ok(stopped)
     }
 
     pub fn info(&mut self) -> AuctionInfo {

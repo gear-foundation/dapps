@@ -1,5 +1,4 @@
 use gmeta::{InOut, Metadata};
-use gstd::prelude::*;
 
 use crate::auction::{Action, AuctionInfo, Error, Event};
 
