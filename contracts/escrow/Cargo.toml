@@ -1,38 +1,51 @@
 [package]
 name = "escrow"
-version = "0.1.6"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+gstd.workspace = true
+ft-main-io.workspace = true
+async-trait.workspace = true
+hashbrown.workspace = true
+escrow-io.workspace = true
+
+[build-dependencies]
+escrow-io.workspace = true
+gear-wasm-builder.workspace = true
+gmeta.workspace = true
+
+[dev-dependencies]
+gclient.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+tokio.workspace = true
+
+[features]
+binary-vendor = []
+
+[workspace]
+members = ["state"]
+
+[workspace.package]
+version = "0.1.7"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
-[dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.1" }
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.2" }
 async-trait = "0.1.68"
-hashbrown = "0.13.2"
+hashbrown = "0.13"
 escrow-io = { path = "io" }
-
-[build-dependencies]
-escrow-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-
-[dev-dependencies]
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
 tokio = "1"
-
-[features]
-# Used for inserting constants with WASM binaries (NOT paths) of the contract in
-# the root crate. Usually these constants used in gclient tests instead of
-# strings with paths to the binaries in the "target" directory. If you don't
-# like this approach or don't use gclient tests, you can freely remove this
-# feature from here and from the rest of the code.
-binary-vendor = []
-
-# It's necessary to include all metawasm crates in the workspace section,
-# otherwise they'll be ignored by Cargo and won't be built.
-[workspace]
-members = [
-    "state"
-]
+primitive-types = { version = "0.12", default-features = false }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }

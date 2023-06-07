@@ -21,7 +21,9 @@ pub const NONEXISTENT_WALLET: u128 = 999999;
 #[tokio::test]
 #[ignore]
 async fn init() -> Result<()> {
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH"))
+        .await
+        .unwrap();
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -62,7 +64,9 @@ async fn init() -> Result<()> {
 #[tokio::test]
 #[ignore]
 async fn create() -> Result<()> {
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH"))
+        .await
+        .unwrap();
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -131,7 +135,9 @@ async fn create() -> Result<()> {
 #[tokio::test]
 #[ignore]
 async fn deposit_not_enough_tokens() -> Result<()> {
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH"))
+        .await
+        .unwrap();
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -224,7 +230,9 @@ async fn deposit_not_enough_tokens() -> Result<()> {
 #[tokio::test]
 #[ignore]
 async fn not_buyer_confirm() -> Result<()> {
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH"))
+        .await
+        .unwrap();
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -341,7 +349,9 @@ async fn not_buyer_confirm() -> Result<()> {
 #[tokio::test]
 #[ignore]
 async fn cancel_paid() -> Result<()> {
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH"))
+        .await
+        .unwrap();
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -458,7 +468,9 @@ async fn cancel_paid() -> Result<()> {
 #[tokio::test]
 #[ignore]
 async fn refund_not_paid() -> Result<()> {
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH"))
+        .await
+        .unwrap();
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 

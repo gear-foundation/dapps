@@ -10,12 +10,11 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  GEAR_NODE_PATH: ./gear
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      GEAR_NODE_PATH: ./gear
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -26,20 +25,8 @@ jobs:
       - name: Remove binaries from cache
         run: rm -vfr target/wasm32-unknown-unknown/*
 
-      - name: Install nightly toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          components: clippy, rustfmt
-          target: wasm32-unknown-unknown
-
       - name: Pin toolchain
-        run: make pin-toolchain-linux
-
-      - name: Install binaryen
-        run: |
-          wget -c https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O - | tar -xz -C .
-          sudo cp binaryen-version_110/bin/wasm-opt /usr/bin/
+        run: make init
 
       - name: Check fmt
         run: make fmt
@@ -50,10 +37,7 @@ jobs:
       - name: Run tests
         run: |
           curl -L https://get.gear.rs/vara-testnet-x86_64-unknown-linux-gnu.tar.xz -o - | tar xJ
-          chmod +x gear
-          ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
           make full-test
-          kill `cat gear.pid`
 
       - name: Build
         run: make build
