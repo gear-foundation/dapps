@@ -1,11 +1,20 @@
-PHONY: all build clean fmt fmt-check init lint pre-commit test full-test
+.PHONY: all build clean fmt fmt-check init lint pre-commit test full-test
 
-all: init build test
+all: init build full-test
+
+clean:
+	@echo ──────────── Clean ────────────────────────────
+	@rm -rvf target
 
 build:
 	@echo ⚙️ Building a release...
-	@cargo +nightly b -r --workspace
+	@cargo b -r --workspace -Fbinary-vendor
 	@ls -l target/wasm32-unknown-unknown/release/*.wasm
+
+debug-build:
+	@echo ──────────── Build debug ────────────────────
+	@cargo build
+	@ls -l ./target/wasm32-unknown-unknown/debug/*.wasm
 
 fmt:
 	@echo ⚙️ Formatting...
@@ -17,30 +26,12 @@ fmt-check:
 
 init:
 	@echo ⚙️ Installing a toolchain \& a target...
-ifeq ($(shell uname -s),Linux)
-	@echo Linux detected..
-	make pin-toolchain-linux
-else ifeq ($(shell uname -s),Darwin)
-	@echo Macos detected..
-	make pin-toolchain-mac-m1
-endif
+	@rustup show
 
-pin-toolchain-mac-m1:
-	@rustup toolchain install nightly-2023-04-21 --component llvm-tools-preview
-	@rustup target add wasm32-unknown-unknown --toolchain nightly-2023-04-21
-	@rm -rf ~/.rustup/toolchains/nightly-aarch64-apple-darwin
-	@ln -s ~/.rustup/toolchains/nightly-2023-04-21-aarch64-apple-darwin ~/.rustup/toolchains/nightly-aarch64-apple-darwin
-
-pin-toolchain-linux:
-	@rustup toolchain install nightly-2023-04-21 --component llvm-tools-preview
-	@rustup target add wasm32-unknown-unknown --toolchain nightly-2023-04-21
-	@rm -rf ~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu
-	@ln -s ~/.rustup/toolchains/nightly-2023-04-21-x86_64-unknown-linux-gnu ~/.rustup/toolchains/nightly-x86_64-unknown-linux-gnu
-	@rustup component add clippy --toolchain nightly-x86_64-unknown-linux-gnu
 lint:
 	@echo ⚙️ Running the linter...
-	@cargo +nightly clippy --workspace -- -D warnings
-	@cargo +nightly clippy \
+	@cargo clippy -- -D warnings
+	@cargo clippy \
 	--all-targets \
 	--workspace \
 	-Fbinary-vendor \
@@ -48,10 +39,10 @@ lint:
 
 pre-commit: fmt lint full-test
 
-test: build
-	@echo ──────────── Run tests ────────────────────────
-	@cargo +nightly test --release --workspace -Fbinary-vendor \
+test:
+	@echo ⚙️ Running unit tests...
+	@cargo t -Fbinary-vendor
 
 full-test:
 	@echo ⚙️ Running all tests...
-	@cargo +nightly t --release --workspace -Fbinary-vendor -- --include-ignored
+	@cargo t --workspace -Fbinary-vendor -- --include-ignored

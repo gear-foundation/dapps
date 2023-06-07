@@ -6,8 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [0.1.2] - 2023-04-28
-- Pin crates to concrete revision
+## [0.1.3] - 2023-05-27
+- Pin crates to 78dfa07 revision
+
+## [0.1.2] - 2023-04-27
+- Pin crates to 5c685d0 revision
 
 ## [0.1.1] - 2023-03-03
 ### Changed
@@ -17,6 +20,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/rock-paper-scissors/compare/0.1.1...HEAD
-[0.1.1]: https://github.com/gear-dapps/rock-paper-scissors/compare/9e34933...0.1.1
+[Unreleased]: https://github.com/gear-dapps/rock-paper-scissors/compare/0.1.3...HEAD
+[0.1.2]: https://github.com/gear-dapps/rock-paper-scissors/compare/0.1.2...0.1.3
+[0.1.2]: https://github.com/gear-dapps/rock-paper-scissors/compare/0.1.1...0.1.2
+[0.1.1]: https://github.com/gear-dapps/rock-paper-scissors/compare/0.1.0...0.1.1
 [0.1.0]: https://github.com/gear-dapps/rock-paper-scissors/compare/9e34933...0.1.0

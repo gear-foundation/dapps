@@ -9,7 +9,7 @@ pub use routines::*;
 #[tokio::test]
 #[ignore]
 async fn init() -> Result<()> {
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 

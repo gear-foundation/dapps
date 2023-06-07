@@ -1,12 +1,12 @@
 [package]
 name = "rps-io"
-version = "0.1.2"
-edition = "2021"
-license = "GPL-3.0"
-authors = ["Gear Technologies"]
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-codec = { package = "parity-scale-codec", version = "3.4", default-features = false, features = ["derive", "full"] }
-scale-info = { version = "2", default-features = false, features = ["derive"] }
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gstd.workspace = true
+parity-scale-codec = { workspace = true, features = ["derive", "full"] }
+scale-info = { workspace = true, features = ["derive"] }
+gmeta.workspace = true
