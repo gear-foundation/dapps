@@ -2,6 +2,7 @@
 .DS_Store
 .vscode
 target
+*.meta.txt
 .metahash
 node_modules
 .idea

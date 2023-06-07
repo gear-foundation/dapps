@@ -1,34 +1,46 @@
 [package]
 name = "tequila-train"
-version = "0.1.3"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+tequila-io.workspace = true
+gstd.workspace = true
+gmeta.workspace = true
+hashbrown.workspace = true
+
+[build-dependencies]
+tequila-io.workspace = true
+gear-wasm-builder.workspace = true
+gmeta.workspace = true
+
+[dev-dependencies]
+gstd = { workspace = true, features = ["debug"] }
+tequila-state.workspace = true
+gtest.workspace = true
+
+[features]
+binary-vendor = ["tequila-state/binary-vendor"]
+
+[workspace]
+members = ["state"]
+
+[workspace.package]
+version = "0.1.4"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
-[dependencies]
+[workspace.dependencies]
 tequila-io = { path = "io" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
-hashbrown = "0.13"
-
-[build-dependencies]
-tequila-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0", features = ["wasm-opt"] }
-
-[dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0", features = ["debug"] }
 tequila-state = { path = "state" }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
-
-[features]
-# Used for inserting constants with WASM binaries (NOT paths) of the contract in
-# the root crate. Usually these constants used in gclient tests instead of
-# strings with paths to the binaries in the "target" directory. If you don't
-# like this approach or don't use gclient tests, you can freely remove this
-# feature from here and from the rest of the code.
-binary-vendor = ["tequila-state/binary-vendor"]
-
-# It's necessary to include all metawasm crates in the workspace section,
-# otherwise they'll be ignored by Cargo and won't be built.
-[workspace]
-members = ["state"]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+hashbrown = "0.13"
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
+enum-iterator = "1.4"
