@@ -1,3 +1,8 @@
+use gear_wasm_builder::WasmBuilder;
+use market_io::MarketMetadata;
+
 fn main() {
-    gear_wasm_builder::build_with_metadata::<market_io::MarketMetadata>();
+    WasmBuilder::with_meta(<MarketMetadata as gmeta::Metadata>::repr())
+        .exclude_features(vec!["binary-vendor"])
+        .build();
 }

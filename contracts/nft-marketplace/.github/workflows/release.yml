@@ -6,6 +6,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  NIGHTLY_TOOLCHAIN_VERSION: ${{ secrets.NIGHTLY_TOOLCHAIN_VERSION }}
 
 jobs:
   prepare:
@@ -35,19 +36,12 @@ jobs:
       - name: Remove binaries from cache
         run: rm -vfr target/wasm32-unknown-unknown/*
 
-      - name: Install nightly toolchain
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: nightly
-          target: wasm32-unknown-unknown
+      - name: Show specific nightly version
+        if: ${{ env.NIGHTLY_TOOLCHAIN_VERSION != '' }}
+        run: echo $NIGHTLY_TOOLCHAIN_VERSION | sed 's/-/ - /g'
 
-      - name: Pin toolchain
-        run: make pin-toolchain-linux
-
-      - name: Install binaryen
-        run: |
-          wget -c https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O - | tar -xz -C .
-          sudo cp binaryen-version_110/bin/wasm-opt /usr/bin/
+      - name: Install specific nightly toolchain
+        run: make init
 
       - name: Build
         run: make build
