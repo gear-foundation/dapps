@@ -1,5 +1,9 @@
 use dex_factory_io::ContractMetadata;
+use gear_wasm_builder::WasmBuilder;
+use gmeta::Metadata;
 
 fn main() {
-    gear_wasm_builder::build_with_metadata::<ContractMetadata>();
+    WasmBuilder::with_meta(ContractMetadata::repr())
+        .exclude_features(["binary-vendor"])
+        .build()
 }

@@ -23,12 +23,21 @@ pub const MINIMUM_LIQUIDITY: u64 = 10u64.pow(3);
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
-    type Init = InOut<(ActorId, ActorId), Result<(), Error>>;
+    type Init = InOut<Initialize, Result<(), Error>>;
     type Handle = InOut<Action, Result<Event, Error>>;
     type Reply = ();
     type Others = ();
     type Signal = ();
     type State = State;
+}
+
+/// Initializes the contract.
+#[derive(
+    Default, Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash,
+)]
+pub struct Initialize {
+    pub pair: (ActorId, ActorId),
+    pub factory: ActorId,
 }
 
 /// The contract state.

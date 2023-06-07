@@ -65,7 +65,7 @@ impl Contract {
             }
         };
 
-        let mut tx_guard = tx_manager.asquire_transaction(
+        let mut tx_guard = tx_manager.acquire_transaction(
             msg_source,
             kind.to_tx_kind(CachedAction::AddLiquidity(amount)),
         )?;
@@ -453,7 +453,7 @@ impl Contract {
         let swap_pattern = self.swap_pattern(swap_kind);
         let in_amount = calculate_in_amount(out_amount, swap_pattern.reserve)?;
 
-        let mut tx_guard = tx_manager.asquire_transaction(
+        let mut tx_guard = tx_manager.acquire_transaction(
             msg_source,
             action_kind.to_tx_kind(CachedAction::Swap(in_amount)),
         )?;
@@ -544,7 +544,10 @@ extern "C" fn init() {
 }
 
 fn process_init() -> Result<(), Error> {
-    let token: (ActorId, ActorId) = msg::load()?;
+    let Initialize {
+        pair: token,
+        factory,
+    } = msg::load()?;
 
     if token.0.is_zero() || token.1.is_zero() {
         return Err(Error::ZeroActorId);
@@ -558,7 +561,7 @@ fn process_init() -> Result<(), Error> {
         STATE = Some((
             Contract {
                 token,
-                factory: msg::source(),
+                factory,
                 ..Default::default()
             },
             TransactionManager::default(),
@@ -609,7 +612,7 @@ async fn process_handle() -> Result<Event, Error> {
             to,
             deadline,
         } => {
-            let mut tx_guard = tx_manager.asquire_transaction(
+            let mut tx_guard = tx_manager.acquire_transaction(
                 msg_source,
                 action_kind.to_tx_kind(CachedAction::RemovedLiquidity {
                     amount: liquidity,
@@ -649,7 +652,7 @@ async fn process_handle() -> Result<Event, Error> {
             deadline,
             swap_kind,
         } => {
-            let mut tx_guard = tx_manager.asquire_transaction(
+            let mut tx_guard = tx_manager.acquire_transaction(
                 msg_source,
                 action_kind.to_tx_kind(CachedAction::Swap(amount_in)),
             )?;
@@ -693,7 +696,7 @@ async fn process_handle() -> Result<Event, Error> {
         }
         InnerAction::Skim(to) => {
             let mut tx_guard = tx_manager
-                .asquire_transaction(msg_source, action_kind.to_tx_kind(CachedAction::Other))?;
+                .acquire_transaction(msg_source, action_kind.to_tx_kind(CachedAction::Other))?;
 
             tx_guard
                 .tx_data
@@ -747,4 +750,11 @@ extern "C" fn state() {
         0,
     )
     .expect("failed to encode or reply from `state()`");
+}
+
+#[no_mangle]
+extern "C" fn metahash() {
+    let metahash: [u8; 32] = include!("../.metahash");
+
+    msg::reply(metahash, 0).expect("failed to encode or reply from `metahash()`");
 }

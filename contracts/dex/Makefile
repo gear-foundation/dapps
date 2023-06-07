@@ -1,13 +1,10 @@
 .PHONY: all build fmt init lint pre-commit deps test full-test
 
-NIGHTLY_TOOLCHAIN_VERSION ?= 2023-03-21
-TARGET = `rustc -Vv | grep 'host: ' | sed 's/^host: \(.*\)/\1/'`
-
 all: init build test
 
 build:
 	@echo ⚙️ Building a release...
-	@cargo +nightly b -r
+	@cargo b -r
 	@ls -l target/wasm32-unknown-unknown/release/*.wasm
 
 fmt:
@@ -16,16 +13,16 @@ fmt:
 
 init:
 	@echo ⚙️ Installing a toolchain \& a target...
-	@rustup toolchain install nightly-$(NIGHTLY_TOOLCHAIN_VERSION) -cclippy -twasm32-unknown-unknown
-	@rm -rf ~/.rustup/toolchains/nightly-$(TARGET)
-	@ln -s ~/.rustup/toolchains/nightly-$(NIGHTLY_TOOLCHAIN_VERSION)-$(TARGET) ~/.rustup/toolchains/nightly-$(TARGET)
+	@rustup show
 
 lint:
 	@echo ⚙️ Running the linter...
-	@cargo +nightly clippy -- -D warnings
-	@cargo +nightly clippy --all-targets -Fbinary-vendor -- -D warnings
+	@cargo clippy -- -D warnings
+	@cargo clippy --all-targets -Fbinary-vendor -- -D warnings
 
 pre-commit: fmt lint full-test
+
+SFT_VERSION = 2.1.2
 
 deps:
 	@mkdir -p target
@@ -33,26 +30,26 @@ deps:
 	@path=target/ft_main.wasm;\
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.1/ft_main.opt.wasm\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/$(SFT_VERSION)/ft_main.opt.wasm\
 	        -o $$path;\
 	fi
 	@path=target/ft_logic.wasm;\
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.1/ft_logic.opt.wasm\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/$(SFT_VERSION)/ft_logic.opt.wasm\
 	        -o $$path;\
 	fi
 	@path=target/ft_storage.wasm;\
 	if [ ! -f $$path ]; then\
 	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.1/ft_storage.opt.wasm\
+	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/$(SFT_VERSION)/ft_storage.opt.wasm\
 	        -o $$path;\
 	fi
 
 test: deps
 	@echo ⚙️ Running tests...
-	@cargo +nightly t -Fbinary-vendor
+	@cargo t -Fbinary-vendor
 
 full-test: deps
 	@echo ⚙️ Running tests...
-	@cargo +nightly t -Fbinary-vendor -- --include-ignored
+	@cargo t -Fbinary-vendor -- --include-ignored

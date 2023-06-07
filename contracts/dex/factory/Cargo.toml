@@ -13,6 +13,7 @@ dex-pair-io.workspace = true
 [build-dependencies]
 gear-wasm-builder.workspace = true
 dex-factory-io.workspace = true
+gmeta.workspace = true
 
 [features]
 binary-vendor = []

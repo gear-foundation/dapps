@@ -17,7 +17,7 @@ primitive-types.workspace = true
 gtest.workspace = true
 gclient.workspace = true
 gstd = { workspace = true, features = ["debug"] }
-gear-core = { git = "https://github.com/gear-tech/gear", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gear-core = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
 subxt = { version = "0.27", default-features = false }
 pretty_assertions = "1"
 dex-factory = { path = "../factory" }
@@ -29,6 +29,7 @@ tokio = "1"
 [build-dependencies]
 gear-wasm-builder.workspace = true
 dex-pair-io.workspace = true
+gmeta.workspace = true
 
 [features]
 binary-vendor = []

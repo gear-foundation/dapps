@@ -62,8 +62,16 @@ impl Contract {
         }
 
         let (pair_actor, result): (_, Result<(), dex_pair_io::Error>) =
-            ProgramGenerator::create_program_for_reply_as(self.pair, token_pair.encode(), 0)?
-                .await?;
+            ProgramGenerator::create_program_for_reply_as(
+                self.pair,
+                dex_pair_io::Initialize {
+                    pair: token_pair,
+                    factory: exec::program_id(),
+                }
+                .encode(),
+                0,
+            )?
+            .await?;
 
         result?;
 
