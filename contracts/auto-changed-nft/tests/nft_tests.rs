@@ -213,7 +213,7 @@ fn auto_change_success() {
     let expected_dynamic_data: Vec<u8> = vec![];
     assert_eq!(expected_dynamic_data, state.dynamic_data);
     const DELAY: u32 = 5;
-    
+
     sys.spend_blocks(DELAY);
     let state: IoNFT = nft.read_state().unwrap();
     let expected_dynamic_data = b"Rest Update Periods: 2".to_vec();
