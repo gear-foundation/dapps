@@ -1,23 +1,24 @@
 [package]
 name = "dao-light"
-version = "0.1.3"
-edition = "2021"
-authors = ["Gear Technologies"]
-license = "MIT"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-dao-light-io = { path = "io" }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.5" }
-hashbrown = "0.13.2"
+gstd.workspace = true
+dao-light-io.workspace = true
+ft-io.workspace = true
+hashbrown.workspace = true
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
 
 [build-dependencies]
-dao-light-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gmeta.workspace = true
+dao-light-io.workspace = true
+gear-wasm-builder.workspace = true
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in
@@ -30,6 +31,24 @@ binary-vendor = []
 # It's necessary to include all metawasm crates in the workspace section,
 # otherwise they'll be ignored by Cargo and won't be built.
 [workspace]
-members = [
-    "state"
-]
+members = ["state"]
+
+[workspace.package]
+version = "0.1.4"
+edition = "2021"
+authors = ["Gear Technologies"]
+license = "MIT"
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+dao-light-io = { path = "io" }
+dao-light-state = { path = "state" }
+ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.6" }
+hashbrown = "0.13"
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+tokio = "1"
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
