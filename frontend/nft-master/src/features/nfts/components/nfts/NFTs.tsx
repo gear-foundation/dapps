@@ -1,19 +1,23 @@
+import { useAccount } from '@gear-js/react-hooks';
 import { Link } from 'react-router-dom';
 import useEmblaCarousel from 'embla-carousel-react';
 import clsx from 'clsx';
 import { getIpfsAddress } from 'utils';
 import { Container } from 'components';
 import { ReactComponent as ArrowLeftSVG } from '../../assets/arrow-left.svg';
-import { NFT } from '../../types';
+import { useNFTs } from '../../hooks';
 import styles from './NFTs.module.scss';
 
 type Props = {
-  list: NFT[];
   slider?: boolean;
 };
 
-function NFTs({ list, slider }: Props) {
-  const isAnyNFT = list.length > 0;
+function NFTs({ slider }: Props) {
+  const { account } = useAccount();
+
+  const nfts = useNFTs();
+  const ownerNFTs = nfts.filter(({ owner }) => owner === account?.decodedAddress);
+  const isAnyNFT = ownerNFTs.length > 0;
 
   const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'center', loop: true });
 
@@ -21,7 +25,7 @@ function NFTs({ list, slider }: Props) {
   const nextSlide = () => emblaApi?.scrollNext();
 
   const getNFTs = () =>
-    list.map(({ id, programId, name, owner, mediaUrl, collection }) => {
+    ownerNFTs.map(({ id, programId, name, owner, mediaUrl, collection }) => {
       const style = { backgroundImage: `url(${getIpfsAddress(mediaUrl)})` };
       const to = `/${programId}/${id}`;
 
