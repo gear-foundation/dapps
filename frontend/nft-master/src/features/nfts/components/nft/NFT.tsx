@@ -22,6 +22,8 @@ function NFT({ item }: Props) {
   const src = getIpfsAddress(mediaUrl);
 
   useEffect(() => {
+    if (!attribUrl) return;
+
     const url = getIpfsAddress(attribUrl);
 
     fetch(url)
@@ -43,7 +45,7 @@ function NFT({ item }: Props) {
       })
       .map((detail) => (
         <li key={detail} className={styles.detail}>
-          {detail}
+          <p>{detail}</p>
         </li>
       ));
 
@@ -73,27 +75,29 @@ function NFT({ item }: Props) {
           <p className={styles.collection}>{collection}</p>
           <p className={styles.description}>{description}</p>
 
-          <div>
-            <header className={styles.header}>
-              {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-              <label htmlFor="search" className={styles.label}>
-                NFT Details:
-              </label>
+          {attribUrl && (
+            <div>
+              <header className={styles.header}>
+                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                <label htmlFor="search" className={styles.label}>
+                  NFT Details:
+                </label>
 
-              <div className={styles.inputWrapper}>
-                <SearchSVG />
-                <input
-                  type="text"
-                  placeholder="Search"
-                  id="search"
-                  value={searchQuery}
-                  onChange={handleSearchInputChange}
-                />
-              </div>
-            </header>
+                <div className={styles.inputWrapper}>
+                  <SearchSVG />
+                  <input
+                    type="text"
+                    placeholder="Search"
+                    id="search"
+                    value={searchQuery}
+                    onChange={handleSearchInputChange}
+                  />
+                </div>
+              </header>
 
-            <ul className={styles.details}>{getDetails()}</ul>
-          </div>
+              <ul className={styles.details}>{getDetails()}</ul>
+            </div>
+          )}
         </div>
 
         <button type="button" className={styles.backButton} onClick={handleBackButtonClick}>
