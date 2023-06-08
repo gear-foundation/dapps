@@ -6,7 +6,7 @@ COPY . /usr/src
 
 RUN apk update
 
-RUN apk add xsel -y
+RUN apk add xsel
 
 RUN yarn install
 
