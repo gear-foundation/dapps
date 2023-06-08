@@ -4,7 +4,7 @@ WORKDIR /usr/src
 
 COPY . /usr/src
 
-RUN apk update -y
+RUN apk update
 
 RUN apk add xsel -y
 
