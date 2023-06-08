@@ -1,5 +1,5 @@
 import { MessagesDispatched, getProgramMetadata } from '@gear-js/api';
-import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
+import { useAlert, useApi } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { useEffect, useState } from 'react';
@@ -104,12 +104,9 @@ function useNFTsState() {
 }
 
 function useNFTs() {
-  const { account } = useAccount();
-  const accountAddress = account?.decodedAddress;
-
   const [NFTs] = useAtom(NFTS_ATOM);
 
-  return NFTs?.filter(({ owner }) => owner === accountAddress) || [];
+  return NFTs || [];
 }
 
 export { useNFTsState, useNFTs };

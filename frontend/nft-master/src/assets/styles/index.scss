@@ -50,11 +50,7 @@ body {
     overflow-y: hidden;
   }
 
-  &.setup {
+  &.welcome {
     background-image: url(/assets/images/bg.png);
-  }
-
-  &.active {
-    background-image: url(/assets/images/bg-active.png);
   }
 }
