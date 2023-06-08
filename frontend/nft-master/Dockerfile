@@ -6,4 +6,8 @@ COPY . /usr/src
 
 RUN yarn install
 
-CMD ["yarn", "start"]
+RUN yarn build
+
+RUN npm install --global serve
+
+CMD ["npm", "serve", "/usr/src/build"]
