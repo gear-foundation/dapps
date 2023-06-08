@@ -79,6 +79,7 @@
   font-size: 14px;
   line-height: 160%;
   color: rgba(#000000, 0.4);
+  white-space: pre-line;
 }
 
 .header {
@@ -126,6 +127,7 @@
   font-size: 14px;
   line-height: 160%;
   position: relative;
+  white-space: pre-line;
 
   &::before {
     @include square(25px);
