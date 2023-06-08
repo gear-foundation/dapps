@@ -44,7 +44,7 @@ jobs:
         with:
           file: Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
 
   deploy-to-k8s:
     needs: build-simple-nft-image
@@ -61,7 +61,7 @@ jobs:
       - name: Deploy to k8s
         uses: sergeyfilyanin/kubectl-aws-eks@master
         with:
-          args: rollout restart deployment simple-nft -n gear-dapps
+          args: rollout restart deployment simple-nft2 -n gear-dapps
 
       - name: Check k8s deployments
         uses: sergeyfilyanin/kubectl-aws-eks@master
