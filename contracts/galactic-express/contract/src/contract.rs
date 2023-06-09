@@ -1,4 +1,4 @@
-use gstd::{exec, msg, prelude::*, ActorId};
+use gstd::{exec, msg, prelude::*, ActorId, ReservationId};
 use launch_io::*;
 
 pub const WEATHER_RANGE: u32 = 5;
@@ -10,6 +10,9 @@ pub const MAX_PAYLOAD_VALUE: u32 = 120;
 
 pub const MIN_ALTITUDE: u32 = 8_000;
 pub const MAX_ALTITUDE: u32 = 15_000;
+
+const RESERVATION_AMOUNT: u64 = 240_000_000_000;
+static mut RESERVATION: Vec<ReservationId> = vec![];
 
 #[derive(Default, Encode, Decode, TypeInfo, Debug)]
 pub struct LaunchSite {
@@ -282,6 +285,14 @@ impl LaunchSite {
         )
         .expect("failed to reply in ::new_session");
     }
+
+    fn reserve_gas(&self) {
+        let reservations = unsafe { &mut RESERVATION };
+        let reservation_id =
+            ReservationId::reserve(RESERVATION_AMOUNT, 600).expect("reservation across executions");
+        reservations.push(reservation_id);
+        // msg::reply(NFTEvent::GasReserved, 0).expect("");
+    }
 }
 
 #[gstd::async_main]
@@ -309,6 +320,9 @@ async fn main() {
         }
         Action::ExecuteSession => {
             launch_site.execute_session();
+        }
+        Action::ReserveGas => {
+            launch_site.reserve_gas();
         }
     }
 }

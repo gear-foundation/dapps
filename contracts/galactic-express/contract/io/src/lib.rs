@@ -26,6 +26,7 @@ pub enum Action {
         payload_amount: u32,
     },
     ExecuteSession,
+    ReserveGas,
 }
 
 #[derive(Encode, Debug, PartialEq, Eq, Decode, TypeInfo)]
