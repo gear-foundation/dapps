@@ -47,7 +47,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
           build-args: |
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_DEFAULT_NODES_URL }}
+            REACT_APP_DEFAULT_NODES_URL =${{ secrets.REACT_APP_DEFAULT_NODES_URL }}
             REACT_APP_IPFS_ADDRESS=${{ secrets.REACT_APP_IPFS_ADDRESS }}
             REACT_APP_IPFS_GATEWAY_ADDRESS=${{ secrets.REACT_APP_IPFS_GATEWAY_ADDRESS }}
             REACT_APP_DEFAULT_CONTRACT_ADDRESS=${{ secrets.REACT_APP_DEFAULT_CONTRACT_ADDRESS }}
