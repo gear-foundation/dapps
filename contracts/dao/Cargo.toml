@@ -1,27 +1,28 @@
 [package]
 name = "dao"
-version = "0.2.4"
-edition = "2021"
-authors = ["Gear Technologies"]
-license = "MIT"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.1" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-dao-io = { path = "io" }
-hashbrown = "0.13.2"
+ft-main-io.workspace = true
+gstd.workspace = true
+dao-io.workspace = true
+hashbrown.workspace = true
 
 [dev-dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-subxt = { version = "0.27", default-features = false }
-tokio = "1"
-blake2-rfc = { version = "0.2.18", default-features = false }
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+gclient.workspace = true
+tokio.workspace = true
+subxt.workspace = true
+blake2-rfc.workspace = true
 
 [build-dependencies]
-dao-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
+gmeta.workspace = true
+dao-io.workspace = true
+gear-wasm-builder.workspace = true
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in
@@ -31,9 +32,27 @@ gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c68
 # feature from here and from the rest of the code.
 binary-vendor = []
 
-# It's necessary to include all metawasm crates in the workspace section,
-# otherwise they'll be ignored by Cargo and won't be built.
 [workspace]
-members = [
-    "state"
-]
+members = ["state"]
+
+[workspace.package]
+version = "0.2.5"
+edition = "2021"
+authors = ["Gear Technologies"]
+license = "MIT"
+
+[workspace.dependencies]
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.2" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+dao-io = { path = "io" }
+dao-state = { path = "state" }
+hashbrown = "0.14"
+gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gclient = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+subxt = { version = "0.27", default-features = false }
+tokio = "1"
+blake2-rfc = { version = "0.2.18", default-features = false }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
