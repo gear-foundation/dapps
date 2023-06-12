@@ -1,18 +1,24 @@
 #![no_std]
 
 use codec::{Decode, Encode};
-use gmeta::{InOut, Metadata};
+use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 
 pub struct ProgramMetadata;
 
 impl Metadata for ProgramMetadata {
-    type Init = InOut<String, ()>;
+    type Init = In<Init>;
     type Handle = InOut<Action, Event>;
     type Reply = InOut<(), ()>;
     type Others = InOut<(), ()>;
     type Signal = ();
     type State = LaunchSite;
+}
+
+#[derive(Encode, Decode, TypeInfo, Debug)]
+pub struct Init {
+    name: String,
+    period_ms: u64,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
@@ -22,6 +28,11 @@ pub enum Action {
     ChangeParticipantName(String),
     StartNewSession,
     RegisterOnLaunch {
+        fuel_amount: u32,
+        payload_amount: u32,
+    },
+    RegisterParticipantOnLaunch {
+        name: String,
         fuel_amount: u32,
         payload_amount: u32,
     },
@@ -70,6 +81,7 @@ pub enum Event {
         payload_value: u32,
     },
     NoCurrentSession,
+    GasReserved,
 }
 
 #[derive(Default, Encode, Decode, TypeInfo)]

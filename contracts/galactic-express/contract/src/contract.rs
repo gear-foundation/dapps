@@ -23,6 +23,7 @@ pub struct LaunchSite {
     pub events: BTreeMap<u32, Vec<CurrentStat>>,
     pub state: SessionState,
     pub session_id: u32,
+    pub session_period_ms: u64,
 }
 
 static mut LAUNCH_SITE: Option<LaunchSite> = None;
@@ -291,7 +292,85 @@ impl LaunchSite {
         let reservation_id =
             ReservationId::reserve(RESERVATION_AMOUNT, 600).expect("reservation across executions");
         reservations.push(reservation_id);
-        // msg::reply(NFTEvent::GasReserved, 0).expect("");
+        msg::reply(Event::GasReserved, 0).expect("");
+    }
+
+    fn register_participant_on_launch(
+        &mut self,
+        name: String,
+        fuel_amount: u32,
+        payload_amount: u32,
+    ) {
+        //new_participant
+        let actor_id = msg::source();
+        let value = msg::value();
+
+        if self.participants.contains_key(&actor_id) {
+            panic!("There is already participant registered with this id");
+        }
+
+        self.participants.insert(
+            actor_id,
+            Participant {
+                name: name.clone(),
+                balance: 0,
+            },
+        );
+
+        // comment original reply from `new_participant()`
+        // msg::reply(Event::NewParticipant { id: actor_id, name }, 0)
+        //     .expect("failed to reply in ::new_participant");
+
+        assert!(self.current_session.is_some());
+
+        assert!(fuel_amount <= 100 && payload_amount <= 100, "Limit is 100%");
+
+        let current_session = self
+            .current_session
+            .as_mut()
+            .expect("checked above that exists");
+
+        if current_session.registered.contains_key(&actor_id) {
+            // already registered
+
+            panic!("Participant already registered on the session");
+        }
+
+        current_session.registered.insert(
+            actor_id,
+            SessionStrategy {
+                fuel: fuel_amount,
+                payload: payload_amount,
+            },
+        );
+
+        let current_session = self
+            .current_session
+            .as_mut()
+            .expect("checked above that exists");
+
+        if current_session.registered.contains_key(&actor_id) {
+            // already registered
+
+            panic!("Participant already registered on the session");
+        }
+
+        current_session.registered.insert(
+            actor_id,
+            SessionStrategy {
+                fuel: fuel_amount,
+                payload: payload_amount,
+            },
+        );
+
+        msg::reply(
+            Event::LaunchRegistration {
+                id: 0,
+                participant: actor_id,
+            },
+            0,
+        )
+        .expect("failed to reply in ::new_session");
     }
 }
 
@@ -324,12 +403,19 @@ async fn main() {
         Action::ReserveGas => {
             launch_site.reserve_gas();
         }
+        Action::RegisterParticipantOnLaunch {
+            name,
+            fuel_amount,
+            payload_amount,
+        } => {
+            launch_site.register_participant_on_launch(name, fuel_amount, payload_amount);
+        }
     }
 }
 
 #[no_mangle]
 unsafe extern "C" fn init() {
-    let name: String = String::from_utf8(msg::load_bytes().expect("Cant load init message"))
+    let name: Init = String::from_utf8(msg::load_bytes().expect("Cant load init message"))
         .expect("Error in decoding");
     let launch_site = LaunchSite {
         name,
