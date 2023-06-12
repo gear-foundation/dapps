@@ -1,4 +1,4 @@
-import { Header, Footer } from './layout';
+import { Header, Footer, Card } from './layout';
 import { ApiLoader, Loader } from './loaders';
 
-export { Header, Footer, ApiLoader, Loader };
+export { Header, Footer, Card, ApiLoader, Loader };

@@ -4,6 +4,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 import { Wallet } from '../../../wallet';
 import { Trait } from '../trait';
+import { Form } from '../form';
 import styles from './Start.module.scss';
 
 function Start() {
@@ -19,7 +20,7 @@ function Start() {
   const playersCount = 0;
   const subheading = `Rockets (${playersCount}/4). Waiting for other players...`;
 
-  const footerClassName = clsx(styles.footer, account ? styles.smallMargin : styles.largeMargin);
+  const containerClassName = clsx(styles.container, account ? styles.smallMargin : styles.largeMargin);
 
   const getTraits = () => {
     if (!currentSession) return;
@@ -43,16 +44,20 @@ function Start() {
         </div>
       </header>
 
-      <ul className={styles.traits}>{getTraits()}</ul>
+      <div className={containerClassName}>
+        <ul className={styles.traits}>{getTraits()}</ul>
 
-      <footer className={footerClassName}>
-        {account ? null : (
-          <div className={styles.wallet}>
-            <Wallet />
-            <p>Connect wallet to start calculation and launch</p>
-          </div>
-        )}
-      </footer>
+        <footer>
+          {account ? (
+            <Form />
+          ) : (
+            <div className={styles.wallet}>
+              <Wallet />
+              <p>Connect wallet to start calculation and launch</p>
+            </div>
+          )}
+        </footer>
+      </div>
     </div>
   ) : (
     <p>Waiting for session to start...</p>

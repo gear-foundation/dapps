@@ -40,13 +40,14 @@
 }
 
 .traits {
-  max-width: 560px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 16px;
 }
 
-.footer {
+.container {
+  max-width: 560px;
+
   .wallet {
     @include gap(16px, right);
     display: flex;
@@ -56,10 +57,10 @@
   }
 
   &.smallMargin {
-    margin-top: 27px;
+    @include gap(27px);
   }
 
   &.largeMargin {
-    margin-top: 70px;
+    @include gap(70px);
   }
 }
