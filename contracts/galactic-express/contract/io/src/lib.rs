@@ -7,7 +7,7 @@ use gstd::{prelude::*, ActorId};
 pub struct ProgramMetadata;
 
 impl Metadata for ProgramMetadata {
-    type Init = In<Init>;
+    type Init = In<Initialize>;
     type Handle = InOut<Action, Event>;
     type Reply = InOut<(), ()>;
     type Others = InOut<(), ()>;
@@ -16,9 +16,9 @@ impl Metadata for ProgramMetadata {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
-pub struct Init {
-    name: String,
-    period_ms: u64,
+pub struct Initialize {
+    pub name: String,
+    pub period_sec: u32,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
@@ -72,7 +72,7 @@ pub enum Event {
     },
     LaunchFinished {
         id: u32,
-        stats: Vec<(ActorId, bool, u32, u32)>, // participant id, success, final altitude, earnings
+        stats: Vec<(ActorId, bool, u32, u128)>, // participant id, success, final altitude, earnings
     },
     SessionInfo {
         weather: u32,
@@ -131,14 +131,14 @@ pub struct CurrentSession {
     pub altitude: u32,
     pub weather: u32,
     pub fuel_price: u32,
-    pub payload_value: u32,
+    pub payload_value: u128,
     pub registered: BTreeMap<ActorId, SessionStrategy>,
 }
 
 #[derive(Default, Encode, Decode, TypeInfo, Debug)]
 pub struct Participant {
     pub name: String,
-    pub balance: u32,
+    pub balance: u128,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, Clone)]

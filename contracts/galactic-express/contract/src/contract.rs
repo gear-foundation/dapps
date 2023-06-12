@@ -1,4 +1,9 @@
-use gstd::{exec, msg, prelude::*, ActorId, ReservationId};
+use gstd::{
+    exec,
+    msg::{self, send_delayed, send_delayed_from_reservation},
+    prelude::*,
+    ActorId, ReservationId,
+};
 use launch_io::*;
 
 pub const WEATHER_RANGE: u32 = 5;
@@ -12,6 +17,7 @@ pub const MIN_ALTITUDE: u32 = 8_000;
 pub const MAX_ALTITUDE: u32 = 15_000;
 
 const RESERVATION_AMOUNT: u64 = 240_000_000_000;
+const GAS_FOR_UPDATE: u64 = 4_000_000_000;
 static mut RESERVATION: Vec<ReservationId> = vec![];
 
 #[derive(Default, Encode, Decode, TypeInfo, Debug)]
@@ -23,7 +29,7 @@ pub struct LaunchSite {
     pub events: BTreeMap<u32, Vec<CurrentStat>>,
     pub state: SessionState,
     pub session_id: u32,
-    pub session_period_ms: u64,
+    pub execute_session_period: u32,
 }
 
 static mut LAUNCH_SITE: Option<LaunchSite> = None;
@@ -93,7 +99,7 @@ impl LaunchSite {
         self.current_session = Some(CurrentSession {
             weather: random_weather,
             fuel_price: random_fuel_price,
-            payload_value: random_payload_value,
+            payload_value: random_payload_value as u128,
             altitude: random_altitude,
             registered: Default::default(),
         });
@@ -152,11 +158,29 @@ impl LaunchSite {
     }
 
     fn execute_session(&mut self) {
+        // Trying to rerun execute session after period
+        let action = Action::ExecuteSession;
+        let gas_available = exec::gas_available();
+        if gas_available <= GAS_FOR_UPDATE {
+            let reservations = unsafe { &mut RESERVATION };
+            let reservation_id = reservations.pop().expect("Need more gas");
+            send_delayed_from_reservation(
+                reservation_id,
+                exec::program_id(),
+                action,
+                0,
+                self.execute_session_period,
+            )
+            .expect("Can't send delayed from reservation");
+        } else {
+            send_delayed(exec::program_id(), action, 0, self.execute_session_period)
+                .expect("Can't send delayed");
+        }
+
         let session_data = self
             .current_session
             .as_ref()
             .expect("There should be active session to execute");
-
         let mut current_altitude = 0;
         let total_rounds = 3;
         let weather = session_data.weather;
@@ -261,7 +285,7 @@ impl LaunchSite {
                     5 * stat.fuel_left / max_fuel_left
                 };
 
-                let earnings = stat.payload * session_data.payload_value * coef / 10;
+                let earnings = stat.payload as u128 * session_data.payload_value * coef as u128 / 10;
                 outcome_participants.push((*id, stat.alive, stat.last_altitude, earnings));
 
                 let leaderboard_entry = self
@@ -309,13 +333,8 @@ impl LaunchSite {
             panic!("There is already participant registered with this id");
         }
 
-        self.participants.insert(
-            actor_id,
-            Participant {
-                name: name.clone(),
-                balance: 0,
-            },
-        );
+        self.participants
+            .insert(actor_id, Participant { name, balance: 0 });
 
         // comment original reply from `new_participant()`
         // msg::reply(Event::NewParticipant { id: actor_id, name }, 0)
@@ -343,6 +362,8 @@ impl LaunchSite {
                 payload: payload_amount,
             },
         );
+
+        current_session.payload_value = value;
 
         let current_session = self
             .current_session
@@ -415,13 +436,20 @@ async fn main() {
 
 #[no_mangle]
 unsafe extern "C" fn init() {
-    let name: Init = String::from_utf8(msg::load_bytes().expect("Cant load init message"))
-        .expect("Error in decoding");
+    let init: Initialize = msg::load().expect("Error in decoding");
     let launch_site = LaunchSite {
-        name,
+        name: init.name,
+        execute_session_period: init.period_sec,
         owner: msg::source(),
         ..Default::default()
     };
+    send_delayed(
+        exec::program_id(),
+        Action::ExecuteSession,
+        0,
+        init.period_sec,
+    )
+    .expect("Can't send delayed Action::ExecuteSession at init()");
     LAUNCH_SITE = Some(launch_site);
 }
 

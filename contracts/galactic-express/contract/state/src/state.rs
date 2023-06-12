@@ -6,7 +6,7 @@ use launch_io::*;
 pub struct ParticipantInfo {
     address: ActorId,
     name: String,
-    balance: u32,
+    balance: u128,
 }
 
 #[metawasm]
