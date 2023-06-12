@@ -1,128 +1,22 @@
 @use 'assets/styles';
 @use '@gear-js/ui/variables' as *;
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@800&family=Silkscreen&display=swap');
 
-:root {
-  --color-secondary: #{red($textColorSecondary) green($textColorSecondary) blue($textColorSecondary)};
-  --color-primary: #{red($successColor) green($successColor) blue($successColor)};
-  --color-error: #{red($errorColor) green($errorColor) blue($errorColor)};
-  --color-dark-500: 41 41 43;
-  --color-light: 209 209 209;
+#root {
+  max-width: 1200px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: content-box;
 }
 
-html {
-  background-color: #1e1e1e;
-  font-family: "Silkscreen", cursive;
+main {
+  flex: 1;
+  padding: 30px 0 60px;
+  position: relative; // for loaders
 }
 
 body {
-  background: $bgColor url(assets/images/bg.gif);
-  background-size: cover;
-}
-
-.start-launch-container {
-  padding: 20px;
-  background: #202022;
-  border: 2px solid rgb(255, 255, 255);
-  font-family: "Silkscreen", cursive;
-}
-
-.rk-btn {
-  border-radius: 0 !important;
-  font-family: "Silkscreen", cursive !important;
-  background-color: #910d9a !important;
-}
-
-.rk-btn:hover {
-  border-radius: 0 !important;
-  font-family: "Silkscreen", cursive !important;
-  background-color: #6f0c76 !important;
-}
-
-.logs {
-  background: #202022;
-  font-size: 13px;
-  border: 2px solid rgb(255, 255, 255);
-  font-family: "Silkscreen", cursive;
-}
-
-.panel {
-  background: #c0c0c0;
-  box-shadow: 0 -2px #fffdfc, 0 -4px #cce9eb;
-  color: #202022;
-  font-size: 2em;
-  font-family: "Silkscreen", cursive;
-  padding: 25px;
-}
-
-.panel2 {
-  margin-top: 20px;
-  background: #c0c0c0;
-  box-shadow: 0 -2px #fffdfc, 0 -4px #cce9eb;
-  color: #202022;
-  font-family: "Silkscreen", cursive;
-  padding: 5px;
-}
-
-.reg {
-  font-size: 1.5em;
-}
-
-.blink {
-  animation: blinker 0.6s linear infinite;
-  color: blue;
-  background-color: #c0c0c0;
-  padding: 3px;
-}
-
-@keyframes blinker {
-  50% {
-    opacity: 0;
-  }
-}
-
-.blink-one {
-  animation: blinker-one 1s linear infinite;
-}
-
-@keyframes blinker-one {
-  0% {
-    opacity: 0;
-  }
-}
-
-.blink-two {
-  animation: blinker-two 1.4s linear infinite;
-}
-
-@keyframes blinker-two {
-  100% {
-    opacity: 0;
-  }
-}
-
-.arrow {
-  color: rgb(74 222 128);
-  padding-right: 5px;
-}
-
-.sessionId {
-  color: blue
-}
-
-.player {
-  color: green;
-}
-
-.players-ready {
-  color: black;
-  font-size: 2em;
-  padding-left: 10px;
-}
-
-.range {
-  padding: 5px;
-  height: 30px;
-  line-height: 20px;
-  margin-bottom: 20px;
+  background: #000 radial-gradient(87.5% 87.5% at 62.28% 47.29%, rgba(46, 46, 46, 0) 0%, #0c0922 100%);
 }

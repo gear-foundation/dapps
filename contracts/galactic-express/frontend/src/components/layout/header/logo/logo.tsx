@@ -1,20 +1,12 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Icon } from 'components/ui/icon';
+import { Link } from 'react-router-dom';
+import { ReactComponent as SVG } from 'assets/images/logo.svg';
 
-export const Logo = () => {
-  const { pathname } = useLocation();
-
+function Logo() {
   return (
-    <>
-      {pathname !== '/' ? (
-        <Link to="/" className="inline-flex text-white transition-colors hover:text-opacity-70">
-          <img src="images/gasa.png" style={{ width: '100px' }}></img>
-        </Link>
-      ) : (
-        <span className="inline-flex text-white">
-          <img src="images/gasa.png" style={{ width: '100px' }}></img>
-        </span>
-      )}
-    </>
+    <Link to="/">
+      <SVG />
+    </Link>
   );
-};
+}
+
+export { Logo };

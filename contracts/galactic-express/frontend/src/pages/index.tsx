@@ -1,23 +1,12 @@
 import { Route, Routes } from 'react-router-dom';
 import { Home } from './home';
-import { Launch } from './launch';
-import { useInitLouncheData } from 'app/hooks/use-battle';
-import { LeaderBoard } from "./leader-board";
 
-const routes = [
-  { path: '/', Page: Home },
-  { path: '/launch', Page: Launch },
-  { path: '/leader-board', Page: LeaderBoard },
-];
+const routes = [{ path: '/', Page: Home }];
 
-export const Routing = () => {
-  useInitLouncheData();
+function Routing() {
+  const getRoutes = () => routes.map(({ path, Page }) => <Route key={path} path={path} element={<Page />} />);
 
-  return (
-    <Routes>
-      {routes.map(({ path, Page }) => (
-        <Route key={path} path={path} element={<Page />} />
-      ))}
-    </Routes>
-  );
-};
+  return <Routes>{getRoutes()}</Routes>;
+}
+
+export { Routing };

@@ -1,9 +1,14 @@
+import { Wallet } from 'features/wallet';
 import { Logo } from './logo';
-import { AccountComponent } from './account';
+import styles from './Header.module.scss';
 
-export const Header = () => (
-  <header className="container flex justify-between items-center py-5">
-    <Logo />
-    <AccountComponent />
-  </header>
-);
+function Header() {
+  return (
+    <header className={styles.header}>
+      <Logo />
+      <Wallet />
+    </header>
+  );
+}
+
+export { Header };
