@@ -13,10 +13,13 @@
 
 main {
   flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
   padding: 30px 0 60px;
   position: relative; // for loaders
 }
 
 body {
-  background: #000 radial-gradient(87.5% 87.5% at 62.28% 47.29%, rgba(46, 46, 46, 0) 0%, #0c0922 100%);
+  background: #1e1e1e radial-gradient(87.5% 87.5% at 62.28% 47.29%, rgb(0, 0, 0) 0%, #0c0922 100%);
 }
