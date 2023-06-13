@@ -9,14 +9,11 @@ import styles from './Start.module.scss';
 
 function Start() {
   const { account } = useAccount();
-  const state = useSessionState();
 
+  const state = useSessionState();
   const { sessionId, currentSession } = state || {};
 
-  console.log(state);
-
   const heading = `Session #${sessionId}`;
-
   const playersCount = 0;
   const subheading = `Rockets (${playersCount}/4). Waiting for other players...`;
 
@@ -25,13 +22,17 @@ function Start() {
   const getTraits = () => {
     if (!currentSession) return;
 
-    const { altitude, weather, fuelPrice, payloadValue } = currentSession || {};
-    const traitValues = [altitude, weather, fuelPrice, payloadValue];
+    const { altitude, weather, fuelPrice, reward } = currentSession || {};
+
+    // same order as in TRAITS
+    const traitValues = [altitude, weather, fuelPrice, reward];
 
     return TRAITS.map((trait, index) => (
-      <Trait SVG={trait.SVG} heading={trait.heading} subheading={traitValues[index]} />
+      <Trait key={trait.heading} SVG={trait.SVG} heading={trait.heading} subheading={traitValues[index]} />
     ));
   };
+
+  console.log(state);
 
   return currentSession ? (
     <div>
@@ -49,7 +50,7 @@ function Start() {
 
         <footer>
           {account ? (
-            <Form />
+            <Form weather={currentSession.weather} />
           ) : (
             <div className={styles.wallet}>
               <Wallet />
