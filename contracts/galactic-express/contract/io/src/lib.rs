@@ -103,12 +103,6 @@ pub struct CurrentStat {
     pub halt: Option<RocketHalt>,
 }
 
-#[derive(Default, Encode, Decode, TypeInfo)]
-pub struct ParticipantState {
-    pub name: String,
-    pub balance: u32,
-}
-
 #[derive(Default, Encode, Decode, TypeInfo, Debug)]
 pub struct LaunchSite {
     pub name: String,
@@ -131,11 +125,12 @@ pub struct CurrentSession {
     pub altitude: u32,
     pub weather: u32,
     pub fuel_price: u32,
-    pub payload_value: u128,
-    pub registered: BTreeMap<ActorId, SessionStrategy>,
+    pub reward: u128,
+    pub registered: BTreeMap<ActorId, (SessionStrategy, Participant)>,
+    pub bet: Option<u128>,
 }
 
-#[derive(Default, Encode, Decode, TypeInfo, Debug)]
+#[derive(Default, Encode, Decode, TypeInfo, Debug, Clone)]
 pub struct Participant {
     pub name: String,
     pub balance: u128,

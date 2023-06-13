@@ -1,3 +1,4 @@
+use codec::EncodeAsRef;
 use gstd::{
     exec,
     msg::{self, send_delayed, send_delayed_from_reservation},
@@ -99,9 +100,10 @@ impl LaunchSite {
         self.current_session = Some(CurrentSession {
             weather: random_weather,
             fuel_price: random_fuel_price,
-            payload_value: random_payload_value as u128,
+            reward: random_payload_value as u128,
             altitude: random_altitude,
             registered: Default::default(),
+            bet: None,
         });
         self.session_id = self.session_id.saturating_add(1);
         self.state = SessionState::Registration;
@@ -121,41 +123,41 @@ impl LaunchSite {
         .expect("failed to reply in ::new_session");
     }
 
-    fn register_on_launch(&mut self, fuel_amount: u32, payload_amount: u32) {
-        let actor_id = msg::source();
+    // fn register_on_launch(&mut self, fuel_amount: u32, payload_amount: u32) {
+    //     let actor_id = msg::source();
 
-        assert!(self.current_session.is_some());
+    //     assert!(self.current_session.is_some());
 
-        assert!(fuel_amount <= 100 && payload_amount <= 100, "Limit is 100%");
+    //     assert!(fuel_amount <= 100 && payload_amount <= 100, "Limit is 100%");
 
-        let current_session = self
-            .current_session
-            .as_mut()
-            .expect("checked above that exists");
+    //     let current_session = self
+    //         .current_session
+    //         .as_mut()
+    //         .expect("checked above that exists");
 
-        if current_session.registered.contains_key(&actor_id) {
-            // already registered
+    //     if current_session.registered.contains_key(&actor_id) {
+    //         // already registered
 
-            panic!("Participant already registered on the session");
-        }
+    //         panic!("Participant already registered on the session");
+    //     }
 
-        current_session.registered.insert(
-            actor_id,
-            SessionStrategy {
-                fuel: fuel_amount,
-                payload: payload_amount,
-            },
-        );
+    //     current_session.registered.insert(
+    //         actor_id,
+    //         SessionStrategy {
+    //             fuel: fuel_amount,
+    //             payload: payload_amount,
+    //         },
+    //     );
 
-        msg::reply(
-            Event::LaunchRegistration {
-                id: 0,
-                participant: actor_id,
-            },
-            0,
-        )
-        .expect("failed to reply in ::new_session");
-    }
+    //     msg::reply(
+    //         Event::LaunchRegistration {
+    //             id: 0,
+    //             participant: actor_id,
+    //         },
+    //         0,
+    //     )
+    //     .expect("failed to reply in ::new_session");
+    // }
 
     fn execute_session(&mut self) {
         // Trying to rerun execute session after period
@@ -187,7 +189,7 @@ impl LaunchSite {
 
         let mut current_stats: BTreeMap<ActorId, CurrentStat> = BTreeMap::new();
 
-        for (id, strategy) in session_data.registered.iter() {
+        for (id, (strategy, _participant)) in session_data.registered.iter() {
             current_stats.insert(
                 *id,
                 CurrentStat {
@@ -204,7 +206,7 @@ impl LaunchSite {
         for i in 0..total_rounds {
             current_altitude += session_data.altitude / total_rounds;
 
-            for (id, strategy) in session_data.registered.iter() {
+            for (id, (strategy, participant)) in session_data.registered.iter() {
                 // if 1/3 or 2/3 of distance the probability of separation failure
 
                 // risk factor of burning fuel
@@ -274,7 +276,7 @@ impl LaunchSite {
                 max_fuel_left = stat.fuel_left;
             }
         }
-
+        let mut winner = (ActorId::default(), 0);
         for (id, stat) in current_stats.iter() {
             if stat.alive {
                 let coef = if stat.fuel_left == 0 {
@@ -285,9 +287,13 @@ impl LaunchSite {
                     5 * stat.fuel_left / max_fuel_left
                 };
 
-                let earnings =
-                    stat.payload as u128 * session_data.payload_value * coef as u128 / 10;
+                let earnings = stat.payload as u128 * session_data.reward * coef as u128 / 10;
                 outcome_participants.push((*id, stat.alive, stat.last_altitude, earnings));
+
+                if winner.1 < earnings {
+                    winner.0 = *id;
+                    winner.1 = earnings;
+                }
 
                 let leaderboard_entry = self
                     .participants
@@ -297,7 +303,11 @@ impl LaunchSite {
                 leaderboard_entry.balance += earnings;
             }
         }
-
+        if let Some(bet) = session_data.bet {
+            let mut prize = bet * current_stats.len() as u128;
+            prize = (prize as f32 - prize as f32 * 0.005) as u128;
+            msg::send(winner.0, (), prize).expect("Can't send total deposit"); // send total deposit to winner
+        }
         self.state = SessionState::SessionIsOver;
 
         // handle round results
@@ -333,9 +343,8 @@ impl LaunchSite {
         if self.participants.contains_key(&actor_id) {
             panic!("There is already participant registered with this id");
         }
-
-        self.participants
-            .insert(actor_id, Participant { name, balance: 0 });
+        let participant = Participant { name, balance: 0 };
+        self.participants.insert(actor_id, participant.clone());
 
         // comment original reply from `new_participant()`
         // msg::reply(Event::NewParticipant { id: actor_id, name }, 0)
@@ -349,22 +358,21 @@ impl LaunchSite {
             .current_session
             .as_mut()
             .expect("checked above that exists");
-        
-        current_session.payload_value = value;
-        
+
         if current_session.registered.contains_key(&actor_id) {
             // already registered
 
             panic!("Participant already registered on the session");
         }
+        current_session.bet = Some(value);
 
-        current_session.registered.insert(
-            actor_id,
-            SessionStrategy {
-                fuel: fuel_amount,
-                payload: payload_amount,
-            },
-        );
+        let session_strategy = SessionStrategy {
+            fuel: fuel_amount,
+            payload: payload_amount,
+        };
+        current_session
+            .registered
+            .insert(actor_id, (session_strategy, participant));
 
         msg::reply(
             Event::LaunchRegistration {
@@ -398,7 +406,8 @@ async fn main() {
             fuel_amount,
             payload_amount,
         } => {
-            launch_site.register_on_launch(fuel_amount, payload_amount);
+            // launch_site.register_on_launch(fuel_amount, payload_amount);
+            unreachable!("You should youse RegisterParticipantOnLaunch")
         }
         Action::ExecuteSession => {
             launch_site.execute_session();
