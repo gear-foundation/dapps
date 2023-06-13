@@ -285,7 +285,8 @@ impl LaunchSite {
                     5 * stat.fuel_left / max_fuel_left
                 };
 
-                let earnings = stat.payload as u128 * session_data.payload_value * coef as u128 / 10;
+                let earnings =
+                    stat.payload as u128 * session_data.payload_value * coef as u128 / 10;
                 outcome_participants.push((*id, stat.alive, stat.last_altitude, earnings));
 
                 let leaderboard_entry = self
@@ -348,28 +349,9 @@ impl LaunchSite {
             .current_session
             .as_mut()
             .expect("checked above that exists");
-
-        if current_session.registered.contains_key(&actor_id) {
-            // already registered
-
-            panic!("Participant already registered on the session");
-        }
-
-        current_session.registered.insert(
-            actor_id,
-            SessionStrategy {
-                fuel: fuel_amount,
-                payload: payload_amount,
-            },
-        );
-
+        
         current_session.payload_value = value;
-
-        let current_session = self
-            .current_session
-            .as_mut()
-            .expect("checked above that exists");
-
+        
         if current_session.registered.contains_key(&actor_id) {
             // already registered
 
