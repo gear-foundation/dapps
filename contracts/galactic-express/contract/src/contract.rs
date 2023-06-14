@@ -195,6 +195,7 @@ impl LaunchSite {
                     participant: *id,
                     alive: true,
                     fuel_left: strategy.fuel,
+                    fuel_capacity: strategy.fuel,
                     last_altitude: 0,
                     payload: strategy.payload,
                     halt: None,
@@ -286,7 +287,9 @@ impl LaunchSite {
                     5 * stat.fuel_left / max_fuel_left
                 };
 
-                let earnings = stat.payload as u128 * session_data.reward * coef as u128 / 10;
+                let mut earnings = (stat.payload as u128 * session_data.reward * coef as u128);
+                earnings = earnings - (session_data.fuel_price * stat.fuel_capacity) as u128; 
+                earnings = earnings / 10;
                 outcome_participants.push((*id, stat.alive, stat.last_altitude, earnings));
 
                 if winner.1 < earnings {
@@ -309,7 +312,7 @@ impl LaunchSite {
             } else {
                 prize - prize * 5 / 1000
             };
-            
+
             msg::send(winner.0, (), prize).expect("Can't send total deposit"); // send total deposit to winner
         }
         self.state = SessionState::SessionIsOver;
@@ -397,22 +400,22 @@ async fn main() {
         Action::Info => {
             launch_site.info();
         }
-        // Action::RegisterParticipant(name) => {
-        //     launch_site.new_participant(name);
-        // }
+        Action::RegisterParticipant(name) => {
+            launch_site.new_participant(name);
+        }
         Action::ChangeParticipantName(name) => {
             launch_site.rename_participant(name);
         }
         Action::StartNewSession => {
             launch_site.new_session();
         }
-        // Action::RegisterOnLaunch {
-        //     fuel_amount,
-        //     payload_amount,
-        // } => {
-        //     // launch_site.register_on_launch(fuel_amount, payload_amount);
-        //     unreachable!("You should youse RegisterParticipantOnLaunch")
-        // }
+        Action::RegisterOnLaunch {
+            fuel_amount,
+            payload_amount,
+        } => {
+            // launch_site.register_on_launch(fuel_amount, payload_amount);
+            unreachable!("You should youse RegisterParticipantOnLaunch")
+        }
         Action::ExecuteSession => {
             launch_site.execute_session();
         }
