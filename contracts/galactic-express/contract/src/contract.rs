@@ -1,4 +1,3 @@
-use codec::EncodeAsRef;
 use gstd::{
     exec,
     msg::{self, send_delayed, send_delayed_from_reservation},
@@ -206,7 +205,7 @@ impl LaunchSite {
         for i in 0..total_rounds {
             current_altitude += session_data.altitude / total_rounds;
 
-            for (id, (strategy, participant)) in session_data.registered.iter() {
+            for (id, (strategy, _participant)) in session_data.registered.iter() {
                 // if 1/3 or 2/3 of distance the probability of separation failure
 
                 // risk factor of burning fuel
@@ -304,8 +303,13 @@ impl LaunchSite {
             }
         }
         if let Some(bet) = session_data.bet {
-            let mut prize = bet * current_stats.len() as u128;
-            prize = (prize as f32 - prize as f32 * 0.005) as u128;
+            let prize = bet * current_stats.len() as u128;
+            let prize = if prize < 200 {
+                prize - 1
+            } else {
+                prize - prize * 5 / 1000
+            };
+            
             msg::send(winner.0, (), prize).expect("Can't send total deposit"); // send total deposit to winner
         }
         self.state = SessionState::SessionIsOver;
@@ -393,22 +397,22 @@ async fn main() {
         Action::Info => {
             launch_site.info();
         }
-        Action::RegisterParticipant(name) => {
-            launch_site.new_participant(name);
-        }
+        // Action::RegisterParticipant(name) => {
+        //     launch_site.new_participant(name);
+        // }
         Action::ChangeParticipantName(name) => {
             launch_site.rename_participant(name);
         }
         Action::StartNewSession => {
             launch_site.new_session();
         }
-        Action::RegisterOnLaunch {
-            fuel_amount,
-            payload_amount,
-        } => {
-            // launch_site.register_on_launch(fuel_amount, payload_amount);
-            unreachable!("You should youse RegisterParticipantOnLaunch")
-        }
+        // Action::RegisterOnLaunch {
+        //     fuel_amount,
+        //     payload_amount,
+        // } => {
+        //     // launch_site.register_on_launch(fuel_amount, payload_amount);
+        //     unreachable!("You should youse RegisterParticipantOnLaunch")
+        // }
         Action::ExecuteSession => {
             launch_site.execute_session();
         }
@@ -434,13 +438,13 @@ unsafe extern "C" fn init() {
         owner: msg::source(),
         ..Default::default()
     };
-    send_delayed(
-        exec::program_id(),
-        Action::ExecuteSession,
-        0,
-        init.period_sec,
-    )
-    .expect("Can't send delayed Action::ExecuteSession at init()");
+    // send_delayed(
+    //     exec::program_id(),
+    //     Action::ExecuteSession,
+    //     0,
+    //     init.period_sec,
+    // )
+    // .expect("Can't send delayed Action::ExecuteSession at init()");
     LAUNCH_SITE = Some(launch_site);
 }
 

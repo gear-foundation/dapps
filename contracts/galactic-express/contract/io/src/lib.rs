@@ -24,13 +24,13 @@ pub struct Initialize {
 #[derive(Encode, Decode, TypeInfo, Debug)]
 pub enum Action {
     Info,
-    RegisterParticipant(String),
+    // RegisterParticipant(String),
     ChangeParticipantName(String),
     StartNewSession,
-    RegisterOnLaunch {
-        fuel_amount: u32,
-        payload_amount: u32,
-    },
+    // RegisterOnLaunch {
+    //     fuel_amount: u32,
+    //     payload_amount: u32,
+    // },
     RegisterParticipantOnLaunch {
         name: String,
         fuel_amount: u32,
