@@ -19,7 +19,7 @@ type Session = {
   bet: string;
 };
 
-type SessionState = {
+type LaunchState = {
   name: string;
   owner: HexString;
   participants: {};
@@ -29,4 +29,4 @@ type SessionState = {
   sessionId: string;
 };
 
-export type { SessionState };
+export type { LaunchState };
