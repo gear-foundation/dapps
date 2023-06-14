@@ -16,7 +16,7 @@ type Session = {
   fuelPrice: string;
   reward: string;
   registered: { [key: HexString]: [Strategy, Participant] };
-  bet: string;
+  bet: string | null;
 };
 
 type LaunchState = {

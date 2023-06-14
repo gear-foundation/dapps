@@ -46,8 +46,6 @@
 }
 
 .container {
-  max-width: 560px;
-
   .wallet {
     @include gap(16px, right);
     display: flex;

@@ -1,5 +1,6 @@
 import { useAccount, withoutCommas } from '@gear-js/react-hooks';
 import clsx from 'clsx';
+import { Container } from 'components';
 import { useLaunchState } from '../../hooks';
 import { TRAITS, WEATHERS } from '../../consts';
 import { Wallet } from '../../../wallet';
@@ -44,12 +45,12 @@ function Start() {
         </div>
       </header>
 
-      <div className={containerClassName}>
+      <Container className={containerClassName}>
         <ul className={styles.traits}>{getTraits()}</ul>
 
         <footer>
           {account ? (
-            <Form weather={currentSession.weather} defaultDeposit={withoutCommas(currentSession.bet)} />
+            <Form weather={currentSession.weather} defaultDeposit={withoutCommas(currentSession.bet || '0')} />
           ) : (
             <div className={styles.wallet}>
               <Wallet />
@@ -57,7 +58,7 @@ function Start() {
             </div>
           )}
         </footer>
-      </div>
+      </Container>
     </div>
   ) : (
     <p>Waiting for session to start...</p>
