@@ -1,3 +1,3 @@
-import { Start } from './components';
+import { Start, Session } from './components';
 
-export { Start };
+export { Start, Session };

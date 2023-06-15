@@ -10,23 +10,36 @@ type Participant = {
   balance: string;
 };
 
+type Player<T> = {
+  [key: HexString]: T;
+};
+
 type Session = {
   altitude: string;
   weather: string;
   fuelPrice: string;
   reward: string;
-  registered: { [key: HexString]: [Strategy, Participant] };
+  registered: Player<[Strategy, Participant]>;
   bet: string | null;
+};
+
+type Event = {
+  participant: HexString;
+  alive: boolean;
+  fuelLeft: string;
+  lastAltitude: string;
+  payload: string;
+  halt: string | null;
 };
 
 type LaunchState = {
   name: string;
   owner: HexString;
-  participants: {};
+  participants: Player<Participant>;
   currentSession: Session | null;
-  events: {};
+  events: { [key: number]: Event[] };
   state: string;
   sessionId: string;
 };
 
-export type { LaunchState };
+export type { LaunchState, Event };

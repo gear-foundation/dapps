@@ -1,0 +1,71 @@
+@use 'utils' as *;
+
+$tableBorder: 1px solid rgba(43, 208, 113, 0.5);
+$cellBorder: 1px solid rgba(#d1cfd7, 0.1);
+$borderRadius: 8px;
+
+.table {
+  display: grid;
+  grid-template-columns: 1fr repeat(5, max-content);
+  text-align: center;
+
+  div {
+    padding: 16px 12px;
+  }
+}
+
+.headerCell {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  color: rgba(#8c8b90, 0.45);
+}
+
+.bodyCell {
+  letter-spacing: -0.24px;
+  background-color: rgba(255, 255, 255, 0.04);
+
+  // first row
+  &:nth-child(n + 7):nth-child(-n + 12) {
+    border-top: $tableBorder;
+  }
+
+  // last row
+  &:nth-last-child(-n + 6) {
+    border-bottom: $tableBorder;
+  }
+
+  // not last column
+  &:not(:nth-child(6n)) {
+    border-right: $cellBorder;
+  }
+
+  // not last row
+  &:not(:nth-last-child(-n + 6)) {
+    border-bottom: $cellBorder;
+  }
+
+  &:nth-child(7) {
+    border-top-left-radius: $borderRadius;
+  }
+
+  &:nth-child(12) {
+    border-top-right-radius: $borderRadius;
+  }
+
+  &:nth-child(25) {
+    border-bottom-left-radius: $borderRadius;
+  }
+
+  &:nth-child(30) {
+    border-bottom-right-radius: $borderRadius;
+  }
+}
+
+.firstColumn {
+  @include textOverflow;
+  border-left: $tableBorder;
+}
+
+.lastColumn {
+  border-right: $tableBorder;
+}

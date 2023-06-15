@@ -24,4 +24,6 @@ const VALIDATE = {
   fuel: isGreaterThanZero,
 };
 
-export { TRAITS, WEATHERS, INITIAL_VALUES, VALIDATE };
+const TABLE_HEADINGS = ['Player', 'Alive', 'Fuel Left', 'Altitude', 'Payload', 'Halt'];
+
+export { TRAITS, WEATHERS, INITIAL_VALUES, VALIDATE, TABLE_HEADINGS };

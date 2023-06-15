@@ -1,0 +1,43 @@
+@use 'utils' as *;
+
+.header {
+  @include gap(54px, right);
+  padding-bottom: 16px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(#8c8b90, 0.2);
+
+  .heading {
+    font-weight: 300;
+    font-size: 32px;
+    line-height: 100%;
+    letter-spacing: 0.08em;
+  }
+
+  .navigation {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .inputWrapper {
+    @include gap(8px, right);
+    display: flex;
+    align-items: center;
+  }
+
+  .input {
+    flex-shrink: 0;
+    max-width: 150px;
+  }
+
+  .total {
+    color: #d2d2d3;
+  }
+
+  .rotatedArrow {
+    transform: rotate(180deg);
+  }
+}

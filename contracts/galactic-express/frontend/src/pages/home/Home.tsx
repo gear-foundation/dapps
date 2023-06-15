@@ -1,7 +1,7 @@
-import { Start } from 'features/session';
+import { Start, Session } from 'features/session';
 
 function Home() {
-  return <Start />;
+  return <Session />;
 }
 
 export { Home };
