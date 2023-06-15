@@ -59,6 +59,7 @@ impl LaunchSite {
             Participant {
                 name: name.clone(),
                 balance: 0,
+                score: 0,
             },
         );
 
@@ -122,46 +123,9 @@ impl LaunchSite {
         .expect("failed to reply in ::new_session");
     }
 
-    // fn register_on_launch(&mut self, fuel_amount: u32, payload_amount: u32) {
-    //     let actor_id = msg::source();
-
-    //     assert!(self.current_session.is_some());
-
-    //     assert!(fuel_amount <= 100 && payload_amount <= 100, "Limit is 100%");
-
-    //     let current_session = self
-    //         .current_session
-    //         .as_mut()
-    //         .expect("checked above that exists");
-
-    //     if current_session.registered.contains_key(&actor_id) {
-    //         // already registered
-
-    //         panic!("Participant already registered on the session");
-    //     }
-
-    //     current_session.registered.insert(
-    //         actor_id,
-    //         SessionStrategy {
-    //             fuel: fuel_amount,
-    //             payload: payload_amount,
-    //         },
-    //     );
-
-    //     msg::reply(
-    //         Event::LaunchRegistration {
-    //             id: 0,
-    //             participant: actor_id,
-    //         },
-    //         0,
-    //     )
-    //     .expect("failed to reply in ::new_session");
-    // }
-
     fn restart_execution(&mut self) {
         if self.state == SessionState::SessionIsOver {
-            self.state = SessionState::Registration;
-            let action = Action::ExecuteSession;
+            let action = Action::StartNewSession;
             let gas_available = exec::gas_available();
             if gas_available <= GAS_FOR_UPDATE {
                 let reservations = unsafe { &mut RESERVATION };
@@ -361,7 +325,11 @@ impl LaunchSite {
         if self.participants.contains_key(&actor_id) {
             panic!("There is already participant registered with this id");
         }
-        let participant = Participant { name, balance: 0 };
+        let participant = Participant {
+            name,
+            score: 0,
+            balance: 0,
+        };
         self.participants.insert(actor_id, participant.clone());
 
         // comment original reply from `new_participant()`
