@@ -93,7 +93,7 @@ pub struct CurrentSesionInfo {
     pub payload_value: u32,
 }
 
-#[derive(Default, Encode, Decode, TypeInfo, Clone, Debug)]
+#[derive(Default, Encode, Decode, TypeInfo, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct CurrentStat {
     pub participant: ActorId,
     pub alive: bool,
@@ -110,7 +110,7 @@ pub struct LaunchSite {
     pub owner: ActorId,
     pub participants: BTreeMap<ActorId, Participant>,
     pub current_session: Option<CurrentSession>,
-    pub events: BTreeMap<u32, Vec<CurrentStat>>,
+    pub events: BTreeMap<u32, BTreeSet<CurrentStat>>,
     pub state: SessionState,
     pub session_id: u32,
 }
@@ -137,7 +137,7 @@ pub struct Participant {
     pub balance: u128,
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug, Clone)]
+#[derive(Encode, Decode, TypeInfo, Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum RocketHalt {
     Overfilled,
     Overfuelled,

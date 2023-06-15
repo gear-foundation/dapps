@@ -26,7 +26,7 @@ pub struct LaunchSite {
     pub owner: ActorId,
     pub participants: BTreeMap<ActorId, Participant>,
     pub current_session: Option<CurrentSession>,
-    pub events: BTreeMap<u32, Vec<CurrentStat>>,
+    pub events: BTreeMap<u32, BTreeSet<CurrentStat>>,
     pub state: SessionState,
     pub session_id: u32,
     pub execute_session_period: u32,
@@ -158,26 +158,30 @@ impl LaunchSite {
     //     .expect("failed to reply in ::new_session");
     // }
 
-    fn execute_session(&mut self) {
-        // Trying to rerun execute session after period
-        let action = Action::ExecuteSession;
-        let gas_available = exec::gas_available();
-        if gas_available <= GAS_FOR_UPDATE {
-            let reservations = unsafe { &mut RESERVATION };
-            let reservation_id = reservations.pop().expect("Need more gas");
-            send_delayed_from_reservation(
-                reservation_id,
-                exec::program_id(),
-                action,
-                0,
-                self.execute_session_period,
-            )
-            .expect("Can't send delayed from reservation");
-        } else {
-            send_delayed(exec::program_id(), action, 0, self.execute_session_period)
-                .expect("Can't send delayed");
+    fn restart_execution(&mut self) {
+        if self.state == SessionState::SessionIsOver {
+            self.state = SessionState::Registration;
+            let action = Action::ExecuteSession;
+            let gas_available = exec::gas_available();
+            if gas_available <= GAS_FOR_UPDATE {
+                let reservations = unsafe { &mut RESERVATION };
+                let reservation_id = reservations.pop().expect("Need more gas");
+                send_delayed_from_reservation(
+                    reservation_id,
+                    exec::program_id(),
+                    action,
+                    0,
+                    self.execute_session_period,
+                )
+                .expect("Can't send delayed from reservation");
+            } else {
+                send_delayed(exec::program_id(), action, 0, self.execute_session_period)
+                    .expect("Can't send delayed");
+            }
         }
+    }
 
+    fn execute_session(&mut self) {
         let session_data = self
             .current_session
             .as_ref()
@@ -214,57 +218,61 @@ impl LaunchSite {
 
                 let current_stat = current_stats.get_mut(id).expect("all have stats");
 
-                if !current_stat.alive {
-                    continue;
-                } // already failed;
+                if current_stat.alive {
+                    // if 1/3 distance then probability of engine error is 3%
+                    if i == 0 && generate_event(3) {
+                        current_stat.halt = Some(RocketHalt::EngineError);
+                        current_stat.alive = false;
+                    };
 
-                // if 1/3 distance then probability of engine error is 3%
-                if i == 0 && generate_event(3) {
-                    current_stat.halt = Some(RocketHalt::EngineError);
-                    current_stat.alive = false;
-                };
+                    // if 1/3 distance and fuel > 80% - risk factor of weather
+                    if i == 0 && current_stat.fuel_left >= (80 - 2 * weather) && generate_event(10)
+                    {
+                        current_stat.halt = Some(RocketHalt::Overfuelled);
+                        current_stat.alive = false;
+                    };
 
-                // if 1/3 distance and fuel > 80% - risk factor of weather
-                if i == 0 && current_stat.fuel_left >= (80 - 2 * weather) && generate_event(10) {
-                    current_stat.halt = Some(RocketHalt::Overfuelled);
-                    current_stat.alive = false;
-                };
+                    // if  2/3 of distance and filled > 80% - risk factor of weather
+                    // 10 percent that will be overfilled
+                    if i == 1 && strategy.payload >= (80 - 2 * weather) && generate_event(10) {
+                        current_stat.halt = Some(RocketHalt::Overfilled);
+                        current_stat.alive = false;
+                    };
 
-                // if  2/3 of distance and filled > 80% - risk factor of weather
-                // 10 percent that will be overfilled
-                if i == 1 && strategy.payload >= (80 - 2 * weather) && generate_event(10) {
-                    current_stat.halt = Some(RocketHalt::Overfilled);
-                    current_stat.alive = false;
-                };
+                    // if 2/3 of distance
+                    // 5 percent that will be separation failure
+                    if i == 1 && generate_event(5 + weather as u8) {
+                        current_stat.halt = Some(RocketHalt::SeparationFailure);
+                        current_stat.alive = false;
+                    };
 
-                // if 2/3 of distance
-                // 5 percent that will be separation failure
-                if i == 1 && generate_event(5 + weather as u8) {
-                    current_stat.halt = Some(RocketHalt::SeparationFailure);
-                    current_stat.alive = false;
-                };
+                    // if last distance 10 percent od asteroid
+                    // 10 percent that will be asteroid + weather factor
+                    if i == 2 && generate_event(10 + weather as u8) {
+                        current_stat.halt = Some(RocketHalt::Asteroid);
+                        current_stat.alive = false;
+                    };
 
-                // if last distance 10 percent od asteroid
-                // 10 percent that will be asteroid + weather factor
-                if i == 2 && generate_event(10 + weather as u8) {
-                    current_stat.halt = Some(RocketHalt::Asteroid);
-                    current_stat.alive = false;
-                };
-
-                if current_stat.fuel_left < fuel_burn {
-                    // fuel is over
-                    current_stat.alive = false;
-                    current_stat.halt = Some(RocketHalt::NotEnoughFuel);
-                } else {
-                    current_stat.last_altitude = current_altitude;
-                    current_stat.fuel_left -= fuel_burn;
+                    if current_stat.fuel_left < fuel_burn {
+                        // fuel is over
+                        current_stat.alive = false;
+                        current_stat.halt = Some(RocketHalt::NotEnoughFuel);
+                    } else {
+                        current_stat.last_altitude = current_altitude;
+                        current_stat.fuel_left -= fuel_burn;
+                    }
                 }
-
                 // weather random affect?
                 self.events
                     .entry(i)
-                    .and_modify(|events| events.push(current_stat.clone()))
-                    .or_insert_with(|| vec![current_stat.clone()]);
+                    .and_modify(|events| {
+                        events.insert(current_stat.clone());
+                    })
+                    .or_insert_with(|| {
+                        let mut s = BTreeSet::new();
+                        s.insert(current_stat.clone());
+                        s
+                    });
             }
         }
 
@@ -288,7 +296,7 @@ impl LaunchSite {
                 };
 
                 let mut earnings = (stat.payload as u128 * session_data.reward * coef as u128);
-                earnings = earnings - (session_data.fuel_price * stat.fuel_capacity) as u128; 
+                earnings = earnings - (session_data.fuel_price * stat.fuel_capacity) as u128;
                 earnings = earnings / 10;
                 outcome_participants.push((*id, stat.alive, stat.last_altitude, earnings));
 
@@ -317,8 +325,6 @@ impl LaunchSite {
         }
         self.state = SessionState::SessionIsOver;
 
-        // handle round results
-
         msg::reply(
             Event::LaunchFinished {
                 id: 0,
@@ -327,6 +333,9 @@ impl LaunchSite {
             0,
         )
         .expect("failed to reply in ::new_session");
+
+        // Trying to rerun execute session after period and if it's over
+        self.restart_execution();
     }
 
     fn reserve_gas(&self) {
@@ -344,8 +353,10 @@ impl LaunchSite {
         payload_amount: u32,
     ) {
         //new_participant
-        let actor_id = msg::source();
         let value = msg::value();
+        assert!(value >= 500);
+
+        let actor_id = msg::source();
 
         if self.participants.contains_key(&actor_id) {
             panic!("There is already participant registered with this id");
@@ -366,11 +377,20 @@ impl LaunchSite {
             .as_mut()
             .expect("checked above that exists");
 
+        if let Some(bet) = current_session.bet {
+            if value != bet {
+                panic!(
+                    "For new participant value should be equal to bet: {}, instead: {}",
+                    bet, value
+                );
+            }
+        }
+
         if current_session.registered.contains_key(&actor_id) {
             // already registered
 
             panic!("Participant already registered on the session");
-        }
+        };
         current_session.bet = Some(value);
 
         let session_strategy = SessionStrategy {
