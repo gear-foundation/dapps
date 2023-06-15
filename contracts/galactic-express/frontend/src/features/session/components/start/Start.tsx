@@ -2,9 +2,8 @@ import { useAccount, withoutCommas } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 import { Container } from 'components';
 import { useLaunchState } from '../../hooks';
-import { TRAITS, WEATHERS } from '../../consts';
 import { Wallet } from '../../../wallet';
-import { Trait } from '../trait';
+import { Traits } from '../traits';
 import { Form } from '../form';
 import styles from './Start.module.scss';
 
@@ -18,19 +17,6 @@ function Start() {
   const playersCount = players.length;
 
   const containerClassName = clsx(styles.container, account ? styles.smallMargin : styles.largeMargin);
-
-  const getTraits = () => {
-    if (!currentSession) return;
-
-    const { altitude, weather, fuelPrice, reward } = currentSession;
-
-    // same order as in TRAITS
-    const traitValues = [altitude, WEATHERS[+weather], fuelPrice, reward];
-
-    return TRAITS.map((trait, index) => (
-      <Trait key={trait.heading} SVG={trait.SVG} heading={trait.heading} subheading={traitValues[index]} />
-    ));
-  };
 
   console.log(state);
 
@@ -46,7 +32,12 @@ function Start() {
       </header>
 
       <Container className={containerClassName}>
-        <ul className={styles.traits}>{getTraits()}</ul>
+        <Traits
+          altitude={currentSession.altitude}
+          weather={currentSession.weather}
+          fuelPrice={currentSession.fuelPrice}
+          reward={currentSession.reward}
+        />
 
         <footer>
           {account ? (
