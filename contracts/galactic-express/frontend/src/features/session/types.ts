@@ -1,4 +1,5 @@
 import { HexString } from '@polkadot/util/types';
+import { HALT } from './consts';
 
 type Strategy = {
   fuel: string;
@@ -23,13 +24,15 @@ type Session = {
   bet: string | null;
 };
 
+type Halt = (typeof HALT)[keyof typeof HALT];
+
 type Event = {
   participant: HexString;
   alive: boolean;
   fuelLeft: string;
   lastAltitude: string;
   payload: string;
-  halt: string | null;
+  halt: Halt | null;
 };
 
 type LaunchState = {

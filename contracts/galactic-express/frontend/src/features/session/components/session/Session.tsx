@@ -1,12 +1,12 @@
 import { Button, Input } from '@gear-js/ui';
-import { Container } from 'components';
 import { useState } from 'react';
+import { Container } from 'components';
 import { ReactComponent as LeftDoubleArrowSVG } from '../../assets/left-double-arrow.svg';
 import { ReactComponent as LeftArrowSVG } from '../../assets/left-arrow.svg';
 import { useLaunchState } from '../../hooks';
 import { Table } from '../table';
-import styles from './Session.module.scss';
 import { Traits } from '../traits';
+import styles from './Session.module.scss';
 
 function Session() {
   const state = useLaunchState();
@@ -23,6 +23,16 @@ function Session() {
   const prevPage = () => setPageIndex((prevValue) => prevValue - 1);
   const firstPage = () => setPageIndex(0);
   const lastPage = () => setPageIndex(pagesCount - 1);
+
+  const getFeed = () =>
+    currentEvents?.map(({ participant, halt }) =>
+      halt ? (
+        <li key={participant} className={styles.item}>
+          <h3 className={styles.heading}>{participant}</h3>
+          <p className={styles.text}>{halt.split(/(?=[A-Z])/).join(' ')}</p>
+        </li>
+      ) : null,
+    );
 
   return (
     <Container>
@@ -55,16 +65,20 @@ function Session() {
         </div>
       </header>
 
-      {currentEvents && <Table data={currentEvents} />}
+      <div className={styles.body}>
+        {currentEvents && <Table data={currentEvents} />}
 
-      {currentSession && (
-        <Traits
-          altitude={currentSession.altitude}
-          weather={currentSession.weather}
-          fuelPrice={currentSession.fuelPrice}
-          reward={currentSession.reward}
-        />
-      )}
+        {currentSession && (
+          <Traits
+            altitude={currentSession.altitude}
+            weather={currentSession.weather}
+            fuelPrice={currentSession.fuelPrice}
+            reward={currentSession.reward}
+          />
+        )}
+
+        <ul className={styles.feed}>{getFeed()}</ul>
+      </div>
     </Container>
   );
 }

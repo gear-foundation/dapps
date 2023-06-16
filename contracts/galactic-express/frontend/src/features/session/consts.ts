@@ -26,4 +26,13 @@ const VALIDATE = {
 
 const TABLE_HEADINGS = ['Player', 'Alive', 'Fuel Left', 'Altitude', 'Payload', 'Halt'];
 
-export { TRAITS, WEATHERS, INITIAL_VALUES, VALIDATE, TABLE_HEADINGS };
+const HALT = {
+  ENGINE_ERROR: 'EngineError',
+  OVERFUELLED: 'Overfuelled',
+  OVERFILLED: 'Overfilled',
+  SEPARATION_FAILURE: 'SeparationFailure',
+  ASTEROID: 'Asteroid',
+  NOT_ENOUGH_FUEL: 'NotEnoughFuel',
+} as const;
+
+export { TRAITS, WEATHERS, INITIAL_VALUES, VALIDATE, TABLE_HEADINGS, HALT };

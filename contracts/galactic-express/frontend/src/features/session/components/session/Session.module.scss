@@ -41,3 +41,42 @@
     transform: rotate(180deg);
   }
 }
+
+.body {
+  @include gap(24px);
+}
+
+.feed {
+  @include gap(8px);
+
+  .item {
+    @include gap(2px);
+    padding: 16px;
+    font-size: 12px;
+    line-height: 20px;
+    letter-spacing: 0.08em;
+    background-image: linear-gradient(180deg, rgba(235, 87, 87, 0.04) 0%, rgba(143, 126, 190, 0) 100%);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      padding: 1px;
+      background-image: linear-gradient(135deg, #eb5757 0%, rgba(0, 0, 0, 0) 14.42%);
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask-composite: exclude;
+    }
+
+    .heading {
+      @include textOverflow;
+      font-weight: 500;
+    }
+
+    .text {
+      font-weight: 300;
+      color: #d1cfd7;
+    }
+  }
+}
