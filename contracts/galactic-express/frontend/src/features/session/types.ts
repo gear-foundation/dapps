@@ -45,4 +45,4 @@ type LaunchState = {
   sessionId: string;
 };
 
-export type { LaunchState, Event };
+export type { LaunchState, Session, Event };

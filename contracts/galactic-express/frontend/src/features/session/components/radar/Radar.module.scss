@@ -1,0 +1,11 @@
+@use 'utils' as *;
+
+.container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+.image {
+  @include square(345px);
+}
