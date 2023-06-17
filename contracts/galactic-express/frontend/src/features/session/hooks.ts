@@ -14,7 +14,7 @@ function useLaunchState() {
 function useLaunchMessage() {
   const meta = useProgramMetadata(metaTxt);
 
-  return useSendMessage(ADDRESS.CONTRACT, meta);
+  return useSendMessage(ADDRESS.CONTRACT, meta, true);
 }
 
 export { useLaunchState, useLaunchMessage };

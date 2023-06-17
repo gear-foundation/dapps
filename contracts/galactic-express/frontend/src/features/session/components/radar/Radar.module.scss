@@ -3,9 +3,38 @@
 .container {
   flex: 1;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .image {
-  @include square(345px);
+  width: 345px;
+}
+
+.field {
+  width: 100%;
+  height: 55%;
+  display: flex;
+  position: relative;
+  background-image: url(../../assets/wave.svg), url(../../assets/wave.svg), url(../../assets/wave.svg);
+  background-size: 50%, 65%, 80%;
+  background-position: bottom 25% center, bottom 65% center, top;
+  background-repeat: no-repeat, no-repeat, no-repeat;
+}
+
+.player {
+  @include circle(26px);
+  position: absolute;
+  display: flex;
+  padding: 5px;
+  border: 1px solid var(--color);
+
+  &::after {
+    content: '';
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: var(--color);
+  }
 }

@@ -7,6 +7,7 @@ import { LaunchState, Session as SessionType } from '../../types';
 import { Table } from '../table';
 import { Traits } from '../traits';
 import styles from './Session.module.scss';
+import { Radar } from '../radar';
 
 type Props = {
   id: string;
@@ -16,18 +17,18 @@ type Props = {
 
 function Session({ id, session, events }: Props) {
   const { altitude, weather, fuelPrice, reward } = session;
-  const pagesCount = Object.keys(events).length;
+  const roundsCount = Object.keys(events).length;
 
   const [pageIndex, setPageIndex] = useState(0);
   const page = pageIndex + 1;
   const isFirstPage = page === 1;
-  const isLastPage = page === pagesCount;
+  const isLastPage = page === roundsCount;
   const currentEvents = events[pageIndex];
 
   const nextPage = () => setPageIndex((prevValue) => prevValue + 1);
   const prevPage = () => setPageIndex((prevValue) => prevValue - 1);
   const firstPage = () => setPageIndex(0);
-  const lastPage = () => setPageIndex(pagesCount - 1);
+  const lastPage = () => setPageIndex(roundsCount - 1);
 
   const getFeedItems = () =>
     currentEvents.map(({ participant, halt }) =>
@@ -40,44 +41,48 @@ function Session({ id, session, events }: Props) {
     );
 
   return (
-    <Container>
-      <header className={styles.header}>
-        <h2 className={styles.heading}>Session #{id}</h2>
+    <div className={styles.container}>
+      <Container>
+        <header className={styles.header}>
+          <h2 className={styles.heading}>Session #{id}</h2>
 
-        <div className={styles.navigation}>
-          <Button icon={LeftDoubleArrowSVG} color="transparent" onClick={firstPage} disabled={isFirstPage} />
-          <Button icon={LeftArrowSVG} color="transparent" onClick={prevPage} disabled={isFirstPage} />
+          <div className={styles.navigation}>
+            <Button icon={LeftDoubleArrowSVG} color="transparent" onClick={firstPage} disabled={isFirstPage} />
+            <Button icon={LeftArrowSVG} color="transparent" onClick={prevPage} disabled={isFirstPage} />
 
-          <div className={styles.inputWrapper}>
-            <Input label="turn" className={styles.input} value={page} onChange={() => {}} />
-            <span className={styles.total}>of {pagesCount}</span>
+            <div className={styles.inputWrapper}>
+              <Input label="turn" className={styles.input} value={page} onChange={() => {}} />
+              <span className={styles.total}>of {roundsCount}</span>
+            </div>
+
+            <Button
+              icon={LeftArrowSVG}
+              color="transparent"
+              onClick={nextPage}
+              className={styles.rotatedArrow}
+              disabled={isLastPage}
+            />
+            <Button
+              icon={LeftDoubleArrowSVG}
+              color="transparent"
+              onClick={lastPage}
+              className={styles.rotatedArrow}
+              disabled={isLastPage}
+            />
           </div>
+        </header>
 
-          <Button
-            icon={LeftArrowSVG}
-            color="transparent"
-            onClick={nextPage}
-            className={styles.rotatedArrow}
-            disabled={isLastPage}
-          />
-          <Button
-            icon={LeftDoubleArrowSVG}
-            color="transparent"
-            onClick={lastPage}
-            className={styles.rotatedArrow}
-            disabled={isLastPage}
-          />
+        <div className={styles.body}>
+          <Table data={currentEvents} />
+
+          <Traits altitude={altitude} weather={weather} fuelPrice={fuelPrice} reward={reward} />
+
+          <ul className={styles.feed}>{getFeedItems()}</ul>
         </div>
-      </header>
+      </Container>
 
-      <div className={styles.body}>
-        <Table data={currentEvents} />
-
-        <Traits altitude={altitude} weather={weather} fuelPrice={fuelPrice} reward={reward} />
-
-        <ul className={styles.feed}>{getFeedItems()}</ul>
-      </div>
-    </Container>
+      <Radar currentEvents={currentEvents} currentRound={pageIndex} roundsCount={roundsCount} />
+    </div>
   );
 }
 

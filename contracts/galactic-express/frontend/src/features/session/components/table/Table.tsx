@@ -19,10 +19,10 @@ function Table({ data }: Props) {
     ));
 
   const getBody = () =>
-    data.map(({ participant, alive, fuelLeft, lastAltitude, payload, halt }) => (
+    data.map(({ participant, deadRound, fuelLeft, lastAltitude, payload, halt }) => (
       <Fragment key={participant}>
         <div className={clsx(styles.bodyCell, styles.firstColumn)}>{participant}</div>
-        <div className={styles.bodyCell}>{alive ? <CheckSVG /> : <CrossSVG />}</div>
+        <div className={styles.bodyCell}>{deadRound ? <CrossSVG /> : <CheckSVG />}</div>
         <div className={styles.bodyCell}>{fuelLeft}</div>
         <div className={styles.bodyCell}>{lastAltitude}</div>
         <div className={styles.bodyCell}>{payload}</div>

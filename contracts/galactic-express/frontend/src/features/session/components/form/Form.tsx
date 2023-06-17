@@ -42,9 +42,10 @@ function Form({ weather, defaultDeposit }: Props) {
     onChange: handleNumberInputChange,
   });
 
-  const handleSubmit = onSubmit(() => {
+  const register = () =>
     sendMessage({ RegisterParticipantOnLaunch: { fuel_amount: fuel, payload_amount: payload } }, { value: deposit });
-  });
+
+  const handleSubmit = onSubmit(() => sendMessage({ ReserveGas: null }, { onSuccess: register }));
 
   return (
     <form onSubmit={handleSubmit}>

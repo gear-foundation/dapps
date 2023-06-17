@@ -1,5 +1,15 @@
 @use 'utils' as *;
 
+.container {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+
+  > div:first-child {
+    align-self: center;
+  }
+}
+
 .header {
   @include gap(54px, right);
   padding-bottom: 16px;
@@ -48,6 +58,8 @@
 
 .feed {
   @include gap(8px);
+  max-height: 75px;
+  overflow-y: auto;
 
   .item {
     @include gap(2px);
