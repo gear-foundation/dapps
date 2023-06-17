@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-dapps/app" target="_blank">
+  <a href="https://gitpod.io/#https://github.com/gear-dapps/RMRK" target="_blank">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
@@ -10,18 +10,18 @@
 [![License][lic_badge]][lic_href]
 [![Docs][docs_badge]][docs_href]
 
-[build_badge]: https://github.com/gear-dapps/app/workflows/Build/badge.svg
-[build_href]: https://github.com/gear-dapps/app/actions/workflows/build.yml
+[build_badge]: https://github.com/gear-dapps/RMRK/workflows/Build/badge.svg
+[build_href]: https://github.com/gear-dapps/RMRK/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-GPL%203.0-success
-[lic_href]: https://github.com/gear-dapps/app/blob/master/LICENSE
+[lic_href]: https://github.com/gear-dapps/RMRK/blob/master/LICENSE
 
 [docs_badge]: https://img.shields.io/badge/Docs-online-5023dd
 [docs_href]: https://dapp.rs/RMRK
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/app/releases/tag/build).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/RMRK/releases).
 
 ## Building Locally
 
