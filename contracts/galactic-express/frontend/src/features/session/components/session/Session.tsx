@@ -34,7 +34,7 @@ function Session({ id, session, events }: Props) {
   const getFeedItems = () =>
     currentEvents.map(({ participant, halt }, index) =>
       halt ? (
-        <li key={participant} className={styles.item} style={{ '--style': PLAYER_COLORS[index] } as CSSProperties}>
+        <li key={participant} className={styles.item} style={{ '--color': PLAYER_COLORS[index] } as CSSProperties}>
           <h3 className={styles.heading}>{participant}</h3>
           <p className={styles.text}>{halt.split(/(?=[A-Z])/).join(' ')}</p>
         </li>
