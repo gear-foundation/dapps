@@ -1,4 +1,4 @@
-import { Button, Input } from '@gear-js/ui';
+import { Button } from '@gear-js/ui';
 import { CSSProperties, useState } from 'react';
 import { Container } from 'components';
 import { ReactComponent as LeftDoubleArrowSVG } from '../../assets/left-double-arrow.svg';
@@ -20,16 +20,16 @@ function Session({ id, session, events }: Props) {
   const { altitude, weather, fuelPrice, reward } = session;
   const roundsCount = Object.keys(events).length;
 
-  const [pageIndex, setPageIndex] = useState(0);
-  const page = pageIndex + 1;
-  const isFirstPage = page === 1;
-  const isLastPage = page === roundsCount;
-  const currentEvents = events[pageIndex];
+  const [roundIndex, setRoundIndex] = useState(0);
+  const roundNumber = roundIndex + 1;
+  const isFirstPage = roundNumber === 1;
+  const isLastPage = roundNumber === roundsCount;
+  const currentEvents = events[roundIndex];
 
-  const nextPage = () => setPageIndex((prevValue) => prevValue + 1);
-  const prevPage = () => setPageIndex((prevValue) => prevValue - 1);
-  const firstPage = () => setPageIndex(0);
-  const lastPage = () => setPageIndex(roundsCount - 1);
+  const nextPage = () => setRoundIndex((prevValue) => prevValue + 1);
+  const prevPage = () => setRoundIndex((prevValue) => prevValue - 1);
+  const firstPage = () => setRoundIndex(0);
+  const lastPage = () => setRoundIndex(roundsCount - 1);
 
   const getFeedItems = () =>
     currentEvents.map(({ participant, halt }, index) =>
@@ -51,10 +51,9 @@ function Session({ id, session, events }: Props) {
             <Button icon={LeftDoubleArrowSVG} color="transparent" onClick={firstPage} disabled={isFirstPage} />
             <Button icon={LeftArrowSVG} color="transparent" onClick={prevPage} disabled={isFirstPage} />
 
-            <div className={styles.inputWrapper}>
-              <Input label="turn" className={styles.input} value={page} onChange={() => {}} />
-              <span className={styles.total}>of {roundsCount}</span>
-            </div>
+            <p>
+              Turn {roundNumber} of {roundsCount}
+            </p>
 
             <Button
               icon={LeftArrowSVG}
@@ -82,7 +81,7 @@ function Session({ id, session, events }: Props) {
         </div>
       </Container>
 
-      <Radar currentEvents={currentEvents} currentRound={pageIndex} roundsCount={roundsCount} />
+      <Radar currentEvents={currentEvents} currentRound={roundIndex} roundsCount={roundsCount} />
     </div>
   );
 }

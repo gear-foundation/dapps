@@ -30,20 +30,6 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-  }
-
-  .inputWrapper {
-    @include gap(8px, right);
-    display: flex;
-    align-items: center;
-  }
-
-  .input {
-    flex-shrink: 0;
-    max-width: 150px;
-  }
-
-  .total {
     color: #d2d2d3;
   }
 
