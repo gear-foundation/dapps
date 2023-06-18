@@ -1,8 +1,9 @@
 import { Button, Input } from '@gear-js/ui';
-import { useState } from 'react';
+import { CSSProperties, useState } from 'react';
 import { Container } from 'components';
 import { ReactComponent as LeftDoubleArrowSVG } from '../../assets/left-double-arrow.svg';
 import { ReactComponent as LeftArrowSVG } from '../../assets/left-arrow.svg';
+import { PLAYER_COLORS } from '../../consts';
 import { LaunchState, Session as SessionType } from '../../types';
 import { Table } from '../table';
 import { Traits } from '../traits';
@@ -31,9 +32,9 @@ function Session({ id, session, events }: Props) {
   const lastPage = () => setPageIndex(roundsCount - 1);
 
   const getFeedItems = () =>
-    currentEvents.map(({ participant, halt }) =>
+    currentEvents.map(({ participant, halt }, index) =>
       halt ? (
-        <li key={participant} className={styles.item}>
+        <li key={participant} className={styles.item} style={{ '--style': PLAYER_COLORS[index] } as CSSProperties}>
           <h3 className={styles.heading}>{participant}</h3>
           <p className={styles.text}>{halt.split(/(?=[A-Z])/).join(' ')}</p>
         </li>

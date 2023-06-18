@@ -24,7 +24,7 @@ function Table({ data }: Props) {
         <div
           className={clsx(styles.bodyCell, styles.firstColumn)}
           style={{ '--color': PLAYER_COLORS[index] } as CSSProperties}>
-          <span>{participant}</span>
+          {participant}
         </div>
         <div className={styles.bodyCell}>{deadRound ? <CrossSVG /> : <CheckSVG />}</div>
         <div className={styles.bodyCell}>{fuelLeft}</div>

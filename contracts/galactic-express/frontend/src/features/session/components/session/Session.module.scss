@@ -67,7 +67,7 @@
     font-size: 12px;
     line-height: 20px;
     letter-spacing: 0.08em;
-    background-image: linear-gradient(180deg, rgba(235, 87, 87, 0.04) 0%, rgba(143, 126, 190, 0) 100%);
+    background-image: linear-gradient(180deg, rgba(var(--color), 0.04) 0%, rgba(143, 126, 190, 0) 100%);
     position: relative;
 
     &::after {
@@ -76,7 +76,7 @@
       inset: 0;
       border-radius: 8px;
       padding: 1px;
-      background-image: linear-gradient(135deg, #eb5757 0%, rgba(0, 0, 0, 0) 14.42%);
+      background-image: linear-gradient(135deg, var(--color) 0%, rgba(0, 0, 0, 0) 14.42%);
       mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
       mask-composite: exclude;
     }
@@ -84,6 +84,15 @@
     .heading {
       @include textOverflow;
       font-weight: 500;
+      white-space: nowrap;
+
+      &::before {
+        @include circle(8px);
+        content: '';
+        display: inline-block;
+        margin-right: 8px;
+        background-color: var(--color);
+      }
     }
 
     .text {
