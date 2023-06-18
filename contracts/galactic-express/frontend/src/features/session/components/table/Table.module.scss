@@ -64,6 +64,15 @@ $borderRadius: 8px;
 .firstColumn {
   @include textOverflow;
   border-left: $tableBorder;
+  white-space: nowrap;
+
+  &::before {
+    @include circle(8px);
+    content: '';
+    display: inline-block;
+    margin-right: 8px;
+    background-color: var(--color);
+  }
 }
 
 .lastColumn {

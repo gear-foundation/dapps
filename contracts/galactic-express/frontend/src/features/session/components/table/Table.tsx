@@ -1,6 +1,6 @@
-import { Fragment } from 'react';
+import { CSSProperties, Fragment } from 'react';
 import clsx from 'clsx';
-import { TABLE_HEADINGS } from 'features/session/consts';
+import { PLAYER_COLORS, TABLE_HEADINGS } from 'features/session/consts';
 import { ReactComponent as CheckSVG } from '../../assets/check.svg';
 import { ReactComponent as CrossSVG } from '../../assets/cross.svg';
 import { Event } from '../../types';
@@ -19,9 +19,13 @@ function Table({ data }: Props) {
     ));
 
   const getBody = () =>
-    data.map(({ participant, deadRound, fuelLeft, lastAltitude, payload, halt }) => (
+    data.map(({ participant, deadRound, fuelLeft, lastAltitude, payload, halt }, index) => (
       <Fragment key={participant}>
-        <div className={clsx(styles.bodyCell, styles.firstColumn)}>{participant}</div>
+        <div
+          className={clsx(styles.bodyCell, styles.firstColumn)}
+          style={{ '--color': PLAYER_COLORS[index] } as CSSProperties}>
+          <span>{participant}</span>
+        </div>
         <div className={styles.bodyCell}>{deadRound ? <CrossSVG /> : <CheckSVG />}</div>
         <div className={styles.bodyCell}>{fuelLeft}</div>
         <div className={styles.bodyCell}>{lastAltitude}</div>
