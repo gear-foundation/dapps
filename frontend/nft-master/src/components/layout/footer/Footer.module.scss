@@ -1,8 +1,8 @@
 @use '@gear-js/ui/variables' as *;
 
 .container {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   padding: 20px 0;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
 }
