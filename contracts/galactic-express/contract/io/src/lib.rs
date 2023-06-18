@@ -18,7 +18,9 @@ impl Metadata for ProgramMetadata {
 #[derive(Encode, Decode, TypeInfo, Debug)]
 pub struct Initialize {
     pub name: String,
-    pub period_sec: u32,
+    pub after_execution_period: u32,
+    pub registered_threshold_to_execute: u32,
+    // pub after_threshold_wait_period_to_execute: u32,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
@@ -96,7 +98,7 @@ pub struct CurrentSesionInfo {
 #[derive(Default, Encode, Decode, TypeInfo, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct CurrentStat {
     pub participant: ActorId,
-    pub alive: bool,
+    pub dead_round: Option<u32>,
     pub fuel_left: u32,
     pub fuel_capacity: u32,
     pub last_altitude: u32,
@@ -113,6 +115,9 @@ pub struct LaunchSite {
     pub events: BTreeMap<u32, BTreeSet<CurrentStat>>,
     pub state: SessionState,
     pub session_id: u32,
+    pub after_execution_period: u32,
+    pub registered_threshold_to_execute: u32,
+    pub after_threshold_wait_period_to_execute: u32,
 }
 
 #[derive(Default, Encode, Decode, TypeInfo, Debug)]

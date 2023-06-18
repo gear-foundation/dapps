@@ -29,7 +29,9 @@ pub struct LaunchSite {
     pub events: BTreeMap<u32, BTreeSet<CurrentStat>>,
     pub state: SessionState,
     pub session_id: u32,
-    pub execute_session_period: u32,
+    pub after_execution_period: u32,
+    pub registered_threshold_to_execute: u32,
+    pub after_threshold_wait_period_to_execute: u32,
 }
 
 static mut LAUNCH_SITE: Option<LaunchSite> = None;
@@ -45,26 +47,6 @@ impl LaunchSite {
             0,
         )
         .expect("Error in a reply `::info");
-    }
-
-    fn new_participant(&mut self, name: String) {
-        let actor_id = msg::source();
-
-        if self.participants.contains_key(&actor_id) {
-            panic!("There is already participant registered with this id");
-        }
-
-        self.participants.insert(
-            actor_id,
-            Participant {
-                name: name.clone(),
-                balance: 0,
-                score: 0,
-            },
-        );
-
-        msg::reply(Event::NewParticipant { id: actor_id, name }, 0)
-            .expect("failed to reply in ::new_participant");
     }
 
     fn rename_participant(&mut self, name: String) {
@@ -86,10 +68,17 @@ impl LaunchSite {
     }
 
     fn new_session(&mut self) {
-        let actor_id = msg::source();
+        // assert!(self.state == SessionState::SessionIsOver || self.state == SessionState::NoSession);
 
-        assert_eq!(actor_id, self.owner);
-        assert!(self.state == SessionState::SessionIsOver || self.state == SessionState::NoSession);
+        let actor_id = msg::source();
+        let program_id = exec::program_id();
+        gstd::debug!(
+            "new_session() {}, from actor_id: {:?}, to program_id: {:?}",
+            self.name,
+            actor_id,
+            program_id
+        );
+        // assert!(actor_id == self.owner || actor_id == program_id);
 
         // 0 - Sunny, 1 - Cloudy, 2 - Rainy, 3 - Stormy, 4 - Thunder, 5 - Tornado
         let random_weather = generate(0, WEATHER_RANGE);
@@ -109,43 +98,82 @@ impl LaunchSite {
         self.state = SessionState::Registration;
         self.events = BTreeMap::new();
 
-        msg::reply(
-            Event::NewLaunch {
-                id: 0,
-                name: "Unnamed".to_string(),
-                weather: random_weather,
-                fuel_price: random_fuel_price,
-                payload_value: random_payload_value,
-                altitude: random_altitude,
-            },
-            0,
-        )
-        .expect("failed to reply in ::new_session");
+        // don't need to reply yourself, reply on for another actor_id
+        if actor_id != program_id {
+            msg::reply(
+                Event::NewLaunch {
+                    id: 0,
+                    name: "Unnamed".to_string(),
+                    weather: random_weather,
+                    fuel_price: random_fuel_price,
+                    payload_value: random_payload_value,
+                    altitude: random_altitude,
+                },
+                0,
+            )
+            .expect("failed to reply in ::new_session");
+        }
     }
 
-    fn restart_execution(&mut self) {
+    fn delayed_start_execution(&mut self) {
+        if self.state == SessionState::Registration {
+            let action = Action::ExecuteSession;
+            // let gas_available = exec::gas_available();
+            // if gas_available <= GAS_FOR_UPDATE {
+            let reservations = unsafe { &mut RESERVATION };
+            let reservation_id = reservations
+                .pop()
+                .expect("Not enough reservations to start execution");
+            send_delayed_from_reservation(
+                reservation_id,
+                exec::program_id(),
+                action,
+                0,
+                self.after_threshold_wait_period_to_execute,
+            )
+            .expect("Can't send delayed Action::ExecuteSession from reservation");
+            // } else {
+            // send_delayed(exec::program_id(), action, 0, self.after_execution_period)
+            // .expect("Can't send delayed Action::ExecuteSession");
+            // }
+        }
+    }
+
+    fn restart_new_session(&mut self) {
+        gstd::debug!("RESTART NEW SESSION {}", self.name);
         if self.state == SessionState::SessionIsOver {
             let action = Action::StartNewSession;
-            let gas_available = exec::gas_available();
-            if gas_available <= GAS_FOR_UPDATE {
-                let reservations = unsafe { &mut RESERVATION };
-                let reservation_id = reservations.pop().expect("Need more gas");
-                send_delayed_from_reservation(
+            // let gas_available = exec::gas_available();
+            // if gas_available <= GAS_FOR_UPDATE {
+            let reservations = unsafe { &mut RESERVATION };
+            if let Some(reservation_id) = reservations.pop() {
+                gstd::debug!("RESERVATION_ID: {:?}", reservation_id);
+                if let Err(e) = send_delayed_from_reservation(
                     reservation_id,
                     exec::program_id(),
                     action,
                     0,
-                    self.execute_session_period,
-                )
-                .expect("Can't send delayed from reservation");
+                    self.after_execution_period,
+                ) {
+                    gstd::debug!(
+                        "Can't send delayed Action::StartNewSession; from reservation: {e}"
+                    );
+                    panic!("Can't send delayed Action::StartNewSession; from reservation: {e}");
+                }
             } else {
-                send_delayed(exec::program_id(), action, 0, self.execute_session_period)
-                    .expect("Can't send delayed");
+                gstd::debug!("NOT RESERVATIONS TO RESTART EXECUTION");
+                panic!("NOT RESERVATIONS TO RESTART EXECUTION");
             }
+
+            // } else {
+            // send_delayed(exec::program_id(), action, 0, self.after_execution_period)
+            // .expect("Can't send delayed Action::StartNewSession;");
+            // }
         }
     }
 
     fn execute_session(&mut self) {
+        gstd::debug!("EXECUTE SESSION FOR {}", self.name);
         let session_data = self
             .current_session
             .as_ref()
@@ -161,7 +189,7 @@ impl LaunchSite {
                 *id,
                 CurrentStat {
                     participant: *id,
-                    alive: true,
+                    dead_round: None,
                     fuel_left: strategy.fuel,
                     fuel_capacity: strategy.fuel,
                     last_altitude: 0,
@@ -182,44 +210,44 @@ impl LaunchSite {
 
                 let current_stat = current_stats.get_mut(id).expect("all have stats");
 
-                if current_stat.alive {
+                if current_stat.dead_round.is_none() {
                     // if 1/3 distance then probability of engine error is 3%
                     if i == 0 && generate_event(3) {
                         current_stat.halt = Some(RocketHalt::EngineError);
-                        current_stat.alive = false;
+                        current_stat.dead_round = Some(i);
                     };
 
                     // if 1/3 distance and fuel > 80% - risk factor of weather
                     if i == 0 && current_stat.fuel_left >= (80 - 2 * weather) && generate_event(10)
                     {
                         current_stat.halt = Some(RocketHalt::Overfuelled);
-                        current_stat.alive = false;
+                        current_stat.dead_round = Some(i);
                     };
 
                     // if  2/3 of distance and filled > 80% - risk factor of weather
                     // 10 percent that will be overfilled
                     if i == 1 && strategy.payload >= (80 - 2 * weather) && generate_event(10) {
                         current_stat.halt = Some(RocketHalt::Overfilled);
-                        current_stat.alive = false;
+                        current_stat.dead_round = Some(i);
                     };
 
                     // if 2/3 of distance
                     // 5 percent that will be separation failure
                     if i == 1 && generate_event(5 + weather as u8) {
                         current_stat.halt = Some(RocketHalt::SeparationFailure);
-                        current_stat.alive = false;
+                        current_stat.dead_round = Some(i);
                     };
 
                     // if last distance 10 percent od asteroid
                     // 10 percent that will be asteroid + weather factor
                     if i == 2 && generate_event(10 + weather as u8) {
                         current_stat.halt = Some(RocketHalt::Asteroid);
-                        current_stat.alive = false;
+                        current_stat.dead_round = Some(i);
                     };
 
                     if current_stat.fuel_left < fuel_burn {
                         // fuel is over
-                        current_stat.alive = false;
+                        current_stat.dead_round = Some(i);
                         current_stat.halt = Some(RocketHalt::NotEnoughFuel);
                     } else {
                         current_stat.last_altitude = current_altitude;
@@ -244,13 +272,13 @@ impl LaunchSite {
         let mut max_fuel_left = 0;
 
         for (_, stat) in current_stats.iter() {
-            if stat.alive && stat.fuel_left > max_fuel_left {
+            if stat.dead_round.is_none() && stat.fuel_left > max_fuel_left {
                 max_fuel_left = stat.fuel_left;
             }
         }
         let mut winner = (ActorId::default(), 0);
         for (id, stat) in current_stats.iter() {
-            if stat.alive {
+            if stat.dead_round.is_none() {
                 let coef = if stat.fuel_left == 0 {
                     // 1.7 if fuel tank = 0
                     17
@@ -259,10 +287,15 @@ impl LaunchSite {
                     5 * stat.fuel_left / max_fuel_left
                 };
 
-                let mut earnings = (stat.payload as u128 * session_data.reward * coef as u128);
-                earnings = earnings - (session_data.fuel_price * stat.fuel_capacity) as u128;
-                earnings = earnings / 10;
-                outcome_participants.push((*id, stat.alive, stat.last_altitude, earnings));
+                let earnings = stat.payload as u128 * session_data.reward * coef as u128;
+                let earnings = match earnings
+                    .checked_sub(session_data.fuel_price as u128 * stat.fuel_capacity as u128)
+                {
+                    Some(val) => val,
+                    None => earnings,
+                };
+                let earnings = earnings / 10;
+                outcome_participants.push((*id, stat.dead_round, stat.last_altitude, earnings));
 
                 if winner.1 < earnings {
                     winner.0 = *id;
@@ -272,9 +305,8 @@ impl LaunchSite {
                 let leaderboard_entry = self
                     .participants
                     .get_mut(id)
-                    .expect("Should have existed in leaderboards");
-
-                leaderboard_entry.balance += earnings;
+                    .expect("Should have existed in leaderboard to give earnings");
+                leaderboard_entry.score += earnings;
             }
         }
         if let Some(bet) = session_data.bet {
@@ -284,30 +316,33 @@ impl LaunchSite {
             } else {
                 prize - prize * 5 / 1000
             };
+            if let Some(leaderboard_entry) = self.participants.get_mut(&winner.0) {
+                leaderboard_entry.balance += prize;
+            }
 
             msg::send(winner.0, (), prize).expect("Can't send total deposit"); // send total deposit to winner
         }
         self.state = SessionState::SessionIsOver;
 
-        msg::reply(
-            Event::LaunchFinished {
-                id: 0,
-                stats: outcome_participants,
-            },
-            0,
-        )
-        .expect("failed to reply in ::new_session");
+        // msg::reply(
+        //     Event::LaunchFinished {
+        //         id: 0,
+        //         stats: outcome_participants,
+        //     },
+        //     0,
+        // )
+        // .expect("failed to reply in ::new_session");
 
         // Trying to rerun execute session after period and if it's over
-        self.restart_execution();
+        self.restart_new_session();
     }
 
     fn reserve_gas(&self) {
         let reservations = unsafe { &mut RESERVATION };
         let reservation_id =
-            ReservationId::reserve(RESERVATION_AMOUNT, 600).expect("reservation across executions");
+            ReservationId::reserve(RESERVATION_AMOUNT, 900).expect("reservation across executions");
         reservations.push(reservation_id);
-        msg::reply(Event::GasReserved, 0).expect("");
+        // msg::reply(Event::GasReserved, 0).expect("");
     }
 
     fn register_participant_on_launch(
@@ -316,21 +351,29 @@ impl LaunchSite {
         fuel_amount: u32,
         payload_amount: u32,
     ) {
+        gstd::debug!(
+            "register_participant_on_launch() {}, name: {}",
+            self.name,
+            name
+        );
         //new_participant
         let value = msg::value();
         assert!(value >= 500);
 
         let actor_id = msg::source();
 
-        if self.participants.contains_key(&actor_id) {
-            panic!("There is already participant registered with this id");
-        }
-        let participant = Participant {
-            name,
-            score: 0,
-            balance: 0,
+        let participant = if let Some(participant) = self.participants.get_mut(&actor_id) {
+            participant.name = name;
+            participant.clone()
+        } else {
+            let participant = Participant {
+                name,
+                score: 0,
+                balance: 0,
+            };
+            self.participants.insert(actor_id, participant.clone());
+            participant
         };
-        self.participants.insert(actor_id, participant.clone());
 
         // comment original reply from `new_participant()`
         // msg::reply(Event::NewParticipant { id: actor_id, name }, 0)
@@ -377,6 +420,13 @@ impl LaunchSite {
             0,
         )
         .expect("failed to reply in ::new_session");
+
+        let registered_len = current_session.registered.len();
+        if registered_len >= self.registered_threshold_to_execute as usize {
+            // self.delayed_start_execution();
+            gstd::debug!("PARTICIPANT THRESHOLD {} FOR {}", registered_len, self.name);
+            self.execute_session();
+        }
     }
 }
 
@@ -388,21 +438,11 @@ async fn main() {
         Action::Info => {
             launch_site.info();
         }
-        Action::RegisterParticipant(name) => {
-            launch_site.new_participant(name);
-        }
         Action::ChangeParticipantName(name) => {
             launch_site.rename_participant(name);
         }
         Action::StartNewSession => {
             launch_site.new_session();
-        }
-        Action::RegisterOnLaunch {
-            fuel_amount,
-            payload_amount,
-        } => {
-            // launch_site.register_on_launch(fuel_amount, payload_amount);
-            unreachable!("You should youse RegisterParticipantOnLaunch")
         }
         Action::ExecuteSession => {
             launch_site.execute_session();
@@ -425,17 +465,12 @@ unsafe extern "C" fn init() {
     let init: Initialize = msg::load().expect("Error in decoding");
     let launch_site = LaunchSite {
         name: init.name,
-        execute_session_period: init.period_sec,
+        after_execution_period: init.after_execution_period,
         owner: msg::source(),
+        registered_threshold_to_execute: init.registered_threshold_to_execute,
+        // after_threshold_wait_period_to_execute: init.after_threshold_wait_period_to_execute,
         ..Default::default()
     };
-    // send_delayed(
-    //     exec::program_id(),
-    //     Action::ExecuteSession,
-    //     0,
-    //     init.period_sec,
-    // )
-    // .expect("Can't send delayed Action::ExecuteSession at init()");
     LAUNCH_SITE = Some(launch_site);
 }
 
