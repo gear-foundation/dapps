@@ -10,4 +10,9 @@ const LOCAL_STORAGE = {
   WALLET: 'wallet',
 };
 
-export { ADDRESS, LOCAL_STORAGE };
+const ROUTES = {
+  HOME: '/',
+  LEADERBOARD: '/leaderboard',
+};
+
+export { ADDRESS, LOCAL_STORAGE, ROUTES };
