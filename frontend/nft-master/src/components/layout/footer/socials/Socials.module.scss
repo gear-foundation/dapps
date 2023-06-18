@@ -2,6 +2,7 @@
 
 .socials {
   display: flex;
+  justify-content: flex-end;
 
   svg {
     @include svgColor(#000);

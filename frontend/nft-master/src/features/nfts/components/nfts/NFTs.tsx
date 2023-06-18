@@ -1,6 +1,6 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { Link } from 'react-router-dom';
-import useEmblaCarousel from 'embla-carousel-react';
+import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
 import { getIpfsAddress } from 'utils';
 import { Container } from 'components';
@@ -17,20 +17,25 @@ function NFTs({ slider }: Props) {
 
   const nfts = useNFTs();
   const ownerNFTs = nfts.filter(({ owner }) => owner === account?.decodedAddress);
-  const isAnyNFT = ownerNFTs.length > 0;
+  const ownerNFTsCount = ownerNFTs.length;
+  const isAnyNFT = ownerNFTsCount > 0;
 
-  const [emblaRef, emblaApi] = useEmblaCarousel({ align: 'center', loop: true });
+  const [sliderRef, sliderApiRef] = useKeenSlider({
+    slides: { perView: 4, spacing: 30, origin: 'center' },
+    initial: ownerNFTsCount < 4 ? Math.floor(ownerNFTsCount / 2) : 2,
+  });
 
-  const prevSlide = () => emblaApi?.scrollPrev();
-  const nextSlide = () => emblaApi?.scrollNext();
+  const prevSlide = () => sliderApiRef.current?.prev();
+  const nextSlide = () => sliderApiRef.current?.next();
 
   const getNFTs = () =>
     ownerNFTs.map(({ id, programId, name, owner, mediaUrl, collection }) => {
       const style = { backgroundImage: `url(${getIpfsAddress(mediaUrl)})` };
       const to = `/${programId}/${id}`;
+      const className = clsx(styles.nft, slider && 'keen-slider__slide');
 
       return (
-        <li key={to} className={clsx(styles.nft, slider && styles.emblaSlide)}>
+        <li key={to} className={className}>
           <header>
             <p className={styles.collection}>{collection}</p>
             <p className={styles.name}>{name}</p>
@@ -75,9 +80,9 @@ function NFTs({ slider }: Props) {
           </Container>
 
           {slider ? (
-            <div className={styles.embla} ref={emblaRef}>
-              <ul className={styles.emblaContainer}>{getNFTs()}</ul>
-            </div>
+            <ul className="keen-slider" ref={sliderRef}>
+              {getNFTs()}
+            </ul>
           ) : (
             <Container>
               <ul className={styles.list}>{getNFTs()}</ul>

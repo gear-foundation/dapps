@@ -93,20 +93,6 @@
   }
 }
 
-.embla {
-  overflow: hidden;
-
-  &Container {
-    display: flex;
-  }
-
-  &Slide {
-    margin-right: 30px;
-    flex: 0 0 24%;
-    min-width: 0;
-  }
-}
-
 .header {
   display: flex;
   justify-content: space-between;
