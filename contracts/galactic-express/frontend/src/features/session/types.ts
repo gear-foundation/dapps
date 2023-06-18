@@ -9,6 +9,7 @@ type Strategy = {
 type Participant = {
   name: string;
   balance: string;
+  score: string;
 };
 
 type Player<T> = {

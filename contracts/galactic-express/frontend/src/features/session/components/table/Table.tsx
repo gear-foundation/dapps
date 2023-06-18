@@ -1,8 +1,8 @@
 import { CSSProperties, Fragment } from 'react';
 import clsx from 'clsx';
-import { PLAYER_COLORS, TABLE_HEADINGS } from 'features/session/consts';
 import { ReactComponent as CheckSVG } from '../../assets/check.svg';
 import { ReactComponent as CrossSVG } from '../../assets/cross.svg';
+import { PLAYER_COLORS, TABLE_HEADINGS } from '../../consts';
 import { Event } from '../../types';
 import styles from './Table.module.scss';
 

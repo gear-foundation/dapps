@@ -5,10 +5,10 @@ import { ReactComponent as LeftDoubleArrowSVG } from '../../assets/left-double-a
 import { ReactComponent as LeftArrowSVG } from '../../assets/left-arrow.svg';
 import { PLAYER_COLORS } from '../../consts';
 import { LaunchState, Session as SessionType } from '../../types';
-import { Table } from '../table';
 import { Traits } from '../traits';
-import styles from './Session.module.scss';
 import { Radar } from '../radar';
+import { Table } from '../table/Table';
+import styles from './Session.module.scss';
 
 type Props = {
   id: string;
