@@ -1,4 +1,3 @@
-// import earthSrc from '../../assets/earth.png';
 import { PLAYER_COLORS } from 'features/session/consts';
 import { CSSProperties } from 'react';
 import cropEarthSrc from '../../assets/earth-crop.png';

@@ -1,5 +1,9 @@
 @use 'utils' as *;
 
+.mainContainer {
+  display: flex;
+}
+
 .header {
   %subheader {
     line-height: 20px;
@@ -54,5 +58,14 @@
 
   &.largeMargin {
     @include gap(70px);
+  }
+}
+
+.imageWrapper {
+  @include flexCenter;
+  flex: 1;
+
+  .image {
+    max-width: 345px;
   }
 }
