@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { buttonStyles } from '@gear-js/ui';
 import { WalletSVG } from '../../assets';
 import { WalletModal } from '../wallet-modal';
+import styles from './Wallet.module.scss';
 
 function Wallet() {
   const { account, isAccountReady } = useAccount();
@@ -20,10 +21,17 @@ function Wallet() {
   return isAccountReady ? (
     <>
       {account ? (
-        <button type="button" className={activeClassName} onClick={openModal}>
-          <Identicon value={account.address} size={16} theme="polkadot" className={buttonStyles.icon} />
-          <span>{account.meta.name}</span>
-        </button>
+        <div className={styles.wallet}>
+          <p>
+            <span className={styles.balanceValue}>{account.balance.value}</span>
+            <span className={styles.balanceUnit}>{account.balance?.unit}</span>
+          </p>
+
+          <button type="button" className={activeClassName} onClick={openModal}>
+            <Identicon value={account.address} size={16} theme="polkadot" className={buttonStyles.icon} />
+            <span>{account.meta.name}</span>
+          </button>
+        </div>
       ) : (
         <button type="button" className={className} onClick={openModal}>
           <WalletSVG className={buttonStyles.icon} />

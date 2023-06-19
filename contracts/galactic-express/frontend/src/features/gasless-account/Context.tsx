@@ -1,13 +1,18 @@
 import { decodeAddress } from '@gear-js/api';
+import { useApi } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
+import { Account } from '@gear-js/react-hooks/dist/esm/types';
 
 type GaslessAccount = {
   publicKey: string | null;
   privateKey: string | null;
 };
 
-type GaslessAccountValue = GaslessAccount & { decodedAddress: HexString | undefined };
+type GaslessAccountValue = GaslessAccount & {
+  decodedAddress: HexString | undefined;
+  balance: Account['balance'] | undefined;
+};
 
 type Value = {
   account: GaslessAccountValue;
@@ -19,10 +24,16 @@ type Value = {
 const AccountContext = createContext({} as Value);
 
 function GaslessAccountProvider({ children }: { children: ReactNode }) {
+  const { api } = useApi();
+
   const [account, setAccount] = useState<GaslessAccount>({
     publicKey: sessionStorage.templatePublicKey,
     privateKey: sessionStorage.templatePrivateKey,
   });
+
+  const decodedAddress = account.publicKey ? decodeAddress(account.publicKey) : undefined;
+
+  const [balance, setBalance] = useState<Account['balance']>();
 
   const isLoggedIn = !!(account.publicKey && account.privateKey);
 
@@ -31,24 +42,31 @@ function GaslessAccountProvider({ children }: { children: ReactNode }) {
   };
 
   useEffect(() => {
-    if (!isLoggedIn) return;
+    if (!isLoggedIn) {
+      sessionStorage.removeItem('templatePublicKey');
+      sessionStorage.removeItem('templatePrivateKey');
+      return;
+    }
 
     sessionStorage.setItem('templatePublicKey', account.publicKey as string);
     sessionStorage.setItem('templatePrivateKey', account.privateKey as string);
 
-    return () => {
-      sessionStorage.removeItem('templatePublicKey');
-      sessionStorage.removeItem('templatePrivateKey');
-    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn]);
 
-  const decodedAddress = account.publicKey ? decodeAddress(account.publicKey) : undefined;
+  useEffect(() => {
+    if (!api || !decodedAddress) return setBalance(undefined);
+
+    api.balance
+      .findOut(decodedAddress)
+      .then((result) => result.toHuman().split(' '))
+      .then(([value, unit]) => setBalance({ value, unit }));
+  }, [api, decodedAddress]);
 
   return (
     <AccountContext.Provider
       // eslint-disable-next-line react/jsx-no-constructed-context-values
-      value={{ account: { ...account, decodedAddress }, setAccount, isLoggedIn, logout }}>
+      value={{ account: { ...account, decodedAddress, balance }, setAccount, isLoggedIn, logout }}>
       {children}
     </AccountContext.Provider>
   );

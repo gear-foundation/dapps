@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { WalletSVG } from '../../../wallet/assets';
 import { useGaslessAccount } from '../../Context';
 import { GaslessAccountModal } from '../gasless-account-modal';
+import walletStyles from '../../../wallet/components/wallet/Wallet.module.scss';
 import styles from './GaslessAccount.module.scss';
 
 function GaslessAccount() {
@@ -21,10 +22,17 @@ function GaslessAccount() {
   return (
     <>
       {isLoggedIn ? (
-        <button type="button" className={activeClassName} onClick={openModal}>
-          <Identicon value={account.publicKey} size={16} theme="polkadot" className={buttonStyles.icon} />
-          <span>{account.publicKey}</span>
-        </button>
+        <div className={walletStyles.wallet}>
+          <p>
+            <span className={walletStyles.balanceValue}>{account.balance?.value}</span>
+            <span className={walletStyles.balanceUnit}>{account.balance?.unit}</span>
+          </p>
+
+          <button type="button" className={activeClassName} onClick={openModal}>
+            <Identicon value={account.publicKey} size={16} theme="polkadot" className={buttonStyles.icon} />
+            <span>{account.publicKey}</span>
+          </button>
+        </div>
       ) : (
         <button type="button" className={className} onClick={openModal}>
           <WalletSVG className={buttonStyles.icon} />
