@@ -1,7 +1,8 @@
-import { useReadFullState, useSendMessage } from '@gear-js/react-hooks';
+import { useReadFullState } from '@gear-js/react-hooks';
 import metaTxt from 'assets/state/launch_site.meta.txt';
 import { ADDRESS } from 'consts';
 import { useProgramMetadata } from 'hooks';
+import { useAuth } from 'features/auth';
 import { LaunchState } from './types';
 
 function useLaunchState() {
@@ -12,6 +13,7 @@ function useLaunchState() {
 }
 
 function useLaunchMessage() {
+  const { useSendMessage } = useAuth();
   const meta = useProgramMetadata(metaTxt);
 
   return useSendMessage(ADDRESS.CONTRACT, meta, true);

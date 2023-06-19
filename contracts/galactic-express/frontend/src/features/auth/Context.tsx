@@ -1,11 +1,12 @@
 import { useAccount, useSendMessage as useHooksSendMessage } from '@gear-js/react-hooks';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
-import { useGaslessAccount, useGaslessSendMessage } from '../gasless-account';
+import { Account } from '@gear-js/react-hooks/dist/esm/types';
+import { useGaslessAccount, useGaslessSendMessage, GaslessAccountValue } from '../gasless-account';
 
 type Value = {
   authType: string;
   setAuthType: (value: string) => void;
-  accountAddress: string | null | undefined;
+  account: Account | GaslessAccountValue | undefined;
   useSendMessage: typeof useHooksSendMessage;
 };
 
@@ -27,7 +28,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
   const value = {
     authType,
     setAuthType,
-    accountAddress: authType === 'gasless' ? gaslessAccount.publicKey : walletAccount?.decodedAddress,
+    account: authType === 'gasless' ? gaslessAccount : walletAccount,
     useSendMessage: authType === 'gasless' ? useGaslessSendMessage : useHooksSendMessage,
   };
 

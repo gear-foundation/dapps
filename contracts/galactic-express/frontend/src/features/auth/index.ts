@@ -1,4 +1,4 @@
 import { Auth } from './Auth';
-import { AuthProvider } from './Context';
+import { AuthProvider, useAuth } from './Context';
 
-export { Auth, AuthProvider };
+export { Auth, AuthProvider, useAuth };

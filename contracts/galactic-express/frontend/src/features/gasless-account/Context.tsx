@@ -1,13 +1,17 @@
-import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useEffect, useState } from 'react';
+import { decodeAddress } from '@gear-js/api';
+import { HexString } from '@polkadot/util/types';
+import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
 type GaslessAccount = {
   publicKey: string | null;
   privateKey: string | null;
 };
 
+type GaslessAccountValue = GaslessAccount & { decodedAddress: HexString | undefined };
+
 type Value = {
-  account: GaslessAccount;
-  setAccount: Dispatch<SetStateAction<GaslessAccount>>;
+  account: GaslessAccountValue;
+  setAccount: (value: GaslessAccount) => void;
   isLoggedIn: boolean;
   logout: () => void;
 };
@@ -39,10 +43,12 @@ function GaslessAccountProvider({ children }: { children: ReactNode }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isLoggedIn]);
 
+  const decodedAddress = account.publicKey ? decodeAddress(account.publicKey) : undefined;
+
   return (
     <AccountContext.Provider
       // eslint-disable-next-line react/jsx-no-constructed-context-values
-      value={{ account, setAccount, isLoggedIn, logout }}>
+      value={{ account: { ...account, decodedAddress }, setAccount, isLoggedIn, logout }}>
       {children}
     </AccountContext.Provider>
   );
@@ -51,3 +57,4 @@ function GaslessAccountProvider({ children }: { children: ReactNode }) {
 const useGaslessAccount = () => useContext(AccountContext);
 
 export { GaslessAccountProvider, useGaslessAccount };
+export type { GaslessAccountValue };

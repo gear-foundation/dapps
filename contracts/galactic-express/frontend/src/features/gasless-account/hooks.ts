@@ -1,4 +1,4 @@
-import { GasInfo, ProgramMetadata, decodeAddress } from '@gear-js/api';
+import { GasInfo, ProgramMetadata } from '@gear-js/api';
 import { EventRecord } from '@polkadot/types/interfaces';
 import { AnyJson, ISubmittableResult } from '@polkadot/types/types';
 import { HexString } from '@polkadot/util/types';
@@ -59,14 +59,13 @@ function useGaslessSendMessage(destination: HexString, metadata: ProgramMetadata
   };
 
   const sendMessage = (payload: AnyJson, options?: SendMessageOptions) => {
-    const { publicKey, privateKey } = account;
+    const { decodedAddress, privateKey } = account;
 
-    if (publicKey && privateKey && metadata) {
+    if (decodedAddress && privateKey && metadata) {
       loadingAlertId.current = alert.loading('Sign In', { title });
 
       const { value = 0, isOtherPanicsAllowed = false, onSuccess, onError } = options || {};
 
-      const decodedAddress = decodeAddress(publicKey);
       const keyring = new Keyring({ type: 'sr25519' });
       const accountPair = keyring.addFromMnemonic(privateKey);
 

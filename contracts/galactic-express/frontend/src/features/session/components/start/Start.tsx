@@ -1,7 +1,7 @@
-import { useAccount, withoutCommas } from '@gear-js/react-hooks';
+import { withoutCommas } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 import { Container } from 'components';
-import { Auth } from '../../../auth';
+import { Auth, useAuth } from '../../../auth';
 import src from '../../assets/earth.gif';
 import { Session } from '../../types';
 import { Traits } from '../traits';
@@ -14,7 +14,7 @@ type Props = {
 };
 
 function Start({ sessionId, session }: Props) {
-  const { account } = useAccount();
+  const { account } = useAuth();
   const { decodedAddress } = account || {};
 
   const { registered, altitude, weather, fuelPrice, reward, bet } = session;
@@ -22,7 +22,7 @@ function Start({ sessionId, session }: Props) {
   const playersCount = players.length;
   const isRegistered = decodedAddress ? !!registered[decodedAddress] : false;
 
-  const containerClassName = clsx(styles.container, account ? styles.smallMargin : styles.largeMargin);
+  const containerClassName = clsx(styles.container, decodedAddress ? styles.smallMargin : styles.largeMargin);
 
   return (
     <div className={styles.mainContainer}>
@@ -40,7 +40,7 @@ function Start({ sessionId, session }: Props) {
           <Traits altitude={altitude} weather={weather} fuelPrice={fuelPrice} reward={reward} />
 
           <footer>
-            {account ? (
+            {decodedAddress ? (
               <>
                 {isRegistered && <p>You&apos;re registered.</p>}
                 {!isRegistered && <Form weather={weather} defaultDeposit={withoutCommas(bet || '0')} />}
