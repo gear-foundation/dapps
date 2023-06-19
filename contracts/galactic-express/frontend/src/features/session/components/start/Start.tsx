@@ -31,7 +31,7 @@ function Start({ sessionId, session }: Props) {
           <h2 className={styles.heading}>Session #{sessionId}</h2>
 
           <div>
-            <p className={styles.registration}>Registration...</p>
+            <p className={styles.registration}>Registration</p>
             <p className={styles.subheading}>Rockets ({playersCount}/4). Waiting for other players...</p>
           </div>
         </header>

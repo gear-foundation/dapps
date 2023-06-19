@@ -1,5 +1,15 @@
 @use 'utils' as *;
 
+@keyframes ellipsis {
+  33% {
+    content: '..';
+  }
+
+  66% {
+    content: '...';
+  }
+}
+
 .mainContainer {
   display: flex;
 }
@@ -34,6 +44,14 @@
     font-weight: 300;
     font-size: 20px;
     color: #2bd071;
+
+    &::after {
+      content: '.';
+      width: 1em;
+      display: inline-block;
+      text-align: left;
+      animation: ellipsis 1.25s infinite;
+    }
   }
 
   .subheading {

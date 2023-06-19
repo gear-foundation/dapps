@@ -1,6 +1,6 @@
 import { PLAYER_COLORS } from 'features/session/consts';
 import { CSSProperties } from 'react';
-import cropEarthSrc from '../../assets/earth-crop.png';
+import cropEarthSrc from '../../assets/earth-crop.gif';
 import { Event } from '../../types';
 import styles from './Radar.module.scss';
 
