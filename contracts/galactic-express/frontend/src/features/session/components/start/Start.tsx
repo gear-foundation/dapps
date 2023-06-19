@@ -1,8 +1,8 @@
 import { useAccount, withoutCommas } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 import { Container } from 'components';
-import { Wallet } from '../../../wallet';
-import src from '../../assets/earth.png';
+import { Auth } from '../../../auth';
+import src from '../../assets/earth.gif';
 import { Session } from '../../types';
 import { Traits } from '../traits';
 import { Form } from '../form';
@@ -47,7 +47,7 @@ function Start({ sessionId, session }: Props) {
               </>
             ) : (
               <div className={styles.wallet}>
-                <Wallet />
+                <Auth hideResetButton />
                 <p>Connect wallet to start calculation and launch</p>
               </div>
             )}

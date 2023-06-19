@@ -20,7 +20,7 @@ const MAX_GAS_LIMIT = 250000000000;
 const getAutoGasLimit = ({ waited, min_limit }: GasInfo) =>
   waited ? min_limit.add(min_limit.mul(bnToBn(0.1))) : min_limit;
 
-function useSendMessage(destination: HexString, metadata: ProgramMetadata | undefined, isMaxGasLimit = false) {
+function useGaslessSendMessage(destination: HexString, metadata: ProgramMetadata | undefined, isMaxGasLimit = false) {
   const { api } = useApi();
   const { account } = useGaslessAccount();
   const alert = useAlert();
@@ -91,4 +91,4 @@ function useSendMessage(destination: HexString, metadata: ProgramMetadata | unde
   return sendMessage;
 }
 
-export { useSendMessage };
+export { useGaslessSendMessage };

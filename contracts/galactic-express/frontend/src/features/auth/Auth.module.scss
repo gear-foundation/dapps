@@ -1,0 +1,18 @@
+@use 'utils' as *;
+
+.modal {
+  display: flex;
+  justify-content: space-between;
+}
+
+.auth {
+  @include gap(8px, right);
+  display: flex;
+  align-items: center;
+
+  .resetButton {
+    svg {
+      @include svgColor(rgba(#fff, 0.5));
+    }
+  }
+}

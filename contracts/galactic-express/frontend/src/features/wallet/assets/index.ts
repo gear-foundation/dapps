@@ -1,3 +1,3 @@
-import { PolkadotSVG, SubWalletSVG, TalismanSVG, EnkryptSVG, WalletSVG, ExitSVG, CopySVG } from './images';
+import { PolkadotSVG, SubWalletSVG, TalismanSVG, EnkryptSVG, WalletSVG, CopySVG } from './images';
 
-export { PolkadotSVG, SubWalletSVG, TalismanSVG, EnkryptSVG, WalletSVG, ExitSVG, CopySVG };
+export { PolkadotSVG, SubWalletSVG, TalismanSVG, EnkryptSVG, WalletSVG, CopySVG };

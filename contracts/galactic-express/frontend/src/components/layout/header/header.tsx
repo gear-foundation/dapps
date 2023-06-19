@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom';
-import { Wallet } from 'features/wallet';
+import { Auth } from 'features/auth';
 import { ROUTES } from 'consts';
 import { Logo } from './logo';
 import styles from './Header.module.scss';
@@ -24,7 +24,7 @@ function Header() {
         </ul>
       </nav>
 
-      <Wallet />
+      <Auth />
     </header>
   );
 }

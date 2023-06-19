@@ -1,10 +1,11 @@
 import Identicon from '@polkadot/react-identicon';
 import { decodeAddress } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
+import { Button, Modal, buttonStyles } from '@gear-js/ui';
+import { ReactComponent as ExitSVG } from 'assets/images/icons/exit.svg';
 import clsx from 'clsx';
 import { copyToClipboard } from 'utils';
-import { Button, Modal, buttonStyles } from '@gear-js/ui';
-import { CopySVG, ExitSVG } from '../../assets';
+import { CopySVG } from '../../assets';
 import { WALLETS } from '../../consts';
 import { useWallet } from '../../hooks';
 import { WalletItem } from '../wallet-item';
