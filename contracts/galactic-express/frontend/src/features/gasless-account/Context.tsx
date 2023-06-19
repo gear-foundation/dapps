@@ -61,6 +61,15 @@ function GaslessAccountProvider({ children }: { children: ReactNode }) {
       .findOut(decodedAddress)
       .then((result) => result.toHuman().split(' '))
       .then(([value, unit]) => setBalance({ value, unit }));
+
+    const unsub = api.gearEvents.subscribeToBalanceChanges(decodedAddress, (result) => {
+      const [value, unit] = result.toHuman().split(' ');
+      setBalance({ value, unit });
+    });
+
+    return () => {
+      unsub.then((unsubCallback) => unsubCallback());
+    };
   }, [api, decodedAddress]);
 
   return (
