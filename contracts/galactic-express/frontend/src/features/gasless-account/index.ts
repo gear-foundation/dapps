@@ -1,4 +1,5 @@
 import { GaslessAccount, GaslessAccountModal } from './components';
-import { GaslessAccountProvider } from './Context';
+import { GaslessAccountProvider, useGaslessAccount } from './Context';
+import { useGaslessSendMessage } from './hooks';
 
-export { GaslessAccount, GaslessAccountModal, GaslessAccountProvider };
+export { GaslessAccount, GaslessAccountModal, GaslessAccountProvider, useGaslessAccount, useGaslessSendMessage };
