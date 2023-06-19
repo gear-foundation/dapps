@@ -7,7 +7,7 @@ import { PLAYER_COLORS } from '../../consts';
 import { LaunchState, Session as SessionType } from '../../types';
 import { Traits } from '../traits';
 import { Radar } from '../radar';
-import { Table } from '../table/Table';
+import { Table } from '../table';
 import styles from './Session.module.scss';
 
 type Props = {
