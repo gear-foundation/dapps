@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Button, Modal } from '@gear-js/ui';
+import { LOCAL_STORAGE } from 'consts';
 import { ReactComponent as ExitSVG } from '../wallet/assets/images/exit.svg';
 import { GaslessAccount, GaslessAccountModal } from '../gasless-account';
 import { Wallet, WalletModal } from '../wallet';
@@ -11,7 +12,7 @@ type Props = {
 };
 
 function Auth({ hideResetButton }: Props) {
-  const { authType, setAuthType } = useAuth();
+  const { authType, setAuthType, logout } = useAuth();
 
   const [isTypeModalOpen, setIsTypeModalOpen] = useState(false);
   const [isWalletModalOpen, setIsWalletModalOpen] = useState(false);
@@ -40,6 +41,10 @@ function Auth({ hideResetButton }: Props) {
 
   const handleResetButtonClick = () => {
     setAuthType('');
+    logout();
+
+    // resetting wallet manually as we do in WalletModal hook
+    localStorage.removeItem(LOCAL_STORAGE.WALLET);
   };
 
   return (

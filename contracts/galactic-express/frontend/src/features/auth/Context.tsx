@@ -8,6 +8,7 @@ type Value = {
   setAuthType: (value: string) => void;
   account: Account | GaslessAccountValue | undefined;
   useSendMessage: typeof useHooksSendMessage;
+  logout: () => void;
 };
 
 const AuthContext = createContext({} as Value);
@@ -16,8 +17,8 @@ const { Provider } = AuthContext;
 function AuthProvider({ children }: { children: ReactNode }) {
   const [authType, setAuthType] = useState((localStorage.authType as string | null) || '');
 
-  const { account: walletAccount } = useAccount();
-  const { account: gaslessAccount } = useGaslessAccount();
+  const { account: walletAccount, logout: hooksLogout } = useAccount();
+  const { account: gaslessAccount, logout: gaslessLogout } = useGaslessAccount();
 
   useEffect(() => {
     if (!authType) return localStorage.removeItem('authType');
@@ -30,6 +31,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
     setAuthType,
     account: authType === 'gasless' ? gaslessAccount : walletAccount,
     useSendMessage: authType === 'gasless' ? useGaslessSendMessage : useHooksSendMessage,
+    logout: authType === 'gasless' ? gaslessLogout : hooksLogout,
   };
 
   return <Provider value={value}>{children}</Provider>;
