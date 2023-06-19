@@ -1,3 +1,16 @@
+@use 'utils' as *;
+
+.keys {
+  @include gap(16px);
+  margin-bottom: 32px;
+  overflow-wrap: break-word;
+
+  p {
+    display: flex;
+    flex-direction: column;
+  }
+}
+
 .form {
   width: 100%;
   max-width: 320px;
@@ -7,10 +20,7 @@
 }
 
 .inputs {
+  @include gap(16px);
   width: 100%;
   margin-bottom: 48px;
-
-  > *:not(:last-child) {
-    margin-bottom: 24px;
-  }
 }

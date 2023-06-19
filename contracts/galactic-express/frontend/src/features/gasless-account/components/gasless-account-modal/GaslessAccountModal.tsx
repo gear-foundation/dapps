@@ -2,7 +2,6 @@ import { useAlert } from '@gear-js/react-hooks';
 import { Button, Input, Modal } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
 import { ADDRESS } from 'consts';
-import { useNavigate } from 'react-router-dom';
 import { useGaslessAccount } from '../../Context';
 import styles from './GaslessAccountModal.module.scss';
 
@@ -15,8 +14,7 @@ type Props = {
 function GaslessAccountModal({ onClose }: Props) {
   const { getInputProps, onSubmit } = useForm({ initialValues });
   const alert = useAlert();
-  const navigate = useNavigate();
-  const { setAccount } = useGaslessAccount();
+  const { isLoggedIn, account, setAccount, logout } = useGaslessAccount();
 
   const handleSubmit = onSubmit(({ login, password }) => {
     fetch(`${ADDRESS.GASLESS_API}/get_keys`, {
@@ -31,7 +29,7 @@ function GaslessAccountModal({ onClose }: Props) {
       })
       .then(({ publicKey, privateKey }) => {
         setAccount({ publicKey, privateKey });
-        navigate('/');
+        onClose();
       })
       .catch((error: Error) => {
         alert.error(error.message);
@@ -40,17 +38,40 @@ function GaslessAccountModal({ onClose }: Props) {
       });
   });
 
+  const handleLogoutButtonClick = () => {
+    logout();
+    onClose();
+  };
+
   return (
-    <Modal heading="Login" close={onClose}>
-      <form onSubmit={handleSubmit} className={styles.form}>
-        <div className={styles.inputs}>
-          <Input label="Login:" direction="y" {...getInputProps('login')} />
+    <Modal heading="Gasless Account" close={onClose}>
+      {isLoggedIn ? (
+        <>
+          <div className={styles.keys}>
+            <p>
+              <span>Public key:</span>
+              <span>{account.publicKey}</span>
+            </p>
 
-          <Input type="password" label="Password:" direction="y" {...getInputProps('password')} />
-        </div>
+            <p>
+              <span>Private key:</span>
+              <span>{account.privateKey}</span>
+            </p>
+          </div>
 
-        <Button type="submit" text="Login" />
-      </form>
+          <Button text="Logout" onClick={handleLogoutButtonClick} block />
+        </>
+      ) : (
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.inputs}>
+            <Input label="Login:" direction="y" {...getInputProps('login')} />
+
+            <Input type="password" label="Password:" direction="y" {...getInputProps('password')} />
+          </div>
+
+          <Button type="submit" text="Login" block />
+        </form>
+      )}
     </Modal>
   );
 }

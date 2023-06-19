@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button, Modal } from '@gear-js/ui';
-import { ReactComponent as ExitSVG } from 'assets/images/icons/exit.svg';
+import { ReactComponent as ExitSVG } from '../wallet/assets/images/exit.svg';
 import { GaslessAccount, GaslessAccountModal } from '../gasless-account';
 import { Wallet, WalletModal } from '../wallet';
 import { useAuth } from './Context';

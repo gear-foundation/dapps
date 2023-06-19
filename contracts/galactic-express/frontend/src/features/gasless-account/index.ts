@@ -1,3 +1,4 @@
 import { GaslessAccount, GaslessAccountModal } from './components';
+import { GaslessAccountProvider } from './Context';
 
-export { GaslessAccount, GaslessAccountModal };
+export { GaslessAccount, GaslessAccountModal, GaslessAccountProvider };
