@@ -1,5 +1,9 @@
 @use 'utils' as *;
 
+.backButton {
+  margin-top: 16px;
+}
+
 .keys {
   @include gap(16px);
   margin-bottom: 32px;
@@ -11,16 +15,7 @@
   }
 }
 
-.form {
-  width: 100%;
-  max-width: 320px;
+.buttons {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.inputs {
-  @include gap(16px);
-  width: 100%;
-  margin-bottom: 48px;
+  justify-content: space-evenly;
 }

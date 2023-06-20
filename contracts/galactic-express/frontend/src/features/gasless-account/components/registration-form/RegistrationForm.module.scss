@@ -1,0 +1,14 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.inputs {
+  width: 100%;
+  margin-bottom: 32px;
+
+  > *:not(:last-child) {
+    margin-bottom: 16px;
+  }
+}

@@ -1,46 +1,31 @@
-import { useAlert } from '@gear-js/react-hooks';
-import { Button, Input, Modal } from '@gear-js/ui';
-import { useForm } from '@mantine/form';
-import { ADDRESS } from 'consts';
+import { Button, Modal } from '@gear-js/ui';
+import { useState } from 'react';
 import { useGaslessAccount } from '../../Context';
+import { LoginForm } from '../login-form';
 import styles from './GaslessAccountModal.module.scss';
-
-const initialValues = { login: '', password: '' };
+import { RegistrationForm } from '../registration-form';
 
 type Props = {
   onClose: () => void;
 };
 
 function GaslessAccountModal({ onClose }: Props) {
-  const { getInputProps, onSubmit } = useForm({ initialValues });
-  const alert = useAlert();
-  const { isLoggedIn, account, setAccount, logout } = useGaslessAccount();
+  const { isLoggedIn, account, logout } = useGaslessAccount();
 
-  const handleSubmit = onSubmit(({ login, password }) => {
-    fetch(`${ADDRESS.GASLESS_API}/get_keys`, {
-      method: 'POST',
-      body: JSON.stringify({ nickname: login, password }),
-      headers: { 'Content-Type': 'application/json' },
-    })
-      .then((response) => {
-        if (!response.ok) throw new Error(response.statusText);
-
-        return response.json();
-      })
-      .then(({ publicKey, privateKey }) => {
-        setAccount({ publicKey, privateKey });
-        onClose();
-      })
-      .catch((error: Error) => {
-        alert.error(error.message);
-        // eslint-disable-next-line no-console
-        console.error(error);
-      });
-  });
+  const [form, setForm] = useState('');
 
   const handleLogoutButtonClick = () => {
     logout();
     onClose();
+  };
+
+  const closeForm = () => setForm('');
+  const openLoginForm = () => setForm('login');
+  const openRegistrationForm = () => setForm('registration');
+
+  const getForm = () => {
+    if (form === 'login') return <LoginForm onSubmit={onClose} />;
+    if (form === 'registration') return <RegistrationForm onSubmit={openLoginForm} />;
   };
 
   return (
@@ -59,19 +44,18 @@ function GaslessAccountModal({ onClose }: Props) {
             </p>
           </div>
 
-          <Button text="Logout" onClick={handleLogoutButtonClick} block />
+          <Button text="Logout" color="light" onClick={handleLogoutButtonClick} block />
         </>
       ) : (
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.inputs}>
-            <Input label="Login:" direction="y" {...getInputProps('login')} />
-
-            <Input type="password" label="Password:" direction="y" {...getInputProps('password')} />
+        getForm() || (
+          <div className={styles.buttons}>
+            <Button text="Login" color="lightGreen" size="small" onClick={openLoginForm} />
+            <Button text="Registration" color="lightGreen" size="small" onClick={openRegistrationForm} />
           </div>
-
-          <Button type="submit" text="Login" block />
-        </form>
+        )
       )}
+
+      {form && <Button text="Go Back" color="light" onClick={closeForm} className={styles.backButton} block />}
     </Modal>
   );
 }
