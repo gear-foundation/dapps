@@ -10,14 +10,14 @@ type Props = {
 
 function Probability({ weather, payload, fuel }: Props) {
   const probability = useMemo(() => {
-    let result = ((((97 / 100) * (95 - weather)) / 100) * (90 - weather)) / 100;
+    let result = (97.0 / 100.0) * ((95.0 - 2.0 * weather) / 100.0) * ((90.0 - 2.0 * weather) / 100.0);
 
-    if (payload >= 80) result = ((((97 / 100) * (85 - 2 * weather)) / 100) * (90 - weather)) / 100;
+    if (payload >= 80) result = (97.0 / 100.0) * ((85.0 - 2.0 * weather) / 100.0) * ((90.0 - 2.0 * weather) / 100.0);
 
-    if (fuel >= 80) result = (((((87 - 2 * weather) / 100) * (95 - weather)) / 100) * (90 - weather)) / 100;
+    if (fuel >= 80) result = (87.0 / 100.0) * ((95.0 - 2.0 * weather) / 100.0) * ((90.0 - 2.0 * weather) / 100.0);
 
     if (fuel >= 80 && payload >= 80)
-      result = (((((87 - 2 * weather) / 100) * (85 - 2 * weather)) / 100) * (90 - weather)) / 100;
+      result = (87.0 / 100.0) * ((85.0 - 2.0 * weather) / 100.0) * ((90.0 - 2.0 * weather) / 100.0);
 
     return Math.round(result * 100);
   }, [weather, payload, fuel]);
