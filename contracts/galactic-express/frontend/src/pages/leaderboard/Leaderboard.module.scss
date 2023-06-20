@@ -15,7 +15,7 @@ $borderRadius: 8px;
 
 .table {
   max-width: 760px;
-  margin: 0 auto;
+  margin: 0 auto 25px;
   display: grid;
   grid-template-columns: repeat(4, max-content);
   text-align: center;
