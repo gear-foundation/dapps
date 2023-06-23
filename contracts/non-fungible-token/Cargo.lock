@@ -2305,7 +2305,9 @@ dependencies = [
  "gear-lib",
  "gmeta",
  "gstd",
+ "parity-scale-codec",
  "primitive-types",
+ "scale-info",
 ]
 
 [[package]]

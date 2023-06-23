@@ -14,6 +14,25 @@ use primitive_types::H256;
 
 pub struct NFTMetadata;
 
+#[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
+pub struct Constraints {
+    pub max_mint_count: Option<u32>,
+    pub authorized_minters: Vec<ActorId>,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+pub struct InitNFT {
+    pub collection: Collection,
+    pub royalties: Option<Royalties>,
+    pub constraints: Constraints,
+}
+
+#[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+pub struct Collection {
+    pub name: String,
+    pub description: String,
+}
+
 impl Metadata for NFTMetadata {
     type Init = In<InitNFT>;
     type Handle = InOut<NFTAction, NFTEvent>;
@@ -24,8 +43,6 @@ impl Metadata for NFTMetadata {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum NFTAction {
     Mint {
         transaction_id: u64,
@@ -70,21 +87,13 @@ pub enum NFTAction {
     Clear {
         transaction_hash: H256,
     },
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub struct InitNFT {
-    pub name: String,
-    pub symbol: String,
-    pub base_uri: String,
-    pub royalties: Option<Royalties>,
+    AddMinter {
+        transaction_id: u64,
+        minter_id: ActorId,
+    },
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, Clone)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum NFTEvent {
     Transfer(NFTTransfer),
     TransferPayout(NFTTransferPayout),
@@ -99,11 +108,12 @@ pub enum NFTEvent {
         token_id: TokenId,
         approved: bool,
     },
+    MinterAdded {
+        minter_id: ActorId,
+    },
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct IoNFTState {
     pub name: String,
     pub symbol: String,
@@ -116,8 +126,6 @@ pub struct IoNFTState {
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct IoNFT {
     pub token: IoNFTState,
     pub token_id: TokenId,
@@ -169,4 +177,24 @@ impl From<&NFTState> for IoNFTState {
             royalties: royalties.clone(),
         }
     }
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub struct Nft {
+    pub owner: ActorId,
+    pub name: String,
+    pub description: String,
+    pub media_url: String,
+    pub attrib_url: String,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+pub struct State {
+    pub tokens: Vec<(TokenId, Nft)>,
+    pub owner: ActorId,
+    pub transactions: Vec<(H256, NFTEvent)>,
+    pub owners: Vec<(ActorId, TokenId)>,
+    pub collection: Collection,
+    pub nonce: TokenId,
+    pub constraints: Constraints,
 }

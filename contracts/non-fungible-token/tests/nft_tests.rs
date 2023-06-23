@@ -28,6 +28,140 @@ fn mint_success() {
 }
 
 #[test]
+fn mint_limit_exceed() {
+    let sys = System::new();
+    sys.init_logger();
+    let nft = gtest::Program::current(&sys);
+
+    let collection = Collection {
+        name: String::from("MyToken"),
+        description: String::from("My token"),
+    };
+
+    let init_nft = InitNFT {
+        collection,
+        royalties: None,
+        constraints: Constraints {
+            max_mint_count: Some(1),
+            authorized_minters: vec![USERS[0].into()],
+        },
+    };
+
+    let res = nft.send(USERS[0], init_nft);
+
+    assert!(res.log().is_empty());
+
+    let nft = sys.get_program(1);
+    let transaction_id: u64 = 0;
+    let res = mint(&nft, transaction_id, USERS[0]);
+    assert!(!res.main_failed());
+    let res = mint(&nft, transaction_id + 1, USERS[1]);
+    assert!(res.main_failed())
+}
+
+#[test]
+fn mint_authorized() {
+    let sys = System::new();
+    sys.init_logger();
+    let nft = gtest::Program::current(&sys);
+
+    let collection = Collection {
+        name: String::from("MyToken"),
+        description: String::from("My token"),
+    };
+
+    let authorized_minters: Vec<ActorId> = vec![USERS[0].into()];
+    let init_nft = InitNFT {
+        collection,
+        royalties: None,
+        constraints: Constraints {
+            max_mint_count: None,
+            authorized_minters,
+        },
+    };
+
+    let res = nft.send(USERS[0], init_nft);
+
+    assert!(res.log().is_empty());
+
+    let nft = sys.get_program(1);
+    let transaction_id: u64 = 0;
+    let res = mint(&nft, transaction_id, USERS[0]);
+    assert!(!res.main_failed());
+    let res = mint(&nft, transaction_id + 1, USERS[0]);
+    assert!(!res.main_failed())
+}
+
+#[test]
+fn mint_not_authorized() {
+    let sys = System::new();
+    sys.init_logger();
+    let nft = gtest::Program::current(&sys);
+
+    let collection = Collection {
+        name: String::from("MyToken"),
+        description: String::from("My token"),
+    };
+
+    let authorized_minters: Vec<ActorId> = vec![USERS[0].into()];
+    let init_nft = InitNFT {
+        collection,
+        royalties: None,
+        constraints: Constraints {
+            max_mint_count: None,
+            authorized_minters,
+        },
+    };
+
+    let res = nft.send(USERS[0], init_nft);
+
+    assert!(res.log().is_empty());
+
+    let nft = sys.get_program(1);
+    let transaction_id: u64 = 0;
+    let res = mint(&nft, transaction_id, USERS[0]);
+    assert!(!res.main_failed());
+    let res = mint(&nft, transaction_id + 1, USERS[1]);
+    assert!(res.main_failed())
+}
+
+#[test]
+fn mint_added() {
+    let sys = System::new();
+    sys.init_logger();
+    let nft = gtest::Program::current(&sys);
+
+    let collection = Collection {
+        name: String::from("MyToken"),
+        description: String::from("My token"),
+    };
+
+    let authorized_minters: Vec<ActorId> = vec![USERS[0].into()];
+    let init_nft = InitNFT {
+        collection,
+        royalties: None,
+        constraints: Constraints {
+            max_mint_count: None,
+            authorized_minters,
+        },
+    };
+
+    let res = nft.send(USERS[0], init_nft);
+
+    assert!(res.log().is_empty());
+
+    let nft = sys.get_program(1);
+    let transaction_id: u64 = 0;
+    let res = add_minter(&nft, transaction_id, USERS[1].into(), USERS[0]);
+    assert!(!res.main_failed());
+    let res = add_minter(&nft, transaction_id + 1, USERS[2].into(), USERS[1]);
+    assert!(!res.main_failed());
+
+    let res = add_minter(&nft, transaction_id + 1, 5.into(), 7);
+    assert!(res.main_failed())
+}
+
+#[test]
 fn burn_success() {
     let sys = System::new();
     init_nft(&sys);
@@ -220,7 +354,8 @@ fn delegated_approve_success() {
     let owner_id = pair.public().0;
 
     let mut transaction_id: u64 = 0;
-    assert!(!mint_to_actor(&nft, transaction_id, owner_id).main_failed());
+    assert!(!add_minter(&nft, transaction_id, owner_id.into(), USERS[0]).main_failed());
+    assert!(!mint_to_actor(&nft, transaction_id + 1, owner_id).main_failed());
 
     let message = DelegatedApproveMessage {
         token_owner_id: owner_id.into(),
@@ -254,6 +389,8 @@ fn delegated_approve_failures() {
     let owner_id = pair.public().0;
 
     let mut transaction_id: u64 = 0;
+    assert!(!add_minter(&nft, transaction_id, owner_id.into(), USERS[0]).main_failed());
+    transaction_id += 1;
     assert!(!mint_to_actor(&nft, transaction_id, owner_id).main_failed());
     transaction_id += 1;
     assert!(!mint(&nft, transaction_id, USERS[0]).main_failed());
@@ -285,6 +422,9 @@ fn delegated_approve_failures() {
     // Must fail if user tries to approve token in wrong contract
     init_nft(&sys);
     let second_nft = sys.get_program(2);
+    transaction_id += 1;
+    assert!(!add_minter(&second_nft, transaction_id, owner_id.into(), USERS[0]).main_failed());
+    transaction_id += 1;
     assert!(!mint_to_actor(&second_nft, transaction_id, owner_id).main_failed());
 
     let message = DelegatedApproveMessage {

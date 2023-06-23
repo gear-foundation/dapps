@@ -9,4 +9,6 @@ license.workspace = true
 gstd.workspace = true
 gear-lib.workspace = true
 primitive-types.workspace = true
+scale-info.workspace = true
+parity-scale-codec.workspace = true
 gmeta = { workspace = true, features = ["codegen"] }
