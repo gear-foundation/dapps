@@ -16,7 +16,7 @@ pub const MAX_PAYLOAD_VALUE: u32 = 120;
 pub const MIN_ALTITUDE: u32 = 8_000;
 pub const MAX_ALTITUDE: u32 = 15_000;
 
-const RESERVATION_AMOUNT: u64 = 240_000_000_000;
+const RESERVATION_AMOUNT: u64 = 200_000_000_000;
 const GAS_FOR_UPDATE: u64 = 4_000_000_000;
 static mut RESERVATION: Vec<ReservationId> = vec![];
 
@@ -455,6 +455,7 @@ async fn main() {
             fuel_amount,
             payload_amount,
         } => {
+            launch_site.reserve_gas();
             launch_site.register_participant_on_launch(name, fuel_amount, payload_amount);
         }
     }
