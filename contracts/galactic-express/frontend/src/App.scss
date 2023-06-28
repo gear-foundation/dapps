@@ -1,128 +1,30 @@
 @use 'assets/styles';
 @use '@gear-js/ui/variables' as *;
-@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@800&family=Silkscreen&display=swap');
 
-:root {
-  --color-secondary: #{red($textColorSecondary) green($textColorSecondary) blue($textColorSecondary)};
-  --color-primary: #{red($successColor) green($successColor) blue($successColor)};
-  --color-error: #{red($errorColor) green($errorColor) blue($errorColor)};
-  --color-dark-500: 41 41 43;
-  --color-light: 209 209 209;
+#root {
+  max-width: 1200px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: content-box;
 }
 
-html {
-  background-color: #1e1e1e;
-  font-family: "Silkscreen", cursive;
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  position: relative; // for loaders
 }
 
 body {
-  background: $bgColor url(assets/images/bg.gif);
-  background-size: cover;
-}
+  background-color: #000;
 
-.start-launch-container {
-  padding: 20px;
-  background: #202022;
-  border: 2px solid rgb(255, 255, 255);
-  font-family: "Silkscreen", cursive;
-}
-
-.rk-btn {
-  border-radius: 0 !important;
-  font-family: "Silkscreen", cursive !important;
-  background-color: #910d9a !important;
-}
-
-.rk-btn:hover {
-  border-radius: 0 !important;
-  font-family: "Silkscreen", cursive !important;
-  background-color: #6f0c76 !important;
-}
-
-.logs {
-  background: #202022;
-  font-size: 13px;
-  border: 2px solid rgb(255, 255, 255);
-  font-family: "Silkscreen", cursive;
-}
-
-.panel {
-  background: #c0c0c0;
-  box-shadow: 0 -2px #fffdfc, 0 -4px #cce9eb;
-  color: #202022;
-  font-size: 2em;
-  font-family: "Silkscreen", cursive;
-  padding: 25px;
-}
-
-.panel2 {
-  margin-top: 20px;
-  background: #c0c0c0;
-  box-shadow: 0 -2px #fffdfc, 0 -4px #cce9eb;
-  color: #202022;
-  font-family: "Silkscreen", cursive;
-  padding: 5px;
-}
-
-.reg {
-  font-size: 1.5em;
-}
-
-.blink {
-  animation: blinker 0.6s linear infinite;
-  color: blue;
-  background-color: #c0c0c0;
-  padding: 3px;
-}
-
-@keyframes blinker {
-  50% {
-    opacity: 0;
+  &.leaderboard {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1141' height='529' fill='none'%3E%3Cg filter='url(%23a)' opacity='.3'%3E%3Ccircle cx='570.5' cy='-41.5' r='222.5' fill='%232BD071'/%3E%3C/g%3E%3Cdefs%3E%3Cfilter id='a' width='1141' height='1141' x='0' y='-612' color-interpolation-filters='sRGB' filterUnits='userSpaceOnUse'%3E%3CfeFlood flood-opacity='0' result='BackgroundImageFix'/%3E%3CfeBlend in='SourceGraphic' in2='BackgroundImageFix' result='shape'/%3E%3CfeGaussianBlur result='effect1_foregroundBlur_82_1619' stdDeviation='174'/%3E%3C/filter%3E%3C/defs%3E%3C/svg%3E");
+    background-position: top;
+    background-repeat: no-repeat;
   }
-}
-
-.blink-one {
-  animation: blinker-one 1s linear infinite;
-}
-
-@keyframes blinker-one {
-  0% {
-    opacity: 0;
-  }
-}
-
-.blink-two {
-  animation: blinker-two 1.4s linear infinite;
-}
-
-@keyframes blinker-two {
-  100% {
-    opacity: 0;
-  }
-}
-
-.arrow {
-  color: rgb(74 222 128);
-  padding-right: 5px;
-}
-
-.sessionId {
-  color: blue
-}
-
-.player {
-  color: green;
-}
-
-.players-ready {
-  color: black;
-  font-size: 2em;
-  padding-left: 10px;
-}
-
-.range {
-  padding: 5px;
-  height: 30px;
-  line-height: 20px;
-  margin-bottom: 20px;
 }

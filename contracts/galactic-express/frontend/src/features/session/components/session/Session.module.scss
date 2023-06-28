@@ -1,0 +1,89 @@
+@use 'utils' as *;
+
+.container {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+
+  > div:first-child {
+    align-self: center;
+  }
+}
+
+.header {
+  @include gap(54px, right);
+  padding-bottom: 16px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  border-bottom: 1px solid rgba(#8c8b90, 0.2);
+
+  .heading {
+    font-weight: 300;
+    font-size: 32px;
+    line-height: 100%;
+    letter-spacing: 0.08em;
+  }
+
+  .navigation {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    color: #d2d2d3;
+  }
+
+  .rotatedArrow {
+    transform: rotate(180deg);
+  }
+}
+
+.body {
+  @include gap(24px);
+}
+
+.feed {
+  @include gap(8px);
+  max-height: 75px;
+  overflow-y: auto;
+
+  .item {
+    @include gap(2px);
+    padding: 16px;
+    font-size: 12px;
+    line-height: 20px;
+    letter-spacing: 0.08em;
+    background-image: linear-gradient(180deg, rgba(var(--color), 0.04) 0%, rgba(143, 126, 190, 0) 100%);
+    position: relative;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 8px;
+      padding: 1px;
+      background-image: linear-gradient(135deg, var(--color) 0%, rgba(0, 0, 0, 0) 14.42%);
+      mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+      mask-composite: exclude;
+    }
+
+    .heading {
+      @include textOverflow;
+      font-weight: 500;
+      white-space: nowrap;
+
+      &::before {
+        @include circle(8px);
+        content: '';
+        display: inline-block;
+        margin-right: 8px;
+        background-color: var(--color);
+      }
+    }
+
+    .text {
+      font-weight: 300;
+      color: #d1cfd7;
+    }
+  }
+}

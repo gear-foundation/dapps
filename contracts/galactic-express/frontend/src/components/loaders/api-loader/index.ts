@@ -1,1 +1,3 @@
-export { ApiLoader } from './ApiLoader';
+import { ApiLoader } from './ApiLoader';
+
+export { ApiLoader };

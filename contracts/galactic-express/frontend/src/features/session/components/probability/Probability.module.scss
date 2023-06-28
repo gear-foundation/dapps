@@ -1,0 +1,24 @@
+.probability {
+  line-height: 20px;
+  letter-spacing: 0.08em;
+  color: #8c8b90;
+}
+
+.value {
+  margin-left: 8px;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 16px;
+
+  &.low {
+    color: #eb5757;
+  }
+
+  &.medium {
+    color: #f2994a;
+  }
+
+  &.high {
+    color: #2bd071;
+  }
+}

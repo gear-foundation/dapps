@@ -1,0 +1,44 @@
+@use 'utils' as *;
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 0;
+}
+
+.nav {
+  @include gap(87px, right);
+  display: flex;
+  align-items: center;
+}
+
+.menu {
+  display: flex;
+  align-items: center;
+}
+
+.link {
+  margin-right: 40px;
+  font-weight: 300;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.08em;
+  position: relative;
+
+  &:global(.active) {
+    color: #2bd071;
+
+    &::after {
+      content: '';
+      width: 9px;
+      height: 1px;
+      position: absolute;
+      bottom: -9px;
+      left: 0;
+      right: 0;
+      margin: auto;
+      background-color: #2bd071;
+    }
+  }
+}
