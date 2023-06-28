@@ -1,6 +1,6 @@
 use gstd::{
     exec,
-    msg::{self, send_delayed, send_delayed_from_reservation},
+    msg::{self, send_delayed_from_reservation},
     prelude::*,
     ActorId, ReservationId,
 };
@@ -17,7 +17,7 @@ pub const MIN_ALTITUDE: u32 = 8_000;
 pub const MAX_ALTITUDE: u32 = 15_000;
 
 const RESERVATION_AMOUNT: u64 = 200_000_000_000;
-const GAS_FOR_UPDATE: u64 = 4_000_000_000;
+
 static mut RESERVATION: Vec<ReservationId> = vec![];
 
 #[derive(Default, Encode, Decode, TypeInfo, Debug)]
@@ -112,30 +112,6 @@ impl LaunchSite {
                 0,
             )
             .expect("failed to reply in ::new_session");
-        }
-    }
-
-    fn delayed_start_execution(&mut self) {
-        if self.state == SessionState::Registration {
-            let action = Action::ExecuteSession;
-            // let gas_available = exec::gas_available();
-            // if gas_available <= GAS_FOR_UPDATE {
-            let reservations = unsafe { &mut RESERVATION };
-            let reservation_id = reservations
-                .pop()
-                .expect("Not enough reservations to start execution");
-            send_delayed_from_reservation(
-                reservation_id,
-                exec::program_id(),
-                action,
-                0,
-                self.after_threshold_wait_period_to_execute,
-            )
-            .expect("Can't send delayed Action::ExecuteSession from reservation");
-            // } else {
-            // send_delayed(exec::program_id(), action, 0, self.after_execution_period)
-            // .expect("Can't send delayed Action::ExecuteSession");
-            // }
         }
     }
 
