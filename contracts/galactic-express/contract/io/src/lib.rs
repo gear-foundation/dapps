@@ -1,13 +1,13 @@
 #![no_std]
 
 use codec::{Decode, Encode};
-use gmeta::{InOut, Metadata};
+use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 
 pub struct ProgramMetadata;
 
 impl Metadata for ProgramMetadata {
-    type Init = InOut<String, ()>;
+    type Init = In<Initialize>;
     type Handle = InOut<Action, Event>;
     type Reply = InOut<(), ()>;
     type Others = InOut<(), ()>;
@@ -16,16 +16,30 @@ impl Metadata for ProgramMetadata {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
+pub struct Initialize {
+    pub name: String,
+    pub after_execution_period: u32,
+    pub registered_threshold_to_execute: u32,
+    // pub after_threshold_wait_period_to_execute: u32,
+}
+
+#[derive(Encode, Decode, TypeInfo, Debug)]
 pub enum Action {
     Info,
-    RegisterParticipant(String),
+    // RegisterParticipant(String),
     ChangeParticipantName(String),
     StartNewSession,
-    RegisterOnLaunch {
+    // RegisterOnLaunch {
+    //     fuel_amount: u32,
+    //     payload_amount: u32,
+    // },
+    RegisterParticipantOnLaunch {
+        name: String,
         fuel_amount: u32,
         payload_amount: u32,
     },
     ExecuteSession,
+    ReserveGas,
 }
 
 #[derive(Encode, Debug, PartialEq, Eq, Decode, TypeInfo)]
@@ -60,7 +74,7 @@ pub enum Event {
     },
     LaunchFinished {
         id: u32,
-        stats: Vec<(ActorId, bool, u32, u32)>, // participant id, success, final altitude, earnings
+        stats: Vec<(ActorId, bool, u32, u128)>, // participant id, success, final altitude, earnings
     },
     SessionInfo {
         weather: u32,
@@ -69,6 +83,7 @@ pub enum Event {
         payload_value: u32,
     },
     NoCurrentSession,
+    GasReserved,
 }
 
 #[derive(Default, Encode, Decode, TypeInfo)]
@@ -80,20 +95,15 @@ pub struct CurrentSesionInfo {
     pub payload_value: u32,
 }
 
-#[derive(Default, Encode, Decode, TypeInfo, Clone, Debug)]
+#[derive(Default, Encode, Decode, TypeInfo, Clone, Debug, Eq, PartialEq, PartialOrd, Ord)]
 pub struct CurrentStat {
     pub participant: ActorId,
-    pub alive: bool,
+    pub dead_round: Option<u32>,
     pub fuel_left: u32,
+    pub fuel_capacity: u32,
     pub last_altitude: u32,
     pub payload: u32,
     pub halt: Option<RocketHalt>,
-}
-
-#[derive(Default, Encode, Decode, TypeInfo)]
-pub struct ParticipantState {
-    pub name: String,
-    pub balance: u32,
 }
 
 #[derive(Default, Encode, Decode, TypeInfo, Debug)]
@@ -102,9 +112,12 @@ pub struct LaunchSite {
     pub owner: ActorId,
     pub participants: BTreeMap<ActorId, Participant>,
     pub current_session: Option<CurrentSession>,
-    pub events: BTreeMap<u32, Vec<CurrentStat>>,
+    pub events: BTreeMap<u32, BTreeSet<CurrentStat>>,
     pub state: SessionState,
     pub session_id: u32,
+    pub after_execution_period: u32,
+    pub registered_threshold_to_execute: u32,
+    pub after_threshold_wait_period_to_execute: u32,
 }
 
 #[derive(Default, Encode, Decode, TypeInfo, Debug)]
@@ -118,17 +131,19 @@ pub struct CurrentSession {
     pub altitude: u32,
     pub weather: u32,
     pub fuel_price: u32,
-    pub payload_value: u32,
-    pub registered: BTreeMap<ActorId, SessionStrategy>,
+    pub reward: u128,
+    pub registered: BTreeMap<ActorId, (SessionStrategy, Participant)>,
+    pub bet: Option<u128>,
 }
 
-#[derive(Default, Encode, Decode, TypeInfo, Debug)]
+#[derive(Default, Encode, Decode, TypeInfo, Debug, Clone)]
 pub struct Participant {
     pub name: String,
-    pub balance: u32,
+    pub score: u128,
+    pub balance: u128,
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug, Clone)]
+#[derive(Encode, Decode, TypeInfo, Debug, Clone, PartialEq, Eq, PartialOrd, Ord)]
 pub enum RocketHalt {
     Overfilled,
     Overfuelled,
