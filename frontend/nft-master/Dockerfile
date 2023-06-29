@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+FROM node:18-alpine
 
 WORKDIR /usr/src
 
@@ -18,11 +18,11 @@ ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
     REACT_APP_IPFS_ADDRESS=${REACT_APP_IPFS_ADDRESS} \
     REACT_APP_IPFS_GATEWAY_ADDRESS=${REACT_APP_IPFS_GATEWAY_ADDRESS} \
     REACT_APP_DEFAULT_CONTRACT_ADDRESS=${REACT_APP_DEFAULT_CONTRACT_ADDRESS}
-
+    
 RUN yarn install
 
 RUN yarn build
 
-FROM nginx:alpine
-RUN rm -vf /usr/share/nginx/html/*
-COPY --from=builder /usr/src/build /usr/share/nginx/html
+RUN npm install --global serve
+
+CMD ["serve", "-s", "/usr/src/build"]
