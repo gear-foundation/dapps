@@ -1,9 +1,28 @@
-FROM node:18-alpine
+FROM node:18-alpine AS builder
 
 WORKDIR /usr/src
 
 COPY . /usr/src
 
+RUN apk update
+
+RUN apk add xsel
+
+ARG REACT_APP_NODE_ADDRESS \
+    REACT_APP_DEFAULT_NODES_URL \
+    REACT_APP_IPFS_ADDRESS \ 
+    REACT_APP_IPFS_GATEWAY_ADDRESS \
+    REACT_APP_DEFAULT_CONTRACT_ADDRESS
+ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
+    REACT_APP_DEFAULT_NODES_URL=${REACT_APP_DEFAULT_NODES_URL} \
+    REACT_APP_IPFS_ADDRESS=${REACT_APP_IPFS_ADDRESS} \
+    REACT_APP_IPFS_GATEWAY_ADDRESS=${REACT_APP_IPFS_GATEWAY_ADDRESS} \
+    REACT_APP_DEFAULT_CONTRACT_ADDRESS=${REACT_APP_DEFAULT_CONTRACT_ADDRESS}
+
 RUN yarn install
 
-CMD ["yarn", "start"]
+RUN yarn build
+
+FROM nginx:alpine
+RUN rm -vf /usr/share/nginx/html/*
+COPY --from=builder /usr/src/build /usr/share/nginx/html
