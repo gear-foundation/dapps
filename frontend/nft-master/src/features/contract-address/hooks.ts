@@ -24,7 +24,7 @@ function useContractAddressSetup() {
     setSearchParams(searchParams);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [address, searchParams]);
+  }, [address]);
 }
 
 export { useContractAddress, useContractAddressSetup };

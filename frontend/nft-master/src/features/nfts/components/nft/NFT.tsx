@@ -78,35 +78,33 @@ function NFT() {
           </div>
 
           <div>
-            <div>
-              <h2 className={styles.name}>{name}</h2>
-              <p className={styles.collection}>{collection}</p>
-              <p className={styles.description}>{description}</p>
+            <h2 className={styles.name}>{name}</h2>
+            <p className={styles.collection}>{collection}</p>
+            <p className={styles.description}>{description}</p>
 
-              {attribUrl && (
-                <div>
-                  <header className={styles.header}>
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label htmlFor="search" className={styles.label}>
-                      NFT Details:
-                    </label>
+            {attribUrl && (
+              <div>
+                <header className={styles.header}>
+                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                  <label htmlFor="search" className={styles.label}>
+                    NFT Details:
+                  </label>
 
-                    <div className={styles.inputWrapper}>
-                      <SearchSVG />
-                      <input
-                        type="text"
-                        placeholder="Search"
-                        id="search"
-                        value={searchQuery}
-                        onChange={handleSearchInputChange}
-                      />
-                    </div>
-                  </header>
+                  <div className={styles.inputWrapper}>
+                    <SearchSVG />
+                    <input
+                      type="text"
+                      placeholder="Search"
+                      id="search"
+                      value={searchQuery}
+                      onChange={handleSearchInputChange}
+                    />
+                  </div>
+                </header>
 
-                  <ul className={styles.details}>{getDetails()}</ul>
-                </div>
-              )}
-            </div>
+                <ul className={styles.details}>{getDetails()}</ul>
+              </div>
+            )}
 
             <button type="button" className={styles.backButton} onClick={handleBackButtonClick}>
               <BackArrowSVG />
