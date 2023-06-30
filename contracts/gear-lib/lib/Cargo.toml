@@ -7,7 +7,7 @@ license.workspace = true
 
 [dependencies]
 codec = { package = "parity-scale-codec", version = "3", default-features = false }
-gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "cfb433a" }
 primitive-types = { version = "0.12", default-features = false }
 scale-info = { version = "2", default-features = false }
 sr25519 = { package = "gear-lib-sr25519", path = "../sr25519" }
