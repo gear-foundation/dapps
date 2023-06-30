@@ -1,5 +1,5 @@
 use crate::non_fungible_token::{delegated::*, io::*, royalties::*, state::*, token::*};
-use gstd::{exec, msg, prelude::*, ActorId};
+use gstd::{msg, prelude::*, ActorId};
 use hashbrown::HashSet;
 
 const ZERO_ID: ActorId = ActorId::zero();
@@ -274,7 +274,7 @@ pub trait NFTCore: NFTStateKeeper {
 
     /// Checks that `msg::source()` is the owner of the token with indicated `token_id`
     fn assert_owner(&self, owner: &ActorId) {
-        if !(owner == &msg::source() || owner == &exec::origin()) {
+        if owner != &msg::source() {
             panic!("Not allowed to transfer");
         }
     }
