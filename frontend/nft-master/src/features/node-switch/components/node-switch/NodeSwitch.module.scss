@@ -10,6 +10,7 @@
   letter-spacing: 0.03em;
   background-color: transparent;
   transition: all 0.3s;
+  white-space: nowrap;
 
   &:hover {
     opacity: 0.6;
@@ -18,6 +19,7 @@
   &::before {
     @include circle(7px);
     content: '';
+    flex-shrink: 0;
     margin-right: 10px;
     background-color: #00ffc4;
   }

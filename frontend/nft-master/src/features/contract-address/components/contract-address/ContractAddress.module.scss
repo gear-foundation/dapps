@@ -3,6 +3,8 @@
 .button {
   @include gap(10px, right);
   background-color: transparent;
+  width: 100%;
+  max-width: 180px;
   display: flex;
   align-items: center;
   font-weight: 700;
@@ -11,12 +13,19 @@
   letter-spacing: 0.03em;
   transition: all 0.3s;
 
+  @include lg {
+    max-width: 100%;
+  }
+
   &:hover {
     opacity: 0.6;
   }
 
   span {
     @include textOverflow;
-    max-width: 160px;
+  }
+
+  svg {
+    flex-shrink: 0;
   }
 }

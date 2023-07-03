@@ -9,8 +9,13 @@
 
 .list {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(3, minmax(0, auto));
   gap: 30px;
+
+  @include lg {
+    grid-template-columns: minmax(0, auto);
+    justify-content: center;
+  }
 }
 
 .nft {
@@ -122,6 +127,14 @@
   align-items: center;
   text-align: center;
   background: url('../../assets/placeholder.svg') center/100% 100% no-repeat;
+
+  @include lg {
+    background-size: 150% 100%;
+  }
+
+  @include sm {
+    background-size: 340% 100%;
+  }
 
   &Heading {
     margin-bottom: 10px;
