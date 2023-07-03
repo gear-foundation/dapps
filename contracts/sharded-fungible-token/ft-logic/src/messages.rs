@@ -16,6 +16,7 @@ pub async fn increase_balance(
             amount,
         },
         0,
+        0,
     )
     .expect("Error in sending a message `FTStorageAction::IncreaseBalance`")
     .await;
@@ -44,6 +45,7 @@ pub async fn decrease_balance(
             amount,
         },
         0,
+        0,
     )
     .expect("Error in sending a message `FTStorageAction::DecreaseBalance`")
     .await;
@@ -71,6 +73,7 @@ pub async fn approve(
             account: *account,
             amount,
         },
+        0,
         0,
     )
     .expect("Error in sending a message `FTStorageAction::DecreaseBalance`")
@@ -102,6 +105,7 @@ pub async fn transfer(
             amount,
         },
         0,
+        0,
     )
     .expect("Error in sending a message `FTStorageAction::Transfer`")
     .await;
@@ -118,6 +122,7 @@ pub async fn get_permit_id(storage_id: &ActorId, account: &ActorId) -> u128 {
     let reply = msg::send_for_reply_as::<_, FTStorageEvent>(
         *storage_id,
         FTStorageAction::GetPermitId(*account),
+        0,
         0,
     )
     .expect("Error in sending a message `FTStorageAction::GetPermitId")
@@ -144,6 +149,7 @@ pub async fn check_and_increment_permit_id(
             expected_permit_id,
         },
         0,
+        0,
     )
     .expect("Error in sending a message `FTStorageAction::IncrementPermitId")
     .await
@@ -158,6 +164,7 @@ pub async fn get_balance(storage_id: &ActorId, account: &ActorId) -> u128 {
     let reply = msg::send_for_reply_as::<_, FTStorageEvent>(
         *storage_id,
         FTStorageAction::GetBalance(*account),
+        0,
         0,
     )
     .expect("Error in sending a message `FTStorageAction::GetBalance")

@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 parity-scale-codec = { version = "3", default-features = false }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gstd.workspace = true
 scale-info = { version = "2", default-features = false }
 primitive-types = { version = "0.12.1", default-features = false }
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gmeta.workspace = true

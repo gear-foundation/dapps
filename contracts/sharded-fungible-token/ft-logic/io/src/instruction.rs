@@ -36,10 +36,14 @@ impl Instruction {
     pub async fn start(&mut self) -> Result<(), ()> {
         match self.state {
             InstructionState::ScheduledRun => {
-                let result =
-                    msg::send_for_reply_as::<_, FTStorageEvent>(self.address, self.transaction, 0)
-                        .expect("Error in sending a message in instruction")
-                        .await;
+                let result = msg::send_for_reply_as::<_, FTStorageEvent>(
+                    self.address,
+                    self.transaction,
+                    0,
+                    0,
+                )
+                .expect("Error in sending a message in instruction")
+                .await;
                 match result {
                     Ok(FTStorageEvent::Ok) => {
                         self.state = InstructionState::ScheduledAbort;
@@ -63,6 +67,7 @@ impl Instruction {
                     self.address,
                     self.compensation
                         .expect("No compensation for that instruction"),
+                    0,
                     0,
                 )
                 .expect("Error in sending a compensation message in instruction")

@@ -51,7 +51,7 @@ jobs:
         with:
           path: |
             target/wasm32-unknown-unknown/*
-            *.meta.txt
+            */*.meta.txt
 
   publish:
     name: Publish binaries

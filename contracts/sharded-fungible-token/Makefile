@@ -13,8 +13,7 @@ fmt:
 
 init:
 	@echo ⚙️ Installing a toolchain \& a target...
-	@rustup toolchain install nightly --component clippy --component rustfmt
-	@rustup target add wasm32-unknown-unknown --toolchain nightly
+	@rustup show
 
 lint:
 	@echo ⚙️ Running the linter...

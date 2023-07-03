@@ -80,6 +80,7 @@ impl FToken {
                 payload: payload.to_vec(),
             },
             0,
+            0,
         )
         .expect("Error in sending a message to the fungible logic contract")
         .await;
@@ -93,6 +94,7 @@ impl FToken {
         let reply = msg::send_for_reply_as::<_, FTLogicEvent>(
             self.ft_logic_id,
             FTLogicAction::GetBalance(*account),
+            0,
             0,
         )
         .expect("Error in sending a message `FTLogicGetBalance")
@@ -108,6 +110,7 @@ impl FToken {
         let reply = msg::send_for_reply_as::<_, FTLogicEvent>(
             self.ft_logic_id,
             FTLogicAction::GetPermitId(*account),
+            0,
             0,
         )
         .expect("Error in sending a message `FTLogic::GetPermitId")
@@ -233,10 +236,4 @@ extern "C" fn state() {
             .collect(),
     };
     msg::reply(token_state, 0).expect("Failed to share state");
-}
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    msg::reply(metahash, 0).expect("Failed to share metahash");
 }
