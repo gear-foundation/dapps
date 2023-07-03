@@ -1,10 +1,11 @@
+import { useAccount } from '@gear-js/react-hooks';
 import { Link } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
 import { getIpfsAddress } from 'utils';
 import { Container } from 'components';
 import { ReactComponent as ArrowLeftSVG } from '../../assets/arrow-left.svg';
-import { useNFTSearch, useNFTs } from '../../hooks';
+import { useNFTs } from '../../hooks';
 import styles from './NFTs.module.scss';
 
 type Props = {
@@ -12,45 +13,23 @@ type Props = {
 };
 
 function NFTs({ slider }: Props) {
+  const { account } = useAccount();
+
   const nfts = useNFTs();
-  const { searchQuery } = useNFTSearch();
-
-  const filteredNFTs = nfts.filter(
-    ({ name, owner }) => name.toLocaleLowerCase().includes(searchQuery) || owner.includes(searchQuery),
-  );
-
-  const nftsCount = filteredNFTs.length;
-  const isAnyNFT = nftsCount > 0;
-  const middleNFTIndex = Math.floor(nftsCount / 2);
+  const ownerNFTs = nfts.filter(({ owner }) => owner === account?.decodedAddress);
+  const ownerNFTsCount = ownerNFTs.length;
+  const isAnyNFT = ownerNFTsCount > 0;
 
   const [sliderRef, sliderApiRef] = useKeenSlider({
     slides: { perView: 4, spacing: 30, origin: 'center' },
-    initial: nftsCount < 4 ? middleNFTIndex : 2,
-    breakpoints: {
-      '(max-width: 1200px)': {
-        slides: { perView: 3.5, spacing: 30, origin: 'center' },
-        initial: nftsCount < 4 ? middleNFTIndex : 2,
-      },
-      '(max-width: 1080px)': {
-        slides: { perView: 2.5, spacing: 30, origin: 'center' },
-        initial: nftsCount < 3 ? middleNFTIndex : 1,
-      },
-      '(max-width: 768px)': {
-        slides: { perView: 1.75, spacing: 9, origin: 'center' },
-        initial: nftsCount < 3 ? middleNFTIndex : 1,
-      },
-      '(max-width: 576px)': {
-        slides: { perView: 1.1, spacing: 9, origin: 'center' },
-        initial: nftsCount < 3 ? middleNFTIndex : 1,
-      },
-    },
+    initial: ownerNFTsCount < 4 ? Math.floor(ownerNFTsCount / 2) : 2,
   });
 
   const prevSlide = () => sliderApiRef.current?.prev();
   const nextSlide = () => sliderApiRef.current?.next();
 
   const getNFTs = () =>
-    filteredNFTs.map(({ id, programId, name, owner, mediaUrl, collection }) => {
+    ownerNFTs.map(({ id, programId, name, owner, mediaUrl, collection }) => {
       const style = { backgroundImage: `url(${getIpfsAddress(mediaUrl)})` };
       const to = `/${programId}/${id}`;
       const className = clsx(styles.nft, slider && 'keen-slider__slide');
@@ -84,7 +63,7 @@ function NFTs({ slider }: Props) {
         <>
           <Container>
             <header className={styles.header}>
-              <h3 className={styles.heading}>NFTs:</h3>
+              <h3 className={styles.heading}>My NFTs:</h3>
 
               {slider && (
                 <div>
@@ -112,7 +91,7 @@ function NFTs({ slider }: Props) {
         </>
       ) : (
         <div className={styles.placeholder}>
-          <p className={styles.placeholderHeading}>No NFTs found</p>
+          <p className={styles.placeholderHeading}>No NFTs found for this account</p>
           <p className={styles.placeholderText}>
             Suggest to specify custom contract address or switch to another network
           </p>

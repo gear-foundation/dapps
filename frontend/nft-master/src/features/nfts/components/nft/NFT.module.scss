@@ -1,22 +1,13 @@
 @use 'utils' as *;
 
 .container {
+  @include gap(60px, right);
   display: flex;
-  gap: 60px;
   margin-bottom: 100px;
-
-  @include lg {
-    flex-direction: column;
-    align-items: center;
-  }
 
   > div {
     flex: 1;
     max-width: 50%;
-    
-    @include lg {
-      max-width: 100%;
-    }
   }
 }
 
@@ -34,9 +25,6 @@
 }
 
 .footer {
-  @include gap(20px, right);
-  display: flex;
-  align-items: center;
   padding: 30px 22px;
   color: #fff;
   background: linear-gradient(183.24deg, rgba(0, 0, 0, 0.2) 32.24%, rgba(14, 211, 163, 0.2) 91.35%), #000000;
@@ -46,26 +34,6 @@
   &Wrapper {
     width: 100%;
     padding: 0 32px;
-
-    @include lg {
-      padding: 0;
-    }
-  }
-
-  .ownerButton {
-    padding: 12px 20px;
-    font-weight: 700;
-    font-size: 14px;
-    line-height: 18px;
-    letter-spacing: 0.03em;
-    white-space: nowrap;
-    background-color: #09ffc6;
-    border-radius: 2px;
-    transition: all 0.3s;
-
-    &:hover {
-      background-color: #29c6a1;
-    }
   }
 }
 
@@ -92,10 +60,6 @@
   font-weight: 500;
   font-size: 64px;
   line-height: 120%;
-
-  @include lg {
-    font-size: 48px;
-  }
 }
 
 .collection {

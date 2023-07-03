@@ -1,79 +1,25 @@
 @use 'utils' as *;
 
 .container {
-  display: grid;
-  grid-template-columns: 1fr minmax(0, auto);
-  align-items: center;
-  gap: 64px;
-  padding-bottom: 20px;
-  padding-top: 20px;
-
-  @include lg {
-    gap: 24px;
-
-    &:first-child svg {
-      max-width: 160px;
-    }
-  }
-}
-
-.configuration,
-.desktopMenu {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 20px;
+  padding: 20px 0;
 }
 
-.desktopMenu {
-  @include lg {
-    display: none;
-  }
-}
-
-.mobileMenuWrapper {
-  display: none;
-  position: relative;
-
-  @include lg {
-    display: block;
-  }
-
-  .button svg {
-    width: 20px;
-  }
-
-  .list {
-    position: absolute;
-    max-width: 250px;
-    top: calc(100% + 16px);
-    right: 0;
-    background-color: #fff;
-    border-radius: 4px;
-    box-shadow: 0 0 4px rgba(#000, 0.1);
-    z-index: 9;
-  }
-
-  .item {
-    padding: 16px 8px;
-  }
-}
-
-.configuration {
-  white-space: nowrap;
-
-  @include lg {
-    grid-column: 1 / -1;
-  }
+.wrapper {
+  display: flex;
 }
 
 .addresses {
   display: flex;
   align-items: center;
+  margin-right: 20px;
+}
 
-  .separator {
-    width: 1px;
-    height: 45px;
-    margin: 0 20px;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='46' fill='none'%3E%3Cpath stroke='url(%23a)' stroke-dasharray='2 2' d='M.5.5v45'/%3E%3Cdefs%3E%3ClinearGradient id='a' x1='.333' x2='0' y1='0' y2='46.5' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-opacity='0'/%3E%3Cstop offset='.474'/%3E%3Cstop offset='1' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E");
-  }
+.separator {
+  width: 1px;
+  height: 100%;
+  margin: 0 20px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='46' fill='none'%3E%3Cpath stroke='url(%23a)' stroke-dasharray='2 2' d='M.5.5v45'/%3E%3Cdefs%3E%3ClinearGradient id='a' x1='.333' x2='0' y1='0' y2='46.5' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-opacity='0'/%3E%3Cstop offset='.474'/%3E%3Cstop offset='1' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E");
 }

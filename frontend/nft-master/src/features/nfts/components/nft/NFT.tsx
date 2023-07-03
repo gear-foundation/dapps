@@ -1,5 +1,5 @@
 import { HexString } from '@polkadot/util/types';
-import { createSearchParams, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { getIpfsAddress } from 'utils';
 import { Container } from 'components';
@@ -56,10 +56,6 @@ function NFT() {
       ));
 
   const handleSearchInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => setSearchQuery(target.value);
-
-  const handleOwnerButtonClick = () =>
-    navigate({ pathname: '/list', search: createSearchParams({ query: owner || '' }).toString() });
-
   const handleBackButtonClick = () => navigate(-1);
 
   return (
@@ -77,10 +73,6 @@ function NFT() {
                   <span className={styles.ownerHeading}>Owner:</span>
                   <span className={styles.ownerText}>{owner}</span>
                 </p>
-
-                <button type="button" className={styles.ownerButton} onClick={handleOwnerButtonClick}>
-                  View NFTs
-                </button>
               </footer>
             </div>
           </div>

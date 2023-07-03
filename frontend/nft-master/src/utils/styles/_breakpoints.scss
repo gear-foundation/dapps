@@ -7,32 +7,24 @@ $sm: 576px;
   @return 'max-width: #{$width - 1}';
 }
 
-@mixin xl {
-  @media screen and (getMaxWidth($xl)) {
+@mixin breakpoint($width) {
+  @media screen and (getMaxWidth($width)) {
     @content;
   }
+}
+
+@mixin xl {
+  @include breakpoint($xl);
 }
 
 @mixin lg {
-  @media screen and (getMaxWidth($lg)) {
-    @content;
-  }
+  @include breakpoint($lg);
 }
 
 @mixin md {
-  @media screen and (getMaxWidth($md)) {
-    @content;
-  }
+  @include breakpoint($md);
 }
 
 @mixin sm {
-  @media screen and (getMaxWidth($sm)) {
-    @content;
-  }
-}
-
-@mixin rwd($width) {
-  @media screen and (max-width: $width) {
-    @content;
-  }
+  @include breakpoint($sm);
 }

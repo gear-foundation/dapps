@@ -2,11 +2,10 @@ import { MessagesDispatched, getProgramMetadata } from '@gear-js/api';
 import { useAlert, useApi } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
 import metaTxt from 'assets/nft_master.meta.txt';
 import { useProgramMetadata } from 'hooks';
-import { useSearchParams } from 'react-router-dom';
 import { useContractAddress } from '../contract-address';
 import { MasterContractState, NFTContractState } from './types';
 import { NFTS_ATOM } from './consts';
@@ -110,22 +109,4 @@ function useNFTs() {
   return NFTs || [];
 }
 
-function useNFTSearch() {
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const searchQuery = useMemo(() => {
-    const value = searchParams.get('query');
-
-    return value ? value.toLocaleLowerCase() : '';
-  }, [searchParams]);
-
-  const resetSearchQuery = () => {
-    searchParams.delete('query');
-
-    setSearchParams(searchParams);
-  };
-
-  return { searchQuery, resetSearchQuery };
-}
-
-export { useNFTsState, useNFTs, useNFTSearch };
+export { useNFTsState, useNFTs };

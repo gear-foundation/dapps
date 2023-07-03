@@ -1,5 +1,4 @@
 @use '@gear-js/ui/resets';
-@use 'utils' as *;
 
 @font-face {
   font-family: 'Anuphan', sans-serif;
@@ -47,20 +46,11 @@ body {
   background-size: 100%;
   background-repeat: no-repeat;
 
-  @include lg {
-    background-size: 650px;
-    background-position: center top 10%;
-  }
-
   &.modal-open {
     overflow-y: hidden;
   }
 
   &.welcome {
     background-image: url(/assets/images/bg.png);
-
-    @include lg {
-      background-image: url(/assets/images/mobile-bg.png);
-    }
   }
 }

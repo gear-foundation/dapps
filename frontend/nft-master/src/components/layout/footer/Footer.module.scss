@@ -1,18 +1,8 @@
 @use '@gear-js/ui/variables' as *;
-@use 'utils' as *;
 
 .container {
-  padding-top: 20px;
-  padding-bottom: 20px;
+  padding: 20px 0;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
-
-  @include lg {
-    @include gap(16px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    text-align: center;
-  }
 }
