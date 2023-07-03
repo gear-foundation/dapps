@@ -1,6 +1,6 @@
 use ft_io::*;
 use gmeta::Metadata;
-use gstd::{debug, errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId};
+use gstd::{errors::Result as GstdResult, msg, prelude::*, ActorId, MessageId};
 use hashbrown::HashMap;
 
 const ZERO_ID: ActorId = ActorId::new([0u8; 32]);
@@ -112,10 +112,7 @@ impl FungibleToken {
     }
 
     fn can_transfer(&mut self, from: &ActorId, amount: u128) -> bool {
-        if from == &msg::source()
-            || from == &exec::origin()
-            || self.balances.get(&msg::source()).unwrap_or(&0) >= &amount
-        {
+        if from == &msg::source() || self.balances.get(&msg::source()).unwrap_or(&0) >= &amount {
             return true;
         }
         if let Some(allowed_amount) = self
@@ -170,12 +167,6 @@ extern "C" fn state() {
         .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
 }
 
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    reply(metahash).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
-}
-
 fn reply(payload: impl Encode) -> GstdResult<MessageId> {
     msg::reply(payload, 0)
 }
@@ -217,25 +208,6 @@ extern "C" fn init() {
         ..Default::default()
     };
     unsafe { FUNGIBLE_TOKEN = Some(ft) };
-}
-
-#[no_mangle]
-extern "C" fn meta_state() -> *mut [i32; 2] {
-    let query: State = msg::load().expect("failed to decode input argument");
-    let ft: &mut FungibleToken = unsafe { FUNGIBLE_TOKEN.get_or_insert(Default::default()) };
-    debug!("{:?}", query);
-    let encoded = match query {
-        State::Name => StateReply::Name(ft.name.clone()),
-        State::Symbol => StateReply::Name(ft.symbol.clone()),
-        State::Decimals => StateReply::Decimals(ft.decimals),
-        State::TotalSupply => StateReply::TotalSupply(ft.total_supply),
-        State::BalanceOf(account) => {
-            let balance = ft.balances.get(&account).unwrap_or(&0);
-            StateReply::Balance(*balance)
-        }
-    }
-    .encode();
-    gstd::util::to_leak_ptr(encoded)
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]

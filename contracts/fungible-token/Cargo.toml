@@ -5,12 +5,6 @@ authors.workspace = true
 edition.workspace = true
 license.workspace = true
 
-[workspace.package]
-version = "0.1.6"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
-
 [dependencies]
 ft-io.workspace = true
 gstd.workspace = true
@@ -24,22 +18,23 @@ gtest.workspace = true
 [build-dependencies]
 ft-io.workspace = true
 gmeta.workspace = true
-gear-wasm-builder = { workspace = true }
+gear-wasm-builder.workspace = true
+
+[workspace.package]
+version = "0.1.7"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
 
 [workspace.dependencies]
 ft-io = { path = "io" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-hashbrown = "0.13"
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "cfb433a" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "cfb433a" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "cfb433a" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "cfb433a" }
+hashbrown = "0.14"
 
 [features]
-# Used for inserting constants with WASM binaries (NOT paths) of the contract in
-# the root crate. Usually these constants used in gclient tests instead of
-# strings with paths to the binaries in the "target" directory. If you don't
-# like this approach or don't use gclient tests, you can freely remove this
-# feature from here and from the rest of the code.
 binary-vendor = []
 
 [workspace]

@@ -17,7 +17,7 @@ fn init_with_mint(sys: &System) {
         },
     );
 
-    assert!(res.log().is_empty());
+    assert!(!res.main_failed());
 
     let res = ft.send(USERS[0], FTAction::Mint(1000000));
     assert!(res.contains(&(

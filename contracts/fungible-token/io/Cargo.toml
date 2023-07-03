@@ -7,4 +7,4 @@ authors.workspace = true
 
 [dependencies]
 gstd.workspace = true
-gmeta = { workspace = true, features = ["codegen"] }
+gmeta.workspace = true
