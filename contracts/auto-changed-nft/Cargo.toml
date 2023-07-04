@@ -6,13 +6,13 @@ license.workspace = true
 authors.workspace = true
 
 [workspace.package]
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Gear Technologies"]
 edition = "2021"
 license = "MIT"
 
 [dependencies]
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 primitive-types.workspace = true
 auto-changed-nft-io.workspace = true
 gear-lib.workspace = true
@@ -34,22 +34,22 @@ auto-changed-nft-io.workspace = true
 gmeta.workspace = true
 
 [workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+sp-core = { git = "https://github.com/gear-tech/substrate", rev = "36699c4" }
 primitive-types = { version = "0.12", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib", branch = "update-deps" }
+gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib", branch = "update-deps" }
+auto-changed-nft-io.path = "io"
 scale-info = { version = "2", default-features = false }
-auto-changed-nft-io = { path = "io" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.7" }
-gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.7" }
-sp-core-hashing = { version = "8.0.0", default-features = false }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+sp-core-hashing = { version = "8", default-features = false }
 hex-literal = "0.4"
-sp-core = { git = "https://github.com/gear-tech/substrate.git", rev = "36699c4478ce8ae05517bb42a1b115403313e083" }
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
 tokio = "1"
-hashbrown = "0.13"
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+hashbrown = "0.14"
 
 [workspace]
 members = ["state"]
