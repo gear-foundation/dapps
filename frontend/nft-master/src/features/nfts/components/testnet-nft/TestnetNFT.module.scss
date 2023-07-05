@@ -1,0 +1,41 @@
+@use 'utils' as *;
+
+.wrapper {
+  padding-bottom: 100%;
+  background: url(../../assets/testnet-frame.svg) center/cover no-repeat;
+  position: relative;
+}
+
+.nft {
+  @include gap(24px);
+  @include absoluteCenter;
+  width: 100%;
+  padding: 32px;
+  text-align: center;
+}
+
+.heading {
+  font-size: 28px;
+  font-weight: 500;
+  line-height: 34px;
+}
+
+.text {
+  font-size: 18px;
+  line-height: 25px;
+}
+
+.button {
+  padding: 16px 32px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 18px;
+  letter-spacing: 0.03em;
+  background-color: #35ffd0;
+  border-radius: 2px;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: #29c6a1;
+  }
+}

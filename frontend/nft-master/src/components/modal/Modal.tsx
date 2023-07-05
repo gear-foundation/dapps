@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useRef, MouseEvent } from 'react';
-import { ReactComponent as CrossSVG } from 'assets/images/icons/cross.svg';
 import { Button } from '@gear-js/ui';
+import { ReactComponent as CrossSVG } from 'assets/images/icons/cross.svg';
+import { useResizeEffect } from 'hooks';
 import styles from './Modal.module.scss';
 
 type Props = {
@@ -31,6 +32,9 @@ function Modal({ heading, children, onClose }: Props) {
     return () => close();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // close on resize, cuz mobile layout has duplicate modal execution components
+  useResizeEffect(onClose);
 
   const handleClick = ({ target }: MouseEvent) => {
     const isBackdropClick = target === ref.current;

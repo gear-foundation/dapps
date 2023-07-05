@@ -5,7 +5,7 @@ type Token = {
   name: string;
   description: string;
   mediaUrl: string;
-  attribUrl?: string;
+  attribUrl?: string | string[];
 };
 
 type NFT = Token & {
