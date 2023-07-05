@@ -2,6 +2,7 @@ use concert_io::*;
 use gear_lib::multitoken::io::{InitConfig, TokenMetadata};
 use gstd::{prelude::*, ActorId, Encode};
 use gtest::{Program, System};
+use multi_token_io::InitMTK;
 
 pub const USER: u64 = 193;
 pub const MTK_ID: u64 = 2;
@@ -22,14 +23,15 @@ pub fn init_concert(sys: &System) -> Program {
     let mtk_program = Program::from_file(sys, "target/multi_token.wasm");
     let res = mtk_program.send(
         USER,
-        InitConfig {
+        InitMTK {
             name: String::from("Multitoken for a concert"),
             symbol: String::from("MTC"),
             base_uri: String::from(""),
         },
     );
-    assert!(res.log().is_empty());
-    assert!(concert_program
+
+    assert!(!res.main_failed());
+    assert!(!concert_program
         .send(
             USER,
             InitConcert {
@@ -37,8 +39,7 @@ pub fn init_concert(sys: &System) -> Program {
                 mtk_contract: MTK_ID.into(),
             },
         )
-        .log()
-        .is_empty());
+        .main_failed());
 
     concert_program
 }

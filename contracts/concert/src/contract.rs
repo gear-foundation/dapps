@@ -2,7 +2,7 @@ use concert_io::*;
 use gear_lib::multitoken::io::*;
 use gstd::{errors::Result, msg, prelude::*, ActorId, MessageId};
 use hashbrown::{HashMap, HashSet};
-use multitoken_io::MyMTKAction;
+use multi_token_io::MyMTKAction;
 
 const ZERO_ID: ActorId = ActorId::zero();
 const NFT_COUNT: u128 = 1;
@@ -125,6 +125,7 @@ impl Concert {
                 token_metadata: None,
             },
             0,
+            0,
         )
         .expect("Error in async message to MTK contract")
         .await
@@ -155,6 +156,7 @@ impl Concert {
                 ids: tokens,
             },
             0,
+            0,
         )
         .expect("Error in async message to MTK contract")
         .await
@@ -173,6 +175,7 @@ impl Concert {
                     id: balance.id,
                     amount: balance.amount,
                 },
+                0,
                 0,
             )
             .expect("Error in async message to MTK contract")
@@ -198,6 +201,7 @@ impl Concert {
                         amounts,
                         tokens_metadata: meta,
                     },
+                    0,
                     0,
                 )
                 .expect("Error in async message to MTK contract")
@@ -259,12 +263,6 @@ extern "C" fn state() {
     );
 }
 
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-
-    reply(metahash).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
-}
 
 fn reply(payload: impl Encode) -> Result<MessageId> {
     msg::reply(payload, 0)
