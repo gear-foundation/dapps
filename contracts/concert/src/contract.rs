@@ -263,7 +263,6 @@ extern "C" fn state() {
     );
 }
 
-
 fn reply(payload: impl Encode) -> Result<MessageId> {
     msg::reply(payload, 0)
 }
