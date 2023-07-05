@@ -403,8 +403,7 @@ use gstd::Encode;
 #[tokio::test]
 #[ignore]
 async fn auto_changed() -> Result<()> {
-    // let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
     // Checking that blocks still running.
@@ -534,20 +533,17 @@ async fn auto_changed() -> Result<()> {
         current_media(&api, program_id.into_bytes(), token_id).await,
         links[0]
     );
-    
+
     Ok(())
 }
 
 pub async fn current_media(api: &GearApi, program_id: [u8; 32], token_id: TokenId) -> String {
-    let state: IoNFT = api.read_state(program_id.into()).await.unwrap();
-    let (_token_id, metadata) = state
-        .token
-        .token_metadata_by_id
-        .iter()
-        .find(|(id, _meta)| token_id.eq(id))
-        .unwrap();
-    match metadata {
-        Some(metadata) => metadata.media.clone(),
-        None => unreachable!(),
-    }
+    let state: NFTState2 = api.read_state(program_id.into()).await.unwrap();
+
+    state
+        .tokens
+        .into_iter()
+        .find_map(|(id, meta)| (token_id == id).then_some(meta))
+        .unwrap()
+        .media_url
 }

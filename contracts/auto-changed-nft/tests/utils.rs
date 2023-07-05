@@ -17,7 +17,7 @@ pub fn init_nft(sys: &System) {
         },
     );
 
-    assert!(res.log().is_empty());
+    assert!(!res.main_failed());
 }
 
 pub fn mint(nft: &Program, transaction_id: u64, member: u64) -> RunResult {
@@ -120,15 +120,12 @@ pub fn approve(nft: &Program, transaction_id: u64, from: u64, to: u64, token_id:
 }
 
 pub fn current_media(nft: &Program, token_id: TokenId) -> String {
-    let state: IoNFT = nft.read_state().unwrap();
-    let (_token_id, metadata) = state
-        .token
-        .token_metadata_by_id
-        .iter()
-        .find(|(id, _meta)| token_id.eq(id))
-        .unwrap();
-    match metadata {
-        Some(metadata) => metadata.media.clone(),
-        None => unreachable!(),
-    }
+    let state: NFTState2 = nft.read_state().unwrap();
+
+    state
+        .tokens
+        .into_iter()
+        .find_map(|(id, meta)| (token_id == id).then_some(meta))
+        .unwrap()
+        .media_url
 }

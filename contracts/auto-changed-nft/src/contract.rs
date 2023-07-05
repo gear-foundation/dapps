@@ -1,4 +1,6 @@
-use auto_changed_nft_io::{Collection, InitNFT2, IoNFT, NFTAction, NFTEvent, NFTMetadata, Nft2, NFTState2};
+use auto_changed_nft_io::{
+    Collection, InitNFT2, IoNFT, NFTAction, NFTEvent, NFTMetadata, NFTState2, Nft2,
+};
 use gear_lib::non_fungible_token::{io::NFTTransfer, nft_core::*, state::*, token::*};
 use gear_lib_derive::{NFTCore, NFTMetaState, NFTStateKeeper};
 use gmeta::Metadata;
@@ -289,12 +291,6 @@ impl AutoChangedNft {
     }
 }
 
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    reply(metahash).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
-}
-
 fn static_mut_state() -> &'static AutoChangedNft {
     unsafe { CONTRACT.get_or_insert(Default::default()) }
 }
@@ -356,12 +352,8 @@ impl From<&AutoChangedNft> for NFTState2 {
         let AutoChangedNft {
             token,
             token_id,
-            owner,
-            transactions,
-            urls,
-            rest_updates_count: update_number,
-            update_period: _,
             collection,
+            ..
         } = value;
 
         // let transactions = transactions
@@ -385,7 +377,7 @@ impl From<&AutoChangedNft> for NFTState2 {
             .map(|(id, metadata)| {
                 let metadata = metadata.as_ref().unwrap();
                 let nft = Nft2 {
-                    owner: token.owner_by_id.get(id).unwrap().clone(),
+                    owner: *token.owner_by_id.get(id).unwrap(),
                     name: metadata.name.clone(),
                     description: metadata.description.clone(),
                     media_url: metadata.media.clone(),
@@ -398,7 +390,7 @@ impl From<&AutoChangedNft> for NFTState2 {
         Self {
             tokens: token_metadata_by_id,
             collection: collection.clone(),
-            nonce: token_id.clone(),
+            nonce: *token_id,
             owners,
         }
     }
