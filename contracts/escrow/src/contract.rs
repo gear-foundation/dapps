@@ -27,6 +27,7 @@ async fn transfer_tokens(
             },
         },
         0,
+        0,
     )
     .expect("Error in sending a message `FTokenAction::Message`")
     .await;
@@ -307,12 +308,6 @@ async fn main() {
         EscrowAction::Cancel(wallet_id) => escrow.cancel(wallet_id).await,
         EscrowAction::Continue(transaction_id) => escrow.continue_transaction(transaction_id).await,
     }
-}
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    msg::reply(metahash, 0).expect("Failed to share metahash");
 }
 
 #[no_mangle]
