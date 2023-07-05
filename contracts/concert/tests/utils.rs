@@ -1,5 +1,5 @@
 use concert_io::*;
-use gear_lib::multitoken::io::{InitConfig, TokenMetadata};
+use gear_lib::multitoken::io::{TokenMetadata};
 use gstd::{prelude::*, ActorId, Encode};
 use gtest::{Program, System};
 use multi_token_io::InitMTK;
@@ -20,7 +20,7 @@ pub fn init_system() -> System {
 
 pub fn init_concert(sys: &System) -> Program {
     let concert_program = Program::current(sys);
-    let mtk_program = Program::from_file(sys, "target/multi_token.wasm");
+    let mtk_program = Program::from_file(sys, "target/wasm32-unknown-unknown/debug/multi_token.wasm");
     let res = mtk_program.send(
         USER,
         InitMTK {
@@ -30,6 +30,8 @@ pub fn init_concert(sys: &System) -> Program {
         },
     );
 
+    //dbg!(&res);
+    //println!("!!!!!!!!{:?}", res.decoded_log::<ErrorReplyReason>());
     assert!(!res.main_failed());
     assert!(!concert_program
         .send(

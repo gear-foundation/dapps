@@ -22,16 +22,6 @@ lint:
 
 pre-commit: fmt lint test
 
-deps:
-	@echo ⚙️ Downloading dependencies...
-	@mkdir -p target;
-	@path=target/multi_token.wasm;\
-	if [ ! -f $$path ]; then\
-	    curl -L\
-	        https://github.com/gear-dapps/multitoken/releases/download/0.3.6/multitoken.opt.wasm\
-	        -o $$path;\
-	fi
-
 test: deps
 	@echo ⚙️ Running tests...
 	@cargo t -Fbinary-vendor
