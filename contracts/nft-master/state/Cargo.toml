@@ -14,9 +14,4 @@ nft-master-io.workspace = true
 gear-wasm-builder = { workspace = true, features = ["metawasm"] }
 
 [features]
-# Used for inserting constants with WASM binaries (NOT paths) of the contract in
-# the root crate. Usually these constants used in gclient tests instead of
-# strings with paths to the binaries in the "target" directory. If you don't
-# like this approach or don't use gclient tests, you can freely remove this
-# feature from here and from the rest of the code.
 binary-vendor = []

@@ -23,33 +23,26 @@ tokio.workspace = true
 gclient.workspace = true
 
 [features]
-# Used for inserting constants with WASM binaries (NOT paths) of the contract in
-# the root crate. Usually these constants used in gclient tests instead of
-# strings with paths to the binaries in the "target" directory. If you don't
-# like this approach or don't use gclient tests, you can freely remove this
-# feature from here and from the rest of the code.
 binary-vendor = []
 
-# It's necessary to include all metawasm crates in the workspace section,
-# otherwise they'll be ignored by Cargo and won't be built.
 [workspace]
 members = ["state"]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Gear Technologies"]
 license = "MIT"
 
 [workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-nft-master-io = { path = "io" }
-nft-master-state = { path = "state" }
-hashbrown = "0.13"
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+nft-master-io.path = "io"
+nft-master-state.path = "state"
+hashbrown = "0.14"
 tokio = "1"
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
