@@ -251,7 +251,7 @@ async fn transfer_test() -> Result<()> {
 async fn owner_test() -> Result<()> {
     let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
     let mut listener = api.subscribe().await?; // Subscribing for events.
-    // Checking that blocks still running.
+                                               // Checking that blocks still running.
     assert!(listener.blocks_running().await?);
     dbg!("1!!!!!!!!!!!");
     let init_nft = InitNft {
