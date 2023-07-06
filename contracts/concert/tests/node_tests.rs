@@ -11,7 +11,8 @@ pub const MTK_ID: u64 = 2;
 #[ignore]
 async fn init() -> Result<()> {
     let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
-    let multitoken_program = code_from_os("target/multi_token.wasm")?;
+    let multitoken_program =
+        code_from_os("target/wasm32-unknown-unknown/debug/multi_token.opt.wasm")?;
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
     // Checking that blocks still running.
@@ -47,7 +48,6 @@ async fn init() -> Result<()> {
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
-
     // Init Concert
     let init_concert = InitConcert {
         owner_id: USER.into(),
@@ -75,7 +75,6 @@ async fn init() -> Result<()> {
             0,
         )
         .await?;
-
     assert!(listener.message_processed(message_id).await?.succeed());
 
     Ok(())
