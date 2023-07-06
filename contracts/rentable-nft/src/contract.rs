@@ -259,12 +259,6 @@ impl Nft {
     }
 }
 
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    msg::reply(metahash, 0).expect("Failed to share metahash");
-}
-
 fn static_mut_state() -> &'static Nft {
     unsafe { CONTRACT.get_or_insert(Default::default()) }
 }
