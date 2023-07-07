@@ -16,7 +16,7 @@ function useLaunchMessage() {
   const { useSendMessage } = useAuth();
   const meta = useProgramMetadata(metaTxt);
 
-  return useSendMessage(ADDRESS.CONTRACT, meta, true);
+  return useSendMessage(ADDRESS.CONTRACT, meta, { isMaxGasLimit: true });
 }
 
 export { useLaunchState, useLaunchMessage };
