@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.2.6] - 2023-07-07
+### Changed
+- Update dependencies.
+- Pin gear crates to `#946ac47`.
+
 ## [0.2.5] - 2023-05-23
 ### Changed
 - Update dependencies.
@@ -41,7 +46,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/dao/compare/0.2.5...HEAD
+[Unreleased]: https://github.com/gear-dapps/dao/compare/0.2.6...HEAD
+[0.2.6]: https://github.com/gear-dapps/dao/compare/0.2.5...0.2.6
 [0.2.5]: https://github.com/gear-dapps/dao/compare/0.2.4...0.2.5
 [0.2.4]: https://github.com/gear-dapps/dao/compare/0.2.3...0.2.4
 [0.2.3]: https://github.com/gear-dapps/dao/compare/0.2.2...0.2.3

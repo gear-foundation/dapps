@@ -6,14 +6,10 @@ use gtest::{Program, System};
 
 #[test]
 fn dilution_bound() {
-    dbg!("vfvfdvfvf");
     let system = System::new();
     system.init_logger();
-    dbg!("vfvfdvfvf");
     let ftoken = Program::ftoken(&system);
-    dbg!("vfvfdvfvf");
     let dao = Program::dao(&system);
-    dbg!("vfvfdvfvf");
     let applicant: u64 = 200;
     let token_tribute: u128 = 10_000;
     let shares_requested: u128 = 10_000;
@@ -22,7 +18,6 @@ fn dilution_bound() {
     let ragequit_amount: u128 = 9_000;
     let quorum: u128 = 10;
     let mut proposal_id: u128 = 0;
-    dbg!("vfvfdvfvf");
     // add members to DAO
     for applicant in APPLICANTS {
         ftoken.mint(0, *applicant, *applicant, token_tribute);
