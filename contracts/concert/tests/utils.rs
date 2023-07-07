@@ -31,8 +31,6 @@ pub fn init_concert(sys: &System) -> Program {
         },
     );
 
-    //dbg!(&res);
-    //println!("!!!!!!!!{:?}", res.decoded_log::<ErrorReplyReason>());
     assert!(!res.main_failed());
     assert!(!concert_program
         .send(
