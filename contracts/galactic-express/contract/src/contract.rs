@@ -457,12 +457,6 @@ extern "C" fn state() {
     msg::reply(launch_site, 0).expect("Failed to share state");
 }
 
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    msg::reply(metahash, 0).expect("Failed to share metahash");
-}
-
 static mut SEED: u8 = 0;
 
 fn generate_event(probability: u8) -> bool {

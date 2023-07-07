@@ -6,7 +6,7 @@ license.workspace = true
 authors.workspace = true
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 authors = ["Gear Technologies"]
 license = "MIT"
@@ -32,16 +32,16 @@ launch-state = { workspace = true, features = ["binary-vendor"] }
 binary-vendor = []
 
 [workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "78dfa07" }
+gstd = { git = "https://github.com/gear-tech/gear.git", features = ["debug"], rev = "946ac47" }
 scale-info = { version = "2", default-features = false, features = ["derive"] }
 parity-scale-codec = { version = "3", default-features = false }
 launch-io = { path = "io" }
 launch-state = { path = "state" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
 tokio = "1"
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
 
 [workspace]
 members = ["state"]
