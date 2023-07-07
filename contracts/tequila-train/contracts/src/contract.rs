@@ -1,5 +1,5 @@
 use gstd::{
-    errors::{ContractError, Result as GstdResult},
+    errors::{Error, Result as GstdResult},
     msg,
     prelude::*,
     MessageId,
@@ -28,7 +28,7 @@ extern "C" fn handle() {
         .expect("Failed to load, decode, encode, or reply with `PingPong` from `handle()`")
 }
 
-fn process_handle() -> Result<(), ContractError> {
+fn process_handle() -> Result<(), Error> {
     let game_launcher = unsafe {
         GAME_LAUNCHER
             .as_mut()
@@ -103,12 +103,6 @@ extern "C" fn state() {
             .expect("Game launcher is not initialized")
     })
     .expect("Failed to encode or reply with the game state");
-}
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    reply(metahash).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
 }
 
 fn reply(payload: impl Encode) -> GstdResult<MessageId> {
