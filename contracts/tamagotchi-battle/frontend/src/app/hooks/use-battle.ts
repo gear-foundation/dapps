@@ -1,20 +1,16 @@
-import { useApp, useBattle } from 'app/context';
-import { useEffect, useRef } from 'react';
-import type { BattleStatePlayer, BattleStateResponse } from 'app/types/battles';
-import { useAccount, useApi, useReadFullState } from '@gear-js/react-hooks';
-import { useMetadata } from './use-metadata';
-import metaBattle from 'assets/meta/battle.meta.txt';
-import { ENV } from 'app/consts';
-import type { UnsubscribePromise } from '@polkadot/api/types';
-import type { UserMessageSent } from '@gear-js/api';
-import { useSendMessage } from './use-send-message';
-import { BattleCurrentStateVariants, RoundDamageType } from 'app/types/battles';
-import { useNavigate } from 'react-router-dom';
+import { useApp, useBattle } from "app/context";
+import { useEffect, useRef } from "react";
+import type { BattleStatePlayer, BattleStateResponse } from "app/types/battles";
+import { useAccount, useApi, useSendMessage } from "@gear-js/react-hooks";
+import { useProgramMetadata, useReadState } from "./api";
+import meta from "assets/meta/battle.meta.txt";
+import { ENV } from "app/consts";
+import type { UnsubscribePromise } from "@polkadot/api/types";
+import type { UserMessageSent } from "@gear-js/api";
+import { BattleCurrentStateVariants, RoundDamageType } from "app/types/battles";
+import { useNavigate } from "react-router-dom";
 
-function useReadBattleState<T>() {
-  const { metadata } = useMetadata(metaBattle);
-  return useReadFullState<T>(ENV.battle, metadata);
-}
+const programId = ENV.battle;
 
 export function useInitBattleData() {
   const { api } = useApi();
@@ -30,11 +26,11 @@ export function useInitBattleData() {
     setCurrentPlayer,
     setCurrentPairIdx,
     setRoundDamage,
-    setPlayers,
+    setPlayers
   } = useBattle();
-  const { state } = useReadBattleState<BattleStateResponse>();
-  const { metadata } = useMetadata(metaBattle);
+  const { state } = useReadState<BattleStateResponse>({ programId, meta });
   const prevBattleState = useRef<BattleCurrentStateVariants | undefined>();
+  const metadata = useProgramMetadata(meta);
 
   useEffect(() => {
     if (window) {
@@ -76,18 +72,19 @@ export function useInitBattleData() {
       setRivals([]);
       setCurrentPlayer(undefined);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, account, currentPairIdx]);
 
   useEffect(() => {
     let unsub: UnsubscribePromise | undefined;
 
     if (metadata && state) {
-      unsub = api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data }: UserMessageSent) => {
+      unsub = api.gearEvents.subscribeToGearEvent("UserMessageSent", ({ data }: UserMessageSent) => {
         const {
-          message: { payload, details },
+          message: { payload, details }
         } = data;
 
-        if (details.isSome && details.unwrap().isReply && !details.unwrap().asReply.statusCode.eq(0)) {
+        if (details.isSome && !details.unwrap().to.eq(0)) {
           // console.log(payload.toHuman());
           // alert.error(`${payload.toHuman()}`, { title: 'Error during program execution' });
         } else {
@@ -95,8 +92,8 @@ export function useInitBattleData() {
             const decodedPayload = metadata.createType(metadata.types.handle.output, payload).toJSON();
             if (
               decodedPayload &&
-              typeof decodedPayload === 'object' &&
-              Object.keys(decodedPayload).includes('roundResult')
+              typeof decodedPayload === "object" &&
+              Object.keys(decodedPayload).includes("roundResult")
             ) {
               const notification = Object.values(decodedPayload)[0] as RoundDamageType;
 
@@ -113,17 +110,19 @@ export function useInitBattleData() {
     return () => {
       if (unsub) unsub.then((unsubCallback) => unsubCallback());
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [metadata, state, currentPairIdx]);
 
   // track state updates
   useEffect(() => {
     if (state) {
-      if (prevBattleState.current === 'WaitNextRound' && state.state === 'GameIsOn') setCurrentPairIdx(0);
+      if (prevBattleState.current === "WaitNextRound" && state.state === "GameIsOn") setCurrentPairIdx(0);
 
-      if (prevBattleState.current === 'GameIsOver' && state.state === 'Registration') navigate('/');
+      if (prevBattleState.current === "GameIsOver" && state.state === "Registration") navigate("/");
 
       if (prevBattleState.current !== state.state) prevBattleState.current = state.state;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, state]);
 
   // track damage updates
@@ -139,10 +138,11 @@ export function useInitBattleData() {
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPairIdx, roundDamage, state]);
 }
 
 export function useBattleMessage() {
-  const { metadata } = useMetadata(metaBattle);
-  return useSendMessage(ENV.battle, metadata);
+  const metadata = useProgramMetadata(meta);
+  return useSendMessage(programId, metadata, { isMaxGasLimit: true });
 }

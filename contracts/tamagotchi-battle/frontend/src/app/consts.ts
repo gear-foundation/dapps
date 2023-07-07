@@ -17,13 +17,6 @@ export const ENV = {
   NODE: process.env.REACT_APP_NODE_ADDRESS as string,
 };
 
-export const MULTIPLIER = {
-  MILLISECONDS: 1000,
-  SECONDS: 60,
-  MINUTES: 60,
-  HOURS: 24,
-};
-
 export const PLAYER_CARD = {
   spacing: {
     desktop: 8,

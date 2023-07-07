@@ -1,17 +1,9 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useState } from 'react';
+import { createContext, useContext, useState } from "react";
 
-type Program = {
-  isPending: boolean;
-  setIsPending: Dispatch<SetStateAction<boolean>>;
-  isAdmin: boolean;
-  setIsAdmin: Dispatch<SetStateAction<boolean>>;
-  isDataReady: boolean;
-  setIsDataReady: Dispatch<SetStateAction<boolean>>;
-};
+export const AppCtx = createContext({} as ReturnType<typeof useProgram>);
+export const useApp = () => useContext(AppCtx);
 
-export const AppCtx = createContext({} as Program);
-
-const useProgram = (): Program => {
+const useProgram = () => {
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [isDataReady, setIsDataReady] = useState<boolean>(false);
@@ -22,11 +14,11 @@ const useProgram = (): Program => {
     isAdmin,
     setIsAdmin,
     isDataReady,
-    setIsDataReady,
+    setIsDataReady
   };
 };
 
-export function AppProvider({ children }: { children: ReactNode }) {
+export function AppProvider({ children }: React.PropsWithChildren) {
   const { Provider } = AppCtx;
   return <Provider value={useProgram()}>{children}</Provider>;
 }
