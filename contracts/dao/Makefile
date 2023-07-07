@@ -1,4 +1,4 @@
-.PHONY: all build fmt init lint pre-commit test full-test deps
+.PHONY: all build fmt init lint pre-commit test full-test
 
 all: init build test
 
@@ -17,35 +17,15 @@ init:
 
 lint:
 	@echo ⚙️ Running the linter...
-	@cargo clippy --workspace --all-targets -- -D warnings
+	@cargo clippy -Fbinary-vendor --workspace --all-targets -- -D warnings
 
 pre-commit: fmt lint full-test
 
-deps:
-	@echo ⚙️ Downloading dependencies...
-	@path=target/ft_main.wasm;\
-	if [ ! -f $$path ]; then\
-	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.2/ft_main.wasm\
-	        -o $$path;\
-	fi
-	@path=target/ft_logic.wasm;\
-	if [ ! -f $$path ]; then\
-	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.2/ft_logic.wasm\
-	        -o $$path;\
-	fi
-	@path=target/ft_storage.wasm;\
-	if [ ! -f $$path ]; then\
-	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/2.1.2/ft_storage.wasm\
-	        -o $$path;\
-	fi
 
-test: deps
+test: 
 	@echo ⚙️ Running unit tests...
-	@cargo t
+	@cargo t -Fbinary-vendor
 
-full-test: deps
+full-test: 
 	@echo ⚙️ Running all tests...
-	@cargo t -- --include-ignored --test-threads=1
+	@cargo t -Fbinary-vendor -- --include-ignored

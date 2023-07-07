@@ -249,10 +249,9 @@ pub trait FToken {
 
 impl FToken for Program<'_> {
     fn ftoken(system: &System) -> Program {
-        let ftoken = Program::from_file(system, "./target/ft_main.wasm");
-        let storage_code_hash: [u8; 32] = system.submit_code("./target/ft_storage.wasm").into();
-        let ft_logic_code_hash: [u8; 32] = system.submit_code("./target/ft_logic.wasm").into();
-
+        let ftoken = Program::from_file(system, "./target/wasm32-unknown-unknown/debug/ft_main.opt.wasm");
+        let storage_code_hash: [u8; 32] = system.submit_code("./target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm").into();
+        let ft_logic_code_hash: [u8; 32] = system.submit_code("./target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm").into();
         let res = ftoken.send(
             100,
             InitFToken {
@@ -261,6 +260,7 @@ impl FToken for Program<'_> {
             },
         );
         assert!(!res.main_failed());
+        dbg!("123");
         ftoken
     }
 
