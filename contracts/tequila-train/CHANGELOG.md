@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2023-07-07
+### Changed
+- Update dependencies.
+- Pin gear crates to `#946ac47`.
+
 ## [0.1.3] - 2023-05-08
 ### Changed
 - Update dependencies.
