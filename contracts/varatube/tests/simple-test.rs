@@ -58,7 +58,7 @@ fn register_subscribe() {
     let res = ft.send(
         USERS[0],
         FTAction::Approve {
-            to: varatube_id.into(),
+            to: varatube_id,
             amount: 666,
         },
     );
@@ -67,7 +67,7 @@ fn register_subscribe() {
         USERS[0],
         FTEvent::Approve {
             from: USERS[0].into(),
-            to: token_id.into(),
+            to: token_id,
             amount: 666,
         }
         .encode()
