@@ -1,6 +1,8 @@
 use crate::utils::*;
 use gtest::{Program, System};
-
+use hashbrown::HashSet;
+use rmrk_io::RMRKError;
+use types::primitives::{CollectionId, TokenId};
 #[test]
 fn accept_child_simple() {
     let sys = System::new();
@@ -20,13 +22,13 @@ fn accept_child_simple() {
         parent_token_id,
     );
 
-    // // check that parent_token_id has no pending children
-    // rmrk_parent.check_pending_children(parent_token_id, BTreeSet::new());
+    // check that parent_token_id has no pending children
+    rmrk_parent.check_pending_children(parent_token_id, HashSet::new());
 
-    // // check accepted children
-    // let mut accepted_children: BTreeSet<(CollectionId, TokenId)> = BTreeSet::new();
-    // accepted_children.insert((CHILD_NFT_CONTRACT.into(), child_token_id.into()));
-    // rmrk_parent.check_accepted_children(parent_token_id, accepted_children);
+    // check accepted children
+    let mut accepted_children: HashSet<(CollectionId, TokenId)> = HashSet::new();
+    accepted_children.insert((CHILD_NFT_CONTRACT.into(), child_token_id.into()));
+    rmrk_parent.check_accepted_children(parent_token_id, accepted_children);
 }
 
 #[test]
@@ -74,7 +76,7 @@ fn accept_child_failures() {
         parent_token_id,
         CHILD_NFT_CONTRACT,
         child_token_id,
-        Some("RMRK: Wrong owner"),
+        Some(RMRKError::NotApprovedAccount),
     );
 
     // fail since the child with that ID does not exist
@@ -83,7 +85,7 @@ fn accept_child_failures() {
         parent_token_id,
         CHILD_NFT_CONTRACT,
         2,
-        Some("RMRK: child does not exist in pending array or has already been accepted"),
+        Some(RMRKError::ChildDoesNotExist),
     );
 
     // accept child
@@ -101,7 +103,7 @@ fn accept_child_failures() {
         parent_token_id,
         CHILD_NFT_CONTRACT,
         child_token_id,
-        Some("RMRK: child does not exist in pending array or has already been accepted"),
+        Some(RMRKError::WrongChildStatus),
     );
 }
 
@@ -180,7 +182,7 @@ fn reject_child_failures() {
         parent_token_id,
         CHILD_NFT_CONTRACT,
         child_token_id,
-        Some("RMRK: Wrong owner"),
+        Some(RMRKError::NotApprovedAccount),
     );
 
     // must fail since the child with indicated id does not exist
@@ -189,7 +191,7 @@ fn reject_child_failures() {
         parent_token_id,
         CHILD_NFT_CONTRACT,
         100,
-        Some("RMRK: child does not exist in pending array or has already been accepted"),
+        Some(RMRKError::ChildDoesNotExist),
     );
 }
 
@@ -285,7 +287,7 @@ fn remove_child_failures() {
         parent_token_id,
         CHILD_NFT_CONTRACT,
         child_token_id,
-        Some("RMRK: Wrong owner"),
+        Some(RMRKError::NotApprovedAccount),
     );
 
     // must fail since the child with indicated id does not exist
@@ -294,6 +296,6 @@ fn remove_child_failures() {
         parent_token_id,
         CHILD_NFT_CONTRACT,
         100,
-        Some("RMRK: child does not exist"),
+        Some(RMRKError::ChildDoesNotExist),
     );
 }

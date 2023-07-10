@@ -1,5 +1,5 @@
 [package]
-name = "rmrk-base"
+name = "rmrk-state"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -7,17 +7,14 @@ authors.workspace = true
 
 [dependencies]
 gstd.workspace = true
-base-io.workspace = true
+gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47", features = ["codegen"] }
+primitive-types.workspace = true
+scale-info.workspace = true
+rmrk-io.workspace = true
 types.workspace = true
-hashbrown.workspace = true
-
-[dev-dependencies]
-gtest.workspace = true
 
 [build-dependencies]
-gmeta.workspace = true
-gear-wasm-builder.workspace = true
-base-io.workspace = true
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47", features = ["metawasm"] }
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in
@@ -26,3 +23,5 @@ base-io.workspace = true
 # like this approach or don't use gclient tests, you can freely remove this
 # feature from here and from the rest of the code.
 binary-vendor = []
+
+

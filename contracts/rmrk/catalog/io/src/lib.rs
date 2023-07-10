@@ -4,23 +4,24 @@ use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 use types::primitives::*;
 
-pub struct BaseMetadata;
+pub struct CatalogMetadata;
 
-impl Metadata for BaseMetadata {
-    type Init = In<InitBase>;
-    type Handle = InOut<BaseAction, BaseEvent>;
+impl Metadata for CatalogMetadata {
+    type Init = In<InitCatalog>;
+    type Handle = InOut<CatalogAction, Result<CatalogReply, CatalogError>>;
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = BaseState;
+    type State = CatalogState;
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo)]
-pub struct BaseState {
-    pub issuer: ActorId,
+pub struct CatalogState {
+    pub admin: ActorId,
     pub base_type: String,
     pub symbol: String,
     pub parts: Vec<(PartId, Part)>,
+    pub is_equippable_to_all: Vec<PartId>,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
@@ -36,22 +37,22 @@ pub struct FixedPart {
     /// An element with greater stack order is always in front of an element with a lower stack order.
     pub z: Option<ZIndex>,
 
-    /// An IPFS Uri pointing to main media file of this part.
-    pub src: String,
+    /// The metadata URI of the part.
+    pub metadata_uri: String,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Eq, PartialEq)]
 pub struct SlotPart {
-    /// Array of whitelisted collections with tokens that can be equipped in the given slot. Used with slot parts only.
-    pub equippable: EquippableList,
+    /// Array of whitelisted collections that can be equipped in the given slot. Used with slot parts only.
+    pub equippable: Vec<CollectionId>,
 
     /// An optional zIndex of base part layer.
     /// specifies the stack order of an element.
     /// An element with greater stack order is always in front of an element with a lower stack order.
     pub z: Option<ZIndex>,
 
-    /// An IPFS Uri pointing to main media file of this part.
-    pub src: String,
+    /// The metadata URI of the part.
+    pub metadata_uri: String,
 }
 
 #[derive(Debug, Clone, Decode, Encode, TypeInfo, Eq, PartialEq)]
@@ -61,13 +62,15 @@ pub enum Part {
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
-pub struct InitBase {
-    pub base_type: String,
+pub struct InitCatalog {
+    /// Catalog metadata URI of the Catalog
+    pub catalog_type: String,
+    /// Type of Catalog
     pub symbol: String,
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
-pub enum BaseAction {
+pub enum CatalogAction {
     /// Adds parts to base contract.
     ///
     /// # Requirements:
@@ -83,19 +86,17 @@ pub enum BaseAction {
     /// Adds equippable to slot part.
     ///
     /// # Requirements:
-    /// * The `msg::source()` must be the contract issuer.
+    /// * The `msg::source()` must be the contract admin.
     /// * The indicated collection contract must be RMRK contract.
     /// * The token from indicated collections must have composable resource that refers to that base.
     ///
     /// # Arguments:
-    /// * `collection_id`: an address of RMRK contract.
-    /// * `token_id`: the id of the token in RMRK contract.
+    /// * `collection_ids`: an addresses of RMRK contract.
     ///
     /// On success replies `[BaseEvent::EquippableAdded]`.
-    AddEquippable {
+    AddEquippableAddresses {
         part_id: PartId,
-        collection_id: CollectionId,
-        token_id: TokenId,
+        collection_ids: Vec<CollectionId>,
     },
 
     /// Removes parts from the base.
@@ -118,13 +119,11 @@ pub enum BaseAction {
     ///
     /// # Arguments:
     /// * `collection_id`: an address of RMRK contract.
-    /// * `token_id`: the id of the token in RMRK contract.
     ///
     /// On success replies `[BaseEvent::EquippableRemoved]`.
     RemoveEquippable {
         part_id: PartId,
         collection_id: CollectionId,
-        token_id: TokenId,
     },
 
     /// Checks whether the part exists in the Base.
@@ -146,24 +145,41 @@ pub enum BaseAction {
     CheckEquippable {
         part_id: PartId,
         collection_id: CollectionId,
-        token_id: TokenId,
+    },
+    SetEquippableToAll {
+        part_id: PartId,
+    },
+    ResetEquippableAddress {
+        part_id: PartId,
     },
 }
 
-#[derive(Debug, Decode, Encode, TypeInfo)]
-pub enum BaseEvent {
+#[derive(Debug, Decode, Encode, TypeInfo, Clone, PartialEq)]
+pub enum CatalogReply {
     PartsAdded(BTreeMap<PartId, Part>),
-    EquippableAdded {
+    EquippablesAdded {
         part_id: PartId,
-        collection_id: CollectionId,
-        token_id: TokenId,
+        collection_ids: Vec<CollectionId>,
     },
+    EqippableAddressesReset,
     PartsRemoved(Vec<PartId>),
     EquippableRemoved {
         part_id: PartId,
         collection_id: CollectionId,
-        token_id: TokenId,
     },
     Part(Part),
     InEquippableList,
+    NotInEquippableList,
+    EquippableToAllSet,
+}
+
+#[derive(Debug, Decode, Encode, TypeInfo)]
+pub enum CatalogError {
+    PartIdCantBeZero,
+    BadConfig,
+    PartAlreadyExists,
+    ZeroLengthPassed,
+    PartDoesNotExist,
+    WrongPartFormat,
+    NotAllowedToCall,
 }

@@ -1,14 +1,14 @@
 #![no_std]
-
 use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
-use resource_io::Resource;
+use primitive_types::U256;
 use types::primitives::*;
+pub type TokenEquipment = Vec<(PartId, Equipment)>;
 pub struct RMRKMetadata;
 
 impl Metadata for RMRKMetadata {
     type Init = In<InitRMRK>;
-    type Handle = InOut<RMRKAction, RMRKEvent>;
+    type Handle = InOut<RMRKAction, Result<RMRKReply, RMRKError>>;
     type Others = ();
     type Reply = ();
     type Signal = ();
@@ -25,12 +25,45 @@ pub struct RMRKState {
     pub pending_children: Vec<(TokenId, Vec<CollectionAndToken>)>,
     pub accepted_children: Vec<(TokenId, Vec<CollectionAndToken>)>,
     pub children_status: Vec<(CollectionAndToken, ChildStatus)>,
-    pub balances: Vec<(ActorId, TokenId)>,
-    pub multiresource: MultiResourceState,
-    pub resource_id: ActorId,
-    pub equipped_tokens: Vec<TokenId>,
+    pub balances: Vec<(ActorId, U256)>,
+    pub assets: AssetsState,
 }
 
+#[derive(Default, Encode, Debug, Decode, TypeInfo)]
+pub struct AssetsState {
+    /// Mapping of uint64 Ids to asset metadata
+    pub assets: Vec<(u64, String)>,
+    /// Mapping of uint64 asset ID to corresponding catalog address.
+    pub catalog_addresses: Vec<(u64, ActorId)>,
+    /// Mapping of asset_id to equippable_group_ids.
+    pub equippable_group_ids: Vec<(u64, u64)>,
+    /// Mapping of asset_id to catalog parts applicable to this asset, both fixed and slot
+    pub part_ids: Vec<(u64, Vec<PartId>)>,
+    /// Mapping of tokenId to an array of pending assets
+    pub pending_assets: Vec<(TokenId, Vec<u64>)>,
+    /// Mapping of tokenId to an array of active assets
+    pub active_assets: Vec<(TokenId, Vec<u64>)>,
+    /// Mapping of tokenId to an array of priorities for active assets
+    pub active_assets_priorities: Vec<(TokenId, Vec<u64>)>,
+    /// Mapping of tokenId to new asset, to asset to be replaced
+    pub asset_replacement: Vec<(TokenId, Vec<(u64, u64)>)>,
+    /// Mapping of `equippable_group_id` to parent contract address and valid `slot_id`.
+    pub valid_parent_slots: Vec<(u64, Vec<(ActorId, PartId)>)>,
+    /// Mapping of token ID and catalog address to slot part ID to equipment information.
+    /// Used to compose an NFT.
+    pub equipments: Vec<((TokenId, ActorId), TokenEquipment)>,
+}
+#[derive(Default, Debug, Clone, Encode, Decode, TypeInfo)]
+pub struct Equipment {
+    ///  The ID of the asset equipping a child
+    pub asset_id: u64,
+    /// The ID of the asset used as equipment
+    pub child_asset_id: u64,
+    /// The ID of token that is equipped
+    pub child_token_id: TokenId,
+    /// Address of the collection to which the child asset belongs to
+    pub child_id: ActorId,
+}
 #[derive(Debug, Default, PartialEq, Eq, Encode, Decode, TypeInfo, Clone)]
 pub struct RMRKOwner {
     pub token_id: Option<TokenId>,
@@ -59,7 +92,7 @@ pub enum ChildStatus {
     Accepted,
 }
 
-#[derive(Debug, Decode, Encode, TypeInfo)]
+#[derive(Debug, Decode, Encode, TypeInfo, Clone)]
 pub enum RMRKAction {
     /// Mints token that will belong to another token in another RMRK contract.
     ///
@@ -198,7 +231,6 @@ pub enum RMRKAction {
     /// On success replies [`RMRKEvent::TokensBurnt`].
     BurnFromParent {
         child_token_id: TokenId,
-        root_owner: ActorId,
     },
 
     /// Burns a child of NFT.
@@ -297,268 +329,132 @@ pub enum RMRKAction {
         token_id: TokenId,
     },
 
-    /// That function is designed to be called from another RMRK contracts
-    /// when root owner transfers his child NFT to another his NFT in another contract.
-    /// It adds a child to the RMRK token with tokenId `parent_token_id` with status `Accepted`.
-    ///
-    /// # Requirements:
-    /// * The `msg::source()` must be a child RMRK contract.
-    /// * The `parent_token_id` must be an existing RMRK token that must have `child_token_id` in its `accepted_children`.
-    ///
-    /// # Arguments:
-    /// * `parent_token_id`: RMRK token to which the child token will be transferred.
-    /// * `child_token_id`: is the tokenId of the child of the RMRK child contract.
-    ///
-    /// On success replies [`RMRKEvent::AcceptedChild`].
-    AddAcceptedChild {
-        parent_token_id: TokenId,
-        child_token_id: TokenId,
-    },
-
-    /// Adds resource entry on resource storage contract.
-    /// It sends a message to resource storage contract with information about new resource.
-    ///
-    /// # Requirements:
-    /// * The `msg::source()` must be the contract admin.
+    /// Used to add an equippable asset entry.
     ///
     /// Arguments:
-    /// * `resource_id`: is a resource identifier
-    /// * `resource`: Resource (Basic, Slot or Composable)
+    /// * `equippable_group_id`: ID of the equippable group
+    /// * `catalog_address`: Address of the `Catalog` smart contract this asset belongs to
+    /// * `metadata_uri`: Metadata URI of the asset
+    /// * `parts_ids`:  An array of IDs of fixed and slot parts to be included in the asset
     ///
     /// On success reply `[RMRKEvent::ResourceEntryAdded]`.
-    AddResourceEntry {
-        resource_id: ResourceId,
-        resource: Resource,
+    AddEquippableAssetEntry {
+        equippable_group_id: u64,
+        catalog_address: Option<ActorId>,
+        metadata_uri: String,
+        part_ids: Vec<PartId>,
     },
 
-    /// Adds resource to an existing token.
-    /// Checks that the resource with indicated id exists in the resource storage contract.
-    /// Proposed resource is placed in the "Pending" array.
-    /// A pending resource can be also proposed to overwrite an existing resource.
-    ///
-    /// # Requirements
-    /// Token with indicated `token_id` must exist.
-    /// The proposed resource must not already exist for the token.
-    /// The resource that is proposed to be overwritten must exist for the token.
-    /// The length of resources in pending status must be less or equal to `MAX_RESOURCE_LEN`.
-    ///
-    /// # Arguments:
-    /// * `token_id`: an id of the token.
-    /// * `resource_id`: a proposed resource.
-    /// * `overwrite_id`: a resource to be overwritten.
-    ///
-    /// On success reply `[RMRKEvent::ResourceAdded]`.
-    AddResource {
+    AddAssetToToken {
         token_id: TokenId,
-        resource_id: u8,
-        overwrite_id: u8,
+        asset_id: u64,
+        replaces_asset_with_id: u64,
     },
 
-    /// Accepts resource from pending list.
-    /// Moves the resource from the pending array to the accepted array.
-    ///
-    /// # Requirements
-    /// Only root owner or approved account can accept a resource.
-    /// `resource_id` must exist for the token in the pending array.
-    ///
-    /// # Arguments:
-    /// * `token_id`: an id of the token.
-    /// * `resource_id`: a resource to be accepted.
-    ///
-    /// On success reply `[RMRKEvent::ResourceAccepted]`.
-    AcceptResource {
+    AcceptAsset {
         token_id: TokenId,
-        resource_id: u8,
+        asset_id: u64,
     },
 
-    /// Rejects a resource, dropping it from the pending array.
-    ///
-    /// # Requirements
-    /// Only root owner or approved account can reject a resource.
-    /// `resource_id` must exist for the token in the pending array.
-    ///
-    /// # Arguments:
-    /// * `token_id`: an id of the token.
-    /// * `resource_id`: a resource to be rejected.
-    ///
-    /// On success reply `[RMRKEvent::ResourceRejected]`.
-    RejectResource {
-        token_id: TokenId,
-        resource_id: u8,
+    /// Declares that the assets belonging to a given `equippable_group_id` are
+    /// equippable into the `Slot` associated with the `part_id` of the collection
+    ///  at the specified `parent_id`.
+    SetValidParentForEquippableGroup {
+        equippable_group_id: u64,
+        slot_part_id: PartId,
+        parent_id: ActorId,
     },
 
-    /// Sets the priority of the active resources array
-    /// Priorities have a 1:1 relationship with their corresponding index in
-    /// the active resources array. E.G, a priority array of [1, 3, 2] indicates
-    ///  that the the active resource at index 1 of the active resource array
-    ///  has a priority of 1, index 2 has a priority of 3, and index 3 has a priority
-    ///  of 2. There is no validation on priority value input; out of order indexes
-    ///  must be handled by the frontend.
-    ///
-    /// # Requirements
-    /// Only root owner or approved account can set priority
-    /// The length of the priorities array must be equal to the present length of the active resources array
-    ///
-    /// # Arguments:
-    /// * `token_id`: an id of the token.
-    /// * `priorities`: An array of priorities to set.
-    ///
-    /// On success reply `[RMRKEvent::PrioritySet]`.
-    SetPriority {
-        token_id: TokenId,
-        priorities: Vec<u8>,
-    },
-
-    /// Equips a child NFT's resource to a parent's slot.
-    /// It sends message to the parent contract checking the child status.
-    /// and the parent's resource.
-    /// to check whether the child token has the indicated slot resource.
-    ///
-    /// # Requirements:
-    /// * The `msg::source()` must be the root owner.
-    /// * The child token must have the slot resource with indicated `base_id` and `slot_id`.
-    /// * The parent token must have composed resource with indicated `base_id`.
+    /// Equips a child to a parent's slot.
     ///
     /// # Arguments:
     /// * `token_id`: the tokenId of the NFT to be equipped.
-    /// * `resource_id`: the id of the slot resource.
-    /// * `equippable`: parent's contract and token.
-    /// * `equippable_resource_id`: the id of the composed resource.
+    /// * `child_token_id`:
+    /// * `child_id`:
+    /// * `asset_id`:ID of the asset that we are equipping into
+    /// * `slot_part_id`: slotPartId ID of the slot part that we are using to equip
+    /// * `child_asset_id`: childAssetId ID of the asset that we are equipping
     ///
     /// On success replies [`RMRKEvent::TokenEquipped`].
     Equip {
         token_id: TokenId,
-        resource_id: ResourceId,
-        equippable: CollectionAndToken,
-        equippable_resource_id: ResourceId,
+        child_token_id: TokenId,
+        child_id: CollectionId,
+        asset_id: u64,
+        slot_part_id: PartId,
+        child_asset_id: u64,
     },
 
-    /// That message is designed to be sent from another RMRK contracts
-    /// when equipping  `child_token_id` to `parent_token_id`.
-    /// It checks that `parent_token_id` has the child with `child_token_id` in its accepted children.
-    /// It checks that `parent_token_id` has composed resource.
-    /// It sends a message to base contract to check whether the `parent_token_id` is in equippable list.
-    /// It sends a message to resource contract to add part id to composed resource.
-    ///
-    /// # Requirements:
-    /// * `msg::source()` must be the child contract.
-    /// * The resource with indicated id must exist in the token resources and must be Composed.
-    /// * The `parent_token_id` must be in the equippable list.
-    ///
-    /// # Arguments:
-    /// * `parent_token_id`: the id of the equippable token.
-    /// * `child_token_id`: the id of the token to be equipped.
-    /// * `resource_id`: the id of the composed resource.
-    /// * `slot_id`: the id of the slot part.
-    ///
-    /// On success replies [`RMRKEvent::EquippableIsOk`].
-    CheckEquippable {
-        parent_token_id: TokenId,
-        child_token_id: TokenId,
-        resource_id: ResourceId,
-        slot_id: PartId,
-    },
-    CheckSlotResource {
+    CanTokenBeEquippedWithAssetIntoSlot {
+        parent_id: ActorId,
         token_id: TokenId,
-        resource_id: ResourceId,
-        base_id: BaseId,
-        slot_id: PartId,
+        asset_id: u64,
+        slot_part_id: PartId,
     },
 }
 
-#[derive(Debug, Encode, Decode, TypeInfo)]
-pub enum RMRKEvent {
-    MintToNft {
-        parent_id: ActorId,
-        parent_token_id: TokenId,
-        token_id: TokenId,
-    },
-    MintToRootOwner {
-        root_owner: ActorId,
-        token_id: TokenId,
-    },
-    Approval {
-        root_owner: ActorId,
-        approved_account: ActorId,
-        token_id: TokenId,
-    },
-    PendingChild {
-        child_token_address: ActorId,
-        child_token_id: TokenId,
-        parent_token_id: TokenId,
-    },
-    AcceptedChild {
-        child_contract_id: ActorId,
-        child_token_id: TokenId,
-        parent_token_id: TokenId,
-    },
+#[derive(Debug, Encode, Decode, TypeInfo, PartialEq)]
+pub enum RMRKReply {
+    MintedToNft,
+    MintedToRootOwner,
+    Burnt,
+    Approved,
+    PendingChildAdded,
+    ChildAccepted,
     RootOwner(ActorId),
-    RejectedChild {
-        child_contract_id: ActorId,
-        child_token_id: TokenId,
-        parent_token_id: TokenId,
-    },
-    RemovedChild {
-        child_contract_id: ActorId,
-        child_token_id: TokenId,
-        parent_token_id: TokenId,
-    },
-    ChildAdded {
-        parent_token_id: TokenId,
-        child_token_id: TokenId,
-        child_status: ChildStatus,
-    },
-    ChildBurnt {
-        parent_token_id: TokenId,
-        child_token_id: TokenId,
-    },
-    ChildTransferred {
-        from: TokenId,
-        to: TokenId,
-        child_contract_id: ActorId,
-        child_token_id: TokenId,
-    },
-    TokenBurnt(TokenId),
-    Transfer {
-        to: ActorId,
-        token_id: TokenId,
-    },
-    TransferToNft {
-        to: ActorId,
-        token_id: TokenId,
-        destination_id: TokenId,
-    },
+    ChildRejected,
+    ChildRemoved,
+    ChildAdded,
+    ChildBurnt,
+    ChildTransferred,
+    TokenBurnt,
+    Transferred,
+    TransferredToNft,
     Owner {
         token_id: Option<TokenId>,
         owner_id: ActorId,
     },
-    ResourceEntryAdded(Resource),
-    ResourceAdded {
-        token_id: TokenId,
-        resource_id: ResourceId,
-        overwrite_id: ResourceId,
-    },
-    ResourceAccepted {
-        token_id: TokenId,
-        resource_id: ResourceId,
-    },
-    ResourceRejected {
-        token_id: TokenId,
-        resource_id: ResourceId,
-    },
-    PrioritySet {
-        token_id: TokenId,
-        priorities: Vec<u8>,
-    },
-    ResourceInited {
-        resource_id: ActorId,
-    },
+    PrioritySet,
     SlotResourceIsOk,
-    TokenEquipped {
-        token_id: TokenId,
-        resource_id: ResourceId,
-        slot_id: PartId,
-        equippable: CollectionAndToken,
-    },
+    TokenEquipped,
     EquippableIsOk,
+    EquippableAssetEntryAdded,
+    AssetAddedToToken,
+    AssetAccepted,
+    ValidParentEquippableGroupIdSet,
+    TokenBeEquippedWithAssetIntoSlot,
+    ChildAssetEquipped,
+    AssetSet,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo, PartialEq, Eq, Clone)]
+pub enum RMRKError {
+    ZeroIdForbidden,
+    TokenDoesNotExist,
+    TokenAlreadyExists,
+    AssetAlreadyExists,
+    ChildDoesNotExist,
+    CatalogRequiredForParts,
+    NoAssetMatchingId,
+    MaxPendingAssetsReached,
+    AssetDoesNotExistInPendingArray,
+    EquippableNotFound,
+    WrongSlotId,
+    WrongPartFormat,
+    NotRMRKParentContract,
+    ActiveAssetNotFound,
+    EquippableNotAllowedByCatalog,
+    TargetAssetCannotReceiveSlot,
+    SlotAlreadyUsed,
+    GasIsOver,
+    NotInEquippableList,
+    WrongChildStatus,
+    UnknownError,
+    CatalogDoesNotExist,
+    UnexpectedReply,
+    ChildInPendingArray,
+    ChildInAcceptedArray,
+    NotApprovedAccount,
+    NotRootOwner,
+    ErrorInCatalog,
 }

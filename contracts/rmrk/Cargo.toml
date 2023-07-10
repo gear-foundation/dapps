@@ -1,37 +1,39 @@
 [workspace]
 resolver = "2"
 members = [
-    "base",
+    "catalog",
     "rmrk-token",
     "resource",
     "types",
-    "base/io",
+    "catalog/io",
     "rmrk-token/io",
     "resource/io",
+    "rmrk-token/state",
 ]
 
 [workspace.package]
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 authors = ["Gear Technologies"]
 license = "MIT"
 
 [workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-base = { path = "base" }
-base-io = { path = "base/io" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+catalog = { path = "catalog" }
+catalog-io = { path = "catalog/io" }
 rmrk-token = { path = "rmrk-token" }
 rmrk-io = { path = "rmrk-token/io" }
+rmrk-state = { path = "rmrk-token/state" }
 resource = { path = "resource" }
 resource-io = { path = "resource/io" }
 types = { path = "types" }
 hashbrown = "0.13"
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
 subxt = { version = "0.27", default-features = false }
 tokio = "1"
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
 primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }

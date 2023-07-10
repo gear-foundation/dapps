@@ -4,6 +4,7 @@ use gtest::{Program, System};
 #[test]
 fn transfer_simple() {
     let sys = System::new();
+    sys.init_logger();
     let rmrk = Program::rmrk(&sys, None);
     let token_id: u64 = 9;
 
@@ -13,14 +14,14 @@ fn transfer_simple() {
     // transfer token
     rmrk.transfer(USERS[0], USERS[3], token_id, None);
 
-    // // check that RMRK owner
-    // rmrk.check_rmrk_owner(token_id, None, USERS[3]);
+    // check that RMRK owner
+    rmrk.check_rmrk_owner(token_id, None, USERS[3]);
 
-    // // check the balance of previous owner
-    // rmrk.check_balance(USERS[0], 0);
+    // check the balance of previous owner
+    rmrk.check_balance(USERS[0].into(), 0.into());
 
-    // // check the balance of new owner
-    // rmrk.check_balance(USERS[3], 1);
+    // check the balance of new owner
+    rmrk.check_balance(USERS[3].into(), 1.into());
 }
 
 #[test]

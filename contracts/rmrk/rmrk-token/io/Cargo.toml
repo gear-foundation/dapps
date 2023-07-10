@@ -9,6 +9,7 @@ authors.workspace = true
 gstd.workspace = true
 scale-info.workspace = true
 parity-scale-codec.workspace = true
+primitive-types.workspace = true
 types.workspace = true
 resource-io.workspace = true
 gmeta.workspace = true

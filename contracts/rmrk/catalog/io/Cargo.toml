@@ -1,5 +1,5 @@
 [package]
-name = "base-io"
+name = "catalog-io"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

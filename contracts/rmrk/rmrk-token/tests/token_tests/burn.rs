@@ -1,5 +1,6 @@
 use crate::utils::*;
 use gtest::{Program, System};
+use rmrk_io::RMRKError;
 
 #[test]
 fn burn_simple() {
@@ -30,10 +31,10 @@ fn burn_simple_failures() {
     rmrk.mint_to_root_owner(USERS[0], USERS[0], token_id, None);
 
     // must fail since caller is not owner and not approved
-    rmrk.burn(USERS[3], token_id, Some("RMRK: Wrong owner"));
+    rmrk.burn(USERS[3], token_id, Some(RMRKError::NotApprovedAccount));
 
     // must fail since token does not exist
-    rmrk.burn(USERS[3], token_id + 1, Some("RMRK: Token does not exist"));
+    rmrk.burn(USERS[3], token_id + 1, Some(RMRKError::TokenDoesNotExist));
 }
 
 #[test]
@@ -112,7 +113,7 @@ fn burn_nested_token_failures() {
     );
 
     // must fail since caller is not root owner of the nested child token
-    rmrk_child.burn(USERS[3], child_token_id, Some("RMRK: Wrong owner"));
+    rmrk_child.burn(USERS[3], child_token_id, Some(RMRKError::NotRootOwner));
 }
 
 // ownership chain is now USERS[0] > parent_token_id > child_token_id > grand_token_id
@@ -171,9 +172,9 @@ fn recursive_burn_parent_token() {
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
     let rmrk_grand = Program::rmrk(&sys, None);
-    let child_token_id: u64 = 9;
-    let parent_token_id: u64 = 10;
-    let grand_token_id: u64 = 11;
+    let grand_token_id: u64 = 9;
+    let child_token_id: u64 = 10;
+    let parent_token_id: u64 = 11;
 
     // ownership chain is  USERS[0] > parent_token_id > child_token_id > grand_token_id
     rmrk_chain(
@@ -188,9 +189,9 @@ fn recursive_burn_parent_token() {
     // burn parent_token_id
     rmrk_parent.burn(USERS[0], parent_token_id, None);
 
-    // // check that child_token_id does not exist
-    // rmrk_child.check_rmrk_owner(child_token_id, None, ZERO_ID);
+    // check that child_token_id does not exist
+    rmrk_child.check_rmrk_owner(child_token_id, None, ZERO_ID);
 
-    // // check that grand_token_id does not exist
-    // rmrk_grand.check_rmrk_owner(grand_token_id, None, ZERO_ID);
+    // check that grand_token_id does not exist
+    rmrk_grand.check_rmrk_owner(grand_token_id, None, ZERO_ID);
 }

@@ -9,12 +9,14 @@ authors.workspace = true
 gstd.workspace = true
 rmrk-io.workspace = true
 resource-io.workspace = true
-base-io.workspace = true
+catalog-io.workspace = true
 types.workspace = true
 hashbrown.workspace = true
+primitive-types.workspace = true
 
 [dev-dependencies]
 gtest.workspace = true
+rmrk-state.workspace = true
 
 [build-dependencies]
 gmeta.workspace = true

@@ -1,3 +1,4 @@
+use crate::utils::get_rmrk_owner;
 use crate::*;
 use gstd::msg;
 
@@ -14,34 +15,68 @@ impl RMRKToken {
     /// * `token_id`: is the tokenId of the burnt token.
     ///
     /// On success replies [`RMRKEvent::Transfer`].
-    pub async fn burn(&mut self, token_id: TokenId) {
-        let root_owner = self.find_root_owner(token_id).await;
-        self.assert_owner(&root_owner);
+    pub fn burn(
+        &mut self,
+        tx_manager: &mut TxManager,
+        token_id: TokenId,
+    ) -> Result<RMRKReply, RMRKError> {
+        let rmrk_owner = get_rmrk_owner(&self.rmrk_owners, token_id)?;
+        let state = tx_manager.get_state(msg::id());
 
-        let rmrk_owner = self
-            .rmrk_owners
-            .remove(&token_id)
-            .expect("RMRK: Token does not exist");
-        // If the burnt NFT is a child of another NFT.
-        if let Some(parent_token_id) = rmrk_owner.token_id {
-            burn_child(&rmrk_owner.owner_id, parent_token_id, token_id).await;
+        match state {
+            TxState::MsgSourceAccountChecked => {
+                if let Some(owner_token_id) = rmrk_owner.token_id {
+                    let msg_id = burn_child_msg(&rmrk_owner.owner_id, owner_token_id, token_id);
+                    tx_manager.set_tx_state(TxState::MsgBurnChildSent, msg_id);
+                    exec::wait_for(5);
+                } else {
+                    let root_owner = rmrk_owner.owner_id;
+                    self.assert_owner(&root_owner);
+
+                    // burn children
+                    let msg_id = self.internal_burn_children(tx_manager, token_id);
+                    if msg_id != MessageId::zero() {
+                        tx_manager.set_tx_state(TxState::MsgBurnFromParentSent, msg_id);
+                        exec::wait_for(5);
+                    } else {
+                        // no children
+                        self.rmrk_owners.remove(&token_id);
+                        self.decrease_balance(&root_owner);
+                        self.token_approvals.remove(&token_id);
+                        Ok(RMRKReply::Burnt)
+                    }
+                }
+            }
+            TxState::ReplyOnBurnChildReceived | TxState::ReplyOnBurnFromParentReceived => {
+                let root_owner = if rmrk_owner.token_id.is_some() {
+                    tx_manager.get_decoded_data::<ActorId>()?
+                } else {
+                    rmrk_owner.owner_id
+                };
+
+                if state == TxState::ReplyOnBurnFromParentReceived {
+                    let child_token = tx_manager.get_payload::<(ActorId, TokenId)>()?;
+                    self.internal_remove_child(token_id, child_token)?;
+                }
+                // burn children
+                let msg_id = self.internal_burn_children(tx_manager, token_id);
+                if msg_id != MessageId::zero() {
+                    tx_manager.set_tx_state(TxState::MsgBurnFromParentSent, msg_id);
+                    exec::wait_for(5);
+                } else {
+                    // no children
+                    if rmrk_owner.token_id.is_none() {
+                        self.decrease_balance(&root_owner);
+                    };
+                    self.rmrk_owners.remove(&token_id);
+                    self.token_approvals.remove(&token_id);
+                    Ok(RMRKReply::Burnt)
+                }
+            }
+            _ => {
+                unreachable!()
+            }
         }
-
-        self.decrease_balance(&root_owner);
-
-        self.token_approvals.remove(&token_id);
-
-        // burn all children
-        self.internal_burn_children(token_id, &root_owner).await;
-
-        msg::reply(
-            RMRKEvent::Transfer {
-                to: ActorId::zero(),
-                token_id,
-            },
-            0,
-        )
-        .expect("Error in reply [RMRKEvent::Transfer]");
     }
 
     /// Burns RMRK tokens. It must be called from the RMRK parent contract when the root owner removes or rejects child NFTs.
@@ -56,35 +91,59 @@ impl RMRKToken {
     /// * `token_ids`: is the tokenIds of the burnt tokens.
     ///
     /// On success replies [`RMRKEvent::TokensBurnt`].
-    pub async fn burn_from_parent(&mut self, token_id: TokenId, root_owner: &ActorId) {
-        let rmrk_owner = self
-            .rmrk_owners
-            .get(&token_id)
-            .expect("Token does not exist");
-        if msg::source() != rmrk_owner.owner_id {
-            panic!("Caller must be parent RMRK contract")
-        }
-        self.token_approvals.remove(&token_id);
-        self.decrease_balance(root_owner);
-        self.rmrk_owners.remove(&token_id);
-        self.internal_burn_children(token_id, root_owner).await;
+    pub fn burn_from_parent(
+        &mut self,
+        tx_manager: &mut TxManager,
+        token_id: TokenId,
+    ) -> Result<RMRKReply, RMRKError> {
+        let rmrk_owner = self.get_rmrk_owner(token_id)?;
+        let state = tx_manager.get_state(msg::id());
 
-        msg::reply(RMRKEvent::TokenBurnt(token_id), 0)
-            .expect("Error in reply [RMRKEvent::TokensBurnt]");
+        // Caller must be parent RMRK contract
+        if msg::source() != rmrk_owner.owner_id {
+            return Err(RMRKError::NotRMRKParentContract);
+        }
+        match state {
+            TxState::Initial | TxState::ReplyOnBurnFromParentReceived => {
+                if state == TxState::ReplyOnBurnFromParentReceived {
+                    let child_token = tx_manager.get_payload::<(ActorId, TokenId)>()?;
+                    self.internal_remove_child(token_id, child_token)?;
+                }
+
+                let msg_id = self.internal_burn_children(tx_manager, token_id);
+
+                if msg_id != MessageId::zero() {
+                    tx_manager.set_tx_state(TxState::MsgBurnFromParentSent, msg_id);
+                    exec::wait_for(5);
+                } else {
+                    // no children
+                    self.token_approvals.remove(&token_id);
+                    self.rmrk_owners.remove(&token_id);
+                    Ok(RMRKReply::TokenBurnt)
+                }
+            }
+            TxState::Error(error) => Err(error),
+            _ => {
+                unreachable!()
+            }
+        }
     }
 
     // burn all pending and accepted children
-    async fn internal_burn_children(&mut self, token_id: TokenId, root_owner: &ActorId) {
+    fn internal_burn_children(&self, tx_manager: &mut TxManager, token_id: TokenId) -> MessageId {
         if let Some(children) = self.pending_children.get(&token_id) {
-            for (child_contract_id, child_token_id) in children {
-                burn_from_parent(child_contract_id, *child_token_id, root_owner).await;
+            if let Some((child_contract_id, child_token_id)) = children.into_iter().next() {
+                tx_manager.set_processing_msg((*child_contract_id, *child_token_id).encode());
+                return burn_from_parent_msg(child_contract_id, *child_token_id);
             }
         }
 
         if let Some(children) = self.accepted_children.get(&token_id) {
-            for (child_contract_id, child_token_id) in children {
-                burn_from_parent(child_contract_id, *child_token_id, root_owner).await;
+            if let Some((child_contract_id, child_token_id)) = children.into_iter().next() {
+                tx_manager.set_processing_msg((*child_contract_id, *child_token_id).encode());
+                return burn_from_parent_msg(child_contract_id, *child_token_id);
             }
         }
+        MessageId::zero()
     }
 }

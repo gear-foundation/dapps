@@ -1,5 +1,5 @@
 [package]
-name = "rmrk-resource"
+name = "rmrk-catalog"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -7,9 +7,6 @@ authors.workspace = true
 
 [dependencies]
 gstd.workspace = true
-scale-info.workspace = true
-parity-scale-codec.workspace = true
-resource-io.workspace = true
 catalog-io.workspace = true
 types.workspace = true
 hashbrown.workspace = true
@@ -20,7 +17,7 @@ gtest.workspace = true
 [build-dependencies]
 gmeta.workspace = true
 gear-wasm-builder.workspace = true
-resource-io.workspace = true
+catalog-io.workspace = true
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in

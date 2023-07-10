@@ -1,58 +1,68 @@
 use crate::*;
-use gstd::{exec, msg, ActorId};
-use types::primitives::ResourceId;
+use gstd::{msg, ActorId};
+use types::primitives::CollectionId;
 
 impl RMRKToken {
-    pub fn assert_zero_address(&self, account: &ActorId) {
-        assert!(account != &ActorId::zero(), "RMRK: Zero address");
+    pub fn assert_zero_address(&self, account: &ActorId) -> Result<(), RMRKError> {
+        if account == &ActorId::zero() {
+            return Err(RMRKError::ZeroIdForbidden);
+        }
+        Ok(())
+    }
+    pub fn check_child_status(
+        &self,
+        child_token: (CollectionId, TokenId),
+        child_status: ChildStatus,
+    ) -> Result<(), RMRKError> {
+        if let Some(status) = self.children_status.get(&child_token) {
+            if *status != child_status {
+                return Err(RMRKError::WrongChildStatus);
+            }
+        } else {
+            return Err(RMRKError::ChildDoesNotExist);
+        }
+        Ok(())
     }
 
     /// Checks that NFT with indicated ID already exists
-    pub fn assert_token_exists(&self, token_id: TokenId) {
+    pub fn token_already_exists(&self, token_id: TokenId) -> Result<(), RMRKError> {
         if self.rmrk_owners.contains_key(&token_id) {
-            panic!("RMRK: Token already exists");
+            return Err(RMRKError::TokenAlreadyExists);
         }
+        Ok(())
     }
 
     /// Checks that NFT with indicated ID already does not exist
-    pub fn assert_token_does_not_exist(&self, token_id: TokenId) {
+    pub fn if_token_exists(&self, token_id: TokenId) -> Result<(), RMRKError> {
         if !self.rmrk_owners.contains_key(&token_id) {
-            panic!("RMRK: Token does not exist");
+            return Err(RMRKError::TokenDoesNotExist);
         }
+        Ok(())
     }
 
     /// Checks that `msg::source()` is the owner of the token with indicated `token_id`
     pub fn assert_owner(&self, root_owner: &ActorId) {
-        debug!("OWNER {:?}", root_owner);
         if msg::source() != *root_owner {
             panic!("RMRK: Wrong owner");
         }
     }
 
-    /// Checks that `exec::origin()` is the owner of the token with indicated `token_id`
-    pub fn assert_exec_origin(&self, root_owner: &ActorId) {
-        debug!("EXEC OWNER {:?}", root_owner);
-        if exec::origin() != *root_owner {
-            panic!("Wrong owner");
-        }
-    }
-    pub fn assert_approved_or_owner(&self, token_id: TokenId, root_owner: &ActorId) {
-        if !matches!(
-            self.token_approvals.get(&token_id),
-            Some(approved_accounts) if approved_accounts.contains(&msg::source())
-        ) {
-            self.assert_owner(root_owner);
+    pub fn get_rmrk_owner(&self, token_id: TokenId) -> Result<&RMRKOwner, RMRKError> {
+        if let Some(rmrk_owner) = self.rmrk_owners.get(&token_id) {
+            Ok(rmrk_owner)
+        } else {
+            Err(RMRKError::TokenDoesNotExist)
         }
     }
 
-    pub fn assert_resource_exists_on_token(&self, token_id: TokenId, resource_id: ResourceId) {
-        if let Some(active_resources) = self.multiresource.active_resources.get(&token_id) {
-            assert!(
-                active_resources.contains(&resource_id),
-                "The resource does not exist or not accepted"
-            );
+    pub fn get_child_status(
+        &self,
+        child_token: (CollectionId, TokenId),
+    ) -> Result<&ChildStatus, RMRKError> {
+        if let Some(status) = self.children_status.get(&child_token) {
+            Ok(status)
         } else {
-            panic!("Token has no active resources");
+            Err(RMRKError::ChildDoesNotExist)
         }
     }
 }

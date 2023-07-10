@@ -1,6 +1,6 @@
 #![no_std]
 
-use base_io::*;
+use catalog_io::*;
 use gstd::{msg, prelude::*, ActorId};
 use hashbrown::HashMap;
 use resource_io::*;
@@ -44,10 +44,15 @@ impl ResourceStorage {
             .expect("Resource with indicated id does not exist");
         if let Resource::Composed(ComposedResource { base, parts, .. }) = resource {
             // check that part exist in base contract
-            msg::send_for_reply_as::<_, BaseEvent>(*base, BaseAction::CheckPart(part_id), 0)
-                .expect("Error in sending async message `[BaseAction::CheckPart]` to base contract")
-                .await
-                .expect("Error in async message `[BaseAction::CheckPart]`");
+            msg::send_for_reply_as::<_, CatalogReply>(
+                *base,
+                CatalogAction::CheckPart(part_id),
+                0,
+                0,
+            )
+            .expect("Error in sending async message `[BaseAction::CheckPart]` to base contract")
+            .await
+            .expect("Error in async message `[BaseAction::CheckPart]`");
             parts.push(part_id);
         } else {
             panic!("Resource must be composed");
@@ -107,10 +112,4 @@ extern "C" fn state() {
             .collect(),
     };
     msg::reply(resource_state, 0).expect("Failed to share state");
-}
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    msg::reply(metahash, 0).expect("Failed to share metahash");
 }
