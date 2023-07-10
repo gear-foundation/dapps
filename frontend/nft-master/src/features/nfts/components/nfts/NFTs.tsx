@@ -1,8 +1,8 @@
+import { useAccount } from '@gear-js/react-hooks';
 import { Link } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
 import { Container } from 'components';
-import { useAccount } from '@gear-js/react-hooks';
 import { getImageUrl } from '../../utils';
 import { ReactComponent as ArrowLeftSVG } from '../../assets/arrow-left.svg';
 import { useNFTSearch, useNFTs } from '../../hooks';
@@ -14,12 +14,13 @@ type Props = {
 
 function NFTs({ slider }: Props) {
   const { nfts } = useNFTs();
-  const { searchQuery } = useNFTSearch();
+  const { searchQuery, decodedQueryAddress } = useNFTSearch();
   const { account } = useAccount();
 
   const filteredNFTs = nfts.filter(({ name, owner }) =>
     searchQuery
-      ? name.toLocaleLowerCase().includes(searchQuery) || owner.includes(searchQuery)
+      ? name.toLocaleLowerCase().includes(searchQuery.toLocaleLowerCase()) ||
+        (decodedQueryAddress && owner === decodedQueryAddress)
       : owner === account?.decodedAddress,
   );
 

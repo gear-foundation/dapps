@@ -1,4 +1,4 @@
-import { MessagesDispatched, getProgramMetadata } from '@gear-js/api';
+import { MessagesDispatched, decodeAddress, getProgramMetadata } from '@gear-js/api';
 import { useAlert, useApi } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
@@ -113,12 +113,17 @@ function useNFTs() {
 
 function useNFTSearch() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get('query') || '';
 
-  const searchQuery = useMemo(() => {
-    const value = searchParams.get('query');
+  const decodedQueryAddress = useMemo(() => {
+    if (!searchQuery) return;
 
-    return value ? value.toLocaleLowerCase() : '';
-  }, [searchParams]);
+    try {
+      return decodeAddress(searchQuery);
+    } catch (error) {
+      return undefined;
+    }
+  }, [searchQuery]);
 
   const resetSearchQuery = () => {
     searchParams.delete('query');
@@ -126,7 +131,7 @@ function useNFTSearch() {
     setSearchParams(searchParams);
   };
 
-  return { searchQuery, resetSearchQuery };
+  return { searchQuery, decodedQueryAddress, resetSearchQuery };
 }
 
 export { useNFTsState, useNFTs, useNFTSearch };
