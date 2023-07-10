@@ -91,12 +91,10 @@ async fn main() {
             let price = Currencies::get_price(&currency_id)
                 .expect("RegisterSubscription: unregistered payment method");
             let subscriber = msg::source();
-
             // Check subscription requirements
             if Subscribers::get_subscriber(&subscriber).is_some() {
                 panic!("RegisterSubscription: invalid subscription state");
             }
-
             // Withdraw subscription fee.
             let _: FTEvent = msg::send_for_reply_as(
                 currency_id,
@@ -106,13 +104,13 @@ async fn main() {
                     amount: price * period.as_units(),
                 },
                 0,
+                0,
             )
             .unwrap_or_else(|e| panic!("RegisterSubscription: error sending async message: {e:?}"))
             .await
             .unwrap_or_else(|e| {
                 panic!("RegisterSubscription: token transfer ended up with an error {e:?}")
             });
-
             gstd::debug!("Before delayed msg");
             // Send delayed message for state invalidation:
             // - subscription renewal
@@ -184,6 +182,7 @@ async fn main() {
                         to: this_program,
                         amount: price * period.as_units(),
                     },
+                    0,
                     0,
                 )
                 .unwrap_or_else(|e| {
@@ -296,6 +295,7 @@ async fn main() {
                             amount: price * period.as_units(),
                         },
                         0,
+                        0,
                     )
                     .unwrap_or_else(|e| {
                         panic!("ManagePendingSubscription: error sending async message: {e:?}")
@@ -312,12 +312,6 @@ async fn main() {
             }
         }
     }
-}
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    msg::reply(metahash, 0).expect("Failed to share metahash");
 }
 
 #[no_mangle]

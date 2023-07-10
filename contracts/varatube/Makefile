@@ -22,20 +22,11 @@ lint:
 
 pre-commit: fmt lint full-test
 
-deps:
-	@echo ⚙️ Downloading dependencies...
-	@path=target/fungible_token.wasm;\
-	if [ ! -f $$path ]; then\
-	    curl -L\
-	        https://github.com/gear-dapps/fungible-token/releases/download/0.1.5/fungible_token.wasm\
-	        -o $$path;\
-	fi
-	
-test: deps
+test:
 	@echo ⚙️ Running tests...
 	@cargo t -Fbinary-vendor
 
-full-test: deps
+full-test:
 	@echo ⚙️ Running all tests...
 	@cargo t -Fbinary-vendor -- --include-ignored
 

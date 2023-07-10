@@ -24,6 +24,7 @@ gstd = { workspace = true }
 varatube-io.workspace = true
 ft-io.workspace = true
 gtest.workspace = true
+fungible-token.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
@@ -32,11 +33,12 @@ gmeta.workspace = true
 
 [workspace.dependencies]
 varatube-io = { path = "io" }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.6" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", branch = "update-deps" }
+fungible-token = { git = "https://github.com/gear-dapps/fungible-token.git", branch = "update-deps" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
 
 [workspace]
 members = ["state"]
