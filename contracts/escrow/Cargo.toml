@@ -44,12 +44,12 @@ gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
 gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
 gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", branch = "update-deps" }
-ft-main = { git = "https://github.com/gear-dapps/sharded-fungible-token", branch = "update-deps" }
-ft-logic = { git = "https://github.com/gear-dapps/sharded-fungible-token", branch = "update-deps" }
-ft-storage = { git = "https://github.com/gear-dapps/sharded-fungible-token", branch = "update-deps" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-main = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-logic = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-storage = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
 async-trait = "0.1.68"
-hashbrown = "0.13"
+hashbrown = "0.14"
 escrow-io = { path = "io" }
 tokio = "1"
 primitive-types = { version = "0.12", default-features = false }

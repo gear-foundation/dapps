@@ -69,6 +69,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "allocator-api2"
+version = "0.2.15"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "56fc6cf8dc8c4158eed8649f9b8b0ea1518eb62b544fe9490d66fa0b349eafe9"
+
+[[package]]
 name = "android-tzdata"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -974,7 +980,7 @@ dependencies = [
  "gmeta",
  "gstd",
  "gtest",
- "hashbrown 0.13.2",
+ "hashbrown 0.14.0",
  "tokio",
 ]
 
@@ -1160,7 +1166,7 @@ checksum = "0845fa252299212f0389d64ba26f34fa32cfe41588355f21ed507c59a0f64541"
 [[package]]
 name = "ft-logic"
 version = "2.1.4"
-source = "git+https://github.com/gear-dapps/sharded-fungible-token?branch=update-deps#a12d468f42253a1e8858c847ea7875ae4a7cbcb5"
+source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#48ca7b3bb12becfa07da1dafbb266194135e388d"
 dependencies = [
  "ft-logic-io",
  "ft-main-io",
@@ -1168,7 +1174,7 @@ dependencies = [
  "gear-wasm-builder",
  "gmeta",
  "gstd",
- "hashbrown 0.13.2",
+ "hashbrown 0.14.0",
  "hex",
  "light_sr25519",
  "parity-scale-codec",
@@ -1179,13 +1185,13 @@ dependencies = [
 [[package]]
 name = "ft-logic-io"
 version = "2.1.4"
-source = "git+https://github.com/gear-dapps/sharded-fungible-token?branch=update-deps#a12d468f42253a1e8858c847ea7875ae4a7cbcb5"
+source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#48ca7b3bb12becfa07da1dafbb266194135e388d"
 dependencies = [
  "ft-main-io",
  "ft-storage-io",
  "gmeta",
  "gstd",
- "hashbrown 0.13.2",
+ "hashbrown 0.14.0",
  "parity-scale-codec",
  "primitive-types",
  "scale-info",
@@ -1194,7 +1200,7 @@ dependencies = [
 [[package]]
 name = "ft-main"
 version = "2.1.4"
-source = "git+https://github.com/gear-dapps/sharded-fungible-token?branch=update-deps#a12d468f42253a1e8858c847ea7875ae4a7cbcb5"
+source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#48ca7b3bb12becfa07da1dafbb266194135e388d"
 dependencies = [
  "ft-logic-io",
  "ft-main-io",
@@ -1202,7 +1208,7 @@ dependencies = [
  "gear-wasm-builder",
  "gmeta",
  "gstd",
- "hashbrown 0.13.2",
+ "hashbrown 0.14.0",
  "primitive-types",
  "sp-core-hashing 8.0.0",
 ]
@@ -1210,7 +1216,7 @@ dependencies = [
 [[package]]
 name = "ft-main-io"
 version = "2.1.4"
-source = "git+https://github.com/gear-dapps/sharded-fungible-token?branch=update-deps#a12d468f42253a1e8858c847ea7875ae4a7cbcb5"
+source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#48ca7b3bb12becfa07da1dafbb266194135e388d"
 dependencies = [
  "gmeta",
  "gstd",
@@ -1222,20 +1228,20 @@ dependencies = [
 [[package]]
 name = "ft-storage"
 version = "2.1.4"
-source = "git+https://github.com/gear-dapps/sharded-fungible-token?branch=update-deps#a12d468f42253a1e8858c847ea7875ae4a7cbcb5"
+source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#48ca7b3bb12becfa07da1dafbb266194135e388d"
 dependencies = [
  "ft-storage-io",
  "gear-wasm-builder",
  "gmeta",
  "gstd",
- "hashbrown 0.13.2",
+ "hashbrown 0.14.0",
  "primitive-types",
 ]
 
 [[package]]
 name = "ft-storage-io"
 version = "2.1.2"
-source = "git+https://github.com/gear-dapps/sharded-fungible-token?branch=update-deps#a12d468f42253a1e8858c847ea7875ae4a7cbcb5"
+source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#48ca7b3bb12becfa07da1dafbb266194135e388d"
 dependencies = [
  "gmeta",
  "gstd",
@@ -1805,6 +1811,10 @@ name = "hashbrown"
 version = "0.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2c6201b9ff9fd90a5a3bac2e56a830d0caa509576f0e503818ee82c181b3437a"
+dependencies = [
+ "ahash 0.8.3",
+ "allocator-api2",
+]
 
 [[package]]
 name = "heck"
