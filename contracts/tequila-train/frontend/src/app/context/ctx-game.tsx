@@ -1,22 +1,7 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useState } from 'react';
-import { DominoTileType, GameWasmStateResponse, IGameState, IPlayer, PlayerChoiceType } from '../types/game';
+import { createContext, ReactNode, useState } from "react";
+import { DominoTileType, GameWasmStateResponse, IGameState, IPlayer, PlayerChoiceType } from "../types/game";
 
-type Program = {
-  game?: IGameState;
-  setGame: Dispatch<SetStateAction<IGameState | undefined>>;
-  gameWasm?: GameWasmStateResponse;
-  setGameWasm: Dispatch<SetStateAction<GameWasmStateResponse | undefined>>;
-  players: IPlayer[];
-  setPlayers: Dispatch<SetStateAction<IPlayer[]>>;
-  playerTiles?: DominoTileType[];
-  setPlayerTiles: Dispatch<SetStateAction<DominoTileType[] | undefined>>;
-  selectedDomino?: [number, DominoTileType];
-  setSelectedDomino: Dispatch<SetStateAction<[number, DominoTileType] | undefined>>;
-  playerChoice?: PlayerChoiceType;
-  setPlayerChoice: Dispatch<SetStateAction<PlayerChoiceType | undefined>>;
-};
-
-const useProgram = (): Program => {
+const useProgram = () => {
   const [game, setGame] = useState<IGameState>();
   const [gameWasm, setGameWasm] = useState<GameWasmStateResponse>();
   const [players, setPlayers] = useState<IPlayer[]>([]);
@@ -36,11 +21,11 @@ const useProgram = (): Program => {
     selectedDomino,
     setSelectedDomino,
     playerChoice,
-    setPlayerChoice,
+    setPlayerChoice
   };
 };
 
-export const GameCtx = createContext({} as Program);
+export const GameCtx = createContext({} as ReturnType<typeof useProgram>);
 
 export function GameProvider({ children }: { children: ReactNode }) {
   const { Provider } = GameCtx;

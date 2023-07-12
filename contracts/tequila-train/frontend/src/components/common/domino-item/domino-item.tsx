@@ -15,7 +15,7 @@ export const DominoItem = ({ row, tile, reverse }: Props) => {
           'flex items-center justify-center w-9 h-9 bg-white border border-[#1E942A]',
           row ? ' rounded-l-lg' : ' rounded-t-lg',
         )}>
-        {tile && tile[reverse ? 1 : 0] >= 0 && (
+        {tile && +tile[reverse ? 1 : 0] >= 0 && (
           <Icon
             name={`domino-${tile[reverse ? 1 : 0]}`}
             section="domino"
@@ -30,7 +30,7 @@ export const DominoItem = ({ row, tile, reverse }: Props) => {
           'flex items-center justify-center w-9 h-9 bg-white border border-[#1E942A]',
           row ? 'rounded-r-lg' : 'rounded-b-lg',
         )}>
-        {tile && tile[reverse ? 0 : 1] >= 0 && (
+        {tile && +tile[reverse ? 0 : 1] >= 0 && (
           <Icon
             name={`domino-${tile[reverse ? 0 : 1]}`}
             section="domino"

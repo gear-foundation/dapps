@@ -15,7 +15,7 @@ export const PlayerTrain = ({ index }: Props) => {
     if (playerChoice && playerChoice.tile_id !== undefined && playerChoice.track_id !== undefined) {
       const { track_id, tile_id } = playerChoice;
 
-      if (track_id >= 0 && tile_id >= 0) {
+      if (+track_id >= 0 && +tile_id >= 0) {
         setPlayerChoice((prev) => ({ ...prev, remove_train: true }));
       }
     } else {

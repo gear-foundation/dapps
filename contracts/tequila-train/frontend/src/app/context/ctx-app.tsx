@@ -1,19 +1,8 @@
-import { createContext, Dispatch, ReactNode, SetStateAction, useState } from 'react';
+import { createContext, ReactNode, useState } from "react";
 
-type Program = {
-  isPending: boolean;
-  setIsPending: Dispatch<SetStateAction<boolean>>;
-  isAllowed: boolean;
-  setIsAllowed: Dispatch<SetStateAction<boolean>>;
-  openEmptyPopup: boolean;
-  setOpenEmptyPopup: Dispatch<SetStateAction<boolean>>;
-  openWinnerPopup: boolean;
-  setOpenWinnerPopup: Dispatch<SetStateAction<boolean>>;
-};
+export const AppCtx = createContext({} as ReturnType<typeof useProgram>);
 
-export const AppCtx = createContext({} as Program);
-
-const useProgram = (): Program => {
+const useProgram = () => {
   const [isPending, setIsPending] = useState<boolean>(false);
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const [openEmptyPopup, setOpenEmptyPopup] = useState<boolean>(false);
@@ -27,7 +16,7 @@ const useProgram = (): Program => {
     openEmptyPopup,
     setOpenEmptyPopup,
     openWinnerPopup,
-    setOpenWinnerPopup,
+    setOpenWinnerPopup
   };
 };
 

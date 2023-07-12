@@ -40,7 +40,7 @@ export const GameSection = () => {
             <PlayerTrackSection
               index={i}
               isUserTrain={p.hasTrain}
-              active={state?.currentPlayer === i}
+              active={+state?.currentPlayer === i}
               tiles={p.tiles}
             />
           </li>
@@ -52,7 +52,7 @@ export const GameSection = () => {
         <ul className="flex gap-4 justify-center">
           {players.map((p, i) => (
             <li key={i}>
-              <PlayerCardSection index={i} active={isAllowed && state?.currentPlayer === i} />
+              <PlayerCardSection index={i} active={isAllowed && Boolean(state && +state.currentPlayer === i)} />
             </li>
           ))}
         </ul>

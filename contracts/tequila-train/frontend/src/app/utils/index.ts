@@ -60,7 +60,7 @@ const strings = [
 ];
 
 export const getTileId = (tile: DominoTileType, tiles: StateDominoTileType[]): number => {
-  const objFromArray = { left: strings[tile[0]], right: strings[tile[1]] };
+  const objFromArray = { left: strings[+tile[0]], right: strings[+tile[1]] };
   return tiles.findIndex((tile) => tile.left === objFromArray.left && tile.right === objFromArray.right);
 };
 

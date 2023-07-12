@@ -40,14 +40,14 @@ export const PlayerConsSection = () => {
     if (game?.gameState) {
       if (playerChoice) {
         playerChoice.tile !== tile
-          ? setPlayerChoice({ ...playerChoice, tile, tile_id: getTileId(tile, game.gameState?.tiles) })
+          ? setPlayerChoice({ ...playerChoice, tile, tile_id: getTileId(tile, game.gameState?.tiles).toString() })
           : setPlayerChoice({
               ...playerChoice,
               tile: undefined,
               tile_id: undefined,
             });
       } else {
-        setPlayerChoice({ tile, tile_id: getTileId(tile, game.gameState?.tiles) });
+        setPlayerChoice({ tile, tile_id: getTileId(tile, game.gameState?.tiles).toString() });
       }
     }
   };
@@ -56,7 +56,7 @@ export const PlayerConsSection = () => {
     if (playerChoice?.track_id !== undefined && playerChoice.tile_id !== undefined) {
       const { tile_id, track_id, remove_train } = playerChoice;
 
-      if (track_id >= 0 && tile_id >= 0) {
+      if (+track_id >= 0 && +tile_id >= 0) {
         setIsPending((prev) => !prev);
         setTurnPending(true);
         handleMessage({ Place: { tile_id, track_id, remove_train } }, { onSuccess, onError });
@@ -76,7 +76,7 @@ export const PlayerConsSection = () => {
     <div className="relative flex justify-between bg-[#D6FE51] py-3 px-7 rounded-2xl before:absolute before:-inset-px before:-z-1 before:rounded-[17px] before:border before:border-dark-500/15">
       <div className="flex flex-wrap items-center gap-2 min-h-[72px]">
         {wasm &&
-          wasm.playersTiles[wasm.currentPlayer].map((tile, i) => (
+          wasm.playersTiles[+wasm.currentPlayer].map((tile, i) => (
             <PlayerDomino
               tile={tile}
               key={i}
