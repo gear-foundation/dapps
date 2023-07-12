@@ -6,7 +6,7 @@ license.workspace = true
 authors.workspace = true
 
 [dependencies]
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 scale-info.workspace = true
 parity-scale-codec.workspace = true
 gmeta.workspace = true

@@ -30,6 +30,7 @@ async fn main() {
                     properties_for_sale: None,
                 },
                 0,
+                0,
             )
             .expect("Error in sending a message `GameAction::ThrowRoll`")
             .await
@@ -50,6 +51,7 @@ async fn main() {
                     pay_fine: true,
                     properties_for_sale: None,
                 },
+                0,
                 0,
             )
             .expect("Error in sending a message `GameAction::ThrowRoll`")
@@ -83,6 +85,7 @@ async fn main() {
                     properties_for_sale: None,
                 },
                 0,
+                0,
             )
             .expect("Error in sending a message `GameAction::AddGear`")
             .await
@@ -96,6 +99,7 @@ async fn main() {
                 GameAction::Upgrade {
                     properties_for_sale: None,
                 },
+                0,
                 0,
             )
             .expect("Error in sending a message `GameAction::Upgrade`")
@@ -113,6 +117,7 @@ async fn main() {
                 properties_for_sale: None,
             },
             0,
+            0,
         )
         .expect("Error in sending a message `GameAction::BuyCell`")
         .await
@@ -125,6 +130,7 @@ async fn main() {
                 properties_for_sale: None,
             },
             0,
+            0,
         )
         .expect("Error in sending a message `GameAction::PayRent`")
         .await
@@ -136,10 +142,4 @@ async fn main() {
 #[no_mangle]
 unsafe extern "C" fn init() {
     //   MONOPOLY = msg::load::<ActorId>().expect("Unable to decode ActorId");
-}
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    msg::reply(metahash, 0).expect("Failed to share metahash");
 }

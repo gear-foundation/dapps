@@ -281,9 +281,3 @@ extern "C" fn state() {
     let game_state: GameState = game.into();
     msg::reply(game_state, 0).expect("Failed to share state");
 }
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    msg::reply(metahash, 0).expect("Failed to share metahash");
-}

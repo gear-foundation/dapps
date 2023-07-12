@@ -1,7 +1,7 @@
 use crate::*;
-use gstd::errors::ContractError;
+use gstd::errors::Error;
 
-pub async fn take_your_turn(player: &ActorId, game: &Game) -> Result<Vec<u8>, ContractError> {
+pub async fn take_your_turn(player: &ActorId, game: &Game) -> Result<Vec<u8>, Error> {
     let players = game
         .players
         .iter()
@@ -13,6 +13,7 @@ pub async fn take_your_turn(player: &ActorId, game: &Game) -> Result<Vec<u8>, Co
             players,
             properties: game.properties.clone(),
         },
+        0,
         0,
     )
     .expect("Error on sending `YourTurn` message")
