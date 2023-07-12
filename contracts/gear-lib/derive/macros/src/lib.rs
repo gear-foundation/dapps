@@ -24,7 +24,7 @@ macro_rules! declare_derive_storage_trait {
                     let field = named_fields.named.iter().find(|f| {
                         f.attrs
                             .iter()
-                            .find(|a| a.path.is_ident(FIELD_SETTER))
+                            .find(|a| a.path().is_ident(FIELD_SETTER))
                             .is_some()
                     });
 

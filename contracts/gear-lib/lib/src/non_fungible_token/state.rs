@@ -2,7 +2,7 @@ use crate::non_fungible_token::{royalties::*, token::*};
 use gstd::{prelude::*, ActorId};
 use hashbrown::{HashMap, HashSet};
 
-#[derive(Debug, Default)]
+#[derive(Default, Debug, PartialEq, Eq, Clone)]
 pub struct NFTState {
     pub name: String,
     pub symbol: String,
@@ -19,7 +19,7 @@ pub trait NFTStateKeeper {
     fn get_mut(&mut self) -> &mut NFTState;
 }
 
-#[derive(Debug, Decode, Encode, TypeInfo)]
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
 pub enum NFTQuery {
     NFTInfo,
     Token { token_id: TokenId },
@@ -30,7 +30,7 @@ pub enum NFTQuery {
     ApprovedTokens { account: ActorId },
 }
 
-#[derive(Debug, Decode, Encode, TypeInfo)]
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub enum NFTQueryReply {
     NFTInfo {
         name: String,
