@@ -13,14 +13,14 @@ type Item = {
   distributor: HexString;
   retailer: HexString;
   state: { state: string; by: string };
-  price: number;
-  deliveryTime: number;
+  price: string;
+  deliveryTime: string;
 };
 
-type Items = [id: number, item: Item][];
+type Items = [id: string, item: Item][];
 
 type Token = {
-  id: number;
+  id: string;
   ownerId: HexString;
   name: string;
   description: string;
