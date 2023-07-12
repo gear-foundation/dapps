@@ -212,12 +212,6 @@ extern "C" fn init() {
 }
 
 #[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    msg::reply(metahash, 0).expect("Failed to share metahash");
-}
-
-#[no_mangle]
 extern "C" fn state() {
     msg::reply(
         unsafe {

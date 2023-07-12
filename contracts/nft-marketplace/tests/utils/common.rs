@@ -17,6 +17,8 @@ pub fn initialize_programs(system: &System) -> (FungibleToken, NonFungibleToken,
 
     let mut tx_id: u64 = 0;
     let nft_program = NonFungibleToken::initialize(system);
+    nft_program.add_minter(tx_id, SELLER);
+    tx_id += 1;
     nft_program.mint(tx_id, SELLER);
 
     let market = Market::initialize(system);
@@ -42,6 +44,8 @@ pub fn initialize_programs_without_ft_approve(
 
     let mut tx_id: u64 = 0;
     let nft_program = NonFungibleToken::initialize(system);
+    nft_program.add_minter(tx_id, SELLER);
+    tx_id += 1;
     nft_program.mint(tx_id, SELLER);
 
     let market = Market::initialize(system);

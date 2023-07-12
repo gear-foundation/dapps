@@ -4,7 +4,7 @@ use gstd::ActorId;
 
 pub const HASH_LENGTH: usize = 32;
 pub type Hash = [u8; HASH_LENGTH];
-pub const USERS: [&str; 4] = ["//Mike", "//John", "//Alex", "//Peter"];
+pub const USERS: [&str; 5] = ["//Mike", "//John", "//Alex", "//Peter", "//Alice"];
 pub const USERS_FUND: u128 = 5_000;
 pub const SELLER: &str = "//Markus";
 pub const BUYER: &str = "//Jim";
@@ -15,19 +15,33 @@ pub const NFT_PRICE: u128 = 100_000;
 pub const BID_PERIOD: u64 = 3_600_000;
 pub const DURATION: u64 = 86_400_000;
 
+static mut API: Option<GearApi> = None;
+
+pub async fn init_gear_api_from_path() -> gclient::Result<GearApi> {
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+
+    unsafe { API = Some(api.clone()) };
+
+    Ok(api)
+}
+
+pub fn gear_api_from_path() -> GearApi {
+    unsafe { API.as_ref().unwrap().clone() }
+}
+
 pub fn get_current_actor_id(api: &GearApi) -> ActorId {
     ActorId::new(*api.account_id().clone().as_ref())
 }
 
 pub async fn get_user_to_actor_id(user: impl AsRef<str>) -> gclient::Result<ActorId> {
-    let api = GearApi::dev().await?.with(user)?;
+    let api = gear_api_from_path().with(user)?;
     let actor_id = ActorId::new(*api.account_id().clone().as_ref());
 
     Ok(actor_id)
 }
 
 pub async fn init(api: &GearApi) -> gclient::Result<(ActorId, ActorId, ActorId)> {
-    for user in USERS {
+    for user in &USERS[..4] {
         let user_id = get_user_to_actor_id(user).await?;
         api.transfer(user_id.as_ref().into(), USERS_FUND).await?;
     }
@@ -52,8 +66,17 @@ pub async fn init(api: &GearApi) -> gclient::Result<(ActorId, ActorId, ActorId)>
     let ft_contract = super::ft::init(api).await?;
     let nft_contract = super::nft::init(api).await?;
 
+    super::nft::add_minter(
+        api,
+        &mut api.subscribe().await?,
+        nft_contract,
+        0,
+        get_user_to_actor_id(SELLER).await?,
+    )
+    .await?;
+
     {
-        let seller_api = GearApi::dev().await?.with(SELLER)?;
+        let seller_api = gear_api_from_path().with(SELLER)?;
         let mut listener = seller_api.subscribe().await?;
         super::nft::mint(&seller_api, &mut listener, &nft_contract, 0).await?;
     }
@@ -63,7 +86,7 @@ pub async fn init(api: &GearApi) -> gclient::Result<(ActorId, ActorId, ActorId)>
     let market_contract = super::marketplace::init(api, &admin_id, &treasury_id).await?;
 
     {
-        let buyer_api = GearApi::dev().await?.with(BUYER)?;
+        let buyer_api = gear_api_from_path().with(BUYER)?;
         let mut listener = buyer_api.subscribe().await?;
         super::ft::approve(
             &buyer_api,
@@ -77,7 +100,7 @@ pub async fn init(api: &GearApi) -> gclient::Result<(ActorId, ActorId, ActorId)>
     }
 
     {
-        let seller_api = GearApi::dev().await?.with(SELLER)?;
+        let seller_api = gear_api_from_path().with(SELLER)?;
         let mut listener = seller_api.subscribe().await?;
         super::nft::approve(
             &seller_api,
@@ -114,21 +137,7 @@ pub async fn upload_with_code_hash(
 
     code_hash[..].copy_from_slice(blake2b::blake2b(HASH_LENGTH, &[], &wasm_code).as_bytes());
 
-    match api.upload_code(wasm_code).await {
-        // Catch re-upload
-        Err(gclient::Error::Subxt(subxt::error::Error::Runtime(
-            subxt::error::DispatchError::Module(subxt::error::ModuleError {
-                error_data:
-                    subxt::error::ModuleErrorData {
-                        pallet_index: 104,
-                        error: [6, 0, 0, 0],
-                    },
-                ..
-            }),
-        ))) => {}
-        Err(error) => return Err(error),
-        _ => {}
-    };
+    api.upload_code(wasm_code).await?;
 
     Ok(code_hash)
 }

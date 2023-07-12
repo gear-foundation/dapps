@@ -20,6 +20,8 @@ fn auction_with_native_tokens() {
         )
         .succeed((nft_program.actor_id(), TOKEN_ID.into(), None));
 
+    nft_program.approve(0, SELLER, market.actor_id(), TOKEN_ID.into());
+
     market
         .create_auction(
             &system,
@@ -98,6 +100,8 @@ fn cancelled_auction() {
         )
         .succeed((nft_program.actor_id(), TOKEN_ID.into(), None));
 
+    nft_program.approve(0, SELLER, market.actor_id(), TOKEN_ID.into());
+
     market
         .create_auction(
             &system,
@@ -135,6 +139,8 @@ fn auction_with_fungible_tokens() {
             None,
         )
         .succeed((nft_program.actor_id(), TOKEN_ID.into(), None));
+
+    nft_program.approve(0, SELLER, market.actor_id(), TOKEN_ID.into());
 
     market
         .create_auction(
@@ -256,6 +262,8 @@ fn auction_failures() {
             DURATION,
         )
         .failed(MarketErr::AuctionMinPriceIsZero);
+
+    nft_program.approve(0, SELLER, market.actor_id(), TOKEN_ID.into());
 
     // start auction
     market

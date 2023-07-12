@@ -1,21 +1,25 @@
+use crate::utils_gclient::common::get_user_to_actor_id;
+
 use super::common;
 use gclient::{EventListener, EventProcessor, GearApi};
 use gear_lib::non_fungible_token::token::TokenMetadata;
 use gstd::{prelude::*, ActorId};
 use market_io::TokenId;
-use nft_io::{InitNFT, NFTAction, NFTEvent};
+use nft_io::{Collection, Constraints, InitNFT, NFTAction, NFTEvent};
 
-const NFT_WASM_PATH: &str = "./target/nft.wasm";
+const NFT_WASM_PATH: &str = "target/wasm32-unknown-unknown/debug/nft.opt.wasm";
 
 pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     let mut listener = api.subscribe().await?;
     assert!(listener.blocks_running().await?);
 
     let init_nft_config = InitNFT {
-        name: Default::default(),
-        symbol: Default::default(),
-        base_uri: Default::default(),
-        royalties: None,
+        royalties: Default::default(),
+        collection: Collection::default(),
+        constraints: Constraints {
+            authorized_minters: vec![get_user_to_actor_id(common::USERS[4]).await?],
+            ..Default::default()
+        },
     }
     .encode();
 
@@ -99,6 +103,31 @@ pub async fn approve(
     .await?;
 
     let NFTEvent::Approval(_) = NFTEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `NFTEvent` data.") else {
+        panic!("Unexpected invalid `NFTEvent`.");
+    };
+
+    Ok(())
+}
+
+pub async fn add_minter(
+    api: &GearApi,
+    listener: &mut EventListener,
+    program_id: ActorId,
+    tx_id: u64,
+    to: ActorId,
+) -> gclient::Result<()> {
+    let reply = send_message(
+        api,
+        listener,
+        &program_id,
+        NFTAction::AddMinter {
+            transaction_id: tx_id,
+            minter_id: to,
+        },
+    )
+    .await?;
+
+    let NFTEvent::MinterAdded {..} = NFTEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `NFTEvent` data.") else {
         panic!("Unexpected invalid `NFTEvent`.");
     };
 

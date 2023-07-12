@@ -3,7 +3,7 @@ use gear_lib::non_fungible_token::{io::*, token::Token};
 use gstd::ActorId;
 use gtest::{Log, Program as InnerProgram, System};
 use market_io::*;
-use nft_io::{InitNFT, NFTAction, NFTEvent};
+use nft_io::{Collection, Constraints, InitNFT, NFTAction, NFTEvent};
 
 pub struct NonFungibleToken<'a>(InnerProgram<'a>);
 
@@ -15,21 +15,39 @@ impl Program for NonFungibleToken<'_> {
 
 impl<'a> NonFungibleToken<'a> {
     pub fn initialize(system: &'a System) -> Self {
-        let program = InnerProgram::from_file(system, "./target/nft.wasm");
+        let program =
+            InnerProgram::from_file(system, "./target/wasm32-unknown-unknown/debug/nft.wasm");
 
         assert!(!program
             .send(
                 ADMIN,
                 InitNFT {
-                    name: Default::default(),
-                    symbol: Default::default(),
-                    base_uri: Default::default(),
-                    royalties: None
+                    royalties: Default::default(),
+                    collection: Collection::default(),
+                    constraints: Constraints {
+                        authorized_minters: vec![ADMIN.into()],
+                        ..Default::default()
+                    }
                 }
             )
             .main_failed());
 
         Self(program)
+    }
+
+    pub fn add_minter(&self, transaction_id: u64, to: u64) {
+        assert!(self
+            .0
+            .send(
+                ADMIN,
+                NFTAction::AddMinter {
+                    transaction_id,
+                    minter_id: to.into()
+                }
+            )
+            .contains(&Log::builder().payload(NFTEvent::MinterAdded {
+                minter_id: to.into()
+            })));
     }
 
     pub fn mint(&self, transaction_id: u64, from: u64) {

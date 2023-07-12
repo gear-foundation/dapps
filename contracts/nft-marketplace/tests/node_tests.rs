@@ -1,19 +1,21 @@
 mod utils_gclient;
 
-use gclient::GearApi;
 use gstd::prelude::*;
 use nft_marketplace::contract::BASE_PERCENT;
-use utils_gclient::{common, ft, marketplace};
+use utils_gclient::{
+    common::{self, gear_api_from_path, init_gear_api_from_path},
+    ft, marketplace, nft,
+};
 
 #[tokio::test]
 #[ignore]
 async fn success_offers_gclient() -> gclient::Result<()> {
-    let api = GearApi::dev().await?;
+    let api = init_gear_api_from_path().await?;
 
     let (ft_contract, nft_contract, marketplace_contract) = common::init(&api).await?;
 
     {
-        let seller_api = GearApi::dev().await?.with(common::SELLER)?;
+        let seller_api = gear_api_from_path().with(common::SELLER)?;
         let mut listener = seller_api.subscribe().await?;
 
         marketplace::add_market_data(
@@ -30,7 +32,7 @@ async fn success_offers_gclient() -> gclient::Result<()> {
     }
 
     {
-        let buyer_api = GearApi::dev().await?.with(common::BUYER)?;
+        let buyer_api = gear_api_from_path().with(common::BUYER)?;
         let mut listener = buyer_api.subscribe().await?;
 
         for i in 0..10 {
@@ -103,7 +105,7 @@ async fn success_offers_gclient() -> gclient::Result<()> {
 
     let accepted_price = 10_000 * 15;
     {
-        let seller_api = GearApi::dev().await?.with(common::SELLER)?;
+        let seller_api = gear_api_from_path().with(common::SELLER)?;
         let mut listener = seller_api.subscribe().await?;
 
         marketplace::accept_offer(
@@ -155,7 +157,7 @@ async fn success_offers_gclient() -> gclient::Result<()> {
         .contains_key(&(Some(ft_contract), accepted_price)));
 
     {
-        let buyer_api = GearApi::dev().await?.with(common::BUYER)?;
+        let buyer_api = gear_api_from_path().with(common::BUYER)?;
         let mut listener = buyer_api.subscribe().await?;
 
         let withdrawn_tokens = 110_000;
@@ -188,7 +190,7 @@ async fn success_offers_gclient() -> gclient::Result<()> {
     let offered_value = 1_000_000;
 
     {
-        let seller_api = GearApi::dev().await?.with(common::SELLER)?;
+        let seller_api = gear_api_from_path().with(common::SELLER)?;
         let mut listener = seller_api.subscribe().await?;
 
         marketplace::add_offer(
@@ -206,7 +208,7 @@ async fn success_offers_gclient() -> gclient::Result<()> {
     }
 
     {
-        let buyer_api = GearApi::dev().await?.with(common::BUYER)?;
+        let buyer_api = gear_api_from_path().with(common::BUYER)?;
         let mut listener = buyer_api.subscribe().await?;
 
         marketplace::accept_offer(
@@ -228,12 +230,12 @@ async fn success_offers_gclient() -> gclient::Result<()> {
 #[tokio::test]
 #[ignore]
 async fn fail_offers_gclient() -> gclient::Result<()> {
-    let api = GearApi::dev().await?;
+    let api = init_gear_api_from_path().await?;
 
     let (ft_contract, nft_contract, marketplace_contract) = common::init(&api).await?;
 
     {
-        let seller_api = GearApi::dev().await?.with(common::SELLER)?;
+        let seller_api = gear_api_from_path().with(common::SELLER)?;
         let mut listener = seller_api.subscribe().await?;
 
         marketplace::add_market_data(
@@ -250,7 +252,7 @@ async fn fail_offers_gclient() -> gclient::Result<()> {
     }
 
     {
-        let buyer_api = GearApi::dev().await?.with(common::BUYER)?;
+        let buyer_api = gear_api_from_path().with(common::BUYER)?;
         let mut listener = buyer_api.subscribe().await?;
 
         marketplace::add_offer(
@@ -319,7 +321,7 @@ async fn fail_offers_gclient() -> gclient::Result<()> {
     }
 
     {
-        let seller_api = GearApi::dev().await?.with(common::SELLER)?;
+        let seller_api = gear_api_from_path().with(common::SELLER)?;
         let mut listener = seller_api.subscribe().await?;
 
         marketplace::accept_offer(
@@ -331,6 +333,16 @@ async fn fail_offers_gclient() -> gclient::Result<()> {
             common::TOKEN_ID.into(),
             2 * common::NFT_PRICE,
             true,
+        )
+        .await?;
+
+        nft::approve(
+            &seller_api,
+            &mut listener,
+            &nft_contract,
+            123,
+            &marketplace_contract,
+            common::TOKEN_ID.into(),
         )
         .await?;
 
@@ -350,7 +362,7 @@ async fn fail_offers_gclient() -> gclient::Result<()> {
     }
 
     {
-        let buyer_api = GearApi::dev().await?.with(common::BUYER)?;
+        let buyer_api = gear_api_from_path().with(common::BUYER)?;
         let mut listener = buyer_api.subscribe().await?;
 
         marketplace::add_offer(
@@ -368,7 +380,7 @@ async fn fail_offers_gclient() -> gclient::Result<()> {
     }
 
     {
-        let seller_api = GearApi::dev().await?.with(common::SELLER)?;
+        let seller_api = gear_api_from_path().with(common::SELLER)?;
         let mut listener = seller_api.subscribe().await?;
 
         marketplace::accept_offer(
@@ -397,7 +409,7 @@ async fn fail_offers_gclient() -> gclient::Result<()> {
     }
 
     {
-        let buyer_api = GearApi::dev().await?.with(common::BUYER)?;
+        let buyer_api = gear_api_from_path().with(common::BUYER)?;
         let mut listener = buyer_api.subscribe().await?;
 
         marketplace::withdraw(
@@ -419,12 +431,12 @@ async fn fail_offers_gclient() -> gclient::Result<()> {
 #[tokio::test]
 #[ignore]
 async fn success_buy_with_ft_gclient() -> gclient::Result<()> {
-    let api = GearApi::dev().await?;
+    let api = init_gear_api_from_path().await?;
 
     let (ft_contract, nft_contract, marketplace_contract) = common::init(&api).await?;
 
     {
-        let seller_api = GearApi::dev().await?.with(common::SELLER)?;
+        let seller_api = gear_api_from_path().with(common::SELLER)?;
         let mut listener = seller_api.subscribe().await?;
 
         marketplace::add_market_data(
@@ -441,7 +453,7 @@ async fn success_buy_with_ft_gclient() -> gclient::Result<()> {
     }
 
     {
-        let buyer_api = GearApi::dev().await?.with(common::BUYER)?;
+        let buyer_api = gear_api_from_path().with(common::BUYER)?;
         let mut listener = buyer_api.subscribe().await?;
 
         ft::mint(
@@ -497,12 +509,12 @@ async fn success_buy_with_ft_gclient() -> gclient::Result<()> {
 #[tokio::test]
 #[ignore]
 async fn success_buy_with_native_tokens_gclient() -> gclient::Result<()> {
-    let api = GearApi::dev().await?;
+    let api = init_gear_api_from_path().await?;
 
     let (_, nft_contract, marketplace_contract) = common::init(&api).await?;
 
     {
-        let seller_api = GearApi::dev().await?.with(common::SELLER)?;
+        let seller_api = gear_api_from_path().with(common::SELLER)?;
         let mut listener = seller_api.subscribe().await?;
 
         marketplace::add_market_data(
@@ -519,7 +531,7 @@ async fn success_buy_with_native_tokens_gclient() -> gclient::Result<()> {
     }
 
     {
-        let buyer_api = GearApi::dev().await?.with(common::BUYER)?;
+        let buyer_api = gear_api_from_path().with(common::BUYER)?;
         let mut listener = buyer_api.subscribe().await?;
 
         marketplace::buy_item(
@@ -551,12 +563,12 @@ async fn success_buy_with_native_tokens_gclient() -> gclient::Result<()> {
 #[tokio::test]
 #[ignore]
 async fn fail_buy_with_ft_gclient() -> gclient::Result<()> {
-    let api = GearApi::dev().await?;
+    let api = init_gear_api_from_path().await?;
 
     let (ft_contract, nft_contract, marketplace_contract) = common::init(&api).await?;
 
     {
-        let buyer_api = GearApi::dev().await?.with(common::BUYER)?;
+        let buyer_api = gear_api_from_path().with(common::BUYER)?;
         let mut listener = buyer_api.subscribe().await?;
 
         marketplace::buy_item(
@@ -572,7 +584,7 @@ async fn fail_buy_with_ft_gclient() -> gclient::Result<()> {
     }
 
     {
-        let seller_api = GearApi::dev().await?.with(common::SELLER)?;
+        let seller_api = gear_api_from_path().with(common::SELLER)?;
         let mut listener = seller_api.subscribe().await?;
 
         marketplace::add_market_data(
@@ -589,7 +601,7 @@ async fn fail_buy_with_ft_gclient() -> gclient::Result<()> {
     }
 
     {
-        let buyer_api = GearApi::dev().await?.with(common::BUYER)?;
+        let buyer_api = gear_api_from_path().with(common::BUYER)?;
         let mut listener = buyer_api.subscribe().await?;
 
         marketplace::buy_item(
@@ -605,8 +617,18 @@ async fn fail_buy_with_ft_gclient() -> gclient::Result<()> {
     }
 
     {
-        let seller_api = GearApi::dev().await?.with(common::SELLER)?;
+        let seller_api = gear_api_from_path().with(common::SELLER)?;
         let mut listener = seller_api.subscribe().await?;
+
+        nft::approve(
+            &seller_api,
+            &mut listener,
+            &nft_contract,
+            123,
+            &marketplace_contract,
+            common::TOKEN_ID.into(),
+        )
+        .await?;
 
         marketplace::create_auction(
             &seller_api,
@@ -624,7 +646,7 @@ async fn fail_buy_with_ft_gclient() -> gclient::Result<()> {
     }
 
     {
-        let buyer_api = GearApi::dev().await?.with(common::BUYER)?;
+        let buyer_api = gear_api_from_path().with(common::BUYER)?;
         let mut listener = buyer_api.subscribe().await?;
 
         marketplace::buy_item(

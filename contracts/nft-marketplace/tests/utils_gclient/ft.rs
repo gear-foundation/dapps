@@ -3,9 +3,9 @@ use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use gclient::{EventListener, EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
 
-const FT_STORAGE_WASM_PATH: &str = "./target/ft_storage.wasm";
-const FT_LOGIC_WASM_PATH: &str = "./target/ft_logic.wasm";
-const FT_MAIN_WASM_PATH: &str = "./target/ft_main.wasm";
+const FT_STORAGE_WASM_PATH: &str = "target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm";
+const FT_LOGIC_WASM_PATH: &str = "target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm";
+const FT_MAIN_WASM_PATH: &str = "target/wasm32-unknown-unknown/debug/ft_main.opt.wasm";
 
 pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     let storage_code_hash = common::upload_with_code_hash(api, FT_STORAGE_WASM_PATH).await?;
