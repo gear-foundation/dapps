@@ -1,37 +1,37 @@
-import { Icon } from '../components/ui/icon';
+import { SpriteIcon } from 'components/ui/sprite-icon';
 import { useState } from 'react';
 import { HexString } from '@polkadot/util/types';
-import { PlayerColor } from '../app/types/battles';
+import { PlayerColor } from '../features/battle/types/battles';
 import { AnimatePresence, motion } from 'framer-motion';
-import { BattleRoundStatsAvatar } from '../components/sections/battle-round-stats-avatar';
-import clsx from 'clsx';
-import { TamagotchiAvatar } from '../components/common/tamagotchi-avatar';
+import { BattleRoundStatsAvatar } from 'features/battle/components/battle-round-stats-avatar';
+import { TamagotchiAvatar } from '../features/battle/components/tamagotchi-avatar';
 import { buttonStyles } from '@gear-js/ui';
-import { BattlePlayersQueue } from '../components/sections/battle-players-queue';
-import { TamagotchiQueueCard } from '../components/cards/tamagotchi-queue-card';
+import { BattlePlayersQueue } from '../features/battle/components/battle-players-queue';
+import { TamagotchiQueueCard } from '../features/battle/components/tamagotchi-queue-card';
+import { cn, toNumber } from 'app/utils';
 
 const rivals = [
   {
     color: 'Yellow' as PlayerColor,
-    dateOfBirth: new Date().getMilliseconds(),
-    defence: 2500,
-    health: 2500,
+    dateOfBirth: new Date().getMilliseconds().toString(),
+    defence: '2500',
+    health: '2500',
     name: 'John',
     owner: '0x255' as HexString,
-    power: 7500,
+    power: '7500',
     tmgId: '0x123' as HexString,
-    victories: 4,
+    victories: '4',
   },
   {
     color: 'Green' as PlayerColor,
-    dateOfBirth: new Date(new Date().getHours() + 1).getMilliseconds(),
-    defence: 2500,
-    health: 1000,
+    dateOfBirth: new Date(new Date().getHours() + 1).getMilliseconds().toString(),
+    defence: '2500',
+    health: '1000',
     name: 'Alex',
     owner: '0x2556' as HexString,
-    power: 7500,
+    power: '7500',
     tmgId: '0x1234' as HexString,
-    victories: 7,
+    victories: '7',
   },
 ];
 
@@ -91,11 +91,11 @@ export const Test = () => {
                     <div className={cnWrapper}>
                       <TamagotchiAvatar
                         color={rivals[0].color}
-                        age={rivals[0].dateOfBirth}
+                        age={toNumber(rivals[0].dateOfBirth)}
                         className={cnT}
                         isActive={!active}
                         isWinner={false}
-                        isDead={!rivals[0].health}
+                        isDead={!toNumber(rivals[0].health)}
                         damage={10}
                         action={'Skipped'}
                         asPlayer
@@ -128,7 +128,7 @@ export const Test = () => {
                       <div className="space-y-2 xxl:space-y-3">
                         {false && (
                           <button
-                            className={clsx(
+                            className={cn(
                               'btn items-center gap-2 w-full transition-colors',
                               buttonStyles.primary,
                               buttonStyles.button,
@@ -139,19 +139,19 @@ export const Test = () => {
                         {true && (
                           <>
                             <button
-                              className={clsx(
+                              className={cn(
                                 'btn btn--error items-center gap-2 w-full bg-error text-white transition-colors',
                                 buttonStyles.button,
                               )}>
-                              <Icon name="swords" className="w-5 h-5" /> Attack
+                              <SpriteIcon name="swords" className="w-5 h-5" /> Attack
                             </button>
                             <button
-                              className={clsx(
+                              className={cn(
                                 'btn items-center gap-2 w-full',
                                 buttonStyles.secondary,
                                 buttonStyles.button,
                               )}>
-                              <Icon name="armor" className="w-5 h-5" /> Defence
+                              <SpriteIcon name="armor" className="w-5 h-5" /> Defence
                             </button>
                           </>
                         )}
@@ -160,11 +160,11 @@ export const Test = () => {
                     <div className={cnWrapper}>
                       <TamagotchiAvatar
                         color={rivals[1].color}
-                        age={rivals[1].dateOfBirth}
+                        age={toNumber(rivals[1].dateOfBirth)}
                         className={cnT}
                         isActive={active}
                         isWinner={false}
-                        isDead={!rivals[1].health}
+                        isDead={!toNumber(rivals[1].health)}
                         damage={20}
                         action={'Skipped'}
                         reverse
@@ -200,7 +200,7 @@ export const Test = () => {
                       </h3>
                       <div className="flex items-center gap-12 mt-4">
                         <div className="flex items-center gap-2">
-                          <Icon name="participants-alive" className="smh:w-5 w-6 aspect-square shrink-0" />
+                          <SpriteIcon name="participants-alive" className="smh:w-5 w-6 aspect-square shrink-0" />
                           <p className="flex items-center">
                             Alive:{' '}
                             <b className="inline-block ml-1 smh:text-[20px] smh:leading-none  text-xl font-semibold text-white">
@@ -209,7 +209,7 @@ export const Test = () => {
                           </p>
                         </div>
                         <div className="flex items-center gap-2">
-                          <Icon name="participants-dead" className="smh:w-5 w-6 aspect-square shrink-0" />
+                          <SpriteIcon name="participants-dead" className="smh:w-5 w-6 aspect-square shrink-0" />
                           <p className="flex items-center">
                             Dead:{' '}
                             <b className="inline-block ml-1 smh:text-[20px] smh:leading-none  text-xl font-semibold text-white">
@@ -241,12 +241,12 @@ export const Test = () => {
 };
 
 const BattleTurnArrows = ({ isReverse }: { isReverse: boolean }) => {
-  const cn = 'smh:w-6 w-7.5 xxl:w-10 aspect-[1/2] text-white';
+  const cx = 'smh:w-6 w-7.5 xxl:w-10 aspect-[1/2] text-white';
   return (
-    <div className={clsx('relative flex', isReverse && 'rotate-180')}>
-      <Icon name="battle-next-step" className={clsx(cn, 'animate-battle-turn-1')} />
-      <Icon name="battle-next-step" className={clsx(cn, 'animate-battle-turn-2')} />
-      <Icon name="battle-next-step" className={clsx(cn, 'animate-battle-turn-3')} />
+    <div className={cn('relative flex', isReverse && 'rotate-180')}>
+      <SpriteIcon name="battle-next-step" className={cn(cx, 'animate-battle-turn-1')} />
+      <SpriteIcon name="battle-next-step" className={cn(cx, 'animate-battle-turn-2')} />
+      <SpriteIcon name="battle-next-step" className={cn(cx, 'animate-battle-turn-3')} />
     </div>
   );
 };

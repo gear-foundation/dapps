@@ -1,9 +1,9 @@
 import { useAccount } from '@gear-js/react-hooks';
-import clsx from 'clsx';
-import { CreateTamagotchiForm } from 'components/forms/create-tamagotchi-form';
-import { LoginSection } from 'components/sections/login-section';
+import { CreateTamagotchiForm } from 'features/battle/components/create-tamagotchi-form';
+import { ConnectAccount } from '../features/wallet/components/connect-account';
 import { Link } from 'react-router-dom';
-import { useBattle } from 'app/context';
+import { useBattle } from 'features/battle/context';
+import { cn } from 'app/utils';
 
 export const Home = () => {
   const { battle } = useBattle();
@@ -22,7 +22,7 @@ export const Home = () => {
           />
         </div>
       )}
-      <div className={clsx('flex flex-col items-center gap-9', account ? 'mt-12' : 'm-auto')}>
+      <div className={cn('flex flex-col items-center gap-9', account ? 'mt-12' : 'm-auto')}>
         <div className="flex flex-col items-center gap-9 text-center w-full">
           <div className="space-y-6">
             {account ? (
@@ -43,18 +43,8 @@ export const Home = () => {
               <p className="text-[#D1D1D1]">Connect your account to start the game</p>
             )}
           </div>
-          {account ? (
-            battle &&
-            battle.state === 'Registration' && (
-              <div className="w-full">
-                <CreateTamagotchiForm />
-              </div>
-            )
-          ) : (
-            <div className="w-full">
-              <LoginSection />
-            </div>
-          )}
+
+          <div className="w-full">{account ? <CreateTamagotchiForm /> : <ConnectAccount />}</div>
 
           {/*<div className="w-full">*/}
           {/*  <Link to={'/test'}>Test page</Link> <Link to={'/battle'}>Battle page</Link>*/}

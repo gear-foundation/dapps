@@ -1,23 +1,27 @@
 import { useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
 import { Button, buttonStyles } from '@gear-js/ui';
-import { GasWallet } from 'components/common/gas-wallet';
-import { SelectAccountPopup } from 'components/popups/select-account-popup';
-import { AccountButton } from 'components/common/account-button';
-import { useApp, useBattle } from 'app/context';
-import { useBattleMessage } from 'app/hooks/use-battle';
-import { Link, useLocation } from 'react-router-dom';
-import clsx from 'clsx';
+import { WalletBalance } from 'features/wallet/components/wallet-balance';
+import { WalletModal } from 'features/wallet/components/wallet-modal';
+import { WalletAccount } from 'features/wallet/components/wallet-account';
+import { useBattle } from 'features/battle/context';
+import { useBattleMessage } from 'features/battle/hooks';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { cn } from 'app/utils';
 
 export const AccountComponent = () => {
-  const { account, accounts } = useAccount();
-  const { isAdmin, isPending, setIsPending } = useApp();
-  const { battle } = useBattle();
+  const { account } = useAccount();
+  const { battle, isAdmin, isPending, setIsPending, setIsAdmin } = useBattle();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setIsAdmin(false);
+    if (battle?.state === 'Registration') navigate('/');
+  };
   const handleMessage = useBattleMessage();
 
   const onSuccess = () => setIsPending(false);
@@ -33,21 +37,26 @@ export const AccountComponent = () => {
         <Button text="Start New Game" color="primary" onClick={handler} disabled={isPending} />
       )}
       {battle?.state === 'Registration' && isAdmin && pathname !== '/battle' && (
-        <Link to="/battle" className={clsx('btn transition-colors', buttonStyles.primary)}>
+        <Link to="/battle" className={cn('btn transition-colors', buttonStyles.primary)}>
           Battle Page
         </Link>
       )}
       {account ? (
         <div className="flex gap-4">
-          <GasWallet balance={account.balance} address={account.address} name={account.meta.name} onClick={openModal} />
+          <WalletBalance
+            balance={account.balance}
+            address={account.address}
+            name={account.meta.name}
+            onClick={openModal}
+          />
           <div className="max-w-[260px]">
-            <AccountButton address={account.address} name={account.meta.name} onClick={openModal} simple />
+            <WalletAccount address={account.address} name={account.meta.name} onClick={openModal} simple />
           </div>
         </div>
       ) : (
         <Button text="Connect account" onClick={openModal} color="lightGreen" />
       )}
-      {isModalOpen && <SelectAccountPopup accounts={accounts} close={closeModal} />}
+      {isModalOpen && <WalletModal close={closeModal} />}
     </div>
   );
 };

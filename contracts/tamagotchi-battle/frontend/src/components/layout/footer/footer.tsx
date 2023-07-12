@@ -1,4 +1,4 @@
-import { Icon } from 'components/ui/icon';
+import { SpriteIcon } from 'components/ui/sprite-icon';
 
 const socials = [
   { href: 'https://twitter.com/gear_techs', icon: 'twitter' },
@@ -13,7 +13,7 @@ export const Footer = () => (
       {socials.map(({ href, icon }) => (
         <li key={icon}>
           <a href={href} target="_blank" rel="noreferrer" className="text-[#BCBCBC] hover:text-white transition-colors">
-            <Icon name={icon} className="w-6 h-6" />
+            <SpriteIcon name={icon} className="w-6 h-6" />
           </a>
         </li>
       ))}

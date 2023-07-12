@@ -1,13 +1,12 @@
-import { BattlePlayersQueue } from 'components/sections/battle-players-queue';
-import { BattleWaitRegistration } from 'components/sections/battle-wait-registration';
-import { useApp, useBattle } from 'app/context';
-import { BattleWaitAdmin } from 'components/sections/battle-wait-admin';
-import { BattleRound } from 'components/sections/battle-round';
-import { BattleWinner } from 'components/sections/battle-winner';
+import { BattlePlayersQueue } from 'features/battle/components/battle-players-queue';
+import { BattleWaitRegistration } from 'features/battle/components/battle-wait-registration';
+import { useBattle } from 'features/battle/context';
+import { BattleWaitAdmin } from 'features/battle/components/battle-wait-admin';
+import { BattleRound } from 'features/battle/components/battle-round';
+import { BattleWinner } from 'features/battle/components/battle-winner';
 
 export const Battle = () => {
-  const { isAdmin } = useApp();
-  const { battle, rivals, currentPairIdx } = useBattle();
+  const { battle, rivals, currentPairIdx, isAdmin } = useBattle();
 
   const gameIsOn = Boolean(
     battle &&

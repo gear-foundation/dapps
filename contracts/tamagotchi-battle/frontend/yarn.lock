@@ -1305,15 +1305,15 @@
   dependencies:
     "@floating-ui/dom" "^1.1.1"
 
-"@gear-js/api@0.32.1":
-  version "0.32.1"
-  resolved "https://registry.yarnpkg.com/@gear-js/api/-/api-0.32.1.tgz#3ef882b443a4c0281e680c6af851fc33a9482212"
-  integrity sha512-RP9x0pHx1Bu3PWhbyPOk4mG11n8DBbyVfXcRY7ajmTA+mHTyBQMgaWc6WCbmE61NVY7AVsji1T4bBHhyQS6Edg==
+"@gear-js/api@0.32.3":
+  version "0.32.3"
+  resolved "https://registry.yarnpkg.com/@gear-js/api/-/api-0.32.3.tgz#056f1baebbd51025be696afc2b13264ba61a0e35"
+  integrity sha512-VbGYxvw/g0ezCUKHd24eJ5t/pXW+vgHyxp24zHIT2AaClLwNW9Tv09vPC18/qDe7LQ2WGGi157G5VTD+G+lOgg==
 
-"@gear-js/react-hooks@0.5.23":
-  version "0.5.23"
-  resolved "https://registry.yarnpkg.com/@gear-js/react-hooks/-/react-hooks-0.5.23.tgz#7301f0d9ca1c9f412b2c2b8d91843e4e03272328"
-  integrity sha512-/MD2GSAuvOFoWoLMgHgvHXjFZ55IfYmXVwjpeqLJWi1k13QavraY/AqfmzD7NbWljfCAhgEUqBf9F7McnQ3chQ==
+"@gear-js/react-hooks@0.5.24":
+  version "0.5.24"
+  resolved "https://registry.yarnpkg.com/@gear-js/react-hooks/-/react-hooks-0.5.24.tgz#a5c999c8853444994e18a2cd938939e3bb80d43f"
+  integrity sha512-yyXGbCXUDXAVSSGjmrhrePJPTuleJSfslxYiOjxFiLYZwESfJ+kEQDJM52M1qtSnimzii+6Maae9qZ/bcj22Zw==
 
 "@gear-js/ui@0.5.19":
   version "0.5.19"
@@ -2066,7 +2066,7 @@
     "@polkadot/wasm-util" "7.2.1"
     tslib "^2.5.0"
 
-"@polkadot/wasm-crypto@^7.2.1":
+"@polkadot/wasm-crypto@7.2.1", "@polkadot/wasm-crypto@^7.2.1":
   version "7.2.1"
   resolved "https://registry.yarnpkg.com/@polkadot/wasm-crypto/-/wasm-crypto-7.2.1.tgz#db671dcb73f1646dc13478b5ffc3be18c64babe1"
   integrity sha512-SA2+33S9TAwGhniKgztVN6pxUKpGfN4Tre/eUZGUfpgRkT92wIUT2GpGWQE+fCCqGQgADrNiBcwt6XwdPqMQ4Q==
@@ -10097,11 +10097,6 @@ web-streams-polyfill@^3.0.3:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/web-streams-polyfill/-/web-streams-polyfill-3.2.1.tgz#71c2718c52b45fd49dbeee88634b3a60ceab42a6"
   integrity sha512-e0MO3wdXWKrLbL0DgGnUV7WHVuw9OUvL4hjgnPkIeEvESk74gAITi5G606JtZPp39cd8HA9VQzCIvA49LpPN5Q==
-
-web-vitals@2.1.4:
-  version "2.1.4"
-  resolved "https://registry.yarnpkg.com/web-vitals/-/web-vitals-2.1.4.tgz#76563175a475a5e835264d373704f9dde718290c"
-  integrity sha512-sVWcwhU5mX6crfI5Vd2dC4qchyTqxV8URinzt25XqVh+bHEPGH4C3NPrNionCP7Obx59wrYEbNlw4Z8sjALzZg==
 
 webidl-conversions@^4.0.2:
   version "4.0.2"
