@@ -1,3 +1,4 @@
+import { withoutCommas } from '@gear-js/react-hooks';
 import { Button, Select } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
 import { ReactComponent as check } from 'assets/images/icons/check.svg';
@@ -11,7 +12,8 @@ type Props = {
 
 function SelectWallet({ wallets, onSubmit }: Props) {
   // TODO: take a look after gear-js/ui update for undefined select value
-  const initialValues = { id: wallets?.[0]?.[0].toString() };
+
+  const initialValues = { id: withoutCommas(wallets?.[0]?.[0] || '') };
   const isAnyWallet = !!wallets?.length;
 
   const form = useForm({ initialValues });
@@ -21,7 +23,7 @@ function SelectWallet({ wallets, onSubmit }: Props) {
 
   // TODO: walletId should be number
   const getOptions = () =>
-    wallets?.map(([id]) => ({ label: id.toString(), value: id.toString() }));
+    wallets?.map(([id]) => ({ label: id, value: withoutCommas(id) }));
   const options = getOptions() || [];
 
   return isAnyWallet ? (
