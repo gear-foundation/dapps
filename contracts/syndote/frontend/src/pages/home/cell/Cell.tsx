@@ -3,7 +3,6 @@
 import { HexString } from '@polkadot/util/types';
 import { FunctionComponent, SVGProps, useState } from 'react';
 import { ReactComponent as GradeSVG } from 'assets/images/icons/grade.svg';
-import numeral from 'numeral';
 import clsx from 'clsx';
 import { CellValues, PlayerType, PlayerState, Properties } from 'types';
 import { useOutsideClick } from 'hooks';
@@ -56,8 +55,6 @@ function Cell({ index, players, ownership, properties, Image, card, type }: Prop
   const isAnyChip = chips.length > 0;
 
   const propertyValue = properties?.[index]?.[2];
-  const propertyValueNumber = propertyValue || 0;
-  const formattedPropNumber = numeral(propertyValueNumber).format('0.00a');
 
   const ownershipColor = ownership?.[index] ? getColor(ownership[index]) : undefined;
 
@@ -73,7 +70,7 @@ function Cell({ index, players, ownership, properties, Image, card, type }: Prop
       )}
 
       {isAnyChip && <div className={styles.chips}>{chips}</div>}
-      {!!propertyValueNumber && <div className={styles.propertyValue}>{formattedPropNumber}</div>}
+      {propertyValue && <div className={styles.propertyValue}>{propertyValue}</div>}
       {properties?.[index]?.[1]?.[0] && <div className={styles.grade}>{getGrade(properties?.[index]?.[1]?.[0])}</div>}
 
       {isCardVisible && card && (

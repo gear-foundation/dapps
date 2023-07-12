@@ -1,13 +1,13 @@
 import { HexString } from '@polkadot/util/types';
 
 type PlayerState = {
-  position: number;
-  balance: number;
-  debt: number;
+  position: string;
+  balance: string;
+  debt: string;
   inJail: boolean;
-  round: number;
+  round: string;
   cells: [];
-  penalty: number;
+  penalty: string;
   lost: boolean;
 };
 
@@ -24,20 +24,20 @@ type State = {
   playersQueue: [];
   properties: {};
   propertiesInBank: string;
-  round: number;
+  round: string;
   winner: HexString;
 };
 
 type PlayerType = {
   color: 'pink' | 'purple' | 'green' | 'yellow';
   address: string;
-  balance: number;
+  balance: string;
 };
 
-type Properties = [HexString, ['Bronze' | 'Silver' | 'Gold'], number, number][];
+type Properties = [HexString, ['Bronze' | 'Silver' | 'Gold'], string, string][];
 
 type Step = {
-  currentStep: number;
+  currentStep: string;
   currentPlayer: HexString;
   players: Players;
   properties: Properties;
@@ -48,11 +48,11 @@ type MessagePayload = { GameFinished: { winner: HexString } } | { Step: Step } |
 
 type CellValues = {
   heading: string;
-  baseRent: number;
-  bronze: number;
-  silver: number;
-  gold: number;
-  cell: number;
+  baseRent: string;
+  bronze: string;
+  silver: string;
+  gold: string;
+  cell: string;
 };
 
 export type { PlayerState, PlayerType, State, Step, MessagePayload, Players, Properties, CellValues };

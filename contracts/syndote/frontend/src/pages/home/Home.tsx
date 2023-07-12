@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAccount, useApi, useReadFullState } from '@gear-js/react-hooks';
+import { useAccount, useApi, useReadFullState, useSendMessage } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { ADDRESS, fields, INIT_PLAYERS, LocalStorage } from 'consts';
 import { MessagePayload, State, Step } from 'types';
@@ -7,7 +7,6 @@ import meta from 'assets/wasm/syndote_meta.txt';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { Loader } from 'components';
 import { u8, Vec } from '@polkadot/types';
-import { useSendMessage } from 'hooks';
 import { useProgramMetadata } from 'hooks/metadata';
 import { Roll } from './roll';
 import { Connect } from './connect';
@@ -33,7 +32,7 @@ function Home() {
   const metadata = useProgramMetadata(meta);
   const { state, isStateRead } = useReadFullState<State>(ADDRESS.CONTRACT, metadata);
 
-  const sendMessage = useSendMessage(ADDRESS.CONTRACT, metadata);
+  const sendMessage = useSendMessage(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true });
 
   const register = (player: HexString) =>
     sendMessage({ Register: { player } }, { onSuccess: () => setProgramId(player) });
@@ -51,7 +50,7 @@ function Home() {
     if (output === null || output === undefined) return;
 
     // handle.output is specific for contract
-    return metadata.createType(output, payload).toJSON();
+    return metadata.createType(output, payload).toHuman();
   };
 
   const [steps, setSteps] = useState<Step[]>([]);
@@ -84,9 +83,9 @@ function Home() {
 
           if (typeof decodedPayload === 'object' && decodedPayload !== null) {
             // @ts-ignore
-            if (decodedPayload.step) {
+            if (decodedPayload.Step) {
               // @ts-ignore
-              setSteps((prevSteps) => [...prevSteps, decodedPayload.step]);
+              setSteps((prevSteps) => [...prevSteps, decodedPayload.Step]);
             }
           }
         }

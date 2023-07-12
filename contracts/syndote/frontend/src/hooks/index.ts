@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { useSendMessage } from './useSendMessage';
 
 const useOutsideClick = <TElement extends Element>(callback: (event: MouseEvent) => void, isActive = true) => {
   const ref = useRef<TElement>(null);
@@ -22,4 +21,4 @@ const useOutsideClick = <TElement extends Element>(callback: (event: MouseEvent)
   return ref;
 };
 
-export { useOutsideClick, useSendMessage };
+export { useOutsideClick };
