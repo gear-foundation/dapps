@@ -8,10 +8,9 @@ authors.workspace = true
 [dependencies]
 gmeta = { workspace = true, features = ["codegen"] }
 gstd.workspace = true
-parity-scale-codec = { workspace = true, features = ["derive", "full"] }
-scale-info = { workspace = true, features = ["derive"] }
+parity-scale-codec.workspace = true
+scale-info.workspace = true
 tmg-io.workspace = true
 
 [build-dependencies]
 gear-wasm-builder = { workspace = true, features = ["metawasm"] }
-

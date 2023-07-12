@@ -6,7 +6,7 @@ license.workspace = true
 authors.workspace = true
 
 [dependencies]
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 scale-info.workspace = true
 parity-scale-codec.workspace = true
 tmg-io.workspace = true
@@ -19,15 +19,15 @@ tmg-io.workspace = true
 members = ["state"]
 
 [workspace.package]
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["Gear Technologies"]
 license = "MIT"
 
 [workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear" , rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
-tmg-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git" , rev = "78dfa07" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+tmg-io.path = "io"
