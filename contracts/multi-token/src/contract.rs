@@ -3,7 +3,7 @@ use gear_lib_derive::{MTKCore, MTKTokenState, StateKeeper};
 use gmeta::Metadata;
 use gstd::{errors::Result as GstdResult, msg, prelude::*, ActorId, MessageId};
 use hashbrown::HashMap;
-use multitoken_io::*;
+use multi_token_io::*;
 
 const NFT_COUNT: u128 = 1;
 
@@ -238,11 +238,4 @@ impl From<&mut SimpleMTK> for State {
             supply,
         }
     }
-}
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-
-    reply(metahash).expect("failed to encode or reply from `metahash()`");
 }

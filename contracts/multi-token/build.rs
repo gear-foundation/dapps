@@ -1,6 +1,6 @@
 use gear_wasm_builder::WasmBuilder;
 use gmeta::Metadata;
-use multitoken_io::MultitokenMetadata;
+use multi_token_io::MultitokenMetadata;
 
 fn main() {
     WasmBuilder::with_meta(MultitokenMetadata::repr())

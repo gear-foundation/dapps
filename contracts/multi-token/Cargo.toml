@@ -1,5 +1,5 @@
 [package]
-name = "multitoken"
+name = "multi-token"
 version.workspace = true
 authors.workspace = true
 license.workspace = true
@@ -8,21 +8,21 @@ edition.workspace = true
 [dependencies]
 gstd.workspace = true
 gear-lib.workspace = true
-gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.7" }
-multitoken-io.workspace = true
-hashbrown = "0.13"
+gear-lib-derive.workspace = true
+multi-token-io.workspace = true
+hashbrown.workspace = true
 gmeta.workspace = true
 
 [dev-dependencies]
 gstd = { workspace = true, features = ["debug"] }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-multitoken-state = { path = "state", features = ["binary-vendor"] }
-tokio = "1"
+gtest.workspace = true
+gclient.workspace = true
+multi-token-state = { workspace = true, features = ["binary-vendor"] }
+tokio.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
-multitoken-io.workspace = true
+multi-token-io.workspace = true
 gmeta.workspace = true
 
 [features]
@@ -32,14 +32,23 @@ binary-vendor = []
 members = ["state"]
 
 [workspace.package]
-version = "0.3.7"
+version = "0.3.8"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.7" }
-multitoken-io = { path = "io" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.9" }
+gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.9" }
+multi-token-state.path = "state"
+multi-token-io.path = "io"
+tokio = "1"
+hashbrown = "0.14"
+primitive-types = { version = "0.12", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
+scale-info = { version = "2", default-features = false }

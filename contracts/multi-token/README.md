@@ -4,7 +4,7 @@
   </a>
 </p>
 
-# Multitoken
+# Multi token
 
 [![Build][build_badge]][build_href]
 [![License][lic_badge]][lic_href]

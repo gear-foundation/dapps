@@ -1,7 +1,7 @@
 pub use gear_lib::multitoken::{io::*, state::*};
 use gstd::{ActorId, Encode, String};
 pub use gtest::{Program, System};
-use multitoken_io::*;
+use multi_token_io::*;
 
 const NFT_COUNT: u128 = 1;
 
@@ -18,7 +18,7 @@ pub fn init_mtk(sys: &System, from: u64) {
         },
     );
 
-    assert!(res.log().is_empty());
+    assert!(!res.main_failed());
 }
 
 pub fn mint_internal(

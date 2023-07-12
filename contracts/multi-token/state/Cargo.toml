@@ -1,5 +1,5 @@
 [package]
-name = "multitoken-state"
+name = "multi-token-state"
 version.workspace = true
 authors.workspace = true
 license.workspace = true
@@ -8,7 +8,7 @@ edition.workspace = true
 [dependencies]
 gstd.workspace = true
 gmeta = { workspace = true, features = ["codegen"] }
-multitoken-io.workspace = true
+multi-token-io.workspace = true
 gear-lib.workspace = true
 
 [build-dependencies]

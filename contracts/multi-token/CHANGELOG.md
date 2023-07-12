@@ -6,9 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.8] - 2023-07-04
+### Changed
+- Gear's dependencies pinned to the "946ac47" commit.
+
 ## [0.3.5] - 2023-04-27
 ### Changed
-- Gear's dependencies pinned to the "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" commit.
+- Gear's dependencies pinned to the "5c685d0" commit.
 
 ## [0.3.4] - 2023-03-03
 ### Changed
@@ -48,7 +52,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/multitoken/compare/0.3.5...HEAD
+[Unreleased]: https://github.com/gear-dapps/multitoken/compare/0.3.8...HEAD
+[0.3.8]: https://github.com/gear-dapps/multitoken/compare/0.3.5...0.3.8
 [0.3.5]: https://github.com/gear-dapps/multitoken/compare/0.3.4...0.3.5
 [0.3.4]: https://github.com/gear-dapps/multitoken/compare/0.3.3...0.3.4
 [0.3.3]: https://github.com/gear-dapps/multitoken/compare/0.3.2...0.3.3

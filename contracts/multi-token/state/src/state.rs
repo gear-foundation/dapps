@@ -1,7 +1,7 @@
 use gear_lib::multitoken::io::TokenId;
 use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
-use multitoken_io::MultitokenMetadata;
+use multi_token_io::MultitokenMetadata;
 
 #[metawasm]
 pub mod metafns {
