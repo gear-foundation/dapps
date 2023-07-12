@@ -40,7 +40,7 @@ gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
 gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
 gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-hashbrown = "0.13"
+hashbrown = "0.14"
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
 enum-iterator = "1.4"
