@@ -1,5 +1,5 @@
-import { useAccount } from '@gear-js/react-hooks';
-import { Button, Checkbox, checkboxStyles } from '@gear-js/ui';
+import { useAccount, withoutCommas } from '@gear-js/react-hooks';
+import { Button, checkboxStyles } from '@gear-js/ui';
 import { useState } from 'react';
 import { Heading, Loader, PurchaseSubscriptionModal } from 'components';
 import { useSubscriptions, useSubscriptionsMessage } from 'hooks';
@@ -17,8 +17,8 @@ function Subscription() {
 
   const { startDate: startDateTimestamp, period, endDate: endDateTimestamp, price, willRenew } = subscription || {};
 
-  const startDate = startDateTimestamp ? new Date(startDateTimestamp).toLocaleString() : '';
-  const endDate = endDateTimestamp ? new Date(endDateTimestamp).toLocaleString() : '';
+  const startDate = startDateTimestamp ? new Date(+withoutCommas(startDateTimestamp)).toLocaleString() : '';
+  const endDate = endDateTimestamp ? new Date(+withoutCommas(endDateTimestamp)).toLocaleString() : '';
 
   const sendMessage = useSubscriptionsMessage();
 

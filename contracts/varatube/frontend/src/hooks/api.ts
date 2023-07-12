@@ -9,14 +9,14 @@ import { useBuffer, useProgramMetadata } from './metadata';
 type FullSubState = {
   [key: HexString]: {
     isActive: boolean;
-    startDate: number;
-    endDate: number;
-    startBlock: number;
-    endBlock: number;
+    startDate: string;
+    endDate: string;
+    startBlock: string;
+    endBlock: string;
     period: string;
-    renewalDate: number;
-    renewalBlock: number;
-    price: number;
+    renewalDate: string;
+    renewalBlock: string;
+    price: string;
     willRenew: boolean;
   };
 };
@@ -31,17 +31,17 @@ function useSubscriptions() {
 function useSubscriptionsMessage() {
   const metadata = useProgramMetadata(varatubeMeta);
 
-  return useSendMessage(ADDRESS.CONTRACT, metadata, true);
+  return useSendMessage(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true });
 }
 
-type FTState = { balances: [[HexString, number]] };
+type FTState = { balances: [[HexString, string]] };
 
 function useFTBalance() {
   const { account } = useAccount();
   const { decodedAddress } = account || {};
 
   const meta = useProgramMetadata(ftMeta);
-  const { state, isStateRead } = useReadFullState<FTState>(ADDRESS.FT_CONTRACT, meta);
+  const { state } = useReadFullState<FTState>(ADDRESS.FT_CONTRACT, meta);
 
   const balances = state?.balances;
   const userBalanceEntity = balances?.find(([address]) => address === decodedAddress);
