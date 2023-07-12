@@ -18,7 +18,7 @@ pub fn init_nft(sys: &System) {
         },
     );
 
-    assert!(res.log().is_empty());
+    assert!(!res.main_failed());
 }
 
 pub fn mint(nft: &Program, transaction_id: u64, member: u64) -> RunResult {

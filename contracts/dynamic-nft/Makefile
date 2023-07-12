@@ -1,10 +1,10 @@
-.PHONY: all build fmt init lint pre-commit test deps full-test
+.PHONY: all build fmt init lint pre-commit test full-test
 
 all: init build test
 
 build:
 	@echo ⚙️ Building a release...
-	@cargo b -r --workspace -Fbinary-vendor
+	@cargo b -r --workspace
 	@ls -l target/wasm32-unknown-unknown/release/*.wasm
 
 fmt:
@@ -22,10 +22,10 @@ lint:
 
 pre-commit: fmt lint full-test
 
-test: deps
+test:
 	@echo ⚙️ Running tests...
 	@cargo t -Fbinary-vendor
 
-full-test: deps
+full-test:
 	@echo ⚙️ Running all tests...
 	@cargo t -Fbinary-vendor -- --include-ignored

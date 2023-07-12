@@ -6,7 +6,7 @@ edition.workspace = true
 license.workspace = true
 
 [dependencies]
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 primitive-types.workspace = true
 dynamic-nft-io.workspace = true
 gear-lib.workspace = true
@@ -16,7 +16,7 @@ hashbrown.workspace = true
 gmeta.workspace = true
 
 [dev-dependencies]
-dynamic-nft-state = { workspace = true, features = ["binary-vendor"] }
+dynamic-nft-state.workspace = true
 hex-literal.workspace = true
 sp-core.workspace = true
 gclient.workspace = true
@@ -32,7 +32,7 @@ gear-wasm-builder.workspace = true
 gmeta.workspace = true
 
 [workspace.package]
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
@@ -41,18 +41,18 @@ authors = ["Gear Technologies"]
 members = ["state"]
 
 [workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-dynamic-nft-io = { path = "io" }
-dynamic-nft-state = { path = "state" }
-primitive-types = { version = "0.12.1", default-features = false }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.7" }
-gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.7" }
-sp-core-hashing = { version = "8.0.0", default-features = false }
-hashbrown = "0.13"
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+sp-core = { git = "https://github.com/gear-tech/substrate", rev = "36699c4" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.9" }
+gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.9" }
+dynamic-nft-io.path = "io"
+dynamic-nft-state.path = "state"
+primitive-types = { version = "0.12", default-features = false }
+sp-core-hashing = { version = "8", default-features = false }
+hashbrown = "0.14"
 hex-literal = "0.4"
-sp-core = { git = "https://github.com/gear-tech/substrate.git", rev = "36699c4478ce8ae05517bb42a1b115403313e083" }
 tokio = "1"

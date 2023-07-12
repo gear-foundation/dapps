@@ -212,12 +212,6 @@ impl DynamicNft {
     }
 }
 
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    reply(metahash).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
-}
-
 fn static_mut_state() -> &'static DynamicNft {
     unsafe { CONTRACT.get_or_insert(Default::default()) }
 }

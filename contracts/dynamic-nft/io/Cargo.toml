@@ -9,4 +9,5 @@ license.workspace = true
 gstd.workspace = true
 gear-lib.workspace = true
 primitive-types.workspace = true
-gmeta = { workspace = true, features = ["codegen"] }
+gmeta.workspace = true
+hashbrown.workspace = true
