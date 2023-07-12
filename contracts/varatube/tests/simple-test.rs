@@ -10,7 +10,10 @@ fn register_subscribe() {
     let sys = System::new();
     sys.init_logger();
 
-    let ft = Program::from_file(&sys, "./target/fungible_token.wasm");
+    let ft = Program::from_file(
+        &sys,
+        "./target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm",
+    );
 
     ft.send(
         USERS[0],
@@ -49,6 +52,27 @@ fn register_subscribe() {
     assert!(state.subscribers.is_empty());
     assert!(!state.currencies.is_empty());
 
+    let varatube_id = varatube.id().encode();
+    let varatube_id = ActorId::from_slice(varatube_id.as_slice()).unwrap();
+
+    let res = ft.send(
+        USERS[0],
+        FTAction::Approve {
+            to: varatube_id,
+            amount: 666,
+        },
+    );
+
+    assert!(res.contains(&(
+        USERS[0],
+        FTEvent::Approve {
+            from: USERS[0].into(),
+            to: token_id,
+            amount: 666,
+        }
+        .encode()
+    )));
+
     // Register Subscription
     let action = Actions::RegisterSubscription {
         currency_id: token_id,
@@ -57,7 +81,6 @@ fn register_subscribe() {
     };
 
     varatube.send(USERS[0], action);
-
     let state: SubscriptionState = varatube.read_state().unwrap();
     println!("subscribers = {:?}", state.subscribers);
     println!("currencies = {:?}", state.currencies);
