@@ -20,9 +20,11 @@ gstd = { workspace = true, features = ["debug"] }
 gtest.workspace = true
 gclient.workspace = true
 sp-core-hashing.workspace = true
-subxt.workspace = true
 primitive-types.workspace = true
 tokio.workspace = true
+ft-main.workspace = true
+ft-logic.workspace = true
+ft-storage.workspace = true
 
 [build-dependencies]
 game-of-chance-io.workspace = true
@@ -34,25 +36,27 @@ binary-vendor = []
 default = ["binary-vendor"]
 
 [workspace.package]
-version = "0.3.4"
+version = "0.3.5"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-main = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-logic = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-storage = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
 parity-scale-codec = { version = "3", default-features = false }
 scale-info = { version = "2", default-features = false }
 rand = { version = "0.8", default-features = false }
 rand_xoshiro = "0.6"
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.2" }
-hashbrown = "0.13"
-game-of-chance-io = { path = "io" }
-sp-core-hashing = "8.0.0"
-subxt = { version = "0.27", default-features = false }
+hashbrown = "0.14"
+game-of-chance-io.path = "io"
+sp-core-hashing = "8"
 primitive-types = "0.12"
 tokio = "1"

@@ -5,10 +5,6 @@ use game_of_chance_io::*;
 use gclient::{Error as GclientError, EventListener, EventProcessor, GearApi, Result};
 use gstd::prelude::*;
 use primitive_types::H256;
-use subxt::{
-    error::{DispatchError, ModuleError, ModuleErrorData},
-    Error as SubxtError,
-};
 
 const ALICE: [u8; 32] = [
     212, 53, 147, 199, 21, 253, 211, 28, 97, 20, 26, 189, 4, 169, 159, 214, 130, 44, 133, 88, 133,
@@ -22,14 +18,9 @@ fn decode<T: Decode>(payload: Vec<u8>) -> Result<T> {
 async fn upload_code(client: &GearApi, path: &str) -> Result<H256> {
     let code_id = match client.upload_code_by_path(path).await {
         Ok((code_id, _)) => code_id.into(),
-        Err(GclientError::Subxt(SubxtError::Runtime(DispatchError::Module(ModuleError {
-            error_data:
-                ModuleErrorData {
-                    pallet_index: 14,
-                    error: [6, 0, 0, 0],
-                },
-            ..
-        })))) => sp_core_hashing::blake2_256(&gclient::code_from_os(path)?),
+        Err(GclientError::ProgramAlreadyExists(_)) => {
+            sp_core_hashing::blake2_256(&gclient::code_from_os(path)?)
+        }
         Err(other_error) => return Err(other_error),
     };
 
@@ -171,13 +162,21 @@ async fn state_consistency() -> Result<()> {
     let client = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
     let mut listener = client.subscribe().await?;
 
-    let storage_code_hash = upload_code(&client, "target/ft_storage.wasm").await?;
-    let ft_logic_code_hash = upload_code(&client, "target/ft_logic.wasm").await?;
+    let storage_code_hash = upload_code(
+        &client,
+        "target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm",
+    )
+    .await?;
+    let ft_logic_code_hash = upload_code(
+        &client,
+        "target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm",
+    )
+    .await?;
 
     let ft_actor_id = upload_program(
         &client,
         &mut listener,
-        "target/ft_main.wasm",
+        "target/wasm32-unknown-unknown/debug/ft_main.opt.wasm",
         InitFToken {
             storage_code_hash,
             ft_logic_code_hash,
@@ -238,7 +237,7 @@ async fn state_consistency() -> Result<()> {
             &mut listener,
             goc_actor_id,
             Action::Start {
-                duration: 15000,
+                duration: 17000,
                 participation_cost: 10000,
                 fungible_token: Some(ft_actor_id.into())
             }

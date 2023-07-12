@@ -1,7 +1,7 @@
 #![no_std]
 
 use gmeta::{InOut, Metadata};
-use gstd::{errors::ContractError, prelude::*, ActorId};
+use gstd::{errors::Error as GstdError, prelude::*, ActorId};
 
 pub struct ContractMetadata;
 
@@ -153,12 +153,12 @@ pub enum Error {
     ///
     /// [`msg::source()`]: gstd::msg::source
     InvalidParticipationCost,
-    /// See [`ContractError`].
+    /// See [`GstdError`].
     ContractError(String),
 }
 
-impl From<ContractError> for Error {
-    fn from(error: ContractError) -> Self {
+impl From<GstdError> for Error {
+    fn from(error: GstdError) -> Self {
         Self::ContractError(error.to_string())
     }
 }
