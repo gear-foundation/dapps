@@ -1,4 +1,4 @@
-.PHONY: all build fmt init lint pre-commit deps test full-test
+.PHONY: all build fmt init lint pre-commit test full-test
 
 all: init build test
 
@@ -22,34 +22,10 @@ lint:
 
 pre-commit: fmt lint full-test
 
-SFT_VERSION = 2.1.2
-
-deps:
-	@mkdir -p target
-	@echo ⚙️ Downloading dependencies...
-	@path=target/ft_main.wasm;\
-	if [ ! -f $$path ]; then\
-	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/$(SFT_VERSION)/ft_main.opt.wasm\
-	        -o $$path;\
-	fi
-	@path=target/ft_logic.wasm;\
-	if [ ! -f $$path ]; then\
-	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/$(SFT_VERSION)/ft_logic.opt.wasm\
-	        -o $$path;\
-	fi
-	@path=target/ft_storage.wasm;\
-	if [ ! -f $$path ]; then\
-	    curl -L\
-	        https://github.com/gear-dapps/sharded-fungible-token/releases/download/$(SFT_VERSION)/ft_storage.opt.wasm\
-	        -o $$path;\
-	fi
-
-test: deps
+test:
 	@echo ⚙️ Running tests...
 	@cargo t -Fbinary-vendor
 
-full-test: deps
+full-test:
 	@echo ⚙️ Running tests...
 	@cargo t -Fbinary-vendor -- --include-ignored

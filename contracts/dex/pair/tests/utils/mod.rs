@@ -16,9 +16,9 @@ pub use common::initialize_system;
 pub use fungible_token::FungibleToken;
 
 pub const FOREIGN_USER: u64 = 1029384756123;
-pub const FT_MAIN: &str = "../target/ft_main.wasm";
-pub const FT_STORAGE: &str = "../target/ft_storage.wasm";
-pub const FT_LOGIC: &str = "../target/ft_logic.wasm";
+pub const FT_MAIN: &str = "../target/wasm32-unknown-unknown/debug/ft_main.opt.wasm";
+pub const FT_STORAGE: &str = "../target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm";
+pub const FT_LOGIC: &str = "../target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm";
 pub const SPENT_BLOCKS: u32 = 1;
 
 const DEADLINE: u64 = 99999999999999999;

@@ -2,7 +2,7 @@
 
 use gear_lib::tx_manager;
 use gmeta::{InOut, Metadata};
-use gstd::{errors::ContractError, prelude::*, ActorId};
+use gstd::{errors::Error as GstdError, prelude::*, ActorId};
 use primitive_types::U256;
 
 pub use gear_lib::{
@@ -252,8 +252,8 @@ pub enum SwapKind {
 /// Error variants of failed [`Action`].
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub enum Error {
-    /// See [`ContractError`].
-    ContractError(String),
+    /// See [`GstdError`].
+    GstdError(String),
     /// An insufficient amount of the A or B token was provided.
     InsufficientAmount,
     /// A specified amount limit of the former tokens has been exceeded.
@@ -286,9 +286,9 @@ pub enum Error {
     TxCacheError(TransactionManagerError),
 }
 
-impl From<ContractError> for Error {
-    fn from(error: ContractError) -> Self {
-        Self::ContractError(error.to_string())
+impl From<GstdError> for Error {
+    fn from(error: GstdError) -> Self {
+        Self::GstdError(error.to_string())
     }
 }
 

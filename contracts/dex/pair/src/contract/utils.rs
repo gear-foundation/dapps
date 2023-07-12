@@ -9,7 +9,7 @@ use gstd::{
 };
 
 pub fn send<T: Decode>(to: ActorId, payload: impl Encode) -> Result<CodecMessageFuture<T>> {
-    msg::send_for_reply_as(to, payload, 0)
+    msg::send_for_reply_as(to, payload, 0, 0)
 }
 
 pub async fn transfer_tokens(

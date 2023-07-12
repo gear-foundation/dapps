@@ -2,23 +2,22 @@ use dex_pair::WASM_BINARY_OPT;
 use dex_pair_io::*;
 use fmt::Debug;
 use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
-use gclient::{Error as GclientError, EventListener, EventProcessor, GearApi, Result};
+use gclient::{
+    errors::{Gear, ModuleError},
+    Error as GclientError, EventListener, EventProcessor, GearApi, Result,
+};
 use gear_core::ids::CodeId;
 use gstd::{prelude::*, ActorId};
 use pretty_assertions::assert_eq;
 use primitive_types::H256;
-use subxt::{
-    error::{DispatchError, ModuleError, ModuleErrorData},
-    Error as SubxtError,
-};
 
 const ALICE: [u8; 32] = [
     212, 53, 147, 199, 21, 253, 211, 28, 97, 20, 26, 189, 4, 169, 159, 214, 130, 44, 133, 88, 133,
     76, 205, 227, 154, 86, 132, 231, 165, 109, 162, 125,
 ];
-const FT_MAIN: &str = "../target/ft_main.wasm";
-const FT_STORAGE: &str = "../target/ft_storage.wasm";
-const FT_LOGIC: &str = "../target/ft_logic.wasm";
+const FT_MAIN: &str = "../target/wasm32-unknown-unknown/debug/ft_main.opt.wasm";
+const FT_STORAGE: &str = "../target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm";
+const FT_LOGIC: &str = "../target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm";
 
 fn decode<T: Decode>(payload: Vec<u8>) -> Result<T> {
     Ok(T::decode(&mut payload.as_slice())?)
@@ -30,14 +29,9 @@ async fn upload_code_common(
 ) -> Result<H256> {
     let code_id = match result {
         Ok((code_id, _)) => code_id.into(),
-        Err(GclientError::Subxt(SubxtError::Runtime(DispatchError::Module(ModuleError {
-            error_data:
-                ModuleErrorData {
-                    pallet_index: 104,
-                    error: [6, 0, 0, 0],
-                },
-            ..
-        })))) => sp_core_hashing::blake2_256(&get_code()?),
+        Err(GclientError::Module(ModuleError::Gear(Gear::CodeAlreadyExists))) => {
+            sp_core_hashing::blake2_256(&get_code()?)
+        }
         Err(other_error) => return Err(other_error),
     };
 

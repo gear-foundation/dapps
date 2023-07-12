@@ -70,6 +70,7 @@ impl Contract {
                 }
                 .encode(),
                 0,
+                0,
             )?
             .await?;
 
@@ -153,13 +154,6 @@ extern "C" fn state() {
         pairs: pairs.into_iter().map(|(k, v)| (*k, *v)).collect(),
     })
     .expect("failed to encode or reply from `state()`");
-}
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-
-    reply(metahash).expect("failed to encode or reply from `metahash()`");
 }
 
 fn reply(payload: impl Encode) -> Result<MessageId> {

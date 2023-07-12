@@ -14,16 +14,19 @@ license = "MIT"
 authors = ["Gear Technologies"]
 
 [workspace.dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.2" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+ft-main-io = { git = "https://github.com/gear-foundation/dapps-sharded-fungible-token", tag = "2.1.4" }
+ft-main = { git = "https://github.com/gear-foundation/dapps-sharded-fungible-token", tag = "2.1.4" }
+ft-logic = { git = "https://github.com/gear-foundation/dapps-sharded-fungible-token", tag = "2.1.4" }
+ft-storage = { git = "https://github.com/gear-foundation/dapps-sharded-fungible-token", tag = "2.1.4" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
 dex-pair-io.path = "pair/io"
 dex-factory-io.path = "factory/io"
-hashbrown = "0.13"
+hashbrown = "0.14"
 primitive-types = { version = "0.12", default-features = false }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib", branch = "as-dev-dev" }
+gear-lib = { git = "https://github.com/gear-foundation/dapps-gear-lib", branch = "as-dev-dev" }

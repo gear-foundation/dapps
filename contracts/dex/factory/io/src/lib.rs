@@ -1,7 +1,7 @@
 #![no_std]
 
 use gmeta::{InOut, Metadata};
-use gstd::{errors::ContractError, prelude::*, ActorId, CodeId};
+use gstd::{errors::Error as GstdError, prelude::*, ActorId, CodeId};
 
 pub struct ContractMetadata;
 
@@ -129,7 +129,7 @@ pub enum Event {
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub enum Error {
     /// See [`ContractError`].
-    ContractError(String),
+    GstdError(String),
     /// [`msg::source()`](gstd::msg::source) doesn't equal to `fee_to_setter`.
     AccessRestricted,
     /// [`ActorId::zero()`] was found where it's forbidden.
@@ -141,9 +141,9 @@ pub enum Error {
     PairCreationFailed(dex_pair_io::Error),
 }
 
-impl From<ContractError> for Error {
-    fn from(error: ContractError) -> Self {
-        Self::ContractError(error.to_string())
+impl From<GstdError> for Error {
+    fn from(error: GstdError) -> Self {
+        Self::GstdError(error.to_string())
     }
 }
 

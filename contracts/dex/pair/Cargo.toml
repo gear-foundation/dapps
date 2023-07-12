@@ -17,13 +17,15 @@ primitive-types.workspace = true
 gtest.workspace = true
 gclient.workspace = true
 gstd = { workspace = true, features = ["debug"] }
-gear-core = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-subxt = { version = "0.27", default-features = false }
+gear-core = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+ft-main.workspace = true
+ft-logic.workspace = true
+ft-storage.workspace = true
 pretty_assertions = "1"
 dex-factory = { path = "../factory" }
 dex-factory-state = { path = "../factory/state" }
 dex-pair-state = { path = "state" }
-sp-core-hashing = "6"
+sp-core-hashing = "8"
 tokio = "1"
 
 [build-dependencies]
