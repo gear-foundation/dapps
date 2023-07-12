@@ -7,7 +7,10 @@ pub const ZERO_ID: u64 = 0;
 
 pub fn init_fungible_token(sys: &System) {
     sys.init_logger();
-    let ft = Program::from_file(sys, "./target/ft.wasm");
+    let ft = Program::from_file(
+        sys,
+        "target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm",
+    );
 
     let res = ft.send(
         MEMBERS[0],
@@ -18,7 +21,7 @@ pub fn init_fungible_token(sys: &System) {
         },
     );
 
-    assert!(res.log().is_empty());
+    assert!(!res.main_failed());
     MEMBERS.iter().for_each(|member| {
         let res = ft.send(*member, FTAction::Mint(10000000));
         assert!(!res.main_failed());
@@ -37,11 +40,21 @@ pub fn init_dao(sys: &System) {
             voting_period_length: 1000000,
         },
     );
-    assert!(res.log().is_empty());
+    assert!(!res.main_failed());
 }
 
 pub fn deposit(dao: &Program, member: u64, amount: u128) -> RunResult {
     dao.send(member, DaoAction::Deposit { amount })
+}
+
+pub fn approve(ft: &Program, member: u64, to: u64, amount: u128) -> RunResult {
+    ft.send(
+        member,
+        FTAction::Approve {
+            to: to.into(),
+            amount,
+        },
+    )
 }
 
 pub fn proposal(dao: &Program, member: u64, applicant: u64, amount: u128) -> RunResult {

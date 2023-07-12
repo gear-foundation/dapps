@@ -14,6 +14,7 @@ hashbrown.workspace = true
 [dev-dependencies]
 gstd = { workspace = true, features = ["debug"] }
 gtest.workspace = true
+fungible-token.workspace = true
 
 [build-dependencies]
 gmeta.workspace = true
@@ -21,34 +22,28 @@ dao-light-io.workspace = true
 gear-wasm-builder.workspace = true
 
 [features]
-# Used for inserting constants with WASM binaries (NOT paths) of the contract in
-# the root crate. Usually these constants used in gclient tests instead of
-# strings with paths to the binaries in the "target" directory. If you don't
-# like this approach or don't use gclient tests, you can freely remove this
-# feature from here and from the rest of the code.
 binary-vendor = []
 
-# It's necessary to include all metawasm crates in the workspace section,
-# otherwise they'll be ignored by Cargo and won't be built.
 [workspace]
 members = ["state"]
 
 [workspace.package]
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 authors = ["Gear Technologies"]
 license = "MIT"
 
 [workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+ft-io = { git = "https://github.com/gear-dapps/fungible-token", tag = "0.1.8" }
+fungible-token = { git = "https://github.com/gear-dapps/fungible-token", tag = "0.1.8" }
 dao-light-io = { path = "io" }
 dao-light-state = { path = "state" }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.6" }
-hashbrown = "0.13"
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+hashbrown = "0.14"
 tokio = "1"
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
