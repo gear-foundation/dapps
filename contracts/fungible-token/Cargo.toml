@@ -28,10 +28,10 @@ authors = ["Gear Technologies"]
 
 [workspace.dependencies]
 ft-io = { path = "io" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "cfb433a" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "cfb433a" }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "cfb433a" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "cfb433a" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
 hashbrown = "0.14"
 
 [features]
