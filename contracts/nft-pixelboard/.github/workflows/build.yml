@@ -41,9 +41,7 @@ jobs:
         run: make lint
 
       - name: Run tests
-        run: |
-          curl -L https://get.gear.rs/vara-testnet-v1.1-x86_64-unknown-linux-gnu.tar.xz -o - | tar xJ
-          make test
+        run: make full-test
 
       - name: Build
         run: make build

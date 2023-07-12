@@ -23,6 +23,7 @@ pub async fn transfer_ftokens(
             },
         },
         0,
+        0,
     )
     .expect("Error in sending a message `FTokenAction::Message`")
     .await;
@@ -46,6 +47,7 @@ pub async fn transfer_nft(
             token_id,
         },
         0,
+        0,
     )
     .expect("Error during sending `NFTAction::Transfer` to an NFT program")
     .await;
@@ -66,6 +68,7 @@ pub async fn mint_nft(
             transaction_id,
             token_metadata,
         },
+        0,
         0,
     )
     .expect("Error during sending `NFTAction::Mint` to an NFT program")

@@ -470,9 +470,3 @@ extern "C" fn state() {
     let nft_pixelboard_state: NFTPixelboardState = nft_pixelboard.into();
     msg::reply(nft_pixelboard_state, 0).expect("Failed to share state");
 }
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    msg::reply(metahash, 0).expect("Failed to share metahash");
-}

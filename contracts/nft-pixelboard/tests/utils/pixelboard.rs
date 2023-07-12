@@ -2,7 +2,7 @@ use super::common::{InitResult, Program, RunResult};
 use super::{FOREIGN_USER, OWNER};
 use gear_lib::non_fungible_token::token::TokenMetadata;
 use gstd::ActorId;
-use gtest::{Program as InnerProgram, System};
+use gtest::{Program as InnerProgram, System, EXISTENTIAL_DEPOSIT};
 use nft_pixelboard_io::*;
 
 type NFTPixelboardRunResult<T> = RunResult<T, NFTPixelboardEvent, NFTPixelboardError>;
@@ -38,6 +38,8 @@ impl<'a> NFTPixelboard<'a> {
         config: InitNFTPixelboard,
     ) -> InitResult<NFTPixelboard<'a>, NFTPixelboardError> {
         let program = InnerProgram::current(system);
+
+        system.mint_to(program.id(), EXISTENTIAL_DEPOSIT);
 
         let result = program.send(FOREIGN_USER, config);
         let is_active = system.is_active_program(program.id());
