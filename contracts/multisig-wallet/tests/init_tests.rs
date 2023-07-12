@@ -22,7 +22,7 @@ fn required_equals_owners_count() {
     let sys = System::new();
     let res = common_init(&sys, &USERS[0..3], 3);
 
-    assert!(res.log().is_empty())
+    assert!(!res.main_failed())
 }
 
 #[test]
@@ -30,7 +30,7 @@ fn required_less_than_owners_count() {
     let sys = System::new();
     let res = common_init(&sys, &USERS[0..4], 3);
 
-    assert!(res.log().is_empty())
+    assert!(!res.main_failed())
 }
 
 #[test]
@@ -38,7 +38,7 @@ fn without_contract_owner() {
     let sys = System::new();
     let res = common_init(&sys, &USERS[1..4], 3);
 
-    assert!(res.log().is_empty())
+    assert!(!res.main_failed())
 }
 
 #[test]

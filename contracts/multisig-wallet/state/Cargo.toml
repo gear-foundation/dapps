@@ -6,7 +6,7 @@ license.workspace = true
 authors.workspace = true
 
 [dependencies]
-gstd = { workspace = true }
+gstd.workspace = true
 gmeta = { workspace = true, features = ["codegen"] }
 multisig-wallet-io.workspace = true
 

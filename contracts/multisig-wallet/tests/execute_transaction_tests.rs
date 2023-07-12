@@ -148,5 +148,5 @@ fn not_confirmed() {
 
     let res = wallet.send(USERS[0], MWAction::ExecuteTransaction(0.into()));
 
-    assert!(res.log().is_empty());
+    assert!(!res.main_failed());
 }
