@@ -11,18 +11,18 @@ type BaseNFT = {
 };
 
 type NFTDetails = {
-  royalty: number;
+  royalty: string;
   rarity: string;
   attributes: { [key: string]: string };
 };
 
-type Offers = { [key: `[null,${number}]`]: HexString };
+type Offers = { [key: `[null,${string}]`]: HexString };
 
 type Auction = {
-  bidPeriod: number;
-  startedAt: number;
-  endedAt: number;
-  currentPrice: number;
+  bidPeriod: string;
+  startedAt: string;
+  endedAt: string;
+  currentPrice: string;
   currentWinner: HexString;
 };
 
@@ -30,7 +30,7 @@ type MarketNFT = {
   tokenId: string;
   owner: HexString;
   ftContractId: HexString | null;
-  price: number | null;
+  price: string | null;
   auction: Auction | null;
   offers: Offers;
   tx: null;

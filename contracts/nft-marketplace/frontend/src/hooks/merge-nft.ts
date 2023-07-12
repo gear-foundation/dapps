@@ -31,7 +31,7 @@ function useMergedNFTs() {
           },
           nftStateMetadata,
         )
-        .then((state) => state.toJSON() as BaseNFT)
+        .then((state) => state.toHuman() as BaseNFT)
         .then((baseNft) => ({ ...marketNft, ...baseNft })),
     );
 
@@ -74,7 +74,7 @@ function useMergedOwnerNFTs() {
             },
             marketplaceStateMetadata,
           )
-          .then((state) => state.toJSON() as MarketNFT)
+          .then((state) => state.toHuman() as MarketNFT)
           .then((marketNft) => ({ ...marketNft, ...baseNft })), // order is important
     );
 

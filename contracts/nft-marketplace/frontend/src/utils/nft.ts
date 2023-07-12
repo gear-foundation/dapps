@@ -1,3 +1,4 @@
+import { withoutCommas } from '@gear-js/react-hooks';
 import { ButtonProps } from '@gear-js/ui';
 import { Auction, BaseNFT, MarketNFT, NFT, NFTDetails } from 'types';
 import { getIpfsAddress } from 'utils';
@@ -65,10 +66,13 @@ function getListingProps(baseNft: BaseNFT, marketNft: MarketNFT | null | undefin
 function getAuctionDate(auction: Auction) {
   const { startedAt, endedAt } = auction;
 
+  const formattedStartedAt = +withoutCommas(startedAt);
+  const formattedEndedAt = +withoutCommas(endedAt);
+
   const currentTimestamp = new Date().getTime();
-  const startDate = new Date(startedAt).toLocaleString();
-  const endDate = new Date(endedAt).toLocaleString();
-  const isAuctionOver = currentTimestamp > endedAt;
+  const startDate = new Date(formattedStartedAt).toLocaleString();
+  const endDate = new Date(formattedEndedAt).toLocaleString();
+  const isAuctionOver = currentTimestamp > formattedEndedAt;
 
   return { startDate, endDate, isAuctionOver };
 }
