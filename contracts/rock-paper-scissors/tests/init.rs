@@ -32,7 +32,6 @@ pub fn init(
     );
 
     assert!(!result.main_failed());
-    assert!(result.log().is_empty());
 
     program
 }

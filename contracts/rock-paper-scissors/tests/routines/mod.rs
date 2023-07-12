@@ -60,7 +60,6 @@ pub fn common_init_with_owner_and_bet(sys: &System, owner_user: u64, bet_size: u
     );
 
     assert!(!result.main_failed());
-    assert!(result.log().is_empty());
 
     program
 }

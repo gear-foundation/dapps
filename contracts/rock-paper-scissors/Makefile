@@ -1,26 +1,13 @@
-.PHONY: all build clean fmt fmt-check init lint pre-commit test full-test
+.PHONY: all build fmt init lint pre-commit test full-test
 
 all: init build full-test
 
-clean:
-	@echo ──────────── Clean ────────────────────────────
-	@rm -rvf target
-
 build:
 	@echo ⚙️ Building a release...
-	@cargo b -r --workspace -Fbinary-vendor
+	@cargo b -r --workspace
 	@ls -l target/wasm32-unknown-unknown/release/*.wasm
 
-debug-build:
-	@echo ──────────── Build debug ────────────────────
-	@cargo build
-	@ls -l ./target/wasm32-unknown-unknown/debug/*.wasm
-
 fmt:
-	@echo ⚙️ Formatting...
-	@cargo fmt --all
-
-fmt-check:
 	@echo ⚙️ Checking a format...
 	@cargo fmt --all --check
 
