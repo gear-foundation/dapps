@@ -27,15 +27,14 @@ pub fn init_system() -> System {
 pub fn init_escrow(sys: &System) -> Program {
     let escrow_program = Program::current_with_id(sys, ESCROW_PROGRAM_ID);
 
-    assert!(escrow_program
+    assert!(!escrow_program
         .send(
             FOREIGN_USER,
             InitEscrow {
                 ft_program_id: FT_PROGRAM_ID.into(),
             },
         )
-        .log()
-        .is_empty());
+        .main_failed());
 
     escrow_program
 }

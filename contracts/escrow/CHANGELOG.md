@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.7] - 2023-07-06
+### Changed
+- Update dependencies, pin gear libs to `#946ac47` commit.
+
 ## [0.1.6] - 2023-04-27
 ### Changed
 - Update dependencies.
@@ -44,7 +48,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/escrow/compare/0.1.6...HEAD
+[Unreleased]: https://github.com/gear-dapps/escrow/compare/0.1.7...HEAD
+[0.1.7]: https://github.com/gear-dapps/escrow/compare/0.1.6...0.1.7
 [0.1.6]: https://github.com/gear-dapps/escrow/compare/0.1.5...0.1.6
 [0.1.5]: https://github.com/gear-dapps/escrow/compare/0.1.4...0.1.5
 [0.1.4]: https://github.com/gear-dapps/escrow/compare/0.1.3...0.1.4
