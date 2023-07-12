@@ -25,7 +25,7 @@ pub fn init_nft(sys: &System) {
 
     let res = nft.send(USERS[0], init_nft);
 
-    assert!(res.log().is_empty());
+    assert!(!res.main_failed());
 }
 
 pub fn mint(nft: &Program, transaction_id: u64, member: u64) -> RunResult {

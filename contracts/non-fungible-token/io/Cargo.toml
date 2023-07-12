@@ -11,4 +11,4 @@ gear-lib.workspace = true
 primitive-types.workspace = true
 scale-info.workspace = true
 parity-scale-codec.workspace = true
-gmeta = { workspace = true, features = ["codegen"] }
+gmeta.workspace = true

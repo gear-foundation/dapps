@@ -49,7 +49,7 @@ fn mint_limit_exceed() {
 
     let res = nft.send(USERS[0], init_nft);
 
-    assert!(res.log().is_empty());
+    assert!(!res.main_failed());
 
     let nft = sys.get_program(1);
     let transaction_id: u64 = 0;
@@ -82,7 +82,7 @@ fn mint_authorized() {
 
     let res = nft.send(USERS[0], init_nft);
 
-    assert!(res.log().is_empty());
+    assert!(!res.main_failed());
 
     let nft = sys.get_program(1);
     let transaction_id: u64 = 0;
@@ -115,7 +115,7 @@ fn mint_not_authorized() {
 
     let res = nft.send(USERS[0], init_nft);
 
-    assert!(res.log().is_empty());
+    assert!(!res.main_failed());
 
     let nft = sys.get_program(1);
     let transaction_id: u64 = 0;
@@ -148,7 +148,7 @@ fn mint_added() {
 
     let res = nft.send(USERS[0], init_nft);
 
-    assert!(res.log().is_empty());
+    assert!(!res.main_failed());
 
     let nft = sys.get_program(1);
     let transaction_id: u64 = 0;

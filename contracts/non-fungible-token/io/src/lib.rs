@@ -14,20 +14,20 @@ use primitive_types::H256;
 
 pub struct NFTMetadata;
 
-#[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub struct Constraints {
     pub max_mint_count: Option<u32>,
     pub authorized_minters: Vec<ActorId>,
 }
 
-#[derive(Debug, Encode, Decode, TypeInfo)]
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub struct InitNFT {
     pub collection: Collection,
     pub royalties: Option<Royalties>,
     pub constraints: Constraints,
 }
 
-#[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub struct Collection {
     pub name: String,
     pub description: String,
@@ -42,7 +42,7 @@ impl Metadata for NFTMetadata {
     type State = IoNFT;
 }
 
-#[derive(Debug, Encode, Decode, TypeInfo)]
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub enum NFTAction {
     Mint {
         transaction_id: u64,
@@ -93,7 +93,7 @@ pub enum NFTAction {
     },
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug, Clone)]
+#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub enum NFTEvent {
     Transfer(NFTTransfer),
     TransferPayout(NFTTransferPayout),
@@ -113,7 +113,7 @@ pub enum NFTEvent {
     },
 }
 
-#[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub struct IoNFTState {
     pub name: String,
     pub symbol: String,
@@ -125,7 +125,7 @@ pub struct IoNFTState {
     pub royalties: Option<Royalties>,
 }
 
-#[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub struct IoNFT {
     pub token: IoNFTState,
     pub token_id: TokenId,
@@ -179,7 +179,7 @@ impl From<&NFTState> for IoNFTState {
     }
 }
 
-#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub struct Nft {
     pub owner: ActorId,
     pub name: String,
@@ -188,7 +188,7 @@ pub struct Nft {
     pub attrib_url: String,
 }
 
-#[derive(Debug, Encode, Decode, TypeInfo)]
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 pub struct State {
     pub tokens: Vec<(TokenId, Nft)>,
     pub owner: ActorId,
