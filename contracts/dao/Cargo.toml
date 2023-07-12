@@ -38,7 +38,7 @@ binary-vendor = []
 members = ["state"]
 
 [workspace.package]
-version = "0.2.5"
+version = "0.2.6"
 edition = "2021"
 authors = ["Gear Technologies"]
 license = "MIT"
