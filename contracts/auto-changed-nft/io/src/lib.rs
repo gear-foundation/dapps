@@ -199,48 +199,6 @@ pub struct Collection {
     pub description: String,
 }
 
-// impl From<&NFTState> for NFTState2 {
-//     fn from(value: &NFTState) -> Self {
-//         let NFTState {
-//             name,
-//             symbol,
-//             base_uri,
-//             owner_by_id,
-//             token_approvals,
-//             token_metadata_by_id,
-//             tokens_for_owner,
-//             royalties,
-//         } = value;
-
-//         let owners = owner_by_id
-//             .iter()
-//             .map(|(hash, actor_id)| (*actor_id, *hash))
-//             .collect();
-
-//         let token_metadata_by_id = token_metadata_by_id
-//             .iter()
-//             .map(|(id, metadata)| {
-//                 let metadata = metadata.as_ref().unwrap();
-//                 let nft = Nft2 {
-//                     owner: owner_by_id.get(id).unwrap().clone(),
-//                     name: metadata.name.clone(),
-//                     description: metadata.description.clone(),
-//                     media_url: metadata.media.clone(),
-//                     attrib_url: metadata.reference.clone(),
-//                 };
-//                 (*id, nft)
-//             })
-//             .collect();
-
-//         Self {
-//             tokens: token_metadata_by_id,
-//             owners,
-//             collection: todo!(),
-//             nonce: TokenId::default(),
-//         }
-//     }
-// }
-
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub struct InitNFT2 {
     pub collection: Collection,
