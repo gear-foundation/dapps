@@ -1,4 +1,4 @@
-.PHONY: all build fmt init lint pre-commit test deps full-test
+.PHONY: all build fmt init lint pre-commit test full-test
 
 all: init build test
 

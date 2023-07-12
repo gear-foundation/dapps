@@ -15,12 +15,12 @@ use primitive_types::H256;
 pub struct NFTMetadata;
 
 impl Metadata for NFTMetadata {
-    type Init = In<InitNFT>;
+    type Init = In<InitNFT2>;
     type Handle = InOut<NFTAction, NFTEvent>;
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = IoNFT;
+    type State = NFTState2;
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
@@ -53,11 +53,6 @@ pub enum NFTAction {
         to: ActorId,
         token_id: TokenId,
     },
-    DelegatedApprove {
-        transaction_id: u64,
-        message: DelegatedApproveMessage,
-        signature: [u8; 64],
-    },
     Owner {
         token_id: TokenId,
     },
@@ -68,10 +63,20 @@ pub enum NFTAction {
     Clear {
         transaction_hash: H256,
     },
-    UpdateDynamicData {
-        transaction_id: u64,
-        data: Vec<u8>,
+    AddMedia {
+        token_id: TokenId,
+        media: String,
     },
+    StartAutoChanging {
+        token_ids: Vec<TokenId>,
+        updates_count: u32,
+        update_period: u32,
+    },
+    Update {
+        token_ids: Vec<TokenId>,
+        rest_updates_count: u32,
+    },
+    ReserveGas,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
@@ -79,7 +84,6 @@ pub struct InitNFT {
     pub name: String,
     pub symbol: String,
     pub base_uri: String,
-    pub royalties: Option<Royalties>,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, Clone)]
@@ -100,6 +104,8 @@ pub enum NFTEvent {
     Updated {
         data_hash: H256,
     },
+    CurrentUrl(String),
+    GasReserved,
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
@@ -120,8 +126,8 @@ pub struct IoNFT {
     pub token_id: TokenId,
     pub owner: ActorId,
     pub transactions: Vec<(H256, NFTEvent)>,
-    pub dynamic_data: Vec<u8>,
-    pub update_periods: u32,
+    pub urls: Vec<(TokenId, Vec<String>)>,
+    pub update_number: u32,
 }
 
 impl From<&NFTState> for IoNFTState {
@@ -168,4 +174,32 @@ impl From<&NFTState> for IoNFTState {
             royalties: royalties.clone(),
         }
     }
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub struct Nft2 {
+    pub owner: ActorId,
+    pub name: String,
+    pub description: String,
+    pub media_url: String,
+    pub attrib_url: String,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+pub struct NFTState2 {
+    pub tokens: Vec<(TokenId, Nft2)>,
+    pub owners: Vec<(ActorId, TokenId)>,
+    pub collection: Collection,
+    pub nonce: TokenId,
+}
+
+#[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+pub struct Collection {
+    pub name: String,
+    pub description: String,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+pub struct InitNFT2 {
+    pub collection: Collection,
 }

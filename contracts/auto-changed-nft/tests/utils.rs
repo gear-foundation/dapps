@@ -14,11 +14,10 @@ pub fn init_nft(sys: &System) {
             name: String::from("MyToken"),
             symbol: String::from("MTK"),
             base_uri: String::from(""),
-            royalties: None,
         },
     );
 
-    assert!(res.log().is_empty());
+    assert!(!res.main_failed());
 }
 
 pub fn mint(nft: &Program, transaction_id: u64, member: u64) -> RunResult {
@@ -32,6 +31,33 @@ pub fn mint(nft: &Program, transaction_id: u64, member: u64) -> RunResult {
                 media: "http://".to_string(),
                 reference: "http://".to_string(),
             },
+        },
+    )
+}
+
+pub fn add_url(nft: &Program, token_id: TokenId, url: &str, member: u64) -> RunResult {
+    nft.send(
+        member,
+        NFTAction::AddMedia {
+            token_id,
+            media: url.to_string(),
+        },
+    )
+}
+
+pub fn start_auto_changing(
+    nft: &Program,
+    token_ids: Vec<TokenId>,
+    updates_count: u32,
+    update_period: u32,
+    member: u64,
+) -> RunResult {
+    nft.send(
+        member,
+        NFTAction::StartAutoChanging {
+            updates_count,
+            update_period,
+            token_ids,
         },
     )
 }
@@ -93,32 +119,13 @@ pub fn approve(nft: &Program, transaction_id: u64, from: u64, to: u64, token_id:
     )
 }
 
-pub fn delegated_approve(
-    nft: &Program,
-    transaction_id: u64,
-    from: u64,
-    message: DelegatedApproveMessage,
-    signature: [u8; 64],
-) -> RunResult {
-    let action = NFTAction::DelegatedApprove {
-        transaction_id,
-        message,
-        signature,
-    };
-    nft.send(from, action)
-}
+pub fn current_media(nft: &Program, token_id: TokenId) -> String {
+    let state: NFTState2 = nft.read_state().unwrap();
 
-pub fn mint_to_actor(nft: &Program, transaction_id: u64, member: [u8; 32]) -> RunResult {
-    nft.send(
-        member,
-        NFTAction::Mint {
-            transaction_id,
-            token_metadata: TokenMetadata {
-                name: "CryptoKitty".to_string(),
-                description: "Description".to_string(),
-                media: "http://".to_string(),
-                reference: "http://".to_string(),
-            },
-        },
-    )
+    state
+        .tokens
+        .into_iter()
+        .find_map(|(id, meta)| (token_id == id).then_some(meta))
+        .unwrap()
+        .media_url
 }
