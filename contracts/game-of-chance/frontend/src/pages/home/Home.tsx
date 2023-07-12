@@ -1,4 +1,4 @@
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, withoutCommas } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { Content, Loader } from 'components';
 import { useLotteryState, useLotteryStatus } from 'hooks';
@@ -14,10 +14,10 @@ function Home() {
   const { state, isStateRead } = useLotteryState();
   const { admin, started, ending, fungibleToken } = state || {};
 
-  const startTime = started || 0;
-  const endTime = ending || 0;
-  const cost = state?.participationCost || 0;
-  const prizeFund = state?.prizeFund || 0;
+  const startTime = +withoutCommas(started || '');
+  const endTime = +withoutCommas(ending || '');
+  const cost = state?.participationCost || '';
+  const prizeFund = state?.prizeFund || '';
   const players = state?.players || [];
   const winner =
     state && isWinner(state.winner) ? state.winner : ('' as HexString);

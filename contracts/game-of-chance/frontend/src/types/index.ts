@@ -2,10 +2,10 @@ import { HexString } from '@polkadot/util/types';
 
 type Lottery = {
   admin: HexString;
-  started: number;
-  ending: number;
-  participationCost: number;
-  prizeFund: number;
+  started: string;
+  ending: string;
+  participationCost: string;
+  prizeFund: string;
   players: HexString[];
   winner: HexString;
   fungibleToken: HexString | null;

@@ -12,9 +12,9 @@ import { PlayerStatus } from './player-status';
 type Props = {
   isOwner: boolean;
   dashboard: DashboardProps;
-  prizeFund: number;
+  prizeFund: string;
   players: HexString[];
-  cost: number;
+  cost: string;
   onResetButtonClick: () => void;
 };
 
