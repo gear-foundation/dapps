@@ -20,9 +20,16 @@ impl TransactionalProgram for FungibleToken<'_> {
 impl<'a> FungibleToken<'a> {
     #[track_caller]
     pub fn initialize(system: &'a System) -> Self {
-        let program = InnerProgram::from_file(system, "target/ft_main.wasm");
-        let storage_code_id: [u8; 32] = system.submit_code("target/ft_storage.wasm").into();
-        let logic_code_id: [u8; 32] = system.submit_code("target/ft_logic.wasm").into();
+        let program = InnerProgram::from_file(
+            system,
+            "target/wasm32-unknown-unknown/debug/ft_main.opt.wasm",
+        );
+        let storage_code_id: [u8; 32] = system
+            .submit_code("target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm")
+            .into();
+        let logic_code_id: [u8; 32] = system
+            .submit_code("target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm")
+            .into();
 
         assert!(!program
             .send(

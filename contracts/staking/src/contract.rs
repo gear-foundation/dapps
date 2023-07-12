@@ -52,7 +52,7 @@ impl Staking {
             payload,
         };
 
-        let result = msg::send_for_reply_as(*token_address, payload, 0)?.await?;
+        let result = msg::send_for_reply_as(*token_address, payload, 0, 0)?.await?;
 
         if let FTokenEvent::Err = result {
             Err(Error::TransferTokens)
@@ -349,12 +349,6 @@ fn static_mut_state() -> &'static mut Staking {
 extern "C" fn state() {
     reply(common_state())
         .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
-}
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    reply(metahash).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
 }
 
 fn reply(payload: impl Encode) -> GstdResult<MessageId> {

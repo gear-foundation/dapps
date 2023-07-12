@@ -1,7 +1,7 @@
 #![no_std]
 
 use gmeta::{In, InOut, Metadata};
-use gstd::{errors::ContractError, prelude::*, ActorId};
+use gstd::{errors::Error as GstdError, prelude::*, ActorId};
 
 pub type TransactionId = u64;
 
@@ -84,8 +84,8 @@ pub struct Transaction<T> {
     pub action: T,
 }
 
-impl From<ContractError> for Error {
-    fn from(value: ContractError) -> Self {
+impl From<GstdError> for Error {
+    fn from(value: GstdError) -> Self {
         Self::ContractError(value.to_string())
     }
 }
