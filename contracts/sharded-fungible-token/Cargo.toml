@@ -7,25 +7,25 @@ members = [
 ]
 
 [workspace.package]
-version = "2.1.3"
+version = "2.1.4"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [workspace.dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "cfb433a" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "cfb433a" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "cfb433a" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "cfb433a" }
-gstd = { git = "https://github.com/gear-tech/gear", rev = "cfb433a" }
-light_sr25519 = { git = "https://github.com/gear-tech/gear", rev = "cfb433a" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.8" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+light_sr25519 = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.9" }
 sp-core = { git = "https://github.com/gear-tech/substrate", rev = "36699c4" }
 ft-logic-io.path = "ft-logic/io"
 ft-main-io.path = "ft-main/io"
 ft-storage-io.path = "ft-storage/io"
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
-hashbrown = "0.13"
+hashbrown = "0.14"
 primitive-types = { version = "0.12", default-features = false }
 tokio = "1"

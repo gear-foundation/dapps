@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [2.1.4] - 2023-07-04
+### Changed
+- Update dependencies, pin gear libs to `#946ac47` commit.
+
 ## [2.1.3] - 2023-06-30
 ### Changed
 - Update dependencies, pin gear libs to `#cfb433a` commit.
@@ -34,7 +38,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/sharded-fungible-token/compare/2.1.3...HEAD
+[Unreleased]: https://github.com/gear-dapps/sharded-fungible-token/compare/2.1.4...HEAD
+[2.1.4]: https://github.com/gear-dapps/sharded-fungible-token/compare/2.1.3...2.1.4
 [2.1.3]: https://github.com/gear-dapps/sharded-fungible-token/compare/2.1.2...2.1.3
 [2.1.2]: https://github.com/gear-dapps/sharded-fungible-token/compare/2.1.1...2.1.2
 [2.1.1]: https://github.com/gear-dapps/sharded-fungible-token/compare/0.1.3...2.1.1
