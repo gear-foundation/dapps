@@ -44,10 +44,10 @@ authors = ["Gear Technologies"]
 license = "MIT"
 
 [workspace.dependencies]
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", branch = "update-deps" }
-ft-main = { git = "https://github.com/gear-dapps/sharded-fungible-token", branch = "update-deps" }
-ft-logic = { git = "https://github.com/gear-dapps/sharded-fungible-token", branch = "update-deps" }
-ft-storage = { git = "https://github.com/gear-dapps/sharded-fungible-token", branch = "update-deps" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-main = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-logic = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-storage = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
 gstd = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
 dao-io = { path = "io" }
 dao-state = { path = "state" }
