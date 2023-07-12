@@ -346,12 +346,6 @@ extern "C" fn state() {
     );
 }
 
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    reply(metahash).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
-}
-
 impl From<&mut IcoContract> for State {
     fn from(value: &mut IcoContract) -> Self {
         let token_holders = value.token_holders.iter().map(|(k, v)| (*k, *v)).collect();

@@ -36,6 +36,7 @@ fn not_owner_start_ico() {
         },
     );
 
+    assert!(!res.main_failed());
     assert!(res.contains(&(
         USER_ID,
         IcoEvent::SaleStarted {

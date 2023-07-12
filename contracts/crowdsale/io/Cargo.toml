@@ -7,7 +7,7 @@ authors.workspace = true
 
 [dependencies]
 gstd.workspace = true
-gmeta = { workspace = true, features = ["codegen"] }
+gmeta.workspace = true
 scale-info.workspace = true
 parity-scale-codec.workspace = true
 hashbrown.workspace = true

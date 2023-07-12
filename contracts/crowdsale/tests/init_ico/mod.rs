@@ -28,7 +28,7 @@ fn init_ico(sys: &System) {
             owner: OWNER_ID.into(),
         },
     );
-    assert!(res.log().is_empty());
+    assert!(!res.main_failed());
 }
 
 pub fn init(sys: &System) {
@@ -55,6 +55,7 @@ pub fn start_sale(ico: &Program, ico_duration: u64, expected_tx_id: u64) {
         },
     );
 
+    assert!(!res.main_failed());
     assert!(res.contains(&(
         OWNER_ID,
         IcoEvent::SaleStarted {
@@ -71,12 +72,14 @@ pub fn start_sale(ico: &Program, ico_duration: u64, expected_tx_id: u64) {
 
 pub fn end_sale(ico: &Program, expected_tx_id: u64) {
     let res = ico.send(OWNER_ID, IcoAction::EndSale);
+    assert!(!res.main_failed());
     assert!(res.contains(&(OWNER_ID, IcoEvent::SaleEnded(expected_tx_id).encode())));
 }
 
 pub fn buy_tokens(sys: &System, ico: &Program, amount: u128, price: u128) {
     sys.mint_to(USER_ID, price);
     let res = ico.send_with_value(USER_ID, IcoAction::Buy(amount), price);
+    assert!(!res.main_failed());
     assert!(res.contains(&(
         USER_ID,
         (IcoEvent::Bought {

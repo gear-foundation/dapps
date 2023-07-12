@@ -6,11 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2023-07-05
+### Changed
+- Update dependencies.
+- Pin gear crates to `#946ac47`.
+
 ## [0.1.4] - 2023-05-27
 ### Changed
 - Update dependencies.
 - Pin gear crates to `#78dfa07`.
-
 
 ## [0.1.3] - 2023-04-27
 ### Changed
@@ -30,8 +34,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial release.
 
-[Unreleased]: https://github.com/gear-dapps/crowdsale/compare/0.1.4...HEAD
-[0.1.3]: https://github.com/gear-dapps/crowdsale/compare/0.1.3...0.1.4
+[Unreleased]: https://github.com/gear-dapps/crowdsale/compare/0.1.5...HEAD
+[0.1.5]: https://github.com/gear-dapps/crowdsale/compare/0.1.4...0.1.5
+[0.1.4]: https://github.com/gear-dapps/crowdsale/compare/0.1.3...0.1.4
 [0.1.3]: https://github.com/gear-dapps/crowdsale/compare/0.1.2...0.1.3
 [0.1.2]: https://github.com/gear-dapps/crowdsale/compare/0.1.1...0.1.2
 [0.1.1]: https://github.com/gear-dapps/crowdsale/compare/0.1.0...0.1.1

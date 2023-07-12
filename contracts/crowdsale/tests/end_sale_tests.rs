@@ -64,6 +64,7 @@ fn not_owner_end_sale() {
     sys.spend_blocks(1001);
 
     let res = ico.send(USER_ID, IcoAction::EndSale);
+    assert!(!res.main_failed());
     assert!(res.contains(&(USER_ID, IcoEvent::SaleEnded(1).encode())));
 }
 
