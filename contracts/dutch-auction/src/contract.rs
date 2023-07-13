@@ -61,6 +61,7 @@ impl Auction {
                 transaction_id,
             },
             0,
+            0,
         ) {
             Ok(reply) => reply,
             Err(_e) => {
@@ -125,6 +126,7 @@ impl Auction {
                 token_id: self.nft.token_id,
             },
             0,
+            0,
         )
         .expect("Send NFTAction::Transfer at renew contract")
         .await
@@ -153,10 +155,11 @@ impl Auction {
     }
 
     pub async fn get_token_owner(contract_id: ActorId, token_id: U256) -> Result<ActorId, Error> {
-        let reply: NFTEvent = msg::send_for_reply_as(contract_id, NFTAction::Owner { token_id }, 0)
-            .map_err(|_e| Error::SendingError)?
-            .await
-            .map_err(|_e| Error::NftOwnerFailed)?;
+        let reply: NFTEvent =
+            msg::send_for_reply_as(contract_id, NFTAction::Owner { token_id }, 0, 0)
+                .map_err(|_e| Error::SendingError)?
+                .await
+                .map_err(|_e| Error::NftOwnerFailed)?;
 
         if let NFTEvent::Owner { owner, .. } = reply {
             Ok(owner)
@@ -172,7 +175,7 @@ impl Auction {
     ) -> Result<(), Error> {
         let to = exec::program_id();
         let reply: NFTEvent =
-            msg::send_for_reply_as(contract_id, NFTAction::IsApproved { token_id, to }, 0)
+            msg::send_for_reply_as(contract_id, NFTAction::IsApproved { token_id, to }, 0, 0)
                 .map_err(|_e| Error::SendingError)?
                 .await
                 .map_err(|_e| Error::NftNotApproved)?;
@@ -215,6 +218,7 @@ impl Auction {
                 to: self.nft.owner,
                 token_id: self.nft.token_id,
             },
+            0,
             0,
         )
         .expect("Can't send NFTAction::Transfer at force stop")
@@ -333,13 +337,6 @@ extern "C" fn state() {
         "Failed to encode or reply with `<AuctionMetadata as Metadata>::State` from `state()`",
     );
 }
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    reply(metahash, 0).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
-}
-
 fn reply(payload: impl Encode, value: u128) -> GstdResult<MessageId> {
     msg::reply(payload, value)
 }

@@ -6,15 +6,15 @@ license.workspace = true
 authors.workspace = true
 
 [workspace.package]
-version = "0.1.4"
+version = "0.1.5"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 auction-io.workspace = true
-primitive-types = { workspace = true, features = ["scale-info"] }
+primitive-types.workspace = true
 nft-io.workspace = true
 gmeta.workspace = true
 gear-lib.workspace = true
@@ -23,6 +23,7 @@ gear-lib.workspace = true
 gtest.workspace = true
 gclient.workspace = true
 tokio.workspace = true
+nft.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
@@ -30,17 +31,18 @@ auction-io.workspace = true
 gmeta.workspace = true
 
 [workspace.dependencies]
-auction-io = { path = "io" }
-nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.11" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-primitive-types = { version = "0.12", default-features = false, features = ["scale-info"] }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.9" }
+nft-io = { git = "https://github.com/gear-dapps/non-fungible-token", tag = "0.2.12" }
+nft = { git = "https://github.com/gear-dapps/non-fungible-token", tag = "0.2.12" }
+auction-io.path = "io"
+primitive-types = { version = "0.12", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
 scale-info = { version = "2", default-features = false }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.7" }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "78dfa07" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
 tokio = "1"
 
 [workspace]

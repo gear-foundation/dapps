@@ -6,7 +6,11 @@ use gstd::prelude::*;
 use gstd::{ActorId, Encode};
 use nft_io::*;
 
-const NFT_PATH: &str = "target/nft.opt.wasm";
+const NFT_PATH: &str = "target/wasm32-unknown-unknown/debug/nft.opt.wasm";
+pub const ALICE: [u8; 32] = [
+    212, 53, 147, 199, 21, 253, 211, 28, 97, 20, 26, 189, 4, 169, 159, 214, 130, 44, 133, 88, 133,
+    76, 205, 227, 154, 86, 132, 231, 165, 109, 162, 125,
+];
 
 #[tokio::test]
 #[ignore]
@@ -17,10 +21,12 @@ async fn create_and_stop() -> Result<()> {
 
     // Init NFT
     let init_nft = InitNFT {
-        name: String::from("MyToken"),
-        symbol: String::from("MTK"),
-        base_uri: String::from(""),
         royalties: None,
+        collection: Default::default(),
+        constraints: Constraints {
+            authorized_minters: vec![ALICE.into()],
+            ..Default::default()
+        },
     }
     .encode();
     let gas_info = api
@@ -176,10 +182,12 @@ async fn create_buy_reward() -> Result<()> {
 
     // Init NFT
     let init_nft = InitNFT {
-        name: String::from("MyToken"),
-        symbol: String::from("MTK"),
-        base_uri: String::from(""),
         royalties: None,
+        collection: Default::default(),
+        constraints: Constraints {
+            authorized_minters: vec![ALICE.into()],
+            ..Default::default()
+        },
     }
     .encode();
     let gas_info = api

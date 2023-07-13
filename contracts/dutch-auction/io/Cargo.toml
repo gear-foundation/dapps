@@ -8,7 +8,7 @@ license.workspace = true
 [dependencies]
 gmeta.workspace = true
 gstd.workspace = true
-primitive-types = { workspace = true, features = ["scale-info"] }
+primitive-types.workspace = true
 scale-info.workspace = true
 parity-scale-codec.workspace = true
 nft-io.workspace = true

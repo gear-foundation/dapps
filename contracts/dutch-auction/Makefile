@@ -1,4 +1,4 @@
-.PHONY: all build fmt init lint pre-commit test deps full-test
+.PHONY: all build fmt init lint pre-commit test full-test
 
 all: init build test
 
@@ -22,21 +22,10 @@ lint:
 
 pre-commit: fmt lint full-test
 
-test: deps
+test:
 	@echo ⚙️ Running tests...
 	@cargo t -Fbinary-vendor
 
-full-test: deps
+full-test:
 	@echo ⚙️ Running all tests...
-	@cargo t -Fbinary-vendor -- --include-ignored --test-threads=1
-
-deps:
-	@echo ⚙️ Downloading dependencies...
-	@path=target/nft.opt.wasm;\
-	if [ ! -f $$path ]; then\
-	    curl -L\
-	        https://github.com/gear-dapps/non-fungible-token/releases/download/0.2.11/nft.opt.wasm\
-	        -o $$path;\
-	fi
-
-
+	@cargo t -Fbinary-vendor -- --include-ignored

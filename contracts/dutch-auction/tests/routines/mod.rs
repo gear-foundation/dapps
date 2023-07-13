@@ -5,7 +5,7 @@ use gear_lib::non_fungible_token::{
 };
 use gstd::Encode;
 use gtest::{Log, Program, RunResult, System};
-use nft_io::NFTEvent;
+use nft_io::{Constraints, InitNFT, NFTEvent};
 
 pub const USERS: &[u64] = &[4, 5, 6];
 #[allow(dead_code)]
@@ -44,15 +44,17 @@ pub fn init(sys: &System) -> Program {
 }
 
 pub fn init_nft(sys: &System, owner: u64) {
-    let nft_program = Program::from_file(sys, "./target/nft.opt.wasm");
+    let nft_program = Program::from_file(sys, "target/wasm32-unknown-unknown/debug/nft.opt.wasm");
 
     let res = nft_program.send(
         owner,
-        nft_io::InitNFT {
-            name: String::from("MyToken"),
-            symbol: String::from("MTK"),
-            base_uri: String::from(""),
+        InitNFT {
             royalties: None,
+            collection: Default::default(),
+            constraints: Constraints {
+                authorized_minters: vec![owner.into()],
+                ..Default::default()
+            },
         },
     );
 
