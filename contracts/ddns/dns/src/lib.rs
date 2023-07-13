@@ -10,7 +10,7 @@ async unsafe fn add_record(id: ActorId) -> Option<DnsRecord> {
         panic!("Program already registered");
     }
 
-    let reply: GetDnsMeta = msg::send_bytes_for_reply_as(id, Vec::from([0]), 0)
+    let reply: GetDnsMeta = msg::send_bytes_for_reply_as(id, Vec::from([0]), 0, 0)
         .expect("Error in async")
         .await
         .expect("Unable to get reply");
@@ -39,7 +39,7 @@ async unsafe fn add_record(id: ActorId) -> Option<DnsRecord> {
 
 async unsafe fn update_record(id: ActorId) -> Option<DnsRecord> {
     if let Some(record) = RECORDS.iter_mut().find(|r| r.id == id) {
-        let reply: GetDnsMeta = msg::send_bytes_for_reply_as(id, Vec::from([0]), 0)
+        let reply: GetDnsMeta = msg::send_bytes_for_reply_as(id, Vec::from([0]), 0, 0)
             .expect("Error in async")
             .await
             .expect("Unable to get reply");
@@ -94,11 +94,4 @@ async unsafe fn main() {
 #[no_mangle]
 unsafe extern "C" fn state() {
     msg::reply(RECORDS.clone(), 0).expect("failed to reply");
-}
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-
-    msg::reply(metahash, 0).expect("failed to encode or reply from `metahash()`");
 }
