@@ -39,7 +39,7 @@ impl Catalog {
         if parts.is_empty() {
             return Err(CatalogError::ZeroLengthPassed);
         }
-        for part_id in parts {
+        for part_id in &parts {
             if self.parts.remove(part_id).is_none() {
                 return Err(CatalogError::PartDoesNotExist);
             }
