@@ -62,6 +62,7 @@ impl ChannelHandler for channel_io::Channel {
                 owner_id: msg::source(),
             },
             0,
+            0,
         )
         .expect("Error in sending a message `[RouterAction::Register]` to router contract")
         .await
@@ -75,6 +76,7 @@ impl ChannelHandler for channel_io::Channel {
         msg::send_for_reply_as::<_, RouterEvent>(
             self.router_id,
             RouterAction::AddSubscriberToChannel(msg::source()),
+            0,
             0,
         ).expect("Error in sending async message `[RouterAction::AddSubscriberToChannel]` to router contract")
         .await
@@ -90,6 +92,7 @@ impl ChannelHandler for channel_io::Channel {
         msg::send_for_reply_as::<_, RouterEvent>(
             self.router_id,
             RouterAction::RemoveSubscriberFromChannel(msg::source()),
+            0,
             0,
         ).expect("Error in sending async message `[RouterAction::AddSubscriberToChannel]` to router contract")
         .await
@@ -166,10 +169,4 @@ extern "C" fn state() {
         0,
     )
     .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
-}
-
-#[no_mangle]
-extern "C" fn metahash() {
-    msg::reply::<[u8; 32]>(include!("../.metahash"), 0)
-        .expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
 }

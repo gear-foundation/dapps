@@ -28,7 +28,7 @@ impl FeedsChannel for Program<'_> {
 
         let res = router.send_bytes(OWNER, "INIT");
 
-        assert!(res.log().is_empty());
+        assert!(!res.main_failed());
 
         router
     }
