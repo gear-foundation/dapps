@@ -201,7 +201,6 @@ fn transfer_accepted_child_to_token_with_same_owner_another_contract() {
     // mint `new_parent_token_id`
     new_rmrk_parent.mint_to_root_owner(USERS[0], USERS[0], new_parent_token_id, None);
 
-    println!("HERE");
     // USERS[0] transfer child to another his token in another rmrk contract
     rmrk_child.transfer_to_nft(
         USERS[0],
