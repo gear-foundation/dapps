@@ -43,11 +43,11 @@ gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
 gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
 gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-multi-token = { git = "https://github.com/gear-dapps/multitoken", branch = "update-deps" }
-multi-token-io = { git = "https://github.com/gear-dapps/multitoken", branch = "update-deps" }
+multi-token = { git = "https://github.com/gear-dapps/multitoken", tag="0.3.8" }
+multi-token-io = { git = "https://github.com/gear-dapps/multitoken", tag="0.3.8" }
 concert-state = { path = "state" }
 concert-io = { path = "io" }
 tokio = "1"
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib", branch = "update-deps" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag="0.3.9" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
