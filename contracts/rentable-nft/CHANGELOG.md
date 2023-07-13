@@ -8,7 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [0.2.10] - 2023-07-06
 ### Changed
-- Update dependencies, pin gear libs to `#946ac47` commit.
+- Update dependencies
+- pin gear libs to `#946ac47` commit.
 
 ## [0.2.9] - 2023-05-25
 - Pin gear crates to 78dfa07 revision
