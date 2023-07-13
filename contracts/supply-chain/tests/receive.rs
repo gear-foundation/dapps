@@ -10,7 +10,7 @@ fn delivery_wo_delay() {
 
     let system = utils::initialize_system();
 
-    let non_fungible_token = NonFungibleToken::initialize(&system);
+    let mut non_fungible_token = NonFungibleToken::initialize(&system);
     let mut fungible_token = FungibleToken::initialize(&system);
     let mut supply_chain = SupplyChain::initialize(
         &system,
@@ -18,12 +18,15 @@ fn delivery_wo_delay() {
         non_fungible_token.actor_id(),
     );
 
+    non_fungible_token.add_minter(supply_chain.actor_id());
+
     for from in [DISTRIBUTOR, RETAILER] {
         fungible_token.mint(from, ITEM_PRICE);
         fungible_token.approve(from, supply_chain.actor_id(), ITEM_PRICE);
     }
 
     supply_chain.produce(PRODUCER).succeed(0);
+    non_fungible_token.approve(PRODUCER, supply_chain.actor_id(), 0);
     supply_chain
         .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE)
         .succeed(0);
@@ -46,6 +49,7 @@ fn delivery_wo_delay() {
 
     supply_chain.process(DISTRIBUTOR, 0).succeed(0);
     supply_chain.package(DISTRIBUTOR, 0).succeed(0);
+    non_fungible_token.approve(DISTRIBUTOR, supply_chain.actor_id(), 0);
     supply_chain
         .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE)
         .succeed(0);
@@ -73,7 +77,7 @@ fn delivery_with_delay() {
 
     let system = utils::initialize_system();
 
-    let non_fungible_token = NonFungibleToken::initialize(&system);
+    let mut non_fungible_token = NonFungibleToken::initialize(&system);
     let mut fungible_token = FungibleToken::initialize(&system);
     let mut supply_chain = SupplyChain::initialize(
         &system,
@@ -81,12 +85,15 @@ fn delivery_with_delay() {
         non_fungible_token.actor_id(),
     );
 
+    non_fungible_token.add_minter(supply_chain.actor_id());
+
     for (from, amount) in [(DISTRIBUTOR, ITEM_PRICE[0]), (RETAILER, ITEM_PRICE[1])] {
         fungible_token.mint(from, amount);
         fungible_token.approve(from, supply_chain.actor_id(), amount);
     }
 
     supply_chain.produce(PRODUCER).succeed(0);
+    non_fungible_token.approve(PRODUCER, supply_chain.actor_id(), 0);
     supply_chain
         .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE[0])
         .succeed(0);
@@ -112,6 +119,7 @@ fn delivery_with_delay() {
 
     supply_chain.process(DISTRIBUTOR, 0).succeed(0);
     supply_chain.package(DISTRIBUTOR, 0).succeed(0);
+    non_fungible_token.approve(DISTRIBUTOR, supply_chain.actor_id(), 0);
     supply_chain
         .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE[1])
         .succeed(0);
@@ -142,14 +150,15 @@ fn delivery_with_big_delay() {
 
     let system = utils::initialize_system();
 
-    let non_fungible_token = NonFungibleToken::initialize(&system);
+    let mut non_fungible_token = NonFungibleToken::initialize(&system);
     let mut fungible_token = FungibleToken::initialize(&system);
-
     let mut supply_chain = SupplyChain::initialize(
         &system,
         fungible_token.actor_id(),
         non_fungible_token.actor_id(),
     );
+
+    non_fungible_token.add_minter(supply_chain.actor_id());
 
     for from in [DISTRIBUTOR, RETAILER] {
         fungible_token.mint(from, ITEM_PRICE);
@@ -157,6 +166,7 @@ fn delivery_with_big_delay() {
     }
 
     supply_chain.produce(PRODUCER).succeed(0);
+    non_fungible_token.approve(PRODUCER, supply_chain.actor_id(), 0);
     supply_chain
         .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE)
         .succeed(0);
@@ -179,6 +189,7 @@ fn delivery_with_big_delay() {
 
     supply_chain.process(DISTRIBUTOR, 0).succeed(0);
     supply_chain.package(DISTRIBUTOR, 0).succeed(0);
+    non_fungible_token.approve(PRODUCER, supply_chain.actor_id(), 0);
     supply_chain
         .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE)
         .succeed(0);

@@ -2,7 +2,7 @@
 
 use gear_lib::non_fungible_token::token::{TokenId, TokenMetadata};
 use gmeta::{InOut, Metadata};
-use gstd::{errors::ContractError, prelude::*, ActorId};
+use gstd::{errors::Error as GstdError, prelude::*, ActorId};
 
 pub struct ContractMetadata;
 
@@ -514,7 +514,7 @@ pub enum Error {
     NFTMintingFailed,
     /// The contract reached a limit of protection against the memory overflow.
     MemoryLimitExceeded,
-    /// See [`ContractError`].
+    /// See [`GstdError`].
     ContractError(String),
     TxCacheError(TransactionCacheError),
 }
@@ -542,8 +542,8 @@ impl From<TransactionCacheError> for Error {
     }
 }
 
-impl From<ContractError> for Error {
-    fn from(error: ContractError) -> Self {
+impl From<GstdError> for Error {
+    fn from(error: GstdError) -> Self {
         Self::ContractError(error.to_string())
     }
 }

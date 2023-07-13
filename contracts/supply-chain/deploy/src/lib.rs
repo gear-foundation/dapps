@@ -1,20 +1,19 @@
-use gclient::{Error as GclientError, EventListener, EventProcessor, GearApi, Result};
+use gclient::{
+    errors::{Gear, ModuleError},
+    Error as GclientError, EventListener, EventProcessor, GearApi, Result,
+};
 use gstd::{
     prelude::{fmt::Debug, *},
     ActorId,
 };
 use primitive_types::H256;
-use subxt::{
-    error::{DispatchError, ModuleError, ModuleErrorData},
-    Error as SubxtError,
-};
 use supply_chain_io::*;
 use supply_chain_state::{WASM_BINARY, WASM_EXPORTS};
 
-pub const FT_MAIN: &str = "target/ft-main.wasm";
-pub const FT_STORAGE: &str = "target/ft-storage.wasm";
-pub const FT_LOGIC: &str = "target/ft-logic.wasm";
-pub const NFT_BINARY: &str = "target/nft.wasm";
+pub const FT_MAIN: &str = "target/wasm32-unknown-unknown/debug/ft_main.opt.wasm";
+pub const FT_STORAGE: &str = "target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm";
+pub const FT_LOGIC: &str = "target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm";
+pub const NFT_BINARY: &str = "target/wasm32-unknown-unknown/debug/nft.opt.wasm";
 
 pub struct Client {
     client: GearApi,
@@ -45,14 +44,9 @@ impl Client {
     pub async fn upload_code(&self, path: &str) -> Result<H256> {
         let code_id = match self.client.upload_code_by_path(path).await {
             Ok((code_id, _)) => code_id.into(),
-            Err(GclientError::Subxt(SubxtError::Runtime(DispatchError::Module(ModuleError {
-                error_data:
-                    ModuleErrorData {
-                        pallet_index: 14,
-                        error: [6, 0, 0, 0],
-                    },
-                ..
-            })))) => sp_core_hashing::blake2_256(&gclient::code_from_os(path)?),
+            Err(GclientError::Module(ModuleError::Gear(Gear::CodeAlreadyExists))) => {
+                sp_core_hashing::blake2_256(&gclient::code_from_os(path)?)
+            }
             Err(other_error) => return Err(other_error),
         };
 

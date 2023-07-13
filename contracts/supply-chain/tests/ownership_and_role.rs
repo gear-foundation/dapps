@@ -11,7 +11,7 @@ const RETAILER: [u64; 2] = [9, 10];
 fn ownership_and_role() {
     let system = utils::initialize_system();
 
-    let non_fungible_token = NonFungibleToken::initialize(&system);
+    let mut non_fungible_token = NonFungibleToken::initialize(&system);
     let mut fungible_token = FungibleToken::initialize(&system);
     let mut supply_chain = SupplyChain::initialize_custom(
         &system,
@@ -25,6 +25,8 @@ fn ownership_and_role() {
         },
     )
     .succeed();
+
+    non_fungible_token.add_minter(supply_chain.actor_id());
 
     for from in [DISTRIBUTOR[0], RETAILER[0]] {
         fungible_token.mint(from, ITEM_PRICE);
@@ -43,6 +45,7 @@ fn ownership_and_role() {
     supply_chain
         .put_up_for_sale_by_producer(PRODUCER[1], 0, ITEM_PRICE)
         .failed(Error::AccessRestricted);
+    non_fungible_token.approve(PRODUCER[0], supply_chain.actor_id(), 0);
     supply_chain
         .put_up_for_sale_by_producer(PRODUCER[0], 0, ITEM_PRICE)
         .succeed(0);
@@ -104,6 +107,7 @@ fn ownership_and_role() {
     supply_chain
         .put_up_for_sale_by_distributor(DISTRIBUTOR[1], 0, ITEM_PRICE)
         .failed(Error::AccessRestricted);
+    non_fungible_token.approve(DISTRIBUTOR[0], supply_chain.actor_id(), 0);
     supply_chain
         .put_up_for_sale_by_distributor(DISTRIBUTOR[0], 0, ITEM_PRICE)
         .succeed(0);

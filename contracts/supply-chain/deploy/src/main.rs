@@ -44,10 +44,9 @@ async fn main() -> Result<()> {
         .upload_program(
             NFT_BINARY,
             InitNFT {
-                name: Default::default(),
-                symbol: Default::default(),
-                base_uri: Default::default(),
                 royalties: Default::default(),
+                collection: Default::default(),
+                constraints: Default::default(),
             },
         )
         .await?;

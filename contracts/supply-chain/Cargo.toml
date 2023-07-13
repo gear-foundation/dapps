@@ -1,30 +1,35 @@
 [package]
 name = "supply-chain"
-version = "0.2.0"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-supply-chain-io = { path = "io" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-nft-io = { git = "https://github.com/gear-dapps/non-fungible-token.git", tag = "0.2.10" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token.git", tag = "2.1.1" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git", tag = "0.3.6" }
-hashbrown = "0.13"
+supply-chain-io.workspace = true
+gstd.workspace = true
+nft-io.workspace = true
+ft-main-io.workspace = true
+gear-lib.workspace = true
+hashbrown.workspace = true
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68", features = ["debug"] }
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-tokio = "1"
-pretty_assertions = "1"
-supply-chain-state = { path = "state" }
-deploy = { path = "deploy" }
+gtest.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+gclient.workspace = true
+tokio.workspace = true
+supply-chain-state.workspace = true
+deploy.workspace = true
+nft.workspace = true
+nft-state.workspace = true
+ft-main.workspace = true
+ft-logic.workspace = true
+ft-storage.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0f15c412ab6ee019ceaf7ce084426dfb68" }
-supply-chain-io = { path = "io" }
+gear-wasm-builder.workspace = true
+supply-chain-io.workspace = true
+gmeta.workspace = true
 
 [features]
 default = ["binary-vendor"]
@@ -32,3 +37,35 @@ binary-vendor = []
 
 [workspace]
 members = ["state", "deploy"]
+
+[workspace.package]
+version = "0.2.1"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.9" }
+nft-io = { git = "https://github.com/gear-dapps/non-fungible-token", tag = "0.2.12" }
+nft = { git = "https://github.com/gear-dapps/non-fungible-token", tag = "0.2.12" }
+nft-state = { git = "https://github.com/gear-dapps/non-fungible-token", tag = "0.2.12" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-main = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-logic = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-storage = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+hashbrown = "0.14"
+tokio = "1"
+supply-chain-state.path = "state"
+supply-chain-io.path = "io"
+supply-chain.path = "."
+sp-core-hashing = "8"
+primitive-types = "0.12"
+clap = { version = "4", default-features = false }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
+deploy.path = "deploy"

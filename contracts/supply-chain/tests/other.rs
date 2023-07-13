@@ -113,12 +113,14 @@ fn query_existing_items() {
     let system = utils::initialize_system();
 
     let fungible_token = FungibleToken::initialize(&system);
-    let non_fungible_token = NonFungibleToken::initialize(&system);
+    let mut non_fungible_token = NonFungibleToken::initialize(&system);
     let mut supply_chain = SupplyChain::initialize(
         &system,
         fungible_token.actor_id(),
         non_fungible_token.actor_id(),
     );
+
+    non_fungible_token.add_minter(supply_chain.actor_id());
 
     let item_infos = (0..=5)
         .map(|item_id| {

@@ -6,13 +6,15 @@ pub mod utils;
 fn nft_transfer() {
     let system = utils::initialize_system();
 
-    let non_fungible_token = NonFungibleToken::initialize(&system);
+    let mut non_fungible_token = NonFungibleToken::initialize(&system);
     let mut fungible_token = FungibleToken::initialize(&system);
     let mut supply_chain = SupplyChain::initialize(
         &system,
         fungible_token.actor_id(),
         non_fungible_token.actor_id(),
     );
+
+    non_fungible_token.add_minter(supply_chain.actor_id());
 
     for from in [DISTRIBUTOR, RETAILER, CONSUMER] {
         fungible_token.mint(from, ITEM_PRICE);
@@ -25,6 +27,7 @@ fn nft_transfer() {
         .owner_id(0)
         .eq(PRODUCER.into());
 
+    non_fungible_token.approve(PRODUCER, supply_chain.actor_id(), 0);
     supply_chain
         .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE)
         .succeed(0);
@@ -52,6 +55,7 @@ fn nft_transfer() {
     supply_chain.process(DISTRIBUTOR, 0).succeed(0);
     supply_chain.package(DISTRIBUTOR, 0).succeed(0);
 
+    non_fungible_token.approve(DISTRIBUTOR, supply_chain.actor_id(), 0);
     supply_chain
         .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE)
         .succeed(0);
@@ -74,6 +78,7 @@ fn nft_transfer() {
         .owner_id(0)
         .eq(RETAILER.into());
 
+    non_fungible_token.approve(RETAILER, supply_chain.actor_id(), 0);
     supply_chain
         .put_up_for_sale_by_retailer(RETAILER, 0, ITEM_PRICE)
         .succeed(0);

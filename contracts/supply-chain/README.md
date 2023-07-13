@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-dapps/supply-chain" target="_blank">
+  <a href="https://gitpod.io/#https://github.com/gear-foundation/dapps-supply-chain" target="_blank">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
@@ -10,18 +10,18 @@
 [![License][lic_badge]][lic_href]
 [![Docs][docs_badge]][docs_href]
 
-[build_badge]: https://img.shields.io/github/actions/workflow/status/gear-dapps/supply-chain/build.yml?label=Build
-[build_href]: https://github.com/gear-dapps/supply-chain/actions/workflows/build.yml
+[build_badge]: https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps-supply-chain/build.yml?label=Build
+[build_href]: https://github.com/gear-foundation/dapps-supply-chain/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-MIT-success
 [lic_href]: LICENSE
 
 [docs_badge]: https://img.shields.io/badge/Docs-online-5023dd
-[docs_href]: https://dapps.gear.rs/supply_chain
+[docs_href]: https://dapp.rs/dapps-supply-chain
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/supply-chain/releases).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-foundation/dapps-supply-chain/releases).
 
 ## Building Locally
 

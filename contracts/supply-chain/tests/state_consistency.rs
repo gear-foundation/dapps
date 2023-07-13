@@ -1,9 +1,9 @@
 use deploy::*;
 use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use gclient::Result;
-use gear_lib::non_fungible_token::token::TokenMetadata;
+use gear_lib::non_fungible_token::{io::NFTApproval, token::TokenMetadata};
 use gstd::prelude::*;
-use nft_io::InitNFT;
+use nft_io::{Constraints, InitNFT, NFTAction, NFTEvent};
 use supply_chain::WASM_BINARY_OPT;
 use supply_chain_io::*;
 
@@ -29,10 +29,12 @@ async fn state_consistency() -> Result<()> {
         .upload_program(
             NFT_BINARY,
             InitNFT {
-                name: Default::default(),
-                symbol: Default::default(),
-                base_uri: Default::default(),
                 royalties: Default::default(),
+                collection: Default::default(),
+                constraints: Constraints {
+                    authorized_minters: vec![ALICE.into()],
+                    ..Default::default()
+                },
             },
         )
         .await?;
@@ -51,6 +53,21 @@ async fn state_consistency() -> Result<()> {
         )
         .await?;
     assert_eq!(reply, Ok(()));
+
+    assert_eq!(
+        NFTEvent::MinterAdded {
+            minter_id: supply_chain_actor_id.into(),
+        },
+        client
+            .send_message(
+                nft_actor_id,
+                NFTAction::AddMinter {
+                    transaction_id: 0,
+                    minter_id: supply_chain_actor_id.into(),
+                },
+            )
+            .await?
+    );
 
     let item_id = 0.into();
     let price = 123456;
@@ -118,6 +135,24 @@ async fn state_consistency() -> Result<()> {
     );
 
     // InnerAction::Producer(ProducerAction::PutUpForSale)
+
+    assert_eq!(
+        NFTEvent::Approval(NFTApproval {
+            owner: ALICE.into(),
+            approved_account: supply_chain_actor_id.into(),
+            token_id: item_id
+        }),
+        client
+            .send_message(
+                nft_actor_id,
+                NFTAction::Approve {
+                    transaction_id: 1,
+                    to: supply_chain_actor_id.into(),
+                    token_id: item_id
+                },
+            )
+            .await?
+    );
 
     payload = Action::new(InnerAction::Producer(ProducerAction::PutUpForSale {
         item_id,
@@ -289,6 +324,24 @@ async fn state_consistency() -> Result<()> {
 
     // InnerAction::Distributor(DistributorAction::PutUpForSale)
 
+    assert_eq!(
+        NFTEvent::Approval(NFTApproval {
+            owner: ALICE.into(),
+            approved_account: supply_chain_actor_id.into(),
+            token_id: item_id
+        }),
+        client
+            .send_message(
+                nft_actor_id,
+                NFTAction::Approve {
+                    transaction_id: 2,
+                    to: supply_chain_actor_id.into(),
+                    token_id: item_id
+                },
+            )
+            .await?
+    );
+
     payload = Action::new(InnerAction::Distributor(DistributorAction::PutUpForSale {
         item_id,
         price,
@@ -416,6 +469,24 @@ async fn state_consistency() -> Result<()> {
     );
 
     // InnerAction::Retailer(RetailerAction::PutUpForSale)
+
+    assert_eq!(
+        NFTEvent::Approval(NFTApproval {
+            owner: ALICE.into(),
+            approved_account: supply_chain_actor_id.into(),
+            token_id: item_id
+        }),
+        client
+            .send_message(
+                nft_actor_id,
+                NFTAction::Approve {
+                    transaction_id: 3,
+                    to: supply_chain_actor_id.into(),
+                    token_id: item_id
+                },
+            )
+            .await?
+    );
 
     payload = Action::new(InnerAction::Retailer(RetailerAction::PutUpForSale {
         item_id,

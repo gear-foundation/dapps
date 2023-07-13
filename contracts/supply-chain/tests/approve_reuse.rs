@@ -9,13 +9,15 @@ const ITEM_PRICE_BY_DISTRIBUTOR: u128 = ITEM_PRICE * 2;
 fn approve_reuse_and_ft_transfer() {
     let system = utils::initialize_system();
 
-    let non_fungible_token = NonFungibleToken::initialize(&system);
+    let mut non_fungible_token = NonFungibleToken::initialize(&system);
     let mut fungible_token = FungibleToken::initialize(&system);
     let mut supply_chain = SupplyChain::initialize(
         &system,
         fungible_token.actor_id(),
         non_fungible_token.actor_id(),
     );
+
+    non_fungible_token.add_minter(supply_chain.actor_id());
 
     for (from, amount) in [
         (DISTRIBUTOR, ITEM_PRICE_BY_PRODUCER),
@@ -26,6 +28,7 @@ fn approve_reuse_and_ft_transfer() {
     }
 
     supply_chain.produce(PRODUCER).succeed(0);
+    non_fungible_token.approve(PRODUCER, supply_chain.actor_id(), 0);
     supply_chain
         .put_up_for_sale_by_producer(PRODUCER, 0, ITEM_PRICE_BY_PRODUCER)
         .succeed(0);
@@ -69,6 +72,7 @@ fn approve_reuse_and_ft_transfer() {
         .succeed(0);
     supply_chain.process(DISTRIBUTOR, 0).succeed(0);
     supply_chain.package(DISTRIBUTOR, 0).succeed(0);
+    non_fungible_token.approve(DISTRIBUTOR, supply_chain.actor_id(), 0);
     supply_chain
         .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE_BY_DISTRIBUTOR)
         .succeed(0);
