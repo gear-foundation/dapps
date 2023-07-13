@@ -36,7 +36,7 @@ jobs:
 
       - name: Run tests
         run: |
-          curl -L https://get.gear.rs/vara-testnet-linux-x86_64.tar.xz -o - | tar xJ
+          curl -L https://get.gear.rs/vara-testnet-x86_64-unknown-linux-gnu.tar.xz -o - | tar xJ
           make full-test
 
       - name: Build

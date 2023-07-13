@@ -75,24 +75,6 @@ extern "C" fn handle() {
     .expect("Error during replying with `OnChainNFTEvent`");
 }
 
-#[no_mangle]
-extern "C" fn meta_state() -> *mut [i32; 2] {
-    let query: OnChainNFTQuery = msg::load().expect("failed to decode input argument");
-    let nft = unsafe { CONTRACT.get_or_insert(OnChainNFT::default()) };
-    match query {
-        OnChainNFTQuery::TokenURI { token_id } => {
-            let encoded = OnChainNFTCore::token_uri(nft, token_id)
-                .expect("Error in reading OnChainNFT contract state");
-            gstd::util::to_leak_ptr(encoded)
-        }
-        OnChainNFTQuery::Base(query) => {
-            let encoded =
-                NFTMetaState::proc_state(nft, query).expect("Error in reading NFT contract state");
-            gstd::util::to_leak_ptr(encoded)
-        }
-    }
-}
-
 pub trait OnChainNFTCore: NFTCore {
     fn mint(&mut self, description: Vec<ItemId>, metadata: TokenMetadata) -> NFTTransfer;
     fn burn(&mut self, token_id: TokenId) -> NFTTransfer;
@@ -218,12 +200,6 @@ fn static_mut_state() -> &'static OnChainNFT {
 extern "C" fn state() {
     reply(common_state())
         .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
-}
-
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    reply(metahash).expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
 }
 
 fn reply(payload: impl Encode) -> GstdResult<MessageId> {

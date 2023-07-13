@@ -20,8 +20,8 @@ gmeta.workspace = true
 gstd = { workspace = true, features = ["debug"] }
 gtest.workspace = true
 gclient.workspace = true
-onchain-nft-state = { workspace = true, features = ["binary-vendor"] }
-tokio = "1"
+onchain-nft-state.workspace = true
+tokio.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
@@ -29,7 +29,7 @@ onchain-nft-io.workspace = true
 gmeta.workspace = true
 
 [features]
-binary-vendor = []
+binary-vendor = ["onchain-nft-state/binary-vendor"]
 
 [workspace]
 members = ["state"]
@@ -41,17 +41,17 @@ edition = "2021"
 license = "MIT"
 
 [workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "78dfa07" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-lib = { git = "https://github.com/gear-foundation/dapps-gear-lib", tag = "0.3.9" }
+gear-lib-derive = { git = "https://github.com/gear-foundation/dapps-gear-lib", tag = "0.3.9" }
 tokio = "1"
 onchain-nft-io.path = "io"
 parity-scale-codec = { version = "3", default-features = false }
 scale-info = { version = "2", default-features = false }
-hashbrown = "0.13"
+hashbrown = "0.14"
 primitive-types = { version = "0.12", default-features = false }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.7" }
-gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.7" }
-onchain-nft-state = { path = "state" }
+onchain-nft-state.path = "state"

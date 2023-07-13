@@ -8,10 +8,6 @@ build:
 	@ls -l target/wasm32-unknown-unknown/release/*.wasm
 
 fmt:
-	@echo ⚙️ Formatting...
-	@cargo fmt --all
-
-fmt-check:
 	@echo ⚙️ Checking a format...
 	@cargo fmt --all --check
 
@@ -30,9 +26,9 @@ lint:
 
 pre-commit: fmt lint full-test
 
-test: build
-	@echo ──────────── Run tests ────────────────────────
-	@cargo t
+test:
+	@echo ⚙️ Running unit tests...
+	@cargo t -Fbinary-vendor
 
 full-test:
 	@echo ⚙️ Running all tests...
