@@ -16,7 +16,7 @@ extern "C" fn handle() {
         debug!("{:?} total message(s) stored: ", MESSAGE_LOG.len());
 
         for log in &MESSAGE_LOG {
-            debug!(log);
+            debug!("{log:?}");
         }
     }
 }
@@ -25,12 +25,6 @@ extern "C" fn handle() {
 extern "C" fn state() {
     msg::reply(unsafe { MESSAGE_LOG.clone() }, 0)
         .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
-}
-
-#[no_mangle]
-extern "C" fn metahash() {
-    msg::reply::<[u8; 32]>(include!("../.metahash"), 0)
-        .expect("Failed to encode or reply with `[u8; 32]` from `metahash()`");
 }
 
 #[cfg(test)]
@@ -48,7 +42,7 @@ mod tests {
         let program = Program::current(&system);
 
         let res = program.send_bytes(42, "INIT");
-        assert!(res.log().is_empty());
+        assert!(!res.main_failed());
 
         let res = program.send_bytes(42, String::from("PING").encode());
         let log = Log::builder().source(1).dest(42).payload_bytes("PONG");
