@@ -1,9 +1,7 @@
 image: gitpod/workspace-rust
 tasks:
   - init: |
-      if [$DAPP]; then
-        gp open $DAPP/src/lib.rs
-      fi
+      [ $DAPP ] && gp open $DAPP/src/lib.rs
 vscode:
   extensions:
     - rust-lang.rust-analyzer
