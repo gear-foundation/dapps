@@ -1,0 +1,7 @@
+image: gitpod/workspace-rust
+tasks:
+  - init: |
+      [$DAPP] && gp open $DAPP/src/lib.rs
+vscode:
+  extensions:
+    - matklad.rust-analyzer
