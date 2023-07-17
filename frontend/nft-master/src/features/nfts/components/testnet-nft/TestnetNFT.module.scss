@@ -1,5 +1,14 @@
 @use 'utils' as *;
 
+.container {
+  min-height: 10vh;
+  position: relative;
+}
+
+.name {
+  margin-bottom: 20px;
+}
+
 .wrapper {
   padding-bottom: 100%;
   background: url(../../assets/testnet-frame.svg) center/cover no-repeat;

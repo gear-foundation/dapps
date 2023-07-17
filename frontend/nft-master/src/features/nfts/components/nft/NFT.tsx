@@ -71,7 +71,7 @@ function NFT() {
     <Container className={styles.container}>
       {nft ? (
         <>
-          <div>
+          <div className={styles.innerContainer}>
             <div className={styles.imageWrapper}>
               <img src={getImageUrl(nft.mediaUrl)} alt="" />
             </div>
@@ -90,7 +90,7 @@ function NFT() {
             </div>
           </div>
 
-          <div>
+          <div className={styles.innerContainer}>
             <h2 className={styles.name}>{name}</h2>
             <p className={styles.collection}>{collection}</p>
             <p className={styles.description}>{description}</p>

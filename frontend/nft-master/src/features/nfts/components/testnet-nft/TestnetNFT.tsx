@@ -3,7 +3,8 @@ import { HexString } from '@polkadot/util/types';
 import { useMemo } from 'react';
 import { getProgramMetadata } from '@gear-js/api';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { Container } from 'components';
+import { Container, Loader } from 'components';
+import clsx from 'clsx';
 import { ReactComponent as BackArrowSVG } from '../../assets/back-arrow.svg';
 import { useNFTs } from '../../hooks';
 import { TESTNET_NFT_CONTRACT_ADDRESS } from '../../consts';
@@ -48,10 +49,10 @@ function TestnetNFT() {
   return nft ? (
     <Navigate to={`/${TESTNET_NFT_CONTRACT_ADDRESS}/${nft.id}`} />
   ) : (
-    <>
+    <Container className={clsx(nftStyles.container, styles.container)}>
       {state && (
-        <Container className={nftStyles.container}>
-          <div>
+        <>
+          <div className={nftStyles.innerContainer}>
             <div className={styles.wrapper}>
               <div className={styles.nft}>
                 {isAccountAuthorized && (
@@ -84,24 +85,21 @@ function TestnetNFT() {
             </div>
           </div>
 
-          <div>
-            <h2 className={nftStyles.name}>VARA Testnet NFT</h2>
-            <p className={nftStyles.collection}>Vara Testnet Launch collection</p>
-            <p className={nftStyles.description}>
-              It is a collection of digital assets created on the Vara blockchain and traded in the non-fungible token
-              (NFT) format. Each token represents a unique character - with unique characteristics and attributes.
-            </p>
+          <div className={nftStyles.innerContainer}>
+            <h2 className={clsx(nftStyles.name, styles.name)}>{`${state.collection.name} NFT`}</h2>
+            {/* <p className={nftStyles.collection}>{}</p> */}
+            <p className={nftStyles.description}>{state.collection.description}</p>
 
             <button type="button" className={nftStyles.backButton} onClick={handleBackButtonClick}>
               <BackArrowSVG />
               <span>Back</span>
             </button>
           </div>
-        </Container>
+        </>
       )}
 
-      {!state && null}
-    </>
+      {!state && <Loader />}
+    </Container>
   );
 }
 
