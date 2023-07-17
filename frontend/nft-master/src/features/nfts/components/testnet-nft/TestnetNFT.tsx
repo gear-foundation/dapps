@@ -5,6 +5,7 @@ import { getProgramMetadata } from '@gear-js/api';
 import { Navigate, useNavigate } from 'react-router-dom';
 import { Container, Loader } from 'components';
 import clsx from 'clsx';
+import { Wallet } from 'features/wallet';
 import { ReactComponent as BackArrowSVG } from '../../assets/back-arrow.svg';
 import { useNFTs } from '../../hooks';
 import { TESTNET_NFT_CONTRACT_ADDRESS } from '../../consts';
@@ -55,30 +56,42 @@ function TestnetNFT() {
           <div className={nftStyles.innerContainer}>
             <div className={styles.wrapper}>
               <div className={styles.nft}>
-                {isAccountAuthorized && (
+                {account && (
                   <>
-                    <h3 className={styles.heading}>You don&apos;t have NFT yet</h3>
-                    <p className={styles.text}>To obtain your NFT, click the &quot;Mint NFT&quot; button.</p>
-                    <button type="button" onClick={mint} className={styles.button}>
-                      Mint NFT
-                    </button>
+                    {isAccountAuthorized && (
+                      <>
+                        <h3 className={styles.heading}>You don&apos;t have NFT yet</h3>
+                        <p className={styles.text}>To obtain your NFT, click the &quot;Mint NFT&quot; button.</p>
+                        <button type="button" onClick={mint} className={styles.button}>
+                          Mint NFT
+                        </button>
+                      </>
+                    )}
+
+                    {!isAccountAuthorized && (
+                      <>
+                        <h3 className={styles.heading}>You are currently not part of the Vara Network Testnet.</h3>
+                        <p>
+                          More information can be found in our{' '}
+                          <a href="https://discord.com/invite/7BQznC9uD9" target="_blank" rel="noreferrer">
+                            Discord
+                          </a>{' '}
+                          and{' '}
+                          <a href="https://t.me/VaraNetwork_Global" target="_blank" rel="noreferrer">
+                            Telegram
+                          </a>
+                          .
+                        </p>
+                      </>
+                    )}
                   </>
                 )}
 
-                {!isAccountAuthorized && (
+                {!account && (
                   <>
-                    <h3 className={styles.heading}>You are currently not part of the Vara Network Testnet.</h3>
-                    <p>
-                      More information can be found in our{' '}
-                      <a href="https://discord.com/invite/7BQznC9uD9" target="_blank" rel="noreferrer">
-                        Discord
-                      </a>{' '}
-                      and{' '}
-                      <a href="https://t.me/VaraNetwork_Global" target="_blank" rel="noreferrer">
-                        Telegram
-                      </a>
-                      .
-                    </p>
+                    <h3 className={styles.heading}>No Account</h3>
+                    <p className={styles.text}>To obtain your NFT, please connect your wallet first.</p>
+                    <Wallet />
                   </>
                 )}
               </div>
