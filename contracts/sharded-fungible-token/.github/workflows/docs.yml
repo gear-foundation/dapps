@@ -6,6 +6,10 @@ on:
   push:
     branches: [master]
 
+permissions:
+  id-token: write
+  pages: write
+
 env:
   CARGO_TERM_COLOR: always
 
@@ -16,28 +20,33 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Install nightly toolchain
-        uses: dtolnay/rust-toolchain@nightly
-        with:
-          targets: wasm32-unknown-unknown
-
       - name: Cache
         uses: Swatinem/rust-cache@v2
 
       - name: Test doc examples
+        if: github.event_name == 'pull_request'
+        env:
+          __GEAR_WASM_BUILDER_NO_BUILD: 1
         run: cargo test --doc --workspace
 
       - name: Build docs
-        run: >
-          RUSTDOCFLAGS="--enable-index-page -Zunstable-options"
+        env:
+          RUSTDOCFLAGS: --enable-index-page -Zunstable-options
+          __GEAR_WASM_BUILDER_NO_BUILD: 1
+        run: |
           cargo doc --no-deps --workspace
+          rm -f target/doc/.lock
 
-      - name: Deploy
+      - name: Setup GitHub Pages
         if: github.event_name == 'push'
-        uses: peaceiris/actions-gh-pages@v3
+        uses: actions/configure-pages@v3
+
+      - name: Upload Pages artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v2
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./target/doc
-          force_orphan: true
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
+            path: target/doc
+
+      - name: Deploy to GitHub Pages
+        if: github.event_name == 'push'
+        uses: actions/deploy-pages@v2
