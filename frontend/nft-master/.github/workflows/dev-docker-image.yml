@@ -68,7 +68,7 @@ jobs:
       - name: Deploy to k8s
         uses: sergeyfilyanin/kubectl-aws-eks@master
         with:
-          args: rollout restart deployment simple-nft-dev -n gear-dapps
+          args: rollout restart deployment dev-simple-nft -n gear-dapps
 
       - name: Check k8s deployments
         uses: sergeyfilyanin/kubectl-aws-eks@master
