@@ -198,4 +198,25 @@
   &:hover {
     opacity: 0.5;
   }
+
+}
+
+.transferButton {
+  @include gap(11px, right);
+  padding: 17px 24px;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0.03em;
+  background-color: transparent;
+  border: 2px solid #000000;
+  border-radius: 2px;
+  transition: all 0.3s;
+  align-self: flex-start;
+  margin-left: 20px;
+
+  &:hover {
+    opacity: 0.5;
+  }
+
 }

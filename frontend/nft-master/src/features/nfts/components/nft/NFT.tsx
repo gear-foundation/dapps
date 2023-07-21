@@ -3,11 +3,13 @@ import { createSearchParams, useLocation, useNavigate, useParams } from 'react-r
 import { ChangeEvent, useEffect, useState } from 'react';
 import { getIpfsAddress } from 'utils';
 import { Container } from 'components';
+import { useAccount } from '@gear-js/react-hooks';
 import { ReactComponent as SearchSVG } from '../../assets/search.svg';
 import { ReactComponent as BackArrowSVG } from '../../assets/back-arrow.svg';
 import { useNFTs } from '../../hooks';
 import { getImageUrl } from '../../utils';
 import styles from './NFT.module.scss';
+import { TransferNFTModal } from '../transfer-nft-modal';
 
 type Params = {
   programId: HexString;
@@ -16,13 +18,13 @@ type Params = {
 
 function NFT() {
   const { programId, id } = useParams() as Params;
+  const { account } = useAccount();
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const { nfts } = useNFTs();
   const nft = nfts.find((item) => item.programId === programId && item.id === id);
   const { name, collection, description, owner, attribUrl } = nft || {};
-
   const [details, setDetails] = useState<string[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -67,70 +69,84 @@ function NFT() {
 
   const handleBackButtonClick = () => navigate(-1);
 
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+  const openTransferModal = () => setIsTransferModalOpen(true);
+  const closeTransferModal = () => setIsTransferModalOpen(false);
+
   return (
-    <Container className={styles.container}>
-      {nft ? (
-        <>
-          <div className={styles.innerContainer}>
-            <div className={styles.imageWrapper}>
-              <img src={getImageUrl(nft.mediaUrl)} alt="" />
-            </div>
-
-            <div className={styles.footerWrapper}>
-              <footer className={styles.footer}>
-                <p className={styles.owner}>
-                  <span className={styles.ownerHeading}>Owner:</span>
-                  <span className={styles.ownerText}>{owner}</span>
-                </p>
-
-                <button type="button" className={styles.ownerButton} onClick={handleOwnerButtonClick}>
-                  View NFTs
-                </button>
-              </footer>
-            </div>
-          </div>
-
-          <div className={styles.innerContainer}>
-            <h2 className={styles.name}>{name}</h2>
-            <p className={styles.collection}>{collection}</p>
-            <p className={styles.description}>{description}</p>
-
-            {attribUrl && (
-              <div>
-                <header className={styles.header}>
-                  {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                  <label htmlFor="search" className={styles.label}>
-                    NFT Details:
-                  </label>
-
-                  <div className={styles.inputWrapper}>
-                    <SearchSVG />
-                    <input
-                      type="text"
-                      placeholder="Search"
-                      id="search"
-                      value={searchQuery}
-                      onChange={handleSearchInputChange}
-                    />
-                  </div>
-                </header>
-
-                <ul className={styles.details}>{getDetails()}</ul>
+    <>
+      <Container className={styles.container}>
+        {nft ? (
+          <>
+            <div className={styles.innerContainer}>
+              <div className={styles.imageWrapper}>
+                <img src={getImageUrl(nft.mediaUrl)} alt="" />
               </div>
-            )}
 
-            <button type="button" className={styles.backButton} onClick={handleBackButtonClick}>
-              <BackArrowSVG />
-              <span>Back</span>
-            </button>
-          </div>
-        </>
-      ) : (
-        <p>
-          NFT with id {id} in {programId} contract not found.
-        </p>
-      )}
-    </Container>
+              <div className={styles.footerWrapper}>
+                <footer className={styles.footer}>
+                  <p className={styles.owner}>
+                    <span className={styles.ownerHeading}>Owner:</span>
+                    <span className={styles.ownerText}>{owner}</span>
+                  </p>
+
+                  <button type="button" className={styles.ownerButton} onClick={handleOwnerButtonClick}>
+                    View NFTs
+                  </button>
+                </footer>
+              </div>
+            </div>
+
+            <div className={styles.innerContainer}>
+              <h2 className={styles.name}>{name}</h2>
+              <p className={styles.collection}>{collection}</p>
+              <p className={styles.description}>{description}</p>
+
+              {attribUrl && (
+                <div>
+                  <header className={styles.header}>
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                    <label htmlFor="search" className={styles.label}>
+                      NFT Details:
+                    </label>
+
+                    <div className={styles.inputWrapper}>
+                      <SearchSVG />
+                      <input
+                        type="text"
+                        placeholder="Search"
+                        id="search"
+                        value={searchQuery}
+                        onChange={handleSearchInputChange}
+                      />
+                    </div>
+                  </header>
+
+                  <ul className={styles.details}>{getDetails()}</ul>
+                </div>
+              )}
+
+              <button type="button" className={styles.backButton} onClick={handleBackButtonClick}>
+                <BackArrowSVG />
+                <span>Back</span>
+              </button>
+
+              {account?.decodedAddress === owner && (
+                <button type="button" className={styles.transferButton} onClick={openTransferModal}>
+                  Transfer
+                </button>
+              )}
+            </div>
+          </>
+        ) : (
+          <p>
+            NFT with id {id} in {programId} contract not found.
+          </p>
+        )}
+      </Container>
+
+      {isTransferModalOpen && <TransferNFTModal onClose={closeTransferModal} />}
+    </>
   );
 }
 
