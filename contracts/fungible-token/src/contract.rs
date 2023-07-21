@@ -26,15 +26,16 @@ static mut FUNGIBLE_TOKEN: Option<FungibleToken> = None;
 impl FungibleToken {
     /// Executed on receiving `fungible-token-messages::MintInput`.
     fn mint(&mut self, amount: u128) {
+        let source = msg::source();
         self.balances
-            .entry(msg::source())
+            .entry(source)
             .and_modify(|balance| *balance += amount)
             .or_insert(amount);
         self.total_supply += amount;
         msg::reply(
             FTEvent::Transfer {
                 from: ZERO_ID,
-                to: msg::source(),
+                to: source,
                 amount,
             },
             0,
@@ -43,17 +44,18 @@ impl FungibleToken {
     }
     /// Executed on receiving `fungible-token-messages::BurnInput`.
     fn burn(&mut self, amount: u128) {
-        if self.balances.get(&msg::source()).unwrap_or(&0) < &amount {
+        let source = msg::source();
+        if self.balances.get(&source).unwrap_or(&0) < &amount {
             panic!("Amount exceeds account balance");
         }
         self.balances
-            .entry(msg::source())
+            .entry(source)
             .and_modify(|balance| *balance -= amount);
         self.total_supply -= amount;
 
         msg::reply(
             FTEvent::Transfer {
-                from: msg::source(),
+                from: source,
                 to: ZERO_ID,
                 amount,
             },
@@ -96,13 +98,14 @@ impl FungibleToken {
         if to == &ZERO_ID {
             panic!("Approve to zero address");
         }
+        let source = msg::source();
         self.allowances
-            .entry(msg::source())
+            .entry(source)
             .or_default()
             .insert(*to, amount);
         msg::reply(
             FTEvent::Approve {
-                from: msg::source(),
+                from: source,
                 to: *to,
                 amount,
             },
@@ -112,17 +115,14 @@ impl FungibleToken {
     }
 
     fn can_transfer(&mut self, from: &ActorId, amount: u128) -> bool {
-        if from == &msg::source() || self.balances.get(&msg::source()).unwrap_or(&0) >= &amount {
+        let source = msg::source();
+        if from == &source || self.balances.get(&source).unwrap_or(&0) >= &amount {
             return true;
         }
-        if let Some(allowed_amount) = self
-            .allowances
-            .get(from)
-            .and_then(|m| m.get(&msg::source()))
-        {
+        if let Some(allowed_amount) = self.allowances.get(from).and_then(|m| m.get(&source)) {
             if allowed_amount >= &amount {
                 self.allowances.entry(*from).and_modify(|m| {
-                    m.entry(msg::source()).and_modify(|a| *a -= amount);
+                    m.entry(source).and_modify(|a| *a -= amount);
                 });
                 return true;
             }
