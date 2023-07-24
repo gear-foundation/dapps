@@ -1,6 +1,6 @@
 import { LOCAL_STORAGE } from 'consts';
 import { Node, NodeSection } from './types';
-import { DEVELOPMENT_SECTION } from './consts';
+import { DEVELOPMENT_SECTION, NODE_ADRESS_URL_PARAM } from './consts';
 
 const isDevSection = (section: NodeSection) => section.caption === DEVELOPMENT_SECTION;
 
@@ -41,4 +41,19 @@ const isNodeExists = (sections: NodeSection[], address: string) => {
   return nodes.some((node) => node.address === address);
 };
 
-export { concatNodes, isDevSection, getLocalNodes, getLocalNodesFromLS, isNodeAddressValid, isNodeExists };
+const getNodeAddressFromUrl = () => {
+  const searchParams = new URLSearchParams(window.location.search);
+  const nodeAddress = searchParams.get(NODE_ADRESS_URL_PARAM);
+
+  return nodeAddress && isNodeAddressValid(nodeAddress) ? nodeAddress : '';
+};
+
+export {
+  concatNodes,
+  isDevSection,
+  getLocalNodes,
+  getLocalNodesFromLS,
+  isNodeAddressValid,
+  isNodeExists,
+  getNodeAddressFromUrl,
+};

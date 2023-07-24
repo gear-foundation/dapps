@@ -1,4 +1,4 @@
 import { ContractAddress } from './components';
-import { useContractAddress, useContractAddressSetup } from './hooks';
+import { useContractAddress } from './hooks';
 
-export { ContractAddress, useContractAddress, useContractAddressSetup };
+export { ContractAddress, useContractAddress };

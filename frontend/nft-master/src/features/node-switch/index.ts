@@ -1,4 +1,4 @@
 import { NodeSwitch } from './components';
-import { useNodeAddress } from './hooks';
+import { useNodeAddress, useSearchParamsSetup } from './hooks';
 
-export { NodeSwitch, useNodeAddress };
+export { NodeSwitch, useNodeAddress, useSearchParamsSetup };

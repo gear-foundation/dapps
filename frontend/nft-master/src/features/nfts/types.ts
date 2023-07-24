@@ -29,4 +29,10 @@ type NFTContractState = {
   collection: Collection;
 };
 
-export type { NFT, MasterContractState, NFTContractState };
+type TestnetNFTState = NFTContractState & {
+  constraints: {
+    authorizedMinters: HexString[];
+  };
+};
+
+export type { NFT, MasterContractState, NFTContractState, TestnetNFTState };

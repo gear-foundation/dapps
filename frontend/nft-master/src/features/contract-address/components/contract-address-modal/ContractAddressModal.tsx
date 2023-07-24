@@ -1,9 +1,8 @@
 import { useForm } from '@mantine/form';
 import { useApi } from '@gear-js/react-hooks';
-import { useAtom } from 'jotai';
 import { Modal } from 'components';
 import { isProgramIdValid } from 'utils';
-import { CONTRACT_ADDRESS_ATOM } from '../../consts';
+import { useContractAddress } from 'features/contract-address/hooks';
 import styles from './ContractAddressModal.module.scss';
 
 const initialValues = { address: '' };
@@ -14,7 +13,7 @@ type Props = {
 
 function ContractAddressModal({ onClose }: Props) {
   const { api } = useApi();
-  const [, setAddress] = useAtom(CONTRACT_ADDRESS_ATOM);
+  const { setContractAddress } = useContractAddress();
 
   const { getInputProps, onSubmit, setFieldError, errors } = useForm({ initialValues });
   const error = errors.address;
@@ -27,7 +26,7 @@ function ContractAddressModal({ onClose }: Props) {
       .then((isProgramExists) => {
         if (!isProgramExists) throw new Error('Program not found in the storage');
 
-        setAddress(address);
+        setContractAddress(address);
         onClose();
       })
       .catch(({ message }) => setFieldError('address', message));

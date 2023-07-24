@@ -10,7 +10,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { useNodeAddress } from 'features/node-switch';
 
 function ApiProvider({ children }: ProviderProps) {
-  const nodeAddress = useNodeAddress();
+  const { nodeAddress } = useNodeAddress();
 
   return <GearApiProvider providerAddress={nodeAddress}>{children}</GearApiProvider>;
 }

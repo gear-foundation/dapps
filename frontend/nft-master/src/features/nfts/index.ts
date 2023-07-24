@@ -1,4 +1,4 @@
-import { NFTs, NFT, Search, TestnetNFT, TransferNFTModal } from './components';
-import { useNFTsState, useNFTs } from './hooks';
+import { NFTs, NFT, Search, TransferNFTModal } from './components';
+import { useNFTsState, useNFTs, useTestnetAutoLogin } from './hooks';
 
-export { NFTs, NFT, TestnetNFT, TransferNFTModal, Search, useNFTsState, useNFTs };
+export { NFTs, NFT, TransferNFTModal, Search, useNFTsState, useNFTs, useTestnetAutoLogin };

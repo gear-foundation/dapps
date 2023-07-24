@@ -1,5 +1,5 @@
 import { MessagesDispatched, decodeAddress, getProgramMetadata } from '@gear-js/api';
-import { useAlert, useApi } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useApi, useReadFullState, useSendMessage } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { useEffect, useMemo } from 'react';
@@ -7,15 +7,16 @@ import { useAtom } from 'jotai';
 import metaTxt from 'assets/nft_master.meta.txt';
 import { useProgramMetadata } from 'hooks';
 import { useSearchParams } from 'react-router-dom';
+import { useNodeAddress } from 'features/node-switch';
 import { useContractAddress } from '../contract-address';
-import { MasterContractState, NFTContractState } from './types';
-import { NFTS_ATOM, NFT_CONTRACTS_ATOM } from './consts';
+import { MasterContractState, NFTContractState, TestnetNFTState } from './types';
+import { NFTS_ATOM, NFT_CONTRACTS_ATOM, TESTNET_NFT_CONTRACT_ADDRESS } from './consts';
 
 function useNFTsState() {
   const { api, isApiReady } = useApi();
   const alert = useAlert();
 
-  const masterContractAddress = useContractAddress();
+  const { contractAddress: masterContractAddress } = useContractAddress();
   const masterMetadata = useProgramMetadata(metaTxt);
 
   const [NFTContracts, setNFTContracts] = useAtom(NFT_CONTRACTS_ATOM);
@@ -134,4 +135,57 @@ function useNFTSearch() {
   return { searchQuery, decodedQueryAddress, resetSearchQuery };
 }
 
-export { useNFTsState, useNFTs, useNFTSearch };
+function useTestnetNFT(NFTContracts: [HexString, string][]) {
+  const { account } = useAccount();
+  const { decodedAddress } = account || {};
+
+  const contract = NFTContracts.find(([address]) => address === TESTNET_NFT_CONTRACT_ADDRESS);
+
+  const metaRaw = contract?.[1];
+  const metaHex = metaRaw ? (`0x${metaRaw}` as HexString) : undefined;
+
+  const metadata = useMemo(() => (metaHex ? getProgramMetadata(metaHex) : undefined), [metaHex]);
+
+  // TODO: better to obtain state from useNFTs to not read state twice,
+  // however current implementation return only list of tokens
+  const { state } = useReadFullState<TestnetNFTState>(TESTNET_NFT_CONTRACT_ADDRESS, metadata);
+  const authorizedMinters = state?.constraints.authorizedMinters;
+  const isTestnetNFTMintAvailable = !!authorizedMinters?.find((address) => address === decodedAddress);
+
+  const sendMessage = useSendMessage(TESTNET_NFT_CONTRACT_ADDRESS, metadata);
+
+  const mintTestnetNFT = () => sendMessage({ Mint: null });
+
+  return { mintTestnetNFT, isTestnetNFTMintAvailable };
+}
+
+function useTestnetAutoLogin() {
+  const { isTestnet } = useNodeAddress();
+
+  const { login, accounts, isAccountReady } = useAccount();
+  const alert = useAlert();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (!isTestnet || !isAccountReady) return;
+
+    const accountAddress = searchParams.get('account');
+
+    if (accountAddress) {
+      const account = accounts.find(({ address }) => address === accountAddress);
+
+      if (account) {
+        login(account).then(() => {
+          searchParams.delete('account');
+          setSearchParams(searchParams);
+        });
+      } else {
+        alert.error(`Account with address ${accountAddress} not found`);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams, accounts, isTestnet, isAccountReady]);
+}
+
+export { useNFTsState, useNFTs, useNFTSearch, useTestnetNFT, useTestnetAutoLogin };

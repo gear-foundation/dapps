@@ -12,7 +12,7 @@ import { Logo } from './logo';
 import styles from './Header.module.scss';
 
 function Header() {
-  const contractAddress = useContractAddress();
+  const { contractAddress } = useContractAddress();
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 

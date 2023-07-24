@@ -1,9 +1,10 @@
 import { Modal } from 'components';
-import { LOCAL_STORAGE } from 'consts';
+import { LOCAL_STORAGE, SEARCH_PARAMS } from 'consts';
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ReactComponent as PlusSVG } from '../../assets/plus.svg';
 import { ReactComponent as SwitchSVG } from '../../assets/switch.svg';
-import { ICON } from '../../consts';
+import { ICON, NODE_ADRESS_URL_PARAM } from '../../consts';
 import { NodeSection } from '../../types';
 import { useNodeAddress } from '../../hooks';
 import { Node } from '../node';
@@ -19,11 +20,18 @@ type Props = {
 function SwitchModal(props: Props) {
   const { sections, onRemove, onAdd, onClose } = props;
 
-  const nodeAddress = useNodeAddress();
+  const { nodeAddress } = useNodeAddress();
   const [selectedNode, setSelectedNode] = useState(nodeAddress);
   const isCurrentNode = selectedNode === nodeAddress;
 
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const switchNode = () => {
+    // remove param to update it during nodeApi init
+    searchParams.delete(NODE_ADRESS_URL_PARAM);
+    searchParams.delete(SEARCH_PARAMS.MASTER_CONTRACT_ID);
+    setSearchParams(searchParams);
+
     localStorage.setItem(LOCAL_STORAGE.NODE, selectedNode);
     window.location.reload();
   };
