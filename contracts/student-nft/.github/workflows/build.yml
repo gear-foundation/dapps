@@ -42,11 +42,8 @@ jobs:
 
       - name: Run tests
         run: |
-          curl -L https://get.gear.rs/vara-testnet-linux-x86_64.tar.xz -o - | tar xJ
-          chmod +x gear
-          ./gear --tmp --dev &> /dev/null & echo -n $! > gear.pid
+          curl -L https://get.gear.rs/vara-testnet-x86_64-unknown-linux-gnu.tar.xz -o - | tar xJ
           make full-test
-          kill `cat gear.pid`
 
       - name: Build
         run: make build

@@ -5,7 +5,7 @@ use gclient::GearApi;
 #[ignore]
 #[tokio::test]
 async fn success() -> gclient::Result<()> {
-    let api = GearApi::dev().await?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
 
     let student_nft = utils_gclient::common::init(&api).await?;
 

@@ -1,26 +1,26 @@
 [package]
 name = "student-nft"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
 student-nft-io = { path = "io" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
 hashbrown = "0.13"
 
 [build-dependencies]
 student-nft-io = { path = "io" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
 
 [dev-dependencies]
 student-nft-state = { path = "state" }
-gtest = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0", features = ["debug"] }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47", features = ["debug"] }
 tokio = "1"
-gclient = { git = "https://github.com/gear-tech/gear.git", rev = "5c685d0" }
+gclient = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
 
 [features]
 # Used for inserting constants with WASM binaries (NOT paths) of the contract in

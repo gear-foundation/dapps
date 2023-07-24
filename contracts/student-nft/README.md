@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-dapps/student-nft" target="_blank">
+  <a href="https://gitpod.io/#https://github.com/gear-foundation/dapps-student-nft" target="_blank">
     <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
   </a>
 </p>
@@ -10,14 +10,14 @@
 [![License][lic_badge]][lic_href]
 [![Docs][docs_badge]][docs_href]
 
-[build_badge]: https://img.shields.io/github/actions/workflow/status/gear-dapps/student-nft/build.yml?label=Build
-[build_href]: https://github.com/gear-dapps/student-nft/actions/workflows/build.yml
+[build_badge]: https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps-student-nft/build.yml?label=Build
+[build_href]: https://github.com/gear-foundation/dapps-student-nft/actions/workflows/build.yml
 
 [lic_badge]: https://img.shields.io/badge/License-MIT-success
-[lic_href]: https://github.com/gear-dapps/student-nft/blob/master/LICENSE
+[lic_href]: https://github.com/gear-foundation/dapps-student-nft/blob/master/LICENSE
 
 [docs_badge]: https://img.shields.io/badge/Docs-online-5023dd
-[docs_href]: https://dapp.rs/student-nft
+[docs_href]: https://dapp.rs/dapps-student-nft
 
 <!-- Description starts here -->
 
@@ -27,7 +27,7 @@ Special NFT implementation for gear academy students. Learn, react, upvote, comm
 
 ## Prebuilt Binaries
 
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-dapps/student-nft/releases).
+Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-foundation/dapps-student-nft/releases).
 
 ## Building Locally
 

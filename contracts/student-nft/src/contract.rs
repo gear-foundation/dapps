@@ -493,13 +493,6 @@ extern "C" fn state() {
     .expect("Failed to share state.");
 }
 
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-
-    reply(metahash).expect("Failed to encode or reply from `metahash()`.");
-}
-
 fn reply(payload: impl Encode) -> GstdResult<MessageId> {
     msg::reply(payload, 0)
 }

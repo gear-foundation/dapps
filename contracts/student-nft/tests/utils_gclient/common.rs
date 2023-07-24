@@ -10,7 +10,9 @@ pub fn get_current_actor_id(api: &GearApi) -> ActorId {
 }
 
 pub async fn get_user_to_actor_id(user: impl AsRef<str>) -> gclient::Result<ActorId> {
-    let api = GearApi::dev().await?.with(user)?;
+    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH"))
+        .await?
+        .with(user)?;
     let actor_id = ActorId::new(*api.account_id().clone().as_ref());
 
     Ok(actor_id)
