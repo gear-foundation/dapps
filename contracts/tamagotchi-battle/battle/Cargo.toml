@@ -1,23 +1,49 @@
 [package]
 name = "battle"
-version = "0.1.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git",features = ["debug"], branch = "testnet" }
-parity-scale-codec = { version = "3", default-features = false }
-battle-io = { path = "io" }
-tmg-io = {  git = "https://github.com/gear-dapps/workshop-tamagotchi" }
-scale-info = { version = "2", default-features = false }
-hex-literal = "0.3.4"
+gstd.workspace = true
+parity-scale-codec.workspace = true
+battle-io.workspace = true
+tmg-io.workspace = true
+scale-info.workspace = true
+hex-literal.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet"}
-battle-io = { path = "io" }
+gear-wasm-builder.workspace = true
+battle-io.workspace = true
 
 [dev-dependencies]
-gtest = { git = "https://github.com/gear-tech/gear.git", branch = "testnet"}
-gclient = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
+gtest.workspace = true
+gclient.workspace = true
+tokio.workspace = true
+hex.workspace = true
+battle-state.workspace = true
+
+[workspace]
+members = ["state"]
+
+[workspace.package]
+version = "0.1.1"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+parity-scale-codec = { version = "3", default-features = false }
+scale-info = { version = "2.7", default-features = false }
+battle-io = { path = "io" }
+hex-literal = "0.3"
 tokio = "1"
 hex = "0.4"
 battle-state = { path = "state" }
+tmg-io = {  git = "https://github.com/gear-dapps/workshop-tamagotchi", branch = "update-deps" }
