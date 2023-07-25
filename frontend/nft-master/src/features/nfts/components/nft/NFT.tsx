@@ -1,9 +1,10 @@
 import { HexString } from '@polkadot/util/types';
+import { useAccount } from '@gear-js/react-hooks';
 import { createSearchParams, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ChangeEvent, useEffect, useState } from 'react';
 import { getIpfsAddress } from 'utils';
 import { Container } from 'components';
-import { useAccount } from '@gear-js/react-hooks';
+import { useNodeAddress } from 'features/node-switch';
 import { ReactComponent as SearchSVG } from '../../assets/search.svg';
 import { ReactComponent as BackArrowSVG } from '../../assets/back-arrow.svg';
 import { useNFTs } from '../../hooks';
@@ -22,6 +23,7 @@ function NFT() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
+  const { isTestnet } = useNodeAddress();
   const { nfts } = useNFTs();
   const nft = nfts.find((item) => item.programId === programId && item.id === id);
   const { name, collection, description, owner, attribUrl } = nft || {};
@@ -131,7 +133,7 @@ function NFT() {
                 <span>Back</span>
               </button>
 
-              {account?.decodedAddress === owner && (
+              {!isTestnet && account?.decodedAddress === owner && (
                 <button type="button" className={styles.transferButton} onClick={openTransferModal}>
                   Transfer
                 </button>
