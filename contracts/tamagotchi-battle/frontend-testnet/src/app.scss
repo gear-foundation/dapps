@@ -1,0 +1,26 @@
+@use '@/assets/styles';
+@import "global.css";
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-sizing: content-box;
+}
+
+#alert-root {
+  color: #fff;
+
+  > div > div > div {
+    border: none;
+    border-radius: 0;
+  }
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 32px 0;
+  position: relative; // for loaders
+}

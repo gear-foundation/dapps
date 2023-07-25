@@ -1,0 +1,90 @@
+@use "@/assets/styles/utils" as *;
+
+.notFound {
+  height: 80px;
+  text-align: center;
+}
+
+.with-sorting {
+  display: flex;
+  align-items: center;
+  @include gap(4px, right);
+  white-space: nowrap;
+}
+
+.table-navigation {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #202020;
+
+}
+
+.table-page-sizing {
+  display: flex;
+  align-items: center;
+  @include gap(4px, right);
+
+  .count {
+    white-space: nowrap;
+  }
+
+  .value {
+    font-weight: 600;
+  }
+}
+
+.table-pagination {
+  display: flex;
+  align-items: center;
+  @include gap(20px, right);
+
+  .actions {
+    display: flex;
+    align-items: center;
+    @include gap(8px, right);
+  }
+
+  .action {
+    padding: 8px;
+
+    &[disabled] {
+      color: #a0a0a0;
+    }
+  }
+
+  .page-info {
+    display: flex;
+    align-items: center;
+    @include gap(10px, right);
+    padding: 8px 0;
+
+    > * {
+      font-weight: 600;
+    }
+
+    .muted {
+      font-weight: 400;
+    }
+  }
+}
+
+.muted {
+  color: #a6a6a6;
+}
+
+.header-col {
+  display: flex;
+  align-items: center;
+  @include gap(8px, right);
+
+  .sorting {
+    transition: color 350ms ease;
+    width: 20px;
+    height: 20px;
+
+    &:hover {
+      color: #d4d4d4;
+    }
+  }
+}
