@@ -1,12 +1,14 @@
 [package]
 name = "battle-state"
-version = "0.2.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", branch = "testnet" }
-gmeta = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["codegen"] }
-battle-io = { path = "../io" }
+gstd.workspace = true
+gmeta = { workspace = true, features = ["codegen"] }
+battle-io.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", branch = "testnet", features = ["metawasm"] }
+gear-wasm-builder = { workspace = true, features = ["metawasm"] }

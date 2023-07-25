@@ -199,7 +199,7 @@ impl Battle {
         );
 
         let pair = self.pairs.get(&pair_id).expect("Pair does not exist");
-        assert_eq!(pair.game_is_over, false, "The game for this pair is over");
+        assert!(!pair.game_is_over, "The game for this pair is over");
 
         let current_turn = pair.moves.len();
         let owner = pair.owner_ids[current_turn];
@@ -263,7 +263,6 @@ impl Battle {
 
         // Get gas from current player who skips the move
         let reservation_id = if let Some(reservation_id) = self.reservations.remove(&current_tmg) {
-            debug!("GAS FROM RESERVATION {:?}", current_turn);
             reservation_id
         } else {
             // if player has no reservation that means that he skipped many moves
@@ -326,7 +325,7 @@ impl Battle {
         let pairs_len = self.pairs.len() as u8;
         let pair = self.pairs.get_mut(&pair_id).expect("Pair does not exist");
 
-        pair.moves.push(tmg_move.clone());
+        pair.moves.push(tmg_move);
 
         let mut players: Vec<Player> = Vec::new();
         players.push(
@@ -378,7 +377,7 @@ impl Battle {
             self.players.insert(pair.tmg_ids[0], players[0].clone());
             self.players.insert(pair.tmg_ids[1], players[1].clone());
 
-            if self.completed_games == pairs_len as u8 {
+            if self.completed_games == pairs_len {
                 if self.players_ids.len() == 1 {
                     self.state = BattleState::GameIsOver;
                     self.current_winner = self.players_ids[0];
@@ -430,7 +429,7 @@ unsafe extern "C" fn init() {
 }
 
 pub async fn get_tmg_info(tmg_id: &ActorId) -> (ActorId, String, u64) {
-    let reply: TmgReply = msg::send_for_reply_as(*tmg_id, TmgAction::TmgInfo, 0)
+    let reply: TmgReply = msg::send_for_reply_as(*tmg_id, TmgAction::TmgInfo, 0, 0)
         .expect("Error in sending a message `TmgAction::TmgInfo")
         .await
         .expect("Unable to decode TmgReply");
@@ -475,7 +474,7 @@ pub fn generate_power(tmg_id: ActorId) -> u16 {
     for i in 0..31 {
         let bytes: [u8; 2] = [random[i], random[i + 1]];
         random_power = u16::from_be_bytes(bytes) % MAX_POWER;
-        if random_power >= MIN_RANGE && random_power <= MAX_RANGE {
+        if (MIN_RANGE..=MAX_RANGE).contains(&random_power) {
             break;
         }
     }
@@ -488,13 +487,7 @@ extern "C" fn state() {
     msg::reply(battle, 0).expect("Failed to share state");
 }
 
-#[no_mangle]
-extern "C" fn metahash() {
-    let metahash: [u8; 32] = include!("../.metahash");
-    msg::reply(metahash, 0).expect("Failed to share metahash");
-}
-
-fn resolve_battle(players: &mut Vec<Player>, moves: Vec<Option<Move>>) -> (Option<u8>, u16, u16) {
+fn resolve_battle(players: &mut [Player], moves: Vec<Option<Move>>) -> (Option<u8>, u16, u16) {
     let mut health_loss_0: u16 = 0;
     let mut health_loss_1: u16 = 0;
     let mut winner = None;
@@ -612,7 +605,7 @@ fn resolve_battle(players: &mut Vec<Player>, moves: Vec<Option<Move>>) -> (Optio
     (winner, loss_0, loss_1)
 }
 
-fn send_round_result(admin: &ActorId, pair_id: PairId, losses: &[u16], moves: &Vec<Option<Move>>) {
+fn send_round_result(admin: &ActorId, pair_id: PairId, losses: &[u16], moves: &[Option<Move>]) {
     msg::send(
         *admin,
         BattleEvent::RoundResult((
@@ -640,7 +633,7 @@ fn send_delayed_msg_from_rsv(
         reservation_id,
         exec::program_id(),
         BattleAction::CheckIfMoveMade {
-            pair_id: pair_id as u8,
+            pair_id,
             tmg_id: Some(*tmg_id),
         },
         0,

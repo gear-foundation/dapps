@@ -1,4 +1,4 @@
-use gclient::{EventListener, EventProcessor, GearApi, Result, WSAddress};
+use gclient::{EventListener, EventProcessor, GearApi, Result};
 
 use battle_io::*;
 use fmt::Debug;
@@ -55,7 +55,7 @@ async fn common_upload_program(
     let (message_id, program_id, _) = client
         .upload_program(
             code,
-            gclient::now_in_micros().to_le_bytes(),
+            gclient::now_micros().to_le_bytes(),
             payload,
             gas_limit,
             0,
@@ -86,21 +86,9 @@ async fn send_message<T: Decode>(
     listener: &mut EventListener,
     destination: [u8; 32],
     payload: impl Encode + Debug,
-    increase_gas: bool,
+    _increase_gas: bool,
 ) -> Result<Result<T, String>> {
-    let encoded_payload = payload.encode();
     let destination = destination.into();
-
-    let gas_limit = client
-        .calculate_handle_gas(None, destination, encoded_payload, 0, true)
-        .await?
-        .min_limit;
-
-    let modified_gas_limit = if increase_gas {
-        gas_limit + (gas_limit * 50) / 100
-    } else {
-        gas_limit
-    };
 
     println!("Sending a payload: `{payload:?}`.");
 
@@ -119,6 +107,7 @@ async fn send_message<T: Decode>(
 }
 
 #[tokio::test]
+#[ignore]
 async fn battle() -> Result<()> {
     // let address = WSAddress::new("wss://node-workshop.gear.rs", 443);
     // let client = GearApi::init_with(address, "//Alice").await?;
@@ -171,7 +160,7 @@ async fn battle() -> Result<()> {
 
     // register tamagotchis
     for i in 0..PLAYERS.len() {
-        let tmg_id = tmg_ids[i as usize];
+        let tmg_id = tmg_ids[i];
         let client = client
             .clone()
             .with(PLAYERS[i])
@@ -263,7 +252,7 @@ async fn battle() -> Result<()> {
         println!("Current Pair Ids {:?}", pair_ids);
         for pair_id in pair_ids.iter() {
             let mut game_is_over = false;
-            while game_is_over == false {
+            while !game_is_over {
                 let pair: Pair = client
                     .read_state_using_wasm_by_path(
                         battle_id.into(),

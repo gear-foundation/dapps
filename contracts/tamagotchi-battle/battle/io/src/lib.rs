@@ -59,18 +59,13 @@ pub struct Pair {
     pub msg_id: MessageId,
 }
 
-#[derive(Debug, PartialEq, Eq, Encode, Decode, TypeInfo)]
+#[derive(Debug, PartialEq, Eq, Encode, Decode, TypeInfo, Default)]
 pub enum BattleState {
+    #[default]
     Registration,
     GameIsOn,
     WaitNextRound,
     GameIsOver,
-}
-
-impl Default for BattleState {
-    fn default() -> Self {
-        BattleState::Registration
-    }
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
