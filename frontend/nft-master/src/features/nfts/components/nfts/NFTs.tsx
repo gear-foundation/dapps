@@ -19,7 +19,7 @@ function NFTs({ slider }: Props) {
   const { account } = useAccount();
 
   const { isTestnet } = useNodeAddress();
-  const { mintTestnetNFT, isTestnetNFTMintAvailable } = useTestnetNFT(NFTContracts);
+  const { mintTestnetNFT, isTestnetNFTMintAvailable, isMinting } = useTestnetNFT(NFTContracts);
 
   const filteredNFTs = nfts.filter(({ name, owner }) =>
     searchQuery
@@ -127,7 +127,7 @@ function NFTs({ slider }: Props) {
                 <>
                   <p className={styles.placeholderHeading}>You don&apos;t have NFT yet</p>
                   <p className={styles.placeholderText}>To obtain your NFT, click the &quot;Mint NFT&quot; button.</p>
-                  <button type="button" onClick={mintTestnetNFT} className={styles.button}>
+                  <button type="button" onClick={mintTestnetNFT} className={styles.button} disabled={isMinting}>
                     Mint NFT
                   </button>
                 </>

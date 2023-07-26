@@ -106,6 +106,9 @@
 .leftButton,
 .rightButton {
   @include circle(40px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid #000000;
   background-color: transparent;
   transition: all 0.3s;

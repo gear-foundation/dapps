@@ -184,6 +184,8 @@
 
 .backButton {
   @include gap(11px, right);
+  display: flex;
+  align-items: center;
   padding: 17px 24px;
   font-weight: 700;
   font-size: 16px;
@@ -198,7 +200,6 @@
   &:hover {
     opacity: 0.5;
   }
-
 }
 
 .transferButton {
@@ -218,5 +219,4 @@
   &:hover {
     opacity: 0.5;
   }
-
 }

@@ -2,7 +2,7 @@ import { MessagesDispatched, decodeAddress, getProgramMetadata } from '@gear-js/
 import { useAccount, useAlert, useApi, useReadFullState, useSendMessage } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useAtom } from 'jotai';
 import metaTxt from 'assets/nft_master.meta.txt';
 import { useProgramMetadata } from 'hooks';
@@ -139,6 +139,8 @@ function useTestnetNFT(NFTContracts: [HexString, string][]) {
   const { account } = useAccount();
   const { decodedAddress } = account || {};
 
+  const [isMinting, setIsMitnting] = useState(false);
+
   const contract = NFTContracts.find(([address]) => address === TESTNET_NFT_CONTRACT_ADDRESS);
 
   const metaRaw = contract?.[1];
@@ -154,9 +156,13 @@ function useTestnetNFT(NFTContracts: [HexString, string][]) {
 
   const sendMessage = useSendMessage(TESTNET_NFT_CONTRACT_ADDRESS, metadata);
 
-  const mintTestnetNFT = () => sendMessage({ Mint: null });
+  const mintTestnetNFT = () => {
+    setIsMitnting(true);
 
-  return { mintTestnetNFT, isTestnetNFTMintAvailable };
+    sendMessage({ Mint: null }, { onSuccess: () => setIsMitnting(false), onError: () => setIsMitnting(false) });
+  };
+
+  return { mintTestnetNFT, isTestnetNFTMintAvailable, isMinting };
 }
 
 function useTestnetAutoLogin() {

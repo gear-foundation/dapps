@@ -7,12 +7,14 @@ function Home() {
   const { account } = useAccount();
 
   useLayoutEffect(() => {
+    if (account) return;
+
     document.body.classList.add('welcome');
 
     return () => {
       document.body.classList.remove('welcome');
     };
-  }, []);
+  }, [account]);
 
   return account ? <Navigate to="/list" replace /> : <Welcome />;
 }
