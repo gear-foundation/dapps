@@ -2,6 +2,7 @@ import Identicon from '@polkadot/react-identicon';
 import { decodeAddress } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
+import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import { copyToClipboard } from 'utils';
 import { Modal } from 'components';
@@ -18,6 +19,7 @@ type Props = {
 };
 
 function WalletModal({ onClose }: Props) {
+  const navigate = useNavigate();
   const { extensions, account, login, logout } = useAccount();
 
   const { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts, saveWallet, removeWallet } =
@@ -58,6 +60,7 @@ function WalletModal({ onClose }: Props) {
       const handleClick = () => {
         login(_account);
         saveWallet();
+        navigate('/');
         onClose();
       };
 
@@ -83,6 +86,7 @@ function WalletModal({ onClose }: Props) {
   const handleLogoutButtonClick = () => {
     logout();
     removeWallet();
+    navigate('/');
     onClose();
   };
 

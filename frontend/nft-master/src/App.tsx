@@ -5,6 +5,7 @@ import { withProviders } from 'hocs';
 import { useNFTsState, useTestnetAutoLogin } from 'features/nfts';
 import { useSearchParamsSetup } from 'features/node-switch';
 import 'App.scss';
+import { useTestnetNFTSetup } from 'features/nfts/hooks';
 
 function Component() {
   const { isApiReady } = useApi();
@@ -13,7 +14,11 @@ function Component() {
 
   useSearchParamsSetup();
   useTestnetAutoLogin();
+
   const isNFTsStateReady = useNFTsState();
+  const isTestnetNFTStateReady = useTestnetNFTSetup();
+
+  const isEachStateReady = isNFTsStateReady && isTestnetNFTStateReady;
 
   return (
     <>
@@ -21,8 +26,8 @@ function Component() {
       <main>
         {isAppReady ? (
           <>
-            {isNFTsStateReady && <Routing />}
-            {!isNFTsStateReady && <Loader />}
+            {isEachStateReady && <Routing />}
+            {!isEachStateReady && <Loader />}
           </>
         ) : (
           <ApiLoader />

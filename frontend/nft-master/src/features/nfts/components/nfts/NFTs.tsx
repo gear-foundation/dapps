@@ -14,12 +14,12 @@ type Props = {
 };
 
 function NFTs({ slider }: Props) {
-  const { nfts, NFTContracts } = useNFTs();
+  const { nfts } = useNFTs();
   const { searchQuery, decodedQueryAddress } = useNFTSearch();
   const { account } = useAccount();
 
   const { isTestnet } = useNodeAddress();
-  const { mintTestnetNFT, isTestnetNFTMintAvailable, isMinting } = useTestnetNFT(NFTContracts);
+  const { mintTestnetNFT, isTestnetNFTMintAvailable, isMinting } = useTestnetNFT();
 
   const filteredNFTs = nfts.filter(({ name, owner }) =>
     searchQuery
@@ -121,7 +121,7 @@ function NFTs({ slider }: Props) {
         </>
       ) : (
         <div className={styles.placeholder}>
-          {isTestnet ? (
+          {isTestnet && !searchQuery ? (
             <>
               {isTestnetNFTMintAvailable && (
                 <>
