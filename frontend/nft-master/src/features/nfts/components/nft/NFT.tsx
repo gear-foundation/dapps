@@ -128,16 +128,18 @@ function NFT() {
                 </div>
               )}
 
-              <button type="button" className={styles.backButton} onClick={handleBackButtonClick}>
-                <BackArrowSVG />
-                <span>Back</span>
-              </button>
-
-              {!isTestnet && account?.decodedAddress === owner && (
-                <button type="button" className={styles.transferButton} onClick={openTransferModal}>
-                  Transfer
+              <div className={styles.buttons}>
+                <button type="button" className={styles.backButton} onClick={handleBackButtonClick}>
+                  <BackArrowSVG />
+                  <span>Back</span>
                 </button>
-              )}
+
+                {!isTestnet && account?.decodedAddress === owner && (
+                  <button type="button" className={styles.transferButton} onClick={openTransferModal}>
+                    Transfer
+                  </button>
+                )}
+              </div>
             </div>
           </>
         ) : (
