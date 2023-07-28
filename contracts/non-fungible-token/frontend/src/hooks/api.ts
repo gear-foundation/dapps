@@ -13,12 +13,7 @@ function useNFTMetadata() {
 function useNFTState<T>(functionName: string, payload?: any) {
   const { buffer } = useWasmMetadata(stateMetaWasm);
 
-  return useReadWasmState<T>(
-    ADDRESS.CONTRACT_ADDRESS,
-    buffer,
-    functionName,
-    payload,
-  );
+  return useReadWasmState<T>(ADDRESS.CONTRACT_ADDRESS, buffer, functionName, payload);
 }
 
 function useNFT() {
@@ -36,10 +31,7 @@ function useOwnerNFTs() {
   const { account } = useAccount();
   const owner = account?.decodedAddress;
 
-  const { state, isStateRead } = useNFTState<Token[]>(
-    'tokens_for_owner',
-    owner,
-  );
+  const { state, isStateRead } = useNFTState<Token[]>('tokens_for_owner', owner);
 
   return { ownerNFTs: state, isOwnerNFTsRead: isStateRead };
 }
@@ -48,17 +40,14 @@ function useApprovedNFTs() {
   const { account } = useAccount();
   const decodedAddress = account?.decodedAddress;
 
-  const { state, isStateRead } = useNFTState<Token[]>(
-    'approved_tokens',
-    decodedAddress,
-  );
+  const { state, isStateRead } = useNFTState<Token[]>('approved_tokens', decodedAddress);
 
   return { approvedNFTs: state, isApprovedNFTsRead: isStateRead };
 }
 
 function useSendNFTMessage() {
   const meta = useNFTMetadata();
-  return useSendMessage(ADDRESS.CONTRACT_ADDRESS, meta);
+  return useSendMessage(ADDRESS.CONTRACT_ADDRESS, meta, { isMaxGasLimit: false });
 }
 
 export { useNFT, useNFTs, useOwnerNFTs, useApprovedNFTs, useSendNFTMessage };
