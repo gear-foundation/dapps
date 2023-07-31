@@ -148,9 +148,9 @@ dependencies = [
 
 [[package]]
 name = "async-trait"
-version = "0.1.71"
+version = "0.1.72"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a564d521dd56509c4c47480d00b80ee55f7e385ae48db5744c67ad50c92d2ebf"
+checksum = "cc6dde6e4ed435a4c1ee4e73592f5ba9da2151af10076cc04858746af9352d09"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1124,7 +1124,7 @@ checksum = "0845fa252299212f0389d64ba26f34fa32cfe41588355f21ed507c59a0f64541"
 [[package]]
 name = "ft-logic"
 version = "2.1.4"
-source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#48ca7b3bb12becfa07da1dafbb266194135e388d"
+source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#13e7fcd8e47dbdfecccb91907e8f8eb877050aec"
 dependencies = [
  "ft-logic-io",
  "ft-main-io",
@@ -1143,7 +1143,7 @@ dependencies = [
 [[package]]
 name = "ft-logic-io"
 version = "2.1.4"
-source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#48ca7b3bb12becfa07da1dafbb266194135e388d"
+source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#13e7fcd8e47dbdfecccb91907e8f8eb877050aec"
 dependencies = [
  "ft-main-io",
  "ft-storage-io",
@@ -1158,7 +1158,7 @@ dependencies = [
 [[package]]
 name = "ft-main"
 version = "2.1.4"
-source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#48ca7b3bb12becfa07da1dafbb266194135e388d"
+source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#13e7fcd8e47dbdfecccb91907e8f8eb877050aec"
 dependencies = [
  "ft-logic-io",
  "ft-main-io",
@@ -1174,7 +1174,7 @@ dependencies = [
 [[package]]
 name = "ft-main-io"
 version = "2.1.4"
-source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#48ca7b3bb12becfa07da1dafbb266194135e388d"
+source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#13e7fcd8e47dbdfecccb91907e8f8eb877050aec"
 dependencies = [
  "gmeta",
  "gstd",
@@ -1186,7 +1186,7 @@ dependencies = [
 [[package]]
 name = "ft-storage"
 version = "2.1.4"
-source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#48ca7b3bb12becfa07da1dafbb266194135e388d"
+source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#13e7fcd8e47dbdfecccb91907e8f8eb877050aec"
 dependencies = [
  "ft-storage-io",
  "gear-wasm-builder",
@@ -1199,7 +1199,7 @@ dependencies = [
 [[package]]
 name = "ft-storage-io"
 version = "2.1.2"
-source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#48ca7b3bb12becfa07da1dafbb266194135e388d"
+source = "git+https://github.com/gear-dapps/sharded-fungible-token?tag=2.1.4#13e7fcd8e47dbdfecccb91907e8f8eb877050aec"
 dependencies = [
  "gmeta",
  "gstd",
@@ -2651,9 +2651,9 @@ dependencies = [
 
 [[package]]
 name = "parity-scale-codec"
-version = "3.6.3"
+version = "3.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "756d439303e94fae44f288ba881ad29670c65b0c4b0e05674ca81061bb65f2c5"
+checksum = "dd8e946cc0cc711189c0b0249fb8b599cbeeab9784d83c415719368bb8d4ac64"
 dependencies = [
  "arrayvec 0.7.4",
  "bitvec",
@@ -2666,9 +2666,9 @@ dependencies = [
 
 [[package]]
 name = "parity-scale-codec-derive"
-version = "3.6.3"
+version = "3.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9d884d78fcf214d70b1e239fcd1c6e5e95aa3be1881918da2e488cc946c7a476"
+checksum = "2a296c3079b5fefbc499e1de58dc26c09b1b9a5952d26694ee89f04a43ebbb3e"
 dependencies = [
  "proc-macro-crate",
  "proc-macro2",
@@ -2855,9 +2855,9 @@ dependencies = [
 
 [[package]]
 name = "proc-macro2"
-version = "1.0.64"
+version = "1.0.66"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "78803b62cbf1f46fde80d7c0e803111524b9877184cfe7c3033659490ac7a7da"
+checksum = "18fb31db3f9bddb2ea821cde30a9f70117e3f119938b5ee630b7403aa6e2ead9"
 dependencies = [
  "unicode-ident",
 ]
@@ -2884,9 +2884,9 @@ dependencies = [
 
 [[package]]
 name = "quote"
-version = "1.0.29"
+version = "1.0.32"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "573015e8ab27661678357f27dc26460738fd2b6c86e46f386fde94cb5d913105"
+checksum = "50f3b39ccfb720540debaa0164757101c08ecb8d326b15358ce76a62c7e85965"
 dependencies = [
  "proc-macro2",
 ]
@@ -4542,7 +4542,7 @@ checksum = "97fee6b57c6a41524a810daee9286c02d7752c4253064d0b05472833a438f675"
 dependencies = [
  "cfg-if",
  "digest 0.10.7",
- "rand 0.8.5",
+ "rand 0.7.3",
  "static_assertions",
 ]
 

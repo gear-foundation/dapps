@@ -4,9 +4,11 @@ on:
   push:
     tags: ['*']
 
+permissions:
+  contents: write
+
 env:
   CARGO_TERM_COLOR: always
-  NIGHTLY_TOOLCHAIN_VERSION: ${{ secrets.NIGHTLY_TOOLCHAIN_VERSION }}
 
 jobs:
   prepare:
@@ -24,7 +26,6 @@ jobs:
 
   build:
     name: Build
-    needs: prepare
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -35,13 +36,6 @@ jobs:
 
       - name: Remove binaries from cache
         run: rm -vfr target/wasm32-unknown-unknown/*
-
-      - name: Show specific nightly version
-        if: ${{ env.NIGHTLY_TOOLCHAIN_VERSION != '' }}
-        run: echo $NIGHTLY_TOOLCHAIN_VERSION | sed 's/-/ - /g'
-
-      - name: Install specific nightly toolchain
-        run: make init
 
       - name: Build
         run: make build
@@ -55,7 +49,7 @@ jobs:
 
   publish:
     name: Publish binaries
-    needs: build
+    needs: [prepare, build]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -87,8 +81,16 @@ jobs:
             fi
           done
 
+      - name: Prepare release notes
+        run: |
+          awk '(/^## \[[0-9]+\.[0-9]+\.[0-9]+\]/ || /^\[Unreleased\]/) && STATE=="show" { exit }
+              STATE=="show";
+              /^## \[${{ needs.prepare.outputs.version }}\]/ { STATE="show" }' CHANGELOG.md \
+          | awk 'NF { SHOW=1 } SHOW' > RELEASE_NOTES.md
+          cat RELEASE_NOTES.md
+
       - name: Publish
         uses: softprops/action-gh-release@v1
         with:
           files: artifact/**
-          body_path: CHANGELOG.md # TODO: Cut piece related to the current version only
+          body_path: RELEASE_NOTES.md
