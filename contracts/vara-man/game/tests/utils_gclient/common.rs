@@ -1,6 +1,6 @@
 use super::vara_man;
 use blake2_rfc::blake2b;
-use gclient::GearApi;
+use gclient::{Error as GclientError, GearApi};
 use gstd::{prelude::*, ActorId};
 use vara_man_io::Config;
 
@@ -50,16 +50,7 @@ pub async fn upload_with_code_hash(
 
     match api.upload_code(wasm_code).await {
         // Catch re-upload
-        Err(gclient::Error::Subxt(subxt::error::Error::Runtime(
-            subxt::error::DispatchError::Module(subxt::error::ModuleError {
-                error_data:
-                    subxt::error::ModuleErrorData {
-                        pallet_index: 104,
-                        error: [6, 0, 0, 0],
-                    },
-                ..
-            }),
-        ))) => {}
+        Err(GclientError::ProgramAlreadyExists(_)) => {}
         Err(error) => return Err(error),
         _ => {}
     };

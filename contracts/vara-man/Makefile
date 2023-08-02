@@ -1,13 +1,10 @@
 .PHONY: all build fmt init lint pre-commit test full-test
 
-NIGHTLY_TOOLCHAIN_VERSION = 2023-03-14
-TARGET = `rustc -Vv | grep 'host: ' | sed 's/^host: \(.*\)/\1/'`
-
 all: init build test
 
 build:
 	@echo ⚙️ Building a release...
-	@cargo +nightly b -r --workspace
+	@cargo b -r --workspace -Fbinary-vendor
 	@ls -l target/wasm32-unknown-unknown/release/*.wasm
 
 fmt:
@@ -16,21 +13,19 @@ fmt:
 
 init:
 	@echo ⚙️ Installing a toolchain \& a target...
-	@rustup toolchain install nightly-$(NIGHTLY_TOOLCHAIN_VERSION) --component llvm-tools-preview --component clippy
-	@rustup target add wasm32-unknown-unknown --toolchain nightly-$(NIGHTLY_TOOLCHAIN_VERSION)
-	@rm -rf ~/.rustup/toolchains/nightly-$(TARGET)
-	@ln -s ~/.rustup/toolchains/nightly-$(NIGHTLY_TOOLCHAIN_VERSION)-$(TARGET) ~/.rustup/toolchains/nightly-$(TARGET)
+	@rustup show
 
 lint:
 	@echo ⚙️ Running the linter...
-	@cargo +nightly clippy --workspace --all-targets -- -D warnings
+	@cargo clippy -- -D warnings
+	@cargo clippy --workspace -Fbinary-vendor --all-targets -- -D warnings
 
 pre-commit: fmt lint full-test
 
 test:
 	@echo ⚙️ Running unit tests...
-	@cargo +nightly t
+	@cargo t -Fbinary-vendor
 
 full-test:
 	@echo ⚙️ Running all tests...
-	@cargo +nightly t -- --include-ignored --test-threads=1
+	@cargo t -Fbinary-vendor -- --include-ignored
