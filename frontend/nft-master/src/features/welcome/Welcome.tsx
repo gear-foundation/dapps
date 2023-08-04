@@ -11,7 +11,7 @@ function Welcome() {
 
   return (
     <>
-      <Container>
+      <Container className={styles.container}>
         <div className={styles.welcome}>
           <h2 className={styles.heading}>
             Vara <span className={styles.nftText}>NFT</span>

@@ -1,8 +1,13 @@
 @use 'utils' as *;
 
+.container {
+  display: flex;
+  flex: 1;
+  align-content: center;
+}
+
 .welcome {
   max-width: 375px;
-  min-height: 75vh;
   display: flex;
   flex-direction: column;
   justify-content: center;
