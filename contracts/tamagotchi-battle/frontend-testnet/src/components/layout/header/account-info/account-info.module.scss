@@ -3,7 +3,8 @@
 .wrapper {
   display: flex;
   align-items: center;
-  @include flex-gap(20px)
+  @include flex-gap(20px);
+  font-family: 'Anuphan', sans-serif;
 }
 
 .vara {

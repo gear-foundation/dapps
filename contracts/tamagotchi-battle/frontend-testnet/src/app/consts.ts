@@ -10,7 +10,6 @@ export const ADDRESS = {
 export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
-  LEADERBOARD: '/leaderboard',
   UNAUTHORIZED: '/not-authorized',
   NOTFOUND: '*',
 }

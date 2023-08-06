@@ -31,7 +31,12 @@ function VaraBalance({ value, unit, className }: HOCProps) {
 
 function PointsBalance({ value, unit = 'PPV', className }: HOCProps) {
   return (
-    <Balance SVG={StarSVG} value={value} unit={unit} className={className} />
+    <Balance
+      SVG={StarSVG}
+      value={value}
+      unit={unit}
+      className={clsx(className, styles.points)}
+    />
   )
 }
 

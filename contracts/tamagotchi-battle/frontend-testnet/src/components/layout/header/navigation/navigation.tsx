@@ -11,12 +11,6 @@ const nav = [
     label: 'Play',
     isPrivate: true,
   },
-  {
-    id: 'leaderboard',
-    url: ROUTES.LEADERBOARD,
-    label: 'Leaderboard',
-    isPrivate: false,
-  },
   // {
   //   id: 'notfound',
   //   url: ROUTES.NOTFOUND,

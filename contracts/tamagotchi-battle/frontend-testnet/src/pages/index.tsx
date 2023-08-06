@@ -30,14 +30,12 @@ function RequireAuth({ children }: { children: JSX.Element }) {
 const Game = lazy(() => import('./home'))
 const Login = lazy(() => import('./login'))
 const NotAuthorized = lazy(() => import('./not-authorized'))
-const Leaderboard = lazy(() => import('./leaderboard'))
 const NotFound = lazy(() => import('./not-found'))
 
 const routes = [
   { path: ROUTES.LOGIN, Page: Login },
   { path: ROUTES.HOME, Page: Game, isPrivate: true },
   { path: ROUTES.UNAUTHORIZED, Page: NotAuthorized },
-  { path: ROUTES.LEADERBOARD, Page: Leaderboard },
   { path: ROUTES.NOTFOUND, Page: NotFound },
 ]
 
