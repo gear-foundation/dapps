@@ -1,29 +1,36 @@
 @use 'utils' as *;
 
+.content {
+  flex: 1 1 100%;
+  max-height: 430px;
+}
+
 .list {
-  @include gap(16px);
+  display: grid;
+  grid-gap: 15px;
+  width: 100%;
+  padding-right: 20px;
 
   .walletButton {
     width: 100%;
-    min-height: 48px;
     padding-right: 20px;
     padding-left: 24px;
-    display: flex;
     justify-content: space-between;
-    align-items: center;
-    background-color: #fff;
-    transition: all 0.3s;
 
     &:hover {
-      background-color: #eee;
+      & .statusAccounts {
+        color: #00b387;
+      }
     }
   }
 }
 
 .status {
+  display: block;
   text-align: right;
 
   &Text {
+    display: block;
     font-weight: 600;
     font-size: 12px;
     line-height: 12px;
@@ -31,11 +38,13 @@
   }
 
   &Accounts {
+    display: block;
     font-weight: 700;
     font-size: 11px;
     line-height: 10px;
     letter-spacing: 0.02em;
     color: #02f8bf;
+    transition: color 250ms ease;
   }
 }
 
@@ -44,27 +53,27 @@
   display: flex;
   align-items: center;
 
-  &Button {
+  .button {
     @include gap(12px, right);
-    width: 100%;
-    padding: 14px 16px;
-    display: flex;
     justify-content: center;
-    align-items: center;
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    width: 100%;
+    padding-right: 24px;
+    padding-left: 24px;
     font-weight: 600;
     font-size: 16px;
-    line-height: 18px;
-    color: #000;
-    background-color: #fff;
-    transition: all 0.3s;
 
-    &.active {
-      background-color: #56ffd8;
+    span {
+      display: block;
+      max-width: 22ch;
+      white-space: nowrap;
+      @include textOverflow;
     }
+  }
 
-    &:hover {
-      background-color: #eee;
-    }
+  &Icon {
+    pointer-events: none;
   }
 }
 
@@ -93,10 +102,15 @@
   color: #00b387;
 }
 
-.logoutButton {
-  color: #000;
+.textButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  transition: opacity 300ms ease;
+  @include gap(10px, right);
 
-  svg {
-    @include svgColor(#000);
+  &:hover {
+    opacity: 50%;
   }
 }

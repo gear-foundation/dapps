@@ -18,6 +18,11 @@
   input {
     width: 100%;
     outline: none;
+    text-overflow: ellipsis;
+
+    &::placeholder {
+      text-overflow: ellipsis;
+    }
   }
 
   svg {

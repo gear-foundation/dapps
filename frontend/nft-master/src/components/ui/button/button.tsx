@@ -13,8 +13,8 @@ export const buttonVariants = cva(styles.base, {
       text: styles.text,
     },
     size: {
-      small: '',
-      medium: styles.md,
+      sm: styles.sm,
+      md: styles.md,
     },
     width: {
       normal: '',
@@ -28,7 +28,7 @@ export const buttonVariants = cva(styles.base, {
   // compoundVariants: [{ variant: 'primary', size: 'medium', className: styles.primaryMedium }],
   defaultVariants: {
     variant: 'primary',
-    size: 'medium',
+    size: 'md',
     state: 'normal',
     width: 'normal',
   },

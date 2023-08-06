@@ -29,6 +29,8 @@
 ::after,
 ::before {
   border: none;
+  font-family: inherit;
+  box-sizing: border-box;
 }
 
 button {

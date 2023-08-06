@@ -1,14 +1,21 @@
-@use 'utils' as *;
-
 .socials {
   display: flex;
   justify-content: flex-end;
 
-  svg {
-    @include svgColor(#000);
+  > * + * {
+    margin-left: 16px;
   }
 
-  & > *:not(:last-child) {
-    margin-right: 24px;
+  .link {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 30px;
+    height: 30px;
+    transition: color 300ms ease;
+
+    &:hover {
+      color: rgba(#000, 0.7);
+    }
   }
 }

@@ -2,7 +2,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import { Link } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
-import { Container } from 'components';
+import { buttonVariants, Container } from 'components';
 import { useNodeAddress } from 'features/node-switch';
 import { getImageUrl } from '../../utils';
 import { ReactComponent as ArrowLeftSVG } from '../../assets/arrow-left.svg';
@@ -78,7 +78,7 @@ function NFTs({ slider }: Props) {
                 <span className={styles.ownerText}>{owner}</span>
               </p>
 
-              <Link to={to} className={styles.link}>
+              <Link to={to} className={buttonVariants({ size: 'sm', className: styles.link })}>
                 View More
               </Link>
             </footer>
