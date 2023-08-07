@@ -31,7 +31,7 @@ impl Metadata for VaraManMetadata {
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
 pub struct VaraMan {
-    pub games: Vec<GameInstance>,
+    pub games: Vec<(ActorId, GameInstance)>,
     pub players: Vec<(ActorId, Player)>,
     pub status: Status,
     pub config: Config,
@@ -122,21 +122,14 @@ pub enum Entity {
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 pub struct GameInstance {
     pub level: Level,
-    pub player_address: ActorId,
     pub gold_coins: u64,
     pub silver_coins: u64,
-    pub start_time_ms: i64,
     pub is_claimed: bool,
     pub map: Map,
 }
 
 impl GameInstance {
-    pub fn new(
-        level: Level,
-        player_address: ActorId,
-        start_time_ms: i64,
-        seed: GameSeed,
-    ) -> GameInstance {
+    pub fn new(level: Level, seed: GameSeed) -> GameInstance {
         let mut map: Map = [[Entity::Empty; MAP_WIDTH]; MAP_HEIGHT];
         let mut rnd = Rand { seed };
 
@@ -172,10 +165,8 @@ impl GameInstance {
 
         Self {
             level,
-            player_address,
             gold_coins,
             silver_coins,
-            start_time_ms,
             map,
             is_claimed: false,
         }
@@ -185,8 +176,6 @@ impl GameInstance {
         level: Level,
         gold_coins: u64,
         silver_coins: u64,
-        player_address: ActorId,
-        start_time_ms: i64,
         seed: GameSeed,
     ) -> GameInstance {
         let mut map: Map = [[Entity::Empty; MAP_WIDTH]; MAP_HEIGHT];
@@ -256,44 +245,28 @@ impl GameInstance {
 
         Self {
             level,
-            player_address,
             gold_coins,
             silver_coins,
-            start_time_ms,
             map,
             is_claimed: false,
         }
-    }
-
-    pub fn is_timeout(&self, time_ms: i64) -> bool {
-        time_ms >= self.start_time_ms + GAME_TIMEOUT_MS
     }
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 pub enum VaraManAction {
-    StartGame {
-        level: Level,
-        seed: GameSeed,
-    },
-    RegisterPlayer {
-        name: String,
-    },
-    ClaimReward {
-        game_id: u64,
-        silver_coins: u64,
-        gold_coins: u64,
-    },
+    StartGame { level: Level, seed: GameSeed },
+    RegisterPlayer { name: String },
+    ClaimReward { silver_coins: u64, gold_coins: u64 },
     ChangeStatus(Status),
     ChangeConfig(Config),
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum VaraManEvent {
-    GameStarted(u64),
+    GameStarted,
     RewardClaimed {
         player_address: ActorId,
-        game_id: u64,
         silver_coins: u64,
         gold_coins: u64,
     },
@@ -316,7 +289,7 @@ mod tests {
 
     #[test]
     fn success_game_instance() {
-        let game_instance = GameInstance::new(Level::Easy, ActorId::zero(), 0, u64::MAX);
+        let game_instance = GameInstance::new(Level::Easy, 0);
 
         for y in 0..MAP_HEIGHT {
             for x in 0..MAP_WIDTH {
@@ -337,8 +310,7 @@ mod tests {
 
     #[test]
     fn success_game_instance_with_coins() {
-        let game_instance =
-            GameInstance::new_with_coins(Level::Easy, 5, 20, ActorId::zero(), 0, u64::MAX);
+        let game_instance = GameInstance::new_with_coins(Level::Easy, 5, 20, 0);
 
         for y in 0..MAP_HEIGHT {
             for x in 0..MAP_WIDTH {

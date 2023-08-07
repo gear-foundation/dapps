@@ -110,7 +110,6 @@ pub async fn claim_reward(
         api,
         program_id,
         VaraManAction::ClaimReward {
-            game_id,
             silver_coins,
             gold_coins,
         },

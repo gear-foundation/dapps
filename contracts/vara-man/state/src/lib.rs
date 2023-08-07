@@ -8,7 +8,7 @@ use vara_man_io::*;
 pub mod metafns {
     pub type State = <VaraManMetadata as Metadata>::State;
 
-    pub fn get_games(state: State) -> Vec<GameInstance> {
+    pub fn get_games(state: State) -> Vec<(ActorId, GameInstance)> {
         state.games
     }
 

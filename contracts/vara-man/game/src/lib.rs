@@ -1,5 +1,5 @@
 #![no_std]
-use gstd::{exec, msg, prelude::*, ActorId};
+use gstd::{msg, prelude::*, ActorId};
 use hashbrown::HashMap;
 use vara_man_io::{
     Config, GameInstance, Player, Status, VaraMan as VaraManState, VaraManAction, VaraManEvent,
@@ -11,7 +11,7 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 #[derive(Debug, Default)]
 struct VaraMan {
-    pub games: Vec<GameInstance>,
+    pub games: HashMap<ActorId, GameInstance>,
     pub players: HashMap<ActorId, Player>,
     pub status: Status,
     pub config: Config,
@@ -19,15 +19,25 @@ struct VaraMan {
 
 impl From<&VaraMan> for VaraManState {
     fn from(value: &VaraMan) -> Self {
-        VaraManState {
-            games: value.games.clone(),
-            players: value
-                .players
-                .iter()
-                .map(|(actor_id, player)| (*actor_id, player.clone()))
-                .collect(),
-            status: value.status,
-            config: value.config,
+        let VaraMan {
+            games,
+            players,
+            status,
+            config,
+        } = value;
+
+        let games = games.iter().map(|(id, game)| (*id, game.clone())).collect();
+
+        let players = players
+            .iter()
+            .map(|(actor_id, player)| (*actor_id, player.clone()))
+            .collect();
+
+        Self {
+            games,
+            players,
+            status: *status,
+            config: *config,
         }
     }
 }
@@ -84,31 +94,35 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                 return VaraManEvent::Error("Player must be registered to play.".to_owned());
             };
 
+            if vara_man.games.get(&player_address).is_some() {
+                return VaraManEvent::Error("Player is already StartGame".to_owned());
+            };
+
             if !player.is_have_retries() {
                 return VaraManEvent::Error("Player has exhausted all his attempts.".to_owned());
             }
 
+            vara_man.games.insert(
+                player_address,
+                GameInstance::new_with_coins(
+                    level,
+                    vara_man.config.gold_coins,
+                    vara_man.config.silver_coins,
+                    seed,
+                ),
+            );
+
             player.retries += 1;
 
-            vara_man.games.push(GameInstance::new_with_coins(
-                level,
-                vara_man.config.gold_coins,
-                vara_man.config.silver_coins,
-                player_address,
-                exec::block_timestamp() as i64,
-                seed,
-            ));
-
-            VaraManEvent::GameStarted((vara_man.games.len() - 1) as u64)
+            VaraManEvent::GameStarted
         }
         VaraManAction::ClaimReward {
-            game_id,
             silver_coins,
             gold_coins,
         } => {
-            if let Some(game) = vara_man.games.get_mut(game_id as usize) {
-                let player_address = msg::source();
+            let player_address = msg::source();
 
+            if let Some(game) = vara_man.games.get(&player_address) {
                 // Check that game is not paused
                 if vara_man.status == Status::Paused {
                     return VaraManEvent::Error("Incorrect whole game status.".to_owned());
@@ -118,23 +132,6 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                 let Some(player) = vara_man.players.get_mut(&player_address) else {
                     return VaraManEvent::Error("Player must be registered to claim.".to_owned());
                 };
-
-                // Check that player address is equal to tx signer(initiator)
-                if player_address != game.player_address {
-                    return VaraManEvent::Error(
-                        "Caller `msg::source` is not eq to actual game player.".to_owned(),
-                    );
-                }
-
-                // Check that game is ended by time
-                if !game.is_timeout(exec::block_timestamp() as i64) {
-                    return VaraManEvent::Error("Game is not ended.".to_owned());
-                }
-
-                // Check that game rewards are not claimed already
-                if game.is_claimed {
-                    return VaraManEvent::Error("Rewards are already claimed.".to_owned());
-                }
 
                 // Check passed coins range
                 if silver_coins > game.silver_coins || gold_coins > game.gold_coins {
@@ -180,16 +177,15 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                     .checked_add(silver_coins)
                     .expect("Math overflow!");
 
-                game.is_claimed = true;
+                vara_man.games.remove(&player_address);
 
                 VaraManEvent::RewardClaimed {
                     player_address,
-                    game_id,
                     silver_coins,
                     gold_coins,
                 }
             } else {
-                VaraManEvent::Error("Invalid game id.".to_owned())
+                VaraManEvent::Error("The reward has already been claimed, start a new game".to_owned())
             }
         }
         VaraManAction::ChangeStatus(status) => {

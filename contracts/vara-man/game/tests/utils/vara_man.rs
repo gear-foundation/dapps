@@ -11,14 +11,7 @@ pub trait VaraMan {
     fn vara_man_with_config(system: &System, config: Config) -> Program;
     fn register_player(&self, from: u64, name: &str, error: bool);
     fn start_game(&self, from: u64, level: Level, seed: GameSeed, error: bool);
-    fn claim_reward(
-        &self,
-        from: u64,
-        game_id: u64,
-        silver_coins: u64,
-        gold_coins: u64,
-        error: bool,
-    );
+    fn claim_reward(&self, from: u64, silver_coins: u64, gold_coins: u64, error: bool);
     fn change_status(&self, status: Status);
     fn change_config(&self, config: Config);
     fn send_tx(&self, from: u64, action: VaraManAction, error: bool);
@@ -59,18 +52,10 @@ impl VaraMan for Program<'_> {
         self.send_tx(from, VaraManAction::StartGame { level, seed }, error);
     }
 
-    fn claim_reward(
-        &self,
-        from: u64,
-        game_id: u64,
-        silver_coins: u64,
-        gold_coins: u64,
-        error: bool,
-    ) {
+    fn claim_reward(&self, from: u64, silver_coins: u64, gold_coins: u64, error: bool) {
         self.send_tx(
             from,
             VaraManAction::ClaimReward {
-                game_id,
                 silver_coins,
                 gold_coins,
             },
