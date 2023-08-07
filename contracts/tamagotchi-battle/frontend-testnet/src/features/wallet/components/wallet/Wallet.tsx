@@ -9,10 +9,10 @@ const Identicon = lazy(() => import('@polkadot/react-identicon'))
 
 export function Wallet({
   account,
-  isReady,
+  isReady = true,
 }: {
   account: Account
-  isReady: boolean
+  isReady?: boolean
 }) {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -22,7 +22,7 @@ export function Wallet({
   return (
     <div>
       <Button
-        variant={isReady && account ? 'black' : 'outline'}
+        variant={isReady && account ? 'black' : 'white'}
         className={styles.button}
         onClick={openWallet}
         disabled={!isReady}

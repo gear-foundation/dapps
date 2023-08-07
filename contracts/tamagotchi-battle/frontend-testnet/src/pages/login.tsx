@@ -4,6 +4,7 @@ import { Navigate } from 'react-router-dom'
 import { ROUTES } from '@/app/consts'
 import { Wallet } from '@/features/wallet'
 import { useAccount } from '@gear-js/react-hooks'
+import { RegisterTamagotchi } from '@/features/battle-tamagotchi/register-tamagotchi'
 
 export default function Login() {
   const { authToken } = useAuth()
@@ -13,5 +14,6 @@ export default function Login() {
     return <Navigate to={ROUTES.HOME} replace />
   }
 
-  return <Welcome>{!account && <Wallet account={account} isReady />}</Welcome>
+  return <RegisterTamagotchi />
+  // return <Welcome>{!account && <Wallet account={account} isReady />}</Welcome>
 }

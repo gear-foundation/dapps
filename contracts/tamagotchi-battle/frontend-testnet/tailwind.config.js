@@ -82,6 +82,7 @@ module.exports = {
       colors: {
         secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
         primary: 'rgb(var(--color-primary) / <alpha-value>)',
+        'primary-600': 'rgb(var(--color-primary-600) / <alpha-value>)',
         tertiary: 'rgb(var(--red) / <alpha-value>)',
         error: 'rgb(var(--color-error) / <alpha-value>)',
         'theme-blue': 'rgb(var(--theme-blue) / <alpha-value>)',
