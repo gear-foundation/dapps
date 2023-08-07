@@ -1,10 +1,9 @@
 @use 'assets/styles';
 
 #root {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  box-sizing: content-box;
+  min-height: 100vh;
 }
 
 #alert-root {
@@ -15,7 +14,14 @@
 }
 
 main {
+  position: relative; // for loaders
+  display: flex;
+  flex-direction: column;
   flex: 1;
   padding: 50px 0 70px;
-  position: relative; // for loaders
+
+  > * {
+    flex: 1;
+    //width: 100%;
+  }
 }

@@ -1,18 +1,18 @@
-import Identicon from '@polkadot/react-identicon';
 import { decodeAddress } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
-import { Button } from '@gear-js/ui';
 import { useNavigate } from 'react-router-dom';
-import clsx from 'clsx';
 import { copyToClipboard } from 'utils';
-import { Modal } from 'components';
+import { Button, Modal, ScrollArea } from 'components';
 import { ReactComponent as EditSVG } from 'assets/images/icons/edit.svg';
 import { ReactComponent as CopySVG } from 'assets/images/icons/copy.svg';
+import { lazy, Suspense } from 'react';
 import { ExitSVG } from '../../assets';
 import { WALLETS } from '../../consts';
 import { useWallet } from '../../hooks';
 import { WalletItem } from '../wallet-item';
 import styles from './WalletModal.module.scss';
+
+const Identicon = lazy(() => import('@polkadot/react-identicon'));
 
 type Props = {
   onClose: () => void;
@@ -20,7 +20,8 @@ type Props = {
 
 function WalletModal({ onClose }: Props) {
   const navigate = useNavigate();
-  const { extensions, account, login, logout } = useAccount();
+  const { extensions, account, accounts, login, logout } = useAccount();
+  const accountAddress = account?.address;
 
   const { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts, saveWallet, removeWallet } =
     useWallet();
@@ -33,11 +34,9 @@ function WalletModal({ onClose }: Props) {
       const accountsCount = getWalletAccounts(id).length;
       const accountsStatus = `${accountsCount} ${accountsCount === 1 ? 'account' : 'accounts'}`;
 
-      const onClick = () => setWalletId(id);
-
       return (
         <li key={id}>
-          <button type="button" className={styles.walletButton} onClick={onClick} disabled={!isEnabled}>
+          <Button variant="white" className={styles.walletButton} onClick={() => setWalletId(id)} disabled={!isEnabled}>
             <WalletItem icon={SVG} name={name} />
 
             <div className={styles.status}>
@@ -45,7 +44,7 @@ function WalletModal({ onClose }: Props) {
 
               {isEnabled && <p className={styles.statusAccounts}>{accountsStatus}</p>}
             </div>
-          </button>
+          </Button>
         </li>
       );
     });
@@ -54,10 +53,9 @@ function WalletModal({ onClose }: Props) {
     walletAccounts?.map((_account) => {
       const { address, meta } = _account;
 
-      const isActive = address === account?.address;
-      const buttonClassName = clsx(styles.accountButton, isActive && styles.active);
+      const isActive = address === accountAddress;
 
-      const handleClick = () => {
+      const handleAccountClick = () => {
         login(_account);
         saveWallet();
         navigate('/');
@@ -73,12 +71,20 @@ function WalletModal({ onClose }: Props) {
 
       return (
         <li key={address} className={styles.account}>
-          <button type="button" className={buttonClassName} onClick={handleClick} disabled={isActive}>
-            <Identicon value={address} size={21} theme="polkadot" />
+          <Button
+            variant={isActive ? 'primary' : 'white'}
+            className={styles.button}
+            onClick={handleAccountClick}
+            disabled={isActive}>
+            <Suspense>
+              <Identicon value={address} size={20} theme="polkadot" className={styles.accountIcon} />
+            </Suspense>
             <span>{meta.name}</span>
-          </button>
+          </Button>
 
-          <Button icon={CopySVG} color="transparent" onClick={handleCopyClick} />
+          <Button variant="text" className={styles.textButton} onClick={handleCopyClick}>
+            <CopySVG />
+          </Button>
         </li>
       );
     });
@@ -92,7 +98,19 @@ function WalletModal({ onClose }: Props) {
 
   return (
     <Modal heading="Wallet connection" onClose={onClose}>
-      <ul className={styles.list}>{getAccounts() || getWallets()}</ul>
+      {accounts ? (
+        <ScrollArea className={styles.content} type="auto">
+          <ul className={styles.list}>{getAccounts() || getWallets()}</ul>
+        </ScrollArea>
+      ) : (
+        <p>
+          Polkadot extension was not found or disabled. Please,{' '}
+          <a href="https://polkadot.js.org/extension/" target="_blank" rel="noreferrer">
+            install it
+          </a>
+          .
+        </p>
+      )}
 
       {wallet && (
         <footer className={styles.footer}>
@@ -102,14 +120,11 @@ function WalletModal({ onClose }: Props) {
             <EditSVG />
           </button>
 
-          {account && (
-            <Button
-              icon={ExitSVG}
-              text="Logout"
-              color="transparent"
-              className={styles.logoutButton}
-              onClick={handleLogoutButtonClick}
-            />
+          {accountAddress && (
+            <Button variant="text" className={styles.textButton} onClick={handleLogoutButtonClick}>
+              <ExitSVG />
+              <span>Exit</span>
+            </Button>
           )}
         </footer>
       )}

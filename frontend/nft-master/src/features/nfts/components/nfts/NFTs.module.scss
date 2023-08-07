@@ -9,17 +9,13 @@
 
 .list {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 30px;
-
-  @include lg {
-    grid-template-columns: minmax(0, auto);
-    justify-content: center;
-  }
+  width: 100%;
 }
 
 .nft {
-  max-width: 380px;
+  //max-width: 380px;
   padding: 30px;
   background: url(../../assets/bg.svg) center/100% 100% no-repeat;
 }
@@ -40,7 +36,7 @@
 }
 
 .media {
-  height: 320px;
+  //height: 320px;
   display: flex;
   align-items: flex-end;
   padding: 20px;
@@ -48,6 +44,8 @@
   background-position: center;
   background-repeat: no-repeat;
   border-radius: 2px;
+
+  aspect-ratio: 1/1;
 }
 
 .footer {
@@ -60,6 +58,10 @@
   backdrop-filter: blur(10px);
   border-radius: 2px;
   overflow: hidden;
+
+  .link {
+    font-size: 14px;
+  }
 }
 
 .owner {
@@ -79,22 +81,6 @@
     font-weight: 700;
     font-size: 14px;
     letter-spacing: 0.04em;
-  }
-}
-
-.link {
-  padding: 12px 20px;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 18px;
-  letter-spacing: 0.03em;
-  white-space: nowrap;
-  background-color: #09ffc6;
-  border-radius: 2px;
-  transition: all 0.3s;
-
-  &:hover {
-    background-color: #29c6a1;
   }
 }
 

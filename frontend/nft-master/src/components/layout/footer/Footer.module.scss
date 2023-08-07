@@ -2,11 +2,11 @@
 @use 'utils' as *;
 
 .container {
-  padding-top: 20px;
-  padding-bottom: 20px;
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
+  padding-top: 40px;
+  padding-bottom: 20px;
 
   @include lg {
     @include gap(16px);

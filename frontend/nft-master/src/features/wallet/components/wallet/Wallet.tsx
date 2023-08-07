@@ -1,9 +1,8 @@
 import Identicon from '@polkadot/react-identicon';
-import clsx from 'clsx';
 import { useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
-import styles from './Wallet.module.scss';
 import { WalletModal } from '../wallet-modal';
+import { Button } from '../../../../components';
 
 function Wallet() {
   const { account, isAccountReady } = useAccount();
@@ -13,14 +12,12 @@ function Wallet() {
   const openWalletModal = () => setIsWalletModalOpen(true);
   const closeWalletModal = () => setIsWalletModalOpen(false);
 
-  const buttonClassName = clsx(styles.button, account && styles.active);
-
   return isAccountReady ? (
     <>
-      <button type="button" className={buttonClassName} onClick={openWalletModal}>
+      <Button variant={account ? 'black' : 'primary'} onClick={openWalletModal}>
         {account && <Identicon value={account.address} size={16} theme="polkadot" />}
         <span>{account ? account.meta.name : 'Connect'}</span>
-      </button>
+      </Button>
 
       {isWalletModalOpen && <WalletModal onClose={closeWalletModal} />}
     </>
