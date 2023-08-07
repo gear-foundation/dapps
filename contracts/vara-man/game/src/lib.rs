@@ -185,7 +185,9 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                     gold_coins,
                 }
             } else {
-                VaraManEvent::Error("The reward has already been claimed, start a new game".to_owned())
+                VaraManEvent::Error(
+                    "The reward has already been claimed, start a new game".to_owned(),
+                )
             }
         }
         VaraManAction::ChangeStatus(status) => {
