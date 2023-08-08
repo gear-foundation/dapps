@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 import { CreateTamagotchiForm } from '@/features/battle-tamagotchi/components/create-tamagotchi-form'
 import { Wallet } from '@/features/wallet'
 import { ClockUpdateIcon, WarningIcon } from '@/assets/images'
+import { Countdown } from '@/components'
 
 export function RegisterTamagotchi() {
   const { battle } = useBattle()
@@ -15,43 +16,43 @@ export function RegisterTamagotchi() {
       <div className={cn('basis-[635px]', 'flex flex-col items-center gap-9')}>
         <div className="flex flex-col items-center gap-9 w-full">
           <div className="w-full">
-            <div className="flex items-center w-fit px-8 py-6 space-x-6 border-2 border-primary-600 rounded-xl">
-              <p className="max-w-[250px] text-lg leading-6">
-                The next Tamagotchi battle{' '}
-                <span className="text-primary-600">
-                  will start automatically in:
-                </span>
-              </p>
-              <div className="flex items-center space-x-4">
-                <ClockUpdateIcon />
-                <p className="typo-h2 font-normal">03:49:51</p>
+            {account && (
+              <div className="grid grid-cols-[auto_auto] items-center w-fit px-8 py-6 gap-x-6 border-2 border-primary-600 rounded-xl font-kanit bg-[#2BD07112]">
+                <p className="max-w-[250px] text-lg leading-6 font-bold tracking-[0.72px]">
+                  The next Tamagotchi battle{' '}
+                  <span className="text-primary-600">
+                    will start automatically in:
+                  </span>
+                </p>
+                <div className="grid grid-cols-[auto_auto] items-center gap-x-4">
+                  <ClockUpdateIcon className="" />
+                  <p className="typo-h2 font-normal tracking-[1.6px]">
+                    <Countdown milliseconds={0} />
+                  </p>
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <div className="w-full space-y-6">
             {account ? (
-              battle &&
-              (battle.state === 'Registration' ? (
-                <h2 className="typo-h2">
-                  Insert your Tamagotchi program ID to{' '}
-                  <span className="text-primary">Register in battle</span>
-                </h2>
-              ) : (
-                <h2 className="typo-h2 max-w-[430px] mx-auto">
-                  Game is on! Go&nbsp;to&nbsp;
-                  <Link
-                    to="/battle"
-                    className="text-primary underline hover:no-underline"
-                  >
-                    battle page
-                  </Link>
-                </h2>
-              ))
+              battle && (
+                <>
+                  {battle.status === 'Unknown' && (
+                    <h2 className="typo-h2">The Game is paused</h2>
+                  )}
+                  {battle.status === 'Registration' && (
+                    <h2 className="typo-h2">
+                      Insert your Tamagotchi program ID to{' '}
+                      <span className="text-primary">Register in battle</span>
+                    </h2>
+                  )}
+                </>
+              )
             ) : (
               <p className="typo-h2 text-[#D1D1D1]">
-                Connect your account to{' '}
-                <span className="text-primary">start the game</span>
+                Connect your account <br />
+                to <span className="text-primary">start the game</span>
               </p>
             )}
           </div>
@@ -65,7 +66,7 @@ export function RegisterTamagotchi() {
               <div className="p-5.5">
                 <WarningIcon />
               </div>
-              <p className="font-medium text-base leading-[22px] font-kanit">
+              <p className="font-medium text-base leading-[22px] font-kanit tracking-[0.64px]">
                 All game mechanics and automatic launch are facilitated by
                 on-chain mechanisms and delayed messages. You can read more
                 about these capabilities of Vara Network{' '}
