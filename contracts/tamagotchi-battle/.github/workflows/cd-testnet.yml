@@ -3,6 +3,8 @@ name: Deploy tamagotchi-testnet to k8s
 on:
   push:
     branches: ['master']
+    paths: 
+      - frontend-testnet/**
   workflow_dispatch:
 
 env:
