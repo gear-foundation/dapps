@@ -1,10 +1,10 @@
-name: Deploy tamagotchi to k8s stage
+name: Deploy tamagotchi-testnet to k8s
 
 on:
   push:
     branches: ['master']
     paths: 
-      - frontend/**
+      - frontend-testnet/**
   workflow_dispatch:
 
 env:
@@ -14,7 +14,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  KUBE_NAMESPACE: dev-1
+  KUBE_NAMESPACE: gear-dapps
 
 jobs:
   wait-previous-run:
@@ -45,12 +45,17 @@ jobs:
       - name: Build and push Tamagotchi Docker image
         uses: docker/build-push-action@master
         with:
-          file: frontend/Dockerfile
+          file: frontend-testnet/Dockerfile
+          context: frontend-testnet
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:stage
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-testnet:latest
           build-args: |
-            REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            REACT_APP_BATTLE_ADDRESS=${{ secrets.REACT_APP_BATTLE_ADDRESS }}
+            VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
+            VITE_AUTH_API_ADDRESS=${{ secrets.VITE_AUTH_API_ADDRESS }}
+            VITE_FT_ADDRES=${{ secrets.VITE_FT_ADDRES }}
+            VITE_GAME_ADDRESS=${{ secrets.VITE_GAME_ADDRESS }}
+            VITE_TESTNET_WEBSITE_ADDRESS=${{ secrets.VITE_TESTNET_WEBSITE_ADDRESS }}
+            
 
   deploy-tamagotchi-k8s:
     needs: [build-and-push-tamagotchi-image]
@@ -67,4 +72,4 @@ jobs:
       - name: Deploy to k8s
         uses: sergeyfilyanin/kubectl-aws-eks@master
         with:
-          args: rollout restart deployment tamagotchi-stage -n $KUBE_NAMESPACE
+          args: rollout restart deployment tamagotchi-testnet -n $KUBE_NAMESPACE
