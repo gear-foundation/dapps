@@ -44,6 +44,7 @@ jobs:
         uses: docker/build-push-action@master
         with:
           file: frontend-testnet/Dockerfile
+          context: frontend-testnet
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-testnet:latest
           build-args: |
