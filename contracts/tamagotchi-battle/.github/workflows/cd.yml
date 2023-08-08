@@ -3,6 +3,8 @@ name: Deploy tamagotchi to k8s stage
 on:
   push:
     branches: ['master']
+    paths: 
+      - frontend/**
   workflow_dispatch:
 
 env:
