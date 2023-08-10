@@ -1,4 +1,4 @@
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { Link } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
@@ -18,6 +18,7 @@ function NFTs({ slider }: Props) {
   const { nfts } = useNFTs();
   const { searchQuery, decodedQueryAddress } = useNFTSearch();
   const { account } = useAccount();
+  const alert = useAlert();
 
   const { isTestnet } = useNodeAddress();
   const { mintTestnetNFT, isTestnetNFTMintAvailable, isMinting } = useTestnetNFT();
@@ -144,7 +145,7 @@ function NFTs({ slider }: Props) {
                 <>
                   <p className={styles.placeholderHeading}>You are currently not part of the Vara Network Testnet.</p>
                   <p className={styles.placeholderText}>
-                    More information can be found in our{' '}
+                    More information can be found in our <br />
                     <a href="https://discord.com/invite/7BQznC9uD9" target="_blank" rel="noreferrer">
                       Discord
                     </a>{' '}

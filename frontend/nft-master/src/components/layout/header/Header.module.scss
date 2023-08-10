@@ -67,16 +67,17 @@
     &--wallet {
       padding-top: 5px;
       padding-bottom: 5px;
-     > button {
+
+      > button {
         width: 100%;
         padding-right: 16px;
         padding-left: 16px;
         font-size: 16px;
 
-       span {
-         text-overflow: ellipsis;
-         overflow: hidden;
-       }
+        span {
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
       }
     }
   }

@@ -4,10 +4,10 @@ import {
   AccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
-import { Alert, alertStyles } from '@gear-js/ui';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { useNodeAddress } from 'features/node-switch';
+import { Alert, alertStyles } from 'components/ui/alert';
 
 function ApiProvider({ children }: ProviderProps) {
   const { nodeAddress } = useNodeAddress();

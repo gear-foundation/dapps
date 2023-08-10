@@ -1,8 +1,8 @@
 import Identicon from '@polkadot/react-identicon';
 import { useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
+import { Button } from 'components';
 import { WalletModal } from '../wallet-modal';
-import { Button } from '../../../../components';
 
 function Wallet() {
   const { account, isAccountReady } = useAccount();
