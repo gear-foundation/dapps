@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Button } from '@gear-js/ui';
-import { ReactComponent as HamburgerSVG } from 'assets/images/icons/hamburger.svg';
-import { ReactComponent as CrossSVG } from 'assets/images/icons/cross.svg';
 import { Wallet } from 'features/wallet';
 import { NodeSwitch } from 'features/node-switch';
 import { ContractAddress, useContractAddress } from 'features/contract-address';
 import { Search } from 'features/nfts';
 import { useResizeEffect } from 'hooks';
+import { Button } from 'components';
+import { CrossIcon, HamburgerIcon } from 'assets/images';
+import clsx from 'clsx';
 import { Container } from '../container';
 import { Logo } from './logo';
 import styles from './Header.module.scss';
@@ -27,12 +27,9 @@ function Header() {
         <Logo />
 
         <div className={styles.mobileMenuWrapper}>
-          <Button
-            icon={isMenuOpen ? CrossSVG : HamburgerSVG}
-            color="transparent"
-            className={styles.button}
-            onClick={toggleMenu}
-          />
+          <Button variant="white" className={styles.button} onClick={toggleMenu}>
+            {isMenuOpen ? <CrossIcon /> : <HamburgerIcon />}
+          </Button>
 
           {isMenuOpen && (
             <ul className={styles.list}>
@@ -41,6 +38,9 @@ function Header() {
               </li>
               <li className={styles.item}>
                 <NodeSwitch />
+              </li>
+              <li className={clsx(styles.item, styles['item--wallet'])}>
+                <Wallet />
               </li>
             </ul>
           )}

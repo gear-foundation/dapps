@@ -24,7 +24,7 @@ function NodeSwitch() {
   return (
     <>
       <button type="button" className={styles.button} onClick={openSwitchModal} disabled={isNodesLoading}>
-        <span>{chain || 'Loading...'}</span> <OpenSVG />
+        <span className={styles.label}>{chain || 'Loading...'}</span> <OpenSVG />
       </button>
 
       {isSwitchModalOpen && (

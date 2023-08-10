@@ -2,8 +2,10 @@
 
 .button {
   @include gap(10px, right);
-  display: flex;
+  display: inline-grid;
+  grid-template-columns: auto auto auto;
   align-items: center;
+  width: 100%;
   font-weight: 700;
   font-size: 16px;
   line-height: 26px;
@@ -17,10 +19,15 @@
   }
 
   &::before {
-    @include circle(7px);
+    @include circle(8px);
     content: '';
     flex-shrink: 0;
     margin-right: 10px;
     background-color: #00ffc4;
   }
+}
+
+.label {
+  text-overflow: ellipsis;
+  overflow: hidden;
 }

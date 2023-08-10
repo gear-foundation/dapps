@@ -15,7 +15,7 @@ function Wallet() {
   return isAccountReady ? (
     <>
       <Button variant={account ? 'black' : 'primary'} onClick={openWalletModal}>
-        {account && <Identicon value={account.address} size={16} theme="polkadot" />}
+        {account && <Identicon value={account.address} size={21} theme="polkadot" />}
         <span>{account ? account.meta.name : 'Connect'}</span>
       </Button>
 

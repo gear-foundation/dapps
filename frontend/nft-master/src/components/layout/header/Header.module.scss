@@ -38,15 +38,23 @@
     display: block;
   }
 
-  .button svg {
-    width: 20px;
+  .button {
+    --btn-bg-color: transparent;
+    padding: 4px 1px;
+
+    svg {
+      width: 26px;
+      height: 20px;
+    }
   }
 
   .list {
     position: absolute;
     max-width: 250px;
+    //max-width: calc(100vw - 32px);
     top: calc(100% + 16px);
     right: 0;
+    padding: 4px;
     background-color: #fff;
     border-radius: 4px;
     box-shadow: 0 0 4px rgba(#000, 0.1);
@@ -55,6 +63,22 @@
 
   .item {
     padding: 16px 8px;
+
+    &--wallet {
+      padding-top: 5px;
+      padding-bottom: 5px;
+     > button {
+        width: 100%;
+        padding-right: 16px;
+        padding-left: 16px;
+        font-size: 16px;
+
+       span {
+         text-overflow: ellipsis;
+         overflow: hidden;
+       }
+      }
+    }
   }
 }
 

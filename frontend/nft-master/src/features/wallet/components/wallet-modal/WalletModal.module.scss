@@ -93,6 +93,19 @@
       opacity: 0.5;
     }
   }
+
+  .textButton {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 14px;
+    transition: opacity 300ms ease;
+    @include gap(10px, right);
+
+    &:hover {
+      opacity: 50%;
+    }
+  }
 }
 
 .changeText {
@@ -100,17 +113,4 @@
   font-weight: 700;
   letter-spacing: 0.02em;
   color: #00b387;
-}
-
-.textButton {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 14px;
-  transition: opacity 300ms ease;
-  @include gap(10px, right);
-
-  &:hover {
-    opacity: 50%;
-  }
 }
