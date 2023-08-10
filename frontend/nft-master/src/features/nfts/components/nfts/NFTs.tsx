@@ -4,6 +4,7 @@ import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
 import { buttonVariants, Container } from 'components';
 import { useNodeAddress } from 'features/node-switch';
+import SmokeImage from 'features/nfts/assets/smoke.webp';
 import { getImageUrl } from '../../utils';
 import { ReactComponent as ArrowLeftSVG } from '../../assets/arrow-left.svg';
 import { useNFTSearch, useNFTs, useTestnetNFT } from '../../hooks';
@@ -88,7 +89,7 @@ function NFTs({ slider }: Props) {
     });
 
   return (
-    <div>
+    <div className={styles.wrapper}>
       {isAnyNFT ? (
         <>
           <Container>
@@ -108,6 +109,12 @@ function NFTs({ slider }: Props) {
               )}
             </header>
           </Container>
+
+          <div className="">
+            <picture>
+              <img src={SmokeImage} alt="Smoke" className={styles.background} />
+            </picture>
+          </div>
 
           {slider ? (
             <ul className="keen-slider" ref={sliderRef}>
@@ -154,7 +161,7 @@ function NFTs({ slider }: Props) {
             <>
               <p className={styles.placeholderHeading}>No NFTs found {!searchQuery && 'for this account'}</p>
               <p className={styles.placeholderText}>
-                Suggest to specify custom contract address or switch to another network
+                Please provide the custom contract address or&nbsp;switch to another network.
               </p>
             </>
           )}

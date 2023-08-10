@@ -155,3 +155,21 @@
     background-color: #29c6a1;
   }
 }
+
+.wrapper {
+  display: grid;
+  align-items: center;
+}
+
+.background {
+  position: fixed;
+  top: 0;
+  left: 10%;
+  right: 0;
+  bottom: 10%;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  overflow: visible;
+}
