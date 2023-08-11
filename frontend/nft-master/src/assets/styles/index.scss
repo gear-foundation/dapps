@@ -1,29 +1,7 @@
 @use '@gear-js/ui/resets';
 @use 'utils' as *;
 
-@font-face {
-  font-family: 'Anuphan', sans-serif;
-  font-weight: 300;
-  src: url('../fonts/anuphan-400.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Anuphan', sans-serif;
-  font-weight: 400;
-  src: url('../fonts/anuphan-500.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Anuphan', sans-serif;
-  font-weight: 500;
-  src: url('../fonts/anuphan-600.woff2') format('woff2');
-}
-
-@font-face {
-  font-family: 'Anuphan', sans-serif;
-  font-weight: 600;
-  src: url('../fonts/anuphan-700.woff2') format('woff2');
-}
+@import "fonts";
 
 *,
 ::after,
@@ -48,6 +26,13 @@ body {
   background-position: top;
   background-size: 100%;
   background-repeat: no-repeat;
+  font-variant-numeric: lining-nums proportional-nums;
+
+  @supports not (font-variation-settings: "wdth" 115) {
+    & {
+      font-family: 'Anuphan-Fallback', sans-serif;
+    }
+  }
 
   @include lg {
     background-size: 650px;
