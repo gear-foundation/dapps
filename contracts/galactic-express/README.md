@@ -1,6 +1,6 @@
 ## Getting started
 
-Galactic Ecpress (GalEx) is a 100% on-chain PvE economic game.
+Galactic Express (GalEx) is a 100% on-chain PvE economic game.
 
 Deliver 📦 cargo to the orbit using ⛽️ fuel efficiently
 
