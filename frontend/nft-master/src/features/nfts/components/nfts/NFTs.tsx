@@ -130,7 +130,7 @@ function NFTs({ slider }: Props) {
         <div className={styles.placeholder}>
           {isTestnet && !searchQuery ? (
             <>
-              {isTestnetNFTMintAvailable && (
+              {(isMinting || isTestnetNFTMintAvailable) && (
                 <>
                   <p className={styles.placeholderHeading}>You don&apos;t have NFT yet</p>
                   <p className={styles.placeholderText}>To obtain your NFT, click the &quot;Mint NFT&quot; button.</p>
@@ -140,7 +140,7 @@ function NFTs({ slider }: Props) {
                 </>
               )}
 
-              {!isTestnetNFTMintAvailable && (
+              {!isMinting && !isTestnetNFTMintAvailable && (
                 <>
                   <p className={styles.placeholderHeading}>You are currently not part of the Vara Network Testnet.</p>
                   <p className={styles.placeholderText}>
