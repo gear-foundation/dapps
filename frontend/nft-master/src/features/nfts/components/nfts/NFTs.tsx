@@ -1,4 +1,4 @@
-import { useAccount, useAlert } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 import { Link } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
@@ -18,7 +18,6 @@ function NFTs({ slider }: Props) {
   const { nfts } = useNFTs();
   const { searchQuery, decodedQueryAddress } = useNFTSearch();
   const { account } = useAccount();
-  const alert = useAlert();
 
   const { isTestnet } = useNodeAddress();
   const { mintTestnetNFT, isTestnetNFTMintAvailable, isMinting } = useTestnetNFT();

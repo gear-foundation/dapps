@@ -1,15 +1,17 @@
-import { MessagesDispatched, ProgramMetadata, decodeAddress, getProgramMetadata } from '@gear-js/api';
-import { useAccount, useAlert, useApi, useSendMessage } from '@gear-js/react-hooks';
+import { MessagesDispatched, decodeAddress, getProgramMetadata } from '@gear-js/api';
+import { useAccount, useAlert, useApi, useReadWasmState, useSendMessage } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { useEffect, useMemo, useState } from 'react';
-import { atom, useAtom } from 'jotai';
+import { useAtom } from 'jotai';
+import metaMasterNFT from 'assets/master_nft.meta.txt';
 import metaTxt from 'assets/nft_master.meta.txt';
-import { useProgramMetadata } from 'hooks';
+import metaWasm from 'assets/market_nft_state.meta.wasm';
+import { useProgramMetadata, useStateMetadata } from 'hooks';
 import { useSearchParams } from 'react-router-dom';
 import { useNodeAddress } from 'features/node-switch';
 import { useContractAddress } from '../contract-address';
-import { MasterContractState, NFTContractState, TestnetNFTState } from './types';
+import { MasterContractState, NFTContractState } from './types';
 import { NFTS_ATOM, NFT_CONTRACTS_ATOM, TESTNET_NFT_CONTRACT_ADDRESS } from './consts';
 
 const handleStateChange = ({ data }: MessagesDispatched, programId: HexString, onChange: () => void) => {
@@ -140,85 +142,35 @@ function useNFTSearch() {
   return { searchQuery, decodedQueryAddress, resetSearchQuery };
 }
 
-const TESTNET_NFT_ATOM = atom<TestnetNFTState | undefined>(undefined);
-const TESTNET_NFT_META = atom<ProgramMetadata | undefined>(undefined);
-
-function useTestnetNFTSetup() {
-  const { api, isApiReady } = useApi();
-  const alert = useAlert();
-
-  const { isTestnet } = useNodeAddress();
-
-  const { NFTContracts } = useNFTs();
-
-  const [state, setState] = useAtom(TESTNET_NFT_ATOM);
-  const [metadata, setMetadata] = useAtom(TESTNET_NFT_META);
-
-  const contract = NFTContracts.find(([address]) => address === TESTNET_NFT_CONTRACT_ADDRESS);
-  const metaRaw = contract?.[1];
-  const metaHex = metaRaw ? (`0x${metaRaw}` as HexString) : undefined;
-
-  useEffect(() => {
-    if (!metaHex) {
-      setState(undefined);
-      setMetadata(undefined);
-
-      return;
-    }
-
-    setMetadata(getProgramMetadata(metaHex));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [metaHex]);
-
-  // TODO: better to obtain state from useNFTs to not read state twice,
-  // however current implementation return only list of tokens
-  const readState = () => {
-    if (!api || !metadata) return;
-
-    api.programState
-      .read({ programId: TESTNET_NFT_CONTRACT_ADDRESS }, metadata)
-      .then((result) => setState(result.toHuman() as TestnetNFTState))
-      .catch(({ message }: Error) => alert.error(message));
-  };
-
-  useEffect(() => {
-    if (!isTestnet || !isApiReady || !metadata) return;
-
-    readState();
-
-    const unsub = api.gearEvents.subscribeToGearEvent('MessagesDispatched', (event) =>
-      handleStateChange(event, TESTNET_NFT_CONTRACT_ADDRESS, readState),
-    );
-
-    return () => {
-      unsub.then((unsubCallback) => unsubCallback());
-    };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isApiReady, metadata]);
-
-  return isTestnet ? !!state : true;
-}
-
 function useTestnetNFT() {
-  const [state] = useAtom(TESTNET_NFT_ATOM);
-  const [metadata] = useAtom(TESTNET_NFT_META);
-
   const { account } = useAccount();
+  const { nfts } = useNFTs();
+
+  const metawasm = useStateMetadata(metaWasm);
+  const { state: isMinter } = useReadWasmState<undefined | boolean>(
+    TESTNET_NFT_CONTRACT_ADDRESS,
+    metawasm?.buffer,
+    // 'get_storage_id',
+    'in_minter_list',
+    account?.decodedAddress,
+  );
+
+  const metadata = useProgramMetadata(metaMasterNFT);
   const sendMessage = useSendMessage(TESTNET_NFT_CONTRACT_ADDRESS, metadata);
 
-  const [isMinting, setIsMitnting] = useState(false);
-
-  const authorizedMinters = state?.constraints.authorizedMinters;
-  const isTestnetNFTMintAvailable = !!authorizedMinters?.find((address) => address === account?.decodedAddress);
+  const [isMinting, setIsMinting] = useState(false);
+  const hasNFT = Boolean(nfts.find(({ owner }) => owner === account?.decodedAddress));
 
   const mintTestnetNFT = () => {
-    setIsMitnting(true);
-
-    sendMessage({ Mint: null }, { onSuccess: () => setIsMitnting(false), onError: () => setIsMitnting(false) });
+    setIsMinting(true);
+    sendMessage({ Mint: null }, { onSuccess: () => setIsMinting(false), onError: () => setIsMinting(false) });
   };
 
-  return { mintTestnetNFT, isTestnetNFTMintAvailable, isMinting };
+  return {
+    isMinting,
+    mintTestnetNFT,
+    isTestnetNFTMintAvailable: !!(isMinter && !hasNFT),
+  };
 }
 
 function useTestnetAutoLogin() {
@@ -250,4 +202,4 @@ function useTestnetAutoLogin() {
   }, [searchParams, accounts, isTestnet, isAccountReady]);
 }
 
-export { useNFTsState, useNFTs, useNFTSearch, useTestnetNFT, useTestnetAutoLogin, useTestnetNFTSetup };
+export { useNFTsState, useNFTs, useNFTSearch, useTestnetNFT, useTestnetAutoLogin };
