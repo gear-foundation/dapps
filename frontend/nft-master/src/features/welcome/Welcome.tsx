@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { Button, Container, Heading, Text, TextGradient, textVariants } from 'components';
-import clsx from 'clsx';
+import { Button, Container, Heading, TextGradient, textVariants } from 'components';
 import { WalletModal } from '../wallet';
 import styles from './Welcome.module.scss';
 

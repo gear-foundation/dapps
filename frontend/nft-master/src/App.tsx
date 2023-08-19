@@ -1,11 +1,10 @@
-import { useApi, useAccount } from '@gear-js/react-hooks';
-import { Header, Footer, ApiLoader, Loader } from 'components';
+import { useAccount, useApi } from '@gear-js/react-hooks';
+import { ApiLoader, Footer, Header, Loader } from 'components';
 import { Routing } from 'pages';
 import { withProviders } from 'hocs';
 import { useNFTsState, useTestnetAutoLogin } from 'features/nfts';
 import { useSearchParamsSetup } from 'features/node-switch';
 import 'App.scss';
-import { useTestnetNFTSetup } from 'features/nfts/hooks';
 
 function Component() {
   const { isApiReady } = useApi();
@@ -15,10 +14,7 @@ function Component() {
   useSearchParamsSetup();
   useTestnetAutoLogin();
 
-  const isNFTsStateReady = useNFTsState();
-  const isTestnetNFTStateReady = useTestnetNFTSetup();
-
-  const isEachStateReady = isNFTsStateReady && isTestnetNFTStateReady;
+  const isEachStateReady = useNFTsState();
 
   return (
     <>

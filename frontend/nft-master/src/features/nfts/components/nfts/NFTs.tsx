@@ -1,4 +1,4 @@
-import { useAccount, useAlert } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 import { Link } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
@@ -18,7 +18,6 @@ function NFTs({ slider }: Props) {
   const { nfts } = useNFTs();
   const { searchQuery, decodedQueryAddress } = useNFTSearch();
   const { account } = useAccount();
-  const alert = useAlert();
 
   const { isTestnet } = useNodeAddress();
   const { mintTestnetNFT, isTestnetNFTMintAvailable, isMinting } = useTestnetNFT();
@@ -131,7 +130,7 @@ function NFTs({ slider }: Props) {
         <div className={styles.placeholder}>
           {isTestnet && !searchQuery ? (
             <>
-              {isTestnetNFTMintAvailable && (
+              {(isMinting || isTestnetNFTMintAvailable) && (
                 <>
                   <p className={styles.placeholderHeading}>You don&apos;t have NFT yet</p>
                   <p className={styles.placeholderText}>To obtain your NFT, click the &quot;Mint NFT&quot; button.</p>
@@ -141,7 +140,7 @@ function NFTs({ slider }: Props) {
                 </>
               )}
 
-              {!isTestnetNFTMintAvailable && (
+              {!isMinting && !isTestnetNFTMintAvailable && (
                 <>
                   <p className={styles.placeholderHeading}>You are currently not part of the Vara Network Testnet.</p>
                   <p className={styles.placeholderText}>
