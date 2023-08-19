@@ -1,6 +1,3 @@
-/* eslint-disable */
-'use client';
-
 import * as React from 'react';
 import * as ScrollAreaPrimitive from '@radix-ui/react-scroll-area';
 import clsx from 'clsx';
