@@ -1,0 +1,63 @@
+[package]
+name = "dao"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+ft-main-io.workspace = true
+gstd.workspace = true
+dao-io.workspace = true
+hashbrown.workspace = true
+
+[dev-dependencies]
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+gclient.workspace = true
+tokio.workspace = true
+ft-main.workspace = true
+ft-logic.workspace = true
+ft-storage.workspace = true
+blake2-rfc.workspace = true
+
+[build-dependencies]
+gmeta.workspace = true
+dao-io.workspace = true
+gear-wasm-builder.workspace = true
+
+[features]
+# Used for inserting constants with WASM binaries (NOT paths) of the contract in
+# the root crate. Usually these constants used in gclient tests instead of
+# strings with paths to the binaries in the "target" directory. If you don't
+# like this approach or don't use gclient tests, you can freely remove this
+# feature from here and from the rest of the code.
+binary-vendor = []
+
+[workspace]
+members = ["state"]
+
+[workspace.package]
+version = "0.2.6"
+edition = "2021"
+authors = ["Gear Technologies"]
+license = "MIT"
+
+[workspace.dependencies]
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-main = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-logic = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-storage = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+dao-io = { path = "io" }
+dao-state = { path = "state" }
+hashbrown = "0.14"
+gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+
+tokio = "1"
+blake2-rfc = { version = "0.2.18", default-features = false }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
