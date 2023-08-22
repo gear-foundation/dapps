@@ -1,0 +1,29 @@
+@use 'utils' as *;
+
+.traits {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.trait {
+  @include flexCenter;
+  flex-direction: column;
+  padding: 24px 24px 4px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  background-image: linear-gradient(180deg, rgba(#8f7ebe, 0.04) 0%, rgba(143, 126, 190, 0) 100%);
+  border-radius: 8px;
+}
+
+.svg {
+  margin-bottom: 16px;
+}
+
+.heading {
+  margin-bottom: 4px;
+}
+
+.subheading {
+  color: #8c8b90;
+}

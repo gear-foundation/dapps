@@ -1,0 +1,89 @@
+@use 'utils' as *;
+
+@keyframes ellipsis {
+  33% {
+    content: '..';
+  }
+
+  66% {
+    content: '...';
+  }
+}
+
+.mainContainer {
+  display: flex;
+}
+
+.header {
+  %subheader {
+    line-height: 20px;
+  }
+
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.08em;
+
+  .heading {
+    display: flex;
+    font-size: 56px;
+    font-weight: 300;
+    line-height: 100%;
+
+    &::after {
+      content: '';
+      width: 1px;
+      margin: 8px 32px;
+      background-color: #2bd071;
+    }
+  }
+
+  .registration {
+    @extend %subheader;
+    margin-bottom: 3px;
+    font-weight: 300;
+    font-size: 20px;
+    color: #2bd071;
+
+    &::after {
+      content: '.';
+      width: 1em;
+      display: inline-block;
+      text-align: left;
+      animation: ellipsis 1.25s infinite;
+    }
+  }
+
+  .subheading {
+    @extend %subheader;
+    font-size: 12px;
+    color: #8c8b90;
+  }
+}
+
+.container {
+  .wallet {
+    @include gap(16px, right);
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.08em;
+    color: #8c8b90;
+  }
+
+  &.smallMargin {
+    @include gap(27px);
+  }
+
+  &.largeMargin {
+    @include gap(70px);
+  }
+}
+
+.imageWrapper {
+  @include flexCenter;
+  flex: 1;
+
+  .image {
+    max-width: 345px;
+  }
+}
