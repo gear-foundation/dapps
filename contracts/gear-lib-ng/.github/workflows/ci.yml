@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  schedule:
+    - cron: '0 0 * * *'
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Artifact cache
+        uses: Swatinem/rust-cache@v1
+
+      - name: Install nightly toolchain
+        run: rustup show
+
+      - name: Check fmt
+        run: cargo fmt --all --check
+
+      - name: Run linter
+        run: cargo clippy
+
+      - name: Run tests
+        run: cargo t

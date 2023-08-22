@@ -1,0 +1,21 @@
+[package]
+name = "gear-lib"
+version = "0.4.1"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+[dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+parity-scale-codec = { version = "3", default-features = false }
+scale-info = { version = "2", default-features = false }
+# FIXME: fails to build with `gstd` due to the unmanagable automatic `std`
+# detecting. Should be fixed in the next major `indexmap` version.
+indexmap = { git = "https://github.com/bluss/indexmap", rev = "11ac52c3c828a42d69c5fb3248198511836bfd2f", default-features = false }
+ahash = { version = "0.8", default-features = false, features = ["compile-time-rng"] }
+primitive-types = { version = "0.12", default-features = false }
+hashbrown = "0.13"
+
+[dev-dependencies]
+pretty_assertions = "1"
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47", features = ["debug"] }
