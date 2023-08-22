@@ -1,0 +1,13 @@
+[package]
+name = "onchain-nft-io"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+gmeta.workspace = true
+gstd.workspace = true
+gear-lib.workspace = true
+scale-info.workspace = true
+parity-scale-codec.workspace = true
