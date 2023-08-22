@@ -1,0 +1,18 @@
+[package]
+name = "nft-state"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+gstd.workspace = true
+gmeta = { workspace = true, features = ["codegen"] }
+nft-io.workspace = true
+gear-lib.workspace = true
+
+[build-dependencies]
+gear-wasm-builder = { workspace = true, features = ["metawasm"] }
+
+[features]
+binary-vendor = []
