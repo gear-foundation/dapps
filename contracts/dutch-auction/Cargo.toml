@@ -1,0 +1,52 @@
+[package]
+name = "dutch-auction"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[workspace.package]
+version = "0.1.5"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+[dependencies]
+gstd.workspace = true
+auction-io.workspace = true
+primitive-types.workspace = true
+nft-io.workspace = true
+gmeta.workspace = true
+gear-lib.workspace = true
+
+[dev-dependencies]
+gtest.workspace = true
+gclient.workspace = true
+tokio.workspace = true
+nft.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+auction-io.workspace = true
+gmeta.workspace = true
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.9" }
+nft-io = { git = "https://github.com/gear-dapps/non-fungible-token", tag = "0.2.12" }
+nft = { git = "https://github.com/gear-dapps/non-fungible-token", tag = "0.2.12" }
+auction-io.path = "io"
+primitive-types = { version = "0.12", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
+scale-info = { version = "2", default-features = false }
+tokio = "1"
+
+[workspace]
+members = ["state"]
+
+[features]
+binary-vendor = []
