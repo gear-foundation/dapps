@@ -1,0 +1,52 @@
+name: Docs
+
+on:
+  pull_request:
+    branches: [master]
+  push:
+    branches: [master]
+
+permissions:
+  id-token: write
+  pages: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    if: github.actor != 'dependabot[bot]'
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Cache
+        uses: Swatinem/rust-cache@v2
+
+      - name: Test doc examples
+        if: github.event_name == 'pull_request'
+        env:
+          __GEAR_WASM_BUILDER_NO_BUILD: 1
+        run: cargo test --doc --workspace
+
+      - name: Build docs
+        env:
+          RUSTDOCFLAGS: --enable-index-page -Zunstable-options
+          __GEAR_WASM_BUILDER_NO_BUILD: 1
+        run: |
+          cargo doc --no-deps --workspace
+          rm -f target/doc/.lock
+
+      - name: Setup GitHub Pages
+        if: github.event_name == 'push'
+        uses: actions/configure-pages@v3
+
+      - name: Upload Pages artifact
+        if: github.event_name == 'push'
+        uses: actions/upload-pages-artifact@v2
+        with:
+            path: target/doc
+
+      - name: Deploy to GitHub Pages
+        if: github.event_name == 'push'
+        uses: actions/deploy-pages@v2
