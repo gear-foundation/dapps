@@ -1,0 +1,37 @@
+[package]
+name = "dex-pair"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+gstd.workspace = true
+dex-pair-io.workspace = true
+dex-factory-io.workspace = true
+gear-lib.workspace = true
+ft-main-io.workspace = true
+primitive-types.workspace = true
+
+[dev-dependencies]
+gtest.workspace = true
+gclient.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+gear-core = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+ft-main.workspace = true
+ft-logic.workspace = true
+ft-storage.workspace = true
+pretty_assertions = "1"
+dex-factory = { path = "../factory" }
+dex-factory-state = { path = "../factory/state" }
+dex-pair-state = { path = "state" }
+sp-core-hashing = "8"
+tokio = "1"
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+dex-pair-io.workspace = true
+gmeta.workspace = true
+
+[features]
+binary-vendor = []
