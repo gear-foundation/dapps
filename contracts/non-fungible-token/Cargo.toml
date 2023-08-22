@@ -1,0 +1,60 @@
+[package]
+name = "nft"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+gstd.workspace = true
+primitive-types.workspace = true
+nft-io.workspace = true
+gear-lib.workspace = true
+gear-lib-derive.workspace = true
+sp-core-hashing.workspace = true
+hashbrown.workspace = true
+gmeta.workspace = true
+
+[dev-dependencies]
+nft-state = { workspace = true, features = ["binary-vendor"] }
+hex-literal.workspace = true
+sp-core.workspace = true
+gclient.workspace = true
+gtest.workspace = true
+tokio.workspace = true
+
+[features]
+binary-vendor = []
+
+[build-dependencies]
+nft-io.workspace = true
+gear-wasm-builder.workspace = true
+gmeta.workspace = true
+
+[workspace.package]
+version = "0.2.12"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+[workspace]
+members = ["state"]
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+sp-core = { git = "https://github.com/gear-tech/substrate", rev = "36699c4" }
+gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.9" }
+gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.9" }
+nft-io.path = "io"
+nft-state.path = "state"
+parity-scale-codec = { version = "3", default-features = false }
+scale-info = { version = "2", default-features = false }
+primitive-types = { version = "0.12", default-features = false }
+sp-core-hashing = { version = "8", default-features = false }
+hashbrown = "0.14"
+hex-literal = "0.4"
+tokio = "1"
