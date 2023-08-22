@@ -1,0 +1,13 @@
+[workspace]
+resolver = "2"
+members = [
+    "derive",
+    "lib",
+    "sr25519",
+]
+
+[workspace.package]
+version = "0.3.9"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
