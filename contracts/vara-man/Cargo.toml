@@ -1,0 +1,2 @@
+[workspace]
+members = ["io", "state", "game"]

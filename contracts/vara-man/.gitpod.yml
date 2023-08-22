@@ -1,0 +1,17 @@
+tasks:
+  - before: |
+      rm -rf $HOME/.cargo
+      unset CARGO_HOME
+      curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+      source $HOME/.cargo/env
+      echo 'export CARGO_HOME="$HOME/.cargo"' >> ~/.bashrc
+      source ~/.bashrc
+      sudo wget -c https://github.com/WebAssembly/binaryen/releases/download/version_110/binaryen-version_110-x86_64-linux.tar.gz -O - | tar -xz -C .
+      sudo cp binaryen-version_110/bin/wasm-opt /usr/bin/
+    init: |
+      gp open src/lib.rs
+      clear && printf '\e[3J' && history -c
+
+vscode:
+  extensions:
+    - matklad.rust-analyzer
