@@ -1,0 +1,28 @@
+[package]
+name = "ft-logic"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+gmeta.workspace = true
+gstd.workspace = true
+scale-info.workspace = true
+parity-scale-codec.workspace = true
+ft-logic-io.workspace = true
+ft-main-io.workspace = true
+ft-storage-io.workspace = true
+primitive-types.workspace = true
+light_sr25519.workspace = true
+hashbrown.workspace = true
+hex = { version = "0.4", default-features = false, features = ["alloc"] }
+
+[dev-dependencies]
+gtest.workspace = true
+tokio.workspace = true
+
+[build-dependencies]
+gmeta.workspace = true
+gear-wasm-builder.workspace = true
+ft-logic-io.workspace = true

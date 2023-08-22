@@ -1,0 +1,33 @@
+[package]
+name = "ft-main"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+gstd.workspace = true
+ft-main-io.workspace = true
+ft-logic-io.workspace = true
+ft-storage-io.workspace = true
+gmeta.workspace = true
+hashbrown.workspace = true
+primitive-types.workspace = true
+sp-core-hashing = { version = "8.0.0", default-features = false }
+
+[dev-dependencies]
+gtest.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+gclient.workspace = true
+tokio.workspace = true
+light_sr25519.workspace = true
+sp-core.workspace = true
+hex-literal = "0.3.4"
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+gmeta.workspace = true
+ft-main-io.workspace = true
+
+[features]
+binary-vendor = []

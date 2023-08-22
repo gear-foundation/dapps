@@ -1,0 +1,11 @@
+[package]
+name = "ft-storage-io"
+version = "2.1.2"
+edition = "2021"
+
+[dependencies]
+parity-scale-codec = { version = "3", default-features = false }
+gstd.workspace = true
+scale-info = { version = "2", default-features = false }
+primitive-types = { version = "0.12.1", default-features = false }
+gmeta.workspace = true
