@@ -1,0 +1,29 @@
+[package]
+name = "gear-feeds-channel"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+circular_buffer.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+async-trait.workspace = true
+channel-io.workspace = true
+router-io.workspace = true
+
+[dev-dependencies]
+gtest.workspace = true
+
+[build-dependencies]
+gmeta.workspace = true
+channel-io.workspace = true
+gear-wasm-builder.workspace = true
+
+[features]
+# Used for inserting constants with WASM binaries (NOT paths) of the contract in
+# the root crate. Usually these constants used in gclient tests instead of
+# strings with paths to the binaries in the "target" directory. If you don't
+# like this approach or don't use gclient tests, you can freely remove this
+# feature from here and from the rest of the code.
+binary-vendor = []
