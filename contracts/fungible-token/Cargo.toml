@@ -1,0 +1,41 @@
+[package]
+name = "fungible-token"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+ft-io.workspace = true
+gstd.workspace = true
+hashbrown.workspace = true
+gmeta.workspace = true
+
+[dev-dependencies]
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+
+[build-dependencies]
+ft-io.workspace = true
+gmeta.workspace = true
+gear-wasm-builder.workspace = true
+
+[workspace.package]
+version = "0.1.7"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+[workspace.dependencies]
+ft-io = { path = "io" }
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+hashbrown = "0.14"
+
+[features]
+binary-vendor = []
+
+[workspace]
+members = ["state"]

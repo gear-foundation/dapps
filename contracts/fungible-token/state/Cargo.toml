@@ -1,0 +1,15 @@
+[package]
+name = "ft-state"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+ft-io.workspace = true
+gstd.workspace = true
+gmeta = { workspace = true, features = ["codegen"] }
+
+[build-dependencies]
+gear-wasm-builder = { workspace = true, features = ["metawasm"] }
+
+[features]
+binary-vendor = []

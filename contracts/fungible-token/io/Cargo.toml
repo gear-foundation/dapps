@@ -1,0 +1,10 @@
+[package]
+name = "ft-io"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+gstd.workspace = true
+gmeta.workspace = true
