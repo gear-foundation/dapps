@@ -1,0 +1,10 @@
+[package]
+name = "demo-ping-io"
+version.workspace = true
+authors.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+gmeta.workspace = true
+gstd.workspace = true
