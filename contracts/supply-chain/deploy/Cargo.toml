@@ -1,0 +1,19 @@
+[package]
+name = "deploy"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+gclient.workspace = true
+gstd.workspace = true
+supply-chain-io.workspace = true
+supply-chain-state.workspace = true
+supply-chain.workspace = true
+sp-core-hashing.workspace = true
+primitive-types.workspace = true
+nft-io.workspace = true
+ft-main-io.workspace = true
+tokio.workspace = true
+clap = { workspace = true, features = ["std"] }
