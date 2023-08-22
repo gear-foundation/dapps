@@ -1,0 +1,23 @@
+[workspace]
+resolver = "2"
+members = [
+    "player",
+    "syndote",
+]
+
+[workspace.package]
+version = "0.1.4"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+parity-scale-codec = { version = "3", default-features = false }
+scale-info = { version = "2", default-features = false }
+syndote-io.path = "syndote/io"
+player-io.path = "player/io"
+hashbrown = "0.14"
