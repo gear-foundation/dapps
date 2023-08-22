@@ -150,7 +150,6 @@ function useTestnetNFT() {
   const { state: isMinter } = useReadWasmState<undefined | boolean>(
     TESTNET_NFT_CONTRACT_ADDRESS,
     metawasm?.buffer,
-    // 'get_storage_id',
     'in_minter_list',
     account?.decodedAddress,
   );

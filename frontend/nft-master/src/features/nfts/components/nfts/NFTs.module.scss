@@ -110,10 +110,12 @@
 }
 
 .placeholder {
-  padding: 170px 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+  min-height: 436px;
+  padding: 0 20px;
   text-align: center;
   background: url('../../assets/placeholder.svg') center/100% 100% no-repeat;
 

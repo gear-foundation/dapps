@@ -110,12 +110,6 @@ function NFTs({ slider }: Props) {
             </header>
           </Container>
 
-          <div className="">
-            <picture>
-              <img src={SmokeImage} alt="Smoke" className={styles.background} />
-            </picture>
-          </div>
-
           {slider ? (
             <ul className="keen-slider" ref={sliderRef}>
               {getNFTs()}
@@ -133,7 +127,9 @@ function NFTs({ slider }: Props) {
               {(isMinting || isTestnetNFTMintAvailable) && (
                 <>
                   <p className={styles.placeholderHeading}>You don&apos;t have NFT yet</p>
-                  <p className={styles.placeholderText}>To obtain your NFT, click the &quot;Mint NFT&quot; button.</p>
+                  <p className={styles.placeholderText}>
+                    To obtain your NFT, click the &quot;Mint&nbsp;NFT&quot;&nbsp;button.
+                  </p>
                   <button type="button" onClick={mintTestnetNFT} className={styles.button} disabled={isMinting}>
                     Mint NFT
                   </button>
