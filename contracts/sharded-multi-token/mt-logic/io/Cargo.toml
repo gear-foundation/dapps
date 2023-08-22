@@ -1,0 +1,16 @@
+[package]
+name = "mt-logic-io"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+parity-scale-codec.workspace = true
+gstd.workspace = true
+scale-info.workspace = true
+primitive-types.workspace = true
+hashbrown.workspace = true
+gmeta.workspace = true
+mt-storage-io.workspace = true
+mt-main-io.workspace = true
