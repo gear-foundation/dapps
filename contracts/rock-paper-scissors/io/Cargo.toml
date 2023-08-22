@@ -1,0 +1,12 @@
+[package]
+name = "rps-io"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+gstd.workspace = true
+parity-scale-codec.workspace = true
+scale-info.workspace = true
+gmeta.workspace = true
