@@ -1,0 +1,3 @@
+[submodule "game-of-chance"]
+	path = game-of-chance
+	url = https://github.com/gear-dapps/game-of-chance

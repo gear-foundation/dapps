@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@gear-js/api": "^0.27.7"
+  }
+}

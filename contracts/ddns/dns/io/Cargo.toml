@@ -1,0 +1,12 @@
+[package]
+name = "dns-io"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+
+[dependencies]
+gstd.workspace = true
+scale-info.workspace = true
+parity-scale-codec.workspace = true
+gmeta.workspace = true
