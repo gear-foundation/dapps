@@ -1,0 +1,57 @@
+[package]
+name = "escrow"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+gstd.workspace = true
+ft-main-io.workspace = true
+async-trait.workspace = true
+hashbrown.workspace = true
+escrow-io.workspace = true
+
+[build-dependencies]
+escrow-io.workspace = true
+gear-wasm-builder.workspace = true
+gmeta.workspace = true
+
+[dev-dependencies]
+gclient.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+tokio.workspace = true
+ft-main.workspace = true
+ft-logic.workspace = true
+ft-storage.workspace = true
+
+[features]
+binary-vendor = []
+
+[workspace]
+members = ["state"]
+
+[workspace.package]
+version = "0.1.7"
+edition = "2021"
+license = "MIT"
+authors = ["Gear Technologies"]
+
+[workspace.dependencies]
+gstd = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-main = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-logic = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+ft-storage = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
+async-trait = "0.1.68"
+hashbrown = "0.14"
+escrow-io = { path = "io" }
+tokio = "1"
+primitive-types = { version = "0.12", default-features = false }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
