@@ -1,5 +1,5 @@
-import { MessagesDispatched, decodeAddress, getProgramMetadata } from '@gear-js/api';
-import { useAccount, useAlert, useApi, useReadWasmState, useSendMessage } from '@gear-js/react-hooks';
+import { MessagesDispatched, decodeAddress, getProgramMetadata, getStateMetadata } from '@gear-js/api';
+import { useAccount, useAlert, useApi, useSendMessage } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { useEffect, useMemo, useState } from 'react';
@@ -143,17 +143,10 @@ function useNFTSearch() {
 }
 
 function useTestnetNFT() {
-  const { account } = useAccount();
   const { nfts } = useNFTs();
-
+  const { isTestnet } = useNodeAddress();
+  const { account } = useAccount();
   const metawasm = useStateMetadata(metaWasm);
-  const { state: isMinter } = useReadWasmState<undefined | boolean>(
-    TESTNET_NFT_CONTRACT_ADDRESS,
-    metawasm?.buffer,
-    'in_minter_list',
-    account?.decodedAddress,
-  );
-
   const metadata = useProgramMetadata(metaMasterNFT);
   const sendMessage = useSendMessage(TESTNET_NFT_CONTRACT_ADDRESS, metadata);
 
@@ -165,10 +158,49 @@ function useTestnetNFT() {
     sendMessage({ Mint: null }, { onSuccess: () => setIsMinting(false), onError: () => setIsMinting(false) });
   };
 
+  const { api, isApiReady } = useApi();
+  const alert = useAlert();
+  const [state, setState] = useState<undefined | boolean>();
+
+  const readState = () => {
+    if (!api || !metawasm) return;
+
+    getStateMetadata(metawasm?.buffer)
+      .then((stateMetadata) =>
+        api.programState.readUsingWasm(
+          {
+            programId: TESTNET_NFT_CONTRACT_ADDRESS,
+            wasm: metawasm?.buffer,
+            fn_name: 'in_minter_list',
+            argument: account?.decodedAddress,
+          },
+          stateMetadata,
+        ),
+      )
+      .then((result) => setState(result.toHuman() as boolean))
+      .catch(({ message }: Error) => alert.error(message));
+  };
+
+  useEffect(() => {
+    if (!isTestnet || !isApiReady || !metawasm) return;
+
+    readState();
+
+    const unsub = api.gearEvents.subscribeToGearEvent('MessagesDispatched', (event) =>
+      handleStateChange(event, TESTNET_NFT_CONTRACT_ADDRESS, readState),
+    );
+
+    return () => {
+      unsub.then((unsubCallback) => unsubCallback());
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isApiReady, isTestnet, account?.decodedAddress]);
+
   return {
     isMinting,
     mintTestnetNFT,
-    isTestnetNFTMintAvailable: !!(isMinter && !hasNFT),
+    isTestnetNFTMintAvailable: isTestnet ? !!(state && !hasNFT) : false,
   };
 }
 
