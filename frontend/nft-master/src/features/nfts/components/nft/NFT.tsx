@@ -2,13 +2,11 @@ import { HexString } from '@polkadot/util/types';
 import { useAccount } from '@gear-js/react-hooks';
 import { createSearchParams, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { getIpfsAddress } from 'utils';
 import { Container } from 'components';
 import { useNodeAddress } from 'features/node-switch';
 import { ReactComponent as SearchSVG } from '../../assets/search.svg';
 import { ReactComponent as BackArrowSVG } from '../../assets/back-arrow.svg';
 import { useNFTs } from '../../hooks';
-import { getImageUrl } from '../../utils';
 import styles from './NFT.module.scss';
 import { TransferNFTModal } from '../transfer-nft-modal';
 
@@ -23,7 +21,7 @@ function NFT() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
-  const { isTestnet } = useNodeAddress();
+  const { isTestnet, getIpfsAddress, getImageUrl } = useNodeAddress();
   const { nfts } = useNFTs();
   const nft = nfts.find((item) => item.programId === programId && item.id === id);
   const { name, collection, description, owner, attribUrl } = nft || {};
@@ -44,6 +42,7 @@ function NFT() {
     } else {
       setDetails(attribUrl);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attribUrl]);
 
   useEffect(() => {

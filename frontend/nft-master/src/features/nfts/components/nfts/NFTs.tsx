@@ -4,8 +4,6 @@ import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
 import { buttonVariants, Container } from 'components';
 import { useNodeAddress } from 'features/node-switch';
-import SmokeImage from 'features/nfts/assets/smoke.webp';
-import { getImageUrl } from '../../utils';
 import { ReactComponent as ArrowLeftSVG } from '../../assets/arrow-left.svg';
 import { useNFTSearch, useNFTs, useTestnetNFT } from '../../hooks';
 import styles from './NFTs.module.scss';
@@ -19,7 +17,7 @@ function NFTs({ slider }: Props) {
   const { searchQuery, decodedQueryAddress } = useNFTSearch();
   const { account } = useAccount();
 
-  const { isTestnet } = useNodeAddress();
+  const { isTestnet, getImageUrl } = useNodeAddress();
   const { mintTestnetNFT, isTestnetNFTMintAvailable, isMinting } = useTestnetNFT();
 
   const filteredNFTs = nfts.filter(({ name, owner }) =>
