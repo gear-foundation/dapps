@@ -5,8 +5,9 @@ import { useEffect } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
 import { ReactComponent as SearchSVG } from '../../assets/search.svg';
 import { ReactComponent as ResetSVG } from '../../assets/reset.svg';
-import { useNFTSearch } from '../../hooks';
+import { useGetAllNFTs, useNFTSearch } from '../../hooks';
 import styles from './Search.module.scss';
+import { usePendingUI } from '../../../../hooks';
 
 function Search() {
   const { isAccountReady } = useAccount();
@@ -16,8 +17,18 @@ function Search() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
+  const { getAllNFTs, isStateRead } = useGetAllNFTs();
+  const { setIsPending } = usePendingUI();
+
   const handleSubmit = onSubmit(({ query }) => {
     searchParams.set('query', query);
+
+    if (!isStateRead) {
+      setIsPending(true);
+      getAllNFTs(() => {
+        setIsPending(false);
+      });
+    }
 
     navigate({ pathname: '/list', search: searchParams.toString() });
   });

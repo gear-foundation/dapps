@@ -2,6 +2,14 @@ import { ProgramMetadata, getProgramMetadata, StateMetadata, getStateMetadata } 
 import { useAlert, useReadFullState } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { useState, useEffect, useRef } from 'react';
+import { atom, useAtom } from 'jotai';
+
+const isPendingUI = atom<boolean>(false);
+
+export function usePendingUI() {
+  const [isPending, setIsPending] = useAtom(isPendingUI);
+  return { isPending, setIsPending };
+}
 
 function useProgramMetadata(source: string) {
   const alert = useAlert();

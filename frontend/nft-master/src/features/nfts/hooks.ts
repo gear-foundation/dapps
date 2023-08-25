@@ -22,6 +22,64 @@ const handleStateChange = ({ data }: MessagesDispatched, programId: HexString, o
   if (isAnyChange) onChange();
 };
 
+export function useNFTSearch() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const searchQuery = searchParams.get('query') || '';
+
+  const decodedQueryAddress = useMemo(() => {
+    if (!searchQuery) return;
+
+    try {
+      return decodeAddress(searchQuery);
+    } catch (error) {
+      return undefined;
+    }
+  }, [searchQuery]);
+
+  const resetSearchQuery = () => {
+    searchParams.delete('query');
+
+    setSearchParams(searchParams);
+  };
+
+  return { searchQuery, decodedQueryAddress, resetSearchQuery };
+}
+
+export function useGetAllNFTs() {
+  const { api } = useApi();
+  const alert = useAlert();
+
+  const [NFTContracts] = useAtom(NFT_CONTRACTS_ATOM);
+  const [, setNFTs] = useAtom(NFTS_ATOM);
+  const [isStateRead, setIsStateRead] = useState<boolean>(false);
+
+  const getAllNFTs = (cb?: () => void) => {
+    if (!NFTContracts) return;
+
+    const promises = NFTContracts.map(([programId, metaRaw]) => {
+      const metaHex = `0x${metaRaw}`;
+      const metadata = getProgramMetadata(metaHex);
+
+      return api.programState
+        .read({ programId }, metadata)
+        .then((codec) => codec.toHuman() as NFTContractState)
+        .then(({ tokens, collection }) =>
+          tokens.map(([id, token]) => ({ ...token, id, programId, collection: collection.name })),
+        );
+    });
+
+    Promise.all(promises)
+      .then((result) => {
+        setIsStateRead(true);
+        setNFTs(result.flat());
+      })
+      .catch(({ message }: Error) => alert.error(message))
+      .finally(() => cb && cb());
+  };
+
+  return { getAllNFTs, isStateRead };
+}
+
 export function useNFTsState() {
   const { api, isApiReady } = useApi();
   const { account, isAccountReady } = useAccount();
@@ -31,6 +89,9 @@ export function useNFTsState() {
   const { isTestnet } = useNodeAddress();
   const { contractAddress: masterContractAddress } = useContractAddress();
   const masterMetadata = useProgramMetadata(metaTxt);
+
+  const { searchQuery } = useNFTSearch();
+  const { getAllNFTs } = useGetAllNFTs();
 
   const [NFTContracts, setNFTContracts] = useAtom(NFT_CONTRACTS_ATOM);
   const [NFTs, setNFTs] = useAtom(NFTS_ATOM);
@@ -68,26 +129,6 @@ export function useNFTsState() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isApiReady, isAccountReady, masterContractAddress, masterMetadata]);
 
-  const getAllNFTs = () => {
-    if (!NFTContracts) return;
-
-    const promises = NFTContracts.map(([programId, metaRaw]) => {
-      const metaHex = `0x${metaRaw}`;
-      const metadata = getProgramMetadata(metaHex);
-
-      return api.programState
-        .read({ programId }, metadata)
-        .then((codec) => codec.toHuman() as NFTContractState)
-        .then(({ tokens, collection }) =>
-          tokens.map(([id, token]) => ({ ...token, id, programId, collection: collection.name })),
-        );
-    });
-
-    Promise.all(promises)
-      .then((result) => setNFTs(result.flat()))
-      .catch(({ message }: Error) => alert.error(message));
-  };
-
   const getUserNFT = (storage: [HexString, string]) => {
     const [programId, metaRaw] = storage;
     const metadata = getProgramMetadata(`0x${metaRaw}`);
@@ -120,7 +161,7 @@ export function useNFTsState() {
       .then((storageId) => {
         const userStorage = NFTContracts.find(([address]) => storageId.toHuman() === address);
 
-        if (userStorage) {
+        if (userStorage && !searchQuery) {
           const nftStorageId = pathname.slice(1, pathname.indexOf('/', 1));
           const isViewingNFT = isHex(nftStorageId);
           const [programId] = userStorage;
@@ -176,29 +217,6 @@ export function useNFTs() {
   const [NFTContracts] = useAtom(NFT_CONTRACTS_ATOM);
 
   return { nfts: NFTs || [], NFTContracts: NFTContracts || [] };
-}
-
-export function useNFTSearch() {
-  const [searchParams, setSearchParams] = useSearchParams();
-  const searchQuery = searchParams.get('query') || '';
-
-  const decodedQueryAddress = useMemo(() => {
-    if (!searchQuery) return;
-
-    try {
-      return decodeAddress(searchQuery);
-    } catch (error) {
-      return undefined;
-    }
-  }, [searchQuery]);
-
-  const resetSearchQuery = () => {
-    searchParams.delete('query');
-
-    setSearchParams(searchParams);
-  };
-
-  return { searchQuery, decodedQueryAddress, resetSearchQuery };
 }
 
 const TESTNET_NFT_IS_MINTER_ATOM = atom<boolean | undefined>(undefined);
@@ -259,9 +277,13 @@ export function useTestnetNFT() {
 
   const [isMinting, setIsMinting] = useState(false);
   const hasNFT = Boolean(nfts.find(({ owner }) => owner === account?.decodedAddress));
+  const { getAllNFTs, isStateRead } = useGetAllNFTs();
 
   const mintTestnetNFT = () => {
     setIsMinting(true);
+
+    if (!isStateRead) getAllNFTs();
+
     sendMessage({ Mint: null }, { onSuccess: () => setIsMinting(false), onError: () => setIsMinting(false) });
   };
 
