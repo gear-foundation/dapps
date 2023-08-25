@@ -56,7 +56,9 @@ function Header() {
               <NodeSwitch />
             </div>
 
-            <Wallet className={styles.desktopWallet} />
+            <div className={styles.desktopWallet}>
+              <Wallet />
+            </div>
           </div>
         </div>
       </Container>
