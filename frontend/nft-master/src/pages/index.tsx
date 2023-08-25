@@ -3,11 +3,13 @@ import { useEffect } from 'react';
 import { NFTs } from 'features/nfts';
 import { Home } from './home';
 import { NFT } from './nft';
+import { NotFound } from './not-found';
 
 const routes = [
   { path: '/', Page: Home },
   { path: '/:programId/:id', Page: NFT },
   { path: '/list', Page: NFTs },
+  { path: '*', Page: NotFound },
 ];
 
 function Routing() {
