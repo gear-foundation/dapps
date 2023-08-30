@@ -15,9 +15,13 @@ impl Metadata for NFTMasterMetadata {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct NFTMasterInit {}
 
 #[derive(Debug, Clone, PartialEq, Eq, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum NFTMasterAction {
     AddNFTContract { nft_contract: ActorId, meta: String },
     RemoveNFTContract { nft_contract: ActorId },
@@ -26,6 +30,8 @@ pub enum NFTMasterAction {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum NFTMasterEvent {
     NFTContractAdded {
         operator: ActorId,
@@ -53,6 +59,8 @@ pub enum NFTMasterEvent {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct NFTMasterState {
     pub nfts: Vec<(ActorId, String)>,
     pub operators: Vec<ActorId>,

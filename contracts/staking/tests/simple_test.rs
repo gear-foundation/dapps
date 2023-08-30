@@ -20,7 +20,7 @@ struct Staking {
 }
 
 fn init_staking(sys: &System) {
-    let staking = Program::current(sys);
+    let staking = Program::current_opt(sys);
 
     let res = staking.send(
         4,

@@ -1,10 +1,10 @@
 #![no_std]
 
-use catalog_io::*;
 use gstd::{msg, prelude::*, ActorId};
 use hashbrown::HashMap;
-use resource_io::*;
-use types::primitives::{PartId, ResourceId};
+use rmrk_catalog_io::*;
+use rmrk_resource_io::*;
+use rmrk_types::primitives::{PartId, ResourceId};
 
 #[derive(Debug, Default)]
 struct ResourceStorage {
@@ -64,7 +64,7 @@ impl ResourceStorage {
 }
 
 #[no_mangle]
-unsafe extern "C" fn init() {
+unsafe extern fn init() {
     let config: InitResource = msg::load().expect("Unable to decode InitResource");
     let resource = ResourceStorage {
         name: config.resource_name,
@@ -96,7 +96,7 @@ async unsafe fn main() {
 }
 
 #[no_mangle]
-extern "C" fn state() {
+extern fn state() {
     let resource = unsafe {
         RESOURCE_STORAGE
             .as_ref()

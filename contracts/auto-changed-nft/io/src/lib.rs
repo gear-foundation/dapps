@@ -1,6 +1,6 @@
 #![no_std]
 
-use gear_lib::non_fungible_token::{
+use gear_lib_old::non_fungible_token::{
     io::{NFTApproval, NFTTransfer, NFTTransferPayout},
     royalties::*,
     state::NFTState,
@@ -9,7 +9,7 @@ use gear_lib::non_fungible_token::{
 use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 
-pub use gear_lib::non_fungible_token::delegated::DelegatedApproveMessage;
+pub use gear_lib_old::non_fungible_token::delegated::DelegatedApproveMessage;
 use primitive_types::H256;
 
 pub struct NFTMetadata;
@@ -24,6 +24,8 @@ impl Metadata for NFTMetadata {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum NFTAction {
     Mint {
         transaction_id: u64,
@@ -80,6 +82,8 @@ pub enum NFTAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitNFT {
     pub name: String,
     pub symbol: String,
@@ -87,6 +91,8 @@ pub struct InitNFT {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum NFTEvent {
     Transfer(NFTTransfer),
     TransferPayout(NFTTransferPayout),
@@ -109,6 +115,8 @@ pub enum NFTEvent {
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct IoNFTState {
     pub name: String,
     pub symbol: String,
@@ -121,6 +129,8 @@ pub struct IoNFTState {
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct IoNFT {
     pub token: IoNFTState,
     pub token_id: TokenId,
@@ -177,6 +187,8 @@ impl From<&NFTState> for IoNFTState {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Nft2 {
     pub owner: ActorId,
     pub name: String,
@@ -186,6 +198,8 @@ pub struct Nft2 {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct NFTState2 {
     pub tokens: Vec<(TokenId, Nft2)>,
     pub owners: Vec<(ActorId, TokenId)>,
@@ -194,12 +208,16 @@ pub struct NFTState2 {
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Collection {
     pub name: String,
     pub description: String,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitNFT2 {
     pub collection: Collection,
 }

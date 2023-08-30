@@ -1,6 +1,6 @@
 #![no_std]
 
-use gear_lib::non_fungible_token::token::{TokenId, TokenMetadata};
+use gear_lib_old::non_fungible_token::token::{TokenId, TokenMetadata};
 use gmeta::{InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 
@@ -16,6 +16,8 @@ impl Metadata for ContractMetadata {
 }
 
 #[derive(Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct NFTPixelboardState {
     pub owner: ActorId,
     pub block_side_length: BlockSideLength,
@@ -58,6 +60,8 @@ pub type TransactionId = u64;
 
 /// Coordinates of the corners of an NFT rectangle on a canvas.
 #[derive(Decode, Encode, TypeInfo, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Default)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Rectangle {
     pub top_left_corner: Coordinates,
     pub bottom_right_corner: Coordinates,
@@ -94,6 +98,8 @@ impl
 
 /// Coordinates of some pixel on a canvas.
 #[derive(Decode, Encode, TypeInfo, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Debug, Default)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Coordinates {
     pub x: BlockSideLength,
     pub y: BlockSideLength,
@@ -107,6 +113,8 @@ impl From<(BlockSideLength, BlockSideLength)> for Coordinates {
 
 /// A resolution of a canvas.
 #[derive(Decode, Encode, Default, Clone, Copy, TypeInfo, Debug, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Resolution {
     pub width: BlockSideLength,
     pub height: BlockSideLength,
@@ -120,10 +128,14 @@ impl From<(BlockSideLength, BlockSideLength)> for Resolution {
 
 /// An NFT with its [`Rectangle`] and [`TokenInfo`].
 #[derive(Decode, Encode, TypeInfo, Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Token(pub Rectangle, pub TokenInfo);
 
 /// NFT info.
 #[derive(Decode, Encode, TypeInfo, Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct TokenInfo {
     pub token_id: Option<TokenId>,
     pub owner: ActorId,
@@ -155,6 +167,8 @@ pub struct TokenInfo {
 /// * `ft_program` address mustn't be [`ActorId::zero()`].
 /// * `nft_program` address mustn't be [`ActorId::zero()`].
 #[derive(Decode, Encode, TypeInfo, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitNFTPixelboard {
     /// An address of a pixelboard owner to which minting fees and commissions
     /// on resales will be transferred.
@@ -184,6 +198,8 @@ pub struct InitNFTPixelboard {
 
 /// Sends a program info about what it should do.
 #[derive(Decode, Encode, TypeInfo, Clone, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum NFTPixelboardAction {
     /// Mints one NFT on a pixelboard with given `token_metadata` & `painting`.
     ///
@@ -295,6 +311,8 @@ pub enum NFTPixelboardAction {
 
 /// A result of processed [`NFTPixelboardAction`] in case of successfull execution.
 #[derive(Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum NFTPixelboardEvent {
     /// Should be returned from [`NFTPixelboardAction::Mint`].
     Minted(TokenId),
@@ -308,6 +326,8 @@ pub enum NFTPixelboardEvent {
 
 /// A result of processed [`NFTPixelboardAction`] in case of failure.
 #[derive(Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum NFTPixelboardError {
     ZeroWidthOrHeight,
     ZeroAddress,

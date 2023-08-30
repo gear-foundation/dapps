@@ -21,6 +21,8 @@ impl Metadata for MarketMetadata {
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Market {
     pub admin_id: ActorId,
     pub treasury_id: ActorId,
@@ -32,12 +34,16 @@ pub struct Market {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct ItemInfoArgs {
     nft_contract_id: ActorId,
     token_id: U256,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitMarket {
     pub admin_id: ActorId,
     pub treasury_id: ActorId,
@@ -45,6 +51,8 @@ pub struct InitMarket {
 }
 
 #[derive(Debug, PartialEq, Eq, Default, Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Auction {
     pub bid_period: u64,
     pub started_at: u64,
@@ -54,6 +62,8 @@ pub struct Auction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo, Clone, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum MarketTx {
     CreateAuction,
     Bid {
@@ -78,6 +88,8 @@ pub enum MarketTx {
 }
 
 #[derive(Debug, PartialEq, Eq, Encode, Decode, TypeInfo, Clone, Default)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Item {
     pub token_id: TokenId,
     pub owner: ActorId,
@@ -89,6 +101,8 @@ pub struct Item {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum MarketAction {
     /// Adds NFT contract addresses that can be listed on marketplace.
     ///
@@ -269,6 +283,8 @@ pub enum MarketAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum MarketEvent {
     NftContractAdded(ContractId),
     FtContractAdded(ContractId),
@@ -330,6 +346,8 @@ pub enum MarketEvent {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum MarketErr {
     NFTTransferFailed,
     TokenTransferFailed,

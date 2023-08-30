@@ -4,7 +4,6 @@ use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 use supply_chain_io::*;
 
-#[cfg(feature = "binary-vendor")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 #[metawasm]

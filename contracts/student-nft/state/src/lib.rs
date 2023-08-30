@@ -4,9 +4,6 @@ use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 use student_nft_io::*;
 
-#[cfg(feature = "binary-vendor")]
-include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
-
 #[metawasm]
 pub mod metafns {
     pub type State = <ContractMetadata as Metadata>::State;

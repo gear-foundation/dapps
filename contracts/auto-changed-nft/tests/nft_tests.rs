@@ -1,5 +1,5 @@
-use gear_lib::non_fungible_token::io::*;
-use gear_lib::non_fungible_token::token::TokenId;
+use gear_lib_old::non_fungible_token::io::*;
+use gear_lib_old::non_fungible_token::token::TokenId;
 use gstd::{ActorId, Encode};
 use gtest::System;
 mod utils;

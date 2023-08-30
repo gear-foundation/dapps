@@ -1,5 +1,5 @@
-use gear_lib::non_fungible_token::delegated::DelegatedApproveMessage;
-use gear_lib::non_fungible_token::io::*;
+use gear_lib_old::non_fungible_token::delegated::DelegatedApproveMessage;
+use gear_lib_old::non_fungible_token::io::*;
 use gstd::{ActorId, Encode};
 use gtest::System;
 mod utils;

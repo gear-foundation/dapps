@@ -1,6 +1,5 @@
 use super::tx_manager::TransactionGuard;
-use ft_main_io::{FTokenAction, FTokenEvent, LogicAction};
-use gear_lib::non_fungible_token::{
+use gear_lib_old::non_fungible_token::{
     io::NFTTransfer,
     token::{TokenId, TokenMetadata},
 };
@@ -10,7 +9,8 @@ use gstd::{
     prelude::*,
     ActorId,
 };
-use nft_io::{NFTAction, NFTEvent};
+use non_fungible_token_io::{NFTAction, NFTEvent};
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
 use supply_chain_io::*;
 
 fn send<T: Decode>(actor: ActorId, payload: impl Encode) -> GstdResult<CodecMessageFuture<T>> {

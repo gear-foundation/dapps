@@ -15,6 +15,8 @@ impl Metadata for DaoMetadata {
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct DaoState {
     pub admin: ActorId,
     pub approved_token_program_id: ActorId,
@@ -82,6 +84,8 @@ impl DaoState {
 }
 
 #[derive(Debug, Default, Clone, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Proposal {
     pub proposer: ActorId,
     pub applicant: ActorId,
@@ -102,6 +106,8 @@ pub struct Proposal {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Member {
     pub delegate_key: ActorId,
     pub shares: u128,
@@ -109,6 +115,8 @@ pub struct Member {
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum DaoAction {
     /// Adds members to whitelist.
     ///
@@ -265,6 +273,8 @@ pub enum DaoAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum DaoEvent {
     MemberAddedToWhitelist(ActorId),
     SubmitMembershipProposal {
@@ -302,6 +312,8 @@ pub enum DaoEvent {
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitDao {
     pub admin: ActorId,
     pub approved_token_program_id: ActorId,
@@ -313,6 +325,8 @@ pub struct InitDao {
 }
 
 #[derive(Debug, Encode, Decode, Clone, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Vote {
     Yes,
     No,

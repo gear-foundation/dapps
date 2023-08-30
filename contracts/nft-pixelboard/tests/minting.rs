@@ -1,10 +1,8 @@
-use gear_lib::non_fungible_token::token::TokenMetadata;
+use gear_lib_old::non_fungible_token::token::TokenMetadata;
 
 pub mod utils;
 use utils::{prelude::*, FungibleToken, NonFungibleToken, FOREIGN_USER, OWNER};
 
-// # TODO:: remove ignore after fixing tests
-#[ignore]
 #[test]
 fn minting_failures() {
     let system = utils::initialize_system();
@@ -143,8 +141,6 @@ fn minting_failures() {
         .failed(NFTPixelboardError::CoordinatesCollision);
 }
 
-// # TODO:: remove ignore after fixing tests
-#[ignore]
 #[test]
 fn minting_n_meta_state() {
     let system = utils::initialize_system();

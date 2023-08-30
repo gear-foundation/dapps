@@ -1,12 +1,12 @@
 use super::{prelude::*, StateReply, TransactionalProgram};
-use deploy::NFT_BINARY;
-use gear_lib::non_fungible_token::{
+use gear_lib_old::non_fungible_token::{
     io::NFTApproval,
     token::{Token, TokenId},
 };
 use gstd::ActorId;
 use gtest::{Log, Program as InnerProgram, System};
-use nft_io::{Constraints, InitNFT, NFTAction, NFTEvent};
+use non_fungible_token_io::{Constraints, InitNFT, NFTAction, NFTEvent};
+use supply_chain_deploy::NFT_BINARY;
 
 pub struct NonFungibleToken<'a>(InnerProgram<'a>, u64);
 
@@ -97,7 +97,7 @@ impl NonFungibleTokenState<'_> {
                 .read_state_using_wasm(
                     "token",
                     gclient::code_from_os(
-                        "target/wasm32-unknown-unknown/debug/nft_state.meta.wasm",
+                        "../target/wasm32-unknown-unknown/debug/non_fungible_token_state.meta.wasm",
                     )
                     .unwrap(),
                     Some(TokenId::from(token_id)),

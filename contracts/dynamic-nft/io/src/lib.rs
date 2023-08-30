@@ -1,6 +1,6 @@
 #![no_std]
 
-use gear_lib::non_fungible_token::{
+use gear_lib_old::non_fungible_token::{
     io::{NFTApproval, NFTTransfer, NFTTransferPayout},
     royalties::*,
     state::NFTState,
@@ -9,7 +9,7 @@ use gear_lib::non_fungible_token::{
 use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 
-pub use gear_lib::non_fungible_token::delegated::DelegatedApproveMessage;
+pub use gear_lib_old::non_fungible_token::delegated::DelegatedApproveMessage;
 use primitive_types::H256;
 
 pub struct NFTMetadata;

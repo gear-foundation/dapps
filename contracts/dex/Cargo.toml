@@ -1,32 +1,33 @@
-[workspace]
-resolver = "2"
-members = [
-    "factory",
-    "factory/state",
-    "pair",
-    "pair/state",
-]
+[package]
+name = "dex"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
 
-[workspace.package]
-version = "0.2.1"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+[dependencies]
+dex-factory-io.workspace = true
+gstd.workspace = true
+dex-io.workspace = true
+gear-lib.workspace = true
+sharded-fungible-token-io.workspace = true
+primitive-types.workspace = true
 
-[workspace.dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-ft-main-io = { git = "https://github.com/gear-foundation/dapps-sharded-fungible-token", tag = "2.1.4" }
-ft-main = { git = "https://github.com/gear-foundation/dapps-sharded-fungible-token", tag = "2.1.4" }
-ft-logic = { git = "https://github.com/gear-foundation/dapps-sharded-fungible-token", tag = "2.1.4" }
-ft-storage = { git = "https://github.com/gear-foundation/dapps-sharded-fungible-token", tag = "2.1.4" }
-scale-info = { version = "2", default-features = false }
-parity-scale-codec = { version = "3", default-features = false }
-dex-pair-io.path = "pair/io"
-dex-factory-io.path = "factory/io"
-hashbrown = "0.14"
-primitive-types = { version = "0.12", default-features = false }
-gear-lib = { git = "https://github.com/gear-foundation/dapps-gear-lib", branch = "as-dev-dev" }
+[dev-dependencies]
+gtest.workspace = true
+gclient.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+gear-core.workspace = true
+sp-core-hashing.workspace = true
+tokio.workspace = true
+
+# External binaries
+dex-factory.workspace = true
+dex-state.workspace = true
+dex-factory-state.workspace = true
+sharded-fungible-token.workspace = true
+sharded-fungible-token-logic.workspace = true
+sharded-fungible-token-storage.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+dex-io.workspace = true

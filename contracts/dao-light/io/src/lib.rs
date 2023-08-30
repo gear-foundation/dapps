@@ -15,6 +15,8 @@ impl Metadata for DaoLightMetadata {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct DaoState {
     pub approved_token_program_id: ActorId,
     pub period_duration: u64,
@@ -36,6 +38,8 @@ impl DaoState {
 }
 
 #[derive(Debug, Default, Clone, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Proposal {
     pub proposer: ActorId,
     pub applicant: ActorId,
@@ -52,12 +56,16 @@ pub struct Proposal {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Member {
     pub shares: u128,
     pub highest_index_yes_vote: Option<u128>,
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Role {
     Admin,
     Member,
@@ -65,6 +73,8 @@ pub enum Role {
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum DaoAction {
     Deposit {
         amount: u128,
@@ -88,6 +98,8 @@ pub enum DaoAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum DaoEvent {
     Deposit {
         member: ActorId,
@@ -116,6 +128,8 @@ pub enum DaoEvent {
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitDao {
     pub approved_token_program_id: ActorId,
     pub voting_period_length: u64,
@@ -124,6 +138,8 @@ pub struct InitDao {
 }
 
 #[derive(Debug, Encode, Decode, Clone, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Vote {
     Yes,
     No,

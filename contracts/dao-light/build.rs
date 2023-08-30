@@ -1,8 +1,5 @@
-use dao_light_io::*;
-use gear_wasm_builder::WasmBuilder;
+use dao_light_io::DaoLightMetadata;
 
 fn main() {
-    WasmBuilder::with_meta(<DaoLightMetadata as gmeta::Metadata>::repr())
-        .exclude_features(vec!["binary-vendor"])
-        .build();
+    gear_wasm_builder::build_with_metadata::<DaoLightMetadata>();
 }

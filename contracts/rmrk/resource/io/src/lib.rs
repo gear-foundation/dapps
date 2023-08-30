@@ -2,7 +2,7 @@
 
 use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
-use types::primitives::{BaseId, PartId, ResourceId};
+use rmrk_types::primitives::{BaseId, PartId, ResourceId};
 
 pub struct ResourceMetadata;
 
@@ -16,6 +16,8 @@ impl Metadata for ResourceMetadata {
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct ResourceState {
     pub name: String,
     // the admin is the rmrk contract that initializes the storage contract
@@ -24,6 +26,8 @@ pub struct ResourceState {
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct BasicResource {
     /// URI like IPFS hash
     pub src: String,
@@ -37,6 +41,8 @@ pub struct BasicResource {
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct ComposedResource {
     /// URI like ipfs hash
     pub src: String,
@@ -56,6 +62,8 @@ pub struct ComposedResource {
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct SlotResource {
     /// URI like ipfs hash
     pub src: String,
@@ -74,6 +82,8 @@ pub struct SlotResource {
     pub slot: PartId,
 }
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Resource {
     Basic(BasicResource),
     Slot(SlotResource),
@@ -81,11 +91,15 @@ pub enum Resource {
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitResource {
     pub resource_name: String,
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ResourceAction {
     /// Adds resource entry on resource storage contract.
     ///
@@ -131,6 +145,8 @@ pub enum ResourceAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ResourceEvent {
     ResourceEntryAdded {
         resource_id: ResourceId,

@@ -1,9 +1,9 @@
 #![no_std]
 
-use catalog_io::*;
 use gstd::{msg, prelude::*, ActorId};
 use hashbrown::HashMap;
-use types::primitives::*;
+use rmrk_catalog_io::*;
+use rmrk_types::primitives::*;
 pub mod catalog;
 use catalog::Catalog;
 
@@ -11,7 +11,7 @@ static mut CATALOG: Option<Catalog> = None;
 static mut ADMIN: Option<ActorId> = None;
 
 #[no_mangle]
-extern "C" fn init() {
+extern fn init() {
     let config: InitCatalog = msg::load().expect("Unable to decode InitBase");
     let catalog = Catalog {
         base_type: config.catalog_type,
@@ -24,7 +24,7 @@ extern "C" fn init() {
     }
 }
 #[no_mangle]
-extern "C" fn handle() {
+extern fn handle() {
     let action: CatalogAction = msg::load().expect("Could not load BaseAction");
     let catalog = unsafe { CATALOG.as_mut().expect("The contract is not initialized") };
     let reply = process_handle(&action, catalog);
@@ -71,7 +71,7 @@ fn process_handle(
 }
 
 #[no_mangle]
-extern "C" fn state() {
+extern fn state() {
     let catalog = unsafe { CATALOG.as_ref().expect("Base is not initialized") };
     let admin = unsafe { ADMIN.as_ref().expect("The contract is not initialized") };
     let catalog_state = CatalogState {

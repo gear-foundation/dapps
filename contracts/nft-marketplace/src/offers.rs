@@ -1,10 +1,10 @@
 use crate::{
-    contract::{BASE_PERCENT, MINIMUM_VALUE},
     nft_messages::*,
     payment::*,
+    {BASE_PERCENT, MINIMUM_VALUE},
 };
 use gstd::{exec, msg, prelude::*, ActorId};
-use market_io::{
+use nft_marketplace_io::{
     ContractId, Item, Market, MarketErr, MarketEvent, MarketTx, Price, TokenId, TransactionId,
 };
 

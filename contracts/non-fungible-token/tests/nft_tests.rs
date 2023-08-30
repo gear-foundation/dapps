@@ -1,10 +1,10 @@
-use gear_lib::non_fungible_token::delegated::DelegatedApproveMessage;
-use gear_lib::non_fungible_token::io::*;
+use gear_lib_old::non_fungible_token::delegated::DelegatedApproveMessage;
+use gear_lib_old::non_fungible_token::io::*;
 use gstd::{ActorId, Encode};
 use gtest::System;
 mod utils;
 use hex_literal::hex;
-use nft_io::*;
+use non_fungible_token_io::*;
 use sp_core::{sr25519::Pair as Sr25519Pair, Pair};
 use utils::*;
 
@@ -31,7 +31,7 @@ fn mint_success() {
 fn mint_limit_exceed() {
     let sys = System::new();
     sys.init_logger();
-    let nft = gtest::Program::current(&sys);
+    let nft = gtest::Program::current_opt(&sys);
 
     let collection = Collection {
         name: String::from("MyToken"),
@@ -63,7 +63,7 @@ fn mint_limit_exceed() {
 fn mint_authorized() {
     let sys = System::new();
     sys.init_logger();
-    let nft = gtest::Program::current(&sys);
+    let nft = gtest::Program::current_opt(&sys);
 
     let collection = Collection {
         name: String::from("MyToken"),
@@ -96,7 +96,7 @@ fn mint_authorized() {
 fn mint_not_authorized() {
     let sys = System::new();
     sys.init_logger();
-    let nft = gtest::Program::current(&sys);
+    let nft = gtest::Program::current_opt(&sys);
 
     let collection = Collection {
         name: String::from("MyToken"),
@@ -129,7 +129,7 @@ fn mint_not_authorized() {
 fn mint_added() {
     let sys = System::new();
     sys.init_logger();
-    let nft = gtest::Program::current(&sys);
+    let nft = gtest::Program::current_opt(&sys);
 
     let collection = Collection {
         name: String::from("MyToken"),

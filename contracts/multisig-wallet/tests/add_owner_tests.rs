@@ -7,7 +7,7 @@ const USERS: &[u64] = &[3, 4, 5, 6];
 fn common_init<'a>(sys: &'a System, users: &[u64], required: u32) -> Program<'a> {
     sys.init_logger();
 
-    let wallet = Program::current(sys);
+    let wallet = Program::current_opt(sys);
 
     wallet.send(
         USERS[0],

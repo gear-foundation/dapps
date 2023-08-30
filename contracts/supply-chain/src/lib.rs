@@ -1,6 +1,6 @@
 #![no_std]
 
-use gear_lib::non_fungible_token::token::TokenMetadata;
+use gear_lib_old::non_fungible_token::token::TokenMetadata;
 use gstd::{errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId};
 use hashbrown::{HashMap, HashSet};
 use supply_chain_io::*;
@@ -9,7 +9,6 @@ use tx_manager::{TransactionGuard, TransactionManager};
 mod tx_manager;
 mod utils;
 
-#[cfg(feature = "binary-vendor")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 fn get_mut_item(
@@ -395,7 +394,7 @@ fn reply(payload: impl Encode) -> GstdResult<MessageId> {
 }
 
 #[no_mangle]
-extern "C" fn init() {
+extern fn init() {
     let result = process_init();
     let is_err = result.is_err();
 
@@ -720,7 +719,7 @@ async fn process_handle() -> Result<Event, Error> {
 }
 
 #[no_mangle]
-extern "C" fn state() {
+extern fn state() {
     let (
         Contract {
             items,

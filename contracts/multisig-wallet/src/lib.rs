@@ -312,7 +312,7 @@ impl MultisigWallet {
 }
 
 #[no_mangle]
-extern "C" fn init() {
+extern fn init() {
     let config: MWInitConfig = msg::load().expect("Unable to decode MWInitConfig");
 
     let owners_count = config.owners.len();
@@ -366,7 +366,7 @@ async unsafe fn main() {
 }
 
 #[no_mangle]
-extern "C" fn state() {
+extern fn state() {
     let MultisigWallet {
         transactions,
         confirmations,

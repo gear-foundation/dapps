@@ -18,7 +18,7 @@ pub const DURATION: u64 = 86_400_000;
 static mut API: Option<GearApi> = None;
 
 pub async fn init_gear_api_from_path() -> gclient::Result<GearApi> {
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     unsafe { API = Some(api.clone()) };
 

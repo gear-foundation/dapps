@@ -43,7 +43,7 @@ pub trait StudentNft {
 
 impl StudentNft for Program<'_> {
     fn student_nft(system: &System) -> Program {
-        let student_nft = Program::current(system);
+        let student_nft = Program::current_opt(system);
         assert!(!student_nft.send(ADMIN, StudentNftInit {}).main_failed());
 
         student_nft

@@ -1,14 +1,11 @@
 [package]
-name = "nft-io"
+name = "rentable-nft-io"
 version.workspace = true
-authors.workspace = true
 edition.workspace = true
-license.workspace = true
+publish.workspace = true
 
 [dependencies]
 gstd.workspace = true
-gear-lib.workspace = true
+gear-lib-old.workspace = true
 primitive-types.workspace = true
-gmeta = { workspace = true, features = ["codegen"] }
-parity-scale-codec.workspace = true
-scale-info.workspace = true
+gmeta.workspace = true

@@ -1,4 +1,4 @@
-pub use gear_lib::multitoken::{io::*, state::*};
+pub use gear_lib_old::multitoken::{io::*, state::*};
 use gstd::{ActorId, Encode, String};
 pub use gtest::{Program, System};
 use multi_token_io::*;
@@ -7,7 +7,7 @@ const NFT_COUNT: u128 = 1;
 
 pub fn init_mtk(sys: &System, from: u64) {
     sys.init_logger();
-    let mtk = Program::current(sys);
+    let mtk = Program::current_opt(sys);
 
     let res = mtk.send(
         from,

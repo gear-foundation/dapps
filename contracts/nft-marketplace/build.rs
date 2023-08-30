@@ -1,8 +1,5 @@
-use gear_wasm_builder::WasmBuilder;
-use market_io::MarketMetadata;
+use nft_marketplace_io::MarketMetadata;
 
 fn main() {
-    WasmBuilder::with_meta(<MarketMetadata as gmeta::Metadata>::repr())
-        .exclude_features(vec!["binary-vendor"])
-        .build();
+    gear_wasm_builder::build_with_metadata::<MarketMetadata>();
 }

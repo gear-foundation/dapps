@@ -15,6 +15,8 @@ impl Metadata for ContractMetadata {
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Move {
     Rock,
     Paper,
@@ -62,12 +64,16 @@ impl Move {
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct StageDescription {
     pub anticipated_players: BTreeSet<ActorId>,
     pub finished_players: BTreeSet<ActorId>,
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum GameStage {
     #[default]
     Preparation,
@@ -117,6 +123,8 @@ impl GameStage {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Duration {
     pub days: u64,
     pub hours: u64,
@@ -124,6 +132,8 @@ pub struct Duration {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum RevealResult {
     Continue,
     NextRoundStarted { players: BTreeSet<ActorId> },
@@ -131,6 +141,8 @@ pub enum RevealResult {
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Action {
     /// Registers a player for the game.
     /// Player must send value to be registered
@@ -201,6 +213,8 @@ pub enum Action {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Event {
     PlayerRegistered,
     SuccessfulMove(ActorId),
@@ -210,6 +224,8 @@ pub enum Event {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum State {
     Config,
     LobbyList,
@@ -218,6 +234,8 @@ pub enum State {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {
     Config(GameConfig),
     LobbyList(Vec<ActorId>),
@@ -226,6 +244,8 @@ pub enum StateReply {
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo, PartialEq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct GameConfig {
     pub bet_size: u128,
     pub players_count_limit: u8,
@@ -235,6 +255,8 @@ pub struct GameConfig {
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct ContractState {
     pub owner: ActorId,
     pub lobby: Vec<ActorId>,

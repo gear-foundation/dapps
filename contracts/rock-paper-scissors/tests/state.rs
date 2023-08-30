@@ -7,7 +7,7 @@
 
 use gstd::ActorId;
 use gtest::System;
-use rps_io::*;
+use rock_paper_scissors_io::*;
 // use rps_state::state::metafns::{
 //     config, current_stage_start_timestamp, game_stage, lobby_list, State,
 // };

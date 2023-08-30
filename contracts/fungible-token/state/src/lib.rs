@@ -1,6 +1,6 @@
 #![no_std]
 
-use ft_io::*;
+use fungible_token_io::*;
 use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 

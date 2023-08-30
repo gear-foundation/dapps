@@ -1,0 +1,23 @@
+[package]
+name = "tamagotchi-battle"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+tamagotchi-battle-io.workspace = true
+tamagotchi-io.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+tamagotchi-battle-io.workspace = true
+
+[dev-dependencies]
+gclient.workspace = true
+tokio.workspace = true
+hex.workspace = true
+
+# External binaries
+tamagotchi.workspace = true
+tamagotchi-battle-state.workspace = true

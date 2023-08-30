@@ -3,8 +3,6 @@ use gstd::ActorId;
 pub mod utils;
 use utils::{prelude::*, FungibleToken, NonFungibleToken, FOREIGN_USER};
 
-// # TODO:: remove ignore after fixing tests
-#[ignore]
 #[test]
 fn initialization_failures() {
     let system = utils::initialize_system();

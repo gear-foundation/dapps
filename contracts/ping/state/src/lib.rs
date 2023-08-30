@@ -1,8 +1,8 @@
 #![no_std]
 
-use demo_ping_io::*;
 use gmeta::{metawasm, Metadata};
 use gstd::prelude::*;
+use ping_io::*;
 
 #[metawasm]
 pub mod metafns {

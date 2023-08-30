@@ -1,6 +1,6 @@
 #![no_std]
 
-use gear_lib::non_fungible_token::{
+use gear_lib_old::non_fungible_token::{
     io::{NFTApproval, NFTTransfer, NFTTransferPayout},
     royalties::*,
     state::*,
@@ -24,6 +24,8 @@ impl Metadata for ContractMetadata {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum OnChainNFTQuery {
     /// Returns an NFT for a specified `token_id`.
     ///
@@ -40,6 +42,8 @@ pub enum OnChainNFTQuery {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum OnChainNFTAction {
     /// Mints an NFT consisting of layers provided in the `description` parameter.
     ///
@@ -125,6 +129,8 @@ pub enum OnChainNFTAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct TokenURI {
     /// Token metadata derived from gear-lib
     pub metadata: TokenMetadata,
@@ -136,6 +142,8 @@ pub struct TokenURI {
 /// Requirements:
 /// * all fields except `royalties` should be specified
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitOnChainNFT {
     /// NFT name
     pub name: String,
@@ -154,6 +162,8 @@ pub struct InitOnChainNFT {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum OnChainNFTEvent {
     Transfer(NFTTransfer),
     TransferPayout(NFTTransferPayout),
@@ -161,6 +171,8 @@ pub enum OnChainNFTEvent {
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct IoNFTState {
     pub name: String,
     pub symbol: String,
@@ -173,6 +185,8 @@ pub struct IoNFTState {
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct State {
     pub token: IoNFTState,
     pub token_id: TokenId,

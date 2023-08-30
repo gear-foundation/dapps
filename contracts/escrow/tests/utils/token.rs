@@ -1,6 +1,6 @@
-use ft_main_io::*;
 use gstd::prelude::*;
 use gtest::{Program, System};
+use sharded_fungible_token_io::*;
 
 pub trait FToken {
     fn ftoken(owner: u64, id: u64, system: &System) -> Program;
@@ -32,13 +32,17 @@ impl FToken for Program<'_> {
         let ftoken = Program::from_file_with_id(
             system,
             id,
-            "target/wasm32-unknown-unknown/debug/ft_main.opt.wasm",
+            "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm",
         );
         let storage_code_hash: [u8; 32] = system
-            .submit_code("target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm")
+            .submit_code(
+                "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm",
+            )
             .into();
         let ft_logic_code_hash: [u8; 32] = system
-            .submit_code("target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm")
+            .submit_code(
+                "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm",
+            )
             .into();
 
         let res = ftoken.send(

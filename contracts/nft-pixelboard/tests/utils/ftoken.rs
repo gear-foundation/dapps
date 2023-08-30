@@ -1,7 +1,7 @@
 use super::{Program, RunResult, TransactionalProgram, FOREIGN_USER};
-use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use gstd::{prelude::*, ActorId};
 use gtest::{Log, Program as InnerProgram, RunResult as InnerRunResult, System};
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 
 pub struct FungibleToken<'a>(InnerProgram<'a>, u64);
 
@@ -22,13 +22,17 @@ impl<'a> FungibleToken<'a> {
     pub fn initialize(system: &'a System) -> Self {
         let program = InnerProgram::from_file(
             system,
-            "target/wasm32-unknown-unknown/debug/ft_main.opt.wasm",
+            "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm",
         );
         let storage_code_id: [u8; 32] = system
-            .submit_code("target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm")
+            .submit_code(
+                "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm",
+            )
             .into();
         let logic_code_id: [u8; 32] = system
-            .submit_code("target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm")
+            .submit_code(
+                "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm",
+            )
             .into();
 
         assert!(!program

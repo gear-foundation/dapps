@@ -11,9 +11,9 @@ mod non_fungible_token;
 
 pub mod prelude;
 
+pub use self::non_fungible_token::NonFungibleToken;
 pub use common::initialize_system;
 pub use fungible_token::FungibleToken;
-pub use non_fungible_token::NonFungibleToken;
 
 pub const FOREIGN_USER: u64 = 1029384756123;
 pub const PRODUCER: u64 = 5;
@@ -69,7 +69,7 @@ impl<'a> SupplyChain<'a> {
         config: Initialize,
         is_exdep_needed: bool,
     ) -> InitResult<SupplyChain<'a>, Error> {
-        let program = InnerProgram::current(system);
+        let program = InnerProgram::current_opt(system);
 
         if is_exdep_needed {
             system.mint_to(program.id(), EXISTENTIAL_DEPOSIT);

@@ -1,10 +1,10 @@
 use clap::{Arg, ArgAction, Command};
-use deploy::*;
-use ft_main_io::InitFToken;
 use gclient::Result;
-use nft_io::InitNFT;
+use non_fungible_token_io::InitNFT;
 use primitive_types::U256;
+use sharded_fungible_token_io::InitFToken;
 use supply_chain::WASM_BINARY_OPT as WASM_BINARY;
+use supply_chain_deploy::*;
 use supply_chain_io::*;
 
 #[tokio::main(flavor = "current_thread")]

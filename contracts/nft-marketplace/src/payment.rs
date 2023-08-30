@@ -1,5 +1,5 @@
-use ft_main_io::{FTokenAction, FTokenEvent, LogicAction};
 use gstd::{msg, prelude::*, ActorId};
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
 
 pub async fn transfer_tokens(
     transaction_id: u64,

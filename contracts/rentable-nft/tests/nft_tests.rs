@@ -1,10 +1,10 @@
-use gear_lib::non_fungible_token::io::NFTTransfer;
+use gear_lib_old::non_fungible_token::io::NFTTransfer;
 use gstd::{ActorId, Encode};
 use gtest::System;
 use std::time::{Duration, Instant};
 mod utils;
 use hex_literal::hex;
-use nft_io::NFTEvent;
+use rentable_nft_io::NFTEvent;
 use sp_core::{sr25519::Pair as Sr25519Pair, Pair};
 use utils::*;
 

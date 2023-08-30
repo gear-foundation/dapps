@@ -2,12 +2,12 @@ use crate::utils_gclient::common::get_user_to_actor_id;
 
 use super::common;
 use gclient::{EventListener, EventProcessor, GearApi};
-use gear_lib::non_fungible_token::token::TokenMetadata;
+use gear_lib_old::non_fungible_token::token::TokenMetadata;
 use gstd::{prelude::*, ActorId};
-use market_io::TokenId;
-use nft_io::{Collection, Constraints, InitNFT, NFTAction, NFTEvent};
+use nft_marketplace_io::TokenId;
+use non_fungible_token_io::{Collection, Constraints, InitNFT, NFTAction, NFTEvent};
 
-const NFT_WASM_PATH: &str = "target/wasm32-unknown-unknown/debug/nft.opt.wasm";
+const NFT_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm";
 
 pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     let mut listener = api.subscribe().await?;

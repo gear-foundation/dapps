@@ -52,7 +52,7 @@ Weather affects the probability multipliers.
 | 🌪 tornado | 5 |
 
 ## End Game
-The main goal is to deliver the cargo to orbit without fuel surplus. 
+The main goal is to deliver the cargo to orbit without fuel surplus.
 A certain reward multiplier apply based on the fuel tank state.
 If the player has lots of remaining fuel the delivery reward decreases.
 
@@ -69,5 +69,3 @@ If the player has lots of remaining fuel the delivery reward decreases.
 - [ ] Add PvP elements for the game;
 - [ ] Implement speed formula;
 - [ ] Build mission probability calculator for registration page;
-
-

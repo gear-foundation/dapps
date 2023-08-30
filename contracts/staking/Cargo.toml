@@ -2,57 +2,24 @@
 name = "staking"
 version.workspace = true
 edition.workspace = true
-license.workspace = true
-authors.workspace = true
+publish.workspace = true
 
 [dependencies]
 gstd.workspace = true
 staking-io.workspace = true
-ft-main-io.workspace = true
-scale-info.workspace = true
+sharded-fungible-token-io.workspace = true
 hashbrown.workspace = true
 gmeta.workspace = true
 
 [dev-dependencies]
 gstd.workspace = true
 gtest.workspace = true
-sp-core.workspace = true
-tokio.workspace = true
-ft-logic.workspace = true
-ft-storage.workspace = true
-ft-main.workspace = true
+
+# External binaries
+sharded-fungible-token-logic.workspace = true
+sharded-fungible-token-storage.workspace = true
+sharded-fungible-token.workspace = true
 
 [build-dependencies]
-gmeta.workspace = true
 gear-wasm-builder.workspace = true
 staking-io.workspace = true
-
-[features]
-binary-vendor = []
-
-[workspace]
-members = ["state"]
-
-[workspace.package]
-version = "0.1.7"
-edition = "2021"
-authors = ["Gear Technologies"]
-license = "MIT"
-
-[workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-sp-core = { git = "https://github.com/gear-tech/substrate", rev = "36699c4" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
-ft-logic = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
-ft-storage = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
-ft-main = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
-staking-io.path = "io"
-staking-state.path = "state"
-hashbrown = "0.14"
-subxt = { version = "0.27", default-features = false }
-tokio = "1"
-scale-info = { version = "2", default-features = false }
-parity-scale-codec = { version = "3", default-features = false }

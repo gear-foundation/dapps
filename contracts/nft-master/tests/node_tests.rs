@@ -8,7 +8,7 @@ async fn success() -> gclient::Result<()> {
     let nft = 1337u64;
     let nft_id = nft.into();
 
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     let nft_master = utils_gclient::common::init(&api).await?;
     let state = utils_gclient::nft_master::get_state(&api, &nft_master).await?;

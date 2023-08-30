@@ -1,12 +1,12 @@
 use auto_changed_nft_io::*;
-use gear_lib::non_fungible_token::token::*;
+use gear_lib_old::non_fungible_token::token::*;
 use gtest::{Program, RunResult, System};
 
 const USERS: &[u64] = &[3, 4, 5];
 
 pub fn init_nft(sys: &System) {
     sys.init_logger();
-    let nft = Program::current(sys);
+    let nft = Program::current_opt(sys);
 
     let res = nft.send(
         USERS[0],

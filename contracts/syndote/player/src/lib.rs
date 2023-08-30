@@ -140,6 +140,6 @@ async fn main() {
 }
 
 #[no_mangle]
-unsafe extern "C" fn init() {
+unsafe extern fn init() {
     //   MONOPOLY = msg::load::<ActorId>().expect("Unable to decode ActorId");
 }

@@ -1,10 +1,10 @@
 mod utils;
 
-use gear_lib::non_fungible_token::io::*;
-use gear_lib::non_fungible_token::token::*;
+use gear_lib_old::non_fungible_token::io::*;
+use gear_lib_old::non_fungible_token::token::*;
 use gstd::prelude::*;
 use gtest::System;
-use onchain_nft_io::OnChainNFTEvent;
+use on_chain_nft_io::OnChainNFTEvent;
 
 const USERS: &[u64] = &[3, 4, 5];
 const ZERO_ID: u64 = 0;

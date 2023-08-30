@@ -1,10 +1,10 @@
-use deploy::*;
-use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use gclient::Result;
-use gear_lib::non_fungible_token::{io::NFTApproval, token::TokenMetadata};
+use gear_lib_old::non_fungible_token::{io::NFTApproval, token::TokenMetadata};
 use gstd::prelude::*;
-use nft_io::{Constraints, InitNFT, NFTAction, NFTEvent};
+use non_fungible_token_io::{Constraints, InitNFT, NFTAction, NFTEvent};
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use supply_chain::WASM_BINARY_OPT;
+use supply_chain_deploy::*;
 use supply_chain_io::*;
 
 #[tokio::test]

@@ -1,4 +1,4 @@
-use auction_io::auction::{Action, Error, Event};
+use dutch_auction_io::auction::{Action, Error, Event};
 use gstd::{ActorId, Encode};
 use gtest::{Log, System};
 mod routines;
@@ -28,7 +28,7 @@ fn buy() {
 
     let log = Log::builder()
         .dest(USERS[0])
-        .payload(nft_io::NFTEvent::Owner {
+        .payload(non_fungible_token_io::NFTEvent::Owner {
             owner: new_owner,
             token_id: token_id.into(),
         });

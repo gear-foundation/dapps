@@ -1,6 +1,6 @@
 pub use super::{Market, Program};
 pub use gstd::prelude::*;
-pub use nft_marketplace::{contract::*, *};
+pub use nft_marketplace::*;
 
 pub const BUYER: u64 = 100;
 pub const SELLER: u64 = 101;

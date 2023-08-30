@@ -4,7 +4,7 @@ use core::fmt::Debug;
 use gstd::ActorId;
 use gtest::{Log, Program as InnerProgram, RunResult as InnerRunResult, System};
 use marker::PhantomData;
-use market_io::*;
+use nft_marketplace_io::*;
 
 pub fn initialize_system() -> System {
     let system = System::new();

@@ -2,12 +2,9 @@
 name = "dex-factory-io"
 version.workspace = true
 edition.workspace = true
-license.workspace = true
-authors.workspace = true
+publish.workspace = true
 
 [dependencies]
 gmeta.workspace = true
 gstd.workspace = true
-scale-info.workspace = true
-parity-scale-codec.workspace = true
-dex-pair-io.workspace = true
+dex-io.workspace = true

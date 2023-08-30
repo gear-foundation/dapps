@@ -1,7 +1,7 @@
 use concert::WASM_BINARY_OPT;
 use concert_io::InitConcert;
 use gclient::{code_from_os, EventProcessor, GearApi, Result};
-use gear_lib::multitoken::io::InitConfig;
+use gear_lib_old::multitoken::io::InitConfig;
 use gstd::Encode;
 
 pub const USER: u64 = 193;
@@ -10,9 +10,9 @@ pub const MTK_ID: u64 = 2;
 #[tokio::test]
 #[ignore]
 async fn init() -> Result<()> {
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     let multitoken_program =
-        code_from_os("target/wasm32-unknown-unknown/debug/multi_token.opt.wasm")?;
+        code_from_os("../target/wasm32-unknown-unknown/debug/multi_token.opt.wasm")?;
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
     // Checking that blocks still running.

@@ -1,5 +1,5 @@
 use dao_io::{DaoAction, DaoEvent, InitDao, Vote};
-use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 
 use gstd::prelude::*;
 use gtest::{Program, System};
@@ -53,7 +53,7 @@ pub trait Dao {
 
 impl Dao for Program<'_> {
     fn dao(system: &System) -> Program {
-        let dao = Program::current(system);
+        let dao = Program::current_opt(system);
         assert!(!dao
             .send(
                 ADMIN,
@@ -251,13 +251,17 @@ impl FToken for Program<'_> {
     fn ftoken(system: &System) -> Program {
         let ftoken = Program::from_file(
             system,
-            "./target/wasm32-unknown-unknown/debug/ft_main.opt.wasm",
+            "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm",
         );
         let storage_code_hash: [u8; 32] = system
-            .submit_code("./target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm")
+            .submit_code(
+                "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm",
+            )
             .into();
         let ft_logic_code_hash: [u8; 32] = system
-            .submit_code("./target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm")
+            .submit_code(
+                "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm",
+            )
             .into();
         let res = ftoken.send(
             100,

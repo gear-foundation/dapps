@@ -1,5 +1,5 @@
 use gtest::{Program, System};
-use rps_io::*;
+use rock_paper_scissors_io::*;
 
 mod routines;
 pub use routines::*;
@@ -19,7 +19,7 @@ pub fn init(
         .copied()
         .for_each(|id| sys.mint_to(id, 1_000_000_000));
 
-    let program = Program::current(sys);
+    let program = Program::current_opt(sys);
     let result = program.send(
         owner_user,
         GameConfig {

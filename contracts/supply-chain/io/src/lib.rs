@@ -1,6 +1,6 @@
 #![no_std]
 
-use gear_lib::non_fungible_token::token::{TokenId, TokenMetadata};
+use gear_lib_old::non_fungible_token::token::{TokenId, TokenMetadata};
 use gmeta::{InOut, Metadata};
 use gstd::{errors::Error as GstdError, prelude::*, ActorId};
 
@@ -19,6 +19,8 @@ impl Metadata for ContractMetadata {
 ///
 /// For more info about fields, see [`Initialize`].
 #[derive(Encode, Decode, TypeInfo, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct State {
     pub items: Vec<(ItemId, ItemInfo)>,
 
@@ -41,6 +43,8 @@ pub struct State {
 /// [`impl From<InnerAction> for Option<CachedAction>`](enum.InnerAction.html#impl-From<InnerAction>-for-Option<CachedAction>)
 /// to find out how the conversion works.
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum CachedAction {
     Purchase(ItemId),
     PutUpForSale(ItemId),
@@ -94,6 +98,8 @@ pub type ItemId = TokenId;
 /// - Each [`ActorId`] of `producers`, `distributors`, and `retailers` mustn't
 /// equal [`ActorId::zero()`].
 #[derive(Encode, Decode, Hash, TypeInfo, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Initialize {
     /// IDs of actors that'll have the right to interact with a supply chain on
     /// behalf of a producer.
@@ -113,6 +119,8 @@ pub struct Initialize {
 
 /// Sends the contract info about what it should do.
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Action {
     pub action: InnerAction,
     pub kind: TransactionKind,
@@ -136,6 +144,8 @@ impl Action {
 
 /// A part of [`Action`].
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum InnerAction {
     Producer(ProducerAction),
     Distributor(DistributorAction),
@@ -167,6 +177,8 @@ pub enum InnerAction {
 #[derive(
     Default, Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash,
 )]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum TransactionKind {
     #[default]
     New,
@@ -177,6 +189,8 @@ pub enum TransactionKind {
 ///
 /// Should be used inside [`InnerAction::Producer`].
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ProducerAction {
     /// Produces one item and a corresponding NFT with given `token_metadata`.
     ///
@@ -256,6 +270,8 @@ pub enum ProducerAction {
 ///
 /// Should be used inside [`InnerAction::Distributor`].
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum DistributorAction {
     /// Purchases an item from a producer on behalf of a distributor.
     ///
@@ -396,6 +412,8 @@ pub enum DistributorAction {
 ///
 /// Should be used inside [`InnerAction::Retailer`].
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum RetailerAction {
     /// Purchases an item from a distributor on behalf of a retailer.
     ///
@@ -465,6 +483,8 @@ pub enum RetailerAction {
 ///
 /// Should be used inside [`InnerAction::Consumer`].
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ConsumerAction {
     /// Purchases an item from a retailer.
     ///
@@ -485,6 +505,8 @@ pub enum ConsumerAction {
 
 /// A result of successfully processed [`Action`].
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Event {
     pub item_id: ItemId,
     pub item_state: ItemState,
@@ -492,6 +514,8 @@ pub struct Event {
 
 /// A result of **un**successfully processed [`Action`].
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Error {
     /// [`ActorId::zero()`] was found where it's forbidden.
     ZeroActorId,
@@ -523,6 +547,8 @@ pub enum Error {
 ///
 /// Also see [`TransactionKind`].
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum TransactionCacheError {
     /// There's no cached transaction for
     /// [`msg::source()`](gstd::msg::source()). The reason may be a
@@ -552,6 +578,8 @@ impl From<GstdError> for Error {
 #[derive(
     Encode, Decode, TypeInfo, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash,
 )]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Role {
     Producer,
     Distributor,
@@ -564,6 +592,8 @@ pub enum Role {
 ///
 /// For more info about fields, see [`Initialize`].
 #[derive(Encode, Decode, TypeInfo, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Participants {
     pub producers: Vec<ActorId>,
     pub distributors: Vec<ActorId>,
@@ -574,6 +604,8 @@ pub struct Participants {
 #[derive(
     Encode, Decode, TypeInfo, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash,
 )]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct ItemInfo {
     /// Item’s producer [`ActorId`].
     pub producer: ActorId,
@@ -596,6 +628,8 @@ pub struct ItemInfo {
 
 /// An item’s state.
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct ItemState {
     pub state: ItemEventState,
     pub by: Role,
@@ -614,6 +648,8 @@ impl Default for ItemState {
 #[derive(
     Encode, Decode, TypeInfo, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash,
 )]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ItemEventState {
     #[default]
     Produced,

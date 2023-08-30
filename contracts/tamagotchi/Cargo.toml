@@ -1,33 +1,13 @@
 [package]
-name = "tmg"
+name = "tamagotchi"
 version.workspace = true
 edition.workspace = true
-license.workspace = true
-authors.workspace = true
+publish.workspace = true
 
 [dependencies]
 gstd.workspace = true
-scale-info.workspace = true
-parity-scale-codec.workspace = true
-tmg-io.workspace = true
+tamagotchi-io.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
-tmg-io.workspace = true
-
-[workspace]
-members = ["state"]
-
-[workspace.package]
-version = "0.1.2"
-edition = "2021"
-authors = ["Gear Technologies"]
-license = "MIT"
-
-[workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear" , rev = "946ac47" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-scale-info = { version = "2", default-features = false }
-parity-scale-codec = { version = "3", default-features = false }
-tmg-io.path = "io"
+tamagotchi-io.workspace = true

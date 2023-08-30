@@ -1,7 +1,5 @@
-use gear_wasm_builder::WasmBuilder;
+use sharded_multi_token_io::MTMainMetadata;
 
 fn main() {
-    WasmBuilder::new_metawasm()
-        .exclude_features(vec!["binary-vendor"])
-        .build();
+    gear_wasm_builder::build_with_metadata::<MTMainMetadata>();
 }

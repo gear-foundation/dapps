@@ -1,7 +1,7 @@
 use auto_changed_nft::WASM_BINARY_OPT;
 use auto_changed_nft_io::*;
 use gclient::{EventProcessor, GearApi, Result};
-use gear_lib::non_fungible_token::token::TokenId;
+use gear_lib_old::non_fungible_token::token::TokenId;
 use gstd::Encode;
 
 // #[tokio::test]
@@ -403,7 +403,7 @@ use gstd::Encode;
 #[tokio::test]
 #[ignore]
 async fn auto_changed() -> Result<()> {
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
     // Checking that blocks still running.
@@ -431,7 +431,7 @@ async fn auto_changed() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let transaction_id: u64 = 0;
-    use gear_lib::non_fungible_token::token::TokenMetadata;
+    use gear_lib_old::non_fungible_token::token::TokenMetadata;
     let token_metadata = TokenMetadata {
         name: "CryptoKitty".to_string(),
         description: "Description".to_string(),

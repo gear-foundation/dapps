@@ -1,0 +1,192 @@
+[workspace]
+resolver = "2"
+# Keep in the lexicographic order!
+# Remove a member if it's used as a dependency in the workspace.
+members = [
+    "auto-changed-nft",
+    "auto-changed-nft/state",
+    "concert",
+    "crowdsale",
+    "dao",
+    "dao/state",
+    "dao-light",
+    "dao-light/state",
+    "ddns",
+    "ddns/state",
+    "dex",
+    "dutch-auction",
+    "dutch-auction/state",
+    "dynamic-nft",
+    "escrow",
+    "escrow/state",
+    "feeds",
+    "feeds/channel",
+    "feeds/channel/state",
+    "feeds/state",
+    "fungible-token/state",
+    "galactic-express",
+    "galactic-express/state",
+    "game-of-chance",
+    "multisig-wallet",
+    "multisig-wallet/state",
+    "nft-marketplace",
+    "nft-marketplace/state",
+    "nft-master",
+    "nft-master/state",
+    "nft-pixelboard",
+    "nft-pixelboard/state",
+    "on-chain-nft",
+    "ping",
+    "ping/state",
+    "rentable-nft",
+    "rentable-nft/state",
+    "rmrk",
+    "rmrk/catalog",
+    "rmrk/resource",
+    "rock-paper-scissors",
+    "rock-paper-scissors/state",
+    "sharded-multi-token",
+    "sharded-multi-token/logic",
+    "sharded-multi-token/storage",
+    "staking",
+    "staking/state",
+    "student-nft",
+    "student-nft/state",
+    "syndote",
+    "syndote/player",
+    "tamagotchi/state",
+    "tamagotchi-battle",
+    "tequila-train",
+    "tequila-train/state",
+    "vara-man",
+    "vara-man/state",
+    "varatube",
+    "varatube/state",
+]
+
+[workspace.package]
+homepage = "https://wiki.gear-tech.io/docs/examples/prerequisites"
+documentation = "https://dapps.gear.rs"
+authors = ["Gear Foundation <hello@gear.foundation>"]
+version = "0.3.1"
+license = "MIT"
+edition = "2021"
+publish = false
+
+[workspace.dependencies]
+# Local contracts
+# Keep in the lexicographic order!
+
+dex-factory.path = "dex/factory"
+fungible-token.path = "fungible-token"
+multi-token.path = "multi-token"
+non-fungible-token.path = "non-fungible-token"
+sharded-fungible-token.path = "sharded-fungible-token"
+sharded-fungible-token-logic.path = "sharded-fungible-token/logic"
+sharded-fungible-token-storage.path = "sharded-fungible-token/storage"
+supply-chain.path = "supply-chain"
+tamagotchi.path = "tamagotchi"
+
+# Local states
+# Keep in the lexicographic order!
+
+concert-state.path = "concert/state"
+crowdsale-state.path = "crowdsale/state"
+dex-factory-state.path = "dex/factory/state"
+dex-state.path = "dex/state"
+dynamic-nft-state.path = "dynamic-nft/state"
+multi-token-state.path = "multi-token/state"
+non-fungible-token-state.path = "non-fungible-token/state"
+on-chain-nft-state.path = "on-chain-nft/state"
+rmrk-state.path = "rmrk/state"
+supply-chain-state.path = "supply-chain/state"
+tamagotchi-battle-state.path = "tamagotchi-battle/state"
+
+# Local IO-crates
+# Keep in the lexicographic order!
+
+auto-changed-nft-io.path = "auto-changed-nft/io"
+concert-io.path = "concert/io"
+crowdsale-io.path = "crowdsale/io"
+dao-io.path = "dao/io"
+dao-light-io.path = "dao-light/io"
+ddns-io.path = "ddns/io"
+dex-factory-io.path = "dex/factory/io"
+dex-io.path = "dex/io"
+dutch-auction-io.path = "dutch-auction/io"
+dynamic-nft-io.path = "dynamic-nft/io"
+escrow-io.path = "escrow/io"
+feeds-channel-io.path = "feeds/channel/io"
+feeds-io.path = "feeds/io"
+fungible-token-io.path = "fungible-token/io"
+galactic-express-io.path = "galactic-express/io"
+game-of-chance-io.path = "game-of-chance/io"
+multi-token-io.path = "multi-token/io"
+multisig-wallet-io.path = "multisig-wallet/io"
+nft-marketplace-io.path = "nft-marketplace/io"
+nft-master-io.path = "nft-master/io"
+nft-pixelboard-io.path = "nft-pixelboard/io"
+non-fungible-token-io.path = "non-fungible-token/io"
+on-chain-nft-io.path = "on-chain-nft/io"
+ping-io.path = "ping/io"
+rentable-nft-io.path = "rentable-nft/io"
+rmrk-catalog-io.path = "rmrk/catalog/io"
+rmrk-io.path = "rmrk/io"
+rmrk-resource-io.path = "rmrk/resource/io"
+rock-paper-scissors-io.path = "rock-paper-scissors/io"
+sharded-fungible-token-io.path = "sharded-fungible-token/io"
+sharded-fungible-token-logic-io.path = "sharded-fungible-token/logic/io"
+sharded-fungible-token-storage-io.path = "sharded-fungible-token/storage/io"
+sharded-multi-token-io.path = "sharded-multi-token/io"
+sharded-multi-token-logic-io.path = "sharded-multi-token/logic/io"
+sharded-multi-token-storage-io.path = "sharded-multi-token/storage/io"
+staking-io.path = "staking/io"
+student-nft-io.path = "student-nft/io"
+supply-chain-io.path = "supply-chain/io"
+syndote-io.path = "syndote/io"
+syndote-player-io.path = "syndote/player/io"
+tamagotchi-io.path = "tamagotchi/io"
+tamagotchi-battle-io.path = "tamagotchi-battle/io"
+tequila-train-io.path = "tequila-train/io"
+vara-man-io.path = "vara-man/io"
+varatube-io.path = "varatube/io"
+
+# Local libraries
+# Keep in the lexicographic order!
+
+gear-lib.path = "gear-lib"
+gear-lib-old.path = "gear-lib-old"
+gear-lib-derive.path = "gear-lib-old/derive"
+rmrk-types.path = "rmrk/types"
+supply-chain-deploy.path = "supply-chain/deploy"
+
+# Gear
+
+gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+light_sr25519 = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gear-core = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+
+# External
+
+hashbrown = "0.14"
+primitive-types = { version = "0.12", default-features = false }
+sp-core = "22"
+sp-core-hashing = { version = "10", default-features = false }
+tokio = "1"
+blake2-rfc = "0.2"
+hex-literal = "0.4"
+hex = { version = "0.4", default-features = false }
+async-trait = "0.1"
+rand = { version = "0.8", default-features = false }
+rand_xoshiro = "0.6"
+indexmap = { version = "2", default-features = false }
+ahash = { version = "0.8", default-features = false, features = ["compile-time-rng"] }
+schnorrkel = { version = "0.10", default-features = false, features = ["u64_backend"] }
+syn = { version = "2", default-features = false }
+quote = "1"
+clap = { version = "4", default-features = false, features = ["std"] }
+enum-iterator = "1"

@@ -1,6 +1,6 @@
 use gstd::{prelude::*, ActorId, Encode};
 use gtest::{Program, RunResult, System};
-use rps_io::*;
+use rock_paper_scissors_io::*;
 
 pub const USERS: &[u64] = &[3, 4, 5, 6];
 pub const COMMON_USERS_SET: &[u64] = &[3, 4, 5];
@@ -47,7 +47,7 @@ pub fn common_init_with_owner_and_bet(sys: &System, owner_user: u64, bet_size: u
         .iter()
         .copied()
         .for_each(|id| sys.mint_to(id, START_BALANCE));
-    let program = Program::current(sys);
+    let program = Program::current_opt(sys);
     let result = program.send(
         owner_user,
         GameConfig {

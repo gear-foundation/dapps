@@ -1,7 +1,26 @@
 #![no_std]
 
-#[cfg(not(feature = "binary-vendor"))]
-pub mod state;
+use gmeta::{metawasm, Metadata};
+use gstd::{prelude::*, ActorId};
+use rock_paper_scissors_io::*;
 
-#[cfg(feature = "binary-vendor")]
-include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
+#[metawasm]
+pub mod metafns {
+    pub type State = <ContractMetadata as Metadata>::State;
+
+    pub fn config(state: State) -> GameConfig {
+        state.game_config
+    }
+
+    pub fn lobby_list(state: State) -> Vec<ActorId> {
+        state.lobby
+    }
+
+    pub fn game_stage(state: State) -> GameStage {
+        state.stage
+    }
+
+    pub fn current_stage_start_timestamp(state: State) -> u64 {
+        state.current_stage_start_timestamp
+    }
+}

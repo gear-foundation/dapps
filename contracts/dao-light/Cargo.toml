@@ -2,48 +2,21 @@
 name = "dao-light"
 version.workspace = true
 edition.workspace = true
-license.workspace = true
-authors.workspace = true
+publish.workspace = true
 
 [dependencies]
 gstd.workspace = true
 dao-light-io.workspace = true
-ft-io.workspace = true
+fungible-token-io.workspace = true
 hashbrown.workspace = true
 
 [dev-dependencies]
 gstd = { workspace = true, features = ["debug"] }
 gtest.workspace = true
+
+# External binaries
 fungible-token.workspace = true
 
 [build-dependencies]
-gmeta.workspace = true
 dao-light-io.workspace = true
 gear-wasm-builder.workspace = true
-
-[features]
-binary-vendor = []
-
-[workspace]
-members = ["state"]
-
-[workspace.package]
-version = "0.1.5"
-edition = "2021"
-authors = ["Gear Technologies"]
-license = "MIT"
-
-[workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token", tag = "0.1.8" }
-fungible-token = { git = "https://github.com/gear-dapps/fungible-token", tag = "0.1.8" }
-dao-light-io = { path = "io" }
-dao-light-state = { path = "state" }
-hashbrown = "0.14"
-tokio = "1"
-scale-info = { version = "2", default-features = false }
-parity-scale-codec = { version = "3", default-features = false }

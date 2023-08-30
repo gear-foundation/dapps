@@ -1,10 +1,10 @@
 use super::common;
 use gclient::{EventListener, EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
-use market_io::{InitMarket, Market, MarketAction, MarketErr, MarketEvent, TokenId};
+use nft_marketplace_io::{InitMarket, Market, MarketAction, MarketErr, MarketEvent, TokenId};
 
 const MARKETPLACE_WASM_PATH: &str =
-    "./target/wasm32-unknown-unknown/debug/nft_marketplace.opt.wasm";
+    "../target/wasm32-unknown-unknown/debug/nft_marketplace.opt.wasm";
 pub const TREASURY_FEE: u16 = 3;
 
 pub async fn init(api: &GearApi, admin: &ActorId, treasury: &ActorId) -> gclient::Result<ActorId> {

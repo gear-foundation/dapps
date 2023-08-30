@@ -1,7 +1,7 @@
 #![no_std]
 
 use auto_changed_nft_io::NFTMetadata;
-use gear_lib::non_fungible_token::state::NFTQueryReply;
+use gear_lib_old::non_fungible_token::state::NFTQueryReply;
 use gmeta::{metawasm, Metadata};
 use gstd::String;
 

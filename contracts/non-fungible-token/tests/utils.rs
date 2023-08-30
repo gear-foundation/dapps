@@ -1,13 +1,13 @@
-use gear_lib::non_fungible_token::token::*;
+use gear_lib_old::non_fungible_token::token::*;
 use gstd::ActorId;
 use gtest::{Program, RunResult, System};
-use nft_io::*;
+use non_fungible_token_io::*;
 
 const USERS: &[u64] = &[3, 4, 5];
 
 pub fn init_nft(sys: &System) {
     sys.init_logger();
-    let nft = Program::current(sys);
+    let nft = Program::current_opt(sys);
 
     let collection = Collection {
         name: String::from("MyToken"),

@@ -1,7 +1,7 @@
 #![no_std]
 use gmeta::metawasm;
 use gstd::{exec, prelude::*};
-use tmg_io::Tamagotchi;
+use tamagotchi_io::*;
 
 pub const HUNGER_PER_BLOCK: u64 = 1;
 pub const BOREDOM_PER_BLOCK: u64 = 2;
@@ -27,11 +27,4 @@ pub mod metafns {
             rested,
         }
     }
-}
-
-#[derive(Encode, Decode, TypeInfo)]
-pub struct TmgCurrentState {
-    pub fed: u64,
-    pub entertained: u64,
-    pub rested: u64,
 }

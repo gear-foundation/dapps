@@ -1,7 +1,7 @@
 #![no_std]
 
 use dynamic_nft_io::NFTMetadata;
-use gear_lib::non_fungible_token::{
+use gear_lib_old::non_fungible_token::{
     state::NFTQueryReply,
     token::{Token, TokenId},
 };

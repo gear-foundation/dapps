@@ -1,5 +1,5 @@
 use dao_light_io::*;
-use ft_io::*;
+use fungible_token_io::*;
 use gtest::{Program, RunResult, System};
 
 pub const MEMBERS: &[u64] = &[3, 4, 5, 6];
@@ -9,7 +9,7 @@ pub fn init_fungible_token(sys: &System) {
     sys.init_logger();
     let ft = Program::from_file(
         sys,
-        "target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm",
+        "../target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm",
     );
 
     let res = ft.send(
@@ -30,7 +30,7 @@ pub fn init_fungible_token(sys: &System) {
 
 pub fn init_dao(sys: &System) {
     sys.init_logger();
-    let dao = Program::current(sys);
+    let dao = Program::current_opt(sys);
     let res = dao.send(
         MEMBERS[0],
         InitDao {

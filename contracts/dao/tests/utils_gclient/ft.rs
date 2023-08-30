@@ -1,11 +1,14 @@
 use super::common;
-use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use gclient::{EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 
-const FT_STORAGE_WASM_PATH: &str = "./target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm";
-const FT_LOGIC_WASM_PATH: &str = "./target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm";
-const FT_MAIN_WASM_PATH: &str = "./target/wasm32-unknown-unknown/debug/ft_main.opt.wasm";
+const FT_STORAGE_WASM_PATH: &str =
+    "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm";
+const FT_LOGIC_WASM_PATH: &str =
+    "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm";
+const FT_MAIN_WASM_PATH: &str =
+    "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm";
 
 pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     let storage_code_hash = common::upload_with_code_hash(api, FT_STORAGE_WASM_PATH).await?;

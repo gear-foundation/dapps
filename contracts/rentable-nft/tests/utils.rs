@@ -1,13 +1,13 @@
-use gear_lib::non_fungible_token::token::*;
+use gear_lib_old::non_fungible_token::token::*;
 use gstd::ActorId;
 use gtest::{Program, RunResult, System};
-use nft_io::{InitNft, NFTAction};
+use rentable_nft_io::{InitNft, NFTAction};
 
 const USERS: &[u64] = &[3, 4, 5];
 
 pub fn init_nft(sys: &System) {
     sys.init_logger();
-    let nft = Program::current(sys);
+    let nft = Program::current_opt(sys);
 
     let res = nft.send(
         USERS[0],
@@ -66,7 +66,7 @@ pub fn set_user(
     expires: u64,
     transaction_id: u64,
 ) -> RunResult {
-    let payload = nft_io::NFTAction::SetUser {
+    let payload = rentable_nft_io::NFTAction::SetUser {
         token_id,
         address,
         expires,
@@ -76,11 +76,11 @@ pub fn set_user(
 }
 
 pub fn user_of(nft: &Program, from: u64, token_id: TokenId) -> RunResult {
-    let payload = nft_io::NFTAction::UserOf { token_id };
+    let payload = rentable_nft_io::NFTAction::UserOf { token_id };
     nft.send(from, payload)
 }
 
 pub fn user_expires(nft: &Program, from: u64, token_id: TokenId) -> RunResult {
-    let payload = nft_io::NFTAction::UserExpires { token_id };
+    let payload = rentable_nft_io::NFTAction::UserExpires { token_id };
     nft.send(from, payload)
 }

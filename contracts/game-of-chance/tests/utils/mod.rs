@@ -44,7 +44,7 @@ impl<'a> Goc<'a> {
         admin: impl Into<ActorId>,
         mint: fn(&System, &InnerProgram),
     ) -> InitResult<Goc<'a>, Error> {
-        let program = InnerProgram::current(system);
+        let program = InnerProgram::current_opt(system);
 
         mint(system, &program);
 

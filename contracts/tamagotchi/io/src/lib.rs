@@ -3,8 +3,10 @@
 use codec::{Decode, Encode};
 use gmeta::{InOut, Metadata};
 use gstd::{prelude::*, ActorId};
+
 pub type AttributeId = u32;
 pub type TransactionId = u64;
+
 pub struct ProgramMetadata;
 
 impl Metadata for ProgramMetadata {
@@ -17,6 +19,8 @@ impl Metadata for ProgramMetadata {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum TmgAction {
     Name,
     Age,
@@ -27,6 +31,8 @@ pub enum TmgAction {
 }
 
 #[derive(Encode, Debug, PartialEq, Eq, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum TmgReply {
     Name(String),
     Age(u64),
@@ -41,6 +47,8 @@ pub enum TmgReply {
 }
 
 #[derive(Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Tamagotchi {
     pub name: String,
     pub date_of_birth: u64,
@@ -53,3 +61,22 @@ pub struct Tamagotchi {
     pub rested_block: u64,
     pub allowed_account: Option<ActorId>,
 }
+
+#[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct TmgCurrentState {
+    pub fed: u64,
+    pub entertained: u64,
+    pub rested: u64,
+}
+
+pub const HUNGER_PER_BLOCK: u64 = 1;
+pub const BOREDOM_PER_BLOCK: u64 = 2;
+pub const ENERGY_PER_BLOCK: u64 = 2;
+
+pub const FILL_PER_FEED: u64 = 2_000;
+pub const FILL_PER_ENTERTAINMENT: u64 = 2_000;
+pub const FILL_PER_SLEEP: u64 = 2_000;
+
+pub const MAX_VALUE: u64 = 10_000;

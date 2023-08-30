@@ -1,6 +1,6 @@
 #![no_std]
 
-use auction_io::{
+use dutch_auction_io::{
     auction::{AuctionInfo, Status},
     io::AuctionMetadata,
 };

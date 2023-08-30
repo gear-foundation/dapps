@@ -8,7 +8,7 @@ const USERS: &[u64] = &[3, 4, 5, 6];
 fn common_init<'a>(sys: &'a System, users: &[u64]) -> Program<'a> {
     sys.init_logger();
 
-    let wallet = Program::current(sys);
+    let wallet = Program::current_opt(sys);
 
     wallet.send(
         users[0],
@@ -118,7 +118,7 @@ fn not_confirmed() {
     let sys = System::new();
     sys.init_logger();
 
-    let wallet = Program::current(&sys);
+    let wallet = Program::current_opt(&sys);
 
     wallet.send(
         USERS[0],

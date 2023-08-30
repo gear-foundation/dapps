@@ -16,6 +16,8 @@ impl Metadata for EscrowMetadata {
 }
 
 #[derive(Default, Encode, Decode, Clone, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct EscrowState {
     pub ft_program_id: ActorId,
     pub wallets: Vec<(WalletId, Wallet)>,
@@ -29,6 +31,8 @@ pub type WalletId = U256;
 
 /// Initializes an escrow program.
 #[derive(Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitEscrow {
     /// Address of a fungible token program.
     pub ft_program_id: ActorId,
@@ -38,6 +42,8 @@ pub struct InitEscrow {
 ///
 /// After a successful processing of this enum, the program replies with [`EscrowEvent`].
 #[derive(Clone, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum EscrowAction {
     /// Creates one escrow wallet and replies with its ID.
     ///
@@ -128,6 +134,8 @@ pub enum EscrowAction {
 
 /// An enum that contains a result of processed [`EscrowAction`].
 #[derive(Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum EscrowEvent {
     Cancelled(
         /// An ID of a wallet with a cancelled deal.
@@ -161,6 +169,8 @@ pub enum EscrowEvent {
 
 /// Escrow wallet information.
 #[derive(Decode, Encode, TypeInfo, Clone, Copy, Debug, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Wallet {
     /// A buyer.
     pub buyer: ActorId,
@@ -174,6 +184,8 @@ pub struct Wallet {
 
 /// An escrow wallet state.
 #[derive(Decode, Encode, TypeInfo, PartialEq, Eq, Clone, Copy, Debug)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum WalletState {
     AwaitingDeposit,
     AwaitingConfirmation,

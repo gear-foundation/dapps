@@ -1,12 +1,12 @@
-use auction_io::auction::*;
 use dutch_auction::WASM_BINARY_OPT;
+use dutch_auction_io::auction::*;
 use gclient::{EventProcessor, GearApi, Result};
-use gear_lib::non_fungible_token::token::{TokenId, TokenMetadata};
+use gear_lib_old::non_fungible_token::token::{TokenId, TokenMetadata};
 use gstd::prelude::*;
 use gstd::{ActorId, Encode};
-use nft_io::*;
+use non_fungible_token_io::*;
 
-const NFT_PATH: &str = "target/wasm32-unknown-unknown/debug/nft.opt.wasm";
+const NFT_PATH: &str = "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm";
 pub const ALICE: [u8; 32] = [
     212, 53, 147, 199, 21, 253, 211, 28, 97, 20, 26, 189, 4, 169, 159, 214, 130, 44, 133, 88, 133,
     76, 205, 227, 154, 86, 132, 231, 165, 109, 162, 125,
@@ -15,7 +15,7 @@ pub const ALICE: [u8; 32] = [
 #[tokio::test]
 #[ignore]
 async fn create_and_stop() -> Result<()> {
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     // let api = GearApi::dev().await?;
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -176,7 +176,7 @@ async fn create_and_stop() -> Result<()> {
 #[tokio::test]
 #[ignore]
 async fn create_buy_reward() -> Result<()> {
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     // let api = GearApi::dev().await?;
     let mut listener = api.subscribe().await?; // Subscribing for events.
 

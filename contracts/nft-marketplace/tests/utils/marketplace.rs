@@ -1,7 +1,7 @@
 use super::{prelude::*, MetaStateReply, RunResult};
 use gstd::ActorId;
 use gtest::{Program as InnerProgram, System};
-use market_io::*;
+use nft_marketplace_io::*;
 
 pub struct Market<'a>(InnerProgram<'a>);
 
@@ -27,7 +27,7 @@ impl<'a> Market<'a> {
     }
 
     pub fn initialize_custom(system: &System, config: InitMarket) -> MarketInit {
-        let program = InnerProgram::current(system);
+        let program = InnerProgram::current_opt(system);
 
         let failed = program.send(ADMIN, config).main_failed();
 
@@ -272,7 +272,7 @@ impl<'a> Market<'a> {
 pub struct MarketMetaState<'a>(&'a InnerProgram<'a>);
 
 impl MarketMetaState<'_> {
-    pub fn state(&self) -> MetaStateReply<market_io::Market> {
+    pub fn state(&self) -> MetaStateReply<nft_marketplace_io::Market> {
         MetaStateReply(self.0.read_state().expect("Unexpected invalid state."))
     }
 }

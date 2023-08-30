@@ -1,16 +1,13 @@
 [package]
 name = "student-nft-state"
-version = "0.2.1"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
-gmeta = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47", features = ["codegen"] }
-student-nft-io = { path = "../io" }
+gstd.workspace = true
+gmeta = { workspace = true, features = ["codegen"] }
+student-nft-io.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47", features = ["metawasm"] }
-
-[features]
-binary-vendor = []
-default = ["binary-vendor"]
+gear-wasm-builder = { workspace = true, features = ["metawasm"] }

@@ -3,7 +3,7 @@ use gclient::{EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
 use nft_master_io::{NFTMasterAction, NFTMasterEvent, NFTMasterInit, NFTMasterState};
 
-const NFT_MASTER_WASM_PATH: &str = "./target/wasm32-unknown-unknown/debug/nft_master.opt.wasm";
+const NFT_MASTER_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/nft_master.opt.wasm";
 
 pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     let mut listener = api.subscribe().await?;

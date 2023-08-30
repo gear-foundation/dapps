@@ -2,47 +2,19 @@
 name = "nft-master"
 version.workspace = true
 edition.workspace = true
-license.workspace = true
-authors.workspace = true
+publish.workspace = true
 
 [dependencies]
 nft-master-io.workspace = true
 gstd.workspace = true
-gmeta.workspace = true
 hashbrown.workspace = true
 
 [build-dependencies]
 nft-master-io.workspace = true
 gear-wasm-builder.workspace = true
-gmeta.workspace = true
 
 [dev-dependencies]
 gtest.workspace = true
 gstd = { workspace = true, features = ["debug"] }
 tokio.workspace = true
 gclient.workspace = true
-
-[features]
-binary-vendor = []
-
-[workspace]
-members = ["state"]
-
-[workspace.package]
-version = "0.1.1"
-edition = "2021"
-authors = ["Gear Technologies"]
-license = "MIT"
-
-[workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-nft-master-io.path = "io"
-nft-master-state.path = "state"
-hashbrown = "0.14"
-tokio = "1"
-scale-info = { version = "2", default-features = false }
-parity-scale-codec = { version = "3", default-features = false }

@@ -1,10 +1,10 @@
 use fmt::Debug;
-use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use game_of_chance::WASM_BINARY_OPT;
 use game_of_chance_io::*;
 use gclient::{Error as GclientError, EventListener, EventProcessor, GearApi, Result};
 use gstd::prelude::*;
 use primitive_types::H256;
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 
 const ALICE: [u8; 32] = [
     212, 53, 147, 199, 21, 253, 211, 28, 97, 20, 26, 189, 4, 169, 159, 214, 130, 44, 133, 88, 133,
@@ -159,24 +159,24 @@ async fn send_message_with_insufficient_gas(
 #[tokio::test]
 #[ignore]
 async fn state_consistency() -> Result<()> {
-    let client = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let client = GearApi::dev_from_path("../target/tmp/gear").await?;
     let mut listener = client.subscribe().await?;
 
     let storage_code_hash = upload_code(
         &client,
-        "target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm",
+        "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm",
     )
     .await?;
     let ft_logic_code_hash = upload_code(
         &client,
-        "target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm",
+        "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm",
     )
     .await?;
 
     let ft_actor_id = upload_program(
         &client,
         &mut listener,
-        "target/wasm32-unknown-unknown/debug/ft_main.opt.wasm",
+        "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm",
         InitFToken {
             storage_code_hash,
             ft_logic_code_hash,

@@ -1,14 +1,14 @@
-use gear_lib::non_fungible_token::{state::*, token::*};
+use gear_lib_old::non_fungible_token::{state::*, token::*};
 use gstd::{prelude::*, ActorId};
 use gtest::{Program, RunResult, System};
-use onchain_nft_io::{InitOnChainNFT, ItemId, OnChainNFTAction, TokenURI};
-use onchain_nft_state::WASM_BINARY;
+use on_chain_nft_io::{InitOnChainNFT, ItemId, OnChainNFTAction, TokenURI};
+use on_chain_nft_state::WASM_BINARY;
 
 const USERS: &[u64] = &[3, 4, 5];
 
 pub fn init_nft(sys: &System) {
     sys.init_logger();
-    let nft = Program::current(sys);
+    let nft = Program::current_opt(sys);
 
     let mut layers = vec![];
     let first_layer = vec![

@@ -17,6 +17,8 @@ impl Metadata for StakingMetadata {
 }
 
 #[derive(Debug, Clone, Decode, Encode, TypeInfo, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitStaking {
     pub staking_token_address: ActorId,
     pub reward_token_address: ActorId,
@@ -25,6 +27,8 @@ pub struct InitStaking {
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Clone, PartialEq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Staker {
     pub balance: u128,
     pub reward_allowed: u128,
@@ -33,6 +37,8 @@ pub struct Staker {
 }
 
 #[derive(Debug, Clone, Decode, Encode, TypeInfo, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum StakingAction {
     Stake(u128),
     Withdraw(u128),
@@ -41,6 +47,8 @@ pub enum StakingAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum StakingEvent {
     StakeAccepted(u128),
     Updated,
@@ -49,6 +57,8 @@ pub enum StakingEvent {
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct IoStaking {
     pub owner: ActorId,
     pub staking_token_address: ActorId,
@@ -66,6 +76,8 @@ pub struct IoStaking {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Error {
     ZeroAmount,
     ZeroReward,
@@ -79,6 +91,8 @@ pub enum Error {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Transaction<T> {
     pub id: TransactionId,
     pub action: T,

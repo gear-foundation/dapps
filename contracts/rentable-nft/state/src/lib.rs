@@ -1,12 +1,12 @@
 #![no_std]
 
-use gear_lib::non_fungible_token::{
+use gear_lib_old::non_fungible_token::{
     state::NFTQueryReply,
     token::{Token, TokenId},
 };
 use gmeta::{metawasm, Metadata};
 use gstd::{ActorId, Vec};
-use nft_io::NFTMetadata;
+use rentable_nft_io::NFTMetadata;
 
 #[metawasm]
 pub mod metafns {
