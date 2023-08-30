@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub struct DaoMetadata;
@@ -11,10 +11,12 @@ impl Metadata for DaoMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = DaoState;
+    type State = Out<DaoState>;
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct DaoState {
     pub admin: ActorId,
     pub approved_token_program_id: ActorId,
@@ -35,25 +37,22 @@ pub struct DaoState {
 }
 
 impl DaoState {
-    pub fn is_member(state: <DaoMetadata as Metadata>::State, account: &ActorId) -> bool {
+    pub fn is_member(state: DaoState, account: &ActorId) -> bool {
         state
             .members
             .iter()
             .any(|(member_account, member)| member_account == account && member.shares != 0)
     }
 
-    pub fn is_in_whitelist(state: <DaoMetadata as Metadata>::State, account: &ActorId) -> bool {
+    pub fn is_in_whitelist(state: DaoState, account: &ActorId) -> bool {
         state.whitelist.contains(account)
     }
 
-    pub fn get_proposal_id(state: <DaoMetadata as Metadata>::State) -> u128 {
+    pub fn get_proposal_id(state: DaoState) -> u128 {
         state.proposal_id
     }
 
-    pub fn get_proposal_info(
-        state: <DaoMetadata as Metadata>::State,
-        id: u128,
-    ) -> Option<Proposal> {
+    pub fn get_proposal_info(state: DaoState, id: u128) -> Option<Proposal> {
         if let Some((_, proposal)) = state
             .proposals
             .iter()
@@ -65,10 +64,7 @@ impl DaoState {
         }
     }
 
-    pub fn get_member_info(
-        state: <DaoMetadata as Metadata>::State,
-        account: &ActorId,
-    ) -> Option<Member> {
+    pub fn get_member_info(state: DaoState, account: &ActorId) -> Option<Member> {
         if let Some((_, member)) = state
             .members
             .iter()
@@ -82,6 +78,8 @@ impl DaoState {
 }
 
 #[derive(Debug, Default, Clone, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Proposal {
     pub proposer: ActorId,
     pub applicant: ActorId,
@@ -102,6 +100,8 @@ pub struct Proposal {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Member {
     pub delegate_key: ActorId,
     pub shares: u128,
@@ -109,6 +109,8 @@ pub struct Member {
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum DaoAction {
     /// Adds members to whitelist.
     ///
@@ -265,6 +267,8 @@ pub enum DaoAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum DaoEvent {
     MemberAddedToWhitelist(ActorId),
     SubmitMembershipProposal {
@@ -302,6 +306,8 @@ pub enum DaoEvent {
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitDao {
     pub admin: ActorId,
     pub approved_token_program_id: ActorId,
@@ -313,6 +319,8 @@ pub struct InitDao {
 }
 
 #[derive(Debug, Encode, Decode, Clone, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Vote {
     Yes,
     No,

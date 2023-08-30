@@ -1,12 +1,11 @@
 #![no_std]
 
 use dao_io::*;
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <DaoMetadata as Metadata>::State;
+    pub type State = DaoState;
 
     pub fn is_member(state: State, account: ActorId) -> bool {
         DaoState::is_member(state, &account)

@@ -1,7 +1,7 @@
 use gclient::{EventProcessor, GearApi, Result};
 use gstd::{ActorId, Encode};
 use multi_token::WASM_BINARY_OPT;
-use multi_token_io::InitMTK;
+use multi_token_io::*;
 
 pub const TOKEN_ADDRESS: u64 = 1;
 pub const ICO_CONTRACT_ID: u64 = 2;
@@ -18,9 +18,7 @@ pub const TIME_INCREASE_STEP: u128 = 1000;
 #[tokio::test]
 #[ignore]
 async fn init() -> Result<()> {
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH"))
-        .await
-        .unwrap();
+    let api = GearApi::dev_from_path("../target/tmp/gear").await.unwrap();
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 

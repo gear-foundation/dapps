@@ -1,10 +1,10 @@
 use crate::{
-    contract::{MarketHandler, BASE_PERCENT, MINIMUM_VALUE},
     nft_messages::{nft_transfer, payouts, Payout},
     payment::transfer_tokens,
+    {MarketHandler, BASE_PERCENT, MINIMUM_VALUE},
 };
 use gstd::{exec, msg, prelude::*, ActorId};
-use market_io::{Market, MarketEvent, *};
+use nft_marketplace_io::*;
 
 const MIN_BID_PERIOD: u64 = 60_000;
 

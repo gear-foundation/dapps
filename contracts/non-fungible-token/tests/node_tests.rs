@@ -1,12 +1,12 @@
 use gclient::{EventProcessor, GearApi, Result};
 use gstd::{ActorId, Encode};
-use nft::WASM_BINARY_OPT;
-use nft_io::*;
+use non_fungible_token::WASM_BINARY_OPT;
+use non_fungible_token_io::*;
 
 #[tokio::test]
 #[ignore]
 async fn mint_test() -> Result<()> {
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -44,7 +44,7 @@ async fn mint_test() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let transaction_id: u64 = 0;
-    use gear_lib::non_fungible_token::token::TokenMetadata;
+    use gear_lib_old::non_fungible_token::token::TokenMetadata;
     let token_metadata = TokenMetadata {
         name: "CryptoKitty".to_string(),
         description: "Description".to_string(),
@@ -62,7 +62,7 @@ async fn mint_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0)
+        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -75,7 +75,7 @@ async fn mint_test() -> Result<()> {
 #[tokio::test]
 #[ignore]
 async fn burn_test() -> Result<()> {
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -113,7 +113,7 @@ async fn burn_test() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let transaction_id: u64 = 0;
-    use gear_lib::non_fungible_token::token::TokenMetadata;
+    use gear_lib_old::non_fungible_token::token::TokenMetadata;
     let token_metadata = TokenMetadata {
         name: "CryptoKitty".to_string(),
         description: "Description".to_string(),
@@ -131,7 +131,7 @@ async fn burn_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0)
+        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -150,7 +150,7 @@ async fn burn_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, burn_payload, gas_info.min_limit, 0)
+        .send_message(program_id, burn_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -168,7 +168,7 @@ async fn burn_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, burn_payload, gas_info.min_limit, 0)
+        .send_message(program_id, burn_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -181,7 +181,7 @@ async fn burn_test() -> Result<()> {
 #[tokio::test]
 #[ignore]
 async fn transfer_test() -> Result<()> {
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -220,7 +220,7 @@ async fn transfer_test() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let transaction_id: u64 = 0;
-    use gear_lib::non_fungible_token::token::TokenMetadata;
+    use gear_lib_old::non_fungible_token::token::TokenMetadata;
     let token_metadata = TokenMetadata {
         name: "CryptoKitty".to_string(),
         description: "Description".to_string(),
@@ -238,7 +238,7 @@ async fn transfer_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0)
+        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -258,7 +258,7 @@ async fn transfer_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, transfer_payload, gas_info.min_limit, 0)
+        .send_message(program_id, transfer_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -271,7 +271,7 @@ async fn transfer_test() -> Result<()> {
 #[tokio::test]
 #[ignore]
 async fn owner_test() -> Result<()> {
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -310,7 +310,7 @@ async fn owner_test() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let transaction_id: u64 = 0;
-    use gear_lib::non_fungible_token::token::TokenMetadata;
+    use gear_lib_old::non_fungible_token::token::TokenMetadata;
     let token_metadata = TokenMetadata {
         name: "CryptoKitty".to_string(),
         description: "Description".to_string(),
@@ -328,7 +328,7 @@ async fn owner_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0)
+        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -342,7 +342,7 @@ async fn owner_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, owner_payload, gas_info.min_limit, 0)
+        .send_message(program_id, owner_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -355,7 +355,7 @@ async fn owner_test() -> Result<()> {
 #[tokio::test]
 #[ignore]
 async fn approved() -> Result<()> {
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -394,7 +394,7 @@ async fn approved() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     let transaction_id: u64 = 0;
-    use gear_lib::non_fungible_token::token::TokenMetadata;
+    use gear_lib_old::non_fungible_token::token::TokenMetadata;
     let token_metadata = TokenMetadata {
         name: "CryptoKitty".to_string(),
         description: "Description".to_string(),
@@ -412,7 +412,7 @@ async fn approved() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0)
+        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -431,7 +431,7 @@ async fn approved() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, approve_payload, gas_info.min_limit, 0)
+        .send_message(program_id, approve_payload, gas_info.min_limit, 0, false)
         .await?;
 
     let processed = listener.message_processed(message_id).await?;

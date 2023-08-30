@@ -1,7 +1,7 @@
 #![no_std]
 
-use gear_lib::multitoken::io::*;
-use gmeta::{In, InOut, Metadata};
+use gear_lib_old::multitoken::io::*;
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub struct MultitokenMetadata;
@@ -12,10 +12,12 @@ impl Metadata for MultitokenMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = State;
+    type State = Out<State>;
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct State {
     pub name: String,
     pub symbol: String,
@@ -32,6 +34,8 @@ pub struct State {
 
 /// Transform to NFT piece of data.
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct BurnToNFT {
     /// To which account mint NFTs.
     pub account: ActorId,
@@ -42,6 +46,8 @@ pub struct BurnToNFT {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum MyMTKAction {
     /// Mints a token.
     ///
@@ -198,6 +204,8 @@ pub enum MyMTKAction {
 /// Initializes a Multitoken.
 ///
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitMTK {
     /// Multitoken name.
     pub name: String,

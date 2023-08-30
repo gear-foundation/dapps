@@ -1,31 +1,27 @@
-[workspace]
-resolver = "2"
-members = [
-    "ft-logic",
-    "ft-main",
-    "ft-storage",
-]
+[package]
+name = "sharded-fungible-token"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
 
-[workspace.package]
-version = "2.1.4"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+[dependencies]
+gstd.workspace = true
+sharded-fungible-token-io.workspace = true
+sharded-fungible-token-logic-io.workspace = true
+primitive-types.workspace = true
+sp-core-hashing.workspace = true
 
-[workspace.dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-light_sr25519 = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib", tag = "0.3.9" }
-sp-core = { git = "https://github.com/gear-tech/substrate", rev = "36699c4" }
-ft-logic-io.path = "ft-logic/io"
-ft-main-io.path = "ft-main/io"
-ft-storage-io.path = "ft-storage/io"
-scale-info = { version = "2", default-features = false }
-parity-scale-codec = { version = "3", default-features = false }
-hashbrown = "0.14"
-primitive-types = { version = "0.12", default-features = false }
-tokio = "1"
+[dev-dependencies]
+gtest.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+sp-core.workspace = true
+hex-literal.workspace = true
+gear-lib-old.workspace = true
+
+# External binaries
+sharded-fungible-token-logic.workspace = true
+sharded-fungible-token-storage.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+sharded-fungible-token-io.workspace = true

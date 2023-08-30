@@ -1,16 +1,15 @@
 #![no_std]
 
-use gear_lib::non_fungible_token::{
+use gear_lib_old::non_fungible_token::{
     state::NFTQueryReply,
     token::{Token, TokenId},
 };
-use gmeta::{metawasm, Metadata};
 use gstd::{ActorId, Vec};
-use nft_io::NFTMetadata;
+use rentable_nft_io::*;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <NFTMetadata as Metadata>::State;
+    pub type State = IoNft;
 
     pub fn info(state: State) -> NFTQueryReply {
         NFTQueryReply::NFTInfo {
@@ -87,7 +86,7 @@ pub mod metafns {
     }
 }
 
-fn token_helper(token_id: &TokenId, state: &<NFTMetadata as Metadata>::State) -> Token {
+fn token_helper(token_id: &TokenId, state: &IoNft) -> Token {
     let mut token = Token::default();
     if let Some((_token_id, owner_id)) = state
         .token

@@ -1,4 +1,4 @@
-use gstd::{prelude::*, ActorId};
+use gstd::{collections::BTreeMap, prelude::*, ActorId};
 
 use primitive_types::U256;
 
@@ -6,6 +6,8 @@ pub type TransactionId = u64;
 
 /// An auction info and auction state
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct AuctionInfo {
     /// NFT contract address
     pub nft_contract_actor_id: ActorId,
@@ -36,6 +38,8 @@ pub struct AuctionInfo {
 
 /// An enum that represent current auction status
 #[derive(Debug, Decode, Default, Encode, TypeInfo, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Status {
     #[default]
     None,
@@ -52,6 +56,8 @@ pub enum Status {
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Transaction<T: Clone> {
     pub id: TransactionId,
     pub action: T,
@@ -61,6 +67,8 @@ pub struct Transaction<T: Clone> {
 ///
 /// After a successful processing of this enum, the program replies with [`Event`].
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Action {
     /// Creates auction
     Create(CreateConfig),
@@ -74,6 +82,8 @@ pub enum Action {
 
 /// An enum that contains a result of processed [`Action`].
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Event {
     AuctionStarted {
         /// Owner of auction NFT
@@ -98,6 +108,8 @@ pub enum Event {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Duration {
     pub hours: u64,
     pub minutes: u64,
@@ -106,6 +118,8 @@ pub struct Duration {
 
 /// Dutch Auction config
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct CreateConfig {
     /// Address of NFT contract
     pub nft_contract_actor_id: ActorId,
@@ -121,6 +135,8 @@ pub struct CreateConfig {
 
 /// An enum that contains a error of processed [`Action`].
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Error {
     PreviousTxMustBeCompleted,
     SendingError,

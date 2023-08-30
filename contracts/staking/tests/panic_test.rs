@@ -6,7 +6,7 @@ mod utils;
 use utils::{FungibleToken, PROGRAMS};
 
 fn init_staking(sys: &System) {
-    let staking = Program::current(sys);
+    let staking = Program::current_opt(sys);
 
     let res = staking.send(
         4,
@@ -21,7 +21,7 @@ fn init_staking(sys: &System) {
     assert!(res.contains(&(4, Ok::<StakingEvent, Error>(StakingEvent::Updated).encode())));
 }
 
-fn init_staking_token(sys: &System) -> FungibleToken {
+fn init_staking_token(sys: &System) -> FungibleToken<'_> {
     let mut st_token = FungibleToken::initialize(sys);
 
     st_token.mint(1, 100000);

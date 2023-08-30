@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata};
+use gmeta::{InOut, Metadata, Out};
 use gstd::{exec, msg, prelude::*, ActorId, Decode, Encode, TypeInfo};
 
 pub struct ChannelMetadata;
@@ -11,10 +11,12 @@ impl Metadata for ChannelMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = Channel;
+    type State = Out<Channel>;
 }
 
 #[derive(Default, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Channel {
     pub owner_id: ActorId,
     pub router_id: ActorId,
@@ -24,6 +26,8 @@ pub struct Channel {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ChannelAction {
     Register { router_contract_id: ActorId },
     Subscribe,
@@ -32,6 +36,8 @@ pub enum ChannelAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ChannelOutput {
     SubscriberAdded(ActorId),
     SubscriberRemoved(ActorId),
@@ -41,6 +47,8 @@ pub enum ChannelOutput {
 }
 
 #[derive(Clone, Debug, Encode, Decode, TypeInfo, Default, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Message {
     pub owner: ActorId,
     pub text: String,

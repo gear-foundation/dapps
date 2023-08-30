@@ -1,8 +1,5 @@
-use catalog_io::CatalogMetadata;
-use gear_wasm_builder::WasmBuilder;
+use rmrk_catalog_io::CatalogMetadata;
 
 fn main() {
-    WasmBuilder::with_meta(<CatalogMetadata as gmeta::Metadata>::repr())
-        .exclude_features(vec!["binary-vendor"])
-        .build();
+    gear_wasm_builder::build_with_metadata::<CatalogMetadata>();
 }

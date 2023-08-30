@@ -1,6 +1,6 @@
 use gstd::prelude::*;
 use gtest::System;
-use rps_io::*;
+use rock_paper_scissors_io::*;
 
 mod routines;
 pub use routines::*;

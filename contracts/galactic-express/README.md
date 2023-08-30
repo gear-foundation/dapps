@@ -1,73 +1,83 @@
-## Getting started
+[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=galactic-express/https://github.com/gear-foundation/dapps)
+[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-docs.yml?logo=rust&label=docs)](https://dapps.gear.rs/galactic_express_io)
+
+# Galactic express
 
 Galactic Express (GalEx) is a 100% on-chain PvE economic game.
 
-Deliver 📦 cargo to the orbit using ⛽️ fuel efficiently
+Deliver the cargo 📦 to the orbit 🌌 using fuel ⛽️ efficiently.
+
+### 🏗️ Building
+
+```sh
+cargo b -p "galactic-express*"
+```
+
+### ✅ Testing
+
+```sh
+cargo t -p "galactic-express*"
+```
 
 ## Stages
-1. Registration.
 
-The stage is initialized by the admin.
+### 1. Registration
 
-Session contract generates random risk factors, payload reward and fuel price.
+> This stage can be started only by the admin.
 
-During the registration stage participants have to specify:
-- the amount of fuel they're willing to buy for the exact session;
-- payload weight.
+Contract generates random risk factors, the payload reward and the fuel price.
 
-2. Execution.
+During this stage participants have to specify:
+- the amount of fuel they're willing to buy for this session.
+- the payload weight.
 
-The stage is initialized by the admin.
+### 2. Execution
 
-The game is managed by a session contract that executes the session within 1 block.
+> This stage can be started only by the admin.
 
-Session contract creates random events based on the risk factor of the session.
+Contract executes a session within 1 transaction, and creates random events during this based on the risk factor of the session.
 
-Fuel burn rate = *strategy.payload / total_rounds*
+### 3. The end game
 
-Participants can review the log using the dApp page [title](https://www.example.com).
+The main goal is to deliver the cargo to the orbit without fuel surplus. A certain reward multiplier is applied based on the fuel tank level. If a player has lots of remaining fuel the delivery reward decreases.
 
-## Risk factor
+| Fuel left (%) | Multiplier (x) |
+| ------------- | -------------- |
+| 0             | 1.7            |
+| > 0           | 0.5..1.4       |
+
+## Math
+
+### Fuel burn rate
+
+`Fuel burn rate = Payload / Total rounds`
+
+### Risk factor
 
 Risk types effect the mission probability.
 
-| Type | Failure probability |
-| --- | ----------- |
-| 🚫 Engine error | 3% |
-| 🛤 Trajectory failure | 3% |
-| 🚀 Separation error | 3% |
-| 🗿 Asteroid | 10% + weather |
-| ⛽ Fuel > 80% | 10% + weather |
-| 📦 Payload > 80% | 10% + weather |
+| Type                  | Failure probability (%) |
+| --------------------- | ----------------------- |
+| 🚫 Engine error       | 3                       |
+| 🛤 Trajectory failure | 3                       |
+| 🚀 Separation error   | 3                       |
+| 🗿 Asteroid           | 10  + `weather effect`  |
+| ⛽ Fuel > 80%         | 10  + `weather effect`  |
+| 📦 Payload > 80%      | 10  + `weather effect`  |
 
-Weather affects the probability multipliers.
+### Weather
 
-| Risk | Effect |
-| --- | ----------- |
-| ☀️ sunny | 0 |
-| ☁️ cloudy | 1 |
-| 🌧 rainy | 2 |
-| 🌩 stormy | 3 |
-| ⛈ thunder | 4 |
-| 🌪 tornado | 5 |
+| Type       | Effect |
+| ---------- | ------ |
+| ☀️ Sunny   | 0      |
+| ☁️ Cloudy  | 1      |
+| 🌧 Rainy   | 2      |
+| 🌩 Stormy  | 3      |
+| ⛈ Thunder | 4      |
+| 🌪 Tornado | 5      |
 
-## End Game
-The main goal is to deliver the cargo to orbit without fuel surplus. 
-A certain reward multiplier apply based on the fuel tank state.
-If the player has lots of remaining fuel the delivery reward decreases.
-
-| Fuel left | Multiplier |
-| --- | ----------- |
-| Fuel tank = 0 | Session reward * 1.7x |
-| Fuel tank > 0 | Session reward * 0.5x..1.4x |
-
-[Leaderboard]() is collecting results of previous rocket launches.
-
-## ToDo
-- [ ] Add Commit-reveal-scheme for registration phase;
-- [ ] Gas reservation feature for autonomous regular sessions;
-- [ ] Add PvP elements for the game;
-- [ ] Implement speed formula;
-- [ ] Build mission probability calculator for registration page;
-
-
+## To do
+- [ ] Add the commit-reveal scheme for the registration phase.
+- [ ] The gas reservation feature for autonomous regular sessions.
+- [ ] Add PvP elements.
+- [ ] Implement speed formula.

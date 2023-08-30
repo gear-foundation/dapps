@@ -1,5 +1,5 @@
 use concert_io::*;
-use gear_lib::multitoken::io::TokenMetadata;
+use gear_lib_old::multitoken::io::TokenMetadata;
 use gstd::{prelude::*, ActorId, Encode};
 use gtest::{Program, System};
 use multi_token_io::InitMTK;
@@ -18,10 +18,12 @@ pub fn init_system() -> System {
     system
 }
 
-pub fn init_concert(sys: &System) -> Program {
-    let concert_program = Program::current(sys);
-    let mtk_program =
-        Program::from_file(sys, "target/wasm32-unknown-unknown/debug/multi_token.wasm");
+pub fn init_concert(sys: &System) -> Program<'_> {
+    let concert_program = Program::current_opt(sys);
+    let mtk_program = Program::from_file(
+        sys,
+        "../target/wasm32-unknown-unknown/debug/multi_token.opt.wasm",
+    );
     let res = mtk_program.send(
         USER,
         InitMTK {
@@ -46,7 +48,7 @@ pub fn init_concert(sys: &System) -> Program {
 }
 
 pub fn create(
-    concert_program: &Program,
+    concert_program: &Program<'_>,
     creator: ActorId,
     name: String,
     description: String,
@@ -78,7 +80,7 @@ pub fn create(
 }
 
 pub fn buy(
-    concert_program: &Program,
+    concert_program: &Program<'_>,
     concert_id: u128,
     amount: u128,
     metadata: Vec<Option<TokenMetadata>>,
@@ -93,14 +95,14 @@ pub fn buy(
     }
 }
 
-pub fn hold(concert_program: &Program, concert_id: u128) {
+pub fn hold(concert_program: &Program<'_>, concert_id: u128) {
     let res = concert_program.send(USER, ConcertAction::Hold {});
 
     assert!(res.contains(&(USER, ConcertEvent::Hold { concert_id }.encode())));
 }
 
 pub fn check_current_concert(
-    concert_program: &Program,
+    concert_program: &Program<'_>,
     name: String,
     description: String,
     date: u128,
@@ -116,37 +118,37 @@ pub fn check_current_concert(
         tickets_left: true_tickets_left,
     } = state.current_concert();
     if name != true_name {
-        panic!("CONCERT: Concert name differs.");
+        std::panic!("CONCERT: Concert name differs.");
     }
     if description != true_description {
-        panic!("CONCERT: Concert description differs.");
+        std::panic!("CONCERT: Concert description differs.");
     }
     if date != true_date {
-        panic!("CONCERT: Concert date differs.");
+        std::panic!("CONCERT: Concert date differs.");
     }
     if number_of_tickets != true_number_of_tickets {
-        panic!("CONCERT: Concert number of tickets differs.");
+        std::panic!("CONCERT: Concert number of tickets differs.");
     }
     if tickets_left != true_tickets_left {
-        panic!("CONCERT: Concert number of tickets left differs.");
+        std::panic!("CONCERT: Concert number of tickets left differs.");
     }
 }
 
 pub fn check_user_tickets(
-    concert_program: &Program,
+    concert_program: &Program<'_>,
     user: ActorId,
     tickets: Vec<Option<TokenMetadata>>,
 ) {
     let state: State = concert_program.read_state().expect("Can't read state");
     let true_tickets = state.user_tickets(user);
     if tickets != true_tickets {
-        panic!("CONCERT: User tickets differ.");
+        std::panic!("CONCERT: User tickets differ.");
     }
 }
 
-pub fn check_buyers(concert_program: &Program, buyers: Vec<ActorId>) {
+pub fn check_buyers(concert_program: &Program<'_>, buyers: Vec<ActorId>) {
     let state: State = concert_program.read_state().expect("Can't read state");
     if buyers != state.buyers {
-        panic!("CONCERT: Buyers list differs.");
+        std::panic!("CONCERT: Buyers list differs.");
     }
 }

@@ -1,8 +1,12 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
-use gstd::{prelude::*, ActorId};
-use types::primitives::*;
+use gmeta::{In, InOut, Metadata, Out};
+use gstd::{
+    collections::{BTreeMap, BTreeSet},
+    prelude::*,
+    ActorId,
+};
+use rmrk_types::primitives::*;
 
 pub struct CatalogMetadata;
 
@@ -12,10 +16,12 @@ impl Metadata for CatalogMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = CatalogState;
+    type State = Out<CatalogState>;
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct CatalogState {
     pub admin: ActorId,
     pub base_type: String,
@@ -25,12 +31,16 @@ pub struct CatalogState {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum EquippableList {
     All,
     Custom(BTreeSet<CollectionAndToken>),
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo, Eq, PartialEq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct FixedPart {
     /// An optional zIndex of base part layer.
     /// specifies the stack order of an element.
@@ -42,6 +52,8 @@ pub struct FixedPart {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Eq, PartialEq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct SlotPart {
     /// Array of whitelisted collections that can be equipped in the given slot. Used with slot parts only.
     pub equippable: Vec<CollectionId>,
@@ -56,12 +68,16 @@ pub struct SlotPart {
 }
 
 #[derive(Debug, Clone, Decode, Encode, TypeInfo, Eq, PartialEq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Part {
     Fixed(FixedPart),
     Slot(SlotPart),
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitCatalog {
     /// Catalog metadata URI of the Catalog
     pub catalog_type: String,
@@ -70,6 +86,8 @@ pub struct InitCatalog {
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum CatalogAction {
     /// Adds parts to base contract.
     ///
@@ -155,6 +173,8 @@ pub enum CatalogAction {
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo, Clone, PartialEq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum CatalogReply {
     PartsAdded(BTreeMap<PartId, Part>),
     EquippablesAdded {
@@ -174,6 +194,8 @@ pub enum CatalogReply {
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum CatalogError {
     PartIdCantBeZero,
     BadConfig,

@@ -1,12 +1,12 @@
 use dynamic_nft_io::*;
-use gear_lib::non_fungible_token::token::*;
+use gear_lib_old::non_fungible_token::token::*;
 use gtest::{Program, RunResult, System};
 
 const USERS: &[u64] = &[3, 4, 5];
 
 pub fn init_nft(sys: &System) {
     sys.init_logger();
-    let nft = Program::current(sys);
+    let nft = Program::current_opt(sys);
 
     let res = nft.send(
         USERS[0],
@@ -21,7 +21,7 @@ pub fn init_nft(sys: &System) {
     assert!(!res.main_failed());
 }
 
-pub fn mint(nft: &Program, transaction_id: u64, member: u64) -> RunResult {
+pub fn mint(nft: &Program<'_>, transaction_id: u64, member: u64) -> RunResult {
     nft.send(
         member,
         NFTAction::Mint {
@@ -36,7 +36,7 @@ pub fn mint(nft: &Program, transaction_id: u64, member: u64) -> RunResult {
     )
 }
 
-pub fn burn(nft: &Program, transaction_id: u64, member: u64, token_id: u64) -> RunResult {
+pub fn burn(nft: &Program<'_>, transaction_id: u64, member: u64, token_id: u64) -> RunResult {
     nft.send(
         member,
         NFTAction::Burn {
@@ -47,7 +47,7 @@ pub fn burn(nft: &Program, transaction_id: u64, member: u64, token_id: u64) -> R
 }
 
 pub fn transfer(
-    nft: &Program,
+    nft: &Program<'_>,
     transaction_id: u64,
     from: u64,
     to: u64,
@@ -63,7 +63,7 @@ pub fn transfer(
     )
 }
 
-pub fn owner_of(nft: &Program, from: u64, token_id: u64) -> RunResult {
+pub fn owner_of(nft: &Program<'_>, from: u64, token_id: u64) -> RunResult {
     nft.send(
         from,
         NFTAction::Owner {
@@ -72,7 +72,7 @@ pub fn owner_of(nft: &Program, from: u64, token_id: u64) -> RunResult {
     )
 }
 
-pub fn is_approved_to(nft: &Program, from: u64, token_id: u64, to: u64) -> RunResult {
+pub fn is_approved_to(nft: &Program<'_>, from: u64, token_id: u64, to: u64) -> RunResult {
     nft.send(
         from,
         NFTAction::IsApproved {
@@ -82,7 +82,13 @@ pub fn is_approved_to(nft: &Program, from: u64, token_id: u64, to: u64) -> RunRe
     )
 }
 
-pub fn approve(nft: &Program, transaction_id: u64, from: u64, to: u64, token_id: u64) -> RunResult {
+pub fn approve(
+    nft: &Program<'_>,
+    transaction_id: u64,
+    from: u64,
+    to: u64,
+    token_id: u64,
+) -> RunResult {
     nft.send(
         from,
         NFTAction::Approve {
@@ -94,7 +100,7 @@ pub fn approve(nft: &Program, transaction_id: u64, from: u64, to: u64, token_id:
 }
 
 pub fn delegated_approve(
-    nft: &Program,
+    nft: &Program<'_>,
     transaction_id: u64,
     from: u64,
     message: DelegatedApproveMessage,
@@ -108,7 +114,7 @@ pub fn delegated_approve(
     nft.send(from, action)
 }
 
-pub fn mint_to_actor(nft: &Program, transaction_id: u64, member: [u8; 32]) -> RunResult {
+pub fn mint_to_actor(nft: &Program<'_>, transaction_id: u64, member: [u8; 32]) -> RunResult {
     nft.send(
         member,
         NFTAction::Mint {
@@ -123,7 +129,7 @@ pub fn mint_to_actor(nft: &Program, transaction_id: u64, member: [u8; 32]) -> Ru
     )
 }
 
-pub fn update(nft: &Program, transaction_id: u64, from: u64, data: Vec<u8>) -> RunResult {
+pub fn update(nft: &Program<'_>, transaction_id: u64, from: u64, data: Vec<u8>) -> RunResult {
     nft.send(
         from,
         NFTAction::UpdateDynamicData {

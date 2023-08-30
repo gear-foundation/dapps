@@ -1,13 +1,13 @@
-use gear_lib::non_fungible_token::token::*;
+use gear_lib_old::non_fungible_token::token::*;
 use gstd::ActorId;
 use gtest::{Program, RunResult, System};
-use nft_io::{InitNft, NFTAction};
+use rentable_nft_io::*;
 
 const USERS: &[u64] = &[3, 4, 5];
 
 pub fn init_nft(sys: &System) {
     sys.init_logger();
-    let nft = Program::current(sys);
+    let nft = Program::current_opt(sys);
 
     let res = nft.send(
         USERS[0],
@@ -22,7 +22,7 @@ pub fn init_nft(sys: &System) {
     assert!(!res.main_failed());
 }
 
-pub fn mint(nft: &Program, transaction_id: u64, member: u64) -> RunResult {
+pub fn mint(nft: &Program<'_>, transaction_id: u64, member: u64) -> RunResult {
     nft.send(
         member,
         NFTAction::Mint {
@@ -37,7 +37,7 @@ pub fn mint(nft: &Program, transaction_id: u64, member: u64) -> RunResult {
     )
 }
 
-pub fn is_approved_to(nft: &Program, from: u64, token_id: u64, to: u64) -> RunResult {
+pub fn is_approved_to(nft: &Program<'_>, from: u64, token_id: u64, to: u64) -> RunResult {
     nft.send(
         from,
         NFTAction::IsApproved {
@@ -47,7 +47,13 @@ pub fn is_approved_to(nft: &Program, from: u64, token_id: u64, to: u64) -> RunRe
     )
 }
 
-pub fn approve(nft: &Program, transaction_id: u64, from: u64, to: u64, token_id: u64) -> RunResult {
+pub fn approve(
+    nft: &Program<'_>,
+    transaction_id: u64,
+    from: u64,
+    to: u64,
+    token_id: u64,
+) -> RunResult {
     nft.send(
         from,
         NFTAction::Approve {
@@ -59,14 +65,14 @@ pub fn approve(nft: &Program, transaction_id: u64, from: u64, to: u64, token_id:
 }
 
 pub fn set_user(
-    nft: &Program,
+    nft: &Program<'_>,
     from: u64,
     address: ActorId,
     token_id: TokenId,
     expires: u64,
     transaction_id: u64,
 ) -> RunResult {
-    let payload = nft_io::NFTAction::SetUser {
+    let payload = NFTAction::SetUser {
         token_id,
         address,
         expires,
@@ -75,12 +81,12 @@ pub fn set_user(
     nft.send(from, payload)
 }
 
-pub fn user_of(nft: &Program, from: u64, token_id: TokenId) -> RunResult {
-    let payload = nft_io::NFTAction::UserOf { token_id };
+pub fn user_of(nft: &Program<'_>, from: u64, token_id: TokenId) -> RunResult {
+    let payload = NFTAction::UserOf { token_id };
     nft.send(from, payload)
 }
 
-pub fn user_expires(nft: &Program, from: u64, token_id: TokenId) -> RunResult {
-    let payload = nft_io::NFTAction::UserExpires { token_id };
+pub fn user_expires(nft: &Program<'_>, from: u64, token_id: TokenId) -> RunResult {
+    let payload = NFTAction::UserExpires { token_id };
     nft.send(from, payload)
 }

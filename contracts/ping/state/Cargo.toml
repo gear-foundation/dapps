@@ -1,14 +1,12 @@
 [package]
-name = "demo-ping-state"
+name = "ping-state"
 version.workspace = true
-authors.workspace = true
 edition.workspace = true
-license.workspace = true
+publish.workspace = true
 
 [dependencies]
 gstd.workspace = true
 gmeta = { workspace = true, features = ["codegen"] }
-demo-ping-io.workspace = true
 
 [build-dependencies]
 gear-wasm-builder = { workspace = true, features = ["metawasm"] }

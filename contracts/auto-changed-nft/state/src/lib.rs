@@ -1,13 +1,12 @@
 #![no_std]
 
-use auto_changed_nft_io::NFTMetadata;
-use gear_lib::non_fungible_token::state::NFTQueryReply;
-use gmeta::{metawasm, Metadata};
+use auto_changed_nft_io::*;
+use gear_lib_old::non_fungible_token::state::NFTQueryReply;
 use gstd::String;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <NFTMetadata as Metadata>::State;
+    pub type State = NFTState2;
 
     pub fn info(state: State) -> NFTQueryReply {
         NFTQueryReply::NFTInfo {

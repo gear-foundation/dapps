@@ -2,12 +2,12 @@ use crate::utils_gclient::common::get_user_to_actor_id;
 
 use super::common;
 use gclient::{EventListener, EventProcessor, GearApi};
-use gear_lib::non_fungible_token::token::TokenMetadata;
+use gear_lib_old::non_fungible_token::token::TokenMetadata;
 use gstd::{prelude::*, ActorId};
-use market_io::TokenId;
-use nft_io::{Collection, Constraints, InitNFT, NFTAction, NFTEvent};
+use nft_marketplace_io::*;
+use non_fungible_token_io::{Collection, Constraints, InitNFT, NFTAction, NFTEvent};
 
-const NFT_WASM_PATH: &str = "target/wasm32-unknown-unknown/debug/nft.opt.wasm";
+const NFT_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm";
 
 pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     let mut listener = api.subscribe().await?;
@@ -38,7 +38,7 @@ pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
             gclient::code_from_os(NFT_WASM_PATH)?,
             gclient::now_micros().to_le_bytes(),
             init_nft_config,
-            gas_info.min_limit,
+            gas_info.min_limit * 2,
             0,
         )
         .await?;
@@ -76,7 +76,7 @@ pub async fn mint(
     .await?;
 
     let NFTEvent::Transfer(_) = NFTEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `NFTEvent` data.") else {
-        panic!("Unexpected invalid `NFTEvent`.");
+        std::panic!("Unexpected invalid `NFTEvent`.");
     };
 
     Ok(())
@@ -103,7 +103,7 @@ pub async fn approve(
     .await?;
 
     let NFTEvent::Approval(_) = NFTEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `NFTEvent` data.") else {
-        panic!("Unexpected invalid `NFTEvent`.");
+        std::panic!("Unexpected invalid `NFTEvent`.");
     };
 
     Ok(())
@@ -128,7 +128,7 @@ pub async fn add_minter(
     .await?;
 
     let NFTEvent::MinterAdded {..} = NFTEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `NFTEvent` data.") else {
-        panic!("Unexpected invalid `NFTEvent`.");
+        std::panic!("Unexpected invalid `NFTEvent`.");
     };
 
     Ok(())
@@ -150,7 +150,7 @@ async fn send_message(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.min_limit, 0)
+        .send_message(program_id.into(), payload, gas_info.min_limit, 0, false)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;

@@ -1,57 +1,26 @@
 [package]
 name = "on-chain-nft"
 version.workspace = true
-authors.workspace = true
 edition.workspace = true
-license.workspace = true
+publish.workspace = true
 
 [dependencies]
 gstd.workspace = true
 primitive-types.workspace = true
-parity-scale-codec.workspace = true
-scale-info.workspace = true
-gear-lib.workspace = true
+gear-lib-old.workspace = true
 gear-lib-derive.workspace = true
-hashbrown.workspace = true
-onchain-nft-io.workspace = true
+on-chain-nft-io.workspace = true
 gmeta.workspace = true
 
 [dev-dependencies]
 gstd = { workspace = true, features = ["debug"] }
 gtest.workspace = true
 gclient.workspace = true
-onchain-nft-state.workspace = true
 tokio.workspace = true
+
+# External binaries
+on-chain-nft-state.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
-onchain-nft-io.workspace = true
-gmeta.workspace = true
-
-[features]
-binary-vendor = ["onchain-nft-state/binary-vendor"]
-
-[workspace]
-members = ["state"]
-
-[workspace.package]
-version = "0.2.1"
-authors = ["Gear Technologies"]
-edition = "2021"
-license = "MIT"
-
-[workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gear-lib = { git = "https://github.com/gear-foundation/dapps-gear-lib", tag = "0.3.9" }
-gear-lib-derive = { git = "https://github.com/gear-foundation/dapps-gear-lib", tag = "0.3.9" }
-tokio = "1"
-onchain-nft-io.path = "io"
-parity-scale-codec = { version = "3", default-features = false }
-scale-info = { version = "2", default-features = false }
-hashbrown = "0.14"
-primitive-types = { version = "0.12", default-features = false }
-onchain-nft-state.path = "state"
+on-chain-nft-io.workspace = true

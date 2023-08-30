@@ -1,11 +1,14 @@
 use super::common;
-use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use gclient::{EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 
-const FT_STORAGE_WASM_PATH: &str = "./target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm";
-const FT_LOGIC_WASM_PATH: &str = "./target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm";
-const FT_MAIN_WASM_PATH: &str = "./target/wasm32-unknown-unknown/debug/ft_main.opt.wasm";
+const FT_STORAGE_WASM_PATH: &str =
+    "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm";
+const FT_LOGIC_WASM_PATH: &str =
+    "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm";
+const FT_MAIN_WASM_PATH: &str =
+    "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm";
 
 pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     let storage_code_hash = common::upload_with_code_hash(api, FT_STORAGE_WASM_PATH).await?;
@@ -82,7 +85,7 @@ pub async fn balance_of(
     let reply = send_message(api, program_id, FTokenAction::GetBalance(*account)).await?;
 
     let FTokenEvent::Balance(balance) = FTokenEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `FTokenEvent` data.") else {
-        panic!("Unexpected invalid `FTokenEvent`.");
+        std::panic!("Unexpected invalid `FTokenEvent`.");
     };
 
     Ok(balance)
@@ -130,7 +133,7 @@ async fn send_message(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.burned * 5, 0)
+        .send_message(program_id.into(), payload, gas_info.burned * 5, 0, false)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;
@@ -140,6 +143,6 @@ async fn send_message(
 fn assert_ft_ok(reply: &[u8]) {
     #[allow(clippy::useless_asref)]
     let FTokenEvent::Ok = FTokenEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `FTokenEvent` data.") else {
-        panic!("Unexpected invalid `FTokenEvent`.");
+        std::panic!("Unexpected invalid `FTokenEvent`.");
     };
 }

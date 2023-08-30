@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub type NftId = u128;
@@ -16,10 +16,12 @@ impl Metadata for ContractMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = StudentNftState;
+    type State = Out<StudentNftState>;
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum StudentNftAction {
     Mint,
     CreateCourse {
@@ -67,6 +69,8 @@ pub enum StudentNftAction {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum StudentNftEvent {
     Minted {
         user: ActorId,
@@ -117,15 +121,21 @@ pub enum StudentNftEvent {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct StudentNftInit {}
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct EmoteState {
     pub upvotes: Vec<ActorId>,
     pub reactions: Vec<(ActorId, String)>,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct StudentNftState {
     pub nfts: Vec<(NftId, Nft)>,
     pub nft_owners: Vec<(ActorId, NftId)>,
@@ -137,6 +147,8 @@ pub struct StudentNftState {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Nft {
     pub owner: ActorId,
     pub actual_courses: Vec<ActualCourse>,
@@ -152,6 +164,8 @@ impl Nft {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct ActualCourse {
     pub id: CourseId,
     pub hws: Vec<Hw>,
@@ -169,6 +183,8 @@ impl ActualCourse {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Hw {
     pub lesson_id: LessonId,
     pub solution_url: String,
@@ -196,6 +212,8 @@ impl Hw {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Course {
     pub owner: ActorId,
     pub owner_helpers: Vec<ActorId>,
@@ -222,6 +240,8 @@ impl Course {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Lesson {
     pub name: String,
     pub description: String,
@@ -234,6 +254,8 @@ pub struct Lesson {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum EmoteAction {
     Upvote,
     Reaction { emoji: Option<String> },

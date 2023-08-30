@@ -1,8 +1,10 @@
-use auction_io::auction::{Action, Error, Event};
+use dutch_auction_io::auction::*;
 use gstd::{ActorId, Encode};
 use gtest::{Log, System};
-mod routines;
+use non_fungible_token_io::NFTEvent;
 use routines::*;
+
+mod routines;
 
 #[test]
 fn buy() {
@@ -26,12 +28,10 @@ fn buy() {
     let res = nft_owner(&nft_program, USERS[0], token_id.into());
     let new_owner = ActorId::from(USERS[1]);
 
-    let log = Log::builder()
-        .dest(USERS[0])
-        .payload(nft_io::NFTEvent::Owner {
-            owner: new_owner,
-            token_id: token_id.into(),
-        });
+    let log = Log::builder().dest(USERS[0]).payload(NFTEvent::Owner {
+        owner: new_owner,
+        token_id: token_id.into(),
+    });
 
     assert!(res.contains(&log));
 

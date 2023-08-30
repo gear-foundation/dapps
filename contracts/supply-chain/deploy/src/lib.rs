@@ -10,10 +10,12 @@ use primitive_types::H256;
 use supply_chain_io::*;
 use supply_chain_state::{WASM_BINARY, WASM_EXPORTS};
 
-pub const FT_MAIN: &str = "target/wasm32-unknown-unknown/debug/ft_main.opt.wasm";
-pub const FT_STORAGE: &str = "target/wasm32-unknown-unknown/debug/ft_storage.opt.wasm";
-pub const FT_LOGIC: &str = "target/wasm32-unknown-unknown/debug/ft_logic.opt.wasm";
-pub const NFT_BINARY: &str = "target/wasm32-unknown-unknown/debug/nft.opt.wasm";
+pub const FT_MAIN: &str = "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm";
+pub const FT_STORAGE: &str =
+    "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm";
+pub const FT_LOGIC: &str =
+    "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm";
+pub const NFT_BINARY: &str = "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm";
 
 pub struct Client {
     client: GearApi,
@@ -35,7 +37,7 @@ impl Client {
     }
 
     pub async fn local() -> Result<Self> {
-        let client = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+        let client = GearApi::dev_from_path("../target/tmp/gear").await?;
         let listener = client.subscribe().await?;
 
         Ok(Self { client, listener })
@@ -101,7 +103,7 @@ impl Client {
                 code,
                 gclient::now_micros().to_le_bytes(),
                 payload,
-                gas_limit,
+                gas_limit * 2,
                 0,
             )
             .await?;
@@ -142,7 +144,7 @@ impl Client {
 
         let (message_id, _) = self
             .client
-            .send_message(destination, payload, modified_gas_limit, 0)
+            .send_message(destination, payload, modified_gas_limit, 0, false)
             .await?;
 
         println!("Sending completed.");
@@ -182,6 +184,7 @@ impl Client {
         self.client
             .read_state_using_wasm::<_, bool>(
                 supply_chain_actor_id.into(),
+                vec![],
                 WASM_EXPORTS[7],
                 WASM_BINARY.into(),
                 Some((ActorId::from(ALICE), action.clone().action)),

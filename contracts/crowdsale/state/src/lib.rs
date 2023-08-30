@@ -1,7 +1,20 @@
 #![no_std]
 
-#[cfg(not(feature = "binary-vendor"))]
-pub mod state;
+use gstd::{prelude::*, ActorId};
 
-#[cfg(feature = "binary-vendor")]
-include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
+#[gmeta::metawasm]
+pub mod metafns {
+    pub type State = crowdsale_io::State;
+
+    pub fn current_price(state: State) -> u128 {
+        state.get_current_price()
+    }
+
+    pub fn tokens_left(state: State) -> u128 {
+        state.get_balance()
+    }
+
+    pub fn balance_of(state: State, address: ActorId) -> u128 {
+        state.balance_of(&address)
+    }
+}

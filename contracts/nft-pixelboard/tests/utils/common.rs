@@ -13,7 +13,7 @@ pub fn initialize_system() -> System {
 }
 
 pub trait Program {
-    fn inner_program(&self) -> &InnerProgram;
+    fn inner_program(&self) -> &InnerProgram<'_>;
 
     fn actor_id(&self) -> ActorId {
         let bytes: [u8; 32] = self.inner_program().id().into();

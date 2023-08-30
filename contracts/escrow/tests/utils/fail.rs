@@ -1,6 +1,6 @@
 use super::*;
 
-pub fn create(escrow_program: &Program, from: u64, buyer: u64, seller: u64, amount: u128) {
+pub fn create(escrow_program: &Program<'_>, from: u64, buyer: u64, seller: u64, amount: u128) {
     assert!(escrow_program
         .send(
             from,
@@ -13,7 +13,7 @@ pub fn create(escrow_program: &Program, from: u64, buyer: u64, seller: u64, amou
         .main_failed());
 }
 
-pub fn deposit(escrow_program: &Program, wallet_id: u128, from: u64, transaction_failed: bool) {
+pub fn deposit(escrow_program: &Program<'_>, wallet_id: u128, from: u64, transaction_failed: bool) {
     if transaction_failed {
         assert!(escrow_program
             .send(from, EscrowAction::Deposit(wallet_id.into()))
@@ -25,25 +25,25 @@ pub fn deposit(escrow_program: &Program, wallet_id: u128, from: u64, transaction
     }
 }
 
-pub fn confirm(escrow_program: &Program, wallet_id: u128, from: u64) {
+pub fn confirm(escrow_program: &Program<'_>, wallet_id: u128, from: u64) {
     assert!(escrow_program
         .send(from, EscrowAction::Confirm(wallet_id.into()))
         .main_failed());
 }
 
-pub fn refund(escrow_program: &Program, wallet_id: u128, from: u64) {
+pub fn refund(escrow_program: &Program<'_>, wallet_id: u128, from: u64) {
     assert!(escrow_program
         .send(from, EscrowAction::Refund(wallet_id.into()))
         .main_failed());
 }
 
-pub fn cancel(escrow_program: &Program, wallet_id: u128, from: u64) {
+pub fn cancel(escrow_program: &Program<'_>, wallet_id: u128, from: u64) {
     assert!(escrow_program
         .send(from, EscrowAction::Cancel(wallet_id.into()))
         .main_failed());
 }
 
-pub fn info(_escrow_program: &Program, _wallet_id: u128) {
+pub fn info(_escrow_program: &Program<'_>, _wallet_id: u128) {
     unimplemented!("New metawasm state unimplemented!")
     /* escrow_program
     .meta_state::<_, EscrowStateReply>(EscrowState::Info(wallet_id.into()))

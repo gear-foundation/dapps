@@ -189,7 +189,7 @@ fn delivery_with_big_delay() {
 
     supply_chain.process(DISTRIBUTOR, 0).succeed(0);
     supply_chain.package(DISTRIBUTOR, 0).succeed(0);
-    non_fungible_token.approve(PRODUCER, supply_chain.actor_id(), 0);
+    non_fungible_token.approve(DISTRIBUTOR, supply_chain.actor_id(), 0);
     supply_chain
         .put_up_for_sale_by_distributor(DISTRIBUTOR, 0, ITEM_PRICE)
         .succeed(0);

@@ -18,7 +18,7 @@ fn zero_owner_id_init() {
     let sys = System::new();
     sys.init_logger();
 
-    let ico = Program::current(&sys);
+    let ico = Program::current_opt(&sys);
 
     let res = ico.send(
         OWNER_ID,
@@ -37,7 +37,7 @@ fn zero_token_address_init() {
     let sys = System::new();
     sys.init_logger();
 
-    let ico = Program::current(&sys);
+    let ico = Program::current_opt(&sys);
 
     let res = ico.send(
         OWNER_ID,
@@ -81,7 +81,7 @@ fn zero_tokens_goal_init() {
     let sys = System::new();
     sys.init_logger();
 
-    let ico = Program::current(&sys);
+    let ico = Program::current_opt(&sys);
 
     let res = ico.send(
         OWNER_ID,
@@ -125,7 +125,7 @@ fn zero_start_price_init() {
     let sys = System::new();
     sys.init_logger();
 
-    let ico = Program::current(&sys);
+    let ico = Program::current_opt(&sys);
 
     let res = ico.send(
         OWNER_ID,
@@ -169,7 +169,7 @@ fn zero_price_increase_init() {
     let sys = System::new();
     sys.init_logger();
 
-    let ico = Program::current(&sys);
+    let ico = Program::current_opt(&sys);
 
     let res = ico.send(
         OWNER_ID,
@@ -213,7 +213,7 @@ fn zero_time_increase_init() {
     let sys = System::new();
     sys.init_logger();
 
-    let ico = Program::current(&sys);
+    let ico = Program::current_opt(&sys);
 
     let res = ico.send(
         OWNER_ID,

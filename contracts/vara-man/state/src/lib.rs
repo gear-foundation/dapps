@@ -1,12 +1,11 @@
 #![no_std]
 
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 use vara_man_io::*;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <VaraManMetadata as Metadata>::State;
+    pub type State = VaraMan;
 
     pub fn get_games(state: State) -> Vec<(ActorId, GameInstance)> {
         state.games

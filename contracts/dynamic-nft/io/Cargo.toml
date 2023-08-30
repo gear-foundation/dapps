@@ -1,13 +1,11 @@
 [package]
 name = "dynamic-nft-io"
 version.workspace = true
-authors.workspace = true
 edition.workspace = true
-license.workspace = true
+publish.workspace = true
 
 [dependencies]
 gstd.workspace = true
-gear-lib.workspace = true
+gear-lib-old.workspace = true
 primitive-types.workspace = true
 gmeta.workspace = true
-hashbrown.workspace = true

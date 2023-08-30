@@ -1,6 +1,6 @@
 pub mod utils;
 
-use market_io::MarketErr;
+use nft_marketplace_io::*;
 use utils::prelude::*;
 
 #[test]

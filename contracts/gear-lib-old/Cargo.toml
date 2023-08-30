@@ -1,0 +1,10 @@
+[package]
+name = "gear-lib-old"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+primitive-types.workspace = true
+schnorrkel.workspace = true

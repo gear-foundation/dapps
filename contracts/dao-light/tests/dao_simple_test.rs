@@ -11,6 +11,7 @@ fn deposit_tokens() {
     init_fungible_token(&sys);
     init_dao(&sys);
     let dao = sys.get_program(2);
+    assert!(!approve(&sys.get_program(1), MEMBERS[0], 2, 1000).main_failed());
     let res = deposit(&dao, MEMBERS[0], 1000);
     assert!(res.contains(&(
         MEMBERS[0],

@@ -1,37 +1,18 @@
-# Gear library for programs
+[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=gear-lib/https://github.com/gear-foundation/dapps)
+[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-docs.yml?logo=rust&label=docs)](https://dapps.gear.rs/gear_lib)
 
-[![Build][build_badge]][build_href]
-[![License][lic_badge]][lic_href]
-[![Docs][docs_badge]][docs_href]
+# Gear library
 
-[build_badge]: https://img.shields.io/github/workflow/status/gear-dapps/supply-chain/Build
-[build_href]: https://github.com/gear-dapps/gear-lib/actions/workflows/build.yml
+Token primitives, helpers for contracts, and everything else that wasn't included in `gstd`.
 
-[lic_badge]: https://img.shields.io/badge/License-MIT-success
-[lic_href]: LICENSE
-
-[docs_badge]: https://img.shields.io/badge/Docs-online-5023dd
-[docs_href]: https://dapp.rs/gear-lib
-
-This library provides standard functions used in the implementation of contracts:
-
-- fungible token
-- non fungible token
-- multitoken
-- etc
-
-To use the default implementation you should include the packages in your `Cargo.toml` file:
-
-```ini
-gear-lib = { git = "https://github.com/gear-dapps/gear-lib.git" }
-gear-lib-derive = { git = "https://github.com/gear-dapps/gear-lib.git" }
+### ✅ Testing
+```sh
+cargo t -p gear-lib
 ```
 
-```rust
-use derive_traits::{NFTStateKeeper, NFTCore, NFTMetaState};
-use gear_contract_libraries::non_fungible_token::{nft_core::*, state::*, token::*};
+### ⚙️ Usage
+
+Include the following line under the `[dependencies]` table in your contract's `Cargo.toml` file:
+```toml
+gear-lib = { git = "https://github.com/gear-foundation/dapps", tag = "0.3.2" }
 ```
-
-## License
-
-The source code is licensed under the [MIT license](LICENSE).

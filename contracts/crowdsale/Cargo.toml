@@ -2,15 +2,11 @@
 name = "crowdsale"
 version.workspace = true
 edition.workspace = true
-license.workspace = true
-authors.workspace = true
+publish.workspace = true
 
 [dependencies]
 gstd.workspace = true
-parity-scale-codec.workspace = true
-scale-info.workspace = true
-ft-main-io.workspace = true
-hashbrown.workspace = true
+sharded-fungible-token-io.workspace = true
 gmeta.workspace = true
 crowdsale-io.workspace = true
 
@@ -18,42 +14,13 @@ crowdsale-io.workspace = true
 gstd = { workspace = true, features = ["debug"] }
 gtest.workspace = true
 gclient.workspace = true
-crowdsale-state.workspace = true
 tokio.workspace = true
-ft-main.workspace = true
-ft-logic.workspace = true
-ft-storage.workspace = true
+
+# External binaries
+sharded-fungible-token.workspace = true
+sharded-fungible-token-logic.workspace = true
+sharded-fungible-token-storage.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
 crowdsale-io.workspace = true
-gmeta.workspace = true
-
-[features]
-binary-vendor = []
-
-[workspace]
-members = ["state"]
-
-[workspace.package]
-version = "0.1.5"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
-
-[workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-ft-main-io = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
-ft-main = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
-ft-logic = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
-ft-storage = { git = "https://github.com/gear-dapps/sharded-fungible-token", tag = "2.1.4" }
-parity-scale-codec = { version = "3", default-features = false }
-scale-info = { version = "2", default-features = false }
-hashbrown = "0.14"
-crowdsale-io.path = "io"
-crowdsale-state.path = "state"
-tokio = "1"

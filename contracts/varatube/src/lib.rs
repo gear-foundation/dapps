@@ -1,8 +1,8 @@
 #![no_std]
 
-use ft_io::{FTAction, FTEvent};
-use gstd::{async_main, exec, msg, prelude::*, ActorId};
-use varatube_io::{Actions, Period, Price, SubscriberData, SubscriptionState};
+use fungible_token_io::{FTAction, FTEvent};
+use gstd::{async_main, collections::BTreeMap, exec, msg, prelude::*, ActorId};
+use varatube_io::*;
 
 // TODO [cleanness] control tokens are of erc20 standard
 // TODO [cleanness] error workflow done by eco-system guys
@@ -76,7 +76,7 @@ impl Currencies {
 }
 
 #[no_mangle]
-extern "C" fn init() {
+extern fn init() {
     Currencies::add_currency(msg::load().expect("init: wrong payload: expected token id"));
 }
 
@@ -315,8 +315,8 @@ async fn main() {
 }
 
 #[no_mangle]
-extern "C" fn state() {
+extern fn state() {
     let ret_state = unsafe { SUBSCRIBERS.clone() };
     let ret_state2 = unsafe { CURRENCIES.clone() };
-    let _ = msg::reply::<SubscriptionState>((ret_state, ret_state2).into(), 0);
+    msg::reply::<SubscriptionState>((ret_state, ret_state2).into(), 0).expect("`state()` failed");
 }

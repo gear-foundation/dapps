@@ -1,8 +1,13 @@
 #![no_std]
 
 use core::cmp::min;
-use gstd::{errors::Result, exec, msg, prelude::*, ActorId, MessageId};
-use hashbrown::{HashMap, HashSet};
+use gstd::{
+    collections::{HashMap, HashSet},
+    errors::Result,
+    exec, msg,
+    prelude::*,
+    ActorId, MessageId,
+};
 use multisig_wallet_io::*;
 use primitive_types::U256;
 
@@ -312,7 +317,7 @@ impl MultisigWallet {
 }
 
 #[no_mangle]
-extern "C" fn init() {
+extern fn init() {
     let config: MWInitConfig = msg::load().expect("Unable to decode MWInitConfig");
 
     let owners_count = config.owners.len();
@@ -366,7 +371,7 @@ async unsafe fn main() {
 }
 
 #[no_mangle]
-extern "C" fn state() {
+extern fn state() {
     let MultisigWallet {
         transactions,
         confirmations,

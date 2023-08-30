@@ -1,4 +1,4 @@
-use auction_io::auction::*;
+use dutch_auction_io::auction::*;
 use gtest::System;
 
 mod routines;

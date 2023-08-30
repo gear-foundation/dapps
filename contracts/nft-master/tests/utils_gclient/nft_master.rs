@@ -1,9 +1,9 @@
 use super::common;
 use gclient::{EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
-use nft_master_io::{NFTMasterAction, NFTMasterEvent, NFTMasterInit, NFTMasterState};
+use nft_master_io::*;
 
-const NFT_MASTER_WASM_PATH: &str = "./target/wasm32-unknown-unknown/debug/nft_master.opt.wasm";
+const NFT_MASTER_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/nft_master.opt.wasm";
 
 pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     let mut listener = api.subscribe().await?;
@@ -124,7 +124,7 @@ pub async fn remove_operator(
 
 pub async fn get_state(api: &GearApi, program_id: &ActorId) -> gclient::Result<NFTMasterState> {
     let program_id = program_id.encode().as_slice().into();
-    api.read_state(program_id).await
+    api.read_state(program_id, vec![]).await
 }
 
 async fn send_message(
@@ -145,7 +145,13 @@ async fn send_message(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.min_limit * 2, value)
+        .send_message(
+            program_id.into(),
+            payload,
+            gas_info.min_limit * 2,
+            value,
+            false,
+        )
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;

@@ -1,2 +1,20 @@
-[workspace]
-members = ["io", "state", "game"]
+[package]
+name = "vara-man"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+vara-man-io.workspace = true
+
+[dev-dependencies]
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+gclient.workspace = true
+tokio.workspace = true
+blake2-rfc.workspace = true
+
+[build-dependencies]
+vara-man-io.workspace = true
+gear-wasm-builder.workspace = true

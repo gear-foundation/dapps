@@ -1,13 +1,14 @@
-[workspace]
-resolver = "2"
-members = [
-    "derive",
-    "lib",
-    "sr25519",
-]
+[package]
+name = "gear-lib"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
 
-[workspace.package]
-version = "0.3.9"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+[dependencies]
+gstd.workspace = true
+indexmap.workspace = true
+ahash.workspace = true
+primitive-types.workspace = true
+
+[dev-dependencies]
+gstd = { workspace = true, features = ["debug"] }

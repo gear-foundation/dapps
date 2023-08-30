@@ -1,4 +1,4 @@
-use ft_io::{FTAction, FTEvent, InitConfig};
+use fungible_token_io::{FTAction, FTEvent, InitConfig};
 use gstd::{ActorId, Encode};
 use gtest::{Program, System};
 use varatube_io::*;
@@ -12,7 +12,7 @@ fn register_subscribe() {
 
     let ft = Program::from_file(
         &sys,
-        "./target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm",
+        "../target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm",
     );
 
     ft.send(
@@ -35,7 +35,7 @@ fn register_subscribe() {
         .encode()
     )));
 
-    let varatube = Program::current(&sys);
+    let varatube = Program::current_opt(&sys);
 
     let token_id = ft.id().encode();
     let token_id = ActorId::from_slice(token_id.as_slice()).unwrap();
@@ -67,7 +67,7 @@ fn register_subscribe() {
         USERS[0],
         FTEvent::Approve {
             from: USERS[0].into(),
-            to: token_id,
+            to: varatube_id,
             amount: 666,
         }
         .encode()

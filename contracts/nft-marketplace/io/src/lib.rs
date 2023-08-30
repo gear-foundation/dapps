@@ -1,7 +1,11 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
-use gstd::{prelude::*, ActorId};
+use gmeta::{In, InOut, Metadata, Out};
+use gstd::{
+    collections::{BTreeMap, BTreeSet},
+    prelude::*,
+    ActorId,
+};
 use primitive_types::U256;
 
 pub type ContractId = ActorId;
@@ -17,10 +21,12 @@ impl Metadata for MarketMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = Market;
+    type State = Out<Market>;
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Market {
     pub admin_id: ActorId,
     pub treasury_id: ActorId,
@@ -32,12 +38,16 @@ pub struct Market {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct ItemInfoArgs {
     nft_contract_id: ActorId,
     token_id: U256,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitMarket {
     pub admin_id: ActorId,
     pub treasury_id: ActorId,
@@ -45,6 +55,8 @@ pub struct InitMarket {
 }
 
 #[derive(Debug, PartialEq, Eq, Default, Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Auction {
     pub bid_period: u64,
     pub started_at: u64,
@@ -54,6 +66,8 @@ pub struct Auction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo, Clone, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum MarketTx {
     CreateAuction,
     Bid {
@@ -78,6 +92,8 @@ pub enum MarketTx {
 }
 
 #[derive(Debug, PartialEq, Eq, Encode, Decode, TypeInfo, Clone, Default)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Item {
     pub token_id: TokenId,
     pub owner: ActorId,
@@ -89,6 +105,8 @@ pub struct Item {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum MarketAction {
     /// Adds NFT contract addresses that can be listed on marketplace.
     ///
@@ -269,6 +287,8 @@ pub enum MarketAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum MarketEvent {
     NftContractAdded(ContractId),
     FtContractAdded(ContractId),
@@ -330,6 +350,8 @@ pub enum MarketEvent {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum MarketErr {
     NFTTransferFailed,
     TokenTransferFailed,
@@ -353,11 +375,11 @@ pub enum MarketErr {
     OfferIsNotExists,
 }
 
-pub fn all_items(state: <MarketMetadata as Metadata>::State) -> Vec<Item> {
+pub fn all_items(state: Market) -> Vec<Item> {
     state.items.values().cloned().collect()
 }
 
-pub fn item_info(state: <MarketMetadata as Metadata>::State, args: &ItemInfoArgs) -> Option<Item> {
+pub fn item_info(state: Market, args: &ItemInfoArgs) -> Option<Item> {
     state
         .items
         .get(&(args.nft_contract_id, args.token_id))

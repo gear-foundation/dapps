@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{exec, prelude::*, ActorId};
 
 pub struct CrowdsaleMetadata;
@@ -11,10 +11,12 @@ impl Metadata for CrowdsaleMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = State;
+    type State = Out<State>;
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Clone, Copy)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct IcoState {
     pub ico_started: bool,
     pub start_time: u64,
@@ -23,6 +25,8 @@ pub struct IcoState {
 }
 
 #[derive(Debug, Decode, Encode, Clone, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum IcoAction {
     /// Starts ICO contract.
     ///
@@ -76,6 +80,8 @@ pub enum IcoAction {
 }
 
 #[derive(Debug, Decode, Encode, Clone, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum IcoEvent {
     SaleStarted {
         transaction_id: u64,
@@ -95,12 +101,16 @@ pub enum IcoEvent {
 }
 
 #[derive(Debug, Decode, Encode, Clone, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct IcoInit {
     pub token_address: ActorId,
     pub owner: ActorId,
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum StateIco {
     CurrentPrice,
     TokensLeft,
@@ -108,6 +118,8 @@ pub enum StateIco {
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum StateIcoReply {
     CurrentPrice(u128),
     TokensLeft(u128),
@@ -115,6 +127,8 @@ pub enum StateIcoReply {
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct State {
     pub ico_state: IcoState,
     pub start_price: u128,

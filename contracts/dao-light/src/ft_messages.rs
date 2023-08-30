@@ -1,4 +1,4 @@
-use ft_io::*;
+use fungible_token_io::{FTAction, FTEvent};
 use gstd::{msg, ActorId};
 
 #[allow(unused)]

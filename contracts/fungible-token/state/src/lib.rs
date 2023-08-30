@@ -1,12 +1,11 @@
 #![no_std]
 
-use ft_io::*;
-use gmeta::{metawasm, Metadata};
+use fungible_token_io::*;
 use gstd::{prelude::*, ActorId};
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <FungibleTokenMetadata as Metadata>::State;
+    pub type State = IoFungibleToken;
 
     pub fn name(state: State) -> String {
         state.name

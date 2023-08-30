@@ -1,5 +1,5 @@
 use crowdsale::WASM_BINARY_OPT;
-use crowdsale_io::IcoInit;
+use crowdsale_io::*;
 use gclient::{EventProcessor, GearApi, Result};
 use gstd::{ActorId, Encode};
 
@@ -20,7 +20,7 @@ pub const TIME_INCREASE_STEP: u128 = 1000;
 #[tokio::test]
 #[ignore]
 async fn init() -> Result<()> {
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
 

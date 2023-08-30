@@ -1,4 +1,4 @@
-use gear_lib::multitoken::io::*;
+use gear_lib_old::multitoken::io::*;
 use gstd::{prelude::*, ActorId, String};
 
 mod utils;

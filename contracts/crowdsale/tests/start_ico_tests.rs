@@ -79,7 +79,7 @@ fn zero_duration_start_ico() {
 fn not_minting_tokens() {
     let sys = System::new();
 
-    let ico = Program::current(&sys);
+    let ico = Program::current_opt(&sys);
 
     let res = ico.send(
         OWNER_ID,

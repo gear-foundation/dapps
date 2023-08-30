@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata};
+use gmeta::{InOut, Metadata, Out};
 use gstd::{errors::Error as GstdError, prelude::*, ActorId, CodeId};
 
 pub struct ContractMetadata;
@@ -11,13 +11,15 @@ impl Metadata for ContractMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = State;
+    type State = Out<State>;
 }
 
 /// The contract state.
 ///
 /// For more info about fields, see [`Initialize`].
 #[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct State {
     pub pair: CodeId,
     pub fee_to: ActorId,
@@ -42,6 +44,8 @@ impl State {
 #[derive(
     Default, Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash,
 )]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Initialize {
     /// The actor that'll receive the 0.05% commission per trade.
     ///
@@ -55,6 +59,8 @@ pub struct Initialize {
 
 /// Sends the contract info about what it should do.
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Action {
     /// Creates a Pair contract instance from a pair of
     /// (SFT)[https://github.com/gear-dapps/sharded-fungible-token]
@@ -100,6 +106,8 @@ pub enum Action {
 
 /// A result of successfully processed [`Action`].
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Event {
     /// Should be returned from [`Action::CreatePair`].
     PairCreated {
@@ -127,6 +135,8 @@ pub enum Event {
 
 /// Error variants of failed [`Action`].
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Error {
     /// See [`ContractError`].
     GstdError(String),
@@ -138,7 +148,7 @@ pub enum Error {
     IdenticalTokens,
     /// A pair contract with given SFT [`ActorId`]s already exist.
     PairExist,
-    PairCreationFailed(dex_pair_io::Error),
+    PairCreationFailed(dex_io::Error),
 }
 
 impl From<GstdError> for Error {
@@ -147,8 +157,8 @@ impl From<GstdError> for Error {
     }
 }
 
-impl From<dex_pair_io::Error> for Error {
-    fn from(error: dex_pair_io::Error) -> Self {
+impl From<dex_io::Error> for Error {
+    fn from(error: dex_io::Error) -> Self {
         Self::PairCreationFailed(error)
     }
 }

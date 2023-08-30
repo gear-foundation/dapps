@@ -1,0 +1,18 @@
+[package]
+name = "sharded-fungible-token-logic"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+sharded-fungible-token-logic-io.workspace = true
+sharded-fungible-token-io.workspace = true
+sharded-fungible-token-storage-io.workspace = true
+gear-lib-old.workspace = true
+primitive-types.workspace = true
+hex.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+sharded-fungible-token-logic-io.workspace = true

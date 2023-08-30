@@ -1,9 +1,9 @@
-use crate::contract::NFTPixelboard;
-use ft_main_io::{FTokenAction, FTokenEvent, LogicAction};
-use gear_lib::non_fungible_token::token::{TokenId, TokenMetadata};
+use super::NFTPixelboard;
+use gear_lib_old::non_fungible_token::token::{TokenId, TokenMetadata};
 use gstd::{msg, prelude::*, ActorId};
-use nft_io::{NFTAction, NFTEvent};
 use nft_pixelboard_io::*;
+use non_fungible_token_io::{NFTAction, NFTEvent};
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
 
 pub async fn transfer_ftokens(
     transaction_id: u64,

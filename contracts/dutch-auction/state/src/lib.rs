@@ -1,15 +1,11 @@
 #![no_std]
 
-use auction_io::{
-    auction::{AuctionInfo, Status},
-    io::AuctionMetadata,
-};
-use gmeta::{metawasm, Metadata};
+use dutch_auction_io::auction::*;
 use gstd::{exec, prelude::*};
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <AuctionMetadata as Metadata>::State;
+    pub type State = AuctionInfo;
 
     pub fn info(mut state: State) -> AuctionInfo {
         if matches!(state.status, Status::IsRunning) && exec::block_timestamp() >= state.expires_at

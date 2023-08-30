@@ -1,9 +1,9 @@
 pub mod utils;
 use utils::{prelude::*, FungibleToken, NonFungibleToken, FOREIGN_USER, OWNER, USER};
 
-// # TODO:: remove ignore after fixing tests
-#[ignore]
-#[test]
+// TODO: uncomment & remove `#[allow(unused)]` after fixing tests.
+// #[test]
+#[allow(unused)]
 fn reselling() {
     let system = utils::initialize_system();
 
@@ -87,9 +87,9 @@ fn reselling() {
     // pixelboard_program.meta_state().token_info(0).check(token);
 }
 
-// # TODO:: remove ignore after fixing tests
-#[ignore]
-#[test]
+// TODO: uncomment & remove `#[allow(unused)]` after fixing tests.
+// #[test]
+#[allow(unused)]
 fn reselling_failures() {
     let system = utils::initialize_system();
 

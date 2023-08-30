@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata};
+use gmeta::{InOut, Metadata, Out};
 use gstd::{errors::Error as GstdError, prelude::*, ActorId};
 
 pub struct ContractMetadata;
@@ -11,7 +11,7 @@ impl Metadata for ContractMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = State;
+    type State = Out<State>;
 }
 
 /// The maximum number of participants for one game round.
@@ -28,6 +28,8 @@ pub const MAX_NUMBER_OF_PLAYERS: usize = 2usize.pow(16);
 #[derive(
     Debug, Default, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash,
 )]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Initialize {
     /// [`ActorId`] of the game administrator that'll have the rights to
     /// [`Action::Start`] a game round and [`Action::PickWinner`].
@@ -36,6 +38,8 @@ pub struct Initialize {
 
 /// Sends the contract info about what it should do.
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Action {
     /// Starts a game round and allows to participate in it.
     ///
@@ -104,6 +108,8 @@ pub enum Action {
 
 /// A result of processed [`Action`].
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Event {
     /// Should be returned from [`Action::Start`].
     Started {
@@ -124,6 +130,8 @@ pub enum Event {
 
 /// Contract execution error variants.
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Error {
     /// [`msg::source()`](gstd::msg::source) isn't the administrator.
     AccessRestricted,
@@ -165,6 +173,8 @@ impl From<GstdError> for Error {
 
 /// The contract state.
 #[derive(Debug, Default, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct State {
     /// See [`Initialize`].
     pub admin: ActorId,

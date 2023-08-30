@@ -3,9 +3,9 @@ use gstd::ActorId;
 pub mod utils;
 use utils::{prelude::*, FungibleToken, NonFungibleToken, FOREIGN_USER};
 
-// # TODO:: remove ignore after fixing tests
-#[ignore]
-#[test]
+// TODO: uncomment & remove `#[allow(unused)]` after fixing tests.
+// #[test]
+#[allow(unused)]
 fn initialization_failures() {
     let system = utils::initialize_system();
 

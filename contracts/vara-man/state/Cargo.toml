@@ -1,14 +1,13 @@
 [package]
 name = "vara-man-state"
-version = "0.1.2"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47", features = ["codegen"] }
-vara-man-io = { path = "../io" }
+gstd.workspace = true
+gmeta = { workspace = true, features = ["codegen"] }
+vara-man-io.workspace = true
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47", features = ["metawasm"] }
+gear-wasm-builder = { workspace = true, features = ["metawasm"] }

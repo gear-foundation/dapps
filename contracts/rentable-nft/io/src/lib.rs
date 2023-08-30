@@ -1,14 +1,14 @@
 #![no_std]
 
-pub use gear_lib::non_fungible_token::delegated::DelegatedApproveMessage;
+pub use gear_lib_old::non_fungible_token::delegated::DelegatedApproveMessage;
 
-use gear_lib::non_fungible_token::{
+use gear_lib_old::non_fungible_token::{
     io::{NFTApproval, NFTTransfer, NFTTransferPayout},
     royalties::*,
     state::NFTState,
     token::*,
 };
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 use primitive_types::H256;
 
@@ -20,10 +20,12 @@ impl Metadata for NFTMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = IoNft;
+    type State = Out<IoNft>;
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum NFTAction {
     Mint {
         transaction_id: u64,
@@ -83,6 +85,8 @@ pub enum NFTAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitNft {
     pub name: String,
     pub symbol: String,
@@ -91,6 +95,8 @@ pub struct InitNft {
 }
 
 #[derive(Clone, Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum NFTEvent {
     Transfer(NFTTransfer),
     TransferPayout(NFTTransferPayout),
@@ -120,12 +126,16 @@ pub enum NFTEvent {
 }
 
 #[derive(Debug, Clone, Copy, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct UserInfo {
     pub address: ActorId, // address of user role
     pub expires: u64,     // unix timestamp
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct IoNft {
     pub token: IoNftState,
     pub token_id: TokenId,
@@ -135,6 +145,8 @@ pub struct IoNft {
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct IoNftState {
     pub name: String,
     pub symbol: String,

@@ -1,7 +1,7 @@
 #![no_std]
 
-use gear_lib::multitoken::io::*;
-use gmeta::{In, InOut, Metadata};
+use gear_lib_old::multitoken::io::*;
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub struct ContractMetadata;
@@ -12,10 +12,12 @@ impl Metadata for ContractMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = State;
+    type State = Out<State>;
 }
 
 #[derive(Debug, Default, PartialEq, Eq, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct State {
     pub owner_id: ActorId,
     pub contract_id: ActorId,
@@ -64,6 +66,8 @@ impl State {
 }
 
 #[derive(Debug, Default, Hash, PartialEq, Eq, PartialOrd, Ord, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct CurrentConcert {
     pub name: String,
     pub description: String,
@@ -74,6 +78,8 @@ pub struct CurrentConcert {
 
 // Concert related stuff
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ConcertAction {
     Create {
         creator: ActorId,
@@ -90,6 +96,8 @@ pub enum ConcertAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ConcertEvent {
     Creation {
         creator: ActorId,
@@ -107,6 +115,8 @@ pub enum ConcertEvent {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ConcertStateQuery {
     CurrentConcert,
     Buyers,
@@ -114,6 +124,8 @@ pub enum ConcertStateQuery {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum ConcertStateReply {
     CurrentConcert(CurrentConcert),
     Buyers(Vec<ActorId>),
@@ -121,6 +133,8 @@ pub enum ConcertStateReply {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct InitConcert {
     pub owner_id: ActorId,
     pub mtk_contract: ActorId,

@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 use primitive_types::U256;
 
@@ -12,10 +12,12 @@ impl Metadata for ContractMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = State;
+    type State = Out<State>;
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Hash, PartialEq, Eq, PartialOrd, Ord, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct State {
     pub transactions: Vec<(TransactionId, Transaction)>,
     pub confirmations: Vec<(TransactionId, Vec<ActorId>)>,
@@ -25,6 +27,8 @@ pub struct State {
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Hash, PartialEq, Eq, PartialOrd, Ord, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Transaction {
     pub destination: ActorId,
     pub payload: Vec<u8>,
@@ -36,6 +40,8 @@ pub struct Transaction {
 pub type TransactionId = U256;
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum MWAction {
     AddOwner(ActorId),
     RemoveOwner(ActorId),
@@ -56,6 +62,8 @@ pub enum MWAction {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum MWEvent {
     Confirmation {
         sender: ActorId,
@@ -85,6 +93,8 @@ pub enum MWEvent {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct MWInitConfig {
     pub owners: Vec<ActorId>,
     pub required: u32,

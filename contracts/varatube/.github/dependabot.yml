@@ -1,7 +1,0 @@
-version: 2
-updates:
-  - package-ecosystem: "cargo"
-    directory: "/"
-    labels: ["A4-insubstantial"]
-    schedule:
-      interval: "daily"

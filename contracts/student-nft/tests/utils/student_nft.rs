@@ -1,13 +1,10 @@
 use super::ADMIN;
 use gstd::prelude::*;
 use gtest::{Program, System};
-use student_nft_io::{
-    CourseId, EmoteAction, EmoteId, Lesson, LessonId, NftId, StudentNftAction, StudentNftEvent,
-    StudentNftInit, StudentNftState,
-};
+use student_nft_io::*;
 
 pub trait StudentNft {
-    fn student_nft(system: &System) -> Program;
+    fn student_nft(system: &System) -> Program<'_>;
     fn mint(&self, from: u64, error: bool);
     fn create_course(&self, from: u64, name: &str, description: &str, error: bool);
     fn start_course(&self, from: u64, course_id: CourseId, error: bool);
@@ -42,8 +39,8 @@ pub trait StudentNft {
 }
 
 impl StudentNft for Program<'_> {
-    fn student_nft(system: &System) -> Program {
-        let student_nft = Program::current(system);
+    fn student_nft(system: &System) -> Program<'_> {
+        let student_nft = Program::current_opt(system);
         assert!(!student_nft.send(ADMIN, StudentNftInit {}).main_failed());
 
         student_nft

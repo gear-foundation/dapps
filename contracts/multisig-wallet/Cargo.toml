@@ -2,13 +2,11 @@
 name = "multisig-wallet"
 version.workspace = true
 edition.workspace = true
-license.workspace = true
-authors.workspace = true
+publish.workspace = true
 
 [dependencies]
 gstd.workspace = true
 multisig-wallet-io.workspace = true
-hashbrown.workspace = true
 primitive-types.workspace = true
 
 [dev-dependencies]
@@ -18,23 +16,3 @@ gtest.workspace = true
 [build-dependencies]
 multisig-wallet-io.workspace = true
 gear-wasm-builder.workspace = true
-
-[workspace]
-members = ["state"]
-
-[workspace.package]
-version = "0.1.4"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
-
-[workspace.dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-scale-info = { version = "2", default-features = false }
-parity-scale-codec = { version = "3", default-features = false }
-primitive-types = { version = "0.12", default-features = false }
-multisig-wallet-io.path = "io"
-hashbrown = "0.14"

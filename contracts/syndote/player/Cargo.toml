@@ -1,9 +1,8 @@
 [package]
-name = "player"
+name = "syndote-player"
 version.workspace = true
 edition.workspace = true
-license.workspace = true
-authors.workspace = true
+publish.workspace = true
 
 [dependencies]
 gstd.workspace = true
@@ -11,4 +10,4 @@ syndote-io.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
-player-io.workspace = true
+syndote-player-io.workspace = true

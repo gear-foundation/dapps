@@ -1,17 +1,17 @@
-use auction_io::auction::{Action, CreateConfig, Duration, Error, Event};
-use gear_lib::non_fungible_token::{
+use dutch_auction_io::auction::*;
+use gear_lib_old::non_fungible_token::{
     io::NFTApproval,
     token::{TokenId, TokenMetadata},
 };
 use gstd::Encode;
 use gtest::{Log, Program, RunResult, System};
-use nft_io::{Constraints, InitNFT, NFTEvent};
+use non_fungible_token_io::{Constraints, InitNFT, NFTAction, NFTEvent};
 
 pub const USERS: &[u64] = &[4, 5, 6];
 #[allow(dead_code)]
 pub const DURATION: u32 = 169 * 60 * 60;
 
-pub fn init(sys: &System) -> Program {
+pub fn init(sys: &System) -> Program<'_> {
     USERS
         .iter()
         .for_each(|user| sys.mint_to(*user, 1_000_000_000));
@@ -19,7 +19,7 @@ pub fn init(sys: &System) -> Program {
 
     sys.init_logger();
 
-    let auction_program = Program::current(sys);
+    let auction_program = Program::current_opt(sys);
 
     auction_program.send(owner_user, ());
 
@@ -32,7 +32,7 @@ pub fn init(sys: &System) -> Program {
 
     assert!(result.contains(&(
         owner_user,
-        Ok::<auction_io::auction::Event, Error>(Event::AuctionStarted {
+        Ok::<Event, Error>(Event::AuctionStarted {
             token_owner: owner_user.into(),
             price: 1_000_000_000,
             token_id: 0.into(),
@@ -44,7 +44,10 @@ pub fn init(sys: &System) -> Program {
 }
 
 pub fn init_nft(sys: &System, owner: u64) {
-    let nft_program = Program::from_file(sys, "target/wasm32-unknown-unknown/debug/nft.opt.wasm");
+    let nft_program = Program::from_file(
+        sys,
+        "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm",
+    );
 
     let res = nft_program.send(
         owner,
@@ -62,7 +65,7 @@ pub fn init_nft(sys: &System, owner: u64) {
 
     let res = nft_program.send(
         owner,
-        nft_io::NFTAction::Mint {
+        NFTAction::Mint {
             token_metadata: TokenMetadata {
                 name: "MyNFT".to_string(),
                 description: "NFTForAuction".to_string(),
@@ -76,7 +79,7 @@ pub fn init_nft(sys: &System, owner: u64) {
     assert!(!res.main_failed());
 
     let res = nft_owner(&nft_program, owner, 0.into());
-    let log = Log::builder().dest(owner).payload(nft_io::NFTEvent::Owner {
+    let log = Log::builder().dest(owner).payload(NFTEvent::Owner {
         owner: owner.into(),
         token_id: 0.into(),
     });
@@ -84,7 +87,7 @@ pub fn init_nft(sys: &System, owner: u64) {
 
     let res = nft_program.send(
         owner,
-        nft_io::NFTAction::Approve {
+        NFTAction::Approve {
             to: 1.into(),
             token_id: 0.into(),
             transaction_id: 1u64,
@@ -97,14 +100,14 @@ pub fn init_nft(sys: &System, owner: u64) {
     };
     let log = Log::builder()
         .dest(owner)
-        .payload(nft_io::NFTEvent::Approval(approval));
+        .payload(NFTEvent::Approval(approval));
     assert!(!res.main_failed());
     println!("approve result = {:?}", res.decoded_log::<NFTEvent>());
     assert!(res.contains(&log));
 }
 
 pub fn update_auction(
-    auction: &Program,
+    auction: &Program<'_>,
     from: u64,
     nft_contract_id: u64,
     starting_price: u128,
@@ -126,6 +129,6 @@ pub fn update_auction(
 }
 
 #[allow(dead_code)]
-pub fn nft_owner(nft_program: &Program, from: u64, token_id: TokenId) -> RunResult {
-    nft_program.send(from, nft_io::NFTAction::Owner { token_id })
+pub fn nft_owner(nft_program: &Program<'_>, from: u64, token_id: TokenId) -> RunResult {
+    nft_program.send(from, NFTAction::Owner { token_id })
 }

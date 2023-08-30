@@ -1,5 +1,9 @@
-use gstd::{exec, prelude::*, ActorId};
-use hashbrown::HashMap;
+use gstd::{
+    collections::{BTreeMap, HashMap},
+    exec,
+    prelude::*,
+    ActorId,
+};
 use supply_chain_io::*;
 
 const MAX_NUMBER_OF_TXS: usize = 2usize.pow(16);
@@ -29,7 +33,7 @@ impl<T: PartialEq + Clone> TransactionManager<T> {
         msg_source: ActorId,
         check_action: T,
         timestamp: u64,
-    ) -> Result<TransactionGuard<T>, TransactionCacheError> {
+    ) -> Result<TransactionGuard<'_, T>, TransactionCacheError> {
         let (tx_id, timestamp) = match kind {
             TransactionKind::New => {
                 let id = self.tx_id_nonce;
@@ -90,7 +94,7 @@ impl<T: PartialEq + Clone> TransactionManager<T> {
         kind: TransactionKind,
         msg_source: ActorId,
         check_action: T,
-    ) -> Result<TransactionGuard<T>, TransactionCacheError> {
+    ) -> Result<TransactionGuard<'_, T>, TransactionCacheError> {
         Self::inner_asquire_transaction(self, kind, msg_source, check_action, 0)
     }
 
@@ -99,7 +103,7 @@ impl<T: PartialEq + Clone> TransactionManager<T> {
         kind: TransactionKind,
         msg_source: ActorId,
         check_action: T,
-    ) -> Result<TransactionGuard<T>, TransactionCacheError> {
+    ) -> Result<TransactionGuard<'_, T>, TransactionCacheError> {
         Self::inner_asquire_transaction(
             self,
             kind,

@@ -1,9 +1,9 @@
 image: gitpod/workspace-rust
 tasks:
   - init: |
-      sudo apt update && sudo apt upgrade -y
+      sudo apt update
       sudo apt install cmake binaryen -y
-      [ $DAPP ] && gp open $DAPP/src/lib.rs
+      [ $DAPP ] && gp open contracts/$DAPP/src/lib.rs
       clear
 vscode:
   extensions:

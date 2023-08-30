@@ -1,29 +1,20 @@
 #![no_std]
+
 use gstd::{exec, msg, prelude::*, ActorId};
-use tmg_io::*;
+use tamagotchi_io::*;
 
-pub const HUNGER_PER_BLOCK: u64 = 1;
-pub const BOREDOM_PER_BLOCK: u64 = 2;
-pub const ENERGY_PER_BLOCK: u64 = 2;
-
-pub const FILL_PER_FEED: u64 = 2_000;
-pub const FILL_PER_ENTERTAINMENT: u64 = 2_000;
-pub const FILL_PER_SLEEP: u64 = 2_000;
-
-pub const MAX_VALUE: u64 = 10_000;
-
-#[derive(Default, Encode, Decode, TypeInfo)]
-pub struct Tamagotchi {
-    pub name: String,
-    pub date_of_birth: u64,
-    pub owner: ActorId,
-    pub fed: u64,
-    pub fed_block: u64,
-    pub entertained: u64,
-    pub entertained_block: u64,
-    pub rested: u64,
-    pub rested_block: u64,
-    pub allowed_account: Option<ActorId>,
+#[derive(Default, Clone)]
+struct Tamagotchi {
+    name: String,
+    date_of_birth: u64,
+    owner: ActorId,
+    fed: u64,
+    fed_block: u64,
+    entertained: u64,
+    entertained_block: u64,
+    rested: u64,
+    rested_block: u64,
+    allowed_account: Option<ActorId>,
 }
 
 static mut TAMAGOTCHI: Option<Tamagotchi> = None;
@@ -98,7 +89,7 @@ impl Tamagotchi {
 }
 
 #[no_mangle]
-extern "C" fn handle() {
+extern fn handle() {
     let action: TmgAction = msg::load().expect("Unable to decode `TmgAction`");
     let tmg = unsafe { TAMAGOTCHI.get_or_insert(Default::default()) };
     match action {
@@ -120,7 +111,7 @@ extern "C" fn handle() {
 }
 
 #[no_mangle]
-unsafe extern "C" fn init() {
+unsafe extern fn init() {
     let name: String = msg::load().expect("Failed to decode Tamagotchi name");
     // // ⚠️ TODO: Change the tamagotchi name
     // let name = String::from("Best-Tamagotchi");
@@ -142,18 +133,25 @@ unsafe extern "C" fn init() {
     TAMAGOTCHI = Some(tmg);
 }
 
-#[derive(Encode, Decode, TypeInfo)]
-pub struct TmgState {
-    name: String,
-    fed: u64,
-    entertained: u64,
-    rested: u64,
-    age: u64,
-    is_dead: bool,
+#[no_mangle]
+extern fn state() {
+    let tmg = unsafe { TAMAGOTCHI.get_or_insert(Default::default()) };
+    msg::reply(tamagotchi_io::Tamagotchi::from(tmg.clone()), 0).expect("Failed to share state");
 }
 
-#[no_mangle]
-extern "C" fn state() {
-    let tmg = unsafe { TAMAGOTCHI.get_or_insert(Default::default()) };
-    msg::reply(tmg, 0).expect("Failed to share state");
+impl From<Tamagotchi> for tamagotchi_io::Tamagotchi {
+    fn from(value: Tamagotchi) -> Self {
+        Self {
+            name: value.name,
+            date_of_birth: value.date_of_birth,
+            owner: value.owner,
+            fed: value.fed,
+            fed_block: value.fed_block,
+            entertained: value.entertained,
+            entertained_block: value.entertained_block,
+            rested: value.rested,
+            rested_block: value.rested_block,
+            allowed_account: value.allowed_account,
+        }
+    }
 }

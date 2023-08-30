@@ -1,13 +1,17 @@
 #![no_std]
 
-use ft_main_io::{FTokenAction, FTokenEvent, LogicAction};
 use game_of_chance_io::*;
-use gstd::{errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId};
-use hashbrown::HashMap;
+use gstd::{
+    collections::{BTreeMap, HashMap},
+    errors::Result as GstdResult,
+    exec, msg,
+    prelude::*,
+    ActorId, MessageId,
+};
 use rand::{RngCore, SeedableRng};
 use rand_xoshiro::Xoshiro128PlusPlus;
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
 
-#[cfg(feature = "binary-vendor")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 const MAX_NUMBER_OF_TXS: usize = 2usize.pow(16);
@@ -245,7 +249,7 @@ fn send_value(program: ActorId, value: u128) -> GstdResult<MessageId> {
 }
 
 #[no_mangle]
-extern "C" fn init() {
+extern fn init() {
     let result = process_init();
     let is_err = result.is_err();
 
@@ -302,7 +306,7 @@ fn state_mut() -> &'static mut Contract {
 }
 
 #[no_mangle]
-extern "C" fn state() {
+extern fn state() {
     let Contract {
         admin,
         fungible_token,

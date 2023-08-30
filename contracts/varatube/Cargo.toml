@@ -2,46 +2,21 @@
 name = "varatube"
 version.workspace = true
 edition.workspace = true
-license.workspace = true
-authors.workspace = true
-
-[workspace.package]
-version = "0.1.2"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
-
-# TODO [release] Add fields as it's done in gear-dapps
+publish.workspace = true
 
 [dependencies]
 varatube-io.workspace = true
-ft-io.workspace = true
-gstd = { workspace = true, features = ["debug"] }
-gmeta.workspace = true
+fungible-token-io.workspace = true
+gstd.workspace = true
 
 [dev-dependencies]
-gstd = { workspace = true }
 varatube-io.workspace = true
-ft-io.workspace = true
+fungible-token-io.workspace = true
 gtest.workspace = true
+
+# External binaries
 fungible-token.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
 varatube-io.workspace = true
-gmeta.workspace = true
-
-[workspace.dependencies]
-varatube-io = { path = "io" }
-ft-io = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.8" }
-fungible-token = { git = "https://github.com/gear-dapps/fungible-token.git", tag = "0.1.8" }
-gstd = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear.git", rev = "946ac47" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-
-[workspace]
-members = ["state"]
-
-[features]
-binary-vendor = []

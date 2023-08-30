@@ -1,85 +1,24 @@
-<p align="center">
-  <a href="https://gitpod.io/#https://github.com/gear-foundation/dapps-game-of-chance" target="_blank">
-    <img src="https://gitpod.io/button/open-in-gitpod.svg" width="240" alt="Gitpod">
-  </a>
-</p>
+[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=game-of-chance/https://github.com/gear-foundation/dapps)
+[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-docs.yml?logo=rust&label=docs)](https://dapps.gear.rs/game_of_chance_io)
 
-# Game of chance
+# [Game of chance](https://wiki.gear-tech.io/docs/examples/game-of-chance)
 
-[![Build][build_badge]][build_href]
-[![License][lic_badge]][lic_href]
-[![Docs][docs_badge]][docs_href]
+### 🏗️ Building
 
-[build_badge]: https://github.com/gear-foundation/dapps-game-of-chance/workflows/Build/badge.svg
-[build_href]: https://github.com/gear-foundation/dapps-game-of-chance/actions/workflows/build.yml
-
-[lic_badge]: https://img.shields.io/badge/License-MIT-success
-[lic_href]: https://github.com/gear-foundation/dapps-game-of-chance/blob/master/LICENSE
-
-[docs_badge]: https://img.shields.io/badge/docs-online-5023dd
-[docs_href]: https://dapp.rs/dapps-game-of-chance
-
-## Prebuilt Binaries
-
-Raw, optimized, and meta WASM binaries can be found in the [Releases section](https://github.com/gear-foundation/dapps-game-of-chance/releases).
-
-## Building Locally
-
-### ⚙️ Install Rust
-
-```shell
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+```sh
+cargo b -p "game-of-chance*"
 ```
 
-### ⚒️ Add specific toolchains
+### ✅ Testing
 
-```shell
-rustup toolchain add nightly
-rustup target add wasm32-unknown-unknown --toolchain nightly
+Run only `gtest` tests:
+```sh
+cargo t -p "game-of-chance*"
 ```
 
-... or ...
-
-```shell
-make init
+Run `gtest` & `gclient` tests:
+```sh
+# Download the node binary.
+cargo xtask node
+cargo t -p "game-of-chance*" -- --include-ignored
 ```
-
-### 🏗️ Build
-
-```shell
-cargo build --release
-```
-
-... or ...
-
-```shell
-make build
-```
-
-### ✅ Run tests
-
-```shell
-cargo test --release
-```
-
-... or ...
-
-```shell
-make test
-```
-
-### 🚀 Run everything with one command
-
-```shell
-make all
-```
-
-... or just ...
-
-```shell
-make
-```
-
-## License
-
-The source code is licensed under the [MIT license](LICENSE).

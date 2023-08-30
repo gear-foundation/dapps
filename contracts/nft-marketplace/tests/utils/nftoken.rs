@@ -1,22 +1,24 @@
 use super::{prelude::*, MetaStateReply};
-use gear_lib::non_fungible_token::{io::*, token::Token};
+use gear_lib_old::non_fungible_token::{io::*, token::Token};
 use gstd::ActorId;
 use gtest::{Log, Program as InnerProgram, System};
-use market_io::*;
-use nft_io::{Collection, Constraints, InitNFT, NFTAction, NFTEvent};
+use nft_marketplace_io::*;
+use non_fungible_token_io::{Collection, Constraints, InitNFT, NFTAction, NFTEvent};
 
 pub struct NonFungibleToken<'a>(InnerProgram<'a>);
 
 impl Program for NonFungibleToken<'_> {
-    fn inner_program(&self) -> &InnerProgram {
+    fn inner_program(&self) -> &InnerProgram<'_> {
         &self.0
     }
 }
 
 impl<'a> NonFungibleToken<'a> {
     pub fn initialize(system: &'a System) -> Self {
-        let program =
-            InnerProgram::from_file(system, "./target/wasm32-unknown-unknown/debug/nft.wasm");
+        let program = InnerProgram::from_file(
+            system,
+            "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm",
+        );
 
         assert!(!program
             .send(
@@ -85,7 +87,7 @@ impl<'a> NonFungibleToken<'a> {
             }))));
     }
 
-    pub fn meta_state(&self) -> NonFungibleTokenMetaState {
+    pub fn meta_state(&self) -> NonFungibleTokenMetaState<'_> {
         NonFungibleTokenMetaState(&self.0)
     }
 }

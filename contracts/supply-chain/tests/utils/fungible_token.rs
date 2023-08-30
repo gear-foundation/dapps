@@ -1,13 +1,13 @@
 use super::{Program, RunResult, TransactionalProgram, FOREIGN_USER};
-use deploy::{FT_LOGIC, FT_MAIN, FT_STORAGE};
-use ft_main_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use gstd::{prelude::*, ActorId};
 use gtest::{Log, Program as InnerProgram, RunResult as InnerRunResult, System};
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
+use supply_chain_deploy::{FT_LOGIC, FT_MAIN, FT_STORAGE};
 
 pub struct FungibleToken<'a>(InnerProgram<'a>, u64);
 
 impl Program for FungibleToken<'_> {
-    fn inner_program(&self) -> &InnerProgram {
+    fn inner_program(&self) -> &InnerProgram<'_> {
         &self.0
     }
 }
