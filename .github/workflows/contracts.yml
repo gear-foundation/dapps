@@ -1,0 +1,14 @@
+name: Contracts CI
+
+jobs:
+  all:
+    name: All
+    steps:
+      - name: Format
+        run: |
+          cd contracts
+          cargo fmt --all --check
+      - name: Clippy
+        run: cargo clippy --all-targets -- -Dwarnings
+      - name: Tests
+        run: cargo t --all-targets -- --include-ignored
