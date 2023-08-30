@@ -1,5 +1,11 @@
 name: Contracts CI
 
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
 jobs:
   all:
     name: All
