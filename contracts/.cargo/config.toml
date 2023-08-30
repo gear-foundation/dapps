@@ -1,0 +1,2 @@
+[alias]
+xtask = "r -p xtask --"
