@@ -11,11 +11,16 @@ jobs:
     name: All
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
       - name: Format
         run: |
           cd contracts
           cargo fmt --all --check
+
       - name: Clippy
         run: cargo clippy --all-targets -- -Dwarnings
+
       - name: Tests
         run: cargo t --all-targets -- --include-ignored
