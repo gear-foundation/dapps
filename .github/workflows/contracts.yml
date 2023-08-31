@@ -12,7 +12,8 @@ env:
 jobs:
   all:
     name: All
-    runs-on: ubuntu-latest
+    runs-on: 
+      labels: Ubuntu_Large_1
     defaults:
       run:
         working-directory: contracts
