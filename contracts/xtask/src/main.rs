@@ -13,7 +13,7 @@ fn main() -> Result<()> {
     match command.as_str() {
         "node" => xshell::cmd!(
             shell,
-            "bash -c 'curl -L https://get.gear.rs/vara-testnet-x86_64-unknown-linux-gnu.tar.xz -o - | tar xJ -C '{man}'/../target/tmp'"
+            "bash -c 'curl -L https://get.gear.rs/gear-v0.3.2-x86_64-unknown-linux-gnu.tar.xz -o - | tar xJ -C '{man}'/../target/tmp'"
         ).quiet()
         .run()
         .map_err(Into::into),
