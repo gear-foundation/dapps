@@ -17,6 +17,11 @@ jobs:
       run:
         working-directory: contracts
     steps:
+      - name: Install GCC
+        run: |
+          sudo apt update
+          sudo apt install gcc
+
       - name: Checkout
         uses: actions/checkout@v3
 
