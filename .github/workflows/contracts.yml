@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Install GCC
         run: |
-          dnf install gcc
+          sudo dnf install gcc
 
       - name: Checkout
         uses: actions/checkout@v3
