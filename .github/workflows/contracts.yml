@@ -12,15 +12,11 @@ env:
 jobs:
   all:
     name: All
-    runs-on: self-hosted
+    runs-on: Ubuntu_Large_1
     defaults:
       run:
         working-directory: contracts
     steps:
-      - name: Install software
-        run: |
-          sudo dnf install gcc-c++ rustup -y
-
       - name: Checkout
         uses: actions/checkout@v3
 
