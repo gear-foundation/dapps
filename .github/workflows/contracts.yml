@@ -21,12 +21,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: "Install: Set cargo path"
-        run: echo "/tmp/cargo/bin" >> $GITHUB_PATH
+      - run: |
+          : install rustup if needed
+          if ! command -v rustup &>/dev/null; then
+            curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused -fsSL "https://sh.rustup.rs" | sh -s -- --default-toolchain none -y
+            source "${CARGO_HOME:-$HOME/.cargo}/env"
+            echo "${CARGO_HOME:-$HOME/.cargo}/bin" >> $GITHUB_PATH
+            rustup show active-toolchain
+          fi
+        if: runner.os != 'Windows'
+        shell: bash
 
-      - name: "Install: Rust toolchain"
-        uses: dsherret/rust-toolchain-file@v1
-        
       - name: Format
         run: cargo fmt --all --check
 
