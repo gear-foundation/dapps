@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId, Decode, Encode, TypeInfo};
 
 pub struct DaoLightMetadata;
@@ -11,7 +11,7 @@ impl Metadata for DaoLightMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = DaoState;
+    type State = Out<DaoState>;
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]

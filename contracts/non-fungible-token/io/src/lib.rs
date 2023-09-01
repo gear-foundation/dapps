@@ -6,7 +6,7 @@ use gear_lib_old::non_fungible_token::{
     state::NFTState,
     token::*,
 };
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub use gear_lib_old::non_fungible_token::delegated::DelegatedApproveMessage;
@@ -45,7 +45,7 @@ impl Metadata for NFTMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = IoNFT;
+    type State = Out<IoNFT>;
 }
 
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]

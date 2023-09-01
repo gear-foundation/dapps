@@ -4,7 +4,7 @@ use sharded_fungible_token_io::*;
 use sp_core::sr25519::Signature;
 
 pub trait FToken {
-    fn ftoken(system: &System) -> Program;
+    fn ftoken(system: &System) -> Program<'_>;
     fn mint(&self, transaction_id: u64, from: u64, account: u64, amount: u128, error: bool);
     fn check_balance(&self, account: impl Into<ActorId>, expected_amount: u128);
     fn check_permit_id(&self, account: [u8; 32], expected_permit_id: u128);
@@ -45,7 +45,7 @@ pub trait FToken {
 const HARDCODED_ACCOUNT: u64 = 100;
 
 impl FToken for Program<'_> {
-    fn ftoken(system: &System) -> Program {
+    fn ftoken(system: &System) -> Program<'_> {
         let ftoken = Program::current_opt(system);
         let storage_code_hash: [u8; 32] = system
             .submit_code(

@@ -1,9 +1,9 @@
 #![no_std]
 
 use fungible_token_io::*;
-use gmeta::Metadata;
-use gstd::{errors::Result as GstdResult, msg, prelude::*, ActorId, MessageId};
-use hashbrown::HashMap;
+use gstd::{
+    collections::HashMap, errors::Result as GstdResult, msg, prelude::*, ActorId, MessageId,
+};
 
 #[cfg(test)]
 mod tests;
@@ -136,7 +136,7 @@ impl FungibleToken {
     }
 }
 
-fn common_state() -> <FungibleTokenMetadata as Metadata>::State {
+fn common_state() -> IoFungibleToken {
     let state = static_mut_state();
     let FungibleToken {
         name,

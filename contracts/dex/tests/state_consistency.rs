@@ -129,7 +129,7 @@ async fn send_message_with_custom_limit<T: Decode>(
     println!("Modified gas limit: {modified_gas_limit}.");
 
     let (message_id, _) = client
-        .send_message(destination, payload, modified_gas_limit, 0)
+        .send_message(destination, payload, modified_gas_limit, 0, false)
         .await?;
 
     println!("Sending completed.");

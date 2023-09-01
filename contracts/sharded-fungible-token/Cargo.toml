@@ -8,16 +8,15 @@ publish.workspace = true
 gstd.workspace = true
 sharded-fungible-token-io.workspace = true
 sharded-fungible-token-logic-io.workspace = true
-hashbrown.workspace = true
 primitive-types.workspace = true
 sp-core-hashing.workspace = true
 
 [dev-dependencies]
 gtest.workspace = true
 gstd = { workspace = true, features = ["debug"] }
-light_sr25519.workspace = true
 sp-core.workspace = true
 hex-literal.workspace = true
+gear-lib-old.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true

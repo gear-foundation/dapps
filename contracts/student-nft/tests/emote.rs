@@ -2,7 +2,7 @@ mod utils;
 
 use gstd::prelude::*;
 use gtest::{Program, System};
-use student_nft_io::EmoteAction;
+use student_nft_io::*;
 use utils::student_nft::StudentNft;
 
 #[test]

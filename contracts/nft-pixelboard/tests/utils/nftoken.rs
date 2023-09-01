@@ -8,7 +8,7 @@ use std::fs;
 pub struct NonFungibleToken<'a>(InnerProgram<'a>, u64);
 
 impl Program for NonFungibleToken<'_> {
-    fn inner_program(&self) -> &InnerProgram {
+    fn inner_program(&self) -> &InnerProgram<'_> {
         &self.0
     }
 }
@@ -34,7 +34,7 @@ impl<'a> NonFungibleToken<'a> {
         Self(program, 0)
     }
 
-    pub fn meta_state(&self) -> NonFungibleTokenMetaState {
+    pub fn meta_state(&self) -> NonFungibleTokenMetaState<'_> {
         NonFungibleTokenMetaState(&self.0)
     }
 }

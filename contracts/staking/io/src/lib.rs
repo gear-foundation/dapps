@@ -1,7 +1,7 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
-use gstd::{errors::Error as GstdError, prelude::*, ActorId};
+use gmeta::{In, InOut, Metadata, Out};
+use gstd::{collections::BTreeMap, errors::Error as GstdError, prelude::*, ActorId};
 
 pub type TransactionId = u64;
 
@@ -13,7 +13,7 @@ impl Metadata for StakingMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = IoStaking;
+    type State = Out<IoStaking>;
 }
 
 #[derive(Debug, Clone, Decode, Encode, TypeInfo, PartialEq, Eq)]

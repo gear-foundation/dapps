@@ -21,7 +21,7 @@ fn init_staking(sys: &System) {
     assert!(res.contains(&(4, Ok::<StakingEvent, Error>(StakingEvent::Updated).encode())));
 }
 
-fn init_staking_token(sys: &System) -> FungibleToken {
+fn init_staking_token(sys: &System) -> FungibleToken<'_> {
     let mut st_token = FungibleToken::initialize(sys);
 
     st_token.mint(1, 100000);

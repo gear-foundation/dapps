@@ -1,5 +1,5 @@
 use crowdsale::WASM_BINARY_OPT;
-use crowdsale_io::IcoInit;
+use crowdsale_io::*;
 use gclient::{EventProcessor, GearApi, Result};
 use gstd::{ActorId, Encode};
 

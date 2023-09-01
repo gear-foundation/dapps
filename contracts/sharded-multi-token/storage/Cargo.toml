@@ -8,7 +8,6 @@ publish.workspace = true
 gstd.workspace = true
 sharded-multi-token-storage-io.workspace = true
 primitive-types.workspace = true
-hashbrown.workspace = true
 
 [build-dependencies]
 sharded-multi-token-storage-io.workspace = true

@@ -8,7 +8,6 @@ publish.workspace = true
 gstd.workspace = true
 rmrk-io.workspace = true
 rmrk-catalog-io.workspace = true
-hashbrown.workspace = true
 primitive-types.workspace = true
 rmrk-types.workspace = true
 

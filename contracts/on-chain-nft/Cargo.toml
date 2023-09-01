@@ -9,7 +9,6 @@ gstd.workspace = true
 primitive-types.workspace = true
 gear-lib-old.workspace = true
 gear-lib-derive.workspace = true
-hashbrown.workspace = true
 on-chain-nft-io.workspace = true
 gmeta.workspace = true
 

@@ -1,6 +1,5 @@
-use gstd::{ActorId, Encode};
+use gstd::{collections::HashMap, ActorId, Encode};
 use gtest::{Program, System};
-use hashbrown::HashMap;
 use staking_io::*;
 mod utils;
 use utils::{FungibleToken, PROGRAMS};
@@ -35,7 +34,7 @@ fn init_staking(sys: &System) {
     assert!(res.contains(&(4, Ok::<StakingEvent, Error>(StakingEvent::Updated).encode())));
 }
 
-fn init_staking_token(sys: &System) -> FungibleToken {
+fn init_staking_token(sys: &System) -> FungibleToken<'_> {
     let mut st_token = FungibleToken::initialize(sys);
 
     st_token.mint(1, 100000);
@@ -59,7 +58,7 @@ fn init_staking_token(sys: &System) -> FungibleToken {
     st_token
 }
 
-fn init_reward_token(sys: &System) -> FungibleToken {
+fn init_reward_token(sys: &System) -> FungibleToken<'_> {
     let mut rw_token = FungibleToken::initialize(sys);
 
     rw_token.mint(1, 100000);

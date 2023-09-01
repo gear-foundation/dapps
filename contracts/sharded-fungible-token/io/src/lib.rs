@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 use primitive_types::{H256, H512};
 
@@ -12,7 +12,7 @@ impl Metadata for FMainTokenMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = FTokenState;
+    type State = Out<FTokenState>;
 }
 
 #[derive(Default, Encode, Decode, TypeInfo, Debug)]

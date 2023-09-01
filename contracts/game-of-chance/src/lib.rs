@@ -1,8 +1,13 @@
 #![no_std]
 
 use game_of_chance_io::*;
-use gstd::{errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId};
-use hashbrown::HashMap;
+use gstd::{
+    collections::{BTreeMap, HashMap},
+    errors::Result as GstdResult,
+    exec, msg,
+    prelude::*,
+    ActorId, MessageId,
+};
 use rand::{RngCore, SeedableRng};
 use rand_xoshiro::Xoshiro128PlusPlus;
 use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};

@@ -1,4 +1,4 @@
-use escrow_io::{EscrowAction, InitEscrow};
+use escrow_io::*;
 use gclient::{EventProcessor, GearApi, Result};
 use gstd::Encode;
 

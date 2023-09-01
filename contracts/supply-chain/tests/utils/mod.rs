@@ -1,7 +1,10 @@
 use common::{InitResult, Program, RunResult, StateReply, TransactionalProgram};
-use gstd::{prelude::*, ActorId};
+use gstd::{
+    collections::{HashMap, HashSet},
+    prelude::*,
+    ActorId,
+};
 use gtest::{Program as InnerProgram, System, EXISTENTIAL_DEPOSIT};
-use hashbrown::{HashMap, HashSet};
 use supply_chain_io::*;
 use supply_chain_state::{WASM_BINARY, WASM_EXPORTS};
 
@@ -25,7 +28,7 @@ type SupplyChainRunResult<T> = RunResult<T, Event, Error>;
 pub struct SupplyChain<'a>(InnerProgram<'a>);
 
 impl Program for SupplyChain<'_> {
-    fn inner_program(&self) -> &InnerProgram {
+    fn inner_program(&self) -> &InnerProgram<'_> {
         &self.0
     }
 }
@@ -81,7 +84,7 @@ impl<'a> SupplyChain<'a> {
         InitResult::new(Self(program), result, is_active)
     }
 
-    pub fn state(&self) -> SupplyChainState {
+    pub fn state(&self) -> SupplyChainState<'_> {
         SupplyChainState(&self.0)
     }
 

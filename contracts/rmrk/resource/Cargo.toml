@@ -8,7 +8,6 @@ publish.workspace = true
 gstd.workspace = true
 rmrk-resource-io.workspace = true
 rmrk-catalog-io.workspace = true
-hashbrown.workspace = true
 rmrk-types.workspace = true
 
 [build-dependencies]

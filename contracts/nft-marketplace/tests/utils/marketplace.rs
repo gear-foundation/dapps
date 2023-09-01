@@ -6,7 +6,7 @@ use nft_marketplace_io::*;
 pub struct Market<'a>(InnerProgram<'a>);
 
 impl Program for Market<'_> {
-    fn inner_program(&self) -> &InnerProgram {
+    fn inner_program(&self) -> &InnerProgram<'_> {
         &self.0
     }
 }
@@ -26,7 +26,7 @@ impl<'a> Market<'a> {
         .succeed()
     }
 
-    pub fn initialize_custom(system: &System, config: InitMarket) -> MarketInit {
+    pub fn initialize_custom(system: &System, config: InitMarket) -> MarketInit<'_> {
         let program = InnerProgram::current_opt(system);
 
         let failed = program.send(ADMIN, config).main_failed();
@@ -34,7 +34,7 @@ impl<'a> Market<'a> {
         MarketInit(program, failed)
     }
 
-    pub fn meta_state(&self) -> MarketMetaState {
+    pub fn meta_state(&self) -> MarketMetaState<'_> {
         MarketMetaState(&self.0)
     }
 

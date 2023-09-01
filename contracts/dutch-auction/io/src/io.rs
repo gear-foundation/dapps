@@ -1,4 +1,4 @@
-use gmeta::{InOut, Metadata};
+use gmeta::{InOut, Metadata, Out};
 
 use crate::auction::{Action, AuctionInfo, Error, Event};
 
@@ -10,5 +10,5 @@ impl Metadata for AuctionMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = AuctionInfo;
+    type State = Out<AuctionInfo>;
 }

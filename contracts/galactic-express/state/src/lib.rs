@@ -1,10 +1,9 @@
 #![no_std]
 
 use galactic_express_io::*;
-use gmeta::metawasm;
 use gstd::prelude::*;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
     pub type State = LaunchSite;
 

@@ -4,7 +4,7 @@ use crate::{
     {MarketHandler, BASE_PERCENT, MINIMUM_VALUE},
 };
 use gstd::{exec, msg, prelude::*, ActorId};
-use nft_marketplace_io::{Market, MarketEvent, *};
+use nft_marketplace_io::*;
 
 const MIN_BID_PERIOD: u64 = 60_000;
 

@@ -1,8 +1,12 @@
 #![no_std]
 
 use codec::{Decode, Encode};
-use gmeta::{In, InOut, Metadata};
-use gstd::{prelude::*, ActorId};
+use gmeta::{In, InOut, Metadata, Out};
+use gstd::{
+    collections::{BTreeMap, BTreeSet},
+    prelude::*,
+    ActorId,
+};
 
 pub struct ProgramMetadata;
 
@@ -12,7 +16,7 @@ impl Metadata for ProgramMetadata {
     type Reply = InOut<(), ()>;
     type Others = InOut<(), ()>;
     type Signal = ();
-    type State = LaunchSite;
+    type State = Out<LaunchSite>;
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]

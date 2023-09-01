@@ -1,8 +1,7 @@
 #![no_std]
 
-use gstd::{msg, prelude::*, ActorId};
-use hashbrown::HashMap;
-use rmrk_catalog_io::*;
+use gstd::{collections::HashMap, msg, prelude::*, ActorId};
+use rmrk_catalog_io::{CatalogAction, CatalogReply};
 use rmrk_resource_io::*;
 use rmrk_types::primitives::{PartId, ResourceId};
 

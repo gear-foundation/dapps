@@ -1,7 +1,7 @@
 #![no_std]
 
 use codec::{Decode, Encode};
-use gmeta::{InOut, Metadata};
+use gmeta::{InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId, Clone, Vec};
 use scale_info::TypeInfo;
 
@@ -13,7 +13,7 @@ impl Metadata for ContractMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = Vec<DnsRecord>;
+    type State = Out<Vec<DnsRecord>>;
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone)]

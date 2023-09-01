@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata};
+use gmeta::{InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 use primitive_types::H256;
 
@@ -12,7 +12,7 @@ impl Metadata for FTStorageMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = FTStorageState;
+    type State = Out<FTStorageState>;
 }
 
 #[derive(Default, Encode, Decode, TypeInfo, Debug)]

@@ -1,6 +1,5 @@
-use gstd::{prelude::*, ActorId};
+use gstd::{collections::HashSet, prelude::*, ActorId};
 use gtest::{Program, System};
-use hashbrown::HashSet;
 use primitive_types::U256;
 use rmrk_io::*;
 use rmrk_state::WASM_BINARY;
@@ -14,7 +13,7 @@ pub const CHILD_NFT_CONTRACT: u64 = 1;
 //pub const CATALOG_ID: u64 = 3;
 
 pub trait RMRKToken {
-    fn rmrk(sys: &System, resource_hash: Option<[u8; 32]>) -> Program;
+    fn rmrk(sys: &System, resource_hash: Option<[u8; 32]>) -> Program<'_>;
     fn mint_to_root_owner(
         &self,
         user: u64,
@@ -81,7 +80,7 @@ pub trait RMRKToken {
 }
 
 impl RMRKToken for Program<'_> {
-    fn rmrk(sys: &System, resource_hash: Option<[u8; 32]>) -> Program {
+    fn rmrk(sys: &System, resource_hash: Option<[u8; 32]>) -> Program<'_> {
         let rmrk = Program::current_opt(sys);
         let res = rmrk.send(
             USERS[0],
@@ -367,8 +366,8 @@ impl RMRKToken for Program<'_> {
 }
 
 pub fn mint_parent_and_child(
-    rmrk_child: &Program,
-    rmrk_parent: &Program,
+    rmrk_child: &Program<'_>,
+    rmrk_parent: &Program<'_>,
     child_token_id: u64,
     parent_token_id: u64,
 ) {
@@ -386,8 +385,8 @@ pub fn mint_parent_and_child(
 }
 
 pub fn mint_parent_and_child_with_acceptance(
-    rmrk_child: &Program,
-    rmrk_parent: &Program,
+    rmrk_child: &Program<'_>,
+    rmrk_parent: &Program<'_>,
     child_token_id: u64,
     parent_token_id: u64,
 ) {
@@ -404,9 +403,9 @@ pub fn mint_parent_and_child_with_acceptance(
 
 // ownership chain is  USERS[0] > parent_token_id > child_token_id > grand_token_id
 pub fn rmrk_chain(
-    rmrk_grand: &Program,
-    rmrk_child: &Program,
-    rmrk_parent: &Program,
+    rmrk_grand: &Program<'_>,
+    rmrk_child: &Program<'_>,
+    rmrk_parent: &Program<'_>,
     grand_token_id: u64,
     child_token_id: u64,
     parent_token_id: u64,

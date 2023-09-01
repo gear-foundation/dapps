@@ -2,7 +2,7 @@ use super::vara_man;
 use blake2_rfc::blake2b;
 use gclient::{Error as GclientError, GearApi};
 use gstd::{prelude::*, ActorId};
-use vara_man_io::Config;
+use vara_man_io::*;
 
 pub const HASH_LENGTH: usize = 32;
 pub type Hash = [u8; HASH_LENGTH];

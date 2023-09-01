@@ -1,12 +1,11 @@
 #![no_std]
 
-use gmeta::{metawasm, Metadata};
 use gstd::prelude::*;
 use nft_marketplace_io::*;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <MarketMetadata as Metadata>::State;
+    pub type State = Market;
 
     pub fn all_items(state: State) -> Vec<Item> {
         nft_marketplace_io::all_items(state)

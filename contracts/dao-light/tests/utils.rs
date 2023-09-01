@@ -1,5 +1,5 @@
 use dao_light_io::*;
-use fungible_token_io::*;
+use fungible_token_io::{FTAction, InitConfig};
 use gtest::{Program, RunResult, System};
 
 pub const MEMBERS: &[u64] = &[3, 4, 5, 6];
@@ -43,11 +43,11 @@ pub fn init_dao(sys: &System) {
     assert!(!res.main_failed());
 }
 
-pub fn deposit(dao: &Program, member: u64, amount: u128) -> RunResult {
+pub fn deposit(dao: &Program<'_>, member: u64, amount: u128) -> RunResult {
     dao.send(member, DaoAction::Deposit { amount })
 }
 
-pub fn approve(ft: &Program, member: u64, to: u64, amount: u128) -> RunResult {
+pub fn approve(ft: &Program<'_>, member: u64, to: u64, amount: u128) -> RunResult {
     ft.send(
         member,
         FTAction::Approve {
@@ -57,7 +57,7 @@ pub fn approve(ft: &Program, member: u64, to: u64, amount: u128) -> RunResult {
     )
 }
 
-pub fn proposal(dao: &Program, member: u64, applicant: u64, amount: u128) -> RunResult {
+pub fn proposal(dao: &Program<'_>, member: u64, applicant: u64, amount: u128) -> RunResult {
     dao.send(
         member,
         DaoAction::SubmitFundingProposal {
@@ -69,14 +69,14 @@ pub fn proposal(dao: &Program, member: u64, applicant: u64, amount: u128) -> Run
     )
 }
 
-pub fn vote(dao: &Program, member: u64, proposal_id: u128, vote: Vote) -> RunResult {
+pub fn vote(dao: &Program<'_>, member: u64, proposal_id: u128, vote: Vote) -> RunResult {
     dao.send(member, DaoAction::SubmitVote { proposal_id, vote })
 }
 
-pub fn process(dao: &Program, member: u64, proposal_id: u128) -> RunResult {
+pub fn process(dao: &Program<'_>, member: u64, proposal_id: u128) -> RunResult {
     dao.send(member, DaoAction::ProcessProposal { proposal_id })
 }
 
-pub fn ragequit(dao: &Program, member: u64, amount: u128) -> RunResult {
+pub fn ragequit(dao: &Program<'_>, member: u64, amount: u128) -> RunResult {
     dao.send(member, DaoAction::RageQuit { amount })
 }

@@ -1,7 +1,10 @@
 #![no_std]
 
 use gear_lib_old::non_fungible_token::token::{TokenId, TokenMetadata};
-use gstd::{async_main, errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId};
+use gstd::{
+    async_main, collections::BTreeMap, errors::Result as GstdResult, exec, msg, prelude::*,
+    ActorId, MessageId,
+};
 use nft_pixelboard_io::*;
 pub const MIN_STEP_FOR_TX: u64 = 3;
 

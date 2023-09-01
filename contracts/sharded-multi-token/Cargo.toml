@@ -10,7 +10,6 @@ sharded-multi-token-logic-io.workspace = true
 sharded-multi-token-io.workspace = true
 primitive-types.workspace = true
 sp-core-hashing.workspace = true
-hashbrown.workspace = true
 
 [build-dependencies]
 sharded-multi-token-io.workspace = true

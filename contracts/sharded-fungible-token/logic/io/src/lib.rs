@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 use instruction::Instruction;
 use primitive_types::H256;
@@ -15,7 +15,7 @@ impl Metadata for FLogicMetadata {
     type Others = InOut<LogicAction, ()>;
     type Reply = ();
     type Signal = ();
-    type State = FTLogicState;
+    type State = Out<FTLogicState>;
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]

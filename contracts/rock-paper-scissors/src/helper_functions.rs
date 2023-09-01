@@ -1,5 +1,5 @@
 use super::RPSGame;
-use gstd::{exec, msg, prelude::*, ActorId};
+use gstd::{collections::BTreeSet, exec, msg, prelude::*, ActorId};
 use rock_paper_scissors_io::*;
 
 impl RPSGame {

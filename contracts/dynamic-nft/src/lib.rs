@@ -1,17 +1,16 @@
 #![no_std]
 
-use dynamic_nft_io::{InitNFT, IoNFT, NFTAction, NFTEvent, NFTMetadata};
+use dynamic_nft_io::*;
 use gear_lib_derive::{NFTCore, NFTMetaState, NFTStateKeeper};
 use gear_lib_old::non_fungible_token::{io::NFTTransfer, nft_core::*, state::*, token::*};
-use gmeta::Metadata;
 use gstd::{
+    collections::HashMap,
     errors::Result as GstdResult,
     exec::{self},
     msg,
     prelude::*,
     ActorId, MessageId,
 };
-use hashbrown::HashMap;
 use primitive_types::{H256, U256};
 
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
@@ -220,14 +219,13 @@ fn static_mut_state() -> &'static DynamicNft {
     unsafe { CONTRACT.get_or_insert(Default::default()) }
 }
 
-fn common_state() -> <NFTMetadata as Metadata>::State {
+fn common_state() -> IoNFT {
     static_mut_state().into()
 }
 
 #[no_mangle]
 extern fn state() {
-    reply(common_state())
-        .expect("Failed to encode or reply with `<NFTMetadata as Metadata>::State` from `state()`");
+    reply(common_state()).expect("Failed to encode or reply with `IoNFT` from `state()`");
 }
 
 fn reply(payload: impl Encode) -> GstdResult<MessageId> {

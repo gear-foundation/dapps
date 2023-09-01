@@ -1,6 +1,6 @@
 use crate::utils::*;
 use gtest::{Program, System};
-use rmrk_io::RMRKError;
+use rmrk_io::*;
 
 #[test]
 fn burn_simple() {

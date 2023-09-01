@@ -2,8 +2,7 @@
 
 use dao_light_io::*;
 use ft_messages::*;
-use gstd::{exec, msg, prelude::*, ActorId, String};
-use hashbrown::HashMap;
+use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId, String};
 
 mod ft_messages;
 

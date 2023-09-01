@@ -1,7 +1,9 @@
 #![no_std]
 
 use auction::*;
-use gstd::{errors::Result as GstdResult, msg, prelude::*, ActorId, MessageId};
+use gstd::{
+    collections::BTreeMap, errors::Result as GstdResult, msg, prelude::*, ActorId, MessageId,
+};
 use nft_marketplace_io::*;
 use nft_messages::get_owner;
 use offers::OffersHandler;

@@ -3,7 +3,7 @@ mod utils;
 use gstd::ActorId;
 use gtest::{Program, System};
 use utils::VaraMan;
-use vara_man_io::{Level, Status};
+use vara_man_io::*;
 
 #[test]
 fn success() {

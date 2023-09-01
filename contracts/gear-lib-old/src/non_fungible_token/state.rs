@@ -1,6 +1,9 @@
 use crate::non_fungible_token::{royalties::*, token::*};
-use gstd::{prelude::*, ActorId};
-use hashbrown::{HashMap, HashSet};
+use gstd::{
+    collections::{HashMap, HashSet},
+    prelude::*,
+    ActorId,
+};
 
 #[derive(Default, Debug, PartialEq, Eq, Clone)]
 pub struct NFTState {

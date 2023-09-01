@@ -1,13 +1,12 @@
 #![no_std]
 
 use gear_lib_old::non_fungible_token::token::TokenId;
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 use nft_pixelboard_io::*;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <ContractMetadata as Metadata>::State;
+    pub type State = NFTPixelboardState;
 
     pub fn painting(state: State) -> Vec<Color> {
         state.painting

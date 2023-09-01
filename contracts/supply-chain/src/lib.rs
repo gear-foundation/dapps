@@ -1,8 +1,13 @@
 #![no_std]
 
 use gear_lib_old::non_fungible_token::token::TokenMetadata;
-use gstd::{errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId};
-use hashbrown::{HashMap, HashSet};
+use gstd::{
+    collections::{HashMap, HashSet},
+    errors::Result as GstdResult,
+    exec, msg,
+    prelude::*,
+    ActorId, MessageId,
+};
 use supply_chain_io::*;
 use tx_manager::{TransactionGuard, TransactionManager};
 

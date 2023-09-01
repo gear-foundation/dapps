@@ -7,7 +7,6 @@ publish.workspace = true
 [dependencies]
 gstd.workspace = true
 sharded-fungible-token-io.workspace = true
-hashbrown.workspace = true
 escrow-io.workspace = true
 
 [build-dependencies]

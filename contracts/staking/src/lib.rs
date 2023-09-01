@@ -1,9 +1,10 @@
 #![no_std]
 
-use gmeta::Metadata;
-use gstd::{errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId};
-use hashbrown::HashMap;
-use sharded_fungible_token_io::*;
+use gstd::{
+    collections::BTreeMap, collections::HashMap, errors::Result as GstdResult, exec, msg,
+    prelude::*, ActorId, MessageId,
+};
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
 use staking_io::*;
 
 #[derive(Debug, Clone, Default)]
@@ -305,7 +306,7 @@ extern fn init() {
     unsafe { STAKING = Some(staking) };
 }
 
-fn common_state() -> <StakingMetadata as Metadata>::State {
+fn common_state() -> IoStaking {
     let state = static_mut_state();
 
     let Staking {

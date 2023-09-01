@@ -1,10 +1,10 @@
 use super::{ADMIN, NFT_MASTER_ID};
 use gstd::{prelude::*, ActorId};
 use gtest::{Program, System};
-use nft_master_io::{NFTMasterAction, NFTMasterEvent, NFTMasterInit, NFTMasterState};
+use nft_master_io::*;
 
 pub trait NFTMasterMock {
-    fn nft_master_mock(system: &System) -> Program;
+    fn nft_master_mock(system: &System) -> Program<'_>;
     fn add_nft_contract(&self, from: u64, nft_contract: &ActorId, meta: &str, error: bool);
     fn remove_nft_contract(&self, from: u64, nft_contract: &ActorId, error: bool);
     fn add_operator(&self, from: u64, operator: &ActorId, error: bool);
@@ -14,7 +14,7 @@ pub trait NFTMasterMock {
 }
 
 impl NFTMasterMock for Program<'_> {
-    fn nft_master_mock(system: &System) -> Program {
+    fn nft_master_mock(system: &System) -> Program<'_> {
         let nft_master = Program::current_with_id(system, NFT_MASTER_ID);
         assert!(!nft_master.send(ADMIN, NFTMasterInit {}).main_failed());
 

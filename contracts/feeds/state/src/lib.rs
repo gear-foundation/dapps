@@ -1,12 +1,11 @@
 #![no_std]
 
 use feeds_io::*;
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <RouterMetadata as Metadata>::State;
+    pub type State = RouterState;
 
     pub fn all_channels(state: State) -> Vec<Channel> {
         state.channels.iter().map(|(_, c)| c.clone()).collect()

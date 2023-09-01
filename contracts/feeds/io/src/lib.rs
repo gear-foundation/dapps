@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata};
+use gmeta::{InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId, Decode, Encode, TypeInfo};
 
 pub struct RouterMetadata;
@@ -11,7 +11,7 @@ impl Metadata for RouterMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = RouterState;
+    type State = Out<RouterState>;
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]

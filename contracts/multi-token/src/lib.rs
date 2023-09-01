@@ -2,9 +2,9 @@
 
 use gear_lib_derive::{MTKCore, MTKTokenState, StateKeeper};
 use gear_lib_old::multitoken::{io::*, mtk_core::*, state::*};
-use gmeta::Metadata;
-use gstd::{errors::Result as GstdResult, msg, prelude::*, ActorId, MessageId};
-use hashbrown::HashMap;
+use gstd::{
+    collections::HashMap, errors::Result as GstdResult, msg, prelude::*, ActorId, MessageId,
+};
 use multi_token_io::*;
 
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
@@ -54,7 +54,7 @@ fn reply(payload: impl Encode) -> GstdResult<MessageId> {
     msg::reply(payload, 0)
 }
 
-fn common_state() -> <MultitokenMetadata as Metadata>::State {
+fn common_state() -> State {
     static_mut_state().into()
 }
 

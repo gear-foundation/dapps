@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 use primitive_types::U256;
 
@@ -12,7 +12,7 @@ impl Metadata for EscrowMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = EscrowState;
+    type State = Out<EscrowState>;
 }
 
 #[derive(Default, Encode, Decode, Clone, TypeInfo)]

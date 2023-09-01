@@ -20,7 +20,7 @@ type GOCRunResult<T> = RunResult<T, Event, Error>;
 pub struct Goc<'a>(InnerProgram<'a>);
 
 impl Program for Goc<'_> {
-    fn inner_program(&self) -> &InnerProgram {
+    fn inner_program(&self) -> &InnerProgram<'_> {
         &self.0
     }
 }
@@ -42,7 +42,7 @@ impl<'a> Goc<'a> {
     fn common_initialize(
         system: &'a System,
         admin: impl Into<ActorId>,
-        mint: fn(&System, &InnerProgram),
+        mint: fn(&System, &InnerProgram<'_>),
     ) -> InitResult<Goc<'a>, Error> {
         let program = InnerProgram::current_opt(system);
 
@@ -59,7 +59,7 @@ impl<'a> Goc<'a> {
         InitResult::new(Self(program), result, is_active)
     }
 
-    pub fn state(&self) -> GOCMetaState {
+    pub fn state(&self) -> GOCMetaState<'_> {
         GOCMetaState(&self.0)
     }
 

@@ -1,12 +1,12 @@
 use super::{prelude::*, MetaStateReply};
 use gstd::ActorId;
 use gtest::{Log, Program as InnerProgram, System};
-use sharded_fungible_token_io::*;
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 
 pub struct FungibleToken<'a>(InnerProgram<'a>);
 
 impl Program for FungibleToken<'_> {
-    fn inner_program(&self) -> &InnerProgram {
+    fn inner_program(&self) -> &InnerProgram<'_> {
         &self.0
     }
 }

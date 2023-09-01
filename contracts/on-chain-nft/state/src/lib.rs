@@ -2,15 +2,14 @@
 
 use gear_lib_old::non_fungible_token::state::{NFTQuery, NFTQueryReply};
 use gear_lib_old::non_fungible_token::token::TokenId;
-use gmeta::{metawasm, Metadata};
 use gstd::prelude::*;
 use on_chain_nft_io::*;
 
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <ContractMetadata as Metadata>::State;
+    pub type State = on_chain_nft_io::State;
 
     pub fn token_uri(state: State, token_id: TokenId) -> Option<Vec<u8>> {
         let metadata = state

@@ -2,12 +2,11 @@
 
 use concert_io::*;
 use gear_lib_old::multitoken::io::TokenMetadata;
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <ContractMetadata as Metadata>::State;
+    pub type State = concert_io::State;
 
     pub fn current_concert(state: State) -> CurrentConcert {
         state.current_concert()

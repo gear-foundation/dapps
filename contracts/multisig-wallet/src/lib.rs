@@ -1,8 +1,13 @@
 #![no_std]
 
 use core::cmp::min;
-use gstd::{errors::Result, exec, msg, prelude::*, ActorId, MessageId};
-use hashbrown::{HashMap, HashSet};
+use gstd::{
+    collections::{HashMap, HashSet},
+    errors::Result,
+    exec, msg,
+    prelude::*,
+    ActorId, MessageId,
+};
 use multisig_wallet_io::*;
 use primitive_types::U256;
 

@@ -10,7 +10,7 @@ type NFTPixelboardRunResult<T> = RunResult<T, NFTPixelboardEvent, NFTPixelboardE
 pub struct NFTPixelboard<'a>(InnerProgram<'a>);
 
 impl Program for NFTPixelboard<'_> {
-    fn inner_program(&self) -> &InnerProgram {
+    fn inner_program(&self) -> &InnerProgram<'_> {
         &self.0
     }
 }

@@ -2,9 +2,13 @@
 
 use gear_lib_derive::{NFTCore, NFTMetaState, NFTStateKeeper};
 use gear_lib_old::non_fungible_token::{io::NFTTransfer, nft_core::*, state::*, token::*};
-use gmeta::Metadata;
-use gstd::{errors::Result as GstdResult, msg, prelude::*, ActorId, MessageId};
-use hashbrown::{HashMap, HashSet};
+use gstd::{
+    collections::{HashMap, HashSet},
+    errors::Result as GstdResult,
+    msg,
+    prelude::*,
+    ActorId, MessageId,
+};
 use on_chain_nft_io::*;
 use primitive_types::U256;
 
@@ -168,7 +172,7 @@ impl OnChainNFTCore for OnChainNFT {
     }
 }
 
-fn common_state() -> <ContractMetadata as Metadata>::State {
+fn common_state() -> State {
     let state = static_mut_state();
     let OnChainNFT {
         token,

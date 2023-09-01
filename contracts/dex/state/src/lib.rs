@@ -4,15 +4,14 @@ use dex_io::{
     hidden::{calculate_in_amount, calculate_out_amount, quote},
     *,
 };
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 use primitive_types::U256;
 
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <ContractMetadata as Metadata>::State;
+    pub type State = dex_io::State;
 
     pub fn token(state: State) -> (ActorId, ActorId) {
         state.token

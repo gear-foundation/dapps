@@ -7,7 +7,6 @@ publish.workspace = true
 [dependencies]
 gstd.workspace = true
 feeds-io.workspace = true
-hashbrown.workspace = true
 
 [dev-dependencies]
 gtest.workspace = true

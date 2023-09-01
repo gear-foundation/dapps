@@ -6,7 +6,9 @@ members = [
     "auto-changed-nft",
     "auto-changed-nft/state",
     "concert",
+    "concert/state",
     "crowdsale",
+    "crowdsale/state",
     "dao",
     "dao/state",
     "dao-light",
@@ -14,19 +16,26 @@ members = [
     "ddns",
     "ddns/state",
     "dex",
+    "dex/factory",
+    "dex/factory/state",
+    "dex/state",
     "dutch-auction",
     "dutch-auction/state",
     "dynamic-nft",
+    "dynamic-nft/state",
     "escrow",
     "escrow/state",
     "feeds",
     "feeds/channel",
     "feeds/channel/state",
     "feeds/state",
+    "fungible-token",
     "fungible-token/state",
     "galactic-express",
     "galactic-express/state",
     "game-of-chance",
+    "multi-token",
+    "multi-token/state",
     "multisig-wallet",
     "multisig-wallet/state",
     "nft-marketplace",
@@ -35,7 +44,10 @@ members = [
     "nft-master/state",
     "nft-pixelboard",
     "nft-pixelboard/state",
+    "non-fungible-token",
+    "non-fungible-token/state",
     "on-chain-nft",
+    "on-chain-nft/state",
     "ping",
     "ping/state",
     "rentable-nft",
@@ -43,8 +55,12 @@ members = [
     "rmrk",
     "rmrk/catalog",
     "rmrk/resource",
+    "rmrk/state",
     "rock-paper-scissors",
     "rock-paper-scissors/state",
+    "sharded-fungible-token",
+    "sharded-fungible-token/logic",
+    "sharded-fungible-token/storage",
     "sharded-multi-token",
     "sharded-multi-token/logic",
     "sharded-multi-token/storage",
@@ -52,16 +68,24 @@ members = [
     "staking/state",
     "student-nft",
     "student-nft/state",
+    "supply-chain",
+    "supply-chain/state",
     "syndote",
     "syndote/player",
+    "tamagotchi",
     "tamagotchi/state",
     "tamagotchi-battle",
+    "tamagotchi-battle/state",
     "tequila-train",
     "tequila-train/state",
     "vara-man",
     "vara-man/state",
     "varatube",
     "varatube/state",
+
+    # Noncontract crates
+
+    "gear-lib",
     "xtask",
 ]
 
@@ -69,7 +93,7 @@ members = [
 homepage = "https://wiki.gear-tech.io/docs/examples/prerequisites"
 documentation = "https://dapps.gear.rs"
 authors = ["Gear Foundation <hello@gear.foundation>"]
-version = "0.3.1"
+version = "0.3.2"
 license = "MIT"
 edition = "2021"
 publish = false
@@ -91,12 +115,9 @@ tamagotchi.path = "tamagotchi"
 # Local states
 # Keep in the lexicographic order!
 
-concert-state.path = "concert/state"
 crowdsale-state.path = "crowdsale/state"
 dex-factory-state.path = "dex/factory/state"
 dex-state.path = "dex/state"
-dynamic-nft-state.path = "dynamic-nft/state"
-multi-token-state.path = "multi-token/state"
 non-fungible-token-state.path = "non-fungible-token/state"
 on-chain-nft-state.path = "on-chain-nft/state"
 rmrk-state.path = "rmrk/state"
@@ -163,17 +184,15 @@ supply-chain-deploy.path = "supply-chain/deploy"
 
 # Gear
 
-gstd = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-light_sr25519 = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
-gear-core = { git = "https://github.com/gear-tech/gear", rev = "946ac47" }
+gstd = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
+gmeta = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
+gclient = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
+gtest = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
+gear-core = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
 
 # External
 
-hashbrown = "0.14"
 primitive-types = { version = "0.12", default-features = false }
 sp-core = "22"
 sp-core-hashing = { version = "10", default-features = false }

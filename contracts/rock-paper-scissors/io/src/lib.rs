@@ -1,7 +1,7 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
-use gstd::{prelude::*, ActorId};
+use gmeta::{In, InOut, Metadata, Out};
+use gstd::{collections::BTreeSet, prelude::*, ActorId};
 
 pub struct ContractMetadata;
 
@@ -11,7 +11,7 @@ impl Metadata for ContractMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = ContractState;
+    type State = Out<ContractState>;
 }
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Encode, Decode, TypeInfo)]

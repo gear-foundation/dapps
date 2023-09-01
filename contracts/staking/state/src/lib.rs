@@ -1,12 +1,11 @@
 #![no_std]
 
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
-use staking_io::{Staker, StakingMetadata};
+use staking_io::*;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <StakingMetadata as Metadata>::State;
+    pub type State = IoStaking;
 
     pub fn get_stakers(state: State) -> Vec<(ActorId, Staker)> {
         state.stakers

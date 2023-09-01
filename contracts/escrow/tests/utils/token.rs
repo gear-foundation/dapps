@@ -1,9 +1,9 @@
 use gstd::prelude::*;
 use gtest::{Program, System};
-use sharded_fungible_token_io::*;
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 
 pub trait FToken {
-    fn ftoken(owner: u64, id: u64, system: &System) -> Program;
+    fn ftoken(owner: u64, id: u64, system: &System) -> Program<'_>;
     fn mint(&self, transaction_id: u64, from: u64, account: u64, amount: u128, error: bool);
     fn check_balance(&self, account: u64, expected_amount: u128);
     fn burn(&self, transaction_id: u64, from: u64, account: u64, amount: u128, error: bool);
@@ -28,7 +28,7 @@ pub trait FToken {
 }
 
 impl FToken for Program<'_> {
-    fn ftoken(owner: u64, id: u64, system: &System) -> Program {
+    fn ftoken(owner: u64, id: u64, system: &System) -> Program<'_> {
         let ftoken = Program::from_file_with_id(
             system,
             id,

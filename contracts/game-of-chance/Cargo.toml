@@ -9,7 +9,6 @@ gstd.workspace = true
 rand.workspace = true
 rand_xoshiro.workspace = true
 sharded-fungible-token-io.workspace = true
-hashbrown.workspace = true
 game-of-chance-io.workspace = true
 
 [dev-dependencies]

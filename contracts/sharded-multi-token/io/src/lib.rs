@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 use primitive_types::H256;
 
@@ -14,7 +14,7 @@ impl Metadata for MTMainMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = MTokenState;
+    type State = Out<MTokenState>;
 }
 
 /// The contract state.

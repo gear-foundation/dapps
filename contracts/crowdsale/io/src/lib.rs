@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{exec, prelude::*, ActorId};
 
 pub struct CrowdsaleMetadata;
@@ -11,7 +11,7 @@ impl Metadata for CrowdsaleMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = State;
+    type State = Out<State>;
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Clone, Copy)]

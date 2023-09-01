@@ -1,5 +1,4 @@
-use gmeta::{Decode, Encode, TypeInfo};
-use gstd::{msg, ActorId};
+use gstd::{msg, prelude::*, ActorId};
 use primitive_types::H256;
 use sharded_multi_token_storage_io::{MTStorageAction, MTStorageEvent};
 

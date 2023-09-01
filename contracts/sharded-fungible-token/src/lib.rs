@@ -1,7 +1,6 @@
 #![no_std]
 
-use gstd::{exec, msg, prelude::*, prog::ProgramGenerator, ActorId};
-use hashbrown::HashMap;
+use gstd::{collections::HashMap, exec, msg, prelude::*, prog::ProgramGenerator, ActorId};
 use primitive_types::H256;
 use sharded_fungible_token_io::*;
 use sharded_fungible_token_logic_io::{FTLogicAction, FTLogicEvent, InitFTLogic};

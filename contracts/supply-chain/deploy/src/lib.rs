@@ -144,7 +144,7 @@ impl Client {
 
         let (message_id, _) = self
             .client
-            .send_message(destination, payload, modified_gas_limit, 0)
+            .send_message(destination, payload, modified_gas_limit, 0, false)
             .await?;
 
         println!("Sending completed.");
@@ -184,6 +184,7 @@ impl Client {
         self.client
             .read_state_using_wasm::<_, bool>(
                 supply_chain_actor_id.into(),
+                vec![],
                 WASM_EXPORTS[7],
                 WASM_BINARY.into(),
                 Some((ActorId::from(ALICE), action.clone().action)),

@@ -1,9 +1,10 @@
-use gstd::{prelude::*, ActorId};
+use gstd::{collections::BTreeMap, prelude::*, ActorId};
 use gtest::{Program, System};
 use rmrk_catalog_io::*;
 use rmrk_io::*;
 use rmrk_state::WASM_BINARY;
 use rmrk_types::primitives::{PartId, TokenId};
+
 const CATALOG_ID: u64 = 100;
 const PATH_TO_CATALOG: &str = "../target/wasm32-unknown-unknown/debug/rmrk_catalog.opt.wasm";
 const ADMIN: u64 = 200;
@@ -419,7 +420,7 @@ pub fn compose(system: &System, token_id: TokenId, asset_id: u64) {
 }
 
 fn add_equippable_asset_entry(
-    program: &Program,
+    program: &Program<'_>,
     equippable_group_id: u64,
     catalog_address: Option<ActorId>,
     metadata_uri: String,
@@ -441,7 +442,7 @@ fn add_equippable_asset_entry(
 }
 
 fn set_valid_parent_for_equippable_group(
-    program: &Program,
+    program: &Program<'_>,
     equippable_group_id: u64,
     slot_part_id: PartId,
     parent_id: ActorId,
@@ -460,7 +461,7 @@ fn set_valid_parent_for_equippable_group(
 }
 
 fn add_asset_to_token(
-    program: &Program,
+    program: &Program<'_>,
     token_id: TokenId,
     asset_id: u64,
     replaces_asset_with_id: u64,
@@ -478,7 +479,7 @@ fn add_asset_to_token(
     assert!(result.contains(&(ADMIN, reply.encode())));
 }
 
-fn accept_asset(program: &Program, token_id: TokenId, asset_id: u64) {
+fn accept_asset(program: &Program<'_>, token_id: TokenId, asset_id: u64) {
     let res = program.send(ADMIN, RMRKAction::AcceptAsset { token_id, asset_id });
     let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::AssetAccepted);
     assert!(res.contains(&(ADMIN, reply.encode())));

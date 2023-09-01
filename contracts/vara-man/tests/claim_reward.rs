@@ -2,7 +2,7 @@ mod utils;
 
 use gtest::{Program, System};
 use utils::VaraMan;
-use vara_man_io::{Config, Level, Status};
+use vara_man_io::*;
 
 #[test]
 fn success() {

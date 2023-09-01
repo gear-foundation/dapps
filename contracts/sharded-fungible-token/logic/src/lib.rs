@@ -1,12 +1,12 @@
 #![no_std]
 
-use gstd::{exec, msg, prelude::*, prog::ProgramGenerator, ActorId};
+use gear_lib_old::sr25519;
+use gstd::{collections::HashMap, exec, msg, prelude::*, prog::ProgramGenerator, ActorId};
 use sharded_fungible_token_io::LogicAction;
 use sharded_fungible_token_logic_io::instruction::*;
 use sharded_fungible_token_logic_io::*;
 
 mod messages;
-use hashbrown::HashMap;
 use messages::*;
 use primitive_types::{H256, H512};
 
@@ -282,7 +282,7 @@ impl FTLogic {
 
     fn check_signature(message: &PermitUnsigned, owner: &ActorId, sign: &H512) -> bool {
         let message_u8 = message.encode();
-        light_sr25519::verify(sign.as_bytes(), message_u8, owner).is_ok()
+        sr25519::verify(sign.as_bytes(), message_u8, owner).is_ok()
     }
 
     async fn permit(

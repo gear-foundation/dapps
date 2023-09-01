@@ -1,9 +1,9 @@
 #![no_std]
-use gmeta::metawasm;
+
 use gstd::{prelude::*, ActorId};
 use tamagotchi_battle_io::*;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
     pub type State = Battle;
 

@@ -1,12 +1,11 @@
 #![no_std]
 
 use dao_light_io::*;
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <DaoLightMetadata as Metadata>::State;
+    pub type State = DaoState;
 
     pub fn user_status(state: State, account: ActorId) -> Role {
         if state.is_member(&account) {

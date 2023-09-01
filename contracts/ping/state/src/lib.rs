@@ -1,12 +1,10 @@
 #![no_std]
 
-use gmeta::{metawasm, Metadata};
 use gstd::prelude::*;
-use ping_io::*;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <DemoPingMetadata as Metadata>::State;
+    pub type State = Vec<String>;
 
     pub fn get_first_message(state: State) -> String {
         state.first().expect("Message log is empty!").to_string()

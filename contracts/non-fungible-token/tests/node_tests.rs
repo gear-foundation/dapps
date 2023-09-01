@@ -62,7 +62,7 @@ async fn mint_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0)
+        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -131,7 +131,7 @@ async fn burn_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0)
+        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -150,7 +150,7 @@ async fn burn_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, burn_payload, gas_info.min_limit, 0)
+        .send_message(program_id, burn_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -168,7 +168,7 @@ async fn burn_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, burn_payload, gas_info.min_limit, 0)
+        .send_message(program_id, burn_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -238,7 +238,7 @@ async fn transfer_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0)
+        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -258,7 +258,7 @@ async fn transfer_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, transfer_payload, gas_info.min_limit, 0)
+        .send_message(program_id, transfer_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -328,7 +328,7 @@ async fn owner_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0)
+        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -342,7 +342,7 @@ async fn owner_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, owner_payload, gas_info.min_limit, 0)
+        .send_message(program_id, owner_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -412,7 +412,7 @@ async fn approved() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0)
+        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -431,7 +431,7 @@ async fn approved() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, approve_payload, gas_info.min_limit, 0)
+        .send_message(program_id, approve_payload, gas_info.min_limit, 0, false)
         .await?;
 
     let processed = listener.message_processed(message_id).await?;

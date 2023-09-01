@@ -6,7 +6,7 @@ use sharded_fungible_token_io::{FTokenAction, FTokenEvent, InitFToken, LogicActi
 pub struct FungibleToken<'a>(InnerProgram<'a>, u64);
 
 impl Program for FungibleToken<'_> {
-    fn inner_program(&self) -> &InnerProgram {
+    fn inner_program(&self) -> &InnerProgram<'_> {
         &self.0
     }
 }

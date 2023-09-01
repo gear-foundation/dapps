@@ -4,7 +4,7 @@ use super::common;
 use gclient::{EventListener, EventProcessor, GearApi};
 use gear_lib_old::non_fungible_token::token::TokenMetadata;
 use gstd::{prelude::*, ActorId};
-use nft_marketplace_io::TokenId;
+use nft_marketplace_io::*;
 use non_fungible_token_io::{Collection, Constraints, InitNFT, NFTAction, NFTEvent};
 
 const NFT_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm";
@@ -76,7 +76,7 @@ pub async fn mint(
     .await?;
 
     let NFTEvent::Transfer(_) = NFTEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `NFTEvent` data.") else {
-        panic!("Unexpected invalid `NFTEvent`.");
+        std::panic!("Unexpected invalid `NFTEvent`.");
     };
 
     Ok(())
@@ -103,7 +103,7 @@ pub async fn approve(
     .await?;
 
     let NFTEvent::Approval(_) = NFTEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `NFTEvent` data.") else {
-        panic!("Unexpected invalid `NFTEvent`.");
+        std::panic!("Unexpected invalid `NFTEvent`.");
     };
 
     Ok(())
@@ -128,7 +128,7 @@ pub async fn add_minter(
     .await?;
 
     let NFTEvent::MinterAdded {..} = NFTEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `NFTEvent` data.") else {
-        panic!("Unexpected invalid `NFTEvent`.");
+        std::panic!("Unexpected invalid `NFTEvent`.");
     };
 
     Ok(())
@@ -150,7 +150,7 @@ async fn send_message(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.min_limit, 0)
+        .send_message(program_id.into(), payload, gas_info.min_limit, 0, false)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;

@@ -1,6 +1,6 @@
-use gstd::{msg, prelude::*, ActorId};
-use nft_marketplace_io::{ContractId, TokenId, TransactionId};
-use non_fungible_token_io::*;
+use gstd::{collections::BTreeMap, msg, prelude::*, ActorId};
+use nft_marketplace_io::*;
+use non_fungible_token_io::{NFTAction, NFTEvent};
 use primitive_types::U256;
 
 pub type Payout = BTreeMap<ActorId, u128>;

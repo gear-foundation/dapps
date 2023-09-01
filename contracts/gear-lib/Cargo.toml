@@ -9,7 +9,6 @@ gstd.workspace = true
 indexmap.workspace = true
 ahash.workspace = true
 primitive-types.workspace = true
-hashbrown.workspace = true
 
 [dev-dependencies]
 gstd = { workspace = true, features = ["debug"] }

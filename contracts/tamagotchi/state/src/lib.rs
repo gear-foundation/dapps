@@ -1,5 +1,5 @@
 #![no_std]
-use gmeta::metawasm;
+
 use gstd::{exec, prelude::*};
 use tamagotchi_io::*;
 
@@ -7,7 +7,7 @@ pub const HUNGER_PER_BLOCK: u64 = 1;
 pub const BOREDOM_PER_BLOCK: u64 = 2;
 pub const ENERGY_PER_BLOCK: u64 = 2;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
     pub type State = Tamagotchi;
 

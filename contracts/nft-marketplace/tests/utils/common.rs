@@ -12,7 +12,7 @@ pub fn initialize_system() -> System {
     system
 }
 
-pub fn initialize_programs(system: &System) -> (FungibleToken, NonFungibleToken, Market) {
+pub fn initialize_programs(system: &System) -> (FungibleToken<'_>, NonFungibleToken<'_>, Market<'_>) {
     let ft_program = FungibleToken::initialize(system);
 
     let mut tx_id: u64 = 0;
@@ -39,7 +39,7 @@ pub fn initialize_programs(system: &System) -> (FungibleToken, NonFungibleToken,
 
 pub fn initialize_programs_without_ft_approve(
     system: &System,
-) -> (FungibleToken, NonFungibleToken, Market) {
+) -> (FungibleToken<'_>, NonFungibleToken<'_>, Market<'_>) {
     let ft_program = FungibleToken::initialize(system);
 
     let mut tx_id: u64 = 0;
@@ -62,7 +62,7 @@ pub fn initialize_programs_without_ft_approve(
 }
 
 pub trait Program {
-    fn inner_program(&self) -> &InnerProgram;
+    fn inner_program(&self) -> &InnerProgram<'_>;
 
     fn actor_id(&self) -> ActorId {
         let bytes: [u8; 32] = self.inner_program().id().into();

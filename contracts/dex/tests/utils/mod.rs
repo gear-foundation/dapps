@@ -30,7 +30,7 @@ type PairRunResult<T, C = ()> = RunResult<T, C, Event, Error>;
 pub struct Pair<'a>(pub InnerProgram<'a>);
 
 impl Program for Pair<'_> {
-    fn inner_program(&self) -> &InnerProgram {
+    fn inner_program(&self) -> &InnerProgram<'_> {
         &self.0
     }
 }
@@ -247,7 +247,7 @@ impl<'a> Pair<'a> {
         )
     }
 
-    pub fn state(&self) -> PairState {
+    pub fn state(&self) -> PairState<'_> {
         PairState(&self.0)
     }
 }

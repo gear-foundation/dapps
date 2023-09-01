@@ -1,7 +1,7 @@
 use gear_lib_old::non_fungible_token::{state::*, token::*};
 use gstd::{prelude::*, ActorId};
 use gtest::{Program, RunResult, System};
-use on_chain_nft_io::{InitOnChainNFT, ItemId, OnChainNFTAction, TokenURI};
+use on_chain_nft_io::*;
 use on_chain_nft_state::WASM_BINARY;
 
 const USERS: &[u64] = &[3, 4, 5];
@@ -44,7 +44,7 @@ pub fn init_nft(sys: &System) {
     assert!(!res.main_failed());
 }
 
-pub fn mint(nft: &Program, member: u64, description: Vec<ItemId>) -> RunResult {
+pub fn mint(nft: &Program<'_>, member: u64, description: Vec<ItemId>) -> RunResult {
     nft.send(
         member,
         OnChainNFTAction::Mint {
@@ -59,7 +59,7 @@ pub fn mint(nft: &Program, member: u64, description: Vec<ItemId>) -> RunResult {
     )
 }
 
-pub fn burn(nft: &Program, member: u64, token_id: u64) -> RunResult {
+pub fn burn(nft: &Program<'_>, member: u64, token_id: u64) -> RunResult {
     nft.send(
         member,
         OnChainNFTAction::Burn {
@@ -68,7 +68,7 @@ pub fn burn(nft: &Program, member: u64, token_id: u64) -> RunResult {
     )
 }
 
-pub fn transfer(nft: &Program, from: u64, to: u64, token_id: u64) -> RunResult {
+pub fn transfer(nft: &Program<'_>, from: u64, to: u64, token_id: u64) -> RunResult {
     nft.send(
         from,
         OnChainNFTAction::Transfer {
@@ -78,7 +78,7 @@ pub fn transfer(nft: &Program, from: u64, to: u64, token_id: u64) -> RunResult {
     )
 }
 
-pub fn approve(nft: &Program, from: u64, to: u64, token_id: u64) -> RunResult {
+pub fn approve(nft: &Program<'_>, from: u64, to: u64, token_id: u64) -> RunResult {
     nft.send(
         from,
         OnChainNFTAction::Approve {
@@ -89,7 +89,7 @@ pub fn approve(nft: &Program, from: u64, to: u64, token_id: u64) -> RunResult {
 }
 
 pub fn check_token_uri(
-    nft: &Program,
+    nft: &Program<'_>,
     token_id: u64,
     metadata: TokenMetadata,
     content: Vec<String>,
@@ -107,19 +107,19 @@ pub fn check_token_uri(
 
             // since they don't have PartialEq do it manually
             if metadata.name != rec_metadata.name {
-                panic!("Metadata name is different");
+                std::panic!("Metadata name is different");
             }
             if metadata.description != rec_metadata.description {
-                panic!("Metadata description is different");
+                std::panic!("Metadata description is different");
             }
             if metadata.media != rec_metadata.media {
-                panic!("Metadata media is different");
+                std::panic!("Metadata media is different");
             }
             if metadata.reference != rec_metadata.reference {
-                panic!("Metadata reference is different");
+                std::panic!("Metadata reference is different");
             }
             if content != rec_content {
-                panic!("Content is different");
+                std::panic!("Content is different");
             }
         }
         _ => unreachable!(
@@ -128,7 +128,7 @@ pub fn check_token_uri(
     }
 }
 
-pub fn check_token_from_state(nft: &Program, owner_id: u64, token_id: u64) {
+pub fn check_token_from_state(nft: &Program<'_>, owner_id: u64, token_id: u64) {
     match nft.read_state_using_wasm::<NFTQuery, Option<Vec<u8>>>(
         "base",
         WASM_BINARY.into(),
@@ -138,7 +138,7 @@ pub fn check_token_from_state(nft: &Program, owner_id: u64, token_id: u64) {
     ) {
         Ok(reply) => {
             let NFTQueryReply::Token { token } = NFTQueryReply::decode(&mut reply.unwrap().as_ref()).unwrap() else {
-                panic!()
+                std::panic!()
             };
 
             let true_token_id = token.id;
@@ -147,7 +147,7 @@ pub fn check_token_from_state(nft: &Program, owner_id: u64, token_id: u64) {
             if !(ActorId::from(owner_id) == true_owner_id
                 && TokenId::from(token_id) == true_token_id)
             {
-                panic!(
+                std::panic!(
                     "There is no such token with token_id ({token_id:?}) for the owner ({owner_id:?})"
                 )
             }

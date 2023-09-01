@@ -2,7 +2,7 @@ mod utils;
 
 use gstd::prelude::*;
 use gtest::{Program, System};
-use sharded_multi_token_logic_io::TokenId;
+use sharded_multi_token_logic_io::*;
 use std::mem;
 use utils::{MToken, USER_ACCOUNTS};
 

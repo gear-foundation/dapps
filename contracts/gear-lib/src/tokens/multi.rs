@@ -1,8 +1,12 @@
 //! The multi token.
 
 use super::types::{Amount, Id, Operator, Owner};
-use gstd::{cell::Cell, prelude::*, ActorId};
-use hashbrown::{HashMap, HashSet};
+use gstd::{
+    cell::Cell,
+    collections::{HashMap, HashSet},
+    prelude::*,
+    ActorId,
+};
 
 #[cfg(test)]
 use super::test_helper::msg;

@@ -1,7 +1,7 @@
 #![no_std]
 
 use codec::{Decode, Encode};
-use gmeta::{InOut, Metadata};
+use gmeta::{InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub type AttributeId = u32;
@@ -15,7 +15,7 @@ impl Metadata for ProgramMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = Tamagotchi;
+    type State = Out<Tamagotchi>;
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]

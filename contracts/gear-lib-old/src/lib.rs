@@ -3,4 +3,4 @@
 pub mod fungible_token;
 pub mod multitoken;
 pub mod non_fungible_token;
-mod sr25519;
+pub mod sr25519;

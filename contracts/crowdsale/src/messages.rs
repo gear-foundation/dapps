@@ -1,5 +1,5 @@
 use gstd::{msg, ActorId};
-use sharded_fungible_token_io::*;
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
 
 /// Transfers `amount` tokens from `sender` account to `recipient` account.
 /// Arguments:
@@ -14,7 +14,7 @@ pub async fn transfer_tokens(
     to: &ActorId,
     amount_tokens: u128,
 ) -> Result<(), ()> {
-    let reply = msg::send_for_reply_as::<sharded_fungible_token_io::FTokenAction, FTokenEvent>(
+    let reply = msg::send_for_reply_as::<FTokenAction, FTokenEvent>(
         *token_address,
         FTokenAction::Message {
             transaction_id,

@@ -93,7 +93,7 @@ pub async fn balance_of(
     )
     .await?;
     let FTokenEvent::Balance(balance) = FTokenEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `FTokenEvent` data.") else {
-        panic!("Unexpected invalid `FTokenEvent`.");
+        std::panic!("Unexpected invalid `FTokenEvent`.");
     };
 
     Ok(balance)
@@ -142,7 +142,7 @@ async fn send_message(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.min_limit * 2, 0)
+        .send_message(program_id.into(), payload, gas_info.min_limit * 2, 0, false)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;
@@ -151,6 +151,6 @@ async fn send_message(
 
 fn assert_ft_ok(mut reply: &[u8]) {
     let FTokenEvent::Ok = FTokenEvent::decode(&mut reply).expect("Unexpected invalid `FTokenEvent` data.") else {
-        panic!("Unexpected invalid `FTokenEvent`.");
+        std::panic!("Unexpected invalid `FTokenEvent`.");
     };
 }

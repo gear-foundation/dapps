@@ -1,13 +1,12 @@
 #![no_std]
 
 use escrow_io::*;
-use gmeta::{metawasm, Metadata};
 use gstd::prelude::*;
 use primitive_types::U256;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <EscrowMetadata as Metadata>::State;
+    pub type State = EscrowState;
 
     pub fn info(state: State, wallet_id: U256) -> Wallet {
         let (_, wallet) = *state

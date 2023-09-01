@@ -8,7 +8,6 @@ publish.workspace = true
 gstd.workspace = true
 dao-light-io.workspace = true
 fungible-token-io.workspace = true
-hashbrown.workspace = true
 
 [dev-dependencies]
 gstd = { workspace = true, features = ["debug"] }

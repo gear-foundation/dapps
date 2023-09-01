@@ -7,7 +7,6 @@ publish.workspace = true
 [dependencies]
 nft-master-io.workspace = true
 gstd.workspace = true
-hashbrown.workspace = true
 
 [build-dependencies]
 nft-master-io.workspace = true

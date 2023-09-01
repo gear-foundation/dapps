@@ -9,7 +9,6 @@ gstd.workspace = true
 multi-token-io.workspace = true
 gear-lib-old.workspace = true
 concert-io.workspace = true
-hashbrown.workspace = true
 
 [dev-dependencies]
 gstd = { workspace = true, features = ["debug"] }

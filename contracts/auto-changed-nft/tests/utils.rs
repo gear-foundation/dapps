@@ -20,7 +20,7 @@ pub fn init_nft(sys: &System) {
     assert!(!res.main_failed());
 }
 
-pub fn mint(nft: &Program, transaction_id: u64, member: u64) -> RunResult {
+pub fn mint(nft: &Program<'_>, transaction_id: u64, member: u64) -> RunResult {
     nft.send(
         member,
         NFTAction::Mint {
@@ -35,7 +35,7 @@ pub fn mint(nft: &Program, transaction_id: u64, member: u64) -> RunResult {
     )
 }
 
-pub fn add_url(nft: &Program, token_id: TokenId, url: &str, member: u64) -> RunResult {
+pub fn add_url(nft: &Program<'_>, token_id: TokenId, url: &str, member: u64) -> RunResult {
     nft.send(
         member,
         NFTAction::AddMedia {
@@ -46,7 +46,7 @@ pub fn add_url(nft: &Program, token_id: TokenId, url: &str, member: u64) -> RunR
 }
 
 pub fn start_auto_changing(
-    nft: &Program,
+    nft: &Program<'_>,
     token_ids: Vec<TokenId>,
     updates_count: u32,
     update_period: u32,
@@ -62,7 +62,7 @@ pub fn start_auto_changing(
     )
 }
 
-pub fn burn(nft: &Program, transaction_id: u64, member: u64, token_id: u64) -> RunResult {
+pub fn burn(nft: &Program<'_>, transaction_id: u64, member: u64, token_id: u64) -> RunResult {
     nft.send(
         member,
         NFTAction::Burn {
@@ -73,7 +73,7 @@ pub fn burn(nft: &Program, transaction_id: u64, member: u64, token_id: u64) -> R
 }
 
 pub fn transfer(
-    nft: &Program,
+    nft: &Program<'_>,
     transaction_id: u64,
     from: u64,
     to: u64,
@@ -89,7 +89,7 @@ pub fn transfer(
     )
 }
 
-pub fn owner_of(nft: &Program, from: u64, token_id: u64) -> RunResult {
+pub fn owner_of(nft: &Program<'_>, from: u64, token_id: u64) -> RunResult {
     nft.send(
         from,
         NFTAction::Owner {
@@ -98,7 +98,7 @@ pub fn owner_of(nft: &Program, from: u64, token_id: u64) -> RunResult {
     )
 }
 
-pub fn is_approved_to(nft: &Program, from: u64, token_id: u64, to: u64) -> RunResult {
+pub fn is_approved_to(nft: &Program<'_>, from: u64, token_id: u64, to: u64) -> RunResult {
     nft.send(
         from,
         NFTAction::IsApproved {
@@ -108,7 +108,7 @@ pub fn is_approved_to(nft: &Program, from: u64, token_id: u64, to: u64) -> RunRe
     )
 }
 
-pub fn approve(nft: &Program, transaction_id: u64, from: u64, to: u64, token_id: u64) -> RunResult {
+pub fn approve(nft: &Program<'_>, transaction_id: u64, from: u64, to: u64, token_id: u64) -> RunResult {
     nft.send(
         from,
         NFTAction::Approve {
@@ -119,7 +119,7 @@ pub fn approve(nft: &Program, transaction_id: u64, from: u64, to: u64, token_id:
     )
 }
 
-pub fn current_media(nft: &Program, token_id: TokenId) -> String {
+pub fn current_media(nft: &Program<'_>, token_id: TokenId) -> String {
     let state: NFTState2 = nft.read_state().unwrap();
 
     state

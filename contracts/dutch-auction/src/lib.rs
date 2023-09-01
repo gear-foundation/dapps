@@ -1,13 +1,9 @@
 #![no_std]
 
 use core::cmp::min;
-use dutch_auction_io::auction::{
-    Action, AuctionInfo, CreateConfig, Error, Event, Status, Transaction, TransactionId,
-};
-use dutch_auction_io::io::AuctionMetadata;
-use gmeta::Metadata;
+use dutch_auction_io::auction::*;
 use gstd::ActorId;
-use gstd::{errors::Result as GstdResult, exec, msg, prelude::*, MessageId};
+use gstd::{collections::BTreeMap, errors::Result as GstdResult, exec, msg, prelude::*, MessageId};
 use non_fungible_token_io::{NFTAction, NFTEvent};
 use primitive_types::U256;
 
@@ -327,7 +323,7 @@ async fn main() {
     reply(result, value).expect("Failed to encode or reply with `Result<Event, Error>`");
 }
 
-fn common_state() -> <AuctionMetadata as Metadata>::State {
+fn common_state() -> AuctionInfo {
     static_mut_state().info()
 }
 
@@ -337,9 +333,7 @@ fn static_mut_state() -> &'static mut Auction {
 
 #[no_mangle]
 extern fn state() {
-    reply(common_state(), 0).expect(
-        "Failed to encode or reply with `<AuctionMetadata as Metadata>::State` from `state()`",
-    );
+    reply(common_state(), 0).expect("Failed to encode or reply with `AuctionInfo` from `state()`");
 }
 fn reply(payload: impl Encode, value: u128) -> GstdResult<MessageId> {
     msg::reply(payload, value)

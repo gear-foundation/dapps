@@ -1,12 +1,11 @@
 #![no_std]
 
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 use student_nft_io::*;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <ContractMetadata as Metadata>::State;
+    pub type State = StudentNftState;
 
     pub fn get_nfts(state: State) -> Vec<(NftId, Nft)> {
         state.nfts

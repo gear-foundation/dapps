@@ -7,7 +7,6 @@ publish.workspace = true
 [dependencies]
 student-nft-io.workspace = true
 gstd.workspace = true
-hashbrown.workspace = true
 
 [build-dependencies]
 student-nft-io.workspace = true

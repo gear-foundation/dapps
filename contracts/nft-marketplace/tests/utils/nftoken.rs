@@ -8,7 +8,7 @@ use non_fungible_token_io::{Collection, Constraints, InitNFT, NFTAction, NFTEven
 pub struct NonFungibleToken<'a>(InnerProgram<'a>);
 
 impl Program for NonFungibleToken<'_> {
-    fn inner_program(&self) -> &InnerProgram {
+    fn inner_program(&self) -> &InnerProgram<'_> {
         &self.0
     }
 }
@@ -87,7 +87,7 @@ impl<'a> NonFungibleToken<'a> {
             }))));
     }
 
-    pub fn meta_state(&self) -> NonFungibleTokenMetaState {
+    pub fn meta_state(&self) -> NonFungibleTokenMetaState<'_> {
         NonFungibleTokenMetaState(&self.0)
     }
 }

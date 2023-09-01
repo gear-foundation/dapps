@@ -1,7 +1,7 @@
 use gclient::{EventProcessor, GearApi, Result};
 use gstd::{ActorId, Encode};
 use multi_token::WASM_BINARY_OPT;
-use multi_token_io::InitMTK;
+use multi_token_io::*;
 
 pub const TOKEN_ADDRESS: u64 = 1;
 pub const ICO_CONTRACT_ID: u64 = 2;

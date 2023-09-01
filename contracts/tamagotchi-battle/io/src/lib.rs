@@ -1,7 +1,8 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata};
-use gstd::{prelude::*, ActorId, MessageId, ReservationId};
+use gmeta::{InOut, Metadata, Out};
+use gstd::{collections::BTreeMap, prelude::*, ActorId, MessageId, ReservationId};
+
 pub type TamagotchiId = ActorId;
 pub type PairId = u8;
 pub struct BattleMetadata;
@@ -12,7 +13,7 @@ impl Metadata for BattleMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = Battle;
+    type State = Out<Battle>;
 }
 
 #[derive(Default, Encode, Decode, TypeInfo)]

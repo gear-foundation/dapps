@@ -1,7 +1,11 @@
 #![no_std]
 
-use gstd::{msg, prelude::*, ActorId};
-use hashbrown::HashMap;
+use gstd::{
+    collections::{BTreeMap, HashMap},
+    msg,
+    prelude::*,
+    ActorId,
+};
 use rmrk_catalog_io::*;
 use rmrk_types::primitives::*;
 pub mod catalog;

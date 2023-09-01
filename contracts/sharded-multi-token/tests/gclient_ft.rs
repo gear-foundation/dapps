@@ -1,7 +1,7 @@
 mod utils_gclient;
 
 use gstd::{prelude::*, ActorId};
-use sharded_multi_token_logic_io::TokenId;
+use sharded_multi_token_logic_io::*;
 use std::mem;
 use utils_gclient::*;
 

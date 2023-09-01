@@ -1,4 +1,4 @@
-use feeds_channel_io::{ChannelAction, ChannelOutput, Message};
+use feeds_channel_io::*;
 use gtest::{Log, Program, System};
 
 pub const CHANNEL_ID: u64 = 2;
@@ -7,8 +7,8 @@ pub const OWNER: u64 = 100;
 pub const SUBSCRIBERS: &[u64] = &[10, 11, 12, 13, 14];
 
 pub trait FeedsChannel {
-    fn router(sys: &System) -> Program;
-    fn channel(sys: &System) -> Program;
+    fn router(sys: &System) -> Program<'_>;
+    fn channel(sys: &System) -> Program<'_>;
     fn register(&self);
     fn add_subscriber(&self, subscriber: u64);
     fn unsubscribe(&self, subscriber: u64);
@@ -20,7 +20,7 @@ pub trait FeedsChannel {
 }
 
 impl FeedsChannel for Program<'_> {
-    fn router(sys: &System) -> Program {
+    fn router(sys: &System) -> Program<'_> {
         let router = Program::current_opt(sys);
 
         let res = router.send_bytes(OWNER, "INIT");
@@ -30,7 +30,7 @@ impl FeedsChannel for Program<'_> {
         router
     }
 
-    fn channel(sys: &System) -> Program {
+    fn channel(sys: &System) -> Program<'_> {
         let channel = Program::from_file(
             sys,
             "../target/wasm32-unknown-unknown/debug/feeds_channel.opt.wasm",

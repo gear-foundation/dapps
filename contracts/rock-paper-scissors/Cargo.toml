@@ -8,7 +8,6 @@ publish.workspace = true
 gstd.workspace = true
 sp-core-hashing.workspace = true
 rock-paper-scissors-io.workspace = true
-hashbrown.workspace = true
 gmeta.workspace = true
 
 [dev-dependencies]

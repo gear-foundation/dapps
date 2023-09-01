@@ -8,7 +8,7 @@ use gear_lib_old::non_fungible_token::{
     state::NFTState,
     token::*,
 };
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 use primitive_types::H256;
 
@@ -20,7 +20,7 @@ impl Metadata for NFTMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = IoNft;
+    type State = Out<IoNft>;
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
