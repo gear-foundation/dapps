@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub struct NFTMasterMetadata;
@@ -11,7 +11,7 @@ impl Metadata for NFTMasterMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = NFTMasterState;
+    type State = Out<NFTMasterState>;
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]

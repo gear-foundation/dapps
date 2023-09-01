@@ -7,7 +7,7 @@ use supply_chain_deploy::{FT_LOGIC, FT_MAIN, FT_STORAGE};
 pub struct FungibleToken<'a>(InnerProgram<'a>, u64);
 
 impl Program for FungibleToken<'_> {
-    fn inner_program(&self) -> &InnerProgram {
+    fn inner_program(&self) -> &InnerProgram<'_> {
         &self.0
     }
 }

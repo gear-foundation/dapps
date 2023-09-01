@@ -2,12 +2,13 @@
 
 mod instruction;
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId, Decode, Encode, TypeInfo};
-pub use instruction::*;
 use primitive_types::H256;
 use sharded_multi_token_io::LogicAction;
-pub use sharded_multi_token_storage_io::TokenId;
+
+pub use instruction::*;
+pub use sharded_multi_token_storage_io::{MTStorageAction, MTStorageEvent, TokenId};
 
 /// Upper bit of `TokenId` is a flag, that indicates if this is NFT or not.
 pub const NFT_BIT: TokenId = 1 << (mem::size_of::<TokenId>() * 8 - 1);
@@ -26,7 +27,7 @@ impl Metadata for MTLogicMetadata {
     type Others = InOut<LogicAction, ()>;
     type Reply = ();
     type Signal = ();
-    type State = MTLogicState;
+    type State = Out<MTLogicState>;
 }
 
 /// Internal transaction entities possible status.

@@ -1,8 +1,12 @@
 #![no_std]
 
-use gstd::{msg, prelude::*, ActorId};
-use hashbrown::{HashMap, HashSet};
-use nft_master_io::{NFTMasterAction, NFTMasterEvent, NFTMasterInit, NFTMasterState};
+use gstd::{
+    collections::{HashMap, HashSet},
+    msg,
+    prelude::*,
+    ActorId,
+};
+use nft_master_io::*;
 
 #[derive(Debug)]
 struct NFTMaster {

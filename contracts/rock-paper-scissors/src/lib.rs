@@ -1,8 +1,13 @@
 #![no_std]
 
-use gmeta::Metadata;
-use gstd::{debug, errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId};
-use hashbrown::{HashMap, HashSet};
+use gstd::{
+    collections::{HashMap, HashSet},
+    debug,
+    errors::Result as GstdResult,
+    exec, msg,
+    prelude::*,
+    ActorId, MessageId,
+};
 use rock_paper_scissors_io::*;
 use validations::validate_game_config;
 
@@ -129,7 +134,7 @@ extern fn handle() {
     }
 }
 
-fn common_state() -> <ContractMetadata as Metadata>::State {
+fn common_state() -> ContractState {
     let state = static_mut_state();
     let RPSGame {
         owner,

@@ -1,9 +1,8 @@
 #![no_std]
 
 use escrow_io::*;
-use gstd::{async_main, exec, msg, prelude::*, ActorId};
-use hashbrown::HashMap;
-use sharded_fungible_token_io::*;
+use gstd::{async_main, collections::HashMap, exec, msg, prelude::*, ActorId};
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
 
 /// Transfers `amount` tokens from `sender` account to `recipient` account.
 /// Arguments:

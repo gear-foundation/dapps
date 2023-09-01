@@ -1,8 +1,9 @@
 pub mod utils;
+use gear_lib_old::sr25519;
 use gstd::Encode;
 use gtest::{Program, System};
 use hex_literal::hex;
-use sharded_fungible_token_logic_io::PermitUnsigned;
+use sharded_fungible_token_logic_io::*;
 use sp_core::{sr25519::Pair as Sr25519Pair, Pair};
 use utils::*;
 
@@ -213,7 +214,7 @@ fn permit() {
 
         signature = pair.sign(message_bytes);
 
-        assert!(light_sr25519::verify(signature.encode().as_slice(), message_bytes, owner).is_ok());
+        assert!(sr25519::verify(signature.encode().as_slice(), message_bytes, owner).is_ok());
     }
 
     ftoken.check_permit_id(owner, 0);
@@ -314,9 +315,7 @@ fn permit() {
 
         new_signature = pair.sign(message_bytes);
 
-        assert!(
-            light_sr25519::verify(new_signature.encode().as_slice(), message_bytes, owner).is_ok()
-        );
+        assert!(sr25519::verify(new_signature.encode().as_slice(), message_bytes, owner).is_ok());
     }
     ftoken.permit(
         transaction_id,

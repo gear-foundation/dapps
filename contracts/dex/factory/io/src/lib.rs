@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata};
+use gmeta::{InOut, Metadata, Out};
 use gstd::{errors::Error as GstdError, prelude::*, ActorId, CodeId};
 
 pub struct ContractMetadata;
@@ -11,7 +11,7 @@ impl Metadata for ContractMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = State;
+    type State = Out<State>;
 }
 
 /// The contract state.

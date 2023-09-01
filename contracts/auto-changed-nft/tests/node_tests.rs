@@ -448,7 +448,7 @@ async fn auto_changed() -> Result<()> {
         .calculate_handle_gas(None, program_id, mint_payload.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0)
+        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -467,7 +467,7 @@ async fn auto_changed() -> Result<()> {
             .calculate_handle_gas(None, program_id, payload.encode(), 0, true)
             .await?;
         let (message_id, _) = api
-            .send_message(program_id, payload, gas_info.min_limit, 0)
+            .send_message(program_id, payload, gas_info.min_limit, 0, false)
             .await?;
         assert!(listener.message_processed(message_id).await?.succeed());
         assert!(listener.blocks_running().await?);
@@ -481,7 +481,7 @@ async fn auto_changed() -> Result<()> {
         update_period,
     };
     let (message_id, _) = api
-        .send_message(program_id, payload, 250_000_000_000, 0)
+        .send_message(program_id, payload, 250_000_000_000, 0, false)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
@@ -538,7 +538,7 @@ async fn auto_changed() -> Result<()> {
 }
 
 pub async fn current_media(api: &GearApi, program_id: [u8; 32], token_id: TokenId) -> String {
-    let state: NFTState2 = api.read_state(program_id.into()).await.unwrap();
+    let state: NFTState2 = api.read_state(program_id.into(), vec![]).await.unwrap();
 
     state
         .tokens

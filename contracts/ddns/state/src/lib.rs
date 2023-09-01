@@ -1,12 +1,11 @@
 #![no_std]
 
 use ddns_io::*;
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <ContractMetadata as Metadata>::State;
+    pub type State = Vec<DnsRecord>;
 
     pub fn get_by_id(state: State, id: ActorId) -> Option<DnsRecord> {
         state.get_by_id(id)

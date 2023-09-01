@@ -1,6 +1,5 @@
 #![no_std]
 
-use gmeta::metawasm;
 use gstd::{prelude::*, ActorId};
 use primitive_types::U256;
 use rmrk_io::*;
@@ -8,7 +7,7 @@ use rmrk_types::primitives::{CollectionAndToken, PartId, TokenId};
 
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
     pub type State = RMRKState;
 

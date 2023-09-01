@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub struct DaoMetadata;
@@ -11,7 +11,7 @@ impl Metadata for DaoMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = DaoState;
+    type State = Out<DaoState>;
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
@@ -37,25 +37,22 @@ pub struct DaoState {
 }
 
 impl DaoState {
-    pub fn is_member(state: <DaoMetadata as Metadata>::State, account: &ActorId) -> bool {
+    pub fn is_member(state: DaoState, account: &ActorId) -> bool {
         state
             .members
             .iter()
             .any(|(member_account, member)| member_account == account && member.shares != 0)
     }
 
-    pub fn is_in_whitelist(state: <DaoMetadata as Metadata>::State, account: &ActorId) -> bool {
+    pub fn is_in_whitelist(state: DaoState, account: &ActorId) -> bool {
         state.whitelist.contains(account)
     }
 
-    pub fn get_proposal_id(state: <DaoMetadata as Metadata>::State) -> u128 {
+    pub fn get_proposal_id(state: DaoState) -> u128 {
         state.proposal_id
     }
 
-    pub fn get_proposal_info(
-        state: <DaoMetadata as Metadata>::State,
-        id: u128,
-    ) -> Option<Proposal> {
+    pub fn get_proposal_info(state: DaoState, id: u128) -> Option<Proposal> {
         if let Some((_, proposal)) = state
             .proposals
             .iter()
@@ -67,10 +64,7 @@ impl DaoState {
         }
     }
 
-    pub fn get_member_info(
-        state: <DaoMetadata as Metadata>::State,
-        account: &ActorId,
-    ) -> Option<Member> {
+    pub fn get_member_info(state: DaoState, account: &ActorId) -> Option<Member> {
         if let Some((_, member)) = state
             .members
             .iter()

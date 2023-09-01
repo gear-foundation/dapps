@@ -1,6 +1,6 @@
 use fmt::Debug;
 use gclient::{EventListener, EventProcessor, GearApi, Result};
-use gstd::{prelude::*, ActorId};
+use gstd::{collections::BTreeMap, prelude::*, ActorId};
 use tamagotchi_battle_io::*;
 
 const PATHS: [&str; 2] = [
@@ -92,7 +92,7 @@ async fn send_message<T: Decode>(
     println!("Sending a payload: `{payload:?}`.");
 
     let (message_id, _) = client
-        .send_message(destination, payload, 250_000_000_000, 0)
+        .send_message(destination, payload, 250_000_000_000, 0, false)
         .await?;
 
     println!("Sending completed.");
@@ -203,6 +203,7 @@ async fn battle() -> Result<()> {
         let pair_ids: Vec<PairId> = client
             .read_state_using_wasm_by_path(
                 battle_id.into(),
+                vec![],
                 "pairs_for_player",
                 META_WASM,
                 Some(player_id),
@@ -217,6 +218,7 @@ async fn battle() -> Result<()> {
         let tmg_ids: Vec<ActorId> = client
             .read_state_using_wasm_by_path(
                 battle_id.into(),
+                vec![],
                 "tmg_ids",
                 META_WASM,
                 <Option<()>>::None,
@@ -245,6 +247,7 @@ async fn battle() -> Result<()> {
         let pair_ids: Vec<PairId> = client
             .read_state_using_wasm_by_path(
                 battle_id.into(),
+                vec![],
                 "pair_ids",
                 META_WASM,
                 <Option<()>>::None,
@@ -257,6 +260,7 @@ async fn battle() -> Result<()> {
                 let pair: Pair = client
                     .read_state_using_wasm_by_path(
                         battle_id.into(),
+                        vec![],
                         "pair",
                         META_WASM,
                         Some(pair_id),
@@ -266,6 +270,7 @@ async fn battle() -> Result<()> {
                 let (power, health): (u16, u16) = client
                     .read_state_using_wasm_by_path(
                         battle_id.into(),
+                        vec![],
                         "power_and_health",
                         META_WASM,
                         Some(pair.tmg_ids[0]),
@@ -280,6 +285,7 @@ async fn battle() -> Result<()> {
                 let (power, health): (u16, u16) = client
                     .read_state_using_wasm_by_path(
                         battle_id.into(),
+                        vec![],
                         "power_and_health",
                         META_WASM,
                         Some(pair.tmg_ids[1]),
@@ -294,6 +300,7 @@ async fn battle() -> Result<()> {
                 let current_player: ActorId = client
                     .read_state_using_wasm_by_path(
                         battle_id.into(),
+                        vec![],
                         "current_turn",
                         META_WASM,
                         Some(pair_id),
@@ -322,6 +329,7 @@ async fn battle() -> Result<()> {
                 game_is_over = client
                     .read_state_using_wasm_by_path(
                         battle_id.into(),
+                        vec![],
                         "game_is_over",
                         META_WASM,
                         Some(pair_id),
@@ -332,6 +340,7 @@ async fn battle() -> Result<()> {
         battle_state = client
             .read_state_using_wasm_by_path(
                 battle_id.into(),
+                vec![],
                 "battle_state",
                 META_WASM,
                 <Option<()>>::None,

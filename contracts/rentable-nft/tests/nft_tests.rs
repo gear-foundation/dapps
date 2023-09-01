@@ -4,7 +4,7 @@ use gtest::System;
 use std::time::{Duration, Instant};
 mod utils;
 use hex_literal::hex;
-use rentable_nft_io::NFTEvent;
+use rentable_nft_io::*;
 use sp_core::{sr25519::Pair as Sr25519Pair, Pair};
 use utils::*;
 

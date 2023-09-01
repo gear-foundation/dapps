@@ -1,7 +1,7 @@
 use super::common;
 use gclient::{EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
-use vara_man_io::{Config, Level, Status, VaraMan, VaraManAction, VaraManEvent, VaraManInit};
+use vara_man_io::*;
 
 const VARA_MAN_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/vara_man.opt.wasm";
 
@@ -159,7 +159,7 @@ pub async fn change_config(
 
 pub async fn get_state(api: &GearApi, program_id: &ActorId) -> gclient::Result<VaraMan> {
     let program_id = program_id.encode().as_slice().into();
-    api.read_state(program_id).await
+    api.read_state(program_id, vec![]).await
 }
 
 async fn send_message(
@@ -180,7 +180,13 @@ async fn send_message(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.min_limit * 2, value)
+        .send_message(
+            program_id.into(),
+            payload,
+            gas_info.min_limit * 2,
+            value,
+            false,
+        )
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;

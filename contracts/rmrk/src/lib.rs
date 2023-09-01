@@ -1,25 +1,29 @@
 #![no_std]
 
 use equippable::Assets;
-use gstd::{exec, msg, prelude::*, ActorId, MessageId};
-use rmrk_catalog_io::{CatalogError, CatalogReply};
-
+use gstd::{
+    collections::{BTreeMap, HashMap, HashSet},
+    exec, msg,
+    prelude::*,
+    ActorId, MessageId,
+};
+use messages::*;
 use primitive_types::U256;
+use rmrk_catalog_io::{CatalogError, CatalogReply};
 use rmrk_io::*;
 use rmrk_types::primitives::{CollectionAndToken, PartId, TokenId};
+use tx_manager::TxManager;
+
 mod burn;
 mod checks;
 mod children;
 mod equippable;
 mod messages;
-mod transfer;
-use messages::*;
 mod mint;
+mod transfer;
 mod utils;
-use hashbrown::{HashMap, HashSet};
 
 pub mod tx_manager;
-use tx_manager::TxManager;
 
 #[derive(Debug, Default)]
 struct RMRKToken {

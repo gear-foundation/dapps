@@ -1,8 +1,7 @@
 #![no_std]
 
-use gmeta::metawasm;
 use gstd::{prelude::*, ActorId};
-use tequila_train_io::{GameLauncher, State as GameStatus};
+use tequila_train_io::{State as GameStatus, *};
 
 use self::helpers::map_tile_face_into_u32;
 
@@ -34,7 +33,7 @@ pub struct GameState {
     pub state: GameStatus,
 }
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
     pub type State = GameLauncher;
 
@@ -106,7 +105,7 @@ pub mod metafns {
 }
 
 mod helpers {
-    use tequila_train_io::Face;
+    use super::*;
 
     pub fn map_tile_face_into_u32(face: Face) -> u32 {
         match face {

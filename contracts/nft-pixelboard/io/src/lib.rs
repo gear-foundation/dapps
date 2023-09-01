@@ -1,7 +1,7 @@
 #![no_std]
 
 use gear_lib_old::non_fungible_token::token::{TokenId, TokenMetadata};
-use gmeta::{InOut, Metadata};
+use gmeta::{InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub struct ContractMetadata;
@@ -12,7 +12,7 @@ impl Metadata for ContractMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = NFTPixelboardState;
+    type State = Out<NFTPixelboardState>;
 }
 
 #[derive(Default, Encode, Decode, TypeInfo)]

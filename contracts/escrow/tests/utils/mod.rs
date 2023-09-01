@@ -24,7 +24,7 @@ pub fn init_system() -> System {
     system
 }
 
-pub fn init_escrow(sys: &System) -> Program {
+pub fn init_escrow(sys: &System) -> Program<'_> {
     let escrow_program = Program::current_with_id(sys, ESCROW_PROGRAM_ID);
 
     assert!(!escrow_program

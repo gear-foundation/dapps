@@ -1,7 +1,6 @@
 #![no_std]
 
-use gstd::{msg, prelude::*, ActorId};
-use hashbrown::HashMap;
+use gstd::{collections::HashMap, msg, prelude::*, ActorId};
 use primitive_types::H256;
 use sharded_fungible_token_storage_io::*;
 

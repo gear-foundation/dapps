@@ -1,12 +1,10 @@
 #![no_std]
 
-use dex_factory_io::*;
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <ContractMetadata as Metadata>::State;
+    pub type State = dex_factory_io::State;
 
     pub fn fee_to(state: State) -> ActorId {
         state.fee_to

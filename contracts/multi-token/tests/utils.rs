@@ -22,7 +22,7 @@ pub fn init_mtk(sys: &System, from: u64) {
 }
 
 pub fn mint_internal(
-    mtk: &Program,
+    mtk: &Program<'_>,
     from: u64,
     amount: u128,
     token_id: u128,
@@ -54,7 +54,7 @@ pub fn mint_internal(
 }
 
 pub fn mint_batch_internal(
-    mtk: &Program,
+    mtk: &Program<'_>,
     from: u64,
     ids: Vec<u128>,
     amounts: Vec<u128>,
@@ -80,7 +80,13 @@ pub fn mint_batch_internal(
     assert!(res.contains(&(from, codec)));
 }
 
-pub fn burn_internal(mtk: &Program, from: u64, token_id: u128, amount: u128, should_fail: bool) {
+pub fn burn_internal(
+    mtk: &Program<'_>,
+    from: u64,
+    token_id: u128,
+    amount: u128,
+    should_fail: bool,
+) {
     let res = mtk.send(
         from,
         MyMTKAction::Burn {
@@ -106,7 +112,7 @@ pub fn burn_internal(mtk: &Program, from: u64, token_id: u128, amount: u128, sho
     }
 }
 
-pub fn burn_batch_internal(mtk: &Program, from: u64, ids: Vec<u128>, amounts: Vec<u128>) {
+pub fn burn_batch_internal(mtk: &Program<'_>, from: u64, ids: Vec<u128>, amounts: Vec<u128>) {
     let res = mtk.send(
         from,
         MyMTKAction::BurnBatch {
@@ -126,7 +132,7 @@ pub fn burn_batch_internal(mtk: &Program, from: u64, ids: Vec<u128>, amounts: Ve
     assert!(res.contains(&(from, codec)));
 }
 
-pub fn balance_internal(mtk: &Program, from: u64, token_id: u128, amount: u128) {
+pub fn balance_internal(mtk: &Program<'_>, from: u64, token_id: u128, amount: u128) {
     let res = mtk.send(
         from,
         MyMTKAction::BalanceOf {
@@ -147,7 +153,7 @@ pub fn balance_internal(mtk: &Program, from: u64, token_id: u128, amount: u128) 
 }
 
 pub fn balance_of_batch_internal(
-    mtk: &Program,
+    mtk: &Program<'_>,
     from: u64,
     accounts: Vec<ActorId>,
     ids: Vec<u128>,
@@ -177,7 +183,7 @@ pub fn balance_of_batch_internal(
 }
 
 pub fn transfer_internal(
-    mtk: &Program,
+    mtk: &Program<'_>,
     from: u64,
     to: u64,
     token_id: u128,
@@ -210,7 +216,7 @@ pub fn transfer_internal(
 }
 
 pub fn transfer_batch_internal(
-    mtk: &Program,
+    mtk: &Program<'_>,
     from: u64,
     to: u64,
     ids: Vec<u128>,
@@ -239,7 +245,7 @@ pub fn transfer_batch_internal(
 }
 
 pub fn transform_internal(
-    mtk: &Program,
+    mtk: &Program<'_>,
     from: u64,
     token_id: u128,
     amount: u128,
@@ -271,7 +277,7 @@ pub fn transform_internal(
     assert!(res.contains(&(from, codec)));
 }
 
-pub fn check_token_ids_for_owner(mtk: &Program, account: u64, ids: Vec<u128>) {
+pub fn check_token_ids_for_owner(mtk: &Program<'_>, account: u64, ids: Vec<u128>) {
     let state: State = mtk.read_state().expect("Can't read state");
     let true_ids = state.tokens_ids_for_owner(&ActorId::from(account));
     if true_ids != ids {
@@ -281,7 +287,7 @@ pub fn check_token_ids_for_owner(mtk: &Program, account: u64, ids: Vec<u128>) {
     }
 }
 
-pub fn check_balance(mtk: &Program, account: u64, token_id: u128, balance: u128) {
+pub fn check_balance(mtk: &Program<'_>, account: u64, token_id: u128, balance: u128) {
     let state: State = mtk.read_state().expect("Can't read state");
     let true_balance = state.get_balance(&ActorId::from(account), &token_id);
 

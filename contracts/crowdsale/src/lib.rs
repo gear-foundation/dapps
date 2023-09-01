@@ -1,9 +1,9 @@
 #![no_std]
 
-use crowdsale_io::{CrowdsaleMetadata, IcoAction, IcoEvent, IcoInit, IcoState, State};
-use gmeta::Metadata;
-use gstd::{errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId};
-use hashbrown::HashMap;
+use crowdsale_io::*;
+use gstd::{
+    collections::HashMap, errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId,
+};
 use messages::transfer_tokens;
 
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
@@ -342,7 +342,7 @@ fn reply(payload: impl Encode) -> GstdResult<MessageId> {
     msg::reply(payload, 0)
 }
 
-fn common_state() -> <CrowdsaleMetadata as Metadata>::State {
+fn common_state() -> State {
     static_mut_state().into()
 }
 

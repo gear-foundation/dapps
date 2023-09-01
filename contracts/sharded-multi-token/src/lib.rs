@@ -1,7 +1,6 @@
 #![no_std]
 
-use gstd::{msg, prelude::*, prog::ProgramGenerator, ActorId};
-use hashbrown::HashMap;
+use gstd::{collections::HashMap, msg, prelude::*, prog::ProgramGenerator, ActorId};
 use primitive_types::H256;
 use sharded_multi_token_io::*;
 use sharded_multi_token_logic_io::{InitMTLogic, MTLogicAction, MTLogicEvent, TokenId};

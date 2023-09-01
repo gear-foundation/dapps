@@ -1,7 +1,7 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata};
-use gstd::{prelude::*, ActorId};
+use gmeta::{InOut, Metadata, Out};
+use gstd::{collections::BTreeSet, prelude::*, ActorId};
 
 pub type Price = u32;
 pub type Rent = u32;
@@ -23,7 +23,7 @@ impl Metadata for SynMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = GameState;
+    type State = Out<GameState>;
 }
 
 #[derive(Clone, Default, Encode, Decode, TypeInfo)]

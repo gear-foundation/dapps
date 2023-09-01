@@ -12,7 +12,7 @@ pub fn init(
     entry_timeout_ms: u64,
     move_timeout_ms: u64,
     reveal_timeout_ms: u64,
-) -> Program {
+) -> Program<'_> {
     sys.init_logger();
     USERS
         .iter()

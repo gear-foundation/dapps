@@ -1,8 +1,12 @@
 #![no_std]
 
 use feeds_io::*;
-use gstd::{debug, msg, prelude::*, ActorId};
-use hashbrown::{HashMap, HashSet};
+use gstd::{
+    collections::{HashMap, HashSet},
+    debug, msg,
+    prelude::*,
+    ActorId,
+};
 
 #[derive(Default)]
 pub struct Router {

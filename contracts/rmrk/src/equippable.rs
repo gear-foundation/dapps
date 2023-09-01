@@ -1,6 +1,5 @@
 use crate::*;
 use gstd::msg;
-use rmrk_io::Equipment;
 
 #[derive(Default)]
 pub struct Assets {

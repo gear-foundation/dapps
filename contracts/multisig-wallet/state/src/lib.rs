@@ -1,13 +1,9 @@
 #![no_std]
 
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 use multisig_wallet_io::*;
 
-fn common_confirmations_count(
-    state: &<ContractMetadata as Metadata>::State,
-    transaction_id: TransactionId,
-) -> Option<u32> {
+fn common_confirmations_count(state: &State, transaction_id: TransactionId) -> Option<u32> {
     state
         .confirmations
         .iter()
@@ -21,9 +17,9 @@ fn common_confirmations_count(
         })
 }
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <ContractMetadata as Metadata>::State;
+    pub type State = multisig_wallet_io::State;
 
     /// Returns number of confirmations of a transaction.
     /// `transaction_id` Transaction ID.

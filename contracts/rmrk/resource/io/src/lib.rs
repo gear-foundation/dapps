@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 use rmrk_types::primitives::{BaseId, PartId, ResourceId};
 
@@ -12,7 +12,7 @@ impl Metadata for ResourceMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = ResourceState;
+    type State = Out<ResourceState>;
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo)]

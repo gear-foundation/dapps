@@ -1,7 +1,11 @@
 #![no_std]
 
-use gmeta::{In, Metadata};
-use gstd::{prelude::*, ActorId};
+use gmeta::{In, Metadata, Out};
+use gstd::{
+    collections::{BTreeMap, BTreeSet},
+    prelude::*,
+    ActorId,
+};
 
 #[cfg(not(test))]
 use gstd::{exec, msg};
@@ -14,7 +18,7 @@ impl Metadata for ContractMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = GameLauncher;
+    type State = Out<GameLauncher>;
 }
 
 #[derive(

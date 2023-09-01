@@ -1,4 +1,4 @@
-use dao_io::{DaoAction, DaoEvent, InitDao, Vote};
+use dao_io::*;
 use sharded_fungible_token_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 
 use gstd::prelude::*;
@@ -14,7 +14,7 @@ pub const ABORT_WINDOW: u64 = 10000000;
 pub const APPLICANTS: &[u64] = &[10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 
 pub trait Dao {
-    fn dao(system: &System) -> Program;
+    fn dao(system: &System) -> Program<'_>;
     fn add_to_whitelist(&self, from: u64, account: u64, error: bool);
     #[allow(clippy::too_many_arguments)]
     fn submit_membership_proposal(
@@ -52,7 +52,7 @@ pub trait Dao {
 }
 
 impl Dao for Program<'_> {
-    fn dao(system: &System) -> Program {
+    fn dao(system: &System) -> Program<'_> {
         let dao = Program::current_opt(system);
         assert!(!dao
             .send(
@@ -240,7 +240,7 @@ impl Dao for Program<'_> {
 }
 
 pub trait FToken {
-    fn ftoken(system: &System) -> Program;
+    fn ftoken(system: &System) -> Program<'_>;
     fn mint(&self, transaction_id: u64, from: u64, account: u64, amount: u128);
     fn check_balance(&self, account: u64, expected_amount: u128);
     fn approve(&self, transaction_id: u64, from: u64, approved_account: u64, amount: u128);
@@ -248,7 +248,7 @@ pub trait FToken {
 }
 
 impl FToken for Program<'_> {
-    fn ftoken(system: &System) -> Program {
+    fn ftoken(system: &System) -> Program<'_> {
         let ftoken = Program::from_file(
             system,
             "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm",

@@ -4,7 +4,7 @@ use gclient::{EventProcessor, GearApi, Result};
 use gear_lib_old::non_fungible_token::token::{TokenId, TokenMetadata};
 use gstd::prelude::*;
 use gstd::{ActorId, Encode};
-use non_fungible_token_io::*;
+use non_fungible_token_io::{Constraints, InitNFT, NFTAction};
 
 const NFT_PATH: &str = "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm";
 pub const ALICE: [u8; 32] = [
@@ -70,7 +70,7 @@ async fn create_and_stop() -> Result<()> {
         .calculate_handle_gas(None, nft_program_id, mint_payload.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(nft_program_id, mint_payload, gas_info.min_limit, 0)
+        .send_message(nft_program_id, mint_payload, gas_info.min_limit, 0, false)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
 
@@ -104,7 +104,7 @@ async fn create_and_stop() -> Result<()> {
         .calculate_handle_gas(None, nft_program_id, approve_action.encode(), 0, true)
         .await?;
     let (message_id, _hash) = api
-        .send_message(nft_program_id, approve_action, gas_info.min_limit, 0)
+        .send_message(nft_program_id, approve_action, gas_info.min_limit, 0, false)
         .await?;
 
     // Create Auction
@@ -130,7 +130,7 @@ async fn create_and_stop() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, create.encode(), 0, true)
         .await?;
     let (_message_id, _) = api
-        .send_message(auction_program_id, create, gas_info.min_limit, 0)
+        .send_message(auction_program_id, create, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -138,7 +138,7 @@ async fn create_and_stop() -> Result<()> {
 
     std::thread::sleep(std::time::Duration::from_secs(10));
 
-    let state: AuctionInfo = api.read_state(auction_program_id).await?;
+    let state: AuctionInfo = api.read_state(auction_program_id, vec![]).await?;
     assert!(matches!(state.status, Status::IsRunning));
 
     // Buy
@@ -146,13 +146,13 @@ async fn create_and_stop() -> Result<()> {
     let value = 1_000_000_000;
 
     let (message_id, _) = api
-        .send_message(auction_program_id, buy, 250_000_000_000, value)
+        .send_message(auction_program_id, buy, 250_000_000_000, value, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
 
-    let state: AuctionInfo = api.read_state(auction_program_id).await?;
+    let state: AuctionInfo = api.read_state(auction_program_id, vec![]).await?;
     assert!(matches!(state.status, Status::Purchased { price: _ }));
 
     // ForceStop
@@ -161,13 +161,13 @@ async fn create_and_stop() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, force_stop.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(auction_program_id, force_stop, gas_info.min_limit, 0)
+        .send_message(auction_program_id, force_stop, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
 
-    let state: AuctionInfo = api.read_state(auction_program_id).await?;
+    let state: AuctionInfo = api.read_state(auction_program_id, vec![]).await?;
     assert!(matches!(state.status, Status::Purchased { price: _ }));
 
     Ok(())
@@ -231,7 +231,7 @@ async fn create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, nft_program_id, mint_payload.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(nft_program_id, mint_payload, gas_info.min_limit, 0)
+        .send_message(nft_program_id, mint_payload, gas_info.min_limit, 0, false)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
 
@@ -264,7 +264,7 @@ async fn create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, nft_program_id, approve_action.encode(), 0, true)
         .await?;
     let (message_id, _hash) = api
-        .send_message(nft_program_id, approve_action, gas_info.min_limit, 0)
+        .send_message(nft_program_id, approve_action, gas_info.min_limit, 0, false)
         .await?;
 
     // Create Auction
@@ -290,7 +290,7 @@ async fn create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, create.encode(), 0, true)
         .await?;
     let (_message_id, _) = api
-        .send_message(auction_program_id, create, gas_info.min_limit, 0)
+        .send_message(auction_program_id, create, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -298,7 +298,7 @@ async fn create_buy_reward() -> Result<()> {
 
     std::thread::sleep(std::time::Duration::from_secs(10));
 
-    let state: AuctionInfo = api.read_state(auction_program_id).await?;
+    let state: AuctionInfo = api.read_state(auction_program_id, vec![]).await?;
     dbg!(state);
 
     // Buy
@@ -309,13 +309,13 @@ async fn create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, buy_payload, value, true)
         .await?;
     let (message_id, _) = api
-        .send_message(auction_program_id, buy, gas_info.min_limit, value)
+        .send_message(auction_program_id, buy, gas_info.min_limit, value, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
 
-    let state: AuctionInfo = api.read_state(auction_program_id).await?;
+    let state: AuctionInfo = api.read_state(auction_program_id, vec![]).await?;
     assert!(matches!(state.status, Status::Purchased { price: _ }));
 
     // Reward
@@ -325,13 +325,13 @@ async fn create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, reward_payload, 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(auction_program_id, reward, gas_info.min_limit, 0)
+        .send_message(auction_program_id, reward, gas_info.min_limit, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
 
-    let state: AuctionInfo = api.read_state(auction_program_id).await?;
+    let state: AuctionInfo = api.read_state(auction_program_id, vec![]).await?;
     assert!(matches!(state.status, Status::Rewarded { price: _ }));
 
     Ok(())

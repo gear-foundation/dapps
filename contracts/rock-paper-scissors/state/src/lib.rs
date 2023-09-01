@@ -1,12 +1,11 @@
 #![no_std]
 
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 use rock_paper_scissors_io::*;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <ContractMetadata as Metadata>::State;
+    pub type State = ContractState;
 
     pub fn config(state: State) -> GameConfig {
         state.game_config

@@ -42,7 +42,7 @@ pub fn init(sys: &System) {
     sys.mint_to(USER_ID, 100_000);
 }
 
-pub fn start_sale(ico: &Program, ico_duration: u64, expected_tx_id: u64) {
+pub fn start_sale(ico: &Program<'_>, ico_duration: u64, expected_tx_id: u64) {
     let duration = Duration::from_secs(ico_duration).as_millis() as u64 * 1000;
     let res = ico.send(
         OWNER_ID,
@@ -70,13 +70,13 @@ pub fn start_sale(ico: &Program, ico_duration: u64, expected_tx_id: u64) {
     )));
 }
 
-pub fn end_sale(ico: &Program, expected_tx_id: u64) {
+pub fn end_sale(ico: &Program<'_>, expected_tx_id: u64) {
     let res = ico.send(OWNER_ID, IcoAction::EndSale);
     assert!(!res.main_failed());
     assert!(res.contains(&(OWNER_ID, IcoEvent::SaleEnded(expected_tx_id).encode())));
 }
 
-pub fn buy_tokens(sys: &System, ico: &Program, amount: u128, price: u128) {
+pub fn buy_tokens(sys: &System, ico: &Program<'_>, amount: u128, price: u128) {
     sys.mint_to(USER_ID, price);
     let res = ico.send_with_value(USER_ID, IcoAction::Buy(amount), price);
     assert!(!res.main_failed());
@@ -91,7 +91,7 @@ pub fn buy_tokens(sys: &System, ico: &Program, amount: u128, price: u128) {
     )));
 }
 
-pub fn balance_of(ico: &Program, amount: u128) {
+pub fn balance_of(ico: &Program<'_>, amount: u128) {
     let state: State = ico.read_state().unwrap();
     assert_eq!(
         amount,

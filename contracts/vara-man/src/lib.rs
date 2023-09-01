@@ -1,17 +1,14 @@
 #![no_std]
 
-use gstd::{msg, prelude::*, ActorId};
-use vara_man_io::{
-    Config, GameInstance, Player, Status, VaraMan as VaraManState, VaraManAction, VaraManEvent,
-    VaraManInit, BPS_SCALE,
-};
+use gstd::{collections::HashMap, msg, prelude::*, ActorId};
+use vara_man_io::{VaraMan as VaraManState, *};
 
 #[derive(Debug, Default)]
 struct VaraMan {
-    pub games: HashMap<ActorId, GameInstance>,
-    pub players: HashMap<ActorId, Player>,
-    pub status: Status,
-    pub config: Config,
+    games: HashMap<ActorId, GameInstance>,
+    players: HashMap<ActorId, Player>,
+    status: Status,
+    config: Config,
 }
 
 impl From<&VaraMan> for VaraManState {

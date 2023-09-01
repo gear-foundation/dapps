@@ -1,12 +1,11 @@
 #![no_std]
 
-use gmeta::{metawasm, BTreeMap, Metadata};
-use gstd::ActorId;
-use varatube_io::{SubscriberDataState, SubscriptionMetadata};
+use gstd::{collections::BTreeMap, ActorId};
+use varatube_io::*;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <SubscriptionMetadata as Metadata>::State;
+    pub type State = SubscriptionState;
 
     pub fn all_subscriptions(state: State) -> BTreeMap<ActorId, SubscriberDataState> {
         state

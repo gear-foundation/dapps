@@ -10,7 +10,7 @@ pub fn initialize_system() -> System {
 }
 
 pub trait Program {
-    fn inner_program(&self) -> &InnerProgram;
+    fn inner_program(&self) -> &InnerProgram<'_>;
 
     fn actor_id(&self) -> ActorId {
         let bytes: [u8; 32] = self.inner_program().id().into();
@@ -117,6 +117,6 @@ fn assert_contains(result: &InnerRunResult, payload: impl Encode) {
 fn decode<T: Decode>(result: &InnerRunResult) -> T {
     match T::decode(&mut result.log()[0].payload()) {
         Ok(ok) => ok,
-        Err(_) => panic!("{}", String::from_utf8_lossy(result.log()[0].payload())),
+        Err(_) => std::panic!("{}", String::from_utf8_lossy(result.log()[0].payload())),
     }
 }

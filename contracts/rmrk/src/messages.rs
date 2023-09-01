@@ -1,6 +1,6 @@
 use crate::*;
 use gstd::{exec, msg, ActorId};
-use rmrk_catalog_io::*;
+use rmrk_catalog_io::CatalogAction;
 use rmrk_types::primitives::{CollectionId, PartId, TokenId};
 pub const REPLY_PROVISION: u64 = 1_000_000_000;
 

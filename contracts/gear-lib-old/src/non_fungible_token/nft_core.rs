@@ -1,6 +1,5 @@
 use crate::non_fungible_token::{delegated::*, io::*, royalties::*, state::*, token::*};
-use gstd::{msg, prelude::*, ActorId};
-use hashbrown::HashSet;
+use gstd::{collections::HashSet, msg, prelude::*, ActorId};
 
 const ZERO_ID: ActorId = ActorId::zero();
 

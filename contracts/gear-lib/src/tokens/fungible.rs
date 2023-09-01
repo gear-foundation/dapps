@@ -1,8 +1,7 @@
 //! The fungible token.
 
 use super::types::{Amount, Operator, Owner};
-use gstd::{prelude::*, ActorId};
-use hashbrown::HashMap;
+use gstd::{collections::HashMap, prelude::*, ActorId};
 
 #[cfg(test)]
 use super::test_helper::msg;

@@ -1,13 +1,11 @@
 #![no_std]
 
 use gear_lib_old::multitoken::io::TokenId;
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
-use multi_token_io::MultitokenMetadata;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <MultitokenMetadata as Metadata>::State;
+    pub type State = multi_token_io::State;
 
     pub fn tokens_ids_for_owner(state: State, owner: ActorId) -> Vec<TokenId> {
         state.tokens_ids_for_owner(&owner)

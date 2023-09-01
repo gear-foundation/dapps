@@ -2,8 +2,13 @@
 
 use concert_io::*;
 use gear_lib_old::multitoken::io::*;
-use gstd::{errors::Result, msg, prelude::*, ActorId, MessageId};
-use hashbrown::{HashMap, HashSet};
+use gstd::{
+    collections::{HashMap, HashSet},
+    errors::Result,
+    msg,
+    prelude::*,
+    ActorId, MessageId,
+};
 use multi_token_io::MyMTKAction;
 
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));

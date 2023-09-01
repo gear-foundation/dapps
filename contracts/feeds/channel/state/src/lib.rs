@@ -1,12 +1,11 @@
 #![no_std]
 
 use feeds_channel_io::*;
-use gmeta::{metawasm, Metadata};
 use gstd::prelude::*;
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <ChannelMetadata as Metadata>::State;
+    pub type State = Channel;
 
     pub fn all_messages(state: State) -> Vec<Message> {
         state.messages

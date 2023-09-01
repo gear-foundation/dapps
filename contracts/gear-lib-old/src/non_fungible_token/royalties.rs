@@ -1,4 +1,4 @@
-use gstd::{prelude::*, ActorId};
+use gstd::{collections::BTreeMap, prelude::*, ActorId};
 
 pub type Payout = BTreeMap<ActorId, u128>;
 

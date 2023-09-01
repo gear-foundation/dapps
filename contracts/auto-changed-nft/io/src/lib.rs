@@ -6,7 +6,7 @@ use gear_lib_old::non_fungible_token::{
     state::NFTState,
     token::*,
 };
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub use gear_lib_old::non_fungible_token::delegated::DelegatedApproveMessage;
@@ -20,7 +20,7 @@ impl Metadata for NFTMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = NFTState2;
+    type State = Out<NFTState2>;
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]

@@ -1,10 +1,10 @@
 #![no_std]
 
 use feeds_channel_io::*;
-use feeds_io::*;
+use feeds_io::{RouterAction, RouterEvent};
 use gstd::{debug, msg, prelude::*, ActorId};
 
-static mut CHANNEL: Option<feeds_channel_io::Channel> = None;
+static mut CHANNEL: Option<Channel> = None;
 
 #[async_trait::async_trait]
 pub trait ChannelHandler {
@@ -28,7 +28,7 @@ pub trait ChannelHandler {
 }
 
 #[async_trait::async_trait]
-impl ChannelHandler for feeds_channel_io::Channel {
+impl ChannelHandler for Channel {
     fn set_owner_id(&mut self, id: ActorId) {
         self.owner_id = id;
     }
@@ -113,7 +113,7 @@ impl ChannelHandler for feeds_channel_io::Channel {
 
 #[no_mangle]
 extern fn init() {
-    let mut channel: feeds_channel_io::Channel = Default::default();
+    let mut channel: Channel = Default::default();
     channel.set_owner_id(msg::source());
     channel.set_name("Channel-Coolest-Name");
     channel.set_description("Channel-Coolest-Description");

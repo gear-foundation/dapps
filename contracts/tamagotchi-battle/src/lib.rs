@@ -1,6 +1,8 @@
 #![no_std]
 
-use gstd::{debug, exec, msg, prelude::*, ActorId, MessageId, ReservationId};
+use gstd::{
+    collections::BTreeMap, debug, exec, msg, prelude::*, ActorId, MessageId, ReservationId,
+};
 use tamagotchi_battle_io::*;
 use tamagotchi_io::{TmgAction, TmgReply};
 

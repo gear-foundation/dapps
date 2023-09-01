@@ -1,5 +1,5 @@
 use concert::WASM_BINARY_OPT;
-use concert_io::InitConcert;
+use concert_io::*;
 use gclient::{code_from_os, EventProcessor, GearApi, Result};
 use gear_lib_old::multitoken::io::InitConfig;
 use gstd::Encode;

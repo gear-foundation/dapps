@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata};
+use gmeta::{InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 use primitive_types::H256;
 
@@ -14,7 +14,7 @@ impl Metadata for MTStorageMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = MTStorageState;
+    type State = Out<MTStorageState>;
 }
 
 /// The contract state.

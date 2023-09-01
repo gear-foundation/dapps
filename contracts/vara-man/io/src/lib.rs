@@ -2,7 +2,7 @@
 
 mod rand;
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 pub use rand::*;
 
@@ -26,7 +26,7 @@ impl Metadata for VaraManMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = VaraMan;
+    type State = Out<VaraMan>;
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]

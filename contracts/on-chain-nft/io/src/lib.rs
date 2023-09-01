@@ -6,7 +6,7 @@ use gear_lib_old::non_fungible_token::{
     state::*,
     token::*,
 };
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub type LayerId = u128;
@@ -20,7 +20,7 @@ impl Metadata for ContractMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = State;
+    type State = Out<State>;
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]

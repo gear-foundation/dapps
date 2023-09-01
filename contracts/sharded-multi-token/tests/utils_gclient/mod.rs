@@ -3,7 +3,7 @@
 use blake2_rfc::blake2b;
 use gclient::{errors::Gear, errors::ModuleError, EventListener, EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
-use sharded_multi_token_io::{InitMToken, LogicAction, MTokenAction, MTokenEvent, TokenId};
+use sharded_multi_token_io::*;
 
 const MT_LOGIC_WASM_PATH: &str =
     "../target/wasm32-unknown-unknown/debug/sharded_multi_token_logic.opt.wasm";
@@ -132,14 +132,14 @@ pub async fn send_mtoken_message(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.min_limit * 5, 0)
+        .send_message(program_id.into(), payload, gas_info.min_limit * 5, 0, false)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;
     let reply = reply_data_result.expect("Unexpected invalid reply.");
 
-    let sharded_multi_token_io::MTokenEvent::Ok = sharded_multi_token_io::MTokenEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `MTokenEvent` data.") else {
-        panic!("Unexpected invalid `MTokenEvent`.");
+    let MTokenEvent::Ok = MTokenEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `MTokenEvent` data.") else {
+        std::panic!("Unexpected invalid `MTokenEvent`.");
     };
 
     Ok(())
@@ -323,14 +323,14 @@ pub async fn mtoken_get_balance(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.min_limit * 5, 0)
+        .send_message(program_id.into(), payload, gas_info.min_limit * 5, 0, false)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;
     let reply_data = reply_data_result.expect("Unexpected invalid reply.");
 
     let MTokenEvent::Balance(balance) = MTokenEvent::decode(&mut reply_data.as_ref()).expect("Unexpected invalid `MTokenEvent` data.") else {
-        panic!("Unexpected invalid `MTokenEvent`.");
+        std::panic!("Unexpected invalid `MTokenEvent`.");
     };
 
     Ok(balance)
@@ -359,14 +359,14 @@ pub async fn mtoken_get_approval(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.min_limit * 5, 0)
+        .send_message(program_id.into(), payload, gas_info.min_limit * 5, 0, false)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;
     let reply_data = reply_data_result.expect("Unexpected invalid reply.");
 
     let MTokenEvent::Approval(approval) = MTokenEvent::decode(&mut reply_data.as_ref()).expect("Unexpected invalid `MTokenEvent` data.") else {
-        panic!("Unexpected invalid `MTokenEvent`.");
+        std::panic!("Unexpected invalid `MTokenEvent`.");
     };
 
     Ok(approval)

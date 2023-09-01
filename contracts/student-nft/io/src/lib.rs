@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub type NftId = u128;
@@ -16,7 +16,7 @@ impl Metadata for ContractMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = StudentNftState;
+    type State = Out<StudentNftState>;
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]

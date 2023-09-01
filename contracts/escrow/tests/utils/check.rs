@@ -1,7 +1,7 @@
 use super::*;
 
 pub fn create(
-    escrow_program: &Program,
+    escrow_program: &Program<'_>,
     wallet_id: u128,
     from: u64,
     buyer: u64,
@@ -20,7 +20,7 @@ pub fn create(
         .contains(&(from, EscrowEvent::Created(wallet_id.into()).encode())));
 }
 
-pub fn deposit(escrow_program: &Program, wallet_id: u128, buyer: u64, expected_tx_id: u64) {
+pub fn deposit(escrow_program: &Program<'_>, wallet_id: u128, buyer: u64, expected_tx_id: u64) {
     assert!(escrow_program
         .send(buyer, EscrowAction::Deposit(wallet_id.into()))
         .contains(&(
@@ -29,7 +29,7 @@ pub fn deposit(escrow_program: &Program, wallet_id: u128, buyer: u64, expected_t
         )));
 }
 
-pub fn confirm(escrow_program: &Program, wallet_id: u128, buyer: u64, expected_tx_id: u64) {
+pub fn confirm(escrow_program: &Program<'_>, wallet_id: u128, buyer: u64, expected_tx_id: u64) {
     assert!(escrow_program
         .send(buyer, EscrowAction::Confirm(wallet_id.into()))
         .contains(&(
@@ -38,7 +38,7 @@ pub fn confirm(escrow_program: &Program, wallet_id: u128, buyer: u64, expected_t
         )));
 }
 
-pub fn refund(escrow_program: &Program, wallet_id: u128, seller: u64, expected_tx_id: u64) {
+pub fn refund(escrow_program: &Program<'_>, wallet_id: u128, seller: u64, expected_tx_id: u64) {
     assert!(escrow_program
         .send(seller, EscrowAction::Refund(wallet_id.into()))
         .contains(&(
@@ -47,13 +47,13 @@ pub fn refund(escrow_program: &Program, wallet_id: u128, seller: u64, expected_t
         )));
 }
 
-pub fn cancel(escrow_program: &Program, wallet_id: u128, from: u64) {
+pub fn cancel(escrow_program: &Program<'_>, wallet_id: u128, from: u64) {
     assert!(escrow_program
         .send(from, EscrowAction::Cancel(wallet_id.into()))
         .contains(&(from, EscrowEvent::Cancelled(wallet_id.into()).encode())));
 }
 
-pub fn info(_escrow_program: &Program, _wallet_id: u128, _wallet_info: Wallet) {
+pub fn info(_escrow_program: &Program<'_>, _wallet_id: u128, _wallet_info: Wallet) {
     /* assert_eq!(
         escrow_program
             .meta_state::<_, EscrowStateReply>(EscrowState::Info(wallet_id.into()))
@@ -62,7 +62,10 @@ pub fn info(_escrow_program: &Program, _wallet_id: u128, _wallet_info: Wallet) {
     ) */
 }
 
-pub fn created_wallets(_escrow_program: &Program, mut _created_wallets: Vec<(WalletId, Wallet)>) {
+pub fn created_wallets(
+    _escrow_program: &Program<'_>,
+    mut _created_wallets: Vec<(WalletId, Wallet)>,
+) {
     /* let reply = escrow_program
         .meta_state::<_, EscrowStateReply>(EscrowState::CreatedWallets)
         .unwrap();

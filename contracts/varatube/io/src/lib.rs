@@ -1,7 +1,7 @@
 #![no_std]
 
-use gmeta::{In, Metadata};
-use gstd::{prelude::*, ActorId};
+use gmeta::{In, Metadata, Out};
+use gstd::{collections::BTreeMap, prelude::*, ActorId};
 
 pub type TokenData = (ActorId, Price);
 pub type Price = u128;
@@ -15,7 +15,7 @@ impl Metadata for SubscriptionMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = SubscriptionState;
+    type State = Out<SubscriptionState>;
 }
 
 /// Actions callable by a user on the subscription contract

@@ -1,5 +1,22 @@
 #![no_std]
-use gstd::{exec, msg, prelude::*, ActorId, ReservationId};
+
+use gstd::{
+    collections::{HashMap, HashSet},
+    exec, msg,
+    prelude::*,
+    ActorId, ReservationId,
+};
+use messages::*;
+use syndote_io::*;
+use utils::*;
+
+pub mod messages;
+pub mod strategic_actions;
+pub mod utils;
+
+const RESERVATION_AMOUNT: u64 = 245_000_000_000;
+const GAS_FOR_ROUND: u64 = 60_000_000_000;
+
 pub const NUMBER_OF_CELLS: u8 = 40;
 pub const NUMBER_OF_PLAYERS: u8 = 4;
 pub const JAIL_POSITION: u8 = 10;
@@ -10,15 +27,7 @@ pub const PENALTY: u8 = 5;
 pub const INITIAL_BALANCE: u32 = 15_000;
 pub const NEW_CIRCLE: u32 = 2_000;
 pub const WAIT_DURATION: u32 = 5;
-pub mod strategic_actions;
-pub mod utils;
-use syndote_io::*;
-use utils::*;
-pub mod messages;
-use messages::*;
-const RESERVATION_AMOUNT: u64 = 245_000_000_000;
-const GAS_FOR_ROUND: u64 = 60_000_000_000;
-use hashbrown::{HashMap, HashSet};
+
 #[derive(Clone, Default)]
 pub struct Game {
     admin: ActorId,

@@ -1,7 +1,11 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
-use gstd::{prelude::*, ActorId};
+use gmeta::{In, InOut, Metadata, Out};
+use gstd::{
+    collections::{BTreeMap, BTreeSet},
+    prelude::*,
+    ActorId,
+};
 use primitive_types::U256;
 
 pub type ContractId = ActorId;
@@ -17,7 +21,7 @@ impl Metadata for MarketMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = Market;
+    type State = Out<Market>;
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
@@ -371,11 +375,11 @@ pub enum MarketErr {
     OfferIsNotExists,
 }
 
-pub fn all_items(state: <MarketMetadata as Metadata>::State) -> Vec<Item> {
+pub fn all_items(state: Market) -> Vec<Item> {
     state.items.values().cloned().collect()
 }
 
-pub fn item_info(state: <MarketMetadata as Metadata>::State, args: &ItemInfoArgs) -> Option<Item> {
+pub fn item_info(state: Market, args: &ItemInfoArgs) -> Option<Item> {
     state
         .items
         .get(&(args.nft_contract_id, args.token_id))

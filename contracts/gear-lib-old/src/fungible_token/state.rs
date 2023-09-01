@@ -1,5 +1,4 @@
-use gstd::{prelude::*, ActorId};
-use hashbrown::HashMap;
+use gstd::{collections::HashMap, prelude::*, ActorId};
 
 #[derive(Debug, Default)]
 pub struct FTState {

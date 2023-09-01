@@ -10,7 +10,6 @@ gstd.workspace = true
 non-fungible-token-io.workspace = true
 sharded-fungible-token-io.workspace = true
 gear-lib-old.workspace = true
-hashbrown.workspace = true
 
 [dev-dependencies]
 gtest.workspace = true

@@ -1,12 +1,10 @@
 #![no_std]
 
-use crowdsale_io::CrowdsaleMetadata;
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <CrowdsaleMetadata as Metadata>::State;
+    pub type State = crowdsale_io::State;
 
     pub fn current_price(state: State) -> u128 {
         state.get_current_price()

@@ -8,7 +8,7 @@ type FactoryRunResult<T, R> = RunResult<T, R, Event, Error>;
 pub struct Factory<'a>(InnerProgram<'a>);
 
 impl Program for Factory<'_> {
-    fn inner_program(&self) -> &InnerProgram {
+    fn inner_program(&self) -> &InnerProgram<'_> {
         &self.0
     }
 }
@@ -85,7 +85,7 @@ impl<'a> Factory<'a> {
         )
     }
 
-    pub fn state(&self) -> FactoryState {
+    pub fn state(&self) -> FactoryState<'_> {
         FactoryState(&self.0)
     }
 }

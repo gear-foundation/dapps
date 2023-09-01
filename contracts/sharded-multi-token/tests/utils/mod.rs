@@ -1,6 +1,6 @@
 use gstd::{prelude::*, ActorId};
 use gtest::{Program, System};
-use sharded_multi_token_io::{InitMToken, LogicAction, MTokenAction, MTokenEvent, TokenId};
+use sharded_multi_token_io::*;
 
 pub const ROOT_ACCOUNT: u64 = 100;
 
@@ -8,7 +8,7 @@ pub const ROOT_ACCOUNT: u64 = 100;
 pub const USER_ACCOUNTS: [u64; 3] = [200, 300, 400];
 
 pub trait MToken {
-    fn mtoken(system: &System) -> Program;
+    fn mtoken(system: &System) -> Program<'_>;
 
     fn transfer(
         &self,
@@ -64,7 +64,7 @@ pub trait MToken {
 }
 
 impl MToken for Program<'_> {
-    fn mtoken(system: &System) -> Program {
+    fn mtoken(system: &System) -> Program<'_> {
         let mtoken = Program::current_opt(system);
 
         let storage_code_hash: [u8; 32] = system

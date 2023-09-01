@@ -1,8 +1,11 @@
 //! The non-fungible token.
 
 use super::types::{Amount, Id, Operator, Owner};
-use gstd::{prelude::*, ActorId};
-use hashbrown::{HashMap, HashSet};
+use gstd::{
+    collections::{HashMap, HashSet},
+    prelude::*,
+    ActorId,
+};
 
 pub mod encodable;
 

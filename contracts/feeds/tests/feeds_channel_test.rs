@@ -1,6 +1,7 @@
 mod utils;
 
 use feeds_channel_io::Message;
+use feeds_io::*;
 use gstd::ActorId;
 use gtest::{Program, System};
 use utils::*;
@@ -20,14 +21,14 @@ fn channels_initialization() {
     channel_2.register();
 
     // check that channels were registered at router contract
-    let mut expected_channels: Vec<feeds_io::Channel> = Vec::new();
+    let mut expected_channels: Vec<Channel> = Vec::new();
 
     // first channel info
-    let mut channel = feeds_io::Channel {
+    let mut channel = Channel {
         id: 2.into(),
-        name: String::from("channel_io::Channel-Coolest-Name"),
+        name: String::from("Channel-Coolest-Name"),
         owner_id: OWNER.into(),
-        description: String::from("channel_io::Channel-Coolest-Description"),
+        description: String::from("Channel-Coolest-Description"),
     };
     // read info about that channel from the router contract
     // router.check_channel_info(channel.clone());
@@ -88,7 +89,7 @@ fn post() {
     // init message
     let mut message = Message {
         owner: OWNER.into(),
-        text: String::from("channel_io::Channel \"channel_io::Channel-Coolest-Name\" was created"),
+        text: String::from("Channel \"Channel-Coolest-Name\" was created"),
         timestamp: 0,
     };
     expected_messages.push(message.clone());

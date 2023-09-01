@@ -1,14 +1,13 @@
 #![no_std]
 
-use gmeta::{metawasm, Metadata};
 use gstd::{prelude::*, ActorId};
 use supply_chain_io::*;
 
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-#[metawasm]
+#[gmeta::metawasm]
 pub mod metafns {
-    pub type State = <ContractMetadata as Metadata>::State;
+    pub type State = supply_chain_io::State;
 
     pub fn item_info(state: State, item_id: ItemId) -> Option<ItemInfo> {
         state

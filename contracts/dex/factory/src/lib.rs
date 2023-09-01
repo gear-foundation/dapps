@@ -2,8 +2,8 @@
 
 use dex_factory_io::*;
 use gstd::{
-    errors::Result, exec, msg, prelude::*, prog::ProgramGenerator, ActorId, CodeId, HashMap,
-    MessageId,
+    collections::HashMap, errors::Result, exec, msg, prelude::*, prog::ProgramGenerator, ActorId,
+    CodeId, MessageId,
 };
 
 struct Contract {

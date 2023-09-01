@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub struct FungibleTokenMetadata;
@@ -11,7 +11,7 @@ impl Metadata for FungibleTokenMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = IoFungibleToken;
+    type State = Out<IoFungibleToken>;
 }
 
 #[derive(Debug, Decode, Encode, TypeInfo)]

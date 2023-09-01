@@ -11,7 +11,7 @@ use supply_chain_deploy::NFT_BINARY;
 pub struct NonFungibleToken<'a>(InnerProgram<'a>, u64);
 
 impl Program for NonFungibleToken<'_> {
-    fn inner_program(&self) -> &InnerProgram {
+    fn inner_program(&self) -> &InnerProgram<'_> {
         &self.0
     }
 }
@@ -79,7 +79,7 @@ impl<'a> NonFungibleToken<'a> {
             }))),)
     }
 
-    pub fn meta_state(&self) -> NonFungibleTokenState {
+    pub fn meta_state(&self) -> NonFungibleTokenState<'_> {
         NonFungibleTokenState(&self.0)
     }
 }

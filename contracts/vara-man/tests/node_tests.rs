@@ -2,7 +2,7 @@ mod utils_gclient;
 
 use gclient::GearApi;
 use gstd::prelude::*;
-use vara_man_io::{Level, Status};
+use vara_man_io::*;
 
 #[tokio::test]
 #[ignore]

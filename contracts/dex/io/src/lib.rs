@@ -1,7 +1,7 @@
 #![no_std]
 
 use gear_lib::tx_manager;
-use gmeta::{InOut, Metadata};
+use gmeta::{InOut, Metadata, Out};
 use gstd::{errors::Error as GstdError, prelude::*, ActorId};
 use primitive_types::U256;
 
@@ -28,7 +28,7 @@ impl Metadata for ContractMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = State;
+    type State = Out<State>;
 }
 
 /// Initializes the contract.

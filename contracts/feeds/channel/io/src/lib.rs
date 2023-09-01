@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata};
+use gmeta::{InOut, Metadata, Out};
 use gstd::{exec, msg, prelude::*, ActorId, Decode, Encode, TypeInfo};
 
 pub struct ChannelMetadata;
@@ -11,7 +11,7 @@ impl Metadata for ChannelMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = Channel;
+    type State = Out<Channel>;
 }
 
 #[derive(Default, Clone, Encode, Decode, TypeInfo)]

@@ -1,5 +1,5 @@
 #![no_std]
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 use primitive_types::U256;
 use rmrk_types::primitives::*;
@@ -12,7 +12,7 @@ impl Metadata for RMRKMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = RMRKState;
+    type State = Out<RMRKState>;
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo)]

@@ -9,9 +9,8 @@ gstd.workspace = true
 sharded-fungible-token-logic-io.workspace = true
 sharded-fungible-token-io.workspace = true
 sharded-fungible-token-storage-io.workspace = true
+gear-lib-old.workspace = true
 primitive-types.workspace = true
-light_sr25519.workspace = true
-hashbrown.workspace = true
 hex.workspace = true
 
 [build-dependencies]

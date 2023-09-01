@@ -1,7 +1,7 @@
 #![no_std]
 
 use gear_lib_old::multitoken::io::*;
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub struct MultitokenMetadata;
@@ -12,7 +12,7 @@ impl Metadata for MultitokenMetadata {
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = State;
+    type State = Out<State>;
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
