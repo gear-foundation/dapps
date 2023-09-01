@@ -12,7 +12,9 @@ pub fn initialize_system() -> System {
     system
 }
 
-pub fn initialize_programs(system: &System) -> (FungibleToken<'_>, NonFungibleToken<'_>, Market<'_>) {
+pub fn initialize_programs(
+    system: &System,
+) -> (FungibleToken<'_>, NonFungibleToken<'_>, Market<'_>) {
     let ft_program = FungibleToken::initialize(system);
 
     let mut tx_id: u64 = 0;

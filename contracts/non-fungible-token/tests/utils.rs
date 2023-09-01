@@ -104,7 +104,13 @@ pub fn is_approved_to(nft: &Program<'_>, from: u64, token_id: u64, to: u64) -> R
     )
 }
 
-pub fn approve(nft: &Program<'_>, transaction_id: u64, from: u64, to: u64, token_id: u64) -> RunResult {
+pub fn approve(
+    nft: &Program<'_>,
+    transaction_id: u64,
+    from: u64,
+    to: u64,
+    token_id: u64,
+) -> RunResult {
     nft.send(
         from,
         NFTAction::Approve {

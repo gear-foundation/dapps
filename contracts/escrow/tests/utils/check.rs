@@ -62,7 +62,10 @@ pub fn info(_escrow_program: &Program<'_>, _wallet_id: u128, _wallet_info: Walle
     ) */
 }
 
-pub fn created_wallets(_escrow_program: &Program<'_>, mut _created_wallets: Vec<(WalletId, Wallet)>) {
+pub fn created_wallets(
+    _escrow_program: &Program<'_>,
+    mut _created_wallets: Vec<(WalletId, Wallet)>,
+) {
     /* let reply = escrow_program
         .meta_state::<_, EscrowStateReply>(EscrowState::CreatedWallets)
         .unwrap();

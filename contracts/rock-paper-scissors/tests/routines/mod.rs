@@ -41,7 +41,11 @@ pub fn common_init(sys: &System) -> Program<'_> {
     common_init_with_owner_and_bet(sys, USERS[0], COMMON_BET)
 }
 
-pub fn common_init_with_owner_and_bet(sys: &System, owner_user: u64, bet_size: u128) -> Program<'_> {
+pub fn common_init_with_owner_and_bet(
+    sys: &System,
+    owner_user: u64,
+    bet_size: u128,
+) -> Program<'_> {
     sys.init_logger();
     USERS
         .iter()

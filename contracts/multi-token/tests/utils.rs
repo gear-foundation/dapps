@@ -80,7 +80,13 @@ pub fn mint_batch_internal(
     assert!(res.contains(&(from, codec)));
 }
 
-pub fn burn_internal(mtk: &Program<'_>, from: u64, token_id: u128, amount: u128, should_fail: bool) {
+pub fn burn_internal(
+    mtk: &Program<'_>,
+    from: u64,
+    token_id: u128,
+    amount: u128,
+    should_fail: bool,
+) {
     let res = mtk.send(
         from,
         MyMTKAction::Burn {
