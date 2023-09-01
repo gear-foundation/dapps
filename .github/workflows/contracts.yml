@@ -19,8 +19,8 @@ jobs:
     steps:
       - name: Install GCC
         run: |
-          sudo apt update
-          sudo apt install gcc
+          sudo apt-get update
+          sudo apt-get install gcc
 
       - name: Checkout
         uses: actions/checkout@v3
