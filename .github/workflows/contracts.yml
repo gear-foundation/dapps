@@ -19,9 +19,7 @@ jobs:
     steps:
       - name: Install GCC
         run: |
-          cat /etc/os-release
-          sudo apt-get update
-          sudo apt-get install gcc
+          dnf install gcc
 
       - name: Checkout
         uses: actions/checkout@v3
