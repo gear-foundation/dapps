@@ -17,9 +17,9 @@ jobs:
       run:
         working-directory: contracts
     steps:
-      - name: Install GCC
+      - name: Install software
         run: |
-          sudo dnf install gcc-c++ -y
+          sudo dnf install gcc-c++ rustup -y
 
       - name: Checkout
         uses: actions/checkout@v3
