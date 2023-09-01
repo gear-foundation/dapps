@@ -194,7 +194,7 @@ gear-core = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
 # External
 
 primitive-types = { version = "0.12", default-features = false }
-sp-core = "22"
+sp-core = { version = "22", default-features = false, features = ["full_crypto", "sp-externalities"] }
 sp-core-hashing = { version = "10", default-features = false }
 tokio = "1"
 blake2-rfc = "0.2"
