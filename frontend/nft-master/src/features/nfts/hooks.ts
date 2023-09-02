@@ -7,7 +7,7 @@ import { atom, useAtom } from 'jotai';
 import metaMasterNFT from 'assets/master_nft.meta.txt';
 import metaTxt from 'assets/nft_master.meta.txt';
 import metaWasm from 'assets/market_nft_state.meta.wasm';
-import { useProgramMetadata, useStateMetadata } from 'hooks';
+import { sleep, useProgramMetadata, useStateMetadata } from 'hooks';
 import { useLocation, useSearchParams } from 'react-router-dom';
 import { useNodeAddress } from 'features/node-switch';
 import { isHex } from '@polkadot/util';
@@ -282,13 +282,19 @@ export function useTestnetNFT() {
 
   const mintTestnetNFT = () => {
     setIsMinting(true);
-    sendMessage({ Mint: null }, { onSuccess: () => setIsMinting(false), onError: () => setIsMinting(false) });
+    sendMessage(
+      { Mint: null },
+      {
+        onSuccess: () => {
+          setIsMinting(false);
+          sleep(1).then(() => {
+            if (!isStateRead) getAllNFTs();
+          });
+        },
+        onError: () => setIsMinting(false),
+      },
+    );
   };
-
-  useEffect(() => {
-    if (!isStateRead) getAllNFTs();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isStateRead]);
 
   return {
     isMinting,

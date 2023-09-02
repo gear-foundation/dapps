@@ -6,6 +6,11 @@ import { atom, useAtom } from 'jotai';
 
 const isPendingUI = atom<boolean>(false);
 
+// Set value in seconds
+export const sleep = (s: number) =>
+  // eslint-disable-next-line no-promise-executor-return
+  new Promise((resolve) => setTimeout(resolve, s * 1000));
+
 export function usePendingUI() {
   const [isPending, setIsPending] = useAtom(isPendingUI);
   return { isPending, setIsPending };
