@@ -14,7 +14,6 @@ import { isHex } from '@polkadot/util';
 import { useContractAddress } from '../contract-address';
 import { MasterContractState, NFTContractState } from './types';
 import { NFTS_ATOM, NFT_CONTRACTS_ATOM, TESTNET_NFT_CONTRACT_ADDRESS } from './consts';
-// import { useSendMessage } from '../../hooks/useSendMessage';
 
 const handleStateChange = ({ data }: MessagesDispatched, programId: HexString, onChange: () => void) => {
   const changedIDs = data.stateChanges.toHuman() as HexString[];
@@ -81,21 +80,89 @@ export function useGetAllNFTs() {
   return { getAllNFTs, isStateRead };
 }
 
+export function useGetTestnetUserNFTs() {
+  const { api } = useApi();
+  const { account } = useAccount();
+  const alert = useAlert();
+  const { getAllNFTs } = useGetAllNFTs();
+  const { searchQuery } = useNFTSearch();
+  const metawasm = useStateMetadata(metaWasm);
+
+  const { pathname } = useLocation();
+
+  const [NFTs, setNFTs] = useAtom(NFTS_ATOM);
+  const [NFTContracts] = useAtom(NFT_CONTRACTS_ATOM);
+
+  useEffect(() => {
+    console.log({ NFTs });
+  }, [NFTs]);
+
+  const getTestnetNFTs = () => {
+    if (!NFTContracts || !metawasm?.buffer) return;
+
+    const getUserNFT = (storage: [HexString, string]) => {
+      const [programId, metaRaw] = storage;
+      const metadata = getProgramMetadata(`0x${metaRaw}`);
+
+      api.programState
+        .read({ programId }, metadata)
+        .then((codec) => codec.toHuman() as NFTContractState)
+        .then(({ tokens, collection }) =>
+          tokens.map(([id, token]) => ({ ...token, id, programId, collection: collection.name })),
+        )
+        .then((result) => {
+          const candidates = result.flat();
+          if (NFTs?.length !== candidates.length) setNFTs(candidates);
+          // setNFTs(candidates);
+        })
+        .catch(({ message }: Error) => alert.error(message));
+    };
+
+    getStateMetadata(metawasm?.buffer)
+      .then((stateMetadata) =>
+        api.programState.readUsingWasm(
+          {
+            programId: TESTNET_NFT_CONTRACT_ADDRESS,
+            wasm: metawasm?.buffer,
+            fn_name: 'get_storage_id',
+            argument: account?.decodedAddress,
+          },
+          stateMetadata,
+        ),
+      )
+      .then((storageId) => {
+        const userStorage = NFTContracts.find(([address]) => storageId.toHuman() === address);
+
+        if (userStorage && !searchQuery) {
+          const nftStorageId = pathname.slice(1, pathname.indexOf('/', 1));
+          const isViewingNFT = isHex(nftStorageId);
+          const [programId] = userStorage;
+          if (isViewingNFT) {
+            if (nftStorageId === programId) getUserNFT(userStorage);
+            else getAllNFTs();
+          } else getUserNFT(userStorage);
+        } else getAllNFTs();
+      })
+      .catch(({ message }: Error) => alert.error(message));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  };
+
+  return { getTestnetNFTs };
+}
+
 export function useNFTsState() {
   const { api, isApiReady } = useApi();
   const { account, isAccountReady } = useAccount();
   const alert = useAlert();
-  const metawasm = useStateMetadata(metaWasm);
-  const { pathname } = useLocation();
-  const { isTestnet } = useNodeAddress();
   const { contractAddress: masterContractAddress } = useContractAddress();
   const masterMetadata = useProgramMetadata(metaTxt);
-
-  const { searchQuery } = useNFTSearch();
-  const { getAllNFTs } = useGetAllNFTs();
+  const { isTestnet } = useNodeAddress();
 
   const [NFTContracts, setNFTContracts] = useAtom(NFT_CONTRACTS_ATOM);
-  const [NFTs, setNFTs] = useAtom(NFTS_ATOM);
+  const [NFTs] = useAtom(NFTS_ATOM);
+
+  const { getAllNFTs } = useGetAllNFTs();
+  const { getTestnetNFTs } = useGetTestnetUserNFTs();
 
   const readMasterContractState = () => {
     if (!isApiReady || !masterContractAddress || !masterMetadata) return;
@@ -130,55 +197,10 @@ export function useNFTsState() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isApiReady, isAccountReady, masterContractAddress, masterMetadata]);
 
-  const getUserNFT = (storage: [HexString, string]) => {
-    const [programId, metaRaw] = storage;
-    const metadata = getProgramMetadata(`0x${metaRaw}`);
-
-    api.programState
-      .read({ programId }, metadata)
-      .then((codec) => codec.toHuman() as NFTContractState)
-      .then(({ tokens, collection }) =>
-        tokens.map(([id, token]) => ({ ...token, id, programId, collection: collection.name })),
-      )
-      .then((result) => setNFTs(result.flat()))
-      .catch(({ message }: Error) => alert.error(message));
-  };
-
-  const getTestnetNFTs = () => {
-    if (!NFTContracts || !isTestnet || !metawasm?.buffer) return;
-
-    getStateMetadata(metawasm?.buffer)
-      .then((stateMetadata) =>
-        api.programState.readUsingWasm(
-          {
-            programId: TESTNET_NFT_CONTRACT_ADDRESS,
-            wasm: metawasm?.buffer,
-            fn_name: 'get_storage_id',
-            argument: account?.decodedAddress,
-          },
-          stateMetadata,
-        ),
-      )
-      .then((storageId) => {
-        const userStorage = NFTContracts.find(([address]) => storageId.toHuman() === address);
-
-        if (userStorage && !searchQuery) {
-          const nftStorageId = pathname.slice(1, pathname.indexOf('/', 1));
-          const isViewingNFT = isHex(nftStorageId);
-          const [programId] = userStorage;
-          if (isViewingNFT) {
-            if (nftStorageId === programId) getUserNFT(userStorage);
-            else getAllNFTs();
-          } else getUserNFT(userStorage);
-        } else getAllNFTs();
-      })
-      .catch(({ message }: Error) => alert.error(message));
-  };
-
   const readNFTContractsStates = () => {
     if (!NFTContracts) return;
 
-    if (isTestnet && metawasm?.buffer) {
+    if (isTestnet) {
       // is user is logged in, read only his nft storage state
       if (account) getTestnetNFTs();
       else getAllNFTs();
@@ -208,7 +230,7 @@ export function useNFTsState() {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [NFTContracts, account?.decodedAddress]);
+  }, [NFTContracts, account?.decodedAddress, NFTs]);
 
   return masterContractAddress ? !!NFTs : true;
 }
@@ -285,11 +307,10 @@ export function useTestnetNFT() {
     sendMessage(
       { Mint: null },
       {
-        onSuccess: () => {
+        onSuccess: async () => {
+          await sleep(0.5);
           setIsMinting(false);
-          sleep(1).then(() => {
-            if (!isStateRead) getAllNFTs();
-          });
+          if (!isStateRead) getAllNFTs();
         },
         onError: () => setIsMinting(false),
       },
