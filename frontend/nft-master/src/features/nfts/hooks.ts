@@ -282,11 +282,13 @@ export function useTestnetNFT() {
 
   const mintTestnetNFT = () => {
     setIsMinting(true);
-
-    if (!isStateRead) getAllNFTs();
-
     sendMessage({ Mint: null }, { onSuccess: () => setIsMinting(false), onError: () => setIsMinting(false) });
   };
+
+  useEffect(() => {
+    if (!isStateRead) getAllNFTs();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isStateRead]);
 
   return {
     isMinting,
