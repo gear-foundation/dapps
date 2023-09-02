@@ -5,7 +5,6 @@ import { withProviders } from 'hocs';
 import { useNFTsState, useTestnetAutoLogin } from 'features/nfts';
 import { useSearchParamsSetup } from 'features/node-switch';
 import 'App.scss';
-import { useEffect, useRef } from 'react';
 import { useTestnetNFTSetup } from './features/nfts/hooks';
 import { usePendingUI } from './hooks';
 
@@ -13,7 +12,7 @@ function Component() {
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
   const isAppReady = isApiReady && isAccountReady;
-  const ref = useRef<null | number>(null);
+  // const ref = useRef<null | number>(null);
 
   useSearchParamsSetup();
   useTestnetAutoLogin();
@@ -23,20 +22,15 @@ function Component() {
   const isTestnetStateReady = useTestnetNFTSetup();
   const isEachStateReady = isNFTStateReady && isTestnetStateReady && !isPending;
 
-  useEffect(() => {
-    console.log({ isNFTStateReady, isTestnetStateReady, isNOTPending: !isPending });
-  }, [isNFTStateReady, isPending, isTestnetStateReady]);
-
-  useEffect(() => {
-    if (!ref.current) ref.current = performance.now();
-    console.log({ isNFTStateReady, isTestnetStateReady });
-
-    if (isNFTStateReady && ref.current) {
-      const diff = Math.floor((performance.now() - ref.current) * 1000) / 1_000_000;
-      console.log(`${diff} seconds`);
-      ref.current = null;
-    }
-  }, [isNFTStateReady, isTestnetStateReady]);
+  // useEffect(() => {
+  //   if (!ref.current) ref.current = performance.now();
+  //
+  //   if (isNFTStateReady && ref.current) {
+  //     const diff = Math.floor((performance.now() - ref.current) * 1000) / 1_000_000;
+  //     console.log(`${diff} seconds`);
+  //     ref.current = null;
+  //   }
+  // }, [isNFTStateReady, isTestnetStateReady]);
 
   return (
     <>
