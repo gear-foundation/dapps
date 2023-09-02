@@ -14,6 +14,7 @@ import { isHex } from '@polkadot/util';
 import { useContractAddress } from '../contract-address';
 import { MasterContractState, NFTContractState } from './types';
 import { NFTS_ATOM, NFT_CONTRACTS_ATOM, TESTNET_NFT_CONTRACT_ADDRESS } from './consts';
+// import { useSendMessage } from '../../hooks/useSendMessage';
 
 const handleStateChange = ({ data }: MessagesDispatched, programId: HexString, onChange: () => void) => {
   const changedIDs = data.stateChanges.toHuman() as HexString[];
@@ -272,7 +273,7 @@ export function useTestnetNFT() {
   const { isTestnet } = useNodeAddress();
   const { account } = useAccount();
   const metadata = useProgramMetadata(metaMasterNFT);
-  const sendMessage = useSendMessage(TESTNET_NFT_CONTRACT_ADDRESS, metadata);
+  const sendMessage = useSendMessage(TESTNET_NFT_CONTRACT_ADDRESS, metadata, { isMaxGasLimit: true });
   const [isMinter] = useAtom(TESTNET_NFT_IS_MINTER_ATOM);
 
   const [isMinting, setIsMinting] = useState(false);
