@@ -90,12 +90,8 @@ export function useGetTestnetUserNFTs() {
 
   const { pathname } = useLocation();
 
-  const [NFTs, setNFTs] = useAtom(NFTS_ATOM);
+  const [, setNFTs] = useAtom(NFTS_ATOM);
   const [NFTContracts] = useAtom(NFT_CONTRACTS_ATOM);
-
-  useEffect(() => {
-    console.log({ NFTs });
-  }, [NFTs]);
 
   const getTestnetNFTs = () => {
     if (!NFTContracts || !metawasm?.buffer) return;
@@ -110,11 +106,7 @@ export function useGetTestnetUserNFTs() {
         .then(({ tokens, collection }) =>
           tokens.map(([id, token]) => ({ ...token, id, programId, collection: collection.name })),
         )
-        .then((result) => {
-          const candidates = result.flat();
-          if (NFTs?.length !== candidates.length) setNFTs(candidates);
-          // setNFTs(candidates);
-        })
+        .then((result) => setNFTs(result.flat()))
         .catch(({ message }: Error) => alert.error(message));
     };
 
@@ -230,7 +222,7 @@ export function useNFTsState() {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [NFTContracts, account?.decodedAddress, NFTs]);
+  }, [NFTContracts, account?.decodedAddress]);
 
   return masterContractAddress ? !!NFTs : true;
 }
