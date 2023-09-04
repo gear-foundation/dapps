@@ -1,5 +1,5 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
 import { Button, buttonVariants, Container } from 'components';
@@ -86,6 +86,10 @@ function NFTs({ slider }: Props) {
         </li>
       );
     });
+
+  if (!account && !searchQuery) {
+    return <Navigate to="/" replace />;
+  }
 
   return (
     <div className={styles.wrapper}>
