@@ -1,8 +1,8 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { useKeenSlider } from 'keen-slider/react';
 import clsx from 'clsx';
-import { buttonVariants, Container } from 'components';
+import { Button, buttonVariants, Container } from 'components';
 import { useNodeAddress } from 'features/node-switch';
 import { ReactComponent as ArrowLeftSVG } from '../../assets/arrow-left.svg';
 import { useNFTSearch, useNFTs, useTestnetNFT } from '../../hooks';
@@ -16,6 +16,7 @@ function NFTs({ slider }: Props) {
   const { nfts } = useNFTs();
   const { searchQuery, decodedQueryAddress } = useNFTSearch();
   const { account } = useAccount();
+  const navigate = useNavigate();
 
   const { isTestnet, getImageUrl } = useNodeAddress();
   const { mintTestnetNFT, isTestnetNFTMintAvailable, isMinting } = useTestnetNFT();
@@ -86,6 +87,10 @@ function NFTs({ slider }: Props) {
       );
     });
 
+  if (!account && !searchQuery) {
+    return <Navigate to="/" replace />;
+  }
+
   return (
     <div className={styles.wrapper}>
       {isAnyNFT ? (
@@ -136,18 +141,23 @@ function NFTs({ slider }: Props) {
 
               {!isMinting && !isTestnetNFTMintAvailable && (
                 <>
-                  <p className={styles.placeholderHeading}>You are currently not part of the Vara Network Testnet.</p>
-                  <p className={styles.placeholderText}>
-                    More information can be found in our <br />
-                    <a href="https://discord.com/invite/7BQznC9uD9" target="_blank" rel="noreferrer">
-                      Discord
-                    </a>{' '}
-                    and{' '}
-                    <a href="https://t.me/VaraNetwork_Global" target="_blank" rel="noreferrer">
-                      Telegram
-                    </a>
-                    .
+                  <p className={styles.placeholderHeading}>There is nothing here yet</p>
+                  <p className={clsx(styles.placeholderText, styles.placeholderTextMax)}>
+                    Due to high system load, it may take some time to process your NFT. Please try again in several
+                    minutes or refresh the&nbsp;page.
+                    <br />
+                    If you are not currently part of the Vara Network Testnet, click on &quot;Register&quot;.
                   </p>
+                  <div className={styles.placeholder__actions}>
+                    <Button onClick={() => navigate(0)}>Reload page</Button>
+                    <a
+                      href="https://gear-faucet.vara-network.io/links/6a8caca9-8833-49ee-ba06-55f5943d770f"
+                      target="_blank"
+                      rel="noreferrer"
+                      className={buttonVariants({ variant: 'black' })}>
+                      Register
+                    </a>
+                  </div>
                 </>
               )}
             </>

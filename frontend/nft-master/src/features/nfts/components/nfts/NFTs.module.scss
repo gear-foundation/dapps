@@ -118,6 +118,7 @@
   padding: 0 20px;
   text-align: center;
   background: url('../../assets/placeholder.svg') center/100% 100% no-repeat;
+  @include gap(18px);
 
   @include lg {
     background-size: 150% 100%;
@@ -128,7 +129,6 @@
   }
 
   &Heading {
-    margin-bottom: 10px;
     font-weight: 500;
     font-size: 28px;
     line-height: 120%;
@@ -139,6 +139,22 @@
     font-weight: 400;
     font-size: 18px;
     line-height: 140%;
+  }
+
+  &TextMax {
+    max-width: 994px;
+  }
+
+  &__actions {
+    display: grid;
+    grid-template-columns: 175px 175px;
+    justify-content: center;
+    width: 100%;
+    grid-gap: 16px;
+
+    @include sm {
+      grid-template-columns: 1fr;
+    }
   }
 }
 

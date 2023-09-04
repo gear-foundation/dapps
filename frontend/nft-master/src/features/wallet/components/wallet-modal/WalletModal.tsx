@@ -2,17 +2,14 @@ import { decodeAddress } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
 import { useNavigate } from 'react-router-dom';
 import { copyToClipboard } from 'utils';
-import { Button, Modal, ScrollArea } from 'components';
+import { AccountIcon, Button, Modal, ScrollArea } from 'components';
 import { ReactComponent as EditSVG } from 'assets/images/icons/edit.svg';
 import { ReactComponent as CopySVG } from 'assets/images/icons/copy.svg';
-import { lazy, Suspense } from 'react';
 import { ExitSVG } from '../../assets';
 import { WALLETS } from '../../consts';
 import { useWallet } from '../../hooks';
 import { WalletItem } from '../wallet-item';
 import styles from './WalletModal.module.scss';
-
-const Identicon = lazy(() => import('@polkadot/react-identicon'));
 
 type Props = {
   onClose: () => void;
@@ -76,9 +73,7 @@ function WalletModal({ onClose }: Props) {
             className={styles.button}
             onClick={handleAccountClick}
             disabled={isActive}>
-            <Suspense>
-              <Identicon value={address} size={20} theme="polkadot" className={styles.accountIcon} />
-            </Suspense>
+            <AccountIcon value={address} className={styles.accountIcon} />
             <span>{meta.name}</span>
           </Button>
 

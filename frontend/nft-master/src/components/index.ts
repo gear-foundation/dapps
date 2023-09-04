@@ -25,3 +25,4 @@ export {
   ScrollBar,
   ScrollArea,
 };
+export { AccountIcon } from './ui/account-icon';
