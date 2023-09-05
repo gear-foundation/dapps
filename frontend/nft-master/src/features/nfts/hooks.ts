@@ -1,4 +1,4 @@
-import { MessagesDispatched, decodeAddress, getProgramMetadata, getStateMetadata } from '@gear-js/api';
+import { MessagesDispatched, ProgramMetadata, decodeAddress, getStateMetadata } from '@gear-js/api';
 import { useAccount, useAlert, useApi, useSendMessage } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
@@ -57,11 +57,10 @@ export function useGetAllNFTs() {
     if (!NFTContracts) return;
 
     const promises = NFTContracts.map(([programId, metaRaw]) => {
-      const metaHex = `0x${metaRaw}`;
-      const metadata = getProgramMetadata(metaHex);
+      const metadata = ProgramMetadata.from(`0x${metaRaw}`);
 
       return api.programState
-        .read({ programId }, metadata)
+        .read({ programId, payload: '0x' }, metadata)
         .then((codec) => codec.toHuman() as NFTContractState)
         .then(({ tokens, collection }) =>
           tokens.map(([id, token]) => ({ ...token, id, programId, collection: collection.name })),
@@ -87,6 +86,7 @@ export function useGetTestnetUserNFTs() {
   const { getAllNFTs } = useGetAllNFTs();
   const { searchQuery } = useNFTSearch();
   const metawasm = useStateMetadata(metaWasm);
+  const masterMetadata = useProgramMetadata(metaTxt);
 
   const { pathname } = useLocation();
 
@@ -94,14 +94,14 @@ export function useGetTestnetUserNFTs() {
   const [NFTContracts] = useAtom(NFT_CONTRACTS_ATOM);
 
   const getTestnetNFTs = () => {
-    if (!NFTContracts || !metawasm?.buffer) return;
+    if (!NFTContracts || !metawasm?.buffer || !masterMetadata) return;
 
     const getUserNFT = (storage: [HexString, string]) => {
       const [programId, metaRaw] = storage;
-      const metadata = getProgramMetadata(`0x${metaRaw}`);
+      const metadata = ProgramMetadata.from(`0x${metaRaw}`);
 
       api.programState
-        .read({ programId }, metadata)
+        .read({ programId, payload: '0x' }, metadata)
         .then((codec) => codec.toHuman() as NFTContractState)
         .then(({ tokens, collection }) =>
           tokens.map(([id, token]) => ({ ...token, id, programId, collection: collection.name })),
@@ -120,6 +120,7 @@ export function useGetTestnetUserNFTs() {
             argument: account?.decodedAddress,
           },
           stateMetadata,
+          masterMetadata,
         ),
       )
       .then((storageId) => {
@@ -162,7 +163,7 @@ export function useNFTsState() {
     const programId = masterContractAddress;
 
     api.programState
-      .read({ programId }, masterMetadata)
+      .read({ programId, payload: `0x` }, masterMetadata)
       .then((codec) => codec.toHuman() as MasterContractState)
       .then(({ nfts }) => setNFTContracts(nfts))
       .catch(({ message }: Error) => alert.error(message));
@@ -242,10 +243,11 @@ export function useTestnetNFTSetup() {
   const { isTestnet } = useNodeAddress();
   const alert = useAlert();
   const metawasm = useStateMetadata(metaWasm);
+  const masterMetadata = useProgramMetadata(metaTxt);
   const [isMinter, setIsMinter] = useAtom(TESTNET_NFT_IS_MINTER_ATOM);
 
   const readState = () => {
-    if (!api || !metawasm) return;
+    if (!api || !metawasm || !masterMetadata) return;
 
     getStateMetadata(metawasm?.buffer)
       .then((stateMetadata) =>
@@ -257,6 +259,7 @@ export function useTestnetNFTSetup() {
             argument: account?.decodedAddress,
           },
           stateMetadata,
+          masterMetadata,
         ),
       )
       .then((result) => setIsMinter(result.toHuman() as boolean))

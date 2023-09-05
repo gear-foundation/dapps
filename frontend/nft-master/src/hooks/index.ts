@@ -1,4 +1,4 @@
-import { ProgramMetadata, getProgramMetadata, StateMetadata, getStateMetadata } from '@gear-js/api';
+import { ProgramMetadata, StateMetadata, getStateMetadata } from '@gear-js/api';
 import { useAlert, useReadFullState } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { useState, useEffect, useRef } from 'react';
@@ -24,8 +24,7 @@ function useProgramMetadata(source: string) {
   useEffect(() => {
     fetch(source)
       .then((response) => response.text())
-      .then((raw) => `0x${raw}` as HexString)
-      .then((metaHex) => getProgramMetadata(metaHex))
+      .then((raw) => ProgramMetadata.from(`0x${raw}`))
       .then((result) => setMetadata(result))
       .catch(({ message }: Error) => alert.error(message));
 
@@ -34,7 +33,6 @@ function useProgramMetadata(source: string) {
 
   return metadata;
 }
-
 export function useStateMetadata(source: string) {
   const alert = useAlert();
 
@@ -62,7 +60,7 @@ export function useStateMetadata(source: string) {
 
 export function useReadState<T>({ programId, meta }: { programId?: HexString; meta: string }) {
   const metadata = useProgramMetadata(meta);
-  return useReadFullState<T>(programId, metadata);
+  return useReadFullState<T>(programId, metadata, '0x');
 }
 
 const useOutsideClick = <TElement extends Element>(callback: (event: MouseEvent) => void) => {
