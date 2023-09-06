@@ -4,7 +4,7 @@ import { HexString } from '@polkadot/util/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { useEffect, useMemo, useState } from 'react';
 import { atom, useAtom } from 'jotai';
-import metaMasterNFT from 'assets/master_nft.meta.txt';
+import metaMarketNFT from 'assets/master_nft.meta.txt';
 import metaTxt from 'assets/nft_master.meta.txt';
 import metaWasm from 'assets/market_nft_state.meta.wasm';
 import { sleep, useProgramMetadata, useStateMetadata } from 'hooks';
@@ -289,8 +289,8 @@ export function useTestnetNFT() {
   const { nfts } = useNFTs();
   const { isTestnet } = useNodeAddress();
   const { account } = useAccount();
-  const metadata = useProgramMetadata(metaMasterNFT);
-  const sendMessage = useSendMessage(TESTNET_NFT_CONTRACT_ADDRESS, metadata, { isMaxGasLimit: true });
+  const marketMetadata = useProgramMetadata(metaMarketNFT);
+  const sendMessage = useSendMessage(TESTNET_NFT_CONTRACT_ADDRESS, marketMetadata, { isMaxGasLimit: true });
   const [isMinter] = useAtom(TESTNET_NFT_IS_MINTER_ATOM);
 
   const [isMinting, setIsMinting] = useState(false);
@@ -320,15 +320,13 @@ export function useTestnetNFT() {
 }
 
 export function useTestnetAutoLogin() {
-  const { isTestnet } = useNodeAddress();
-
   const { login, accounts, isAccountReady } = useAccount();
   const alert = useAlert();
 
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
-    if (!isTestnet || !isAccountReady) return;
+    if (!isAccountReady) return;
 
     const accountAddress = searchParams.get('account');
 
@@ -345,5 +343,5 @@ export function useTestnetAutoLogin() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, accounts, isTestnet, isAccountReady]);
+  }, [searchParams, accounts, isAccountReady]);
 }
