@@ -4,8 +4,6 @@ on:
   workflow_dispatch:
   push:
     branches: ['master', 'main', 'staging']
-    paths:
-      - frontend/**
 
 concurrency: 
   group: ${{ github.workflow }}-${{ github.ref }}
