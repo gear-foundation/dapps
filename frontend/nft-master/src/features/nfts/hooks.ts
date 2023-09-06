@@ -12,7 +12,7 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import { isHex } from '@polkadot/util';
 import { useContractAddress } from '../contract-address';
 import { MasterContractState, NFTContractState } from './types';
-import { NFTS_ATOM, NFT_CONTRACTS_ATOM, TESTNET_NFT_CONTRACT_ADDRESS } from './consts';
+import { NFTS_ATOM, NFT_CONTRACTS_ATOM } from './consts';
 import { ADDRESS } from '../../consts';
 
 const handleStateChange = ({ data }: MessagesDispatched, programId: HexString, onChange: () => void) => {
@@ -242,7 +242,6 @@ export function useTestnetNFTSetup() {
   const metawasm = useStateMetadata(metaWasmMasterNFT);
   const masterMetadata = useProgramMetadata(metaMasterNFT);
   const [isMinter, setIsMinter] = useAtom(TESTNET_NFT_IS_MINTER_ATOM);
-  console.log({ isMinter });
   const readState = () => {
     if (!api || !metawasm || !masterMetadata) return;
 
@@ -269,7 +268,7 @@ export function useTestnetNFTSetup() {
     readState();
 
     const unsub = api.gearEvents.subscribeToGearEvent('MessagesDispatched', (event) =>
-      handleStateChange(event, TESTNET_NFT_CONTRACT_ADDRESS, readState),
+      handleStateChange(event, ADDRESS.DEFAULT_TESTNET_CONTRACT, readState),
     );
 
     return () => {
@@ -286,7 +285,7 @@ export function useTestnetNFT() {
   const { nfts } = useNFTs();
   const { account } = useAccount();
   const marketMetadata = useProgramMetadata(metaMarketNFT);
-  const sendMessage = useSendMessage(TESTNET_NFT_CONTRACT_ADDRESS, marketMetadata, { isMaxGasLimit: true });
+  const sendMessage = useSendMessage(ADDRESS.DEFAULT_TESTNET_CONTRACT, marketMetadata, { isMaxGasLimit: true });
   const [isMinter] = useAtom(TESTNET_NFT_IS_MINTER_ATOM);
 
   const [isMinting, setIsMinting] = useState(false);
