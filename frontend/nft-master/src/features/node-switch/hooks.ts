@@ -15,10 +15,9 @@ const addressAtom = atom(
 function useNodeAddress() {
   const [nodeAddress] = useAtom(addressAtom);
 
-  const isTestnet = nodeAddress === 'wss://vit.vara-network.io';
+  const isTestnet = true;
 
-  const getIpfsAddress = (cid: string) =>
-    isTestnet ? `${ADDRESS.TESTNET_IPFS_GATEWAY}/${cid}` : `${ADDRESS.IPFS_GATEWAY}/${cid}`;
+  const getIpfsAddress = (cid: string) => `${ADDRESS.IPFS_GATEWAY}/${cid}`;
 
   const getImageUrl = (value: string) => (value.startsWith('https://') ? value : getIpfsAddress(value));
 
