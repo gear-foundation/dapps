@@ -133,9 +133,9 @@ function NFTs({ slider }: Props) {
                   <p className={styles.placeholderText}>
                     To obtain your NFT, click the &quot;Mint&nbsp;NFT&quot;&nbsp;button.
                   </p>
-                  <button type="button" onClick={mintTestnetNFT} className={styles.button} disabled={isMinting}>
+                  <Button onClick={mintTestnetNFT} className={styles.button} isLoading={isMinting}>
                     Mint NFT
-                  </button>
+                  </Button>
                 </>
               )}
 
