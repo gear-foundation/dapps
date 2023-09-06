@@ -1,50 +1,78 @@
 name: Build and Deploy simple-nft
 
 on:
-  push:
-    branches: ['master']
   workflow_dispatch:
+  push:
+    branches: ['master', 'main', 'staging']
+    paths:
+      - frontend/**
+
+concurrency: 
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository }}
+  ENVIRONMENT: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && 'prod' || 'stg' }}
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+  KUBECTL_VERSION: "v1.22.17"
+  KUBE_NAMESPACE: gear-dapps
+  KUBE_DEPLOYMENT_PREFIX: simple-nft
+  REGISTRY: ghcr.io/${{ github.repository }}
 
 jobs:
-  wait-previous-run:
+  prepair:
     runs-on: ubuntu-latest
+    outputs:
+      image_name: ${{ steps.image.outputs.image_name }}
     steps:
-      - uses: mktcode/consecutive-workflow-action@v1 # please read security note
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          
-  build-simple-nft-image:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get branch
+        id: branch
+        run: |
+          branch_name=${GITHUB_REF#refs/heads/}
+          echo "branch_name=$branch_name" >> $GITHUB_ENV
+
+      - name: Get short SHA
+        id: sha
+        run: |
+          sha_short=$(git rev-parse --short HEAD)
+          echo "sha_short=$sha_short" >> $GITHUB_ENV
+
+      - name: Set IMAGE_NAME
+        id: image
+        run: |
+          image_name=${{ env.REGISTRY }}-${{ env.KUBE_DEPLOYMENT_PREFIX }}:${{ env.branch_name }}-${{ env.sha_short }}
+          echo "image_name=$image_name" >> $GITHUB_OUTPUT
+
+  build-and-push-image:
+    needs: [prepair]
     runs-on: ubuntu-latest
-    needs: [wait-previous-run]
+    environment: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && 'prod' || 'stg' }}
     permissions:
       contents: read
       packages: write
-
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Log in to the github container registry
-        uses: docker/login-action@master
+        uses: docker/login-action@v2
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Simple NFT image
-        uses: docker/build-push-action@master
+      - name: Build and push image
+        uses: docker/build-push-action@v4
         with:
           file: Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
             REACT_APP_DEFAULT_NODES_URL=${{ secrets.REACT_APP_DEFAULT_NODES_URL }}
@@ -56,23 +84,36 @@ jobs:
             REACT_APP_TESTNET_IPFS_GATEWAY_ADDRESS=${{ secrets.REACT_APP_TESTNET_IPFS_GATEWAY_ADDRESS }}
 
   deploy-to-k8s:
-    needs: build-simple-nft-image
+    needs: [prepair, build-and-push-image]
     runs-on: ubuntu-latest
-
+    environment: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && 'prod' || 'stg' }}
     steps:
       - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v1
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - name: Deploy to k8s
-        uses: sergeyfilyanin/kubectl-aws-eks@master
+      - name: Update deployment image
+        uses: kodermax/kubectl-aws-eks@1.1.0
         with:
-          args: rollout restart deployment simple-nft -n gear-dapps
+          args: |
+            set image deployment/${{ env.KUBE_DEPLOYMENT_PREFIX }}-${{ env.ENVIRONMENT }} \
+            ${{ env.KUBE_DEPLOYMENT_PREFIX }}-${{ env.ENVIRONMENT }}=${{ needs.prepair.outputs.image_name }} \
+            -n ${{ env.KUBE_NAMESPACE }}
 
-      - name: Check k8s deployments
-        uses: sergeyfilyanin/kubectl-aws-eks@master
+      - name: Restart deployment
+        uses: kodermax/kubectl-aws-eks@1.1.0
         with:
-          args: get deployment -o name -n gear-dapps | xargs -n1 -t kubectl rollout status -n gear-dapps --timeout=120s
+          args: |
+            rollout restart deployment/${{ env.KUBE_DEPLOYMENT_PREFIX }}-${{ env.ENVIRONMENT }} \
+            -n ${{ env.KUBE_NAMESPACE }}
+
+      - name: Check deployment
+        uses: kodermax/kubectl-aws-eks@1.1.0
+        with:
+          args: |
+            rollout status deployment/${{ env.KUBE_DEPLOYMENT_PREFIX }}-${{ env.ENVIRONMENT }} \
+            --timeout=120s \
+            -n ${{ env.KUBE_NAMESPACE }}
