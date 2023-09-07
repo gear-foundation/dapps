@@ -117,6 +117,7 @@ export function useGetTestnetUserNFTs() {
             wasm: metawasm?.buffer,
             fn_name: 'get_storage_id',
             argument: account?.decodedAddress,
+            payload: '0x',
           },
           stateMetadata,
           masterMetadata,
@@ -145,7 +146,6 @@ export function useGetTestnetUserNFTs() {
         } else getAllNFTs();
       })
       .catch(({ message }: Error) => alert.error(message));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   };
 
   return { getTestnetNFTs };
