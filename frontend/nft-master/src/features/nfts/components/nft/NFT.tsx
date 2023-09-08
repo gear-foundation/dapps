@@ -128,7 +128,7 @@ function NFT() {
               )}
 
               <div className={styles.buttons}>
-                <Button variant="outline" className={styles.backButton} onClick={handleBackButtonClick}>
+                <Button variant="outline" onClick={handleBackButtonClick}>
                   <BackArrowSVG />
                   <span>Back</span>
                 </Button>
