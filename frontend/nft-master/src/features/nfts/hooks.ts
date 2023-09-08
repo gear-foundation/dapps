@@ -58,7 +58,7 @@ export function useGetAllNFTs() {
   const getAllNFTs = (cb?: () => void) => {
     if (!NFTContracts) return;
 
-    const promises = NFTContracts.map(([programId, metaRaw]) => {
+    const promises = NFTContracts.map(([programId, metaRaw], index) => {
       const metadata = ProgramMetadata.from(`0x${metaRaw}`);
 
       return api.programState
@@ -90,7 +90,6 @@ export function useGetTestnetUserNFTs() {
   const metawasm = useStateMetadata(metaWasmMasterNFT);
   const masterMetadata = useProgramMetadata(metaMasterNFT);
   const nftMetadata = useProgramMetadata(metaNFT);
-  const { isTestnet } = useNodeAddress();
 
   const { pathname } = useLocation();
 
@@ -115,7 +114,7 @@ export function useGetTestnetUserNFTs() {
       .then((stateMetadata) =>
         api.programState.readUsingWasm(
           {
-            programId: isTestnet ? TESTNET_NFT_CONTRACT_ADDRESS : ADDRESS.DEFAULT_TESTNET_CONTRACT,
+            programId: TESTNET_NFT_CONTRACT_ADDRESS,
             wasm: metawasm?.buffer,
             fn_name: 'get_storage_id',
             argument: account?.decodedAddress,
@@ -159,6 +158,7 @@ export function useNFTsState() {
   const alert = useAlert();
   const { contractAddress: masterContractAddress } = useContractAddress();
   const masterMetadata = useProgramMetadata(metaMasterNFT);
+  const { isTestnet } = useNodeAddress();
 
   const [NFTContracts, setNFTContracts] = useAtom(NFT_CONTRACTS_ATOM);
   const [NFTs] = useAtom(NFTS_ATOM);
@@ -201,9 +201,11 @@ export function useNFTsState() {
 
   const readNFTContractsStates = () => {
     if (!NFTContracts) return;
-    // is user is logged in, read only his nft storage state
-    if (account) getTestnetNFTs();
-    else getAllNFTs();
+    if (isTestnet) {
+      // is user is logged in, read only his nft storage state
+      if (account) getTestnetNFTs();
+      else getAllNFTs();
+    } else getAllNFTs();
   };
 
   useEffect(() => {
@@ -261,7 +263,7 @@ export function useTestnetNFTSetup() {
       .then((stateMetadata) =>
         api.programState.readUsingWasm(
           {
-            programId: isTestnet ? TESTNET_NFT_CONTRACT_ADDRESS : ADDRESS.DEFAULT_TESTNET_CONTRACT,
+            programId: TESTNET_NFT_CONTRACT_ADDRESS,
             wasm: metawasm?.buffer,
             fn_name: 'in_minter_list',
             argument: account?.decodedAddress,
@@ -275,7 +277,7 @@ export function useTestnetNFTSetup() {
   };
 
   useEffect(() => {
-    if (!isApiReady || !metawasm) return;
+    if (!isTestnet || !isApiReady || !metawasm) return;
 
     readState();
 
@@ -288,9 +290,9 @@ export function useTestnetNFTSetup() {
     };
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isApiReady, account?.decodedAddress]);
+  }, [isApiReady, account?.decodedAddress, isTestnet]);
 
-  return typeof isMinter !== 'undefined';
+  return isTestnet ? typeof isMinter !== 'undefined' : true;
 }
 
 export function useTestnetNFT() {
