@@ -2,7 +2,7 @@ import { HexString } from '@polkadot/util/types';
 import { useAccount } from '@gear-js/react-hooks';
 import { createSearchParams, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { ChangeEvent, useEffect, useState } from 'react';
-import { Container } from 'components';
+import { Button, Container } from 'components';
 import { useNodeAddress } from 'features/node-switch';
 import { ReactComponent as SearchSVG } from '../../assets/search.svg';
 import { ReactComponent as BackArrowSVG } from '../../assets/back-arrow.svg';
@@ -128,16 +128,16 @@ function NFT() {
               )}
 
               <div className={styles.buttons}>
-                <button type="button" className={styles.backButton} onClick={handleBackButtonClick}>
+                <Button variant="outline" className={styles.backButton} onClick={handleBackButtonClick}>
                   <BackArrowSVG />
                   <span>Back</span>
-                </button>
+                </Button>
 
-                {!isTestnet && account?.decodedAddress === owner && (
-                  <button type="button" className={styles.transferButton} onClick={openTransferModal}>
-                    Transfer
-                  </button>
-                )}
+                {/* {account?.decodedAddress === owner && ( */}
+                {/*  <Button variant="outline" onClick={openTransferModal}> */}
+                {/*    Transfer */}
+                {/*  </Button> */}
+                {/* )} */}
               </div>
             </div>
           </>
