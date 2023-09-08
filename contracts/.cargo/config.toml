@@ -1,0 +1,10 @@
+[alias]
+xtask = "r -p xtask --"
+
+[build]
+rustflags = [
+    "-Wfuture-incompatible",
+    "-Wlet-underscore",
+    "-Wrust-2018-idioms",
+    "-Wunused",
+]

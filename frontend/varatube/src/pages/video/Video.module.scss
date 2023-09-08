@@ -1,0 +1,13 @@
+.wrapper {
+  max-width: 750px;
+  text-align: center;
+
+  > *:not(:last-child) {
+    margin-bottom: 64px;
+  }
+}
+
+.videoWrapper {
+  background-color: rgba(#0d0d11, 0.5);
+  border-radius: 20px;
+}

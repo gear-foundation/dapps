@@ -1,0 +1,18 @@
+wsAddress: wss://node-workshop.gear.rs
+
+accounts:
+   Luisa: "portion below service typical insane grain search later lyrics anchor sister again"
+
+
+programs:
+  - name: Syndote
+    id: 0
+    path_to_wasm: ./programs/syndote.opt.wasm
+    path_to_meta: ./programs/syndote.meta.txt
+    payload: 0x00
+      
+transactions:
+
+  - type: upload_program
+    program: 0
+    account: Luisa

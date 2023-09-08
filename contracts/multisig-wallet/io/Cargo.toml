@@ -1,0 +1,10 @@
+[package]
+name = "multisig-wallet-io"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gmeta.workspace = true
+gstd.workspace = true
+primitive-types.workspace = true

@@ -1,0 +1,24 @@
+.image {
+  position: relative;
+
+  &::before {
+    content: '';
+    display: block;
+    padding-top: 100%;
+  }
+
+  picture {
+    position: absolute;
+    inset: 0 -32px 0 -10px;
+    display: block;
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left center;
+    overflow: visible;
+  }
+}

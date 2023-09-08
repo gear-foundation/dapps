@@ -1,0 +1,9 @@
+@use 'utils' as *;
+
+.button {
+  max-width: 175px;
+
+  span {
+    @include textOverflow;
+  }
+}

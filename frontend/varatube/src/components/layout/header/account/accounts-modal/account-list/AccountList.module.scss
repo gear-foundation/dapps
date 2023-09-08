@@ -1,0 +1,23 @@
+@use '@gear-js/ui/variables' as *;
+
+.accountList {
+  > *:not(:last-child) {
+    margin-bottom: 16px;
+  }
+}
+
+.accountButton {
+  width: 100%;
+  font-weight: 500;
+  text-transform: uppercase;
+  padding: 16px 40px;
+
+  &.active {
+    background-color: $successColor;
+  }
+}
+
+.accountName {
+  font-size: 16px;
+  padding: 0 5px;
+}

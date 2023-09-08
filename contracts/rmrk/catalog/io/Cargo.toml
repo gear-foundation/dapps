@@ -1,0 +1,10 @@
+[package]
+name = "rmrk-catalog-io"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+gmeta.workspace = true
+rmrk-types.workspace = true

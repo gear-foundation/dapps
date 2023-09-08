@@ -1,0 +1,13 @@
+[package]
+name = "dex-factory-state"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+gmeta = { workspace = true, features = ["codegen"] }
+dex-factory-io.workspace = true
+
+[build-dependencies]
+gear-wasm-builder = { workspace = true, features = ["metawasm"] }

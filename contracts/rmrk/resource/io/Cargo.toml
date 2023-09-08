@@ -1,0 +1,10 @@
+[package]
+name = "rmrk-resource-io"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+gmeta.workspace = true
+rmrk-types.workspace = true

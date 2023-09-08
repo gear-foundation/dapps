@@ -1,0 +1,13 @@
+[package]
+name = "fungible-token-state"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+fungible-token-io.workspace = true
+gstd.workspace = true
+gmeta = { workspace = true, features = ["codegen"] }
+
+[build-dependencies]
+gear-wasm-builder = { workspace = true, features = ["metawasm"] }

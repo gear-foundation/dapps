@@ -1,0 +1,13 @@
+[package]
+name = "student-nft-state"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+gmeta = { workspace = true, features = ["codegen"] }
+student-nft-io.workspace = true
+
+[build-dependencies]
+gear-wasm-builder = { workspace = true, features = ["metawasm"] }

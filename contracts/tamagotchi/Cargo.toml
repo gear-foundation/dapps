@@ -1,0 +1,13 @@
+[package]
+name = "tamagotchi"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+tamagotchi-io.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+tamagotchi-io.workspace = true

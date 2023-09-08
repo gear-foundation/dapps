@@ -1,0 +1,12 @@
+[package]
+name = "sharded-fungible-token-logic-io"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+primitive-types.workspace = true
+gmeta.workspace = true
+sharded-fungible-token-storage-io.workspace = true
+sharded-fungible-token-io.workspace = true

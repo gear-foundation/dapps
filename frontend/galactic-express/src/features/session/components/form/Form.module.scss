@@ -1,0 +1,50 @@
+.deposit {
+  margin-bottom: 12px;
+  padding: 8px 32px;
+
+  .heading {
+    text-align: center;
+  }
+
+  .input {
+    max-width: 250px;
+    margin: 0 auto;
+  }
+}
+
+.calculation {
+  padding: 24px 32px;
+}
+
+.heading {
+  margin-bottom: 16px;
+  font-size: 18px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.08em;
+}
+
+.ranges {
+  margin-bottom: 32px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+
+  > *:first-child {
+    padding-right: 28px;
+    border-right: 1px solid rgba(#2d2c34, 0.3);
+  }
+
+  > *:last-child {
+    padding-left: 28px;
+  }
+
+  .input {
+    margin-bottom: 16px;
+  }
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}

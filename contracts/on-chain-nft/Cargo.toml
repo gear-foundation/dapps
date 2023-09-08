@@ -1,0 +1,26 @@
+[package]
+name = "on-chain-nft"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+primitive-types.workspace = true
+gear-lib-old.workspace = true
+gear-lib-derive.workspace = true
+on-chain-nft-io.workspace = true
+gmeta.workspace = true
+
+[dev-dependencies]
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+gclient.workspace = true
+tokio.workspace = true
+
+# External binaries
+on-chain-nft-state.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+on-chain-nft-io.workspace = true

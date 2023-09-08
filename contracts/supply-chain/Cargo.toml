@@ -1,0 +1,31 @@
+[package]
+name = "supply-chain"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+supply-chain-io.workspace = true
+gstd.workspace = true
+non-fungible-token-io.workspace = true
+sharded-fungible-token-io.workspace = true
+gear-lib-old.workspace = true
+
+[dev-dependencies]
+gtest.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+gclient.workspace = true
+tokio.workspace = true
+supply-chain-deploy.workspace = true
+
+# External binaries
+supply-chain-state.workspace = true
+non-fungible-token.workspace = true
+non-fungible-token-state.workspace = true
+sharded-fungible-token.workspace = true
+sharded-fungible-token-logic.workspace = true
+sharded-fungible-token-storage.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+supply-chain-io.workspace = true

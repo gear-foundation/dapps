@@ -1,0 +1,12 @@
+[package]
+name = "gear-lib-derive"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[lib]
+proc-macro = true
+
+[dependencies]
+syn.workspace = true
+quote.workspace = true

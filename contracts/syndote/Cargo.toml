@@ -1,0 +1,19 @@
+[package]
+name = "syndote"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+syndote-io.workspace = true
+
+[dev-dependencies]
+gtest.workspace = true
+
+# External binaries
+syndote-player.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+syndote-io.workspace = true

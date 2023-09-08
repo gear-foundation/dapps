@@ -1,0 +1,22 @@
+[package]
+name = "varatube"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+varatube-io.workspace = true
+fungible-token-io.workspace = true
+gstd.workspace = true
+
+[dev-dependencies]
+varatube-io.workspace = true
+fungible-token-io.workspace = true
+gtest.workspace = true
+
+# External binaries
+fungible-token.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+varatube-io.workspace = true

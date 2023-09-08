@@ -1,0 +1,15 @@
+[package]
+name = "feeds-channel"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+async-trait.workspace = true
+feeds-channel-io.workspace = true
+feeds-io.workspace = true
+
+[build-dependencies]
+feeds-channel-io.workspace = true
+gear-wasm-builder.workspace = true

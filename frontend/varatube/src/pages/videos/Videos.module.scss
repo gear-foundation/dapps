@@ -1,0 +1,59 @@
+@use '@gear-js/ui/headings' as *;
+@use '@gear-js/ui/mixins' as *;
+
+.videos {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 32px;
+}
+
+.videoWrapper {
+  background-color: rgba(#0d0d11, 0.5);
+  border-radius: 20px;
+
+  video {
+    @include transition;
+    display: block;
+    max-width: 100%;
+    max-height: 200px;
+    margin: 0 auto;
+  }
+
+  overflow: hidden;
+}
+
+.video {
+  @include transition;
+
+  &:hover {
+    opacity: 0.75;
+
+    video {
+      transform: scale(2.2);
+    }
+  }
+
+  > *:not(:last-child) {
+    margin-bottom: 8px;
+  }
+}
+
+.heading,
+.description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+}
+
+.heading {
+  @extend %h5;
+  -webkit-line-clamp: 1;
+}
+
+.description {
+  color: #ccc;
+  -webkit-line-clamp: 2;
+  font-size: 12px;
+  color: #ccc;
+}

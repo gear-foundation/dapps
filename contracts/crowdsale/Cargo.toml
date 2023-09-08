@@ -1,0 +1,26 @@
+[package]
+name = "crowdsale"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+sharded-fungible-token-io.workspace = true
+gmeta.workspace = true
+crowdsale-io.workspace = true
+
+[dev-dependencies]
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+gclient.workspace = true
+tokio.workspace = true
+
+# External binaries
+sharded-fungible-token.workspace = true
+sharded-fungible-token-logic.workspace = true
+sharded-fungible-token-storage.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+crowdsale-io.workspace = true

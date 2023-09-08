@@ -1,0 +1,22 @@
+---
+- name: Restart Gear node
+  hosts: all
+
+  tasks:
+    - name: Download the Gear node executable
+      become: yes
+      get_url:
+        url: https://github.com/gear-dapps/tequila-train/releases/download/node/gear
+        dest: /usr/local/bin
+        mode: '0755'
+        force: yes
+        owner: root
+        group: root
+
+    - name: Restart service
+      become: yes
+      systemd:
+        name: gear-node
+        state: restarted
+        enabled: yes
+        daemon_reload: yes

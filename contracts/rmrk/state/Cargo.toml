@@ -1,0 +1,15 @@
+[package]
+name = "rmrk-state"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+gmeta = { workspace = true, features = ["codegen"] }
+primitive-types.workspace = true
+rmrk-io.workspace = true
+rmrk-types.workspace = true
+
+[build-dependencies]
+gear-wasm-builder = { workspace = true, features = ["metawasm"] }

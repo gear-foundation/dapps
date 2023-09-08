@@ -1,1 +1,8 @@
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/gear-foundation/dapps)
+# Gear Ecosystem
+
+[![Contracts](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-check.yml?logo=github&label=Contracts)](contracts)<br>
+[Frontend (TBD)](frontend)
+
+# License
+
+The source code is licensed under the [MIT license](LICENSE).

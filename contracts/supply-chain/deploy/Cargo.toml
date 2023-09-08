@@ -1,0 +1,18 @@
+[package]
+name = "supply-chain-deploy"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gclient.workspace = true
+gstd.workspace = true
+supply-chain-io.workspace = true
+supply-chain-state.workspace = true
+supply-chain.workspace = true
+sp-core-hashing.workspace = true
+primitive-types.workspace = true
+non-fungible-token-io.workspace = true
+sharded-fungible-token-io.workspace = true
+tokio.workspace = true
+clap.workspace = true

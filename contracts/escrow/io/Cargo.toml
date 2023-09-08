@@ -1,0 +1,10 @@
+[package]
+name = "escrow-io"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+gmeta.workspace = true
+primitive-types.workspace = true

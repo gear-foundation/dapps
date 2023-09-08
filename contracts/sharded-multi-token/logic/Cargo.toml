@@ -1,0 +1,17 @@
+[package]
+name = "sharded-multi-token-logic"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+sharded-multi-token-logic-io.workspace = true
+sharded-multi-token-storage-io.workspace = true
+sharded-multi-token-io.workspace = true
+primitive-types.workspace = true
+hex.workspace = true
+
+[build-dependencies]
+sharded-multi-token-logic-io.workspace = true
+gear-wasm-builder.workspace = true

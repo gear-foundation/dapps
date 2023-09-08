@@ -1,0 +1,21 @@
+[Unit]
+Description=Gear Node
+After=network.target
+
+[Service]
+Type=simple
+User={{ user }}
+Group={{ user }}
+ExecStart=/usr/local/bin/gear --dev --rpc-cors all --execution wasm
+    {%- if node_name is defined %} --name "{{ node_name }}"{% endif %}
+    {%- if port_p2p is defined %} --port {{ port_p2p }}{% endif %}
+    {%- if port_http is defined %} --rpc-port {{ port_http }}{% endif %}
+    {%- if port_ws is defined %} --ws-port {{ port_ws }}{% endif %}
+    {%- if telemetry is defined %} --telemetry-url "{{ telemetry }}/submit 0"{% endif %}
+
+Restart=always
+RestartSec=3
+LimitNOFILE=10000
+
+[Install]
+WantedBy=multi-user.target

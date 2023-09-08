@@ -1,0 +1,10 @@
+[package]
+name = "dex-factory-io"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gmeta.workspace = true
+gstd.workspace = true
+dex-io.workspace = true
