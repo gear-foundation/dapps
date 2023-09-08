@@ -299,7 +299,7 @@ export function useTestnetNFT() {
   const { nfts } = useNFTs();
   const { account } = useAccount();
   const marketMetadata = useProgramMetadata(metaMarketNFT);
-  const sendMessage = useSendMessage(ADDRESS.DEFAULT_TESTNET_CONTRACT, marketMetadata, { isMaxGasLimit: true });
+  const sendMessage = useSendMessage(TESTNET_NFT_CONTRACT_ADDRESS, marketMetadata, { isMaxGasLimit: true });
   const { getAllNFTs, isStateRead } = useGetAllNFTs();
   const { isTestnet } = useNodeAddress();
 
