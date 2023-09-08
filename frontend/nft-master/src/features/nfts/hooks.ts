@@ -13,8 +13,9 @@ import { useLocation, useSearchParams } from 'react-router-dom';
 import { isHex } from '@polkadot/util';
 import { useContractAddress } from '../contract-address';
 import { MasterContractState, NFTContractState } from './types';
-import { NFTS_ATOM, NFT_CONTRACTS_ATOM } from './consts';
+import { NFTS_ATOM, NFT_CONTRACTS_ATOM, TESTNET_NFT_CONTRACT_ADDRESS } from './consts';
 import { ADDRESS } from '../../consts';
+import { useNodeAddress } from '../node-switch';
 
 const handleStateChange = ({ data }: MessagesDispatched, programId: HexString, onChange: () => void) => {
   const changedIDs = data.stateChanges.toHuman() as HexString[];
@@ -89,6 +90,7 @@ export function useGetTestnetUserNFTs() {
   const metawasm = useStateMetadata(metaWasmMasterNFT);
   const masterMetadata = useProgramMetadata(metaMasterNFT);
   const nftMetadata = useProgramMetadata(metaNFT);
+  const { isTestnet } = useNodeAddress();
 
   const { pathname } = useLocation();
 
@@ -113,7 +115,7 @@ export function useGetTestnetUserNFTs() {
       .then((stateMetadata) =>
         api.programState.readUsingWasm(
           {
-            programId: ADDRESS.DEFAULT_TESTNET_CONTRACT,
+            programId: isTestnet ? TESTNET_NFT_CONTRACT_ADDRESS : ADDRESS.DEFAULT_TESTNET_CONTRACT,
             wasm: metawasm?.buffer,
             fn_name: 'get_storage_id',
             argument: account?.decodedAddress,
@@ -245,6 +247,7 @@ export function useTestnetNFTSetup() {
   const { api, isApiReady } = useApi();
   const { account } = useAccount();
   const alert = useAlert();
+  const { isTestnet } = useNodeAddress();
 
   const metawasm = useStateMetadata(metaWasmMasterNFT);
   const masterMetadata = useProgramMetadata(metaMasterNFT);
@@ -258,7 +261,7 @@ export function useTestnetNFTSetup() {
       .then((stateMetadata) =>
         api.programState.readUsingWasm(
           {
-            programId: ADDRESS.DEFAULT_TESTNET_CONTRACT,
+            programId: isTestnet ? TESTNET_NFT_CONTRACT_ADDRESS : ADDRESS.DEFAULT_TESTNET_CONTRACT,
             wasm: metawasm?.buffer,
             fn_name: 'in_minter_list',
             argument: account?.decodedAddress,
@@ -296,6 +299,7 @@ export function useTestnetNFT() {
   const marketMetadata = useProgramMetadata(metaMarketNFT);
   const sendMessage = useSendMessage(ADDRESS.DEFAULT_TESTNET_CONTRACT, marketMetadata, { isMaxGasLimit: true });
   const { getAllNFTs, isStateRead } = useGetAllNFTs();
+  const { isTestnet } = useNodeAddress();
 
   const [isMinter] = useAtom(TESTNET_NFT_IS_MINTER_ATOM);
   const [isMinting, setIsMinting] = useState(false);
@@ -319,7 +323,7 @@ export function useTestnetNFT() {
   return {
     isMinting,
     mintTestnetNFT,
-    isTestnetNFTMintAvailable: !!(isMinter && !hasNFT),
+    isTestnetNFTMintAvailable: isTestnet ? !!(isMinter && !hasNFT) : false,
   };
 }
 
