@@ -133,11 +133,11 @@ function NFT() {
                   <span>Back</span>
                 </Button>
 
-                {/* {account?.decodedAddress === owner && ( */}
-                {/*  <Button variant="outline" onClick={openTransferModal}> */}
-                {/*    Transfer */}
-                {/*  </Button> */}
-                {/* )} */}
+                {!isTestnet && account?.decodedAddress === owner && (
+                  <Button variant="outline" onClick={openTransferModal}>
+                    Transfer
+                  </Button>
+                )}
               </div>
             </div>
           </>
