@@ -6,7 +6,7 @@ import { App } from './App';
 
 if (process.env.NODE_ENV === 'production') {
   TagManager.initialize({
-    gtmId: 'GTM-NPRC6D7P',
+    gtmId: 'GTM-PHHRZ89C',
   });
 }
 

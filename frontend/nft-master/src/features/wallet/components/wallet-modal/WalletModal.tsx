@@ -93,7 +93,7 @@ function WalletModal({ onClose }: Props) {
 
   return (
     <Modal heading="Wallet connection" onClose={onClose}>
-      {accounts ? (
+      {accounts.length ? (
         <ScrollArea className={styles.content} type="auto">
           <ul className={styles.list}>{getAccounts() || getWallets()}</ul>
         </ScrollArea>
