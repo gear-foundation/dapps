@@ -1,6 +1,6 @@
 {
-  "name": "dapp",
-  "version": "0.1.1",
+  "name": "dapp-nft-portal-frontend",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "start": "react-app-rewired start",
@@ -30,6 +30,7 @@
     "lucide-react": "0.263.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-gtm-module": "2.0.11",
     "react-router-dom": "6.10.0",
     "react-scripts": "5.0.1",
     "react-transition-group": "4.4.5"
@@ -38,6 +39,7 @@
     "@types/node": "18.17.1",
     "@types/react": "18.0.38",
     "@types/react-dom": "18.0.11",
+    "@types/react-gtm-module": "2.0.1",
     "@typescript-eslint/eslint-plugin": "5.25.0",
     "@typescript-eslint/parser": "5.25.0",
     "eslint": "8.16.0",
