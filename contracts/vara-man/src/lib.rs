@@ -1,5 +1,5 @@
 #![no_std]
-use gstd::{msg, prelude::*, ActorId, collections::HashMap};
+use gstd::{collections::HashMap, msg, prelude::*, ActorId};
 use vara_man_io::{
     Config, GameInstance, Player, StateQuery, StateReply, Status, VaraMan as VaraManState,
     VaraManAction, VaraManEvent, VaraManInit, BPS_SCALE,
@@ -220,7 +220,7 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
 }
 
 #[no_mangle]
-extern "C" fn init() {
+extern fn init() {
     let init: VaraManInit = msg::load().expect("Unexpected invalid init payload.");
     assert!(init.config.is_valid());
     unsafe {
@@ -233,7 +233,7 @@ extern "C" fn init() {
 }
 
 #[no_mangle]
-extern "C" fn state() {
+extern fn state() {
     let contract = unsafe { VARA_MAN.take().expect("Unexpected error in taking state") };
 
     let query: StateQuery = msg::load().expect("Unable to load the state query");

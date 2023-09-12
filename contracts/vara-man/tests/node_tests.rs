@@ -19,7 +19,6 @@ async fn success_register_player() -> gclient::Result<()> {
         assert!(!state.players.is_empty());
         assert!(state.games.is_empty());
         assert_eq!(state.players[0].1.name, "Peter".to_owned());
-
     }
 
     Ok(())
@@ -39,7 +38,7 @@ async fn success_start_game() -> gclient::Result<()> {
             .await?;
 
         let state = utils_gclient::vara_man::get_state(&api, &vara_man_id).await;
-        assert_eq!(state.games.len(), 1);        
+        assert_eq!(state.games.len(), 1);
     }
 
     Ok(())
