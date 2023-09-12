@@ -1,22 +1,27 @@
 use super::{ADMIN, VARA_MAN_ID};
 use gstd::prelude::*;
+use gstd::ActorId;
 use gtest::{Program, System};
-use vara_man_io::{VaraMan as VaraManState, *};
+use vara_man_io::{
+    Config, GameSeed, Level, Status, VaraMan as VaraManState, VaraManAction, VaraManEvent,
+    VaraManInit,
+};
 
 pub trait VaraMan {
-    fn vara_man(system: &System) -> Program<'_>;
-    fn vara_man_with_config(system: &System, config: Config) -> Program<'_>;
+    fn vara_man(system: &System) -> Program;
+    fn vara_man_with_config(system: &System, config: Config) -> Program;
     fn register_player(&self, from: u64, name: &str, error: bool);
     fn start_game(&self, from: u64, level: Level, seed: GameSeed, error: bool);
     fn claim_reward(&self, from: u64, silver_coins: u64, gold_coins: u64, error: bool);
     fn change_status(&self, status: Status);
     fn change_config(&self, config: Config);
+    fn add_admin(&self, admin: ActorId);
     fn send_tx(&self, from: u64, action: VaraManAction, error: bool);
     fn get_state(&self) -> VaraManState;
 }
 
 impl VaraMan for Program<'_> {
-    fn vara_man(system: &System) -> Program<'_> {
+    fn vara_man(system: &System) -> Program {
         Self::vara_man_with_config(
             system,
             Config {
@@ -28,7 +33,7 @@ impl VaraMan for Program<'_> {
         )
     }
 
-    fn vara_man_with_config(system: &System, config: Config) -> Program<'_> {
+    fn vara_man_with_config(system: &System, config: Config) -> Program {
         let vara_man = Program::current_with_id(system, VARA_MAN_ID);
         assert!(!vara_man.send(ADMIN, VaraManInit { config }).main_failed());
 
@@ -66,6 +71,10 @@ impl VaraMan for Program<'_> {
 
     fn change_config(&self, config: Config) {
         self.send_tx(ADMIN, VaraManAction::ChangeConfig(config), false);
+    }
+
+    fn add_admin(&self, admin: ActorId) {
+        self.send_tx(ADMIN, VaraManAction::AddAdmin(admin), false);
     }
 
     fn send_tx(&self, from: u64, action: VaraManAction, error: bool) {

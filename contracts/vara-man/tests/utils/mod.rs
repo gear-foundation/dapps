@@ -1,6 +1,6 @@
 mod vara_man;
 
-pub use self::vara_man::*;
+pub use vara_man::*;
 
 pub const ADMIN: u64 = 100;
 pub const VARA_MAN_ID: u64 = 200;

@@ -6640,15 +6640,18 @@ dependencies = [
 
 [[package]]
 name = "vara-man-io"
-version = "0.3.2"
+version = "0.1.2"
 dependencies = [
  "gmeta",
  "gstd",
+ "parity-scale-codec",
+ "primitive-types",
+ "scale-info",
 ]
 
 [[package]]
 name = "vara-man-state"
-version = "0.3.2"
+version = "0.1.2"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
