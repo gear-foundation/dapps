@@ -7,7 +7,7 @@ use vara_man_io::{Level, Status};
 #[tokio::test]
 #[ignore]
 async fn success_register_player() -> gclient::Result<()> {
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let api = GearApi::dev_from_path(env!("../target/tmp/gear")).await?;
     let vara_man_id = utils_gclient::common::init(&api).await?;
     utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, false).await?;
 
@@ -27,7 +27,7 @@ async fn success_register_player() -> gclient::Result<()> {
 #[tokio::test]
 #[ignore]
 async fn success_start_game() -> gclient::Result<()> {
-    let api = GearApi::dev_from_path(env!("GEAR_NODE_PATH")).await?;
+    let api = GearApi::dev_from_path(env!("../target/tmp/gear")).await?;
     let vara_man_id = utils_gclient::common::init(&api).await?;
     utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, false).await?;
 
