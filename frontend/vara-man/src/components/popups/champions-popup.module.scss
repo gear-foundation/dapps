@@ -1,0 +1,25 @@
+@mixin background($value) {
+    background: linear-gradient(180deg, #2f81ed 0%, #01b387 $value);
+}
+
+.player {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+    padding: 14px 16px;
+    border-radius: 22px;
+    background: #ffffff08;
+
+    &.first {
+        background: linear-gradient(180deg, #2f81ed 0%, #01b387 100%);
+    }
+
+    &.second {
+        background: linear-gradient(180deg, rgba(47, 129, 237, 0.6) 0%, rgba(1, 179, 135, 0.6) 100%);
+    }
+
+    &.thirty {
+        background: linear-gradient(180deg, rgba(47, 129, 237, 0.3) 0%, rgba(1, 179, 135, 0.3) 100%);
+    }
+}

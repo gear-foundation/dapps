@@ -1,0 +1,113 @@
+.canvas {
+    background: url("@/assets/images/game/map.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: fit-content;
+    margin-left: auto;
+    margin-right: auto;
+
+    canvas {
+        max-height: 70vh;
+    }
+}
+
+.modalContain {
+    // clip-path: polygon(evenodd, 25% 25%, 50% 37%, 75% 25%, 75% 75%, 25% 75%);
+}
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1;
+}
+
+.modalContent {
+    background: url("../../../assets/images/game/claim-modal/modal.svg") no-repeat;
+    background-size: cover;
+    width: 452px;
+    height: 487px;
+    border-radius: 15px;
+    display: inline-block;
+    position: relative;
+
+    .avatar {
+        position: absolute;
+        top: -45px;
+        left: 50%;
+        transform: translate(-50%);
+    }
+
+    .close {
+        cursor: pointer;
+        display: flex;
+        justify-content: flex-end;
+        padding: 18px 22px;
+    }
+
+    .info {
+        padding: 42px 32px;
+    }
+
+    .title {
+        text-align: center;
+        font-size: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+
+        .fontSemibold {
+            font-weight: 700;
+        }
+    }
+
+    .total {
+        margin-top: 28px;
+        display: flex;
+        justify-content: space-between;
+        font-size: 20px;
+
+        .coins {
+            display: flex;
+            font-size: 1rem;
+
+            img {
+                margin-right: 8px;
+            }
+
+            span {
+                margin-right: 8px;
+            }
+        }
+    }
+
+    .totalTokens {
+        position: relative;
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+
+        .number {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+
+            span {
+                margin-right: 8px;
+            }
+        }
+    }
+
+    .buttons {
+        margin-top: 24px;
+        display: flex;
+        justify-content: space-between;
+    }
+}
