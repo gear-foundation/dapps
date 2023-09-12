@@ -168,7 +168,7 @@ pub async fn get_state(api: &GearApi, program_id: &ActorId) -> VaraMan {
         .expect("Unexpected invalid reply.");
     match reply {
         StateReply::All(state) => {
-            return state;
+            state
         }
     }
 }
