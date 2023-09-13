@@ -21,5 +21,5 @@ jobs:
 
       - name: CI
         run: |
-          apt install binaryen
+          sudo apt-get install binaryen
           cargo xtask ci
