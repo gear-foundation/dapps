@@ -11,7 +11,7 @@ env:
 jobs:
   all:
     name: All
-    runs-on: self-hosted
+    runs-on: Ubuntu_Large_1
     defaults:
       run:
         working-directory: contracts
