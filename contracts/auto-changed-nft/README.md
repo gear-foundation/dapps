@@ -13,14 +13,14 @@ cargo b -p "auto-changed-nft*"
 
 ### ✅ Testing
 
-Run only `gtest` tests:
+Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "auto-changed-nft*"
+cargo t -p "auto-changed-nft*" -- --skip gclient
 ```
 
-Run `gtest` & `gclient` tests:
+Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "auto-changed-nft*" -- --include-ignored
+cargo t -p "auto-changed-nft*"
 ```

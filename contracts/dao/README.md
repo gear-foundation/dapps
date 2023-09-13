@@ -11,14 +11,14 @@ cargo b -p dao -p "dao-[!l]*"
 
 ### ✅ Testing
 
-Run only `gtest` tests:
+Run all tests, except `gclient` ones:
 ```sh
-cargo t -p dao -p "dao-[!l]*"
+cargo t -p dao -p "dao-[!l]*" -- --skip gclient
 ```
 
-Run `gtest` & `gclient` tests:
+Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p dao -p "dao-[!l]*" -- --include-ignored
+cargo t -p dao -p "dao-[!l]*"
 ```

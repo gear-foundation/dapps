@@ -4,7 +4,7 @@ use gclient::GearApi;
 use gstd::prelude::*;
 
 #[tokio::test]
-async fn dilution_bound_gclient() -> gclient::Result<()> {
+async fn gclient_dilution_bound() -> gclient::Result<()> {
     let mut api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     let ft_program = utils_gclient::ft::init(&api).await?;

@@ -33,7 +33,7 @@ pub async fn init(api: &GearApi, admin: &ActorId, treasury: &ActorId) -> gclient
             gclient::code_from_os(MARKETPLACE_WASM_PATH)?,
             gclient::now_micros().to_le_bytes(),
             init_marketplace_config,
-            gas_info.min_limit * 2,
+            gas_info.burned * 2,
             0,
         )
         .await?;
@@ -430,7 +430,7 @@ async fn send_message(
         .send_message(
             program_id.into(),
             payload,
-            gas_info.min_limit * 2,
+            gas_info.burned * 2,
             value,
             false,
         )

@@ -15,6 +15,7 @@ rmrk-types.workspace = true
 gtest.workspace = true
 
 # External binaries
+
 rmrk-catalog.workspace = true
 rmrk-state.workspace = true
 

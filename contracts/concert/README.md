@@ -11,14 +11,14 @@ cargo b -p "concert*"
 
 ### ✅ Testing
 
-Run only `gtest` tests:
+Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "concert*"
+cargo t -p "concert*" -- --skip gclient
 ```
 
-Run `gtest` & `gclient` tests:
+Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "concert*" -- --include-ignored
+cargo t -p "concert*"
 ```

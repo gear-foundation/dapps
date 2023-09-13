@@ -18,7 +18,7 @@ fn main() -> Result<()> {
         {
             xshell::cmd!(
                 sh,
-                "bash -c 'curl -L https://get.gear.rs/gear-v0.3.2-x86_64-unknown-linux-gnu.tar.xz -o - | tar xJ -C '{manifest_dir}'/../target/tmp'"
+                "bash -c 'curl -L https://get.gear.rs/gear-v0.3.3-x86_64-unknown-linux-gnu.tar.xz -o - | tar xJ -C '{manifest_dir}'/../target/tmp'"
             )
             .quiet()
             .run()?;
@@ -33,7 +33,7 @@ fn main() -> Result<()> {
             xshell::cmd!(sh, "cargo fmt --all --check").run()?;
             xshell::cmd!(sh, "cargo clippy --all-targets -- -Dwarnings").run()?;
             node()?;
-            xshell::cmd!(sh, "cargo t --all-targets -- --include-ignored").run()?;
+            xshell::cmd!(sh, "cargo t").run()?;
         }
         _ => return Err(anyhow!("unknown command")),
     }

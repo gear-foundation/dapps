@@ -11,14 +11,14 @@ cargo b -p "dex*"
 
 ### ✅ Testing
 
-Run only `gtest` tests:
+Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "dex*"
+cargo t -p "dex*" -- --skip gclient
 ```
 
-Run `gtest` & `gclient` tests:
+Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "dex*" -- --include-ignored
+cargo t -p "dex*"
 ```

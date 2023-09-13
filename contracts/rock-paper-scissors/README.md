@@ -11,14 +11,14 @@ cargo b -p "rock-paper-scissors*"
 
 ### ✅ Testing
 
-Run only `gtest` tests:
+Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "rock-paper-scissors*"
+cargo t -p "rock-paper-scissors*" -- --skip gclient
 ```
 
-Run `gtest` & `gclient` tests:
+Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "rock-paper-scissors*" -- --include-ignored
+cargo t -p "rock-paper-scissors*"
 ```

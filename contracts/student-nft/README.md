@@ -13,14 +13,14 @@ cargo b -p "student-nft*"
 
 ### ✅ Testing
 
-Run only `gtest` tests:
+Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "student-nft*"
+cargo t -p "student-nft*" -- --skip gclient
 ```
 
-Run `gtest` & `gclient` tests:
+Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "student-nft*" -- --include-ignored
+cargo t -p "student-nft*"
 ```

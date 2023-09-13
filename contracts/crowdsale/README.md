@@ -11,14 +11,14 @@ cargo b -p "crowdsale*"
 
 ### ✅ Testing
 
-Run only `gtest` tests:
+Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "crowdsale*"
+cargo t -p "crowdsale*" -- --skip gclient
 ```
 
-Run `gtest` & `gclient` tests:
+Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "crowdsale*" -- --include-ignored
+cargo t -p "crowdsale*"
 ```

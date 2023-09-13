@@ -11,14 +11,14 @@ cargo b -p "tamagotchi-battle*"
 
 ### ✅ Testing
 
-Run only `gtest` tests:
+Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "tamagotchi-battle*"
+cargo t -p "tamagotchi-battle*" -- --skip gclient
 ```
 
-Run `gtest` & `gclient` tests:
+Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "tamagotchi-battle*" -- --include-ignored
+cargo t -p "tamagotchi-battle*"
 ```

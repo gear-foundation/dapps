@@ -1,6 +1,6 @@
 [![Open in Gitpod]](https://gitpod.io/#https://github.com/gear-foundation/dapps)
 [![Docs]](https://dapps.gear.rs)
-![CI](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-check.yml?logo=github&label=CI)
+[![CI](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-build.yml?logo=github&label=CI)](https://github.com/gear-foundation/dapps/actions/workflows/contracts-build.yml)
 
 # Gear Ecosystem Contracts
 
@@ -12,7 +12,7 @@ This workspace contains reference implementations of standardized contracts & ex
 The building, and the test passing is fully supported & checked by CI.
 
 **macOS**<br>
-The building should work, but the workspace doesn't support the node downloading by `cargo xtask`. Not checked by CI.
+The building, and the test passing should work, but the workspace doesn't support the node downloading by `cargo xtask`. Not checked by CI.
 
 **Windows**<br>
 Not supported.
@@ -33,16 +33,16 @@ cargo b
 
 ### ✅ Build & run tests
 
-Run only `gtest` tests:
+Run all tests, except `gclient` ones:
 ```sh
-cargo t --all-targets
+cargo t -- --skip gclient
 ```
 
-Run `gtest` & `gclient` tests:
+Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t --all-targets -- --include-ignored
+cargo t
 ```
 
 ### 🚀 Run CI locally (should be done before a commit)

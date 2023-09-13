@@ -13,14 +13,14 @@ cargo b -p "multi-token*"
 
 ### ✅ Testing
 
-Run only `gtest` tests:
+Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "multi-token*"
+cargo t -p "multi-token*" -- --skip gclient
 ```
 
-Run `gtest` & `gclient` tests:
+Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "multi-token*" -- --include-ignored
+cargo t -p "multi-token*"
 ```

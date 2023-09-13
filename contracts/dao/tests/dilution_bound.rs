@@ -63,6 +63,6 @@ fn dilution_bound() {
     // quorum is achieved and number of YES votes > NO votes
     // but max_total_shares_at_yes_vote > total_shares * dilution_bound
     // proposal is not passed
-    system.spend_blocks(((VOTING_PERIOD_LENGTH + GRACE_PERIOD_LENGTH) / 1000) as u32);
+    system.spend_blocks((VOTING_PERIOD_LENGTH + GRACE_PERIOD_LENGTH) as u32);
     dao.process_proposal(proposal_id, false, false);
 }

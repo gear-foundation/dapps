@@ -11,14 +11,14 @@ cargo b -p "non-fungible-token*"
 
 ### ✅ Testing
 
-Run only `gtest` tests:
+Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "non-fungible-token*"
+cargo t -p "non-fungible-token*" -- --skip gclient
 ```
 
-Run `gtest` & `gclient` tests:
+Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "non-fungible-token*" -- --include-ignored
+cargo t -p "non-fungible-token*"
 ```

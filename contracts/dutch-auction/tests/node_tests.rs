@@ -13,8 +13,7 @@ pub const ALICE: [u8; 32] = [
 ];
 
 #[tokio::test]
-#[ignore]
-async fn create_and_stop() -> Result<()> {
+async fn gclient_create_and_stop() -> Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     // let api = GearApi::dev().await?;
     let mut listener = api.subscribe().await?; // Subscribing for events.
@@ -43,7 +42,7 @@ async fn create_and_stop() -> Result<()> {
             NFT_PATH,
             gclient::now_micros().to_le_bytes(),
             init_nft,
-            gas_info.min_limit,
+            gas_info.burned * 2,
             0,
         )
         .await
@@ -70,7 +69,7 @@ async fn create_and_stop() -> Result<()> {
         .calculate_handle_gas(None, nft_program_id, mint_payload.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(nft_program_id, mint_payload, gas_info.min_limit, 0, false)
+        .send_message(nft_program_id, mint_payload, gas_info.burned * 2, 0, false)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
 
@@ -84,7 +83,7 @@ async fn create_and_stop() -> Result<()> {
             WASM_BINARY_OPT.to_vec(),
             gclient::now_micros().to_le_bytes(),
             payload,
-            gas_info.min_limit,
+            gas_info.burned * 2,
             0,
         )
         .await?;
@@ -104,7 +103,13 @@ async fn create_and_stop() -> Result<()> {
         .calculate_handle_gas(None, nft_program_id, approve_action.encode(), 0, true)
         .await?;
     let (message_id, _hash) = api
-        .send_message(nft_program_id, approve_action, gas_info.min_limit, 0, false)
+        .send_message(
+            nft_program_id,
+            approve_action,
+            gas_info.burned * 2,
+            0,
+            false,
+        )
         .await?;
 
     // Create Auction
@@ -130,7 +135,7 @@ async fn create_and_stop() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, create.encode(), 0, true)
         .await?;
     let (_message_id, _) = api
-        .send_message(auction_program_id, create, gas_info.min_limit, 0, false)
+        .send_message(auction_program_id, create, gas_info.burned * 2, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -161,7 +166,13 @@ async fn create_and_stop() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, force_stop.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(auction_program_id, force_stop, gas_info.min_limit, 0, false)
+        .send_message(
+            auction_program_id,
+            force_stop,
+            gas_info.burned * 2,
+            0,
+            false,
+        )
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -174,8 +185,7 @@ async fn create_and_stop() -> Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
-async fn create_buy_reward() -> Result<()> {
+async fn gclient_create_buy_reward() -> Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     // let api = GearApi::dev().await?;
     let mut listener = api.subscribe().await?; // Subscribing for events.
@@ -204,7 +214,7 @@ async fn create_buy_reward() -> Result<()> {
             NFT_PATH,
             gclient::now_micros().to_le_bytes(),
             init_nft,
-            gas_info.min_limit,
+            gas_info.burned * 2,
             0,
         )
         .await
@@ -231,7 +241,7 @@ async fn create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, nft_program_id, mint_payload.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(nft_program_id, mint_payload, gas_info.min_limit, 0, false)
+        .send_message(nft_program_id, mint_payload, gas_info.burned * 2, 0, false)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
 
@@ -245,7 +255,7 @@ async fn create_buy_reward() -> Result<()> {
             WASM_BINARY_OPT.to_vec(),
             gclient::now_micros().to_le_bytes(),
             payload,
-            gas_info.min_limit,
+            gas_info.burned * 2,
             0,
         )
         .await?;
@@ -264,7 +274,13 @@ async fn create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, nft_program_id, approve_action.encode(), 0, true)
         .await?;
     let (message_id, _hash) = api
-        .send_message(nft_program_id, approve_action, gas_info.min_limit, 0, false)
+        .send_message(
+            nft_program_id,
+            approve_action,
+            gas_info.burned * 2,
+            0,
+            false,
+        )
         .await?;
 
     // Create Auction
@@ -290,7 +306,7 @@ async fn create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, create.encode(), 0, true)
         .await?;
     let (_message_id, _) = api
-        .send_message(auction_program_id, create, gas_info.min_limit, 0, false)
+        .send_message(auction_program_id, create, gas_info.burned * 2, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -309,7 +325,7 @@ async fn create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, buy_payload, value, true)
         .await?;
     let (message_id, _) = api
-        .send_message(auction_program_id, buy, gas_info.min_limit, value, false)
+        .send_message(auction_program_id, buy, gas_info.burned * 2, value, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -325,7 +341,7 @@ async fn create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, reward_payload, 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(auction_program_id, reward, gas_info.min_limit, 0, false)
+        .send_message(auction_program_id, reward, gas_info.burned * 2, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());

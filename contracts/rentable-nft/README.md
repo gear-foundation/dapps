@@ -11,14 +11,14 @@ cargo b -p "rentable-nft*"
 
 ### ✅ Testing
 
-Run only `gtest` tests:
+Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "rentable-nft*"
+cargo t -p "rentable-nft*" -- --skip gclient
 ```
 
-Run `gtest` & `gclient` tests:
+Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "rentable-nft*" -- --include-ignored
+cargo t -p "rentable-nft*"
 ```

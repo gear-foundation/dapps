@@ -11,14 +11,14 @@ cargo b -p "dynamic-nft*"
 
 ### ✅ Testing
 
-Run only `gtest` tests:
+Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "dynamic-nft*"
+cargo t -p "dynamic-nft*" -- --skip gclient
 ```
 
-Run `gtest` & `gclient` tests:
+Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "dynamic-nft*" -- --include-ignored
+cargo t -p "dynamic-nft*"
 ```
