@@ -6,11 +6,11 @@ import {
 } from '@gear-js/react-hooks'
 import { ENV } from '@/app/consts'
 import { useProgramMetadata, useReadState } from '@/app/hooks/use-metadata'
-import metaTxt from '@/assets/meta/vara_man_game.meta.txt'
+import metaTxt from '@/assets/meta/vara_man.meta.txt'
 import { useApp } from '@/app/context/ctx-app'
 import { useGame } from '@/app/context/ctx-game'
 import { IGameState } from '@/app/types/game'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 
 const programIdGame = ENV.GAME
 
@@ -20,9 +20,13 @@ export function useInitGame() {
   const { setIsSettled } = useApp()
   const { account } = useAccount()
   const { game, setGame, setIsAdmin, setPlayer } = useGame()
-  const { state, error } = useReadState<IGameState>({
+
+  const payloadConfig = useMemo(() => ({ All: null }), [])
+
+  const { state: config } = useReadState<{ All: IGameState }>({
     programId: programIdGame,
     meta: metaTxt,
+    payload: payloadConfig,
   })
 
   useEffect(() => {
@@ -41,9 +45,11 @@ export function useInitGame() {
   }, [account, game])
 
   useEffect(() => {
-    console.log('hello', state)
-    setGame(state)
-  }, [state, setGame])
+    console.log('hello', config)
+    if (!config) return
+    
+    setGame(config.All)
+  }, [config, setGame])
 }
 
 export function useGameMessage() {

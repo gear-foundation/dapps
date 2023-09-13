@@ -1,7 +1,8 @@
+import { useEffect, useState } from 'react'
+import { AnyJson } from '@polkadot/types/types';
 import { useAlert, useReadFullState } from '@gear-js/react-hooks'
 import { getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api'
 import { HexString } from '@polkadot/util/types'
-import { useEffect, useState } from 'react'
 
 export function useProgramMetadata(source: string) {
   const alert = useAlert()
@@ -43,10 +44,12 @@ export function useStateMetadata(source: string) {
 export function useReadState<T>({
   programId,
   meta,
+  payload,
 }: {
   programId?: HexString
   meta: string
+  payload?: AnyJson
 }) {
   const metadata = useProgramMetadata(meta)
-  return useReadFullState<T>(programId, metadata, '0x')
+  return useReadFullState<T>(programId, metadata, payload)
 }
