@@ -39,6 +39,7 @@ jobs:
       - name: Release
         if: startsWith(github.ref, "refs/tags/")
         uses: softprops/action-gh-release@v1
+        with:
           files: |
             contracts/target/wasm32-unknown-unknown/debug/*.*.wasm
             contracts/target/wasm32-unknown-unknown/debug/*.meta.txt
