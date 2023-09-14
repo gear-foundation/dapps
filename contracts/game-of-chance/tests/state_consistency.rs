@@ -71,13 +71,14 @@ async fn common_upload_program(
     let gas_limit = client
         .calculate_upload_gas(None, code.clone(), encoded_payload, 0, true)
         .await?
-        .min_limit;
+        .burned
+        * 2;
     let (message_id, program_id, _) = client
         .upload_program(
             code,
             gclient::now_micros().to_le_bytes(),
             payload,
-            gas_limit * 2,
+            gas_limit,
             0,
         )
         .await?;
@@ -98,7 +99,7 @@ async fn send_message_with_custom_limit<T: Decode>(
     let gas_limit = client
         .calculate_handle_gas(None, destination, encoded_payload, 0, true)
         .await?
-        .min_limit;
+        .burned;
     let modified_gas_limit = modify_gas_limit(gas_limit);
 
     println!("Sending a payload: `{payload:?}`.");
@@ -157,8 +158,7 @@ async fn send_message_with_insufficient_gas(
 }
 
 #[tokio::test]
-#[ignore]
-async fn state_consistency() -> Result<()> {
+async fn gclient_state_consistency() -> Result<()> {
     let client = GearApi::dev_from_path("../target/tmp/gear").await?;
     let mut listener = client.subscribe().await?;
 

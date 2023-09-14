@@ -26,7 +26,7 @@ pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
             gclient::code_from_os(STUDENT_NFT_WASM_PATH)?,
             gclient::now_micros().to_le_bytes(),
             student_nft_init,
-            gas_info.min_limit * 2,
+            gas_info.burned * 2,
             0,
         )
         .await?;
@@ -73,7 +73,7 @@ async fn send_message(
         .send_message(
             program_id.into(),
             payload,
-            gas_info.min_limit * 2,
+            gas_info.burned * 2,
             value,
             false,
         )

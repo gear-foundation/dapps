@@ -8,8 +8,7 @@ use supply_chain_deploy::*;
 use supply_chain_io::*;
 
 #[tokio::test]
-#[ignore]
-async fn state_consistency() -> Result<()> {
+async fn gclient_state_consistency() -> Result<()> {
     let mut client = Client::local().await?;
 
     let storage_code_hash = client.upload_code(FT_STORAGE).await?;

@@ -19,6 +19,7 @@ tokio.workspace = true
 supply-chain-deploy.workspace = true
 
 # External binaries
+
 supply-chain-state.workspace = true
 non-fungible-token.workspace = true
 non-fungible-token-state.workspace = true

@@ -18,11 +18,21 @@ fn main() -> Result<()> {
         {
             xshell::cmd!(
                 sh,
-                "bash -c 'curl -L https://get.gear.rs/gear-v0.3.2-x86_64-unknown-linux-gnu.tar.xz -o - | tar xJ -C '{manifest_dir}'/../target/tmp'"
+                "bash -c 'curl -L https://get.gear.rs/gear-v0.3.3-x86_64-unknown-linux-gnu.tar.xz -o - | tar xJ -C '{manifest_dir}'/../target/tmp'"
             )
-            .quiet()
             .run()?;
         }
+
+        Ok(())
+    };
+
+    let docs = || -> Result<_> {
+        xshell::cmd!(
+            sh,
+            "cargo d --no-deps -p '*-io' -p '*-state' -p rmrk-types -p 'gear-lib*'"
+        )
+        .env("__GEAR_WASM_BUILDER_NO_BUILD", "")
+        .run()?;
 
         Ok(())
     };
@@ -31,10 +41,12 @@ fn main() -> Result<()> {
         "node" => node()?,
         "ci" => {
             xshell::cmd!(sh, "cargo fmt --all --check").run()?;
+            docs()?;
             xshell::cmd!(sh, "cargo clippy --all-targets -- -Dwarnings").run()?;
             node()?;
-            xshell::cmd!(sh, "cargo t --all-targets -- --include-ignored").run()?;
+            xshell::cmd!(sh, "cargo t").run()?;
         }
+        "docs" => docs()?,
         _ => return Err(anyhow!("unknown command")),
     }
 
