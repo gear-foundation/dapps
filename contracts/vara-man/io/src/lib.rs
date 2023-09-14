@@ -31,6 +31,7 @@ impl Metadata for VaraManMetadata {
 pub enum StateQuery {
     All,
     AllGames,
+    AllPlayers,
     Game { player_address: ActorId },
     Player { player_address: ActorId },
     Config,
@@ -42,6 +43,7 @@ pub enum StateQuery {
 pub enum StateReply {
     All(VaraMan),
     AllGames(Vec<(ActorId, GameInstance)>),
+    AllPlayers(Vec<(ActorId, Player)>),
     Game(Option<GameInstance>),
     Config(Config),
     Admins(Vec<ActorId>),

@@ -246,6 +246,14 @@ extern fn state() {
                 .collect();
             msg::reply(StateReply::AllGames(games), 0).expect("Unable to share the state")
         }
+        StateQuery::AllPlayers => {
+            let players = contract
+                .players
+                .iter()
+                .map(|(id, player)| (*id, player.clone()))
+                .collect();
+            msg::reply(StateReply::AllPlayers(players), 0).expect("Unable to share the state")
+        }
         StateQuery::Game { player_address } => {
             let game: Option<GameInstance> = contract.games.get(&player_address).cloned();
             msg::reply(StateReply::Game(game), 0).expect("Unable to share the state")
