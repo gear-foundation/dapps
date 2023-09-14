@@ -12,8 +12,6 @@ pub const MAP_CELLS: usize = MAP_WIDTH * MAP_HEIGHT;
 pub const MAX_PERCENTAGE: u128 = 100;
 pub const GAME_TIMEOUT_MS: i64 = 300_000;
 pub const MAX_RETRIES_COUNT: u8 = 3;
-pub const BPS_SCALE: u16 = 10_000;
-pub const COINS_SCALE: u8 = 6;
 
 pub type GameSeed = u64;
 pub type Map = [[Entity; MAP_WIDTH]; MAP_HEIGHT];
@@ -32,11 +30,21 @@ impl Metadata for VaraManMetadata {
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateQuery {
     All,
+    AllGames,
+    Game { player_address: ActorId },
+    Config,
+    Admins,
+    Status,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateReply {
     All(VaraMan),
+    AllGames(Vec<(ActorId, GameInstance)>),
+    Game(Option<GameInstance>),
+    Config(Config),
+    Admins(Vec<ActorId>),
+    Status(Status),
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
@@ -58,16 +66,13 @@ pub enum Status {
 #[derive(Debug, Default, Clone, Copy, Encode, Decode, TypeInfo)]
 pub struct Config {
     pub operator: ActorId,
-
-    /// Should be scaled by `reward_token_id` precision.
-    pub tokens_per_gold_coin: u64,
-    /// Should be scaled by `reward_token_id` precision.
-    pub tokens_per_silver_coin: u64,
-
-    pub easy_reward_scale_bps: u16,
-    pub medium_reward_scale_bps: u16,
-    pub hard_reward_scale_bps: u16,
-
+    pub one_coin_in_value: u64,
+    pub tokens_per_gold_coin_easy: u64,
+    pub tokens_per_silver_coin_easy: u64,
+    pub tokens_per_gold_coin_medium: u64,
+    pub tokens_per_silver_coin_medium: u64,
+    pub tokens_per_gold_coin_hard: u64,
+    pub tokens_per_silver_coin_hard: u64,
     pub gold_coins: u64,
     pub silver_coins: u64,
 }
@@ -77,11 +82,20 @@ impl Config {
         !self.operator.is_zero() && self.gold_coins + self.silver_coins <= MAP_CELLS as u64
     }
 
-    pub fn get_reward_scale_bps(&self, level: Level) -> u16 {
+    pub fn get_tokens_per_gold_coin_for_level(&self, level: Level) -> (u64, u64) {
         match level {
-            Level::Easy => self.easy_reward_scale_bps,
-            Level::Medium => self.medium_reward_scale_bps,
-            Level::Hard => self.hard_reward_scale_bps,
+            Level::Easy => (
+                self.tokens_per_gold_coin_easy,
+                self.tokens_per_silver_coin_easy,
+            ),
+            Level::Medium => (
+                self.tokens_per_gold_coin_medium,
+                self.tokens_per_silver_coin_medium,
+            ),
+            Level::Hard => (
+                self.tokens_per_gold_coin_hard,
+                self.tokens_per_silver_coin_hard,
+            ),
         }
     }
 }

@@ -13,11 +13,13 @@ pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
         api,
         Config {
             operator: common::get_current_actor_id(api),
-            tokens_per_gold_coin: 1,
-            tokens_per_silver_coin: 1,
-            easy_reward_scale_bps: 0,
-            medium_reward_scale_bps: 0,
-            hard_reward_scale_bps: 0,
+            one_coin_in_value: 1_000_000_000_000,
+            tokens_per_gold_coin_easy: 5,
+            tokens_per_silver_coin_easy: 1,
+            tokens_per_gold_coin_medium: 8,
+            tokens_per_silver_coin_medium: 2,
+            tokens_per_gold_coin_hard: 10,
+            tokens_per_silver_coin_hard: 3,
             gold_coins: 5,
             silver_coins: 20,
         },
@@ -160,14 +162,16 @@ pub async fn change_config(
     Ok(())
 }
 
-pub async fn get_state(api: &GearApi, program_id: &ActorId) -> VaraMan {
+pub async fn get_state(api: &GearApi, program_id: &ActorId) -> Option<VaraMan> {
     let program_id = program_id.encode().as_slice().into();
     let reply = api
         .read_state(program_id, StateQuery::All.encode())
         .await
         .expect("Unexpected invalid reply.");
-    match reply {
-        StateReply::All(state) => state,
+    if let StateReply::All(state) = reply {
+        Some(state)
+    } else {
+        None
     }
 }
 

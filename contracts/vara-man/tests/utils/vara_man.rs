@@ -8,8 +8,8 @@ use vara_man_io::{
 };
 
 pub trait VaraMan {
-    fn vara_man(system: &System) -> Program;
-    fn vara_man_with_config(system: &System, config: Config) -> Program;
+    fn vara_man(system: &System) -> Program<'_>;
+    fn vara_man_with_config(system: &System, config: Config) -> Program<'_>;
     fn register_player(&self, from: u64, name: &str, error: bool);
     fn start_game(&self, from: u64, level: Level, seed: GameSeed, error: bool);
     fn claim_reward(&self, from: u64, silver_coins: u64, gold_coins: u64, error: bool);
@@ -21,7 +21,7 @@ pub trait VaraMan {
 }
 
 impl VaraMan for Program<'_> {
-    fn vara_man(system: &System) -> Program {
+    fn vara_man(system: &System) -> Program<'_> {
         Self::vara_man_with_config(
             system,
             Config {
@@ -33,7 +33,7 @@ impl VaraMan for Program<'_> {
         )
     }
 
-    fn vara_man_with_config(system: &System, config: Config) -> Program {
+    fn vara_man_with_config(system: &System, config: Config) -> Program<'_> {
         let vara_man = Program::current_with_id(system, VARA_MAN_ID);
         assert!(!vara_man.send(ADMIN, VaraManInit { config }).main_failed());
 

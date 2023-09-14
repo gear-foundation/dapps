@@ -15,7 +15,9 @@ async fn success_register_player() -> gclient::Result<()> {
         let api = api.with("//Peter")?;
         utils_gclient::vara_man::register_player(&api, &vara_man_id, "Peter", false).await?;
 
-        let state = utils_gclient::vara_man::get_state(&api, &vara_man_id).await;
+        let state = utils_gclient::vara_man::get_state(&api, &vara_man_id)
+            .await
+            .expect("Unexpected invalid state.");
         assert!(!state.players.is_empty());
         assert!(state.games.is_empty());
         assert_eq!(state.players[0].1.name, "Peter".to_owned());
@@ -37,7 +39,9 @@ async fn success_start_game() -> gclient::Result<()> {
         utils_gclient::vara_man::start_game(&api, &vara_man_id, Level::Easy, u64::MAX, false)
             .await?;
 
-        let state = utils_gclient::vara_man::get_state(&api, &vara_man_id).await;
+        let state = utils_gclient::vara_man::get_state(&api, &vara_man_id)
+            .await
+            .expect("Unexpected invalid state.");
         assert_eq!(state.games.len(), 1);
     }
 

@@ -2,7 +2,7 @@
 use gstd::{collections::HashMap, msg, prelude::*, ActorId};
 use vara_man_io::{
     Config, GameInstance, Player, StateQuery, StateReply, Status, VaraMan as VaraManState,
-    VaraManAction, VaraManEvent, VaraManInit, BPS_SCALE,
+    VaraManAction, VaraManEvent, VaraManInit,
 };
 
 #[derive(Debug, Default)]
@@ -137,28 +137,24 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                     return VaraManEvent::Error("Coin(s) amount is gt than allowed.".to_owned());
                 }
 
-                let reward_scale_bps = vara_man.config.get_reward_scale_bps(game.level);
-
-                let base_tokens_amount = vara_man
+                let (tokens_per_gold_coin, tokens_per_silver_coin) = vara_man
                     .config
-                    .tokens_per_gold_coin
+                    .get_tokens_per_gold_coin_for_level(game.level);
+
+                let tokens_amount = vara_man
+                    .config
+                    .one_coin_in_value
+                    .checked_mul(tokens_per_gold_coin)
+                    .expect("Math overflow!")
                     .checked_mul(gold_coins)
                     .expect("Math overflow!")
                     .checked_add(
                         vara_man
                             .config
-                            .tokens_per_silver_coin
-                            .checked_mul(silver_coins)
-                            .expect("Math overflow!"),
-                    )
-                    .expect("Math overflow!");
-
-                let tokens_amount = base_tokens_amount
-                    .checked_add(
-                        base_tokens_amount
-                            .checked_mul(reward_scale_bps.into())
+                            .one_coin_in_value
+                            .checked_mul(tokens_per_silver_coin)
                             .expect("Math overflow!")
-                            .checked_div(BPS_SCALE.into())
+                            .checked_mul(silver_coins)
                             .expect("Math overflow!"),
                     )
                     .expect("Math overflow!");
@@ -241,6 +237,27 @@ extern fn state() {
     match query {
         StateQuery::All => {
             msg::reply(StateReply::All(contract.into()), 0).expect("Unable to share the state")
+        }
+        StateQuery::AllGames => {
+            let games = contract
+                .games
+                .iter()
+                .map(|(id, game)| (*id, game.clone()))
+                .collect();
+            msg::reply(StateReply::AllGames(games), 0).expect("Unable to share the state")
+        }
+        StateQuery::Game { player_address } => {
+            let game: Option<GameInstance> = contract.games.get(&player_address).cloned();
+            msg::reply(StateReply::Game(game), 0).expect("Unable to share the state")
+        }
+        StateQuery::Config => {
+            msg::reply(StateReply::Config(contract.config), 0).expect("Unable to share the state")
+        }
+        StateQuery::Admins => {
+            msg::reply(StateReply::Admins(contract.admins), 0).expect("Unable to share the state")
+        }
+        StateQuery::Status => {
+            msg::reply(StateReply::Status(contract.status), 0).expect("Unable to share the state")
         }
     };
 }
