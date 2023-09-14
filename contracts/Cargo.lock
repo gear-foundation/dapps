@@ -15,7 +15,7 @@ dependencies = [
 [[package]]
 name = "actor-system-error"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
 dependencies = [
  "derive_more",
 ]
@@ -186,8 +186,8 @@ dependencies = [
  "gclient",
  "gear-lib-derive",
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "gtest",
  "primitive-types",
@@ -200,7 +200,7 @@ name = "auto-changed-nft-io"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -211,8 +211,8 @@ version = "0.3.3"
 dependencies = [
  "auto-changed-nft-io",
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -564,7 +564,7 @@ dependencies = [
  "concert-io",
  "gclient",
  "gear-lib-old",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "multi-token",
@@ -577,7 +577,7 @@ name = "concert-io"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -587,8 +587,8 @@ version = "0.3.3"
 dependencies = [
  "concert-io",
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -805,8 +805,8 @@ version = "0.3.3"
 dependencies = [
  "crowdsale-io",
  "gclient",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "gtest",
  "sharded-fungible-token",
@@ -820,7 +820,7 @@ dependencies = [
 name = "crowdsale-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -829,8 +829,8 @@ name = "crowdsale-state"
 version = "0.3.3"
 dependencies = [
  "crowdsale-io",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -916,7 +916,7 @@ dependencies = [
  "blake2-rfc",
  "dao-io",
  "gclient",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "sharded-fungible-token",
@@ -930,7 +930,7 @@ dependencies = [
 name = "dao-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -941,7 +941,7 @@ dependencies = [
  "dao-light-io",
  "fungible-token",
  "fungible-token-io",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
 ]
@@ -950,7 +950,7 @@ dependencies = [
 name = "dao-light-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -959,8 +959,8 @@ name = "dao-light-state"
 version = "0.3.3"
 dependencies = [
  "dao-light-io",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -969,8 +969,8 @@ name = "dao-state"
 version = "0.3.3"
 dependencies = [
  "dao-io",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1049,7 +1049,7 @@ name = "ddns"
 version = "0.3.3"
 dependencies = [
  "ddns-io",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
 ]
 
@@ -1057,7 +1057,7 @@ dependencies = [
 name = "ddns-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1066,8 +1066,8 @@ name = "ddns-state"
 version = "0.3.3"
 dependencies = [
  "ddns-io",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1105,9 +1105,9 @@ dependencies = [
  "dex-io",
  "dex-state",
  "gclient",
- "gear-core",
+ "gear-core 0.3.3",
  "gear-lib",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "primitive-types",
@@ -1125,7 +1125,7 @@ version = "0.3.3"
 dependencies = [
  "dex-factory-io",
  "dex-io",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
 ]
 
@@ -1134,7 +1134,7 @@ name = "dex-factory-io"
 version = "0.3.3"
 dependencies = [
  "dex-io",
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1143,8 +1143,8 @@ name = "dex-factory-state"
 version = "0.3.3"
 dependencies = [
  "dex-factory-io",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1153,7 +1153,7 @@ name = "dex-io"
 version = "0.3.3"
 dependencies = [
  "gear-lib",
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -1163,8 +1163,8 @@ name = "dex-state"
 version = "0.3.3"
 dependencies = [
  "dex-io",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -1243,8 +1243,8 @@ dependencies = [
  "dutch-auction-io",
  "gclient",
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "gtest",
  "non-fungible-token",
@@ -1257,7 +1257,7 @@ dependencies = [
 name = "dutch-auction-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -1267,8 +1267,8 @@ name = "dutch-auction-state"
 version = "0.3.3"
 dependencies = [
  "dutch-auction-io",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1307,8 +1307,8 @@ dependencies = [
  "gclient",
  "gear-lib-derive",
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "gtest",
  "hex-literal",
@@ -1323,7 +1323,7 @@ name = "dynamic-nft-io"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -1334,8 +1334,8 @@ version = "0.3.3"
 dependencies = [
  "dynamic-nft-io",
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1519,7 +1519,7 @@ version = "0.3.3"
 dependencies = [
  "escrow-io",
  "gclient",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "sharded-fungible-token",
@@ -1533,7 +1533,7 @@ dependencies = [
 name = "escrow-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -1543,8 +1543,8 @@ name = "escrow-state"
 version = "0.3.3"
 dependencies = [
  "escrow-io",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -1580,7 +1580,7 @@ dependencies = [
  "feeds-channel",
  "feeds-channel-io",
  "feeds-io",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
 ]
@@ -1592,7 +1592,7 @@ dependencies = [
  "async-trait",
  "feeds-channel-io",
  "feeds-io",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
 ]
 
@@ -1600,7 +1600,7 @@ dependencies = [
 name = "feeds-channel-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1609,8 +1609,8 @@ name = "feeds-channel-state"
 version = "0.3.3"
 dependencies = [
  "feeds-channel-io",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1618,7 +1618,7 @@ dependencies = [
 name = "feeds-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1627,8 +1627,8 @@ name = "feeds-state"
 version = "0.3.3"
 dependencies = [
  "feeds-io",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1676,8 +1676,8 @@ name = "fungible-token"
 version = "0.3.3"
 dependencies = [
  "fungible-token-io",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "gtest",
 ]
@@ -1686,7 +1686,7 @@ dependencies = [
 name = "fungible-token-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1695,8 +1695,8 @@ name = "fungible-token-state"
 version = "0.3.3"
 dependencies = [
  "fungible-token-io",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1807,7 +1807,7 @@ name = "galactic-express"
 version = "0.3.3"
 dependencies = [
  "galactic-express-io",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
 ]
 
@@ -1815,7 +1815,7 @@ dependencies = [
 name = "galactic-express-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1824,8 +1824,8 @@ name = "galactic-express-state"
 version = "0.3.3"
 dependencies = [
  "galactic-express-io",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1843,7 +1843,7 @@ version = "0.3.3"
 dependencies = [
  "game-of-chance-io",
  "gclient",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "primitive-types",
@@ -1861,7 +1861,7 @@ dependencies = [
 name = "game-of-chance-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -1874,9 +1874,9 @@ dependencies = [
  "async-trait",
  "futures",
  "futures-timer",
- "gear-core",
- "gear-core-errors",
- "gear-utils",
+ "gear-core 0.3.3",
+ "gear-core-errors 0.3.3",
+ "gear-utils 0.1.0 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gsdk",
  "gstd",
  "hex",
@@ -1894,17 +1894,17 @@ name = "gcore"
 version = "0.3.3"
 source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
 dependencies = [
- "gear-core-errors",
+ "gear-core-errors 0.3.3",
  "gear-stack-buffer",
- "gsys",
+ "gsys 0.3.3",
  "parity-scale-codec",
  "static_assertions",
 ]
 
 [[package]]
 name = "gear-backend-codegen"
-version = "0.3.3"
-source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
+version = "0.3.4"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -1913,17 +1913,17 @@ dependencies = [
 
 [[package]]
 name = "gear-backend-common"
-version = "0.3.3"
-source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
+version = "0.3.4"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
 dependencies = [
  "actor-system-error",
  "blake2-rfc",
  "derive_more",
  "gear-backend-codegen",
- "gear-core",
- "gear-core-errors",
- "gear-wasm-instrument",
- "gsys",
+ "gear-core 0.3.4",
+ "gear-core-errors 0.3.4",
+ "gear-wasm-instrument 0.3.4",
+ "gsys 0.3.4",
  "log",
  "num_enum",
  "parity-scale-codec",
@@ -1933,16 +1933,16 @@ dependencies = [
 [[package]]
 name = "gear-backend-sandbox"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
 dependencies = [
  "derive_more",
  "gear-backend-common",
- "gear-core",
- "gear-core-errors",
+ "gear-core 0.3.4",
+ "gear-core-errors 0.3.4",
  "gear-sandbox",
  "gear-sandbox-env",
- "gear-wasm-instrument",
- "gsys",
+ "gear-wasm-instrument 0.3.4",
+ "gsys 0.3.4",
  "log",
  "parity-scale-codec",
 ]
@@ -1956,8 +1956,29 @@ dependencies = [
  "byteorder",
  "derive_more",
  "enum-iterator 1.4.1",
- "gear-core-errors",
- "gear-wasm-instrument",
+ "gear-core-errors 0.3.3",
+ "gear-wasm-instrument 0.3.3",
+ "hashbrown 0.14.0",
+ "hex",
+ "log",
+ "parity-scale-codec",
+ "paste",
+ "scale-info",
+ "static_assertions",
+ "wasmparser-nostd",
+]
+
+[[package]]
+name = "gear-core"
+version = "0.3.4"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
+dependencies = [
+ "blake2-rfc",
+ "byteorder",
+ "derive_more",
+ "enum-iterator 1.4.1",
+ "gear-core-errors 0.3.4",
+ "gear-wasm-instrument 0.3.4",
  "hashbrown 0.14.0",
  "hex",
  "log",
@@ -1979,16 +2000,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "gear-core-errors"
+version = "0.3.4"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
+dependencies = [
+ "derive_more",
+ "enum-iterator 1.4.1",
+ "scale-info",
+]
+
+[[package]]
 name = "gear-core-processor"
-version = "0.3.3"
-source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
+version = "0.3.4"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
 dependencies = [
  "actor-system-error",
  "derive_more",
  "gear-backend-common",
- "gear-core",
- "gear-core-errors",
- "gear-wasm-instrument",
+ "gear-core 0.3.4",
+ "gear-core-errors 0.3.4",
+ "gear-wasm-instrument 0.3.4",
  "log",
  "scale-info",
  "static_assertions",
@@ -1997,13 +2028,13 @@ dependencies = [
 [[package]]
 name = "gear-lazy-pages"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
 dependencies = [
  "cfg-if",
  "derive_more",
  "errno",
  "gear-backend-common",
- "gear-core",
+ "gear-core 0.3.4",
  "gear-sandbox-host",
  "libc",
  "log",
@@ -2049,12 +2080,12 @@ dependencies = [
 [[package]]
 name = "gear-runtime-interface"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
 dependencies = [
  "byteorder",
  "derive_more",
  "gear-backend-common",
- "gear-core",
+ "gear-core 0.3.4",
  "gear-lazy-pages",
  "gear-sandbox-host",
  "libc",
@@ -2072,7 +2103,7 @@ dependencies = [
 [[package]]
 name = "gear-sandbox"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
 dependencies = [
  "gear-runtime-interface",
  "gear-sandbox-env",
@@ -2087,7 +2118,7 @@ dependencies = [
 [[package]]
 name = "gear-sandbox-env"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
 dependencies = [
  "parity-scale-codec",
  "sp-core 7.0.0 (git+https://github.com/gear-tech/substrate.git?branch=gear-polkadot-v0.9.41-canary-no-sandbox)",
@@ -2098,7 +2129,7 @@ dependencies = [
 [[package]]
 name = "gear-sandbox-host"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
 dependencies = [
  "environmental",
  "gear-sandbox-env",
@@ -2126,7 +2157,22 @@ version = "0.1.0"
 source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
 dependencies = [
  "env_logger",
- "gear-core",
+ "gear-core 0.3.3",
+ "hex",
+ "nonempty",
+ "parity-scale-codec",
+ "path-clean",
+ "serde",
+ "serde_json",
+]
+
+[[package]]
+name = "gear-utils"
+version = "0.1.0"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
+dependencies = [
+ "env_logger",
+ "gear-core 0.3.4",
  "hex",
  "nonempty",
  "parity-scale-codec",
@@ -2151,9 +2197,33 @@ dependencies = [
  "chrono",
  "colored",
  "dirs",
- "gear-core",
- "gear-wasm-instrument",
- "gmeta",
+ "gear-core 0.3.3",
+ "gear-wasm-instrument 0.3.3",
+ "gmeta 0.3.3",
+ "log",
+ "once_cell",
+ "pathdiff",
+ "pwasm-utils",
+ "regex",
+ "thiserror",
+ "toml",
+ "wasmparser-nostd",
+ "which",
+]
+
+[[package]]
+name = "gear-wasm-builder"
+version = "0.1.2"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
+dependencies = [
+ "anyhow",
+ "cargo_metadata",
+ "chrono",
+ "colored",
+ "dirs",
+ "gear-core 0.3.4",
+ "gear-wasm-instrument 0.3.4",
+ "gmeta 0.3.4",
  "log",
  "once_cell",
  "pathdiff",
@@ -2169,6 +2239,15 @@ dependencies = [
 name = "gear-wasm-instrument"
 version = "0.3.3"
 source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
+dependencies = [
+ "enum-iterator 1.4.1",
+ "gwasm-instrument",
+]
+
+[[package]]
+name = "gear-wasm-instrument"
+version = "0.3.4"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
 dependencies = [
  "enum-iterator 1.4.1",
  "gwasm-instrument",
@@ -2253,6 +2332,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "gmeta"
+version = "0.3.4"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
+dependencies = [
+ "blake2-rfc",
+ "derive_more",
+ "hex",
+ "scale-info",
+]
+
+[[package]]
 name = "gmeta-codegen"
 version = "0.3.3"
 source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
@@ -2271,8 +2361,8 @@ dependencies = [
  "base64 0.21.4",
  "futures",
  "futures-util",
- "gear-core",
- "gear-core-errors",
+ "gear-core 0.3.3",
+ "gear-core-errors 0.3.3",
  "gsdk-codegen",
  "hex",
  "jsonrpsee",
@@ -2308,7 +2398,7 @@ dependencies = [
  "futures",
  "galloc",
  "gcore",
- "gear-core-errors",
+ "gear-core-errors 0.3.3",
  "gstd-codegen",
  "hashbrown 0.14.0",
  "hex",
@@ -2334,9 +2424,14 @@ version = "0.3.3"
 source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
 
 [[package]]
+name = "gsys"
+version = "0.3.4"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
+
+[[package]]
 name = "gtest"
 version = "0.1.0"
-source = "git+https://github.com/gear-tech/gear?tag=v0.3.3#d8d59287bf874d41e9116d9cc6a4e21e40819e58"
+source = "git+https://github.com/gear-tech/gear?tag=v0.3.6#4e263f0d0717f512224f1c456a3f6805d95ad573"
 dependencies = [
  "anyhow",
  "colored",
@@ -2344,12 +2439,12 @@ dependencies = [
  "env_logger",
  "gear-backend-common",
  "gear-backend-sandbox",
- "gear-core",
- "gear-core-errors",
+ "gear-core 0.3.4",
+ "gear-core-errors 0.3.4",
  "gear-core-processor",
- "gear-utils",
- "gear-wasm-builder",
- "gear-wasm-instrument",
+ "gear-utils 0.1.0 (git+https://github.com/gear-tech/gear?tag=v0.3.6)",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.6)",
+ "gear-wasm-instrument 0.3.4",
  "hex",
  "log",
  "parity-scale-codec",
@@ -3144,8 +3239,8 @@ dependencies = [
  "gclient",
  "gear-lib-derive",
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "gtest",
  "multi-token-io",
@@ -3157,7 +3252,7 @@ name = "multi-token-io"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -3166,8 +3261,8 @@ name = "multi-token-state"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "multi-token-io",
 ]
@@ -3176,7 +3271,7 @@ dependencies = [
 name = "multisig-wallet"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "multisig-wallet-io",
@@ -3187,7 +3282,7 @@ dependencies = [
 name = "multisig-wallet-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -3196,8 +3291,8 @@ dependencies = [
 name = "multisig-wallet-state"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "multisig-wallet-io",
 ]
@@ -3210,7 +3305,7 @@ dependencies = [
  "blake2-rfc",
  "gclient",
  "gear-lib-old",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "nft-marketplace-io",
@@ -3228,7 +3323,7 @@ dependencies = [
 name = "nft-marketplace-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -3237,8 +3332,8 @@ dependencies = [
 name = "nft-marketplace-state"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "nft-marketplace-io",
 ]
@@ -3248,7 +3343,7 @@ name = "nft-master"
 version = "0.3.3"
 dependencies = [
  "gclient",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "nft-master-io",
@@ -3259,7 +3354,7 @@ dependencies = [
 name = "nft-master-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -3267,8 +3362,8 @@ dependencies = [
 name = "nft-master-state"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "nft-master-io",
 ]
@@ -3278,7 +3373,7 @@ name = "nft-pixelboard"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "nft-pixelboard-io",
@@ -3295,7 +3390,7 @@ name = "nft-pixelboard-io"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -3304,8 +3399,8 @@ name = "nft-pixelboard-state"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "nft-pixelboard-io",
 ]
@@ -3342,8 +3437,8 @@ dependencies = [
  "gclient",
  "gear-lib-derive",
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "gtest",
  "hex-literal",
@@ -3359,7 +3454,7 @@ name = "non-fungible-token-io"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -3369,8 +3464,8 @@ name = "non-fungible-token-state"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "non-fungible-token-io",
 ]
@@ -3503,8 +3598,8 @@ dependencies = [
  "gclient",
  "gear-lib-derive",
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "gtest",
  "on-chain-nft-io",
@@ -3518,7 +3613,7 @@ name = "on-chain-nft-io"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -3527,8 +3622,8 @@ name = "on-chain-nft-state"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "on-chain-nft-io",
 ]
@@ -3712,7 +3807,7 @@ checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 name = "ping"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "ping-io",
@@ -3722,7 +3817,7 @@ dependencies = [
 name = "ping-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -3730,8 +3825,8 @@ dependencies = [
 name = "ping-state"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -4098,8 +4193,8 @@ dependencies = [
  "gclient",
  "gear-lib-derive",
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "gtest",
  "hex-literal",
@@ -4115,7 +4210,7 @@ name = "rentable-nft-io"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -4125,8 +4220,8 @@ name = "rentable-nft-state"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "rentable-nft-io",
 ]
@@ -4178,7 +4273,7 @@ dependencies = [
 name = "rmrk"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "primitive-types",
@@ -4193,7 +4288,7 @@ dependencies = [
 name = "rmrk-catalog"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "rmrk-catalog-io",
  "rmrk-types",
@@ -4203,7 +4298,7 @@ dependencies = [
 name = "rmrk-catalog-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "rmrk-types",
 ]
@@ -4212,7 +4307,7 @@ dependencies = [
 name = "rmrk-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
  "rmrk-types",
@@ -4222,7 +4317,7 @@ dependencies = [
 name = "rmrk-resource"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "rmrk-catalog-io",
  "rmrk-resource-io",
@@ -4233,7 +4328,7 @@ dependencies = [
 name = "rmrk-resource-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "rmrk-types",
 ]
@@ -4242,8 +4337,8 @@ dependencies = [
 name = "rmrk-state"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
  "rmrk-io",
@@ -4263,8 +4358,8 @@ name = "rock-paper-scissors"
 version = "0.3.3"
 dependencies = [
  "gclient",
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "gtest",
  "rock-paper-scissors-io",
@@ -4276,7 +4371,7 @@ dependencies = [
 name = "rock-paper-scissors-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -4284,8 +4379,8 @@ dependencies = [
 name = "rock-paper-scissors-state"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "rock-paper-scissors-io",
 ]
@@ -4797,7 +4892,7 @@ name = "sharded-fungible-token"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "hex-literal",
@@ -4814,7 +4909,7 @@ dependencies = [
 name = "sharded-fungible-token-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -4824,7 +4919,7 @@ name = "sharded-fungible-token-logic"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "hex",
  "primitive-types",
@@ -4837,7 +4932,7 @@ dependencies = [
 name = "sharded-fungible-token-logic-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
  "sharded-fungible-token-io",
@@ -4848,7 +4943,7 @@ dependencies = [
 name = "sharded-fungible-token-storage"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "primitive-types",
  "sharded-fungible-token-storage-io",
@@ -4858,7 +4953,7 @@ dependencies = [
 name = "sharded-fungible-token-storage-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -4869,7 +4964,7 @@ version = "0.3.3"
 dependencies = [
  "blake2-rfc",
  "gclient",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "primitive-types",
@@ -4885,7 +4980,7 @@ dependencies = [
 name = "sharded-multi-token-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -4894,7 +4989,7 @@ dependencies = [
 name = "sharded-multi-token-logic"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "hex",
  "primitive-types",
@@ -4907,7 +5002,7 @@ dependencies = [
 name = "sharded-multi-token-logic-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
  "sharded-multi-token-io",
@@ -4918,7 +5013,7 @@ dependencies = [
 name = "sharded-multi-token-storage"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "primitive-types",
  "sharded-multi-token-storage-io",
@@ -4928,7 +5023,7 @@ dependencies = [
 name = "sharded-multi-token-storage-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "primitive-types",
 ]
@@ -5839,8 +5934,8 @@ checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 name = "staking"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "gtest",
  "sharded-fungible-token",
@@ -5854,7 +5949,7 @@ dependencies = [
 name = "staking-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -5862,8 +5957,8 @@ dependencies = [
 name = "staking-state"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "staking-io",
 ]
@@ -5891,7 +5986,7 @@ name = "student-nft"
 version = "0.3.3"
 dependencies = [
  "gclient",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "student-nft-io",
@@ -5902,7 +5997,7 @@ dependencies = [
 name = "student-nft-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -5910,8 +6005,8 @@ dependencies = [
 name = "student-nft-state"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "student-nft-io",
 ]
@@ -6022,7 +6117,7 @@ version = "0.3.3"
 dependencies = [
  "gclient",
  "gear-lib-old",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "non-fungible-token",
@@ -6060,7 +6155,7 @@ name = "supply-chain-io"
 version = "0.3.3"
 dependencies = [
  "gear-lib-old",
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -6068,8 +6163,8 @@ dependencies = [
 name = "supply-chain-state"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "supply-chain-io",
 ]
@@ -6100,7 +6195,7 @@ dependencies = [
 name = "syndote"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "syndote-io",
@@ -6111,7 +6206,7 @@ dependencies = [
 name = "syndote-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -6119,7 +6214,7 @@ dependencies = [
 name = "syndote-player"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "syndote-io",
  "syndote-player-io",
@@ -6129,7 +6224,7 @@ dependencies = [
 name = "syndote-player-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
  "syndote-io",
 ]
@@ -6138,7 +6233,7 @@ dependencies = [
 name = "tamagotchi"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "tamagotchi-io",
 ]
@@ -6148,7 +6243,7 @@ name = "tamagotchi-battle"
 version = "0.3.3"
 dependencies = [
  "gclient",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "hex",
  "tamagotchi",
@@ -6162,7 +6257,7 @@ dependencies = [
 name = "tamagotchi-battle-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -6170,8 +6265,8 @@ dependencies = [
 name = "tamagotchi-battle-state"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "tamagotchi-battle-io",
 ]
@@ -6180,7 +6275,7 @@ dependencies = [
 name = "tamagotchi-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -6188,8 +6283,8 @@ dependencies = [
 name = "tamagotchi-state"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "tamagotchi-io",
 ]
@@ -6223,7 +6318,7 @@ dependencies = [
 name = "tequila-train"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "tequila-train-io",
@@ -6234,7 +6329,7 @@ name = "tequila-train-io"
 version = "0.3.3"
 dependencies = [
  "enum-iterator 1.4.1",
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -6242,8 +6337,8 @@ dependencies = [
 name = "tequila-train-state"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "tequila-train-io",
 ]
@@ -6626,7 +6721,7 @@ version = "0.3.3"
 dependencies = [
  "blake2-rfc",
  "gclient",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "tokio",
@@ -6637,7 +6732,7 @@ dependencies = [
 name = "vara-man-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -6645,8 +6740,8 @@ dependencies = [
 name = "vara-man-state"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "vara-man-io",
 ]
@@ -6657,7 +6752,7 @@ version = "0.3.3"
 dependencies = [
  "fungible-token",
  "fungible-token-io",
- "gear-wasm-builder",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
  "gstd",
  "gtest",
  "varatube-io",
@@ -6667,7 +6762,7 @@ dependencies = [
 name = "varatube-io"
 version = "0.3.3"
 dependencies = [
- "gmeta",
+ "gmeta 0.3.3",
  "gstd",
 ]
 
@@ -6675,8 +6770,8 @@ dependencies = [
 name = "varatube-state"
 version = "0.3.3"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
+ "gear-wasm-builder 0.1.2 (git+https://github.com/gear-tech/gear?tag=v0.3.3)",
+ "gmeta 0.3.3",
  "gstd",
  "varatube-io",
 ]
