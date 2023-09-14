@@ -250,6 +250,10 @@ extern fn state() {
             let game: Option<GameInstance> = contract.games.get(&player_address).cloned();
             msg::reply(StateReply::Game(game), 0).expect("Unable to share the state")
         }
+        StateQuery::Player { player_address } => {
+            let player: Option<Player> = contract.players.get(&player_address).cloned();
+            msg::reply(StateReply::Player(player), 0).expect("Unable to share the state")
+        }
         StateQuery::Config => {
             msg::reply(StateReply::Config(contract.config), 0).expect("Unable to share the state")
         }

@@ -32,6 +32,7 @@ pub enum StateQuery {
     All,
     AllGames,
     Game { player_address: ActorId },
+    Player { player_address: ActorId },
     Config,
     Admins,
     Status,
@@ -45,6 +46,7 @@ pub enum StateReply {
     Config(Config),
     Admins(Vec<ActorId>),
     Status(Status),
+    Player(Option<Player>),
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
