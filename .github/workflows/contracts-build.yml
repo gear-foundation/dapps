@@ -20,6 +20,9 @@ jobs:
     defaults:
       run:
         working-directory: contracts
+    permissions:
+      pages: write
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -38,7 +41,7 @@ jobs:
           path: contracts/target/doc
 
       - name: Deploy GitHub Pages
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v2
 
       - name: Release the nightly build
         uses: softprops/action-gh-release@v1
