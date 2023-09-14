@@ -1,6 +1,8 @@
+import { IGameLevel } from '@/app/types/game'
 import Character from './Character'
 import Enemy from './Enemy'
 import TileMap from './TileMap'
+import { gameLevelConfigs } from './levels'
 
 interface GameActions {
   incrementCoins: (coinType: 'silver' | 'gold') => void
@@ -25,13 +27,14 @@ class GameEngine {
     canvas: HTMLCanvasElement,
     gameActions: GameActions,
     timer: number,
+    level: IGameLevel
   ) {
     this.canvas = canvas
-    this.tileMap = new TileMap(this.TILE_SIZE, canvas)
+    this.tileMap = new TileMap(this.TILE_SIZE, canvas, level)
     this.tileMap.initialize().then(() => {
       this.character = this.tileMap.getCharacter(this.VELOCITY)
       this.enemies = []
-      this.enemies = this.tileMap.getEnemies(this.VELOCITY)
+      this.enemies = this.tileMap.getEnemies(gameLevelConfigs[level].speed)
     })
     this.gameActions = gameActions
     this.isStopGame = false
@@ -99,7 +102,6 @@ class GameEngine {
   endGame(animationId: number) {
     this.clearTimerInterval()
     cancelAnimationFrame(animationId)
-    console.log('cancelAnimationFrame(animationId)', animationId)
   }
 
   setPause(isStart: boolean) {

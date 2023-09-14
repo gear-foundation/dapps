@@ -19,7 +19,7 @@ export function useInitGame() {
   const navigate = useNavigate();
   const { setIsSettled } = useApp()
   const { account } = useAccount()
-  const { game, setGame, setIsAdmin, setPlayer } = useGame()
+  const { game, setGame, setIsAdmin, setPlayer, setGamePlayer } = useGame()
 
   const payloadConfig = useMemo(() => ({ All: null }), [])
 
@@ -32,13 +32,16 @@ export function useInitGame() {
   useEffect(() => {
     const findPlayer = game?.players.find(([address]) => address === account?.decodedAddress)
     const isAdmin = game?.admins.find((address) => address === account?.decodedAddress)
+    const findGamePlayer = findPlayer && game?.games.find(x => x[0] === findPlayer[0])
 
     setIsSettled(!!game)
     setIsAdmin(!!isAdmin)
     setPlayer(
       findPlayer
     )
-
+    setGamePlayer(
+      findGamePlayer
+    )
     if (!findPlayer) {
       navigate('/');
     }
@@ -47,7 +50,7 @@ export function useInitGame() {
   useEffect(() => {
     console.log('hello', config)
     if (!config) return
-    
+
     setGame(config.All)
   }, [config, setGame])
 }

@@ -5,13 +5,12 @@ import { GameInit } from '@/components/sections/game/game-init'
 
 export default function Home() {
   const navigate = useNavigate();
-  const { player, game } = useGame()
+  const { player, game, gamePlayer } = useGame()
 
   useEffect(() => {
     if (game && player) {
-      const findGamePlayer = game.games.find(x => x[0] === player[0])
 
-      if (!findGamePlayer) {
+      if (!gamePlayer) {
         navigate('/levels');
       }
     }

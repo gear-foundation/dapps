@@ -4,7 +4,8 @@ import MovingDirection from './MovingDirection'
 
 import SilverCoin from '@/assets/images/game/silver_coin.svg'
 import GoldCoin from '@/assets/images/game/gold_coin.svg'
-import { fullMap, mediumMap } from './const'
+import { gameLevelConfigs } from './levels'
+import { IGameLevel } from '@/app/types/game'
 
 class TileMap {
   private tileSize: number
@@ -25,7 +26,7 @@ class TileMap {
   private canvas: HTMLCanvasElement
   private coinBuffer: HTMLCanvasElement | null = null
 
-  constructor(tileSize: number, canvas: HTMLCanvasElement) {
+  constructor(tileSize: number, canvas: HTMLCanvasElement, level: IGameLevel) {
     this.tileSize = tileSize
     this.canvas = canvas
 
@@ -38,7 +39,7 @@ class TileMap {
     this.coinEaten = false
     this.coinType = null
 
-    this.map = mediumMap
+    this.map = gameLevelConfigs[level].map
 
     this.initialMap = this.map.map((row) => row.slice())
   }

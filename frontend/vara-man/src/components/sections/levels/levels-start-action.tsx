@@ -16,7 +16,7 @@ export function LevelsStartAction({
 }: LevelsStartActionProps) {
   const navigate = useNavigate();
   const { isPending, onStart } = useMessage()
-  const { player, game, isAdmin } = useGame()
+  const { player, game, isAdmin, gamePlayer } = useGame()
   const [isDisable, setDisable] = useState(false)
 
   useEffect(() => {
@@ -33,9 +33,8 @@ export function LevelsStartAction({
 
   const onClickStart = () => {
     if (game && player) {
-      const findGamePlayer = game.games.find((x) => x[0] === player[0])
 
-      if (findGamePlayer) {
+      if (gamePlayer) {
         return navigate('/game');
       }
 

@@ -18,7 +18,7 @@ export default class Enemy {
   scaredGhost2!: HTMLImageElement
   image!: HTMLImageElement
 
-  private directionChangeInterval: number = 1000
+  private directionChangeInterval: number = 500
   private lastDirectionChangeTime: number = 0
 
   constructor(
@@ -81,28 +81,38 @@ export default class Enemy {
   }
 
   private move() {
-    if (
-      !this.tileMap.didCollideWithEnvironment(
-        this.x,
-        this.y,
+    const stepSize = this.velocity
+
+    let newX = this.x
+    let newY = this.y
+
+    for (let i = 0; i < stepSize; i++) {
+      const didCollideWithEnvironment = this.tileMap.didCollideWithEnvironment(
+        newX,
+        newY,
         this.movingDirection
       )
-    ) {
-      switch (this.movingDirection) {
-        case MovingDirection.up:
-          this.y -= this.velocity
-          break
-        case MovingDirection.down:
-          this.y += this.velocity
-          break
-        case MovingDirection.left:
-          this.x -= this.velocity
-          break
-        case MovingDirection.right:
-          this.x += this.velocity
-          break
+
+      if (!didCollideWithEnvironment) {
+        switch (this.movingDirection) {
+          case MovingDirection.up:
+            newY -= 1
+            break
+          case MovingDirection.down:
+            newY += 1
+            break
+          case MovingDirection.left:
+            newX -= 1
+            break
+          case MovingDirection.right:
+            newX += 1
+            break
+        }
       }
     }
+
+    this.x = newX
+    this.y = newY
   }
 
   getCurrentCell(): { row: number; column: number } {

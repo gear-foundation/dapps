@@ -16,11 +16,11 @@ type GameNavProps = BaseComponentProps & {}
 
 export function GameNav({ }: GameNavProps) {
   const { account } = useAccount()
-  const { silverCoins, goldCoins, lives, timer } = useContext(GameContext);
+  const { silverCoins, goldCoins, lives, gameTime } = useContext(GameContext);
   const [formattedTimer, setFormattedTimer] = useState('00:00');
+  const [timer, setTimer] = useState(gameTime)
 
   useEffect(() => {
-    // Function to format the timer value to "mm:ss" format
     const formatTimer = (seconds: number) => {
       const minutes = Math.floor(seconds / 60);
       const remainingSeconds = seconds % 60;
@@ -29,12 +29,16 @@ export function GameNav({ }: GameNavProps) {
       return `${formattedMinutes}:${formattedSeconds}`;
     };
 
-    if (timer > 0) {
-      setFormattedTimer(formatTimer(timer - 1));
-    }
-
+    setFormattedTimer(formatTimer(timer));
   }, [timer]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimer((prevTimer) => Math.max(prevTimer - 1, 0));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   const shortenString = (str: string, length: number) => {
     if (str.length <= length) {

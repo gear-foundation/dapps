@@ -33,8 +33,7 @@ export type IGameLevel = 'Easy' | 'Medium' | 'Hard'
 
 export interface IGameLevelConfig {
   speed: number // Скорость
-  numberOfEnemies: number // Количество врагов
-  lives: number // Количество жизней
+  map: number[][] // Карта уровня
 }
 
 export type IGameInstance = {
@@ -44,7 +43,6 @@ export type IGameInstance = {
   silver_coins: number // Количество серебряных монет на карте
   start_time_ms: number // Время начала игры
   isClaimed: boolean // Флаг, который указывает на то, забрал ли игрок награду(клейм) или нет
-  // map: [[Entity, MAP_WIDTH], MAP_HEIGHT] // Карта в формате: [[Entity; MAP_WIDTH]; MAP_HEIGHT]
 }
 
 // Представляет сущность, которая может быть на карте (в ячейке)
