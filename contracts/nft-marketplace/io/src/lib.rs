@@ -253,7 +253,7 @@ pub enum MarketAction {
     /// * Only the offer creator can withdraw his tokens.
     /// * The offer with indicated hash must exist.
     ///
-    /// On success replies [`MarketEvent::Withdrawn`].
+    /// On success replies [`MarketEvent::Withdraw`].
     Withdraw {
         /// the NFT contract address
         nft_contract_id: ContractId,

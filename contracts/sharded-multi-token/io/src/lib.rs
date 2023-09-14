@@ -114,7 +114,7 @@ pub enum LogicAction {
     /// - `sender` must be equal to `msg_source` or `msg_source` must be approved by `sender`.
     /// - `sender` must have enough `amount` of `token_id` tokens.
     ///
-    /// On success, replies with [`MTLogicEvent::Ok`].
+    /// On success, replies with [`MTLogicEvent::Ok`](../sharded_multi_token_logic_io/enum.MTLogicEvent.html#variant.Ok).
     Transfer {
         /// Identifier of the token with which transfer will be performed.
         token_id: u128,
@@ -127,7 +127,7 @@ pub enum LogicAction {
     },
     /// Gives `approve` to `account` for various token-related operations.
     ///
-    /// On success, replies with [`MTLogicEvent::Ok`].
+    /// On success, replies with [`MTLogicEvent::Ok`](../sharded_multi_token_logic_io/enum.MTLogicEvent.html#variant.Ok).
     Approve {
         /// Account to which access is granted.
         account: ActorId,
@@ -136,7 +136,7 @@ pub enum LogicAction {
     },
     /// Creates new token.
     ///
-    /// On success, replies with [`MTLogicEvent::Ok`].
+    /// On success, replies with [`MTLogicEvent::Ok`](../sharded_multi_token_logic_io/enum.MTLogicEvent.html#variant.Ok).
     Create {
         /// Initial token amount which will be minted to [`msg::source()`](gstd::msg::source), if `is_nft` flag is set, then ignored.
         initial_amount: u128,
@@ -151,7 +151,7 @@ pub enum LogicAction {
     /// - `token_id` must be fungible.
     /// - `amounts` must be equal to `to`.
     ///
-    /// On success, replies with [`MTLogicEvent::Ok`].
+    /// On success, replies with [`MTLogicEvent::Ok`](../sharded_multi_token_logic_io/enum.MTLogicEvent.html#variant.Ok).
     MintBatchFT {
         /// Identifier of the token with which mint will be performed.
         token_id: TokenId,
@@ -165,7 +165,7 @@ pub enum LogicAction {
     /// # Requirements
     /// - `token_id` must be non-fungible.
     ///
-    /// On success, replies with [`MTLogicEvent::Ok`].
+    /// On success, replies with [`MTLogicEvent::Ok`](../sharded_multi_token_logic_io/enum.MTLogicEvent.html#variant.Ok).
     MintBatchNFT {
         /// Identifier of the token with which mint will be performed.
         token_id: TokenId,
@@ -179,7 +179,7 @@ pub enum LogicAction {
     /// - `amounts` must be equal to `burn_from`.
     /// - `burn_from` must approve [`msg::source()`](gstd::msg::source) if not equal.
     ///
-    /// On success, replies with [`MTLogicEvent::Ok`].
+    /// On success, replies with [`MTLogicEvent::Ok`](../sharded_multi_token_logic_io/enum.MTLogicEvent.html#variant.Ok).
     BurnBatchFT {
         /// Identifier of the token with which burn will be performed.
         token_id: TokenId,
@@ -195,7 +195,7 @@ pub enum LogicAction {
     /// - `from` must approve [`msg::source()`](gstd::msg::source) if not equal.
     /// - `from` must be owner of `token_id`.
     ///
-    /// On success, replies with [`MTLogicEvent::Ok`].
+    /// On success, replies with [`MTLogicEvent::Ok`](../sharded_multi_token_logic_io/enum.MTLogicEvent.html#variant.Ok).
     BurnNFT {
         /// Identifier of the token with which burn will be performed.
         token_id: TokenId,

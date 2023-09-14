@@ -1,5 +1,5 @@
 [![Open in Gitpod]](https://gitpod.io/#https://github.com/gear-foundation/dapps)
-[![Docs]](https://dapps.gear.rs)
+[![Docs]](https://dapps.gear.rs/ping_io)
 [![CI](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-build.yml?logo=github&label=CI)](https://github.com/gear-foundation/dapps/actions/workflows/contracts-build.yml)
 
 # Gear Ecosystem Contracts
@@ -22,8 +22,8 @@ Not supported.
 The workspace consists of mainly contracts & a few libraries. Some of them have a clickable title in `README.md`, it means they have an article on [Gear Wiki](https://wiki.gear-tech.io).
 
 Above the title, there are clickable badges:
-- ![Open in Gitpod] opens a Gitpod workspace with the set up environment to play with code.
-- ![Docs] opens the generated documentation from the workspace.
+- ![Open in Gitpod] opens a Gitpod workspace in your browser with the set up environment to play with code.
+- ![Docs] opens the portal with generated documentation from the workspace.
 
 ### 🏗️ Build all contract & states
 
@@ -55,4 +55,4 @@ cargo xtask ci
 The workspace has the same version as the latest stable release of the [Gear runtime](https://github.com/gear-tech/gear), so there's no backwards compatibility, and it's recommended to be ready for any breaking change & always use the latest version.
 
 [Open in Gitpod]: https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod
-[Docs]: https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-docs.yml?logo=rust&label=docs
+[Docs]: https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-build.yml?logo=rust&label=docs

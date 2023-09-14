@@ -1,7 +1,7 @@
 //! The encodable non-fungible token state.
 //!
 //! Due to limitations of the SCALE codec, it's impossible to encode the
-//! [`HashMap`] & [`HashSet`](hashbrown::HashSet) types, and therefore
+//! [`HashMap`](gstd::collections::HashMap) & [`HashSet`](gstd::collections::HashSet) types, and therefore
 //! [`super::NFTState`] too, so as a workaround there's the encodable
 //! [`NFTState`] type that use [`Vec`] instead of unencodable types and can be
 //! constructed from [`super::NFTState`].
