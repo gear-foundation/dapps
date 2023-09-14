@@ -38,7 +38,7 @@ jobs:
           path: contracts/target/doc
 
       - name: Deploy GitHub Pages
-        uses: actions/deploy-pages@v1
+        uses: actions/deploy-pages@v2
 
       - name: Release the nightly build
         uses: softprops/action-gh-release@v1
