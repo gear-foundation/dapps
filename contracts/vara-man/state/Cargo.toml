@@ -6,9 +6,9 @@ license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gstd = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89", features = ["codegen"] }
+gstd = { workspace = true, features = ["debug"] }
+gmeta = { workspace = true, features = ["codegen"] }
 vara-man-io = { path = "../io" }
 
 [build-dependencies]
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89", features = ["metawasm"] }
+gear-wasm-builder.workspace = true

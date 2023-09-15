@@ -6,8 +6,8 @@ license = "MIT"
 authors = ["Gear Technologies"]
 
 [dependencies]
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
-gstd = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
-primitive-types = { version = "0.12.1", default-features = false, features = ["scale-info"] }
+gstd.workspace = true
+primitive-types.workspace = true
+gmeta.workspace = true
