@@ -18,13 +18,13 @@ jobs:
     permissions:
       id-token: write
       contents: write
+      pages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Build & move the `nightly` tag
         run: |
-          ls -al ..
           cargo xtask docs
           rm target/doc/.lock
           git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
