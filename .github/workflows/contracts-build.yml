@@ -27,7 +27,6 @@ jobs:
         run: |
           cargo xtask docs
           rm target/doc/.lock
-          git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
           git tag nightly
           git push -f --tags
 
@@ -43,6 +42,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           name: Nightly
+          tag_name: nightly
           files: contracts/target/doc/help.html
 
       - name: Release
