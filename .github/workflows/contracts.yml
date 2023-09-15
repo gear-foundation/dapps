@@ -38,7 +38,7 @@ jobs:
         if: github.ref == 'refs/heads/master'
         run: |
           git tag -f nightly
-          git push -f --tags
+          git push -f origin nightly
 
       - name: Build
         if: github.event_name != 'pull_request'
