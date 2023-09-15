@@ -1,0 +1,69 @@
+name: Contracts CI
+
+on:
+  pull_request:
+  push:
+    branches: [master]
+    tags:
+
+env:
+  CARGO_TERM_COLOR: always
+
+defaults:
+  run:
+    working-directory: contracts
+
+permissions:
+  contents: write
+  id-token: write
+  pages: write
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  all:
+    name: All
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: CI
+        if: github.ref_type != 'tag'
+        run: cargo xtask ci
+
+      - name: Update the nightly tag
+        if: github.ref == 'refs/heads/master'
+        run: |
+          git tag nightly
+          git push -f --tags
+
+      - name: Build
+        if: github.ref_type == 'tag'
+        run: cargo b
+
+      - name: Release
+        if: github.ref_type == 'tag'
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ github.ref_name == 'nightly' && 'Nightly' || github.ref_name }}
+          files: |
+            contracts/target/wasm32-unknown-unknown/debug/*.*.wasm
+            contracts/target/wasm32-unknown-unknown/debug/*.meta.txt
+
+      - name: Generate documentation
+        if: github.ref == 'refs/tags/nightly'
+        run: |
+          cargo xtask docs
+
+      - name: Upload the GitHub Pages artifact
+        if: github.ref == 'refs/tags/nightly'
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: contracts/target/doc
+
+      - name: Deploy GitHub Pages
+        if: github.ref == 'refs/tags/nightly'
+        uses: actions/deploy-pages@v2

@@ -1,6 +1,6 @@
 [![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#https://github.com/gear-foundation/dapps)
-[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-build.yml?logo=rust&label=docs)](https://dapps.gear.rs/ping_io)
-[![CI](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-build.yml?logo=github&label=CI)](https://github.com/gear-foundation/dapps/actions/workflows/contracts-build.yml)
+[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts.yml?logo=rust&label=docs)](https://dapps.gear.rs/ping_io)
+[![CI](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts.yml?logo=github&label=CI)](https://github.com/gear-foundation/dapps/actions/workflows/contracts.yml)
 
 # Gear Ecosystem Contracts
 
@@ -23,7 +23,7 @@ The workspace consists of mainly contracts & a few libraries. Some of them have 
 
 Above the title, there are clickable badges:
 - <picture><img alt="Open in Gitpod" src="https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod"></picture> opens a Gitpod workspace in your browser with the set up environment to play with code.
-- <picture><img alt="Docs" src="https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-build.yml?logo=rust&label=docs"></picture> opens the portal with generated documentation from the workspace.
+- <picture><img alt="Docs" src="https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts.yml?logo=rust&label=docs"></picture> opens the portal with generated documentation from the workspace.
 
 ### 🏗️ Build all contract & states
 
