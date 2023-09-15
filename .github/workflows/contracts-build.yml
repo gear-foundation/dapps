@@ -27,7 +27,7 @@ jobs:
           cargo xtask docs
           rm target/doc/.lock
           git tag nightly
-          git push -f --tags
+          git push --tags
 
       - name: Upload the GitHub Pages artifact
         uses: actions/upload-pages-artifact@v2
