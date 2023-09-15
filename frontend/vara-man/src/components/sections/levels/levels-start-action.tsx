@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { cn } from '@/app/utils'
 import { Icons } from '@/components/ui/icons'
-import { useMessage } from '@/app/hooks/use-level'
+import { useMessage } from '@/app/hooks/use-message'
 import { IGameLevel } from '@/app/types/game'
 import { useGame } from '@/app/context/ctx-game'
 
@@ -16,13 +16,13 @@ export function LevelsStartAction({
 }: LevelsStartActionProps) {
   const navigate = useNavigate();
   const { isPending, onStart } = useMessage()
-  const { player, game, isAdmin, gamePlayer } = useGame()
+  const { player, game, isAdmin } = useGame()
   const [isDisable, setDisable] = useState(false)
 
   useEffect(() => {
     if (!player) return
 
-    if (player[1].retries === "3") {
+    if (player.retries === "3" && !game) {
       setDisable(true)
     }
 
@@ -32,13 +32,12 @@ export function LevelsStartAction({
   }, [])
 
   const onClickStart = () => {
-    if (game && player) {
-
-      if (gamePlayer) {
+    if (player) {
+      if (game) {
         return navigate('/game');
       }
 
-      if (player[1].retries !== "3" || isAdmin) {
+      if (player.retries !== "3" || isAdmin) {
         return onStart(level)
       }
     }

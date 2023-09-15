@@ -11,7 +11,7 @@ import { retriesToLivesMap } from '@/app/consts'
 export function LevelsEasy() {
   const { player } = useGame()
 
-  const retries = player ? player[1].retries : 3;
+  const retries = player ? player.retries : 3;
   const livesLeft = retriesToLivesMap[retries];
 
   const lifeIcons = Array.from({ length: 3 }, (_, index) => (

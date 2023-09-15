@@ -11,8 +11,8 @@
     "deploy": "tsc && vite build && npx thirdweb@latest upload dist"
   },
   "dependencies": {
-    "@gear-js/api": "0.33.1",
-    "@gear-js/react-hooks": "0.6.3",
+    "@gear-js/api": "0.33.2",
+    "@gear-js/react-hooks": "0.6.5",
     "@gear-js/ui": "0.5.19",
     "@headlessui/react": "1.7.14",
     "@mantine/form": "6.0.10",

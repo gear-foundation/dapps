@@ -8,10 +8,10 @@ type GameNavProps = BaseComponentProps & {}
 
 function GameNavChampions({ }: GameNavProps) {
   const [open, setOpen] = useState(false)
-  const { game } = useGame()
+  const { allPlayers } = useGame()
 
-  const sortedPlayers = game
-    ? game.players.slice().sort((playerA, playerB) => {
+  const sortedPlayers = allPlayers
+    ? allPlayers.slice().sort((playerA, playerB) => {
       const [_, playerInfoA] = playerA;
       const [__, playerInfoB] = playerB;
 
@@ -31,7 +31,7 @@ function GameNavChampions({ }: GameNavProps) {
         Show champions
       </button>
 
-      {game && <ChampionsPopup setIsOpen={setOpen} isOpen={open} players={sortedPlayers} />}
+      {allPlayers && <ChampionsPopup setIsOpen={setOpen} isOpen={open} players={sortedPlayers} />}
     </>
   )
 }

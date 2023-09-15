@@ -4,7 +4,7 @@ import { buttonStyles } from '@gear-js/ui'
 import { cn } from '@/app/utils'
 
 import { GameContext } from '@/app/context/ctx-game-score'
-import { useMessage } from '@/app/hooks/use-level'
+import { useMessage } from '@/app/hooks/use-message'
 
 import AvatarIcon from '@/assets/images/game/claim-modal/avatar.png'
 import SilverCoinIcon from '@/assets/images/game/silver_coin.svg'
@@ -29,15 +29,12 @@ const GameModal = ({ setOpenModal }: Props) => {
     const goldTokens = goldCoins * 10
 
     const [isShowChampionModal, setShowChampionModal] = useState(false)
-    const { game } = useGame()
+    const { allPlayers } = useGame()
     const { account } = useAccount()
-
-
 
     useEffect(() => {
         setAllTokens(silverTokens + goldTokens)
     }, [])
-
 
     const onClickClaimReward = () => {
         onClaimReward(silverCoins, goldCoins)
@@ -48,8 +45,8 @@ const GameModal = ({ setOpenModal }: Props) => {
     }
 
     if (isShowChampionModal) {
-        const sortedPlayers = game
-            ? game.players.slice().sort((playerA, playerB) => {
+        const sortedPlayers = allPlayers
+            ? allPlayers.slice().sort((playerA, playerB) => {
                 const [_, playerInfoA] = playerA;
                 const [__, playerInfoB] = playerB;
 
