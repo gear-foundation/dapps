@@ -1,21 +1,27 @@
 import { createContext, ReactNode, useContext, useState } from 'react'
-import { IGame, IGameState, IPlayer } from '@/app/types/game'
+import { IGame, IGameConfig, IGameInstance, IPlayer, IPlayerInfo } from '@/app/types/game'
 
 const useGameData = () => {
-  const [game, setGame] = useState<IGameState>()
-  const [gamePlayer, setGamePlayer] = useState<IGame>()
+  const [game, setGame] = useState<IGameInstance | null>()
+  const [allGames, setAllGames] = useState<IGame[]>()
+  const [configState, setConfigState] = useState<IGameConfig | null>()
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
-  const [player, setPlayer] = useState<IPlayer>()
+  const [player, setPlayer] = useState<IPlayerInfo>()
+  const [allPlayers, setAllPlayers] = useState<IPlayer[]>()
 
   return {
     game,
     setGame,
-    gamePlayer,
-    setGamePlayer,
+    allGames,
+    setAllGames,
+    configState,
+    setConfigState,
     isAdmin,
     setIsAdmin,
     player,
     setPlayer,
+    allPlayers,
+    setAllPlayers,
   }
 }
 

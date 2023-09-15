@@ -1299,15 +1299,15 @@
   resolved "https://registry.yarnpkg.com/@eslint/js/-/js-8.46.0.tgz#3f7802972e8b6fe3f88ed1aabc74ec596c456db6"
   integrity sha512-a8TLtmPi8xzPkCbp/OGFUo5yhRkHM2Ko9kOWP4znJr0WAhWyThaw3PnwX4vOTWOAMsV2uRt32PPDcEz63esSaA==
 
-"@gear-js/api@0.33.1":
-  version "0.33.1"
-  resolved "https://registry.yarnpkg.com/@gear-js/api/-/api-0.33.1.tgz#79569d7090b413b1b234735933e456c3ff8df775"
-  integrity sha512-c0/TFYfVnIukeMf0xh/8dUbKGrgkJNU7L7wCNJJ0p5h8XyIhxHeJxOu8M5fLC0Tlp+SCTtGzBaDyEpkGthpnEg==
+"@gear-js/api@0.33.2":
+  version "0.33.2"
+  resolved "https://registry.yarnpkg.com/@gear-js/api/-/api-0.33.2.tgz#38d77d5a401a611915a28d98310f57e848cbc51f"
+  integrity sha512-Cwf6GLtbQBmytjqLlke1uvQWInGLwOiNoGBJvry0pg1SgM/yLl1LfvChiF7/eS/5SWn+HCIvvYVLM7YoFHg4Bg==
 
-"@gear-js/react-hooks@0.6.3":
-  version "0.6.3"
-  resolved "https://registry.yarnpkg.com/@gear-js/react-hooks/-/react-hooks-0.6.3.tgz#36971a68888b1d937298c0fe9a6a41336c40bd6a"
-  integrity sha512-YHwm+R1r4LWMF50h8u3IkyXcH+qD3KXs9cS0wu22cig65CEblj9I2+SmKK/mKoZz1NFhap8rq2uxy2i9MzENAg==
+"@gear-js/react-hooks@0.6.5":
+  version "0.6.5"
+  resolved "https://registry.yarnpkg.com/@gear-js/react-hooks/-/react-hooks-0.6.5.tgz#044323c3d7405dea8222e91ee9cb1d32207267bf"
+  integrity sha512-5Is2dls0NQtWNg5UE/m0HRkz5KvrP6ilpGe0/PT5QP9fFEEM2EgbD97EVeLJb/ZBw0eAyEkf/P2XOVLeiHa8vw==
 
 "@gear-js/ui@0.5.19":
   version "0.5.19"

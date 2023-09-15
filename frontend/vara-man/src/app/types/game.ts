@@ -16,6 +16,18 @@ export type IGameState = {
   }
 }
 
+export type IGameConfig = {
+  config: {
+    tokensPerGoldCoin: number
+    tokensPerSilverCoin: number
+    easyRewardScaleBps: number
+    mediumRewardScaleBps: number
+    hardRewardScaleBps: number
+    goldCoins: number
+    silverCoins: number
+  }
+}
+
 export type IPlayer = [HexString, IPlayerInfo]
 export type IGame = [string, IGameInstance]
 
