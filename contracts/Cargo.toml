@@ -191,7 +191,7 @@ supply-chain-deploy.path = "supply-chain/deploy"
 
 gstd = { git = "https://github.com/gear-tech/gear", tag = "v0.3.3" }
 gear-wasm-builder = { git = "https://github.com/gear-tech/gear", tag = "v0.3.3" }
-gmeta = { git = "https://github.com/gear-tech/gear", tag = "v0.3.3" }
+gmeta = { git = "https://github.com/gear-tech/gear", tag = "v0.3.6" }
 gclient = { git = "https://github.com/gear-tech/gear", tag = "v0.3.3" }
 gtest = { git = "https://github.com/gear-tech/gear", tag = "v0.3.3" }
 gear-core = { git = "https://github.com/gear-tech/gear", tag = "v0.3.3" }
