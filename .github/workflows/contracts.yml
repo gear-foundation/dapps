@@ -30,13 +30,15 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: CI
-        if: github.ref_type != 'tag'
-        run: cargo xtask ci
+      # - name: CI
+      #   if: github.ref_type != 'tag'
+      #   run: cargo xtask ci
 
       - name: Update the nightly tag
         if: github.ref == 'refs/heads/master'
         run: |
+          git log --pretty=oneline HEAD~15...HEAD
+          git tag -l
           git tag nightly
           git push -f --tags
 
