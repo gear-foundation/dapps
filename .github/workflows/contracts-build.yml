@@ -10,7 +10,6 @@ env:
 
 jobs:
   build:
-    name: Build
     runs-on: self-hosted
     defaults:
       run:
