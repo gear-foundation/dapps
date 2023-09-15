@@ -111,10 +111,6 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                 ),
             );
 
-            if !vara_man.admins.contains(&player_address) {
-                player.lives -= 1;
-            }
-
             VaraManEvent::GameStarted
         }
         VaraManAction::ClaimReward {
@@ -175,6 +171,10 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                     .expect("Math overflow!");
 
                 vara_man.games.remove(&player_address);
+
+                if !vara_man.admins.contains(&player_address) {
+                    player.lives -= 1;
+                }
 
                 VaraManEvent::RewardClaimed {
                     player_address,
