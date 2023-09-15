@@ -12,6 +12,7 @@ syndote-io.workspace = true
 gtest.workspace = true
 
 # External binaries
+
 syndote-player.workspace = true
 
 [build-dependencies]

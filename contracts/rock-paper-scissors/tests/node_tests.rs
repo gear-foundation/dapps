@@ -7,8 +7,7 @@ mod routines;
 pub use routines::*;
 
 #[tokio::test]
-#[ignore]
-async fn init() -> Result<()> {
+async fn gclient_init() -> Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
@@ -45,7 +44,7 @@ async fn init() -> Result<()> {
             WASM_BINARY_OPT.to_vec(),
             gclient::now_micros().to_le_bytes(),
             init_payload,
-            gas_info.min_limit,
+            gas_info.burned * 2,
             0,
         )
         .await?;

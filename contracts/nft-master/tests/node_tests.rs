@@ -2,9 +2,8 @@ mod utils_gclient;
 
 use gclient::GearApi;
 
-#[ignore]
 #[tokio::test]
-async fn success() -> gclient::Result<()> {
+async fn gclient_success() -> gclient::Result<()> {
     let nft = 1337u64;
     let nft_id = nft.into();
 

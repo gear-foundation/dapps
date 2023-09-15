@@ -6,8 +6,7 @@ use std::mem;
 use utils_gclient::*;
 
 #[tokio::test]
-#[ignore]
-async fn success_create_ft_gclient() -> gclient::Result<()> {
+async fn gclient_success_create_ft() -> gclient::Result<()> {
     let (api, program_id) = setup_gclient().await?;
 
     let mut tx_id = 0;
@@ -75,8 +74,7 @@ async fn success_create_ft_gclient() -> gclient::Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
-async fn success_mint_batch_ft_gclient() -> gclient::Result<()> {
+async fn gclient_success_mint_batch_ft() -> gclient::Result<()> {
     let (api, program_id) = setup_gclient().await?;
 
     let user_account_1 = get_actor_id(&api, USER_ACCOUNTS[1])?;
@@ -162,8 +160,7 @@ async fn success_mint_batch_ft_gclient() -> gclient::Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
-async fn success_burn_batch_ft_gclient() -> gclient::Result<()> {
+async fn gclient_success_burn_batch_ft() -> gclient::Result<()> {
     let (api, program_id) = setup_gclient().await?;
 
     let user_account_1 = get_actor_id(&api, USER_ACCOUNTS[1])?;
@@ -285,8 +282,7 @@ async fn success_burn_batch_ft_gclient() -> gclient::Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
-async fn success_approve_ft_gclient() -> gclient::Result<()> {
+async fn gclient_success_approve_ft() -> gclient::Result<()> {
     let (api, program_id) = setup_gclient().await?;
 
     let user_account_1 = get_actor_id(&api, USER_ACCOUNTS[1])?;
@@ -396,8 +392,7 @@ async fn success_approve_ft_gclient() -> gclient::Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
-async fn success_transfer_ft_gclient() -> gclient::Result<()> {
+async fn gclient_success_transfer_ft() -> gclient::Result<()> {
     let (api, program_id) = setup_gclient().await?;
 
     let user_account_1 = get_actor_id(&api, USER_ACCOUNTS[1])?;

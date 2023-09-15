@@ -63,7 +63,7 @@ pub struct Initialize {
 #[scale_info(crate = gstd::scale_info)]
 pub enum Action {
     /// Creates a Pair contract instance from a pair of
-    /// (SFT)[https://github.com/gear-dapps/sharded-fungible-token]
+    /// [SFT](https://github.com/gear-dapps/sharded-fungible-token)
     /// [`ActorId`]s.
     ///
     /// # Requirements:
@@ -138,7 +138,7 @@ pub enum Event {
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum Error {
-    /// See [`ContractError`].
+    /// See [`GstdError`].
     GstdError(String),
     /// [`msg::source()`](gstd::msg::source) doesn't equal to `fee_to_setter`.
     AccessRestricted,

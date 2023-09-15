@@ -12,7 +12,6 @@ fn is_not_active_after_time_is_over() {
     sys.spend_blocks(DURATION);
 
     if let Ok(AuctionInfo { status, .. }) = auction.read_state() {
-        dbg!(&status);
         assert!(!matches!(status, Status::IsRunning))
     }
 }
@@ -24,7 +23,6 @@ fn is_active_before_deal() {
     let auction = init(&sys);
 
     if let Ok(AuctionInfo { status, .. }) = auction.read_state() {
-        dbg!(&status);
         assert!(matches!(status, Status::IsRunning));
     } else {
         panic!("Can't get state");
@@ -39,7 +37,6 @@ fn is_not_active_after_deal() {
     auction.send_with_value(USERS[1], Action::Buy, 1_000_000_000);
 
     if let Ok(AuctionInfo { status, .. }) = auction.read_state() {
-        dbg!(&status);
         assert!(matches!(
             status,
             Status::Purchased {

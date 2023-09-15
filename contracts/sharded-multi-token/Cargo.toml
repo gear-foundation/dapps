@@ -23,5 +23,6 @@ blake2-rfc.workspace = true
 tokio.workspace = true
 
 # External binaries
+
 sharded-multi-token-logic.workspace = true
 sharded-multi-token-storage.workspace = true

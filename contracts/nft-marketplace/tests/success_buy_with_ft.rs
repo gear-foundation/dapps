@@ -8,8 +8,7 @@ use utils_gclient::{
 };
 
 #[tokio::test]
-#[ignore]
-async fn success_buy_with_ft() -> gclient::Result<()> {
+async fn gclient_success_buy_with_ft() -> gclient::Result<()> {
     let api = init_gear_api_from_path().await?;
 
     let (ft_contract, nft_contract, marketplace_contract) = common::init(&api).await?;

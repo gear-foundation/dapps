@@ -6,8 +6,7 @@ use std::mem;
 use utils_gclient::*;
 
 #[tokio::test]
-#[ignore]
-async fn success_create_and_mint_batch_nft_gclient() -> gclient::Result<()> {
+async fn gclient_success_create_and_mint_batch_nft() -> gclient::Result<()> {
     let (api, program_id) = setup_gclient().await?;
 
     let mut tx_id = 0;
@@ -78,8 +77,7 @@ async fn success_create_and_mint_batch_nft_gclient() -> gclient::Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
-async fn success_transfer_nft_gclient() -> gclient::Result<()> {
+async fn gclient_success_transfer_nftt() -> gclient::Result<()> {
     let (api, program_id) = setup_gclient().await?;
 
     let mut tx_id = 0;
@@ -208,8 +206,7 @@ async fn success_transfer_nft_gclient() -> gclient::Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
-async fn success_burn_nft_gclient() -> gclient::Result<()> {
+async fn gclient_success_burn_nft() -> gclient::Result<()> {
     let (api, program_id) = setup_gclient().await?;
 
     let mut tx_id = 0;

@@ -55,7 +55,7 @@ pub struct State {
     pub token: (ActorId, ActorId),
     /// The record of tokens reserve in the SFT pair (`token`).
     pub reserve: (u128, u128),
-    /// https://docs.uniswap.org/contracts/v2/concepts/core-concepts/oracles
+    /// <https://docs.uniswap.org/contracts/v2/concepts/core-concepts/oracles>
     pub cumulative_price: (U256, U256),
     /// A timestamp of the last block where `reserve`s were changed.
     pub last_block_ts: u64,
@@ -71,7 +71,7 @@ pub struct State {
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum InnerAction {
-    /// Adds liquidity to the contract from [`msg::source()`]'s fungible tokens
+    /// Adds liquidity to the contract from [`msg::source()`](gstd::msg::source)'s fungible tokens
     /// and mints liquidity tokens to it.
     ///
     /// # Requirements
@@ -108,6 +108,8 @@ pub enum InnerAction {
     /// tokens than a given one.
     ///
     /// On success, replies with [`Event::RemovedLiquidity`].
+    ///
+    /// [`msg::source()`]: gstd::msg::source
     RemoveLiquidity {
         /// An amount of liquidity tokens to remove.
         liquidity: Amount,
@@ -185,6 +187,8 @@ pub enum InnerAction {
     /// tokens than a given one.
     ///
     /// On success, replies with [`Event::Transfer`].
+    ///
+    /// [`msg::source()`]: gstd::msg::source
     Transfer { to: ActorId, amount: Amount },
 }
 

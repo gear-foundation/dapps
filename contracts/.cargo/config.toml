@@ -1,5 +1,5 @@
 [alias]
-xtask = "r -p xtask --"
+xtask = "r -rp xtask --"
 
 [build]
 rustflags = [
@@ -7,4 +7,11 @@ rustflags = [
     "-Wlet-underscore",
     "-Wrust-2018-idioms",
     "-Wunused",
+]
+rustdocflags = [
+    "-Dwarnings",
+    "--default-theme=ayu",
+    "-Wrustdoc::private_doc_tests",
+    # TODO: uncomment after the compiler update.
+    # "-Wrustdoc::unescaped_backticks",
 ]

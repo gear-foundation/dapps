@@ -2,9 +2,8 @@ mod utils_gclient;
 
 use gclient::GearApi;
 
-#[ignore]
 #[tokio::test]
-async fn success() -> gclient::Result<()> {
+async fn gclient_success() -> gclient::Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     let student_nft = utils_gclient::common::init(&api).await?;

@@ -13,6 +13,7 @@ gtest.workspace = true
 feeds-channel-io.workspace = true
 
 # External binaries
+
 feeds-channel.workspace = true
 
 [build-dependencies]

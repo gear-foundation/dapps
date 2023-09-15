@@ -8,8 +8,7 @@ pub const USER: u64 = 193;
 pub const MTK_ID: u64 = 2;
 
 #[tokio::test]
-#[ignore]
-async fn init() -> Result<()> {
+async fn gclient_init() -> Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     let multitoken_program =
         code_from_os("../target/wasm32-unknown-unknown/debug/multi_token.opt.wasm")?;
@@ -42,7 +41,7 @@ async fn init() -> Result<()> {
             multitoken_program,
             gclient::now_micros().to_le_bytes(),
             init_multitoken_payload,
-            gas_info.min_limit,
+            gas_info.burned * 2,
             0,
         )
         .await?;
@@ -71,7 +70,7 @@ async fn init() -> Result<()> {
             WASM_BINARY_OPT.to_vec(),
             gclient::now_micros().to_le_bytes(),
             init_concert_payload,
-            gas_info.min_limit,
+            gas_info.burned * 2,
             0,
         )
         .await?;
