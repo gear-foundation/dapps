@@ -20,10 +20,12 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Build & move the `nightly` tag
         run: |
-          sudo dnf install git -y
+          ls -al ..
           cargo xtask docs
           rm target/doc/.lock
           git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
