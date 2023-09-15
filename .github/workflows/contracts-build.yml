@@ -30,6 +30,7 @@ jobs:
       - name: Build
         run: |
           cargo xtask docs
+          rm target/doc/.lock
           cargo b
 
       - name: Configure GitHub Pages
