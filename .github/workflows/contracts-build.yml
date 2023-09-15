@@ -9,32 +9,25 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  check:
-    name: CI
-    uses: ./.github/workflows/contracts-check.yml
-
   build:
     name: Build
-    needs: check
     runs-on: self-hosted
     defaults:
       run:
         working-directory: contracts
     permissions:
-      pages: write
       id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Build
+      - name: Build & move the `nightly` tag
         run: |
           cargo xtask docs
           rm target/doc/.lock
-          cargo b
-
-      - name: Configure GitHub Pages
-        uses: actions/configure-pages@v3
+          git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git tag -f nightly
+          git push --tags
 
       - name: Upload the GitHub Pages artifact
         uses: actions/upload-pages-artifact@v2
@@ -48,15 +41,10 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           name: Nightly
-          prerelease: true
-          files: |
-            contracts/target/wasm32-unknown-unknown/debug/*.*.wasm
-            contracts/target/wasm32-unknown-unknown/debug/*.meta.txt
+          files: contracts/target/doc/help.html
 
       - name: Release
         if: startsWith(github.ref, 'refs/tags/')
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            contracts/target/wasm32-unknown-unknown/debug/*.*.wasm
-            contracts/target/wasm32-unknown-unknown/debug/*.meta.txt
+          files: contracts/target/doc/help.html
