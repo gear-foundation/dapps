@@ -27,12 +27,6 @@ jobs:
     name: All
     runs-on: self-hosted
     steps:
-      - name: Check
-        run: |
-          ls -al
-          git log --pretty=oneline
-          git tag -l
-
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -43,9 +37,7 @@ jobs:
       - name: Update the nightly tag
         if: github.ref == 'refs/heads/master'
         run: |
-          git log --pretty=oneline
-          git tag -l
-          git tag nightly
+          git tag -f nightly
           git push -f --tags
 
       - name: Build
