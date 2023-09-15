@@ -28,8 +28,7 @@ jobs:
           cargo xtask docs
           rm target/doc/.lock
           git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
-          git tag -f nightly
-          git push --tags
+          git push -f --tags
 
       - name: Upload the GitHub Pages artifact
         uses: actions/upload-pages-artifact@v2
