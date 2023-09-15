@@ -23,6 +23,7 @@ jobs:
 
       - name: Build & move the `nightly` tag
         run: |
+          sudo dnf install git -y
           cargo xtask docs
           rm target/doc/.lock
           git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
