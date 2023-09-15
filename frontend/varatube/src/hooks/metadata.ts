@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAlert } from '@gear-js/react-hooks';
-import { getProgramMetadata, getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api';
+import { getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api';
 import { HexString } from '@polkadot/util/types';
 
 function useBuffer(source: string) {
@@ -30,7 +30,7 @@ function useProgramMetadata(source: string) {
     fetch(source)
       .then((response) => response.text())
       .then((raw) => `0x${raw}` as HexString)
-      .then((metaHex) => getProgramMetadata(metaHex))
+      .then((metaHex) => ProgramMetadata.from(metaHex))
       .then((result) => setMetadata(result))
       .catch(({ message }: Error) => alert.error(message));
 
