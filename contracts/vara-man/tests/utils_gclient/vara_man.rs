@@ -22,6 +22,7 @@ pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
             tokens_per_silver_coin_hard: 3,
             gold_coins: 5,
             silver_coins: 20,
+            number_of_lives: 3,
         },
     )
     .await

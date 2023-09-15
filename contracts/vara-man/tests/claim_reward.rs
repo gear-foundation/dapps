@@ -22,6 +22,7 @@ fn success() {
             tokens_per_silver_coin_hard: 3,
             gold_coins: 5,
             silver_coins: 20,
+            number_of_lives: 3,
         },
     );
 
@@ -61,6 +62,7 @@ fn success_reward_scale() {
             tokens_per_silver_coin_hard: 3,
             gold_coins: 5,
             silver_coins: 20,
+            number_of_lives: 3,
         },
     );
 
@@ -100,6 +102,7 @@ fn fail_rewards_already_claimed() {
             tokens_per_silver_coin_hard: 3,
             gold_coins: 5,
             silver_coins: 20,
+            number_of_lives: 3,
         },
     );
 
@@ -143,6 +146,7 @@ fn fail_coin_amount_is_gt_than_allowed() {
             tokens_per_silver_coin_hard: 3,
             gold_coins: 5,
             silver_coins: 20,
+            number_of_lives: 3,
         },
     );
 

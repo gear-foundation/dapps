@@ -73,7 +73,7 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                     actor_id,
                     Player {
                         name,
-                        retries: 0,
+                        lives: vara_man.config.number_of_lives,
                         claimed_gold_coins: 0,
                         claimed_silver_coins: 0,
                     },
@@ -97,8 +97,8 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                 return VaraManEvent::Error("Player is already StartGame".to_owned());
             };
 
-            if !vara_man.admins.contains(&player_address) && !player.is_have_retries() {
-                return VaraManEvent::Error("Player has exhausted all his attempts.".to_owned());
+            if !player.is_have_lives() {
+                return VaraManEvent::Error("Player has exhausted all his lives.".to_owned());
             }
 
             vara_man.games.insert(
@@ -111,7 +111,9 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                 ),
             );
 
-            player.retries += 1;
+            if !vara_man.admins.contains(&player_address) {
+                player.lives -= 1;
+            }
 
             VaraManEvent::GameStarted
         }
