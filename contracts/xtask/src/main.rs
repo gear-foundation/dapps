@@ -35,7 +35,7 @@ fn main() -> Result<()> {
         .env("__GEAR_WASM_BUILDER_NO_BUILD", "")
         .run()?;
 
-        if xshell::cmd!(sh, "[ -e target/tmp/gear ]")
+        if xshell::cmd!(sh, "[ -e target/doc/.lock ]")
             .quiet()
             .run()
             .is_ok()
