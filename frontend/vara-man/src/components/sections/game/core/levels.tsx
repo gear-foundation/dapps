@@ -8,12 +8,12 @@ export const gameLevelConfigs: Record<IGameLevel, IGameLevelConfig> = {
 
     },
     Medium: {
-        speed: 1.2,
+        speed: 2,
         map: mediumMap,
 
     },
     Hard: {
-        speed: 1.5,
+        speed: 3,
         map: hardMap,
 
     },

@@ -1,26 +1,28 @@
 import { useApp } from '@/app/context/ctx-app'
-import { useGame } from '@/app/context/ctx-game'
 import { useGameMessage } from '@/app/hooks/use-game'
 import { IGameLevel } from '@/app/types/game'
 import { useNavigate } from 'react-router-dom'
+import { useAccount } from '@gear-js/react-hooks'
+
+import { gameLevelConfigs } from '@/components/sections/game/core/levels'
 
 export function useMessage() {
   const { isPending, setIsPending } = useApp()
-  const { player } = useGame()
+  const { account } = useAccount()
   const navigate = useNavigate()
   const handleMessage = useGameMessage()
 
   const onStart = (level: IGameLevel) => {
-    if (player) {
+    if (account?.decodedAddress) {
       setIsPending(true)
-      // const seed = Math.floor(Math.random() * 10 ** 10)
-      const seed = 1
+
+      const seed = gameLevelConfigs[level].speed
       handleMessage(
         {
           StartGame: {
             level,
             seed,
-            player_address: player[0],
+            player_address: account.decodedAddress,
           },
         },
         {
