@@ -122,7 +122,7 @@ pub enum RMRKAction {
     /// * `parent_token_id`: is the parent RMRK token.
     /// * `token_id`: is the tokenId of new RMRK token.
     ///
-    /// On success replies [`RMRKEvent::MintToNft`].
+    /// On success replies [`RMRKReply::MintedToNft`].
     MintToNft {
         parent_id: ActorId,
         parent_token_id: TokenId,
@@ -139,7 +139,7 @@ pub enum RMRKAction {
     /// * `root_owner`: is the address who will own the token.
     /// * `token_id`: is the tokenId of new RMRK token.
     ///
-    /// On success replies [`RMRKEvent::MintToRootOwner`].
+    /// On success replies [`RMRKReply::MintedToRootOwner`].
     MintToRootOwner {
         root_owner: ActorId,
         token_id: TokenId,
@@ -158,7 +158,7 @@ pub enum RMRKAction {
     /// * `parent_token_id`: is the tokenId of the parent NFT.
     /// * `child_token_id`: is the tokenId of the child instance.
     ///
-    /// On success replies [`RMRKEvent::PendingChild`].
+    /// On success replies [`RMRKReply::PendingChildAdded`].
     AddChild {
         parent_token_id: TokenId,
         child_token_id: TokenId,
@@ -175,7 +175,7 @@ pub enum RMRKAction {
     /// * `parent_token_id`: is the tokenId of the parent NFT
     /// * `child_token_id`: is the tokenId of the child instance
     ///
-    /// On success replies [`RMRKEvent::AcceptedChild`].
+    /// On success replies [`RMRKReply::ChildAccepted`].
     AcceptChild {
         parent_token_id: TokenId,
         child_contract_id: ActorId,
@@ -194,7 +194,7 @@ pub enum RMRKAction {
     /// * `child_contract_id`: is the address of the child RMRK contract.
     /// * `child_token_id`: is the tokenId of the child instance.
     ///
-    /// On success replies [`RMRKEvent::RejectedChild`].
+    /// On success replies [`RMRKReply::ChildRejected`].
     RejectChild {
         parent_token_id: TokenId,
         child_contract_id: ActorId,
@@ -212,7 +212,7 @@ pub enum RMRKAction {
     /// * `child_contract_id`: is the address of the child RMRK contract.
     /// * `child_token_id`: is the tokenId of the child instance.
     ///
-    /// On success replies [`RMRKEvent::RemovedChild`].
+    /// On success replies [`RMRKReply::ChildRemoved`].
     RemoveChild {
         parent_token_id: TokenId,
         child_contract_id: ActorId,
@@ -230,7 +230,7 @@ pub enum RMRKAction {
     /// # Arguments:
     /// * `token_id`: is the tokenId of the burnt token.
     ///
-    /// On success replies [`RMRKEvent::Transfer`].
+    /// On success replies [`RMRKReply::Burnt`].
     Burn(TokenId),
 
     /// Burns RMRK tokens. It must be called from the RMRK parent contract when the root owner removes or rejects child NFTs.
@@ -244,7 +244,7 @@ pub enum RMRKAction {
     /// # Arguments:
     /// * `token_ids`: is the tokenIds of the burnt tokens.
     ///
-    /// On success replies [`RMRKEvent::TokensBurnt`].
+    /// On success replies [`RMRKReply::TokenBurnt`].
     BurnFromParent {
         child_token_id: TokenId,
     },
@@ -260,7 +260,7 @@ pub enum RMRKAction {
     /// * `parent_token_id`: is the tokenId of the parent NFT.
     /// * `child_token_id`: is the tokenId of the child instance.
     ///
-    /// On success replies [`RMRKEvent::ChildBurnt`].
+    /// On success replies [`RMRKReply::ChildBurnt`].
     BurnChild {
         parent_token_id: TokenId,
         child_token_id: TokenId,
@@ -278,7 +278,7 @@ pub enum RMRKAction {
     /// * `to`: is the receiving address.
     /// * `token_id`: is the tokenId of the transfered token.
     ///
-    /// On success replies [`RMRKEvent::ChildBurnt`].
+    /// On success replies [`RMRKReply::ChildBurnt`].
     Transfer {
         to: ActorId,
         token_id: TokenId,
@@ -296,7 +296,7 @@ pub enum RMRKAction {
     /// * `destination_id: is the tokenId of the parent RMRK token.
     /// * `token_id`: is the tokenId of the transfered token.
     ///
-    /// On success replies [`RMRKEvent::TransferToNft`].
+    /// On success replies [`RMRKReply::TransferredToNft`].
     TransferToNft {
         to: ActorId,
         token_id: TokenId,
@@ -320,7 +320,7 @@ pub enum RMRKAction {
     /// * `to`: RMRK token to which the child token will be transferred.
     /// * `child_token_id`: is the tokenId of the child in the RMRK child contract.
     ///
-    /// On success replies [`RMRKEvent::ChildTransferred`].
+    /// On success replies [`RMRKReply::ChildTransferred`].
     TransferChild {
         from: TokenId,
         to: TokenId,
@@ -339,7 +339,7 @@ pub enum RMRKAction {
     /// * `to`: is the address of approved account.
     /// * `token_id`: is the tokenId of the token.
     ///
-    /// On success replies [`RMRKEvent::Approval`].
+    /// On success replies [`RMRKReply::Approved`].
     Approve {
         to: ActorId,
         token_id: TokenId,
@@ -353,7 +353,7 @@ pub enum RMRKAction {
     /// * `metadata_uri`: Metadata URI of the asset
     /// * `parts_ids`:  An array of IDs of fixed and slot parts to be included in the asset
     ///
-    /// On success reply `[RMRKEvent::ResourceEntryAdded]`.
+    /// On success reply [`RMRKReply::EquippableAssetEntryAdded`].
     AddEquippableAssetEntry {
         equippable_group_id: u64,
         catalog_address: Option<ActorId>,
@@ -391,7 +391,7 @@ pub enum RMRKAction {
     /// * `slot_part_id`: slotPartId ID of the slot part that we are using to equip
     /// * `child_asset_id`: childAssetId ID of the asset that we are equipping
     ///
-    /// On success replies [`RMRKEvent::TokenEquipped`].
+    /// On success replies [`RMRKReply::TokenEquipped`].
     Equip {
         token_id: TokenId,
         child_token_id: TokenId,

@@ -37,7 +37,7 @@ pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
             gclient::code_from_os(FT_MAIN_WASM_PATH)?,
             gclient::now_micros().to_le_bytes(),
             init_ftoken_config,
-            gas_info.burned * 5,
+            gas_info.burned * 2,
             0,
         )
         .await?;
@@ -133,7 +133,7 @@ async fn send_message(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.burned * 5, 0, false)
+        .send_message(program_id.into(), payload, gas_info.burned * 2, 0, false)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;

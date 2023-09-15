@@ -43,7 +43,7 @@ pub async fn init_with_config(api: &GearApi, config: Config) -> gclient::Result<
             gclient::code_from_os(VARA_MAN_WASM_PATH)?,
             gclient::now_micros().to_le_bytes(),
             vara_man_init,
-            gas_info.min_limit * 2,
+            gas_info.burned * 2,
             0,
         )
         .await?;
@@ -183,7 +183,7 @@ async fn send_message(
         .send_message(
             program_id.into(),
             payload,
-            gas_info.min_limit * 2,
+            gas_info.burned * 2,
             value,
             false,
         )

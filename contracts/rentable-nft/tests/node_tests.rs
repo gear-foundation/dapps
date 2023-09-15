@@ -4,8 +4,7 @@ use rentable_nft::WASM_BINARY_OPT;
 use rentable_nft_io::*;
 
 #[tokio::test]
-#[ignore]
-async fn mint_test() -> Result<()> {
+async fn gclient_mint_test() -> Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
@@ -29,7 +28,7 @@ async fn mint_test() -> Result<()> {
             WASM_BINARY_OPT.to_vec(),
             gclient::now_micros().to_le_bytes(),
             init_nft,
-            gas_info.min_limit,
+            gas_info.burned * 2,
             0,
         )
         .await?;
@@ -55,7 +54,7 @@ async fn mint_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
+        .send_message(program_id, mint_payload, gas_info.burned * 2, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -66,8 +65,7 @@ async fn mint_test() -> Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
-async fn burn_test() -> Result<()> {
+async fn gclient_burn_test() -> Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
@@ -91,7 +89,7 @@ async fn burn_test() -> Result<()> {
             WASM_BINARY_OPT.to_vec(),
             gclient::now_micros().to_le_bytes(),
             init_nft,
-            gas_info.min_limit,
+            gas_info.burned * 2,
             0,
         )
         .await?;
@@ -117,7 +115,7 @@ async fn burn_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
+        .send_message(program_id, mint_payload, gas_info.burned * 2, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -136,7 +134,7 @@ async fn burn_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, burn_payload, gas_info.min_limit, 0, false)
+        .send_message(program_id, burn_payload, gas_info.burned * 2, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -154,7 +152,7 @@ async fn burn_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, burn_payload, gas_info.min_limit, 0, false)
+        .send_message(program_id, burn_payload, gas_info.burned * 2, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -165,8 +163,7 @@ async fn burn_test() -> Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
-async fn transfer_test() -> Result<()> {
+async fn gclient_transfer_test() -> Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
@@ -190,7 +187,7 @@ async fn transfer_test() -> Result<()> {
             WASM_BINARY_OPT.to_vec(),
             gclient::now_micros().to_le_bytes(),
             init_nft,
-            gas_info.min_limit,
+            gas_info.burned * 2,
             0,
         )
         .await?;
@@ -216,7 +213,7 @@ async fn transfer_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
+        .send_message(program_id, mint_payload, gas_info.burned * 2, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -236,7 +233,7 @@ async fn transfer_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, transfer_payload, gas_info.min_limit, 0, false)
+        .send_message(program_id, transfer_payload, gas_info.burned * 2, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -247,13 +244,11 @@ async fn transfer_test() -> Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
-async fn owner_test() -> Result<()> {
+async fn gclient_owner_test() -> Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     let mut listener = api.subscribe().await?; // Subscribing for events.
                                                // Checking that blocks still running.
     assert!(listener.blocks_running().await?);
-    dbg!("1!!!!!!!!!!!");
     let init_nft = InitNft {
         name: String::from("MyToken"),
         symbol: String::from("MTK"),
@@ -261,23 +256,19 @@ async fn owner_test() -> Result<()> {
         royalties: None,
     }
     .encode();
-    dbg!("2!!!!!!!!!!!");
     let gas_info = api
         .calculate_upload_gas(None, WASM_BINARY_OPT.to_vec(), init_nft.clone(), 0, true)
         .await?;
-    dbg!("3!!!!!!!!!!!");
     let (message_id, program_id, _hash) = api
         .upload_program_bytes(
             WASM_BINARY_OPT.to_vec(),
             gclient::now_micros().to_le_bytes(),
             init_nft,
-            gas_info.min_limit,
+            gas_info.burned * 2,
             0,
         )
         .await?;
-    dbg!("4!!!!!!!!!!!");
     assert!(listener.message_processed(message_id).await?.succeed());
-    dbg!("5!!!!!!!!!!!");
     let transaction_id: u64 = 0;
     use gear_lib_old::non_fungible_token::token::TokenMetadata;
     let token_metadata = TokenMetadata {
@@ -286,22 +277,17 @@ async fn owner_test() -> Result<()> {
         media: "http://".to_string(),
         reference: "http://".to_string(),
     };
-    dbg!("6!!!!!!!!!!!");
     let mint_payload = NFTAction::Mint {
         transaction_id,
         token_metadata,
     };
-    dbg!("7!!!!!!!!!!!");
     let gas_info = api
         .calculate_handle_gas(None, program_id, mint_payload.encode(), 0, true)
         .await?;
-    dbg!("8!!!!!!!!!!!");
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
+        .send_message(program_id, mint_payload, gas_info.burned * 2, 0, false)
         .await?;
-    dbg!("9!!!!!!!!!!!");
     assert!(listener.message_processed(message_id).await?.succeed());
-    dbg!("10!!!!!!!!!!!");
     assert!(listener.blocks_running().await?);
 
     let owner_payload = NFTAction::Owner { token_id: 0.into() };
@@ -311,7 +297,7 @@ async fn owner_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, owner_payload, gas_info.min_limit, 0, false)
+        .send_message(program_id, owner_payload, gas_info.burned * 2, 0, false)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
 
@@ -321,8 +307,7 @@ async fn owner_test() -> Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
-async fn approved() -> Result<()> {
+async fn gclient_approved() -> Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
     let mut listener = api.subscribe().await?; // Subscribing for events.
@@ -346,7 +331,7 @@ async fn approved() -> Result<()> {
             WASM_BINARY_OPT.to_vec(),
             gclient::now_micros().to_le_bytes(),
             init_nft,
-            gas_info.min_limit,
+            gas_info.burned * 2,
             0,
         )
         .await?;
@@ -372,7 +357,7 @@ async fn approved() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
+        .send_message(program_id, mint_payload, gas_info.burned * 2, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -391,7 +376,7 @@ async fn approved() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, approve_payload, gas_info.min_limit, 0, false)
+        .send_message(program_id, approve_payload, gas_info.burned * 2, 0, false)
         .await?;
 
     let processed = listener.message_processed(message_id).await?;

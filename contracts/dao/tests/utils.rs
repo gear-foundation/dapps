@@ -6,11 +6,11 @@ use gtest::{Program, System};
 pub const ADMIN: u64 = 100;
 const TOKEN_ID: u64 = 1;
 pub const DAO_ID: u64 = 2;
-pub const PERIOD_DURATION: u64 = 10000000;
-pub const VOTING_PERIOD_LENGTH: u64 = 100000000;
-pub const GRACE_PERIOD_LENGTH: u64 = 10000000;
+pub const PERIOD_DURATION: u64 = 100;
+pub const VOTING_PERIOD_LENGTH: u64 = 1000;
+pub const GRACE_PERIOD_LENGTH: u64 = 100;
 const DILUTION_BOUND: u8 = 3;
-pub const ABORT_WINDOW: u64 = 10000000;
+pub const ABORT_WINDOW: u64 = 100;
 pub const APPLICANTS: &[u64] = &[10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
 
 pub trait Dao {

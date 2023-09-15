@@ -96,14 +96,15 @@ impl Client {
             .client
             .calculate_upload_gas(None, code.clone(), encoded_payload, 0, true)
             .await?
-            .min_limit;
+            .burned
+            * 2;
         let (message_id, program_id, _) = self
             .client
             .upload_program(
                 code,
                 gclient::now_micros().to_le_bytes(),
                 payload,
-                gas_limit * 2,
+                gas_limit,
                 0,
             )
             .await?;
@@ -135,7 +136,7 @@ impl Client {
             .client
             .calculate_handle_gas(None, destination, encoded_payload, 0, true)
             .await?
-            .min_limit;
+            .burned;
         let modified_gas_limit = modify_gas_limit(gas_limit);
 
         println!("Sending a payload: `{payload:?}`.");

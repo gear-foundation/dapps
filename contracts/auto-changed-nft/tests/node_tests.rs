@@ -401,8 +401,7 @@ use gstd::Encode;
 // }
 
 #[tokio::test]
-#[ignore]
-async fn auto_changed() -> Result<()> {
+async fn gclient_auto_changed() -> Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
@@ -423,7 +422,7 @@ async fn auto_changed() -> Result<()> {
             WASM_BINARY_OPT.to_vec(),
             gclient::now_micros().to_le_bytes(),
             init_nft,
-            gas_info.min_limit,
+            gas_info.burned * 2,
             0,
         )
         .await?;
@@ -448,7 +447,7 @@ async fn auto_changed() -> Result<()> {
         .calculate_handle_gas(None, program_id, mint_payload.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.min_limit, 0, false)
+        .send_message(program_id, mint_payload, gas_info.burned * 2, 0, false)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -467,7 +466,7 @@ async fn auto_changed() -> Result<()> {
             .calculate_handle_gas(None, program_id, payload.encode(), 0, true)
             .await?;
         let (message_id, _) = api
-            .send_message(program_id, payload, gas_info.min_limit, 0, false)
+            .send_message(program_id, payload, gas_info.burned * 2, 0, false)
             .await?;
         assert!(listener.message_processed(message_id).await?.succeed());
         assert!(listener.blocks_running().await?);

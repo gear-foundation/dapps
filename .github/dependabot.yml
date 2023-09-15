@@ -2,9 +2,11 @@ version: 2
 updates:
   - package-ecosystem: "cargo"
     directory: "contracts"
+    labels: ["A3-insubstantial"]
     schedule:
       interval: "daily"
   - package-ecosystem: "github-actions"
     directory: "."
+    labels: ["A3-insubstantial"]
     schedule:
       interval: "daily"

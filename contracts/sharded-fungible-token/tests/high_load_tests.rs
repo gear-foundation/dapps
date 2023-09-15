@@ -5,9 +5,8 @@ use utils::*;
 // Change this parameter to scale test
 const ACCOUNTS_AMOUNT: u64 = 1000;
 
-#[ignore]
 #[test]
-fn high_load_mint() {
+fn gclient_high_load_mint() {
     const FIRST_ID: u64 = 100;
     let system = System::new();
     system.init_logger();

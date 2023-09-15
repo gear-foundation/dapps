@@ -15,6 +15,7 @@ fungible-token-io.workspace = true
 gtest.workspace = true
 
 # External binaries
+
 fungible-token.workspace = true
 
 [build-dependencies]

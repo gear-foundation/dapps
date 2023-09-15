@@ -19,5 +19,6 @@ tokio.workspace = true
 hex.workspace = true
 
 # External binaries
+
 tamagotchi.workspace = true
 tamagotchi-battle-state.workspace = true

@@ -1,4 +1,4 @@
-name: Contracts Build
+name: Contracts CI & Build
 
 on:
   push:
@@ -9,19 +9,44 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  check:
-    uses: ./.github/workflows/contracts-check.yml
-
   build:
     name: Build
-    needs: check
     runs-on: self-hosted
     defaults:
       run:
         working-directory: contracts
+    permissions:
+      id-token: write
+      contents: write
+      pages: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: CI
-        run: cargo b
+      - name: Build & move the `nightly` tag
+        run: |
+          cargo xtask docs
+          rm target/doc/.lock
+          git remote set-url origin https://${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}
+          git tag nightly
+          git push -f --tags
+
+      - name: Upload the GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: contracts/target/doc
+
+      - name: Deploy GitHub Pages
+        uses: actions/deploy-pages@v2
+
+      - name: Release the nightly build
+        uses: softprops/action-gh-release@v1
+        with:
+          name: Nightly
+          files: contracts/target/doc/help.html
+
+      - name: Release
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: contracts/target/doc/help.html
