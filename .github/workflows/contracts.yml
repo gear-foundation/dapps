@@ -27,6 +27,12 @@ jobs:
     name: All
     runs-on: self-hosted
     steps:
+      - name: Check
+        run: |
+          ls -al
+          git log --pretty=oneline
+          git tag -l
+
       - name: Checkout
         uses: actions/checkout@v4
 
