@@ -41,10 +41,6 @@ jobs:
           git tag -f nightly
           git push -f origin nightly
 
-      - name: Build
-        if: github.ref_type == 'tag'
-        run: cargo b
-
       - name: Release
         if: github.event_name != 'pull_request'
         uses: softprops/action-gh-release@v1
