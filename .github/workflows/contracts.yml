@@ -2,9 +2,9 @@ name: Contracts CI
 
 on:
   pull_request:
-    paths-ignore: 'frontend/**'
+    paths-ignore: frontend
   push:
-    paths-ignore: 'frontend/**'
+    paths-ignore: frontend
     branches: [master]
     tags: ['[0-9]+.[0-9]+.[0-9]+']
 
