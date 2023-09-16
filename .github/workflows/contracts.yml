@@ -52,11 +52,6 @@ jobs:
             contracts/target/wasm32-unknown-unknown/debug/*.*.wasm
             contracts/target/wasm32-unknown-unknown/debug/*.meta.txt
 
-      - name: Generate documentation
-        if: github.ref == 'refs/heads/master'
-        run: |
-          cargo xtask docs
-
       - name: Upload the GitHub Pages artifact
         if: github.ref == 'refs/heads/master'
         uses: actions/upload-pages-artifact@v2
