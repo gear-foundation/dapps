@@ -32,9 +32,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # - name: CI
-      #   if: github.ref_type != 'tag'
-      #   run: cargo xtask ci
+      - name: CI
+        if: github.ref_type != 'tag'
+        run: cargo xtask ci
 
       - name: Update the nightly tag
         if: github.ref == 'refs/heads/master'
@@ -42,20 +42,20 @@ jobs:
           git tag -f nightly
           git push -f origin nightly
 
-      # - name: Build
-      #   if: github.event_name != 'pull_request'
-      #   run: cargo b
+      - name: Build
+        if: github.ref_type == 'tag'
+        run: cargo b
 
-      # - name: Release
-      #   if: github.event_name != 'pull_request'
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     name: ${{ github.ref == 'refs/heads/master' && 'Nightly' || github.ref_name }}
-      #     tag_name: ${{ github.ref == 'refs/heads/master' && 'nightly' || github.ref_name }}
-      #     prerelease: github.ref == 'refs/heads/master'
-      #     files: |
-      #       contracts/target/wasm32-unknown-unknown/debug/*.*.wasm
-      #       contracts/target/wasm32-unknown-unknown/debug/*.meta.txt
+      - name: Release
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ github.ref == 'refs/heads/master' && 'Nightly' || github.ref_name }}
+          tag_name: ${{ github.ref == 'refs/heads/master' && 'nightly' || github.ref_name }}
+          prerelease: github.ref == 'refs/heads/master'
+          files: |
+            contracts/target/wasm32-unknown-unknown/debug/*.*.wasm
+            contracts/target/wasm32-unknown-unknown/debug/*.meta.txt
 
       - name: Generate documentation
         if: github.ref == 'refs/heads/master'
