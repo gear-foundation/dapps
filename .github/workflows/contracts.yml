@@ -28,6 +28,7 @@ jobs:
   all:
     name: All
     runs-on: self-hosted
+    environment: github-pages
     steps:
       - name: Checkout
         uses: actions/checkout@v4
