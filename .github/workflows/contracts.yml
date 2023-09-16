@@ -32,9 +32,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: CI
-        if: github.ref_type != 'tag'
-        run: cargo xtask ci
+      - name: ${{ github.ref_type == 'tag' && 'Build' || 'Build & CI' }}
+        run: [ ${{ github.ref_type == 'tag' || '' }} ] && cargo b || cargo xtask ci
 
       - name: Update the nightly tag
         if: github.ref == 'refs/heads/master'
