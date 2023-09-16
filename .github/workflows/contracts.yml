@@ -2,9 +2,9 @@ name: Contracts CI
 
 on:
   pull_request:
-    paths-ignore: frontend
+    paths-ignore: frontend/**
   push:
-    paths-ignore: frontend
+    paths-ignore: frontend/**
     branches: [master]
     tags: ['[0-9]+.[0-9]+.[0-9]+']
 
@@ -28,7 +28,6 @@ jobs:
   all:
     name: All
     runs-on: self-hosted
-    environment: github-pages
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -69,6 +68,12 @@ jobs:
         with:
           path: contracts/target/doc
 
+  deploy:
+    name: Deploy GitHub Pages
+    if: github.ref == 'refs/heads/master'
+    needs: all
+    environment: github-pages
+    runs-on: self-hosted
+    steps:
       - name: Deploy GitHub Pages
-        if: github.ref == 'refs/heads/master'
         uses: actions/deploy-pages@v2
