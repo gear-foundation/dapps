@@ -47,7 +47,7 @@ jobs:
         with:
           name: ${{ github.ref == 'refs/heads/master' && 'Nightly' || github.ref_name }}
           tag_name: ${{ github.ref == 'refs/heads/master' && 'nightly' || github.ref_name }}
-          prerelease: github.ref == 'refs/heads/master'
+          prerelease: ${{ github.ref == 'refs/heads/master' }}
           files: |
             contracts/target/wasm32-unknown-unknown/debug/*.*.wasm
             contracts/target/wasm32-unknown-unknown/debug/*.meta.txt
