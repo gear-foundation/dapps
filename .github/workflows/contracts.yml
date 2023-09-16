@@ -33,7 +33,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: ${{ github.ref_type == 'tag' && 'Build' || 'Build & CI' }}
-        run: [ $GITHUB_REF_TYPE = 'tag' ] && cargo b || cargo xtask ci
+        run: '[ $GITHUB_REF_TYPE = "tag" ] && cargo b || cargo xtask ci'
 
       - name: Update the nightly tag
         if: github.ref == 'refs/heads/master'
