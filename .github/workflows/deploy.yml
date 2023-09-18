@@ -4,7 +4,7 @@ on:
   push:
     branches: ['master']
     paths: 
-      - frontend/**
+      - frontend/vara-man/**
   workflow_dispatch:
 
 env:
@@ -45,8 +45,7 @@ jobs:
       - name: Build and push Vara Man Docker image
         uses: docker/build-push-action@master
         with:
-          file: frontend/Dockerfile
-          context: frontend
+          context: frontend/vara-man
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           build-args: |
