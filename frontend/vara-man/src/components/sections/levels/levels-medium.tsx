@@ -5,19 +5,15 @@ import { LevelsStartAction } from '@/components/sections/levels/levels-start-act
 
 import LevelsBackgroundImage from '@/assets/images/levels/bg2.jpg'
 import { useGame } from '@/app/context/ctx-game'
-import { retriesToLivesMap } from '@/app/consts'
 
 export function LevelsMedium() {
   const { player } = useGame()
 
-  const retries = player ? player.retries : 3;
-  const livesLeft = retriesToLivesMap[retries];
-
   const lifeIcons = Array.from({ length: 3 }, (_, index) => (
     <div key={index}>
       <Icons.lifes
-        primary={livesLeft > index ? "currentColor" : "gray"}
-        secondary={livesLeft > index ? "1E8C4D" : "gray"}
+        primary={Number(player?.lives) > index ? "currentColor" : "gray"}
+        secondary={Number(player?.lives) > index ? "1E8C4D" : "gray"}
         className="w-9 h-9"
       />
     </div>

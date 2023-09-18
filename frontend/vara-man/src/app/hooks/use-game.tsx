@@ -14,10 +14,10 @@ import { programIdGame, useGameState } from './use-game-state'
 export const useInitGame = () => {
   const { account } = useAccount()
   const { setIsSettled } = useApp()
-  const { game, config, players, admins, error } = useGameState()
+  const { game, config, players, admins, error, status } = useGameState()
   const navigate = useNavigate();
 
-  const { setGame, setIsAdmin, setPlayer, setAllPlayers, setConfigState } = useGame()
+  const { setGame, setIsAdmin, setPlayer, setAllPlayers, setConfigState, setStatus } = useGame()
 
   useEffect(() => {
     setConfigState(config?.Config || null)
@@ -58,7 +58,16 @@ export const useInitGame = () => {
       const isAdmin = admins.Admins.find((address) => address === account.decodedAddress)
       setIsAdmin(!!isAdmin)
     }
-  }, [admins?.Admins])
+  }, [account?.decodedAddress, admins?.Admins])
+
+
+  useEffect(() => {
+    if (!programIdGame) return
+
+    if (status?.Status) {
+      setStatus(status?.Status)
+    }
+  }, [status?.Status])
 
   return {
     isGameReady: programIdGame ? Boolean(game) : true,

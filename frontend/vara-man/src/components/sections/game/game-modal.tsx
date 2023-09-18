@@ -15,22 +15,57 @@ import style from './game.module.scss';
 import { ChampionsPopup } from '@/components/popups/champions-popup'
 import { useGame } from '@/app/context/ctx-game'
 import { useAccount } from '@gear-js/react-hooks'
+import { IGameConfig, IGameLevel } from '@/app/types/game'
 
 type Props = {
     setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
+const getPerCoin = (config: IGameConfig, level: IGameLevel) => {
+    const {
+        tokensPerGoldCoinEasy,
+        tokensPerSilverCoinEasy,
+        tokensPerGoldCoinMedium,
+        tokensPerSilverCoinMedium,
+        tokensPerGoldCoinHard,
+        tokensPerSilverCoinHard,
+    } = config;
+
+    const goldTokens: Record<string, string> = {
+        Easy: tokensPerGoldCoinEasy,
+        Medium: tokensPerGoldCoinMedium,
+        Hard: tokensPerGoldCoinHard,
+    };
+
+    const silverTokens: Record<string, string> = {
+        Easy: tokensPerSilverCoinEasy,
+        Medium: tokensPerSilverCoinMedium,
+        Hard: tokensPerSilverCoinHard,
+    };
+
+    return {
+        tokensPerGoldCoin: Number(goldTokens[level]),
+        tokensPerSilverCoin: Number(silverTokens[level]),
+    };
+};
 
 const GameModal = ({ setOpenModal }: Props) => {
+    const { configState, game } = useGame()
     const { onClaimReward, isPending } = useMessage()
-    const { silverCoins, goldCoins } = useContext(GameContext);
-    const [allTokens, setAllTokens] = useState(0)
-    const silverTokens = silverCoins * 5
-    const goldTokens = goldCoins * 10
-
-    const [isShowChampionModal, setShowChampionModal] = useState(false)
     const { allPlayers } = useGame()
     const { account } = useAccount()
+
+    const { silverCoins, goldCoins } = useContext(GameContext);
+    const perCoins = configState && game && getPerCoin(configState, game.level)
+
+    const [allTokens, setAllTokens] = useState(0)
+
+    const perGoldCoin = perCoins?.tokensPerGoldCoin || 0
+    const perSilverCoin = perCoins?.tokensPerSilverCoin || 0
+    const goldTokens = goldCoins * perGoldCoin
+    const silverTokens = silverCoins * perSilverCoin
+
+    const [isShowChampionModal, setShowChampionModal] = useState(false)
 
     useEffect(() => {
         setAllTokens(silverTokens + goldTokens)
@@ -80,12 +115,12 @@ const GameModal = ({ setOpenModal }: Props) => {
                         <div className={style.total}>
                             <div className={style.coins}>
                                 <img src={SilverCoinIcon} width={24} alt="" />
-                                <span className='font-semibold'>{silverCoins} x 5 = {silverTokens} </span>
+                                <span className='font-semibold'>{silverCoins} x {perSilverCoin} = {silverTokens} </span>
                                 <span className='font-extralight'>{account?.balance.unit || 'TVARA'}</span>
                             </div>
                             <div className={style.coins}>
                                 <img src={GoldCoinIcon} width={24} alt="" />
-                                <span className='font-semibold'>{goldCoins} x 10 = {goldTokens} </span>
+                                <span className='font-semibold'>{goldCoins} x {perGoldCoin} = {goldTokens} </span>
                                 <span className='font-extralight'>{account?.balance.unit || 'TVARA'}</span>
                             </div>
 

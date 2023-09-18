@@ -4,8 +4,6 @@ import { IGameLevel } from '@/app/types/game'
 import { useNavigate } from 'react-router-dom'
 import { useAccount } from '@gear-js/react-hooks'
 
-import { gameLevelConfigs } from '@/components/sections/game/core/levels'
-
 export function useMessage() {
   const { isPending, setIsPending } = useApp()
   const { account } = useAccount()
@@ -16,12 +14,10 @@ export function useMessage() {
     if (account?.decodedAddress) {
       setIsPending(true)
 
-      const seed = gameLevelConfigs[level].speed
       handleMessage(
         {
           StartGame: {
             level,
-            seed,
             player_address: account.decodedAddress,
           },
         },

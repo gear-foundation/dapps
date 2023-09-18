@@ -4,28 +4,23 @@ export type IGameState = {
   admins: string[]
   games: IGame[]
   players: IPlayer[]
-  status: 'Paused' | 'Started'
-  config: {
-    tokensPerGoldCoin: number
-    tokensPerSilverCoin: number
-    easyRewardScaleBps: number
-    mediumRewardScaleBps: number
-    hardRewardScaleBps: number
-    goldCoins: number
-    silverCoins: number
-  }
+  config: IGameConfig
 }
 
+export type IGameStatus = 'Paused' | 'Started'
+
 export type IGameConfig = {
-  config: {
-    tokensPerGoldCoin: number
-    tokensPerSilverCoin: number
-    easyRewardScaleBps: number
-    mediumRewardScaleBps: number
-    hardRewardScaleBps: number
-    goldCoins: number
-    silverCoins: number
-  }
+  operator: string
+  oneCoinInValue: string
+  tokensPerGoldCoinEasy: string
+  tokensPerSilverCoinEasy: string
+  tokensPerGoldCoinMedium: string
+  tokensPerSilverCoinMedium: string
+  tokensPerGoldCoinHard: string
+  tokensPerSilverCoinHard: string
+  goldCoins: string
+  silverCoins: string
+  numberOfLives: string
 }
 
 export type IPlayer = [HexString, IPlayerInfo]
@@ -33,13 +28,10 @@ export type IGame = [string, IGameInstance]
 
 export type IPlayerInfo = {
   name: string // Имя
-  retries: string // Количество попыток(игр)
+  lives: string // Количество попыток(игр)
   claimedGoldCoins: number // Количество заработанных золотых монет
   claimedSilverCoins: number // Количество заработанных серебряных монет
 }
-
-// type MAP_WIDTH = 17 // Количество ячеек на карте в длину
-// type MAP_HEIGHT = 12 // Количество ячеек на карте в ширину
 
 export type IGameLevel = 'Easy' | 'Medium' | 'Hard'
 
@@ -56,15 +48,3 @@ export type IGameInstance = {
   start_time_ms: number // Время начала игры
   isClaimed: boolean // Флаг, который указывает на то, забрал ли игрок награду(клейм) или нет
 }
-
-// Представляет сущность, которая может быть на карте (в ячейке)
-// type Entity =
-//   | 'Empty'
-//   | 'GoldCoin'
-//   | 'SilverCoin'
-//   | 'ZombieCat'
-//   | 'BatCat'
-//   | 'BullyCat'
-
-// // Специальный эффект
-// type Effect = 'Speed' | 'Slow' | 'Blind'

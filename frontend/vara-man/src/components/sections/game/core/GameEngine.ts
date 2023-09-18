@@ -10,7 +10,7 @@ interface GameActions {
 }
 
 class GameEngine {
-  private readonly VELOCITY = 2
+  private readonly VELOCITY = 1
   private readonly TILE_SIZE = 32
 
   private canvas: HTMLCanvasElement | null
