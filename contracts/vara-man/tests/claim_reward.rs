@@ -34,7 +34,7 @@ fn success() {
     // assert!(state.players.is_empty() && state.games.is_empty());
 
     vara_man.register_player(utils::PLAYERS[0], "John", false);
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 
     assert_eq!(system.balance_of(utils::PLAYERS[0]), 0);
     vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
@@ -74,7 +74,7 @@ fn success_reward_scale() {
     // assert!(state.players.is_empty() && state.games.is_empty());
 
     vara_man.register_player(utils::PLAYERS[0], "John", false);
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 
     assert_eq!(system.balance_of(utils::PLAYERS[0]), 0);
     vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
@@ -114,7 +114,7 @@ fn fail_rewards_already_claimed() {
     // assert!(state.players.is_empty() && state.games.is_empty());
 
     vara_man.register_player(utils::PLAYERS[0], "John", false);
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 
     assert_eq!(system.balance_of(utils::PLAYERS[0]), 0);
     vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
@@ -158,7 +158,7 @@ fn fail_coin_amount_is_gt_than_allowed() {
     // assert!(state.players.is_empty() && state.games.is_empty());
 
     vara_man.register_player(utils::PLAYERS[0], "John", false);
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 
     assert_eq!(system.balance_of(utils::PLAYERS[0]), 0);
     vara_man.claim_reward(utils::PLAYERS[0], 10000, 10000, true);

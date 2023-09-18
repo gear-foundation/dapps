@@ -82,7 +82,7 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                 VaraManEvent::PlayerRegistered(actor_id)
             }
         }
-        VaraManAction::StartGame { level, seed } => {
+        VaraManAction::StartGame { level } => {
             let player_address = msg::source();
 
             if vara_man.status == Status::Paused {
@@ -103,12 +103,12 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
 
             vara_man.games.insert(
                 player_address,
-                GameInstance::new_with_coins(
+                GameInstance {
                     level,
-                    vara_man.config.gold_coins,
-                    vara_man.config.silver_coins,
-                    seed,
-                ),
+                    gold_coins: vara_man.config.gold_coins,
+                    silver_coins: vara_man.config.silver_coins,
+                    is_claimed: false,
+                },
             );
 
             VaraManEvent::GameStarted

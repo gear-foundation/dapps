@@ -3,15 +3,14 @@ use gstd::prelude::*;
 use gstd::ActorId;
 use gtest::{Program, System};
 use vara_man_io::{
-    Config, GameSeed, Level, Status, VaraMan as VaraManState, VaraManAction, VaraManEvent,
-    VaraManInit,
+    Config, Level, Status, VaraMan as VaraManState, VaraManAction, VaraManEvent, VaraManInit,
 };
 
 pub trait VaraMan {
     fn vara_man(system: &System) -> Program<'_>;
     fn vara_man_with_config(system: &System, config: Config) -> Program<'_>;
     fn register_player(&self, from: u64, name: &str, error: bool);
-    fn start_game(&self, from: u64, level: Level, seed: GameSeed, error: bool);
+    fn start_game(&self, from: u64, level: Level, error: bool);
     fn claim_reward(&self, from: u64, silver_coins: u64, gold_coins: u64, error: bool);
     fn change_status(&self, status: Status);
     fn change_config(&self, config: Config);
@@ -50,8 +49,8 @@ impl VaraMan for Program<'_> {
         );
     }
 
-    fn start_game(&self, from: u64, level: Level, seed: GameSeed, error: bool) {
-        self.send_tx(from, VaraManAction::StartGame { level, seed }, error);
+    fn start_game(&self, from: u64, level: Level, error: bool) {
+        self.send_tx(from, VaraManAction::StartGame { level }, error);
     }
 
     fn claim_reward(&self, from: u64, silver_coins: u64, gold_coins: u64, error: bool) {

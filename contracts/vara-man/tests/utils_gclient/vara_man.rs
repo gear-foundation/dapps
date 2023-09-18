@@ -91,10 +91,9 @@ pub async fn start_game(
     api: &GearApi,
     program_id: &ActorId,
     level: Level,
-    seed: u64,
     error: bool,
 ) -> gclient::Result<()> {
-    let result = send_message(api, program_id, VaraManAction::StartGame { level, seed }, 0).await?;
+    let result = send_message(api, program_id, VaraManAction::StartGame { level }, 0).await?;
 
     let event: VaraManEvent =
         VaraManEvent::decode(&mut result.as_ref()).expect("Unexpected invalid result payload.");

@@ -36,8 +36,7 @@ async fn success_start_game() -> gclient::Result<()> {
     {
         let api = api.with("//Peter")?;
         utils_gclient::vara_man::register_player(&api, &vara_man_id, "Peter", false).await?;
-        utils_gclient::vara_man::start_game(&api, &vara_man_id, Level::Easy, u64::MAX, false)
-            .await?;
+        utils_gclient::vara_man::start_game(&api, &vara_man_id, Level::Easy, false).await?;
 
         let state = utils_gclient::vara_man::get_state(&api, &vara_man_id)
             .await

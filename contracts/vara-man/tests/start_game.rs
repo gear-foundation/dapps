@@ -19,7 +19,7 @@
 //     let player_0_id: ActorId = utils::PLAYERS[0].into();
 
 //     vara_man.register_player(utils::PLAYERS[0], "John", false);
-//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 
 //     let state = vara_man.get_state();
 
@@ -40,7 +40,7 @@
 //     let state = vara_man.get_state();
 //     assert!(state.games.is_empty());
 
-//     vara_man.start_game(utils::PLAYERS[0], Level::Hard, u64::MAX, true);
+//     vara_man.start_game(utils::PLAYERS[0], Level::Hard, true);
 
 //     let state = vara_man.get_state();
 //     assert_eq!(state.games.len(), 0);
@@ -59,13 +59,13 @@
 
 //     vara_man.register_player(utils::PLAYERS[0], "John", false);
 
-//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 //     vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 //     vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 //     vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, true);
+//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, true);
 
 //     let state = vara_man.get_state();
 //     assert_eq!(state.games.len(), 0);
@@ -81,21 +81,21 @@
 
 //     vara_man.register_player(utils::PLAYERS[0], "John", false);
 
-//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 //     vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 //     vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 //     vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, true);
+//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, true);
 
 //     vara_man.add_admin(utils::PLAYERS[0].into());
 
-//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 //     vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 //     vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 //     vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, u64::MAX, false);
+//     vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
 // }
