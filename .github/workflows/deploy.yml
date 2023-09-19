@@ -2,8 +2,8 @@ name: Deploy vara man
 
 on:
   push:
-    branches: ['master']
-    paths: 
+    branches: ["master"]
+    paths:
       - frontend/vara-man/**
   workflow_dispatch:
 
@@ -51,7 +51,6 @@ jobs:
           build-args: |
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
             VITE_GAME_ADDRESS=${{ secrets.VITE_GAME_ADDRESS }}
-            
 
   deploy-vara-man-k8s:
     needs: [build-and-push-vara-man-image]
