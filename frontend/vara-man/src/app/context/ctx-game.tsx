@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useContext, useState } from 'react'
-import { IGame, IGameConfig, IGameInstance, IPlayer, IPlayerInfo } from '@/app/types/game'
+import { IGame, IGameConfig, IGameInstance, IGameStatus, IPlayer, IPlayerInfo } from '@/app/types/game'
 
 const useGameData = () => {
   const [game, setGame] = useState<IGameInstance | null>()
@@ -8,7 +8,7 @@ const useGameData = () => {
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [player, setPlayer] = useState<IPlayerInfo>()
   const [allPlayers, setAllPlayers] = useState<IPlayer[]>()
-  const [status, setStatus] = useState<string>()
+  const [status, setStatus] = useState<IGameStatus>()
 
   return {
     game,

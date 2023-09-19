@@ -10,7 +10,6 @@ export type IGameState = {
 export type IGameStatus = 'Paused' | 'Started'
 
 export type IGameConfig = {
-  operator: string
   oneCoinInValue: string
   tokensPerGoldCoinEasy: string
   tokensPerSilverCoinEasy: string
