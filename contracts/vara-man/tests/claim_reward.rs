@@ -1,5 +1,5 @@
 mod utils;
-
+use crate::utils::ADMIN;
 use gtest::{Program, System};
 use utils::VaraMan;
 use vara_man_io::{Config, Level, Status};
@@ -12,7 +12,6 @@ fn success() {
     let vara_man = Program::vara_man_with_config(
         &system,
         Config {
-            operator: utils::ADMIN.into(),
             one_coin_in_value: 1_000_000_000_000,
             tokens_per_gold_coin_easy: 5,
             tokens_per_silver_coin_easy: 1,
@@ -28,7 +27,7 @@ fn success() {
 
     system.mint_to(utils::VARA_MAN_ID, utils::VARA_MAN_FUND);
 
-    vara_man.change_status(Status::Started);
+    vara_man.change_status(ADMIN, Status::Started);
 
     // let state = vara_man.get_state();
     // assert!(state.players.is_empty() && state.games.is_empty());
@@ -52,7 +51,6 @@ fn success_reward_scale() {
     let vara_man = Program::vara_man_with_config(
         &system,
         Config {
-            operator: utils::ADMIN.into(),
             one_coin_in_value: 1_000_000_000_000,
             tokens_per_gold_coin_easy: 5,
             tokens_per_silver_coin_easy: 1,
@@ -68,7 +66,7 @@ fn success_reward_scale() {
 
     system.mint_to(utils::VARA_MAN_ID, utils::VARA_MAN_FUND);
 
-    vara_man.change_status(Status::Started);
+    vara_man.change_status(ADMIN, Status::Started);
 
     // let state = vara_man.get_state();
     // assert!(state.players.is_empty() && state.games.is_empty());
@@ -92,7 +90,6 @@ fn fail_rewards_already_claimed() {
     let vara_man = Program::vara_man_with_config(
         &system,
         Config {
-            operator: utils::ADMIN.into(),
             one_coin_in_value: 1_000_000_000_000,
             tokens_per_gold_coin_easy: 5,
             tokens_per_silver_coin_easy: 1,
@@ -108,7 +105,7 @@ fn fail_rewards_already_claimed() {
 
     system.mint_to(utils::VARA_MAN_ID, utils::VARA_MAN_FUND);
 
-    vara_man.change_status(Status::Started);
+    vara_man.change_status(ADMIN, Status::Started);
 
     // let state = vara_man.get_state();
     // assert!(state.players.is_empty() && state.games.is_empty());
@@ -136,7 +133,6 @@ fn fail_coin_amount_is_gt_than_allowed() {
     let vara_man = Program::vara_man_with_config(
         &system,
         Config {
-            operator: utils::ADMIN.into(),
             one_coin_in_value: 1_000_000_000_000,
             tokens_per_gold_coin_easy: 5,
             tokens_per_silver_coin_easy: 1,
@@ -152,7 +148,7 @@ fn fail_coin_amount_is_gt_than_allowed() {
 
     system.mint_to(utils::VARA_MAN_ID, utils::VARA_MAN_FUND);
 
-    vara_man.change_status(Status::Started);
+    vara_man.change_status(ADMIN, Status::Started);
 
     // let state = vara_man.get_state();
     // assert!(state.players.is_empty() && state.games.is_empty());

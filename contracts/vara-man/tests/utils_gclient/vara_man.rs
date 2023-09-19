@@ -12,7 +12,6 @@ pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     init_with_config(
         api,
         Config {
-            operator: common::get_current_actor_id(api),
             one_coin_in_value: 1_000_000_000_000,
             tokens_per_gold_coin_easy: 5,
             tokens_per_silver_coin_easy: 1,

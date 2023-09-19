@@ -1,5 +1,5 @@
 // mod utils;
-
+// use crate::utils::ADMIN;
 // use gstd::ActorId;
 // use gtest::{Program, System};
 // use utils::VaraMan;
@@ -11,7 +11,7 @@
 //     system.init_logger();
 
 //     let vara_man = Program::vara_man(&system);
-//     vara_man.change_status(Status::Started);
+//     vara_man.change_status(ADMIN, Status::Started);
 
 //     let state = vara_man.get_state();
 //     assert!(state.players.is_empty());
@@ -62,7 +62,7 @@
 //     system.init_logger();
 
 //     let vara_man = Program::vara_man(&system);
-//     vara_man.change_status(Status::Started);
+//     vara_man.change_status(ADMIN, Status::Started);
 
 //     let state = vara_man.get_state();
 //     assert!(state.players.is_empty());

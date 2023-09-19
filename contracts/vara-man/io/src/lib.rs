@@ -98,7 +98,6 @@ pub enum Status {
 
 #[derive(Debug, Default, Clone, Copy, Encode, Decode, TypeInfo)]
 pub struct Config {
-    pub operator: ActorId,
     pub one_coin_in_value: u64,
     pub tokens_per_gold_coin_easy: u64,
     pub tokens_per_silver_coin_easy: u64,
@@ -113,7 +112,7 @@ pub struct Config {
 
 impl Config {
     pub fn is_valid(&self) -> bool {
-        !self.operator.is_zero() && self.gold_coins + self.silver_coins <= MAP_CELLS as u64
+        self.gold_coins + self.silver_coins <= MAP_CELLS as u64
     }
 
     pub fn get_tokens_per_gold_coin_for_level(&self, level: Level) -> (u64, u64) {

@@ -188,16 +188,16 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
             }
         }
         VaraManAction::ChangeStatus(status) => {
-            if msg::source() != vara_man.config.operator {
-                VaraManEvent::Error("Only operator can change whole game status.".to_owned())
-            } else {
+            if vara_man.admins.contains(&msg::source()) {
                 vara_man.status = status;
                 VaraManEvent::StatusChanged(status)
+            } else {
+                VaraManEvent::Error("Only admin can change whole game status.".to_owned())
             }
         }
         VaraManAction::ChangeConfig(config) => {
-            if msg::source() != vara_man.config.operator {
-                VaraManEvent::Error("Only operator can change whole game config.".to_owned())
+            if !vara_man.admins.contains(&msg::source()) {
+                VaraManEvent::Error("Only admin can change whole game config.".to_owned())
             } else if !config.is_valid() {
                 VaraManEvent::Error("Provided config is invalid.".to_owned())
             } else {
