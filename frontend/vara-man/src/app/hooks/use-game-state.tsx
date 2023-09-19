@@ -3,7 +3,7 @@ import { useAccount } from "@gear-js/react-hooks"
 import { ENV } from '@/app/consts'
 import { useReadState } from "./use-metadata"
 import meta from '@/assets/meta/vara_man.meta.txt'
-import { IGameConfig, IGameInstance, IPlayer } from '@/app/types/game'
+import { IGameConfig, IGameInstance, IGameStatus, IPlayer } from '@/app/types/game'
 
 export const programIdGame = ENV.GAME
 
@@ -22,6 +22,7 @@ export function useGameState() {
     const payloadConfig = useMemo(() => ({ Config: null }), [])
     const payloadAdmins = useMemo(() => ({ Admins: null }), [])
     const payloadPlayers = useMemo(() => ({ AllPlayers: null }), [])
+    const payloadStatus = useMemo(() => ({ Status: null }), [])
 
     const { state: game, error } = useReadState<{ Game: IGameInstance }>({
         programId: programIdGame,
@@ -47,5 +48,11 @@ export function useGameState() {
         payload: payloadAdmins,
     })
 
-    return { game, config, players, admins, error }
+    const { state: status } = useReadState<{ Status: IGameStatus }>({
+        programId: programIdGame,
+        meta,
+        payload: payloadStatus,
+    })
+
+    return { game, config, players, admins, error, status }
 }

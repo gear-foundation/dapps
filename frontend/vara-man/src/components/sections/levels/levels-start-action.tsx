@@ -16,20 +16,16 @@ export function LevelsStartAction({
 }: LevelsStartActionProps) {
   const navigate = useNavigate();
   const { isPending, onStart } = useMessage()
-  const { player, game, isAdmin } = useGame()
+  const { player, game } = useGame()
   const [isDisable, setDisable] = useState(false)
 
   useEffect(() => {
     if (!player) return
 
-    if (player.retries === "3" && !game) {
+    if (player.lives === "0" && !game) {
       setDisable(true)
     }
-
-    if (isAdmin) {
-      setDisable(false)
-    }
-  }, [])
+  }, [game, player])
 
   const onClickStart = () => {
     if (player) {
@@ -37,7 +33,7 @@ export function LevelsStartAction({
         return navigate('/game');
       }
 
-      if (player.retries !== "3" || isAdmin) {
+      if (player.lives !== "0") {
         return onStart(level)
       }
     }

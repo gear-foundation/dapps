@@ -18,7 +18,7 @@ export default class Enemy {
   scaredGhost2!: HTMLImageElement
   image!: HTMLImageElement
 
-  private directionChangeInterval: number = 500
+  private directionChangeInterval: number = 800
   private lastDirectionChangeTime: number = 0
 
   constructor(

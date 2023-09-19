@@ -8,6 +8,7 @@ const useGameData = () => {
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [player, setPlayer] = useState<IPlayerInfo>()
   const [allPlayers, setAllPlayers] = useState<IPlayer[]>()
+  const [status, setStatus] = useState<string>()
 
   return {
     game,
@@ -22,6 +23,8 @@ const useGameData = () => {
     setPlayer,
     allPlayers,
     setAllPlayers,
+    status,
+    setStatus,
   }
 }
 

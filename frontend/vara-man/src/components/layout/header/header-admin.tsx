@@ -5,16 +5,16 @@ import { useApp } from '@/app/context/ctx-app'
 
 type HeaderAdminProps = BaseComponentProps & {}
 
-export function HeaderAdmin({}: HeaderAdminProps) {
+export function HeaderAdmin({ }: HeaderAdminProps) {
   const { isPending, setIsPending } = useApp()
-  const { game } = useGame()
+  const { status } = useGame()
   const handleMessage = useGameMessage()
 
   const onSuccess = () => setIsPending(false)
 
   return (
     <>
-      {game?.status === 'Paused' && (
+      {status === 'Paused' && (
         <button
           type="button"
           className="btn btn--primary px-6"
@@ -30,7 +30,7 @@ export function HeaderAdmin({}: HeaderAdminProps) {
           <span>Activate game</span>
         </button>
       )}
-      {game?.status === 'Started' && (
+      {status === 'Started' && (
         <button
           type="button"
           className="btn btn--theme-red px-6"
