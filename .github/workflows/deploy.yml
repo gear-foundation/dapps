@@ -47,7 +47,7 @@ jobs:
         with:
           context: frontend/vara-man
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-vara-man:latest
           build-args: |
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
             VITE_GAME_ADDRESS=${{ secrets.VITE_GAME_ADDRESS }}
