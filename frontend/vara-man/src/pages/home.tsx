@@ -5,11 +5,9 @@ import { useGame } from '@/app/context/ctx-game'
 export default function Home() {
   const { status } = useGame()
 
-  if (status === "Started") {
-    return <HomeRegister />
-  }
-
-  if (status === "Paused") {
-    return <HomeNotActive />
-  }
+  return (
+    <>
+      {status === "Started" ? <HomeRegister /> : <HomeNotActive />}
+    </>
+  )
 }
