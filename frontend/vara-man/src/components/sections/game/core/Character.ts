@@ -177,36 +177,37 @@ export default class Character {
       this.characterAnimationTimer = this.characterAnimationTimerDefault
     }
 
-    const directionMap = {
-      [MovingDirection.up]: {
-        x: 0,
-        y: -this.velocity,
-        rotation: this.Rotation.up,
-      },
-      [MovingDirection.down]: {
-        x: 0,
-        y: this.velocity,
-        rotation: this.Rotation.down,
-      },
-      [MovingDirection.left]: {
-        x: -this.velocity,
-        y: 0,
-        rotation: this.Rotation.left,
-      },
-      [MovingDirection.right]: {
-        x: this.velocity,
-        y: 0,
-        rotation: this.Rotation.right,
-      },
+    const stepSize = this.velocity
+    let newX = this.x
+    let newY = this.y
+
+    for (let i = 0; i < stepSize; i++) {
+      const didCollideWithEnvironment = this.tileMap.didCollideWithEnvironment(
+        newX,
+        newY,
+        this.currentMovingDirection
+      )
+
+      if (!didCollideWithEnvironment) {
+        switch (this.currentMovingDirection) {
+          case MovingDirection.up:
+            newY -= 1
+            break
+          case MovingDirection.down:
+            newY += 1
+            break
+          case MovingDirection.left:
+            newX -= 1
+            break
+          case MovingDirection.right:
+            newX += 1
+            break
+        }
+      }
     }
 
-    const directionData = directionMap[this.currentMovingDirection]
-    if (directionData) {
-      const { x, y, rotation } = directionData
-      this.x += x
-      this.y += y
-      this.characterRotation = rotation
-    }
+    this.x = newX
+    this.y = newY
   }
 
   private animate() {
@@ -225,5 +226,4 @@ export default class Character {
   private eatDot() {
     this.tileMap.eatDot(this.x, this.y)
   }
-
 }

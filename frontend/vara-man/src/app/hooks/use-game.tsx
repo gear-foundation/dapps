@@ -42,7 +42,7 @@ export const useInitGame = () => {
       const playerCurrent = players.AllPlayers.find(x => x[0] === account.decodedAddress)
       setAllPlayers(players?.AllPlayers)
 
-      if (playerCurrent) {
+      if (playerCurrent && status?.Status !== "Paused") {
         setPlayer(playerCurrent[1])
         navigate('/levels');
       } else {
