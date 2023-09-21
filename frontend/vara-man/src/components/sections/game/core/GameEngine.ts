@@ -10,7 +10,6 @@ interface GameActions {
 }
 
 class GameEngine {
-  private readonly VELOCITY = 1
   private readonly TILE_SIZE = 32
 
   private canvas: HTMLCanvasElement | null
@@ -32,7 +31,7 @@ class GameEngine {
     this.canvas = canvas
     this.tileMap = new TileMap(this.TILE_SIZE, canvas, level)
     this.tileMap.initialize().then(() => {
-      this.character = this.tileMap.getCharacter(this.VELOCITY)
+      this.character = this.tileMap.getCharacter(gameLevelConfigs[level].speed)
       this.enemies = []
       this.enemies = this.tileMap.getEnemies(gameLevelConfigs[level].speed)
     })
