@@ -1,0 +1,53 @@
+@use '@gear-js/ui/resets';
+@use 'utils' as *;
+
+@import "fonts";
+
+*,
+::after,
+::before {
+  border: none;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+button {
+  cursor: pointer;
+
+  &:disabled {
+    pointer-events: none;
+  }
+}
+
+body {
+  font-family: 'Anuphan', sans-serif;
+  color: #000;
+  background-color: #fff;
+  background-position: top;
+  background-size: 100%;
+  background-repeat: no-repeat;
+  font-variant-numeric: lining-nums proportional-nums;
+
+  @supports not (font-variation-settings: "wdth" 115) {
+    & {
+      font-family: 'Anuphan-Fallback', sans-serif;
+    }
+  }
+
+  @include lg {
+    background-size: 650px;
+    background-position: center top 10%;
+  }
+
+  &.modal-open {
+    overflow-y: hidden;
+  }
+
+  &.welcome {
+    background-image: url(/assets/images/bg.png);
+
+    @include lg {
+      background-image: url(/assets/images/mobile-bg.png);
+    }
+  }
+}
