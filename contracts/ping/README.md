@@ -3,7 +3,7 @@
 
 # [Ping](https://wiki.gear-tech.io/docs/examples/ping)
 
-An elementary application for the familiarity with Gear. You send "PING" and the contract responds with "PONG".
+An elementary application for the familiarity with Gear. You send "PING", and the contract responds with "PONG".
 
 ### 🏗️ Building
 

@@ -1,0 +1,23 @@
+[package]
+name = "roll-the-dice"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+oracle-io.workspace = true
+roll-the-dice-io.workspace = true
+
+[dev-dependencies]
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+
+[build-dependencies]
+roll-the-dice-io.workspace = true
+gear-wasm-builder.workspace = true
+
+# External binaries
+
+oracle.workspace = true
+roll-the-dice-state.workspace = true
