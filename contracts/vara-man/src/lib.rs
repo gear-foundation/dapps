@@ -1,4 +1,5 @@
 #![no_std]
+
 use gstd::{collections::HashMap, msg, prelude::*, ActorId};
 use vara_man_io::{
     Config, GameInstance, Player, StateQuery, StateReply, Status, VaraMan as VaraManState,
@@ -7,11 +8,11 @@ use vara_man_io::{
 
 #[derive(Debug, Default)]
 struct VaraMan {
-    pub games: HashMap<ActorId, GameInstance>,
-    pub players: HashMap<ActorId, Player>,
-    pub status: Status,
-    pub config: Config,
-    pub admins: Vec<ActorId>,
+    games: HashMap<ActorId, GameInstance>,
+    players: HashMap<ActorId, Player>,
+    status: Status,
+    config: Config,
+    admins: Vec<ActorId>,
 }
 
 impl From<VaraMan> for VaraManState {

@@ -50,7 +50,8 @@ async fn common_upload_program(
     let gas_limit = client
         .calculate_upload_gas(None, code.clone(), encoded_payload, 0, true)
         .await?
-        .min_limit;
+        .burned
+        * 2;
     let (message_id, program_id, _) = client
         .upload_program(
             code,
@@ -106,8 +107,7 @@ async fn send_message<T: Decode>(
 }
 
 #[tokio::test]
-#[ignore]
-async fn battle() -> Result<()> {
+async fn gclient_battle() -> Result<()> {
     // let address = WSAddress::new("wss://node-workshop.gear.rs", 443);
     // let client = GearApi::init_with(address, "//Alice").await?;
     let client = GearApi::dev_from_path("../target/tmp/gear")

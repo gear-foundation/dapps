@@ -5,6 +5,7 @@ resolver = "2"
 members = [
     "auto-changed-nft",
     "auto-changed-nft/state",
+    "battleship",
     "concert",
     "concert/state",
     "crowdsale",
@@ -15,6 +16,12 @@ members = [
     "dao-light/state",
     "ddns",
     "ddns/state",
+    "decentralized-git",
+    "decentralized-git/master",
+    "decentralized-git/master/state",
+    "decentralized-git/state",
+    "decentralized-git/user",
+    "decentralized-git/user/state",
     "dex",
     "dex/factory",
     "dex/factory/state",
@@ -34,6 +41,10 @@ members = [
     "galactic-express",
     "galactic-express/state",
     "game-of-chance",
+    "horse-races",
+    "horse-races/state",
+    "identity",
+    "identity/state",
     "multi-token",
     "multi-token/state",
     "multisig-wallet",
@@ -48,6 +59,10 @@ members = [
     "non-fungible-token/state",
     "on-chain-nft",
     "on-chain-nft/state",
+    "oracle",
+    "oracle/state",
+    "oracle/randomness",
+    "oracle/randomness/state",
     "ping",
     "ping/state",
     "rentable-nft",
@@ -58,6 +73,8 @@ members = [
     "rmrk/state",
     "rock-paper-scissors",
     "rock-paper-scissors/state",
+    "roll-the-dice",
+    "roll-the-dice/state",
     "sharded-fungible-token",
     "sharded-fungible-token/logic",
     "sharded-fungible-token/storage",
@@ -82,6 +99,7 @@ members = [
     "vara-man/state",
     "varatube",
     "varatube/state",
+    "w3bstreaming",
 
     # Noncontract crates
 
@@ -93,7 +111,7 @@ members = [
 homepage = "https://wiki.gear-tech.io/docs/examples/prerequisites"
 documentation = "https://dapps.gear.rs"
 authors = ["Gear Foundation <hello@gear.foundation>"]
-version = "0.3.2"
+version = "0.3.3"
 license = "MIT"
 edition = "2021"
 publish = false
@@ -102,11 +120,14 @@ publish = false
 # Local contracts
 # Keep in the lexicographic order!
 
+battleship-bot.path = "battleship/bot"
 dex-factory.path = "dex/factory"
 feeds-channel.path = "feeds/channel"
 fungible-token.path = "fungible-token"
 multi-token.path = "multi-token"
 non-fungible-token.path = "non-fungible-token"
+oracle.path = "oracle"
+oracle-randomness.path = "oracle/randomness"
 rmrk-catalog.path = "rmrk/catalog"
 sharded-fungible-token.path = "sharded-fungible-token"
 sharded-fungible-token-logic.path = "sharded-fungible-token/logic"
@@ -123,9 +144,12 @@ tamagotchi.path = "tamagotchi"
 crowdsale-state.path = "crowdsale/state"
 dex-factory-state.path = "dex/factory/state"
 dex-state.path = "dex/state"
+horse-races-state.path = "horse-races/state"
+identity-state.path = "identity/state"
 non-fungible-token-state.path = "non-fungible-token/state"
 on-chain-nft-state.path = "on-chain-nft/state"
 rmrk-state.path = "rmrk/state"
+roll-the-dice-state.path = "roll-the-dice/state"
 supply-chain-state.path = "supply-chain/state"
 tamagotchi-battle-state.path = "tamagotchi-battle/state"
 
@@ -133,11 +157,15 @@ tamagotchi-battle-state.path = "tamagotchi-battle/state"
 # Keep in the lexicographic order!
 
 auto-changed-nft-io.path = "auto-changed-nft/io"
+battleship-io.path = "battleship/io"
 concert-io.path = "concert/io"
 crowdsale-io.path = "crowdsale/io"
 dao-io.path = "dao/io"
 dao-light-io.path = "dao-light/io"
 ddns-io.path = "ddns/io"
+decentralized-git-io.path = "decentralized-git/io"
+decentralized-git-master-io.path = "decentralized-git/master/io"
+decentralized-git-user-io.path = "decentralized-git/user/io"
 dex-factory-io.path = "dex/factory/io"
 dex-io.path = "dex/io"
 dutch-auction-io.path = "dutch-auction/io"
@@ -148,6 +176,8 @@ feeds-io.path = "feeds/io"
 fungible-token-io.path = "fungible-token/io"
 galactic-express-io.path = "galactic-express/io"
 game-of-chance-io.path = "game-of-chance/io"
+horse-races-io.path = "horse-races/io"
+identity-io.path = "identity/io"
 multi-token-io.path = "multi-token/io"
 multisig-wallet-io.path = "multisig-wallet/io"
 nft-marketplace-io.path = "nft-marketplace/io"
@@ -155,12 +185,15 @@ nft-master-io.path = "nft-master/io"
 nft-pixelboard-io.path = "nft-pixelboard/io"
 non-fungible-token-io.path = "non-fungible-token/io"
 on-chain-nft-io.path = "on-chain-nft/io"
+oracle-io.path = "oracle/io"
+oracle-randomness-io.path = "oracle/randomness/io"
 ping-io.path = "ping/io"
 rentable-nft-io.path = "rentable-nft/io"
 rmrk-catalog-io.path = "rmrk/catalog/io"
 rmrk-io.path = "rmrk/io"
 rmrk-resource-io.path = "rmrk/resource/io"
 rock-paper-scissors-io.path = "rock-paper-scissors/io"
+roll-the-dice-io.path = "roll-the-dice/io"
 sharded-fungible-token-io.path = "sharded-fungible-token/io"
 sharded-fungible-token-logic-io.path = "sharded-fungible-token/logic/io"
 sharded-fungible-token-storage-io.path = "sharded-fungible-token/storage/io"
@@ -177,6 +210,7 @@ tamagotchi-battle-io.path = "tamagotchi-battle/io"
 tequila-train-io.path = "tequila-train/io"
 vara-man-io.path = "vara-man/io"
 varatube-io.path = "varatube/io"
+w3bstreaming-io.path = "w3bstreaming/io"
 
 # Local libraries
 # Keep in the lexicographic order!
@@ -189,12 +223,12 @@ supply-chain-deploy.path = "supply-chain/deploy"
 
 # Gear
 
-gstd = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
-gmeta = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
-gclient = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
-gear-core = { git = "https://github.com/gear-tech/gear", rev = "e9b6d89" }
+gstd = { git = "https://github.com/gear-tech/gear", tag = "v0.3.3" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", tag = "v0.3.3" }
+gmeta = { git = "https://github.com/gear-tech/gear", tag = "v0.3.3" }
+gclient = { git = "https://github.com/gear-tech/gear", tag = "v0.3.3" }
+gtest = { git = "https://github.com/gear-tech/gear", tag = "v0.3.3" }
+gear-core = { git = "https://github.com/gear-tech/gear", tag = "v0.3.3" }
 
 # External
 
@@ -217,3 +251,4 @@ clap = { version = "4", default-features = false, features = ["std"] }
 enum-iterator = "1"
 xshell = "0.2"
 anyhow = "1"
+sha2 = "0.10"

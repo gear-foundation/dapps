@@ -1,13 +1,9 @@
 [package]
 name = "vara-man-io"
-version = "0.1.2"
-edition = "2021"
-license = "MIT"
-authors = ["Gear Technologies"]
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
 
 [dependencies]
-scale-info = { version = "2", default-features = false }
-parity-scale-codec = { version = "3", default-features = false }
 gstd.workspace = true
-primitive-types.workspace = true
 gmeta.workspace = true

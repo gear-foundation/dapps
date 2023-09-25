@@ -14,6 +14,7 @@ gstd = { workspace = true, features = ["debug"] }
 gtest.workspace = true
 
 # External binaries
+
 fungible-token.workspace = true
 
 [build-dependencies]

@@ -1,5 +1,5 @@
 [![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=galactic-express/https://github.com/gear-foundation/dapps)
-[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-docs.yml?logo=rust&label=docs)](https://dapps.gear.rs/galactic_express_io)
+[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts.yml?logo=rust&label=docs)](https://dapps.gear.rs/galactic_express_io)
 
 # Galactic express
 
@@ -25,7 +25,7 @@ cargo t -p "galactic-express*"
 
 > This stage can be started only by the admin.
 
-Contract generates random risk factors, the payload reward and the fuel price.
+Contract generates random risk factors, the payload reward, and the fuel price.
 
 During this stage participants have to specify:
 - the amount of fuel they're willing to buy for this session.
@@ -35,7 +35,7 @@ During this stage participants have to specify:
 
 > This stage can be started only by the admin.
 
-Contract executes a session within 1 transaction, and creates random events during this based on the risk factor of the session.
+Contract executes a session within 1 transaction and creates random events during this based on the risk factor of the session.
 
 ### 3. The end game
 

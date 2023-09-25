@@ -17,6 +17,7 @@ gclient.workspace = true
 tokio.workspace = true
 
 # External binaries
+
 sharded-fungible-token.workspace = true
 sharded-fungible-token-logic.workspace = true
 sharded-fungible-token-storage.workspace = true

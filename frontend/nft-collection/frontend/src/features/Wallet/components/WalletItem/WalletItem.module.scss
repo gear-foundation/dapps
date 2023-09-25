@@ -1,0 +1,12 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.wallet {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 120%;
+  letter-spacing: 0.02em;
+  color: theme-var($text-primary)
+}

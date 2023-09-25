@@ -5,8 +5,7 @@ use gstd::prelude::*;
 use vara_man_io::{Level, Status};
 
 #[tokio::test]
-#[ignore]
-async fn success_register_player() -> gclient::Result<()> {
+async fn gclient_success_register_player() -> gclient::Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     let vara_man_id = utils_gclient::common::init(&api).await?;
     utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, false).await?;
@@ -27,8 +26,7 @@ async fn success_register_player() -> gclient::Result<()> {
 }
 
 #[tokio::test]
-#[ignore]
-async fn success_start_game() -> gclient::Result<()> {
+async fn gclient_success_start_game() -> gclient::Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     let vara_man_id = utils_gclient::common::init(&api).await?;
     utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, false).await?;

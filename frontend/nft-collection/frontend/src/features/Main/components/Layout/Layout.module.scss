@@ -1,0 +1,61 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding-top: 32px;
+}
+
+.content {
+    display: flex;
+    height: 472px;
+    padding: 10px 60px 10px 76px;
+    background: linear-gradient(90deg, #edfffb 10%, #fbfbfb 50%);
+    width: 100%;
+    border: 1px solid #F0F0F0;
+    border-radius: 24px;
+
+    .nft-main-image {
+        width: 407px;
+        margin-right: 80px;
+    }
+
+    .presentation {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        gap: 20px;
+    }
+
+    .buttons {
+        display: flex;
+        margin-top: 20px;
+        gap: 16px;
+    }
+
+    .title {
+        font-size: 64px;
+        font-weight: 500;
+        background: linear-gradient(90deg, #2B2B2B 33.39%, #00FFC4 77.42%);
+        -webkit-background-clip: text;
+        background-clip: text; 
+        -webkit-text-fill-color: transparent;
+    }
+
+    .text {
+        font-size: 18px;
+        font-weight: 400;
+    }
+}
+
+.collections {
+    padding: 64px 0 16px;
+    display: flex;
+    flex-direction: column;
+}
+
+.with-padding {
+    padding-bottom: 40px;
+}

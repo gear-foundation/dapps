@@ -1,0 +1,57 @@
+@use "@/assets/styles/utils" as *;
+
+.container {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    @include gap(64px);
+    width: 100%;
+}
+
+.header {
+    @include gap(24px);
+    text-align: center;
+}
+
+.content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    @include gap(48px);
+}
+
+.map {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.block {
+    width: 68px;
+    height: 68px;
+    background-color: #ffffff;
+    border: 1px solid #cfcfcf;
+}
+
+.buttons {
+    // background: linear-gradient(180deg, #b6b6b6 0%, rgba(182, 182, 182, 0) 100%);
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+    // padding: 16px;
+
+    button,
+    button span {
+        width: 100%;
+    }
+}

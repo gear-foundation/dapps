@@ -18,6 +18,7 @@ gclient.workspace = true
 tokio.workspace = true
 
 # External binaries
+
 non-fungible-token.workspace = true
 
 [build-dependencies]

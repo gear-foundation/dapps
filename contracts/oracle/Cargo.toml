@@ -1,0 +1,25 @@
+[package]
+name = "oracle"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+async-trait.workspace = true
+oracle-io.workspace = true
+
+[dev-dependencies]
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+gclient.workspace = true
+tokio.workspace = true
+oracle-randomness-io.workspace = true
+
+# External binaries
+
+oracle-randomness.workspace = true
+
+[build-dependencies]
+oracle-io.workspace = true
+gear-wasm-builder.workspace = true

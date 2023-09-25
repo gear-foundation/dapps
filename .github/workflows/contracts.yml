@@ -1,0 +1,72 @@
+name: Contracts CI
+
+on:
+  pull_request:
+    paths-ignore: frontend/**
+  push:
+    paths-ignore: frontend/**
+    branches: [master]
+    tags: ['[0-9]+.[0-9]+.[0-9]+']
+
+env:
+  CARGO_TERM_COLOR: always
+
+defaults:
+  run:
+    working-directory: contracts
+
+permissions:
+  contents: write
+  id-token: write
+  pages: write
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  all:
+    name: All
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: ${{ github.ref_type == 'tag' && 'Build' || 'Build & CI' }}
+        run: '[ $GITHUB_REF_TYPE = "tag" ] && cargo b || cargo xtask ci'
+
+      - name: Update the nightly tag
+        if: github.ref == 'refs/heads/master'
+        run: |
+          git tag nightly
+          git push -f origin nightly
+
+      - name: Release
+        if: github.event_name != 'pull_request'
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ github.ref == 'refs/heads/master' && 'Nightly' || github.ref_name }}
+          tag_name: ${{ github.ref == 'refs/heads/master' && 'nightly' || github.ref_name }}
+          prerelease: ${{ github.ref == 'refs/heads/master' }}
+          files: |
+            contracts/target/wasm32-unknown-unknown/debug/*.*.wasm
+            contracts/target/wasm32-unknown-unknown/debug/*.meta.txt
+
+      - name: Upload the GitHub Pages artifact
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-pages-artifact@v2
+        with:
+          path: contracts/target/doc
+
+  # A separate job for the Pages deployment is neccessary to prevent the spam from the "deployed"
+  # messages in PRs.
+  # https://github.com/orgs/community/discussions/36919
+  deploy:
+    name: Deploy GitHub Pages
+    if: github.ref == 'refs/heads/master'
+    needs: all
+    environment: github-pages
+    runs-on: self-hosted
+    steps:
+      - name: Deploy GitHub Pages
+        uses: actions/deploy-pages@v2

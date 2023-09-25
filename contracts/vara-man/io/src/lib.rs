@@ -27,11 +27,15 @@ impl Metadata for VaraManMetadata {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct VaraManInit {
     pub config: Config,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum VaraManEvent {
     GameStarted,
     RewardClaimed {
@@ -47,6 +51,8 @@ pub enum VaraManEvent {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum VaraManAction {
     StartGame { level: Level },
     RegisterPlayer { name: String },
@@ -57,6 +63,8 @@ pub enum VaraManAction {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum StateQuery {
     All,
     AllGames,
@@ -69,6 +77,8 @@ pub enum StateQuery {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {
     All(VaraMan),
     AllGames(Vec<(ActorId, GameInstance)>),
@@ -81,6 +91,8 @@ pub enum StateReply {
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct VaraMan {
     pub games: Vec<(ActorId, GameInstance)>,
     pub players: Vec<(ActorId, Player)>,
@@ -90,6 +102,8 @@ pub struct VaraMan {
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Status {
     #[default]
     Paused,
@@ -97,6 +111,8 @@ pub enum Status {
 }
 
 #[derive(Debug, Default, Clone, Copy, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Config {
     pub one_coin_in_value: u64,
     pub tokens_per_gold_coin_easy: u64,
@@ -134,6 +150,8 @@ impl Config {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Player {
     pub name: String,
     pub lives: u64,
@@ -148,6 +166,8 @@ impl Player {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Level {
     Easy,
     Medium,
@@ -155,6 +175,8 @@ pub enum Level {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Effect {
     Speed,
     Slow,
@@ -162,6 +184,8 @@ pub enum Effect {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Entity {
     /// 25% chance to spawn.
     Empty,
@@ -178,6 +202,8 @@ pub enum Entity {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct GameInstance {
     pub level: Level,
     pub gold_coins: u64,

@@ -1,6 +1,6 @@
 # Gear Ecosystem
 
-[![Contracts](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-check.yml?logo=github&label=Contracts)](contracts)<br>
+[![Contracts](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts.yml?logo=github&label=Contracts)](contracts)<br>
 [Frontend (TBD)](frontend)
 
 # License

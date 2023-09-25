@@ -1,0 +1,44 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.tab-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.tab {
+    margin-right: 16px;
+    height: 40px;
+    width: 158px;
+    background: theme-var($background-primary);
+    color: theme-var($text-primary);
+    border: none;
+    border-radius: 40px;
+    gap: 4px;
+    border-color: theme-var($background-secondary);
+    outline: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    box-sizing:content-box;
+    transition: border-color 0.3s, color 0.3s;
+
+    &-active {
+        background: theme-var($green-special-bright);
+    }
+}
+
+.tabs {
+    padding-bottom: 20px;
+
+    @include lg {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+}
+
+.content {
+    flex: 1;
+}

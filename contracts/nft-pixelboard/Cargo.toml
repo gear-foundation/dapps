@@ -16,6 +16,7 @@ gstd = { workspace = true, features = ["debug"] }
 gtest.workspace = true
 
 # External binaries
+
 non-fungible-token.workspace = true
 sharded-fungible-token.workspace = true
 sharded-fungible-token-logic.workspace = true

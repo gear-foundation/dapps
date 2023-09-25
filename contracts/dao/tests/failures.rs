@@ -98,7 +98,7 @@ fn submit_vote() {
     // must fail since the voting period has not started
     dao.submit_vote(ADMIN, proposal_id + 1, Vote::Yes, true);
 
-    system.spend_blocks((PERIOD_DURATION / 1000) as u32);
+    system.spend_blocks((PERIOD_DURATION / 100) as u32);
 
     dao.submit_vote(ADMIN, proposal_id + 1, Vote::Yes, false);
 
@@ -175,7 +175,7 @@ fn process_proposal() {
     // must fail since the proposal is not ready to be processed
     dao.process_proposal(proposal_id + 1, true, true);
     dao.abort(applicant, proposal_id + 1, false);
-    system.spend_blocks(((VOTING_PERIOD_LENGTH + GRACE_PERIOD_LENGTH) / 1000) as u32);
+    system.spend_blocks((VOTING_PERIOD_LENGTH + GRACE_PERIOD_LENGTH) as u32);
 
     dao.process_proposal(proposal_id, false, false);
 

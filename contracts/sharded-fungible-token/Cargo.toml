@@ -19,6 +19,7 @@ hex-literal.workspace = true
 gear-lib-old.workspace = true
 
 # External binaries
+
 sharded-fungible-token-logic.workspace = true
 sharded-fungible-token-storage.workspace = true
 

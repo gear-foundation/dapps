@@ -1,5 +1,5 @@
 [![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=tamagotchi-battle/https://github.com/gear-foundation/dapps)
-[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts-docs.yml?logo=rust&label=docs)](https://dapps.gear.rs/tamagotchi_battle_io)
+[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts.yml?logo=rust&label=docs)](https://dapps.gear.rs/tamagotchi_battle_io)
 
 # Tamagotchi battle
 
@@ -11,14 +11,14 @@ cargo b -p "tamagotchi-battle*"
 
 ### ✅ Testing
 
-Run only `gtest` tests:
+Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "tamagotchi-battle*"
+cargo t -p "tamagotchi-battle*" -- --skip gclient
 ```
 
-Run `gtest` & `gclient` tests:
+Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "tamagotchi-battle*" -- --include-ignored
+cargo t -p "tamagotchi-battle*"
 ```

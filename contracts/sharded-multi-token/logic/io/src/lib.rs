@@ -81,13 +81,13 @@ pub enum MTLogicAction {
         transaction_hash: H256,
         /// The actual account that made the operation (initiator).
         account: ActorId,
-        /// Encoded high-level [`Action`] operation.
+        /// Encoded high-level [`LogicAction`] operation.
         payload: Vec<u8>,
     },
     /// Returns `account` token balance.
     ///
     /// # Requirements
-    /// - `token_id` must exists in [`MTStorageState`](mt_storage_io::MTStorageState) state, in `balances` field.
+    /// - `token_id` must exists in [`MTStorageState`](sharded_multi_token_storage_io::MTStorageState) state, in `balances` field.
     ///
     /// On success, replies with [`MTLogicEvent::Balance`].
     GetBalance {
@@ -99,7 +99,7 @@ pub enum MTLogicAction {
     /// Returns status approval for `approval_target` from `account`.
     ///
     /// # Requirements
-    /// - `account` must exists in [`MTStorageState`](mt_storage_io::MTStorageState) state, in `approvals` field.
+    /// - `account` must exists in [`MTStorageState`](sharded_multi_token_storage_io::MTStorageState) state, in `approvals` field.
     ///
     /// On success, replies with [`MTLogicEvent::Approval`].
     GetApproval {

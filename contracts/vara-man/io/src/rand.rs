@@ -1,4 +1,4 @@
-//! Example from: https://github.com/Absolucy/nanorand-rs/issues/33#issuecomment-1436634311
+//! Example from: <https://github.com/Absolucy/nanorand-rs/issues/33#issuecomment-1436634311>
 
 pub struct Rand {
     pub seed: u64,

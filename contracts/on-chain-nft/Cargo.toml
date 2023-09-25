@@ -19,6 +19,7 @@ gclient.workspace = true
 tokio.workspace = true
 
 # External binaries
+
 on-chain-nft-state.workspace = true
 
 [build-dependencies]

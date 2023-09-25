@@ -1,0 +1,12 @@
+[package]
+name = "battleship-bot"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd = { workspace = true, features = ["debug"] }
+battleship-io.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
