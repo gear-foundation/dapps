@@ -2,7 +2,7 @@ use super::{prelude::*, MetaStateReply, FOREIGN_USER};
 use gear_lib_old::non_fungible_token::token::{Token, TokenId};
 use gstd::ActorId;
 use gtest::{Program as InnerProgram, System};
-use non_fungible_token_io::{Collection, Constraints, InitNFT};
+use non_fungible_token_io::{Collection, Config, InitNFT};
 use std::fs;
 
 pub struct NonFungibleToken<'a>(InnerProgram<'a>, u64);
@@ -26,7 +26,7 @@ impl<'a> NonFungibleToken<'a> {
                 InitNFT {
                     royalties: Default::default(),
                     collection: Collection::default(),
-                    constraints: Constraints::default()
+                    config: Config::default()
                 }
             )
             .main_failed());

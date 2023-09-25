@@ -3,7 +3,7 @@ use gear_lib_old::non_fungible_token::{io::*, token::Token};
 use gstd::ActorId;
 use gtest::{Log, Program as InnerProgram, System};
 use nft_marketplace_io::*;
-use non_fungible_token_io::{Collection, Constraints, InitNFT, NFTAction, NFTEvent};
+use non_fungible_token_io::{Collection, Config, InitNFT, NFTAction, NFTEvent};
 
 pub struct NonFungibleToken<'a>(InnerProgram<'a>);
 
@@ -26,7 +26,7 @@ impl<'a> NonFungibleToken<'a> {
                 InitNFT {
                     royalties: Default::default(),
                     collection: Collection::default(),
-                    constraints: Constraints {
+                    config: Config {
                         authorized_minters: vec![ADMIN.into()],
                         ..Default::default()
                     }

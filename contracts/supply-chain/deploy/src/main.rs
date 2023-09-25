@@ -46,7 +46,7 @@ async fn main() -> Result<()> {
             InitNFT {
                 royalties: Default::default(),
                 collection: Default::default(),
-                constraints: Default::default(),
+                config: Default::default(),
             },
         )
         .await?;

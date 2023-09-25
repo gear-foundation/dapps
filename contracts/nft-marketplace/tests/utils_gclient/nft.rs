@@ -5,7 +5,7 @@ use gclient::{EventListener, EventProcessor, GearApi};
 use gear_lib_old::non_fungible_token::token::TokenMetadata;
 use gstd::{prelude::*, ActorId};
 use nft_marketplace_io::*;
-use non_fungible_token_io::{Collection, Constraints, InitNFT, NFTAction, NFTEvent};
+use non_fungible_token_io::{Collection, Config, InitNFT, NFTAction, NFTEvent};
 
 const NFT_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm";
 
@@ -16,7 +16,7 @@ pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     let init_nft_config = InitNFT {
         royalties: Default::default(),
         collection: Collection::default(),
-        constraints: Constraints {
+        config: Config {
             authorized_minters: vec![get_user_to_actor_id(common::USERS[4]).await?],
             ..Default::default()
         },

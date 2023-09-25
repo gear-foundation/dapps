@@ -14,10 +14,10 @@ use rentable_nft_io::*;
 
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-static mut CONTRACT: Option<Nft> = None;
+static mut CONTRACT: Option<Contract> = None;
 
 #[derive(Debug, Default, NFTStateKeeper, NFTCore, NFTMetaState)]
-pub struct Nft {
+pub struct Contract {
     #[NFTStateField]
     pub token: NFTState,
     pub token_id: TokenId,
@@ -34,7 +34,7 @@ unsafe extern fn init() {
     if config.royalties.is_some() {
         config.royalties.as_ref().expect("Unable to g").validate();
     }
-    let nft = Nft {
+    let nft = Contract {
         token: NFTState {
             name: config.collection.name.clone(),
             royalties: config.royalties,
@@ -206,7 +206,7 @@ pub trait MyNFTCore: NFTCore {
     fn mint(&mut self, token_metadata: TokenMetadata) -> NFTTransfer;
 }
 
-impl MyNFTCore for Nft {
+impl MyNFTCore for Contract {
     fn mint(&mut self, token_metadata: TokenMetadata) -> NFTTransfer {
         let transfer = NFTCore::mint(self, &msg::source(), self.token_id, Some(token_metadata));
         self.token_id = self.token_id.saturating_add(U256::one());
@@ -214,11 +214,11 @@ impl MyNFTCore for Nft {
     }
 }
 
-impl Nft {
+impl Contract {
     fn process_transaction(
         &mut self,
         transaction_id: u64,
-        action: impl FnOnce(&mut Nft) -> NFTEvent,
+        action: impl FnOnce(&mut Contract) -> NFTEvent,
     ) -> NFTEvent {
         let transaction_hash = get_hash(&msg::source(), transaction_id);
 
@@ -305,7 +305,7 @@ impl Nft {
 
 #[no_mangle]
 extern fn state() {
-    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
+    let contract = unsafe { CONTRACT.as_ref().expect("Unexpected error in taking state") };
     msg::reply::<IoNFT>(contract.into(), 0)
         .expect("Failed to encode or reply with `IoNFT` from `state()`");
 }
@@ -316,9 +316,9 @@ pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
     sp_core_hashing::blake2_256(&[account.as_slice(), transaction_id.as_slice()].concat()).into()
 }
 
-impl From<Nft> for IoNFT {
-    fn from(value: Nft) -> Self {
-        let Nft {
+impl From<&Contract> for IoNFT {
+    fn from(value: &Contract) -> Self {
+        let Contract {
             token,
             token_id,
             owner,
@@ -335,9 +335,9 @@ impl From<Nft> for IoNFT {
         let users_info = users_info.iter().map(|(id, info)| (*id, *info)).collect();
 
         Self {
-            token: (&token).into(),
-            token_id,
-            owner,
+            token: token.into(),
+            token_id: *token_id,
+            owner: *owner,
             transactions,
             users_info,
         }

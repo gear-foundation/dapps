@@ -257,7 +257,7 @@ impl DynamicNft {
 
 #[no_mangle]
 extern fn state() {
-    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
+    let contract = unsafe { CONTRACT.as_ref().expect("Unexpected error in taking state") };
     msg::reply::<IoNFT>(contract.into(), 0)
         .expect("Failed to encode or reply with `IoNFT` from `state()`");
 }
@@ -268,8 +268,8 @@ pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
     sp_core_hashing::blake2_256(&[account.as_slice(), transaction_id.as_slice()].concat()).into()
 }
 
-impl From<DynamicNft> for IoNFT {
-    fn from(value: DynamicNft) -> Self {
+impl From<&DynamicNft> for IoNFT {
+    fn from(value: &DynamicNft) -> Self {
         let DynamicNft {
             token,
             token_id,
@@ -284,11 +284,11 @@ impl From<DynamicNft> for IoNFT {
             .map(|(key, event)| (*key, event.clone()))
             .collect();
         Self {
-            token: (&token).into(),
-            token_id,
-            owner,
+            token: token.into(),
+            token_id: *token_id,
+            owner: *owner,
             transactions,
-            dynamic_data,
+            dynamic_data: dynamic_data.clone(),
         }
     }
 }
