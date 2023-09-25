@@ -357,7 +357,6 @@ pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
     sp_core_hashing::blake2_256(&[account.as_slice(), transaction_id.as_slice()].concat()).into()
 }
 
-
 impl From<&AutoChangedNft> for IoNFT {
     fn from(value: &AutoChangedNft) -> Self {
         let AutoChangedNft {
