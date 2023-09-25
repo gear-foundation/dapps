@@ -1,0 +1,51 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.node {
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  &:checked {
+    background-image: url("data:image/svg+xml,%3Csvg width='15' height='15' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='7.5' cy='7.5' r='3.5' fill='%2300ffc4'/%3E%3Ccircle cx='7.5' cy='7.5' r='7' stroke='%2300ffc4'/%3E%3C/svg%3E");
+  }
+}
+
+.radio {
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  white-space: nowrap;
+
+  &.current {
+    color: #00ffc4;
+
+    .icon {
+      border-color: #00ffc4;
+    }
+  }
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  margin: 0 8px 0 2px;
+  border: 1px solid #898b94;
+  border-radius: 50%;
+}
+
+.copyButton {
+  @include square(16px);
+}
+
+.buttons {
+  @include gap(4px, right);
+
+  margin-left: 14px;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+}

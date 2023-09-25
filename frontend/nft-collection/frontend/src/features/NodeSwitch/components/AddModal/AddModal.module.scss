@@ -1,0 +1,38 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.form {
+  @include gap(16px);
+}
+
+.input {
+  width: 100%;
+  padding: 15px 20px;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+  background-color: #ffffff;
+  border-radius: 2px;
+  outline: none;
+}
+
+.error {
+  margin-top: 8px;
+  color: crimson;
+}
+
+.button {
+  width: 100%;
+  padding: 16px 32px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 18px;
+  letter-spacing: 0.03em;
+  background-color: #35ffd0;
+  border-radius: 2px;
+  transition: all 0.3s;
+
+  &:hover {
+    background-color: #29c6a1;
+  }
+}

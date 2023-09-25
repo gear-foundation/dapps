@@ -5,14 +5,14 @@
 
 Token primitives, helpers for contracts, and everything else that wasn't included in `gstd`.
 
-### ✅ Testing
-```sh
-cargo t -p gear-lib
-```
-
 ### ⚙️ Usage
 
 Include the following line under the `[dependencies]` table in your contract's `Cargo.toml` file:
 ```toml
-gear-lib = { git = "https://github.com/gear-foundation/dapps", tag = "0.3.2" }
+gear-lib = { git = "https://github.com/gear-foundation/dapps", tag = "0.3.3" }
+```
+
+### ✅ Testing
+```sh
+cargo t -p gear-lib
 ```

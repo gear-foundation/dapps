@@ -1,0 +1,24 @@
+.ff {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 28px;
+
+  .name {
+    font-size: 40px;
+    font-weight: 500;
+  }
+
+  .nav-wrapper {
+    display: flex;
+    align-items: center;
+  }
+}
+
+.swiper-wrapper {
+  
+}

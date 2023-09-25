@@ -1,0 +1,30 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.input {
+    width: 165px;
+    height: 40px;
+    outline: 1px solid theme-var($text-tertiary);
+    border-radius: 4px;
+
+    input {
+        padding: 20px;
+        font-size: 16px;
+        font-weight: 400;
+        color: theme-var($text-primary);;
+        outline: none;
+        border: none;
+        width: 80%;
+    }
+}
+
+.select {
+    height: 20px;
+    cursor: pointer;
+}
+
+.popup {
+    :global(.rc-time-picker-panel-input-wrap) {
+        height: 41px;
+    }
+}
