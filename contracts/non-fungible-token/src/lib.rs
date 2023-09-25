@@ -2,9 +2,7 @@
 
 use gear_lib_derive::{NFTCore, NFTMetaState, NFTStateKeeper};
 use gear_lib_old::non_fungible_token::{io::NFTTransfer, nft_core::*, state::*, token::*};
-use gstd::{
-    collections::HashMap, errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId,
-};
+use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId};
 use non_fungible_token_io::*;
 use primitive_types::{H256, U256};
 
@@ -18,7 +16,7 @@ pub struct Contract {
     pub owner: ActorId,
     pub transactions: HashMap<H256, NFTEvent>,
     pub collection: Collection,
-    pub constraints: Constraints,
+    pub config: Config,
 }
 
 static mut CONTRACT: Option<Contract> = None;
@@ -36,7 +34,7 @@ unsafe extern fn init() {
             ..Default::default()
         },
         collection: config.collection,
-        constraints: config.constraints,
+        config: config.config,
         owner: msg::source(),
         ..Default::default()
     };
@@ -52,7 +50,7 @@ unsafe extern fn handle() {
             transaction_id,
             token_metadata,
         } => {
-            nft.check_constraints();
+            nft.check_config();
             msg::reply(
                 nft.process_transaction(transaction_id, |nft| {
                     NFTEvent::Transfer(MyNFTCore::mint(nft, token_metadata))
@@ -159,10 +157,10 @@ unsafe extern fn handle() {
             transaction_id,
             minter_id,
         } => {
-            nft.check_constraints();
+            nft.check_config();
             msg::reply(
                 nft.process_transaction(transaction_id, |nft| {
-                    nft.constraints.authorized_minters.push(minter_id);
+                    nft.config.authorized_minters.push(minter_id);
                     NFTEvent::MinterAdded { minter_id }
                 }),
                 0,
@@ -213,8 +211,8 @@ impl Contract {
         self.transactions.remove(&transaction_hash);
     }
 
-    fn check_constraints(&self) {
-        if let Some(max_mint_count) = self.constraints.max_mint_count {
+    fn check_config(&self) {
+        if let Some(max_mint_count) = self.config.max_mint_count {
             if max_mint_count <= self.token.token_metadata_by_id.len() as u32 {
                 panic!(
                     "Mint impossible because max minting count {} limit exceeded",
@@ -225,7 +223,7 @@ impl Contract {
 
         let current_minter = msg::source();
         let is_authorized_minter = self
-            .constraints
+            .config
             .authorized_minters
             .iter()
             .any(|authorized_minter| authorized_minter.eq(&current_minter));
@@ -239,21 +237,11 @@ impl Contract {
     }
 }
 
-fn static_mut_state() -> &'static Contract {
-    unsafe { CONTRACT.get_or_insert(Default::default()) }
-}
-
-fn common_state() -> IoNFT {
-    static_mut_state().into()
-}
-
 #[no_mangle]
 extern fn state() {
-    reply(common_state()).expect("Failed to encode or reply with `IoNFT` from `state()`");
-}
-
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
+    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
+    msg::reply::<IoNFT>(contract.into(), 0)
+        .expect("Failed to encode or reply with `IoNFT` from `state()`");
 }
 
 pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
@@ -262,8 +250,8 @@ pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
     sp_core_hashing::blake2_256(&[account.as_slice(), transaction_id.as_slice()].concat()).into()
 }
 
-impl From<&Contract> for IoNFT {
-    fn from(value: &Contract) -> Self {
+impl From<Contract> for IoNFT {
+    fn from(value: Contract) -> Self {
         let Contract {
             token,
             token_id,
@@ -277,9 +265,9 @@ impl From<&Contract> for IoNFT {
             .map(|(key, event)| (*key, event.clone()))
             .collect();
         Self {
-            token: token.into(),
-            token_id: *token_id,
-            owner: *owner,
+            token: (&token).into(),
+            token_id,
+            owner,
             transactions,
         }
     }
@@ -293,7 +281,7 @@ impl From<&Contract> for State {
             owner,
             transactions,
             collection,
-            constraints,
+            config,
         } = value;
 
         let owners = token
@@ -330,7 +318,7 @@ impl From<&Contract> for State {
             owners,
             owner: *owner,
             transactions,
-            constraints: constraints.clone(),
+            config: config.clone(),
         }
     }
 }

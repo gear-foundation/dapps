@@ -20,7 +20,7 @@ async fn gclient_mint_test() -> Result<()> {
     let init_nft = InitNFT {
         collection,
         royalties: None,
-        constraints: Constraints {
+        config: Config {
             max_mint_count: Some(100),
             authorized_minters: vec![actor_id],
         },
@@ -88,7 +88,7 @@ async fn gclient_burn_test() -> Result<()> {
     let init_nft = InitNFT {
         collection,
         royalties: None,
-        constraints: Constraints {
+        config: Config {
             max_mint_count: Some(100),
             authorized_minters: vec![actor_id],
         },
@@ -194,7 +194,7 @@ async fn gclient_transfer_test() -> Result<()> {
     let init_nft = InitNFT {
         collection,
         royalties: None,
-        constraints: Constraints {
+        config: Config {
             max_mint_count: Some(100),
             authorized_minters: vec![actor_id],
         },
@@ -283,7 +283,7 @@ async fn gclient_owner_test() -> Result<()> {
     let init_nft = InitNFT {
         collection,
         royalties: None,
-        constraints: Constraints {
+        config: Config {
             max_mint_count: Some(100),
             authorized_minters: vec![actor_id],
         },
@@ -366,7 +366,7 @@ async fn gclient_approved() -> Result<()> {
     let init_nft = InitNFT {
         collection,
         royalties: None,
-        constraints: Constraints {
+        config: Config {
             max_mint_count: Some(100),
             authorized_minters: vec![actor_id],
         },

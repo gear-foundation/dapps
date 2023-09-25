@@ -14,6 +14,8 @@ sp-core-hashing.workspace = true
 gmeta.workspace = true
 
 [dev-dependencies]
+hex-literal.workspace = true
+sp-core.workspace = true
 gtest.workspace = true
 gclient.workspace = true
 tokio.workspace = true

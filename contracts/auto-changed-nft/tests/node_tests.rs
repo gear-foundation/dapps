@@ -2,7 +2,7 @@ use auto_changed_nft::WASM_BINARY_OPT;
 use auto_changed_nft_io::*;
 use gclient::{EventProcessor, GearApi, Result};
 use gear_lib_old::non_fungible_token::token::TokenId;
-use gstd::Encode;
+use gstd::{ActorId, Encode};
 
 // #[tokio::test]
 // #[ignore]
@@ -408,10 +408,18 @@ async fn gclient_auto_changed() -> Result<()> {
     // Checking that blocks still running.
     assert!(listener.blocks_running().await?);
 
-    let init_nft = InitNFT {
+    let collection = Collection {
         name: String::from("MyToken"),
-        symbol: String::from("MTK"),
-        base_uri: String::from(""),
+        description: String::from("My token"),
+    };
+    let actor_id = ActorId::from_slice(&api.account_id().encode()).unwrap();
+    let init_nft = InitNFT {
+        collection,
+        royalties: None,
+        config: Config {
+            max_mint_count: Some(100),
+            authorized_minters: vec![actor_id],
+        },
     }
     .encode();
     let gas_info = api
@@ -537,7 +545,7 @@ async fn gclient_auto_changed() -> Result<()> {
 }
 
 pub async fn current_media(api: &GearApi, program_id: [u8; 32], token_id: TokenId) -> String {
-    let state: NFTState2 = api.read_state(program_id.into(), vec![]).await.unwrap();
+    let state: State = api.read_state(program_id.into(), vec![]).await.unwrap();
 
     state
         .tokens

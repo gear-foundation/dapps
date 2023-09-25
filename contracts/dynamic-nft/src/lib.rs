@@ -5,11 +5,10 @@ use gear_lib_derive::{NFTCore, NFTMetaState, NFTStateKeeper};
 use gear_lib_old::non_fungible_token::{io::NFTTransfer, nft_core::*, state::*, token::*};
 use gstd::{
     collections::HashMap,
-    errors::Result as GstdResult,
     exec::{self},
     msg,
     prelude::*,
-    ActorId, MessageId,
+    ActorId,
 };
 use primitive_types::{H256, U256};
 
@@ -22,6 +21,8 @@ pub struct DynamicNft {
     pub token_id: TokenId,
     pub owner: ActorId,
     pub transactions: HashMap<H256, NFTEvent>,
+    pub collection: Collection,
+    pub config: Config,
     pub dynamic_data: Vec<u8>,
 }
 
@@ -35,12 +36,12 @@ unsafe extern fn init() {
     }
     let nft = DynamicNft {
         token: NFTState {
-            name: config.name,
-            symbol: config.symbol,
-            base_uri: config.base_uri,
+            name: config.collection.name.clone(),
             royalties: config.royalties,
             ..Default::default()
         },
+        collection: config.collection,
+        config: config.config,
         owner: msg::source(),
         ..Default::default()
     };
@@ -56,6 +57,7 @@ unsafe extern fn handle() {
             transaction_id,
             token_metadata,
         } => {
+            nft.check_config();
             msg::reply(
                 nft.process_transaction(transaction_id, |nft| {
                     NFTEvent::Transfer(MyNFTCore::mint(nft, token_metadata))
@@ -158,6 +160,20 @@ unsafe extern fn handle() {
             .expect("Error during replying with `NFTEvent::Approval`");
         }
         NFTAction::Clear { transaction_hash } => nft.clear(transaction_hash),
+        NFTAction::AddMinter {
+            transaction_id,
+            minter_id,
+        } => {
+            nft.check_config();
+            msg::reply(
+                nft.process_transaction(transaction_id, |nft| {
+                    nft.config.authorized_minters.push(minter_id);
+                    NFTEvent::MinterAdded { minter_id }
+                }),
+                0,
+            )
+            .expect("Error during replying with `NFTEvent::Approval`");
+        }
         NFTAction::UpdateDynamicData {
             transaction_id,
             data,
@@ -213,23 +229,37 @@ impl DynamicNft {
         );
         self.transactions.remove(&transaction_hash);
     }
-}
+    fn check_config(&self) {
+        if let Some(max_mint_count) = self.config.max_mint_count {
+            if max_mint_count <= self.token.token_metadata_by_id.len() as u32 {
+                panic!(
+                    "Mint impossible because max minting count {} limit exceeded",
+                    max_mint_count
+                );
+            }
+        }
 
-fn static_mut_state() -> &'static DynamicNft {
-    unsafe { CONTRACT.get_or_insert(Default::default()) }
-}
+        let current_minter = msg::source();
+        let is_authorized_minter = self
+            .config
+            .authorized_minters
+            .iter()
+            .any(|authorized_minter| authorized_minter.eq(&current_minter));
 
-fn common_state() -> IoNFT {
-    static_mut_state().into()
+        if !is_authorized_minter {
+            panic!(
+                "Current minter {:?} is not authorized at initialization",
+                current_minter
+            );
+        }
+    }
 }
 
 #[no_mangle]
 extern fn state() {
-    reply(common_state()).expect("Failed to encode or reply with `IoNFT` from `state()`");
-}
-
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
+    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
+    msg::reply::<IoNFT>(contract.into(), 0)
+        .expect("Failed to encode or reply with `IoNFT` from `state()`");
 }
 
 pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
@@ -238,14 +268,15 @@ pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
     sp_core_hashing::blake2_256(&[account.as_slice(), transaction_id.as_slice()].concat()).into()
 }
 
-impl From<&DynamicNft> for IoNFT {
-    fn from(value: &DynamicNft) -> Self {
+impl From<DynamicNft> for IoNFT {
+    fn from(value: DynamicNft) -> Self {
         let DynamicNft {
             token,
             token_id,
             owner,
             transactions,
             dynamic_data,
+            ..
         } = value;
 
         let transactions = transactions
@@ -253,11 +284,11 @@ impl From<&DynamicNft> for IoNFT {
             .map(|(key, event)| (*key, event.clone()))
             .collect();
         Self {
-            token: token.into(),
-            token_id: *token_id,
-            owner: *owner,
+            token: (&token).into(),
+            token_id,
+            owner,
             transactions,
-            dynamic_data: dynamic_data.clone(),
+            dynamic_data,
         }
     }
 }

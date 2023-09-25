@@ -14,13 +14,38 @@ use primitive_types::H256;
 
 pub struct NFTMetadata;
 
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct Config {
+    pub max_mint_count: Option<u32>,
+    pub authorized_minters: Vec<ActorId>,
+}
+
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct InitNFT {
+    pub collection: Collection,
+    pub royalties: Option<Royalties>,
+    pub config: Config,
+}
+
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct Collection {
+    pub name: String,
+    pub description: String,
+}
+
 impl Metadata for NFTMetadata {
-    type Init = In<InitNft>;
+    type Init = In<InitNFT>;
     type Handle = InOut<NFTAction, NFTEvent>;
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = Out<IoNft>;
+    type State = Out<IoNFT>;
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
@@ -70,6 +95,10 @@ pub enum NFTAction {
     Clear {
         transaction_hash: H256,
     },
+    AddMinter {
+        transaction_id: u64,
+        minter_id: ActorId,
+    },
     SetUser {
         token_id: TokenId,
         address: ActorId,
@@ -82,16 +111,6 @@ pub enum NFTAction {
     UserExpires {
         token_id: TokenId,
     },
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub struct InitNft {
-    pub name: String,
-    pub symbol: String,
-    pub base_uri: String,
-    pub royalties: Option<Royalties>,
 }
 
 #[derive(Clone, Debug, Encode, Decode, TypeInfo)]
@@ -110,6 +129,9 @@ pub enum NFTEvent {
         to: ActorId,
         token_id: TokenId,
         approved: bool,
+    },
+    MinterAdded {
+        minter_id: ActorId,
     },
     TransactionMade,
     UpdateUser {
@@ -136,8 +158,8 @@ pub struct UserInfo {
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub struct IoNft {
-    pub token: IoNftState,
+pub struct IoNFT {
+    pub token: IoNFTState,
     pub token_id: TokenId,
     pub owner: ActorId,
     pub transactions: Vec<(H256, NFTEvent)>,
@@ -147,7 +169,7 @@ pub struct IoNft {
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub struct IoNftState {
+pub struct IoNFTState {
     pub name: String,
     pub symbol: String,
     pub base_uri: String,
@@ -158,7 +180,7 @@ pub struct IoNftState {
     pub royalties: Option<Royalties>,
 }
 
-impl From<&NFTState> for IoNftState {
+impl From<&NFTState> for IoNFTState {
     fn from(value: &NFTState) -> Self {
         let NFTState {
             name,
