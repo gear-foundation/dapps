@@ -4,6 +4,7 @@ import { HexString } from '@polkadot/util/types';
 import { LOCAL_STORAGE } from 'consts';
 import { Item, Items, Token } from 'types';
 import meta from 'assets/state/supply_chain_meta.txt';
+import nftMeta from 'assets/state/non_fungible_token.meta.txt';
 import stateWasm from 'assets/state/supply_chain_state.meta.wasm';
 import nftStateWasm from 'assets/state/nft_state.meta.wasm';
 import { useBuffer, useProgramMetadata } from './metadata';
@@ -12,10 +13,14 @@ function useSupplyChainMetadata() {
   return useProgramMetadata(meta);
 }
 
-function useSupplyChainState<T>(functionName: string, payload: AnyJson) {
-  const buffer = useBuffer(stateWasm);
+function useSupplyChainState<T>(functionName: string, argument: AnyJson) {
+  const programMetadata = useSupplyChainMetadata();
+  const wasm = useBuffer(stateWasm);
 
-  return useReadWasmState<T>(localStorage[LOCAL_STORAGE.PROGRAM], buffer, functionName, payload);
+  const programId = localStorage[LOCAL_STORAGE.PROGRAM];
+  const payload = '0x';
+
+  return useReadWasmState<T>({ programId, programMetadata, wasm, argument, payload, functionName });
 }
 
 function useItem(itemId: string) {
@@ -47,11 +52,22 @@ function useNftProgramId() {
 }
 
 function useNft(tokenId: string) {
-  const nftProgramId = useNftProgramId();
-  const nftStateBuffer = useBuffer(nftStateWasm);
+  const programId = useNftProgramId();
+  const programMetadata = useProgramMetadata(nftMeta);
+  const wasm = useBuffer(nftStateWasm);
 
-  const payload = tokenId || undefined;
-  const { state, isStateRead } = useReadWasmState<Token>(nftProgramId, nftStateBuffer, 'token', payload);
+  const functionName = 'token';
+  const argument = tokenId || undefined;
+  const payload = '0x';
+
+  const { state, isStateRead } = useReadWasmState<Token>({
+    programId,
+    programMetadata,
+    wasm,
+    functionName,
+    argument,
+    payload,
+  });
 
   return { nft: state, isNftRead: isStateRead };
 }

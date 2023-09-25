@@ -6,14 +6,26 @@ import metaTxt from 'assets/state/nft_meta.txt';
 import stateWasm from 'assets/state/nft_state.meta.wasm';
 import { useBuffer, useProgramMetadata } from './metadata';
 
+function useNftMeta() {
+  return useProgramMetadata(metaTxt);
+}
+
 function useNftStateBuffer() {
   return useBuffer(stateWasm);
 }
 
-function useNftWasmState<T>(functionName: string, payload: AnyJson) {
+function useNftWasmState<T>(functionName: string, argument: AnyJson) {
+  const programMetadata = useNftMeta();
   const buffer = useBuffer(stateWasm);
 
-  return useReadWasmState<T>(ADDRESS.NFT_CONTRACT, buffer, functionName, payload);
+  return useReadWasmState<T>({
+    programId: ADDRESS.NFT_CONTRACT,
+    wasm: buffer,
+    functionName,
+    payload: '0x',
+    argument,
+    programMetadata,
+  });
 }
 
 function useNft(tokenId: string) {
@@ -32,9 +44,9 @@ function useOwnersNft() {
 }
 
 function useNftMessage() {
-  const metadata = useProgramMetadata(metaTxt);
+  const metadata = useNftMeta();
 
   return useSendMessage(ADDRESS.NFT_CONTRACT, metadata, { isMaxGasLimit: false });
 }
 
-export { useNftStateBuffer, useNft, useNftMessage, useOwnersNft };
+export { useNftStateBuffer, useNft, useNftMessage, useOwnersNft, useNftMeta };

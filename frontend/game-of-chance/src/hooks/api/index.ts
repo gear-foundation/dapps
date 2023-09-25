@@ -11,7 +11,7 @@ function useLotteryMetadata() {
 function useLotteryState() {
   const meta = useLotteryMetadata();
 
-  return useReadFullState<Lottery>(ADDRESS.CONTRACT, meta);
+  return useReadFullState<Lottery>(ADDRESS.CONTRACT, meta, '0x');
 }
 
 function useLotteryMessage() {

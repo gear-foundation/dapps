@@ -8,14 +8,26 @@ import stateWasm from 'assets/state/market_state.meta.wasm';
 import { getMilliseconds } from 'utils';
 import { useBuffer, useProgramMetadata } from './metadata';
 
+function useMarketplaceMeta() {
+  return useProgramMetadata(metaTxt);
+}
+
 function useMarketplaceStateBuffer() {
   return useBuffer(stateWasm);
 }
 
-function useMarketplaceWasmState<T>(functionName: string, payload: AnyJson) {
+function useMarketplaceWasmState<T>(functionName: string, argument: AnyJson) {
+  const programMetadata = useMarketplaceMeta();
   const buffer = useMarketplaceStateBuffer();
 
-  return useReadWasmState<T>(ADDRESS.MARKETPLACE_CONTRACT, buffer, functionName, payload);
+  return useReadWasmState<T>({
+    programId: ADDRESS.MARKETPLACE_CONTRACT,
+    wasm: buffer,
+    functionName,
+    payload: '0x',
+    programMetadata,
+    argument,
+  });
 }
 
 function useMarketplace() {
@@ -33,7 +45,7 @@ function useMarketNft(tokenId: string) {
 }
 
 function useMarketplaceMessage() {
-  const metadata = useProgramMetadata(metaTxt);
+  const metadata = useMarketplaceMeta();
 
   return useSendMessage(ADDRESS.MARKETPLACE_CONTRACT, metadata, { isMaxGasLimit: false });
 }
@@ -94,4 +106,11 @@ function useMarketplaceActions(token_id: string, price: MarketNFT['price'] | und
   return { buy, offer, bid, settle, startAuction, startSale };
 }
 
-export { useMarketplace, useMarketplaceStateBuffer, useMarketNft, useMarketplaceMessage, useMarketplaceActions };
+export {
+  useMarketplace,
+  useMarketplaceStateBuffer,
+  useMarketNft,
+  useMarketplaceMessage,
+  useMarketplaceActions,
+  useMarketplaceMeta,
+};

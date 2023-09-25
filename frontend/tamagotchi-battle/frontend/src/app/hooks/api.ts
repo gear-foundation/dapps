@@ -50,5 +50,5 @@ export function useStateMetadata(source: string) {
 
 export function useReadState<T>({ programId, meta }: { programId?: HexString; meta: string }) {
   const metadata = useProgramMetadata(meta);
-  return useReadFullState<T>(programId, metadata);
+  return useReadFullState<T>(programId, metadata, '0x');
 }

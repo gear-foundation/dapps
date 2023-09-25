@@ -30,7 +30,7 @@ function Home() {
   const { api } = useApi();
 
   const metadata = useProgramMetadata(meta);
-  const { state, isStateRead } = useReadFullState<State>(ADDRESS.CONTRACT, metadata);
+  const { state, isStateRead } = useReadFullState<State>(ADDRESS.CONTRACT, metadata, '0x');
 
   const sendMessage = useSendMessage(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true });
 

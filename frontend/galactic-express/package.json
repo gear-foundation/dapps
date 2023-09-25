@@ -3,8 +3,8 @@
   "version": "0.1.2",
   "private": true,
   "dependencies": {
-    "@gear-js/api": "0.33.2",
-    "@gear-js/react-hooks": "0.6.5",
+    "@gear-js/api": "0.33.6",
+    "@gear-js/react-hooks": "0.6.8",
     "@gear-js/ui": "0.5.19",
     "@mantine/form": "6.0.8",
     "@polkadot/api": "10.9.1",
@@ -22,6 +22,7 @@
     "@types/react": "18.0.37",
     "@types/react-dom": "18.0.11",
     "assert": "2.0.0",
+    "bignumber.js": "9.1.2",
     "buffer": "6.0.3",
     "clsx": "1.2.1",
     "react": "18.2.0",

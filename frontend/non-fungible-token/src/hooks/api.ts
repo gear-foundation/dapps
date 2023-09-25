@@ -1,4 +1,4 @@
-import { useAccount, useSendMessage, useReadWasmState } from '@gear-js/react-hooks';
+import { useAccount, useReadWasmState, useSendMessage } from '@gear-js/react-hooks';
 import { ADDRESS } from 'consts';
 import { Params, Token } from 'types';
 import { useParams } from 'react-router-dom';
@@ -10,10 +10,34 @@ function useNFTMetadata() {
   return useMetadata(metaTxt);
 }
 
-function useNFTState<T>(functionName: string, payload?: any) {
+function useNFTState<T>(functionName: string, argument?: any) {
   const { buffer } = useWasmMetadata(stateMetaWasm);
+  const programMetadata = useNFTMetadata();
 
-  return useReadWasmState<T>(ADDRESS.CONTRACT_ADDRESS, buffer, functionName, payload);
+  // ADDRESS.CONTRACT_ADDRESS, buffer, functionName, payload;
+
+  const result = useReadWasmState<T>({
+    programId: ADDRESS.CONTRACT_ADDRESS,
+    wasm: buffer,
+    programMetadata,
+    functionName,
+    argument,
+    payload: '0x',
+  });
+
+  console.log({
+    programId: ADDRESS.CONTRACT_ADDRESS,
+    wasm: buffer,
+    programMetadata,
+    functionName,
+    argument,
+  });
+
+  console.log('result: ', result);
+
+  console.log(result.state);
+
+  return result;
 }
 
 function useNFT() {
