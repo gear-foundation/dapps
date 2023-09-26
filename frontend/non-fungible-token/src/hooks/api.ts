@@ -71,7 +71,7 @@ function useApprovedNFTs() {
 
 function useSendNFTMessage() {
   const meta = useNFTMetadata();
-  return useSendMessage(ADDRESS.CONTRACT_ADDRESS, meta, { isMaxGasLimit: false });
+  return useSendMessage(ADDRESS.CONTRACT_ADDRESS, meta);
 }
 
 export { useNFT, useNFTs, useOwnerNFTs, useApprovedNFTs, useSendNFTMessage };

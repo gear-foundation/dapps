@@ -17,7 +17,7 @@ function useLotteryState() {
 function useLotteryMessage() {
   const meta = useLotteryMetadata();
 
-  return useSendMessage(ADDRESS.CONTRACT, meta, { isMaxGasLimit: false });
+  return useSendMessage(ADDRESS.CONTRACT, meta);
 }
 
 export { useLotteryState, useLotteryMessage };

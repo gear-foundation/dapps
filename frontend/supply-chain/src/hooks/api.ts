@@ -74,7 +74,7 @@ function useNft(tokenId: string) {
 
 function useSupplyChainMessage() {
   const metadata = useSupplyChainMetadata();
-  const sendMessage = useSendMessage(localStorage[LOCAL_STORAGE.PROGRAM], metadata, { isMaxGasLimit: false });
+  const sendMessage = useSendMessage(localStorage[LOCAL_STORAGE.PROGRAM], metadata);
 
   return (payload: AnyJson, options?: SendMessageOptions) =>
     sendMessage({ action: payload, kind: { New: null } }, options);

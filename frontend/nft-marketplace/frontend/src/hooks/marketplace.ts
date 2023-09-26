@@ -47,7 +47,7 @@ function useMarketNft(tokenId: string) {
 function useMarketplaceMessage() {
   const metadata = useMarketplaceMeta();
 
-  return useSendMessage(ADDRESS.MARKETPLACE_CONTRACT, metadata, { isMaxGasLimit: false });
+  return useSendMessage(ADDRESS.MARKETPLACE_CONTRACT, metadata);
 }
 
 function useMarketplaceActions(token_id: string, price: MarketNFT['price'] | undefined) {

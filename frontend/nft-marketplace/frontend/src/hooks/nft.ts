@@ -46,7 +46,7 @@ function useOwnersNft() {
 function useNftMessage() {
   const metadata = useNftMeta();
 
-  return useSendMessage(ADDRESS.NFT_CONTRACT, metadata, { isMaxGasLimit: false });
+  return useSendMessage(ADDRESS.NFT_CONTRACT, metadata);
 }
 
 export { useNftStateBuffer, useNft, useNftMessage, useOwnersNft, useNftMeta };
