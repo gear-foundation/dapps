@@ -1,7 +1,10 @@
 #![no_std]
 
 use gstd::{collections::HashMap, msg, prelude::*, ActorId};
-use vara_man_io::{VaraMan as VaraManState, *};
+use vara_man_io::{
+    Config, GameInstance, Player, StateQuery, StateReply, Status, VaraMan as VaraManState,
+    VaraManAction, VaraManEvent, VaraManInit,
+};
 
 #[derive(Debug, Default)]
 struct VaraMan {
@@ -9,15 +12,17 @@ struct VaraMan {
     players: HashMap<ActorId, Player>,
     status: Status,
     config: Config,
+    admins: Vec<ActorId>,
 }
 
-impl From<&VaraMan> for VaraManState {
-    fn from(value: &VaraMan) -> Self {
+impl From<VaraMan> for VaraManState {
+    fn from(value: VaraMan) -> Self {
         let VaraMan {
             games,
             players,
             status,
             config,
+            admins,
         } = value;
 
         let games = games.iter().map(|(id, game)| (*id, game.clone())).collect();
@@ -30,8 +35,9 @@ impl From<&VaraMan> for VaraManState {
         Self {
             games,
             players,
-            status: *status,
-            config: *config,
+            status,
+            config,
+            admins,
         }
     }
 }
@@ -68,7 +74,7 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                     actor_id,
                     Player {
                         name,
-                        retries: 0,
+                        lives: vara_man.config.number_of_lives,
                         claimed_gold_coins: 0,
                         claimed_silver_coins: 0,
                     },
@@ -77,7 +83,7 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                 VaraManEvent::PlayerRegistered(actor_id)
             }
         }
-        VaraManAction::StartGame { level, seed } => {
+        VaraManAction::StartGame { level } => {
             let player_address = msg::source();
 
             if vara_man.status == Status::Paused {
@@ -92,21 +98,19 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                 return VaraManEvent::Error("Player is already StartGame".to_owned());
             };
 
-            if !player.is_have_retries() {
-                return VaraManEvent::Error("Player has exhausted all his attempts.".to_owned());
+            if !player.is_have_lives() {
+                return VaraManEvent::Error("Player has exhausted all his lives.".to_owned());
             }
 
             vara_man.games.insert(
                 player_address,
-                GameInstance::new_with_coins(
+                GameInstance {
                     level,
-                    vara_man.config.gold_coins,
-                    vara_man.config.silver_coins,
-                    seed,
-                ),
+                    gold_coins: vara_man.config.gold_coins,
+                    silver_coins: vara_man.config.silver_coins,
+                    is_claimed: false,
+                },
             );
-
-            player.retries += 1;
 
             VaraManEvent::GameStarted
         }
@@ -132,28 +136,24 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                     return VaraManEvent::Error("Coin(s) amount is gt than allowed.".to_owned());
                 }
 
-                let reward_scale_bps = vara_man.config.get_reward_scale_bps(game.level);
-
-                let base_tokens_amount = vara_man
+                let (tokens_per_gold_coin, tokens_per_silver_coin) = vara_man
                     .config
-                    .tokens_per_gold_coin
+                    .get_tokens_per_gold_coin_for_level(game.level);
+
+                let tokens_amount = vara_man
+                    .config
+                    .one_coin_in_value
+                    .checked_mul(tokens_per_gold_coin)
+                    .expect("Math overflow!")
                     .checked_mul(gold_coins)
                     .expect("Math overflow!")
                     .checked_add(
                         vara_man
                             .config
-                            .tokens_per_silver_coin
-                            .checked_mul(silver_coins)
-                            .expect("Math overflow!"),
-                    )
-                    .expect("Math overflow!");
-
-                let tokens_amount = base_tokens_amount
-                    .checked_add(
-                        base_tokens_amount
-                            .checked_mul(reward_scale_bps.into())
+                            .one_coin_in_value
+                            .checked_mul(tokens_per_silver_coin)
                             .expect("Math overflow!")
-                            .checked_div(BPS_SCALE.into())
+                            .checked_mul(silver_coins)
                             .expect("Math overflow!"),
                     )
                     .expect("Math overflow!");
@@ -173,6 +173,10 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
 
                 vara_man.games.remove(&player_address);
 
+                if !vara_man.admins.contains(&player_address) {
+                    player.lives -= 1;
+                }
+
                 VaraManEvent::RewardClaimed {
                     player_address,
                     silver_coins,
@@ -185,21 +189,30 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
             }
         }
         VaraManAction::ChangeStatus(status) => {
-            if msg::source() != vara_man.config.operator {
-                VaraManEvent::Error("Only operator can change whole game status.".to_owned())
-            } else {
+            if vara_man.admins.contains(&msg::source()) {
                 vara_man.status = status;
                 VaraManEvent::StatusChanged(status)
+            } else {
+                VaraManEvent::Error("Only admin can change whole game status.".to_owned())
             }
         }
         VaraManAction::ChangeConfig(config) => {
-            if msg::source() != vara_man.config.operator {
-                VaraManEvent::Error("Only operator can change whole game config.".to_owned())
+            if !vara_man.admins.contains(&msg::source()) {
+                VaraManEvent::Error("Only admin can change whole game config.".to_owned())
             } else if !config.is_valid() {
                 VaraManEvent::Error("Provided config is invalid.".to_owned())
             } else {
                 vara_man.config = config;
                 VaraManEvent::ConfigChanged(config)
+            }
+        }
+        VaraManAction::AddAdmin(admin) => {
+            let msg_source = msg::source();
+            if vara_man.admins.contains(&msg_source) {
+                vara_man.admins.push(admin);
+                VaraManEvent::AdminAdded(admin)
+            } else {
+                VaraManEvent::Error("Only an admin can add another admin.".to_owned())
             }
         }
     }
@@ -208,12 +221,11 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
 #[no_mangle]
 extern fn init() {
     let init: VaraManInit = msg::load().expect("Unexpected invalid init payload.");
-
     assert!(init.config.is_valid());
-
     unsafe {
         VARA_MAN = Some(VaraMan {
             config: init.config,
+            admins: vec![msg::source()],
             ..Default::default()
         })
     };
@@ -221,13 +233,46 @@ extern fn init() {
 
 #[no_mangle]
 extern fn state() {
-    msg::reply(
-        unsafe {
-            let vara_man = VARA_MAN.as_ref().expect("Uninitialized vara man state.");
-            let vara_man_state: VaraManState = vara_man.into();
-            vara_man_state
-        },
-        0,
-    )
-    .expect("Unexpected invalid reply result.");
+    let contract = unsafe { VARA_MAN.take().expect("Unexpected error in taking state") };
+
+    let query: StateQuery = msg::load().expect("Unable to load the state query");
+
+    match query {
+        StateQuery::All => {
+            msg::reply(StateReply::All(contract.into()), 0).expect("Unable to share the state")
+        }
+        StateQuery::AllGames => {
+            let games = contract
+                .games
+                .iter()
+                .map(|(id, game)| (*id, game.clone()))
+                .collect();
+            msg::reply(StateReply::AllGames(games), 0).expect("Unable to share the state")
+        }
+        StateQuery::AllPlayers => {
+            let players = contract
+                .players
+                .iter()
+                .map(|(id, player)| (*id, player.clone()))
+                .collect();
+            msg::reply(StateReply::AllPlayers(players), 0).expect("Unable to share the state")
+        }
+        StateQuery::Game { player_address } => {
+            let game: Option<GameInstance> = contract.games.get(&player_address).cloned();
+            msg::reply(StateReply::Game(game), 0).expect("Unable to share the state")
+        }
+        StateQuery::Player { player_address } => {
+            let player: Option<Player> = contract.players.get(&player_address).cloned();
+            msg::reply(StateReply::Player(player), 0).expect("Unable to share the state")
+        }
+        StateQuery::Config => {
+            msg::reply(StateReply::Config(contract.config), 0).expect("Unable to share the state")
+        }
+        StateQuery::Admins => {
+            msg::reply(StateReply::Admins(contract.admins), 0).expect("Unable to share the state")
+        }
+        StateQuery::Status => {
+            msg::reply(StateReply::Status(contract.status), 0).expect("Unable to share the state")
+        }
+    };
 }
