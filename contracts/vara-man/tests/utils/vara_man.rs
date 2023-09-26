@@ -1,10 +1,7 @@
 use super::{ADMIN, VARA_MAN_ID};
-use gstd::prelude::*;
-use gstd::ActorId;
+use gstd::{prelude::*, ActorId};
 use gtest::{Program, System};
-use vara_man_io::{
-    Config, Level, Status, VaraMan as VaraManState, VaraManAction, VaraManEvent, VaraManInit,
-};
+use vara_man_io::{VaraMan as VaraManState, *};
 
 pub trait VaraMan {
     fn vara_man(system: &System) -> Program<'_>;

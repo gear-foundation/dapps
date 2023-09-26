@@ -1,10 +1,7 @@
 use super::common;
 use gclient::{EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
-use vara_man_io::{
-    Config, Level, StateQuery, StateReply, Status, VaraMan, VaraManAction, VaraManEvent,
-    VaraManInit,
-};
+use vara_man_io::*;
 
 const VARA_MAN_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/vara_man.opt.wasm";
 
