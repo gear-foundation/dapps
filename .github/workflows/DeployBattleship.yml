@@ -44,7 +44,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Vara Man Docker image
+      - name: Build and push ${{ env.FRONTEND }} image
         uses: docker/build-push-action@master
         with:
           context: frontend/${{ env.FRONTEND }}/frontend
