@@ -9,10 +9,15 @@ import styles from './ShipArrangement.module.scss';
 import { useGameMessage, usePending } from '../../hooks';
 import { generateShipsField } from './shipGenerator';
 import { convertShipsToField } from '../../utils';
+import { useAccount } from '@gear-js/react-hooks';
+import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
 
 export default function ShipArrangement() {
+    const { account } = useAccount()
+    const isVoucher = useFetchVoucher(account?.address);
     const message = useGameMessage()
     const { setPending } = usePending()
+
     const [shipLayout, setShipLayout] = useState<string[]>([]);
     const [shipsField, setShipsField] = useState<number[][]>([]);
     const [isLoadingGenerate, setLoadingGenerate] = useState(false)
@@ -31,12 +36,15 @@ export default function ShipArrangement() {
 
     const onGameStart = () => {
         setPending(true)
-        message({
-            StartGame: {
-                ships: shipsField,
+
+        message(
+            {
+                StartGame: {
+                    ships: shipsField,
+                },
             },
-        });
-        // resetGameState()
+            { prepaid: isVoucher }
+        );
     }
 
     return (

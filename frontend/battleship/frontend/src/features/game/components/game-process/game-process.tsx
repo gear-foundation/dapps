@@ -7,8 +7,13 @@ import { MapEnemy } from '../map';
 import { useGame, useGameMessage, usePending } from '../../hooks';
 import { getFormattedTime } from '../../utils';
 import { Loader } from '@/components';
+import { useAccount } from '@gear-js/react-hooks';
+import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
 
 export default function GameProcess() {
+    const { account } = useAccount()
+    const isVoucher = useFetchVoucher(account?.address)
+
     const [canExecute, setCanExecute] = useState(false);
     const [playerShips, setPlayerShips] = useState<string[]>([])
     const [enemiesShips, setEnemiesShips] = useState<string[]>([])
@@ -78,7 +83,8 @@ export default function GameProcess() {
                     setPending(false);
                     setCanExecute(true);
                 },
-            }
+                prepaid: isVoucher
+            },
         )
     }
 
