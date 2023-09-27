@@ -1,7 +1,7 @@
 {
   "name": "frontend-battleship",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@gear-js/api": "0.33.3",
-    "@gear-js/react-hooks": "0.6.5",
+    "@gear-js/api": "0.33.6",
+    "@gear-js/react-hooks": "0.6.8",
     "@gear-js/ui": "0.5.19",
     "@gear-js/vara-ui": "^0.0.2",
     "@mantine/form": "6.0.15",

@@ -9,10 +9,18 @@ function useEscrowMetadata() {
   return useMetadata(metaTxt);
 }
 
-function useEscrowState<T>(functionName: string, payload?: any) {
+function useEscrowState<T>(functionName: string, argument?: any) {
+  const programMetadata = useEscrowMetadata();
   const { buffer } = useWasmMetadata(stateMetaWasm);
 
-  return useReadWasmState<T>(getProgramId(), buffer, functionName, payload);
+  return useReadWasmState<T>({
+    programMetadata,
+    functionName,
+    argument,
+    programId: getProgramId(),
+    wasm: buffer,
+    payload: '0x',
+  });
 }
 
 function useEscrow(id: string | undefined) {

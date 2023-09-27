@@ -1432,15 +1432,15 @@
   dependencies:
     "@floating-ui/dom" "^1.3.0"
 
-"@gear-js/api@0.32.3":
-  version "0.32.3"
-  resolved "https://registry.yarnpkg.com/@gear-js/api/-/api-0.32.3.tgz#056f1baebbd51025be696afc2b13264ba61a0e35"
-  integrity sha512-VbGYxvw/g0ezCUKHd24eJ5t/pXW+vgHyxp24zHIT2AaClLwNW9Tv09vPC18/qDe7LQ2WGGi157G5VTD+G+lOgg==
+"@gear-js/api@0.33.2":
+  version "0.33.2"
+  resolved "https://registry.yarnpkg.com/@gear-js/api/-/api-0.33.2.tgz#38d77d5a401a611915a28d98310f57e848cbc51f"
+  integrity sha512-Cwf6GLtbQBmytjqLlke1uvQWInGLwOiNoGBJvry0pg1SgM/yLl1LfvChiF7/eS/5SWn+HCIvvYVLM7YoFHg4Bg==
 
-"@gear-js/react-hooks@0.5.25":
-  version "0.5.25"
-  resolved "https://registry.yarnpkg.com/@gear-js/react-hooks/-/react-hooks-0.5.25.tgz#61365c160fe3502945f9a730e65adce679a68f00"
-  integrity sha512-9Ks7Zd+fly0SIOsbswv5FEVw2SN5ihpsjHobG2emUq8Wm1zyglRQjN8z4x3tnDTKWFWi//fulf7RWf5KGyj9Yg==
+"@gear-js/react-hooks@0.6.5":
+  version "0.6.5"
+  resolved "https://registry.yarnpkg.com/@gear-js/react-hooks/-/react-hooks-0.6.5.tgz#044323c3d7405dea8222e91ee9cb1d32207267bf"
+  integrity sha512-5Is2dls0NQtWNg5UE/m0HRkz5KvrP6ilpGe0/PT5QP9fFEEM2EgbD97EVeLJb/ZBw0eAyEkf/P2XOVLeiHa8vw==
 
 "@gear-js/ui@0.5.19":
   version "0.5.19"

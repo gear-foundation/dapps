@@ -1,7 +1,7 @@
 import { UserMessageSent } from '@gear-js/api';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { UnsubscribePromise } from '@polkadot/api/types';
-import { u8, Vec } from '@polkadot/types';
+import { Bytes } from '@polkadot/types';
 import { useEffect, useState } from 'react';
 import isPlainObject from 'lodash.isplainobject';
 import { LOCAL_STORAGE } from 'consts';
@@ -23,14 +23,14 @@ function useWalletId() {
 
   const resetWalletId = () => setWalletId(undefined);
 
-  const getDecodedPayload = (payload: Vec<u8>) => {
+  const getDecodedPayload = (payload: Bytes) => {
     // handle_output is specific for escrow contract
     if (meta?.types.handle.output) {
       return meta.createType(meta.types.handle.output, payload).toHuman();
     }
   };
 
-  const getWalletId = (payload: Vec<u8>) => {
+  const getWalletId = (payload: Bytes) => {
     const decodedPayload = getDecodedPayload(payload);
     const isWalletCreated = Object.prototype.hasOwnProperty.call(
       decodedPayload,

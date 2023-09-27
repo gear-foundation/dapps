@@ -1,6 +1,5 @@
 import { useAlert, useReadFullState } from '@gear-js/react-hooks'
 import {
-  getProgramMetadata,
   getStateMetadata,
   ProgramMetadata,
   StateMetadata,
@@ -17,7 +16,7 @@ export function useProgramMetadata(source: string) {
     fetch(source)
       .then((response) => response.text())
       .then((raw) => `0x${raw}` as HexString)
-      .then((metaHex) => getProgramMetadata(metaHex))
+      .then((metaHex) => ProgramMetadata.from(metaHex))
       .then((result) => setMetadata(result))
       .catch(({ message }: Error) => alert.error(message))
 
