@@ -14,7 +14,7 @@ import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
 
 export default function ShipArrangement() {
     const { account } = useAccount()
-    const isVoucher = useFetchVoucher(account?.address);
+    const { memoizedVoucher: isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address)
     const message = useGameMessage()
     const { setPending } = usePending()
 
@@ -34,17 +34,20 @@ export default function ShipArrangement() {
         }
     }
 
-    const onGameStart = () => {
-        setPending(true)
+    const onGameStart = async () => {
+        await updateBalance
 
-        message(
-            {
-                StartGame: {
-                    ships: shipsField,
+        if (!isLoading) {
+            setPending(true)
+            message(
+                {
+                    StartGame: {
+                        ships: shipsField,
+                    },
                 },
-            },
-            { prepaid: isVoucher }
-        );
+                { prepaid: isVoucher }
+            );
+        }
     }
 
     return (
@@ -64,8 +67,9 @@ export default function ShipArrangement() {
             </div>
             <div className={styles.buttons}>
                 <Button color="dark" text='Generate' onClick={onGenerateRandomLayout} disabled={isLoadingGenerate} />
-                <Button text='Continue' onClick={onGameStart} disabled={!shipLayout.length} />
+                <Button text='Continue' onClick={onGameStart} disabled={!shipLayout.length || isLoading} />
             </div>
         </div>
     );
 }
+

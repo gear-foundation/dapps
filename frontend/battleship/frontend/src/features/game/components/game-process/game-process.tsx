@@ -12,7 +12,7 @@ import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
 
 export default function GameProcess() {
     const { account } = useAccount()
-    const isVoucher = useFetchVoucher(account?.address)
+    const { memoizedVoucher: isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address)
 
     const [canExecute, setCanExecute] = useState(false);
     const [playerShips, setPlayerShips] = useState<string[]>([])
@@ -71,21 +71,25 @@ export default function GameProcess() {
     }, [gameState]);
 
 
-    const onClickCell = (indexCell: number) => {
-        message(
-            {
-                Turn: {
-                    step: indexCell,
+    const onClickCell = async (indexCell: number) => {
+        await updateBalance()
+        if (!isLoading) {
+            message(
+                {
+                    Turn: {
+                        step: indexCell,
+                    },
                 },
-            },
-            {
-                onSuccess: () => {
-                    setPending(false);
-                    setCanExecute(true);
+                {
+                    onSuccess: () => {
+                        setPending(false);
+                        setCanExecute(true);
+                    },
+                    prepaid: isVoucher
                 },
-                prepaid: isVoucher
-            },
-        )
+            )
+        }
+
     }
 
     useEffect(() => {
