@@ -32,8 +32,13 @@ function WalletInfo({ account }: WalletInfoProps) {
             <div className={cx(styles['balance-currency-name'])}>{account.balance.unit}</div>
           </div>
           <button className={cx(styles.description)} onClick={handleOpenWalletModal} type="button">
-            {address && (
-              <Identicon value={address} size={21} theme="polkadot" className={cx(styles['description-icon'])} />
+            {account?.decodedAddress && (
+              <Identicon
+                value={account?.decodedAddress}
+                size={21}
+                theme="polkadot"
+                className={cx(styles['description-icon'])}
+              />
             )}
             <div className={cx(styles['description-name'])}>{account?.meta.name}</div>
           </button>
