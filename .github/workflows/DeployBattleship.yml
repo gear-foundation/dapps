@@ -55,7 +55,7 @@ jobs:
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
             VITE_GAME_ADDRESS=${{ secrets.VITE_GAME_ADDRESS }}
             VITE_NAME_ADDRESS=${{ secrets.VITE_NAME_ADDRESS }}
-            VITE_BACK_ADDRESS=${{ secrets.VITE_BACK_ADDRESS }}
+            VITE_BACKEND_ADDRES=${{ secrets.VITE_BACK_ADDRESS }}
 
   deploy-to-k8s:
     needs: [build-and-push-image]
