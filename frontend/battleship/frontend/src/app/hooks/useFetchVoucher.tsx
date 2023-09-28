@@ -57,7 +57,7 @@ export function useFetchVoucher(account: string | undefined) {
     const updateBalance = useCallback(async () => {
         const formattedBalance = voucherBalance && getFormattedBalanceValue(voucherBalance).toFixed();
         const isBalanceLow = formattedBalance < 3;
-        console.log('formattedBalance', formattedBalance)
+
         if (isBalanceLow) {
             const createdVoucher = await fetchVoucher();
             if (createdVoucher) {
