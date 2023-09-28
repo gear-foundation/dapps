@@ -1,9 +1,6 @@
 #![no_std]
 
-use gstd::{
-    collections::BTreeMap, collections::HashMap, errors::Result as GstdResult, exec, msg,
-    prelude::*, ActorId, MessageId,
-};
+use gstd::{collections::BTreeMap, collections::HashMap, exec, msg, prelude::*, ActorId};
 use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
 use staking_io::*;
 
@@ -20,7 +17,6 @@ struct Staking {
     all_produced: u128,
     reward_produced: u128,
     stakers: HashMap<ActorId, Staker>,
-
     transactions: BTreeMap<ActorId, Transaction<StakingAction>>,
     current_tid: TransactionId,
 }
@@ -244,7 +240,8 @@ async fn main() {
     }) = staking.transactions.get(&msg_source)
     {
         if action != *pend_action {
-            reply(_reply).expect("Failed to encode or reply with `Result<StakingEvent, Error>`");
+            msg::reply(_reply, 0)
+                .expect("Failed to encode or reply with `Result<StakingEvent, Error>`");
             return;
         }
         *id
@@ -282,7 +279,7 @@ async fn main() {
             result
         }
     };
-    reply(result).expect("Failed to encode or reply with `Result<StakingEvent, Error>`");
+    msg::reply(result, 0).expect("Failed to encode or reply with `Result<StakingEvent, Error>`");
 }
 
 #[no_mangle]
@@ -297,7 +294,8 @@ extern fn init() {
     let result = staking.update_staking(config);
     let is_err = result.is_err();
 
-    reply(result).expect("Failed to encode or reply with `Result<(), Error>` from `init()`");
+    msg::reply(result, 0)
+        .expect("Failed to encode or reply with `Result<(), Error>` from `init()`");
 
     if is_err {
         exec::exit(ActorId::zero());
@@ -306,54 +304,50 @@ extern fn init() {
     unsafe { STAKING = Some(staking) };
 }
 
-fn common_state() -> IoStaking {
-    let state = static_mut_state();
-
-    let Staking {
-        owner,
-        staking_token_address,
-        reward_token_address,
-        tokens_per_stake,
-        total_staked,
-        distribution_time,
-        produced_time,
-        reward_total,
-        all_produced,
-        reward_produced,
-        stakers,
-        transactions,
-        current_tid,
-    } = state.clone();
-
-    let stakers = stakers.iter().map(|(k, v)| (*k, v.clone())).collect();
-
-    IoStaking {
-        owner,
-        staking_token_address,
-        reward_token_address,
-        tokens_per_stake,
-        total_staked,
-        distribution_time,
-        produced_time,
-        reward_total,
-        all_produced,
-        reward_produced,
-        stakers,
-        transactions,
-        current_tid,
-    }
-}
-
-fn static_mut_state() -> &'static mut Staking {
-    unsafe { STAKING.get_or_insert(Default::default()) }
-}
-
 #[no_mangle]
 extern fn state() {
-    reply(common_state())
-        .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
+    let staking = unsafe { STAKING.as_ref().expect("Unexpected error in taking state") };
+    msg::reply::<IoStaking>(staking.into(), 0)
+        .expect("Failed to encode or reply with `IoStaking` from `state()`");
 }
 
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
+impl From<&Staking> for IoStaking {
+    fn from(value: &Staking) -> Self {
+        let Staking {
+            owner,
+            staking_token_address,
+            reward_token_address,
+            tokens_per_stake,
+            total_staked,
+            distribution_time,
+            produced_time,
+            reward_total,
+            all_produced,
+            reward_produced,
+            stakers,
+            transactions,
+            current_tid,
+        } = value;
+
+        let stakers = stakers
+            .iter()
+            .map(|(id, staker)| (*id, staker.clone()))
+            .collect();
+
+        Self {
+            owner: *owner,
+            staking_token_address: *staking_token_address,
+            reward_token_address: *reward_token_address,
+            tokens_per_stake: *tokens_per_stake,
+            total_staked: *total_staked,
+            distribution_time: *distribution_time,
+            produced_time: *produced_time,
+            reward_total: *reward_total,
+            all_produced: *all_produced,
+            reward_produced: *reward_produced,
+            stakers,
+            transactions: transactions.clone(),
+            current_tid: *current_tid,
+        }
+    }
 }

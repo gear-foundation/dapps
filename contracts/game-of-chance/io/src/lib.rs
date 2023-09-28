@@ -6,7 +6,7 @@ use gstd::{errors::Error as GstdError, prelude::*, ActorId};
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
-    type Init = InOut<Initialize, Result<(), Error>>;
+    type Init = InOut<InitGOC, Result<(), Error>>;
     type Handle = InOut<Action, Result<Event, Error>>;
     type Reply = ();
     type Others = ();
@@ -21,7 +21,7 @@ impl Metadata for ContractMetadata {
 /// participants.
 pub const MAX_NUMBER_OF_PLAYERS: usize = 2usize.pow(16);
 
-/// Initializes the contract.
+/// Initializes the Game of chance contract.
 ///
 /// # Requirements
 /// - `admin` mustn't be [`ActorId::zero()`].
@@ -30,7 +30,7 @@ pub const MAX_NUMBER_OF_PLAYERS: usize = 2usize.pow(16);
 )]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub struct Initialize {
+pub struct InitGOC {
     /// [`ActorId`] of the game administrator that'll have the rights to
     /// [`Action::Start`] a game round and [`Action::PickWinner`].
     pub admin: ActorId,
@@ -176,7 +176,7 @@ impl From<GstdError> for Error {
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct State {
-    /// See [`Initialize`].
+    /// See [`InitGOC`].
     pub admin: ActorId,
     /// The start time (in milliseconds) of the current game round and the
     /// players entry stage.

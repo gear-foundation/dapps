@@ -313,13 +313,6 @@ async fn main() {
 
 #[no_mangle]
 extern fn state() {
-    msg::reply(
-        unsafe {
-            let escrow = ESCROW.as_ref().expect("Uninitialized escrow state");
-            let state: EscrowState = escrow.into();
-            state
-        },
-        0,
-    )
-    .expect("Failed to share state");
+    let escrow = unsafe { ESCROW.as_ref().expect("Uninitialized Escrow state") };
+    msg::reply::<EscrowState>(escrow.into(), 0).expect("Failed to share state");
 }

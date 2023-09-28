@@ -1,9 +1,7 @@
 #![no_std]
 
 use auction::*;
-use gstd::{
-    collections::BTreeMap, errors::Result as GstdResult, msg, prelude::*, ActorId, MessageId,
-};
+use gstd::{collections::BTreeMap, msg, prelude::*, ActorId};
 use nft_marketplace_io::*;
 use nft_messages::get_owner;
 use offers::OffersHandler;
@@ -200,7 +198,7 @@ async fn main() {
             token_id,
         } => market.settle_auction(&nft_contract_id, token_id).await,
     };
-    reply(result).expect("Failed to encode or reply with `Result<MarketEvent, MarketErr>`");
+    msg::reply(result, 0).expect("Failed to encode or reply with `Result<MarketEvent, MarketErr>`");
 }
 
 #[no_mangle]
@@ -226,16 +224,6 @@ extern fn init() {
 
 #[no_mangle]
 extern fn state() {
-    msg::reply(
-        unsafe {
-            let market = MARKET.as_ref().expect("Uninitialized market state");
-            &(*market).clone()
-        },
-        0,
-    )
-    .expect("Failed to share state");
-}
-
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
+    let market = unsafe { MARKET.as_ref().expect("Uninitialized market state") };
+    msg::reply(market, 0).expect("Failed to share state");
 }

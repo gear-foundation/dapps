@@ -2,11 +2,9 @@
 
 use gstd::{
     collections::{HashMap, HashSet},
-    debug,
-    errors::Result as GstdResult,
-    exec, msg,
+    debug, exec, msg,
     prelude::*,
-    ActorId, MessageId,
+    ActorId,
 };
 use rock_paper_scissors_io::*;
 use validations::validate_game_config;
@@ -134,45 +132,45 @@ extern fn handle() {
     }
 }
 
-fn common_state() -> ContractState {
-    let state = static_mut_state();
-    let RPSGame {
-        owner,
-        lobby,
-        game_config,
-        stage,
-        encrypted_moves,
-        player_moves,
-        next_game_config,
-        current_stage_start_timestamp,
-    } = state;
-
-    let encrypted_moves = encrypted_moves.iter().map(|(k, v)| (*k, *v)).collect();
-    let player_moves = player_moves.iter().map(|(k, v)| (*k, v.clone())).collect();
-    let lobby = lobby.iter().cloned().collect();
-
-    ContractState {
-        owner: *owner,
-        lobby,
-        game_config: game_config.clone(),
-        stage: stage.clone(),
-        encrypted_moves,
-        player_moves,
-        next_game_config: next_game_config.clone(),
-        current_stage_start_timestamp: *current_stage_start_timestamp,
-    }
-}
-
-fn static_mut_state() -> &'static RPSGame {
-    unsafe { RPS_GAME.get_or_insert(Default::default()) }
-}
-
 #[no_mangle]
 extern fn state() {
-    reply(common_state())
-        .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
+    let game = unsafe { RPS_GAME.as_ref().expect("Unexpected error in taking state") };
+    msg::reply::<ContractState>(game.into(), 0)
+        .expect("Failed to encode or reply with `ContractState` from `state()`");
 }
 
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
+impl From<&RPSGame> for ContractState {
+    fn from(value: &RPSGame) -> Self {
+        let RPSGame {
+            owner,
+            lobby,
+            game_config,
+            stage,
+            encrypted_moves,
+            player_moves,
+            next_game_config,
+            current_stage_start_timestamp,
+        } = value;
+
+        let encrypted_moves = encrypted_moves
+            .iter()
+            .map(|(id, arr)| (*id, *arr))
+            .collect();
+        let player_moves = player_moves
+            .iter()
+            .map(|(id, mv)| (*id, mv.clone()))
+            .collect();
+        let lobby = lobby.iter().cloned().collect();
+
+        Self {
+            owner: *owner,
+            lobby,
+            game_config: game_config.clone(),
+            stage: stage.clone(),
+            encrypted_moves,
+            player_moves,
+            next_game_config: next_game_config.clone(),
+            current_stage_start_timestamp: *current_stage_start_timestamp,
+        }
+    }
 }

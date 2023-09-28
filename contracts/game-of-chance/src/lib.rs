@@ -16,12 +16,11 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 const MAX_NUMBER_OF_TXS: usize = 2usize.pow(16);
 
-static mut STATE: Option<Contract> = None;
+static mut CONTRACT: Option<Contract> = None;
 
 #[derive(Default, Debug)]
 struct Contract {
     admin: ActorId,
-
     fungible_token: Option<ActorId>,
     started: u64,
     ending: u64,
@@ -29,9 +28,7 @@ struct Contract {
     prize_fund: u128,
     participation_cost: u128,
     is_active: bool,
-
     winner: Option<ActorId>,
-
     txs_for_actor: BTreeMap<u64, ActorId>,
     actors_for_tx: HashMap<ActorId, u64>,
     tx_id_nonce: u64,
@@ -261,7 +258,7 @@ extern fn init() {
 }
 
 fn process_init() -> Result<(), Error> {
-    let Initialize { admin } = msg::load()?;
+    let InitGOC { admin } = msg::load().expect("Unable to decode InitGOC");
 
     if admin.is_zero() {
         return Err(Error::ZeroActorId);
@@ -272,7 +269,7 @@ fn process_init() -> Result<(), Error> {
         ..Default::default()
     };
 
-    unsafe { STATE = Some(contract) }
+    unsafe { CONTRACT = Some(contract) }
 
     Ok(())
 }
@@ -283,7 +280,7 @@ async fn main() {
 }
 
 async fn process_handle() -> Result<Event, Error> {
-    let action: Action = msg::load()?;
+    let action: Action = msg::load().expect("Unable to decode Action");
     let contract = state_mut();
 
     match action {
@@ -298,39 +295,44 @@ async fn process_handle() -> Result<Event, Error> {
 }
 
 fn state_mut() -> &'static mut Contract {
-    let state = unsafe { STATE.as_mut() };
+    let state = unsafe { CONTRACT.as_mut() };
 
     debug_assert!(state.is_some(), "state isn't initialized");
 
     unsafe { state.unwrap_unchecked() }
 }
-
 #[no_mangle]
 extern fn state() {
-    let Contract {
-        admin,
-        fungible_token,
-        started,
-        ending,
-        players,
-        prize_fund,
-        participation_cost,
-        winner,
-        is_active,
-        ..
-    } = state_mut();
+    let contract = unsafe { CONTRACT.as_ref().expect("Unexpected error in taking state") };
+    msg::reply::<State>(contract.into(), 0)
+        .expect("Failed to encode or reply with `IoNFT` from `state()`");
+}
 
-    let state = State {
-        admin: *admin,
-        fungible_token: *fungible_token,
-        started: *started,
-        ending: *ending,
-        players: players.clone(),
-        prize_fund: *prize_fund,
-        participation_cost: *participation_cost,
-        winner: winner.unwrap_or_default(),
-        is_active: *is_active,
-    };
+impl From<&Contract> for State {
+    fn from(value: &Contract) -> Self {
+        let Contract {
+            admin,
+            fungible_token,
+            started,
+            ending,
+            players,
+            prize_fund,
+            participation_cost,
+            winner,
+            is_active,
+            ..
+        } = value;
 
-    reply(state).expect("failed to encode or reply from `state()`");
+        Self {
+            admin: *admin,
+            fungible_token: *fungible_token,
+            started: *started,
+            ending: *ending,
+            players: players.clone(),
+            prize_fund: *prize_fund,
+            participation_cost: *participation_cost,
+            winner: winner.unwrap_or_default(),
+            is_active: *is_active,
+        }
+    }
 }

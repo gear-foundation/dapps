@@ -4,10 +4,9 @@ use concert_io::*;
 use gear_lib_old::multitoken::io::*;
 use gstd::{
     collections::{HashMap, HashSet},
-    errors::Result,
     msg,
     prelude::*,
-    ActorId, MessageId,
+    ActorId,
 };
 use multi_token_io::MyMTKAction;
 
@@ -20,18 +19,14 @@ const NFT_COUNT: u128 = 1;
 struct Concert {
     owner_id: ActorId,
     contract_id: ActorId,
-
     name: String,
     description: String,
-
     ticket_ft_id: u128,
     creator: ActorId,
     number_of_tickets: u128,
     tickets_left: u128,
     date: u128,
-
     buyers: HashSet<ActorId>,
-
     id_counter: u128,
     concert_id: u128,
     running: bool,
@@ -91,12 +86,15 @@ impl Concert {
         self.date = date;
         self.running = true;
         self.tickets_left = number_of_tickets;
-        reply(ConcertEvent::Creation {
-            creator,
-            concert_id: self.concert_id,
-            number_of_tickets,
-            date,
-        })
+        msg::reply(
+            ConcertEvent::Creation {
+                creator,
+                concert_id: self.concert_id,
+                number_of_tickets,
+                date,
+            },
+            0,
+        )
         .expect("Error during a replying with ConcertEvent::Creation");
     }
 
@@ -140,10 +138,13 @@ impl Concert {
         .await
         .expect("CONCERT: Error minting concert tokens");
 
-        reply(ConcertEvent::Purchase {
-            concert_id: self.concert_id,
-            amount,
-        })
+        msg::reply(
+            ConcertEvent::Purchase {
+                concert_id: self.concert_id,
+                amount,
+            },
+            0,
+        )
         .expect("Error during a replying with ConcertEvent::Purchase");
     }
 
@@ -219,59 +220,64 @@ impl Concert {
             }
         }
         self.running = false;
-        reply(ConcertEvent::Hold {
-            concert_id: self.concert_id,
-        })
+        msg::reply(
+            ConcertEvent::Hold {
+                concert_id: self.concert_id,
+            },
+            0,
+        )
         .expect("Error during a replying with ConcertEvent::Hold");
-    }
-}
-
-fn common_state() -> State {
-    let Concert {
-        owner_id,
-        contract_id,
-        name,
-        description,
-        ticket_ft_id,
-        creator,
-        number_of_tickets,
-        tickets_left,
-        date,
-        buyers,
-        id_counter,
-        concert_id,
-        running,
-        metadata,
-    } = unsafe { CONTRACT.get_or_insert(Default::default()) };
-
-    State {
-        owner_id: *owner_id,
-        contract_id: *contract_id,
-        name: name.clone(),
-        description: description.clone(),
-        ticket_ft_id: *ticket_ft_id,
-        creator: *creator,
-        number_of_tickets: *number_of_tickets,
-        tickets_left: *tickets_left,
-        date: *date,
-        buyers: buyers.iter().copied().collect(),
-        id_counter: *id_counter,
-        concert_id: *concert_id,
-        running: *running,
-        metadata: metadata
-            .iter()
-            .map(|(k, v)| (*k, v.iter().map(|(k, v)| (*k, v.clone())).collect()))
-            .collect(),
     }
 }
 
 #[no_mangle]
 extern fn state() {
-    reply(common_state()).expect(
-        "Failed to encode or reply with `<ContractMetadata as Metadata>::State` from `state()`",
-    );
+    let contract = unsafe { CONTRACT.as_ref().expect("Unexpected error in taking state") };
+    msg::reply::<State>(contract.into(), 0)
+        .expect("Failed to encode or reply with `State` from `state()`");
 }
 
-fn reply(payload: impl Encode) -> Result<MessageId> {
-    msg::reply(payload, 0)
+impl From<&Concert> for State {
+    fn from(value: &Concert) -> Self {
+        let Concert {
+            owner_id,
+            contract_id,
+            name,
+            description,
+            ticket_ft_id,
+            creator,
+            number_of_tickets,
+            tickets_left,
+            date,
+            buyers,
+            id_counter,
+            concert_id,
+            running,
+            metadata,
+        } = value;
+
+        let buyers = buyers.iter().copied().collect();
+
+        let metadata = metadata
+            .iter()
+            .map(|(k, v)| (*k, v.iter().map(|(k, v)| (*k, v.clone())).collect()))
+            .collect();
+
+        State {
+            owner_id: *owner_id,
+            contract_id: *contract_id,
+            name: name.clone(),
+            description: description.clone(),
+            ticket_ft_id: *ticket_ft_id,
+            creator: *creator,
+            number_of_tickets: *number_of_tickets,
+            tickets_left: *tickets_left,
+            date: *date,
+            buyers,
+            id_counter: *id_counter,
+            concert_id: *concert_id,
+            running: *running,
+            metadata,
+        }
+    }
 }
