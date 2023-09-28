@@ -8,8 +8,6 @@ import { Alert, alertStyles } from '@gear-js/ui';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ADDRESS } from 'consts';
-import { GaslessAccountProvider } from 'features/gasless-account';
-import { AuthProvider } from 'features/auth';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider providerAddress={ADDRESS.NODE}>{children}</GearApiProvider>;
@@ -23,7 +21,7 @@ function AlertProvider({ children }: ProviderProps) {
   );
 }
 
-const providers = [BrowserRouter, AlertProvider, ApiProvider, AccountProvider, GaslessAccountProvider, AuthProvider];
+const providers = [BrowserRouter, AlertProvider, ApiProvider, AccountProvider];
 
 function withProviders(Component: ComponentType) {
   return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);

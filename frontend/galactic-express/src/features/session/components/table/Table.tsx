@@ -1,5 +1,6 @@
 import { CSSProperties, Fragment } from 'react';
-import clsx from 'clsx';
+import { cx } from 'utils';
+import { shortenString } from 'features/session/utils';
 import { ReactComponent as CheckSVG } from '../../assets/check.svg';
 import { ReactComponent as CrossSVG } from '../../assets/cross.svg';
 import { PLAYER_COLORS, TABLE_HEADINGS } from '../../consts';
@@ -8,9 +9,10 @@ import styles from './Table.module.scss';
 
 type Props = {
   data: Event[];
+  userId?: string;
 };
 
-function Table({ data }: Props) {
+function Table({ data, userId }: Props) {
   const getHeader = () =>
     TABLE_HEADINGS.map((text) => (
       <div key={text} className={styles.headerCell}>
@@ -19,18 +21,21 @@ function Table({ data }: Props) {
     ));
 
   const getBody = () =>
-    data.map(({ participant, deadRound, fuelLeft, lastAltitude, payload, halt }, index) => (
+    data?.map(({ participant, deadRound, fuelLeft, lastAltitude, payload, halt }, index) => (
       <Fragment key={participant}>
         <div
-          className={clsx(styles.bodyCell, styles.firstColumn)}
+          className={cx(styles.bodyCell, styles.firstColumn)}
           style={{ '--color': PLAYER_COLORS[index] } as CSSProperties}>
-          {participant}
+          <span>
+            {shortenString(participant)}{' '}
+            {userId === participant ? <span className={cx(styles.yourAddressSpan)}>(You)</span> : ''}
+          </span>
         </div>
         <div className={styles.bodyCell}>{deadRound ? <CrossSVG /> : <CheckSVG />}</div>
         <div className={styles.bodyCell}>{fuelLeft}</div>
         <div className={styles.bodyCell}>{lastAltitude}</div>
         <div className={styles.bodyCell}>{payload}</div>
-        <div className={clsx(styles.bodyCell, styles.lastColumn)}>{halt ? halt.split(/(?=[A-Z])/).join(' ') : '-'}</div>
+        <div className={cx(styles.bodyCell, styles.lastColumn)}>{halt ? halt.split(/(?=[A-Z])/).join(' ') : '-'}</div>
       </Fragment>
     ));
 

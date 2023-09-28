@@ -1,0 +1,22 @@
+@use 'utils' as *;
+
+.button {
+  width: 216px;
+
+  span {
+    @include textOverflow;
+  }
+}
+
+.form {
+  padding: 10px 0;
+}
+
+.input.input {
+  display: grid;
+  grid-template-columns: 2fr 6fr;
+}
+
+.button {
+  margin-top: 20px;
+}

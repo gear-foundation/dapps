@@ -13,7 +13,8 @@ const LOCAL_STORAGE = {
 
 const ROUTES = {
   HOME: '/',
-  LEADERBOARD: '/leaderboard',
+  LOGIN: 'login',
+  NOT_AUTHORIZED: 'not-authorized',
 };
 
 export { ADDRESS, LOCAL_STORAGE, ROUTES };

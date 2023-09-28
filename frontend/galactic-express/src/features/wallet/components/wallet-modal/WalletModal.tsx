@@ -1,52 +1,46 @@
+import { useNavigate } from 'react-router-dom';
 import Identicon from '@polkadot/react-identicon';
 import { decodeAddress } from '@gear-js/api';
-import { useAccount } from '@gear-js/react-hooks';
-import { Button, Modal, buttonStyles } from '@gear-js/ui';
-import clsx from 'clsx';
-import { copyToClipboard } from 'utils';
-import { ReactComponent as ExitSVG } from '../../assets/images/exit.svg';
-import { CopySVG } from '../../assets';
-import { WALLETS } from '../../consts';
+import { useAccount, useAlert } from '@gear-js/react-hooks';
+import { useAuth } from 'features/auth/hooks';
+import { Button } from 'components/layout/button';
+import { Modal } from 'components/layout';
+import { cx, copyToClipboard } from 'utils';
+import copyToClipboardSVG from 'assets/images/icons/binary-code.svg';
+import penEditSVG from 'assets/images/icons/pen-edit-icon.svg';
+import exitSVG from 'assets/images/icons/exit-icon.svg';
+import { WALLET } from '../../consts';
 import { useWallet } from '../../hooks';
 import { WalletItem } from '../wallet-item';
+import { WalletId } from '../../types';
+
 import styles from './WalletModal.module.scss';
+import { WalletModalProps } from './WalletModal.interface';
 
-type Props = {
-  onClose: () => void;
-};
-
-function WalletModal({ onClose }: Props) {
-  const { extensions, account, login, logout } = useAccount();
-
+function WalletModal({ onClose }: WalletModalProps) {
+  const { extensions, account } = useAccount();
+  const alert = useAlert();
   const { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts, saveWallet, removeWallet } =
     useWallet();
+  const navigate = useNavigate();
+  const { signIn, signOut } = useAuth();
 
   const getWallets = () =>
-    WALLETS.map(([id, { SVG, name }]) => {
+    Object.entries(WALLET).map(([id, { SVG, name }]) => {
       const isEnabled = extensions.some((extension) => extension.name === id);
-      const status = isEnabled ? 'Enabled' : 'Disabled';
 
-      const accountsCount = getWalletAccounts(id).length;
+      const accountsCount = getWalletAccounts(id as WalletId).length;
       const accountsStatus = `${accountsCount} ${accountsCount === 1 ? 'account' : 'accounts'}`;
 
-      const onClick = () => setWalletId(id);
-
-      const className = clsx(
-        styles.walletButton,
-        buttonStyles.button,
-        buttonStyles.light,
-        buttonStyles.large,
-        buttonStyles.block,
-      );
+      const onClick = () => setWalletId(id as WalletId);
 
       return (
         <li key={id}>
-          <button type="button" className={className} onClick={onClick} disabled={!isEnabled}>
+          <button type="button" className={cx(styles['wallet-button'])} onClick={onClick} disabled={!isEnabled}>
             <WalletItem icon={SVG} name={name} />
-
-            <div className={styles.status}>
-              <p>{status}</p>
-              {isEnabled && <p>{accountsStatus}</p>}
+            <div className={cx(styles.status)}>
+              <p className={cx(styles['status-text'])}>{isEnabled ? 'Enabled' : 'Disabled'}</p>
+              {isEnabled && <p className={cx(styles['status-accounts'])}>{accountsStatus}</p>}
             </div>
           </button>
         </li>
@@ -59,7 +53,9 @@ function WalletModal({ onClose }: Props) {
       const isActive = address === account?.address;
 
       const handleClick = () => {
-        login(_account);
+        signIn(_account).then(() => {
+          navigate(`/`);
+        });
         saveWallet();
         onClose();
       };
@@ -67,51 +63,50 @@ function WalletModal({ onClose }: Props) {
       const handleCopyClick = () => {
         const decodedAddress = decodeAddress(address);
 
-        copyToClipboard(decodedAddress);
+        copyToClipboard(decodedAddress).then(() => alert.success('copied'));
         onClose();
       };
 
-      const className = clsx(
-        styles.accountButton,
-        buttonStyles.button,
-        buttonStyles.large,
-        buttonStyles.block,
-        isActive ? buttonStyles.primary : buttonStyles.light,
-      );
-
       return (
         <li key={address} className={styles.account}>
-          <button type="button" className={className} onClick={handleClick}>
-            <Identicon value={address} size={21} theme="polkadot" />
-            <span>{meta.name}</span>
+          <button
+            type="button"
+            className={cx(styles['account-button'], isActive ? styles.active : '')}
+            onClick={handleClick}
+            disabled={isActive}>
+            <div className={cx(styles['account-button-content'])}>
+              <Identicon value={address} size={21} theme="polkadot" className={cx(styles['account-identicon'])} />
+              <span className={cx(styles['account-name'])}>{meta.name}</span>
+            </div>
           </button>
-
-          <Button icon={CopySVG} color="transparent" onClick={handleCopyClick} />
+          <Button icon={copyToClipboardSVG} onClick={handleCopyClick} variant="icon" />
         </li>
       );
     });
 
   const handleLogoutButtonClick = () => {
-    logout();
+    signOut();
     removeWallet();
     onClose();
   };
 
-  const walletButtonClassName = clsx(buttonStyles.button, buttonStyles.transparent);
-
   return (
-    <Modal heading="Wallet connection" close={onClose}>
-      <ul className={styles.list}>{getAccounts() || getWallets()}</ul>
-
+    <Modal heading={wallet ? 'Connect wallet' : 'Wallet connection'} onClose={onClose}>
+      <ul className={cx(styles.list)}>{getAccounts() || getWallets()}</ul>
       {wallet && (
-        <footer className={styles.footer}>
-          <button type="button" className={walletButtonClassName} onClick={resetWalletId}>
+        <footer className={cx(styles.footer)}>
+          <button type="button" className={cx(styles['wallet-button'])} onClick={resetWalletId}>
             <WalletItem icon={wallet.SVG} name={wallet.name} />
-
-            <span className={styles.changeText}>Change</span>
+            <img src={penEditSVG} alt="edit" />
           </button>
-
-          {account && <Button icon={ExitSVG} text="Logout" color="transparent" onClick={handleLogoutButtonClick} />}
+          {account && (
+            <div className={cx(styles['logout-button-container'])}>
+              <Button icon={exitSVG} variant="icon" />
+              <button type="button" className={cx(styles['logout-button'])} onClick={handleLogoutButtonClick}>
+                Exit
+              </button>
+            </div>
+          )}
         </footer>
       )}
     </Modal>

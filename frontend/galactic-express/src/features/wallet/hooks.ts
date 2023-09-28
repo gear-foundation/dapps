@@ -1,8 +1,26 @@
-import { useAccount } from '@gear-js/react-hooks';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useAlert, useAccount } from '@gear-js/react-hooks';
+import { Buffer } from 'buffer';
 import { LOCAL_STORAGE } from 'consts';
-import { WALLET } from './consts';
+import { WALLET, WALLET_ID_LOCAL_STORAGE_KEY } from './consts';
 import { WalletId } from './types';
+
+function useWasmMetadata(source: RequestInfo | URL) {
+  const alert = useAlert();
+  const [data, setData] = useState<Buffer>();
+
+  useEffect(() => {
+    if (source) {
+      fetch(source)
+        .then((response) => response.arrayBuffer())
+        .then((array) => Buffer.from(array))
+        .then((buffer) => setData(buffer))
+        .catch(({ message }: Error) => alert.error(`Fetch error: ${message}`));
+    }
+  }, [source, alert]);
+
+  return { buffer: data };
+}
 
 function useWallet() {
   const { accounts } = useAccount();
@@ -23,4 +41,16 @@ function useWallet() {
   return { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts, saveWallet, removeWallet };
 }
 
-export { useWallet };
+function useWalletSync() {
+  const { account, isAccountReady } = useAccount();
+  const { address } = account || {};
+
+  useEffect(() => {
+    if (!isAccountReady) return;
+    if (!account) return localStorage.removeItem(WALLET_ID_LOCAL_STORAGE_KEY);
+
+    localStorage.setItem(WALLET_ID_LOCAL_STORAGE_KEY, account.meta.source);
+  }, [isAccountReady, address, account]);
+}
+
+export { useWalletSync, useWallet, useWasmMetadata };

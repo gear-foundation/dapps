@@ -1,0 +1,27 @@
+FROM node:18-alpine
+
+WORKDIR /usr/src
+
+COPY . /usr/src
+
+RUN apk update
+
+RUN apk add xsel
+
+ARG REACT_APP_NODE_ADDRESS \
+    REACT_APP_AUTH_API_ADDRESS \
+    REACT_APP_TESTNET_URL \ 
+    REACT_APP_FT_ADDRESS
+ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
+    REACT_APP_AUTH_API_ADDRESS=${REACT_APP_AUTH_API_ADDRESS} \
+    REACT_APP_TESTNET_URL=${REACT_APP_TESTNET_URL} \
+    REACT_APP_FT_ADDRESS=${REACT_APP_FT_ADDRESS} \
+    DISABLE_ESLINT_PLUGIN=true 
+    
+RUN npm install
+
+RUN npm run build
+
+RUN npm install --global serve
+
+CMD ["serve", "-s", "/usr/src/build"]

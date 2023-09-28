@@ -1,0 +1,60 @@
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    outline: none;
+    box-shadow: none;
+    border-radius: 2px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.5;
+    }
+}
+
+.variant {
+    &-primary {
+        border: none;
+        background: #2bd071;
+        color: #ffffff
+    }
+
+    &-outline {
+        border: 2px solid #2bd071;
+        background: transparent;
+        color: #fff
+    }
+
+    &-icon {
+        border: none;
+        background: transparent;
+        color: #fff
+    }
+
+    &-text {
+        border: none;
+        background: transparent;
+        color: #fff
+    }
+}
+
+.size {
+    &-small {
+        height: 30px;
+        width: 150px;
+    }
+
+    &-medium {
+        height: 40px;
+        width: 160px;
+    }
+
+    &-large {
+        height: 50px;
+        width: 180px;
+    }
+}

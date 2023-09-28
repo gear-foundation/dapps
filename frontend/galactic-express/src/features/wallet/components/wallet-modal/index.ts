@@ -1,3 +1,1 @@
-import { WalletModal } from './WalletModal';
-
-export { WalletModal };
+export * from './WalletModal';

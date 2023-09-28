@@ -1,31 +1,60 @@
-import { NavLink } from 'react-router-dom';
-import { Auth } from 'features/auth';
-import { ROUTES } from 'consts';
-import { Logo } from './logo';
+import { useState } from 'react';
+import { WalletModal, WalletInfo } from 'features/wallet/components';
+import { Link, useLocation } from 'react-router-dom';
+import { useAccount } from '@gear-js/react-hooks';
+import { cx } from 'utils';
 import styles from './Header.module.scss';
+import { Logo } from './logo';
 
-function Header() {
+interface Menu {
+  [key: string]: {
+    url: string;
+  };
+}
+interface HeaderProps {
+  menu?: Menu;
+}
+
+function Header({ menu }: HeaderProps) {
+  const location = useLocation();
+  const { account } = useAccount();
+  const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
+
+  const handleCloseWalletModal = () => {
+    setIsWalletModalOpen(false);
+  };
+
   return (
-    <header className={styles.header}>
-      <nav className={styles.nav}>
-        <Logo />
+    <>
+      <header className={cx(styles.header)}>
+        <div className={cx(styles.container)}>
+          <Logo />
+          {account && (
+            <nav className={cx(styles.menu)}>
+              {menu &&
+                Object.keys(menu).map((item) => {
+                  const { url } = menu[item];
 
-        <ul className={styles.menu}>
-          <li>
-            <NavLink to={ROUTES.HOME} className={styles.link}>
-              Home
-            </NavLink>
-          </li>
-          <li>
-            <NavLink to={ROUTES.LEADERBOARD} className={styles.link}>
-              Leaderboard
-            </NavLink>
-          </li>
-        </ul>
-      </nav>
+                  return (
+                    <Link to={url} key={item}>
+                      <p
+                        className={cx(
+                          styles['menu-item'],
+                          location.pathname === `/${url}` ? styles['menu-item--active'] : '',
+                        )}>
+                        {item}
+                      </p>
+                    </Link>
+                  );
+                })}
+            </nav>
+          )}
+          <WalletInfo account={account} />
+        </div>
+      </header>
 
-      <Auth />
-    </header>
+      {isWalletModalOpen && <WalletModal onClose={handleCloseWalletModal} />}
+    </>
   );
 }
 

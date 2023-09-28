@@ -11,7 +11,34 @@ const TRAITS = [
   { heading: 'Reward', SVG: RewardSVG },
 ];
 
-const WEATHERS = ['Sunny ☀️', 'Cloudy ☁️', 'Rainy 🌦️', 'Storm 🌧️', 'Thunder ⛈️', 'Tornado 🌪️'];
+// const WEATHERS = ['Sunny ☀️', 'Cloudy ☁️', 'Rainy 🌦️', 'Storm 🌧️', 'Thunder ⛈️', 'Tornado 🌪️'];
+
+const WEATHERS = {
+  Clear: {
+    weight: 0,
+    name: 'Sunny ☀️',
+  },
+  Cloudy: {
+    weight: 1,
+    name: 'Cloudy ☁️',
+  },
+  Rainy: {
+    weight: 2,
+    name: 'Rainy 🌦️',
+  },
+  Stormy: {
+    weight: 3,
+    name: 'Storm 🌧️',
+  },
+  Thunder: {
+    weight: 4,
+    name: 'Thunder ⛈️',
+  },
+  Tornado: {
+    weight: 5,
+    name: 'Tornado 🌪️',
+  },
+};
 
 const INITIAL_VALUES = {
   payload: '0',

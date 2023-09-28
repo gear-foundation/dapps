@@ -3,14 +3,18 @@ import { CSSProperties } from 'react';
 import cropEarthSrc from '../../assets/earth-crop.gif';
 import { Event } from '../../types';
 import styles from './Radar.module.scss';
+import { WinStatus } from '../win-status';
 
 type Props = {
   currentEvents: Event[] | undefined;
   currentRound: number;
   roundsCount: number;
+  isWinner: boolean;
+  userRank: number;
 };
 
-function Radar({ currentEvents, currentRound, roundsCount }: Props) {
+function Radar({ currentEvents, currentRound, roundsCount, isWinner, userRank }: Props) {
+  console.log(roundsCount);
   const getPlayers = () =>
     currentEvents?.map(({ participant, deadRound }, index) => {
       const playerNumber = index + 1;
@@ -31,6 +35,7 @@ function Radar({ currentEvents, currentRound, roundsCount }: Props) {
 
   return (
     <div className={styles.container}>
+      {isWinner ? <WinStatus type="win" userRank={userRank} /> : <WinStatus type="lose" userRank={userRank} />}
       <div className={styles.field}>{getPlayers()}</div>
 
       <img src={cropEarthSrc} alt="" className={styles.image} />

@@ -1,62 +1,131 @@
-@use 'utils' as *;
 
-.list {
-  @include gap(16px);
-  max-height: 70vh;
-  margin-right: -32px;
-  padding-right: 16px;
-  overflow-y: auto;
+.list {  
+    max-height: 430px;
+    overflow-y: auto;
 
-  .walletButton {
-    justify-content: space-between;
+    .wallet-button {
+      width: 100%;
+      min-height: 48px;
+      padding-right: 20px;
+      padding-left: 24px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      outline: none;
+      border: none;
+      background: rgb(34, 34, 34);
+      transition: all 0.3s;
+      cursor: pointer;
+  
+      &:hover {
+        background:#161616;
+      }
+    }
   }
-}
-
-.status {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1;
-  text-align: right;
-}
-
-.account {
-  @include gap(10px, right);
-  display: flex;
-  align-items: center;
-
-  &Button {
-    @include gap(12px, right);
+  
+  .status {
+    text-align: right;
+  
+    &-text {
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 12px;
+      color: #a2a2a2;
+    }
+  
+    &-accounts {
+      font-weight: 700;
+      font-size: 11px;
+      line-height: 10px;
+      letter-spacing: 0.02em;
+      color: green;
+    }
   }
-}
-
-.footer {
-  margin-top: 22px;
-  display: flex;
-  justify-content: space-between;
-
-  .walletButton {
-    @include gap(8px, right);
+  
+  .account {
     display: flex;
     align-items: center;
-    background-color: transparent;
-    border: none;
+    margin: 10px 0;
+
+    &-identicon {
+      display: inline;
+    }
+
+    &-name {
+      max-width: 200px;
+      white-space: nowrap;
+    }
+  
+    &-button {
+      width: 100%;
+      padding: 14px 16px;
+      margin-right: 20px;
+      gap: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 18px;
+      color: #fff;
+      background-color: #000;
+      transition: all 0.3s;
+      border: none;
+      outline: none;
+      cursor: pointer;
+
+      &-content {
+        width: 100%;
+        padding-left: 10px;
+        gap: 10px;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+      }
+  
+      &.active {
+        background: green
+      }
+  
+      &:hover {
+        background-color: #000;
+      }
+    }
   }
-}
+  
+  .footer {
+    margin-top: 22px;
+    display: flex;
+    justify-content: space-between;
+  
+    .wallet-button {
+      display: flex;
+      align-items: center;
+      background: transparent;
+      transition: all 0.3s;
+      gap: 10px;
+      border: none;
+      outline: none;
+      cursor: pointer;
+  
+      &:hover {
+        opacity: 0.5;
+      }
+    }
+  }
 
-.changeText {
-  margin-left: 8px;
-  font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  color: #2bd071;
-}
-
-.logoutButton {
-  @include gap(4px, right);
-  display: flex;
-  align-items: center;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 1.14;
-  color: #a2a2a2;
-}
+  .logout-button-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logout-button {
+    color: #fff;
+    font-size: 14px;
+    font-weight: 700;
+    background: transparent;
+    outline: none;
+    border: none;
+    cursor: pointer;
+  }

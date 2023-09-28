@@ -1,15 +1,11 @@
-import { SVGComponent } from 'types';
+import { cx } from 'utils';
 import styles from './WalletItem.module.scss';
+import { WalletItemProps } from './WalletItem.interfaces';
 
-type Props = {
-  icon: SVGComponent;
-  name: string;
-};
-
-function WalletItem({ icon: Icon, name }: Props) {
+function WalletItem({ icon, name }: WalletItemProps) {
   return (
-    <span className={styles.wallet}>
-      <Icon className={styles.icon} />
+    <span className={cx(styles.wallet)}>
+      <img src={icon} alt={name} />
       {name}
     </span>
   );
