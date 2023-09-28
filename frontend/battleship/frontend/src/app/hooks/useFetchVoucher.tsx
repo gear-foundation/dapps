@@ -35,11 +35,15 @@ export function useFetchVoucher(account: string | undefined) {
             const fetchData = async () => {
                 setIsLoading(true);
                 const availableBack = await fetch(ADDRESS.BACK)
+
                 if (availableBack?.status === 200) {
                     if (isVoucherExists) {
                         setVoucher(true);
                     } else {
-
+                        const createdVoucher = await fetchVoucher();
+                        if (createdVoucher) {
+                            setVoucher(true);
+                        }
                     }
                 }
                 setIsLoading(false);
@@ -53,11 +57,10 @@ export function useFetchVoucher(account: string | undefined) {
     const updateBalance = useCallback(async () => {
         const formattedBalance = voucherBalance && getFormattedBalanceValue(voucherBalance).toFixed();
         const isBalanceLow = formattedBalance < 3;
-
+        console.log('formattedBalance', formattedBalance)
         if (isBalanceLow) {
             const createdVoucher = await fetchVoucher();
             if (createdVoucher) {
-
                 setVoucher(true);
             }
         }

@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@gear-js/api": "0.33.3",
-    "@gear-js/react-hooks": "0.6.9",
+    "@gear-js/react-hooks": "0.6.10",
     "@gear-js/ui": "0.5.19",
     "@gear-js/vara-ui": "^0.0.2",
     "@mantine/form": "6.0.15",
