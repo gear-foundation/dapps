@@ -33,15 +33,30 @@
         display: flex;
         margin-top: 20px;
         gap: 16px;
+
+        .create-button {
+            width: 218px;
+            border-radius: 4px;
+        }
+
+        .explore-button {
+            width: 133px;
+            background: #000000;
+            color: #ffffff;
+            border-radius: 4px;
+        }
     }
 
     .title {
         font-size: 64px;
         font-weight: 500;
-        background: linear-gradient(90deg, #2B2B2B 33.39%, #00FFC4 77.42%);
-        -webkit-background-clip: text;
-        background-clip: text; 
-        -webkit-text-fill-color: transparent;
+
+        .title-gradient {
+            background: linear-gradient(90deg, #2B2B2B 33.39%, #00FFC4 77.42%);
+            -webkit-background-clip: text;
+            background-clip: text; 
+            -webkit-text-fill-color: transparent;
+        }
     }
 
     .text {

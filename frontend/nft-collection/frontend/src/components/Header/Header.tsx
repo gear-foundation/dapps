@@ -61,10 +61,12 @@ function Header({ menu }: HeaderProps) {
                   </nav>
                   <div className={cx(styles.items)}>
                     <Search />
-                    <Link to={CREATE_COLLECTION}>
-                      <Button variant="primary" label="Create" className={cx(styles['create-btn'])} />
-                    </Link>
-                    <WalletInfo account={account} />
+                    {account && (
+                      <Link to={CREATE_COLLECTION}>
+                        <Button variant="primary" label="Create" className={cx(styles['create-btn'])} />
+                      </Link>
+                    )}
+                    <WalletInfo account={account} withoutBalance />
                     <ContractInfo />
                   </div>
                 </>

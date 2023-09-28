@@ -2,6 +2,7 @@ import { Button, radioStyles } from '@gear-js/ui';
 import clsx from 'clsx';
 import { SVGComponent } from 'types';
 import { copyToClipboard } from 'utils';
+import { useAlert } from '@gear-js/react-hooks';
 import { ReactComponent as CopySVG } from '@/assets/icons/binary-code.svg';
 import { ReactComponent as TrashSVG } from '@/assets/icons/trash.svg';
 import styles from './Node.module.scss';
@@ -16,14 +17,14 @@ type Props = {
   onRemove: (value: string) => void;
 };
 
-function Node(props: Props) {
-  const { address, isChecked, isActive, isCustom, SVG, onChange, onRemove } = props;
+function Node({ address, isChecked, isActive, isCustom, SVG, onChange, onRemove }: Props) {
+  const alert = useAlert();
 
   const labelClassName = clsx(styles.radio, isActive && styles.current);
   const radioClassName = clsx(radioStyles.input, styles.input);
 
   const handleChange = () => onChange(address);
-  const handleCopy = () => copyToClipboard(address);
+  const handleCopy = () => copyToClipboard({ value: address, alert });
   const handleRemove = () => !isActive && onRemove(address);
 
   return (

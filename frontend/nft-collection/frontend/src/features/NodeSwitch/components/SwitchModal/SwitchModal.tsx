@@ -1,7 +1,7 @@
-import { Modal } from 'components';
 import { LOCAL_STORAGE, SEARCH_PARAMS } from 'consts';
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Modal } from '@/components';
 import { ReactComponent as PlusSVG } from '../../assets/plus.svg';
 import { ReactComponent as SwitchSVG } from '../../assets/switch.svg';
 import { ICON, NODE_ADRESS_URL_PARAM } from '../../consts';

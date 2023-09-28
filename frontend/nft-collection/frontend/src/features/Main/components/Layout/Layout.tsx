@@ -1,5 +1,6 @@
 import moment from 'moment';
 import { useAtomValue } from 'jotai';
+import { motion } from 'framer-motion';
 import { Link } from '@ui';
 import styles from './Layout.module.scss';
 import { cx } from '@/utils';
@@ -16,10 +17,12 @@ function Layout() {
 
   return (
     <div className={cx(styles.container)}>
-      <div className={cx(styles.content)}>
+      <motion.div className={cx(styles.content)} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
         <img src={images} alt="nft main" className={cx(styles['nft-main-image'])} />
         <div className={cx(styles.presentation)}>
-          <h1 className={cx(styles.title)}>Vara NFT</h1>
+          <h1 className={cx(styles.title)}>
+            Vara <span className={cx(styles['title-gradient'])}>NFT</span>
+          </h1>
           <span className={cx(styles.text)}>Discover Vara NFT Marketplace - Create, Connect, Collect!</span>
           <span className={cx(styles.text)}>
             Your hub for creating and exploring NFTs. Unleash your creativity, connect with fellow creators, and own
@@ -27,38 +30,24 @@ function Layout() {
           </span>
           <div className={cx(styles.buttons)}>
             <Link to={CREATE_COLLECTION}>
-              <Button label="Create Collection" variant="primary" />
+              <Button
+                label="Create Collection"
+                variant="primary"
+                size="large"
+                className={cx(styles['create-button'])}
+              />
             </Link>
             <Link to={EXPLORE}>
-              <Button label="Explore" variant="primary" />
+              <Button label="Explore" variant="primary" size="large" className={cx(styles['explore-button'])} />
             </Link>
           </div>
         </div>
-      </div>
+      </motion.div>
       <div className={cx(styles.collections)}>
-        <Swiper
-          title="Featured Collections"
-          data={Object.keys(collections).map((id) => {
-            const collection = collections[id];
-
-            return (
-              <Link to={`${COLLECTION}/${id}`}>
-                <CollectionPreview collection={collection} />
-              </Link>
-            );
-          })}
-          wrapperClass={cx(styles['with-padding'])}
-          withNavigation
-        />
-        <Swiper
-          title="Recently Created Collections"
-          data={Object.keys(collections)
-            .sort((a, b) =>
-              moment(collections[b].timeCreation, 'YYYY-M-D HH:mm').diff(
-                moment(collections[a].timeCreation, 'YYYY-M-D HH:mm'),
-              ),
-            )
-            .map((id) => {
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+          <Swiper
+            title="Featured Collections"
+            data={Object.keys(collections).map((id) => {
               const collection = collections[id];
 
               return (
@@ -67,34 +56,59 @@ function Layout() {
                 </Link>
               );
             })}
-          wrapperClass={cx(styles['with-padding'])}
-          withNavigation
-        />
-        <Swiper
-          title="Recently Minted NFTs"
-          data={Object.keys(collections)
-            .map((id) => {
-              const collection = collections[id];
+            wrapperClass={cx(styles['with-padding'])}
+            withNavigation
+          />
+        </motion.div>
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+          <Swiper
+            title="Recently Created Collections"
+            data={Object.keys(collections)
+              .sort((a, b) =>
+                moment(collections[b].timeCreation, 'YYYY-M-D HH:mm').diff(
+                  moment(collections[a].timeCreation, 'YYYY-M-D HH:mm'),
+                ),
+              )
+              .map((id) => {
+                const collection = collections[id];
 
-              return collection.tokens;
-            })
-            .flat()
-            .sort((a, b) => moment(b.timeMinted, 'YYYY-M-D HH:mm').diff(moment(a.timeMinted, 'YYYY-M-D HH:mm')))
-            .slice(0, 20)
-            .map((token) => (
-              <Link to={`${COLLECTION}/${token.id}`}>
-                <NftPreview
-                  url={token.medium}
-                  name={token.name}
-                  collectionName={token.collectionName}
-                  owner={token.owner}
-                  timeMinted={token.timeMinted}
-                />
-              </Link>
-            ))}
-          wrapperClass={cx(styles['with-padding'])}
-          withNavigation
-        />
+                return (
+                  <Link to={`${COLLECTION}/${id}`}>
+                    <CollectionPreview collection={collection} />
+                  </Link>
+                );
+              })}
+            wrapperClass={cx(styles['with-padding'])}
+            withNavigation
+          />
+        </motion.div>
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
+          <Swiper
+            title="Recently Minted NFTs"
+            data={Object.keys(collections)
+              .map((id) => {
+                const collection = collections[id];
+
+                return collection.tokens;
+              })
+              .flat()
+              .sort((a, b) => moment(b.timeMinted, 'YYYY-M-D HH:mm').diff(moment(a.timeMinted, 'YYYY-M-D HH:mm')))
+              .slice(0, 20)
+              .map((token) => (
+                <Link to={`${COLLECTION}/${token.id}`}>
+                  <NftPreview
+                    url={token.medium}
+                    name={token.name}
+                    collectionName={token.collectionName}
+                    owner={token.owner}
+                    timeMinted={token.timeMinted}
+                  />
+                </Link>
+              ))}
+            wrapperClass={cx(styles['with-padding'])}
+            withNavigation
+          />
+        </motion.div>
       </div>
     </div>
   );

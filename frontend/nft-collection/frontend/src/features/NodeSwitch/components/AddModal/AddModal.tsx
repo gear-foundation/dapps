@@ -1,5 +1,5 @@
 import { useForm } from '@mantine/form';
-import { Modal } from 'components';
+import { Modal } from '@/components';
 import { NodeSection } from '../../types';
 import { isNodeAddressValid, isNodeExists } from '../../utils';
 import styles from './AddModal.module.scss';

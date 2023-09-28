@@ -17,7 +17,9 @@ function NftCreationSuccessModal({ collectionId, onClose }: NftCreationSuccessMo
   };
 
   const handleCopyLink = () => {
-    copyToClipboard(`${window.location.origin}${COLLECTION}/${collectionId}`).then(() => alert.success('copied'));
+    copyToClipboard({ value: `${window.location.origin}${COLLECTION}/${collectionId}`, alert }).then(() =>
+      alert.success('copied'),
+    );
   };
 
   return (

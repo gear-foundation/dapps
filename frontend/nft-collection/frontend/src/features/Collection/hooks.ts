@@ -54,7 +54,7 @@ function useCollectionsState() {
     const programId = masterContractAddress;
 
     api.programState
-      .read({ programId }, masterMetadata)
+      .read({ programId, payload: '0x' }, masterMetadata)
       .then((codec) => codec.toHuman() as any)
       .then(({ ownerToCollection }) => setCollectionContracts(ownerToCollection))
       .catch(({ message }: Error) => alert.error(message));
@@ -88,7 +88,7 @@ function useCollectionsState() {
 
     const promises = collectionContracts.map(([ownerAddress, { address, timeCreation }]) =>
       api.programState
-        .read({ programId: address }, metadata)
+        .read({ programId: address, payload: '0x' }, metadata)
         .then((codec) => ({ ...(codec.toHuman() as any), id: address, timeCreation })),
     );
 

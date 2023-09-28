@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useForm } from '@mantine/form';
+import { motion } from 'framer-motion';
 import { useAtomValue } from 'jotai';
 import { UserMessageSent } from '@gear-js/api';
 import { UnsubscribePromise } from '@polkadot/api/types';
@@ -126,7 +127,11 @@ function CreateCollection() {
 
   return (
     <>
-      <form onSubmit={onSubmit(handleCreateCollection)} className={cx(styles.container)}>
+      <motion.form
+        onSubmit={onSubmit(handleCreateCollection)}
+        className={cx(styles.container)}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}>
         <h1 className={cx(styles.title)}>New Collection</h1>
         <div className={cx(styles.block)}>
           <div className={cx(styles.content)}>
@@ -166,7 +171,7 @@ function CreateCollection() {
             />
           </div>
         </div>
-      </form>
+      </motion.form>
       {isSuccessModalOpen && <NftCreationSuccessModal collectionId={newCollectionId} onClose={handleContinue} />}
     </>
   );

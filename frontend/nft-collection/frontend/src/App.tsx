@@ -14,9 +14,8 @@ import 'babel-polyfill';
 import { useFactoryState } from './hooks';
 import { ACCOUNT_ATOM } from './atoms';
 import { ProtectedRoute } from './features/Auth/components';
-import { useWalletSync } from './features/Wallet/hooks';
+import { useAccountAvailableBalanceSync, useWalletSync } from './features/Wallet/hooks';
 import { LoginPage } from './pages/LoginPage';
-import { NotAuthorizedPage } from './pages/NotAuthorizedPage';
 import { COLLECTION, CREATE_COLLECTION, EXPLORE, MAIN, NFT, SEARCH, YOUR_SPACE, menu } from './routes';
 import { ExplorePage } from './pages/ExplorePage';
 import { YourSpacePage } from './pages/YourSpacePage';
@@ -43,6 +42,7 @@ function AppComponent() {
 
   useWalletSync();
   useAuthSync();
+  useAccountAvailableBalanceSync();
 
   return (
     <div className={cx(styles['app-container'])}>
@@ -108,7 +108,6 @@ function AppComponent() {
                   </ProtectedRoute>
                 }
               />
-              <Route path={`/${NOT_AUTHORIZED}`} element={<NotAuthorizedPage />} />
               <Route path={`/${LOGIN}`} element={<LoginPage />} />
             </Routes>
           </div>

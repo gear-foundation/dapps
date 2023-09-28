@@ -3,6 +3,7 @@ import styles from './NftPreview.module.scss';
 import { cx, shortenString } from '@/utils';
 import { ReactComponent as IcUserStar } from '../../assets/images/ic-user-star-16.svg';
 import { ReactComponent as Clocks } from '../../assets/images/watch-later-24px.svg';
+import nftDefault from '../../assets/images/nft-default.png';
 import { NftPreviewProps } from './NftPreview.interfaces';
 import { DescriptionItem } from '@/components';
 import { getTimeFormatFromStateDate } from '@/features/Collection/utils';
@@ -15,7 +16,11 @@ function NftPreview({ url, name, collectionName, owner, timeMinted }: NftPreview
     <div className={cx(styles.card)}>
       <div className={cx(styles['image-wrapper'])}>
         <div className={cx(styles.dummy)} />
-        <img src={url} alt="" className={cx(styles.image)} />
+        <picture>
+          <source srcSet={url} className={cx(styles.image)} />
+          <img src={nftDefault} alt="Default nft" className={cx(styles.image)} />
+        </picture>
+        {/* <img src={url || nftDefault} alt="" className={cx(styles.image)} /> */}
       </div>
       <div className={cx(styles.content)}>
         <h4 className={cx(styles.title)}>{name}</h4>

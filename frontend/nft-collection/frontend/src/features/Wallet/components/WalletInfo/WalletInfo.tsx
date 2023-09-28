@@ -4,13 +4,17 @@ import { useAtom } from 'jotai';
 import { cx, shortenString } from '@/utils';
 import { ADDRESS } from '@/consts';
 import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
+import varaCoin from '@/assets/icons/vara-coin.svg';
+import tVaraCoin from '@/assets/icons/tvara-coin.svg';
 import { WalletInfoProps } from './WalletInfo.interfaces';
 import { Button } from '@/ui';
 import { WalletModal } from '../WalletModal';
 import styles from './WalletInfo.module.scss';
+import { useAccountAvailableBalance } from '../../hooks';
 
-function WalletInfo({ account }: WalletInfoProps) {
+function WalletInfo({ account, withoutBalance, buttonClassName }: WalletInfoProps) {
   const address = useAtom(CONTRACT_ADDRESS_ATOM);
+  const { availableBalance: balance, isAvailableBalanceReady } = useAccountAvailableBalance();
   const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
 
   const handleCloseWalletModal = () => {
@@ -21,15 +25,31 @@ function WalletInfo({ account }: WalletInfoProps) {
     setIsWalletModalOpen(true);
   };
 
+  const balanceValue = (balance?.value || '0').split('.');
+  const balanceAmount = balanceValue[0].replaceAll(/,|\s/g, '&thinsp;');
+  const balanceDecimals = balanceValue[1];
+
   return (
     <>
-      {account ? (
+      {account && isAvailableBalanceReady ? (
         <div className={cx(styles['wallet-info'])}>
+          {!withoutBalance && (
+            <div className={cx(styles.balance)}>
+              <img
+                src={balance?.unit?.toLowerCase() === 'vara' ? varaCoin : tVaraCoin}
+                alt="vara coin"
+                className={cx(styles['balance-coin-image'])}
+              />
+              <div className={cx(styles['balance-value'])} dangerouslySetInnerHTML={{ __html: balanceAmount }} />
+              {balanceDecimals && <div className={cx(styles['balance-decimals'])}>{`.${balanceDecimals}`}</div>}
+              <div className={cx(styles['balance-currency-name'])}>{account.balance.unit}</div>
+            </div>
+          )}
           <button className={cx(styles.description)} onClick={handleOpenWalletModal}>
             {address && (
               <Identicon
-                value={ADDRESS.FACTORY}
-                size={16}
+                value={account.decodedAddress}
+                size={21}
                 theme="polkadot"
                 className={cx(styles['description-icon'])}
               />
@@ -38,9 +58,15 @@ function WalletInfo({ account }: WalletInfoProps) {
           </button>
         </div>
       ) : (
-        <Button label="connect" variant="outline" onClick={handleOpenWalletModal} />
+        <Button
+          label="Connect Wallet"
+          variant="primary"
+          size="medium"
+          onClick={handleOpenWalletModal}
+          className={cx(styles['connect-btn'], buttonClassName || '')}
+        />
       )}
-      {isWalletModalOpen && <WalletModal onClose={handleCloseWalletModal} />}
+      <WalletModal open={isWalletModalOpen} setOpen={setIsWalletModalOpen} onClose={handleCloseWalletModal} />
     </>
   );
 }

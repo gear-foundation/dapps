@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
+import { ProgramMetadata } from '@gear-js/api';
 import { useParams } from 'react-router-dom';
 import { useSendMessage } from '@gear-js/react-hooks';
 import { useForm } from '@mantine/form';
 import { HexString } from '@polkadot/util/types';
-import { getProgramMetadata } from '@gear-js/api';
+
 import { Modal } from 'components';
 import { isHex } from '@polkadot/util';
 import { useNFTs } from '@/features/Nft/hooks';
@@ -26,8 +26,7 @@ export function TransferNFTModal({ onClose }: Props) {
   const { programId, id } = useParams() as Params;
   const contract = NFTContracts.find(([address]: any) => address === programId);
   const metaRaw = contract?.[1];
-  const metaHex = metaRaw ? (`0x${metaRaw}` as HexString) : undefined;
-  const metadata = useMemo(() => (metaHex ? getProgramMetadata(metaHex) : undefined), [metaHex]);
+  const metadata = ProgramMetadata.from(`0x${metaRaw}`);
 
   const { getInputProps, onSubmit, errors } = useForm({ initialValues, validate });
   const error = errors.address;
