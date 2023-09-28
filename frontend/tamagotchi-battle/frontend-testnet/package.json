@@ -10,8 +10,8 @@
   },
   "dependencies": {
     "@fireworks-js/react": "2.10.7",
-    "@gear-js/api": "0.32.3",
-    "@gear-js/react-hooks": "0.5.25",
+    "@gear-js/api": "0.33.2",
+    "@gear-js/react-hooks": "0.6.5",
     "@gear-js/ui": "0.5.19",
     "@mantine/form": "6.0.15",
     "@polkadot/api": "10.9.1",

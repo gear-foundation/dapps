@@ -1,8 +1,5 @@
 import { useEffect, useState } from 'react';
-import {
-  getProgramMetadata,
-  ProgramMetadata
-} from '@gear-js/api';
+import { ProgramMetadata } from '@gear-js/api';
 import { Buffer } from 'buffer';
 import { useAlert } from '@gear-js/react-hooks';
 
@@ -12,7 +9,7 @@ export const useMetadata = (source: RequestInfo | URL) => {
   useEffect(() => {
     fetch(source)
       .then((res) => res.text() as Promise<string>)
-      .then((raw) => getProgramMetadata(`0x${raw}`))
+      .then((raw) => ProgramMetadata.from(`0x${raw}`))
       .then((meta) => setData(meta));
   }, [source]);
 

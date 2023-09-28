@@ -6,7 +6,7 @@ import { MessagePayload, State, Step } from 'types';
 import meta from 'assets/wasm/syndote_meta.txt';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { Loader } from 'components';
-import { u8, Vec } from '@polkadot/types';
+import { Bytes } from '@polkadot/types';
 import { useProgramMetadata } from 'hooks/metadata';
 import { Roll } from './roll';
 import { Connect } from './connect';
@@ -30,7 +30,7 @@ function Home() {
   const { api } = useApi();
 
   const metadata = useProgramMetadata(meta);
-  const { state, isStateRead } = useReadFullState<State>(ADDRESS.CONTRACT, metadata);
+  const { state, isStateRead } = useReadFullState<State>(ADDRESS.CONTRACT, metadata, '0x');
 
   const sendMessage = useSendMessage(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true });
 
@@ -42,7 +42,7 @@ function Home() {
   const { admin } = state || {};
   const isAdmin = account?.decodedAddress === admin;
 
-  const getDecodedPayload = (payload: Vec<u8>) => {
+  const getDecodedPayload = (payload: Bytes) => {
     if (!metadata) return;
 
     const { output } = metadata.types.handle;
