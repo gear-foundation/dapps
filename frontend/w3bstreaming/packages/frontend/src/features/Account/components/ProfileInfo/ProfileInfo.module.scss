@@ -1,0 +1,78 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.profile-info {
+    width: 275px;
+    max-width: 275px;
+    margin-right: 32px;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(180deg, #F5F5F5 0%, rgba(245, 245, 245, 0) 100%);
+
+    &-name {
+        padding-top: 20px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+
+    &-image {
+        max-width: 211px;
+        max-height: 211px;
+    }
+
+    &-subs {
+        padding-top: 5px;
+
+        &-value {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        &-caption {
+            font-size: 14px;
+            font-weight: 400;
+        }
+    }
+
+    &-role {
+        padding: 10px 0 24px;
+        opacity: 0.5;
+        font-size: 14px;
+        font-weight: 400;
+    }
+
+    &-form-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        padding: 20px 0;
+    }
+
+    & .save-button {
+        width: 100%;
+    }
+}
+
+.dropzone-wrapper {
+    width: 211px;
+    height: 211px;
+}
+
+.field-error {
+    position: absolute;
+    bottom: -18px;
+    color: red;
+    font-size: 14px;
+}
+
+.form-item {
+    position: relative;
+}
+
+.controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}

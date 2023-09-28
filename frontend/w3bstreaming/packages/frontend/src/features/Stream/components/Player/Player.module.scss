@@ -1,0 +1,108 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.player-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+
+}
+
+.player {
+    width: 100%;
+    height: 100%;
+}
+
+.controls {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 80px;
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    background: theme-var($player-controls-background);
+}
+
+.part {
+    flex: 0.33;
+}
+
+.volume {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.center {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.right {
+    display: flex;
+    justify-content: end;
+}
+
+/********** Range Input Styles **********/
+/*Range Reset*/
+input[type="range"] {
+    -webkit-appearance: none;
+     appearance: none;
+     background: transparent;
+     cursor: pointer;
+     width: 15rem;
+
+  height: 6px;
+  background: theme-var($input-range-select);
+ }
+ 
+ /* Removes default focus */
+ input[type="range"]:focus {
+   outline: none;
+ }
+ 
+ /***** Chrome, Safari, Opera and Edge Chromium styles *****/
+ /* slider track */
+ input[type="range"]::-webkit-slider-runnable-track {
+    background: theme-var($input-range-track);
+    border-radius: 0.5rem;
+    height: 2px;
+ }
+ 
+ /* slider thumb */
+ input[type="range"]::-webkit-slider-thumb {
+   -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    margin-top: -10px; /* Centers thumb on the track */
+ 
+    /*custom styles*/
+    background: theme-var($input-range-thumb);
+    height: 22px;
+    width: 3px;
+ }
+ 
+ /******** Firefox styles ********/
+ /* slider track */
+ 
+ input[type="range"]::-moz-range-track {
+    background: theme-var($input-range-track);
+    border-radius: 0.5rem;
+    height: 2px;
+ }
+ 
+ /* slider thumb */
+ input[type="range"]::-moz-range-thumb {
+    border: none; /*Removes extra border that FF applies*/
+    border-radius: 0; /*Removes default border-radius that FF applies*/
+ 
+    /*custom styles*/
+    background: theme-var($input-range-thumb);
+    height: 22px;
+    width: 3px;
+
+ }
+
+ 

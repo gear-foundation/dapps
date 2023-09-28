@@ -15,9 +15,9 @@ function getEnv(envName: string, default_?: string): string {
 export default {
   port: process.env.PORT || 3001,
   wsAddress: getEnv('WS_ADDRESS', 'ws://127.0.0.1:9944'),
-  pathToStateWasm: getEnv(
-    'PATH_TO_STATE_WASM',
-    '../../target/wasm32-unknown-unknown/release/web3streaming_state.meta.wasm',
+  pathToMeta: getEnv(
+    'PATH_TO_META',
+    '../../target/wasm32-unknown-unknown/release/web3streaming.meta.txt'
   ),
   programId: getEnv('PROGRAM_ID'),
 };

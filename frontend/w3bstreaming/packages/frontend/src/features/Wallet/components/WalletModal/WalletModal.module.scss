@@ -1,0 +1,111 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.list {  
+    .wallet-button {
+      width: 100%;
+      min-height: 48px;
+      padding-right: 20px;
+      padding-left: 24px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      outline: none;
+      border: none;
+      background: theme-var($background-primary);
+      transition: all 0.3s;
+      cursor: pointer;
+  
+      &:hover {
+        background: theme-var($background-primary);
+      }
+    }
+  }
+  
+  .status {
+    text-align: right;
+  
+    &-text {
+      font-weight: 600;
+      font-size: 12px;
+      line-height: 12px;
+      color: #a2a2a2;
+    }
+  
+    &-accounts {
+      font-weight: 700;
+      font-size: 11px;
+      line-height: 10px;
+      letter-spacing: 0.02em;
+      color: theme-var($green-special);
+    }
+  }
+  
+  .account {
+    display: flex;
+    align-items: center;
+  
+    &-button {
+      width: 100%;
+      padding: 14px 16px;
+      margin-right: 20px;
+      gap: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 18px;
+      color: theme-var($text-primary);
+      background-color: theme-var($background-primary);
+      transition: all 0.3s;
+      border: none;
+      outline: none;
+      cursor: pointer;
+  
+      &.active {
+        background: theme-var($green-special);
+      }
+  
+      &:hover {
+        background-color: theme-var($background-primary);
+      }
+    }
+  }
+  
+  .footer {
+    margin-top: 22px;
+    display: flex;
+    justify-content: space-between;
+  
+    .wallet-button {
+      display: flex;
+      align-items: center;
+      background: transparent;
+      transition: all 0.3s;
+      gap: 10px;
+      border: none;
+      outline: none;
+      cursor: pointer;
+  
+      &:hover {
+        opacity: 0.5;
+      }
+    }
+  }
+
+  .logout-button-container {
+    display: flex;
+    align-items: center;
+  }
+  
+  .logout-button {
+    color: theme-var($text-primary);
+    font-size: 14px;
+    font-weight: 700;
+    background: transparent;
+    outline: none;
+    border: none;
+    cursor: pointer;
+  }

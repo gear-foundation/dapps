@@ -1,19 +1,26 @@
 import { HexString } from '@polkadot/util/types';
-import { decodeAddress } from '@gear-js/api';
 
 import config from '../config';
-import { api, stateMeta, stateWasm } from './init';
+import { api, meta } from './init';
 
-export async function isUserSubscribed(streamId: string, watcherId: string): Promise<boolean> {
-  const isSubscribed = await api.programState.readUsingWasm(
+export async function getState(): Promise<any> {
+  const state = await api.programState.read(
     {
       programId: config.programId as HexString,
-      fn_name: 'is_actor_subscribed',
-      argument: { streamId, watcherId: decodeAddress(watcherId) },
-      wasm: stateWasm,
     },
-    stateMeta,
+    meta
   );
 
-  return isSubscribed.toJSON() as boolean;
+  return state.toJSON() as boolean;
+}
+
+export async function isUserSubscribed(
+  broadcasterId: string,
+  watcherId: string
+): Promise<boolean> {
+  const state = await getState();
+
+  return (
+    state.users?.[broadcasterId]?.subscribers?.includes(watcherId) || false
+  );
 }

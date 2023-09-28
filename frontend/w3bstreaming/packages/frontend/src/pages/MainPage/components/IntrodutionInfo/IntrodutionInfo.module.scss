@@ -1,0 +1,72 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.content {
+    display: flex;
+    min-height: 695px;
+    background: theme-var($background-secondary);
+
+    @include lg {
+        padding: 0 20px;
+      }
+
+    @include wings;
+}
+
+.left {
+    padding-top: 120px;
+    flex-basis: 50%;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-title {
+    font-size: 72px;
+    font-weight: 500;
+
+    &-with-gradient {
+        background: linear-gradient(
+            to right, 
+        rgba(0,0,0) 0%,
+        #00ffc4 100%,
+        #00ffc4 100% 
+        );
+        -webkit-background-clip: text;
+  background-clip: text; 
+  -webkit-text-fill-color: transparent;
+    }
+}
+
+.main-description {
+    max-width: 370px;
+    font-size: 18px;
+    font-weight: 400;
+    padding: 12px 0 48px;
+}
+
+.right {
+    position: relative;
+    flex-basis: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.lower-img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0.5;
+}
+
+.upper-img {
+    position: absolute;
+    left: 40%;
+    top: 0;
+}
+
+.courtain {
+    left: 0;
+    top: 0;
+    position: absolute;
+}

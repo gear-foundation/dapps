@@ -1,0 +1,122 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.layout {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    padding-bottom: 80px;
+}
+
+.left {
+    display: flex;
+    flex-direction: column;
+    flex: 0.8;
+}
+
+.right {
+    width: 160px;
+    display: flex;
+    align-items: end;
+    flex-direction: column;
+}
+
+.title {
+    font-size: 30px;
+    font-weight: 600;
+}
+
+.card-top-speaker {
+    display: flex;
+    align-items: center;
+    background: theme-var($background-primary);
+    height: 100%;
+    border-radius: 40px;
+
+    &-container {
+        padding: 20px 0 35px;
+    }
+
+    &-photo {
+        height: 62px;
+        width: 62px;
+        border-radius: 50px;
+
+        &-wrapper {
+            position: relative;
+        }
+
+        &-on-air {
+            border: 3px solid theme-var($error);
+        }
+
+        &-caption-on-air {
+            bottom: 0;
+            width: 100%;
+            padding: 4px 0;
+            text-align: center;
+            background: theme-var($error);
+            color: theme-var($text-secondary);
+            border-top: 2px solid theme-var($background-primary);
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            transform: translateY(-50%);
+        }
+    }
+
+    &-content {
+        display: flex;
+        flex-direction: column;
+        padding: 0 30px 0 10px;
+    }
+
+    &-name {
+        font-size: 14px;
+        font-weight: 600;
+    }
+
+    &-descr {
+        font-size: 12px;
+        font-weight: 400;
+        opacity: 0.6;
+    }
+}
+
+.stream-info {
+    font-size: 20px;
+    font-weight: 600;
+    padding-bottom: 10px;
+}
+
+.stream-description {
+    font-size: 16px;
+    font-weight: 400;
+    color: theme-var($pale-text);
+    line-height: 25.6px;
+}
+
+.views-and-time {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+.views {
+    gap: 10px;
+    display: flex;
+    color: theme-var($pale-text);
+}
+
+.time {
+    gap: 10px;
+    display: flex;
+    color: theme-var($pale-text);
+}
+
+.unsubscribe-button {
+    background: theme-var($error);
+    color: theme-var($text-secondary);
+}

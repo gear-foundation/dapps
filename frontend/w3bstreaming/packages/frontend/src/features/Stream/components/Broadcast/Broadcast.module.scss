@@ -1,0 +1,23 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.layout {
+    position: relative;
+    width: 1200px;
+    height: 80%;
+    margin: 40px 0 10px;
+}
+
+.start-stream-curtain {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    justify-content: center;
+    align-items: center;
+    background: theme-var($background-secondary);
+}

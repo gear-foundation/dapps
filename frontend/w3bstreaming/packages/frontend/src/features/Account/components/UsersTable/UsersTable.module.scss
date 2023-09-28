@@ -1,0 +1,45 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.table {
+    max-width: 893px;
+}
+
+.streamer-cell-name {
+    padding-left: 10px;
+    font-weight: 600;
+}
+
+.unsubscribe-cell {
+    padding: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: theme-var($error);
+    font-size: 16px;
+    font-weight: 400;
+    height: 100%;
+    cursor: pointer;
+}
+
+.header-cell {
+    &:last-child {
+        text-align: right; 
+        justify-content: end;
+        text-align: right;
+    }
+}
+
+.cell {
+    &:last-child {
+        text-align: right; 
+        justify-content: end;
+        text-align: right;
+    }
+}
+
+.user-image {
+    max-height: 35px;
+    max-width: 35px;
+    border-radius: 50px;
+}
