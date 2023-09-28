@@ -14,7 +14,7 @@ import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
 
 export default function ShipArrangement() {
     const { account } = useAccount()
-    const { memoizedVoucher: isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address)
+    const { isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address)
     const message = useGameMessage()
     const { setPending } = usePending()
 
@@ -35,7 +35,7 @@ export default function ShipArrangement() {
     }
 
     const onGameStart = async () => {
-        await updateBalance
+        await updateBalance()
 
         if (!isLoading) {
             setPending(true)

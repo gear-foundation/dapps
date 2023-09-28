@@ -68,7 +68,7 @@ export function useFetchVoucher(account: string | undefined) {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [voucherBalance]);
 
-    const memoizedVoucher = useMemo(() => voucher, [voucher]);
+    const isVoucher = useMemo(() => voucher, [voucher]);
 
-    return { memoizedVoucher, isLoading, updateBalance };
+    return { isVoucher, isLoading, updateBalance };
 }

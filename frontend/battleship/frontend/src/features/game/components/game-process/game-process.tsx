@@ -12,7 +12,7 @@ import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
 
 export default function GameProcess() {
     const { account } = useAccount()
-    const { memoizedVoucher: isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address)
+    const { isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address)
 
     const [canExecute, setCanExecute] = useState(false);
     const [playerShips, setPlayerShips] = useState<string[]>([])
