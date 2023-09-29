@@ -7,7 +7,7 @@ import { Streams } from './types';
 function useStreamTeasersState() {
   const programId = ADDRESS.CONTRACT;
   const meta = useProgramMetadata(metaTxt);
-  const { state, isStateRead } = useReadFullState(programId, meta);
+  const { state, isStateRead } = useReadFullState(programId, meta, '0x');
 
   return { streamTeasers: (state as any)?.streams as Streams, isStateRead };
 }

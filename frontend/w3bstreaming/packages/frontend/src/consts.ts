@@ -9,9 +9,9 @@ export const LOCAL_STORAGE = {
 };
 
 export const ADDRESS = {
-  NODE: 'wss://node-workshop.gear.rs:443',
+  NODE: 'wss://vit.vara-network.io',
   NODES: 'https://idea.gear-tech.io/gear-nodes',
-  CONTRACT: '0x5c08daae9aab3ecb0bf348fe318b580059436dbdaaaba9ac676b89ac02a58954' as HexString,
+  CONTRACT: '0xb5f44ec900f394488fcddf9024ec3af58f52c797ba745a0dc91d99173650a91d' as HexString,
 };
 
 export const SEARCH_PARAMS = {

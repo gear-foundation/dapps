@@ -7,6 +7,7 @@ export async function getState(): Promise<any> {
   const state = await api.programState.read(
     {
       programId: config.programId as HexString,
+      payload: '0x',
     },
     meta
   );
