@@ -10,7 +10,7 @@ export function useFetchVoucher(account: string | undefined) {
     const [isLoading, setIsLoading] = useState(false);
 
 
-    const fetchVoucher = async () => {
+    const createVoucher = async () => {
         try {
             const response = await fetch(ADDRESS.BACK, {
                 method: 'POST',
@@ -40,7 +40,7 @@ export function useFetchVoucher(account: string | undefined) {
                     if (isVoucherExists) {
                         setVoucher(true);
                     } else {
-                        const createdVoucher = await fetchVoucher();
+                        const createdVoucher = await createVoucher();
                         if (createdVoucher) {
                             setVoucher(true);
                         }
@@ -59,7 +59,7 @@ export function useFetchVoucher(account: string | undefined) {
         const isBalanceLow = formattedBalance < 3;
 
         if (isBalanceLow) {
-            const createdVoucher = await fetchVoucher();
+            const createdVoucher = await createVoucher();
             if (createdVoucher) {
                 setVoucher(true);
             }
