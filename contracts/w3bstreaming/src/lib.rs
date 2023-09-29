@@ -2,9 +2,6 @@
 
 pub use w3bstreaming_io::*;
 
-#[cfg(feature = "binary-vendor")]
-include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
-
 use gstd::{exec, msg, prelude::*};
 use w3bstreaming_io::{Action, ActionResult, Contract, Profile, Role, Stream, Subscription};
 
@@ -94,4 +91,18 @@ extern fn handle() {
             msg::reply(ActionResult::ProfileEdited, 0).expect("Unable to send reply");
         }
     };
+}
+
+#[no_mangle]
+extern fn state() {
+    msg::reply::<Contract>(
+        unsafe {
+            CONTRACT
+                .as_mut()
+                .expect("The contract is not initialized")
+                .clone()
+        },
+        0,
+    )
+    .expect("`state()` failed");
 }

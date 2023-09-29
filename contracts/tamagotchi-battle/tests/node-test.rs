@@ -232,16 +232,16 @@ async fn gclient_battle() -> Result<()> {
                 .with("//Alice")
                 .expect("Unable to change signer.");
             // start battle
-            assert!(
-                Ok(BattleEvent::BattleStarted)
-                    == send_message(
-                        &client,
-                        &mut listener,
-                        battle_id,
-                        BattleAction::StartBattle,
-                        true
-                    )
-                    .await?
+            assert_eq!(
+                Ok(BattleEvent::BattleStarted),
+                send_message(
+                    &client,
+                    &mut listener,
+                    battle_id,
+                    BattleAction::StartBattle,
+                    true
+                )
+                .await?
             );
         }
         let pair_ids: Vec<PairId> = client

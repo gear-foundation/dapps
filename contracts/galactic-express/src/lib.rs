@@ -1,498 +1,443 @@
 #![no_std]
 
 use galactic_express_io::*;
+use gear_lib::tx_manager::{Stepper, TransactionKind, TransactionManager};
 use gstd::{
-    collections::{BTreeMap, BTreeSet},
-    exec,
-    msg::{self, send_delayed_from_reservation},
+    collections::HashMap,
+    errors::Error as GstdError,
+    exec, iter, msg,
+    ops::{Add, Rem, Sub},
     prelude::*,
-    ActorId, ReservationId,
+    ActorId,
 };
+use num_traits::FromBytes;
+use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
 
-pub const WEATHER_RANGE: u32 = 5;
-pub const MIN_FUEL_PRICE: u32 = 80;
-pub const MAX_FUEL_PRICE: u32 = 120;
+struct Random {
+    index: usize,
+    random: [u8; 32],
+}
 
-pub const MIN_PAYLOAD_VALUE: u32 = 80;
-pub const MAX_PAYLOAD_VALUE: u32 = 120;
+impl Random {
+    fn new() -> Result<Self, Error> {
+        exec::random([0; 32])
+            .map(|(random, _)| Self { index: 0, random })
+            .map_err(|error| GstdError::from(error).into())
+    }
 
-pub const MIN_ALTITUDE: u32 = 8_000;
-pub const MAX_ALTITUDE: u32 = 15_000;
+    fn next(&mut self) -> u8 {
+        let next = *self
+            .random
+            .get(self.index)
+            .expect("index for the random array traversing must'n overflow");
 
-const RESERVATION_AMOUNT: u64 = 200_000_000_000;
+        self.index += 1;
 
-static mut RESERVATION: Vec<ReservationId> = vec![];
-static mut LAUNCH_SITE: Option<LaunchSiteInteral> = None;
+        next
+    }
 
-impl From<LaunchSiteInteral> for LaunchSite {
-    fn from(value: LaunchSiteInteral) -> Self {
-        Self {
-            name: value.name,
-            owner: value.owner,
-            participants: value.participants,
-            current_session: value.current_session,
-            events: value.events,
-            state: value.state,
-            session_id: value.session_id,
-            after_execution_period: value.after_execution_period,
-            registered_threshold_to_execute: value.registered_threshold_to_execute,
-            after_threshold_wait_period_to_execute: value.after_threshold_wait_period_to_execute,
+    fn generate<T, const N: usize>(&mut self, min: T, max: T) -> T
+    where
+        T: FromBytes<Bytes = [u8; N]>
+            + Add<T, Output = T>
+            + Sub<T, Output = T>
+            + Rem<T, Output = T>
+            + Copy,
+    {
+        min + T::from_le_bytes(&array::from_fn(|_| self.next())) % (max - min)
+    }
+
+    fn chance(&mut self, probability: u8) -> bool {
+        assert!(probability < 101, "probability can't be more than 100");
+
+        self.next() % 100 < probability
+    }
+}
+
+static mut STATE: Option<(Contract, TransactionManager<()>)> = None;
+
+fn state_mut() -> Result<&'static mut (Contract, TransactionManager<()>), Error> {
+    unsafe { STATE.as_mut().ok_or(Error::StateUninitaliazed) }
+}
+
+enum Stage {
+    Registration(HashMap<ActorId, Participant>),
+    Results(Results),
+}
+
+impl Stage {
+    fn mut_participants(&mut self) -> Result<&mut HashMap<ActorId, Participant>, Error> {
+        if let Stage::Registration(participants) = self {
+            Ok(participants)
+        } else {
+            Err(Error::SessionEnded)
         }
     }
 }
 
-#[derive(Clone, Default)]
-struct LaunchSiteInteral {
-    name: String,
-    owner: ActorId,
-    participants: BTreeMap<ActorId, Participant>,
-    current_session: Option<CurrentSession>,
-    events: BTreeMap<u32, BTreeSet<CurrentStat>>,
-    state: SessionState,
-    session_id: u32,
-    after_execution_period: u32,
-    registered_threshold_to_execute: u32,
-    after_threshold_wait_period_to_execute: u32,
+impl Default for Stage {
+    fn default() -> Self {
+        Self::Results(Results::default())
+    }
 }
 
-impl LaunchSiteInteral {
-    fn info(&self) {
-        msg::reply(
-            Event::Info {
-                name: self.name.clone(),
-                owner: self.owner,
-                has_current_session: self.current_session.is_some(),
-            },
-            0,
-        )
-        .expect("Error in a reply `::info");
+#[derive(Default)]
+struct Contract {
+    admin: ActorId,
+    sft: ActorId,
+
+    session_id: u128,
+    altitude: u16,
+    weather: Weather,
+    fuel_price: u8,
+    reward: u128,
+    stage: Stage,
+}
+
+impl Contract {
+    fn assert_admin(&self) -> Result<(), Error> {
+        assert_admin(self.admin)
     }
 
-    fn rename_participant(&mut self, name: String) {
-        let actor_id = msg::source();
+    fn create_new_session(&mut self) -> Result<Event, Error> {
+        let stage = &mut self.stage;
 
-        if !self.participants.contains_key(&actor_id) {
-            panic!("There is no participant registered with this id");
-        }
+        match stage {
+            Stage::Registration(participants) => {
+                assert_admin(self.admin)?;
 
-        let participant = self
-            .participants
-            .get_mut(&actor_id)
-            .expect("checked above that exists");
-
-        participant.name = name.clone();
-
-        msg::reply(Event::ParticipantNameChange { id: actor_id, name }, 0)
-            .expect("failed to reply in ::rename_participant");
-    }
-
-    fn new_session(&mut self) {
-        // assert!(self.state == SessionState::SessionIsOver || self.state == SessionState::NoSession);
-
-        let actor_id = msg::source();
-        let program_id = exec::program_id();
-        gstd::debug!(
-            "new_session() {}, from actor_id: {:?}, to program_id: {:?}",
-            self.name,
-            actor_id,
-            program_id
-        );
-        // assert!(actor_id == self.owner || actor_id == program_id);
-
-        // 0 - Sunny, 1 - Cloudy, 2 - Rainy, 3 - Stormy, 4 - Thunder, 5 - Tornado
-        let random_weather = generate(0, WEATHER_RANGE);
-        let random_fuel_price = generate(MIN_FUEL_PRICE, MAX_FUEL_PRICE);
-        let random_payload_value = generate(MIN_PAYLOAD_VALUE, MAX_PAYLOAD_VALUE);
-        let random_altitude = generate(MIN_ALTITUDE, MAX_ALTITUDE);
-
-        self.current_session = Some(CurrentSession {
-            weather: random_weather,
-            fuel_price: random_fuel_price,
-            reward: random_payload_value as u128,
-            altitude: random_altitude,
-            registered: Default::default(),
-            bet: None,
-        });
-        self.session_id = self.session_id.saturating_add(1);
-        self.state = SessionState::Registration;
-        self.events = BTreeMap::new();
-
-        // don't need to reply yourself, reply on for another actor_id
-        if actor_id != program_id {
-            msg::reply(
-                Event::NewLaunch {
-                    id: 0,
-                    name: "Unnamed".to_string(),
-                    weather: random_weather,
-                    fuel_price: random_fuel_price,
-                    payload_value: random_payload_value,
-                    altitude: random_altitude,
-                },
-                0,
-            )
-            .expect("failed to reply in ::new_session");
-        }
-    }
-
-    fn restart_new_session(&mut self) {
-        gstd::debug!("RESTART NEW SESSION {}", self.name);
-        if self.state == SessionState::SessionIsOver {
-            let action = Action::StartNewSession;
-            // let gas_available = exec::gas_available();
-            // if gas_available <= GAS_FOR_UPDATE {
-            let reservations = unsafe { &mut RESERVATION };
-            if let Some(reservation_id) = reservations.pop() {
-                gstd::debug!("RESERVATION_ID: {:?}", reservation_id);
-                if let Err(e) = send_delayed_from_reservation(
-                    reservation_id,
-                    exec::program_id(),
-                    action,
-                    0,
-                    self.after_execution_period,
-                ) {
-                    gstd::debug!(
-                        "Can't send delayed Action::StartNewSession; from reservation: {e}"
-                    );
-                    panic!("Can't send delayed Action::StartNewSession; from reservation: {e}");
-                }
-            } else {
-                gstd::debug!("NOT RESERVATIONS TO RESTART EXECUTION");
-                panic!("NOT RESERVATIONS TO RESTART EXECUTION");
+                participants.clear();
             }
-
-            // } else {
-            // send_delayed(exec::program_id(), action, 0, self.after_execution_period)
-            // .expect("Can't send delayed Action::StartNewSession;");
-            // }
+            Stage::Results { .. } => *stage = Stage::Registration(HashMap::new()),
         }
+
+        let mut random = Random::new()?;
+
+        self.weather = match random.next() % (Weather::Tornado as u8 + 1) {
+            0 => Weather::Clear,
+            1 => Weather::Cloudy,
+            2 => Weather::Rainy,
+            3 => Weather::Stormy,
+            4 => Weather::Thunder,
+            5 => Weather::Tornado,
+            _ => unreachable!(),
+        };
+        self.altitude = random.generate(TURN_ALTITUDE.0, TURN_ALTITUDE.1) * TURNS as u16;
+        self.fuel_price = random.generate(FUEL_PRICE.0, FUEL_PRICE.1);
+        self.reward = random.generate(REWARD.0, REWARD.1);
+
+        Ok(Event::NewSession(Session {
+            id: self.session_id,
+            altitude: self.altitude,
+            weather: self.weather,
+            fuel_price: self.fuel_price,
+            reward: self.reward,
+        }))
     }
 
-    fn execute_session(&mut self) {
-        gstd::debug!("EXECUTE SESSION FOR {}", self.name);
-        let session_data = self
-            .current_session
-            .as_ref()
-            .expect("There should be active session to execute");
-        let mut current_altitude = 0;
-        let total_rounds = 3;
-        let weather = session_data.weather;
+    async fn start_game(
+        &mut self,
+        mut participant: Participant,
+        stepper: &mut Stepper,
+    ) -> Result<Event, Error> {
+        self.assert_admin()?;
 
-        let mut current_stats: BTreeMap<ActorId, CurrentStat> = BTreeMap::new();
+        let participants = self.stage.mut_participants()?;
 
-        for (id, (strategy, _participant)) in session_data.registered.iter() {
-            current_stats.insert(
-                *id,
-                CurrentStat {
-                    participant: *id,
-                    dead_round: None,
-                    fuel_left: strategy.fuel,
-                    fuel_capacity: strategy.fuel,
-                    last_altitude: 0,
-                    payload: strategy.payload,
-                    halt: None,
-                },
-            );
+        if participants.is_empty() {
+            return Err(Error::NotEnoughParticipants);
         }
 
-        for i in 0..total_rounds {
-            current_altitude += session_data.altitude / total_rounds;
+        participant.check()?;
 
-            for (id, (strategy, _participant)) in session_data.registered.iter() {
-                // if 1/3 or 2/3 of distance the probability of separation failure
+        let mut random = Random::new()?;
+        let mut turns = HashMap::new();
 
-                // risk factor of burning fuel
-                let fuel_burn = (strategy.payload + 2 * weather) / total_rounds;
+        for (actor, participant) in participants
+            .into_iter()
+            .chain(iter::once((&msg::source(), &mut participant)))
+        {
+            let mut actor_turns = Vec::with_capacity(TURNS);
+            let mut remaining_fuel = participant.fuel;
 
-                let current_stat = current_stats.get_mut(id).expect("all have stats");
+            for turn_index in 0..TURNS {
+                match turn(
+                    turn_index,
+                    remaining_fuel,
+                    &mut random,
+                    self.weather,
+                    participant.payload,
+                ) {
+                    Ok(fuel_left) => {
+                        remaining_fuel = fuel_left;
 
-                if current_stat.dead_round.is_none() {
-                    // if 1/3 distance then probability of engine error is 3%
-                    if i == 0 && generate_event(3) {
-                        current_stat.halt = Some(RocketHalt::EngineError);
-                        current_stat.dead_round = Some(i);
-                    };
+                        actor_turns.push(TurnOutcome::Alive {
+                            fuel_left,
+                            payload: participant.payload,
+                        });
+                    }
+                    Err(halt_reason) => {
+                        actor_turns.push(TurnOutcome::Destroyed(halt_reason));
 
-                    // if 1/3 distance and fuel > 80% - risk factor of weather
-                    if i == 0 && current_stat.fuel_left >= (80 - 2 * weather) && generate_event(10)
-                    {
-                        current_stat.halt = Some(RocketHalt::Overfuelled);
-                        current_stat.dead_round = Some(i);
-                    };
-
-                    // if  2/3 of distance and filled > 80% - risk factor of weather
-                    // 10 percent that will be overfilled
-                    if i == 1 && strategy.payload >= (80 - 2 * weather) && generate_event(10) {
-                        current_stat.halt = Some(RocketHalt::Overfilled);
-                        current_stat.dead_round = Some(i);
-                    };
-
-                    // if 2/3 of distance
-                    // 5 percent that will be separation failure
-                    if i == 1 && generate_event(5 + weather as u8) {
-                        current_stat.halt = Some(RocketHalt::SeparationFailure);
-                        current_stat.dead_round = Some(i);
-                    };
-
-                    // if last distance 10 percent od asteroid
-                    // 10 percent that will be asteroid + weather factor
-                    if i == 2 && generate_event(10 + weather as u8) {
-                        current_stat.halt = Some(RocketHalt::Asteroid);
-                        current_stat.dead_round = Some(i);
-                    };
-
-                    if current_stat.fuel_left < fuel_burn {
-                        // fuel is over
-                        current_stat.dead_round = Some(i);
-                        current_stat.halt = Some(RocketHalt::NotEnoughFuel);
-                    } else {
-                        current_stat.last_altitude = current_altitude;
-                        current_stat.fuel_left -= fuel_burn;
+                        break;
                     }
                 }
-                // weather random affect?
-                self.events
-                    .entry(i)
-                    .and_modify(|events| {
-                        events.insert(current_stat.clone());
-                    })
-                    .or_insert_with(|| {
-                        let mut s = BTreeSet::new();
-                        s.insert(current_stat.clone());
-                        s
-                    });
             }
+
+            turns.insert(*actor, actor_turns);
         }
 
-        let mut outcome_participants = vec![];
-        let mut max_fuel_left = 0;
+        let mut scores: Vec<_> = turns
+            .iter()
+            .map(|(actor, turns)| {
+                let last_turn = turns.last().expect("there must be at least 1 turn");
 
-        for (_, stat) in current_stats.iter() {
-            if stat.dead_round.is_none() && stat.fuel_left > max_fuel_left {
-                max_fuel_left = stat.fuel_left;
+                (
+                    *actor,
+                    match last_turn {
+                        TurnOutcome::Alive { fuel_left, payload } => {
+                            *payload as u32 * self.altitude as u32 + *fuel_left as u32
+                        }
+                        TurnOutcome::Destroyed(_) => 0,
+                    },
+                )
+            })
+            .collect();
+
+        scores.sort_by(|(_, score_a), (_, score_b)| score_a.cmp(score_b));
+
+        let mut rankings = Vec::with_capacity(scores.len());
+        let mut deductible = 0;
+
+        for (recipient, _) in scores.into_iter().rev() {
+            let amount = self.reward - deductible;
+
+            if FTokenEvent::Ok
+                != msg::send_for_reply_as(
+                    self.sft,
+                    FTokenAction::Message {
+                        transaction_id: stepper.step()?,
+                        payload: LogicAction::Mint { recipient, amount },
+                    },
+                    0,
+                    0,
+                )?
+                .await?
+            {
+                return Err(Error::TransferFailed);
             }
+
+            if matches!(rankings.last(), Some((_, reward)) if *reward != amount) {
+                deductible += self.reward / 10 * 6 / PARTICIPANTS as u128;
+            }
+
+            rankings.push((recipient, amount));
         }
-        let mut winner = (ActorId::default(), 0);
-        for (id, stat) in current_stats.iter() {
-            if stat.dead_round.is_none() {
-                let coef = if stat.fuel_left == 0 {
-                    // 1.7 if fuel tank = 0
-                    17
+
+        let mut io_turns: Vec<Vec<(ActorId, TurnOutcome)>> = vec![];
+
+        for (actor, actor_turns) in turns {
+            let mut last_turn = actor_turns.get(0).expect("there must be at least 1 turn");
+
+            for i in 0..TURNS {
+                if let Some(turns) = io_turns.get_mut(i) {
+                    turns.push((
+                        actor,
+                        if let Some(turn) = actor_turns.get(i) {
+                            last_turn = turn;
+
+                            *turn
+                        } else {
+                            *last_turn
+                        },
+                    ))
                 } else {
-                    // max fuel left -> multiply by 0.5
-                    5 * stat.fuel_left / max_fuel_left
-                };
-
-                let earnings = stat.payload as u128 * session_data.reward * coef as u128;
-                let earnings = match earnings
-                    .checked_sub(session_data.fuel_price as u128 * stat.fuel_capacity as u128)
-                {
-                    Some(val) => val,
-                    None => earnings,
-                };
-                let earnings = earnings / 10;
-                outcome_participants.push((*id, stat.dead_round, stat.last_altitude, earnings));
-
-                if winner.1 < earnings {
-                    winner.0 = *id;
-                    winner.1 = earnings;
+                    io_turns.push(vec![(actor, *last_turn)])
                 }
-
-                let leaderboard_entry = self
-                    .participants
-                    .get_mut(id)
-                    .expect("Should have existed in leaderboard to give earnings");
-                leaderboard_entry.score += earnings;
             }
         }
-        if let Some(bet) = session_data.bet {
-            let prize = bet * current_stats.len() as u128;
-            let prize = if prize < 200 {
-                prize - 1
-            } else {
-                prize - prize * 5 / 1000
-            };
-            if let Some(leaderboard_entry) = self.participants.get_mut(&winner.0) {
-                leaderboard_entry.balance += prize;
+
+        let results = Results {
+            turns: io_turns,
+            rankings,
+        };
+
+        self.session_id = self.session_id.wrapping_add(1);
+        self.stage = Stage::Results(results.clone());
+
+        Ok(Event::GameFinished(results))
+    }
+}
+
+fn assert_admin(admin: ActorId) -> Result<(), Error> {
+    if msg::source() != admin {
+        Err(Error::AccessDenied)
+    } else {
+        Ok(())
+    }
+}
+
+fn turn(
+    turn: usize,
+    remaining_fuel: u8,
+    random: &mut Random,
+    weather: Weather,
+    payload: u8,
+) -> Result<u8, HaltReason> {
+    let Some(new_remaining_fuel) = remaining_fuel.checked_sub((payload + 2 * weather as u8) / TURNS as u8) else {
+        return Err(HaltReason::FuelShortage);
+    };
+
+    match turn {
+        0 => {
+            if random.chance(3) {
+                return Err(HaltReason::EngineFailure);
             }
 
-            msg::send(winner.0, (), prize).expect("Can't send total deposit"); // send total deposit to winner
+            if remaining_fuel >= 80 - 2 * weather as u8 && random.chance(10) {
+                return Err(HaltReason::FuelOverload);
+            }
         }
-        self.state = SessionState::SessionIsOver;
+        1 => {
+            if payload >= 80 - 2 * weather as u8 && random.chance(10) {
+                return Err(HaltReason::PayloadOverload);
+            }
 
-        // msg::reply(
-        //     Event::LaunchFinished {
-        //         id: 0,
-        //         stats: outcome_participants,
-        //     },
-        //     0,
-        // )
-        // .expect("failed to reply in ::new_session");
-
-        // Trying to rerun execute session after period and if it's over
-        self.restart_new_session();
+            if random.chance(5 + weather as u8) {
+                return Err(HaltReason::SeparationFailure);
+            }
+        }
+        2 => {
+            if random.chance(10 + weather as u8) {
+                return Err(HaltReason::AsteroidCollision);
+            }
+        }
+        _ => unreachable!(),
     }
 
-    fn reserve_gas(&self) {
-        let reservations = unsafe { &mut RESERVATION };
-        let reservation_id =
-            ReservationId::reserve(RESERVATION_AMOUNT, 900).expect("reservation across executions");
-        reservations.push(reservation_id);
-        // msg::reply(Event::GasReserved, 0).expect("");
-    }
+    Ok(new_remaining_fuel)
+}
 
-    fn register_participant_on_launch(
-        &mut self,
-        name: String,
-        fuel_amount: u32,
-        payload_amount: u32,
-    ) {
-        gstd::debug!(
-            "register_participant_on_launch() {}, name: {}",
-            self.name,
-            name
-        );
-        //new_participant
-        let value = msg::value();
-        assert!(value >= 500);
+#[no_mangle]
+extern fn init() {
+    reply(process_init()).expect("failed to encode or reply from `init()`");
+}
 
-        let actor_id = msg::source();
+fn process_init() -> Result<(), Error> {
+    let Initialize { admin, sft } = msg::load()?;
 
-        let participant = if let Some(participant) = self.participants.get_mut(&actor_id) {
-            participant.name = name;
-            participant.clone()
-        } else {
-            let participant = Participant {
-                name,
-                score: 0,
-                balance: 0,
-            };
-            self.participants.insert(actor_id, participant.clone());
-            participant
-        };
-
-        // comment original reply from `new_participant()`
-        // msg::reply(Event::NewParticipant { id: actor_id, name }, 0)
-        //     .expect("failed to reply in ::new_participant");
-
-        assert!(self.current_session.is_some());
-
-        assert!(fuel_amount <= 100 && payload_amount <= 100, "Limit is 100%");
-
-        let current_session = self
-            .current_session
-            .as_mut()
-            .expect("checked above that exists");
-
-        if let Some(bet) = current_session.bet {
-            if value != bet {
-                panic!(
-                    "For new participant value should be equal to bet: {}, instead: {}",
-                    bet, value
-                );
-            }
-        }
-
-        if current_session.registered.contains_key(&actor_id) {
-            // already registered
-
-            panic!("Participant already registered on the session");
-        };
-        current_session.bet = Some(value);
-
-        let session_strategy = SessionStrategy {
-            fuel: fuel_amount,
-            payload: payload_amount,
-        };
-        current_session
-            .registered
-            .insert(actor_id, (session_strategy, participant));
-
-        msg::reply(
-            Event::LaunchRegistration {
-                id: 0,
-                participant: actor_id,
+    unsafe {
+        STATE = Some((
+            Contract {
+                admin,
+                sft,
+                ..Default::default()
             },
-            0,
-        )
-        .expect("failed to reply in ::new_session");
-
-        let registered_len = current_session.registered.len();
-        if registered_len >= self.registered_threshold_to_execute as usize {
-            // self.delayed_start_execution();
-            gstd::debug!("PARTICIPANT THRESHOLD {} FOR {}", registered_len, self.name);
-            self.execute_session();
-        }
+            TransactionManager::new(),
+        ));
     }
+
+    Ok(())
 }
 
 #[gstd::async_main]
 async fn main() {
-    let action: Action = msg::load().expect("Unable to decode `Action`");
-    let launch_site = unsafe { LAUNCH_SITE.get_or_insert(Default::default()) };
+    reply(process_main().await).expect("failed to encode or reply from `main()`");
+}
+
+async fn process_main() -> Result<Event, Error> {
+    let action = msg::load()?;
+    let (contract, tx_manager) = state_mut()?;
+
     match action {
-        Action::Info => {
-            launch_site.info();
+        Action::ChangeAdmin(actor) => {
+            contract.assert_admin()?;
+
+            let old_admin = contract.admin;
+
+            contract.admin = actor;
+
+            Ok(Event::AdminChanged(old_admin, contract.admin))
         }
-        Action::ChangeParticipantName(name) => {
-            launch_site.rename_participant(name);
+        Action::ChangeSft(actor) => {
+            contract.assert_admin()?;
+
+            let old_sft = contract.sft;
+
+            contract.sft = actor;
+
+            Ok(Event::SftChanged(old_sft, contract.sft))
         }
-        Action::StartNewSession => {
-            launch_site.new_session();
+        Action::CreateNewSession => contract.create_new_session(),
+        Action::Register(participant) => {
+            let msg_source = msg::source();
+
+            if msg_source == contract.admin {
+                return Err(Error::AccessDenied);
+            }
+
+            let participants = contract.stage.mut_participants()?;
+
+            if participants.len() >= PARTICIPANTS - 1 {
+                return Err(Error::SessionFull);
+            }
+
+            participant.check()?;
+            participants.insert(msg_source, participant);
+
+            Ok(Event::Registered(msg_source, participant))
         }
-        Action::ExecuteSession => {
-            launch_site.execute_session();
-        }
-        Action::ReserveGas => {
-            launch_site.reserve_gas();
-        }
-        Action::RegisterParticipantOnLaunch {
-            name,
-            fuel_amount,
-            payload_amount,
-        } => {
-            launch_site.reserve_gas();
-            launch_site.register_participant_on_launch(name, fuel_amount, payload_amount);
+        Action::StartGame(participant) => {
+            contract
+                .start_game(
+                    participant,
+                    &mut tx_manager
+                        .acquire_transaction(msg::source(), TransactionKind::New(()))?
+                        .stepper,
+                )
+                .await
         }
     }
 }
 
 #[no_mangle]
-unsafe extern fn init() {
-    let init: Initialize = msg::load().expect("Error in decoding");
-    let launch_site = LaunchSiteInteral {
-        name: init.name,
-        after_execution_period: init.after_execution_period,
-        owner: msg::source(),
-        registered_threshold_to_execute: init.registered_threshold_to_execute,
-        // after_threshold_wait_period_to_execute: init.after_threshold_wait_period_to_execute,
-        ..Default::default()
-    };
-    LAUNCH_SITE = Some(launch_site);
-}
-
-#[no_mangle]
 extern fn state() {
-    let launch_site = unsafe { LAUNCH_SITE.get_or_insert(Default::default()) };
-    msg::reply(LaunchSite::from(launch_site.clone()), 0).expect("Failed to share state");
+    let (
+        Contract {
+            admin,
+            sft,
+            session_id,
+            altitude,
+            weather,
+            fuel_price,
+            reward,
+            stage,
+        },
+        _,
+    ) = state_mut().expect("state uninitialized");
+
+    let stage = match stage {
+        Stage::Registration(participants) => {
+            galactic_express_io::Stage::Registration(participants.clone().into_iter().collect())
+        }
+        Stage::Results(results) => galactic_express_io::Stage::Results(results.clone()),
+    };
+
+    reply(State {
+        admin: *admin,
+        sft: *sft,
+        session: Session {
+            id: *session_id,
+            altitude: *altitude,
+            weather: *weather,
+            fuel_price: *fuel_price,
+            reward: *reward,
+        },
+        stage,
+    })
+    .expect("failed to encode or reply from `state()`");
 }
 
-static mut SEED: u8 = 0;
-
-fn generate_event(probability: u8) -> bool {
-    let seed = unsafe { SEED };
-    unsafe { SEED = SEED.wrapping_add(1) };
-    let random_input: [u8; 32] = [seed; 32];
-    let (random, _) = exec::random(random_input).expect("Error in getting random number");
-
-    let prob = random[0] % 100;
-    prob <= probability
-}
-
-fn generate(min: u32, max: u32) -> u32 {
-    let seed = unsafe { SEED };
-    unsafe { SEED += 1 };
-    let random_input: [u8; 32] = [seed; 32];
-    let (random, _) = exec::random(random_input).expect("Error in getting random number");
-    let bytes = [random[0], random[1], random[2], random[3]];
-    min + u32::from_be_bytes(bytes) % (max - min)
+fn reply(payload: impl Encode) -> Result<(), GstdError> {
+    msg::reply(payload, 0).map(|_| ())
 }
