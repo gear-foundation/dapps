@@ -11,13 +11,13 @@ function useLotteryMetadata() {
 function useLotteryState() {
   const meta = useLotteryMetadata();
 
-  return useReadFullState<Lottery>(ADDRESS.CONTRACT, meta);
+  return useReadFullState<Lottery>(ADDRESS.CONTRACT, meta, '0x');
 }
 
 function useLotteryMessage() {
   const meta = useLotteryMetadata();
 
-  return useSendMessage(ADDRESS.CONTRACT, meta, { isMaxGasLimit: false });
+  return useSendMessage(ADDRESS.CONTRACT, meta);
 }
 
 export { useLotteryState, useLotteryMessage };

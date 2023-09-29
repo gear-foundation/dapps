@@ -21,15 +21,31 @@ type FullSubState = {
   };
 };
 
+function useSubscriptionMeta() {
+  return useProgramMetadata(varatubeMeta);
+}
+
 function useSubscriptions() {
-  const buffer = useBuffer(stateWasm);
-  const { state, isStateRead } = useReadWasmState<FullSubState>(ADDRESS.CONTRACT, buffer, 'all_subscriptions', null);
+  const programMetadata = useSubscriptionMeta();
+  const wasm = useBuffer(stateWasm);
+
+  const programId = ADDRESS.CONTRACT;
+  const functionName = 'all_subscriptions';
+  const payload = '0x';
+
+  const { state, isStateRead } = useReadWasmState<FullSubState>({
+    programId,
+    programMetadata,
+    wasm,
+    functionName,
+    payload,
+  });
 
   return { subscriptionsState: state, isSubscriptionsStateRead: isStateRead };
 }
 
 function useSubscriptionsMessage() {
-  const metadata = useProgramMetadata(varatubeMeta);
+  const metadata = useSubscriptionMeta();
 
   return useSendMessage(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true });
 }
@@ -41,7 +57,7 @@ function useFTBalance() {
   const { decodedAddress } = account || {};
 
   const meta = useProgramMetadata(ftMeta);
-  const { state } = useReadFullState<FTState>(ADDRESS.FT_CONTRACT, meta);
+  const { state } = useReadFullState<FTState>(ADDRESS.FT_CONTRACT, meta, '0x');
 
   const balances = state?.balances;
   const userBalanceEntity = balances?.find(([address]) => address === decodedAddress);
