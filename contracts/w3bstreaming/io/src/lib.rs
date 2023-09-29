@@ -31,7 +31,7 @@ pub struct Profile {
     pub role: Role,
 }
 
-#[derive(Encode, Decode, Default, TypeInfo)]
+#[derive(Encode, Decode, Default, TypeInfo, Clone)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct Contract {

@@ -1,5 +1,5 @@
-use galactic_express_io::ProgramMetadata;
+use galactic_express_io::ContractMetadata;
 
 fn main() {
-    gear_wasm_builder::build_with_metadata::<ProgramMetadata>();
+    gear_wasm_builder::build_with_metadata::<ContractMetadata>();
 }
