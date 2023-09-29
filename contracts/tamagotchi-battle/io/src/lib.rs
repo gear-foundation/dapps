@@ -99,7 +99,7 @@ pub enum BattleAction {
     },
 }
 
-#[derive(Encode, Decode, TypeInfo, PartialEq, Eq)]
+#[derive(Encode, Decode, TypeInfo, PartialEq, Eq, Debug)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum BattleEvent {
