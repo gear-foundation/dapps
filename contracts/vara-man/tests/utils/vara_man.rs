@@ -1,5 +1,5 @@
 use super::{ADMIN, VARA_MAN_ID};
-use gstd::prelude::*;
+use gstd::{prelude::*, ActorId};
 use gtest::{Program, System};
 use vara_man_io::{VaraMan as VaraManState, *};
 
@@ -7,10 +7,11 @@ pub trait VaraMan {
     fn vara_man(system: &System) -> Program<'_>;
     fn vara_man_with_config(system: &System, config: Config) -> Program<'_>;
     fn register_player(&self, from: u64, name: &str, error: bool);
-    fn start_game(&self, from: u64, level: Level, seed: GameSeed, error: bool);
+    fn start_game(&self, from: u64, level: Level, error: bool);
     fn claim_reward(&self, from: u64, silver_coins: u64, gold_coins: u64, error: bool);
-    fn change_status(&self, status: Status);
-    fn change_config(&self, config: Config);
+    fn change_status(&self, from: u64, status: Status);
+    fn change_config(&self, from: u64, config: Config);
+    fn add_admin(&self, from: u64, admin: ActorId);
     fn send_tx(&self, from: u64, action: VaraManAction, error: bool);
     fn get_state(&self) -> VaraManState;
 }
@@ -20,7 +21,6 @@ impl VaraMan for Program<'_> {
         Self::vara_man_with_config(
             system,
             Config {
-                operator: ADMIN.into(),
                 gold_coins: 5,
                 silver_coins: 20,
                 ..Default::default()
@@ -45,8 +45,8 @@ impl VaraMan for Program<'_> {
         );
     }
 
-    fn start_game(&self, from: u64, level: Level, seed: GameSeed, error: bool) {
-        self.send_tx(from, VaraManAction::StartGame { level, seed }, error);
+    fn start_game(&self, from: u64, level: Level, error: bool) {
+        self.send_tx(from, VaraManAction::StartGame { level }, error);
     }
 
     fn claim_reward(&self, from: u64, silver_coins: u64, gold_coins: u64, error: bool) {
@@ -60,12 +60,16 @@ impl VaraMan for Program<'_> {
         );
     }
 
-    fn change_status(&self, status: Status) {
-        self.send_tx(ADMIN, VaraManAction::ChangeStatus(status), false);
+    fn change_status(&self, from: u64, status: Status) {
+        self.send_tx(from, VaraManAction::ChangeStatus(status), false);
     }
 
-    fn change_config(&self, config: Config) {
-        self.send_tx(ADMIN, VaraManAction::ChangeConfig(config), false);
+    fn change_config(&self, from: u64, config: Config) {
+        self.send_tx(from, VaraManAction::ChangeConfig(config), false);
+    }
+
+    fn add_admin(&self, from: u64, admin: ActorId) {
+        self.send_tx(from, VaraManAction::AddAdmin(admin), false);
     }
 
     fn send_tx(&self, from: u64, action: VaraManAction, error: bool) {

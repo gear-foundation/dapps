@@ -1,0 +1,66 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.modal {
+  max-width: 620px;
+  background: #ffffff;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.content-heading {
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+}
+
+.collection-link-container {
+  display: flex;
+  padding: 12px;
+  background: #00FFC412;
+  border-radius: 40px;
+
+  .collection-link-text {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 400;
+    letter-spacing: 0.02em;
+  }
+
+  .copy-link-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+
+    .copy-link-text {
+      font-size: 14px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      color: #0ED3A3;
+    }
+  }
+}
+
+.buttons {
+  display: flex;
+  align-items: center;
+  padding-top: 16px;
+  gap: 16px;
+
+  .button {
+    width: 188px;
+    
+    &-grey {
+      background: #F3F3F3;
+      width: 120px;
+    }
+  }
+}

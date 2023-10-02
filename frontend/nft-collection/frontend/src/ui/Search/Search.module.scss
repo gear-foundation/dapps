@@ -1,0 +1,30 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.container {
+    width: 252px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    padding: 8px 20px;
+    gap: 10px;
+    background: #F5F5F5;
+}
+
+.search {
+    flex: 1;
+    height: 40px;
+    border: none;
+    outline: none;
+    font-size: 16px;
+    font-weight: 400;
+    background: #F5F5F5;
+    border-radius: 4px;
+
+    &::placeholder {
+        font-size: 16px;
+        font-weight: 400;
+        color: theme-var($text-primary);
+        opacity: 1;
+    }
+}

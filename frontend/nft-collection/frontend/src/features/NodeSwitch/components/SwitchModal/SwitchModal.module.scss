@@ -1,0 +1,68 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.list {
+  @include gap(24px);
+  margin-bottom: 24px;
+}
+
+.section {
+  @include gap(8px);
+}
+
+.caption {
+  margin-bottom: 4px;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 140%;
+  letter-spacing: 0.02em;
+}
+
+.buttons {
+  @include gap(20px, right);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  > *:first-child {
+    width: 100%;
+  }
+}
+
+.switchButton,
+.addButton {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 18px;
+  letter-spacing: 0.03em;
+  border-radius: 2px;
+  transition: all 0.3s;
+}
+
+.switchButton {
+  @include gap(12px, right);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 16px 32px;
+  background-color: #35ffd0;
+  color: inherit;
+
+  &:disabled {
+    opacity: 0.5;
+  }
+
+  &:hover {
+    background-color: #29c6a1;
+  }
+}
+
+.addButton {
+  @include square(50px);
+  flex-shrink: 0;
+  background-color: #000;
+
+  &:hover {
+    background-color: #404040;
+  }
+}

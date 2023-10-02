@@ -1,0 +1,97 @@
+@use './variables' as *;
+
+@mixin sm {
+  @media (max-width: #{$screen-sm-min}) {
+      @content;
+  }
+}
+
+@mixin md {
+  @media (max-width: #{$screen-md-min}) {
+      @content;
+  }
+}
+
+@mixin lg {
+  @media (max-width: #{$screen-lg-min}) {
+      @content;
+  }
+}
+
+@mixin xl {
+  @media (max-width: #{$screen-xl-min}) {
+      @content;
+  }
+}
+
+@mixin spread-map($map: ()) {
+    @each $key, $value in $map {
+        #{$key}: $value;
+    }
+}
+
+@function theme-var($key, $fallback: null, $map: $theme-standard) {
+    @if not map-has-key($map, $key) {
+        @error "key: '#{$key}', is not a key in map: #{$map}";
+    }
+    @if ($fallback) {
+        @return var($key, $fallback);
+    } @else {
+        @return var($key);
+    }
+}
+
+@mixin wings {
+    position: relative; 
+  
+    &::before, 
+    &::after {
+      content: '';
+      position: absolute;
+      z-index: -1;   
+      height: 100%;
+      background: inherit; 
+    }
+  
+    &::before {
+      top: 0; 
+      left: -50%;  
+      right: 50%;
+    }
+  
+    &::after {
+      bottom: 0;
+      left: 50%; 
+      right: -50%;      
+    }
+  }
+
+  @mixin gap($value, $direction: bottom) {
+    $margin: 'margin-#{$direction}';
+  
+    > *:not(:last-child) {
+      #{$margin}: $value;
+    }
+  }
+  
+  @mixin square($size) {
+    width: $size;
+    height: $size;
+  }
+
+  @mixin circle($size) {
+    @include square($size);
+    border-radius: 50%;
+  }
+  
+  @mixin flexCenter {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+
+  @mixin textOverflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }

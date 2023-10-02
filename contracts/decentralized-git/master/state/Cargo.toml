@@ -1,0 +1,13 @@
+[package]
+name = "decentralized-git-master-state"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+gmeta = { workspace = true, features = ["codegen"] }
+decentralized-git-master-io.workspace = true
+
+[build-dependencies]
+gear-wasm-builder = { workspace = true, features = ["metawasm"] }

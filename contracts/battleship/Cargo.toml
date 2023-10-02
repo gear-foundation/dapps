@@ -1,0 +1,25 @@
+[package]
+name = "battleship"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+battleship-io.workspace = true
+
+[dev-dependencies]
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
+gear-core.workspace = true
+gclient.workspace = true
+tokio.workspace = true
+hex.workspace = true
+
+# External binaries
+
+battleship-bot.workspace = true
+
+[build-dependencies]
+battleship-io.workspace = true
+gear-wasm-builder.workspace = true

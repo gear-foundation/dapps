@@ -1,0 +1,13 @@
+[package]
+name = "w3bstreaming"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+w3bstreaming-io.workspace = true
+
+[build-dependencies]
+w3bstreaming-io.workspace = true
+gear-wasm-builder.workspace = true

@@ -1,0 +1,70 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.wallet-info {
+  display: flex;
+  align-items: center;
+}
+
+.balance {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  margin-right: 20px;
+
+  &-coin-image {
+      margin-right: 10px;
+      width: 20px;
+      height: 20px;
+  }
+
+  &-value {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -2%;
+  }
+
+  &-currency-name {
+      margin: 8px 0 0 4px;
+      font-size: 10px;
+      font-weight: 400;
+      color: theme-var($text-primary);
+      opacity: 0.6;
+      text-transform: uppercase;
+  }
+}
+
+.description {
+  height: 40px;
+  min-width: 128px;
+  max-width: 200px;
+  padding: 0 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 4px;
+  text-transform: capitalize;
+  border: none;
+  outline: none;
+  background: theme-var($background-tertiary);
+  cursor: pointer;
+
+  &-icon {
+      min-width: 16px;
+      min-height: 16px;
+      margin-right: 10px;
+      background: theme-var($background-primary);
+      border-radius: 50px;
+  }
+
+  &-name {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 3%;
+      color: theme-var($text-secondary);
+  }
+}
+
+.score {
+  padding-right: 60px
+}

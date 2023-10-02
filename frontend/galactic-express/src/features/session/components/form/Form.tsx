@@ -1,5 +1,7 @@
 import { Input, Button } from '@gear-js/ui';
+import { useApi } from '@gear-js/react-hooks';
 import { useForm } from '@mantine/form';
+import BigNumber from 'bignumber.js';
 import { Card } from 'components';
 import { ChangeEvent } from 'react';
 import { ReactComponent as RocketSVG } from '../../assets/rocket.svg';
@@ -15,6 +17,10 @@ type Props = {
 };
 
 function Form({ weather, defaultDeposit }: Props) {
+  const { api } = useApi();
+  const [decimals] = api.registry.chainDecimals;
+  const balanceMultiplier = BigNumber(10).exponentiatedBy(BigNumber(decimals));
+
   const { values, getInputProps, onSubmit, setFieldValue } = useForm({
     initialValues: { deposit: defaultDeposit, ...INITIAL_VALUES },
     validate: VALIDATE,
@@ -43,7 +49,10 @@ function Form({ weather, defaultDeposit }: Props) {
   });
 
   const handleSubmit = onSubmit(() =>
-    sendMessage({ RegisterParticipantOnLaunch: { fuel_amount: fuel, payload_amount: payload } }, { value: deposit }),
+    sendMessage(
+      { RegisterParticipantOnLaunch: { fuel_amount: fuel, payload_amount: payload } },
+      { value: BigNumber(deposit).multipliedBy(balanceMultiplier).toFixed() },
+    ),
   );
 
   return (

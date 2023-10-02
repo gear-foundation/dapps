@@ -2,15 +2,16 @@ import { useAlert, useApi } from '@gear-js/react-hooks';
 import { ADDRESS } from 'consts';
 import { useEffect, useState } from 'react';
 import { NFT, MarketNFT, BaseNFT } from 'types';
-import { useMarketplace, useMarketplaceStateBuffer } from './marketplace';
+import { useMarketplace, useMarketplaceMeta, useMarketplaceStateBuffer } from './marketplace';
 import { useStateMetadata } from './metadata';
-import { useNftStateBuffer, useOwnersNft } from './nft';
+import { useNftMeta, useNftStateBuffer, useOwnersNft } from './nft';
 
 function useMergedNFTs() {
   const { api } = useApi();
   const alert = useAlert();
 
   const { NFTs: marketNFTs } = useMarketplace();
+  const nftMetadata = useNftMeta();
   const nftStateBuffer = useNftStateBuffer();
   const nftStateMetadata = useStateMetadata(nftStateBuffer);
 
@@ -18,7 +19,7 @@ function useMergedNFTs() {
   const [isEachNFTRead, setIsEachNFTRead] = useState(false);
 
   useEffect(() => {
-    if (!marketNFTs || !nftStateBuffer || !nftStateMetadata) return;
+    if (!marketNFTs || !nftStateBuffer || !nftStateMetadata || !nftMetadata) return;
 
     const combinedNFTs = marketNFTs.map((marketNft) =>
       api.programState
@@ -28,8 +29,10 @@ function useMergedNFTs() {
             fn_name: 'token',
             wasm: nftStateBuffer,
             argument: marketNft.tokenId,
+            payload: '0x',
           },
           nftStateMetadata,
+          nftMetadata,
         )
         .then((state) => state.toHuman() as BaseNFT)
         .then((baseNft) => ({ ...marketNft, ...baseNft })),
@@ -55,12 +58,13 @@ function useMergedOwnerNFTs() {
   const { NFTs: ownerNFTs } = useOwnersNft();
   const marketplaceStateBuffer = useMarketplaceStateBuffer();
   const marketplaceStateMetadata = useStateMetadata(marketplaceStateBuffer);
+  const marketplaceMeta = useMarketplaceMeta();
 
   const [NFTs, setNFTs] = useState<NFT[]>([]);
   const [isEachNFTRead, setIsEachNFTRead] = useState(false);
 
   useEffect(() => {
-    if (!ownerNFTs || !marketplaceStateBuffer || !marketplaceStateMetadata) return;
+    if (!ownerNFTs || !marketplaceStateBuffer || !marketplaceStateMetadata || !marketplaceMeta) return;
 
     const combinedNFTs = ownerNFTs.map(
       (baseNft) =>
@@ -71,8 +75,10 @@ function useMergedOwnerNFTs() {
               fn_name: 'item_info',
               wasm: marketplaceStateBuffer,
               argument: { nft_contract_id: ADDRESS.NFT_CONTRACT, token_id: baseNft.id },
+              payload: '0x',
             },
             marketplaceStateMetadata,
+            marketplaceMeta,
           )
           .then((state) => state.toHuman() as MarketNFT)
           .then((marketNft) => ({ ...marketNft, ...baseNft })), // order is important

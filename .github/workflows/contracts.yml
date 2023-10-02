@@ -38,7 +38,7 @@ jobs:
       - name: Update the nightly tag
         if: github.ref == 'refs/heads/master'
         run: |
-          git tag -f nightly
+          git tag nightly
           git push -f origin nightly
 
       - name: Release
@@ -58,6 +58,9 @@ jobs:
         with:
           path: contracts/target/doc
 
+  # A separate job for the Pages deployment is neccessary to prevent the spam from the "deployed"
+  # messages in PRs.
+  # https://github.com/orgs/community/discussions/36919
   deploy:
     name: Deploy GitHub Pages
     if: github.ref == 'refs/heads/master'
