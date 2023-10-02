@@ -33,8 +33,8 @@ impl From<Dao> for DaoState {
             proposals,
         } = value;
 
-        let members = members.clone().into_iter().collect();
-        let proposals = proposals.clone().into_iter().collect();
+        let members = members.into_iter().collect();
+        let proposals = proposals.into_iter().collect();
 
         Self {
             approved_token_program_id,
