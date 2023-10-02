@@ -7,8 +7,13 @@ import { MapEnemy } from '../map';
 import { useGame, useGameMessage, usePending } from '../../hooks';
 import { getFormattedTime } from '../../utils';
 import { Loader } from '@/components';
+import { useAccount } from '@gear-js/react-hooks';
+import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
 
 export default function GameProcess() {
+    const { account } = useAccount()
+    const { isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address)
+
     const [canExecute, setCanExecute] = useState(false);
     const [playerShips, setPlayerShips] = useState<string[]>([])
     const [enemiesShips, setEnemiesShips] = useState<string[]>([])
@@ -66,20 +71,25 @@ export default function GameProcess() {
     }, [gameState]);
 
 
-    const onClickCell = (indexCell: number) => {
-        message(
-            {
-                Turn: {
-                    step: indexCell,
+    const onClickCell = async (indexCell: number) => {
+        await updateBalance()
+        if (!isLoading) {
+            message(
+                {
+                    Turn: {
+                        step: indexCell,
+                    },
                 },
-            },
-            {
-                onSuccess: () => {
-                    setPending(false);
-                    setCanExecute(true);
+                {
+                    onSuccess: () => {
+                        setPending(false);
+                        setCanExecute(true);
+                    },
+                    prepaid: isVoucher
                 },
-            }
-        )
+            )
+        }
+
     }
 
     useEffect(() => {
