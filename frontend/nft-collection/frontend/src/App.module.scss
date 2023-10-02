@@ -16,4 +16,9 @@
   display: flex;
   margin: auto;
   background: theme-var($background-primary);
+
+  @include xl {
+    width: 100%;
+    max-width: 100%;
+  }
 }

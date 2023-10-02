@@ -1,39 +1,63 @@
-import { MutableRefObject, useRef, useState } from 'react';
-import { Swiper as ReactSwiper, SwiperSlide } from 'swiper/react';
-import NativeSwiper from 'swiper';
+import { useState } from 'react';
+import { useKeenSlider } from 'keen-slider/react.es';
 import { SwiperProps } from './Swiper.interface';
 import styles from './Swiper.module.scss';
+import { useMediaQuery } from '@/hooks';
 import { cx } from '@/utils';
-import 'swiper/css';
-import 'swiper/css/navigation';
+import 'keen-slider/keen-slider.min.css';
 import { Button } from '@/ui';
 import leftArrow from '@/assets/icons/left.svg';
 import rightArrow from '@/assets/icons/right.svg';
 
-function Swiper({ title, data, withNavigation, ...props }: SwiperProps) {
-  const swiperRef: MutableRefObject<NativeSwiper | null> = useRef(null);
+function Swiper({ title, data, withNavigation, titleClass }: SwiperProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const isTablet = useMediaQuery(1200);
+  const isSmallTablet = useMediaQuery(710);
+  const isMobile = useMediaQuery(430);
+
+  const handleDetectMedia = () => {
+    if (isMobile) {
+      return 1.5;
+    }
+
+    if (isSmallTablet) {
+      return 2;
+    }
+
+    if (isTablet) {
+      return 3;
+    }
+
+    return 4;
+  };
+
+  const [sliderRef, instanceRef] = useKeenSlider(
+    {
+      slides: {
+        perView: handleDetectMedia(),
+        spacing: 16,
+      },
+      slideChanged(slider) {
+        setCurrentIndex(slider.track.details.rel);
+      },
+    },
+    [
+      // add plugins here
+    ],
+  );
 
   const handlePrevSlide = () => {
-    swiperRef.current!.slidePrev();
+    instanceRef.current?.prev();
   };
 
   const handleNextSlide = () => {
-    swiperRef.current!.slideNext();
-  };
-
-  const handleRefSwiper = (swiper: NativeSwiper) => {
-    swiperRef.current = swiper;
-  };
-
-  const handleSlideChange = (swiper: NativeSwiper) => {
-    setCurrentIndex(swiper.activeIndex);
+    instanceRef.current?.next();
   };
 
   return (
-    <div className={cx(styles['swiper-wrapper'])}>
+    <div className={cx(styles.wrapper)}>
       <div className={cx(styles.header)}>
-        {title && <h4 className={cx(styles.name)}>{title}</h4>}
+        {title && <h4 className={cx(styles.title, titleClass || '')}>{title}</h4>}
         {withNavigation && (
           <div className={cx(styles['nav-wrapper'])}>
             <Button variant="icon" icon={leftArrow} onClick={handlePrevSlide} disabled={currentIndex === 0} />
@@ -41,22 +65,18 @@ function Swiper({ title, data, withNavigation, ...props }: SwiperProps) {
               variant="icon"
               icon={rightArrow}
               onClick={handleNextSlide}
-              disabled={currentIndex === data.length - 4}
+              disabled={currentIndex === data.length - Math.floor(handleDetectMedia())}
             />
           </div>
         )}
       </div>
-
-      <ReactSwiper
-        spaceBetween={16}
-        slidesPerView={4}
-        onSwiper={handleRefSwiper}
-        onSlideChange={handleSlideChange}
-        {...props}>
-        {data.map((item) => (
-          <SwiperSlide>{item}</SwiperSlide>
-        ))}
-      </ReactSwiper>
+      <div className={cx(styles['swiper-wrapper'])}>
+        <div ref={sliderRef} className="keen-slider">
+          {data.map((item) => (
+            <div className="keen-slider__slide">{item}</div>
+          ))}
+        </div>
+      </div>
     </div>
   );
 }

@@ -7,7 +7,7 @@ import { MainPage } from '@/pages';
 import { Header, Footer } from '@/components';
 import { withProviders } from '@/hocs';
 import { ScrollToTop, cx } from '@/utils';
-import { LOGIN, NOT_AUTHORIZED } from '@/routes';
+import { LOGIN } from '@/routes';
 import { Loader } from './components/Loader';
 import styles from './App.module.scss';
 import 'babel-polyfill';

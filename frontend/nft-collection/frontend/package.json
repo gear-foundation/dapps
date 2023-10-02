@@ -44,6 +44,7 @@
     "clsx": "^1.2.1",
     "framer-motion": "^10.16.4",
     "jotai": "^2.2.1",
+    "keen-slider": "^6.8.6",
     "lodash.isequal": "^4.5.0",
     "lodash.merge": "^4.6.2",
     "moment": "^2.29.4",

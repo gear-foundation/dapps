@@ -1,6 +1,5 @@
-.ff {
-  width: 100%;
-}
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
 
 .header {
   display: flex;
@@ -8,17 +7,40 @@
   align-items: center;
   padding-bottom: 28px;
 
-  .name {
+  @include md {
+    align-items: start;
+  }
+
+  .title {
     font-size: 40px;
     font-weight: 500;
+    line-height: 44px;
+
+    @include md {
+      font-size: 24px;
+      font-weight: 700;
+      line-height: 26.4px;
+    }
   }
 
   .nav-wrapper {
     display: flex;
     align-items: center;
+
+    @include xl {
+      padding-right: 16px;
+    }
+
+    @include sm {
+      padding-right: 10px;
+    }
   }
 }
 
 .swiper-wrapper {
-  
+    & > div {
+      @include xl {
+        padding-left: 16px;
+      }
+    }
 }

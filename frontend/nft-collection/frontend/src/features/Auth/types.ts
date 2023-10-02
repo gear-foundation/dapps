@@ -4,10 +4,17 @@ export type SignInResponse = {
 };
 
 export type AuthResponse = {
-  email: string;
-  id: string;
-  publicKey: string;
-  username: string;
+  success: true;
+  content: {
+    user: {
+      address: string;
+      activities: {
+        staked: boolean;
+        raced: boolean;
+        tictactoe: boolean;
+      };
+    };
+  };
 };
 
 export type ISignInError = {

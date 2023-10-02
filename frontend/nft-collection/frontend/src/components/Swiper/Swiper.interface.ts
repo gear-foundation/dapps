@@ -1,8 +1,8 @@
 import { ReactElement } from 'react';
-import Swiper from 'swiper';
-import { SwiperProps as ReactSwiperProps } from 'swiper/react';
 
-export interface SwiperProps extends ReactSwiperProps {
+export interface SwiperProps {
+  title?: string;
   data: ReactElement[];
   withNavigation?: boolean;
+  titleClass?: string;
 }

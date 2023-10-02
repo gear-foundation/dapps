@@ -17,32 +17,36 @@ function Layout() {
 
   return (
     <div className={cx(styles.container)}>
-      <motion.div className={cx(styles.content)} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-        <img src={images} alt="nft main" className={cx(styles['nft-main-image'])} />
-        <div className={cx(styles.presentation)}>
-          <h1 className={cx(styles.title)}>
-            Vara <span className={cx(styles['title-gradient'])}>NFT</span>
-          </h1>
-          <span className={cx(styles.text)}>Discover Vara NFT Marketplace - Create, Connect, Collect!</span>
-          <span className={cx(styles.text)}>
-            Your hub for creating and exploring NFTs. Unleash your creativity, connect with fellow creators, and own
-            digital assets like never before.
-          </span>
-          <div className={cx(styles.buttons)}>
-            <Link to={CREATE_COLLECTION}>
-              <Button
-                label="Create Collection"
-                variant="primary"
-                size="large"
-                className={cx(styles['create-button'])}
-              />
-            </Link>
-            <Link to={EXPLORE}>
-              <Button label="Explore" variant="primary" size="large" className={cx(styles['explore-button'])} />
-            </Link>
+      <div className={cx(styles['content-wrapper'])}>
+        <motion.div className={cx(styles.content)} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <div className={cx(styles['nft-main-image-wrapper'])}>
+            <img src={images} alt="nft main" className={cx(styles['nft-main-image'])} />
           </div>
-        </div>
-      </motion.div>
+          <div className={cx(styles.presentation)}>
+            <h1 className={cx(styles.title)}>
+              Vara <span className={cx(styles['title-gradient'])}>NFT</span>
+            </h1>
+            <span className={cx(styles.text)}>Discover Vara NFT Marketplace - Create, Connect, Collect!</span>
+            <span className={cx(styles.text)}>
+              Your hub for creating and exploring NFTs. Unleash your creativity, connect with fellow creators, and own
+              digital assets like never before.
+            </span>
+            <div className={cx(styles.buttons)}>
+              <Link to={CREATE_COLLECTION}>
+                <Button
+                  label="Create Collection"
+                  variant="primary"
+                  size="large"
+                  className={cx(styles['create-button'])}
+                />
+              </Link>
+              <Link to={EXPLORE}>
+                <Button label="Explore" variant="primary" size="large" className={cx(styles['explore-button'])} />
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      </div>
       <div className={cx(styles.collections)}>
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}>
           <Swiper
@@ -56,7 +60,7 @@ function Layout() {
                 </Link>
               );
             })}
-            wrapperClass={cx(styles['with-padding'])}
+            titleClass={cx(styles['swiper-title'])}
             withNavigation
           />
         </motion.div>
@@ -78,7 +82,7 @@ function Layout() {
                   </Link>
                 );
               })}
-            wrapperClass={cx(styles['with-padding'])}
+            titleClass={cx(styles['swiper-title'])}
             withNavigation
           />
         </motion.div>
@@ -105,7 +109,7 @@ function Layout() {
                   />
                 </Link>
               ))}
-            wrapperClass={cx(styles['with-padding'])}
+            titleClass={cx(styles['swiper-title'])}
             withNavigation
           />
         </motion.div>

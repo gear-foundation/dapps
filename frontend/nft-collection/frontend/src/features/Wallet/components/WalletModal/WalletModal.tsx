@@ -14,10 +14,11 @@ import { WalletItem } from '../WalletItem';
 import styles from './WalletModal.module.scss';
 import { WalletModalProps } from './WalletModal.interface';
 import { useAuth } from '@/features/Auth/hooks';
-import { PLAY } from '@/App.routes';
+
 import { AccountIcon } from '../account-icon';
 import { variantsPanel, variantsOverlay } from '@/components/Modal/modal.variants';
 import { ScrollArea } from '@/components/ScrollArea';
+import { MAIN } from '@/routes';
 
 function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
   const alert = useAlert();
@@ -59,10 +60,14 @@ function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
       const isActive = address === account?.address;
 
       const handleClick = async () => {
-        await signIn(_account);
-        navigate(PLAY);
-        setOpen(false);
-        onClose();
+        try {
+          await signIn(_account);
+          navigate(MAIN);
+          setOpen(false);
+          onClose();
+        } catch (err) {
+          console.log(err);
+        }
       };
 
       const handleCopyClick = async () => {

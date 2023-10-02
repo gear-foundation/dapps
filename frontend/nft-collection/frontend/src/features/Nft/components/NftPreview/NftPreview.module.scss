@@ -1,9 +1,16 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
 .card {
-    width: 100%;
+    width: 288px;
     display: flex;
     flex-direction: column;
     animation: ff 1s;
     transition: transform 1s ease-out; 
+
+    @include lg {
+        width: 224px;
+    }
 
     .image-wrapper {
         display: inline-block;

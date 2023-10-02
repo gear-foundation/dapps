@@ -7,18 +7,21 @@ import styles from './Header.module.scss';
 import logo from '@/assets/icons/logo-vara-nft.svg';
 import { HeaderProps } from './Header.interfaces';
 import { useMediaQuery } from '@/hooks';
-import menuIcon from '@/assets/icons/burger-menu-icon.svg';
-import { BurgerMenu } from '../BurgerMenu/BurgerMenu';
+import coin from '@/assets/icons/vara-coin-silver.png';
+import { MobileMenu } from '../MobileMenu';
 import { WalletInfo } from '@/features/Wallet/components/WalletInfo';
 import { ContractInfo } from '@/features/Auth/components';
 import { CREATE_COLLECTION } from '@/routes';
 import { Search } from '../Search';
+import { useAccountAvailableBalance } from '@/features/Wallet/hooks';
+import { SearchModal } from '../SearchModal';
 
 function Header({ menu }: HeaderProps) {
   const location = useLocation();
   const { account } = useAccount();
-  const isMobile = useMediaQuery(600);
+  const isMobile = useMediaQuery(992);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const { availableBalance: balance, isAvailableBalanceReady } = useAccountAvailableBalance();
 
   const burgerMenuHandler = () => {
     setIsMobileMenuOpen(false);
@@ -34,7 +37,7 @@ function Header({ menu }: HeaderProps) {
     <>
       <header className={cx(styles.header)}>
         <div className={cx(styles.container)}>
-          <Link to="/">
+          <Link to="/" className={cx(styles['logo-link'])}>
             <img src={logo} alt="" />
           </Link>
           {account && (
@@ -60,7 +63,9 @@ function Header({ menu }: HeaderProps) {
                       })}
                   </nav>
                   <div className={cx(styles.items)}>
-                    <Search />
+                    <div className={cx(styles['search-wrapper'])}>
+                      <Search />
+                    </div>
                     {account && (
                       <Link to={CREATE_COLLECTION}>
                         <Button variant="primary" label="Create" className={cx(styles['create-btn'])} />
@@ -74,18 +79,20 @@ function Header({ menu }: HeaderProps) {
             </>
           )}
           {account && isMobile && (
-            <div className={cx(styles['burger-menu-button'])}>
-              <Button label="" variant="icon" onClick={() => setIsMobileMenuOpen(true)} icon={menuIcon} />
+            <div className={cx(styles['menu-wrapper'])}>
+              {isAvailableBalanceReady && (
+                <div className={cx(styles.balance)}>
+                  <img src={coin} alt="vara coin" className={cx(styles['balance-coin-image'])} />
+                  <div className={cx(styles['balance-value'])}>{balance?.value || '0'}</div>
+                  <div className={cx(styles['balance-currency-name'])}>{account.balance.unit}</div>
+                </div>
+              )}
+              <SearchModal />
+              <MobileMenu />
             </div>
           )}
         </div>
       </header>
-      {isMobileMenuOpen && (
-        <>
-          <div className={cx(styles['blur-background'])} />
-          <BurgerMenu burgerMenuHandler={burgerMenuHandler} />
-        </>
-      )}
     </>
   );
 }

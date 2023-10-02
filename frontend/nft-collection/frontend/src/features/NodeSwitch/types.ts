@@ -9,4 +9,9 @@ type NodeSection = {
   nodes: Node[];
 };
 
-export type { Node, NodeSection };
+type ResultNode = {
+  caption: string;
+  address: string;
+};
+
+export type { Node, NodeSection, ResultNode };

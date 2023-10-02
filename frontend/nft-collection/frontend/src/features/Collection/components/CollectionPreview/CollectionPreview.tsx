@@ -19,7 +19,7 @@ const sliceConfig = (length: number) => {
   return 9;
 };
 
-function CollectionPreview({ collection }: CollectionPreviewProps) {
+function CollectionPreview({ collection, variant = 'default' }: CollectionPreviewProps) {
   const {
     collection: { name },
     timeCreation,
@@ -28,8 +28,13 @@ function CollectionPreview({ collection }: CollectionPreviewProps) {
   const nftMaxCount = 10;
 
   return (
-    <div className={cx(styles.card)}>
-      <div className={cx(styles['image-wrapper'], styles[`image-wrapper-mosaic-${sliceConfig(tokens.length)}`])}>
+    <div className={cx(styles.card, styles[`card-${variant}`])}>
+      <div
+        className={cx(
+          styles['image-wrapper'],
+          styles[`image-wrapper-mosaic-${sliceConfig(tokens.length)}`],
+          styles[`image-wrapper-${variant}`],
+        )}>
         {tokens.slice(tokens.length - sliceConfig(tokens.length), tokens.length).map((item) => (
           <img key={item.id} src={item.medium} alt="nft" className={cx(styles.image)} />
         ))}

@@ -1,8 +1,15 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
 .container {
   display: flex;
   flex-direction: column;
   width: 100%;
   padding-top: 40px;
+
+  @include xl {
+    padding: 40px 16px 0;
+  }
 }
 
 .gallery-wrapper {

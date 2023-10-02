@@ -48,7 +48,7 @@ function YourSpacePage() {
           .map((collection) => ({
             component: (
               <Link to={`${COLLECTION}/${collection.id}`}>
-                <CollectionPreview collection={collection} />
+                <CollectionPreview collection={collection} variant="mobile" />
               </Link>
             ),
             id: collection.id,

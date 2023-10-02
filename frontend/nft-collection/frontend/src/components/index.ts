@@ -4,3 +4,4 @@ export * from './Modal';
 export * from './Loader';
 export * from './Spinner';
 export * from './DescriptionItem';
+export * from './SearchModal';

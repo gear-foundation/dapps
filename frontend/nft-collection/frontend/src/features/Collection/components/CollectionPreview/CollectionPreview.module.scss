@@ -1,11 +1,26 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
 .card {
-    width: 100%;
+    width: 288px;
     display: flex;
     flex-direction: column;
     animation: ff 1s;
     transition: transform 1s ease-out;
     position: relative;
     cursor: pointer;
+
+    @include lg {
+        width: 224px;
+    }
+
+    &-mobile {
+        @include md {
+            width: 100%;
+            height: 120px;
+            flex-direction: row;
+        }
+    }
 
     .image-wrapper {
         position: relative;
@@ -18,6 +33,23 @@
         border-top-left-radius: 24px;
         border-top-right-radius: 24px;
         overflow: hidden;
+
+        @include lg {
+            height: 224px;
+            width: 224px;
+            max-width: 224px;
+            max-height: 224px;
+        }
+
+        &-mobile {
+            @include md {
+                width: 120px;
+                height: 120px;
+                min-width: 120px;
+                min-height: 120px;
+                flex-direction: row;
+            }
+        }
 
         &-mosaic-1 {
             grid-template-columns: repeat(1, 1fr); 

@@ -6,6 +6,16 @@
     flex-direction: column;
     width: 100%;
     padding-top: 32px;
+
+    @include md {
+        padding-top: 4px
+    }
+}
+
+.content-wrapper {
+    @include lg {
+    padding: 0 16px;
+    }
 }
 
 .content {
@@ -17,9 +27,42 @@
     border: 1px solid #F0F0F0;
     border-radius: 24px;
 
+    @include lg {
+        flex-direction: column;
+        align-items: center;
+        height: auto;
+    }
+
+    @include md {
+        height: fit-content;
+        max-width: 100%;
+        padding: 0;
+    }
+
+    .nft-main-image-wrapper {
+        @include sm {
+            height: 248px;
+            overflow: hidden;
+            margin: 0;
+        }
+    }
+
     .nft-main-image {
         width: 407px;
         margin-right: 80px;
+
+        @include md {
+            max-width: 100%;
+            width: 100%;
+            height: auto;
+            margin: 0;
+        }
+
+        @include sm {
+            width: 100%;
+            display: block;
+            margin-top: 10px;
+        }
     }
 
     .presentation {
@@ -27,16 +70,35 @@
         flex-direction: column;
         justify-content: center;
         gap: 20px;
+
+        @include lg {
+            padding: 20px 16px 24px;
+            text-align: center;
+            align-items: center;
+        }
     }
 
     .buttons {
         display: flex;
         margin-top: 20px;
         gap: 16px;
+        
+        @include sm {
+           display: grid;
+           grid-template-columns: 2fr 1fr;
+           width: 100%;
+        }
 
         .create-button {
             width: 218px;
             border-radius: 4px;
+
+            @include md {
+                width: 100%;
+                padding: 0 16px;
+                font-size: 18px;
+                font-weight: 700;
+            }
         }
 
         .explore-button {
@@ -44,6 +106,13 @@
             background: #000000;
             color: #ffffff;
             border-radius: 4px;
+
+            @include md {
+                width: 100%;
+                padding: 0 16px;
+                font-size: 18px;
+                font-weight: 700;
+            }
         }
     }
 
@@ -57,11 +126,22 @@
             background-clip: text; 
             -webkit-text-fill-color: transparent;
         }
+
+        @include sm {
+            font-size: 35px;
+            font-weight: 600;
+            line-height: 42px;
+        }
     }
 
     .text {
         font-size: 18px;
         font-weight: 400;
+
+        @include sm {
+            font-size: 14px;
+            line-height: 19.6px;
+        }
     }
 }
 
@@ -69,8 +149,20 @@
     padding: 64px 0 16px;
     display: flex;
     flex-direction: column;
+    gap: 40px;
+
+    @include md {
+        padding-top: 20px;
+    }
 }
 
 .with-padding {
     padding-bottom: 40px;
+}
+
+.swiper-title {
+    @include xl {
+        padding-left: 16px;
+        letter-spacing: 0.01em;
+    }
 }

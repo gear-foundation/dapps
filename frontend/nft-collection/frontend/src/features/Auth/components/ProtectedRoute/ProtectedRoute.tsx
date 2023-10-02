@@ -7,7 +7,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { account } = useAccount();
 
   if (!account) {
-    return <Navigate to={`/${LOGIN}`} replace />;
+    return <Navigate to={`${LOGIN}`} />;
   }
 
   return children;

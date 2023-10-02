@@ -6,6 +6,21 @@
     width: 100%;
     box-sizing: border-box;
     background: theme-var($background-primary);
+    z-index: 2;
+
+    @include md {
+        height: 68px;
+    }
+}
+
+.logo-link {
+    height: 100%;
+    position: relative;
+    display: flex;
+    
+    & img {
+        max-height: 100%;
+    }
 }
 
 .container {
@@ -19,8 +34,12 @@
     gap: 20px;
 
     @include lg {
-        padding-left: 10px;
-        padding-right: 10px;
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    @include md {
+        padding-bottom: 16px;
     }
 }
 
@@ -54,6 +73,10 @@
     display: flex;
     align-items: center;
     gap: 20px;
+
+    .search-wrapper {
+        width: 252px;
+    }
 }
 
 .wallet-info {
@@ -65,16 +88,23 @@
     display: flex;
     align-items: center;
     padding: 12px 0;
-    margin-right: 20px;
 
     &-coin-image {
         margin-right: 10px;
+
+        @include md {
+            width: 22px;
+        }
     }
 
     &-value {
         font-size: 20px;
         font-weight: 700;
         letter-spacing: -2%;
+
+        @include md {
+            font-size: 16px;
+        }
     }
 
     &-currency-name {
@@ -136,4 +166,10 @@
 .create-btn {
     width: 101px;
     border-radius: 4px;
+}
+
+.menu-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
