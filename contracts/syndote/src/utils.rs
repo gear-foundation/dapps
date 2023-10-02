@@ -215,8 +215,8 @@ pub enum GameError {
     StrategicError,
 }
 
-impl From<&Game> for GameState {
-    fn from(game: &Game) -> GameState {
+impl From<Game> for GameState {
+    fn from(game: Game) -> GameState {
         GameState {
             admin: game.admin,
             properties_in_bank: game.properties_in_bank.iter().copied().collect(),
@@ -226,12 +226,12 @@ impl From<&Game> for GameState {
                 .iter()
                 .map(|(key, value)| (*key, value.clone()))
                 .collect(),
-            players_queue: game.players_queue.clone(),
+            players_queue: game.players_queue,
             current_player: game.current_player,
             current_step: game.current_step,
-            properties: game.properties.clone(),
-            ownership: game.ownership.clone(),
-            game_status: game.game_status.clone(),
+            properties: game.properties,
+            ownership: game.ownership,
+            game_status: game.game_status,
             winner: game.winner,
         }
     }

@@ -333,15 +333,15 @@ extern fn init() {
 extern fn state() {
     let staking = unsafe {
         ICO_CONTRACT
-            .as_ref()
+            .take()
             .expect("Unexpected error in taking state")
     };
     msg::reply::<State>(staking.into(), 0)
         .expect("Failed to encode or reply with `State` from `state()`");
 }
 
-impl From<&IcoContract> for State {
-    fn from(value: &IcoContract) -> Self {
+impl From<IcoContract> for State {
+    fn from(value: IcoContract) -> Self {
         let IcoContract {
             ico_state,
             start_price,
@@ -367,16 +367,16 @@ impl From<&IcoContract> for State {
             .collect();
 
         Self {
-            ico_state: *ico_state,
-            start_price: *start_price,
-            price_increase_step: *price_increase_step,
-            time_increase_step: *time_increase_step,
-            tokens_sold: *tokens_sold,
-            tokens_goal: *tokens_goal,
-            owner: *owner,
-            token_address: *token_address,
+            ico_state,
+            start_price,
+            price_increase_step,
+            time_increase_step,
+            tokens_sold,
+            tokens_goal,
+            owner,
+            token_address,
             token_holders,
-            transaction_id: *transaction_id,
+            transaction_id,
             transactions,
         }
     }

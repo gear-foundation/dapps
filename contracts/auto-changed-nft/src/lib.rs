@@ -346,7 +346,7 @@ impl AutoChangedNft {
 
 #[no_mangle]
 extern fn state() {
-    let contract = unsafe { CONTRACT.as_ref().expect("Unexpected error in taking state") };
+    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
     msg::reply::<State>(contract.into(), 0)
         .expect("Failed to encode or reply with `IoNFT` from `state()`");
 }
@@ -357,8 +357,8 @@ pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
     sp_core_hashing::blake2_256(&[account.as_slice(), transaction_id.as_slice()].concat()).into()
 }
 
-impl From<&AutoChangedNft> for IoNFT {
-    fn from(value: &AutoChangedNft) -> Self {
+impl From<AutoChangedNft> for IoNFT {
+    fn from(value: AutoChangedNft) -> Self {
         let AutoChangedNft {
             token,
             token_id,
@@ -378,18 +378,18 @@ impl From<&AutoChangedNft> for IoNFT {
             .map(|(token_id, urls)| (*token_id, urls.clone()))
             .collect();
         Self {
-            token: token.into(),
-            token_id: *token_id,
-            owner: *owner,
+            token: (&token).into(),
+            token_id,
+            owner,
             transactions,
             urls,
-            update_number: *update_number,
+            update_number,
         }
     }
 }
 
-impl From<&AutoChangedNft> for State {
-    fn from(value: &AutoChangedNft) -> Self {
+impl From<AutoChangedNft> for State {
+    fn from(value: AutoChangedNft) -> Self {
         let AutoChangedNft {
             token,
             token_id,
@@ -421,8 +421,8 @@ impl From<&AutoChangedNft> for State {
 
         Self {
             tokens: token_metadata_by_id,
-            collection: collection.clone(),
-            nonce: *token_id,
+            collection,
+            nonce: token_id,
             owners,
         }
     }

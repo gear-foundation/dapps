@@ -3,7 +3,7 @@
 use core::cmp::min;
 use dutch_auction_io::auction::*;
 use gstd::ActorId;
-use gstd::{collections::BTreeMap, errors::Result as GstdResult, exec, msg, prelude::*, MessageId};
+use gstd::{collections::BTreeMap, exec, msg, prelude::*};
 use non_fungible_token_io::{NFTAction, NFTEvent};
 use primitive_types::U256;
 
@@ -231,24 +231,6 @@ impl Auction {
 
         Ok(stopped)
     }
-
-    pub fn info(&mut self) -> AuctionInfo {
-        self.stop_if_time_is_over();
-        AuctionInfo {
-            nft_contract_actor_id: self.nft.contract_id,
-            token_id: self.nft.token_id,
-            token_owner: self.nft.owner,
-            auction_owner: self.owner,
-            starting_price: self.starting_price,
-            current_price: self.token_price(),
-            discount_rate: self.discount_rate,
-            time_left: self.expires_at.saturating_sub(exec::block_timestamp()),
-            expires_at: self.expires_at,
-            status: self.status.clone(),
-            transactions: self.transactions.clone(),
-            current_tid: self.current_tid,
-        }
-    }
 }
 
 #[no_mangle]
@@ -277,7 +259,7 @@ async fn main() {
     }) = auction.transactions.get(&msg_source)
     {
         if action != *pend_action {
-            reply(r, 0).expect("Failed to encode or reply with `Result<Action, Error>`");
+            msg::reply(r, 0).expect("Failed to encode or reply with `Result<Action, Error>`");
             return;
         }
         *tid
@@ -320,21 +302,32 @@ async fn main() {
             result
         }
     };
-    reply(result, value).expect("Failed to encode or reply with `Result<Event, Error>`");
-}
-
-fn common_state() -> AuctionInfo {
-    static_mut_state().info()
-}
-
-fn static_mut_state() -> &'static mut Auction {
-    unsafe { AUCTION.get_or_insert(Default::default()) }
+    msg::reply(result, value).expect("Failed to encode or reply with `Result<Event, Error>`");
 }
 
 #[no_mangle]
 extern fn state() {
-    reply(common_state(), 0).expect("Failed to encode or reply with `AuctionInfo` from `state()`");
+    let contract = unsafe { AUCTION.take().expect("Unexpected error in taking state") };
+    msg::reply::<AuctionInfo>(contract.into(), 0)
+        .expect("Failed to encode or reply with `AuctionInfo` from `state()`");
 }
-fn reply(payload: impl Encode, value: u128) -> GstdResult<MessageId> {
-    msg::reply(payload, value)
+
+impl From<Auction> for AuctionInfo {
+    fn from(mut value: Auction) -> Self {
+        value.stop_if_time_is_over();
+        Self {
+            nft_contract_actor_id: value.nft.contract_id,
+            token_id: value.nft.token_id,
+            token_owner: value.nft.owner,
+            auction_owner: value.owner,
+            starting_price: value.starting_price,
+            current_price: value.token_price(),
+            discount_rate: value.discount_rate,
+            time_left: value.expires_at.saturating_sub(exec::block_timestamp()),
+            expires_at: value.expires_at,
+            status: value.status.clone(),
+            transactions: value.transactions.clone(),
+            current_tid: value.current_tid,
+        }
+    }
 }

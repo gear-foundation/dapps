@@ -371,13 +371,13 @@ async unsafe fn main() {
 
 #[no_mangle]
 extern fn state() {
-    let contract = unsafe { WALLET.as_ref().expect("Unexpected error in taking state") };
+    let contract = unsafe { WALLET.take().expect("Unexpected error in taking state") };
     msg::reply::<State>(contract.into(), 0)
         .expect("Failed to encode or reply with `State` from `state()`");
 }
 
-impl From<&MultisigWallet> for State {
-    fn from(value: &MultisigWallet) -> Self {
+impl From<MultisigWallet> for State {
+    fn from(value: MultisigWallet) -> Self {
         let MultisigWallet {
             transactions,
             confirmations,
@@ -402,8 +402,8 @@ impl From<&MultisigWallet> for State {
             transactions,
             confirmations,
             owners,
-            required: *required,
-            transaction_count: *transaction_count,
+            required,
+            transaction_count,
         }
     }
 }

@@ -725,35 +725,38 @@ async fn process_handle() -> Result<Event, Error> {
 
 #[no_mangle]
 extern fn state() {
-    let (
-        Contract {
+    let (contract, _) = unsafe { STATE.take().expect("Unexpected error in taking state") };
+    msg::reply::<State>(contract.into(), 0)
+        .expect("Failed to encode or reply with `State` from `state()`");
+}
+
+impl From<Contract> for State {
+    fn from(value: Contract) -> Self {
+        let Contract {
             items,
             producers,
             distributors,
             retailers,
             fungible_token,
             non_fungible_token,
-        },
-        tx_manager,
-    ) = state_mut();
+        } = value;
 
-    let [producers, distributors, retailers] =
-        [producers, distributors, retailers].map(|actors| actors.iter().cloned().collect());
+        let [producers, distributors, retailers] =
+            [producers, distributors, retailers].map(|actors| actors.iter().cloned().collect());
 
-    reply(State {
-        items: items.iter().map(|item| (*item.0, item.1.info)).collect(),
+        let (_, tx_manager) = state_mut();
 
-        producers,
-        distributors,
-        retailers,
-
-        fungible_token: *fungible_token,
-        non_fungible_token: *non_fungible_token,
-
-        cached_actions: tx_manager
-            .cached_actions()
-            .map(|(actor, action)| (*actor, *action))
-            .collect(),
-    })
-    .expect("failed to encode or reply from `state()`");
+        Self {
+            items: items.iter().map(|item| (*item.0, item.1.info)).collect(),
+            producers,
+            distributors,
+            retailers,
+            fungible_token,
+            non_fungible_token,
+            cached_actions: tx_manager
+                .cached_actions()
+                .map(|(actor, action)| (*actor, *action))
+                .collect(),
+        }
+    }
 }

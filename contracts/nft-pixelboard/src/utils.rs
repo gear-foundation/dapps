@@ -79,8 +79,8 @@ pub async fn mint_nft(
     }
 }
 
-impl From<&NFTPixelboard> for NFTPixelboardState {
-    fn from(state: &NFTPixelboard) -> NFTPixelboardState {
+impl From<NFTPixelboard> for NFTPixelboardState {
+    fn from(state: NFTPixelboard) -> NFTPixelboardState {
         NFTPixelboardState {
             owner: state.owner,
             block_side_length: state.block_side_length,

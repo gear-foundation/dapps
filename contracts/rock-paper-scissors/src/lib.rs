@@ -134,13 +134,13 @@ extern fn handle() {
 
 #[no_mangle]
 extern fn state() {
-    let game = unsafe { RPS_GAME.as_ref().expect("Unexpected error in taking state") };
+    let game = unsafe { RPS_GAME.take().expect("Unexpected error in taking state") };
     msg::reply::<ContractState>(game.into(), 0)
         .expect("Failed to encode or reply with `ContractState` from `state()`");
 }
 
-impl From<&RPSGame> for ContractState {
-    fn from(value: &RPSGame) -> Self {
+impl From<RPSGame> for ContractState {
+    fn from(value: RPSGame) -> Self {
         let RPSGame {
             owner,
             lobby,
@@ -163,14 +163,14 @@ impl From<&RPSGame> for ContractState {
         let lobby = lobby.iter().cloned().collect();
 
         Self {
-            owner: *owner,
+            owner,
             lobby,
-            game_config: game_config.clone(),
-            stage: stage.clone(),
+            game_config,
+            stage,
             encrypted_moves,
             player_moves,
-            next_game_config: next_game_config.clone(),
-            current_stage_start_timestamp: *current_stage_start_timestamp,
+            next_game_config,
+            current_stage_start_timestamp,
         }
     }
 }

@@ -232,13 +232,13 @@ impl Concert {
 
 #[no_mangle]
 extern fn state() {
-    let contract = unsafe { CONTRACT.as_ref().expect("Unexpected error in taking state") };
+    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
     msg::reply::<State>(contract.into(), 0)
         .expect("Failed to encode or reply with `State` from `state()`");
 }
 
-impl From<&Concert> for State {
-    fn from(value: &Concert) -> Self {
+impl From<Concert> for State {
+    fn from(value: Concert) -> Self {
         let Concert {
             owner_id,
             contract_id,
@@ -264,19 +264,19 @@ impl From<&Concert> for State {
             .collect();
 
         State {
-            owner_id: *owner_id,
-            contract_id: *contract_id,
-            name: name.clone(),
-            description: description.clone(),
-            ticket_ft_id: *ticket_ft_id,
-            creator: *creator,
-            number_of_tickets: *number_of_tickets,
-            tickets_left: *tickets_left,
-            date: *date,
+            owner_id,
+            contract_id,
+            name,
+            description,
+            ticket_ft_id,
+            creator,
+            number_of_tickets,
+            tickets_left,
+            date,
             buyers,
-            id_counter: *id_counter,
-            concert_id: *concert_id,
-            running: *running,
+            id_counter,
+            concert_id,
+            running,
             metadata,
         }
     }

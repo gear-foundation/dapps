@@ -173,13 +173,13 @@ impl OnChainNFTCore for OnChainNFT {
 
 #[no_mangle]
 extern fn state() {
-    let contract = unsafe { CONTRACT.as_ref().expect("Unexpected error in taking state") };
+    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
     msg::reply::<State>(contract.into(), 0)
         .expect("Failed to encode or reply with `State` from `state()`");
 }
 
-impl From<&OnChainNFT> for State {
-    fn from(value: &OnChainNFT) -> Self {
+impl From<OnChainNFT> for State {
+    fn from(value: OnChainNFT) -> Self {
         let OnChainNFT {
             token,
             token_id,
@@ -198,10 +198,10 @@ impl From<&OnChainNFT> for State {
         let nfts_existence = nfts_existence.iter().cloned().collect();
 
         Self {
-            token: token.into(),
-            token_id: *token_id,
-            owner: *owner,
-            base_image: base_image.clone(),
+            token: (&token).into(),
+            token_id,
+            owner,
+            base_image,
             layers,
             nfts,
             nfts_existence,

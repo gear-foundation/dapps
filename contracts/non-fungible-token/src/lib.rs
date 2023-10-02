@@ -239,9 +239,9 @@ impl Contract {
 
 #[no_mangle]
 extern fn state() {
-    let contract = unsafe { CONTRACT.as_ref().expect("Unexpected error in taking state") };
-    msg::reply::<IoNFT>(contract.into(), 0)
-        .expect("Failed to encode or reply with `IoNFT` from `state()`");
+    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
+    msg::reply::<IoNft>(contract.into(), 0)
+        .expect("Failed to encode or reply with `IoNft` from `state()`");
 }
 
 pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
@@ -250,8 +250,8 @@ pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
     sp_core_hashing::blake2_256(&[account.as_slice(), transaction_id.as_slice()].concat()).into()
 }
 
-impl From<&Contract> for IoNFT {
-    fn from(value: &Contract) -> Self {
+impl From<Contract> for IoNft {
+    fn from(value: Contract) -> Self {
         let Contract {
             token,
             token_id,
@@ -265,16 +265,16 @@ impl From<&Contract> for IoNFT {
             .map(|(key, event)| (*key, event.clone()))
             .collect();
         Self {
-            token: token.into(),
-            token_id: *token_id,
-            owner: *owner,
+            token: (&token).into(),
+            token_id,
+            owner,
             transactions,
         }
     }
 }
 
-impl From<&Contract> for State {
-    fn from(value: &Contract) -> Self {
+impl From<Contract> for State {
+    fn from(value: Contract) -> Self {
         let Contract {
             token,
             token_id,
@@ -313,12 +313,12 @@ impl From<&Contract> for State {
 
         Self {
             tokens: token_metadata_by_id,
-            collection: collection.clone(),
-            nonce: *token_id,
+            collection,
+            nonce: token_id,
             owners,
-            owner: *owner,
+            owner,
             transactions,
-            config: config.clone(),
+            config,
         }
     }
 }

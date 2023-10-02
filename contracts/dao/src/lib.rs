@@ -499,8 +499,8 @@ impl Dao {
     }
 }
 
-impl From<&Dao> for DaoState {
-    fn from(dao: &Dao) -> DaoState {
+impl From<Dao> for DaoState {
+    fn from(dao: Dao) -> DaoState {
         DaoState {
             admin: dao.admin,
             approved_token_program_id: dao.approved_token_program_id,
@@ -621,13 +621,7 @@ async fn main() {
 
 #[no_mangle]
 extern fn state() {
-    msg::reply(
-        unsafe {
-            let dao = DAO.as_ref().expect("Uninitialized dao state");
-            let dao_state: DaoState = dao.into();
-            dao_state
-        },
-        0,
-    )
-    .expect("Failed to share state");
+    let dao = unsafe { DAO.take().expect("Unexpected error in taking state") };
+    msg::reply::<DaoState>(dao.into(), 0)
+        .expect("Failed to encode or reply with `DaoState` from `state()`");
 }

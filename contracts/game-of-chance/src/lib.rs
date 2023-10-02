@@ -303,13 +303,13 @@ fn state_mut() -> &'static mut Contract {
 }
 #[no_mangle]
 extern fn state() {
-    let contract = unsafe { CONTRACT.as_ref().expect("Unexpected error in taking state") };
+    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
     msg::reply::<State>(contract.into(), 0)
         .expect("Failed to encode or reply with `IoNFT` from `state()`");
 }
 
-impl From<&Contract> for State {
-    fn from(value: &Contract) -> Self {
+impl From<Contract> for State {
+    fn from(value: Contract) -> Self {
         let Contract {
             admin,
             fungible_token,
@@ -324,15 +324,15 @@ impl From<&Contract> for State {
         } = value;
 
         Self {
-            admin: *admin,
-            fungible_token: *fungible_token,
-            started: *started,
-            ending: *ending,
-            players: players.clone(),
-            prize_fund: *prize_fund,
-            participation_cost: *participation_cost,
+            admin,
+            fungible_token,
+            started,
+            ending,
+            players,
+            prize_fund,
+            participation_cost,
             winner: winner.unwrap_or_default(),
-            is_active: *is_active,
+            is_active,
         }
     }
 }

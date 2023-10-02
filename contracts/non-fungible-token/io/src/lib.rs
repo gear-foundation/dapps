@@ -45,7 +45,7 @@ impl Metadata for NFTMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = Out<IoNFT>;
+    type State = Out<IoNft>;
 }
 
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
@@ -140,7 +140,7 @@ pub struct IoNFTState {
 #[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub struct IoNFT {
+pub struct IoNft {
     pub token: IoNFTState,
     pub token_id: TokenId,
     pub owner: ActorId,

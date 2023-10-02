@@ -239,26 +239,6 @@ impl Escrow {
     }
 }
 
-impl From<&Escrow> for EscrowState {
-    fn from(state: &Escrow) -> Self {
-        EscrowState {
-            ft_program_id: state.ft_program_id,
-            wallets: state
-                .wallets
-                .iter()
-                .map(|(id, wallet)| (*id, *wallet))
-                .collect(),
-            id_nonce: state.id_nonce,
-            transaction_id: state.transaction_id,
-            transactions: state
-                .transactions
-                .iter()
-                .map(|(a, b)| (*a, b.clone()))
-                .collect(),
-        }
-    }
-}
-
 static mut ESCROW: Option<Escrow> = None;
 
 #[no_mangle]
@@ -313,6 +293,26 @@ async fn main() {
 
 #[no_mangle]
 extern fn state() {
-    let escrow = unsafe { ESCROW.as_ref().expect("Uninitialized Escrow state") };
+    let escrow = unsafe { ESCROW.take().expect("Uninitialized Escrow state") };
     msg::reply::<EscrowState>(escrow.into(), 0).expect("Failed to share state");
+}
+
+impl From<Escrow> for EscrowState {
+    fn from(state: Escrow) -> Self {
+        Self {
+            ft_program_id: state.ft_program_id,
+            wallets: state
+                .wallets
+                .iter()
+                .map(|(id, wallet)| (*id, *wallet))
+                .collect(),
+            id_nonce: state.id_nonce,
+            transaction_id: state.transaction_id,
+            transactions: state
+                .transactions
+                .iter()
+                .map(|(a, b)| (*a, b.clone()))
+                .collect(),
+        }
+    }
 }

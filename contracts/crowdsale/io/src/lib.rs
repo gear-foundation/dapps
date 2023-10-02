@@ -18,10 +18,10 @@ impl Metadata for CrowdsaleMetadata {
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct IcoState {
-    pub ico_started: bool,
-    pub start_time: u64,
-    pub duration: u64,
-    pub ico_ended: bool,
+    pub ico_started: bool, // true if ICO was started
+    pub start_time: u64,   // time when ICO was started, otherwise is zero
+    pub duration: u64,     // duration of the ICO, otherwise is zero
+    pub ico_ended: bool,   // true if ICO was ended
 }
 
 #[derive(Debug, Decode, Encode, Clone, TypeInfo)]

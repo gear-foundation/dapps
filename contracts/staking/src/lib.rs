@@ -27,9 +27,10 @@ const DECIMALS_FACTOR: u128 = 10_u128.pow(20);
 impl Staking {
     /// Transfers `amount` tokens from `sender` account to `recipient` account.
     /// Arguments:
+    /// * `token_address`: token address
     /// * `from`: sender account
     /// * `to`: recipient account
-    /// * `amount`: amount of tokens
+    /// * `amount_tokens`: amount of tokens
     async fn transfer_tokens(
         &mut self,
         token_address: &ActorId,
@@ -306,13 +307,13 @@ extern fn init() {
 
 #[no_mangle]
 extern fn state() {
-    let staking = unsafe { STAKING.as_ref().expect("Unexpected error in taking state") };
+    let staking = unsafe { STAKING.take().expect("Unexpected error in taking state") };
     msg::reply::<IoStaking>(staking.into(), 0)
         .expect("Failed to encode or reply with `IoStaking` from `state()`");
 }
 
-impl From<&Staking> for IoStaking {
-    fn from(value: &Staking) -> Self {
+impl From<Staking> for IoStaking {
+    fn from(value: Staking) -> Self {
         let Staking {
             owner,
             staking_token_address,
@@ -335,19 +336,19 @@ impl From<&Staking> for IoStaking {
             .collect();
 
         Self {
-            owner: *owner,
-            staking_token_address: *staking_token_address,
-            reward_token_address: *reward_token_address,
-            tokens_per_stake: *tokens_per_stake,
-            total_staked: *total_staked,
-            distribution_time: *distribution_time,
-            produced_time: *produced_time,
-            reward_total: *reward_total,
-            all_produced: *all_produced,
-            reward_produced: *reward_produced,
+            owner,
+            staking_token_address,
+            reward_token_address,
+            tokens_per_stake,
+            total_staked,
+            distribution_time,
+            produced_time,
+            reward_total,
+            all_produced,
+            reward_produced,
             stakers,
-            transactions: transactions.clone(),
-            current_tid: *current_tid,
+            transactions,
+            current_tid,
         }
     }
 }
