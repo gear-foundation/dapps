@@ -721,8 +721,7 @@ async fn process_handle() -> Result<Event, Error> {
 #[no_mangle]
 extern fn state() {
     let state: State = generate_state();
-    msg::reply(state, 0)
-        .expect("Failed to encode or reply with `State` from `state()`");
+    msg::reply(state, 0).expect("Failed to encode or reply with `State` from `state()`");
 }
 
 fn generate_state() -> State {
