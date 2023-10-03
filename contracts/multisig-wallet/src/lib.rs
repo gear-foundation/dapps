@@ -3,10 +3,9 @@
 use core::cmp::min;
 use gstd::{
     collections::{HashMap, HashSet},
-    errors::Result,
     exec, msg,
     prelude::*,
-    ActorId, MessageId,
+    ActorId,
 };
 use multisig_wallet_io::*;
 use primitive_types::U256;
@@ -372,30 +371,39 @@ async unsafe fn main() {
 
 #[no_mangle]
 extern fn state() {
-    let MultisigWallet {
-        transactions,
-        confirmations,
-        owners,
-        required,
-        transaction_count,
-    } = unsafe { WALLET.get_or_insert(Default::default()) };
-
-    let state = State {
-        transactions: transactions.iter().map(|(k, v)| (*k, v.clone())).collect(),
-        confirmations: confirmations
-            .iter()
-            .map(|(k, v)| (*k, v.iter().copied().collect()))
-            .collect(),
-        owners: owners.iter().copied().collect(),
-        required: *required,
-        transaction_count: *transaction_count,
-    };
-
-    reply(state).expect(
-        "Failed to encode or reply with `<ContractMetadata as Metadata>::State` from `state()`",
-    );
+    let contract = unsafe { WALLET.take().expect("Unexpected error in taking state") };
+    msg::reply::<State>(contract.into(), 0)
+        .expect("Failed to encode or reply with `State` from `state()`");
 }
 
-fn reply(payload: impl Encode) -> Result<MessageId> {
-    msg::reply(payload, 0)
+impl From<MultisigWallet> for State {
+    fn from(value: MultisigWallet) -> Self {
+        let MultisigWallet {
+            transactions,
+            confirmations,
+            owners,
+            required,
+            transaction_count,
+        } = value;
+
+        let transactions = transactions
+            .iter()
+            .map(|(tran_id, tran)| (*tran_id, tran.clone()))
+            .collect();
+
+        let confirmations = confirmations
+            .iter()
+            .map(|(tran_id, ids)| (*tran_id, ids.iter().copied().collect()))
+            .collect();
+
+        let owners = owners.iter().copied().collect();
+
+        Self {
+            transactions,
+            confirmations,
+            owners,
+            required,
+            transaction_count,
+        }
+    }
 }

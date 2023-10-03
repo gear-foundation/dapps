@@ -5,7 +5,7 @@ use gear_lib_old::non_fungible_token::{
 };
 use gstd::Encode;
 use gtest::{Log, Program, RunResult, System};
-use non_fungible_token_io::{Constraints, InitNFT, NFTAction, NFTEvent};
+use non_fungible_token_io::{Config, InitNFT, NFTAction, NFTEvent};
 
 pub const USERS: &[u64] = &[4, 5, 6];
 #[allow(dead_code)]
@@ -54,7 +54,7 @@ pub fn init_nft(sys: &System, owner: u64) {
         InitNFT {
             royalties: None,
             collection: Default::default(),
-            constraints: Constraints {
+            config: Config {
                 authorized_minters: vec![owner.into()],
                 ..Default::default()
             },

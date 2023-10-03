@@ -4,10 +4,9 @@ use gear_lib_derive::{NFTCore, NFTMetaState, NFTStateKeeper};
 use gear_lib_old::non_fungible_token::{io::NFTTransfer, nft_core::*, state::*, token::*};
 use gstd::{
     collections::{HashMap, HashSet},
-    errors::Result as GstdResult,
     msg,
     prelude::*,
-    ActorId, MessageId,
+    ActorId,
 };
 use on_chain_nft_io::*;
 use primitive_types::U256;
@@ -172,43 +171,40 @@ impl OnChainNFTCore for OnChainNFT {
     }
 }
 
-fn common_state() -> State {
-    let state = static_mut_state();
-    let OnChainNFT {
-        token,
-        token_id,
-        owner,
-        base_image,
-        layers,
-        nfts,
-        nfts_existence,
-    } = state;
-
-    let layers = layers.iter().map(|(k, v)| (*k, v.clone())).collect();
-    let nfts = nfts.iter().map(|(k, v)| (*k, v.clone())).collect();
-    let nfts_existence = nfts_existence.iter().cloned().collect();
-
-    State {
-        token: token.into(),
-        token_id: *token_id,
-        owner: *owner,
-        base_image: base_image.clone(),
-        layers,
-        nfts,
-        nfts_existence,
-    }
-}
-
-fn static_mut_state() -> &'static OnChainNFT {
-    unsafe { CONTRACT.get_or_insert(Default::default()) }
-}
-
 #[no_mangle]
 extern fn state() {
-    reply(common_state())
-        .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
+    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
+    msg::reply::<State>(contract.into(), 0)
+        .expect("Failed to encode or reply with `State` from `state()`");
 }
 
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
+impl From<OnChainNFT> for State {
+    fn from(value: OnChainNFT) -> Self {
+        let OnChainNFT {
+            token,
+            token_id,
+            owner,
+            base_image,
+            layers,
+            nfts,
+            nfts_existence,
+        } = value;
+
+        let layers = layers.iter().map(|(id, s)| (*id, s.clone())).collect();
+        let nfts = nfts
+            .iter()
+            .map(|(token_id, item_id)| (*token_id, item_id.clone()))
+            .collect();
+        let nfts_existence = nfts_existence.iter().cloned().collect();
+
+        Self {
+            token: (&token).into(),
+            token_id,
+            owner,
+            base_image,
+            layers,
+            nfts,
+            nfts_existence,
+        }
+    }
 }

@@ -286,7 +286,7 @@ unsafe extern fn init() {
 
 #[no_mangle]
 extern fn state() {
-    let game = unsafe { GAME.as_ref().expect("Game is not initialized") };
+    let game = unsafe { GAME.take().expect("Game is not initialized") };
     let game_state: GameState = game.into();
     msg::reply(game_state, 0).expect("Failed to share state");
 }

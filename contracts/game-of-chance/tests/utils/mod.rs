@@ -50,7 +50,7 @@ impl<'a> Goc<'a> {
 
         let result = program.send(
             FOREIGN_USER,
-            Initialize {
+            InitGOC {
                 admin: admin.into(),
             },
         );

@@ -472,7 +472,7 @@ fn reply(payload: impl Encode) -> GstdResult<MessageId> {
 
 #[no_mangle]
 extern fn state() {
-    let nft_pixelboard = unsafe { PROGRAM.as_ref().expect("Program is not initialized") };
+    let nft_pixelboard = unsafe { PROGRAM.take().expect("Program is not initialized") };
     let nft_pixelboard_state: NFTPixelboardState = nft_pixelboard.into();
     msg::reply(nft_pixelboard_state, 0).expect("Failed to share state");
 }

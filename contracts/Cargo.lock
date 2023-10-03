@@ -190,7 +190,9 @@ dependencies = [
  "gmeta",
  "gstd",
  "gtest",
+ "hex-literal",
  "primitive-types",
+ "sp-core 22.0.0",
  "sp-core-hashing 10.0.0",
  "tokio",
 ]

@@ -17,7 +17,7 @@ pub struct NFTMetadata;
 #[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub struct Constraints {
+pub struct Config {
     pub max_mint_count: Option<u32>,
     pub authorized_minters: Vec<ActorId>,
 }
@@ -28,7 +28,7 @@ pub struct Constraints {
 pub struct InitNFT {
     pub collection: Collection,
     pub royalties: Option<Royalties>,
-    pub constraints: Constraints,
+    pub config: Config,
 }
 
 #[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
@@ -45,7 +45,7 @@ impl Metadata for NFTMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = Out<IoNFT>;
+    type State = Out<IoNft>;
 }
 
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
@@ -140,7 +140,7 @@ pub struct IoNFTState {
 #[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub struct IoNFT {
+pub struct IoNft {
     pub token: IoNFTState,
     pub token_id: TokenId,
     pub owner: ActorId,
@@ -214,5 +214,5 @@ pub struct State {
     pub owners: Vec<(ActorId, TokenId)>,
     pub collection: Collection,
     pub nonce: TokenId,
-    pub constraints: Constraints,
+    pub config: Config,
 }

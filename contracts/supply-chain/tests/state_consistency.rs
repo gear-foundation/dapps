@@ -1,7 +1,7 @@
 use gclient::Result;
 use gear_lib_old::non_fungible_token::{io::NFTApproval, token::TokenMetadata};
 use gstd::prelude::*;
-use non_fungible_token_io::{Constraints, InitNFT, NFTAction, NFTEvent};
+use non_fungible_token_io::{Config, InitNFT, NFTAction, NFTEvent};
 use sharded_fungible_token_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 use supply_chain::WASM_BINARY_OPT;
 use supply_chain_deploy::*;
@@ -30,7 +30,7 @@ async fn gclient_state_consistency() -> Result<()> {
             InitNFT {
                 royalties: Default::default(),
                 collection: Default::default(),
-                constraints: Constraints {
+                config: Config {
                     authorized_minters: vec![ALICE.into()],
                     ..Default::default()
                 },

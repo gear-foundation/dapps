@@ -19,20 +19,32 @@ struct Dao {
     proposals: HashMap<u128, Proposal>,
 }
 
-impl From<&Dao> for DaoState {
-    fn from(dao: &Dao) -> Self {
-        let members = dao.members.clone().into_iter().collect();
-        let proposals = dao.proposals.clone().into_iter().collect();
-
-        DaoState {
-            approved_token_program_id: dao.approved_token_program_id,
-            period_duration: dao.period_duration,
-            voting_period_length: dao.voting_period_length,
-            grace_period_length: dao.grace_period_length,
-            total_shares: dao.total_shares,
+impl From<Dao> for DaoState {
+    fn from(value: Dao) -> Self {
+        let Dao {
+            approved_token_program_id,
+            period_duration,
+            voting_period_length,
+            grace_period_length,
+            total_shares,
             members,
-            proposal_id: dao.proposal_id,
-            locked_funds: dao.locked_funds,
+            proposal_id,
+            locked_funds,
+            proposals,
+        } = value;
+
+        let members = members.into_iter().collect();
+        let proposals = proposals.into_iter().collect();
+
+        Self {
+            approved_token_program_id,
+            period_duration,
+            voting_period_length,
+            grace_period_length,
+            total_shares,
+            members,
+            proposal_id,
+            locked_funds,
             proposals,
         }
     }
@@ -75,11 +87,11 @@ impl Dao {
     /// The proposal of funding
     /// Requirements:
     /// * The proposal can be submitted only by the existing members or their delegate addresses
-    /// * The receiver ID can't be the zero
+    /// * The applicant ID can't be the zero
     /// * The DAO must have enough funds to finance the proposal
     /// Arguments:
-    /// * `receiver`: an actor that will be funded
-    /// * `amount`: the number of fungible tokens that will be sent to the receiver
+    /// * `applicant`: an actor that will be funded
+    /// * `amount`: the number of fungible tokens that will be sent to the applicant
     /// * `quorum`: a certain threshold of YES votes in order for the proposal to pass
     /// * `details`: the proposal description
     async fn submit_funding_proposal(
@@ -371,13 +383,7 @@ async fn main() {
 
 #[no_mangle]
 extern fn state() {
-    msg::reply(
-        unsafe {
-            let dao = DAO.as_ref().expect("Uninitialized dao state");
-            let dao_state: DaoState = dao.into();
-            dao_state
-        },
-        0,
-    )
-    .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
+    let dao = unsafe { DAO.take().expect("Unexpected error in taking state") };
+    msg::reply::<DaoState>(dao.into(), 0)
+        .expect("Failed to encode or reply with `DaoState` from `state()`");
 }

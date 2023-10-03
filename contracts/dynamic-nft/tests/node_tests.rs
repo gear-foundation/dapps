@@ -12,11 +12,18 @@ async fn gclient_mint_test() -> Result<()> {
     // Checking that blocks still running.
     assert!(listener.blocks_running().await?);
 
-    let init_nft = InitNFT {
+    let collection = Collection {
         name: String::from("MyToken"),
-        symbol: String::from("MTK"),
-        base_uri: String::from(""),
+        description: String::from("My token"),
+    };
+    let actor_id = ActorId::from_slice(&api.account_id().encode()).unwrap();
+    let init_nft = InitNFT {
+        collection,
         royalties: None,
+        config: Config {
+            max_mint_count: Some(100),
+            authorized_minters: vec![actor_id],
+        },
     }
     .encode();
     let gas_info = api
@@ -72,12 +79,19 @@ async fn gclient_burn_test() -> Result<()> {
 
     // Checking that blocks still running.
     assert!(listener.blocks_running().await?);
-
-    let init_nft = InitNFT {
+    let collection = Collection {
         name: String::from("MyToken"),
-        symbol: String::from("MTK"),
-        base_uri: String::from(""),
+        description: String::from("My token"),
+    };
+
+    let actor_id = ActorId::from_slice(&api.account_id().encode()).unwrap();
+    let init_nft = InitNFT {
+        collection,
         royalties: None,
+        config: Config {
+            max_mint_count: Some(100),
+            authorized_minters: vec![actor_id],
+        },
     }
     .encode();
     let gas_info = api
@@ -171,11 +185,19 @@ async fn gclient_transfer_test() -> Result<()> {
     // Checking that blocks still running.
     assert!(listener.blocks_running().await?);
 
-    let init_nft = InitNFT {
+    let collection = Collection {
         name: String::from("MyToken"),
-        symbol: String::from("MTK"),
-        base_uri: String::from(""),
+        description: String::from("My token"),
+    };
+
+    let actor_id = ActorId::from_slice(&api.account_id().encode()).unwrap();
+    let init_nft = InitNFT {
+        collection,
         royalties: None,
+        config: Config {
+            max_mint_count: Some(100),
+            authorized_minters: vec![actor_id],
+        },
     }
     .encode();
     let gas_info = api
@@ -252,11 +274,19 @@ async fn gclient_owner_test() -> Result<()> {
     // Checking that blocks still running.
     assert!(listener.blocks_running().await?);
 
-    let init_nft = InitNFT {
+    let collection = Collection {
         name: String::from("MyToken"),
-        symbol: String::from("MTK"),
-        base_uri: String::from(""),
+        description: String::from("My token"),
+    };
+
+    let actor_id = ActorId::from_slice(&api.account_id().encode()).unwrap();
+    let init_nft = InitNFT {
+        collection,
         royalties: None,
+        config: Config {
+            max_mint_count: Some(100),
+            authorized_minters: vec![actor_id],
+        },
     }
     .encode();
     let gas_info = api
@@ -327,11 +357,19 @@ async fn gclient_approved() -> Result<()> {
     // Checking that blocks still running.
     assert!(listener.blocks_running().await?);
 
-    let init_nft = InitNFT {
+    let collection = Collection {
         name: String::from("MyToken"),
-        symbol: String::from("MTK"),
-        base_uri: String::from(""),
+        description: String::from("My token"),
+    };
+
+    let actor_id = ActorId::from_slice(&api.account_id().encode()).unwrap();
+    let init_nft = InitNFT {
+        collection,
         royalties: None,
+        config: Config {
+            max_mint_count: Some(100),
+            authorized_minters: vec![actor_id],
+        },
     }
     .encode();
     let gas_info = api

@@ -188,7 +188,7 @@ async fn gclient_state_consistency() -> Result<()> {
         &client,
         &mut listener,
         WASM_BINARY_OPT.into(),
-        Initialize {
+        InitGOC {
             admin: ALICE.into(),
         },
     )

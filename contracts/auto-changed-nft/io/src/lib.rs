@@ -14,13 +14,38 @@ use primitive_types::H256;
 
 pub struct NFTMetadata;
 
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct Config {
+    pub max_mint_count: Option<u32>,
+    pub authorized_minters: Vec<ActorId>,
+}
+
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct InitNFT {
+    pub collection: Collection,
+    pub royalties: Option<Royalties>,
+    pub config: Config,
+}
+
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct Collection {
+    pub name: String,
+    pub description: String,
+}
+
 impl Metadata for NFTMetadata {
-    type Init = In<InitNFT2>;
+    type Init = In<InitNFT>;
     type Handle = InOut<NFTAction, NFTEvent>;
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = Out<NFTState2>;
+    type State = Out<State>;
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
@@ -55,6 +80,11 @@ pub enum NFTAction {
         to: ActorId,
         token_id: TokenId,
     },
+    DelegatedApprove {
+        transaction_id: u64,
+        message: DelegatedApproveMessage,
+        signature: [u8; 64],
+    },
     Owner {
         token_id: TokenId,
     },
@@ -64,6 +94,10 @@ pub enum NFTAction {
     },
     Clear {
         transaction_hash: H256,
+    },
+    AddMinter {
+        transaction_id: u64,
+        minter_id: ActorId,
     },
     AddMedia {
         token_id: TokenId,
@@ -79,15 +113,6 @@ pub enum NFTAction {
         rest_updates_count: u32,
     },
     ReserveGas,
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub struct InitNFT {
-    pub name: String,
-    pub symbol: String,
-    pub base_uri: String,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, Clone)]
@@ -106,6 +131,9 @@ pub enum NFTEvent {
         to: ActorId,
         token_id: TokenId,
         approved: bool,
+    },
+    MinterAdded {
+        minter_id: ActorId,
     },
     Updated {
         data_hash: H256,
@@ -189,7 +217,7 @@ impl From<&NFTState> for IoNFTState {
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub struct Nft2 {
+pub struct Nft {
     pub owner: ActorId,
     pub name: String,
     pub description: String,
@@ -200,24 +228,9 @@ pub struct Nft2 {
 #[derive(Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub struct NFTState2 {
-    pub tokens: Vec<(TokenId, Nft2)>,
+pub struct State {
+    pub tokens: Vec<(TokenId, Nft)>,
     pub owners: Vec<(ActorId, TokenId)>,
     pub collection: Collection,
     pub nonce: TokenId,
-}
-
-#[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub struct Collection {
-    pub name: String,
-    pub description: String,
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub struct InitNFT2 {
-    pub collection: Collection,
 }

@@ -4,43 +4,44 @@ use gear_lib_derive::{NFTCore, NFTMetaState, NFTStateKeeper};
 use gear_lib_old::non_fungible_token::{io::NFTTransfer, nft_core::*, state::*, token::*};
 use gstd::{
     collections::HashMap,
-    errors::Result as GstdResult,
     exec::{self, block_timestamp},
     msg,
     prelude::*,
-    ActorId, MessageId,
+    ActorId,
 };
 use primitive_types::{H256, U256};
 use rentable_nft_io::*;
 
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-static mut CONTRACT: Option<Nft> = None;
+static mut CONTRACT: Option<Contract> = None;
 
 #[derive(Debug, Default, NFTStateKeeper, NFTCore, NFTMetaState)]
-pub struct Nft {
+pub struct Contract {
     #[NFTStateField]
     pub token: NFTState,
     pub token_id: TokenId,
     pub owner: ActorId,
     pub transactions: HashMap<H256, NFTEvent>,
+    pub collection: Collection,
+    pub config: Config,
     pub users_info: HashMap<TokenId, UserInfo>,
 }
 
 #[no_mangle]
 unsafe extern fn init() {
-    let config: InitNft = msg::load().expect("Unable to decode InitNft");
+    let config: InitNFT = msg::load().expect("Unable to decode InitNft");
     if config.royalties.is_some() {
         config.royalties.as_ref().expect("Unable to g").validate();
     }
-    let nft = Nft {
+    let nft = Contract {
         token: NFTState {
-            name: config.name,
-            symbol: config.symbol,
-            base_uri: config.base_uri,
+            name: config.collection.name.clone(),
             royalties: config.royalties,
             ..Default::default()
         },
+        collection: config.collection,
+        config: config.config,
         owner: msg::source(),
         ..Default::default()
     };
@@ -56,6 +57,7 @@ unsafe extern fn handle() {
             transaction_id,
             token_metadata,
         } => {
+            nft.check_config();
             msg::reply(
                 nft.process_transaction(transaction_id, |nft| {
                     NFTEvent::Transfer(MyNFTCore::mint(nft, token_metadata))
@@ -158,6 +160,20 @@ unsafe extern fn handle() {
             .expect("Error during replying with `NFTEvent::Approval`");
         }
         NFTAction::Clear { transaction_hash } => nft.clear(transaction_hash),
+        NFTAction::AddMinter {
+            transaction_id,
+            minter_id,
+        } => {
+            nft.check_config();
+            msg::reply(
+                nft.process_transaction(transaction_id, |nft| {
+                    nft.config.authorized_minters.push(minter_id);
+                    NFTEvent::MinterAdded { minter_id }
+                }),
+                0,
+            )
+            .expect("Error during replying with `NFTEvent::Approval`");
+        }
         NFTAction::SetUser {
             token_id,
             address,
@@ -190,7 +206,7 @@ pub trait MyNFTCore: NFTCore {
     fn mint(&mut self, token_metadata: TokenMetadata) -> NFTTransfer;
 }
 
-impl MyNFTCore for Nft {
+impl MyNFTCore for Contract {
     fn mint(&mut self, token_metadata: TokenMetadata) -> NFTTransfer {
         let transfer = NFTCore::mint(self, &msg::source(), self.token_id, Some(token_metadata));
         self.token_id = self.token_id.saturating_add(U256::one());
@@ -198,11 +214,11 @@ impl MyNFTCore for Nft {
     }
 }
 
-impl Nft {
+impl Contract {
     fn process_transaction(
         &mut self,
         transaction_id: u64,
-        action: impl FnOnce(&mut Nft) -> NFTEvent,
+        action: impl FnOnce(&mut Contract) -> NFTEvent,
     ) -> NFTEvent {
         let transaction_hash = get_hash(&msg::source(), transaction_id);
 
@@ -225,6 +241,31 @@ impl Nft {
             "Not allowed to clear transactions"
         );
         self.transactions.remove(&transaction_hash);
+    }
+
+    fn check_config(&self) {
+        if let Some(max_mint_count) = self.config.max_mint_count {
+            if max_mint_count <= self.token.token_metadata_by_id.len() as u32 {
+                panic!(
+                    "Mint impossible because max minting count {} limit exceeded",
+                    max_mint_count
+                );
+            }
+        }
+
+        let current_minter = msg::source();
+        let is_authorized_minter = self
+            .config
+            .authorized_minters
+            .iter()
+            .any(|authorized_minter| authorized_minter.eq(&current_minter));
+
+        if !is_authorized_minter {
+            panic!(
+                "Current minter {:?} is not authorized at initialization",
+                current_minter
+            );
+        }
     }
 
     fn set_user(&mut self, address: ActorId, token_id: TokenId, expires: u64) {
@@ -262,21 +303,11 @@ impl Nft {
     }
 }
 
-fn static_mut_state() -> &'static Nft {
-    unsafe { CONTRACT.get_or_insert(Default::default()) }
-}
-
-fn common_state() -> IoNft {
-    static_mut_state().into()
-}
-
 #[no_mangle]
 extern fn state() {
-    reply(common_state()).expect("Failed to encode or reply with `IoNFT` from `state()`");
-}
-
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
+    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
+    msg::reply::<IoNFT>(contract.into(), 0)
+        .expect("Failed to encode or reply with `IoNFT` from `state()`");
 }
 
 pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
@@ -285,14 +316,15 @@ pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
     sp_core_hashing::blake2_256(&[account.as_slice(), transaction_id.as_slice()].concat()).into()
 }
 
-impl From<&Nft> for IoNft {
-    fn from(value: &Nft) -> Self {
-        let Nft {
+impl From<Contract> for IoNFT {
+    fn from(value: Contract) -> Self {
+        let Contract {
             token,
             token_id,
             owner,
             transactions,
             users_info,
+            ..
         } = value;
 
         let transactions = transactions
@@ -303,9 +335,9 @@ impl From<&Nft> for IoNft {
         let users_info = users_info.iter().map(|(id, info)| (*id, *info)).collect();
 
         Self {
-            token: token.into(),
-            token_id: *token_id,
-            owner: *owner,
+            token: (&token).into(),
+            token_id,
+            owner,
             transactions,
             users_info,
         }

@@ -14,6 +14,31 @@ use primitive_types::H256;
 
 pub struct NFTMetadata;
 
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct Config {
+    pub max_mint_count: Option<u32>,
+    pub authorized_minters: Vec<ActorId>,
+}
+
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct InitNFT {
+    pub collection: Collection,
+    pub royalties: Option<Royalties>,
+    pub config: Config,
+}
+
+#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct Collection {
+    pub name: String,
+    pub description: String,
+}
+
 impl Metadata for NFTMetadata {
     type Init = In<InitNFT>;
     type Handle = InOut<NFTAction, NFTEvent>;
@@ -70,20 +95,14 @@ pub enum NFTAction {
     Clear {
         transaction_hash: H256,
     },
+    AddMinter {
+        transaction_id: u64,
+        minter_id: ActorId,
+    },
     UpdateDynamicData {
         transaction_id: u64,
         data: Vec<u8>,
     },
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub struct InitNFT {
-    pub name: String,
-    pub symbol: String,
-    pub base_uri: String,
-    pub royalties: Option<Royalties>,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, Clone)]
@@ -102,6 +121,9 @@ pub enum NFTEvent {
         to: ActorId,
         token_id: TokenId,
         approved: bool,
+    },
+    MinterAdded {
+        minter_id: ActorId,
     },
     Updated {
         data_hash: H256,

@@ -9,7 +9,7 @@ use rentable_nft_io::*;
 
 #[gmeta::metawasm]
 pub mod metafns {
-    pub type State = IoNft;
+    pub type State = IoNFT;
 
     pub fn info(state: State) -> NFTQueryReply {
         NFTQueryReply::NFTInfo {
@@ -86,7 +86,7 @@ pub mod metafns {
     }
 }
 
-fn token_helper(token_id: &TokenId, state: &IoNft) -> Token {
+fn token_helper(token_id: &TokenId, state: &IoNFT) -> Token {
     let mut token = Token::default();
     if let Some((_token_id, owner_id)) = state
         .token

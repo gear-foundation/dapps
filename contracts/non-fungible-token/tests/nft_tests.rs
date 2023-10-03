@@ -41,7 +41,7 @@ fn mint_limit_exceed() {
     let init_nft = InitNFT {
         collection,
         royalties: None,
-        constraints: Constraints {
+        config: Config {
             max_mint_count: Some(1),
             authorized_minters: vec![USERS[0].into()],
         },
@@ -74,7 +74,7 @@ fn mint_authorized() {
     let init_nft = InitNFT {
         collection,
         royalties: None,
-        constraints: Constraints {
+        config: Config {
             max_mint_count: None,
             authorized_minters,
         },
@@ -107,7 +107,7 @@ fn mint_not_authorized() {
     let init_nft = InitNFT {
         collection,
         royalties: None,
-        constraints: Constraints {
+        config: Config {
             max_mint_count: None,
             authorized_minters,
         },
@@ -140,7 +140,7 @@ fn mint_added() {
     let init_nft = InitNFT {
         collection,
         royalties: None,
-        constraints: Constraints {
+        config: Config {
             max_mint_count: None,
             authorized_minters,
         },

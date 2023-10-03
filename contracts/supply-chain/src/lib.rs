@@ -3,10 +3,9 @@
 use gear_lib_old::non_fungible_token::token::TokenMetadata;
 use gstd::{
     collections::{HashMap, HashSet},
-    errors::Result as GstdResult,
     exec, msg,
     prelude::*,
-    ActorId, MessageId,
+    ActorId,
 };
 use supply_chain_io::*;
 use tx_manager::{TransactionGuard, TransactionManager};
@@ -394,16 +393,12 @@ fn state_mut() -> &'static mut (Contract, TransactionManager<CachedAction>) {
     unsafe { state.unwrap_unchecked() }
 }
 
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
-}
-
 #[no_mangle]
 extern fn init() {
     let result = process_init();
     let is_err = result.is_err();
 
-    reply(result).expect("failed to encode or reply from `init()`");
+    msg::reply(result, 0).expect("failed to encode or reply from `init()`");
 
     if is_err {
         exec::exit(ActorId::zero());
@@ -451,7 +446,7 @@ fn process_init() -> Result<(), Error> {
 
 #[gstd::async_main]
 async fn main() {
-    reply(process_handle().await).expect("failed to encode or reply `handle()`");
+    msg::reply(process_handle().await, 0).expect("failed to encode or reply `handle()`");
 }
 
 async fn process_handle() -> Result<Event, Error> {
@@ -725,6 +720,11 @@ async fn process_handle() -> Result<Event, Error> {
 
 #[no_mangle]
 extern fn state() {
+    let state: State = generate_state();
+    msg::reply(state, 0).expect("Failed to encode or reply with `State` from `state()`");
+}
+
+fn generate_state() -> State {
     let (
         Contract {
             items,
@@ -735,25 +735,21 @@ extern fn state() {
             non_fungible_token,
         },
         tx_manager,
-    ) = state_mut();
+    ) = unsafe { STATE.take().expect("Unexpected error in taking state") };
 
     let [producers, distributors, retailers] =
         [producers, distributors, retailers].map(|actors| actors.iter().cloned().collect());
 
-    reply(State {
+    State {
         items: items.iter().map(|item| (*item.0, item.1.info)).collect(),
-
         producers,
         distributors,
         retailers,
-
-        fungible_token: *fungible_token,
-        non_fungible_token: *non_fungible_token,
-
+        fungible_token,
+        non_fungible_token,
         cached_actions: tx_manager
             .cached_actions()
             .map(|(actor, action)| (*actor, *action))
             .collect(),
-    })
-    .expect("failed to encode or reply from `state()`");
+    }
 }

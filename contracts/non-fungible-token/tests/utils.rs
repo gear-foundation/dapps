@@ -17,7 +17,7 @@ pub fn init_nft(sys: &System) {
     let init_nft = InitNFT {
         collection,
         royalties: None,
-        constraints: Constraints {
+        config: Config {
             max_mint_count: Some(100),
             authorized_minters: vec![USERS[0].into()],
         },

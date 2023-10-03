@@ -1,9 +1,7 @@
 #![no_std]
 
 use crowdsale_io::*;
-use gstd::{
-    collections::HashMap, errors::Result as GstdResult, exec, msg, prelude::*, ActorId, MessageId,
-};
+use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId};
 use messages::transfer_tokens;
 
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
@@ -331,43 +329,54 @@ extern fn init() {
     unsafe { ICO_CONTRACT = Some(ico) };
 }
 
-fn static_mut_state() -> &'static mut IcoContract {
-    match unsafe { &mut ICO_CONTRACT } {
-        Some(state) => state,
-        None => unreachable!("State can't be uninitialized"),
-    }
-}
-
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
-}
-
-fn common_state() -> State {
-    static_mut_state().into()
-}
-
 #[no_mangle]
 extern fn state() {
-    reply(common_state()).expect(
-        "Failed to encode or reply with `<ContractMetadata as Metadata>::State` from `state()`",
-    );
+    let staking = unsafe {
+        ICO_CONTRACT
+            .take()
+            .expect("Unexpected error in taking state")
+    };
+    msg::reply::<State>(staking.into(), 0)
+        .expect("Failed to encode or reply with `State` from `state()`");
 }
 
-impl From<&mut IcoContract> for State {
-    fn from(value: &mut IcoContract) -> Self {
-        let token_holders = value.token_holders.iter().map(|(k, v)| (*k, *v)).collect();
-        let transactions = value.transactions.iter().map(|(k, v)| (*k, *v)).collect();
+impl From<IcoContract> for State {
+    fn from(value: IcoContract) -> Self {
+        let IcoContract {
+            ico_state,
+            start_price,
+            price_increase_step,
+            time_increase_step,
+            tokens_sold,
+            tokens_goal,
+            owner,
+            token_address,
+            transaction_id,
+            ..
+        } = value;
+
+        let token_holders = value
+            .token_holders
+            .iter()
+            .map(|(id, val)| (*id, *val))
+            .collect();
+        let transactions = value
+            .transactions
+            .iter()
+            .map(|(id, val)| (*id, *val))
+            .collect();
+
         Self {
-            ico_state: value.ico_state,
-            start_price: value.start_price,
-            price_increase_step: value.price_increase_step,
-            time_increase_step: value.time_increase_step,
-            tokens_sold: value.tokens_sold,
-            tokens_goal: value.tokens_goal,
-            owner: value.owner,
-            token_address: value.token_address,
+            ico_state,
+            start_price,
+            price_increase_step,
+            time_increase_step,
+            tokens_sold,
+            tokens_goal,
+            owner,
+            token_address,
             token_holders,
-            transaction_id: value.transaction_id,
+            transaction_id,
             transactions,
         }
     }

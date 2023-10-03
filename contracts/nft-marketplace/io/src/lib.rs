@@ -42,7 +42,7 @@ pub struct Market {
 #[scale_info(crate = gstd::scale_info)]
 pub struct ItemInfoArgs {
     nft_contract_id: ActorId,
-    token_id: U256,
+    token_id: TokenId,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
@@ -148,7 +148,7 @@ pub enum MarketAction {
         /// the NFT id
         token_id: TokenId,
         /// the NFT price (if it is `None` then the item is not on the sale)
-        price: Option<u128>,
+        price: Option<Price>,
     },
 
     /// Sells the NFT.
@@ -184,7 +184,7 @@ pub enum MarketAction {
         /// the NFT id
         token_id: TokenId,
         /// the starting price
-        min_price: u128,
+        min_price: Price,
         /// the time interval the auction is extended if bid is made if the auction ends before `exec::blocktimestamp() + bid_period`
         bid_period: u64,
         /// the auction duration
@@ -207,7 +207,7 @@ pub enum MarketAction {
         /// * `token_id`: the NFT id.
         token_id: TokenId,
         /// the offered price.
-        price: u128,
+        price: Price,
     },
 
     /// Settles the auction.
@@ -221,7 +221,7 @@ pub enum MarketAction {
         /// the NFT contract address
         nft_contract_id: ContractId,
         /// the NFT id
-        token_id: U256,
+        token_id: TokenId,
     },
 
     /// Adds a price offer to the item.
@@ -243,7 +243,7 @@ pub enum MarketAction {
         /// the NFT id
         token_id: TokenId,
         /// the offer price
-        price: u128,
+        price: Price,
     },
 
     /// Withdraws tokens.
@@ -295,7 +295,7 @@ pub enum MarketEvent {
     MarketDataAdded {
         nft_contract_id: ContractId,
         token_id: TokenId,
-        price: Option<u128>,
+        price: Option<Price>,
     },
     ItemSold {
         owner: ActorId,
@@ -305,17 +305,17 @@ pub enum MarketEvent {
     BidAdded {
         nft_contract_id: ContractId,
         token_id: TokenId,
-        price: u128,
+        price: Price,
     },
     AuctionCreated {
         nft_contract_id: ContractId,
         token_id: TokenId,
-        price: u128,
+        price: Price,
     },
     AuctionSettled {
         nft_contract_id: ContractId,
         token_id: TokenId,
-        price: u128,
+        price: Price,
     },
     AuctionCancelled {
         nft_contract_id: ContractId,
@@ -325,24 +325,24 @@ pub enum MarketEvent {
         nft_contract_id: ContractId,
         owner: ActorId,
         token_id: TokenId,
-        price: Option<u128>,
+        price: Option<Price>,
     },
     OfferAdded {
         nft_contract_id: ContractId,
         ft_contract_id: Option<ActorId>,
         token_id: TokenId,
-        price: u128,
+        price: Price,
     },
     OfferAccepted {
         nft_contract_id: ContractId,
         token_id: TokenId,
         new_owner: ActorId,
-        price: u128,
+        price: Price,
     },
     Withdraw {
         nft_contract_id: ActorId,
         token_id: TokenId,
-        price: u128,
+        price: Price,
     },
     TransactionFailed,
     RerunTransaction,

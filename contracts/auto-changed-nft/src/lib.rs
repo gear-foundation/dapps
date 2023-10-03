@@ -5,11 +5,10 @@ use gear_lib_derive::{NFTCore, NFTMetaState, NFTStateKeeper};
 use gear_lib_old::non_fungible_token::{io::NFTTransfer, nft_core::*, state::*, token::*};
 use gstd::{
     collections::HashMap,
-    errors::Result as GstdResult,
     exec::{self},
     msg::{self, send_delayed, send_delayed_from_reservation},
     prelude::*,
-    ActorId, MessageId, ReservationId,
+    ActorId, ReservationId,
 };
 use primitive_types::{H256, U256};
 
@@ -25,10 +24,11 @@ pub struct AutoChangedNft {
     pub token_id: TokenId,
     pub owner: ActorId,
     pub transactions: HashMap<H256, NFTEvent>,
+    pub collection: Collection,
+    pub config: Config,
     pub urls: HashMap<TokenId, Vec<String>>,
     pub rest_updates_count: u32,
     pub update_period: u32,
-    pub collection: Collection,
 }
 
 static mut CONTRACT: Option<AutoChangedNft> = None;
@@ -36,16 +36,18 @@ static mut RESERVATION: Vec<ReservationId> = vec![];
 
 #[no_mangle]
 unsafe extern fn init() {
-    let config: InitNFT2 = msg::load().expect("Unable to decode InitNFT");
+    let config: InitNFT = msg::load().expect("Unable to decode InitNFT");
+    if config.royalties.is_some() {
+        config.royalties.as_ref().expect("Unable to g").validate();
+    }
     let nft = AutoChangedNft {
         token: NFTState {
             name: config.collection.name.clone(),
-            symbol: "".to_string(),
-            base_uri: "".to_string(),
-            royalties: None,
+            royalties: config.royalties,
             ..Default::default()
         },
         collection: config.collection,
+        config: config.config,
         owner: msg::source(),
         ..Default::default()
     };
@@ -63,6 +65,7 @@ unsafe extern fn handle() {
             transaction_id,
             token_metadata,
         } => {
+            nft.check_config();
             msg::reply(
                 nft.process_transaction(transaction_id, |nft| {
                     NFTEvent::Transfer(MyNFTCore::mint(nft, token_metadata))
@@ -151,8 +154,35 @@ unsafe extern fn handle() {
             )
             .expect("Error during replying with `NFTEvent::IsApproved`");
         }
-        NFTAction::ReserveGas => nft.reserve_gas(),
+        NFTAction::DelegatedApprove {
+            transaction_id,
+            message,
+            signature,
+        } => {
+            msg::reply(
+                nft.process_transaction(transaction_id, |nft| {
+                    NFTEvent::Approval(NFTCore::delegated_approve(nft, message, signature))
+                }),
+                0,
+            )
+            .expect("Error during replying with `NFTEvent::Approval`");
+        }
         NFTAction::Clear { transaction_hash } => nft.clear(transaction_hash),
+        NFTAction::AddMinter {
+            transaction_id,
+            minter_id,
+        } => {
+            nft.check_config();
+            msg::reply(
+                nft.process_transaction(transaction_id, |nft| {
+                    nft.config.authorized_minters.push(minter_id);
+                    NFTEvent::MinterAdded { minter_id }
+                }),
+                0,
+            )
+            .expect("Error during replying with `NFTEvent::Approval`");
+        }
+        NFTAction::ReserveGas => nft.reserve_gas(),
         NFTAction::AddMedia { token_id, media } => {
             if let Some(urls) = nft.urls.get_mut(&token_id) {
                 urls.push(media);
@@ -264,6 +294,30 @@ impl AutoChangedNft {
         );
         self.transactions.remove(&transaction_hash);
     }
+    fn check_config(&self) {
+        if let Some(max_mint_count) = self.config.max_mint_count {
+            if max_mint_count <= self.token.token_metadata_by_id.len() as u32 {
+                panic!(
+                    "Mint impossible because max minting count {} limit exceeded",
+                    max_mint_count
+                );
+            }
+        }
+
+        let current_minter = msg::source();
+        let is_authorized_minter = self
+            .config
+            .authorized_minters
+            .iter()
+            .any(|authorized_minter| authorized_minter.eq(&current_minter));
+
+        if !is_authorized_minter {
+            panic!(
+                "Current minter {:?} is not authorized at initialization",
+                current_minter
+            );
+        }
+    }
 
     fn update_media(&mut self, token_ids: &Vec<TokenId>) {
         for token_id in token_ids {
@@ -290,21 +344,11 @@ impl AutoChangedNft {
     }
 }
 
-fn static_mut_state() -> &'static AutoChangedNft {
-    unsafe { CONTRACT.get_or_insert(Default::default()) }
-}
-
-fn common_state() -> NFTState2 {
-    static_mut_state().into()
-}
-
 #[no_mangle]
 extern fn state() {
-    reply(common_state()).expect("Failed to encode or reply with `NFTState2` from `state()`");
-}
-
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
+    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
+    msg::reply::<State>(contract.into(), 0)
+        .expect("Failed to encode or reply with `IoNFT` from `state()`");
 }
 
 pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
@@ -313,8 +357,8 @@ pub fn get_hash(account: &ActorId, transaction_id: u64) -> H256 {
     sp_core_hashing::blake2_256(&[account.as_slice(), transaction_id.as_slice()].concat()).into()
 }
 
-impl From<&AutoChangedNft> for IoNFT {
-    fn from(value: &AutoChangedNft) -> Self {
+impl From<AutoChangedNft> for IoNFT {
+    fn from(value: AutoChangedNft) -> Self {
         let AutoChangedNft {
             token,
             token_id,
@@ -322,8 +366,7 @@ impl From<&AutoChangedNft> for IoNFT {
             transactions,
             urls,
             rest_updates_count: update_number,
-            update_period: _,
-            collection: _,
+            ..
         } = value;
 
         let transactions = transactions
@@ -335,18 +378,18 @@ impl From<&AutoChangedNft> for IoNFT {
             .map(|(token_id, urls)| (*token_id, urls.clone()))
             .collect();
         Self {
-            token: token.into(),
-            token_id: *token_id,
-            owner: *owner,
+            token: (&token).into(),
+            token_id,
+            owner,
             transactions,
             urls,
-            update_number: *update_number,
+            update_number,
         }
     }
 }
 
-impl From<&AutoChangedNft> for NFTState2 {
-    fn from(value: &AutoChangedNft) -> Self {
+impl From<AutoChangedNft> for State {
+    fn from(value: AutoChangedNft) -> Self {
         let AutoChangedNft {
             token,
             token_id,
@@ -365,7 +408,7 @@ impl From<&AutoChangedNft> for NFTState2 {
             .iter()
             .map(|(id, metadata)| {
                 let metadata = metadata.as_ref().unwrap();
-                let nft = Nft2 {
+                let nft = Nft {
                     owner: *token.owner_by_id.get(id).unwrap(),
                     name: metadata.name.clone(),
                     description: metadata.description.clone(),
@@ -378,8 +421,8 @@ impl From<&AutoChangedNft> for NFTState2 {
 
         Self {
             tokens: token_metadata_by_id,
-            collection: collection.clone(),
-            nonce: *token_id,
+            collection,
+            nonce: token_id,
             owners,
         }
     }
