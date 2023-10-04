@@ -10,3 +10,7 @@ type Escrow = {
 type Wallet = [string, Escrow];
 
 export type { Escrow, Wallet };
+
+export type Entries<T> = {
+  [K in keyof T]: [K, T[K]];
+}[keyof T][];

@@ -1,17 +1,18 @@
 import { useState } from 'react';
 import Identicon from '@polkadot/react-identicon';
-import { useAtomValue } from 'jotai';
 import { cx } from 'utils';
-import { Button } from '@gear-js/ui';
-import { CURRENT_CONTRACT_ADDRESS_ATOM } from 'atoms';
-import coin from 'assets/images/icons/vara-coin-silver.png';
+import { ADDRESS } from 'consts';
+import { Button } from 'components/layout/button';
+import varaCoin from '../../assets/icons/vara-coin.svg';
+import tVaraCoin from '../../assets/icons/tvara-coin.svg';
 import { WalletInfoProps } from './WalletInfo.interfaces';
 
 import { WalletModal } from '../wallet-modal';
 import styles from './WalletInfo.module.scss';
+import { useAccountAvailableBalance } from '../../hooks';
 
-function WalletInfo({ account }: WalletInfoProps) {
-  const address = useAtomValue(CURRENT_CONTRACT_ADDRESS_ATOM);
+function WalletInfo({ account, withoutBalance, buttonClassName }: WalletInfoProps) {
+  const { availableBalance: balance, isAvailableBalanceReady } = useAccountAvailableBalance();
   const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
 
   const handleCloseWalletModal = () => {
@@ -22,19 +23,30 @@ function WalletInfo({ account }: WalletInfoProps) {
     setIsWalletModalOpen(true);
   };
 
+  const balanceValue = (balance?.value || '0').split('.');
+  const balanceAmount = balanceValue[0].replaceAll(/,|\s/g, '&thinsp;');
+  const balanceDecimals = balanceValue[1];
+
   return (
     <>
-      {account ? (
+      {account && isAvailableBalanceReady ? (
         <div className={cx(styles['wallet-info'])}>
-          <div className={cx(styles.balance)}>
-            <img src={coin} alt="wara coin" className={cx(styles['balance-coin-image'])} />
-            <div className={cx(styles['balance-value'])}>{account.balance.value}</div>
-            <div className={cx(styles['balance-currency-name'])}>{account.balance.unit}</div>
-          </div>
-          <button className={cx(styles.description)} onClick={handleOpenWalletModal} type="button">
-            {account?.decodedAddress && (
+          {!withoutBalance && (
+            <div className={cx(styles.balance)}>
+              <img
+                src={balance?.unit?.toLowerCase() === 'vara' ? varaCoin : tVaraCoin}
+                alt="vara coin"
+                className={cx(styles['balance-coin-image'])}
+              />
+              <div className={cx(styles['balance-value'])} dangerouslySetInnerHTML={{ __html: balanceAmount }} />
+              {balanceDecimals && <div className={cx(styles['balance-value'])}>{`.${balanceDecimals}`}</div>}
+              <div className={cx(styles['balance-currency-name'])}>{account.balance.unit}</div>
+            </div>
+          )}
+          <button className={cx(styles.description)} onClick={handleOpenWalletModal}>
+            {account.address && (
               <Identicon
-                value={account?.decodedAddress}
+                value={account.address}
                 size={21}
                 theme="polkadot"
                 className={cx(styles['description-icon'])}
@@ -44,9 +56,15 @@ function WalletInfo({ account }: WalletInfoProps) {
           </button>
         </div>
       ) : (
-        <Button text="connect" onClick={handleOpenWalletModal} className={cx(styles.btn)} />
+        <Button
+          label="Connect Wallet"
+          variant="primary"
+          size="large"
+          onClick={handleOpenWalletModal}
+          className={cx(styles['connect-btn'], buttonClassName || '')}
+        />
       )}
-      {isWalletModalOpen && <WalletModal onClose={handleCloseWalletModal} />}
+      <WalletModal open={isWalletModalOpen} setOpen={setIsWalletModalOpen} onClose={handleCloseWalletModal} />
     </>
   );
 }

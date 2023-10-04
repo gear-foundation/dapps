@@ -53,7 +53,7 @@ function Header({ menu }: HeaderProps) {
         </div>
       </header>
 
-      {isWalletModalOpen && <WalletModal onClose={handleCloseWalletModal} />}
+      <WalletModal onClose={handleCloseWalletModal} open={isWalletModalOpen} setOpen={setIsWalletModalOpen} />
     </>
   );
 }

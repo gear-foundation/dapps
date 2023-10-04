@@ -1,15 +1,22 @@
+@use 'utils' as *;
 
 .modal {
     width: 100%;
     max-width: 400px;
     padding: 0;
     border-radius: 4px;
-    background: #161616;
+    background: #F5F5F5;
     border: none;
   
     &::backdrop {
       background: rgba(0, 0, 0, 0.2);
       backdrop-filter: blur(10px);
+    }
+
+    @media screen and (max-width: 429px) {
+      padding-right: 30px;
+      padding-left: 30px;
+      font-size: 18px;
     }
   }
   
@@ -27,5 +34,5 @@
     line-height: 120%;
     letter-spacing: 0.02em;
     text-transform: capitalize;
-    color: #fff;
+    color: #000000;
   }
