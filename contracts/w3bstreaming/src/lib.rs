@@ -104,11 +104,7 @@ extern fn handle() {
 #[no_mangle]
 extern fn state() {
     msg::reply::<Contract>(
-        unsafe {
-            CONTRACT
-                .take()
-                .expect("The contract is not initialized")
-        },
+        unsafe { CONTRACT.take().expect("The contract is not initialized") },
         0,
     )
     .expect("`state()` failed");
