@@ -14,12 +14,21 @@ type Props = {
 };
 
 function Radar({ currentEvents, currentRound, roundsCount, isWinner, userRank }: Props) {
-  console.log(roundsCount);
+  const defineHeightIndex = (current: number, firstDead: number) => {
+    if (firstDead !== -1) {
+      if (current < firstDead) {
+        return current;
+      }
+      return firstDead;
+    }
+
+    return current;
+  };
   const getPlayers = () =>
-    currentEvents?.map(({ participant, deadRound }, index) => {
+    currentEvents?.map(({ participant, deadRound, firstDeadRound }, index) => {
       const playerNumber = index + 1;
       const heightMultiplier = `100% / ${roundsCount}`;
-      const heightIndex = deadRound || currentRound;
+      const heightIndex = defineHeightIndex(currentRound, firstDeadRound);
       const transitionTime = 0.15 * playerNumber;
 
       const style = {

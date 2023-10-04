@@ -48,6 +48,10 @@ function Session({ session, turns, rankings, userId, participants }: Props) {
         return {
           participant: participantInfo[0],
           deadRound: !isAlive,
+          firstDeadRound: turns.findIndex((turn) => {
+            const part = turn.find((participant) => participant[0] === participantInfo[0]) || [];
+            return Object.keys(part[1] || {})[0] !== 'Alive';
+          }),
           fuelLeft: isAlive ? participantInfo[1].Alive.fuelLeft : ' - ',
           payload: isAlive ? participantInfo[1].Alive.payloadAmount : ' - ',
           lastAltitude: String(Math.round(Number(withoutCommas(altitude)) / (roundsCount - roundNumber + 1))),

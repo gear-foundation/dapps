@@ -21,6 +21,7 @@ type Halt = (typeof HALT)[keyof typeof HALT];
 type Event = {
   participant: HexString;
   deadRound: boolean;
+  firstDeadRound: number;
   fuelLeft: string;
   lastAltitude: string;
   payload: string;
