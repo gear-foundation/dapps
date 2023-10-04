@@ -1,7 +1,6 @@
 import { lazy, Suspense } from 'react'
 import { decodeAddress } from '@gear-js/api'
 import { useAccount, useAlert } from '@gear-js/react-hooks'
-import { Button } from '@gear-js/ui'
 import { Button as VaraButton } from '@/components/ui/button'
 import { CopyIcon, EditIcon, ExitIcon } from '../../assets'
 import { WALLETS } from '../../consts'
@@ -10,9 +9,9 @@ import { WalletItem } from '../wallet-item'
 import styles from './WalletModal.module.scss'
 import { copyToClipboard } from '@/app/utils'
 import { Modal } from '@/components'
-import { useGame } from '@/features/tic-tac-toe/hooks'
 import { useAuth } from '@/features/auth'
 import { ScrollArea } from '@/components/ui/scroll-area/scroll-area'
+import { useBattle } from '@/features/battle-tamagotchi/context'
 
 const Identicon = lazy(() => import('@polkadot/react-identicon'))
 
@@ -23,7 +22,7 @@ type Props = {
 function WalletModal({ onClose }: Props) {
   const alert = useAlert()
   const { extensions, account, accounts } = useAccount()
-  const { resetGameState } = useGame()
+  const { reset } = useBattle()
   const { signIn, signOut } = useAuth()
 
   const {
@@ -120,7 +119,7 @@ function WalletModal({ onClose }: Props) {
   const handleLogoutButtonClick = () => {
     signOut()
     onClose()
-    resetGameState()
+    reset()
   }
 
   return (

@@ -58,12 +58,12 @@ export type BattleHero = {
 
   owner: HexString
   hero_id: HexString
-  name: String
-  date_of_birth: string
+  name: string
+  dateOfBirth: string
   defense: string
   power: string
   health: string
-  color: String
+  color: TamagotchiColor
 }
 
 export type BattleRoom = {
@@ -76,7 +76,7 @@ export type BattleStateResponse = {
   admins: HexString[]
   currentReservation: null
   heroes: Record<HexString, BattleHero>
-  rooms: []
+  rooms: BattleRoom[]
   status: BattleStatus
-  tournamentsStartTimestamps: {}
+  tournamentsStartTimestamps: Record<string, HexString>
 }

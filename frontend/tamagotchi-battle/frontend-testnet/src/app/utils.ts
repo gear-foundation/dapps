@@ -107,3 +107,18 @@ export const hexRequired = (value: string) =>
     : !isHex(value)
     ? 'String must be in Hex format'
     : null
+
+export const getHours = (value: number) =>
+  Math.floor(value / (1000 * 60 * 60))
+    .toString()
+    .padStart(2, '0')
+
+export const getMinutes = (value: number) =>
+  Math.floor((value % (1000 * 60 * 60)) / (1000 * 60))
+    .toString()
+    .padStart(2, '0')
+
+export const getSeconds = (value: number) =>
+  Math.floor((value % (1000 * 60)) / 1000)
+    .toString()
+    .padStart(2, '0')

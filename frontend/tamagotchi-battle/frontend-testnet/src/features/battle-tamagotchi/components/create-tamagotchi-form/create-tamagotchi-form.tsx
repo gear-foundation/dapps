@@ -3,38 +3,30 @@ import { useForm } from '@mantine/form'
 import { hexRequired } from '@/app/utils'
 import { useBattle } from '../../context'
 import { useBattleMessage } from '../../hooks'
-import { useNavigate } from 'react-router-dom'
 import { HexString } from '@polkadot/util/types'
 
 const createTamagotchiInitial = {
-  programId: '' as HexString,
-  programId2: '' as HexString,
-  currentStep: 1,
+  hero_id: '' as HexString,
 }
 
 const validate: Record<string, typeof hexRequired> = {
-  programId: hexRequired,
+  hero_id: hexRequired,
 }
 
 export const CreateTamagotchiForm = () => {
   const { battle, isPending } = useBattle()
   const handleMessage = useBattleMessage()
-  const navigate = useNavigate()
   const form = useForm({
     initialValues: createTamagotchiInitial,
     validate: validate,
     validateInputOnChange: true,
   })
   const { getInputProps, errors } = form
-  const handleSubmit = form.onSubmit((values) => {
+  const handleSubmit = form.onSubmit(({ hero_id }) => {
     handleMessage(
-      { Register: { tmg_id: values.programId } },
+      { Register: { hero_id } },
       {
-        onSuccess: () => {
-          form.reset()
-          navigate('/battle')
-        },
-        onError: () => form.reset(),
+        onSuccess: () => form.reset(),
       }
     )
   })
@@ -45,7 +37,7 @@ export const CreateTamagotchiForm = () => {
         <Input
           placeholder="Insert program ID"
           direction="y"
-          {...getInputProps('programId')}
+          {...getInputProps('hero_id')}
         />
       </div>
       <div className="whitespace-nowrap">
@@ -56,7 +48,7 @@ export const CreateTamagotchiForm = () => {
           disabled={
             Object.keys(errors).length > 0 ||
             isPending ||
-            battle?.state !== 'Registration'
+            battle?.status !== 'Registration'
           }
         />
       </div>

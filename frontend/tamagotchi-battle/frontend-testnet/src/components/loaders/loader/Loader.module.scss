@@ -5,12 +5,14 @@
   @extend %absoluteCenter;
   display: flex;
   align-items: center;
+  color: white;
 
   &::before,
   &::after {
     content: '';
     background: url(@/assets/images/icons/gear.svg) center/cover no-repeat;
     animation: spin linear infinite;
+    filter: invert(100%);
   }
 
   &::before {

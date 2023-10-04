@@ -1,15 +1,18 @@
-import { useBattle } from '@/features/battle-tamagotchi/context'
 import { useAccount } from '@gear-js/react-hooks'
 import { cn } from '@/app/utils'
-import { Link } from 'react-router-dom'
 import { CreateTamagotchiForm } from '@/features/battle-tamagotchi/components/create-tamagotchi-form'
 import { Wallet } from '@/features/wallet'
-import { ClockUpdateIcon, WarningIcon } from '@/assets/images'
-import { Countdown } from '@/components'
+import { BattleStateResponse } from '@/features/battle-tamagotchi/types/battles'
+import { NextBattleTimer } from '@/features/battle-tamagotchi/components/next-battle-timer'
+import { InfoCard } from '@/features/battle-tamagotchi/components/info-card'
 
-export function RegisterTamagotchi() {
-  const { battle } = useBattle()
+export function RegisterTamagotchi({
+  battle,
+}: {
+  battle: BattleStateResponse
+}) {
   const { account } = useAccount()
+
   return (
     <section className="flex items-center h-[calc(100vh-164px-64px)] container">
       {/*Info*/}
@@ -17,20 +20,17 @@ export function RegisterTamagotchi() {
         <div className="flex flex-col items-center gap-9 w-full">
           <div className="w-full">
             {account && (
-              <div className="grid grid-cols-[auto_auto] items-center w-fit px-8 py-6 gap-x-6 border-2 border-primary-600 rounded-xl font-kanit bg-[#2BD07112]">
+              <NextBattleTimer
+                battle={battle}
+                className="grid-cols-[auto_auto]"
+              >
                 <p className="max-w-[250px] text-lg leading-6 font-bold tracking-[0.72px]">
                   The next Tamagotchi battle{' '}
                   <span className="text-primary-600">
                     will start automatically in:
                   </span>
                 </p>
-                <div className="grid grid-cols-[auto_auto] items-center gap-x-4">
-                  <ClockUpdateIcon className="" />
-                  <p className="typo-h2 font-normal tracking-[1.6px]">
-                    <Countdown milliseconds={0} />
-                  </p>
-                </div>
-              </div>
+              </NextBattleTimer>
             )}
           </div>
 
@@ -62,11 +62,8 @@ export function RegisterTamagotchi() {
           </div>
 
           <div className="">
-            <div className="flex items-center py-4 rounded-xl bg-gradient-to-r from-primary-600/[.17] to-transparent">
-              <div className="p-5.5">
-                <WarningIcon />
-              </div>
-              <p className="font-medium text-base leading-[22px] font-kanit tracking-[0.64px]">
+            <InfoCard>
+              <p>
                 All game mechanics and automatic launch are facilitated by
                 on-chain mechanisms and delayed messages. You can read more
                 about these capabilities of Vara Network{' '}
@@ -79,12 +76,8 @@ export function RegisterTamagotchi() {
                 </a>
                 .
               </p>
-            </div>
+            </InfoCard>
           </div>
-
-          {/*<div className="w-full">*/}
-          {/*  <Link to={'/test'}>Test page</Link> <Link to={'/battle'}>Battle page</Link>*/}
-          {/*</div>*/}
         </div>
       </div>
       {/*Image*/}

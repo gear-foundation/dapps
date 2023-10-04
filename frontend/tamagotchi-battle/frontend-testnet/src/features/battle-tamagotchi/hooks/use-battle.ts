@@ -9,6 +9,7 @@ import type { UserMessageSent } from '@gear-js/api'
 import type { UnsubscribePromise } from '@polkadot/api/types'
 import type { BattleStatePlayer, BattleStateResponse } from '../types/battles'
 import type { BattleStatus, RoundDamageType } from '../types/battles'
+import { BattleHero } from '../types/battles'
 
 const programId = BATTLE_ADDRESS
 
@@ -27,7 +28,10 @@ export function useInitBattleData() {
     setPlayers,
     setIsAdmin,
   } = useBattle()
-  const { state } = useReadState<BattleStateResponse>({ programId, meta })
+  const { state, error } = useReadState<BattleStateResponse>({
+    programId,
+    meta,
+  })
   const prevBattleState = useRef<BattleStatus | undefined>()
   const metadata = useProgramMetadata(meta)
 
@@ -38,40 +42,42 @@ export function useInitBattleData() {
   }, [])
 
   useEffect(() => {
+    // if (!account) return
+
     console.log({ state })
     setBattle(state)
-    // if (state && account) {
-    //   const activePair = Object.values(state.pairs)[currentPairIdx]
-    //   // console.log({ state });
-    //   setIsAdmin(state.admins.includes(account.decodedAddress))
-    //
-    //   const getCurrentQueue = () => {
-    //     const queue: BattleStatePlayer[] = []
-    //     state.currentPlayers.forEach((p) => queue.push(state.players[p]))
-    //     return queue
-    //   }
-    //   const players = getCurrentQueue()
-    //   players && setPlayers(players)
-    //
-    //   if (activePair) {
-    //     const getRivals = () => {
-    //       const result: BattleStatePlayer[] = []
-    //       activePair.tmgIds.forEach((player) => {
-    //         if (state.players[player]) result.push(state.players[player])
-    //       })
-    //       // console.log({ rivals: result });
-    //       return result
-    //     }
-    //
-    //     setRivals(getRivals())
-    //     setCurrentPlayer(activePair.tmgIds[activePair.moves.length > 0 ? 1 : 0])
-    //   }
-    // } else {
-    //   setIsAdmin(false)
-    //   setPlayers([])
-    //   setRivals([])
-    //   setCurrentPlayer(undefined)
-    // }
+    if (state && account) {
+      // const activePair = Object.values(state.pairs)[currentPairIdx]
+      // console.log({ state });
+      setIsAdmin(state.admins.includes(account.decodedAddress))
+
+      const getCurrentQueue = () => {
+        const queue: BattleHero[] = []
+        Object.values(state.heroes).forEach((p) => queue.push(p))
+        return queue
+      }
+      const players = getCurrentQueue()
+      players && setPlayers(players)
+
+      // if (activePair) {
+      //   const getRivals = () => {
+      //     const result: BattleStatePlayer[] = []
+      //     activePair.tmgIds.forEach((player) => {
+      //       if (state.players[player]) result.push(state.players[player])
+      //     })
+      //     // console.log({ rivals: result });
+      //     return result
+      //   }
+      //
+      //   setRivals(getRivals())
+      //   setCurrentPlayer(activePair.tmgIds[activePair.moves.length > 0 ? 1 : 0])
+      // }
+    } else {
+      setIsAdmin(false)
+      setPlayers([])
+      setRivals([])
+      setCurrentPlayer(undefined)
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, account, currentPairIdx])
 
@@ -156,9 +162,17 @@ export function useInitBattleData() {
   //   }
   //   // eslint-disable-next-line react-hooks/exhaustive-deps
   // }, [currentPairIdx, roundDamage, state])
+
+  return {
+    isGameReady: programId ? Boolean(state) : true,
+    errorGame: error,
+  }
 }
 
 export function useBattleMessage() {
   const metadata = useProgramMetadata(meta)
-  return useSendMessage(programId, metadata, { isMaxGasLimit: true })
+  return useSendMessage(programId, metadata, {
+    isMaxGasLimit: false,
+    disableAlerts: true,
+  })
 }

@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react'
+import { getHours, getMinutes, getSeconds } from '@/app/utils'
 
-type Props = {
-  milliseconds: number
-  text?: string
-  onClick?: () => void
+export const getTime = (value: number | undefined) => {
+  if (!value) return '00:00:00'
+
+  return `${getHours(value)}:${getMinutes(value)}:${getSeconds(value)}`
 }
 
-export function Countdown({ milliseconds, text, onClick }: Props) {
-  const [countdown, setCountdown] = useState(milliseconds)
-  const isCountdown = !!countdown
+export function useCountdown({ time }: { time: number }) {
+  const [countdown, setCountdown] = useState(time)
 
   useEffect(() => {
-    if (!isCountdown) return
+    if (!countdown) return
 
     const timer = setInterval(() => {
       setCountdown((prevCountdown) => {
@@ -23,25 +23,10 @@ export function Countdown({ milliseconds, text, onClick }: Props) {
     return () => {
       clearInterval(timer)
     }
-  }, [isCountdown])
+  }, [countdown])
 
-  const getTime = (value: number | undefined) => {
-    if (!value) return '00:00:00'
-
-    const hours = Math.floor(value / (1000 * 60 * 60))
-      .toString()
-      .padStart(2, '0')
-
-    const minutes = Math.floor((value % (1000 * 60 * 60)) / (1000 * 60))
-      .toString()
-      .padStart(2, '0')
-
-    const seconds = Math.floor((value % (1000 * 60)) / 1000)
-      .toString()
-      .padStart(2, '0')
-
-    return `${hours}:${minutes}:${seconds}`
+  return {
+    countdown,
+    trigger: (value: number | undefined = time) => setCountdown(value),
   }
-
-  return <>{getTime(countdown)}</>
 }

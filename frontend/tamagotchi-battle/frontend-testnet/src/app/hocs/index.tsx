@@ -8,6 +8,7 @@ import { Alert, alertStyles } from '@gear-js/ui'
 import { ComponentType } from 'react'
 import { BrowserRouter } from 'react-router-dom'
 import { ADDRESS } from '@/app/consts'
+import { BattleProvider } from '@/features/battle-tamagotchi/context'
 
 function ApiProvider({ children }: ProviderProps) {
   return (
@@ -23,7 +24,13 @@ function AlertProvider({ children }: ProviderProps) {
   )
 }
 
-const providers = [BrowserRouter, AlertProvider, ApiProvider, AccountProvider]
+const providers = [
+  BrowserRouter,
+  AlertProvider,
+  ApiProvider,
+  AccountProvider,
+  BattleProvider,
+]
 
 function withProviders(Component: ComponentType) {
   return () =>

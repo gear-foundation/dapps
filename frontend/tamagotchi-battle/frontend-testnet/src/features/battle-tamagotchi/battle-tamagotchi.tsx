@@ -10,21 +10,21 @@ export function BattleTamagotchi() {
 
   const gameIsOn = Boolean(
     battle &&
-      ['GameIsOn', 'WaitNextRound'].includes(battle.state) &&
-      Object.values(battle.pairs).length > 0 &&
+      ['GameIsOn', 'WaitNextRound'].includes(battle.status) &&
+      // Object.values(battle.pairs).length > 0 &&
       rivals.length > 0 &&
       currentPairIdx >= 0
   )
 
-  const gameIsOver = battle?.state === 'GameIsOver' && battle?.currentWinner
+  const gameIsOver = battle?.status === 'GameIsOver' //&& battle?.currentWinner
 
   return (
     <>
-      {battle?.state === 'Registration' &&
-        (isAdmin ? <BattleWaitAdmin /> : <BattleWaitRegistration />)}
-      {gameIsOn && <BattleRound />}
-      {gameIsOver && <BattleWinner battle={battle} />}
-      {battle && Object.keys(battle.players).length > 0 && (
+      {/*{battle?.status === 'Registration' &&*/}
+      {/*  (isAdmin ? <BattleWaitAdmin /> : <BattleWaitRegistration />)}*/}
+      {/*{gameIsOn && <BattleRound />}*/}
+      {/*{gameIsOver && <BattleWinner battle={battle} />}*/}
+      {battle && Object.keys(battle.heroes).length > 0 && (
         <BattlePlayersQueue />
       )}
     </>

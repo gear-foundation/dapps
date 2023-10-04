@@ -4,7 +4,6 @@ import { Wallet } from '@/features/wallet'
 import { Account, useAccount } from '@gear-js/react-hooks'
 import { useFTBalance } from '@/features/points-balance/hooks'
 import { PointsBalance, VaraBalance } from '@/components/ui/balance'
-import { useInitGame } from '@/features/tic-tac-toe/hooks'
 
 type AccountInfoProps = BaseComponentProps & {}
 
@@ -26,15 +25,14 @@ function AccountVaraBalance({ account }: { account: Account }) {
 
 export function AccountInfo({ className }: AccountInfoProps) {
   const { account } = useAccount()
-  const { isGameReady } = useInitGame()
-  const { isFTBalanceReady } = useFTBalance()
-  const isUserReady = isGameReady && isFTBalanceReady
+  // const { isFTBalanceReady } = useFTBalance()
+  const isUserReady = true //isFTBalanceReady
 
   return (
     <div className={clsx(styles.wrapper, className)}>
       {isUserReady && !!account && (
         <>
-          <AccountPointsBalance />
+          {/*<AccountPointsBalance />*/}
           <AccountVaraBalance account={account} />
         </>
       )}
