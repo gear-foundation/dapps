@@ -1,0 +1,58 @@
+.container {
+  position: absolute;
+  top: 50px;
+  left: 50px;
+  height: 200px;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  border-radius: 8px;
+  justify-content: center;
+  align-items: center;
+  z-index: 1;
+}
+
+.win {
+  border: 1px solid #2BD07180;
+}
+
+.lose {
+  background: #0A0A0FCC;
+}
+
+.title {
+  font-size: 40px;
+  font-weight: 500;
+
+  &-win {
+    color: #2BD071;
+  }
+
+  &-lose {
+    color: #ffffff;
+  }
+}
+
+.ranks {
+  display: flex;
+  justify-content: center;
+  gap: 140px;
+  width: 100%;
+}
+
+.prize {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 12px;
+}
+
+.btn {
+  width: 232px;
+  margin-top: 16px;
+}
+
+.rank {
+  font-size: 18px;
+  font-weight: 700;
+}

@@ -1,44 +1,104 @@
 @use 'utils' as *;
 
 .header {
+  height: 100px;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+.container {
+  height: 100%;
+  padding: 20px 0;
+  max-width: 1200px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 25px 0;
-}
-
-.nav {
-  @include gap(87px, right);
-  display: flex;
-  align-items: center;
+  margin: auto;
 }
 
 .menu {
+  list-style: none;
+  display: flex;
+}
+
+.wallet-info {
   display: flex;
   align-items: center;
 }
 
-.link {
-  margin-right: 40px;
-  font-weight: 300;
-  font-size: 16px;
-  line-height: 20px;
-  letter-spacing: 0.08em;
-  position: relative;
+.balance {
+  display: flex;
+  align-items: center;
+  padding: 12px 0;
+  margin-right: 20px;
 
-  &:global(.active) {
-    color: #2bd071;
-
-    &::after {
-      content: '';
-      width: 9px;
-      height: 1px;
-      position: absolute;
-      bottom: -9px;
-      left: 0;
-      right: 0;
-      margin: auto;
-      background-color: #2bd071;
-    }
+  &-coin-image {
+      margin-right: 10px;
   }
+
+  &-value {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -2%;
+  }
+
+  &-currency-name {
+      margin: 8px 0 0 4px;
+      font-size: 10px;
+      font-weight: 400;
+      color: #ffffff;
+      opacity: 0.6;
+      text-transform: uppercase;
+  }
+}
+
+.description {
+  height: 50px;
+  min-width: 128px;
+  max-width: 200px;
+  padding: 0 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-transform: capitalize;
+  border: none;
+  outline: none;
+  background: #FFFFFF12;
+  cursor: pointer;
+
+  &-icon {
+      min-width: 16px;
+      min-height: 16px;
+      margin-right: 10px;
+      background: wheat;
+      border-radius: 50px;
+  }
+
+  &-name {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 3%;
+      color: #ffffff;
+  }
+}
+
+.blur-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  background: rgba(39, 44, 63, 0.11);
+  backdrop-filter: blur(16px);
+  z-index: 4;
+  width: 100%;
+  height: 100%;
+  display: none;
+}
+
+.score {
+  padding-right: 60px
+}
+
+.vara-logo {
+  margin-right: 22px;
 }

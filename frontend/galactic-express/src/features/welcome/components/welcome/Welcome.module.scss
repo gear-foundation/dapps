@@ -1,0 +1,44 @@
+@use 'utils' as *;
+
+.button {
+  max-width: 175px;
+
+  span {
+    @include textOverflow;
+  }
+}
+
+.introWrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.welcomeContainer {
+  display: flex;
+  align-items: center;
+  padding-bottom: 10%;
+  flex: 1;
+  animation: smooth-appearing 1.5s;
+  transition: transform 1s ease-out; 
+}
+
+.imageWrapper {
+  @include flexCenter;
+  flex: 1;
+
+  .image {
+    max-width: 345px;
+  }
+}
+
+@keyframes smooth-appearing {
+  0% {
+      opacity: 0;
+  }
+
+  100% {
+      opacity: 1;
+  }
+}

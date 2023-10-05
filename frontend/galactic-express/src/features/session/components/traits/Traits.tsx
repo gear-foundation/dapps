@@ -11,7 +11,7 @@ type Props = {
 function Traits({ altitude, weather, fuelPrice, reward }: Props) {
   const getTraits = () => {
     // same order as in TRAITS
-    const traitValues = [altitude, WEATHERS[+weather], fuelPrice, reward];
+    const traitValues = [altitude, WEATHERS[weather as keyof typeof WEATHERS].name, fuelPrice, reward];
 
     return TRAITS.map(({ heading, SVG }, index) => (
       <li key={heading} className={styles.trait}>

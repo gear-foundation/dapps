@@ -1,22 +1,71 @@
 @use 'utils' as *;
 
+.content {
+  flex: 1 1 100%;
+  max-height: 430px;
+}
+
 .list {
-  @include gap(16px);
-  max-height: 70vh;
-  margin-right: -32px;
-  padding-right: 16px;
-  overflow-y: auto;
+  display: grid;
+  grid-gap: 15px;
+  width: 100%;
+
+  &--scroll {
+    padding-right: 20px;
+  }
 
   .walletButton {
+    width: 100%;
+    padding-right: 20px;
+    padding-left: 24px;
+    height: 48px;
     justify-content: space-between;
+    border: none;
+    outline: none;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    transition: 0.3s;
+    cursor: pointer;
+
+    &:not(:disabled):hover {
+      background: #d4d4d4;
+    }
+
+    &:disabled {
+      color: #000000;
+      cursor: not-allowed;
+    }
+
+    &:hover {
+      & .statusAccounts {
+        color: #00b387;
+      }
+    }
   }
 }
 
 .status {
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1;
+  display: block;
   text-align: right;
+
+  &Text {
+    display: block;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 12px;
+    color: #a2a2a2;
+  }
+
+  &Accounts {
+    display: block;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 10px;
+    letter-spacing: 0.02em;
+    color: #02f8bf;
+    transition: color 250ms ease;
+  }
 }
 
 .account {
@@ -26,6 +75,45 @@
 
   &Button {
     @include gap(12px, right);
+    height: 50px;
+    border: none;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding-right: 24px;
+    padding-left: 24px;
+    font-weight: 600;
+    font-size: 16px;
+    background: #ffffff;
+    cursor: pointer;
+    transition: 0.3s;
+    outline: none;
+    border: none;
+
+    &:not(:disabled):hover {
+      background: #d4d4d4;
+    }
+
+    &:disabled {
+      color: #000000;
+    }
+
+    &Active {
+      background: linear-gradient(270deg,rgba(100,255,219,.07) 0%,rgba(0,255,196,.07) 100%);
+      cursor: not-allowed;
+    }
+
+    span {
+      display: block;
+      max-width: 22ch;
+      white-space: nowrap;
+      @include textOverflow;
+    }
+  }
+
+  &Icon {
+    pointer-events: none;
   }
 }
 
@@ -39,24 +127,139 @@
     display: flex;
     align-items: center;
     background-color: transparent;
+    transition: all 0.3s;
+    padding: 0;
     border: none;
+    outline: none;
+    cursor: pointer;
+
+    &:hover {
+      opacity: 0.5;
+    }
   }
 }
 
 .changeText {
-  margin-left: 8px;
   font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.02em;
-  color: #2bd071;
+  color: #00b387;
 }
 
-.logoutButton {
-  @include gap(4px, right);
-  display: flex;
+.textButton {
+  display: inline-flex;
+  justify-content: center;
   align-items: center;
-  font-weight: 700;
+  background: none;
+  outline: none;
+  border: none;
   font-size: 14px;
-  line-height: 1.14;
-  color: #a2a2a2;
+  font-weight: 700;
+  letter-spacing: .54px;
+  transition: opacity 300ms ease;
+  cursor: pointer;
+  @include gap(10px, right);
+
+  &:hover {
+    opacity: 50%;
+  }
 }
+
+
+.modal {
+  position: relative;
+  z-index: 50;
+
+  &__backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    @media screen and (min-width: 768px) {
+      background-color: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+    }
+  }
+
+  &__wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    overflow-y: hidden;
+  }
+
+  &__container {
+    display: flex;
+    min-height: 100%;
+    align-items: flex-end;
+    justify-content: center;
+
+    @media screen and (min-width: 768px) {
+      align-items: center;
+    }
+  }
+
+  &__content {
+    --opacity-closed: 0%;
+    --opacity-open: 100%;
+
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    background-color: #f6f8f8;
+
+    @media screen and (min-width: 768px) {
+      --scale-closed: 90%;
+      --scale-open: 100%;
+
+      padding: 30px 32px;
+      border-radius: 4px;
+    }
+
+    @media screen and (max-width: 767px) {
+      --y-closed: 32px;
+      --y-open: 0px;
+
+      padding: 32px 16px 32px;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  &__title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 120%;
+    letter-spacing: 0.02em;
+    text-transform: capitalize;
+    color: #222424;
+  }
+
+  &__close {
+    position: relative;
+    bottom: 2px;
+    left: 5px;
+    margin-left: auto;
+    transition: color 350ms ease;
+    border: none;
+    background: none;
+    outline: none;
+    cursor: pointer;
+
+    &:hover {
+      color: #777777;
+    }
+  }
+}
+
