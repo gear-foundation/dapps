@@ -7,7 +7,7 @@ ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
     REACT_APP_GAME_ADDRESS=${REACT_APP_GAME_ADDRESS}
 
 COPY . /tamagotchi
-WORKDIR /tamagotchi/frontend
+WORKDIR /tamagotchi
 
 RUN yarn install
 CMD ["yarn", "start"]
