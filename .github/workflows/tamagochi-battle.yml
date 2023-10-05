@@ -52,7 +52,7 @@ jobs:
           push: true
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ env.FRONTEND }}:latest
           build-args: |
-            REACT_APP_NODE_ADDRES=${{ secrets.REACT_APP_NODE_ADDRES }}
+            REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
             REACT_APP_GAME_ADDRESS=${{ secrets.REACT_APP_GAME_ADDRESS }}
 
   deploy-to-k8s:
