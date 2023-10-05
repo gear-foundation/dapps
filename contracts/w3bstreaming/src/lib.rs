@@ -8,6 +8,14 @@ use w3bstreaming_io::{Action, ActionResult, Contract, Profile, Role, Stream, Sub
 static mut CONTRACT: Option<Contract> = None;
 
 #[no_mangle]
+extern fn init() {
+    let contract = Contract {
+        ..Default::default()
+    };
+    unsafe { CONTRACT = Some(contract) };
+}
+
+#[no_mangle]
 extern fn handle() {
     let input: Action = msg::load().expect("Unable to load message");
     let contract = unsafe { CONTRACT.as_mut().expect("The contract is not initialized") };
@@ -96,12 +104,7 @@ extern fn handle() {
 #[no_mangle]
 extern fn state() {
     msg::reply::<Contract>(
-        unsafe {
-            CONTRACT
-                .as_mut()
-                .expect("The contract is not initialized")
-                .clone()
-        },
+        unsafe { CONTRACT.take().expect("The contract is not initialized") },
         0,
     )
     .expect("`state()` failed");
