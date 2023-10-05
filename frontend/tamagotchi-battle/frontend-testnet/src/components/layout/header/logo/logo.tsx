@@ -1,24 +1,20 @@
-import { NavLink } from 'react-router-dom'
-import clsx from 'clsx'
-import styles from './logo.module.scss'
-import { VaraLogoIcon } from '@/assets/images'
-import { ROUTES } from '@/app/consts'
-import { useAuth } from '@/features/auth'
-import { useAccount } from '@gear-js/react-hooks'
+import { Link, useLocation } from 'react-router-dom';
+import { SpriteIcon } from 'components/ui/sprite-icon';
 
-export function Logo({ className }: BaseComponentProps) {
-  const { authToken } = useAuth()
-  const { account } = useAccount()
+export const Logo = () => {
+  const { pathname } = useLocation();
+
   return (
-    <NavLink
-      to={
-        authToken ? ROUTES.HOME : account ? ROUTES.UNAUTHORIZED : ROUTES.LOGIN
-      }
-      className={({ isActive }) =>
-        clsx(styles.link, isActive && styles.active, className)
-      }
-    >
-      <VaraLogoIcon className={styles.logo} />
-    </NavLink>
-  )
-}
+    <>
+      {pathname !== '/' ? (
+        <Link to="/" className="inline-flex text-white transition-colors hover:text-opacity-70">
+          <SpriteIcon name="logo" width={180} height={44} className="smh:h-9 h-10" />
+        </Link>
+      ) : (
+        <span className="inline-flex text-white">
+          <SpriteIcon name="logo" width={180} height={44} className="smh:h-9 h-10" />
+        </span>
+      )}
+    </>
+  );
+};

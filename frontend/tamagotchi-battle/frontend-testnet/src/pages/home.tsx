@@ -1,66 +1,56 @@
-import { BattleTamagotchi } from '@/features/battle-tamagotchi/battle-tamagotchi'
-import { RegisterTamagotchi } from '@/features/battle-tamagotchi/register-tamagotchi'
-import { useBattle } from '@/features/battle-tamagotchi/context'
-import { useAccount } from '@gear-js/react-hooks'
-import { BattlePlayersQueue } from '@/features/battle-tamagotchi/components/battle-players-queue'
-import { useMemo } from 'react'
-import { NextBattleTimer } from '@/features/battle-tamagotchi/components/next-battle-timer'
-import { InfoCard } from '@/features/battle-tamagotchi/components/info-card'
+import { useAccount } from '@gear-js/react-hooks';
+import { CreateTamagotchiForm } from 'features/battle/components/create-tamagotchi-form';
+import { ConnectAccount } from '../features/wallet/components/connect-account';
+import { Link } from 'react-router-dom';
+import { useBattle } from 'features/battle/context';
+import { cn } from 'app/utils';
 
-export default function Home() {
-  const { account } = useAccount()
-  const { battle } = useBattle()
-  // return <BattleTamagotchi />
-  const isRegistered = useMemo(
-    () =>
-      battle?.heroes
-        ? Object.values(battle?.heroes).find(
-            (hero) => hero.owner === account?.decodedAddress
-          )
-        : false,
-    [account?.decodedAddress, battle?.heroes]
-  )
-
-  if (!battle || !account) return null
-
+export const Home = () => {
+  const { battle } = useBattle();
+  const { account } = useAccount();
   return (
-    <>
-      {!isRegistered && ['Unknown', 'Registration'].includes(battle.status) && (
-        <RegisterTamagotchi battle={battle} />
+    <section className="grid grid-rows-[1fr_auto_auto] h-[calc(100vh-216px)]">
+      {account && (
+        <div className="grow flex flex-col justify-center text-center">
+          <img
+            className="grow w-full h-30 aspect-[45/56]"
+            src="/images/avatar.svg"
+            width={448}
+            height={560}
+            alt="Img"
+            loading="lazy"
+          />
+        </div>
       )}
-      {isRegistered && Object.keys(battle.heroes).length > 0 && (
-        <>
-          <div className="flex flex-col grow max-w-[560px] max-h-[440px] my-auto mx-auto pb-10">
-            <div className="space-y-6 text-center pb-6">
-              <NextBattleTimer
-                battle={battle}
-                className="pl-6 pr-8 rounded-full mx-auto"
-              />
-              <h2 className="typo-h2">Wait for the game to start</h2>
-              <p className="text-white/80 max-w-[370px] mx-auto">
-                Wait for the end of registration of other participants. As soon
-                as the timer expires, the game will begin.
-              </p>
-            </div>
-            <InfoCard className="mt-auto">
-              <p>
-                All game mechanics and automatic launch are facilitated by
-                on-chain mechanisms and delayed messages. You can read more
-                about these capabilities of Vara Network{' '}
-                <a
-                  href="#"
-                  target="_blank"
-                  className="text-primary-600 underline hover:no-underline hover:text-primary"
-                >
-                  in our Wiki
-                </a>
-                .
-              </p>
-            </InfoCard>
+      <div className={cn('flex flex-col items-center gap-9', account ? 'mt-12' : 'm-auto')}>
+        <div className="flex flex-col items-center gap-9 text-center w-full">
+          <div className="space-y-6">
+            {account ? (
+              battle &&
+              (battle.state === 'Registration' ? (
+                <h2 className="typo-h2 max-w-[430px] mx-auto">
+                  Insert program ID to&nbsp;<span className="text-primary">create a character</span>
+                </h2>
+              ) : (
+                <h2 className="typo-h2 max-w-[430px] mx-auto">
+                  Game is on! Go&nbsp;to&nbsp;
+                  <Link to="/battle" className="text-primary underline hover:no-underline">
+                    battle page
+                  </Link>
+                </h2>
+              ))
+            ) : (
+              <p className="text-[#D1D1D1]">Connect your account to start the game</p>
+            )}
           </div>
-          <BattlePlayersQueue />
-        </>
-      )}
-    </>
-  )
-}
+
+          <div className="w-full">{account ? <CreateTamagotchiForm /> : <ConnectAccount />}</div>
+
+          {/*<div className="w-full">*/}
+          {/*  <Link to={'/test'}>Test page</Link> <Link to={'/battle'}>Battle page</Link>*/}
+          {/*</div>*/}
+        </div>
+      </div>
+    </section>
+  );
+};

@@ -1,15 +1,14 @@
 export const LOCAL_STORAGE = {
   ACCOUNT: 'account',
-  WALLET: 'wallet',
 }
 
-export const ADDRESS = {
-  NODE: import.meta.env.VITE_NODE_ADDRESS,
+export const ENV = {
+  NODE: process.env.REACT_APP_NODE_ADDRESS as string,
 }
 
 export const ROUTES = {
   HOME: '/',
-  LOGIN: '/login',
-  UNAUTHORIZED: '/not-authorized',
+  GAME: '/battle',
+  TEST: '/test',
   NOTFOUND: '*',
 }

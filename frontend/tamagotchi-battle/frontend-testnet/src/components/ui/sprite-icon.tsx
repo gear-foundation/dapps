@@ -1,19 +1,14 @@
-import { FC, SVGProps } from 'react'
+import { SVGProps } from "react";
 
-type IconProps = SVGProps<SVGSVGElement> & {
-  name: string
-  section?: string
-}
+export type IconProps = SVGProps<SVGSVGElement> & {
+  name: string;
+  section?: string;
+};
 
-export const SpriteIcon: FC<IconProps> = ({
-  name,
-  className,
-  section = 'icons',
-  ...props
-}) => {
+export function SpriteIcon({ name, className, section = "icons", ...props }: IconProps) {
   return (
     <svg className={className} {...props}>
       <use href={`/sprites/${section}.svg?sprite#${name}`} />
     </svg>
-  )
-}
+  );
+};

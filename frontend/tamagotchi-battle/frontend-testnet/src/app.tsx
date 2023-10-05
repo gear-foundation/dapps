@@ -1,55 +1,26 @@
-import './app.scss'
-import { useAccount, useApi } from '@gear-js/react-hooks'
-import { Routing } from './pages'
-import { ApiLoader, Loader } from '@/components'
-import { Footer, Header } from '@/components/layout'
-import { withProviders } from '@/app/hocs'
-import { LoadingError } from '@/components/loaders/loading-error'
-import { useInitBattleData } from '@/features/battle-tamagotchi/hooks'
+import './app.scss';
+import './index.css';
+import { useApi, useAccount } from '@gear-js/react-hooks';
+import { Footer, Header } from 'components/layout';
+import { ApiLoader } from 'components/loaders/api-loader';
+import { withProviders } from 'app/hocs';
+import { Routing } from './pages';
+import { useLocation } from 'react-router-dom';
+import { ROUTES } from './app/consts';
 
-function Component() {
-  const { isApiReady } = useApi()
-  const { isAccountReady } = useAccount()
-  // const { isFTBalanceReady } = useFTBalance()
-  const { isGameReady, errorGame } = useInitBattleData()
-  // const { errorFT } = useFTBalanceSync()
-
-  const isAppReady = isApiReady && isAccountReady
-  const isUserReady = isGameReady //&& isFTBalanceReady
-  const hasError = errorGame //|| errorFT
-
+const Component = () => {
+  const { isApiReady } = useApi();
+  const { isAccountReady } = useAccount();
+  const { pathname } = useLocation();
   return (
-    <>
+    <div className="flex flex-col min-h-screen w-screen overflow-hidden">
       <Header />
-      <main>
-        {isAppReady ? (
-          <>
-            {/*{errorFT && (*/}
-            {/*  <LoadingError>*/}
-            {/*    <p>Error in the FT contract :(</p>*/}
-            {/*    <pre>*/}
-            {/*      <small>Error message:</small> <code>{errorFT}</code>*/}
-            {/*    </pre>*/}
-            {/*  </LoadingError>*/}
-            {/*)}*/}
-            {errorGame && (
-              <LoadingError>
-                <p>Error in the Game contract :(</p>
-                <pre>
-                  <small>Error message:</small> <code>{errorGame}</code>
-                </pre>
-              </LoadingError>
-            )}
-            {!hasError && isUserReady && <Routing />}
-            {!hasError && !isUserReady && <Loader />}
-          </>
-        ) : (
-          <ApiLoader />
-        )}
+      <main className="flex flex-col flex-1 smh:gap-1 gap-4 xxl:gap-8 pt-3 pb-5">
+        {isApiReady && isAccountReady ? <Routing /> : <ApiLoader />}
       </main>
-      <Footer />
-    </>
-  )
-}
+      {pathname !== ROUTES.GAME && <Footer />}
+    </div>
+  );
+};
 
-export const App = withProviders(Component)
+export const App = withProviders(Component);

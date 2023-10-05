@@ -1,9 +1,9 @@
-const plugin = require('tailwindcss/plugin')
-const defaultTheme = require('tailwindcss/defaultTheme')
+const plugin = require('tailwindcss/plugin');
+const defaultTheme = require('tailwindcss/defaultTheme');
 
 /** @type {import("tailwindcss").Config} */
 module.exports = {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  content: ['./src/**/*.{ts,tsx}'],
   theme: {
     extend: {
       animation: {
@@ -82,7 +82,6 @@ module.exports = {
       colors: {
         secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
         primary: 'rgb(var(--color-primary) / <alpha-value>)',
-        'primary-600': 'rgb(var(--color-primary-600) / <alpha-value>)',
         tertiary: 'rgb(var(--red) / <alpha-value>)',
         error: 'rgb(var(--color-error) / <alpha-value>)',
         'theme-blue': 'rgb(var(--theme-blue) / <alpha-value>)',
@@ -99,10 +98,7 @@ module.exports = {
         lg: ['18px', '20px'],
         xl: ['24px', '32px'],
         '2xl': ['28px', '32px'],
-        h2: [
-          '40px',
-          { lineHeight: '48px', fontWeight: 700, letterSpacing: '-0.02em' },
-        ],
+        h2: ['40px', { lineHeight: '48px', fontWeight: 700, letterSpacing: '-0.02em' }],
       },
       opacity: {
         15: '.15',
@@ -193,8 +189,8 @@ module.exports = {
         '.vertical-lr': {
           writingMode: 'vertical-lr',
         },
-      }
-      addUtilities(newUtilities)
+      };
+      addUtilities(newUtilities);
     }),
   ],
-}
+};

@@ -1,15 +1,9 @@
-import { Logo } from './logo'
-import styles from './header.module.scss'
-import { AccountInfo } from './account-info'
-import { Container } from '@/components/ui/container'
+import { Logo } from './logo';
+import { AccountComponent } from './account';
 
-export function Header() {
-  return (
-    <header className={styles.header}>
-      <Container className={styles.header__container}>
-        <Logo className={styles.header__logo} />
-        <AccountInfo />
-      </Container>
-    </header>
-  )
-}
+export const Header = () => (
+  <header className="container flex justify-between items-center py-5 xxl:py-7.5">
+    <Logo />
+    <AccountComponent />
+  </header>
+);

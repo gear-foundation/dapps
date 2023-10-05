@@ -1,25 +1,8 @@
-@use '@/assets/styles';
-@import "global.css";
+@use 'assets/styles';
+@use '@gear-js/ui/variables' as *;
 
-#root {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-#alert-root {
-  color: #fff;
-
-  > div > div > div {
-    border: none;
-    border-radius: 0;
-  }
-}
-
-main {
-  position: relative; // for loaders
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  padding: 32px 0;
+:root {
+  --color-secondary: #{red($textColorSecondary) green($textColorSecondary) blue($textColorSecondary)};
+  --color-primary: #{red($successColor) green($successColor) blue($successColor)};
+  --color-error: #{red($errorColor) green($errorColor) blue($errorColor)};
 }
