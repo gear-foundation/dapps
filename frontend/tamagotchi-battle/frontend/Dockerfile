@@ -10,4 +10,5 @@ COPY . /tamagotchi
 WORKDIR /tamagotchi
 
 RUN yarn install
+RUN yarn build
 CMD ["yarn", "start"]
