@@ -4,7 +4,7 @@ import { UserMessageSent, encodeAddress } from '@gear-js/api';
 import { Button } from '@gear-js/ui';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { CURRENT_CONTRACT_ADDRESS_ATOM, IS_CONTRACT_ADDRESS_INITIALIZED_ATOM } from 'atoms';
-import { Vec, u8 } from '@polkadot/types';
+import { Bytes, Vec, u8 } from '@polkadot/types';
 import { useAccount, useApi, withoutCommas } from '@gear-js/react-hooks';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import src from 'assets/images/earth.gif';
@@ -49,13 +49,13 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
   >('registration');
 
   const meta = useEscrowMetadata();
-  const getDecodedPayload = (payload: Vec<u8>) => {
+  const getDecodedPayload = (payload: Bytes) => {
     if (meta?.types.handle.output) {
       return meta.createType(meta.types.handle.output, payload).toHuman();
     }
   };
 
-  const getDecodedReply = (payload: Vec<u8>): DecodedReply => {
+  const getDecodedReply = (payload: Bytes): DecodedReply => {
     const decodedPayload = getDecodedPayload(payload);
 
     return decodedPayload as DecodedReply;
