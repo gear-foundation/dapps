@@ -9,9 +9,9 @@ import { useAccountAvailableBalance, useAccountAvailableBalanceSync, useWalletSy
 function Component() {
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
-  const { availableBalance } = useAccountAvailableBalance();
+  const { isAvailableBalanceReady } = useAccountAvailableBalance();
 
-  const isAppReady = isApiReady && isAccountReady && availableBalance;
+  const isAppReady = isApiReady && isAccountReady && isAvailableBalanceReady;
 
   useWalletSync();
   useAuthSync();
