@@ -125,7 +125,6 @@ extern fn init() {
         entertained_block: current_block,
         rested: MAX_VALUE,
         rested_block: current_block,
-        ..Default::default()
     };
     unsafe {
         TAMAGOTCHI = Some(tmg);
