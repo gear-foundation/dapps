@@ -127,7 +127,9 @@ extern fn init() {
         rested_block: current_block,
         ..Default::default()
     };
-    unsafe { TAMAGOTCHI = Some(tmg); }
+    unsafe {
+        TAMAGOTCHI = Some(tmg);
+    }
 }
 
 #[no_mangle]
