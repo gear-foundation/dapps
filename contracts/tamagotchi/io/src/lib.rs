@@ -1,7 +1,7 @@
 #![no_std]
 
 use codec::{Decode, Encode};
-use gmeta::{InOut, Metadata, Out};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
 
 pub type AttributeId = u32;
@@ -10,12 +10,19 @@ pub type TransactionId = u64;
 pub struct ProgramMetadata;
 
 impl Metadata for ProgramMetadata {
-    type Init = InOut<String, ()>;
+    type Init = In<TmgInit>;
     type Handle = InOut<TmgAction, TmgReply>;
     type Reply = ();
     type Others = ();
     type Signal = ();
     type State = Out<Tamagotchi>;
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct TmgInit {
+    pub name: String,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
