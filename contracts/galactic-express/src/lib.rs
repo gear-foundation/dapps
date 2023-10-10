@@ -1,6 +1,7 @@
 #![no_std]
 
 use core::array;
+use galactic_express_io::*;
 use gstd::collections::HashMap;
 use gstd::{
     errors::Error as GstdError,
@@ -10,7 +11,6 @@ use gstd::{
     ActorId,
 };
 use num_traits::FromBytes;
-use galactic_express_io::*;
 
 #[cfg(feature = "binary-vendor")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
