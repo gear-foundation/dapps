@@ -19,6 +19,18 @@ pub trait Program {
     }
 }
 
+pub trait TransactionalProgram {
+    fn previous_mut_transaction_id(&mut self) -> &mut u64;
+
+    fn transaction_id(&mut self) -> u64 {
+        let tx_id = self.previous_mut_transaction_id();
+
+        *tx_id = tx_id.wrapping_add(1);
+
+        *tx_id
+    }
+}
+
 #[must_use]
 pub struct RunResult<Check, CheckResult, Event, Error> {
     pub result: InnerRunResult,
@@ -48,11 +60,6 @@ impl<Check, CheckResult, Event: Decode + Debug, Error: Decode + Debug + PartialE
     #[track_caller]
     pub fn succeed(self, value: Check) -> CheckResult {
         (self.check)(decode::<Result<Event, Error>>(&self.result).unwrap(), value)
-    }
-
-    #[track_caller]
-    pub fn contains(self, value: Check) {
-        (self.check)(decode::<Event>(&self.result), value);
     }
 }
 

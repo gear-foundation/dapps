@@ -1,17 +1,21 @@
 #![no_std]
 
-use galactic_express_io::*;
-use gear_lib::tx_manager::{Stepper, TransactionKind, TransactionManager};
+use core::array;
+use gstd::collections::HashMap;
 use gstd::{
-    collections::HashMap,
     errors::Error as GstdError,
-    exec, iter, msg,
+    exec, msg,
     ops::{Add, Rem, Sub},
     prelude::*,
     ActorId,
 };
 use num_traits::FromBytes;
-use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
+use galactic_express_io::*;
+
+#[cfg(feature = "binary-vendor")]
+include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
+
+static mut STATE: Option<Contract> = None;
 
 struct Random {
     index: usize,
@@ -26,12 +30,13 @@ impl Random {
     }
 
     fn next(&mut self) -> u8 {
-        let next = *self
-            .random
-            .get(self.index)
-            .expect("index for the random array traversing must'n overflow");
+        let next = self.random[self.index];
 
         self.index += 1;
+        debug_assert!(
+            self.index < 33,
+            "overflow of the index for the random array traversing"
+        );
 
         next
     }
@@ -48,72 +53,76 @@ impl Random {
     }
 
     fn chance(&mut self, probability: u8) -> bool {
-        assert!(probability < 101, "probability can't be more than 100");
+        debug_assert!(probability < 101, "probability can't be more than 100");
 
         self.next() % 100 < probability
     }
 }
 
-static mut STATE: Option<(Contract, TransactionManager<()>)> = None;
-
-fn state_mut() -> Result<&'static mut (Contract, TransactionManager<()>), Error> {
-    unsafe { STATE.as_mut().ok_or(Error::StateUninitaliazed) }
-}
-
-enum Stage {
-    Registration(HashMap<ActorId, Participant>),
-    Results(Results),
-}
-
-impl Stage {
-    fn mut_participants(&mut self) -> Result<&mut HashMap<ActorId, Participant>, Error> {
-        if let Stage::Registration(participants) = self {
-            Ok(participants)
-        } else {
-            Err(Error::SessionEnded)
-        }
-    }
-}
-
-impl Default for Stage {
-    fn default() -> Self {
-        Self::Results(Results::default())
-    }
-}
-
-#[derive(Default)]
 struct Contract {
     admin: ActorId,
-    sft: ActorId,
 
     session_id: u128,
+    is_session_ended: bool,
+
     altitude: u16,
     weather: Weather,
     fuel_price: u8,
     reward: u128,
-    stage: Stage,
+    participants: HashMap<ActorId, Participant>,
+    turns: Vec<HashMap<ActorId, Turn>>,
+    rankings: Vec<(ActorId, u128)>,
+}
+
+impl Default for Contract {
+    fn default() -> Self {
+        let State {
+            admin,
+            session,
+            is_session_ended,
+            ..
+        } = State::default();
+
+        Self {
+            admin,
+
+            session_id: session.session_id,
+            is_session_ended,
+
+            altitude: session.altitude,
+            weather: session.weather,
+            fuel_price: session.fuel_price,
+            reward: session.reward,
+            participants: HashMap::new(),
+            turns: vec![],
+            rankings: vec![],
+        }
+    }
 }
 
 impl Contract {
-    fn assert_admin(&self) -> Result<(), Error> {
-        assert_admin(self.admin)
+    fn change_admin(&mut self, actor: ActorId) -> Result<Event, Error> {
+        let msg_source = msg::source();
+
+        self.assert_admin(msg_source)?;
+
+        self.admin = actor;
+
+        Ok(Event::AdminChanged(msg_source, self.admin))
     }
 
-    fn create_new_session(&mut self) -> Result<Event, Error> {
-        let stage = &mut self.stage;
-
-        match stage {
-            Stage::Registration(participants) => {
-                assert_admin(self.admin)?;
-
-                participants.clear();
-            }
-            Stage::Results { .. } => *stage = Stage::Registration(HashMap::new()),
+    fn assert_admin(&self, actor: ActorId) -> Result<(), Error> {
+        if self.admin == actor {
+            Ok(())
+        } else {
+            Err(Error::AccessDenied)
         }
+    }
 
+    fn new_session(&mut self) -> Result<Event, Error> {
         let mut random = Random::new()?;
 
-        self.weather = match random.next() % (Weather::Tornado as u8 + 1) {
+        let random_weather = match random.next() % 6 {
             0 => Weather::Clear,
             1 => Weather::Cloudy,
             2 => Weather::Rainy,
@@ -122,12 +131,25 @@ impl Contract {
             5 => Weather::Tornado,
             _ => unreachable!(),
         };
-        self.altitude = random.generate(TURN_ALTITUDE.0, TURN_ALTITUDE.1) * TURNS as u16;
-        self.fuel_price = random.generate(FUEL_PRICE.0, FUEL_PRICE.1);
-        self.reward = random.generate(REWARD.0, REWARD.1);
+        let random_fuel_price = random.generate(MIN_FUEL_PRICE, MAX_FUEL_PRICE);
+        let random_reward = random.generate(MIN_REWARD, MAX_REWARD);
+        let random_altitude =
+            random.generate(MIN_TURN_ALTITUDE, MAX_TURN_ALTITUDE) * TOTAL_TURNS as u16;
+
+        self.is_session_ended = false;
+
+        self.altitude = random_altitude;
+        self.weather = random_weather;
+        self.fuel_price = random_fuel_price;
+        self.reward = random_reward;
+
+        self.participants.clear();
+        self.turns.clear();
+        self.rankings.clear();
 
         Ok(Event::NewSession(Session {
-            id: self.session_id,
+            session_id: self.session_id,
+
             altitude: self.altitude,
             weather: self.weather,
             fuel_price: self.fuel_price,
@@ -135,309 +157,266 @@ impl Contract {
         }))
     }
 
-    async fn start_game(
-        &mut self,
-        mut participant: Participant,
-        stepper: &mut Stepper,
-    ) -> Result<Event, Error> {
-        self.assert_admin()?;
+    fn turn(
+        &self,
+        turn_index: usize,
+        random: &mut Random,
+        payload_amount: u8,
+        fuel_left: u8,
+    ) -> Result<u8, HaltReason> {
+        let Some(new_fuel_left) = fuel_left.checked_sub((payload_amount + 2 * self.weather as u8) / TOTAL_TURNS as u8) else {
+            return Err(HaltReason::FuelShortage);
+        };
 
-        let participants = self.stage.mut_participants()?;
+        match turn_index {
+            0 => {
+                if random.chance(3) {
+                    return Err(HaltReason::EngineFailure);
+                }
 
-        if participants.is_empty() {
+                if fuel_left >= 80 - 2 * self.weather as u8 && random.chance(10) {
+                    return Err(HaltReason::FuelOverload);
+                }
+            }
+            1 => {
+                if payload_amount >= 80 - 2 * self.weather as u8 && random.chance(10) {
+                    return Err(HaltReason::PayloadOverload);
+                }
+
+                if random.chance(5 + self.weather as u8) {
+                    return Err(HaltReason::SeparationFailure);
+                }
+            }
+            2 => {
+                if random.chance(10 + self.weather as u8) {
+                    return Err(HaltReason::AsteroidCollision);
+                }
+            }
+            _ => unreachable!(),
+        }
+
+        Ok(new_fuel_left)
+    }
+
+    async fn start_game(&mut self, participant: Participant) -> Result<Event, Error> {
+        self.assert_admin(msg::source())?;
+
+        if self.participants.is_empty() {
             return Err(Error::NotEnoughParticipants);
         }
 
-        participant.check()?;
+        self.register(participant, false)?;
 
         let mut random = Random::new()?;
-        let mut turns = HashMap::new();
+        let mut turns = vec![];
 
-        for (actor, participant) in participants
-            .into_iter()
-            .chain(iter::once((&msg::source(), &mut participant)))
-        {
-            let mut actor_turns = Vec::with_capacity(TURNS);
-            let mut remaining_fuel = participant.fuel;
+        for turn_index in 0..TOTAL_TURNS {
+            let mut turn: HashMap<ActorId, Turn> = HashMap::new();
 
-            for turn_index in 0..TURNS {
-                match turn(
-                    turn_index,
-                    remaining_fuel,
-                    &mut random,
-                    self.weather,
-                    participant.payload,
-                ) {
-                    Ok(fuel_left) => {
-                        remaining_fuel = fuel_left;
+            let first_turn: HashMap<ActorId, Turn> = self
+                .participants
+                .iter()
+                .map(|(actor, participant)| {
+                    (
+                        *actor,
+                        Turn::Alive {
+                            fuel_left: participant.fuel_amount,
+                            payload_amount: participant.payload_amount,
+                        },
+                    )
+                })
+                .collect();
 
-                        actor_turns.push(TurnOutcome::Alive {
-                            fuel_left,
-                            payload: participant.payload,
-                        });
+            let participants_data = if turn_index == 0 {
+                &first_turn
+            } else {
+                &turns[turn_index - 1]
+            };
+
+            for (actor, turn_entry) in participants_data
+                .into_iter()
+                .map(|(actor, turn_entry)| (*actor, *turn_entry))
+            {
+                let (fuel_left, payload_amount) = match turn_entry {
+                    Turn::Alive {
+                        fuel_left,
+                        payload_amount,
+                    } => (fuel_left, payload_amount),
+                    destroyed => {
+                        turn.insert(actor, destroyed);
+
+                        continue;
                     }
-                    Err(halt_reason) => {
-                        actor_turns.push(TurnOutcome::Destroyed(halt_reason));
+                };
 
-                        break;
-                    }
-                }
+                turn.insert(
+                    actor,
+                    match self.turn(turn_index, &mut random, payload_amount, fuel_left) {
+                        Ok(new_fuel_left) => Turn::Alive {
+                            fuel_left: new_fuel_left,
+                            payload_amount,
+                        },
+                        Err(reason) => Turn::Destroyed(reason),
+                    },
+                );
             }
 
-            turns.insert(*actor, actor_turns);
+            turns.push(turn);
         }
 
-        let mut scores: Vec<_> = turns
-            .iter()
-            .map(|(actor, turns)| {
-                let last_turn = turns.last().expect("there must be at least 1 turn");
+        self.is_session_ended = true;
+        self.turns = turns.clone();
+        self.session_id = self.session_id.wrapping_add(1);
 
-                (
-                    *actor,
-                    match last_turn {
-                        TurnOutcome::Alive { fuel_left, payload } => {
-                            *payload as u32 * self.altitude as u32 + *fuel_left as u32
-                        }
-                        TurnOutcome::Destroyed(_) => 0,
-                    },
-                )
+        let mut rankings = vec![];
+
+        for (participant, turn_info) in &turns[TOTAL_TURNS - 1] {
+            rankings.push((
+                participant,
+                match turn_info {
+                    Turn::Alive {
+                        fuel_left,
+                        payload_amount,
+                    } => {
+                        *payload_amount as u128 * self.reward * self.altitude as u128
+                            + *fuel_left as u128
+                    }
+                    Turn::Destroyed(_) => 0,
+                },
+            ))
+        }
+
+        rankings.sort_unstable_by(|a, b| a.1.cmp(&b.1));
+
+        let mut min_earnings = u128::MAX;
+        let mut factor = 10;
+
+        let rankings = rankings
+            .into_iter()
+            .rev()
+            .map(|(actor, earnings)| {
+                if earnings < min_earnings {
+                    min_earnings = earnings;
+                    factor -= 2;
+                }
+                (*actor, self.reward / 10 * factor)
             })
             .collect();
 
-        scores.sort_by(|(_, score_a), (_, score_b)| score_a.cmp(score_b));
+        self.rankings = rankings;
 
-        let mut rankings = Vec::with_capacity(scores.len());
-        let mut deductible = 0;
+        Ok(Event::GameFinished(
+            turns
+                .into_iter()
+                .map(|turn| turn.into_iter().collect())
+                .collect(),
+        ))
+    }
 
-        for (recipient, _) in scores.into_iter().rev() {
-            let amount = self.reward - deductible;
-
-            if FTokenEvent::Ok
-                != msg::send_for_reply_as(
-                    self.sft,
-                    FTokenAction::Message {
-                        transaction_id: stepper.step()?,
-                        payload: LogicAction::Mint { recipient, amount },
-                    },
-                    0,
-                    0,
-                )?
-                .await?
-            {
-                return Err(Error::TransferFailed);
-            }
-
-            if matches!(rankings.last(), Some((_, reward)) if *reward != amount) {
-                deductible += self.reward / 10 * 6 / PARTICIPANTS as u128;
-            }
-
-            rankings.push((recipient, amount));
+    fn register(&mut self, participant: Participant, is_not_admin: bool) -> Result<Event, Error> {
+        if self.is_session_ended {
+            return Err(Error::EndedSession);
         }
 
-        let mut io_turns: Vec<Vec<(ActorId, TurnOutcome)>> = vec![];
+        let msg_source = msg::source();
 
-        for (actor, actor_turns) in turns {
-            let mut last_turn = actor_turns.get(0).expect("there must be at least 1 turn");
-
-            for i in 0..TURNS {
-                if let Some(turns) = io_turns.get_mut(i) {
-                    turns.push((
-                        actor,
-                        if let Some(turn) = actor_turns.get(i) {
-                            last_turn = turn;
-
-                            *turn
-                        } else {
-                            *last_turn
-                        },
-                    ))
-                } else {
-                    io_turns.push(vec![(actor, *last_turn)])
-                }
-            }
+        if is_not_admin && msg_source == self.admin {
+            return Err(Error::AccessDenied);
         }
 
-        let results = Results {
-            turns: io_turns,
-            rankings,
-        };
+        if is_not_admin && self.participants.len() >= 3 {
+            return Err(Error::FullSession);
+        }
 
-        self.session_id = self.session_id.wrapping_add(1);
-        self.stage = Stage::Results(results.clone());
+        if participant.fuel_amount > 100 || participant.payload_amount > 100 {
+            return Err(Error::FuelOrPayloadOverload);
+        }
 
-        Ok(Event::GameFinished(results))
+        self.participants.insert(msg_source, participant);
+
+        Ok(Event::Registered(msg_source, participant))
     }
 }
 
-fn assert_admin(admin: ActorId) -> Result<(), Error> {
-    if msg::source() != admin {
-        Err(Error::AccessDenied)
-    } else {
-        Ok(())
+#[gstd::async_main]
+async fn main() {
+    msg::reply(process_handle().await, 0).expect("failed to encode or reply from `handle()`");
+}
+
+async fn process_handle() -> Result<Event, Error> {
+    let action = msg::load()?;
+    let contract = unsafe { STATE.as_mut().expect("state isn't initialized") };
+
+    match action {
+        Action::ChangeAdmin(actor) => contract.change_admin(actor),
+        Action::CreateNewSession => contract.new_session(),
+        Action::Register(participant) => contract.register(participant, true),
+        Action::StartGame(participant) => contract.start_game(participant).await,
     }
 }
 
-fn turn(
-    turn: usize,
-    remaining_fuel: u8,
-    random: &mut Random,
-    weather: Weather,
-    payload: u8,
-) -> Result<u8, HaltReason> {
-    let Some(new_remaining_fuel) = remaining_fuel.checked_sub((payload + 2 * weather as u8) / TURNS as u8) else {
-        return Err(HaltReason::FuelShortage);
-    };
+#[gstd::async_init]
+async fn init() {
+    let result = process_init().await;
+    let is_err = result.is_err();
 
-    match turn {
-        0 => {
-            if random.chance(3) {
-                return Err(HaltReason::EngineFailure);
-            }
+    msg::reply(result, 0).expect("failed to encode or reply from `init()`");
 
-            if remaining_fuel >= 80 - 2 * weather as u8 && random.chance(10) {
-                return Err(HaltReason::FuelOverload);
-            }
-        }
-        1 => {
-            if payload >= 80 - 2 * weather as u8 && random.chance(10) {
-                return Err(HaltReason::PayloadOverload);
-            }
-
-            if random.chance(5 + weather as u8) {
-                return Err(HaltReason::SeparationFailure);
-            }
-        }
-        2 => {
-            if random.chance(10 + weather as u8) {
-                return Err(HaltReason::AsteroidCollision);
-            }
-        }
-        _ => unreachable!(),
+    if is_err {
+        exec::exit(msg::source());
     }
-
-    Ok(new_remaining_fuel)
 }
 
-#[no_mangle]
-extern fn init() {
-    reply(process_init()).expect("failed to encode or reply from `init()`");
-}
-
-fn process_init() -> Result<(), Error> {
-    let Initialize { admin, sft } = msg::load()?;
-
+async fn process_init() -> Result<(), Error> {
     unsafe {
-        STATE = Some((
-            Contract {
-                admin,
-                sft,
-                ..Default::default()
-            },
-            TransactionManager::new(),
-        ));
+        STATE = Some(Contract {
+            admin: msg::source(),
+            ..Default::default()
+        })
     }
 
     Ok(())
 }
 
-#[gstd::async_main]
-async fn main() {
-    reply(process_main().await).expect("failed to encode or reply from `main()`");
-}
-
-async fn process_main() -> Result<Event, Error> {
-    let action = msg::load()?;
-    let (contract, tx_manager) = state_mut()?;
-
-    match action {
-        Action::ChangeAdmin(actor) => {
-            contract.assert_admin()?;
-
-            let old_admin = contract.admin;
-
-            contract.admin = actor;
-
-            Ok(Event::AdminChanged(old_admin, contract.admin))
-        }
-        Action::ChangeSft(actor) => {
-            contract.assert_admin()?;
-
-            let old_sft = contract.sft;
-
-            contract.sft = actor;
-
-            Ok(Event::SftChanged(old_sft, contract.sft))
-        }
-        Action::CreateNewSession => contract.create_new_session(),
-        Action::Register(participant) => {
-            let msg_source = msg::source();
-
-            if msg_source == contract.admin {
-                return Err(Error::AccessDenied);
-            }
-
-            let participants = contract.stage.mut_participants()?;
-
-            if participants.len() >= PARTICIPANTS - 1 {
-                return Err(Error::SessionFull);
-            }
-
-            participant.check()?;
-            participants.insert(msg_source, participant);
-
-            Ok(Event::Registered(msg_source, participant))
-        }
-        Action::StartGame(participant) => {
-            contract
-                .start_game(
-                    participant,
-                    &mut tx_manager
-                        .acquire_transaction(msg::source(), TransactionKind::New(()))?
-                        .stepper,
-                )
-                .await
-        }
-    }
-}
-
 #[no_mangle]
 extern fn state() {
-    let (
-        Contract {
+    let state = unsafe { STATE.take().expect("Unexpected error in taking state") };
+    msg::reply::<State>(state.into(), 0)
+        .expect("Failed to encode or reply with `IoNft` from `state()`");
+}
+
+impl From<Contract> for State {
+    fn from(value: Contract) -> Self {
+        let Contract {
             admin,
-            sft,
             session_id,
+            is_session_ended,
             altitude,
             weather,
             fuel_price,
             reward,
-            stage,
-        },
-        _,
-    ) = state_mut().expect("state uninitialized");
+            participants,
+            turns,
+            rankings,
+        } = value;
 
-    let stage = match stage {
-        Stage::Registration(participants) => {
-            galactic_express_io::Stage::Registration(participants.clone().into_iter().collect())
+        Self {
+            admin,
+            session: Session {
+                session_id,
+                altitude,
+                weather,
+                fuel_price,
+                reward,
+            },
+            is_session_ended,
+
+            participants: participants.into_iter().collect(),
+            turns: turns
+                .into_iter()
+                .map(|turn| turn.into_iter().collect())
+                .collect(),
+            rankings,
         }
-        Stage::Results(results) => galactic_express_io::Stage::Results(results.clone()),
-    };
-
-    reply(State {
-        admin: *admin,
-        sft: *sft,
-        session: Session {
-            id: *session_id,
-            altitude: *altitude,
-            weather: *weather,
-            fuel_price: *fuel_price,
-            reward: *reward,
-        },
-        stage,
-    })
-    .expect("failed to encode or reply from `state()`");
-}
-
-fn reply(payload: impl Encode) -> Result<(), GstdError> {
-    msg::reply(payload, 0).map(|_| ())
+    }
 }

@@ -1,108 +1,122 @@
-use utils::{prelude::*, Sft};
-
+use galactic_express_io::*;
+use utils::prelude::*;
 mod utils;
 
 #[test]
 fn test() {
     let system = utils::initialize_system();
 
-    let sft = Sft::initialize(&system);
-
-    let mut balances: HashMap<ActorId, u128> = PLAYERS
-        .into_iter()
-        .chain(ADMINS)
-        .map(|actor| (actor.into(), 0))
-        .collect();
-
     for admin_id in ADMINS {
-        let mut rockets = GalEx::initialize(&system, admin_id, sft.actor_id());
+        let mut rockets = Rockets::initialize(&system, admin_id);
         if let State {
             admin,
-            session: Session { id: 0, .. },
-            sft: true_sft,
-            stage: Stage::Results(results),
+            session: Session { session_id: 0, .. },
+            is_session_ended: true,
+            participants,
+            turns,
+            rankings,
         } = rockets.state()
         {
             assert_eq!(admin, admin_id.into());
-            assert_eq!(true_sft, sft.actor_id());
-            assert_eq!(results, Results::default());
+            assert_eq!((participants, turns, rankings), (vec![], vec![], vec![]));
         } else {
             unreachable!()
         }
 
-        for (session_id, starter) in [admin_id, PLAYERS[0]].into_iter().enumerate() {
-            rockets
-                .create_new_session(starter)
-                .succeed(session_id as u128);
+        for (session_id, starter) in [admin_id, PLAYERS[0]]
+            .into_iter()
+            .enumerate()
+            .map(|e| ((e.0 + 1) as u128, e.1))
+        {
+            rockets.create_new_session(starter).succeed(session_id - 1);
+            if let State {
+                session:
+                    Session {
+                        altitude,
+                        weather,
+                        fuel_price,
+                        reward,
+                        ..
+                    },
+                is_session_ended: false,
+                ..
+            } = rockets.state()
+            {
+                assert!((weather as u8) < 6);
+                assert!(
+                    altitude >= MIN_TURN_ALTITUDE * (TOTAL_TURNS as u16)
+                        && altitude < MAX_TURN_ALTITUDE * (TOTAL_TURNS as u16)
+                );
+                assert!((MIN_FUEL_PRICE..MAX_FUEL_PRICE).contains(&fuel_price));
+                assert!((MIN_REWARD..MAX_REWARD).contains(&reward));
+            } else {
+                unreachable!()
+            }
 
-            let player = (
+            let mut player = (
                 ADMINS[0],
                 Participant {
-                    fuel: 42,
-                    payload: 24,
+                    fuel_amount: 42,
+                    payload_amount: 24,
                 },
             );
 
             for player_id in PLAYERS {
+                player.0 = player_id;
+
                 rockets
-                    .register(player_id, player.1)
-                    .succeed((player_id, player.1));
+                    .register(player.0, player.1)
+                    .succeed((player.0, player.1));
             }
+            let State { participants, .. } = rockets.state();
+            assert_eq!(
+                HashMap::from_iter(
+                    PLAYERS
+                        .into_iter()
+                        .map(|player_id| (player_id.into(), player.1))
+                ),
+                participants.into_iter().collect::<HashMap<_, _>>(),
+            );
+
+            rockets
+                .start_game(admin_id, player.1)
+                .succeed(PLAYERS.into_iter().chain(iter::once(admin_id)).collect());
             if let State {
-                stage: Stage::Registration(participants),
+                participants,
+                session:
+                    Session {
+                        session_id: true_sess_id,
+                        reward,
+                        ..
+                    },
+                is_session_ended: true,
+                rankings,
                 ..
             } = rockets.state()
             {
+                assert_eq!(true_sess_id, session_id);
                 assert_eq!(
                     HashMap::from_iter(
                         PLAYERS
                             .into_iter()
                             .map(|player_id| (player_id.into(), player.1))
+                            .chain(iter::once((admin_id.into(), player.1)))
                     ),
                     participants.into_iter().collect::<HashMap<_, _>>(),
                 );
-            } else {
-                unreachable!()
-            }
-
-            rockets
-                .start_game(admin_id, player.1)
-                .succeed(PLAYERS.into_iter().chain(iter::once(admin_id)).collect());
-            let rankings = if let State {
-                session:
-                    Session {
-                        id: true_session_id,
-                        reward,
-                        ..
-                    },
-                stage: Stage::Results(Results { rankings, .. }),
-                ..
-            } = rockets.state()
-            {
-                assert_eq!(true_session_id, session_id as u128 + 1);
-
-                let deductible = reward / 10 * 6 / PARTICIPANTS as u128;
-
-                assert!(rankings.iter().all(|(_, true_reward)| (REWARD.0..REWARD.1)
-                    .contains(true_reward)
-                    && (*true_reward == reward
-                        || *true_reward == 0
-                        || *true_reward == reward - deductible
-                        || *true_reward == reward - deductible * 2
-                        || *true_reward == reward - deductible * 3)));
-
-                rankings
+                assert_eq!(rankings.len(), 4);
+                assert!(rankings
+                    .iter()
+                    .all(|(_, true_reward)| *true_reward >= MIN_REWARD
+                        && *true_reward < MAX_REWARD
+                        && (*true_reward == reward
+                            || *true_reward == 0
+                            || *true_reward == reward / 10 * 8
+                            || *true_reward == reward / 10 * 6
+                            || *true_reward == reward / 10 * 4)));
             } else {
                 unreachable!()
             };
-
-            for (actor, reward) in rankings {
-                let bal = balances.get_mut(&actor).unwrap();
-
-                *bal += reward;
-
-                sft.balance(actor).contains(*bal)
-            }
         }
     }
 }
@@ -111,8 +125,7 @@ fn test() {
 fn errors() {
     let system = utils::initialize_system();
 
-    let sft = Sft::initialize(&system);
-    let mut rockets = GalEx::initialize(&system, ADMINS[0], sft.actor_id());
+    let mut rockets = Rockets::initialize(&system, ADMINS[0]);
 
     rockets
         .change_admin(PLAYERS[0], PLAYERS[0])
@@ -123,7 +136,7 @@ fn errors() {
 
     rockets
         .register(PLAYERS[0], Default::default())
-        .failed(Error::SessionEnded);
+        .failed(Error::EndedSession);
     rockets
         .start_game(PLAYERS[0], Default::default())
         .failed(Error::AccessDenied);
@@ -144,8 +157,8 @@ fn errors() {
         .start_game(
             ADMINS[1],
             Participant {
-                fuel: 101,
-                payload: 100,
+                fuel_amount: 101,
+                payload_amount: 100,
             },
         )
         .failed(Error::FuelOrPayloadOverload);
@@ -153,8 +166,8 @@ fn errors() {
         .start_game(
             ADMINS[1],
             Participant {
-                fuel: 100,
-                payload: 101,
+                fuel_amount: 100,
+                payload_amount: 101,
             },
         )
         .failed(Error::FuelOrPayloadOverload);
@@ -162,8 +175,8 @@ fn errors() {
         .start_game(
             ADMINS[1],
             Participant {
-                fuel: 101,
-                payload: 101,
+                fuel_amount: 101,
+                payload_amount: 101,
             },
         )
         .failed(Error::FuelOrPayloadOverload);
@@ -172,5 +185,5 @@ fn errors() {
         .failed(Error::AccessDenied);
     rockets
         .register(FOREIGN_USER, Default::default())
-        .failed(Error::SessionFull);
+        .failed(Error::FullSession);
 }
