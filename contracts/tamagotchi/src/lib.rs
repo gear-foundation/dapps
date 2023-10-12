@@ -1,9 +1,12 @@
 #![no_std]
 
+use codec::{Decode, Encode};
 use gstd::{exec, msg, prelude::*, ActorId};
 use tamagotchi_io::*;
 
-#[derive(Default, Clone)]
+#[derive(Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 struct Tamagotchi {
     name: String,
     date_of_birth: u64,
@@ -14,7 +17,6 @@ struct Tamagotchi {
     entertained_block: u64,
     rested: u64,
     rested_block: u64,
-    allowed_account: Option<ActorId>,
 }
 
 static mut TAMAGOTCHI: Option<Tamagotchi> = None;
@@ -22,8 +24,8 @@ static mut TAMAGOTCHI: Option<Tamagotchi> = None;
 impl Tamagotchi {
     fn feed(&mut self) {
         assert!(!self.tmg_is_dead(), "Tamagotchi has died");
-        self.fed_block = exec::block_timestamp();
         self.fed += FILL_PER_FEED - self.calculate_hunger();
+        self.fed_block = exec::block_timestamp();
         self.fed = if self.fed > MAX_VALUE {
             MAX_VALUE
         } else {
@@ -34,8 +36,8 @@ impl Tamagotchi {
 
     fn play(&mut self) {
         assert!(!self.tmg_is_dead(), "Tamagotchi has died");
-        self.entertained_block = exec::block_timestamp();
         self.entertained += FILL_PER_ENTERTAINMENT - self.calculate_boredom();
+        self.entertained_block = exec::block_timestamp();
         self.entertained = if self.entertained > MAX_VALUE {
             MAX_VALUE
         } else {
@@ -46,8 +48,8 @@ impl Tamagotchi {
 
     fn sleep(&mut self) {
         assert!(!self.tmg_is_dead(), "Tamagotchi has died");
-        self.rested_block = exec::block_timestamp();
         self.rested += FILL_PER_SLEEP - self.calculate_energy();
+        self.rested_block = exec::block_timestamp();
         self.rested = if self.rested > MAX_VALUE {
             MAX_VALUE
         } else {
@@ -100,8 +102,6 @@ extern fn handle() {
         TmgAction::Age => {
             let age = exec::block_timestamp() - tmg.date_of_birth;
             msg::reply(TmgReply::Age(age), 0).expect("Error in a reply `TmgEvent::Age`");
-            // ⚠️ TODO: Send a reply about the Tamagotchi age
-            // Hint: the message payload must be TmgReply::Age(age)
         }
         TmgAction::Feed => tmg.feed(),
         TmgAction::Play => tmg.play(),
@@ -111,11 +111,8 @@ extern fn handle() {
 }
 
 #[no_mangle]
-unsafe extern fn init() {
-    let name: String = msg::load().expect("Failed to decode Tamagotchi name");
-    // // ⚠️ TODO: Change the tamagotchi name
-    // let name = String::from("Best-Tamagotchi");
-
+extern fn init() {
+    let TmgInit { name } = msg::load().expect("Failed to decode Tamagotchi name");
     let current_block = exec::block_timestamp();
 
     let tmg = Tamagotchi {
@@ -128,30 +125,14 @@ unsafe extern fn init() {
         entertained_block: current_block,
         rested: MAX_VALUE,
         rested_block: current_block,
-        ..Default::default()
     };
-    TAMAGOTCHI = Some(tmg);
+    unsafe {
+        TAMAGOTCHI = Some(tmg);
+    }
 }
 
 #[no_mangle]
 extern fn state() {
-    let tmg = unsafe { TAMAGOTCHI.get_or_insert(Default::default()) };
-    msg::reply(tamagotchi_io::Tamagotchi::from(tmg.clone()), 0).expect("Failed to share state");
-}
-
-impl From<Tamagotchi> for tamagotchi_io::Tamagotchi {
-    fn from(value: Tamagotchi) -> Self {
-        Self {
-            name: value.name,
-            date_of_birth: value.date_of_birth,
-            owner: value.owner,
-            fed: value.fed,
-            fed_block: value.fed_block,
-            entertained: value.entertained,
-            entertained_block: value.entertained_block,
-            rested: value.rested,
-            rested_block: value.rested_block,
-            allowed_account: value.allowed_account,
-        }
-    }
+    let tmg = unsafe { TAMAGOTCHI.take().expect("Unexpected error in taking state") };
+    msg::reply(tmg, 0).expect("Failed to share state");
 }

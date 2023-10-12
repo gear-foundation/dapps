@@ -18,24 +18,9 @@ const GAS_AMOUNT: u64 = 10_000_000_000;
 const RESERVATION_AMOUNT: u64 = 200_000_000_000;
 const RESERVATION_DURATION: u32 = 86_400;
 
-impl From<Battle> for tamagotchi_battle_io::Battle {
-    fn from(value: Battle) -> Self {
-        Self {
-            admins: value.admins,
-            players: value.players,
-            players_ids: value.players_ids,
-            current_players: value.current_players,
-            state: value.state,
-            current_winner: value.current_winner,
-            pairs: value.pairs,
-            players_to_pairs: value.players_to_pairs,
-            completed_games: value.completed_games,
-            reservations: value.reservations,
-        }
-    }
-}
-
-#[derive(Default, Clone)]
+#[derive(Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 struct Battle {
     admins: Vec<ActorId>,
     players: BTreeMap<ActorId, Player>,
@@ -505,9 +490,8 @@ pub fn generate_power(tmg_id: ActorId) -> u16 {
 
 #[no_mangle]
 extern fn state() {
-    let battle = unsafe { BATTLE.get_or_insert(Default::default()) };
-    msg::reply(tamagotchi_battle_io::Battle::from(battle.clone()), 0)
-        .expect("Failed to share state");
+    let battle = unsafe { BATTLE.take().expect("Unexpected error in taking state") };
+    msg::reply(battle, 0).expect("Failed to share state");
 }
 
 fn resolve_battle(players: &mut [Player], moves: Vec<Option<Move>>) -> (Option<u8>, u16, u16) {
