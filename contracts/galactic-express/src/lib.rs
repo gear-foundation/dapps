@@ -53,18 +53,15 @@ impl Random {
     }
 
     fn chance(&mut self, probability: u8) -> bool {
-        debug_assert!(probability < 101, "probability can't be more than 100");
-
+        assert!(probability < 101, "probability can't be more than 100");
         self.next() % 100 < probability
     }
 }
 
 struct Contract {
     admin: ActorId,
-
     session_id: u128,
     is_session_ended: bool,
-
     altitude: u16,
     weather: Weather,
     fuel_price: u8,
@@ -104,14 +101,14 @@ impl Contract {
     fn change_admin(&mut self, actor: ActorId) -> Result<Event, Error> {
         let msg_source = msg::source();
 
-        self.assert_admin(msg_source)?;
+        self.check_admin(msg_source)?;
 
         self.admin = actor;
 
         Ok(Event::AdminChanged(msg_source, self.admin))
     }
 
-    fn assert_admin(&self, actor: ActorId) -> Result<(), Error> {
+    fn check_admin(&self, actor: ActorId) -> Result<(), Error> {
         if self.admin == actor {
             Ok(())
         } else {
@@ -149,7 +146,6 @@ impl Contract {
 
         Ok(Event::NewSession(Session {
             session_id: self.session_id,
-
             altitude: self.altitude,
             weather: self.weather,
             fuel_price: self.fuel_price,
@@ -199,7 +195,7 @@ impl Contract {
     }
 
     async fn start_game(&mut self, participant: Participant) -> Result<Event, Error> {
-        self.assert_admin(msg::source())?;
+        self.check_admin(msg::source())?;
 
         if self.participants.is_empty() {
             return Err(Error::NotEnoughParticipants);
@@ -208,7 +204,7 @@ impl Contract {
         self.register(participant, false)?;
 
         let mut random = Random::new()?;
-        let mut turns = vec![];
+        let mut turns = Vec::with_capacity(TOTAL_TURNS);
 
         for turn_index in 0..TOTAL_TURNS {
             let mut turn: HashMap<ActorId, Turn> = HashMap::new();

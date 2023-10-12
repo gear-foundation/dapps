@@ -14,15 +14,15 @@ pub const TOTAL_TURNS: usize = 3;
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
-    type Init = InOut<(), Result<(), Error>>;
+    type Init = Out<Result<(), Error>>;
     type Handle = InOut<Action, Result<Event, Error>>;
-    type Reply = InOut<(), ()>;
-    type Others = InOut<(), ()>;
+    type Reply = ();
+    type Others = ();
     type Signal = ();
     type State = Out<State>;
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
+#[derive(Encode, Decode, TypeInfo, Debug)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct State {
@@ -34,7 +34,7 @@ pub struct State {
     pub rankings: Vec<(ActorId, u128)>,
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+#[derive(Encode, Decode, TypeInfo, Debug)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct Session {
@@ -71,7 +71,7 @@ impl Default for State {
     }
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+#[derive(Encode, Decode, TypeInfo, Debug)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum Action {
@@ -81,7 +81,7 @@ pub enum Action {
     StartGame(Participant),
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
+#[derive(Encode, Decode, TypeInfo, Debug)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum Event {
@@ -91,7 +91,7 @@ pub enum Event {
     GameFinished(Vec<Vec<(ActorId, Turn)>>),
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+#[derive(Encode, Decode, TypeInfo, Debug, Copy, Clone)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum Turn {
@@ -99,7 +99,7 @@ pub enum Turn {
     Destroyed(HaltReason),
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Hash)]
+#[derive(Encode, Decode, TypeInfo, Debug)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum Error {
@@ -117,9 +117,7 @@ impl From<GstdError> for Error {
     }
 }
 
-#[derive(
-    Default, Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash,
-)]
+#[derive(Default, Encode, Decode, TypeInfo, Debug, Copy, Clone)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum Weather {
@@ -132,9 +130,7 @@ pub enum Weather {
     Tornado,
 }
 
-#[derive(
-    Default, Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash,
-)]
+#[derive(Encode, Decode, TypeInfo, Debug, Copy, Clone)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct Participant {
@@ -142,7 +138,7 @@ pub struct Participant {
     pub payload_amount: u8,
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+#[derive(Encode, Decode, TypeInfo, Debug, Copy, Clone)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum HaltReason {
