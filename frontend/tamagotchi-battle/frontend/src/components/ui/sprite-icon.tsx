@@ -1,14 +1,15 @@
-import { SVGProps } from "react";
+import { SVGProps } from 'react';
 
-export type IconProps = SVGProps<SVGSVGElement> & {
+type IconProps = SVGProps<SVGSVGElement> & {
   name: string;
   section?: string;
+  size?: number | string;
 };
 
-export function SpriteIcon({ name, className, section = "icons", ...props }: IconProps) {
+export function SpriteIcon({ name, className, section = 'icons', size, ...props }: IconProps) {
   return (
-    <svg className={className} {...props}>
+    <svg className={className} width={size || props.width} height={size || props.height} {...props}>
       <use href={`/sprites/${section}.svg?sprite#${name}`} />
     </svg>
   );
-};
+}
