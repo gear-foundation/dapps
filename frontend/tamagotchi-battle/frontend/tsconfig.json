@@ -34,5 +34,8 @@
       //      "@/assets/*": ["./src/assets/*"],
       //      "@/components/*": ["./src/components/*"]
     }
-  }
+  },
+  "files":[
+    "index.d.ts"
+  ],
 }
