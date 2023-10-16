@@ -1,4 +1,4 @@
-use utils::{prelude::*, Sft};
+use utils::prelude::*;
 
 mod utils;
 
@@ -6,26 +6,19 @@ mod utils;
 fn test() {
     let system = utils::initialize_system();
 
-    let sft = Sft::initialize(&system);
-
-    let mut balances: HashMap<ActorId, u128> = PLAYERS
-        .into_iter()
-        .chain(ADMINS)
-        .map(|actor| (actor.into(), 0))
-        .collect();
-
     for admin_id in ADMINS {
-        let mut rockets = GalEx::initialize(&system, admin_id, sft.actor_id());
+        let mut rockets = GalEx::initialize(&system, admin_id);
         if let State {
             admin,
-            session: Session { id: 0, .. },
-            sft: true_sft,
-            stage: Stage::Results(results),
+            session: Session { session_id: 0, .. },
+            is_session_ended: true,
+            participants,
+            turns,
+            rankings,
         } = rockets.state()
         {
             assert_eq!(admin, admin_id.into());
-            assert_eq!(true_sft, sft.actor_id());
-            assert_eq!(results, Results::default());
+            assert_eq!((participants, turns, rankings), (vec![], vec![], vec![]));
         } else {
             unreachable!()
         }
@@ -35,29 +28,23 @@ fn test() {
                 .create_new_session(starter)
                 .succeed(session_id as u128);
 
-            let player = (
-                ADMINS[0],
-                Participant {
-                    fuel: 42,
-                    payload: 24,
-                },
-            );
+            let player = Participant {
+                fuel_amount: 42,
+                payload_amount: 24,
+            };
 
             for player_id in PLAYERS {
                 rockets
-                    .register(player_id, player.1)
-                    .succeed((player_id, player.1));
+                    .register(player_id, player)
+                    .succeed((player_id, player));
             }
-            if let State {
-                stage: Stage::Registration(participants),
-                ..
-            } = rockets.state()
-            {
+            #[allow(irrefutable_let_patterns)]
+            if let State { participants, .. } = rockets.state() {
                 assert_eq!(
                     HashMap::from_iter(
                         PLAYERS
                             .into_iter()
-                            .map(|player_id| (player_id.into(), player.1))
+                            .map(|player_id| (player_id.into(), player))
                     ),
                     participants.into_iter().collect::<HashMap<_, _>>(),
                 );
@@ -66,43 +53,8 @@ fn test() {
             }
 
             rockets
-                .start_game(admin_id, player.1)
+                .start_game(admin_id, player)
                 .succeed(PLAYERS.into_iter().chain(iter::once(admin_id)).collect());
-            let rankings = if let State {
-                session:
-                    Session {
-                        id: true_session_id,
-                        reward,
-                        ..
-                    },
-                stage: Stage::Results(Results { rankings, .. }),
-                ..
-            } = rockets.state()
-            {
-                assert_eq!(true_session_id, session_id as u128 + 1);
-
-                let deductible = reward / 10 * 6 / PARTICIPANTS as u128;
-
-                assert!(rankings.iter().all(|(_, true_reward)| (REWARD.0..REWARD.1)
-                    .contains(true_reward)
-                    && (*true_reward == reward
-                        || *true_reward == 0
-                        || *true_reward == reward - deductible
-                        || *true_reward == reward - deductible * 2
-                        || *true_reward == reward - deductible * 3)));
-
-                rankings
-            } else {
-                unreachable!()
-            };
-
-            for (actor, reward) in rankings {
-                let bal = balances.get_mut(&actor).unwrap();
-
-                *bal += reward;
-
-                sft.balance(actor).contains(*bal)
-            }
         }
     }
 }
@@ -111,8 +63,7 @@ fn test() {
 fn errors() {
     let system = utils::initialize_system();
 
-    let sft = Sft::initialize(&system);
-    let mut rockets = GalEx::initialize(&system, ADMINS[0], sft.actor_id());
+    let mut rockets = GalEx::initialize(&system, ADMINS[0]);
 
     rockets
         .change_admin(PLAYERS[0], PLAYERS[0])
@@ -144,8 +95,8 @@ fn errors() {
         .start_game(
             ADMINS[1],
             Participant {
-                fuel: 101,
-                payload: 100,
+                fuel_amount: 101,
+                payload_amount: 100,
             },
         )
         .failed(Error::FuelOrPayloadOverload);
@@ -153,8 +104,8 @@ fn errors() {
         .start_game(
             ADMINS[1],
             Participant {
-                fuel: 100,
-                payload: 101,
+                fuel_amount: 100,
+                payload_amount: 101,
             },
         )
         .failed(Error::FuelOrPayloadOverload);
@@ -162,8 +113,8 @@ fn errors() {
         .start_game(
             ADMINS[1],
             Participant {
-                fuel: 101,
-                payload: 101,
+                fuel_amount: 101,
+                payload_amount: 101,
             },
         )
         .failed(Error::FuelOrPayloadOverload);

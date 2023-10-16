@@ -49,11 +49,6 @@ impl<Check, CheckResult, Event: Decode + Debug, Error: Decode + Debug + PartialE
     pub fn succeed(self, value: Check) -> CheckResult {
         (self.check)(decode::<Result<Event, Error>>(&self.result).unwrap(), value)
     }
-
-    #[track_caller]
-    pub fn contains(self, value: Check) {
-        (self.check)(decode::<Event>(&self.result), value);
-    }
 }
 
 #[must_use]

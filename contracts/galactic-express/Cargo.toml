@@ -8,16 +8,10 @@ publish.workspace = true
 gstd.workspace = true
 galactic-express-io.workspace = true
 num-traits.workspace = true
-sharded-fungible-token-io.workspace = true
 gear-lib.workspace = true
 
 [dev-dependencies]
 gtest.workspace = true
-
-# External binaries
-sharded-fungible-token.workspace = true
-sharded-fungible-token-logic.workspace = true
-sharded-fungible-token-storage.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
