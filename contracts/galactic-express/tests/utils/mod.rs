@@ -4,12 +4,10 @@ use gstd::{collections::HashSet, prelude::*, ActorId};
 use gtest::{Program as InnerProgram, System};
 
 mod common;
-mod sft;
 
 pub mod prelude;
 
 pub use common::initialize_system;
-pub use sft::Sft;
 
 pub const FOREIGN_USER: u64 = 1029384756123;
 pub const ADMINS: [u64; 2] = [123, 321];
@@ -26,16 +24,10 @@ impl Program for GalEx<'_> {
 }
 
 impl<'a> GalEx<'a> {
-    pub fn initialize(system: &'a System, admin: u64, sft: ActorId) -> Self {
+    pub fn initialize(system: &'a System, from: u64) -> Self {
         let program = InnerProgram::current(system);
 
-        let result = program.send(
-            FOREIGN_USER,
-            Initialize {
-                admin: admin.into(),
-                sft,
-            },
-        );
+        let result = program.send(from, 0);
         let is_active = system.is_active_program(program.id());
 
         InitResult::<_, Error>::new(Self(program), result, is_active).succeed()
@@ -57,11 +49,10 @@ impl<'a> GalEx<'a> {
             self.0.send(from, Action::CreateNewSession),
             |event, session_id| {
                 if let Event::NewSession(session) = event {
-                    assert_eq!(session.id, session_id);
+                    assert_eq!(session.session_id, session_id);
                     assert!(((TURN_ALTITUDE.0 * (TURNS as u16))
                         ..(TURN_ALTITUDE.1 * (TURNS as u16)))
                         .contains(&session.altitude));
-                    assert!((FUEL_PRICE.0..FUEL_PRICE.1).contains(&session.fuel_price));
                     assert!((REWARD.0..REWARD.1).contains(&session.reward));
 
                     session
