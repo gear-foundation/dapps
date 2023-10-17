@@ -155,26 +155,9 @@ function NFTs({ slider }: Props) {
               {!searchQuery ? (
                 <>
                   {(isMinting || isMintingAvailable) && (
-                    <>
-                      <p className={styles.placeholderHeading}>
-                        You don&apos;t have NFT yet
-                      </p>
-                      <p className={styles.placeholderText}>
-                        To obtain your NFT, click the
-                        &quot;Mint&nbsp;NFT&quot;&nbsp;button.
-                      </p>
-                      <Button
-                        onClick={mintNFT}
-                        className={styles.button}
-                        isLoading={isMinting}
-                        disabled={getIsLowBalance()}
-                      >
-                        Mint NFT
-                      </Button>
-                      {getIsLowBalance() && (
-                        <div>Your account balance too low</div>
-                      )}
-                    </>
+                    <p className={styles.placeholderHeading}>
+                      You don&apos;t have NFTs
+                    </p>
                   )}
 
                   {!isMinting && !isMintingAvailable && (
