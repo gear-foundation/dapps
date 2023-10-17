@@ -1,61 +1,21 @@
-import { useEffect } from 'react'
-import { useSearchParams } from 'react-router-dom'
 import { useAtom } from 'jotai'
+import { useSearchParams } from 'react-router-dom'
 import { useAccount, Account, useAlert } from '@gear-js/react-hooks'
+import { useEffect } from 'react'
 import { useWallet } from 'features/wallet/hooks'
-import { IS_AUTH_READY_ATOM, USER_ADDRESS_ATOM } from './atoms'
-import { fetchAuth } from './utils'
-import { CB_UUID_KEY } from './consts'
-import { AuthResponse } from './types'
+import { IS_AUTH_READY_ATOM } from './consts'
 
-export function useAuth() {
+function useAuth() {
   const [isAuthReady, setIsAuthReady] = useAtom(IS_AUTH_READY_ATOM)
-  const [userAddress, setIsUserAddress] = useAtom(USER_ADDRESS_ATOM)
-  const [query, setQuery] = useSearchParams()
-
-  const { login, logout, account } = useAccount()
+  const { login, logout } = useAccount()
   const { resetWalletId } = useWallet()
-
-  const resetSearchQuery = () => {
-    query.delete('uuid')
-
-    setQuery(query)
-  }
 
   const signOut = () => {
     logout()
     resetWalletId()
-    localStorage.removeItem(CB_UUID_KEY)
   }
 
   const auth = async () => {
-    const uuid = query.get('uuid')
-    const cbUuid = localStorage.getItem(CB_UUID_KEY)
-
-    if (query.size && uuid) {
-      localStorage.setItem(CB_UUID_KEY, uuid)
-    }
-
-    if (account) {
-      try {
-        const res = await fetchAuth<AuthResponse>('api/user/auth', 'POST', {
-          coinbaseUID: uuid || cbUuid,
-          substrate: account.decodedAddress,
-        })
-
-        if (res?.success) {
-          setIsUserAddress(res.content.user.address)
-        }
-
-        if (!res?.success) {
-          setIsUserAddress(null)
-        }
-
-        resetSearchQuery()
-      } catch (err) {
-        console.log(err)
-      }
-    }
     setIsAuthReady(true)
   }
 
@@ -63,10 +23,10 @@ export function useAuth() {
     await login(_account)
   }
 
-  return { signIn, signOut, auth, isAuthReady, userAddress }
+  return { signIn, signOut, auth, isAuthReady }
 }
 
-export function useAuthSync() {
+function useAuthSync() {
   const { isAccountReady, account } = useAccount()
   const { auth } = useAuth()
 
@@ -81,7 +41,7 @@ export function useAuthSync() {
   }, [isAccountReady, account?.decodedAddress])
 }
 
-export function useAutoLogin() {
+function useAutoLogin() {
   const { login, accounts, isAccountReady } = useAccount()
   const alert = useAlert()
 
@@ -107,3 +67,5 @@ export function useAutoLogin() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams, accounts, isAccountReady])
 }
+
+export { useAuth, useAuthSync, useAutoLogin }
