@@ -1,0 +1,72 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    background-color: #1e1e1e;
+  }
+
+  .container {
+    @apply w-full max-w-[1150px] mx-auto px-5;
+  }
+}
+
+@layer components {
+  .typo-h1 {
+    @apply font-kanit text-[72px] leading-[86px] font-medium
+  }
+
+  .typo-h2 {
+    @apply font-kanit text-[40px] leading-[48px] font-bold tracking-[0.04em]
+  }
+
+  .btn {
+    @apply inline-flex justify-center items-center text-center py-2.5 px-8 text-[14px] font-semibold text-center leading-5 tracking-[0.08em] rounded-full whitespace-nowrap cursor-pointer select-none;
+  }
+
+  .btn--primary {
+    @apply text-white bg-primary hover:bg-primary-600 active:bg-primary-700 transition-colors;
+  }
+
+  .btn--gray {
+    @apply text-black bg-secondary-500 hover:bg-secondary-600 active:bg-secondary-700 transition-colors
+  }
+
+  .btn--ghost {
+    @apply text-white bg-white/10 hover:bg-white/30 active:bg-white/50 transition-colors
+  }
+
+  .btn--white {
+    @apply text-black bg-white hover:bg-[#DEDEDE] active:bg-neutral-300 transition-colors
+  }
+
+  .btn--error {
+    @apply text-white bg-red-500 hover:bg-red-600 active:bg-red-700 transition-colors
+  }
+
+  .btn--blue {
+    @apply text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 transition-colors;
+  }
+
+  .btn:disabled {
+    @apply cursor-not-allowed
+  }
+
+  .btn--loading {
+    @apply opacity-90 gap-2 before:w-4 before:h-4 before:border-2 before:border-neutral-400 before:rounded-full before:border-l-transparent before:border-t-transparent before:animate-spin;
+  }
+}
+
+.ellipse {
+  position: absolute;
+  top: 100%;
+  z-index: -20;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 276px;
+  height: 171px;
+  background: #ffffff;
+  opacity: 0.7;
+  filter: blur(50px);
+}
