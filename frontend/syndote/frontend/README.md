@@ -10,7 +10,7 @@
 
 ## Description
 
-React application of [Syndote](#) based on [Rust smart-contract](#).
+React application of [Syndote](https://wiki.gear-tech.io/docs/examples/Gaming/monopoly) based on [Rust smart-contract](https://github.com/gear-foundation/dapps/tree/master/contracts/syndote).
 
 ## Getting started
 
