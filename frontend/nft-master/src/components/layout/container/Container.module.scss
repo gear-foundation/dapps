@@ -1,8 +1,13 @@
 .container {
+  --container-padding: 20px;
   width: 100%;
-  max-width: 1232px;
-  padding-left: 16px;
-  padding-right: 16px;
-  margin-left: auto;
+  max-width: 1240px;
+  padding-right: var(--container-padding);
+  padding-left: var(--container-padding);
   margin-right: auto;
+  margin-left: auto;
+
+  @media screen and (max-width: 767px) {
+    --container-padding: 16px;
+  }
 }

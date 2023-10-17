@@ -1,5 +1,7 @@
-import { WALLET } from './consts';
+// eslint-disable-next-line import/no-cycle
+import { WALLET } from './consts'
+import type { SVGComponent } from '../../types'
 
-type WalletId = keyof typeof WALLET;
+export type IWalletId = keyof typeof WALLET
 
-export type { WalletId };
+export type IWalletExtensionContent = { name: string; SVG: SVGComponent }

@@ -169,12 +169,12 @@
   border-radius: 2px;
   transition: all 0.3s;
 
-  &:hover {
+  &:not(:disabled):hover {
     background-color: #29c6a1;
   }
 }
 
-.wrapper {
+.wrapper,.content {
   display: grid;
   align-items: center;
 }
