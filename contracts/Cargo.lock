@@ -1919,10 +1919,6 @@ dependencies = [
  "gstd",
  "gtest",
  "num-traits",
- "sharded-fungible-token",
- "sharded-fungible-token-io",
- "sharded-fungible-token-logic",
- "sharded-fungible-token-storage",
 ]
 
 [[package]]

@@ -1,9 +1,9 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { CreateTamagotchiForm } from 'features/battle/components/create-tamagotchi-form';
-import { ConnectAccount } from '../features/wallet/components/connect-account';
 import { Link } from 'react-router-dom';
 import { useBattle } from 'features/battle/context';
 import { cn } from 'app/utils';
+import { Wallet } from 'features/wallet';
 
 export const Home = () => {
   const { battle } = useBattle();
@@ -44,7 +44,7 @@ export const Home = () => {
             )}
           </div>
 
-          <div className="w-full">{account ? <CreateTamagotchiForm /> : <ConnectAccount />}</div>
+          <div className="w-full">{account ? <CreateTamagotchiForm /> : <Wallet />}</div>
 
           {/*<div className="w-full">*/}
           {/*  <Link to={'/test'}>Test page</Link> <Link to={'/battle'}>Battle page</Link>*/}

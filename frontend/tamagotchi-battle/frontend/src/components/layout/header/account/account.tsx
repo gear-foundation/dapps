@@ -1,17 +1,19 @@
 import { useState } from 'react';
-import { useAccount } from '@gear-js/react-hooks';
+import { useHandleCalculateGas, withoutCommas } from '@gear-js/react-hooks';
 import { Button, buttonStyles } from '@gear-js/ui';
-import { WalletBalance } from 'features/wallet/components/wallet-balance';
-import { WalletModal } from 'features/wallet/components/wallet-modal';
-import { WalletAccount } from 'features/wallet/components/wallet-account';
+import { Wallet } from 'features/wallet';
 import { useBattle } from 'features/battle/context';
 import { useBattleMessage } from 'features/battle/hooks';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from 'app/utils';
+import { BATTLE_ADDRESS } from 'features/battle/consts';
+import { useProgramMetadata } from 'app/hooks/api';
+import metaTxt from 'features/battle/assets/meta/battle.meta.txt';
 
 export const AccountComponent = () => {
-  const { account } = useAccount();
   const { battle, isAdmin, isPending, setIsPending, setIsAdmin } = useBattle();
+  const meta = useProgramMetadata(metaTxt);
+  const calculateGas = useHandleCalculateGas(BATTLE_ADDRESS, meta);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { pathname } = useLocation();
   const navigate = useNavigate();
@@ -27,8 +29,25 @@ export const AccountComponent = () => {
   const onSuccess = () => setIsPending(false);
   const onError = () => setIsPending(false);
   const handler = () => {
+    const payload = { StartRegistration: null };
+
     setIsPending(true);
-    handleMessage({ StartRegistration: null }, { onSuccess, onError });
+
+    calculateGas(payload)
+      .then((res) => res.toHuman())
+      .then(({ min_limit }) => {
+        const limit = withoutCommas(min_limit as string);
+
+        handleMessage({
+          payload,
+          gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
+          onSuccess,
+          onError,
+        });
+      })
+      .catch(() => {
+        alert('Gas calculation error');
+      });
   };
 
   return (
@@ -41,22 +60,7 @@ export const AccountComponent = () => {
           Battle Page
         </Link>
       )}
-      {account ? (
-        <div className="flex gap-4">
-          <WalletBalance
-            balance={account.balance}
-            address={account.address}
-            name={account.meta.name}
-            onClick={openModal}
-          />
-          <div className="max-w-[260px]">
-            <WalletAccount address={account.address} name={account.meta.name} onClick={openModal} simple />
-          </div>
-        </div>
-      ) : (
-        <Button text="Connect account" onClick={openModal} color="lightGreen" />
-      )}
-      {isModalOpen && <WalletModal close={closeModal} />}
+      <Wallet isModalOpen={isModalOpen} openModal={openModal} closeModal={closeModal} />
     </div>
   );
 };
