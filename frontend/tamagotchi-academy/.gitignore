@@ -17,6 +17,7 @@ Cargo.lock
 dist/
 node_modules/
 *.log
+.env
 
 # Gear specific
 .binpath
