@@ -1,26 +1,39 @@
-import { useState } from 'react';
-import { LOCAL_STORAGE } from 'consts';
-import { useAccount } from '@gear-js/react-hooks';
-import { WALLET } from './consts';
-import { WalletId } from './types';
+import { useCallback, useEffect, useState } from 'react'
+import { useAccount } from '@gear-js/react-hooks'
+import { WALLET, WALLET_ID_LOCAL_STORAGE_KEY } from './consts'
+import { IWalletId } from './types'
 
-function useWallet() {
-  const { accounts } = useAccount();
+export function useWalletSync() {
+  const { account, isAccountReady } = useAccount()
+  const { address } = account || {}
 
-  const [walletId, setWalletId] = useState<WalletId | undefined>(localStorage[LOCAL_STORAGE.WALLET]);
+  useEffect(() => {
+    if (!isAccountReady) return
+    if (!account) return localStorage.removeItem(WALLET_ID_LOCAL_STORAGE_KEY)
 
-  const resetWalletId = () => setWalletId(undefined);
-
-  const getWalletAccounts = (id: WalletId) => accounts.filter(({ meta }) => meta.source === id);
-
-  const saveWallet = () => walletId && localStorage.setItem(LOCAL_STORAGE.WALLET, walletId);
-
-  const removeWallet = () => localStorage.removeItem(LOCAL_STORAGE.WALLET);
-
-  const wallet = walletId && WALLET[walletId];
-  const walletAccounts = walletId && getWalletAccounts(walletId);
-
-  return { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts, saveWallet, removeWallet };
+    localStorage.setItem(WALLET_ID_LOCAL_STORAGE_KEY, account.meta.source)
+  }, [isAccountReady, address, account])
 }
 
-export { useWallet };
+export function useWallet() {
+  const { accounts } = useAccount()
+
+  const [walletId, setWalletId] = useState(
+    (localStorage.getItem(WALLET_ID_LOCAL_STORAGE_KEY) as IWalletId | null) || undefined
+  )
+
+  const wallet = walletId ? WALLET[walletId] : undefined
+
+  const getWalletAccounts = (id: IWalletId) => accounts.filter(({ meta }) => meta.source === id)
+  const walletAccounts = walletId ? getWalletAccounts(walletId) : undefined
+
+  const resetWalletId = useCallback(() => setWalletId(undefined), [])
+
+  return {
+    wallet,
+    walletAccounts,
+    setWalletId,
+    getWalletAccounts,
+    resetWalletId,
+  }
+}

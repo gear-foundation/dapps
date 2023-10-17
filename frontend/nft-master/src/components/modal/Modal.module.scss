@@ -27,3 +27,15 @@
   text-transform: capitalize;
   color: #222424;
 }
+
+.modal-close {
+  position: relative;
+  bottom: 2px;
+  left: 5px;
+  margin-left: auto;
+  transition: color 350ms ease;
+
+  &:hover {
+    color: #777777;
+  }
+}

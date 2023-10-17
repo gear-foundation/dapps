@@ -12,3 +12,5 @@ export { ReactComponent as ChevronsLeft } from './icons/chevrons-left.svg';
 export { ReactComponent as ChevronRight } from './icons/chevron-right.svg';
 export { ReactComponent as ChevronsRight } from './icons/chevrons-right.svg';
 export { ReactComponent as CaretDown } from './icons/caret-down.svg';
+export { ReactComponent as VaraCoinIcon } from './icons/vara-coin.svg';
+export { ReactComponent as TVaraCoinIcon } from './icons/tvara-coin.svg';

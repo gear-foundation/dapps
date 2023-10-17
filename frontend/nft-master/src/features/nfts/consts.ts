@@ -1,10 +1,15 @@
-import { atom } from 'jotai';
-import { HexString } from '@polkadot/util/types';
-import { MasterContractState, NFT } from './types';
+import { atom } from 'jotai'
+import { UseQueryExecute } from 'urql'
+import { NFT } from './types'
 
-const TESTNET_NFT_CONTRACT_ADDRESS = process.env.REACT_APP_TESTNET_NFT_CONTRACT_ADDRESS as HexString;
+const NFTS_ATOM = atom<NFT[] | null>(null)
 
-const NFT_CONTRACTS_ATOM = atom<MasterContractState['nfts'] | undefined>(undefined);
-const NFTS_ATOM = atom<NFT[] | undefined>(undefined);
+const IS_MINTING_ATOM = atom<boolean>(false)
 
-export { TESTNET_NFT_CONTRACT_ADDRESS, NFT_CONTRACTS_ATOM, NFTS_ATOM };
+const IS_FETCHING_NFT_ATOM = atom<boolean>(false)
+
+const USER_NFT_QUERY_ATOM = atom<{ fn: UseQueryExecute | null }>({
+  fn: null,
+})
+
+export { NFTS_ATOM, IS_MINTING_ATOM, IS_FETCHING_NFT_ATOM, USER_NFT_QUERY_ATOM }
