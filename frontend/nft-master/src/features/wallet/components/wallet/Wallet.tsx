@@ -1,30 +1,38 @@
-import { useState } from 'react';
-import { useAccount } from '@gear-js/react-hooks';
-import { AccountIcon, Button } from 'components';
-import clsx from 'clsx';
-import { WalletModal } from '../wallet-modal';
-import styles from './Wallet.module.scss';
+import { useState } from 'react'
+import { useAccount } from '@gear-js/react-hooks'
+import { AccountIcon, Button } from 'components'
+import clsx from 'clsx'
+import { useIsAppReady } from 'app/hooks/use-is-app-ready'
+import { WalletModal } from '../wallet-modal'
+import styles from './Wallet.module.scss'
 
-function Wallet({ className }: { className?: string }) {
-  const { account, isAccountReady } = useAccount();
-  const [open, setOpen] = useState(false);
+export function Wallet({ className }: { className?: string }) {
+  const [open, setOpen] = useState(false)
 
-  const openWalletModal = () => setOpen(true);
-  const closeWalletModal = () => setOpen(false);
+  const { account } = useAccount()
+  const { isAppReady } = useIsAppReady()
 
-  return isAccountReady ? (
+  const isSigned = isAppReady && !!account
+
+  return (
     <>
       <Button
-        variant={account ? 'black' : 'primary'}
+        variant={isSigned ? 'black' : 'primary'}
         className={clsx(styles.button, className)}
-        onClick={openWalletModal}>
-        {account && <AccountIcon value={account.address} size={16} className={styles.icon} />}
-        <span>{account ? account.meta.name : 'Connect'}</span>
+        onClick={() => setOpen(true)}
+        disabled={!isAppReady}
+      >
+        {isSigned && (
+          <AccountIcon
+            address={account.address}
+            size={16}
+            className={styles.icon}
+          />
+        )}
+        <span>{isSigned ? account.meta.name : 'Connect'}</span>
       </Button>
 
-      {open && <WalletModal onClose={closeWalletModal} />}
+      {open && <WalletModal onClose={() => setOpen(false)} />}
     </>
-  ) : null;
+  )
 }
-
-export { Wallet };
