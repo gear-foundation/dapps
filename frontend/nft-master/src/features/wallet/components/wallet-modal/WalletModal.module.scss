@@ -9,7 +9,10 @@
   display: grid;
   grid-gap: 15px;
   width: 100%;
-  padding-right: 20px;
+
+  &--scroll {
+    padding-right: 20px;
+  }
 
   .walletButton {
     width: 100%;
@@ -89,21 +92,12 @@
     background-color: transparent;
     transition: all 0.3s;
 
+    > svg {
+      color: #acaeae;
+    }
+
     &:hover {
       opacity: 0.5;
-    }
-  }
-
-  .textButton {
-    display: inline-flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 14px;
-    transition: opacity 300ms ease;
-    @include gap(10px, right);
-
-    &:hover {
-      opacity: 50%;
     }
   }
 }
@@ -113,4 +107,126 @@
   font-weight: 700;
   letter-spacing: 0.02em;
   color: #00b387;
+}
+
+.textButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  transition: opacity 300ms ease;
+  @include gap(10px, right);
+
+  span {
+    font-size: 14px;
+  }
+
+  &:hover {
+    opacity: 50%;
+  }
+}
+
+
+.modal {
+  position: relative;
+  z-index: 50;
+
+  &__backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    @media screen and (min-width: 768px) {
+      background-color: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+    }
+  }
+
+  &__wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    overflow-y: hidden;
+  }
+
+  &__container {
+    display: flex;
+    min-height: 100%;
+    align-items: flex-end;
+    justify-content: center;
+
+    @media screen and (min-width: 768px) {
+      align-items: center;
+    }
+  }
+
+  &__content {
+    --opacity-closed: 0%;
+    --opacity-open: 100%;
+
+    position: relative;
+    width: 100%;
+    background-color: #f6f8f8;
+
+    @media screen and (min-width: 768px) {
+      --scale-closed: 90%;
+      --scale-open: 100%;
+
+      max-width: 400px;
+      padding: 30px 32px;
+      border-radius: 4px;
+    }
+
+    @media screen and (max-width: 767px) {
+      --y-closed: 32px;
+      --y-open: 0px;
+
+      padding: 32px 16px 32px;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  &__title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 120%;
+    letter-spacing: 0.02em;
+    text-transform: capitalize;
+    color: #222424;
+  }
+
+  &__close {
+    position: relative;
+    bottom: 2px;
+    left: 5px;
+    margin-left: auto;
+    transition: color 350ms ease;
+
+    &:hover {
+      color: #777777;
+    }
+  }
+}
+
+.external {
+  color: #00b387;
+  font-weight: 500;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+
+  &:hover {
+    text-decoration: none;
+  }
 }

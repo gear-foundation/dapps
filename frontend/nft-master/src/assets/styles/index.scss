@@ -1,7 +1,36 @@
-@use '@gear-js/ui/resets';
 @use 'utils' as *;
 
 @import "fonts";
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  margin: 0;
+}
+
+a {
+  color: inherit;
+
+  &:not(p &) {
+    text-decoration: none;
+  }
+}
+
+img,
+svg {
+  vertical-align: middle;
+}
+
+ul,
+ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
 
 *,
 ::after,
@@ -20,6 +49,7 @@ button {
 }
 
 body {
+  margin: 0;
   font-family: 'Anuphan', sans-serif;
   color: #000;
   background-color: #fff;

@@ -1,9 +1,8 @@
-import { cva, type VariantProps } from 'class-variance-authority';
-import { ButtonHTMLAttributes } from 'react';
-import { Loader2 } from 'lucide-react';
-import styles from './buttons.module.scss';
+import { cva, type VariantProps } from 'class-variance-authority'
+import { ButtonHTMLAttributes, forwardRef } from 'react'
+import styles from './buttons.module.scss'
 
-export const buttonVariants = cva(styles.base, {
+export const buttonVariants = cva('', {
   variants: {
     variant: {
       primary: styles.primary,
@@ -32,32 +31,59 @@ export const buttonVariants = cva(styles.base, {
     state: 'normal',
     width: 'normal',
   },
-});
+})
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
-  isLoading?: boolean;
+export interface ButtonProps
+  extends ButtonHTMLAttributes<HTMLButtonElement>,
+    VariantProps<typeof buttonVariants> {
+  isLoading?: boolean
 }
 
-export function Button({
-  children,
-  className,
-  variant,
-  size,
-  state,
-  isLoading,
-  width,
-  disabled,
-  ...props
-}: ButtonProps) {
-  return (
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
+  (
+    {
+      children,
+      className,
+      variant,
+      size,
+      state,
+      isLoading,
+      width,
+      disabled,
+      ...props
+    },
+    ref
+  ) => (
     <button
       type="button"
-      className={buttonVariants({ variant, size, state: isLoading ? 'loading' : 'normal', width, className })}
+      className={buttonVariants({
+        variant,
+        size,
+        state: isLoading ? 'loading' : 'normal',
+        width,
+        className,
+      })}
       disabled={disabled || isLoading}
-      // eslint-disable-next-line react/jsx-props-no-spreading
-      {...props}>
-      {isLoading && <Loader2 width={20} height={20} className={styles.loader} />}
+      ref={ref}
+      {...props}
+    >
+      {isLoading && (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className={styles.loader}
+          width={20}
+          height={20}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <path d="M21 12a9 9 0 1 1-6.219-8.56" />
+        </svg>
+      )}
       {children}
     </button>
-  );
-}
+  )
+)

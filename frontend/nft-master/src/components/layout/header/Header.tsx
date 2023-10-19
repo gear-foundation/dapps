@@ -1,25 +1,27 @@
-import { useState } from 'react';
-import { Wallet } from 'features/wallet';
-import { NodeSwitch } from 'features/node-switch';
-import { ContractAddress, useContractAddress } from 'features/contract-address';
-import { Search } from 'features/nfts';
-import { useResizeEffect } from 'hooks';
-import { Button } from 'components';
-import { CrossIcon, HamburgerIcon } from 'assets/images';
-import clsx from 'clsx';
-import { Container } from '../container';
-import { Logo } from './logo';
-import styles from './Header.module.scss';
+import { useState } from 'react'
+import { Wallet } from 'features/wallet'
+import { Search } from 'features/nfts'
+import { useResizeEffect } from 'hooks'
+import { Button, Sprite } from 'components'
+import { CrossIcon, HamburgerIcon } from 'assets/images'
+import clsx from 'clsx'
+import { useAccount } from '@gear-js/react-hooks'
+import { Container } from '../container'
+import { Logo } from './logo'
+import styles from './Header.module.scss'
+import { AccountBalance } from '../../ui/balance/Balance'
+import { useIsAppReady } from '../../../app/hooks/use-is-app-ready'
 
-function Header() {
-  const { contractAddress } = useContractAddress();
+export function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { isAppReady } = useIsAppReady()
+  const { account } = useAccount()
 
-  const toggleMenu = () => setIsMenuOpen((prevValue) => !prevValue);
-  const closeMenu = () => setIsMenuOpen(false);
+  const toggleMenu = () => setIsMenuOpen((prevValue) => !prevValue)
+  const closeMenu = () => setIsMenuOpen(false)
 
-  useResizeEffect(closeMenu);
+  useResizeEffect(closeMenu)
 
   return (
     <header>
@@ -27,18 +29,25 @@ function Header() {
         <Logo />
 
         <div className={styles.mobileMenuWrapper}>
-          <Button variant="white" className={styles.button} onClick={toggleMenu}>
-            {isMenuOpen ? <CrossIcon /> : <HamburgerIcon />}
+          <Button
+            variant="white"
+            className={styles.button}
+            onClick={toggleMenu}
+          >
+            <Sprite
+              name={isMenuOpen ? 'close' : 'burger-menu'}
+              width={25}
+              height={24}
+            />
           </Button>
 
           {isMenuOpen && (
             <ul className={styles.list}>
-              <li className={styles.item}>
-                <ContractAddress />
-              </li>
-              <li className={styles.item}>
-                <NodeSwitch />
-              </li>
+              {account && (
+                <li className={styles.item}>
+                  <AccountBalance className={styles.balance} />
+                </li>
+              )}
               <li className={clsx(styles.item, styles['item--wallet'])}>
                 <Wallet />
               </li>
@@ -47,23 +56,21 @@ function Header() {
         </div>
 
         <div className={styles.configuration}>
-          <Search />
+          {isAppReady && <Search />}
 
           <div className={styles.desktopMenu}>
-            <div className={styles.addresses}>
-              <ContractAddress />
-              {contractAddress && <span className={styles.separator} />}
-              <NodeSwitch />
-            </div>
+            {isAppReady && <span className={styles.separator} />}
 
             <div className={styles.desktopWallet}>
+              {isAppReady && !!account && (
+                <AccountBalance className={styles.balance} />
+              )}
+
               <Wallet />
             </div>
           </div>
         </div>
       </Container>
     </header>
-  );
+  )
 }
-
-export { Header };
