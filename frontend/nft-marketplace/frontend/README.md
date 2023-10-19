@@ -10,7 +10,7 @@
 
 ## Description
 
-React application of [NFT Marketplace](https://wiki.gear-tech.io/examples/marketplace) based on [NFT](https://github.com/gear-dapps/non-fungible-token/tree/master/nft) and [Marketplace](https://github.com/gear-dapps/non-fungible-token/tree/master/nft-marketplace) Rust smart-contracts.
+React application of [NFT Marketplace](https://wiki.gear-tech.io/examples/marketplace) based on [NFT](https://github.com/gear-foundation/dapps/tree/master/contracts/non-fungible-token) and [Marketplace](https://github.com/gear-foundation/dapps/tree/master/contracts/nft-marketplace) Rust smart-contracts.
 
 ## Getting started
 

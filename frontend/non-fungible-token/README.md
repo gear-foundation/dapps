@@ -10,7 +10,7 @@
 
 ## Description
 
-An example of React application that demonstrates how to work with a [Non-Fungible Token](https://wiki.gear-tech.io/examples/gnft-721/). The Rust implementation of NFT smart-contract is available on [GitHub](https://github.com/gear-dapps/non-fungible-token).
+An example of React application that demonstrates how to work with a [Non-Fungible Token](https://wiki.gear-tech.io/examples/gnft-721/). The Rust implementation of NFT smart-contract is available on [GitHub](https://github.com/gear-foundation/dapps/tree/master/contracts/non-fungible-token).
 
 The application implements the ability to mint NFTs, view all NFTs minted by any account in the contract, as well as view NFTs that someone has approved to the current account (AprovedToMe) with the possibility of further transfer to another account.
 
