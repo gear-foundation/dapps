@@ -29,7 +29,8 @@ export const CreateTamagotchiForm = () => {
   })
   const { getInputProps, errors } = form
   const handleSubmit = form.onSubmit((values) => {
-    setLesson({ step: +values.currentStep, programId: values.programId })
+    // setLesson({ step: +values.currentStep, programId: values.programId })
+    setLesson({ step: 5, programId: values.programId })
   })
 
   return (
@@ -53,13 +54,13 @@ export const CreateTamagotchiForm = () => {
               {...getInputProps('programId')}
             />
           </div>
-          <div className="">
+          {/* <div className="">
             <Select
               options={options}
               direction="y"
               {...getInputProps('currentStep')}
             />
-          </div>
+          </div> */}
           <div className="whitespace-nowrap">
             <Button
               text="Create Tamagochi"

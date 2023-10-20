@@ -8,6 +8,7 @@ const key = 'tmgState'
 
 const useProgram = () => {
   const [lesson, setLesson] = useState<LessonState>()
+  console.log('lesson: ', lesson)
   // const [lessonMeta, setLessonMeta] = useState<ProgramMetadata>()
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [isReady, setIsReady] = useState<boolean>(false)
