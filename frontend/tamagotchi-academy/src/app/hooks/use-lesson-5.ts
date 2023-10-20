@@ -10,7 +10,7 @@ import type {
 import { getNotificationTypeValue } from '@/app/utils'
 
 export const useLesson5 = () => {
-  const { api } = useApi()
+  const { api, isApiReady } = useApi()
   const [notification, setNotification] = useState<NotificationType>({})
   const [activeNotification, setActiveNotification] =
     useState<NotificationResponseTypes>()
@@ -35,6 +35,8 @@ export const useLesson5 = () => {
   }, [notification, tamagotchi])
 
   useEffect(() => {
+    if (!isApiReady) return
+
     let unsub: UnsubscribePromise | undefined
 
     if (lessonMeta && lesson?.step === 5 && tamagotchi) {
@@ -47,10 +49,8 @@ export const useLesson5 = () => {
             } = data
 
             const decodedPayload = lessonMeta
-              .createType(8, payload)
+              .createType(lessonMeta.types.handle.output!, payload)
               .toHuman() as NotificationResponseTypes
-
-            // console.log({ decodedPayload });
 
             if (
               tamagotchi &&
@@ -70,7 +70,7 @@ export const useLesson5 = () => {
     return () => {
       if (unsub) unsub.then((unsubCallback) => unsubCallback())
     }
-  }, [lesson, lessonMeta, tamagotchi])
+  }, [isApiReady, lesson, lessonMeta, tamagotchi])
 
   return {
     notification,

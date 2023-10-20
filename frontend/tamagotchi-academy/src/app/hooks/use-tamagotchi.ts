@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import {
   useAccount,
+  useHandleCalculateGas,
   useReadFullState,
   useSendMessage,
   withoutCommas,
@@ -8,6 +9,7 @@ import {
 import { useLessons, useTamagotchi } from '@/app/context'
 import type { HexString } from '@polkadot/util/types'
 import type { TamagotchiState } from '@/app/types/lessons'
+import { AnyJson } from '@polkadot/types/types'
 
 export function useReadTamagotchi<T>() {
   const { lesson, lessonMeta } = useLessons()
@@ -58,5 +60,15 @@ export function useTamagotchiInit() {
 
 export function useTamagotchiMessage() {
   const { lesson, lessonMeta } = useLessons()
-  return useSendMessage(lesson?.programId as HexString, lessonMeta)
+
+  const calculateGas = useHandleCalculateGas(lesson?.programId, lessonMeta)
+  const sendMessage = useSendMessage(lesson?.programId as HexString, lessonMeta)
+
+  return (
+    payload: AnyJson,
+    { onSuccess, onError }: { onSuccess?: () => void; onError?: () => void }
+  ) =>
+    calculateGas(payload).then(({ min_limit }) =>
+      sendMessage({ payload, onError, onSuccess, gasLimit: min_limit })
+    )
 }

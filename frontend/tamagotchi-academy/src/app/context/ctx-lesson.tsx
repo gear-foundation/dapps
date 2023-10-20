@@ -1,12 +1,14 @@
 import { createContext, PropsWithChildren, useState } from 'react'
-import { ProgramMetadata } from '@gear-js/api'
 import { LessonState } from '@/app/types/lessons'
+import { useProgramMetadata } from '../hooks/use-metadata'
+import meta5 from '@/assets/meta/meta5.txt'
+// import { ProgramMetadata } from '@gear-js/api'
 
 const key = 'tmgState'
 
 const useProgram = () => {
   const [lesson, setLesson] = useState<LessonState>()
-  const [lessonMeta, setLessonMeta] = useState<ProgramMetadata>()
+  // const [lessonMeta, setLessonMeta] = useState<ProgramMetadata>()
   const [isAdmin, setIsAdmin] = useState<boolean>(false)
   const [isReady, setIsReady] = useState<boolean>(false)
   const resetLesson = () => {
@@ -16,11 +18,13 @@ const useProgram = () => {
     localStorage.removeItem(key)
   }
 
+  const lessonMeta = useProgramMetadata(meta5)
+
   return {
     lesson,
     setLesson,
     lessonMeta,
-    setLessonMeta,
+    // setLessonMeta,
     isAdmin,
     setIsAdmin,
     isReady,

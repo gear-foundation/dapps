@@ -25,10 +25,12 @@ export function useThrottleWasmState() {
     programMetadata: meta,
     payload: '0x',
     functionName: 'current_state',
+    argument: null,
   })
 
   useEffect(() => {
     if (lesson && lesson.step < 2) return
+
     if (state) {
       const { fed, rested, entertained } = state
 
@@ -49,6 +51,7 @@ export function useThrottleWasmState() {
         }
       })
     }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state, lesson, isReady])
 }

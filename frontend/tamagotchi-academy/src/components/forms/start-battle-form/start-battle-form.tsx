@@ -1,27 +1,27 @@
-import { hexRequired } from "@/app/utils/form-validations";
-import { useBattle } from "@/app/context";
-import { useBattleMessage } from "@/app/hooks/use-battle";
-import { useForm } from "@mantine/form";
-import { createTamagotchiInitial } from "@/app/consts";
-import { Button, Input } from "@gear-js/ui";
+import { hexRequired } from '@/app/utils/form-validations'
+import { useBattle } from '@/app/context'
+import { useBattleMessage } from '@/app/hooks/use-battle'
+import { useForm } from '@mantine/form'
+import { createTamagotchiInitial } from '@/app/consts'
+import { Button, Input } from '@gear-js/ui'
 
 const validate: Record<string, typeof hexRequired> = {
   programId: hexRequired,
-};
+}
 
 export const StartBattleForm = () => {
-  const { battleState } = useBattle();
-  const handleMessage = useBattleMessage();
+  const { battleState } = useBattle()
+  const handleMessage = useBattleMessage()
   const form = useForm({
     initialValues: createTamagotchiInitial,
     validate,
     validateInputOnChange: true,
-  });
-  const { getInputProps, errors } = form;
+  })
+  const { getInputProps, errors } = form
   const handleSubmit = form.onSubmit((values) => {
-    const onSuccess = () => form.reset();
-    handleMessage({ Register: { tmg_id: values.programId } }, { onSuccess });
-  });
+    const onSuccess = () => form.reset()
+    // handleMessage({ Register: { tmg_id: values.programId } }, { onSuccess });
+  })
 
   return (
     <div className="space-y-10 my-auto">
@@ -37,7 +37,7 @@ export const StartBattleForm = () => {
           <Input
             placeholder="Insert program ID"
             direction="y"
-            {...getInputProps("programId")}
+            {...getInputProps('programId')}
           />
         </div>
         <div className="whitespace-nowrap">
@@ -50,5 +50,5 @@ export const StartBattleForm = () => {
         </div>
       </form>
     </div>
-  );
-};
+  )
+}

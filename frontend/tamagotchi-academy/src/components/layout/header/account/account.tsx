@@ -1,20 +1,20 @@
 import { useState } from 'react'
 import { useAccount } from '@gear-js/react-hooks'
-import { Button, buttonStyles } from '@gear-js/ui'
-import { cn } from '@/app/utils'
-import { Link, useLocation } from 'react-router-dom'
-import { useLessons } from '@/app/context'
-import { TokensWallet } from '@/components/common/tokens-wallet'
+import { Button } from '@gear-js/ui'
+// import { cn } from '@/app/utils'
+// import { Link, useLocation } from 'react-router-dom'
+// import { useLessons } from '@/app/context'
+// import { TokensWallet } from '@/components/common/tokens-wallet'
 import { GasWallet } from '@/components/common/gas-wallet'
 import { AccountButton } from '@/components/common/account-button'
 import { SelectAccountPopup } from '@/components/popups/select-account-popup'
 
 export const AccountComponent = () => {
-  const { lesson, isAdmin } = useLessons()
+  // const { lesson, isAdmin } = useLessons()
   const { account, accounts } = useAccount()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const { pathname } = useLocation()
+  // const { pathname } = useLocation()
 
   const openModal = () => setIsModalOpen(true)
   const closeModal = () => setIsModalOpen(false)
@@ -23,7 +23,7 @@ export const AccountComponent = () => {
     <>
       {account ? (
         <div className="flex gap-4">
-          {Number(lesson?.step) > 3 && isAdmin && (
+          {/* {Number(lesson?.step) > 3 && isAdmin && (
             <>
               {pathname !== '/store' && (
                 <Link
@@ -35,7 +35,7 @@ export const AccountComponent = () => {
               )}
               <TokensWallet />
             </>
-          )}
+          )} */}
           <GasWallet
             balance={account.balance}
             address={account.address}

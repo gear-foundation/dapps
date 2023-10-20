@@ -1,4 +1,8 @@
-import { useReadFullState, useSendMessage } from '@gear-js/react-hooks'
+import {
+  useHandleCalculateGas,
+  useReadFullState,
+  useSendMessage,
+} from '@gear-js/react-hooks'
 import type { HexString } from '@polkadot/util/types'
 import { useApp, useFTBalance, useLessons } from '@/app/context'
 import type {
@@ -6,10 +10,21 @@ import type {
   BalanceMain,
   BalanceStorage,
 } from '@/app/types/ft-wallet'
+import { AnyJson } from '@polkadot/types/types'
 
 export function useFtMessage() {
   const { metaMain, programId } = useFTBalance()
-  return useSendMessage(programId as HexString, metaMain)
+
+  const calculateGas = useHandleCalculateGas(programId, metaMain)
+  const sendMessage = useSendMessage(programId as HexString, metaMain)
+
+  return (
+    payload: AnyJson,
+    { onSuccess, onError }: { onSuccess: () => void; onError: () => void }
+  ) =>
+    calculateGas(payload).then(({ min_limit }) =>
+      sendMessage({ payload, gasLimit: min_limit, onError, onSuccess })
+    )
 }
 
 function useReadFTMain<T>() {

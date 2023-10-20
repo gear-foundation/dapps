@@ -7,7 +7,7 @@ import { TamagotchiState } from '@/app/types/lessons'
 import { TamagotchiBattleTopStats } from '@/components/tamagotchi/tamagotchi-battle-top-stats'
 import { TamagotchiAvatar } from '@/components/tamagotchi/tamagotchi-avatar'
 import { getTamagotchiAgeDiff } from '@/app/utils/get-tamagotchi-age'
-import { cn, getAttributesById } from "@/app/utils";
+import { cn, getAttributesById } from '@/app/utils'
 import { SpriteIcon } from '@/components/ui/sprite-icon'
 import { TamagotchiBattleInfoCard } from '@/components/tamagotchi/tamagotchi-battle-info-card'
 import { StartBattleForm } from '@/components/forms/start-battle-form'
@@ -27,20 +27,20 @@ export default function Battle() {
     const onSuccess = () => setIsPending(false)
     if (battle?.state === 'GameIsOver') {
       setIsPending(true)
-      sendMessage(
-        { StartNewGame: null },
-        {
-          onSuccess: () => {
-            setBattleState(undefined)
-            setIsPending(false)
-          },
-          onError,
-        }
-      )
+      // sendMessage(
+      //   { StartNewGame: null },
+      //   {
+      //     onSuccess: () => {
+      //       setBattleState(undefined)
+      //       setIsPending(false)
+      //     },
+      //     onError,
+      //   }
+      // )
     }
     if (battle?.state === 'Moves') {
       setIsPending(true)
-      sendMessage({ MakeMove: null }, { onError, onSuccess })
+      // sendMessage({ MakeMove: null }, { onError, onSuccess })
     }
   }
 

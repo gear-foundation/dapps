@@ -7,6 +7,7 @@ import { Loader } from '@/components/loaders/loader'
 export const HomeCreateSection = () => {
   const { tamagotchi } = useTamagotchi()
   const { lesson, isReady } = useLessons()
+
   return (
     <section className="grid grid-rows-[1fr_auto_auto] h-[calc(100vh-216px)]">
       <div className="grow flex flex-col justify-center text-center">

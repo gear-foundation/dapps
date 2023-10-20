@@ -5,14 +5,14 @@ import { useLessons } from '@/app/context'
 const key = 'tmgState'
 
 export function useLessonsInit() {
-  const { setLesson, setLessonMeta, lesson } = useLessons()
+  const { setLesson, lesson } = useLessons()
   const isParsed = useRef(false)
   const assets = useLessonAssets()
 
   useEffect(() => {
     if (lesson && assets.length) {
       localStorage.setItem(key, JSON.stringify(lesson))
-      setLessonMeta(assets[+lesson.step || 0])
+      // setLessonMeta(assets[+lesson.step || 0])
     } else {
       if (!isParsed.current) {
         const ls = localStorage.getItem(key)
