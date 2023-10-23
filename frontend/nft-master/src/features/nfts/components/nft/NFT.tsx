@@ -32,7 +32,7 @@ function NFT() {
   })
 
   const { data, fetching } = result
-  console.log(data)
+
   const [nft] = data?.nfts || []
   const { name, collection, description, owner, attribUrl } = nft || {}
 
