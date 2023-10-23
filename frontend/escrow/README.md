@@ -10,7 +10,7 @@
 
 ## Description
 
-React application of [Escrow wallet](https://wiki.gear-tech.io/examples/escrow) based on [Rust smart-contract](https://github.com/gear-dapps/escrow).
+React application of [Escrow wallet](https://wiki.gear-tech.io/examples/escrow) based on [Rust smart-contract](https://github.com/gear-foundation/dapps/tree/master/contracts/escrow).
 
 ## Getting started
 

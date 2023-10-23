@@ -1,7 +1,7 @@
 ## Description
 
-React application of [Tamagotchi](https://github.com/gear-dapps/tamagotchi) based
-on [Rust smart-contract](https://github.com/gear-dapps/tamagotchi).
+React application of [Tequila Train Game](https://wiki.gear-tech.io/docs/examples/Gaming/tequila-train) based on [Rust smart-contract](https://github.com/gear-foundation/dapps/tree/master/contracts/tequila-train).
+
 
 ## Getting started
 

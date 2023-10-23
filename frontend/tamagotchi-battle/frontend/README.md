@@ -1,6 +1,6 @@
 ## Description
 
-React application of [Tamagotchi](https://github.com/gear-dapps/tamagotchi) based on [Rust smart-contract](https://github.com/gear-dapps/tamagotchi).
+React application of [Tamagotchi](https://github.com/gear-foundation/dapps/tree/master/frontend/syndote) based on [Rust smart-contract](https://github.com/gear-foundation/dapps/tree/master/contracts/tamagotchi-battle).
 
 ## Getting started
 
