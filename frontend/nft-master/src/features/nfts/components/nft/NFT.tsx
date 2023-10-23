@@ -45,7 +45,6 @@ function NFT() {
 
     if (isIPFSHash) {
       const url = getIpfsAddress(attribUrl)
-      console.log(attribUrl)
 
       fetch(url)
         .then((response) => response.json())
@@ -53,8 +52,6 @@ function NFT() {
           setDetails(res)
         })
     } else {
-      console.log(name)
-      console.log(attribUrl)
       setDetails(attribUrl)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
