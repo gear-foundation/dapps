@@ -1,18 +1,14 @@
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment } from 'react'
 import { Menu, Transition } from '@headlessui/react'
 import { cn } from '@/app/utils'
-import { useAccount } from '@gear-js/react-hooks'
 import { useApp, useLessons, useTamagotchi } from '@/app/context'
 import { SpriteIcon } from '@/components/ui/sprite-icon'
-import { TransferAccountPopup } from '@/components/popups/transfer-account-popup'
-import { ApproveAccountPopup } from '@/components/popups/approve-account-popup'
-import { RevokeApprovalPopup } from '@/components/popups/revoke-approval-popup'
 
 export const AccountActionsMenu = () => {
-  const { account } = useAccount()
   const { isPending } = useApp()
-  const { setTamagotchi, tamagotchi } = useTamagotchi()
-  const { lesson, resetLesson } = useLessons()
+  const { setTamagotchi } = useTamagotchi()
+  const { resetLesson } = useLessons()
+
   const initialOptions = [
     {
       id: 4,
@@ -24,50 +20,6 @@ export const AccountActionsMenu = () => {
       icon: 'upload',
     },
   ]
-  const [options, setOptions] = useState([...initialOptions])
-  const [openTransfer, setOpenTransfer] = useState(false)
-  const [openApprove, setOpenApprove] = useState(false)
-  const [openRevoke, setOpenRevoke] = useState(false)
-
-  const getUserActions = () => {
-    const isOwner = account?.decodedAddress === tamagotchi?.owner
-    const isApproved = Boolean(tamagotchi?.allowedAccount)
-    const isCurrentAccountApproved = isApproved
-      ? account?.decodedAddress === tamagotchi?.allowedAccount
-      : false
-    const result = []
-
-    if (isOwner || isCurrentAccountApproved) {
-      result.unshift({
-        id: 1,
-        label: 'Transfer',
-        action: () => setOpenTransfer(true),
-        icon: 'transfer',
-      })
-    }
-    if (isOwner) {
-      isApproved
-        ? result.push({
-            id: 2,
-            label: 'Revoke approval',
-            action: () => setOpenRevoke(true),
-            icon: 'check',
-          })
-        : result.push({
-            id: 3,
-            label: 'Approve',
-            action: () => setOpenApprove(true),
-            icon: 'check',
-          })
-    }
-    return [...result, ...initialOptions]
-  }
-
-  useEffect(() => {
-    Number(lesson?.step) > 2
-      ? setOptions(getUserActions())
-      : setOptions(initialOptions)
-  }, [lesson, account, tamagotchi])
 
   return (
     <div className="">
@@ -96,7 +48,7 @@ export const AccountActionsMenu = () => {
             >
               <Menu.Items className="absolute right-0 mt-2 origin-top-right divide-y divide-gray-100 rounded-md bg-[#353535] shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                 <div className="py-2 font-kanit font-semibold text-sm whitespace-nowrap">
-                  {options.map((item) => (
+                  {initialOptions.map((item) => (
                     <Menu.Item key={item.id}>
                       {({ active }) => (
                         <button
@@ -118,13 +70,6 @@ export const AccountActionsMenu = () => {
           </>
         )}
       </Menu>
-      {openTransfer && (
-        <TransferAccountPopup close={() => setOpenTransfer(false)} />
-      )}
-      {openApprove && (
-        <ApproveAccountPopup close={() => setOpenApprove(false)} />
-      )}
-      {openRevoke && <RevokeApprovalPopup close={() => setOpenRevoke(false)} />}
     </div>
   )
 }

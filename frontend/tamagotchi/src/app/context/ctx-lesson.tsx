@@ -1,8 +1,7 @@
-import { createContext, PropsWithChildren, useState } from 'react'
+import { createContext, PropsWithChildren, useContext, useState } from 'react'
 import { LessonState } from '@/app/types/lessons'
 import { useProgramMetadata } from '../hooks/use-metadata'
 import meta5 from '@/assets/meta/meta5.txt'
-// import { ProgramMetadata } from '@gear-js/api'
 
 const key = 'tmgState'
 
@@ -35,6 +34,8 @@ const useProgram = () => {
 }
 
 export const LessonsCtx = createContext({} as ReturnType<typeof useProgram>)
+
+export const useLessons = () => useContext(LessonsCtx)
 
 export function LessonsProvider({ children }: PropsWithChildren) {
   const { Provider } = LessonsCtx

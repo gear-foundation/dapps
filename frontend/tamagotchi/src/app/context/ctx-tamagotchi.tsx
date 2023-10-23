@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from 'react'
+import { createContext, ReactNode, useContext, useState } from 'react'
 import type { TamagotchiState } from '@/app/types/lessons'
 import type { StoreItemsNames } from '@/app/types/ft-store'
 
@@ -15,6 +15,8 @@ const useProgram = () => {
     setTamagotchiItems,
   }
 }
+
+export const useTamagotchi = () => useContext(TamagotchiCtx)
 
 export function TmgProvider({ children }: { children: ReactNode }) {
   const { Provider } = TamagotchiCtx

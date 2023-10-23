@@ -1,8 +1,6 @@
 import { Button, buttonStyles } from '@gear-js/ui'
-import { lazy } from 'react'
 import { cn } from '@/app/utils'
-
-const Identicon = lazy(() => import('@polkadot/react-identicon'))
+import { WalletIcon } from '@/features/wallet-icon'
 
 type Props = {
   address: string
@@ -15,16 +13,15 @@ type Props = {
 export const AccountButton = ({ address, name, onClick, isActive }: Props) => (
   <Button
     className={cn(
-      'w-full !justify-start',
+      'w-full justify-center truncate',
       isActive ? buttonStyles.primary : buttonStyles.light
     )}
     text={name}
     onClick={onClick}
     icon={() => (
-      <Identicon
-        value={address}
-        className={buttonStyles.icon}
-        theme="polkadot"
+      <WalletIcon
+        address={address}
+        className={cn(buttonStyles.icon, 'shrink-0')}
         size={28}
       />
     )}
