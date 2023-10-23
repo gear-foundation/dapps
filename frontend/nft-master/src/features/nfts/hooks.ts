@@ -149,7 +149,7 @@ export function useNFTSetup() {
 
   useEffect(() => {
     if (isStateRead) {
-      setNFTs(state ? [state as NFT] : [])
+      setNFTs(state ? (state as NFT[]) : [])
       setIsPending(false)
       setIsStateRead(false)
     }

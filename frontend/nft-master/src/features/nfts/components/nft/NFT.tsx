@@ -8,7 +8,7 @@ import {
 import { ChangeEvent, useEffect, useState } from 'react'
 import { Button, Container, Loader } from 'components'
 import { useQuery } from 'urql'
-import { GetAccountNFTQuery } from 'features/nfts/queries'
+import { GetNFTByIdQuery } from 'features/nfts/queries'
 import { ReactComponent as SearchSVG } from '../../assets/search.svg'
 import { ReactComponent as BackArrowSVG } from '../../assets/back-arrow.svg'
 import { useNFTs } from '../../hooks'
@@ -27,12 +27,12 @@ function NFT() {
   const [searchQuery, setSearchQuery] = useState('')
 
   const [result] = useQuery({
-    query: GetAccountNFTQuery,
-    variables: { account_id: id || '' },
+    query: GetNFTByIdQuery,
+    variables: { id: id || '' },
   })
 
   const { data, fetching } = result
-
+  console.log(data)
   const [nft] = data?.nfts || []
   const { name, collection, description, owner, attribUrl } = nft || {}
 
@@ -45,6 +45,7 @@ function NFT() {
 
     if (isIPFSHash) {
       const url = getIpfsAddress(attribUrl)
+      console.log(attribUrl)
 
       fetch(url)
         .then((response) => response.json())
@@ -52,6 +53,8 @@ function NFT() {
           setDetails(res)
         })
     } else {
+      console.log(name)
+      console.log(attribUrl)
       setDetails(attribUrl)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

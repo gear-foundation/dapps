@@ -6,6 +6,7 @@ type Token = {
   description: string
   mediaUrl: string
   attribUrl?: string | string[]
+  id: HexString
 }
 
 type NFT = Token & {
