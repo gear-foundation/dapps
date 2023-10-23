@@ -19,10 +19,9 @@ function NFTs({ slider }: Props) {
   const { nfts, getImageUrl } = useNFTs()
   const { searchQuery } = useNFTSearch()
   const { account } = useAccount()
-  const { getIsLowBalance } = useCheckBalance()
   const navigate = useNavigate()
 
-  const { mintNFT, isMintingAvailable, isMinting } = useMintNFT()
+  const { isMintingAvailable, isMinting } = useMintNFT()
 
   const [result] = useQuery({
     query: GetNftsByNameQuery,
@@ -64,13 +63,13 @@ function NFTs({ slider }: Props) {
   const nextSlide = () => sliderApiRef.current?.next()
 
   const getNFTs = () =>
-    filteredNFTs.map(({ name, owner, mediaUrl, collection }) => {
+    filteredNFTs.map(({ name, id, owner, mediaUrl, collection }) => {
       const style = { backgroundImage: `url(${getImageUrl(mediaUrl)})` }
-      const to = `/${owner.id}`
+      const to = `/${id}`
       const className = clsx(styles.nft, slider && 'keen-slider__slide')
 
       return (
-        <li key={to} className={className}>
+        <li key={id} className={className}>
           <header>
             <p className={styles.collection}>{collection}</p>
             <p className={styles.name}>{name}</p>

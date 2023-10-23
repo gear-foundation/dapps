@@ -8,7 +8,7 @@ import {
 import { ChangeEvent, useEffect, useState } from 'react'
 import { Button, Container, Loader } from 'components'
 import { useQuery } from 'urql'
-import { GetAccountNFTQuery } from 'features/nfts/queries'
+import { GetNFTByIdQuery } from 'features/nfts/queries'
 import { ReactComponent as SearchSVG } from '../../assets/search.svg'
 import { ReactComponent as BackArrowSVG } from '../../assets/back-arrow.svg'
 import { useNFTs } from '../../hooks'
@@ -27,8 +27,8 @@ function NFT() {
   const [searchQuery, setSearchQuery] = useState('')
 
   const [result] = useQuery({
-    query: GetAccountNFTQuery,
-    variables: { account_id: id || '' },
+    query: GetNFTByIdQuery,
+    variables: { id: id || '' },
   })
 
   const { data, fetching } = result

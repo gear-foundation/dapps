@@ -10,6 +10,22 @@ export const GetAccountNFTQuery = gql`
       description
       mediaUrl
       attribUrl
+      id
+    }
+  }
+`
+
+export const GetNFTByIdQuery = gql`
+  query ($id: String!) {
+    nfts(where: { id_eq: $id }) {
+      owner {
+        id
+      }
+      name
+      description
+      mediaUrl
+      attribUrl
+      id
     }
   }
 `
