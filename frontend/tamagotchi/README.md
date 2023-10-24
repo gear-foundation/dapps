@@ -31,5 +31,5 @@ In case of issues with the application, try to switch to another network or run 
 ### Run the app:
 
 ```sh
-yarn start
+yarn dev
 ```
