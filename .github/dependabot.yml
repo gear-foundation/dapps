@@ -5,8 +5,17 @@ updates:
     labels: ["A3-insubstantial"]
     schedule:
       interval: "daily"
+    groups:
+      deps:
+        patterns:
+          - "*"
+
   - package-ecosystem: "github-actions"
     directory: "."
     labels: ["A3-insubstantial"]
     schedule:
       interval: "daily"
+    groups:
+      deps:
+        patterns:
+          - "*"
