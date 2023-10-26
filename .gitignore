@@ -1,0 +1,14 @@
+# Frontend
+dist/
+node_modules/
+*.log
+.env
+*.local
+
+# Gear specific
+.binpath
+*.meta.txt
+
+# Misc
+.DS_Store
+.idea
