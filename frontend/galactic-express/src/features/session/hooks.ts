@@ -1,4 +1,4 @@
-import { useReadFullState, useSendMessage } from '@gear-js/react-hooks';
+import { useReadFullState, useSendMessageHandler } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
 import metaTxt from 'assets/state/launch_site.meta.txt';
 import { useProgramMetadata } from 'hooks';
@@ -7,7 +7,7 @@ import { LaunchState } from './types';
 function useNewSessionMessage(address: string) {
   const meta = useProgramMetadata(metaTxt);
 
-  return { meta: !!meta, message: useSendMessage(address as HexString, meta, { isMaxGasLimit: true }) };
+  return { meta: !!meta, message: useSendMessageHandler(address as HexString, meta, { isMaxGasLimit: true }) };
 }
 
 function useLaunchState(address: string) {
@@ -20,7 +20,7 @@ function useLaunchState(address: string) {
 function useLaunchMessage(address: string) {
   const meta = useProgramMetadata(metaTxt);
 
-  return { meta, message: useSendMessage(address as HexString, meta, { isMaxGasLimit: true }) };
+  return { meta, message: useSendMessageHandler(address as HexString, meta, { isMaxGasLimit: true }) };
 }
 
 export { useLaunchState, useLaunchMessage, useNewSessionMessage };
