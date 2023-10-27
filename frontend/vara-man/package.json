@@ -2,7 +2,7 @@
   "name": "smart-contract-academy-frontend",
   "homepage": ".",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite --host",

@@ -14,42 +14,32 @@ export function useMessage() {
     if (account?.decodedAddress) {
       setIsPending(true)
 
-      handleMessage(
-        {
-          StartGame: {
-            level,
-            player_address: account.decodedAddress,
-          },
+      handleMessage({
+        payload: {
+          StartGame: { level, player_address: account.decodedAddress },
         },
-        {
-          onSuccess: () => {
-            setIsPending(false)
-            navigate('/game')
-          },
-          onError: () => setIsPending(false),
-        }
-      )
+        onSuccess: () => {
+          setIsPending(false)
+          navigate('/game')
+        },
+        onError: () => setIsPending(false),
+      })
     }
   }
 
   const onClaimReward = (silver_coins: number, gold_coins: number) => {
     setIsPending(true)
 
-    handleMessage(
-      {
-        ClaimReward: {
-          silver_coins,
-          gold_coins,
-        },
+    handleMessage({
+      payload: {
+        ClaimReward: { silver_coins, gold_coins },
       },
-      {
-        onSuccess: () => {
-          setIsPending(false)
-          navigate('/levels')
-        },
-        onError: () => setIsPending(false),
-      }
-    )
+      onSuccess: () => {
+        setIsPending(false)
+        navigate('/levels')
+      },
+      onError: () => setIsPending(false),
+    })
   }
 
   return { isPending, onStart, onClaimReward }
