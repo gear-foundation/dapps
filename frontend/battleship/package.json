@@ -1,7 +1,7 @@
 {
   "name": "frontend-battleship",
   "private": true,
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite --host",
@@ -14,7 +14,6 @@
     "@gear-js/ui": "0.5.19",
     "@gear-js/vara-ui": "0.0.2",
     "@mantine/form": "6.0.15",
-    "@polkadot-cloud/community": "0.1.10",
     "@polkadot/api": "10.10.1",
     "@polkadot/extension-dapp": "0.46.5",
     "@polkadot/extension-inject": "0.46.5",
