@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAccount, useApi, useReadFullState, useSendMessage } from '@gear-js/react-hooks';
+import { useAccount, useApi, useReadFullState, useSendMessageHandler } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { ADDRESS, fields, INIT_PLAYERS, LocalStorage } from 'consts';
 import { MessagePayload, State, Step } from 'types';
@@ -32,12 +32,12 @@ function Home() {
   const metadata = useProgramMetadata(meta);
   const { state, isStateRead } = useReadFullState<State>(ADDRESS.CONTRACT, metadata, '0x');
 
-  const sendMessage = useSendMessage(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true });
+  const sendMessage = useSendMessageHandler(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true });
 
   const register = (player: HexString) =>
-    sendMessage({ Register: { player } }, { onSuccess: () => setProgramId(player) });
+    sendMessage({ payload: { Register: { player } }, onSuccess: () => setProgramId(player) });
 
-  const startGame = () => sendMessage({ Play: null });
+  const startGame = () => sendMessage({ payload: { Play: null } });
 
   const { admin } = state || {};
   const isAdmin = account?.decodedAddress === admin;
@@ -74,7 +74,7 @@ function Home() {
     let unsub: UnsubscribePromise | undefined;
 
     if (metadata) {
-      unsub = api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data }) => {
+      unsub = api?.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data }) => {
         const { message } = data;
         const { source, payload } = message;
 
