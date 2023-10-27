@@ -57,7 +57,7 @@ export function WalletModal({ onClose }: Props) {
 
   const getWallets = () =>
     sortWallets(WALLETS).map(([id, { SVG, name }]) => {
-      const isEnabled = extensions.some((extension) => extension.name === id);
+      const isEnabled = extensions?.some((extension) => extension.name === id);
       const status = isEnabled ? 'Enabled' : 'Disabled';
 
       const accountsCount = getWalletAccounts(id).length;
@@ -124,7 +124,7 @@ export function WalletModal({ onClose }: Props) {
 
   return (
     <Modal heading="Wallet connection" onClose={onClose}>
-      {accounts.length ? (
+      {accounts?.length ? (
         <ScrollArea className={styles.content} type={isScrollable ? 'always' : undefined}>
           <ul className={clsx(styles.list, isScrollable && styles['list--scroll'])}>{getAccounts() || getWallets()}</ul>
         </ScrollArea>
