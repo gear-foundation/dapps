@@ -17,9 +17,7 @@ function useWalletId() {
   const meta = useEscrowMetadata();
 
   // TODO: walletId should be number
-  const [walletId, setWalletId] = useState<string | undefined>(
-    localStorage[LOCAL_STORAGE.WALLET]
-  );
+  const [walletId, setWalletId] = useState<string | undefined>(localStorage[LOCAL_STORAGE.WALLET]);
 
   const resetWalletId = () => setWalletId(undefined);
 
@@ -32,10 +30,7 @@ function useWalletId() {
 
   const getWalletId = (payload: Bytes) => {
     const decodedPayload = getDecodedPayload(payload);
-    const isWalletCreated = Object.prototype.hasOwnProperty.call(
-      decodedPayload,
-      'Created'
-    );
+    const isWalletCreated = Object.prototype.hasOwnProperty.call(decodedPayload, 'Created');
 
     if (isPlainObject(decodedPayload) && isWalletCreated)
       // @ts-ignore
@@ -58,10 +53,7 @@ function useWalletId() {
     let unsub: UnsubscribePromise | undefined;
 
     if (api && decodedAddress) {
-      unsub = api.gearEvents.subscribeToGearEvent(
-        'UserMessageSent',
-        handleEvents
-      );
+      unsub = api.gearEvents.subscribeToGearEvent('UserMessageSent', handleEvents);
     }
 
     return () => {
