@@ -70,7 +70,7 @@ function Create() {
       .then(({ cid }) => cid)
       .then(async (imageCid) => (details ? { detailsCid: (await ipfs.add(details)).cid, imageCid } : { imageCid }))
       .then(({ imageCid, detailsCid }) => getMintPayload(name, description, imageCid, detailsCid))
-      .then((payload) => sendMessage(payload, { onSuccess: resetForm }))
+      .then((payload) => sendMessage({ payload, onSuccess: resetForm }))
       .catch(({ message }: Error) => alert.error(message));
   };
 

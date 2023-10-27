@@ -39,9 +39,12 @@ function NFT() {
 
   const onSuccess = closeModal;
 
-  const transfer = (address: HexString) => sendMessage({ Transfer: { to: address, tokenId: id } }, { onSuccess });
-  const approve = (address: HexString) => sendMessage({ Approve: { to: address, tokenId: id } }, { onSuccess });
-  const revoke = () => sendMessage({ RevokeApproval: { approvedAccount: revokedAddress, tokenId: id } }, { onSuccess });
+  const transfer = (address: HexString) =>
+    sendMessage({ payload: { Transfer: { to: address, tokenId: id } }, onSuccess });
+  const approve = (address: HexString) =>
+    sendMessage({ payload: { Approve: { to: address, tokenId: id } }, onSuccess });
+  const revoke = () =>
+    sendMessage({ payload: { RevokeApproval: { approvedAccount: revokedAddress, tokenId: id } }, onSuccess });
 
   return (
     <>
