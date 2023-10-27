@@ -49,7 +49,7 @@ function AccountsModal({ close }: Props) {
   }, [walletId]);
 
   useEffect(() => {
-    const isChosenExtensionExists = extensions.some((ext) => ext.name === walletId);
+    const isChosenExtensionExists = extensions?.some((ext) => ext.name === walletId);
 
     if (!isChosenExtensionExists) resetWallet();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -64,7 +64,7 @@ function AccountsModal({ close }: Props) {
         <>
           <SimpleBar className={styles.simplebar}>
             {isWalletSelection && (
-              <Wallets selectedWalletId={walletId} onWalletClick={switchWallet} extensions={extensions} />
+              <Wallets selectedWalletId={walletId} onWalletClick={switchWallet} extensions={extensions || []} />
             )}
 
             {!isWalletSelection && (

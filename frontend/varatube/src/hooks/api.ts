@@ -1,4 +1,4 @@
-import { useAccount, useReadFullState, useReadWasmState, useSendMessage } from '@gear-js/react-hooks';
+import { useAccount, useReadFullState, useReadWasmState, useSendMessageHandler } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import stateWasm from 'assets/state/varatube_state.meta.wasm';
 import varatubeMeta from 'assets/state/varatube_meta.txt';
@@ -47,7 +47,7 @@ function useSubscriptions() {
 function useSubscriptionsMessage() {
   const metadata = useSubscriptionMeta();
 
-  return useSendMessage(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true });
+  return useSendMessageHandler(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true });
 }
 
 type FTState = { balances: [[HexString, string]] };
