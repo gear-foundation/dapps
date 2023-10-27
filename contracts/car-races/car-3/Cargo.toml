@@ -1,0 +1,10 @@
+[package]
+name = "car-3"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gstd = { workspace = true, features = ["debug"] }
+
+[build-dependencies]
+gear-wasm-builder.workspace = true

@@ -1,0 +1,9 @@
+[package]
+name = "car-races-io"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gstd = { workspace = true, features = ["debug"] }
+gmeta.workspace = true
+primitive-types.workspace = true

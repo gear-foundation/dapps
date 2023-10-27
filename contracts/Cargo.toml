@@ -6,6 +6,7 @@ members = [
     "auto-changed-nft",
     "auto-changed-nft/state",
     "battleship",
+    "car-races",
     "concert",
     "concert/state",
     "crowdsale",
@@ -94,6 +95,7 @@ members = [
     "tamagotchi-battle/state",
     "tequila-train",
     "tequila-train/state",
+    "tic-tac-toe",
     "vara-man",
     "vara-man/state",
     "varatube",
@@ -157,6 +159,7 @@ tamagotchi-battle-state.path = "tamagotchi-battle/state"
 
 auto-changed-nft-io.path = "auto-changed-nft/io"
 battleship-io.path = "battleship/io"
+car-races-io.path = "car-races/io"
 concert-io.path = "concert/io"
 crowdsale-io.path = "crowdsale/io"
 dao-io.path = "dao/io"
@@ -207,6 +210,7 @@ syndote-player-io.path = "syndote/player/io"
 tamagotchi-io.path = "tamagotchi/io"
 tamagotchi-battle-io.path = "tamagotchi-battle/io"
 tequila-train-io.path = "tequila-train/io"
+tic-tac-toe-io.path = "tic-tac-toe/io"
 vara-man-io.path = "vara-man/io"
 varatube-io.path = "varatube/io"
 w3bstreaming-io.path = "w3bstreaming/io"
