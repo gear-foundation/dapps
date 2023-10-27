@@ -13,7 +13,7 @@ import { ADDRESS } from '../consts'
 
 function ApiProvider({ children }: ProviderProps) {
   return (
-    <GearApiProvider providerAddress={ADDRESS.DEFAULT_NODE}>
+    <GearApiProvider initialArgs={{ endpoint: ADDRESS.DEFAULT_NODE }}>
       {children}
     </GearApiProvider>
   )

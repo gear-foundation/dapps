@@ -1,6 +1,6 @@
 {
-  "name": "coinbase-nft-portal-frontend",
-  "version": "0.3.2",
+  "name": "nft-portal-frontend",
+  "version": "0.3.3",
   "private": true,
   "scripts": {
     "start": "react-app-rewired start",
@@ -9,12 +9,12 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
-    "@gear-js/api": "0.33.6",
-    "@gear-js/react-hooks": "0.7.0",
+    "@gear-js/api": "0.35.1",
+    "@gear-js/react-hooks": "0.9.0",
     "@mantine/form": "6.0.8",
-    "@polkadot/api": "10.9.1",
+    "@polkadot/api": "10.10.1",
     "@polkadot/extension-dapp": "0.46.5",
-    "@polkadot/types": "10.9.1",
+    "@polkadot/types": "10.10.1",
     "@polkadot/util": "12.4.2",
     "@polkadot/wasm-crypto": "7.2.1",
     "@polkadot/x-randomvalues": "12.4.2",
