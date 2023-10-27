@@ -1,4 +1,4 @@
-import { SendMessageOptions, useAccount, useReadWasmState, useSendMessage } from '@gear-js/react-hooks';
+import { SendMessageOptions, useAccount, useReadWasmState, useSendMessageHandler } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 import { HexString } from '@polkadot/util/types';
 import { LOCAL_STORAGE } from 'consts';
@@ -74,10 +74,10 @@ function useNft(tokenId: string) {
 
 function useSupplyChainMessage() {
   const metadata = useSupplyChainMetadata();
-  const sendMessage = useSendMessage(localStorage[LOCAL_STORAGE.PROGRAM], metadata);
+  const sendMessage = useSendMessageHandler(localStorage[LOCAL_STORAGE.PROGRAM], metadata);
 
-  return (payload: AnyJson, options?: SendMessageOptions) =>
-    sendMessage({ action: payload, kind: { New: null } }, options);
+  return (payload: AnyJson, options?: Pick<SendMessageOptions, 'onSuccess' | 'onError'>) =>
+    sendMessage({ payload: { action: payload, kind: { New: null } }, ...options });
 }
 
 export { useItem, useItems, useRoles, useNft, useSupplyChainMessage, useSupplyChainMetadata };

@@ -19,10 +19,10 @@ function Use({ onCancel, onSubmit }: Props) {
   const form = useForm({ initialValues, validate });
   const { getInputProps, values, setFieldError } = form;
 
-  const isProgramExists = () => api.program.exists(values.programId);
-
   const handleSubmit = form.onSubmit(async ({ programId }) => {
-    if (await isProgramExists()) {
+    const isProgramExists = await api?.program.exists(values.programId);
+
+    if (isProgramExists) {
       onSubmit(programId);
     } else setFieldError('programId', 'Program not found in the storage');
   });
