@@ -66,6 +66,5 @@ extern fn handle() {
     // if I'm the third just buy shell
     if cars_vec[2].0 == my_car_id {
         msg::reply(StrategyAction::BuyAcceleration, 0).expect("Error in sending a message");
-        return;
     }
 }
