@@ -36,7 +36,7 @@ impl Metadata for ContractMetadata {
     ///
     /// Describes incoming/outgoing types for the `handle()` function.
     ///
-    /// We use the [`GameAction`] type for incoming and [`GameEvent`] for outgoing
+    /// We use the [`GameAction`] type for incoming and [`GameReply`] for outgoing
     /// messages.
     type Handle = InOut<GameAction, GameReply>;
     /// Asynchronous handle message type.
@@ -66,7 +66,7 @@ impl Metadata for ContractMetadata {
     /// Describes the type for the queried state returned by the `state()`
     /// function.
     ///
-    /// We use a [`GameState`] struct.
+    /// We use a [`StateQuery`] and [`StateReply`]struct.
     type State = InOut<StateQuery, StateReply>;
 }
 
