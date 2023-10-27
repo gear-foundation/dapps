@@ -1,11 +1,15 @@
 #![no_std]
-use gstd::{collections::BTreeMap, debug, exec, msg, prelude::*, ActorId};
+use gstd::{collections::BTreeMap, exec, msg, prelude::*, ActorId};
 
 #[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum CarAction {
     YourTurn(BTreeMap<ActorId, Car>),
 }
 #[derive(Encode, Decode, TypeInfo, Clone, Debug)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Car {
     pub balance: u32,
     pub position: u32,
@@ -15,6 +19,8 @@ pub struct Car {
     pub round_result: Option<RoundAction>,
 }
 #[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum StrategyAction {
     BuyAcceleration,
     BuyShell,
@@ -22,6 +28,8 @@ pub enum StrategyAction {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum RoundAction {
     Accelerated(u32),
     SlowedDown(u32),
@@ -44,28 +52,20 @@ extern fn handle() {
         msg::reply(StrategyAction::Skip, 0).expect("Error in sending a message");
         return;
     }
-    debug!("CAR 2: SKIP");
     // if I'm the second
     if cars_vec[1].0 == my_car_id {
-        debug!("CAR 2 I AM THE SECOND");
         // if the distance is small, then just buy acceleration
         if (cars_vec[0].1.position - my_position) <= 1000 {
-            debug!("ACC");
             msg::reply(StrategyAction::BuyShell, 0).expect("Error in sending a message");
         } else {
             // else buy shells
-            debug!("SHELL");
             msg::reply(StrategyAction::BuyAcceleration, 0).expect("Error in sending a message");
         }
         return;
     }
-    debug!("CAR 2: SKIP");
     // if I'm the third just buy shell
     if cars_vec[2].0 == my_car_id {
-        debug!("CAR 2 I AM THE THIRD");
         msg::reply(StrategyAction::BuyAcceleration, 0).expect("Error in sending a message");
         return;
     }
-
-    debug!("CAR 2: SKIP");
 }
