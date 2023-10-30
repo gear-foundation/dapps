@@ -10,7 +10,7 @@
 
 ## Description
 
-React application of [Supply chain](https://wiki.gear-tech.io/examples/supply-chain) based on [Rust smart-contract](https://github.com/gear-foundation/dapps-supply-chain).
+React application of [Supply chain](https://wiki.gear-tech.io/examples/supply-chain) based on [Rust smart-contract](https://github.com/gear-foundation/dapps/tree/master/contracts/supply-chain).
 
 ## Getting started
 

@@ -19,10 +19,9 @@ function NFTs({ slider }: Props) {
   const { nfts, getImageUrl } = useNFTs()
   const { searchQuery } = useNFTSearch()
   const { account } = useAccount()
-  const { getIsLowBalance } = useCheckBalance()
   const navigate = useNavigate()
 
-  const { mintNFT, isMintingAvailable, isMinting } = useMintNFT()
+  const { isMintingAvailable, isMinting } = useMintNFT()
 
   const [result] = useQuery({
     query: GetNftsByNameQuery,
@@ -64,13 +63,13 @@ function NFTs({ slider }: Props) {
   const nextSlide = () => sliderApiRef.current?.next()
 
   const getNFTs = () =>
-    filteredNFTs.map(({ name, owner, mediaUrl, collection }) => {
+    filteredNFTs.map(({ name, id, owner, mediaUrl, collection }) => {
       const style = { backgroundImage: `url(${getImageUrl(mediaUrl)})` }
-      const to = `/${owner.id}`
+      const to = `/${id}`
       const className = clsx(styles.nft, slider && 'keen-slider__slide')
 
       return (
-        <li key={to} className={className}>
+        <li key={id} className={className}>
           <header>
             <p className={styles.collection}>{collection}</p>
             <p className={styles.name}>{name}</p>
@@ -155,26 +154,9 @@ function NFTs({ slider }: Props) {
               {!searchQuery ? (
                 <>
                   {(isMinting || isMintingAvailable) && (
-                    <>
-                      <p className={styles.placeholderHeading}>
-                        You don&apos;t have NFT yet
-                      </p>
-                      <p className={styles.placeholderText}>
-                        To obtain your NFT, click the
-                        &quot;Mint&nbsp;NFT&quot;&nbsp;button.
-                      </p>
-                      <Button
-                        onClick={mintNFT}
-                        className={styles.button}
-                        isLoading={isMinting}
-                        disabled={getIsLowBalance()}
-                      >
-                        Mint NFT
-                      </Button>
-                      {getIsLowBalance() && (
-                        <div>Your account balance too low</div>
-                      )}
-                    </>
+                    <p className={styles.placeholderHeading}>
+                      You don&apos;t have NFTs
+                    </p>
                   )}
 
                   {!isMinting && !isMintingAvailable && (

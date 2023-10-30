@@ -10,7 +10,7 @@
 
 ## Description
 
-React application of [_wiki link_](#) based on [Rust smart-contract](#).
+React application of [VaraTube](https://wiki.gear-tech.io/docs/examples/Infra/varatube) based on [Rust smart-contract](https://github.com/gear-foundation/dapps/tree/master/contracts/varatube).
 
 ## Getting started
 

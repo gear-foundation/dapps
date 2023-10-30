@@ -15,7 +15,7 @@ export function usePendingUI() {
 }
 
 export function useReadStateFromApi<T = AnyJson>() {
-  const [nft, setNft] = useState<T | null>(null)
+  const [nft, setNft] = useState<T[] | null>(null)
   const [isStateRead, setIsStateRead] = useState(false)
   const { account } = useAccount()
   const { setIsPending } = usePendingUI()
@@ -38,9 +38,8 @@ export function useReadStateFromApi<T = AnyJson>() {
 
     if (data) {
       const { nfts } = data
-      const [userNft] = nfts
 
-      setNft(userNft || null)
+      setNft(nfts || null)
     }
     if (!fetching) {
       setIsStateRead(true)
