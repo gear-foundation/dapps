@@ -7,3 +7,5 @@ edition = "2021"
 gstd = { workspace = true, features = ["debug"] }
 gmeta.workspace = true
 primitive-types.workspace = true
+scale-info.workspace = true
+parity-scale-codec.workspace = true

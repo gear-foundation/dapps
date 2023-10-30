@@ -1,7 +1,7 @@
 //! Data types for the contract input/output.
 
 #![no_std]
-
+use codec::{Decode, Encode};
 use gmeta::{In, InOut, Metadata};
 use gstd::{collections::BTreeMap, prelude::*, ActorId, MessageId};
 // prices for acceleration and shuffles are constants for simple implementation
@@ -82,8 +82,6 @@ impl Metadata for ContractMetadata {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StateQuery {
     Admins,
     StrategyIds,
@@ -96,8 +94,6 @@ pub enum StateQuery {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {
     Admins(Vec<ActorId>),
     StrategyIds(Vec<ActorId>),
@@ -110,8 +106,6 @@ pub enum StateReply {
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Car {
     pub position: u32,
     pub speed: u32,
@@ -120,8 +114,6 @@ pub struct Car {
 }
 
 #[derive(Encode, Decode, TypeInfo, Default, PartialEq, Eq, Debug, Clone)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum GameState {
     #[default]
     ReadyToStart,
@@ -132,8 +124,6 @@ pub enum GameState {
 }
 
 #[derive(Encode, Decode, TypeInfo, Default, Clone, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Game {
     pub cars: BTreeMap<ActorId, Car>,
     pub car_ids: Vec<ActorId>,
@@ -145,8 +135,6 @@ pub struct Game {
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum GameResult {
     Win,
     Draw,
@@ -154,15 +142,11 @@ pub enum GameResult {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct GameInit {
     pub config: Config,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum GameAction {
     AddAdmin(ActorId),
     RemoveAdmin(ActorId),
@@ -199,8 +183,6 @@ pub enum GameAction {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StrategyAction {
     BuyAcceleration,
     BuyShell,
@@ -208,8 +190,6 @@ pub enum StrategyAction {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, Clone, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum RoundAction {
     Accelerated,
     SlowedDown,
@@ -217,15 +197,11 @@ pub enum RoundAction {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum CarAction {
     YourTurn(BTreeMap<ActorId, Car>),
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum GameReply {
     GameStarted,
     NotEnoughGas,
@@ -239,7 +215,7 @@ impl Game {
     pub fn buy_acceleration(&mut self) {
         let car_id = self.get_current_car_id();
         let car = self.cars.get_mut(&car_id).expect("Get Car: Can't be None");
-        car.speed += DEFAULT_SPEED;
+        car.speed = car.speed.saturating_add(DEFAULT_SPEED);
         car.car_actions.push(RoundAction::Accelerated);
     }
 
@@ -248,12 +224,8 @@ impl Game {
 
         let shelled_car_id = self.find_car_to_shell(&car_id);
         self.cars.entry(shelled_car_id).and_modify(|car| {
-            let new_speed = car.speed - DEFAULT_SPEED;
-            if new_speed < DEFAULT_SPEED {
-                car.speed = DEFAULT_SPEED;
-            } else {
-                car.speed = new_speed;
-            }
+            let new_speed = car.speed.saturating_sub(DEFAULT_SPEED);
+            car.speed = new_speed.max(DEFAULT_SPEED);
             car.car_actions.push(RoundAction::SlowedDown);
         });
     }
@@ -263,7 +235,7 @@ impl Game {
     }
 
     pub fn update_positions(&mut self, config: &Config) {
-        let mut winners = Vec::new();
+        let mut winners = Vec::with_capacity(3);
         for (car_id, car) in self.cars.iter_mut() {
             car.position = car.position.saturating_add(car.speed * config.time);
             if car.position >= config.max_distance {
@@ -352,8 +324,6 @@ impl Game {
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Config {
     pub add_attribute_gas: u64,
     pub tokens_for_owner_gas: u64,
@@ -369,8 +339,6 @@ pub struct Config {
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct RoundInfo {
     pub cars: Vec<(ActorId, u32, Option<RoundAction>)>,
     pub result: Option<GameResult>,

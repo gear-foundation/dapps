@@ -1,15 +1,13 @@
 #![no_std]
+use codec::{Decode, Encode};
 use gstd::{collections::BTreeMap, exec, msg, prelude::*, ActorId};
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum CarAction {
     YourTurn(BTreeMap<ActorId, Car>),
 }
+
 #[derive(Encode, Decode, TypeInfo, Clone)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Car {
     pub balance: u32,
     pub position: u32,
@@ -18,8 +16,6 @@ pub struct Car {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StrategyAction {
     BuyAcceleration,
     BuyShell,

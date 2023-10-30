@@ -256,3 +256,5 @@ xshell = "0.2"
 anyhow = "1"
 sha2 = "0.10"
 num-traits = { version = "0.2", default-features = false }
+scale-info = { version = "2", default-features = false }
+parity-scale-codec = { version = "3", default-features = false }
