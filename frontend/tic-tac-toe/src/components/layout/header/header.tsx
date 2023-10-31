@@ -5,6 +5,8 @@ import clsx from 'clsx'
 import { useAccount } from '@gear-js/react-hooks'
 import { MobileMenu } from '@/components/layout/header/mobile-menu'
 import { Wallet } from '@/features/wallet'
+import { Suspense } from 'react'
+import { Loader } from '@/components/loaders'
 
 export function Header() {
   const { account } = useAccount()
@@ -18,7 +20,11 @@ export function Header() {
           )}
           label="Tic-Tac-Toe"
         />
-        {!!account && <MobileMenu />}
+        {!!account && (
+          <Suspense fallback={<Loader />}>
+            <MobileMenu />
+          </Suspense>
+        )}
         <div className={styles.header__wallet}>
           <Wallet className={styles.wallet} />
         </div>
