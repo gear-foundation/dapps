@@ -1,0 +1,12 @@
+[package]
+name = "car-3"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gstd = { workspace = true, features = ["debug"] }
+scale-info.workspace = true
+parity-scale-codec.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true

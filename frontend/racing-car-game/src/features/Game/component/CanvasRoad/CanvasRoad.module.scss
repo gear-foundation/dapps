@@ -1,0 +1,48 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.road {
+  position: relative;
+  width: 100%;
+  height: 264px;
+  overflow: hidden;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.roads-start {
+  height: 100%;
+  position: absolute;
+  left: 300px;
+}
+
+.road-canvas {
+  position: absolute;
+}
+
+.car {
+  position: absolute;
+  transition: all 1s;
+}
+
+.car-effect {
+  position: absolute;
+  z-index: -1;
+
+  &-shooted {
+    &-fire {
+      height: 84px;
+      transform: translate(-45px, -10px);
+    }
+
+    &-smoke {
+      height: 204px;
+      transform: translate(-38px, -78px);
+    }
+    
+  }
+
+  &-accelerated {
+    height: 50px;
+    transform: translateX(-150px);
+  }
+}
