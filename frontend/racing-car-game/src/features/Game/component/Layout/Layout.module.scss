@@ -1,0 +1,253 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.container {
+  width: 100%;
+  
+  &-flexed {
+    display: flex;
+    flex-direction: column;
+  }
+
+  @include md {
+    padding-bottom: 0;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+.content {
+    display: flex;
+    min-height: 695px;
+    background: theme-var($background-secondary);
+
+    @include lg {
+        padding: 0 20px;
+      }
+
+    @include wings;
+}
+
+.controls {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding: 0 20px;
+  width: 100%;
+
+  @include md {
+    position: absolute;
+    bottom: 20px;
+    margin-top: 0;
+    z-index: 1;
+  }
+}
+
+.control-button {
+  width: 200px;
+  font-size: 18px;
+  font-weight: 700;
+
+  &-red {
+    background: linear-gradient(270deg, #64FFDB 0%, #FF7979 0.01%);
+  }
+
+  &-gray {
+    background: theme-var($text-tertiary);
+  }
+}
+
+.footer {
+  padding-top: 50px;
+  margin-top: auto;
+  width: 100%;
+  background: #ffffff;
+
+  @include md {
+    display: none;
+  }
+}
+
+.rewards-wrapper {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+
+  @include md {
+    position: absolute;
+    bottom: 20px;
+    padding: 0 20px;
+    width: 100%;
+  }
+}
+
+.btn {
+  @include md {
+    width: 100%;
+    z-index: 1;
+  }
+}
+
+.footer-wrapper {
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  padding: 160px 20px;
+  width: 100%;
+
+  & > div:nth-child(2) {
+    background: #00ffc4;
+  }
+
+  @include md {
+    position: absolute;
+    transform: translateY(100%);
+    bottom:  0;
+    padding: 0 20px;
+  }
+}
+
+.banner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 24px;
+  padding: 40px 56px 40px 40px;
+  color: #fff;
+  background-color: #000000;
+  background-image: radial-gradient(63.92% 185.86% at 41.88% 70.03%, rgba(0, 255, 196, 0.2) 0%, rgba(0, 255, 196, 0) 100%);
+  border-radius: 8px;
+  max-width: 1200px;
+  margin: auto;
+
+  @include md {
+    display: flex;
+    flex-direction: column;
+    grid-gap: 0;
+    padding: 16px;
+    margin: auto;
+    width: auto;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 38px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: -1;
+    width: 100%;
+    background-color: #00ffc4;
+  }
+
+  &__right {
+    @include gap(16px)
+  }
+
+  &__title {
+    font-size: 34px;
+    font-weight: 600;
+    line-height: 41px;
+    letter-spacing: 0.02em;
+
+    @include md {
+      font-size: 23px;
+      line-height: 27.6px;
+    }
+
+    span {
+      display: inline-block;
+      background: linear-gradient(90deg, #ffffff 33.39%, #00ffc4 77.42%);
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+
+  &__text {
+    @include gap(14px);
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 25px;
+    letter-spacing: 0;
+
+    @include md {
+      font-size: 14px;
+      line-height: 19.6px
+    }
+  }
+
+  &__left {
+    @include gap(16px);
+
+    @include md {
+      padding-top: 24px;
+    }
+  }
+
+  .visit-block {
+    @include md {
+      font-size: 14px;
+      line-height: 19.6px;
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    padding: 24px;
+    @include gap(20px, right);
+    background-color: #00ffc429;
+    border-radius: 4px;
+    font-size: 18px;
+    line-height: 25px;
+
+    @include md {
+      padding: 16px;
+    }
+
+    a {
+      position: relative;
+      display: inline-block;
+      font-weight: 700;
+      color: #00ffc4;
+
+      &:hover {
+        &::before {
+          background-color: transparent;
+        }
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 1px;
+        height: 2px;
+        background-color: currentColor;
+        transition: background-color 150ms ease-in;
+      }
+    }
+  }
+
+  &__icon {
+    display: inline-block;
+    padding: 12px;
+    border-radius: 50%;
+    background-color: #00ffc4;
+    color: #0b1114;
+
+    @include md {
+      padding: 4px;
+      align-self: start;
+    }
+  }
+}
+
+.loader-wrapper {
+  position: relative;
+  width: 100%;
+}

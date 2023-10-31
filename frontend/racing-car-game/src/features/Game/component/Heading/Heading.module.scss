@@ -1,0 +1,72 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.heading-title {
+  font-size: 40px;
+  font-weight: 500;
+
+  @include md {
+    font-size: 32px;
+    font-weight: 700;
+  }
+
+  &-with-gradient-null {
+    background: linear-gradient(90deg, #2B2B2B 33.39%, #00FFC4 77.42%);
+      -webkit-background-clip: text;
+      background-clip: text; 
+      -webkit-text-fill-color: transparent;
+  }
+
+  &-with-gradient-Win {
+    background: linear-gradient(90deg, #2B2B2B 33.39%, #00FFC4 77.42%);
+      -webkit-background-clip: text;
+      background-clip: text; 
+      -webkit-text-fill-color: transparent;
+  }
+
+  &-with-gradient-Draw {
+    color: #2B2B2B;
+  }
+
+  &-with-gradient-Lose {
+    background: linear-gradient(90deg, #2B2B2B 33.39%, #C5C5C5 77.42%);
+      -webkit-background-clip: text;
+      background-clip: text; 
+      -webkit-text-fill-color: transparent;
+  }
+}
+
+.heading-description {
+  font-size: 18px;
+  font-weight: 400;
+  
+  @include md {
+    font-size: 14px;
+    text-align: center;
+  }
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  margin: 50px 0 40px;
+
+  @include md {
+    margin: 0;
+    gap: 10px;
+  }
+}
+
+.turn {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.turn-value {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.8px;
+}
