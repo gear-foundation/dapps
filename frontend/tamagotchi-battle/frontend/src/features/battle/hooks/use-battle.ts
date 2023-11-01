@@ -78,7 +78,7 @@ export function useInitBattleData() {
     let unsub: UnsubscribePromise | undefined;
 
     if (metadata && state) {
-      unsub = api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data }: UserMessageSent) => {
+      unsub = api?.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data }: UserMessageSent) => {
         const {
           message: { payload, details },
         } = data;
@@ -143,5 +143,5 @@ export function useInitBattleData() {
 
 export function useBattleMessage() {
   const metadata = useProgramMetadata(meta);
-  return useSendMessage(programId, metadata, { isMaxGasLimit: true });
+  return useSendMessage(programId, metadata);
 }

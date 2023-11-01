@@ -1,4 +1,4 @@
-import { useReadWasmState, useSendMessage } from '@gear-js/react-hooks';
+import { useReadWasmState, useSendMessageHandler } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 import { useMemo } from 'react';
 import { ADDRESS } from 'consts';
@@ -47,7 +47,7 @@ function useMarketNft(tokenId: string) {
 function useMarketplaceMessage() {
   const metadata = useMarketplaceMeta();
 
-  return useSendMessage(ADDRESS.MARKETPLACE_CONTRACT, metadata);
+  return useSendMessageHandler(ADDRESS.MARKETPLACE_CONTRACT, metadata);
 }
 
 function useMarketplaceActions(token_id: string, price: MarketNFT['price'] | undefined) {
@@ -62,31 +62,31 @@ function useMarketplaceActions(token_id: string, price: MarketNFT['price'] | und
     const payload = { BuyItem: { nft_contract_id, token_id } };
     const value = price;
 
-    sendMessage(payload, { value, onSuccess });
+    sendMessage({ payload, value, onSuccess });
   };
 
   const offer = (value: string, onSuccess: () => void) => {
     const payload = { AddOffer: { nft_contract_id, token_id, price: value } };
 
-    sendMessage(payload, { value, onSuccess });
+    sendMessage({ payload, value, onSuccess });
   };
 
   const bid = (value: string, onSuccess: () => void) => {
     const payload = { AddBid: { nft_contract_id, token_id, price: value } };
 
-    sendMessage(payload, { value, onSuccess });
+    sendMessage({ payload, value, onSuccess });
   };
 
   const settle = (onSuccess: () => void) => {
     const payload = { SettleAuction: { nft_contract_id, token_id } };
 
-    sendMessage(payload, { onSuccess });
+    sendMessage({ payload, onSuccess });
   };
 
   const startSale = (value: string, onSuccess: () => void) => {
     const payload = { AddMarketData: { nft_contract_id, token_id, price: value } };
 
-    sendMessage(payload, { value, onSuccess });
+    sendMessage({ payload, value, onSuccess });
   };
 
   const startAuction = (values: AuctionFormValues, onSuccess: () => void) => {
@@ -98,9 +98,9 @@ function useMarketplaceActions(token_id: string, price: MarketNFT['price'] | und
     const marketDataPayload = { AddMarketData: { nft_contract_id, token_id } };
     const auctionPayload = { CreateAuction: { nft_contract_id, token_id, bid_period, duration, min_price: minPrice } };
 
-    const sendStartAuctionMessage = () => sendMessage(auctionPayload, { onSuccess });
+    const sendStartAuctionMessage = () => sendMessage({ payload: auctionPayload, onSuccess });
 
-    sendMessage(marketDataPayload, { onSuccess: sendStartAuctionMessage });
+    sendMessage({ payload: marketDataPayload, onSuccess: sendStartAuctionMessage });
   };
 
   return { buy, offer, bid, settle, startAuction, startSale };

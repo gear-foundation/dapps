@@ -20,7 +20,7 @@ function InputAddress({ label, onSubmit }: Props) {
   const { getInputProps, setFieldError } = form;
 
   const handleSubmit = async (address: HexString) => {
-    const isProgram = await api.program.exists(address);
+    const isProgram = await api?.program.exists(address);
 
     if (isProgram) {
       onSubmit(address);

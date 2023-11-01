@@ -17,7 +17,7 @@ export const AccountComponent = () => {
     <div className="flex items-center gap-4">
       {account ? (
         <div className="flex gap-4">
-          <GasWallet balance={account.balance} address={account.address} name={account.meta.name} onClick={openModal} />
+          <GasWallet address={account.address} name={account.meta.name} onClick={openModal} />
           <div className="max-w-[260px]">
             <button
               className={clsx('btn btn--primary gap-2 w-full !justify-start', buttonStyles.button)}

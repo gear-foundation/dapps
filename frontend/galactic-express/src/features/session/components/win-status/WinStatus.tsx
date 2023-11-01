@@ -16,7 +16,7 @@ function WinStatus({ type, userRank }: Props) {
 
   const handleCreateNewSession = () => {
     if (meta) {
-      sendNewSessionMessage({ CreateNewSession: null });
+      sendNewSessionMessage({ payload: { CreateNewSession: null } });
     }
   };
 

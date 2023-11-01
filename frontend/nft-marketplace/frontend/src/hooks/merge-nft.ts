@@ -19,7 +19,7 @@ function useMergedNFTs() {
   const [isEachNFTRead, setIsEachNFTRead] = useState(false);
 
   useEffect(() => {
-    if (!marketNFTs || !nftStateBuffer || !nftStateMetadata || !nftMetadata) return;
+    if (!api || !marketNFTs || !nftStateBuffer || !nftStateMetadata || !nftMetadata) return;
 
     const combinedNFTs = marketNFTs.map((marketNft) =>
       api.programState
@@ -46,7 +46,7 @@ function useMergedNFTs() {
       .catch(({ message }: Error) => alert.error(message));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [marketNFTs]);
+  }, [api, marketNFTs]);
 
   return { NFTs, isEachNFTRead };
 }
@@ -64,7 +64,7 @@ function useMergedOwnerNFTs() {
   const [isEachNFTRead, setIsEachNFTRead] = useState(false);
 
   useEffect(() => {
-    if (!ownerNFTs || !marketplaceStateBuffer || !marketplaceStateMetadata || !marketplaceMeta) return;
+    if (!api || !ownerNFTs || !marketplaceStateBuffer || !marketplaceStateMetadata || !marketplaceMeta) return;
 
     const combinedNFTs = ownerNFTs.map(
       (baseNft) =>
@@ -92,7 +92,7 @@ function useMergedOwnerNFTs() {
       .catch(({ message }: Error) => alert.error(message));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ownerNFTs, marketplaceStateBuffer, marketplaceStateMetadata]);
+  }, [api, ownerNFTs, marketplaceStateBuffer, marketplaceStateMetadata]);
 
   return { NFTs, isEachNFTRead };
 }

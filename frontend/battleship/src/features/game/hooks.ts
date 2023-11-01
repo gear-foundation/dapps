@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react'
-import { useAccount, useSendMessage } from '@gear-js/react-hooks'
+import { useAccount, useSendMessageHandler } from '@gear-js/react-hooks'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import meta from './assets/meta/battleship.meta.txt'
 import { IGameInstance } from './types'
@@ -78,7 +78,7 @@ export const useInitGame = () => {
 
 export function useGameMessage() {
   const metadata = useProgramMetadata(meta)
-  return useSendMessage(programIdGame, metadata, {
+  return useSendMessageHandler(programIdGame, metadata, {
     disableAlerts: true,
   })
 }

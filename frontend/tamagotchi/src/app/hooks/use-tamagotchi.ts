@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
 import {
   useAccount,
-  useHandleCalculateGas,
   useReadFullState,
-  useSendMessage,
+  useSendMessageHandler,
   withoutCommas,
 } from '@gear-js/react-hooks'
 import { useLessons, useTamagotchi } from '@/app/context'
@@ -61,14 +60,13 @@ export function useTamagotchiInit() {
 export function useTamagotchiMessage() {
   const { lesson, lessonMeta } = useLessons()
 
-  const calculateGas = useHandleCalculateGas(lesson?.programId, lessonMeta)
-  const sendMessage = useSendMessage(lesson?.programId as HexString, lessonMeta)
+  const sendMessage = useSendMessageHandler(
+    lesson?.programId as HexString,
+    lessonMeta
+  )
 
   return (
     payload: AnyJson,
     { onSuccess, onError }: { onSuccess?: () => void; onError?: () => void }
-  ) =>
-    calculateGas(payload).then(({ min_limit }) =>
-      sendMessage({ payload, onError, onSuccess, gasLimit: min_limit })
-    )
+  ) => sendMessage({ payload, onError, onSuccess })
 }

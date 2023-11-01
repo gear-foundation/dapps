@@ -40,7 +40,7 @@ function Form() {
 
     const payload = { Start: { duration, participation_cost: participationCost, fungible_token: ftAddress } };
 
-    sendMessage(payload, { onSuccess: resetForm });
+    sendMessage({ payload, onSuccess: resetForm });
   };
 
   useEffect(() => {

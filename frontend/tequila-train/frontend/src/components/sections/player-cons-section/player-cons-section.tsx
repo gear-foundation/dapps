@@ -59,7 +59,7 @@ export const PlayerConsSection = () => {
       if (+track_id >= 0 && +tile_id >= 0) {
         setIsPending((prev) => !prev);
         setTurnPending(true);
-        handleMessage({ Place: { tile_id, track_id, remove_train } }, { onSuccess, onError });
+        handleMessage({ payload: { Place: { tile_id, track_id, remove_train } }, onSuccess, onError });
       }
     } else {
       setOpenEmptyPopup(true);
@@ -69,7 +69,7 @@ export const PlayerConsSection = () => {
   const onPass = () => {
     setIsPending((prev) => !prev);
     setPassPending(true);
-    handleMessage({ Skip: null }, { onSuccess, onError });
+    handleMessage({ payload: { Skip: null }, onSuccess, onError });
   };
 
   return (

@@ -11,7 +11,7 @@ import { Alert, alertStyles } from '@/components/ui/alert'
 
 function ApiProvider({ children }: ProviderProps) {
   return (
-    <GearApiProvider providerAddress={ADDRESS.NODE}>{children}</GearApiProvider>
+    <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>
   )
 }
 

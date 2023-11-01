@@ -14,7 +14,7 @@ type Props = {
 };
 
 function ApiProvider({ children }: Props) {
-  return <GearApiProvider providerAddress={ADDRESS.NODE}>{children}</GearApiProvider>;
+  return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
 }
 
 function AlertProvider({ children }: Props) {

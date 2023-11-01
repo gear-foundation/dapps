@@ -1,4 +1,4 @@
-import { useReadFullState, useSendMessage } from '@gear-js/react-hooks';
+import { useReadFullState, useSendMessageHandler } from '@gear-js/react-hooks';
 import metaTxt from 'assets/meta/meta.txt';
 import { ADDRESS } from 'consts';
 import { Lottery } from 'types';
@@ -17,7 +17,7 @@ function useLotteryState() {
 function useLotteryMessage() {
   const meta = useLotteryMetadata();
 
-  return useSendMessage(ADDRESS.CONTRACT, meta);
+  return useSendMessageHandler(ADDRESS.CONTRACT, meta);
 }
 
 export { useLotteryState, useLotteryMessage };

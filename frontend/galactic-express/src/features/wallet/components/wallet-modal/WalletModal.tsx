@@ -28,10 +28,10 @@ function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
 
   const getWallets = () =>
     WALLETS.map(([id, { SVG, name }]) => {
-      const isEnabled = extensions.some((extension) => extension.name === id);
+      const isEnabled = extensions?.some((extension) => extension.name === id);
       const status = isEnabled ? 'Enabled' : 'Disabled';
 
-      const accountsCount = getWalletAccounts(id).length;
+      const accountsCount = getWalletAccounts(id)?.length;
       const accountsStatus = `${accountsCount} ${accountsCount === 1 ? 'account' : 'accounts'}`;
 
       const onClick = () => setWalletId(id);
@@ -123,7 +123,7 @@ function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
                     <CrossIcon />
                   </button>
                 </div>
-                {accounts.length ? (
+                {accounts?.length ? (
                   <ScrollArea className={styles.content} type={isScrollable ? 'always' : undefined}>
                     <ul className={cx(styles.list, isScrollable ? styles['list--scroll'] : '')}>
                       {getAccounts() || getWallets()}

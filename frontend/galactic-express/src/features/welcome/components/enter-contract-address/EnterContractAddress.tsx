@@ -44,17 +44,15 @@ function EnterContractAddress({ doesSessionExist, isUserAdmin, isStateComing }: 
   useEffect(() => {
     if (!isContractAddressInitialized && contractAddress && isStateComing) {
       if (!doesSessionExist && meta) {
-        sendNewSessionMessage(
-          { CreateNewSession: null },
-          {
-            onSuccess: () => {
-              setIsContractAddressInitialized(true);
-            },
-            onError: () => {
-              console.log('error');
-            },
+        sendNewSessionMessage({
+          payload: { CreateNewSession: null },
+          onSuccess: () => {
+            setIsContractAddressInitialized(true);
           },
-        );
+          onError: () => {
+            console.log('error');
+          },
+        });
       }
       if (doesSessionExist) {
         setIsContractAddressInitialized(true);

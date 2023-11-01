@@ -40,7 +40,7 @@ export const Countdown = () => {
 const usePairCountdown = () => {
   const [time, setTime] = useState<string>('59');
   const { battle, currentPairIdx } = useBattle();
-  const timer = useRef<NodeJS.Timer | undefined>();
+  const timer = useRef<NodeJS.Timeout | undefined>();
   const prevTime = useRef<Dayjs | undefined>();
 
   useEffect(() => {

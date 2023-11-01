@@ -19,12 +19,14 @@ export function useWallet() {
   const { accounts } = useAccount()
 
   const [walletId, setWalletId] = useState(
-    (localStorage.getItem(WALLET_ID_LOCAL_STORAGE_KEY) as IWalletId | null) || undefined
+    (localStorage.getItem(WALLET_ID_LOCAL_STORAGE_KEY) as IWalletId | null) ||
+      undefined
   )
 
   const wallet = walletId ? WALLET[walletId] : undefined
 
-  const getWalletAccounts = (id: IWalletId) => accounts.filter(({ meta }) => meta.source === id)
+  const getWalletAccounts = (id: IWalletId) =>
+    accounts?.filter(({ meta }) => meta.source === id) || []
   const walletAccounts = walletId ? getWalletAccounts(walletId) : undefined
 
   const resetWalletId = useCallback(() => setWalletId(undefined), [])
