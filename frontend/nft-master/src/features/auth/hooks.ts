@@ -53,13 +53,14 @@ function useAutoLogin() {
     const accountAddress = searchParams.get('account')
 
     if (accountAddress) {
-      const account = accounts.find(({ address }) => address === accountAddress)
+      const account = accounts?.find(
+        ({ address }) => address === accountAddress
+      )
 
       if (account) {
-        login(account).then(() => {
-          searchParams.delete('account')
-          setSearchParams(searchParams)
-        })
+        login(account)
+        searchParams.delete('account')
+        setSearchParams(searchParams)
       } else {
         alert.error(`Account with address ${accountAddress} not found`)
       }

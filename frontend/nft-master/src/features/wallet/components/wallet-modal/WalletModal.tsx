@@ -1,7 +1,6 @@
 import { decodeAddress } from '@gear-js/api'
 import { useAccount } from '@gear-js/react-hooks'
 import { useNavigate } from 'react-router-dom'
-import { useSetAtom } from 'jotai'
 import { copyToClipboard, isMobileDevice } from 'utils'
 import { AccountIcon, Button, Modal, ScrollArea, Sprite } from 'components'
 import { usePendingUI } from 'hooks'
@@ -67,7 +66,7 @@ export function WalletModal({ onClose }: Props) {
 
   const getWallets = () =>
     sortWallets(WALLETS).map(([id, { SVG, name }]) => {
-      const isEnabled = extensions.some((extension) => extension.name === id)
+      const isEnabled = extensions?.some((extension) => extension.name === id)
       const status = isEnabled ? 'Enabled' : 'Disabled'
 
       const accountsCount = getWalletAccounts(id).length
@@ -148,7 +147,7 @@ export function WalletModal({ onClose }: Props) {
 
   return (
     <Modal heading="Wallet connection" onClose={onClose}>
-      {accounts.length ? (
+      {accounts?.length ? (
         <ScrollArea
           className={styles.content}
           type={isScrollable ? 'always' : undefined}

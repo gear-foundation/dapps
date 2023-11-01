@@ -21,7 +21,7 @@ function Address({ onSubmit, onBack }: Props) {
   const form = useForm({ initialValues, validate });
   const { values, setFieldError, getInputProps } = form;
 
-  const isProgramExists = () => api.program.exists(values.programId);
+  const isProgramExists = () => api?.program.exists(values.programId);
 
   const handleSubmit = form.onSubmit(async ({ programId }) => {
     if (await isProgramExists()) {

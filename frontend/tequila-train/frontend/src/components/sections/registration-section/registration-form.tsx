@@ -35,7 +35,11 @@ export function RegistrationForm() {
 
   const handleSubmit = form.onSubmit((values) => {
     setIsPending(true);
-    handleMessage({ Register: { player: account?.decodedAddress, name: values.name } }, { onSuccess, onError });
+    handleMessage({
+      payload: { Register: { player: account?.decodedAddress, name: values.name } },
+      onSuccess,
+      onError,
+    });
   });
 
   return (

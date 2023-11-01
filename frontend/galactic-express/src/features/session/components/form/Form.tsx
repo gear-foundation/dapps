@@ -27,7 +27,7 @@ function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props
     validate: VALIDATE,
   });
 
-  const { fuel, payload, deposit } = values;
+  const { fuel, payload } = values;
 
   const { meta, message: sendMessage } = useLaunchMessage(currentContractAddress);
 
@@ -51,18 +51,16 @@ function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props
 
   const handleSubmit = () => {
     if (!isAdmin && meta) {
-      sendMessage(
-        { Register: { fuel_amount: fuel, payload_amount: payload } },
-        {
-          onSuccess: () => {
-            setRegistrationStatus('success');
-          },
+      sendMessage({
+        payload: { Register: { fuel_amount: fuel, payload_amount: payload } },
+        onSuccess: () => {
+          setRegistrationStatus('success');
         },
-      );
+      });
     }
 
     if (isAdmin && meta) {
-      sendMessage({ StartGame: { fuel_amount: fuel, payload_amount: payload } });
+      sendMessage({ payload: { StartGame: { fuel_amount: fuel, payload_amount: payload } } });
     }
   };
 

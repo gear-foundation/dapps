@@ -11,7 +11,7 @@ import { AppProvider, GameProvider } from 'app/context';
 import { ENV } from 'app/consts';
 
 const ApiProvider = ({ children }: ProviderProps) => (
-  <GearApiProvider providerAddress={ENV.NODE}>{children}</GearApiProvider>
+  <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>
 );
 
 const AlertProvider = ({ children }: ProviderProps) => (

@@ -5,7 +5,7 @@ import { useApp } from '@/app/context/ctx-app'
 
 type HeaderAdminProps = BaseComponentProps & {}
 
-export function HeaderAdmin({ }: HeaderAdminProps) {
+export function HeaderAdmin({}: HeaderAdminProps) {
   const { isPending, setIsPending } = useApp()
   const { status } = useGame()
   const handleMessage = useGameMessage()
@@ -20,10 +20,11 @@ export function HeaderAdmin({ }: HeaderAdminProps) {
           className="btn btn--primary px-6"
           disabled={isPending}
           onClick={() =>
-            handleMessage(
-              { ChangeStatus: { Started: null } },
-              { onSuccess, onError: onSuccess }
-            )
+            handleMessage({
+              payload: { ChangeStatus: { Started: null } },
+              onSuccess,
+              onError: onSuccess,
+            })
           }
         >
           <Icons.gameJoystick className="w-5 h-5 mr-2" />
@@ -36,10 +37,11 @@ export function HeaderAdmin({ }: HeaderAdminProps) {
           className="btn btn--theme-red px-6"
           disabled={isPending}
           onClick={() =>
-            handleMessage(
-              { ChangeStatus: { Paused: null } },
-              { onSuccess, onError: onSuccess }
-            )
+            handleMessage({
+              payload: { ChangeStatus: { Paused: null } },
+              onSuccess,
+              onError: onSuccess,
+            })
           }
         >
           <Icons.gameJoystick className="w-5 h-5 mr-2" />

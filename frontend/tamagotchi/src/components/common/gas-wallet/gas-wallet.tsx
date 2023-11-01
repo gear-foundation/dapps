@@ -1,15 +1,20 @@
-import { Account } from "@gear-js/react-hooks";
-import { GetGasBalance } from "@/components/common/get-gas-balance";
+import { useApi, useBalance, useBalanceFormat } from '@gear-js/react-hooks'
+import { GetGasBalance } from '@/components/common/get-gas-balance'
 
 type Props = {
-  balance: Account["balance"];
-  address: string;
-  name: string | undefined;
-  onClick: () => void;
-};
+  address: string
+  name: string | undefined
+  onClick: () => void
+}
 
-export function GasWallet({ balance, address, name, onClick }: Props) {
-  return (
+export function GasWallet({ address, name, onClick }: Props) {
+  const { isApiReady } = useApi()
+  const { balance } = useBalance(address)
+  const { getFormattedBalance } = useBalanceFormat()
+  const formattedBalance =
+    isApiReady && balance ? getFormattedBalance(balance) : undefined
+
+  return formattedBalance ? (
     <div className="flex gap-4 shrink-0">
       <GetGasBalance />
       <p className="shrink-0 grid grid-cols-[auto_auto] gap-x-1 font-kanit">
@@ -17,12 +22,12 @@ export function GasWallet({ balance, address, name, onClick }: Props) {
           Gas Balance:
         </span>
         <span className="font-medium text-lg leading-none">
-          {balance.value}
+          {formattedBalance.value}
         </span>
         <span className="text-sm text-white text-opacity-70">
-          {balance.unit}
+          {formattedBalance.unit}
         </span>
       </p>
     </div>
-  );
+  ) : null
 }

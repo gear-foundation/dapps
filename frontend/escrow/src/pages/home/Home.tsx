@@ -2,13 +2,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import { useEffect, useState } from 'react';
 import { ESCROW, FORM, LOCAL_STORAGE } from 'consts';
 import { CreateFormValues } from 'types';
-import {
-  useEscrow,
-  useEscrowMessage,
-  useWalletId,
-  useProgram,
-  useWallets,
-} from 'hooks';
+import { useEscrow, useEscrowMessage, useWalletId, useProgram, useWallets } from 'hooks';
 import { Box, InfoText, Loader } from 'components';
 import { CreateWallet } from './create-wallet';
 import { Summary } from './summary';
@@ -25,8 +19,7 @@ function Home() {
   const [form, setForm] = useState('');
   const resetForm = () => setForm('');
 
-  const { programId, setProgramId, resetProgramId, createProgram } =
-    useProgram();
+  const { programId, setProgramId, resetProgramId, createProgram } = useProgram();
   const { walletId, setWalletId, resetWalletId } = useWalletId();
 
   const { escrow, isEscrowRead } = useEscrow(walletId);
@@ -38,8 +31,8 @@ function Home() {
   const isSeller = account && account.decodedAddress === seller;
   const isStart = !form && !programId && !walletId;
 
-  const create = (values: CreateFormValues) => sendMessage({ Create: values });
-  const action = (key: string) => () => sendMessage({ [key]: walletId });
+  const create = (values: CreateFormValues) => sendMessage({ payload: { Create: values } });
+  const action = (key: string) => () => sendMessage({ payload: { [key]: walletId } });
   const deposit = action('Deposit');
   const cancel = action('Cancel');
   const confirm = action('Confirm');
@@ -72,12 +65,7 @@ function Home() {
   const getForm = () => {
     switch (form) {
       case FORM.INIT.PROGRAM:
-        return (
-          <InputAddress
-            label="Fungible token address"
-            onSubmit={createProgram}
-          />
-        );
+        return <InputAddress label="Fungible token address" onSubmit={createProgram} />;
       case FORM.INPUT.PROGRAM:
         return <InputAddress label="Program address" onSubmit={setProgramId} />;
       case FORM.INIT.WALLET:
@@ -93,13 +81,9 @@ function Home() {
       case ESCROW.STATE.AWAITING_DEPOSIT:
         return <Deposit role={role} onDeposit={deposit} onCancel={cancel} />;
       case ESCROW.STATE.AWAITING_CONFIRMATION:
-        return (
-          <Confirmation role={role} onConfirm={confirm} onRefund={refund} />
-        );
+        return <Confirmation role={role} onConfirm={confirm} onRefund={refund} />;
       case ESCROW.STATE.CLOSED:
-        return (
-          <InfoText text="Wallet is closed, please go back and select or create another one." />
-        );
+        return <InfoText text="Wallet is closed, please go back and select or create another one." />;
       default:
     }
   };
@@ -139,20 +123,10 @@ function Home() {
           (programId ? (
             <>
               {walletId && getButtons()}
-              {!walletId && (
-                <Start
-                  text="Create wallet"
-                  onInit={openInitWalletForm}
-                  onUse={openInputWalletForm}
-                />
-              )}
+              {!walletId && <Start text="Create wallet" onInit={openInitWalletForm} onUse={openInputWalletForm} />}
             </>
           ) : (
-            <Start
-              text="Initialize program"
-              onInit={openInitProgramForm}
-              onUse={openInputProgramForm}
-            />
+            <Start text="Initialize program" onInit={openInitProgramForm} onUse={openInputProgramForm} />
           ))}
       </Box>
     </div>

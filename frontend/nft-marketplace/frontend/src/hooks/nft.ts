@@ -1,4 +1,4 @@
-import { useAccount, useReadWasmState, useSendMessage } from '@gear-js/react-hooks';
+import { useAccount, useReadWasmState, useSendMessageHandler } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 import { ADDRESS } from 'consts';
 import { BaseNFT } from 'types';
@@ -46,7 +46,7 @@ function useOwnersNft() {
 function useNftMessage() {
   const metadata = useNftMeta();
 
-  return useSendMessage(ADDRESS.NFT_CONTRACT, metadata);
+  return useSendMessageHandler(ADDRESS.NFT_CONTRACT, metadata);
 }
 
 export { useNftStateBuffer, useNft, useNftMessage, useOwnersNft, useNftMeta };

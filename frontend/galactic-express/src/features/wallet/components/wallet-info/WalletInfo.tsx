@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import Identicon from '@polkadot/react-identicon';
 import { cx } from 'utils';
-import { ADDRESS } from 'consts';
 import { Button } from 'components/layout/button';
 import varaCoin from '../../assets/icons/vara-coin.svg';
 import tVaraCoin from '../../assets/icons/tvara-coin.svg';
@@ -40,7 +39,7 @@ function WalletInfo({ account, withoutBalance, buttonClassName }: WalletInfoProp
               />
               <div className={cx(styles['balance-value'])} dangerouslySetInnerHTML={{ __html: balanceAmount }} />
               {balanceDecimals && <div className={cx(styles['balance-value'])}>{`.${balanceDecimals}`}</div>}
-              <div className={cx(styles['balance-currency-name'])}>{account.balance.unit}</div>
+              <div className={cx(styles['balance-currency-name'])}>{balance?.unit}</div>
             </div>
           )}
           <button className={cx(styles.description)} onClick={handleOpenWalletModal}>

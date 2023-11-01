@@ -11,7 +11,7 @@ import { ADDRESS } from 'consts';
 import { IPFSProvider } from 'context';
 
 function ApiProvider({ children }: ProviderProps) {
-  return <GearApiProvider providerAddress={ADDRESS.NODE}>{children}</GearApiProvider>;
+  return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
 }
 
 function AlertProvider({ children }: ProviderProps) {

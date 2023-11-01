@@ -27,19 +27,19 @@ function Subscription() {
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const cancelSubscription = () => sendMessage({ CancelSubscription: null });
+  const cancelSubscription = () => sendMessage({ payload: { CancelSubscription: null } });
 
   const purchaseSubscription = (values: { isRenewal: boolean; period: string }) =>
-    sendMessage(
-      {
+    sendMessage({
+      payload: {
         RegisterSubscription: {
           currency_id: ADDRESS.FT_CONTRACT,
           period: { [values.period]: null },
           with_renewal: values.isRenewal,
         },
       },
-      { onSuccess: closeModal },
-    );
+      onSuccess: closeModal,
+    });
 
   return (
     <>

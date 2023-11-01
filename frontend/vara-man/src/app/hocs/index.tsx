@@ -12,7 +12,9 @@ import { AppProvider } from '@/app/context/ctx-app'
 import { GameProvider } from '@/app/context/ctx-game'
 
 const ApiProvider = ({ children }: ProviderProps) => (
-  <GearApiProvider providerAddress={ENV.NODE}>{children}</GearApiProvider>
+  <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>
+    {children}
+  </GearApiProvider>
 )
 
 const AlertProvider = ({ children }: ProviderProps) => (

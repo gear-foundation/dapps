@@ -39,7 +39,7 @@ function Offer({ bidder, listingOwner, price }: Props) {
   const accept = () => {
     const payload = { AcceptOffer: { nft_contract_id: ADDRESS.NFT_CONTRACT, token_id: tokenId, price } };
 
-    sendMessage(payload, { onSuccess: closeModal });
+    sendMessage({ payload, onSuccess: closeModal });
   };
 
   return (

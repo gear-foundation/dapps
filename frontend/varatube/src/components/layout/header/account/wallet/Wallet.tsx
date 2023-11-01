@@ -1,16 +1,21 @@
-import { Account } from '@gear-js/react-hooks';
+import { useApi, useAccount, useBalance, useBalanceFormat } from '@gear-js/react-hooks';
 import { useFTBalance } from 'hooks/api';
 import { AccountButton } from '../account-button';
 import styles from './Wallet.module.scss';
 
 type Props = {
-  balance: Account['balance'];
   address: string;
   name: string | undefined;
   onClick: () => void;
 };
 
-function Wallet({ balance, address, name, onClick }: Props) {
+function Wallet({ address, name, onClick }: Props) {
+  const { isApiReady } = useApi();
+  const { account } = useAccount();
+  const { balance } = useBalance(account?.address);
+  const { getFormattedBalance } = useBalanceFormat();
+  const formattedBalance = isApiReady && balance ? getFormattedBalance(balance) : undefined;
+
   const tokens = useFTBalance();
 
   return (
@@ -22,7 +27,7 @@ function Wallet({ balance, address, name, onClick }: Props) {
       )}
 
       <p className={styles.balance}>
-        {balance.value} <span className={styles.currency}>{balance.unit}</span>
+        {formattedBalance?.value} <span className={styles.currency}>{formattedBalance?.unit}</span>
       </p>
 
       <AccountButton address={address} name={name} onClick={onClick} />

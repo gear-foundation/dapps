@@ -13,12 +13,7 @@ function PlayerStart({ cost, isToken }: Props) {
 
   const subheading = `Cost of participation is ${cost}. This amount will be withdrawn from your balance. Click "Enter" if you want to proceed.`;
 
-  const enter = () => {
-    sendMessage(
-      { Enter: null },
-      isToken ? undefined : { value: withoutCommas(cost) }
-    );
-  };
+  const enter = () => sendMessage({ payload: { Enter: null }, value: isToken ? undefined : withoutCommas(cost) });
 
   return (
     <Content subheading={subheading}>
