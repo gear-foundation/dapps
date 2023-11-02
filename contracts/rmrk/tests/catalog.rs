@@ -40,7 +40,7 @@ fn add_parts() {
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // check that fixed part is in the state
-    let state: CatalogState = catalog.read_state().expect("Failed to decode the state");
+    let state: CatalogState = catalog.read_state(0).expect("Failed to decode the state");
     let fixed_part_in_state = state
         .parts
         .iter()
@@ -62,7 +62,7 @@ fn add_parts() {
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Check that slot part is in the state
-    let state: CatalogState = catalog.read_state().expect("Failed to decode the state");
+    let state: CatalogState = catalog.read_state(0).expect("Failed to decode the state");
 
     let slot_part_in_state = state
         .parts
@@ -97,7 +97,7 @@ fn add_parts() {
     let expected_reply: Result<CatalogReply, CatalogError> = Ok(CatalogReply::PartsAdded(parts));
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
-    let state: CatalogState = catalog.read_state().expect("Failed to decode the state");
+    let state: CatalogState = catalog.read_state(0).expect("Failed to decode the state");
 
     // check that fixed part_1 is in the state
     let fixed_part_1_in_state = state
@@ -128,7 +128,7 @@ fn add_parts() {
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // check that fixed part_1 is NOT in the state
-    let state: CatalogState = catalog.read_state().expect("Failed to decode the state");
+    let state: CatalogState = catalog.read_state(0).expect("Failed to decode the state");
     let fixed_part_1_in_state = state
         .parts
         .iter()
@@ -173,7 +173,7 @@ fn add_parts_error_cases() {
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // check that fixed part is in the state
-    let state: CatalogState = catalog.read_state().expect("Failed to decode the state");
+    let state: CatalogState = catalog.read_state(0).expect("Failed to decode the state");
     assert_eq!(state.parts, vec![]);
 
     // Add part

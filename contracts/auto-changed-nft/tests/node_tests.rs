@@ -455,7 +455,7 @@ async fn gclient_auto_changed() -> Result<()> {
         .calculate_handle_gas(None, program_id, mint_payload.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id, mint_payload, gas_info.burned * 2, 0)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -474,7 +474,7 @@ async fn gclient_auto_changed() -> Result<()> {
             .calculate_handle_gas(None, program_id, payload.encode(), 0, true)
             .await?;
         let (message_id, _) = api
-            .send_message(program_id, payload, gas_info.burned * 2, 0, false)
+            .send_message(program_id, payload, gas_info.burned * 2, 0)
             .await?;
         assert!(listener.message_processed(message_id).await?.succeed());
         assert!(listener.blocks_running().await?);
@@ -488,7 +488,7 @@ async fn gclient_auto_changed() -> Result<()> {
         update_period,
     };
     let (message_id, _) = api
-        .send_message(program_id, payload, 250_000_000_000, 0, false)
+        .send_message(program_id, payload, 250_000_000_000, 0)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);

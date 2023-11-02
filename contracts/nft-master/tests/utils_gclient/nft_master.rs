@@ -150,7 +150,6 @@ async fn send_message(
             payload,
             gas_info.burned * 2,
             value,
-            false,
         )
         .await?;
 

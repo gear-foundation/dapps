@@ -13,7 +13,7 @@ pub trait VaraMan {
     fn change_config(&self, from: u64, config: Config);
     fn add_admin(&self, from: u64, admin: ActorId);
     fn send_tx(&self, from: u64, action: VaraManAction, error: bool);
-    fn get_state(&self) -> VaraManState;
+    fn get_state(&self) -> Option<VaraManState>;
 }
 
 impl VaraMan for Program<'_> {
@@ -23,6 +23,7 @@ impl VaraMan for Program<'_> {
             Config {
                 gold_coins: 5,
                 silver_coins: 20,
+                number_of_lives: 3,
                 ..Default::default()
             },
         )
@@ -88,7 +89,12 @@ impl VaraMan for Program<'_> {
         assert_eq!(maybe_error.is_some(), error, "Error: {:#?}", maybe_error);
     }
 
-    fn get_state(&self) -> VaraManState {
-        self.read_state().expect("Unexpected invalid state.")
+    fn get_state(&self) -> Option<VaraManState> {
+        let reply = self.read_state(StateQuery::All).expect("Unexpected invalid state.");
+        if let StateReply::All(state) = reply {
+            Some(state)
+        } else {
+            None
+        }
     }
 }

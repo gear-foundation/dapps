@@ -90,7 +90,7 @@ async fn transfer_balances_to_account(accounts: &[String], nonce: u32) -> Result
         let account: ProgramId = account.into();
         let rpc_nonce = api.rpc_nonce().await?;
         println!("RPC NONCE {:?}", rpc_nonce);
-        api.set_nonce(rpc_nonce + nonce);
+        api.set_nonce(rpc_nonce + nonce as u64);
         api.transfer(account, 1_000_000_000_000).await?;
         println!("Transferred");
         println!("{:?}", api.total_balance(account).await.expect(""));
@@ -178,7 +178,7 @@ async fn start_game_from_account(game_pid: ProgramId, accounts: &[String]) -> Re
             match api.total_balance(_account).await {
                 Ok(balance) => {
                     println!("i {} balance {} ", i, balance);
-                    api.send_message(game_pid, start_payload, 500_000_000_000, 0, false)
+                    api.send_message(game_pid, start_payload, 500_000_000_000, 0)
                         .await?;
                     println!("STARTED");
                 }

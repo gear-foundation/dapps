@@ -46,12 +46,12 @@ fn owner_balance() {
 
     sys.spend_blocks(1001);
 
-    let res: State = ico.read_state().unwrap();
+    let res: State = ico.read_state(0).unwrap();
     assert_eq!(0, res.balance_of(&OWNER_ID.into()), "Error in balance_of()");
 
     end_sale(&ico, 1);
 
-    let res: State = ico.read_state().unwrap();
+    let res: State = ico.read_state(0).unwrap();
     assert_eq!(
         TOKENS_CNT - amount,
         res.balance_of(&OWNER_ID.into()),

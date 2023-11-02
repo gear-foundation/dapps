@@ -19,7 +19,7 @@ fn success_init() {
     );
     assert!(!result.main_failed());
 
-    let oracle_state: Oracle = oracle_program.read_state().expect("Invalid state.");
+    let oracle_state: Oracle = oracle_program.read_state(0).expect("Invalid state.");
 
     assert_eq!(oracle_state.owner, OWNER.into());
     assert_eq!(oracle_state.manager, MANAGER.into());

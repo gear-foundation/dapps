@@ -132,7 +132,7 @@ pub async fn send_mtoken_message(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id.into(), payload, gas_info.burned * 2, 0)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;
@@ -323,7 +323,7 @@ pub async fn mtoken_get_balance(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id.into(), payload, gas_info.burned * 2, 0)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;
@@ -359,7 +359,7 @@ pub async fn mtoken_get_approval(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id.into(), payload, gas_info.burned * 2, 0)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;

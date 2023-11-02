@@ -69,7 +69,7 @@ async fn gclient_create_and_stop() -> Result<()> {
         .calculate_handle_gas(None, nft_program_id, mint_payload.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(nft_program_id, mint_payload, gas_info.burned * 2, 0, false)
+        .send_message(nft_program_id, mint_payload, gas_info.burned * 2, 0)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
 
@@ -108,7 +108,6 @@ async fn gclient_create_and_stop() -> Result<()> {
             approve_action,
             gas_info.burned * 2,
             0,
-            false,
         )
         .await?;
 
@@ -135,7 +134,7 @@ async fn gclient_create_and_stop() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, create.encode(), 0, true)
         .await?;
     let (_message_id, _) = api
-        .send_message(auction_program_id, create, gas_info.burned * 2, 0, false)
+        .send_message(auction_program_id, create, gas_info.burned * 2, 0)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -151,7 +150,7 @@ async fn gclient_create_and_stop() -> Result<()> {
     let value = 1_000_000_000;
 
     let (message_id, _) = api
-        .send_message(auction_program_id, buy, 250_000_000_000, value, false)
+        .send_message(auction_program_id, buy, 250_000_000_000, value)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -171,7 +170,6 @@ async fn gclient_create_and_stop() -> Result<()> {
             force_stop,
             gas_info.burned * 2,
             0,
-            false,
         )
         .await?;
 
@@ -241,7 +239,7 @@ async fn gclient_create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, nft_program_id, mint_payload.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(nft_program_id, mint_payload, gas_info.burned * 2, 0, false)
+        .send_message(nft_program_id, mint_payload, gas_info.burned * 2, 0)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
 
@@ -279,7 +277,6 @@ async fn gclient_create_buy_reward() -> Result<()> {
             approve_action,
             gas_info.burned * 2,
             0,
-            false,
         )
         .await?;
 
@@ -306,7 +303,7 @@ async fn gclient_create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, create.encode(), 0, true)
         .await?;
     let (_message_id, _) = api
-        .send_message(auction_program_id, create, gas_info.burned * 2, 0, false)
+        .send_message(auction_program_id, create, gas_info.burned * 2, 0)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -325,7 +322,7 @@ async fn gclient_create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, buy_payload, value, true)
         .await?;
     let (message_id, _) = api
-        .send_message(auction_program_id, buy, gas_info.burned * 2, value, false)
+        .send_message(auction_program_id, buy, gas_info.burned * 2, value)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -341,7 +338,7 @@ async fn gclient_create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, reward_payload, 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(auction_program_id, reward, gas_info.burned * 2, 0, false)
+        .send_message(auction_program_id, reward, gas_info.burned * 2, 0)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());

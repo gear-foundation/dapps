@@ -101,6 +101,7 @@ impl FactoryState<'_> {
         StateReply(
             self.0
                 .read_state_using_wasm(
+                    0,
                     fn_name,
                     gclient::code_from_os(
                         "../target/wasm32-unknown-unknown/debug/dex_factory_state.meta.wasm",

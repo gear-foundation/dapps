@@ -179,7 +179,7 @@ pub fn mint_to_actor(nft: &Program<'_>, transaction_id: u64, member: [u8; 32]) -
 }
 
 pub fn current_media(nft: &Program<'_>, token_id: TokenId) -> String {
-    let state: State = nft.read_state().unwrap();
+    let state: State = nft.read_state(0).unwrap();
 
     state
         .tokens

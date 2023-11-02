@@ -30,7 +30,7 @@ fn common_config_tests() {
     };
     check_change_next_game_config(&game, USERS[0], next_config.clone());
 
-    let state: ContractState = game.read_state().expect("Not suitable reply");
+    let state: ContractState = game.read_state(0).expect("Not suitable reply");
     assert_eq!(COMMON_CONFIG, state.game_config);
 
     play_round(
@@ -39,7 +39,7 @@ fn common_config_tests() {
         &[Move::Rock, Move::Paper, Move::Rock],
     );
 
-    let state: ContractState = game.read_state().expect("Not suitable reply");
+    let state: ContractState = game.read_state(0).expect("Not suitable reply");
     assert_eq!(next_config, state.game_config);
 }
 
@@ -48,7 +48,7 @@ fn common_stage_tests() {
     let sys = System::new();
     let game = common_init_and_register(&sys);
 
-    let state: ContractState = game.read_state().expect("Not suitable reply");
+    let state: ContractState = game.read_state(0).expect("Not suitable reply");
     let stage = state.stage;
     match stage {
         GameStage::Preparation => {}
@@ -57,7 +57,7 @@ fn common_stage_tests() {
 
     check_user_move(&game, USERS[0], Move::Rock);
 
-    let state: ContractState = game.read_state().expect("Not suitable reply");
+    let state: ContractState = game.read_state(0).expect("Not suitable reply");
 
     let list = COMMON_USERS_SET
         .iter()
@@ -68,7 +68,7 @@ fn common_stage_tests() {
     lobby.sort();
     assert_eq!(lobby, list);
 
-    let state: ContractState = game.read_state().expect("Not suitable reply");
+    let state: ContractState = game.read_state(0).expect("Not suitable reply");
     let stage = state.stage;
     match stage {
         GameStage::InProgress(description) => {
@@ -90,7 +90,7 @@ fn lobby_list_test() {
     let sys = System::new();
     let game = common_init_and_register(&sys);
 
-    let state: ContractState = game.read_state().expect("Not suiable reply");
+    let state: ContractState = game.read_state(0).expect("Not suiable reply");
 
     let list = COMMON_USERS_SET
         .iter()
@@ -107,7 +107,7 @@ fn lobby_list_test() {
         &[Move::Rock, Move::Paper, Move::Paper],
     );
 
-    let state: ContractState = game.read_state().expect("Not suiable reply");
+    let state: ContractState = game.read_state(0).expect("Not suiable reply");
 
     let list = COMMON_USERS_SET
         .iter()

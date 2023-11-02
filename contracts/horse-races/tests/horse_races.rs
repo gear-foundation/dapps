@@ -26,7 +26,7 @@ fn success_init() {
     assert!(!result.main_failed());
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm.clone(), Some(MetaQuery::GetRuns))
+        .read_state_using_wasm( 0, "query", state_wasm.clone(), Some(MetaQuery::GetRuns))
         .unwrap();
     match meta_state {
         MetaResponse::Runs(runs) => assert!(runs.is_empty()),
@@ -34,7 +34,7 @@ fn success_init() {
     }
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm.clone(), Some(MetaQuery::GetManager))
+        .read_state_using_wasm( 0, "query", state_wasm.clone(), Some(MetaQuery::GetManager))
         .unwrap();
     match meta_state {
         MetaResponse::Manager(manager) => assert_eq!(manager, MANAGER.into()),
@@ -42,7 +42,7 @@ fn success_init() {
     }
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm.clone(), Some(MetaQuery::GetOwner))
+        .read_state_using_wasm( 0, "query", state_wasm.clone(), Some(MetaQuery::GetOwner))
         .unwrap();
     match meta_state {
         MetaResponse::Owner(owner) => assert_eq!(owner, OWNER.into()),
@@ -50,7 +50,7 @@ fn success_init() {
     }
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm.clone(), Some(MetaQuery::GetToken))
+        .read_state_using_wasm( 0, "query", state_wasm.clone(), Some(MetaQuery::GetToken))
         .unwrap();
     match meta_state {
         MetaResponse::Token(token) => assert_eq!(token, TOKEN_ID.into()),
@@ -58,7 +58,7 @@ fn success_init() {
     }
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm.clone(), Some(MetaQuery::GetOracle))
+        .read_state_using_wasm( 0, "query", state_wasm.clone(), Some(MetaQuery::GetOracle))
         .unwrap();
     match meta_state {
         MetaResponse::Oracle(oracle) => assert_eq!(oracle, ORACLE_ID.into()),
@@ -66,7 +66,7 @@ fn success_init() {
     }
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm.clone(), Some(MetaQuery::GetFeeBps))
+        .read_state_using_wasm( 0, "query", state_wasm.clone(), Some(MetaQuery::GetFeeBps))
         .unwrap();
     match meta_state {
         MetaResponse::FeeBps(fee_bps) => assert_eq!(fee_bps, FEE_BPS),
@@ -74,7 +74,7 @@ fn success_init() {
     }
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm, Some(MetaQuery::GetRunNonce))
+        .read_state_using_wasm( 0, "query", state_wasm, Some(MetaQuery::GetRunNonce))
         .unwrap();
     match meta_state {
         MetaResponse::RunNonce(run_nonce) => assert_eq!(run_nonce, 0),
@@ -118,7 +118,7 @@ fn success_update() {
     )));
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm.clone(), Some(MetaQuery::GetManager))
+        .read_state_using_wasm( 0, "query", state_wasm.clone(), Some(MetaQuery::GetManager))
         .unwrap();
     match meta_state {
         MetaResponse::Manager(manager) => assert_eq!(manager, NEW_MANAGER.into()),
@@ -126,7 +126,7 @@ fn success_update() {
     }
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm.clone(), Some(MetaQuery::GetOracle))
+        .read_state_using_wasm( 0, "query", state_wasm.clone(), Some(MetaQuery::GetOracle))
         .unwrap();
     match meta_state {
         MetaResponse::Oracle(oracle) => assert_eq!(oracle, NEW_ORACLE.into()),
@@ -134,7 +134,7 @@ fn success_update() {
     }
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm, Some(MetaQuery::GetFeeBps))
+        .read_state_using_wasm( 0, "query", state_wasm, Some(MetaQuery::GetFeeBps))
         .unwrap();
     match meta_state {
         MetaResponse::FeeBps(fee_bps) => assert_eq!(fee_bps, NEW_FEE_BPS),
@@ -187,7 +187,7 @@ fn success_create_run() {
     )));
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm.clone(), Some(MetaQuery::GetRuns))
+        .read_state_using_wasm( 0, "query", state_wasm.clone(), Some(MetaQuery::GetRuns))
         .unwrap();
     match meta_state {
         MetaResponse::Runs(runs) => {
@@ -217,7 +217,7 @@ fn success_create_run() {
     }
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm, Some(MetaQuery::GetRunNonce))
+        .read_state_using_wasm( 0, "query", state_wasm, Some(MetaQuery::GetRunNonce))
         .unwrap();
     match meta_state {
         MetaResponse::RunNonce(run_nonce) => assert_eq!(run_nonce, 1),
@@ -290,7 +290,7 @@ fn success_bid() {
     )));
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm, Some(MetaQuery::GetRuns))
+        .read_state_using_wasm( 0, "query", state_wasm, Some(MetaQuery::GetRuns))
         .unwrap();
     match meta_state {
         MetaResponse::Runs(runs) => {
@@ -386,7 +386,7 @@ fn success_cancel_last_run() {
     assert!(result.contains(&(MANAGER, Event::LastRunCanceled(1).encode())));
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm, Some(MetaQuery::GetRuns))
+        .read_state_using_wasm( 0, "query", state_wasm, Some(MetaQuery::GetRuns))
         .unwrap();
     match meta_state {
         MetaResponse::Runs(runs) => {
@@ -469,7 +469,7 @@ fn success_progress_last_run() {
     assert!(result.contains(&(MANAGER, Event::LastRunProgressed(1).encode())));
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm, Some(MetaQuery::GetRuns))
+        .read_state_using_wasm( 0, "query", state_wasm, Some(MetaQuery::GetRuns))
         .unwrap();
     match meta_state {
         MetaResponse::Runs(runs) => {
@@ -566,7 +566,7 @@ fn success_finish_last_run() {
     )));
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm, Some(MetaQuery::GetRuns))
+        .read_state_using_wasm( 0, "query", state_wasm, Some(MetaQuery::GetRuns))
         .unwrap();
     match meta_state {
         MetaResponse::Runs(runs) => {
@@ -801,7 +801,7 @@ fn success_withdraw_finished_more_users() {
     assert!(!result.main_failed());
 
     let meta_state: MetaResponse = horse_races_program
-        .read_state_using_wasm("query", state_wasm, Some(MetaQuery::GetRuns))
+        .read_state_using_wasm( 0, "query", state_wasm, Some(MetaQuery::GetRuns))
         .unwrap();
     match meta_state {
         MetaResponse::Runs(runs) => {

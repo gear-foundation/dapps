@@ -36,7 +36,7 @@ async fn gclient_start_game_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, start_payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id, start_payload, gas_info.burned * 2, 0)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -81,7 +81,7 @@ async fn gclient_turn_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, start_payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id, start_payload, gas_info.burned * 2, 0)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());

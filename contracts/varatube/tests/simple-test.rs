@@ -40,7 +40,7 @@ fn register_subscribe() {
     let token_id = ft.id().encode();
     let token_id = ActorId::from_slice(token_id.as_slice()).unwrap();
 
-    let state: SubscriptionState = varatube.read_state().unwrap();
+    let state: SubscriptionState = varatube.read_state(0).unwrap();
     assert!(state.subscribers.is_empty());
     assert!(state.currencies.is_empty());
 
@@ -48,7 +48,7 @@ fn register_subscribe() {
     let action: TokenData = (token_id, 666);
     varatube.send(USERS[0], action);
 
-    let state: SubscriptionState = varatube.read_state().unwrap();
+    let state: SubscriptionState = varatube.read_state(0).unwrap();
     assert!(state.subscribers.is_empty());
     assert!(!state.currencies.is_empty());
 
@@ -81,7 +81,7 @@ fn register_subscribe() {
     };
 
     varatube.send(USERS[0], action);
-    let state: SubscriptionState = varatube.read_state().unwrap();
+    let state: SubscriptionState = varatube.read_state(0).unwrap();
     println!("subscribers = {:?}", state.subscribers);
     println!("currencies = {:?}", state.currencies);
 

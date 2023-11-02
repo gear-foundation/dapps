@@ -98,7 +98,7 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                 return VaraManEvent::Error("Player is already StartGame".to_owned());
             };
 
-            if !player.is_have_lives() {
+            if !player.is_have_lives() && !vara_man.admins.contains(&player_address) {
                 return VaraManEvent::Error("Player has exhausted all his lives.".to_owned());
             }
 

@@ -11,6 +11,14 @@ cargo b -p "car-races*"
 
 ### ✅ Testing
 
+Run all tests, except `gclient` ones:
 ```sh
+cargo t -p "car-races*" -- --skip gclient
+```
+
+Run all tests:
+```sh
+# Download the node binary.
+cargo xtask node
 cargo t -p "car-races*"
 ```

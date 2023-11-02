@@ -118,7 +118,6 @@ pub async fn gclient_success_change_manager() -> gclient::Result<()> {
             change_manager_payload,
             gas_info.min_limit,
             0,
-            false,
         )
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -198,7 +197,6 @@ pub async fn gclient_success_request_value() -> gclient::Result<()> {
             request_value_payload,
             gas_info.min_limit * 2,
             0,
-            false,
         )
         .await?;
 
@@ -216,7 +214,6 @@ pub async fn gclient_success_request_value() -> gclient::Result<()> {
         RANDOM_VALUE,
         gas_info.min_limit * 2,
         0,
-        false,
     )
     .await?;
     assert!(listener
@@ -286,7 +283,6 @@ pub async fn gclient_fail_change_manager_invalid_owner() -> gclient::Result<()> 
             change_manager_payload,
             gas_info.min_limit,
             0,
-            false
         )
         .await
         .is_err());

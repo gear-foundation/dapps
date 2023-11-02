@@ -145,7 +145,7 @@ impl Client {
 
         let (message_id, _) = self
             .client
-            .send_message(destination, payload, modified_gas_limit, 0, false)
+            .send_message(destination, payload, modified_gas_limit, 0)
             .await?;
 
         println!("Sending completed.");

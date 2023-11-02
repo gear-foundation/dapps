@@ -93,7 +93,7 @@ async fn send_message<T: Decode>(
     println!("Sending a payload: `{payload:?}`.");
 
     let (message_id, _) = client
-        .send_message(destination, payload, 250_000_000_000, 0, false)
+        .send_message(destination, payload, 250_000_000_000, 0)
         .await?;
 
     println!("Sending completed.");
