@@ -13,7 +13,7 @@ function Home() {
   const state = useLaunchState(currentContractAddress);
   const { admin, session, turns, participants, isSessionEnded, rankings } = state || {};
 
-  const { sessionId, altitude, weather, fuelPrice, reward } = session || {};
+  const { sessionId, altitude, weather, reward } = session || {};
 
   const isUserAdmin = admin === account?.decodedAddress;
   const isStateComing = !!state;
@@ -43,7 +43,6 @@ function Home() {
                   session={{
                     altitude: altitude || '',
                     weather: weather || '',
-                    fuelPrice: fuelPrice || '',
                     reward: reward || '',
                     sessionId: sessionId || '',
                   }}
@@ -56,7 +55,6 @@ function Home() {
                   session={{
                     altitude: altitude || '',
                     weather: weather || '',
-                    fuelPrice: fuelPrice || '',
                     reward: reward || '',
                     sessionId: sessionId || '',
                   }}

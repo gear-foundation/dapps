@@ -3,7 +3,7 @@ import { Input, Button } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
 import { Card } from 'components';
 import { CURRENT_CONTRACT_ADDRESS_ATOM } from 'atoms';
-import { ChangeEvent, Dispatch, SetStateAction } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
 import { ReactComponent as RocketSVG } from '../../assets/rocket.svg';
 import { INITIAL_VALUES, VALIDATE, WEATHERS } from '../../consts';
 import { useLaunchMessage } from '../../hooks';
@@ -22,6 +22,7 @@ type Props = {
 
 function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props) {
   const currentContractAddress = useAtomValue(CURRENT_CONTRACT_ADDRESS_ATOM);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const { values, getInputProps, onSubmit, setFieldValue } = useForm({
     initialValues: { deposit: defaultDeposit, ...INITIAL_VALUES },
     validate: VALIDATE,
@@ -51,10 +52,15 @@ function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props
 
   const handleSubmit = () => {
     if (!isAdmin && meta) {
+      setIsLoading(true);
       sendMessage({
         payload: { Register: { fuel_amount: fuel, payload_amount: payload } },
         onSuccess: () => {
           setRegistrationStatus('success');
+          setIsLoading(false);
+        },
+        onError: () => {
+          setIsLoading(false);
         },
       });
     }
@@ -92,6 +98,7 @@ function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props
             type="submit"
             icon={RocketSVG}
             text={isAdmin ? 'Launch rocket and start Game' : 'Launch Rocket'}
+            disabled={isLoading}
             color="lightGreen"
           />
         </footer>

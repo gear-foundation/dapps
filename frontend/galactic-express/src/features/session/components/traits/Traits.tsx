@@ -4,14 +4,13 @@ import styles from './Traits.module.scss';
 type Props = {
   altitude: string;
   weather: string;
-  fuelPrice: string;
   reward: string;
 };
 
-function Traits({ altitude, weather, fuelPrice, reward }: Props) {
+function Traits({ altitude, weather, reward }: Props) {
   const getTraits = () => {
     // same order as in TRAITS
-    const traitValues = [altitude, WEATHERS[weather as keyof typeof WEATHERS].name, fuelPrice, reward];
+    const traitValues = [altitude, WEATHERS[weather as keyof typeof WEATHERS].name, reward];
 
     return TRAITS.map(({ heading, SVG }, index) => (
       <li key={heading} className={styles.trait}>
