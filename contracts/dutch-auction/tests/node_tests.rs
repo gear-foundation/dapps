@@ -103,12 +103,7 @@ async fn gclient_create_and_stop() -> Result<()> {
         .calculate_handle_gas(None, nft_program_id, approve_action.encode(), 0, true)
         .await?;
     let (message_id, _hash) = api
-        .send_message(
-            nft_program_id,
-            approve_action,
-            gas_info.burned * 2,
-            0,
-        )
+        .send_message(nft_program_id, approve_action, gas_info.burned * 2, 0)
         .await?;
 
     // Create Auction
@@ -165,12 +160,7 @@ async fn gclient_create_and_stop() -> Result<()> {
         .calculate_handle_gas(None, auction_program_id, force_stop.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(
-            auction_program_id,
-            force_stop,
-            gas_info.burned * 2,
-            0,
-        )
+        .send_message(auction_program_id, force_stop, gas_info.burned * 2, 0)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -272,12 +262,7 @@ async fn gclient_create_buy_reward() -> Result<()> {
         .calculate_handle_gas(None, nft_program_id, approve_action.encode(), 0, true)
         .await?;
     let (message_id, _hash) = api
-        .send_message(
-            nft_program_id,
-            approve_action,
-            gas_info.burned * 2,
-            0,
-        )
+        .send_message(nft_program_id, approve_action, gas_info.burned * 2, 0)
         .await?;
 
     // Create Auction

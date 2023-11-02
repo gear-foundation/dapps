@@ -1,6 +1,6 @@
 use car_races_io::*;
 use gclient::{EventListener, EventProcessor, GearApi, Result};
-use gstd::{ Encode, ActorId };
+use gstd::{ActorId, Encode};
 
 async fn upload_program(
     client: &GearApi,
@@ -101,7 +101,6 @@ async fn gclient_start_game_test() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
 
-    
     let car_1_id = upload_program(
         &api,
         &mut listener,
@@ -119,7 +118,7 @@ async fn gclient_start_game_test() -> Result<()> {
     .await?;
 
     let car_ids: Vec<ActorId> = vec![car_1_id.into(), car_2_id.into()];
-    let add_strategy_payload = GameAction::AddStrategyIds{ car_ids };
+    let add_strategy_payload = GameAction::AddStrategyIds { car_ids };
 
     let gas_info = api
         .calculate_handle_gas(None, program_id, add_strategy_payload.encode(), 0, true)
@@ -129,7 +128,6 @@ async fn gclient_start_game_test() -> Result<()> {
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
-
 
     let start_game_payload = GameAction::StartGame;
 
@@ -142,7 +140,9 @@ async fn gclient_start_game_test() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
 
-    let move_payload = GameAction::PlayerMove { strategy_action: StrategyAction::BuyShell };
+    let move_payload = GameAction::PlayerMove {
+        strategy_action: StrategyAction::BuyShell,
+    };
 
     let gas_info = api
         .calculate_handle_gas(None, program_id, move_payload.encode(), 0, true)

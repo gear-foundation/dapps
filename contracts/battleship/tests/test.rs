@@ -4,7 +4,10 @@ use gtest::{Program, System};
 
 fn init_battleship(sys: &System) {
     let battleship = Program::current(sys);
-    let bot = Program::from_file(sys, "../target/wasm32-unknown-unknown/debug/battleship_bot.opt.wasm");
+    let bot = Program::from_file(
+        sys,
+        "../target/wasm32-unknown-unknown/debug/battleship_bot.opt.wasm",
+    );
     let bot_init_result = bot.send_bytes(3, []);
     assert!(!bot_init_result.main_failed());
 
@@ -108,10 +111,12 @@ fn failures_test() {
 
     let steps: Vec<u8> = (0..25).collect();
     for step in steps {
-        let reply = battleship.read_state(StateQuery::All).expect("Unexpected invalid state.");
+        let reply = battleship
+            .read_state(StateQuery::All)
+            .expect("Unexpected invalid state.");
         if let StateReply::All(state) = reply {
             if state.games[0].1.bot_board[step as usize] == Entity::Empty
-            || state.games[0].1.bot_board[step as usize] == Entity::Ship
+                || state.games[0].1.bot_board[step as usize] == Entity::Ship
             {
                 if !state.games[0].1.game_over {
                     let res = battleship.send(3, BattleshipAction::Turn { step });
@@ -143,7 +148,9 @@ fn success_test() {
 
     let steps: Vec<u8> = (0..25).collect();
     for step in steps {
-        let reply = battleship.read_state(StateQuery::All).expect("Unexpected invalid state.");
+        let reply = battleship
+            .read_state(StateQuery::All)
+            .expect("Unexpected invalid state.");
         if let StateReply::All(state) = reply {
             if (state.games[0].1.bot_board[step as usize] == Entity::Empty
                 || state.games[0].1.bot_board[step as usize] == Entity::Ship)

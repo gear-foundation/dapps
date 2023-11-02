@@ -113,12 +113,7 @@ pub async fn gclient_success_change_manager() -> gclient::Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(
-            program_id,
-            change_manager_payload,
-            gas_info.min_limit,
-            0,
-        )
+        .send_message(program_id, change_manager_payload, gas_info.min_limit, 0)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
 
@@ -192,12 +187,7 @@ pub async fn gclient_success_request_value() -> gclient::Result<()> {
         .await?;
 
     let (request_message_id, _) = api
-        .send_message(
-            program_id,
-            request_value_payload,
-            gas_info.min_limit * 2,
-            0,
-        )
+        .send_message(program_id, request_value_payload, gas_info.min_limit * 2, 0)
         .await?;
 
     let api = api.with(MANAGER_GCLIENT)?;
@@ -209,13 +199,8 @@ pub async fn gclient_success_request_value() -> gclient::Result<()> {
 
     let payload_reply_id = maybe_mailbox[0].0.id();
 
-    api.send_reply(
-        payload_reply_id,
-        RANDOM_VALUE,
-        gas_info.min_limit * 2,
-        0,
-    )
-    .await?;
+    api.send_reply(payload_reply_id, RANDOM_VALUE, gas_info.min_limit * 2, 0)
+        .await?;
     assert!(listener
         .message_processed(request_message_id)
         .await?
@@ -278,12 +263,7 @@ pub async fn gclient_fail_change_manager_invalid_owner() -> gclient::Result<()> 
     let api = api.with(FAKE_OWNER_GCLIENT)?;
 
     assert!(api
-        .send_message(
-            program_id,
-            change_manager_payload,
-            gas_info.min_limit,
-            0,
-        )
+        .send_message(program_id, change_manager_payload, gas_info.min_limit, 0,)
         .await
         .is_err());
 

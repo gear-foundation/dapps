@@ -68,11 +68,15 @@ pub async fn add_to_whitelist(
     let reply = send_message(api, program_id, DaoAction::AddToWhiteList(*account)).await?;
 
     if !should_fail {
-        let DaoEvent::MemberAddedToWhitelist(_) = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::MemberAddedToWhitelist(_) =
+            DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     } else {
-        let DaoEvent::TransactionFailed(_) = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::TransactionFailed(_) =
+            DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     }
@@ -105,13 +109,21 @@ pub async fn submit_membership_proposal(
     .await?;
 
     if !should_fail {
-        let DaoEvent::SubmitMembershipProposal { proposer: _, applicant: _, proposal_id, token_tribute: _ } = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::SubmitMembershipProposal {
+            proposer: _,
+            applicant: _,
+            proposal_id,
+            token_tribute: _,
+        } = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
 
         Ok(Some(proposal_id))
     } else {
-        let DaoEvent::TransactionFailed(_) = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::TransactionFailed(_) =
+            DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
 
@@ -141,11 +153,19 @@ pub async fn submit_funding_proposal(
     .await?;
 
     if !should_fail {
-        let DaoEvent::SubmitFundingProposal { proposer: _, amount: _, applicant: _, proposal_id: _ } = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::SubmitFundingProposal {
+            proposer: _,
+            amount: _,
+            applicant: _,
+            proposal_id: _,
+        } = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     } else {
-        let DaoEvent::TransactionFailed(_) = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::TransactionFailed(_) =
+            DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     }
@@ -162,11 +182,17 @@ pub async fn process_proposal(
     let reply = send_message(api, program_id, DaoAction::ProcessProposal(proposal_id)).await?;
 
     if !should_fail {
-        let DaoEvent::ProcessProposal { proposal_id: _, passed: _ } = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::ProcessProposal {
+            proposal_id: _,
+            passed: _,
+        } = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     } else {
-        let DaoEvent::TransactionFailed(_) = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::TransactionFailed(_) =
+            DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     }
@@ -184,11 +210,18 @@ pub async fn submit_vote(
     let reply = send_message(api, program_id, DaoAction::SubmitVote { proposal_id, vote }).await?;
 
     if !should_fail {
-        let DaoEvent::SubmitVote { account: _, proposal_id: _, vote: _ } = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::SubmitVote {
+            account: _,
+            proposal_id: _,
+            vote: _,
+        } = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     } else {
-        let DaoEvent::TransactionFailed(_) = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::TransactionFailed(_) =
+            DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     }
@@ -205,11 +238,17 @@ pub async fn rage_quit(
     let reply = send_message(api, program_id, DaoAction::RageQuit(shares_amount)).await?;
 
     if !should_fail {
-        let DaoEvent::RageQuit { member: _, amount: _ } = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::RageQuit {
+            member: _,
+            amount: _,
+        } = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     } else {
-        let DaoEvent::TransactionFailed(_) = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::TransactionFailed(_) =
+            DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     }
@@ -226,11 +265,15 @@ pub async fn abort(
     let reply = send_message(api, program_id, DaoAction::Abort(proposal_id)).await?;
 
     if !should_fail {
-        let DaoEvent::Abort(_) = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::Abort(_) =
+            DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     } else {
-        let DaoEvent::TransactionFailed(_) = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::TransactionFailed(_) =
+            DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     }
@@ -247,11 +290,17 @@ pub async fn update_delegate_key(
     let reply = send_message(api, program_id, DaoAction::UpdateDelegateKey(*new_delegate)).await?;
 
     if !should_fail {
-        let DaoEvent::DelegateKeyUpdated { member: _, delegate: _ } = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::DelegateKeyUpdated {
+            member: _,
+            delegate: _,
+        } = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     } else {
-        let DaoEvent::TransactionFailed(_) = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::TransactionFailed(_) =
+            DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     }
@@ -268,11 +317,15 @@ pub async fn set_admin(
     let reply = send_message(api, program_id, DaoAction::SetAdmin(*new_admin)).await?;
 
     if !should_fail {
-        let DaoEvent::AdminUpdated(_) = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::AdminUpdated(_) =
+            DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     } else {
-        let DaoEvent::TransactionFailed(_) = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::TransactionFailed(_) =
+            DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     }
@@ -289,7 +342,9 @@ pub async fn cont(
     let reply = send_message(api, program_id, DaoAction::Continue(tx_id)).await?;
 
     if should_fail {
-        let DaoEvent::TransactionFailed(_) = DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.") else {
+        let DaoEvent::TransactionFailed(_) =
+            DaoEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `DaoEvent` data.")
+        else {
             std::panic!("Unexpected invalid `DaoEvent`.");
         };
     }

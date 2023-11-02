@@ -90,7 +90,9 @@ impl VaraMan for Program<'_> {
     }
 
     fn get_state(&self) -> Option<VaraManState> {
-        let reply = self.read_state(StateQuery::All).expect("Unexpected invalid state.");
+        let reply = self
+            .read_state(StateQuery::All)
+            .expect("Unexpected invalid state.");
         if let StateReply::All(state) = reply {
             Some(state)
         } else {

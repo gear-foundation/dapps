@@ -245,7 +245,8 @@ fn process_approve_hw(
             return StudentNftEvent::Error("Invalid nft id.".to_owned());
         };
 
-        let Some(actual_course) = nft.actual_courses.iter_mut().find(|ac| ac.id == course_id) else {
+        let Some(actual_course) = nft.actual_courses.iter_mut().find(|ac| ac.id == course_id)
+        else {
             return StudentNftEvent::Error("Course is not started by nft owner.".to_owned());
         };
 
@@ -316,7 +317,8 @@ fn process_complete_course(
             return StudentNftEvent::Error("Invalid nft id.".to_owned());
         };
 
-        let Some(actual_course) = nft.actual_courses.iter_mut().find(|ac| ac.id == course_id) else {
+        let Some(actual_course) = nft.actual_courses.iter_mut().find(|ac| ac.id == course_id)
+        else {
             return StudentNftEvent::Error("Course is not started by nft owner.".to_owned());
         };
 

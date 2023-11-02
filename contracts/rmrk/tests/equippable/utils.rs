@@ -400,7 +400,9 @@ pub fn compose(system: &System, token_id: TokenId, asset_id: u64) {
     println!("catalog_address {:?}", catalog_address);
 
     let catalog = system.get_program(CATALOG_ID);
-    let catalog_state: CatalogState = catalog.read_state(0).expect("Failed to decode CatalogState");
+    let catalog_state: CatalogState = catalog
+        .read_state(0)
+        .expect("Failed to decode CatalogState");
     let parts = catalog_state.parts;
     let mut fixed_parts = Vec::new();
     let mut slot_parts = Vec::new();

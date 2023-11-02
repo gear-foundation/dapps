@@ -71,13 +71,14 @@ fn success_run_game() {
 
         assert!(!run_result.main_failed());
 
-        let reply = game.read_state(StateQuery::AllGames).expect("Unexpected invalid state.");
+        let reply = game
+            .read_state(StateQuery::AllGames)
+            .expect("Unexpected invalid state.");
         if let StateReply::AllGames(state) = reply {
             let (_id, game) = &state[0];
-            if game.state == GameState::Finished{
-                break
+            if game.state == GameState::Finished {
+                break;
             }
-            
         }
     }
 }
@@ -115,12 +116,13 @@ fn success_add_admin() {
     let run_result = game.send(ADMIN, GameAction::AddAdmin(1.into()));
     assert!(!run_result.main_failed());
 
-    let reply = game.read_state(StateQuery::Admins).expect("Unexpected invalid state.");
+    let reply = game
+        .read_state(StateQuery::Admins)
+        .expect("Unexpected invalid state.");
     if let StateReply::Admins(admins) = reply {
         let true_admins: Vec<ActorId> = vec![100.into(), 1.into()];
-        assert_eq!(true_admins, admins, "Wrong admins");   
+        assert_eq!(true_admins, admins, "Wrong admins");
     }
-
 }
 
 #[test]
@@ -204,13 +206,14 @@ fn failures_test() {
 
         assert!(!run_result.main_failed());
 
-        let reply = game.read_state(StateQuery::AllGames).expect("Unexpected invalid state.");
+        let reply = game
+            .read_state(StateQuery::AllGames)
+            .expect("Unexpected invalid state.");
         if let StateReply::AllGames(state) = reply {
             let (_id, game) = &state[0];
-            if game.state == GameState::Finished{
-                break
+            if game.state == GameState::Finished {
+                break;
             }
-            
         }
     }
 

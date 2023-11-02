@@ -141,7 +141,9 @@ pub fn check_token_from_state(nft: &Program<'_>, owner_id: u64, token_id: u64) {
         }),
     ) {
         Ok(reply) => {
-            let NFTQueryReply::Token { token } = NFTQueryReply::decode(&mut reply.unwrap().as_ref()).unwrap() else {
+            let NFTQueryReply::Token { token } =
+                NFTQueryReply::decode(&mut reply.unwrap().as_ref()).unwrap()
+            else {
                 std::panic!()
             };
 

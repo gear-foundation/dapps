@@ -321,7 +321,7 @@ impl RMRKToken for Program<'_> {
 
     fn check_balance(&self, account: ActorId, expected_balance: U256) {
         let balance: U256 = self
-            .read_state_using_wasm( 0, "balance", WASM_BINARY.into(), Some(account))
+            .read_state_using_wasm(0, "balance", WASM_BINARY.into(), Some(account))
             .expect("Failed to read state");
         assert_eq!(balance, expected_balance);
     }

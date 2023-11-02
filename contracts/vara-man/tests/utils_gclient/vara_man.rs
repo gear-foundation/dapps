@@ -189,12 +189,7 @@ async fn send_message(
         .await?;
 
     let (message_id, _) = api
-        .send_message(
-            program_id.into(),
-            payload,
-            gas_info.burned * 2,
-            value,
-        )
+        .send_message(program_id.into(), payload, gas_info.burned * 2, value)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;

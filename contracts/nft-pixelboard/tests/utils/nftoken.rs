@@ -48,7 +48,7 @@ impl NonFungibleTokenMetaState<'_> {
 
     pub fn token(self, token_id: u128) -> MetaStateReply<Token> {
         if let Ok(token) = self.0.read_state_using_wasm::<TokenId, _, Token>(
-            0, 
+            0,
             "token",
             fs::read("target/nft_state.wasm").unwrap(),
             Some(token_id.into()),

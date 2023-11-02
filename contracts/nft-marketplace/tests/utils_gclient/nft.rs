@@ -75,7 +75,9 @@ pub async fn mint(
     )
     .await?;
 
-    let NFTEvent::Transfer(_) = NFTEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `NFTEvent` data.") else {
+    let NFTEvent::Transfer(_) =
+        NFTEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `NFTEvent` data.")
+    else {
         std::panic!("Unexpected invalid `NFTEvent`.");
     };
 
@@ -102,7 +104,9 @@ pub async fn approve(
     )
     .await?;
 
-    let NFTEvent::Approval(_) = NFTEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `NFTEvent` data.") else {
+    let NFTEvent::Approval(_) =
+        NFTEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `NFTEvent` data.")
+    else {
         std::panic!("Unexpected invalid `NFTEvent`.");
     };
 
@@ -127,7 +131,9 @@ pub async fn add_minter(
     )
     .await?;
 
-    let NFTEvent::MinterAdded {..} = NFTEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `NFTEvent` data.") else {
+    let NFTEvent::MinterAdded { .. } =
+        NFTEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `NFTEvent` data.")
+    else {
         std::panic!("Unexpected invalid `NFTEvent`.");
     };
 
