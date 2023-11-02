@@ -8,6 +8,7 @@ import { withProviders } from '@/app/hocs'
 
 import { useWalletSync } from '@/features/wallet/hooks'
 import { ADDRESS } from '@/app/consts'
+import { useEffect } from 'react'
 
 function Component() {
   const { isApiReady } = useApi()
@@ -17,8 +18,10 @@ function Component() {
 
   const isAppReady = isApiReady && isAccountReady
 
-  console.log('ADDRESS NODE:', ADDRESS.NODE)
-  console.log('ADDRESS GAME:', ADDRESS.GAME)
+  useEffect(() => {
+    console.log('ADDRESS NODE:', ADDRESS.NODE)
+    console.log('ADDRESS GAME:', ADDRESS.GAME)
+  }, [])
 
   return (
     <main>
