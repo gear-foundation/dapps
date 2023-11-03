@@ -5,6 +5,7 @@ import { CrossIcon } from '@/assets/images'
 import { Button } from '@/components/ui/button'
 
 import styles from './Modal.module.scss'
+import { ScrollArea } from '../scroll-area'
 
 type Props = React.PropsWithChildren & {
     heading: string
@@ -59,8 +60,9 @@ export function ModalBottom({ heading, children, onClose }: Props) {
                         <CrossIcon />
                     </Button>
                 </div>
-
-                {children}
+                <ScrollArea type="auto" className={styles.scroll}>
+                    {children}
+                </ScrollArea>
             </motion.div>
         </motion.dialog>
     )
