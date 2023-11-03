@@ -1,6 +1,7 @@
 import { Button } from '@gear-js/ui';
 import { CSSProperties, useState } from 'react';
 import { withoutCommas } from '@gear-js/react-hooks';
+import { HexString } from '@gear-js/api';
 import { Container } from 'components';
 import { ReactComponent as LeftDoubleArrowSVG } from '../../assets/left-double-arrow.svg';
 import { ReactComponent as LeftArrowSVG } from '../../assets/left-arrow.svg';
@@ -15,7 +16,7 @@ type Props = {
   session: SessionType;
   turns: Turns;
   rankings: Rank[];
-  userId?: string;
+  userId?: HexString;
   participants: Participant[];
 };
 
@@ -95,10 +96,23 @@ function Session({ session, turns, rankings, userId, participants }: Props) {
 
   const sortRanks = () => {
     const sortedRanks = rankings.sort((rankA, rankB) =>
-      Number(withoutCommas(rankA[1])) < Number(withoutCommas(rankB[1])) ? 1 : 0,
+      Number(withoutCommas(rankA[1])) < Number(withoutCommas(rankB[1])) ? 1 : -1,
     );
 
     return sortedRanks;
+  };
+
+  const defineWinners = () => {
+    const sortedRanks = sortRanks();
+    const highestRank = sortedRanks?.[0]?.[1];
+
+    const winners = sortedRanks.filter((item) => item[1] === highestRank);
+
+    return {
+      isUserWinner: winners.map((item) => item[0]).includes(userId || '0x'),
+      userRank: sortedRanks.find((item) => item[0] === userId)?.[1] || '',
+      winners,
+    };
   };
 
   return (
@@ -145,8 +159,9 @@ function Session({ session, turns, rankings, userId, participants }: Props) {
         currentEvents={getEvents()}
         currentRound={roundIndex}
         roundsCount={roundsCount}
-        isWinner={userId === sortRanks()?.[0]?.[0]}
-        userRank={sortRanks()?.findIndex((rank) => rank[0] === userId) || 0 + 1}
+        isWinner={defineWinners().isUserWinner}
+        winners={defineWinners().winners}
+        userRank={defineWinners().userRank}
       />
     </div>
   );

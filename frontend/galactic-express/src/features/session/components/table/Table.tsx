@@ -27,7 +27,7 @@ function Table({ data, userId }: Props) {
           className={cx(styles.bodyCell, styles.firstColumn)}
           style={{ '--color': PLAYER_COLORS[index] } as CSSProperties}>
           <span>
-            {shortenString(participant)}{' '}
+            {shortenString(participant, 4)}{' '}
             {userId === participant ? <span className={cx(styles.yourAddressSpan)}>(You)</span> : ''}
           </span>
         </div>

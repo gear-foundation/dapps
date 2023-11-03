@@ -51,18 +51,24 @@ function Home() {
                 />
               )}
               {isSessionEnded && (
-                <Session
-                  session={{
-                    altitude: altitude || '',
-                    weather: weather || '',
-                    reward: reward || '',
-                    sessionId: sessionId || '',
-                  }}
-                  participants={participants}
-                  turns={turns || []}
-                  rankings={rankings || []}
-                  userId={account?.decodedAddress}
-                />
+                <>
+                  {rankings?.map((item) => item[0]).includes(account?.decodedAddress || '0x') ? (
+                    <Session
+                      session={{
+                        altitude: altitude || '',
+                        weather: weather || '',
+                        reward: reward || '',
+                        sessionId: sessionId || '',
+                      }}
+                      participants={participants}
+                      turns={turns || []}
+                      rankings={rankings || []}
+                      userId={account?.decodedAddress}
+                    />
+                  ) : (
+                    <div>The session has passed. You are not participating in this one</div>
+                  )}
+                </>
               )}
             </>
           ) : (
