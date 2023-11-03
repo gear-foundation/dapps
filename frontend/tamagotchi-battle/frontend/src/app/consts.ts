@@ -3,7 +3,7 @@ export const LOCAL_STORAGE = {
 };
 
 export const ENV = {
-  NODE: 'wss://testnet.vara.rs',
+  NODE: 'wss://testnet.vara-network.io',
 };
 
 export const ROUTES = {
