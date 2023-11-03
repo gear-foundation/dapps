@@ -169,7 +169,6 @@ pub enum GameAction {
         max_distance: Option<u32>,
         time: Option<u32>,
         time_for_game_storage: Option<u64>,
-
     },
     RemoveGameInstance {
         account_id: ActorId,

@@ -60,7 +60,7 @@ fn success_run_game() {
     assert!(!run_result.main_failed());
 
     // TODO: uncomment when we switch to 1.0.1 version
-    
+
     // for _i in 0..40 {
     //     let run_result = game.send(
     //         ADMIN,
@@ -192,7 +192,6 @@ fn failures_test() {
     // The game has already started
     let run_result = game.send(ADMIN, GameAction::StartGame);
     assert!(run_result.main_failed());
-
 
     // TODO: uncomment when we switch to 1.0.1 version
 
