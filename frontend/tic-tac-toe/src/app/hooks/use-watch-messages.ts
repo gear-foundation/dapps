@@ -1,21 +1,17 @@
 import { useAccount, useAlert, useApi } from '@gear-js/react-hooks'
-import { useProgramMetadata } from '@/app/hooks/api'
 import { MutableRefObject, useRef, useState } from 'react'
 import { UnsubscribePromise } from '@polkadot/api/types'
 import { Bytes } from '@polkadot/types'
-import { UserMessageSent } from '@gear-js/api'
+import { ProgramMetadata, UserMessageSent } from '@gear-js/api'
 import { ADDRESS } from '@/features/tic-tac-toe/consts'
-import metaTxt from '@/features/tic-tac-toe/assets/meta/tic_tac_toe.meta.txt'
 import { ContractError } from '../types'
 
 const programId = ADDRESS.GAME
 
-export function useWatchMessages<T>() {
+export function useWatchMessages<T>(meta: ProgramMetadata) {
   const { api } = useApi()
   const { account } = useAccount()
   const alert = useAlert()
-
-  const meta = useProgramMetadata(metaTxt)
 
   const messageSub: MutableRefObject<UnsubscribePromise | null> = useRef(null)
   const [reply, setReply] = useState<T | undefined>()
