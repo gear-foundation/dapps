@@ -107,9 +107,7 @@ export function WalletConnect({ onClose }: Props) {
     <ModalBottom heading="Connect Wallet" onClose={onClose}>
       <div>
         {accounts?.length ? (
-          <ScrollArea type="auto">
-            <ul className={styles.list}>{getAccounts() || getWallets()}</ul>
-          </ScrollArea>
+          <ul className={styles.list}>{getAccounts() || getWallets()}</ul>
         ) : (
           <p>
             <a href="https://novawallet.io/" target="_blank" rel="noreferrer">
