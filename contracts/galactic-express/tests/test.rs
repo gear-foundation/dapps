@@ -30,7 +30,7 @@ fn test() {
 
             let player = Participant {
                 fuel_amount: 42,
-                payload_amount: 24,
+                payload_amount: 20,
             };
 
             for player_id in PLAYERS {
@@ -39,7 +39,16 @@ fn test() {
                     .succeed((player_id, player));
             }
             #[allow(irrefutable_let_patterns)]
-            if let State { participants, .. } = rockets.state() {
+            if let State {
+                participants,
+                rankings,
+                ..
+            } = rockets.state()
+            {
+                println!("!!!!!!!!!!!");
+                println!("STATE");
+                println!("STATE   : {:?}, {:?}", rankings, participants);
+                println!("!!!!!!!!!!!");
                 assert_eq!(
                     HashMap::from_iter(
                         PLAYERS
@@ -55,6 +64,12 @@ fn test() {
             rockets
                 .start_game(admin_id, player)
                 .succeed(PLAYERS.into_iter().chain(iter::once(admin_id)).collect());
+
+            let state = rockets.state();
+            println!("!!!!!!!!!!!");
+            println!("STATE");
+            println!("STATE   : {:?}", state);
+            println!("!!!!!!!!!!!");
         }
     }
 }

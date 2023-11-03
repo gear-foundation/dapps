@@ -209,7 +209,7 @@ impl Contract {
                         Turn::Alive {
                             fuel_left,
                             payload_amount,
-                        } => *payload_amount as u128 * self.altitude as u128 + *fuel_left as u128,
+                        } => (*payload_amount as u128 + *fuel_left as u128) * self.altitude as u128,
                         Turn::Destroyed(_) => 0,
                     },
                 )
@@ -218,26 +218,14 @@ impl Contract {
 
         scores.sort_by(|(_, score_a), (_, score_b)| score_a.cmp(score_b));
 
-        let mut io_turns: Vec<Vec<(ActorId, Turn)>> = vec![];
+        let mut io_turns: Vec<Vec<(ActorId, Turn)>> = vec![vec![]; 3];
 
-        for (actor, actor_turns) in turns {
-            let mut last_turn = actor_turns.get(0).expect("there must be at least 1 turn");
-
-            for i in 0..TURNS {
-                if let Some(turns) = io_turns.get_mut(i) {
-                    turns.push((
-                        actor,
-                        if let Some(turn) = actor_turns.get(i) {
-                            last_turn = turn;
-
-                            *turn
-                        } else {
-                            *last_turn
-                        },
-                    ))
-                } else {
-                    io_turns.push(vec![(actor, *last_turn)])
-                }
+        for i in 0..TURNS {
+            for (actor, actor_turns) in &turns {
+                let turn = actor_turns
+                    .get(i)
+                    .unwrap_or_else(|| &actor_turns.last().expect("There must be at least 1 turn"));
+                io_turns[i].push((*actor, *turn));
             }
         }
 

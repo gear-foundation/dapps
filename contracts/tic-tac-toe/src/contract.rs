@@ -38,7 +38,7 @@ extern fn init() {
 }
 
 impl Game {
-    async fn start_game(&mut self) {
+    fn start_game(&mut self) {
         let msg_source = msg::source();
 
         if let Some(current_game) = self.current_games.get(&msg_source) {
@@ -232,7 +232,7 @@ impl Game {
             None => {
                 self.current_games.retain(|_, game_instance| {
                     exec::block_timestamp() - game_instance.last_time
-                        < self.config.time_interval as u64 * self.config.ms_per_block
+                        < self.config.time_interval as u64 * self.config.s_per_block
                 });
             }
         }
@@ -257,7 +257,7 @@ async fn main() {
         "Message processing has been suspended for some time"
     );
     match action {
-        GameAction::StartGame => game.start_game().await,
+        GameAction::StartGame => game.start_game(),
         GameAction::Turn { step } => game.player_move(step),
         GameAction::Skip => game.skip(),
         GameAction::RemoveGameInstance { account_id } => game.remove_game_instance(&account_id),
@@ -272,43 +272,24 @@ async fn main() {
             game.admins.retain(|id| *id != admin);
         }
         GameAction::UpdateConfig {
-            ms_per_block,
-            add_attribute_gas,
+            s_per_block,
             gas_to_remove_game,
             time_interval,
             turn_deadline_ms,
-            tokens_for_owner_gas,
-            reply_deposit,
-            max_number_of_blocks_for_reply,
         } => {
             assert!(game.admins.contains(&msg::source()), "You are not admin");
 
-            if let Some(ms_per_block) = ms_per_block {
-                game.config.ms_per_block = ms_per_block;
+            if let Some(s_per_block) = s_per_block {
+                game.config.s_per_block = s_per_block;
             }
-
-            if let Some(add_attribute_gas) = add_attribute_gas {
-                game.config.add_attribute_gas = add_attribute_gas;
-            }
-
             if let Some(gas_to_remove_game) = gas_to_remove_game {
                 game.config.gas_to_remove_game = gas_to_remove_game;
             }
-
             if let Some(time_interval) = time_interval {
                 game.config.time_interval = time_interval;
             }
             if let Some(turn_deadline_ms) = turn_deadline_ms {
                 game.config.turn_deadline_ms = turn_deadline_ms;
-            }
-            if let Some(tokens_for_owner_gas) = tokens_for_owner_gas {
-                game.config.tokens_for_owner_gas = tokens_for_owner_gas;
-            }
-            if let Some(max_number_of_blocks_for_reply) = max_number_of_blocks_for_reply {
-                game.config.number_of_blocks_for_reply = max_number_of_blocks_for_reply;
-            }
-            if let Some(reply_deposit) = reply_deposit {
-                game.config.reply_deposit = reply_deposit;
             }
         }
         _ => {}
