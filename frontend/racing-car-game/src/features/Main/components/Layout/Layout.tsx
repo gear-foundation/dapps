@@ -8,7 +8,7 @@ import { Welcome } from '@/features/Main/components';
 import styles from './Layout.module.scss';
 import { cx } from '@/utils';
 import metaTxt from '@/assets/meta/meta.txt';
-import { useCheckBalance, useProgramMetadata } from '@/hooks';
+import { useProgramMetadata } from '@/hooks';
 import { useAccountAvailableBalance } from '@/features/Wallet/hooks';
 import { IS_STATE_READ_ATOM } from '@/features/Game/atoms';
 
@@ -17,7 +17,6 @@ function Layout() {
   const currentGame = useAtomValue(CURRENT_GAME);
   const isStateRead = useAtomValue(IS_STATE_READ_ATOM);
   const { account } = useAccount();
-  const { checkBalance } = useCheckBalance();
   const meta = useProgramMetadata(metaTxt);
   const { isAvailableBalanceReady, availableBalance } = useAccountAvailableBalance();
 
@@ -33,7 +32,7 @@ function Layout() {
         label={currentGame ? 'Continue Game' : 'Start the game'}
         variant="primary"
         size="large"
-        onClick={() => checkBalance(handleGoToPlay)}
+        onClick={handleGoToPlay}
         className={cx(styles['game-button'])}
         isLoading={!meta || !availableBalance?.value || !account?.decodedAddress || !isStateRead}
       />

@@ -2,7 +2,7 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useAtom } from 'jotai';
 import isEqual from 'lodash.isequal';
-import { useAccount, useAlert, useApi, useHandleCalculateGas } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { Bytes } from '@polkadot/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { UserMessageSent } from '@gear-js/api';
@@ -21,14 +21,19 @@ import { MessageDetails, RepliesQueue, UserMessage, WinStatus } from './Layout.i
 import { PLAY } from '@/App.routes';
 import { ContractError, DecodedReply, DecodedReplyItem, GameState } from '@/types';
 import { ADDRESS } from '@/consts';
-import { useCheckBalance } from '@/hooks';
+import { useCheckBalance, useHandleCalculateGas } from '@/hooks';
 import { useAccountAvailableBalance } from '@/features/Wallet/hooks';
-import { CURRENT_SENT_MESSAGE_ID_ATOM, IS_STATE_READ_ATOM, REPLY_DATA_ATOM } from '../../atoms';
+import {
+  CURRENT_SENT_MESSAGE_ID_ATOM,
+  IS_STARTING_NEW_GAME_ATOM,
+  IS_STATE_READ_ATOM,
+  REPLY_DATA_ATOM,
+} from '../../atoms';
 
 function LayoutComponent() {
   const [currentGame, setCurrentGame] = useAtom(CURRENT_GAME);
   const [isPlayerAction, setIsPlayerAction] = useState<boolean>(true);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useAtom(IS_STARTING_NEW_GAME_ATOM);
   const [isRoadLoaded, setIsRoadLoaded] = useState(false);
   const { isAvailableBalanceReady } = useAccountAvailableBalance();
   const { account } = useAccount();
@@ -83,7 +88,7 @@ function LayoutComponent() {
       logger({ auto: foundRepliesPair?.auto?.toHuman(), manual: foundRepliesPair?.manual?.toHuman() });
       logger(`Reply found: ${foundRepliesPair?.manual}`);
 
-      if (foundRepliesPair?.auto && foundRepliesPair.manual) {
+      if (foundRepliesPair?.auto?.toHuman() && foundRepliesPair.manual?.toHuman()) {
         const { manual } = foundRepliesPair;
 
         logger('trying to decode....:');
@@ -108,12 +113,18 @@ function LayoutComponent() {
         }
       }
 
-      if (foundRepliesPair && foundRepliesPair.auto && !foundRepliesPair.manual) {
+      if (foundRepliesPair && foundRepliesPair.auto?.toHuman() && !foundRepliesPair.manual?.toHuman()) {
         setCurrentSentMessageId(null);
         setIsPlayerAction(true);
+        handleUnsubscribeFromEvent();
+
+        if (isLoading) {
+          setIsStateRead(false);
+          setIsLoading(false);
+        }
       }
 
-      if (!foundRepliesPair?.auto) {
+      if (!foundRepliesPair?.auto?.toHuman()) {
         setTimeout(decodePair, 1500);
       }
     }
@@ -127,7 +138,7 @@ function LayoutComponent() {
   const handleChangeState = ({ data: _data }: UserMessageSent) => {
     const { message } = _data;
 
-    const { destination, source, details: messageDetails } = message as UserMessage;
+    const { destination, source, details: messageDetails, id } = message as UserMessage;
 
     const isOwner = destination.toHex() === account?.decodedAddress;
     const isCurrentProgram = source.toHex() === ADDRESS.CONTRACT;
@@ -135,17 +146,16 @@ function LayoutComponent() {
     const details = messageDetails.toHuman() as MessageDetails;
 
     if (isOwner && isCurrentProgram) {
-      if (
-        details?.to &&
-        !repliesQueue.current.map((item) => (item.auto?.toHuman().details as MessageDetails).to).includes(details?.to)
-      ) {
+      if (details?.to && !repliesQueue.current.map((item) => item.auto?.toHuman().id).includes(id.toHex())) {
         console.log('pushed');
         console.log(repliesQueue.current.map((item) => (item.auto?.toHuman()?.details as MessageDetails).to));
+
         repliesQueue.current.push({ auto: message, manual: null });
       }
 
       if (!details && !repliesQueue.current[repliesQueue.current.length - 1].manual) {
         console.log('pushed2');
+
         repliesQueue.current[repliesQueue.current.length - 1].manual = message;
       }
       logger(repliesQueue.current.map((item) => ({ auto: item.auto?.toHuman(), manual: item.manual?.toHuman() })));
@@ -187,34 +197,46 @@ function LayoutComponent() {
     calculateGas(payload)
       .then((res) => res.toHuman())
       .then(({ min_limit }) => {
-        const limit = withoutCommas(min_limit as string);
+        const minLimit = withoutCommas(min_limit as string);
+        const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
         logger(`Calculating gas:`);
         logger(`MIN_LIMIT ${min_limit}`);
-        logger(`LIMIT ${Math.floor(Number(limit) + Number(limit) * 0.2)}`);
+        logger(`LIMIT ${gasLimit}`);
         logger(`Calculated gas SUCCESS`);
         logger(`Sending message`);
         console.log(`START TURN ${Number(currentGame?.currentRound) + 1}`);
 
-        sendPlayerMoveMessage({
-          payload,
-          gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
-          onError: () => {
+        checkBalance(
+          gasLimit,
+          () =>
+            sendPlayerMoveMessage({
+              payload,
+              gasLimit,
+              onError: () => {
+                setIsPlayerAction(true);
+                handleUnsubscribeFromEvent();
+                logger(`Errror send message`);
+              },
+              onSuccess: (messageId) => {
+                logger(`sucess on ID: ${messageId}`);
+              },
+              onInBlock: (messageId) => {
+                logger('messageInBlock');
+                logger(`messageID: ${messageId}`);
+                setCurrentSentMessageId(messageId);
+              },
+            }),
+          () => {
             setIsPlayerAction(true);
             handleUnsubscribeFromEvent();
-            logger(`Errror send message`);
+            logger(`Errror check balance`);
           },
-          onSuccess: (messageId) => {
-            logger(`sucess on ID: ${messageId}`);
-          },
-          onInBlock: (messageId) => {
-            logger('messageInBlock');
-            logger(`messageID: ${messageId}`);
-            setCurrentSentMessageId(messageId);
-          },
-        });
+        );
       })
       .catch((error) => {
         logger(error);
+        setIsPlayerAction(true);
+        handleUnsubscribeFromEvent();
         alert.error('Gas calculation error');
       });
   };
@@ -230,32 +252,56 @@ function LayoutComponent() {
   const handleStartNewGame = useCallback(
     (startManually?: boolean) => {
       if (meta && (!currentGame || startManually)) {
-        setIsPlayerAction(false);
-        setIsLoading(true);
         const payload = {
           StartGame: null,
         };
 
+        handleSubscribeToEvent();
+
+        setIsPlayerAction(false);
+        setIsLoading(true);
+        setIsStateRead(false);
+
         calculateGas(payload)
           .then((res) => res.toHuman())
           .then(({ min_limit }) => {
-            const limit = withoutCommas(min_limit as string);
+            const minLimit = withoutCommas(min_limit as string);
+            const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
 
-            startGameMessage({
-              payload,
-              gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
-              onSuccess: () => {
-                setIsStateRead(false);
-                setIsLoading(false);
+            checkBalance(
+              gasLimit,
+              () => {
+                startGameMessage({
+                  payload,
+                  gasLimit,
+                  onInBlock: (messageId) => {
+                    logger('Start Game messageInBlock');
+                    logger(`messageID: ${messageId}`);
+                    setCurrentSentMessageId(messageId);
+                  },
+                  onError: () => {
+                    handleUnsubscribeFromEvent();
+                    setIsStateRead(true);
+                    setIsLoading(false);
+                    logger('error');
+                    navigate(PLAY, { replace: true });
+                  },
+                });
               },
-              onError: () => {
+              () => {
+                handleUnsubscribeFromEvent();
+                setIsStateRead(true);
+                setIsLoading(false);
                 logger('error');
                 navigate(PLAY, { replace: true });
               },
-            });
+            );
           })
           .catch((error) => {
             logger(error);
+            handleUnsubscribeFromEvent();
+            setIsStateRead(true);
+            setIsLoading(false);
             alert.error('Gas calculation error');
             navigate(PLAY, { replace: true });
           });
@@ -272,9 +318,7 @@ function LayoutComponent() {
   }, [isStateRead]);
 
   useEffect(() => {
-    checkBalance(handleStartNewGame, () => {
-      navigate(PLAY, { replace: true });
-    });
+    handleStartNewGame();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [handleStartNewGame]);
 
@@ -345,7 +389,7 @@ function LayoutComponent() {
                     disabled={!isPlayerAction}
                     isLoading={!account.decodedAddress || !meta}
                     className={cx(styles['control-button'])}
-                    onClick={() => checkBalance(() => handleActionChoose('accelerate'))}
+                    onClick={() => handleActionChoose('accelerate')}
                   />
                   <Button
                     label="Shoot"
@@ -355,7 +399,7 @@ function LayoutComponent() {
                     disabled={!isPlayerAction}
                     isLoading={!account.decodedAddress || !meta}
                     className={cx(styles['control-button'], styles['control-button-red'])}
-                    onClick={() => checkBalance(() => handleActionChoose('shoot'))}
+                    onClick={() => handleActionChoose('shoot')}
                   />
                 </div>
               )}
@@ -366,7 +410,7 @@ function LayoutComponent() {
                     label="Play again"
                     size="large"
                     className={cx(styles.btn)}
-                    onClick={() => checkBalance(() => handleStartNewGame(true))}
+                    onClick={() => handleStartNewGame(true)}
                   />
                 </div>
               )}
