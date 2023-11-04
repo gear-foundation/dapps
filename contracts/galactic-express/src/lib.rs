@@ -218,14 +218,14 @@ impl Contract {
 
         scores.sort_by(|(_, score_a), (_, score_b)| score_a.cmp(score_b));
 
-        let mut io_turns: Vec<Vec<(ActorId, Turn)>> = vec![vec![]; 3];
+        let mut io_turns: Vec<Vec<(ActorId, Turn)>> = vec![vec![]; TURNS];
 
-        for i in 0..TURNS {
+        for (i, io_turn) in io_turns.iter_mut().enumerate().take(TURNS) {
             for (actor, actor_turns) in &turns {
                 let turn = actor_turns
                     .get(i)
-                    .unwrap_or_else(|| &actor_turns.last().expect("There must be at least 1 turn"));
-                io_turns[i].push((*actor, *turn));
+                    .unwrap_or_else(|| actor_turns.last().expect("There must be at least 1 turn"));
+                io_turn.push((*actor, *turn));
             }
         }
 

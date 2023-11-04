@@ -41,14 +41,9 @@ fn test() {
             #[allow(irrefutable_let_patterns)]
             if let State {
                 participants,
-                rankings,
                 ..
             } = rockets.state()
             {
-                println!("!!!!!!!!!!!");
-                println!("STATE");
-                println!("STATE   : {:?}, {:?}", rankings, participants);
-                println!("!!!!!!!!!!!");
                 assert_eq!(
                     HashMap::from_iter(
                         PLAYERS
@@ -65,11 +60,6 @@ fn test() {
                 .start_game(admin_id, player)
                 .succeed(PLAYERS.into_iter().chain(iter::once(admin_id)).collect());
 
-            let state = rockets.state();
-            println!("!!!!!!!!!!!");
-            println!("STATE");
-            println!("STATE   : {:?}", state);
-            println!("!!!!!!!!!!!");
         }
     }
 }
