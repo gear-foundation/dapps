@@ -39,11 +39,7 @@ fn test() {
                     .succeed((player_id, player));
             }
             #[allow(irrefutable_let_patterns)]
-            if let State {
-                participants,
-                ..
-            } = rockets.state()
-            {
+            if let State { participants, .. } = rockets.state() {
                 assert_eq!(
                     HashMap::from_iter(
                         PLAYERS
@@ -59,7 +55,6 @@ fn test() {
             rockets
                 .start_game(admin_id, player)
                 .succeed(PLAYERS.into_iter().chain(iter::once(admin_id)).collect());
-
         }
     }
 }
