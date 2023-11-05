@@ -38,7 +38,7 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
   const currentContractAddress = useAtomValue(CURRENT_CONTRACT_ADDRESS_ATOM);
   const setCurrentContractAddress = useSetAtom(CURRENT_CONTRACT_ADDRESS_ATOM);
   const setIsContractAddressInitialized = useSetAtom(IS_CONTRACT_ADDRESS_INITIALIZED_ATOM);
-  const { altitude, weather, fuelPrice, reward, sessionId } = session;
+  const { altitude, weather, reward, sessionId } = session;
   const playersCount = participants?.length ? participants.length + 1 : 1;
   const isRegistered = decodedAddress ? !!participants.some((participant) => participant[0] === decodedAddress) : false;
 
@@ -135,7 +135,7 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
               userAddress={userAddress}
             />
           )}
-          <Traits altitude={altitude} weather={weather} fuelPrice={fuelPrice} reward={reward} />
+          <Traits altitude={altitude} weather={weather} reward={reward} />
 
           <footer>
             {isRegistered && !isUserAdmin && <SuccessfullyRegisteredInfo />}

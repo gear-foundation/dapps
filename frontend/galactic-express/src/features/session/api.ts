@@ -1,4 +1,4 @@
-import metaTxt from 'assets/state/launch_site.meta.txt';
+import metaTxt from 'assets/meta/galactic_express_meta.txt';
 import { useProgramMetadata } from 'hooks';
 
 function useEscrowMetadata() {
