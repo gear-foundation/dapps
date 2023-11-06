@@ -6,7 +6,7 @@ import { useWallet } from '../../hooks'
 import { WalletItem } from '../wallet-item'
 import styles from './WalletModal.module.scss'
 import { copyToClipboard, isMobileDevice } from '@/app/utils'
-import { useGame } from '@/features/tic-tac-toe/hooks'
+import { useGame, usePending } from '@/features/tic-tac-toe/hooks'
 import { useAuth } from '@/features/auth'
 import { ScrollArea } from '@/components/ui/scroll-area/scroll-area'
 import { WalletIcon } from '../wallet-icon'
@@ -29,9 +29,8 @@ export type WalletModalProps = {
 export function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
   const alert = useAlert()
   const { extensions, account, accounts } = useAccount()
-  const { resetGame } = useGame()
+  const { resetGame, clearGame } = useGame()
   const { signIn, signOut } = useAuth()
-
   const {
     wallet,
     walletAccounts,
@@ -115,6 +114,7 @@ export function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
       const isActive = address === account?.address
 
       const handleClick = async () => {
+        clearGame()
         await signIn(_account)
         setOpen(false)
         onClose && onClose()

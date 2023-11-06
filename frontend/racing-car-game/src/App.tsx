@@ -31,6 +31,15 @@ function AppComponent() {
   const setCurrentGame = useSetAtom(CURRENT_GAME);
 
   useEffect(() => {
+    if (ADDRESS.CONTRACT) {
+      console.log('CONTRACT ADDRESS:');
+      console.log(ADDRESS.CONTRACT);
+      console.log('NODE:');
+      console.log(ADDRESS.NODE);
+    }
+  }, []);
+
+  useEffect(() => {
     if (isAccountReady && account?.decodedAddress && isStateRead) {
       setCurrentGame(game.Game);
     }

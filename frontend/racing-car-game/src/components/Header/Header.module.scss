@@ -119,6 +119,16 @@
         letter-spacing: -2%;
     }
 
+    &-decimals {
+        margin: 10px 0 0 1px;
+        font-size: 10px;
+        font-weight: 500;
+        line-height: 1.4;
+        color: theme-var($text-primary);
+        text-transform: uppercase;
+        opacity: 60%;
+      }
+
     &-currency-name {
         margin: 8px 0 0 4px;
         font-size: 10px;

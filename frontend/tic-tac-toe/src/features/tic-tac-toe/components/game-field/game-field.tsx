@@ -6,40 +6,38 @@ import { GameMark } from '../game-mark'
 import {
   useGame,
   useGameMessage,
+  useHandleCalculateGas,
   useSubscriptionOnGameMessage,
 } from '../../hooks'
 import { calculateWinner } from '../../utils'
 import { motion } from 'framer-motion'
-import metaTxt from '@/features/tic-tac-toe/assets/meta/tic_tac_toe.meta.txt'
 import { variantsGameMark } from '../../variants'
 import { BaseComponentProps } from '@/app/types'
 import { useEffect } from 'react'
 import { useAtom } from 'jotai'
 import { stateChangeLoadingAtom } from '../../store'
-import {
-  useAccount,
-  useAlert,
-  useHandleCalculateGas,
-} from '@gear-js/react-hooks'
+import { useAccount, useAlert } from '@gear-js/react-hooks'
 import { ADDRESS } from '../../consts'
-import { useCheckBalance, useProgramMetadata } from '@/app/hooks'
+import { useCheckBalance } from '@/app/hooks'
 import { withoutCommas } from '@/app/utils'
+import { ProgramMetadata } from '@gear-js/api'
 
 type GameFieldProps = BaseComponentProps & {
   game: IGameInstance
+  meta: ProgramMetadata
 }
 
-export function GameField({ game }: GameFieldProps) {
+export function GameField({ game, meta }: GameFieldProps) {
   const { countdown } = useGame()
   const [isLoading, setIsLoading] = useAtom(stateChangeLoadingAtom)
   const board = game.board
-  const meta = useProgramMetadata(metaTxt)
   const { account } = useAccount()
   const alert = useAlert()
   const calculateGas = useHandleCalculateGas(ADDRESS.GAME, meta)
-  const message = useGameMessage()
+  const message = useGameMessage(meta)
   const { checkBalance } = useCheckBalance()
-  const { subscribe, unsubscribe, isOpened } = useSubscriptionOnGameMessage()
+  const { subscribe, unsubscribe, isOpened } =
+    useSubscriptionOnGameMessage(meta)
 
   const winnerRow = calculateWinner(board)
   const winnerColor = winnerRow
@@ -57,19 +55,28 @@ export function GameField({ game }: GameFieldProps) {
       calculateGas(payload)
         .then((res) => res.toHuman())
         .then(({ min_limit }) => {
-          const limit = withoutCommas(min_limit as string)
+          const minLimit = withoutCommas(min_limit as string)
+          const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2)
 
           subscribe()
-          message({
-            payload,
-            gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
-            onError: () => {
+
+          checkBalance(
+            gasLimit,
+            () =>
+              message({
+                payload,
+                gasLimit,
+                onError: () => {
+                  unsubscribe()
+                },
+                onSuccess: () => {
+                  console.log('success on cell')
+                },
+              }),
+            () => {
               unsubscribe()
-            },
-            onSuccess: () => {
-              console.log('success on cell')
-            },
-          })
+            }
+          )
         })
         .catch((error) => {
           console.log(error)
@@ -100,7 +107,7 @@ export function GameField({ game }: GameFieldProps) {
             !!game.gameResult
           }
           isLoading={isLoading}
-          onSelectCell={(val) => checkBalance(() => onSelectCell(val))}
+          onSelectCell={onSelectCell}
         >
           {mark && (
             <GameMark

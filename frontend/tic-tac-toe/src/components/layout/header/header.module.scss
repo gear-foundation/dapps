@@ -31,3 +31,18 @@
   padding-right: 22px;
   padding-left: 22px;
 }
+
+.mobile_balance {
+  display: none;
+
+  @media screen and (max-width: 767px) {
+    display: block;
+    display: flex;
+    margin-right: 14px;
+  }
+}
+
+.menu_wrapper {
+  display: flex;
+  flex-direction: row-reverse;
+}
