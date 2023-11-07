@@ -3,7 +3,8 @@ use gtest::{Program, System};
 use utils::*;
 
 // Change this parameter to scale test
-// const ACCOUNTS_AMOUNT: u64 = 1000;
+#[allow(dead_code)]
+const ACCOUNTS_AMOUNT: u64 = 1000;
 
 #[allow(dead_code)]
 fn gclient_high_load_mint() {
