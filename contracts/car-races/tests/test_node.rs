@@ -51,8 +51,6 @@ async fn gclient_start_game_test() -> Result<()> {
 
     let init_game = GameInit {
         config: Config {
-            add_attribute_gas: 40_000_000_000,
-            tokens_for_owner_gas: 40_000_000_000,
             gas_to_remove_game: 20_000_000_000,
             initial_speed: 100,
             min_speed: 10,

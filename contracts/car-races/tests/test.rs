@@ -15,8 +15,6 @@ fn success_run_game() {
         ADMIN,
         GameInit {
             config: Config {
-                add_attribute_gas: 40_000_000_000,
-                tokens_for_owner_gas: 40_000_000_000,
                 gas_to_remove_game: 20_000_000_000,
                 initial_speed: 100,
                 min_speed: 10,
@@ -94,8 +92,6 @@ fn success_add_admin() {
         ADMIN,
         GameInit {
             config: Config {
-                add_attribute_gas: 40_000_000_000,
-                tokens_for_owner_gas: 40_000_000_000,
                 gas_to_remove_game: 20_000_000_000,
                 initial_speed: 100,
                 min_speed: 10,
@@ -136,8 +132,6 @@ fn failures_test() {
         ADMIN,
         GameInit {
             config: Config {
-                add_attribute_gas: 40_000_000_000,
-                tokens_for_owner_gas: 40_000_000_000,
                 gas_to_remove_game: 20_000_000_000,
                 initial_speed: 100,
                 min_speed: 10,

@@ -88,7 +88,6 @@ pub enum StateQuery {
     Game { account_id: ActorId },
     AllGames,
     MsgIdToGameId,
-    WaitingMsgs,
     Config,
     MessagesAllowed,
 }
@@ -161,8 +160,6 @@ pub enum GameAction {
         strategy_action: StrategyAction,
     },
     UpdateConfig {
-        add_attribute_gas: Option<u64>,
-        tokens_for_owner_gas: Option<u64>,
         gas_to_remove_game: Option<u64>,
         initial_speed: Option<u32>,
         min_speed: Option<u32>,
@@ -325,8 +322,6 @@ impl Game {
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
 pub struct Config {
-    pub add_attribute_gas: u64,
-    pub tokens_for_owner_gas: u64,
     pub gas_to_remove_game: u64,
     pub initial_speed: u32,
     pub min_speed: u32,

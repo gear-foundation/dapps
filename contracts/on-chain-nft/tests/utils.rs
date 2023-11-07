@@ -94,13 +94,11 @@ pub fn check_token_uri(
     metadata: TokenMetadata,
     content: Vec<String>,
 ) {
-    match nft.read_state_using_wasm::<NFTQuery, _, Option<Vec<u8>>>(
+    match nft.read_state_using_wasm::<TokenId, _, Option<Vec<u8>>>(
         0,
         "token_uri",
         WASM_BINARY.into(),
-        Some(NFTQuery::Token {
-            token_id: token_id.into(),
-        }),
+        Some(token_id.into()),
     ) {
         Ok(token_uri) => {
             let token_uri = TokenURI::decode(&mut token_uri.unwrap().as_ref()).unwrap();
