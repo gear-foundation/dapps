@@ -1,7 +1,5 @@
 #![no_std]
 
-pub use w3bstreaming_io::*;
-
 use gstd::{exec, msg, prelude::*};
 use w3bstreaming_io::{Action, ActionResult, Contract, Profile, Role, Stream, Subscription};
 
