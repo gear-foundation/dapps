@@ -1,3 +1,1 @@
-import { HexString } from '@polkadot/util/types';
-
-export const BATTLE_ADDRESS = '0x644c1e6f60cd2e7ddcb503ae4923fb5486dddaf9933733d7bc473fbaef67efc8';
+export const BATTLE_ADDRESS = '0xf74ebe31a9659d3caccf522336ae2805f894d85619d60744755816f67fa2c158';

@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { BATTLE_ADDRESS } from 'features/battle/consts';
 import { cn, toNumber } from 'app/utils';
 import { useProgramMetadata } from 'app/hooks/api';
-import { useAccount, useHandleCalculateGas, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useHandleCalculateGas, withoutCommas } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
 import metaTxt from '../../assets/meta/battle.meta.txt';
 
@@ -15,6 +15,7 @@ export const BattleRoundPlayers = () => {
   const { rivals, currentPlayer, currentPairIdx, roundDamage, battle, isPending, setIsPending, isAdmin } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
+  const alert = useAlert();
   const meta = useProgramMetadata(metaTxt);
   const calculateGas = useHandleCalculateGas(BATTLE_ADDRESS, meta);
 
@@ -44,7 +45,7 @@ export const BattleRoundPlayers = () => {
         });
       })
       .catch(() => {
-        alert('Gas calculation error');
+        alert.error('Gas calculation error');
       });
   };
   const onAttack = () => {
@@ -65,7 +66,7 @@ export const BattleRoundPlayers = () => {
         });
       })
       .catch(() => {
-        alert('Gas calculation error');
+        alert.error('Gas calculation error');
       });
   };
   const onDefence = () => {
@@ -86,7 +87,7 @@ export const BattleRoundPlayers = () => {
         });
       })
       .catch(() => {
-        alert('Gas calculation error');
+        alert.error('Gas calculation error');
       });
   };
 

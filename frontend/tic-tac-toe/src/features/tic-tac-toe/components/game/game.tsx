@@ -10,12 +10,14 @@ import { Heading } from '@/components/ui/heading'
 import { TextGradient } from '@/components/ui/text-gradient'
 import { useGame } from '@/features/tic-tac-toe/hooks'
 import { BaseComponentProps } from '@/app/types'
+import { ProgramMetadata } from '@gear-js/api'
 
 type GameProps = BaseComponentProps & {
   game: IGameInstance
+  meta: ProgramMetadata
 }
 
-export function Game({ game }: GameProps) {
+export function Game({ game, meta }: GameProps) {
   const { gameResult, playerMark } = game
   const { countdown } = useGame()
 
@@ -66,16 +68,16 @@ export function Game({ game }: GameProps) {
             {countdown?.isActive ? (
               <GameCountdown game={game} className={styles.game__countdown} />
             ) : (
-              <GameSkipButton />
+              <GameSkipButton meta={meta} />
             )}
           </>
         ) : (
-          <GameStartButton>Play again</GameStartButton>
+          <GameStartButton meta={meta}>Play again</GameStartButton>
         )}
       </div>
 
       <div className={styles.game__field}>
-        <GameField game={game} />
+        <GameField game={game} meta={meta} />
 
         <GameInfoPlayerMark
           isNewGame={!gameResult}

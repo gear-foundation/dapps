@@ -16,7 +16,6 @@ pub struct Contract {
     pub strategy_ids: Vec<ActorId>,
     pub games: HashMap<ActorId, Game>,
     pub msg_id_to_game_id: HashMap<MessageId, ActorId>,
-    pub waiting_msgs: HashMap<MessageId, MessageId>,
     pub config: Config,
     pub messages_allowed: bool,
 }
@@ -234,8 +233,6 @@ extern fn handle() {
             contract.admins.retain(|id| *id != admin);
         }
         GameAction::UpdateConfig {
-            add_attribute_gas,
-            tokens_for_owner_gas,
             gas_to_remove_game,
             initial_speed,
             min_speed,
@@ -250,14 +247,6 @@ extern fn handle() {
                 contract.admins.contains(&msg::source()),
                 "You are not admin"
             );
-
-            if let Some(add_attribute_gas) = add_attribute_gas {
-                contract.config.add_attribute_gas = add_attribute_gas;
-            }
-
-            if let Some(tokens_for_owner_gas) = tokens_for_owner_gas {
-                contract.config.tokens_for_owner_gas = tokens_for_owner_gas;
-            }
 
             if let Some(gas_to_remove_game) = gas_to_remove_game {
                 contract.config.gas_to_remove_game = gas_to_remove_game;
@@ -305,10 +294,6 @@ extern fn handle_reply() {
     let reply_to = msg::reply_to().expect("Unable to get the msg id");
     let contract = unsafe { CONTRACT.as_mut().expect("The game is not initialized") };
 
-    if let Some(msg_id) = contract.waiting_msgs.remove(&reply_to) {
-        exec::wake(msg_id).expect("Unable to wake the msg");
-        return;
-    }
     let game_id = contract
         .msg_id_to_game_id
         .remove(&reply_to)
@@ -373,7 +358,6 @@ extern fn state() {
         strategy_ids,
         games,
         msg_id_to_game_id,
-        waiting_msgs,
         config,
         messages_allowed,
     } = unsafe { CONTRACT.take().expect("Failed to get state") };
@@ -398,13 +382,6 @@ extern fn state() {
         StateQuery::MsgIdToGameId => {
             msg::reply(
                 StateReply::MsgIdToGameId(msg_id_to_game_id.into_iter().collect()),
-                0,
-            )
-            .expect("Unable to share the state");
-        }
-        StateQuery::WaitingMsgs => {
-            msg::reply(
-                StateReply::WaitingMsgs(waiting_msgs.into_iter().collect()),
                 0,
             )
             .expect("Unable to share the state");

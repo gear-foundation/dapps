@@ -1,13 +1,11 @@
 import { ReactComponent as AltitudeSVG } from './assets/altitude.svg';
 import { ReactComponent as WeatherSVG } from './assets/weather.svg';
-import { ReactComponent as FuelSVG } from './assets/fuel.svg';
 import { ReactComponent as RewardSVG } from './assets/reward.svg';
 import { isGreaterThanZero } from './utils';
 
 const TRAITS = [
   { heading: 'Altitude', SVG: AltitudeSVG },
   { heading: 'Weather', SVG: WeatherSVG },
-  { heading: 'Fuel', SVG: FuelSVG },
   { heading: 'Reward', SVG: RewardSVG },
 ];
 
@@ -51,17 +49,8 @@ const VALIDATE = {
   fuel: isGreaterThanZero,
 };
 
-const TABLE_HEADINGS = ['Player', 'Alive', 'Fuel Left', 'Altitude', 'Payload', 'Halt'];
-
-const HALT = {
-  ENGINE_ERROR: 'EngineError',
-  OVERFUELLED: 'Overfuelled',
-  OVERFILLED: 'Overfilled',
-  SEPARATION_FAILURE: 'SeparationFailure',
-  ASTEROID: 'Asteroid',
-  NOT_ENOUGH_FUEL: 'NotEnoughFuel',
-} as const;
+const TABLE_HEADINGS = ['Player', 'Alive', 'Fuel Left', 'Altitude', 'Payload'];
 
 const PLAYER_COLORS = ['#eb5757', '#f2c94c', '#2f80ed', '#9b51e0'];
 
-export { TRAITS, WEATHERS, INITIAL_VALUES, VALIDATE, TABLE_HEADINGS, HALT, PLAYER_COLORS };
+export { TRAITS, WEATHERS, INITIAL_VALUES, VALIDATE, TABLE_HEADINGS, PLAYER_COLORS };

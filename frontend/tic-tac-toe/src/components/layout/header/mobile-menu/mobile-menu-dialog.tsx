@@ -14,6 +14,7 @@ import { Dialog } from '@headlessui/react'
 import { useAuth } from '@/features/auth'
 import { DialogsLibrary } from '@/components/ui/dialogs'
 import { Sprite } from '@/components/ui/sprite'
+import { useGame } from '@/features/tic-tac-toe/hooks'
 
 export type MobileMenuDialogProps = {
   onClose?(): void
@@ -25,7 +26,14 @@ export function MobileMenuDialog({ setOpen, open }: MobileMenuDialogProps) {
   const { account } = useAccount()
   const { signOut } = useAuth()
   const { nodes } = useNodes()
+  const { resetGame } = useGame()
   const currentNode = nodes?.find((n) => n.address === ADDRESS.NODE)
+
+  const handleLogoutButtonClick = () => {
+    signOut()
+    setOpen(false)
+    resetGame()
+  }
 
   return (
     <AnimatePresence initial={false}>
@@ -72,7 +80,7 @@ export function MobileMenuDialog({ setOpen, open }: MobileMenuDialogProps) {
                 </div>
                 <div className={styles.actions}>
                   <SwitchAccount onClose={() => setOpen(false)} />
-                  <Button variant="black" onClick={() => signOut()}>
+                  <Button variant="black" onClick={handleLogoutButtonClick}>
                     Disconnect
                   </Button>
                 </div>

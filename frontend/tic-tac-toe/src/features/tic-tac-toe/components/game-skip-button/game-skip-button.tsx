@@ -1,25 +1,29 @@
 import { Button } from '@/components/ui/button'
-import { useGameMessage, useSubscriptionOnGameMessage } from '../../hooks'
-import { useEffect, useState } from 'react'
-import { useCheckBalance, useProgramMetadata } from '@/app/hooks'
-import metaTxt from '@/features/tic-tac-toe/assets/meta/tic_tac_toe.meta.txt'
 import {
-  useAccount,
-  useAlert,
+  useGameMessage,
   useHandleCalculateGas,
-} from '@gear-js/react-hooks'
+  useSubscriptionOnGameMessage,
+} from '../../hooks'
+import { useEffect, useState } from 'react'
+import { useCheckBalance } from '@/app/hooks'
+import { useAccount, useAlert } from '@gear-js/react-hooks'
 import { ADDRESS } from '../../consts'
 import { withoutCommas } from '@/app/utils'
+import { ProgramMetadata } from '@gear-js/api'
 
-export function GameSkipButton() {
-  const meta = useProgramMetadata(metaTxt)
+type Props = {
+  meta: ProgramMetadata
+}
+
+export function GameSkipButton({ meta }: Props) {
   const calculateGas = useHandleCalculateGas(ADDRESS.GAME, meta)
-  const message = useGameMessage()
+  const message = useGameMessage(meta)
   const alert = useAlert()
   const { account } = useAccount()
   const { checkBalance } = useCheckBalance()
   const [isLoading, setIsLoading] = useState<boolean>(false)
-  const { subscribe, unsubscribe, isOpened } = useSubscriptionOnGameMessage()
+  const { subscribe, unsubscribe, isOpened } =
+    useSubscriptionOnGameMessage(meta)
 
   useEffect(() => {
     setIsLoading(isOpened)
@@ -45,28 +49,34 @@ export function GameSkipButton() {
     calculateGas(payload)
       .then((res) => res.toHuman())
       .then(({ min_limit }) => {
-        const limit = withoutCommas(min_limit as string)
+        console.log('min_limit================')
+        console.log(min_limit)
+        const minLimit = withoutCommas(min_limit as string)
+        const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2)
 
         subscribe()
-        message({
-          payload,
-          gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
-          onError,
-          onSuccess,
-        })
+        checkBalance(
+          gasLimit,
+          () => {
+            message({
+              payload,
+              gasLimit,
+              onError,
+              onSuccess,
+            })
+          },
+          onError
+        )
       })
       .catch((error) => {
+        onError()
         console.log(error)
         alert.error('Gas calculation error')
       })
   }
 
   return (
-    <Button
-      onClick={() => checkBalance(onNextTurn)}
-      isLoading={isLoading}
-      variant="black"
-    >
+    <Button onClick={onNextTurn} isLoading={isLoading} variant="black">
       Skip
     </Button>
   )

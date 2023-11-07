@@ -1,7 +1,7 @@
 import { PLAYER_COLORS } from 'features/session/consts';
 import { CSSProperties } from 'react';
 import cropEarthSrc from '../../assets/earth-crop.gif';
-import { Event } from '../../types';
+import { Event, Rank } from '../../types';
 import styles from './Radar.module.scss';
 import { WinStatus } from '../win-status';
 
@@ -10,10 +10,11 @@ type Props = {
   currentRound: number;
   roundsCount: number;
   isWinner: boolean;
-  userRank: number;
+  userRank: string;
+  winners: Rank[];
 };
 
-function Radar({ currentEvents, currentRound, roundsCount, isWinner, userRank }: Props) {
+function Radar({ currentEvents, currentRound, roundsCount, isWinner, userRank, winners }: Props) {
   const defineHeightIndex = (current: number, firstDead: number) => {
     if (firstDead !== -1) {
       if (current < firstDead) {
@@ -44,7 +45,11 @@ function Radar({ currentEvents, currentRound, roundsCount, isWinner, userRank }:
 
   return (
     <div className={styles.container}>
-      {isWinner ? <WinStatus type="win" userRank={userRank} /> : <WinStatus type="lose" userRank={userRank} />}
+      {isWinner ? (
+        <WinStatus type="win" userRank={userRank} winners={winners} />
+      ) : (
+        <WinStatus type="lose" userRank={userRank} winners={winners} />
+      )}
       <div className={styles.field}>{getPlayers()}</div>
 
       <img src={cropEarthSrc} alt="" className={styles.image} />

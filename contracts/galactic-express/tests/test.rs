@@ -30,7 +30,7 @@ fn test() {
 
             let player = Participant {
                 fuel_amount: 42,
-                payload_amount: 24,
+                payload_amount: 20,
             };
 
             for player_id in PLAYERS {

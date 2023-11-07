@@ -1,6 +1,6 @@
 import { useReadFullState, useSendMessageHandler } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
-import metaTxt from 'assets/state/launch_site.meta.txt';
+import metaTxt from 'assets/meta/galactic_express_meta.txt';
 import { useProgramMetadata } from 'hooks';
 import { LaunchState } from './types';
 

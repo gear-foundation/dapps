@@ -119,14 +119,10 @@ pub enum GameAction {
         accounts: Option<Vec<ActorId>>,
     },
     UpdateConfig {
-        ms_per_block: Option<u64>,
-        add_attribute_gas: Option<u64>,
-        tokens_for_owner_gas: Option<u64>,
+        s_per_block: Option<u64>,
         gas_to_remove_game: Option<u64>,
         time_interval: Option<u32>,
         turn_deadline_ms: Option<u64>,
-        reply_deposit: Option<u64>,
-        max_number_of_blocks_for_reply: Option<u32>,
     },
     AllowMessages(bool),
 }
@@ -176,12 +172,8 @@ pub enum Mark {
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct Config {
-    pub add_attribute_gas: u64,
-    pub ms_per_block: u64,
-    pub tokens_for_owner_gas: u64,
+    pub s_per_block: u64,
     pub gas_to_remove_game: u64,
     pub time_interval: u32,
     pub turn_deadline_ms: u64,
-    pub number_of_blocks_for_reply: u32,
-    pub reply_deposit: u64,
 }
