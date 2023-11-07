@@ -8,7 +8,15 @@
 ```sh
 cargo b -p "car-races*"
 ```
-
+```sh
+cargo b -p "car-1*"
+```
+```sh
+cargo b -p "car-2*"
+```
+```sh
+cargo b -p "car-3*"
+```
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:

@@ -40,7 +40,7 @@ function WalletInfo({ account, withoutBalance, buttonClassName }: WalletInfoProp
                 alt="vara coin"
                 className={cx(styles['balance-coin-image'])}
               />
-              <div className={cx(styles['balance-value'])} dangerouslySetInnerHTML={{ __html: balanceAmount }} />
+              <div className={cx(styles['balance-value'])}>{balanceAmount}</div>
               {balanceDecimals && <div className={cx(styles['balance-decimals'])}>{`.${balanceDecimals}`}</div>}
               <div className={cx(styles['balance-currency-name'])}>{balance?.unit}</div>
             </div>

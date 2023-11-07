@@ -23,7 +23,6 @@ ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
     REACT_APP_NFT_EXPLORER_URL=${REACT_APP_NFT_EXPLORER_URL} \
     DISABLE_ESLINT_PLUGIN=true
 
-# Install dependencies based on the preferred package manager
 RUN \
     if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
     elif [ -f package-lock.json ]; then npm ci; \

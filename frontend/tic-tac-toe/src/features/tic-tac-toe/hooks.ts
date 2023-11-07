@@ -1,20 +1,33 @@
-import { useAccount, useApi, useSendMessage } from '@gear-js/react-hooks'
+import {
+  useAccount,
+  useAlert,
+  useApi,
+  useHandleCalculateGas as useCalculateGasNative,
+  useSendMessage,
+} from '@gear-js/react-hooks'
 import { useEffect, useMemo } from 'react'
 import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import isEqual from 'lodash.isequal'
-import meta from './assets/meta/tic_tac_toe.meta.txt'
 import {
   IDecodedReplyGame,
   IGameInstance,
   IQueryResponseConfig,
   IQueryResponseGame,
 } from './types'
-import { configAtom, countdownAtom, gameAtom, pendingAtom } from './store'
+import {
+  configAtom,
+  countdownAtom,
+  gameAtom,
+  pendingAtom,
+  stateChangeLoadingAtom,
+} from './store'
 import { ADDRESS } from './consts'
-import { useProgramMetadata } from '@/app/hooks'
 import { useOnceReadState } from '@/app/hooks/use-once-read-state'
 import { useWatchMessages } from '@/app/hooks/use-watch-messages'
-import { toNumber } from '@/app/utils'
+import { toNumber, withoutCommas } from '@/app/utils'
+import { HexString, ProgramMetadata } from '@gear-js/api'
+import { AnyJson, AnyNumber } from '@polkadot/types/types'
+import { useAccountAvailableBalance } from '../account-available-balance/hooks'
 
 const programIdGame = ADDRESS.GAME
 
@@ -57,6 +70,11 @@ export function useGame() {
     updateCountdown(game)
   }
 
+  const clearGame = () => {
+    setGameState(undefined)
+    setCountdown(undefined)
+  }
+
   const resetGame = () => {
     console.log('reset all')
     setGameState(null)
@@ -73,10 +91,11 @@ export function useGame() {
     configState,
     updateCountdown,
     updateGame,
+    clearGame,
   }
 }
 
-export function useOnceGameState() {
+export function useOnceGameState(metadata?: ProgramMetadata) {
   const { account } = useAccount()
 
   const payloadGame = useMemo(
@@ -89,7 +108,7 @@ export function useOnceGameState() {
   const payloadConfig = useMemo(() => ({ Config: null }), [])
 
   console.log(account?.decodedAddress)
-  console.log(!!meta)
+  console.log(!!metadata)
 
   const {
     state: stateConfig,
@@ -98,7 +117,7 @@ export function useOnceGameState() {
   } = useOnceReadState<IQueryResponseConfig>({
     programId: programIdGame,
     payload: payloadConfig,
-    meta,
+    meta: metadata,
   })
 
   const {
@@ -108,8 +127,11 @@ export function useOnceGameState() {
   } = useOnceReadState<IQueryResponseGame>({
     programId: programIdGame,
     payload: payloadGame,
-    meta,
+    meta: metadata,
   })
+
+  console.log('GAME FROM READ STATE STATE:')
+  console.log(stateGame)
 
   return {
     stateGame,
@@ -130,35 +152,36 @@ export const useInitGame = () => {
     isGameReady: account?.decodedAddress ? gameState !== undefined : true,
   }
 }
-export const useInitGameSync = () => {
+export const useInitGameSync = (metadata?: ProgramMetadata) => {
   const { isApiReady, api } = useApi()
   const { account } = useAccount()
   const { stateGame, stateConfig, error, triggerGame, triggerConfig } =
-    useOnceGameState()
+    useOnceGameState(metadata)
   const { updateGame, resetGame, setConfigState } = useGame()
-
+  console.log(stateConfig?.Config)
   useEffect(() => {
     console.log('FETCH CONFIG:')
     console.log(!!isApiReady)
     console.log(!!api)
     console.log(!!account?.decodedAddress)
-    console.log(!!meta)
+    console.log(!!metadata)
 
-    if (!isApiReady || !api || !meta) return
+    if (!isApiReady || !api || !metadata || stateConfig?.Config) return
 
     console.log('fetch config', isApiReady)
-    triggerConfig()
+    triggerConfig(metadata)
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isApiReady, api, meta])
+  }, [isApiReady, api, metadata, account?.decodedAddress])
 
   useEffect(() => {
-    if (!isApiReady || !api || !meta || !stateConfig?.Config) return
+    console.log('Running trigger state effect')
+    if (!isApiReady || !api || !metadata || !stateConfig?.Config) return
 
     console.log('trigger game state')
-    triggerGame()
+    triggerGame(metadata)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isApiReady, api, meta, stateConfig?.Config, account?.decodedAddress])
+  }, [isApiReady, api, metadata, stateConfig?.Config, account?.decodedAddress])
 
   useEffect(() => {
     if (!stateConfig?.Config) return
@@ -170,7 +193,7 @@ export const useInitGameSync = () => {
   useEffect(() => {
     console.log(stateGame)
     console.log(stateConfig)
-    if (stateGame === undefined || !stateConfig?.Config) return
+    if (stateGame === undefined) return
 
     console.log({ stateGame })
 
@@ -181,16 +204,15 @@ export const useInitGameSync = () => {
     game ? updateGame(game) : resetGame()
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [stateGame?.Game, stateConfig?.Config])
+  }, [stateGame])
 
   return {
     errorGame: error,
   }
 }
 
-export function useGameMessage() {
-  const metadata = useProgramMetadata(meta)
-  return useSendMessage(programIdGame, metadata, {
+export function useGameMessage(meta: ProgramMetadata) {
+  return useSendMessage(programIdGame, meta, {
     disableAlerts: true,
     isMaxGasLimit: true,
   })
@@ -201,10 +223,11 @@ export function usePending() {
   return { pending, setPending }
 }
 
-export function useSubscriptionOnGameMessage() {
+export function useSubscriptionOnGameMessage(meta: ProgramMetadata) {
   const { gameState, updateGame } = useGame()
   const { subscribe, unsubscribe, reply, isOpened } =
-    useWatchMessages<IDecodedReplyGame>()
+    useWatchMessages<IDecodedReplyGame>(meta)
+  const setIsLoading = useSetAtom(stateChangeLoadingAtom)
 
   useEffect(() => {
     if (!isOpened) return
@@ -214,6 +237,7 @@ export function useSubscriptionOnGameMessage() {
     if (game && !isEqual(game.board, gameState?.board)) {
       updateGame(game)
       unsubscribe()
+      setIsLoading(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reply, isOpened])
@@ -223,5 +247,29 @@ export function useSubscriptionOnGameMessage() {
     unsubscribe,
     reply,
     isOpened,
+  }
+}
+
+export const useHandleCalculateGas = (
+  address: HexString,
+  meta: ProgramMetadata
+) => {
+  const { availableBalance } = useAccountAvailableBalance()
+  const calculateGasNative = useCalculateGasNative(address, meta)
+
+  const alert = useAlert()
+
+  return (initPayload: AnyJson, value?: AnyNumber | undefined) => {
+    const balance = Number(withoutCommas(availableBalance?.value || ''))
+    const existentialDeposit = Number(
+      withoutCommas(availableBalance?.existentialDeposit || '')
+    )
+    console.log(balance)
+    console.log(existentialDeposit)
+    if (!balance || balance < existentialDeposit) {
+      alert.error(`Low balance when calculating gas`)
+    }
+
+    return calculateGasNative(initPayload, value)
   }
 }

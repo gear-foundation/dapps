@@ -52,7 +52,7 @@ function ParticipantsTable({ data, userAddress }: Props) {
                         <td className={cx(styles.bodyTd, styles[`bodyTd${cellName}`])}>
                           {cellName === 'playerAddress' ? (
                             <>
-                              {shortenString(row[cellName as keyof TableData])}
+                              {shortenString(row[cellName as keyof TableData], 4)}
                               {isYourAddress(row[cellName]) && (
                                 <span className={cx(styles.yourAddressSpan)}>(You)</span>
                               )}

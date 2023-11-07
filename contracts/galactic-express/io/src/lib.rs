@@ -21,7 +21,7 @@ pub const TURNS: usize = 3;
 /// Represents a range of the minimum & the maximum reward for a session.
 pub const REWARD: (u128, u128) = (80, 360);
 /// Represents a range of the minimum & the maximum turn altitude.
-pub const TURN_ALTITUDE: (u16, u16) = (2_600, 5_000);
+pub const TURN_ALTITUDE: (u16, u16) = (500, 1_000);
 /// Dangerous level for high fuel and payload values
 /// This is to account for the scenario where a player specifies a significant amount of fuel
 /// or a large payload, resulting in a greater likelihood of mission failure.

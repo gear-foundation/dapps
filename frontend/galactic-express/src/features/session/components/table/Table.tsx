@@ -21,21 +21,20 @@ function Table({ data, userId }: Props) {
     ));
 
   const getBody = () =>
-    data?.map(({ participant, deadRound, fuelLeft, lastAltitude, payload, halt }, index) => (
+    data?.map(({ participant, deadRound, fuelLeft, lastAltitude, payload }, index) => (
       <Fragment key={participant}>
         <div
           className={cx(styles.bodyCell, styles.firstColumn)}
           style={{ '--color': PLAYER_COLORS[index] } as CSSProperties}>
           <span>
-            {shortenString(participant)}{' '}
+            {shortenString(participant, 4)}{' '}
             {userId === participant ? <span className={cx(styles.yourAddressSpan)}>(You)</span> : ''}
           </span>
         </div>
         <div className={styles.bodyCell}>{deadRound ? <CrossSVG /> : <CheckSVG />}</div>
         <div className={styles.bodyCell}>{fuelLeft}</div>
         <div className={styles.bodyCell}>{lastAltitude}</div>
-        <div className={styles.bodyCell}>{payload}</div>
-        <div className={cx(styles.bodyCell, styles.lastColumn)}>{halt ? halt.split(/(?=[A-Z])/).join(' ') : '-'}</div>
+        <div className={cx(styles.bodyCell, styles.lastColumn)}>{payload}</div>
       </Fragment>
     ));
 

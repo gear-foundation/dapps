@@ -1,6 +1,7 @@
 import { Button } from '@gear-js/ui';
 import { CSSProperties, useState } from 'react';
 import { withoutCommas } from '@gear-js/react-hooks';
+import { HexString } from '@gear-js/api';
 import { Container } from 'components';
 import { ReactComponent as LeftDoubleArrowSVG } from '../../assets/left-double-arrow.svg';
 import { ReactComponent as LeftArrowSVG } from '../../assets/left-arrow.svg';
@@ -15,12 +16,12 @@ type Props = {
   session: SessionType;
   turns: Turns;
   rankings: Rank[];
-  userId?: string;
+  userId?: HexString;
   participants: Participant[];
 };
 
 function Session({ session, turns, rankings, userId, participants }: Props) {
-  const { altitude, weather, fuelPrice, reward, sessionId: id } = session;
+  const { altitude, weather, reward, sessionId: id } = session;
   const roundsCount = turns.length;
 
   const [roundIndex, setRoundIndex] = useState(0);
@@ -33,6 +34,14 @@ function Session({ session, turns, rankings, userId, participants }: Props) {
   const firstPage = () => setRoundIndex(0);
   const lastPage = () => setRoundIndex(roundsCount - 1);
 
+  const defineFuelLeftFormat = (isAlive: boolean, fuelLeft: string) => {
+    if (isAlive && fuelLeft) {
+      return fuelLeft !== '0' ? fuelLeft : '1';
+    }
+
+    return ' - ';
+  };
+
   const getEvents = (): Event[] =>
     turns[roundIndex]
       .slice()
@@ -44,23 +53,31 @@ function Session({ session, turns, rankings, userId, participants }: Props) {
       })
       ?.map((participantInfo) => {
         const isAlive = Object.keys(participantInfo[1])[0] === 'Alive';
+        const firstDeadRound = turns.findIndex((turn) => {
+          const part = turn.find((participant) => participant[0] === participantInfo[0]) || [];
+
+          return Object.keys(part[1] || {})[0] !== 'Alive';
+        });
 
         return {
           participant: participantInfo[0],
           deadRound: !isAlive,
-          firstDeadRound: turns.findIndex((turn) => {
-            const part = turn.find((participant) => participant[0] === participantInfo[0]) || [];
-            return Object.keys(part[1] || {})[0] !== 'Alive';
-          }),
-          fuelLeft: isAlive ? participantInfo[1].Alive.fuelLeft : ' - ',
+          firstDeadRound,
+          fuelLeft: defineFuelLeftFormat(isAlive, participantInfo[1]?.Alive?.fuelLeft),
           payload: isAlive ? participantInfo[1].Alive.payloadAmount : ' - ',
-          lastAltitude: String(Math.round(Number(withoutCommas(altitude)) / (roundsCount - roundNumber + 1))),
-          halt: null,
+          lastAltitude: String(
+            Math.round(
+              Number(withoutCommas(altitude)) /
+                (firstDeadRound !== -1 && firstDeadRound < roundNumber
+                  ? roundsCount - firstDeadRound
+                  : roundsCount - roundNumber + 1),
+            ),
+          ),
         };
       });
 
   const getFeedItems = () =>
-    getEvents()?.map(({ participant, halt, payload, lastAltitude, fuelLeft, deadRound }, index) => (
+    getEvents()?.map(({ participant, payload, lastAltitude, fuelLeft, deadRound }, index) => (
       <li key={participant} className={styles.item} style={{ '--color': PLAYER_COLORS[index] } as CSSProperties}>
         <h3 className={styles.heading}>{participant}</h3>
         <div className={styles.bodyItem}>
@@ -73,18 +90,29 @@ function Session({ session, turns, rankings, userId, participants }: Props) {
           <p className={styles.textValue}>{lastAltitude},</p>
           <p className={styles.text}>Payload:</p>
           <p className={styles.textValue}>{payload},</p>
-          <p className={styles.text}>Halt:</p>
-          <p className={styles.textValue}>{halt?.split(/(?=[A-Z])/).join(' ') || 'null'}</p>
         </div>
       </li>
     ));
 
   const sortRanks = () => {
     const sortedRanks = rankings.sort((rankA, rankB) =>
-      Number(withoutCommas(rankA[1])) < Number(withoutCommas(rankB[1])) ? 1 : 0,
+      Number(withoutCommas(rankA[1])) < Number(withoutCommas(rankB[1])) ? 1 : -1,
     );
 
     return sortedRanks;
+  };
+
+  const defineWinners = () => {
+    const sortedRanks = sortRanks();
+    const highestRank = sortedRanks?.[0]?.[1];
+
+    const winners = sortedRanks.filter((item) => item[1] === highestRank);
+
+    return {
+      isUserWinner: winners.map((item) => item[0]).includes(userId || '0x'),
+      userRank: sortedRanks.find((item) => item[0] === userId)?.[1] || '',
+      winners,
+    };
   };
 
   return (
@@ -121,7 +149,7 @@ function Session({ session, turns, rankings, userId, participants }: Props) {
         <div className={styles.body}>
           <Table data={getEvents()} userId={userId} />
 
-          <Traits altitude={altitude} weather={weather} fuelPrice={fuelPrice} reward={reward} />
+          <Traits altitude={altitude} weather={weather} reward={reward} />
 
           <ul className={styles.feed}>{getFeedItems()}</ul>
         </div>
@@ -131,8 +159,9 @@ function Session({ session, turns, rankings, userId, participants }: Props) {
         currentEvents={getEvents()}
         currentRound={roundIndex}
         roundsCount={roundsCount}
-        isWinner={userId === sortRanks()?.[0]?.[0]}
-        userRank={sortRanks()?.findIndex((rank) => rank[0] === userId) || 0 + 1}
+        isWinner={defineWinners().isUserWinner}
+        winners={defineWinners().winners}
+        userRank={defineWinners().userRank}
       />
     </div>
   );

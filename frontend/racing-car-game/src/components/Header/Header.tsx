@@ -9,7 +9,8 @@ import { HeaderProps } from './Header.interfaces';
 import { useMediaQuery } from '@/hooks';
 import { WalletInfo } from '@/features/Wallet/components/WalletInfo';
 import { useAccountAvailableBalance } from '@/features/Wallet/hooks';
-import coin from '@/assets/icons/green_coin.svg';
+import varaCoin from '@/assets/icons/vara-coin.svg';
+import tVaraCoin from '@/assets/icons/tvara-coin.svg';
 import { MobileMenu } from '../MobileMenu';
 
 function Header({ menu }: HeaderProps) {
@@ -28,6 +29,10 @@ function Header({ menu }: HeaderProps) {
       burgerMenuHandler();
     }
   }, [isMobile, isMobileMenuOpen]);
+
+  const balanceValue = (balance?.value || '0').split('.');
+  const balanceAmount = balanceValue[0].replaceAll(/,|\s/g, '&thinsp;');
+  const balanceDecimals = balanceValue[1];
 
   return (
     <>
@@ -67,8 +72,13 @@ function Header({ menu }: HeaderProps) {
           {account && isMobile && isAvailableBalanceReady && (
             <div className={cx(styles['menu-wrapper'])}>
               <div className={cx(styles.balance)}>
-                <img src={coin} alt="vara coin" className={cx(styles['balance-coin-image'])} />
-                <div className={cx(styles['balance-value'])}>{balance?.value || '0'}</div>
+                <img
+                  src={balance?.unit?.toLowerCase() === 'vara' ? varaCoin : tVaraCoin}
+                  alt="vara coin"
+                  className={cx(styles['balance-coin-image'])}
+                />
+                <div className={cx(styles['balance-value'])}>{balanceAmount}</div>
+                {balanceDecimals && <div className={cx(styles['balance-decimals'])}>{`.${balanceDecimals}`}</div>}
                 <div className={cx(styles['balance-currency-name'])}>{balance?.unit}</div>
               </div>
               {!!account && <MobileMenu />}

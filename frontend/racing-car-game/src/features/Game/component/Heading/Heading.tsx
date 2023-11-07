@@ -13,7 +13,7 @@ function Heading({ currentTurn, isPlayerAction, winStatus }: HeadingProps) {
         {winStatus === 'Lose' && 'You Lose'}
       </h1>
       <h3 className={cx(styles['heading-description'])}>
-        {!winStatus && 'Either accelerate or shoot at the nearest car to win.'}
+        {!winStatus && 'To win the race, either Accelerate or Shoot the nearest car to slow it down.'}
         {winStatus === 'Win' && 'Congratulations, the game is over, you won!'}
         {winStatus === 'Draw' && `The game is over, it's a draw! Try again to win.`}
         {winStatus === 'Lose' && 'Try again to win.'}

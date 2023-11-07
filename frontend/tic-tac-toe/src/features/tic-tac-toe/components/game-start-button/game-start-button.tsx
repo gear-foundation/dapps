@@ -1,28 +1,32 @@
 import { Button } from '@/components/ui/button'
-import { useGameMessage, useSubscriptionOnGameMessage } from '../../hooks'
-import { useEffect, useState } from 'react'
-import { BaseComponentProps } from '@/app/types'
-import { useCheckBalance, useProgramMetadata } from '@/app/hooks'
 import {
-  useAccount,
-  useAlert,
+  useGameMessage,
   useHandleCalculateGas,
-} from '@gear-js/react-hooks'
-import metaTxt from '@/features/tic-tac-toe/assets/meta/tic_tac_toe.meta.txt'
+  useSubscriptionOnGameMessage,
+} from '../../hooks'
+import { useEffect } from 'react'
+import { BaseComponentProps } from '@/app/types'
+import { useCheckBalance } from '@/app/hooks'
+import { useAccount, useAlert } from '@gear-js/react-hooks'
 import { ADDRESS } from '../../consts'
 import { withoutCommas } from '@/app/utils'
+import { ProgramMetadata } from '@gear-js/api'
+import { useAtom } from 'jotai'
+import { stateChangeLoadingAtom } from '../../store'
 
-type GameStartButtonProps = BaseComponentProps & {}
+type GameStartButtonProps = BaseComponentProps & {
+  meta: ProgramMetadata
+}
 
-export function GameStartButton({ children }: GameStartButtonProps) {
-  const meta = useProgramMetadata(metaTxt)
+export function GameStartButton({ children, meta }: GameStartButtonProps) {
   const calculateGas = useHandleCalculateGas(ADDRESS.GAME, meta)
-  const message = useGameMessage()
+  const message = useGameMessage(meta)
   const { account } = useAccount()
   const alert = useAlert()
   const { checkBalance } = useCheckBalance()
-  const [isLoading, setIsLoading] = useState<boolean>(false)
-  const { subscribe, unsubscribe, isOpened } = useSubscriptionOnGameMessage()
+  const [isLoading, setIsLoading] = useAtom(stateChangeLoadingAtom)
+  const { subscribe, unsubscribe, isOpened } =
+    useSubscriptionOnGameMessage(meta)
 
   useEffect(() => {
     console.log({ isOpened })
@@ -34,7 +38,6 @@ export function GameStartButton({ children }: GameStartButtonProps) {
     unsubscribe()
   }
   const onSuccess = () => {
-    setIsLoading(false)
     console.log('success on start')
   }
 
@@ -48,24 +51,38 @@ export function GameStartButton({ children }: GameStartButtonProps) {
     calculateGas(payload)
       .then((res) => res.toHuman())
       .then(({ min_limit }) => {
-        const limit = withoutCommas(min_limit as string)
+        const minLimit = withoutCommas(min_limit as string)
+        const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2)
+        console.log('min_limit================')
+        console.log(min_limit)
+        console.log(gasLimit)
 
         subscribe()
-        message({
-          payload,
-          gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
-          onError,
-          onSuccess,
-        })
+        checkBalance(
+          gasLimit,
+          () => {
+            message({
+              payload,
+              gasLimit,
+              onError,
+              onSuccess,
+            })
+          },
+          onError
+        )
       })
       .catch((error) => {
+        onError()
         console.log(error)
         alert.error('Gas calculation error')
       })
   }
 
   return (
-    <Button onClick={() => checkBalance(onGameStart)} isLoading={isLoading}>
+    <Button
+      onClick={onGameStart}
+      isLoading={isLoading || !meta || !ADDRESS.GAME || !account}
+    >
       {children}
     </Button>
   )

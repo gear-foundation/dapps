@@ -27,7 +27,7 @@ function useWallet() {
   const resetWalletId = () => setWalletId(undefined)
 
   const getWalletAccounts = (id: WalletId) =>
-    accounts.filter(({ meta }) => meta.source === id)
+    accounts?.filter(({ meta }) => meta.source === id)
 
   const saveWallet = () =>
     walletId && localStorage.setItem(LOCAL_STORAGE.WALLET, walletId)

@@ -13,7 +13,7 @@ function Home() {
   const state = useLaunchState(currentContractAddress);
   const { admin, session, turns, participants, isSessionEnded, rankings } = state || {};
 
-  const { sessionId, altitude, weather, fuelPrice, reward } = session || {};
+  const { sessionId, altitude, weather, reward } = session || {};
 
   const isUserAdmin = admin === account?.decodedAddress;
   const isStateComing = !!state;
@@ -43,7 +43,6 @@ function Home() {
                   session={{
                     altitude: altitude || '',
                     weather: weather || '',
-                    fuelPrice: fuelPrice || '',
                     reward: reward || '',
                     sessionId: sessionId || '',
                   }}
@@ -52,19 +51,24 @@ function Home() {
                 />
               )}
               {isSessionEnded && (
-                <Session
-                  session={{
-                    altitude: altitude || '',
-                    weather: weather || '',
-                    fuelPrice: fuelPrice || '',
-                    reward: reward || '',
-                    sessionId: sessionId || '',
-                  }}
-                  participants={participants}
-                  turns={turns || []}
-                  rankings={rankings || []}
-                  userId={account?.decodedAddress}
-                />
+                <>
+                  {rankings?.map((item) => item[0]).includes(account?.decodedAddress || '0x') ? (
+                    <Session
+                      session={{
+                        altitude: altitude || '',
+                        weather: weather || '',
+                        reward: reward || '',
+                        sessionId: sessionId || '',
+                      }}
+                      participants={participants}
+                      turns={turns || []}
+                      rankings={rankings || []}
+                      userId={account?.decodedAddress}
+                    />
+                  ) : (
+                    <div>The session has passed. You are not participating in this one</div>
+                  )}
+                </>
               )}
             </>
           ) : (

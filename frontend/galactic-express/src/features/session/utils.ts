@@ -1,5 +1,5 @@
 const isGreaterThanZero = (value: string) => (+value > 0 ? null : 'Enter number');
 
-const shortenString = (str: string): string => `${str.slice(0, 4)}...${str.slice(-4)}`;
+const shortenString = (str: string, length: number): string => `${str.slice(0, length)}...${str.slice(-length)}`;
 
 export { isGreaterThanZero, shortenString };
