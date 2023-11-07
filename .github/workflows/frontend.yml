@@ -1,0 +1,47 @@
+name: Frontend CI
+
+on:
+  pull_request:
+    paths-ignore: contracts/**
+  push:
+    paths-ignore: contracts/**
+    branches: [master]
+
+defaults:
+  run:
+    working-directory: frontend
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          - subdir: battleship
+            build: build
+          - subdir: concert/api
+            test: test
+          - subdir: ddns
+            build: build:all
+
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Yarn
+        run: npm install -g yarn
+
+      - name: Build
+        if: ${{ matrix.build }} != null
+        run: yarn --cwd ${{ matrix.subdir }} ${{ matrix.build }}
+
+      - name: Test
+        if: ${{ matrix.test }} != null
+        run: yarn --cwd ${{ matrix.subdir }} ${{ matrix.test }}
