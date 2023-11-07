@@ -347,10 +347,7 @@ fn approve_success() {
 
 //     // Start update
 //     assert_eq!(current_media(&nft, token_id), link1);
-//     // println!("!!!!!!!!!!! {:?} !!!!!!!!!!!!", current_media(&nft, token_id));
 //     sys.spend_blocks(updates_period);
-//     // println!("!!!!!!!!!!!!!!!!!!!!!!!");
-//     // println!("!!!!!!!!!!! {:?} !!!!!!!!!!!!", current_media(&nft, token_id));
 //     assert_eq!(current_media(&nft, token_id), link4);
 
 //     sys.spend_blocks(updates_period);
