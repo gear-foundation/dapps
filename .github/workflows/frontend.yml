@@ -18,6 +18,9 @@ concurrency:
   group: frontend-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CI: false
+
 jobs:
   build:
     strategy:
@@ -92,13 +95,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
       - name: Install dependencies
-        run: npm install -g react-app-rewired typescript vite yarn
+        #run: sudo npm i -g react-app-rewired typescript vite yarn webpack
+        run: sudo npm i -g yarn
 
       - name: Build
         if: ${{ matrix.build }} != null
-        run: yarn install && yarn --cwd ${{ matrix.subdir }} ${{ matrix.build }}
+        run: yarn --cwd ${{ matrix.subdir }} && yarn --cwd ${{ matrix.subdir }} ${{ matrix.build }}
 
       - name: Test
         if: ${{ matrix.test }} != null
-        run: yarn install && yarn --cwd ${{ matrix.subdir }} ${{ matrix.test }}
+        run: yarn --cwd ${{ matrix.subdir }} && yarn --cwd ${{ matrix.subdir }} ${{ matrix.test }}
