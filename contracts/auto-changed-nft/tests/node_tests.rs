@@ -463,7 +463,7 @@ async fn gclient_auto_changed() -> Result<()> {
 
     // Add auto-changed media
     let token_id = TokenId::default();
-    let links = vec!["link 1", "link 2", "link 3", "link 4"];
+    let links = ["link 1", "link 2", "link 3", "link 4"];
     for link in links.iter() {
         let payload = NFTAction::AddMedia {
             token_id,
