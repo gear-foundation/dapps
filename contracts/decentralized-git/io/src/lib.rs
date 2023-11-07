@@ -183,7 +183,6 @@ impl Branch {
     pub fn get_commit_by_hash(&self, hash: String) -> Option<Commit> {
         self.commits
             .iter()
-            .cloned()
-            .find(|commit| commit.hash.eq(&hash))
+            .find(|&commit| commit.hash.eq(&hash)).cloned()
     }
 }
