@@ -35,8 +35,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install Yarn
-        run: npm install -g yarn
+      - name: Install dependencies
+        run: npm install -g yarn vite
 
       - name: Build
         if: ${{ matrix.build }} != null
