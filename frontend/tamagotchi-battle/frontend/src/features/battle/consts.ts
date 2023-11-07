@@ -1,1 +1,3 @@
-export const BATTLE_ADDRESS = '0xf74ebe31a9659d3caccf522336ae2805f894d85619d60744755816f67fa2c158';
+import { HexString } from '@polkadot/util/types';
+
+export const BATTLE_ADDRESS = process.env.REACT_APP_BATTLE_ADDRESS as HexString;
