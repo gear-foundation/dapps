@@ -98,17 +98,13 @@ jobs:
         with:
           node-version: 18
 
-      # - name: Install dependencies
-      #   run: sudo npm i -g yarn
+      - name: Install dependencies
+        run: sudo npm i -g yarn
 
       - name: Build
         if: ${{ matrix.build }} != null
-        run: |
-          cd ${{ matrix.subdir }}
-          npm install && npm ${{ matrix.build }}
+        run: npm --cwd ${{ matrix.subdir }} install && npm --cwd ${{ matrix.subdir }} ${{ matrix.build }}
 
       - name: Test
         if: ${{ matrix.test }} != null
-        run: |
-          cd ${{ matrix.subdir }}
-          npm install && npm ${{ matrix.test }}
+        run: yarn --cwd ${{ matrix.subdir }} && yarn --cwd ${{ matrix.subdir }} ${{ matrix.test }}
