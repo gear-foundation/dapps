@@ -53,8 +53,8 @@ jobs:
 
       - name: Build
         if: ${{ matrix.build }} != null
-        run: yarn && yarn --cwd ${{ matrix.subdir }} ${{ matrix.build }}
+        run: yarn install && yarn --cwd ${{ matrix.subdir }} ${{ matrix.build }}
 
       - name: Test
         if: ${{ matrix.test }} != null
-        run: yarn && yarn --cwd ${{ matrix.subdir }} ${{ matrix.test }}
+        run: yarn install && yarn --cwd ${{ matrix.subdir }} ${{ matrix.test }}
