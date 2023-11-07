@@ -499,43 +499,43 @@ async fn gclient_auto_changed() -> Result<()> {
         links[3]
     );
 
-    std::thread::sleep(std::time::Duration::from_secs(5));
+    std::thread::sleep(std::time::Duration::from_secs(15));
     assert_eq!(
         current_media(&api, program_id.into_bytes(), token_id).await,
         links[2]
     );
 
-    std::thread::sleep(std::time::Duration::from_secs(5));
+    std::thread::sleep(std::time::Duration::from_secs(15));
     assert_eq!(
         current_media(&api, program_id.into_bytes(), token_id).await,
         links[1]
     );
-    std::thread::sleep(std::time::Duration::from_secs(5));
+    std::thread::sleep(std::time::Duration::from_secs(15));
     assert_eq!(
         dbg!(current_media(&api, program_id.into_bytes(), token_id).await),
         dbg!(links[0])
     );
 
     // Media rotation happens
-    std::thread::sleep(std::time::Duration::from_secs(5));
+    std::thread::sleep(std::time::Duration::from_secs(15));
     assert_eq!(
         current_media(&api, program_id.into_bytes(), token_id).await,
         links[3]
     );
 
-    std::thread::sleep(std::time::Duration::from_secs(5));
+    std::thread::sleep(std::time::Duration::from_secs(15));
     assert_eq!(
         current_media(&api, program_id.into_bytes(), token_id).await,
         links[2]
     );
 
-    std::thread::sleep(std::time::Duration::from_secs(5));
+    std::thread::sleep(std::time::Duration::from_secs(15));
     assert_eq!(
         current_media(&api, program_id.into_bytes(), token_id).await,
         links[1]
     );
 
-    std::thread::sleep(std::time::Duration::from_secs(5));
+    std::thread::sleep(std::time::Duration::from_secs(15));
     assert_eq!(
         current_media(&api, program_id.into_bytes(), token_id).await,
         links[0]
