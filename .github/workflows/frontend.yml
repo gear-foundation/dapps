@@ -36,12 +36,12 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install dependencies
-        run: npm install -g yarn vite
+        run: npm install -g yarn # vite
 
       - name: Build
         if: ${{ matrix.build }} != null
-        run: yarn --cwd ${{ matrix.subdir }} ${{ matrix.build }}
+        run: yarn && yarn --cwd ${{ matrix.subdir }} ${{ matrix.build }}
 
       - name: Test
         if: ${{ matrix.test }} != null
-        run: yarn --cwd ${{ matrix.subdir }} ${{ matrix.test }}
+        run: yarn && yarn --cwd ${{ matrix.subdir }} ${{ matrix.test }}
