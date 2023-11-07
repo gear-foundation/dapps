@@ -39,9 +39,53 @@ jobs:
           - subdir: game-of-chance
             build: build
             test: test
-          - subdir: nft-collection
+          - subdir: nft-collection/frontend
+            build: build
+          - subdir: nft-marketplace/frontend
             build: build
             test: test
+          - subdir: nft-marketplace/indexer
+            build: build
+            test: test
+          - subdir: nft-master
+            build: build
+            test: test
+          - subdir: non-fungible-token
+            build: build
+            test: test
+          - subdir: oracle/producer
+            build: build
+          - subdir: oracle/randomness-oracle-feeder
+            build: build
+          - subdir: racing-car-game
+            build: build
+          - subdir: rock-paper-scissors/api
+            build: build
+          - subdir: supply-chain
+            build: build
+            test: test
+          - subdir: syndote/frontend
+            build: build
+            test: test
+          - subdir: tamagotchi
+            build: build
+          - subdir: tamagotchi-battle/frontend
+            build: build
+            test: test
+          - subdir: tamagotchi-battle/frontend-testnet
+            build: build
+          - subdir: tequila-train/frontend
+            build: build
+            test: test
+          - subdir: tic-tac-toe
+            build: build
+          - subdir: vara-man
+            build: build
+          - subdir: varatube
+            build: build
+            test: test
+          - subdir: w3bstreaming
+            build: build
 
     runs-on: ubuntu-latest
     steps:
