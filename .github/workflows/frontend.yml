@@ -103,8 +103,12 @@ jobs:
 
       - name: Build
         if: ${{ matrix.build }} != null
-        run: npm --cwd ${{ matrix.subdir }} install && npm --cwd ${{ matrix.subdir }} ${{ matrix.build }}
+        run: |
+          cd ${{ matrix.subdir }}
+          npm install && npm ${{ matrix.build }}
 
       - name: Test
         if: ${{ matrix.test }} != null
-        run: yarn --cwd ${{ matrix.subdir }} && yarn --cwd ${{ matrix.subdir }} ${{ matrix.test }}
+        run: |
+          cd ${{ matrix.subdir }}
+          npm install && npm ${{ matrix.test }}
