@@ -3,6 +3,14 @@
   "version": "1.0.1",
   "private": true,
   "packageManager": "yarn@4.0.1",
+  "scripts": {
+    "bump": "yarn up --exact",
+    "bump:api": "yarn bump @gear-js/api",
+    "bump:hooks": "yarn bump @gear-js/react-hooks",
+    "bump:ui": "yarn bump @gear-js/ui",
+    "bump:vara-ui": "yarn bump @gear-js/vara-ui",
+    "bump:polkadot": "yarn bump @polkadot/api @polkadot/types"
+  },
   "workspaces": [
     "./apps/*"
   ]
