@@ -2408,9 +2408,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gear-js/escrow@workspace:escrow":
+"@gear-js/escrow@workspace:apps/escrow":
   version: 0.0.0-use.local
-  resolution: "@gear-js/escrow@workspace:escrow"
+  resolution: "@gear-js/escrow@workspace:apps/escrow"
   dependencies:
     "@gear-js/api": "npm:0.35.1"
     "@gear-js/react-hooks": "npm:0.9.0"
@@ -2456,9 +2456,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gear-js/game-of-chance@workspace:game-of-chance":
+"@gear-js/game-of-chance@workspace:apps/game-of-chance":
   version: 0.0.0-use.local
-  resolution: "@gear-js/game-of-chance@workspace:game-of-chance"
+  resolution: "@gear-js/game-of-chance@workspace:apps/game-of-chance"
   dependencies:
     "@gear-js/api": "npm:0.35.1"
     "@gear-js/react-hooks": "npm:0.9.0"
@@ -2502,9 +2502,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gear-js/marketplace@workspace:nft-marketplace/frontend":
+"@gear-js/marketplace@workspace:apps/nft-marketplace":
   version: 0.0.0-use.local
-  resolution: "@gear-js/marketplace@workspace:nft-marketplace/frontend"
+  resolution: "@gear-js/marketplace@workspace:apps/nft-marketplace"
   dependencies:
     "@gear-js/api": "npm:0.35.1"
     "@gear-js/react-hooks": "npm:0.9.0"
@@ -2549,9 +2549,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gear-js/nft@workspace:non-fungible-token":
+"@gear-js/nft@workspace:apps/non-fungible-token":
   version: 0.0.0-use.local
-  resolution: "@gear-js/nft@workspace:non-fungible-token"
+  resolution: "@gear-js/nft@workspace:apps/non-fungible-token"
   dependencies:
     "@gear-js/api": "npm:0.35.1"
     "@gear-js/react-hooks": "npm:0.9.0"
@@ -2622,9 +2622,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gear-js/supply-chain@workspace:supply-chain":
+"@gear-js/supply-chain@workspace:apps/supply-chain":
   version: 0.0.0-use.local
-  resolution: "@gear-js/supply-chain@workspace:supply-chain"
+  resolution: "@gear-js/supply-chain@workspace:apps/supply-chain"
   dependencies:
     "@gear-js/api": "npm:0.35.1"
     "@gear-js/react-hooks": "npm:0.9.0"
@@ -2668,9 +2668,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@gear-js/syndote@workspace:syndote/frontend":
+"@gear-js/syndote@workspace:apps/syndote":
   version: 0.0.0-use.local
-  resolution: "@gear-js/syndote@workspace:syndote/frontend"
+  resolution: "@gear-js/syndote@workspace:apps/syndote"
   dependencies:
     "@gear-js/api": "npm:0.35.1"
     "@gear-js/react-hooks": "npm:0.9.0"
@@ -9339,9 +9339,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cb-tic-tac-toe-frontend@workspace:tic-tac-toe":
+"cb-tic-tac-toe-frontend@workspace:apps/tic-tac-toe":
   version: 0.0.0-use.local
-  resolution: "cb-tic-tac-toe-frontend@workspace:tic-tac-toe"
+  resolution: "cb-tic-tac-toe-frontend@workspace:apps/tic-tac-toe"
   dependencies:
     "@gear-js/api": "npm:0.35.1"
     "@gear-js/react-hooks": "npm:0.9.0"
@@ -10372,9 +10372,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dapp-cb-racing-cars-frontend@workspace:racing-car-game":
+"dapp-cb-racing-cars-frontend@workspace:apps/racing-car-game":
   version: 0.0.0-use.local
-  resolution: "dapp-cb-racing-cars-frontend@workspace:racing-car-game"
+  resolution: "dapp-cb-racing-cars-frontend@workspace:apps/racing-car-game"
   dependencies:
     "@craco/craco": "npm:7.1.0"
     "@gear-js/api": "npm:0.35.1"
@@ -10427,9 +10427,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"dapp@workspace:galactic-express":
+"dapp@workspace:apps/galactic-express":
   version: 0.0.0-use.local
-  resolution: "dapp@workspace:galactic-express"
+  resolution: "dapp@workspace:apps/galactic-express"
   dependencies:
     "@gear-js/api": "npm:0.35.1"
     "@gear-js/react-hooks": "npm:0.9.0"
@@ -12931,9 +12931,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"frontend-battleship@workspace:battleship":
+"frontend-battleship@workspace:apps/battleship":
   version: 0.0.0-use.local
-  resolution: "frontend-battleship@workspace:battleship"
+  resolution: "frontend-battleship@workspace:apps/battleship"
   dependencies:
     "@gear-js/api": "npm:0.35.2"
     "@gear-js/react-hooks": "npm:0.9.2"
@@ -13115,9 +13115,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"gear-dapp-tequila-train@workspace:tequila-train/frontend":
+"gear-dapp-tequila-train@workspace:apps/tequila-train":
   version: 0.0.0-use.local
-  resolution: "gear-dapp-tequila-train@workspace:tequila-train/frontend"
+  resolution: "gear-dapp-tequila-train@workspace:apps/tequila-train"
   dependencies:
     "@gear-js/api": "npm:0.35.1"
     "@gear-js/react-hooks": "npm:0.9.0"
@@ -13166,9 +13166,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"gear-dapps-workshop-tamagotchi-battle@workspace:tamagotchi-battle/frontend":
+"gear-dapps-workshop-tamagotchi-battle@workspace:apps/tamagotchi-battle":
   version: 0.0.0-use.local
-  resolution: "gear-dapps-workshop-tamagotchi-battle@workspace:tamagotchi-battle/frontend"
+  resolution: "gear-dapps-workshop-tamagotchi-battle@workspace:apps/tamagotchi-battle"
   dependencies:
     "@fireworks-js/react": "npm:2.10.7"
     "@gear-js/api": "npm:0.35.1"
@@ -16715,9 +16715,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"nft-portal-frontend@workspace:nft-master":
+"nft-portal-frontend@workspace:apps/nft-master":
   version: 0.0.0-use.local
-  resolution: "nft-portal-frontend@workspace:nft-master"
+  resolution: "nft-portal-frontend@workspace:apps/nft-master"
   dependencies:
     "@gear-js/api": "npm:0.35.1"
     "@gear-js/react-hooks": "npm:0.9.0"
@@ -20638,9 +20638,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"subscription@workspace:varatube":
+"subscription@workspace:apps/varatube":
   version: 0.0.0-use.local
-  resolution: "subscription@workspace:varatube"
+  resolution: "subscription@workspace:apps/varatube"
   dependencies:
     "@gear-js/api": "npm:0.35.1"
     "@gear-js/react-hooks": "npm:0.9.0"
@@ -20978,9 +20978,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tamagotchi@workspace:tamagotchi":
+"tamagotchi@workspace:apps/tamagotchi":
   version: 0.0.0-use.local
-  resolution: "tamagotchi@workspace:tamagotchi"
+  resolution: "tamagotchi@workspace:apps/tamagotchi"
   dependencies:
     "@gear-js/api": "npm:0.35.1"
     "@gear-js/react-hooks": "npm:0.9.0"
@@ -21877,9 +21877,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"varaman@workspace:vara-man":
+"varaman@workspace:apps/vara-man":
   version: 0.0.0-use.local
-  resolution: "varaman@workspace:vara-man"
+  resolution: "varaman@workspace:apps/vara-man"
   dependencies:
     "@gear-js/api": "npm:0.35.1"
     "@gear-js/react-hooks": "npm:0.9.0"

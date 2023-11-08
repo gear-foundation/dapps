@@ -1,3 +1,5 @@
+# yarn
+
 .yarn/*
 !.yarn/patches
 !.yarn/plugins
@@ -10,4 +12,19 @@
 # Documentation here: https://yarnpkg.com/features/zero-installs
 
 #!.yarn/cache
+
+# dependencies
+node_modules
 .pnp.*
+
+# production
+build
+dist
+
+# misc
+.DS_Store
+
+.env*
+!.env.example
+
+*.log*
