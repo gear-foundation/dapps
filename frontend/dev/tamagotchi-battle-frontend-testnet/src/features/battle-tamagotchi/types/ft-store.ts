@@ -1,1 +1,1 @@
-export type StoreItemsNames = 'sword' | 'hat' | 'bag' | 'glasses';
+export type StoreItemsNames = 'sword' | 'hat' | 'bag' | 'glasses'

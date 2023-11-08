@@ -1,16 +1,16 @@
-import { Route, Routes } from 'react-router-dom'
-import { useTamagotchiInit } from '@/app/hooks/use-tamagotchi'
-import { useThrottleWasmState } from '@/app/hooks/use-read-wasm-state'
-import { lazy, Suspense } from 'react'
-import { Loader } from '@/components/loaders/loader'
-import { useLessonsInit } from '@/app/hooks/use-lessons'
+import { Route, Routes } from 'react-router-dom';
+import { useTamagotchiInit } from '@/app/hooks/use-tamagotchi';
+import { useThrottleWasmState } from '@/app/hooks/use-read-wasm-state';
+import { lazy, Suspense } from 'react';
+import { Loader } from '@/components/loaders/loader';
+import { useLessonsInit } from '@/app/hooks/use-lessons';
 
-const routes = [{ path: '/', Page: lazy(() => import('./home')) }]
+const routes = [{ path: '/', Page: lazy(() => import('./home')) }];
 
 export const Routing = () => {
-  useLessonsInit()
-  useTamagotchiInit()
-  useThrottleWasmState()
+  useLessonsInit();
+  useTamagotchiInit();
+  useThrottleWasmState();
 
   return (
     <Routes>
@@ -26,5 +26,5 @@ export const Routing = () => {
         />
       ))}
     </Routes>
-  )
-}
+  );
+};

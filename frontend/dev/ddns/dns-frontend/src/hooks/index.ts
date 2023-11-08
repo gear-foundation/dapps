@@ -1,3 +1,3 @@
-import {useReadConfiq} from './useReadConfiq'
+import { useReadConfiq } from './useReadConfiq';
 
 export { useReadConfiq };

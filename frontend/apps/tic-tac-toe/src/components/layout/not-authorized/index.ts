@@ -1,1 +1,1 @@
-export { NotAuthorized } from './not-authorized'
+export { NotAuthorized } from './not-authorized';

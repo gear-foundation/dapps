@@ -11,7 +11,7 @@ const FILTERS = ['All Channels', 'My'];
 const FILTERS_2 = ['All Channels', 'My Feed'];
 
 const LOCAL_STORAGE = {
-  ACCOUNT: 'account'
+  ACCOUNT: 'account',
 };
 
 export { ADDRESS, LOCAL_STORAGE, FILTERS, FILTERS_2, META_STORAGE_ADDRESS };

@@ -8,11 +8,11 @@ module.exports = {
   // mode: 'production',
   plugins: [
     new webpack.ProvidePlugin({
-        Buffer: ['buffer', 'Buffer'],
+      Buffer: ['buffer', 'Buffer'],
     }),
     new HtmlWebpackPlugin({
-      template: "./index.html",
-    })
+      template: './index.html',
+    }),
   ],
   module: {
     rules: [
@@ -26,7 +26,7 @@ module.exports = {
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
     fallback: {
-        buffer: require.resolve('buffer/'),
+      buffer: require.resolve('buffer/'),
     },
   },
   output: {
@@ -34,8 +34,8 @@ module.exports = {
   },
   devServer: {
     static: {
-      directory: path.resolve(__dirname, './contract_files'), 
-      publicPath: '/contract_files'
-    }
-  }
+      directory: path.resolve(__dirname, './contract_files'),
+      publicPath: '/contract_files',
+    },
+  },
 };

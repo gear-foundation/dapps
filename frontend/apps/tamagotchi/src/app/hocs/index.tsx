@@ -1,26 +1,24 @@
-import type { ComponentType } from 'react'
-import { BrowserRouter } from 'react-router-dom'
+import type { ComponentType } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
   AccountProvider,
   ProviderProps,
-} from '@gear-js/react-hooks'
-import { Alert, alertStyles } from '@gear-js/ui'
-import { ENV } from '../consts'
-import { AppProvider, LessonsProvider, TmgProvider } from '../context'
+} from '@gear-js/react-hooks';
+import { Alert, alertStyles } from '@gear-js/ui';
+import { ENV } from '../consts';
+import { AppProvider, LessonsProvider, TmgProvider } from '../context';
 
 const ApiProvider = ({ children }: ProviderProps) => (
-  <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>
-    {children}
-  </GearApiProvider>
-)
+  <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>
+);
 
 const AlertProvider = ({ children }: ProviderProps) => (
   <GearAlertProvider template={Alert} containerClassName={alertStyles.root}>
     {children}
   </GearAlertProvider>
-)
+);
 
 const providers = [
   BrowserRouter,
@@ -30,10 +28,7 @@ const providers = [
   AppProvider,
   LessonsProvider,
   TmgProvider,
-]
+];
 
 export const withProviders = (Component: ComponentType) => () =>
-  providers.reduceRight(
-    (children, Provider) => <Provider>{children}</Provider>,
-    <Component />
-  )
+  providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);

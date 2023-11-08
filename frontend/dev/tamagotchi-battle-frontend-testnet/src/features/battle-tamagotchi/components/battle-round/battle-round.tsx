@@ -1,8 +1,8 @@
-import { BattleRoundInfo } from '../battle-round-info';
-import { BattleRoundStats } from '../battle-round-stats';
-import { BattleRoundPlayers } from '../battle-round-players';
-import { BattleTablePairs } from '../battle-table-pairs';
-import { BattleTableChampions } from '../battle-table-champions';
+import { BattleRoundInfo } from '../battle-round-info'
+import { BattleRoundStats } from '../battle-round-stats'
+import { BattleRoundPlayers } from '../battle-round-players'
+import { BattleTablePairs } from '../battle-table-pairs'
+import { BattleTableChampions } from '../battle-table-champions'
 
 export const BattleRound = () => {
   return (
@@ -16,5 +16,5 @@ export const BattleRound = () => {
       <BattleTablePairs />
       <BattleTableChampions />
     </>
-  );
-};
+  )
+}

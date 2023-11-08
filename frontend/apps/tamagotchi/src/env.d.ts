@@ -1,12 +1,12 @@
 // declaring .wasm, since TS doesn't support experimental modules
 // source: https://github.com/microsoft/TypeScript/issues/31713
 
-declare module "*.wasm" {
+declare module '*.wasm' {
   const value: string;
   export default value;
 }
 
-declare module "*.txt" {
+declare module '*.txt' {
   const value: string;
   export default value;
 }

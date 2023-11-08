@@ -1,2 +1,2 @@
-export { WalletConnect } from './wallet-connect'
-export { WalletChange } from './wallet-change'
+export { WalletConnect } from './wallet-connect';
+export { WalletChange } from './wallet-change';

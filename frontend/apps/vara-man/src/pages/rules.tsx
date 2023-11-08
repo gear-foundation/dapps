@@ -1,11 +1,10 @@
-import { useState } from 'react'
-import { AnimatePresence, motion, wrap } from 'framer-motion'
-import { Icons } from '@/components/ui/icons'
+import { useState } from 'react';
+import { AnimatePresence, motion, wrap } from 'framer-motion';
+import { Icons } from '@/components/ui/icons';
 
-import RulesImage1 from '@/assets/images/rules/rules-1.webp'
-import RulesImage2 from '@/assets/images/rules/rules-2.webp'
-import RulesImage3 from '@/assets/images/rules/rules-3.webp'
-
+import RulesImage1 from '@/assets/images/rules/rules-1.webp';
+import RulesImage2 from '@/assets/images/rules/rules-2.webp';
+import RulesImage3 from '@/assets/images/rules/rules-3.webp';
 
 const images = [RulesImage1, RulesImage2, RulesImage3];
 
@@ -88,18 +87,14 @@ export default function Rules() {
         {page > 0 && (
           <button
             className="col-start-1 group level-mode level-mode--to-right p-2.5 hover:[--from:#16B768]"
-            onClick={() => paginate(-1)}
-          >
+            onClick={() => paginate(-1)}>
             <span className="before:absolute before:inset-0 before:z-0 before:bg-[#1e1e1e] before:rounded-[8px] group-hover:before:bg-primary before:transition-colors" />
             <Icons.sliderPrev className="relative z-1 w-5 h-5 text-primary group-hover:text-white" />
           </button>
         )}
 
         {page < images.length - 1 && (
-          <button
-            className="col-start-2 group level-mode p-2.5 hover:[--from:#16B768]"
-            onClick={() => paginate(1)}
-          >
+          <button className="col-start-2 group level-mode p-2.5 hover:[--from:#16B768]" onClick={() => paginate(1)}>
             <span className="before:transition-colors before:absolute before:inset-0 before:z-0 before:bg-[#1e1e1e] before:rounded-[8px] group-hover:before:bg-primary" />
             <Icons.sliderNext className="relative z-1 w-5 h-5 text-primary group-hover:text-white transition-colors" />
           </button>

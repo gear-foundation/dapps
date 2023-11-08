@@ -1,12 +1,12 @@
-import clsx from 'clsx'
-import { AlertProps } from './alert.types'
-import styles from './alert.module.scss'
-import { Button } from '../button'
-import { Sprite } from '@/components/ui/sprite'
+import clsx from 'clsx';
+import { AlertProps } from './alert.types';
+import styles from './alert.module.scss';
+import { Button } from '../button';
+import { Sprite } from '@/components/ui/sprite';
 
 export function Alert({ alert, close }: AlertProps) {
-  const { content, options } = alert
-  const { type, title, style, isClosed } = options
+  const { content, options } = alert;
+  const { type, title, style, isClosed } = options;
 
   return (
     <div className={styles.alert} style={style}>
@@ -18,6 +18,6 @@ export function Alert({ alert, close }: AlertProps) {
         </Button>
       )}
     </div>
-  )
+  );
 }
-export { styles as alertStyles }
+export { styles as alertStyles };

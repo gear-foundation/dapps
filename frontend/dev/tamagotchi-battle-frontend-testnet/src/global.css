@@ -19,15 +19,15 @@
 
 @layer components {
   .typo-h1 {
-    @apply font-kanit text-[72px] leading-[86px] font-medium
+    @apply font-kanit text-[72px] leading-[86px] font-medium;
   }
 
   .typo-h2 {
-    @apply font-kanit text-[40px] leading-[48px] font-bold tracking-[0.04em]
+    @apply font-kanit text-[40px] leading-[48px] font-bold tracking-[0.04em];
   }
 
   .typo-text {
-    @apply text-[14px] leading-[21px]
+    @apply text-[14px] leading-[21px];
   }
 
   .btn {
@@ -43,19 +43,19 @@
   }
 
   .btn--gray {
-    @apply text-black bg-secondary-500 hover:bg-secondary-600 active:bg-secondary-700 transition-colors
+    @apply text-black bg-secondary-500 hover:bg-secondary-600 active:bg-secondary-700 transition-colors;
   }
 
   .btn--ghost {
-    @apply text-white bg-white/10 hover:bg-white/30 active:bg-white/50 transition-colors
+    @apply text-white bg-white/10 hover:bg-white/30 active:bg-white/50 transition-colors;
   }
 
   .btn--white {
-    @apply text-black bg-white hover:bg-[#DEDEDE] active:bg-neutral-300 transition-colors
+    @apply text-black bg-white hover:bg-[#DEDEDE] active:bg-neutral-300 transition-colors;
   }
 
   .btn--error {
-    @apply text-white bg-tertiary hover:bg-red-600 active:bg-red-700 transition-colors
+    @apply text-white bg-tertiary hover:bg-red-600 active:bg-red-700 transition-colors;
   }
 
   .btn--blue {
@@ -63,7 +63,7 @@
   }
 
   .btn:disabled {
-    @apply cursor-not-allowed
+    @apply cursor-not-allowed;
   }
 
   .btn--loading {
@@ -85,7 +85,11 @@
 }
 
 .bg-battle-row {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0) 100%);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.15) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
   backdrop-filter: blur(4px);
 }
 

@@ -1,1 +1,1 @@
-export { BattleTableChampions } from './battle-table-champions';
+export { BattleTableChampions } from './battle-table-champions'

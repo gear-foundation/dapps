@@ -1,1 +1,1 @@
-export { GameMark } from './game-mark';
+export { GameMark } from './game-mark'

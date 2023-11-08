@@ -1,25 +1,25 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { XIcon } from 'lucide-react'
-import { buttonStyles } from '@gear-js/ui'
-import { cn } from '@/app/utils'
+import React, { useContext, useEffect, useState } from 'react';
+import { XIcon } from 'lucide-react';
+import { buttonStyles } from '@gear-js/ui';
+import { cn } from '@/app/utils';
 
-import { GameContext } from '@/app/context/ctx-game-score'
-import { useMessage } from '@/app/hooks/use-message'
+import { GameContext } from '@/app/context/ctx-game-score';
+import { useMessage } from '@/app/hooks/use-message';
 
-import AvatarIcon from '@/assets/images/game/claim-modal/avatar.png'
-import SilverCoinIcon from '@/assets/images/game/silver_coin.svg'
-import GoldCoinIcon from '@/assets/images/game/gold_coin.svg'
-import TotalCoinsIcon from '@/assets/images/game/claim-modal/total-coins.svg'
+import AvatarIcon from '@/assets/images/game/claim-modal/avatar.png';
+import SilverCoinIcon from '@/assets/images/game/silver_coin.svg';
+import GoldCoinIcon from '@/assets/images/game/gold_coin.svg';
+import TotalCoinsIcon from '@/assets/images/game/claim-modal/total-coins.svg';
 
-import style from './game.module.scss'
-import { ChampionsPopup } from '@/components/popups/champions-popup'
-import { useGame } from '@/app/context/ctx-game'
-import { useApi } from '@gear-js/react-hooks'
-import { IGameConfig, IGameLevel } from '@/app/types/game'
+import style from './game.module.scss';
+import { ChampionsPopup } from '@/components/popups/champions-popup';
+import { useGame } from '@/app/context/ctx-game';
+import { useApi } from '@gear-js/react-hooks';
+import { IGameConfig, IGameLevel } from '@/app/types/game';
 
 type Props = {
-  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>
-}
+  setOpenModal: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 const getPerCoin = (config: IGameConfig, level: IGameLevel) => {
   const {
@@ -29,80 +29,72 @@ const getPerCoin = (config: IGameConfig, level: IGameLevel) => {
     tokensPerSilverCoinMedium,
     tokensPerGoldCoinHard,
     tokensPerSilverCoinHard,
-  } = config
+  } = config;
 
   const goldTokens: Record<string, string> = {
     Easy: tokensPerGoldCoinEasy,
     Medium: tokensPerGoldCoinMedium,
     Hard: tokensPerGoldCoinHard,
-  }
+  };
 
   const silverTokens: Record<string, string> = {
     Easy: tokensPerSilverCoinEasy,
     Medium: tokensPerSilverCoinMedium,
     Hard: tokensPerSilverCoinHard,
-  }
+  };
 
   return {
     tokensPerGoldCoin: Number(goldTokens[level]),
     tokensPerSilverCoin: Number(silverTokens[level]),
-  }
-}
+  };
+};
 
 const GameModal = ({ setOpenModal }: Props) => {
-  const { configState, game } = useGame()
-  const { onClaimReward, isPending } = useMessage()
-  const { allPlayers } = useGame()
+  const { configState, game } = useGame();
+  const { onClaimReward, isPending } = useMessage();
+  const { allPlayers } = useGame();
 
-  const { api } = useApi()
-  const [unit] = api?.registry.chainTokens || ['TVARA']
+  const { api } = useApi();
+  const [unit] = api?.registry.chainTokens || ['TVARA'];
 
-  const { silverCoins, goldCoins } = useContext(GameContext)
-  const perCoins = configState && game && getPerCoin(configState, game.level)
+  const { silverCoins, goldCoins } = useContext(GameContext);
+  const perCoins = configState && game && getPerCoin(configState, game.level);
 
-  const [allTokens, setAllTokens] = useState(0)
+  const [allTokens, setAllTokens] = useState(0);
 
-  const perGoldCoin = perCoins?.tokensPerGoldCoin || 0
-  const perSilverCoin = perCoins?.tokensPerSilverCoin || 0
-  const goldTokens = goldCoins * perGoldCoin
-  const silverTokens = silverCoins * perSilverCoin
+  const perGoldCoin = perCoins?.tokensPerGoldCoin || 0;
+  const perSilverCoin = perCoins?.tokensPerSilverCoin || 0;
+  const goldTokens = goldCoins * perGoldCoin;
+  const silverTokens = silverCoins * perSilverCoin;
 
-  const [isShowChampionModal, setShowChampionModal] = useState(false)
+  const [isShowChampionModal, setShowChampionModal] = useState(false);
 
   useEffect(() => {
-    setAllTokens(silverTokens + goldTokens)
-  }, [])
+    setAllTokens(silverTokens + goldTokens);
+  }, []);
 
   const onClickClaimReward = () => {
-    onClaimReward(silverCoins, goldCoins)
-  }
+    onClaimReward(silverCoins, goldCoins);
+  };
 
   const onClickShowChampion = () => {
-    setShowChampionModal(!isShowChampionModal)
-  }
+    setShowChampionModal(!isShowChampionModal);
+  };
 
   if (isShowChampionModal) {
     const sortedPlayers = allPlayers
       ? allPlayers.slice().sort((playerA, playerB) => {
-          const [_, playerInfoA] = playerA
-          const [__, playerInfoB] = playerB
+          const [_, playerInfoA] = playerA;
+          const [__, playerInfoB] = playerB;
 
-          const totalCoinsA =
-            playerInfoA.claimedGoldCoins + playerInfoA.claimedSilverCoins
-          const totalCoinsB =
-            playerInfoB.claimedGoldCoins + playerInfoB.claimedSilverCoins
+          const totalCoinsA = playerInfoA.claimedGoldCoins + playerInfoA.claimedSilverCoins;
+          const totalCoinsB = playerInfoB.claimedGoldCoins + playerInfoB.claimedSilverCoins;
 
-          return totalCoinsB - totalCoinsA
+          return totalCoinsB - totalCoinsA;
         })
-      : []
+      : [];
 
-    return (
-      <ChampionsPopup
-        setIsOpen={setShowChampionModal}
-        isOpen={isShowChampionModal}
-        players={sortedPlayers}
-      />
-    )
+    return <ChampionsPopup setIsOpen={setShowChampionModal} isOpen={isShowChampionModal} players={sortedPlayers} />;
   }
 
   return (
@@ -118,9 +110,7 @@ const GameModal = ({ setOpenModal }: Props) => {
           <div className={style.info}>
             <div className={style.title}>
               <span className="font-semibold">Dead mouse,</span>
-              <span className="font-semibold text-[#2BD071]">
-                Congratulations!
-              </span>
+              <span className="font-semibold text-[#2BD071]">Congratulations!</span>
               <span className="font-extralight">Your reward</span>
             </div>
             <div className={style.total}>
@@ -148,21 +138,13 @@ const GameModal = ({ setOpenModal }: Props) => {
             </div>
             <div className={style.buttons}>
               <button
-                className={cn(
-                  'btn',
-                  buttonStyles.primary,
-                  isPending && 'btn--loading'
-                )}
+                className={cn('btn', buttonStyles.primary, isPending && 'btn--loading')}
                 onClick={onClickClaimReward}
-                disabled={isPending}
-              >
+                disabled={isPending}>
                 <span>Claim reward</span>
               </button>
 
-              <button
-                className={cn('btn', buttonStyles.lightGreen)}
-                onClick={onClickShowChampion}
-              >
+              <button className={cn('btn', buttonStyles.lightGreen)} onClick={onClickShowChampion}>
                 <span>Show champions</span>
               </button>
             </div>
@@ -170,7 +152,7 @@ const GameModal = ({ setOpenModal }: Props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default GameModal
+export default GameModal;

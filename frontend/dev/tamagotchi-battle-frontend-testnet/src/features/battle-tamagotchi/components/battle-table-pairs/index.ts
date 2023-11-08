@@ -1,1 +1,1 @@
-export { BattleTablePairs } from './battle-table-pairs';
+export { BattleTablePairs } from './battle-table-pairs'

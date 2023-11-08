@@ -1,1 +1,1 @@
-export { GameCountdown } from './game-countdown';
+export { GameCountdown } from './game-countdown'

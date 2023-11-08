@@ -1,5 +1,5 @@
-import { createContext, ReactNode, useState } from "react";
-import { DominoTileType, GameWasmStateResponse, IGameState, IPlayer, PlayerChoiceType } from "../types/game";
+import { createContext, ReactNode, useState } from 'react';
+import { DominoTileType, GameWasmStateResponse, IGameState, IPlayer, PlayerChoiceType } from '../types/game';
 
 const useProgram = () => {
   const [game, setGame] = useState<IGameState>();
@@ -21,7 +21,7 @@ const useProgram = () => {
     selectedDomino,
     setSelectedDomino,
     playerChoice,
-    setPlayerChoice
+    setPlayerChoice,
   };
 };
 

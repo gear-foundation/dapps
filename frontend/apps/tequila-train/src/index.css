@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
 :root {
   --color-secondary: #858585;
   --color-primary: 103 203 77;
@@ -38,11 +37,11 @@ body.body {
 
 @layer components {
   .typo-h1 {
-    @apply font-kanit text-[72px] leading-[86px] font-medium
+    @apply font-kanit text-[72px] leading-[86px] font-medium;
   }
 
   .typo-h2 {
-    @apply font-kanit text-[40px] leading-[48px] font-bold tracking-[0.04em]
+    @apply font-kanit text-[40px] leading-[48px] font-bold tracking-[0.04em];
   }
 
   .btn {
@@ -62,23 +61,23 @@ body.body {
   }
 
   .btn--gray {
-    @apply text-black bg-secondary-500 enabled:hover:bg-secondary-600 enabled:active:bg-secondary-700 transition-colors
+    @apply text-black bg-secondary-500 enabled:hover:bg-secondary-600 enabled:active:bg-secondary-700 transition-colors;
   }
 
   .btn--ghost {
-    @apply text-white bg-white/10 enabled:hover:bg-white/30 enabled:active:bg-white/50 transition-colors
+    @apply text-white bg-white/10 enabled:hover:bg-white/30 enabled:active:bg-white/50 transition-colors;
   }
 
   .btn--white {
-    @apply text-black bg-white enabled:hover:bg-[#DEDEDE] enabled:active:bg-neutral-300 transition-colors
+    @apply text-black bg-white enabled:hover:bg-[#DEDEDE] enabled:active:bg-neutral-300 transition-colors;
   }
 
   .btn--black {
-    @apply text-white bg-dark-500 enabled:hover:bg-dark-400 enabled:active:bg-opacity-80 transition-colors
+    @apply text-white bg-dark-500 enabled:hover:bg-dark-400 enabled:active:bg-opacity-80 transition-colors;
   }
 
   .btn--error {
-    @apply text-white bg-red-500 enabled:hover:bg-red-600 enabled:active:bg-red-700 transition-colors
+    @apply text-white bg-red-500 enabled:hover:bg-red-600 enabled:active:bg-red-700 transition-colors;
   }
 
   .btn--blue {
@@ -108,14 +107,22 @@ body.body {
 }
 
 .text-transparent-primary {
-  background: radial-gradient(136.03% 142.06% at 47.37% 6.07%, #52d88c 0%, #4dc383 7.98%, #42946e 27.89%, #3a725f 45.54%, #355e56 60.07%, #335653 69.7%);
+  background: radial-gradient(
+    136.03% 142.06% at 47.37% 6.07%,
+    #52d88c 0%,
+    #4dc383 7.98%,
+    #42946e 27.89%,
+    #3a725f 45.54%,
+    #355e56 60.07%,
+    #335653 69.7%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-fill-color: transparent;
 }
 
-
 .bg-register-section {
-  background: radial-gradient(42.35% 52.35% at 50.87% 70.86%, rgba(0, 255, 196, 0.2) 0%, rgba(0, 255, 196, 0) 100%), #242625;
+  background: radial-gradient(42.35% 52.35% at 50.87% 70.86%, rgba(0, 255, 196, 0.2) 0%, rgba(0, 255, 196, 0) 100%),
+    #242625;
 }

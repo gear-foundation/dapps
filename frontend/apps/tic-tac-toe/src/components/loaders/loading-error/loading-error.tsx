@@ -1,9 +1,9 @@
-import styles from './loading-error.module.scss'
-import { Container } from '@/components/ui/container'
-import { BaseComponentProps } from '@/app/types'
+import styles from './loading-error.module.scss';
+import { Container } from '@/components/ui/container';
+import { BaseComponentProps } from '@/app/types';
 
-type LoadingErrorProps = BaseComponentProps & {}
+type LoadingErrorProps = BaseComponentProps & {};
 
 export function LoadingError({ children }: LoadingErrorProps) {
-  return <Container className={styles.box}>{children}</Container>
+  return <Container className={styles.box}>{children}</Container>;
 }

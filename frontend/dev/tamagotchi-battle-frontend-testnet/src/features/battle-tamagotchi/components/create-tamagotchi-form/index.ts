@@ -1,1 +1,1 @@
-export { CreateTamagotchiForm } from './create-tamagotchi-form';
+export { CreateTamagotchiForm } from './create-tamagotchi-form'

@@ -1,9 +1,9 @@
-import styles from './WalletItem.module.scss';
+import styles from './WalletItem.module.scss'
 
 type Props = {
-  icon: SVGComponent;
-  name: string;
-};
+  icon: SVGComponent
+  name: string
+}
 
 function WalletItem({ icon: Icon, name }: Props) {
   return (
@@ -11,7 +11,7 @@ function WalletItem({ icon: Icon, name }: Props) {
       <Icon className={styles.icon} />
       {name}
     </span>
-  );
+  )
 }
 
-export { WalletItem };
+export { WalletItem }

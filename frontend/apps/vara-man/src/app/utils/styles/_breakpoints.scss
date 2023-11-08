@@ -4,35 +4,35 @@ $md: 768px;
 $sm: 576px;
 
 @function getMaxWidth($width) {
-    @return "max-width: #{$width - 1}";
+  @return 'max-width: #{$width - 1}';
 }
 
 @mixin xl {
-    @media screen and (getMaxWidth($xl)) {
-        @content;
-    }
+  @media screen and (getMaxWidth($xl)) {
+    @content;
+  }
 }
 
 @mixin lg {
-    @media screen and (getMaxWidth($lg)) {
-        @content;
-    }
+  @media screen and (getMaxWidth($lg)) {
+    @content;
+  }
 }
 
 @mixin md {
-    @media screen and (getMaxWidth($md)) {
-        @content;
-    }
+  @media screen and (getMaxWidth($md)) {
+    @content;
+  }
 }
 
 @mixin sm {
-    @media screen and (getMaxWidth($sm)) {
-        @content;
-    }
+  @media screen and (getMaxWidth($sm)) {
+    @content;
+  }
 }
 
 @mixin rwd($width) {
-    @media screen and (max-width: $width) {
-        @content;
-    }
+  @media screen and (max-width: $width) {
+    @content;
+  }
 }

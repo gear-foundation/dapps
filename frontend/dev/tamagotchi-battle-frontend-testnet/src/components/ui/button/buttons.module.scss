@@ -92,7 +92,11 @@
 
   &[disabled] {
     &::before {
-      background: linear-gradient(270deg, rgba(100, 255, 219, 0.07) 0%, rgba(0, 255, 196, 0.07) 100%);
+      background: linear-gradient(
+        270deg,
+        rgba(100, 255, 219, 0.07) 0%,
+        rgba(0, 255, 196, 0.07) 100%
+      );
     }
   }
 

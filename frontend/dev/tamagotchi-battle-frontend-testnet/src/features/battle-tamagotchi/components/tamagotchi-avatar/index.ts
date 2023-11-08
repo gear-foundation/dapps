@@ -1,1 +1,1 @@
-export { TamagotchiAvatar } from './tamagotchi-avatar';
+export { TamagotchiAvatar } from './tamagotchi-avatar'

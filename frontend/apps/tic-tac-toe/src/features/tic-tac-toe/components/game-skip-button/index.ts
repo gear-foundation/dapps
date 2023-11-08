@@ -1,1 +1,1 @@
-export { GameSkipButton } from './game-skip-button'
+export { GameSkipButton } from './game-skip-button';

@@ -9,10 +9,10 @@ const useRoute = () => {
   return { route, setRoute };
 };
 
-const useLoading = () =>{
+const useLoading = () => {
   const [loading, setLoading] = useState(false);
-return {loading, setLoading} 
-}
+  return { loading, setLoading };
+};
 
 export {
   useWasm,
@@ -21,5 +21,5 @@ export {
   useRockPaperScissors,
   useCreateRockPaperScissors,
   useRockPaperScissorsMessage,
-  useLoading
+  useLoading,
 };

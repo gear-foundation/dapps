@@ -1,4 +1,4 @@
-import { gql } from 'urql'
+import { gql } from 'urql';
 
 export const GetAccountNFTQuery = gql`
   query ($account_id: String!) {
@@ -13,7 +13,7 @@ export const GetAccountNFTQuery = gql`
       id
     }
   }
-`
+`;
 
 export const GetNFTByIdQuery = gql`
   query ($id: String!) {
@@ -28,16 +28,11 @@ export const GetNFTByIdQuery = gql`
       id
     }
   }
-`
+`;
 
 export const GetNftsByNameQuery = gql`
   query ($search_query: String) {
-    nfts(
-      where: {
-        name_containsInsensitive: $search_query
-        OR: { owner: { id_eq: $search_query } }
-      }
-    ) {
+    nfts(where: { name_containsInsensitive: $search_query, OR: { owner: { id_eq: $search_query } } }) {
       owner {
         id
       }
@@ -47,4 +42,4 @@ export const GetNftsByNameQuery = gql`
       attribUrl
     }
   }
-`
+`;

@@ -8,7 +8,6 @@
   }
 }
 
-
 .link {
   display: block;
   padding-top: 6px;
@@ -19,7 +18,7 @@
   letter-spacing: 0.03em;
   border-bottom: 2px solid transparent;
 
-  &.base:not([aria-disabled="true"]) {
+  &.base:not([aria-disabled='true']) {
     transition: opacity 300ms ease;
 
     &:hover {
@@ -31,8 +30,8 @@
     border-color: #00ffc4;
   }
 
-  &[aria-disabled="true"] {
-    color: rgba(0,0,0,0.4);
+  &[aria-disabled='true'] {
+    color: rgba(0, 0, 0, 0.4);
     cursor: not-allowed;
     pointer-events: none;
   }

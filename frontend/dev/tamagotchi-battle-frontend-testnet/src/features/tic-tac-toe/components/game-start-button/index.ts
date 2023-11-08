@@ -1,1 +1,1 @@
-export { GameStartButton } from './game-start-button';
+export { GameStartButton } from './game-start-button'

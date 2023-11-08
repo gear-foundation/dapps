@@ -1,23 +1,23 @@
-import { createContext, PropsWithChildren, useContext, useState } from 'react'
-import { LessonState } from '@/app/types/lessons'
-import { useProgramMetadata } from '../hooks/use-metadata'
-import meta5 from '@/assets/meta/meta5.txt'
+import { createContext, PropsWithChildren, useContext, useState } from 'react';
+import { LessonState } from '@/app/types/lessons';
+import { useProgramMetadata } from '../hooks/use-metadata';
+import meta5 from '@/assets/meta/meta5.txt';
 
-const key = 'tmgState'
+const key = 'tmgState';
 
 const useProgram = () => {
-  const [lesson, setLesson] = useState<LessonState>()
+  const [lesson, setLesson] = useState<LessonState>();
   // const [lessonMeta, setLessonMeta] = useState<ProgramMetadata>()
-  const [isAdmin, setIsAdmin] = useState<boolean>(false)
-  const [isReady, setIsReady] = useState<boolean>(false)
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
+  const [isReady, setIsReady] = useState<boolean>(false);
   const resetLesson = () => {
-    setLesson(undefined)
-    setIsAdmin(false)
-    setIsReady(false)
-    localStorage.removeItem(key)
-  }
+    setLesson(undefined);
+    setIsAdmin(false);
+    setIsReady(false);
+    localStorage.removeItem(key);
+  };
 
-  const lessonMeta = useProgramMetadata(meta5)
+  const lessonMeta = useProgramMetadata(meta5);
 
   return {
     lesson,
@@ -29,14 +29,14 @@ const useProgram = () => {
     isReady,
     setIsReady,
     resetLesson,
-  }
-}
+  };
+};
 
-export const LessonsCtx = createContext({} as ReturnType<typeof useProgram>)
+export const LessonsCtx = createContext({} as ReturnType<typeof useProgram>);
 
-export const useLessons = () => useContext(LessonsCtx)
+export const useLessons = () => useContext(LessonsCtx);
 
 export function LessonsProvider({ children }: PropsWithChildren) {
-  const { Provider } = LessonsCtx
-  return <Provider value={useProgram()}>{children}</Provider>
+  const { Provider } = LessonsCtx;
+  return <Provider value={useProgram()}>{children}</Provider>;
 }

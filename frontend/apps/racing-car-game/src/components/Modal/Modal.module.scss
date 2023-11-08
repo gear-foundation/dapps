@@ -2,37 +2,37 @@
 @use '~styles/mixins' as *;
 
 .modal {
-    width: 100%;
-    max-width: 400px;
-    padding: 0;
-    border-radius: 4px;
-    background: theme-var($background-secondary);
-    border: none;
-  
-    &::backdrop {
-      background: rgba(0, 0, 0, 0.2);
-      backdrop-filter: blur(10px);
-    }
+  width: 100%;
+  max-width: 400px;
+  padding: 0;
+  border-radius: 4px;
+  background: theme-var($background-secondary);
+  border: none;
 
-    @include sm {
-      max-width: 100%;
-      top: auto;
-    }
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(10px);
   }
-  
-  .wrapper {
-    padding: 30px 32px;
+
+  @include sm {
+    max-width: 100%;
+    top: auto;
   }
-  
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 32px;
-    font-size: 14px;
-    font-weight: 700;
-    line-height: 120%;
-    letter-spacing: 0.02em;
-    text-transform: capitalize;
-    color: theme-var($text-primary);
-  }
+}
+
+.wrapper {
+  padding: 30px 32px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 120%;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+  color: theme-var($text-primary);
+}

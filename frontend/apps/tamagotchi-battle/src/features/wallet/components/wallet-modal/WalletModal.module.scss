@@ -121,7 +121,7 @@
   align-items: center;
   font-size: 14px;
   transition: opacity 300ms ease;
-  color: #D4D4D4;
+  color: #d4d4d4;
   @include gap(10px, right);
 
   span {
@@ -132,7 +132,6 @@
     opacity: 50%;
   }
 }
-
 
 .modal {
   position: relative;

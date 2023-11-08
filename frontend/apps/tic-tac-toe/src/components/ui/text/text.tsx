@@ -1,6 +1,6 @@
-import { cva, VariantProps } from 'class-variance-authority'
-import { BaseHTMLAttributes } from 'react'
-import styles from './text.module.scss'
+import { cva, VariantProps } from 'class-variance-authority';
+import { BaseHTMLAttributes } from 'react';
+import styles from './text.module.scss';
 
 export const textVariants = cva('', {
   variants: {
@@ -21,22 +21,14 @@ export const textVariants = cva('', {
     size: 'md',
     weight: 'normal',
   },
-})
+});
 
-export interface TextProps
-  extends BaseHTMLAttributes<HTMLParagraphElement>,
-    VariantProps<typeof textVariants> {}
+export interface TextProps extends BaseHTMLAttributes<HTMLParagraphElement>, VariantProps<typeof textVariants> {}
 
-export function Text({
-  children,
-  className,
-  size,
-  weight,
-  ...props
-}: TextProps) {
+export function Text({ children, className, size, weight, ...props }: TextProps) {
   return (
     <p className={textVariants({ size, weight, className })} {...props}>
       {children}
     </p>
-  )
+  );
 }

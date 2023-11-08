@@ -2,73 +2,73 @@
 @use '~styles/mixins' as *;
 
 .content {
-    display: flex;
+  display: flex;
+  align-items: center;
+  // padding: 0 440px;
+  width: 940px;
+  margin: auto;
+  background: theme-var($background-primary);
+
+  @include xl {
+    padding: 0 100px;
+  }
+
+  @include lg {
+    padding: 0 20px;
+  }
+
+  @include md {
+    flex-direction: column;
     align-items: center;
-    // padding: 0 440px;
-    width: 940px;
-    margin: auto;
-    background: theme-var($background-primary);
+    padding: 50px 0;
+  }
 
-    @include xl {
-        padding: 0 100px;
-      }
-
-    @include lg {
-        padding: 0 20px;
-      }
-
-      @include md {
-        flex-direction: column;
-        align-items: center;
-        padding: 50px 0;
-      }
-
-    @include wings;
+  @include wings;
 }
 
 .left {
-    padding: 80px 0 100px;
-    flex-basis: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 24px;
+  padding: 80px 0 100px;
+  flex-basis: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 24px;
 
-    .main-title {
-        font-size: 40px;
-        font-weight: 500;
-    
-        &-with-gradient {
-            background: linear-gradient(90deg, #2B2B2B 33.39%, #00FFC4 77.42%);
-            -webkit-background-clip: text;
-            background-clip: text; 
-            -webkit-text-fill-color: transparent;
-        }
+  .main-title {
+    font-size: 40px;
+    font-weight: 500;
+
+    &-with-gradient {
+      background: linear-gradient(90deg, #2b2b2b 33.39%, #00ffc4 77.42%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
-    
-    .main-description {
-        max-width: 370px;
-        font-size: 18px;
-        font-weight: 400;
-    }
+  }
+
+  .main-description {
+    max-width: 370px;
+    font-size: 18px;
+    font-weight: 400;
+  }
 }
 
 .right {
-    position: relative;
-    flex-basis: 50%;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+  position: relative;
+  flex-basis: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
-    .cars-pic {
-        max-width: 100%;
-        max-height: 100%;
-    }
+  .cars-pic {
+    max-width: 100%;
+    max-height: 100%;
+  }
 }
 
 .game-button {
-    width: 200px;
-    font-weight: 700;
-    font-size: 18px;
-    letter-spacing: 0.03em;
+  width: 200px;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.03em;
 }

@@ -24,7 +24,7 @@ yarn install
 
 Create `.env` file, `.env.example` will let you know what variables are expected.
 
-Put the latest version of the `syndote.meta.wasm` file locally in `gear-js\apps\syndote\src\assets\wasm\`, replace if necessary. 
+Put the latest version of the `syndote.meta.wasm` file locally in `gear-js\apps\syndote\src\assets\wasm\`, replace if necessary.
 
 In order for all features to work as expected, the node and it's runtime version should be chosen based on the current `@gear-js/api` version.
 

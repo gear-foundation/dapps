@@ -1,5 +1,5 @@
-import { Cell } from './types'
-import { toNumber } from '@/app/utils'
+import { Cell } from './types';
+import { toNumber } from '@/app/utils';
 
 export function calculateWinner(squares: Cell[]) {
   const lines: [number[], string][] = [
@@ -11,15 +11,15 @@ export function calculateWinner(squares: Cell[]) {
     [[2, 5, 8], 'col-3'],
     [[0, 4, 8], 'diagonal-1'],
     [[2, 4, 6], 'diagonal-2'],
-  ]
+  ];
   for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i][0]
+    const [a, b, c] = lines[i][0];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return lines[i]
+      return lines[i];
     }
   }
 }
 
 export function calculateWinRate(wins: string, games: string) {
-  return Math.floor((toNumber(wins) / toNumber(games) || 0) * 10000) / 100
+  return Math.floor((toNumber(wins) / toNumber(games) || 0) * 10000) / 100;
 }

@@ -1,3 +1,3 @@
-import GameProcess from './game-process'
+import GameProcess from './game-process';
 
-export { GameProcess }
+export { GameProcess };

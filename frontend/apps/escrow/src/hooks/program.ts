@@ -9,15 +9,12 @@ function useProgram() {
   const meta = useEscrowMetadata();
   const createProgram = useCreateHandler(ADDRESS.CODE_ADDRESS, meta);
 
-  const [programId, setProgramId] = useState<HexString>(
-    localStorage[LOCAL_STORAGE.PROGRAM] || ''
-  );
+  const [programId, setProgramId] = useState<HexString>(localStorage[LOCAL_STORAGE.PROGRAM] || '');
 
   const resetProgramId = () => setProgramId('' as HexString);
 
   return {
-    createProgram: (payload: AnyJson) =>
-      createProgram(payload, { onSuccess: setProgramId }),
+    createProgram: (payload: AnyJson) => createProgram(payload, { onSuccess: setProgramId }),
     programId,
     setProgramId,
     resetProgramId,

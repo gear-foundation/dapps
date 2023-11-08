@@ -1,6 +1,6 @@
-import { HomeBackground } from '@/components/sections/home/home-background'
-import { HomeFormGradient } from '@/components/sections/home/home-form-gradient'
-import { HomeRegisterForm } from '@/components/sections/home/home-register-form'
+import { HomeBackground } from '@/components/sections/home/home-background';
+import { HomeFormGradient } from '@/components/sections/home/home-form-gradient';
+import { HomeRegisterForm } from '@/components/sections/home/home-register-form';
 
 export function HomeRegister() {
   return (
@@ -22,5 +22,5 @@ export function HomeRegister() {
         </div>
       </div>
     </>
-  )
+  );
 }

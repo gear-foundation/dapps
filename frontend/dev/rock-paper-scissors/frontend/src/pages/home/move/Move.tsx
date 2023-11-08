@@ -21,7 +21,7 @@ const ACTIONS = [
 type Props = {
   onRouteChange: (arg: string) => void;
   setUserMove: (arg: UserMoveType) => void;
-  payloadSend: (payload: AnyJson, options?: SendMessageOptions  | undefined) => void;
+  payloadSend: (payload: AnyJson, options?: SendMessageOptions | undefined) => void;
   userMove: UserMoveType;
 };
 

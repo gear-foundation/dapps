@@ -1,7 +1,7 @@
-import { Variants } from 'framer-motion'
+import { Variants } from 'framer-motion';
 
-const initGameDelay = 1
-const initGameDuration = 0.75
+const initGameDelay = 1;
+const initGameDuration = 0.75;
 
 export const variantsPlayerMark: Variants = {
   enter: { opacity: 1 },
@@ -13,7 +13,7 @@ export const variantsPlayerMark: Variants = {
       delay: initGameDelay,
     },
   },
-}
+};
 
 export const variantsGameMark: Variants = {
   enter: { opacity: 0 },
@@ -25,4 +25,4 @@ export const variantsGameMark: Variants = {
       delay: disabled * initGameDelay + initGameDuration,
     },
   }),
-}
+};

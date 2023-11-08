@@ -1,20 +1,20 @@
-import { Icons } from '@/components/ui/icons'
-import { buttonStyles } from '@gear-js/ui'
-import { LevelsBackground } from '@/components/sections/levels/levels-background'
-import { LevelsModeContent } from '@/components/sections/levels/levels-mode-content'
-import { LevelsStartAction } from '@/components/sections/levels/levels-start-action'
+import { Icons } from '@/components/ui/icons';
+import { buttonStyles } from '@gear-js/ui';
+import { LevelsBackground } from '@/components/sections/levels/levels-background';
+import { LevelsModeContent } from '@/components/sections/levels/levels-mode-content';
+import { LevelsStartAction } from '@/components/sections/levels/levels-start-action';
 
-import LevelsBackgroundImage from '@/assets/images/levels/bg1.jpg'
-import { useGame } from '@/app/context/ctx-game'
+import LevelsBackgroundImage from '@/assets/images/levels/bg1.jpg';
+import { useGame } from '@/app/context/ctx-game';
 
 export function LevelsEasy() {
-  const { player } = useGame()
+  const { player } = useGame();
 
   const lifeIcons = Array.from({ length: 3 }, (_, index) => (
     <div key={index}>
       <Icons.lifes
-        primary={Number(player?.lives) > index ? "currentColor" : "gray"}
-        secondary={Number(player?.lives) > index ? "1E8C4D" : "gray"}
+        primary={Number(player?.lives) > index ? 'currentColor' : 'gray'}
+        secondary={Number(player?.lives) > index ? '1E8C4D' : 'gray'}
         className="w-9 h-9"
       />
     </div>
@@ -50,22 +50,13 @@ export function LevelsEasy() {
                 <span className="text-base w-25">Speed:</span>
                 <div className="grid grid-cols-3 gap-4 text-primary">
                   <div>
-                    <Icons.flameActive
-                      secondary="#1E8C4D"
-                      className="w-9 h-9"
-                    />
+                    <Icons.flameActive secondary="#1E8C4D" className="w-9 h-9" />
                   </div>
                   <div>
-                    <Icons.flameInactive
-                      secondary="#919191"
-                      className="w-9 h-9"
-                    />
+                    <Icons.flameInactive secondary="#919191" className="w-9 h-9" />
                   </div>
                   <div>
-                    <Icons.flameInactive
-                      secondary="#919191"
-                      className="w-9 h-9"
-                    />
+                    <Icons.flameInactive secondary="#919191" className="w-9 h-9" />
                   </div>
                 </div>
               </div>
@@ -78,16 +69,10 @@ export function LevelsEasy() {
                     <Icons.coins1 secondary="#1E8C4D" className="w-9 h-9" />
                   </div>
                   <div>
-                    <Icons.coins2
-                      secondary="#919191"
-                      className="w-9 h-9 text-[#626262]"
-                    />
+                    <Icons.coins2 secondary="#919191" className="w-9 h-9 text-[#626262]" />
                   </div>
                   <div>
-                    <Icons.coins3
-                      secondary="#919191"
-                      className="w-9 h-9 text-[#626262]"
-                    />
+                    <Icons.coins3 secondary="#919191" className="w-9 h-9 text-[#626262]" />
                   </div>
                 </div>
               </div>
@@ -95,9 +80,7 @@ export function LevelsEasy() {
             <li>
               <div className="flex items-center py-2.5 pl-24 space-x-7">
                 <span className="text-base w-25">Lives left:</span>
-                <div className="grid grid-cols-3 gap-4 text-primary">
-                  {lifeIcons}
-                </div>
+                <div className="grid grid-cols-3 gap-4 text-primary">{lifeIcons}</div>
               </div>
             </li>
           </ul>
@@ -105,5 +88,5 @@ export function LevelsEasy() {
         </div>
       </LevelsModeContent>
     </>
-  )
+  );
 }

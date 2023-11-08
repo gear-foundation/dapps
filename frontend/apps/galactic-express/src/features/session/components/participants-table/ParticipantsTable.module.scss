@@ -1,10 +1,9 @@
 .table {
-box-shadow: 0px 4px 4px 0px #00000040;
-
+  box-shadow: 0px 4px 4px 0px #00000040;
 }
 
 .body {
-  outline: 1px solid #2BD07180;
+  outline: 1px solid #2bd07180;
   border-radius: 8px;
   background: #131315;
 }
@@ -19,14 +18,14 @@ box-shadow: 0px 4px 4px 0px #00000040;
   border-spacing: 0;
   height: 43px;
   text-align: center;
-  border-right: 1px solid rgba(209,	207,	215, 0.1);
-  border-bottom: 1px solid rgba(209,	207,	215, 0.1);
+  border-right: 1px solid rgba(209, 207, 215, 0.1);
+  border-bottom: 1px solid rgba(209, 207, 215, 0.1);
 
   &Index {
     min-width: 64px;
   }
 
-  &playerAddress{
+  &playerAddress {
     min-width: 345px;
   }
 
@@ -37,17 +36,17 @@ box-shadow: 0px 4px 4px 0px #00000040;
 }
 
 .yourAddressSpan {
-  color: #2BD071;
+  color: #2bd071;
 }
 
 .bodyTrWithYourAddress {
-  background: #2BD0711F;
+  background: #2bd0711f;
 }
 
 .headTd {
   text-align: center;
   font-size: 12px;
   font-weight: 400;
-  color: #8C8B90;
+  color: #8c8b90;
   padding-bottom: 8px;
 }

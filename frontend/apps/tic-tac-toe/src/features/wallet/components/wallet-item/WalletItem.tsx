@@ -1,10 +1,10 @@
-import styles from './WalletItem.module.scss'
-import { SVGComponent } from '@/app/types'
+import styles from './WalletItem.module.scss';
+import { SVGComponent } from '@/app/types';
 
 type Props = {
-  icon: SVGComponent
-  name: string
-}
+  icon: SVGComponent;
+  name: string;
+};
 
 function WalletItem({ icon: Icon, name }: Props) {
   return (
@@ -12,7 +12,7 @@ function WalletItem({ icon: Icon, name }: Props) {
       <Icon className={styles.icon} />
       {name}
     </span>
-  )
+  );
 }
 
-export { WalletItem }
+export { WalletItem };

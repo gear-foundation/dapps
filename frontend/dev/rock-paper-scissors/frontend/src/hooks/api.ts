@@ -1,16 +1,15 @@
-import { Hex } from "@gear-js/api";
-import { useCreateHandler, useMetadata, useSendMessage } from "@gear-js/react-hooks";
+import { Hex } from '@gear-js/api';
+import { useCreateHandler, useMetadata, useSendMessage } from '@gear-js/react-hooks';
 import metaAssets from '../assets/metaWasm/rock_paper_scissors.meta.wasm';
 
-
 function useCreateRockPaperScissors() {
-    const newHesh = process.env.REACT_APP_CODE_ADDRESS as Hex;
-    const { metadata } = useMetadata(metaAssets);
-    return useCreateHandler(newHesh, metadata);
+  const newHesh = process.env.REACT_APP_CODE_ADDRESS as Hex;
+  const { metadata } = useMetadata(metaAssets);
+  return useCreateHandler(newHesh, metadata);
 }
 
 function useRockPaperScissorsMessage(programID: Hex) {
-    return useSendMessage(programID, metaAssets);
+  return useSendMessage(programID, metaAssets);
 }
 
 // function useCreateRockPaperScissors() {
@@ -24,5 +23,4 @@ function useRockPaperScissorsMessage(programID: Hex) {
 // }
 //  temporary
 
-
-export { useCreateRockPaperScissors, useRockPaperScissorsMessage }
+export { useCreateRockPaperScissors, useRockPaperScissorsMessage };

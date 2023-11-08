@@ -1,6 +1,6 @@
 @use 'utils' as *;
 
-@import "fonts";
+@import 'fonts';
 
 h1,
 h2,
@@ -58,7 +58,7 @@ body {
   background-repeat: no-repeat;
   font-variant-numeric: lining-nums proportional-nums;
 
-  @supports not (font-variation-settings: "wdth" 115) {
+  @supports not (font-variation-settings: 'wdth' 115) {
     & {
       font-family: 'Anuphan-Fallback', sans-serif;
     }

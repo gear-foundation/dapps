@@ -1,16 +1,16 @@
-import { Icons } from '@/components/ui/icons'
-import { useGame } from '@/app/context/ctx-game'
-import { useGameMessage } from '@/app/hooks/use-game'
-import { useApp } from '@/app/context/ctx-app'
+import { Icons } from '@/components/ui/icons';
+import { useGame } from '@/app/context/ctx-game';
+import { useGameMessage } from '@/app/hooks/use-game';
+import { useApp } from '@/app/context/ctx-app';
 
-type HeaderAdminProps = BaseComponentProps & {}
+type HeaderAdminProps = BaseComponentProps & {};
 
 export function HeaderAdmin({}: HeaderAdminProps) {
-  const { isPending, setIsPending } = useApp()
-  const { status } = useGame()
-  const handleMessage = useGameMessage()
+  const { isPending, setIsPending } = useApp();
+  const { status } = useGame();
+  const handleMessage = useGameMessage();
 
-  const onSuccess = () => setIsPending(false)
+  const onSuccess = () => setIsPending(false);
 
   return (
     <>
@@ -25,8 +25,7 @@ export function HeaderAdmin({}: HeaderAdminProps) {
               onSuccess,
               onError: onSuccess,
             })
-          }
-        >
+          }>
           <Icons.gameJoystick className="w-5 h-5 mr-2" />
           <span>Activate game</span>
         </button>
@@ -42,12 +41,11 @@ export function HeaderAdmin({}: HeaderAdminProps) {
               onSuccess,
               onError: onSuccess,
             })
-          }
-        >
+          }>
           <Icons.gameJoystick className="w-5 h-5 mr-2" />
           <span>Deactivate game</span>
         </button>
       )}
     </>
-  )
+  );
 }

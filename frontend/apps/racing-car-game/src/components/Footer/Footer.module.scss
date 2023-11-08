@@ -2,66 +2,66 @@
 @use '~styles/mixins' as *;
 
 .footer {
-    position: relative;
-    min-height: 96px;
-    width: 100%;
+  position: relative;
+  min-height: 96px;
+  width: 100%;
 }
 
 .container {
-    height: 100%;
-    padding: 20px 0;
-    max-width: 1200px;
-    margin: auto;
+  height: 100%;
+  padding: 20px 0;
+  max-width: 1200px;
+  margin: auto;
 
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    justify-items: space-between; 
-    align-items: center;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  justify-items: space-between;
+  align-items: center;
 
-    @include xl {
-        padding: 20px 20px;
-    }
+  @include xl {
+    padding: 20px 20px;
+  }
 
-    @include md {
-        grid-template-columns: 0.5fr 1.5fr;
-        grid-template-areas: 
-            "a b"
-            "c c";
-    }
+  @include md {
+    grid-template-columns: 0.5fr 1.5fr;
+    grid-template-areas:
+      'a b'
+      'c c';
+  }
 }
 
 .rigts {
-    font-size: 14px;
-    font-weight: 400px;
-    color: #4d4d4d;
+  font-size: 14px;
+  font-weight: 400px;
+  color: #4d4d4d;
 
-    @include md {
-        grid-area: c;
-        grid-row: 2;
-        justify-self: center;
-        font-size: 14px;
-        padding: 20px 0 30px;
-    }
+  @include md {
+    grid-area: c;
+    grid-row: 2;
+    justify-self: center;
+    font-size: 14px;
+    padding: 20px 0 30px;
+  }
 }
 
 .socials {
-    justify-self: end;
+  justify-self: end;
 
-    @include md {
-        grid-area: b;
-    }
+  @include md {
+    grid-area: b;
+  }
 
-    &-icon {
-        margin: 0 8px;
-    }
+  &-icon {
+    margin: 0 8px;
+  }
 }
 
 .logo {
-    height: 52px;
+  height: 52px;
 
-    @include md {
-        grid-area: a;
-        justify-self: center;
-        font-size: 14px;
-    }
+  @include md {
+    grid-area: a;
+    justify-self: center;
+    font-size: 14px;
+  }
 }

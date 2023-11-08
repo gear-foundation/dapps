@@ -13,7 +13,7 @@ type Bid @entity {
   price: BigInt!
 }
 
-type Auction @entity{
+type Auction @entity {
   token: Token! @index
   ftContract: String
   finishAt: BigInt!
@@ -22,7 +22,7 @@ type Auction @entity{
   isOpened: Boolean!
 }
 
-type Token @entity{
+type Token @entity {
   id: ID!
   tokenId: ID!
   nftContract: NftContract! @index
@@ -39,7 +39,7 @@ type Token @entity{
   burnt: Boolean!
 }
 
-type Transfer @entity{
+type Transfer @entity {
   token: Token! @index
   from: Account!
   to: Account!
@@ -47,7 +47,7 @@ type Transfer @entity{
   price: BigInt
 }
 
-type Offer @entity{
+type Offer @entity {
   token: Token! @index
   price: BigInt!
   account: Account! @index

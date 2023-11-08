@@ -7,11 +7,11 @@
   padding: 16px;
   background-color: #00ffc412;
   border-radius: 4px;
-  @include flex-gap(16px)
+  @include flex-gap(16px);
 }
 
 .balance {
-  @include flex-gap(8px)
+  @include flex-gap(8px);
 }
 
 .text {
@@ -21,5 +21,5 @@
   font-size: 16px;
   font-weight: 500;
   line-height: 140%;
-  @include flex-gap(8px)
+  @include flex-gap(8px);
 }

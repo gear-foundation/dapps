@@ -1,3 +1,3 @@
-import GameEndModal from "./game-end-modal"
+import GameEndModal from './game-end-modal';
 
-export { GameEndModal }
+export { GameEndModal };

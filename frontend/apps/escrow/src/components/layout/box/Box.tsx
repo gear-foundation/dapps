@@ -21,15 +21,15 @@ function Box({ onBack, onHome, isNavigationVisible, children }: Props) {
       <header>
         {isNavigationVisible && (
           <div className={styles.buttons}>
-            <Button icon={back} color='transparent' onClick={onBack} />
-            <Button icon={home} color='transparent' onClick={onHome} />
+            <Button icon={back} color="transparent" onClick={onBack} />
+            <Button icon={home} color="transparent" onClick={onHome} />
           </div>
         )}
         <h2 className={styles.heading}>
           Escrow <span className={styles.contract}>contract</span>
         </h2>
       </header>
-      <div className={styles.body}>{account ? children : <InfoText text='In order to use app, please login.' />}</div>
+      <div className={styles.body}>{account ? children : <InfoText text="In order to use app, please login." />}</div>
     </div>
   );
 }

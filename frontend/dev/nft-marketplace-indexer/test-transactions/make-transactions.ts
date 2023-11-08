@@ -209,7 +209,7 @@ const main = async () => {
     }
   }
 
-  console.log(uploadedPrograms)
+  console.log(uploadedPrograms);
 };
 
 main()

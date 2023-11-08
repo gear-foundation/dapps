@@ -7,11 +7,11 @@
   }
 
   &:not(.active):hover {
-    opacity: 0.7
+    opacity: 0.7;
   }
 
   .title {
-    --gradient-to: #0ED3A3;
+    --gradient-to: #0ed3a3;
 
     align-self: flex-start;
     margin-top: -4px;

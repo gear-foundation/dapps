@@ -1,66 +1,66 @@
-@use "@/assets/styles/utils" as *;
+@use '@/assets/styles/utils' as *;
 
 .container {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
 .header {
-    @include gap(24px);
-    // text-align: center;
+  @include gap(24px);
+  // text-align: center;
 }
 
 .content {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
 }
 
 .gameInfo {
-    width: 50%;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .manageTurn {
     display: flex;
-    flex-direction: column;
-    gap: 16px;
+    justify-content: space-between;
+  }
 
-    .manageTurn {
-        display: flex;
-        justify-content: space-between;
-    }
-
-    p {
-        display: flex;
-        justify-content: space-between;
-
-        span {
-            font-weight: 600;
-        }
-    }
-}
-
-.enemyShips {
+  p {
     display: flex;
     justify-content: space-between;
 
-    .text {
-        color: #a6a6a6;
+    span {
+      font-weight: 600;
+    }
+  }
+}
+
+.enemyShips {
+  display: flex;
+  justify-content: space-between;
+
+  .text {
+    color: #a6a6a6;
+  }
+
+  .listShips {
+    display: flex;
+
+    .ship {
+      display: flex;
+      gap: 1.5px;
+      margin-left: 5px;
     }
 
-    .listShips {
-        display: flex;
-
-        .ship {
-            display: flex;
-            gap: 1.5px;
-            margin-left: 5px;
-        }
-
-        .block {
-            background: rgba(166, 166, 166, 0.13);
-            border-radius: 1px;
-            height: 16px;
-            width: 16px;
-            border: 1px solid #a6a6a6;
-        }
+    .block {
+      background: rgba(166, 166, 166, 0.13);
+      border-radius: 1px;
+      height: 16px;
+      width: 16px;
+      border: 1px solid #a6a6a6;
     }
+  }
 }

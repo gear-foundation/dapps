@@ -1,2 +1,2 @@
-export { WalletModal } from './WalletModal'
-export type { WalletModalProps } from './WalletModal'
+export { WalletModal } from './WalletModal';
+export type { WalletModalProps } from './WalletModal';

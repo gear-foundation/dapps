@@ -1,9 +1,9 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import path from 'path'
-import nodePolyfills from 'vite-plugin-node-stdlib-browser'
-import eslint from 'vite-plugin-eslint'
-import checker from 'vite-plugin-checker'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
+import nodePolyfills from 'vite-plugin-node-stdlib-browser';
+import eslint from 'vite-plugin-eslint';
+import checker from 'vite-plugin-checker';
 
 // import wasm from "vite-plugin-wasm";
 // import topLevelAwait from "vite-plugin-top-level-await";
@@ -32,4 +32,4 @@ export default defineConfig({
     checker({ typescript: true }),
   ],
   assetsInclude: ['**/*.wasm?inline'],
-})
+});

@@ -28,12 +28,12 @@ function Join({ onClickRouteChange, setProgramID, setLoading }: Props) {
   return (
     <div className={styles.container}>
       <h2 className={styles.heading}>Join game</h2>
-      <form id='form' className={styles.form} onSubmit={handleSubmit}>
+      <form id="form" className={styles.form} onSubmit={handleSubmit}>
         <Input autoComplete="off" label="Program Id" direction="y" {...getInputProps('programId')} />
       </form>
       <div className={styles.buttons}>
         <BackButton onClick={() => onClickRouteChange('')} />
-        <Button form='form' type="submit" text="Join" size="large"/>
+        <Button form="form" type="submit" text="Join" size="large" />
       </div>
     </div>
   );

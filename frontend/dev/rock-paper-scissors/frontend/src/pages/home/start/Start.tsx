@@ -11,20 +11,8 @@ function Start({ onClickJoin, onClickCreate }: Props) {
   return (
     <>
       <h2 className={styles.heading}>Rock Paper Scissors Lizard Spock</h2>
-      <Button
-        icon={CreateSVG}
-        text="Create new game"
-        size="large"
-        className={styles.button}
-        onClick={onClickCreate}
-      />
-      <Button
-        icon={CreateSVG}
-        text="Join game"
-        size="large"
-        className={styles.button}
-        onClick={onClickJoin}
-      />
+      <Button icon={CreateSVG} text="Create new game" size="large" className={styles.button} onClick={onClickCreate} />
+      <Button icon={CreateSVG} text="Join game" size="large" className={styles.button} onClick={onClickJoin} />
     </>
   );
 }

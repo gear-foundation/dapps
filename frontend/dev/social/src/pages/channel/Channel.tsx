@@ -24,10 +24,8 @@ function Channel() {
             <div className={styles.description}>{description}</div>
           </header>
           <OnLogin>
-            <div className={styles.buttons}>
-              {isOwner ? <MessageAction /> : <SubscribeAction />}
-            </div>
-          </ OnLogin>
+            <div className={styles.buttons}>{isOwner ? <MessageAction /> : <SubscribeAction />}</div>
+          </OnLogin>
           <Messages />
         </>
       ) : (

@@ -1,16 +1,16 @@
-import { Route, Routes } from 'react-router-dom'
-import { Suspense, lazy } from 'react'
-import { useInitGame } from '@/app/hooks/use-game'
+import { Route, Routes } from 'react-router-dom';
+import { Suspense, lazy } from 'react';
+import { useInitGame } from '@/app/hooks/use-game';
 
 const routes = [
   { path: '/', Page: lazy(() => import('./home')) },
   { path: '/levels', Page: lazy(() => import('./levels')) },
   { path: '/rules', Page: lazy(() => import('./rules')) },
   { path: '/game', Page: lazy(() => import('./game')) },
-]
+];
 
 export const Routing = () => {
-  useInitGame()
+  useInitGame();
 
   return (
     <Routes>
@@ -26,5 +26,5 @@ export const Routing = () => {
         />
       ))}
     </Routes>
-  )
-}
+  );
+};

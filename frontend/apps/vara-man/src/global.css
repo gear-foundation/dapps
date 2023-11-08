@@ -25,11 +25,11 @@
 
 @layer components {
   .typo-h1 {
-    @apply font-kanit text-[72px] leading-[86px] font-medium
+    @apply font-kanit text-[72px] leading-[86px] font-medium;
   }
 
   .typo-h2 {
-    @apply font-kanit text-[40px] leading-[48px] font-bold tracking-[0.04em]
+    @apply font-kanit text-[40px] leading-[48px] font-bold tracking-[0.04em];
   }
 
   .btn {
@@ -45,15 +45,15 @@
   }
 
   .btn--ghost {
-    @apply text-white bg-white/10 hover:bg-white/30 active:bg-white/50 transition-colors
+    @apply text-white bg-white/10 hover:bg-white/30 active:bg-white/50 transition-colors;
   }
 
   .btn--white {
-    @apply text-black bg-white hover:bg-[#DEDEDE] active:bg-neutral-300 transition-colors
+    @apply text-black bg-white hover:bg-[#DEDEDE] active:bg-neutral-300 transition-colors;
   }
 
   .btn--error {
-    @apply text-white bg-red-500 hover:bg-red-600 active:bg-red-700 transition-colors
+    @apply text-white bg-red-500 hover:bg-red-600 active:bg-red-700 transition-colors;
   }
 
   .btn--blue {
@@ -61,17 +61,16 @@
   }
 
   .btn:disabled {
-    @apply cursor-not-allowed bg-neutral-500
+    @apply cursor-not-allowed bg-neutral-500;
   }
 
   .btn--loading {
     @apply opacity-90 gap-2 before:w-4 before:h-4 before:border-2 before:border-neutral-400 before:rounded-full before:border-l-transparent before:border-t-transparent before:animate-spin;
   }
 
-
   .level-mode {
-    --from: #8D8D8D;
-    --to: #1E1E1E;
+    --from: #8d8d8d;
+    --to: #1e1e1e;
 
     @apply relative transition-colors;
 
@@ -83,7 +82,7 @@
   }
 
   .level-mode.level-mode--to-right {
-    @apply before:bg-gradient-to-br after:bg-gradient-to-br
+    @apply before:bg-gradient-to-br after:bg-gradient-to-br;
   }
 
   .level-mode.level-mode--active {
@@ -106,14 +105,13 @@
   filter: blur(50px);
 }
 
-
 .text-test {
   text-transform: uppercase;
   font-weight: bold;
   color: #1e1e1e;
   /* Warning: no fallback */
 
-  background: linear-gradient(180deg, #2D84E7 0%, #16B768 96.47%);
+  background: linear-gradient(180deg, #2d84e7 0%, #16b768 96.47%);
   background-clip: text;
   -webkit-text-stroke: 2px transparent;
 }

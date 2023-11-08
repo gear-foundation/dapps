@@ -1,1 +1,1 @@
-export { PolkadotSVG, SubWalletSVG, TalismanSVG, EnkryptSVG, ExitSVG, NovaIcon } from './images'
+export { PolkadotSVG, SubWalletSVG, TalismanSVG, EnkryptSVG, ExitSVG, NovaIcon } from './images';

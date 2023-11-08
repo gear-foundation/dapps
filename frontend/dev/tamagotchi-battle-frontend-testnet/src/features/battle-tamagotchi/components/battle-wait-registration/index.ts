@@ -1,1 +1,1 @@
-export { BattleWaitRegistration } from './battle-wait-registration';
+export { BattleWaitRegistration } from './battle-wait-registration'

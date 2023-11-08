@@ -1,1 +1,1 @@
-export { BattlePlayersQueue } from './battle-players-queue';
+export { BattlePlayersQueue } from './battle-players-queue'

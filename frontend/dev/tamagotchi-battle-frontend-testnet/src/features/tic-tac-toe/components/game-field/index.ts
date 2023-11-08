@@ -1,1 +1,1 @@
-export { GameField } from './game-field';
+export { GameField } from './game-field'

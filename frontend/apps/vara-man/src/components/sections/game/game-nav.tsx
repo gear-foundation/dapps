@@ -1,24 +1,23 @@
-import { useContext, useEffect, useState } from 'react'
-import { GameContext } from '@/app/context/ctx-game-score'
-import { useAccount } from '@gear-js/react-hooks'
+import { useContext, useEffect, useState } from 'react';
+import { GameContext } from '@/app/context/ctx-game-score';
+import { useAccount } from '@gear-js/react-hooks';
 
-import { gameNavData } from '@/components/sections/game/game-nav.data'
-import { GameNavBackground } from '@/components/sections/game/game-nav-background'
-import { GameNavItem } from '@/components/sections/game/game-nav-item'
-import GameNavChampions from '@/components/sections/game/game-nav-champions'
+import { gameNavData } from '@/components/sections/game/game-nav.data';
+import { GameNavBackground } from '@/components/sections/game/game-nav-background';
+import { GameNavItem } from '@/components/sections/game/game-nav-item';
+import GameNavChampions from '@/components/sections/game/game-nav-champions';
 
-import StatsHeroImage from '@/assets/images/game/stats-hero.svg'
+import StatsHeroImage from '@/assets/images/game/stats-hero.svg';
 
+const data = gameNavData;
 
-const data = gameNavData
+type GameNavProps = BaseComponentProps & {};
 
-type GameNavProps = BaseComponentProps & {}
-
-export function GameNav({ }: GameNavProps) {
-  const { account } = useAccount()
+export function GameNav({}: GameNavProps) {
+  const { account } = useAccount();
   const { silverCoins, goldCoins, lives, gameTime } = useContext(GameContext);
   const [formattedTimer, setFormattedTimer] = useState('00:00');
-  const [timer, setTimer] = useState(gameTime)
+  const [timer, setTimer] = useState(gameTime);
 
   useEffect(() => {
     const formatTimer = (seconds: number) => {
@@ -51,7 +50,6 @@ export function GameNav({ }: GameNavProps) {
 
   const shortenedStr = account && shortenString(account.decodedAddress, 10);
 
-
   return (
     <div className="relative font-kanit">
       <GameNavBackground />
@@ -71,12 +69,7 @@ export function GameNav({ }: GameNavProps) {
         </div>
 
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 grid gap-4 text-center">
-          <img
-            width={92}
-            height={92}
-            src={StatsHeroImage}
-            alt="Avatar"
-          />
+          <img width={92} height={92} src={StatsHeroImage} alt="Avatar" />
 
           <span className="text-test">Vara - Man</span>
         </div>
@@ -92,13 +85,11 @@ export function GameNav({ }: GameNavProps) {
           </div>
 
           <div className="btn bg-white/[1%] shadow-white shadow-[inset_0_0_4px] px-6 flex-col items-start pt-1 pb-1.5 cursor-auto">
-            <small className="text-white/60 opacity-80 font-normal text-[10px] leading-[14px]">
-              Substrate address
-            </small>
+            <small className="text-white/60 opacity-80 font-normal text-[10px] leading-[14px]">Substrate address</small>
             <span className="leading-4">{shortenedStr}</span>
           </div>
         </div>
       </div>
     </div>
-  )
+  );
 }

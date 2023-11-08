@@ -1,12 +1,12 @@
-import { useLessons, useTamagotchi } from '@/app/context'
-import { TamagotchiAvatar } from '@/components/tamagotchi/tamagotchi-avatar'
-import { TamagotchiInfoCard } from '@/components/tamagotchi/tamagotchi-info-card'
-import { ConnectAccount } from '@/components/common/connect-account'
-import { Loader } from '@/components/loaders/loader'
+import { useLessons, useTamagotchi } from '@/app/context';
+import { TamagotchiAvatar } from '@/components/tamagotchi/tamagotchi-avatar';
+import { TamagotchiInfoCard } from '@/components/tamagotchi/tamagotchi-info-card';
+import { ConnectAccount } from '@/components/common/connect-account';
+import { Loader } from '@/components/loaders/loader';
 
 export const HomeCreateSection = () => {
-  const { tamagotchi } = useTamagotchi()
-  const { lesson, isReady } = useLessons()
+  const { tamagotchi } = useTamagotchi();
+  const { lesson, isReady } = useLessons();
 
   return (
     <section className="grid grid-rows-[1fr_auto_auto] h-[calc(100vh-216px)]">
@@ -28,5 +28,5 @@ export const HomeCreateSection = () => {
         {lesson ? isReady && <TamagotchiInfoCard /> : <ConnectAccount />}
       </div>
     </section>
-  )
-}
+  );
+};

@@ -3,7 +3,7 @@
 
 .container {
   width: 100%;
-  
+
   &-flexed {
     display: flex;
     flex-direction: column;
@@ -17,15 +17,15 @@
 }
 
 .content {
-    display: flex;
-    min-height: 695px;
-    background: theme-var($background-secondary);
+  display: flex;
+  min-height: 695px;
+  background: theme-var($background-secondary);
 
-    @include lg {
-        padding: 0 20px;
-      }
+  @include lg {
+    padding: 0 20px;
+  }
 
-    @include wings;
+  @include wings;
 }
 
 .controls {
@@ -50,7 +50,7 @@
   font-weight: 700;
 
   &-red {
-    background: linear-gradient(270deg, #64FFDB 0%, #FF7979 0.01%);
+    background: linear-gradient(270deg, #64ffdb 0%, #ff7979 0.01%);
   }
 
   &-gray {
@@ -105,7 +105,7 @@
   @include md {
     position: absolute;
     transform: translateY(100%);
-    bottom:  0;
+    bottom: 0;
     padding: 0 20px;
   }
 }
@@ -117,7 +117,11 @@
   padding: 40px 56px 40px 40px;
   color: #fff;
   background-color: #000000;
-  background-image: radial-gradient(63.92% 185.86% at 41.88% 70.03%, rgba(0, 255, 196, 0.2) 0%, rgba(0, 255, 196, 0) 100%);
+  background-image: radial-gradient(
+    63.92% 185.86% at 41.88% 70.03%,
+    rgba(0, 255, 196, 0.2) 0%,
+    rgba(0, 255, 196, 0) 100%
+  );
   border-radius: 8px;
   max-width: 1200px;
   margin: auto;
@@ -144,7 +148,7 @@
   }
 
   &__right {
-    @include gap(16px)
+    @include gap(16px);
   }
 
   &__title {
@@ -175,7 +179,7 @@
 
     @include md {
       font-size: 14px;
-      line-height: 19.6px
+      line-height: 19.6px;
     }
   }
 

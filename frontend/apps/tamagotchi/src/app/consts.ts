@@ -1,12 +1,12 @@
-import { HexString } from "@polkadot/util/types";
+import { HexString } from '@polkadot/util/types';
 
 export const LOCAL_STORAGE = {
-  ACCOUNT: "account",
+  ACCOUNT: 'account',
 };
 
 export const createTamagotchiInitial = {
-  programId: "" as HexString,
-  programId2: "" as HexString,
+  programId: '' as HexString,
+  programId2: '' as HexString,
   currentStep: 1,
 };
 
