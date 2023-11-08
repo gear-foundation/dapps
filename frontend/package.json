@@ -4,21 +4,6 @@
   "private": true,
   "packageManager": "yarn@4.0.1",
   "workspaces": [
-    "./battleship",
-    "./escrow",
-    "./galactic-express",
-    "./game-of-chance",
-    "./nft-marketplace/frontend",
-    "./nft-master",
-    "./non-fungible-token",
-    "./racing-car-game",
-    "./supply-chain",
-    "./syndote/frontend",
-    "./tamagotchi",
-    "./tamagotchi-battle/frontend",
-    "./tequila-train/frontend",
-    "./tic-tac-toe",
-    "./vara-man",
-    "./varatube"
+    "./apps/*"
   ]
 }

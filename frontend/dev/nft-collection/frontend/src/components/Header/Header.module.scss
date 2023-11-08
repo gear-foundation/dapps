@@ -1,0 +1,138 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.header {
+    height: 100px;
+    width: 100%;
+    box-sizing: border-box;
+    background: theme-var($background-primary);
+}
+
+.container {
+    height: 100%;
+    padding: 20px 0;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: auto;
+    gap: 20px;
+
+    @include lg {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+.menu {
+    list-style: none;
+    display: flex;
+
+    @include lg {
+        align-items: center;
+    }
+}
+
+.menu-item {
+    margin: 0 12px;
+    padding-bottom: 4px;
+    font-size: 18px;
+    font-weight: 500;
+    transition: border-color 0.3s, color 0.3s;
+    border-color: theme-var($background-primary);
+
+    @include lg {
+        margin: 0 10px;
+    }
+
+    &--active {
+        border-bottom: 2px solid theme-var($green-special-bright)
+    }
+}
+
+.items {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.wallet-info {
+    display: flex;
+    align-items: center;
+}
+
+.balance {
+    display: flex;
+    align-items: center;
+    padding: 12px 0;
+    margin-right: 20px;
+
+    &-coin-image {
+        margin-right: 10px;
+    }
+
+    &-value {
+        font-size: 20px;
+        font-weight: 700;
+        letter-spacing: -2%;
+    }
+
+    &-currency-name {
+        margin: 8px 0 0 4px;
+        font-size: 10px;
+        font-weight: 400;
+        color: theme-var($text-primary);
+        opacity: 0.6;
+        text-transform: uppercase;
+    }
+}
+
+.description {
+    height: 50px;
+    min-width: 128px;
+    max-width: 200px;
+    padding: 0 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-transform: capitalize;
+    border: none;
+    outline: none;
+    background: theme-var($background-tertiary);
+    cursor: pointer;
+
+    &-icon {
+        min-width: 16px;
+        min-height: 16px;
+        margin-right: 10px;
+        background: wheat;
+        border-radius: 50px;
+    }
+
+    &-name {
+        font-size: 16px;
+        font-weight: 700;
+        letter-spacing: 3%;
+        color: theme-var($text-secondary);
+    }
+}
+
+.blur-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(39, 44, 63, 0.11);
+    backdrop-filter: blur(16px);
+    z-index: 4;
+    width: 100%;
+    height: 100%;
+    display: none;
+
+    @include lg {
+        display: block
+    }
+}
+
+.create-btn {
+    width: 101px;
+}

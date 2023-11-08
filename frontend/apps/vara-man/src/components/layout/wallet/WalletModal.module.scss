@@ -1,0 +1,96 @@
+@use "@/app/utils" as *;
+
+.content {
+    max-height: 50vh;
+    padding-bottom: 100px;
+}
+
+.list {
+    @include gap(16px);
+
+    margin-right: 16px;
+    overflow-y: auto;
+
+    .walletButton {
+        justify-content: space-between;
+    }
+}
+
+.status {
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 1;
+    text-align: right;
+}
+
+.account {
+    @include gap(10px, right);
+    display: flex;
+    align-items: center;
+
+    &Button {
+        @include gap(12px, right);
+    }
+}
+
+.footer {
+    margin-top: 22px;
+    display: flex;
+    justify-content: space-between;
+
+    background-color: #222225;
+    border-radius: 0 0 20px 20px;
+    bottom: 0;
+    display: flex;
+    left: 0;
+    padding: 24px 32px;
+    position: absolute;
+    width: 100%;
+
+    .walletButton {
+        @include gap(8px, right);
+        display: flex;
+        align-items: center;
+        background-color: transparent;
+        border: none;
+        font-size: 14px;
+
+        img {
+            margin-right: 10px;
+        }
+    }
+}
+
+.changeText {
+    margin-left: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: #2bd071;
+}
+
+.logoutButton {
+    @include gap(4px, right);
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 1.14;
+    color: #a2a2a2;
+}
+
+.wallet {
+    display: flex;
+    align-items: center;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 120%;
+    letter-spacing: 0.02em;
+}
+
+.icon {
+    margin-right: 8px;
+    background-color: #fff;
+    border-radius: 50%;
+    border: 1px solid #ebeeee;
+}

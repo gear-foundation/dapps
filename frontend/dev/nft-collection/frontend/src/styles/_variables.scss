@@ -1,0 +1,44 @@
+$screen-sm-min: 430px;
+$screen-md-min: 768px;
+$screen-lg-min: 992px;
+$screen-xl-min: 1200px;
+
+$background-primary: --primary;
+$background-secondary: --secondary;
+$background-tertiary: --tertiary;
+$text-primary: --text-primary;
+$text-secondary: --text-secondary;
+$text-tertiary: --text-tertiary;
+$green-special: --green-special;
+$green-special-bright: --green-special-bright;
+$green-special-pale: --green-special-pale;
+$table-text-weekday-cell: --table-text-weekday-cell;
+$table-background-day-cell: --table-background-day-cell;
+$text-section-title: --text-section-title;
+$placeholder-input: --placeholder-input;
+$border-input: --border-input;
+$error: --error;
+
+//ui-kit colors
+$button-border: --button-border;
+$button-background: --button-background;
+
+$theme-standard: (
+    $background-primary: #FFFFFF,
+    $background-secondary: #F5F5F5,
+    $background-tertiary: #000000,
+    $text-primary: #000000,
+    $text-secondary: #FFFFFF,
+    $text-tertiary: #C4C4C4,
+    $green-special: #0ED3A3,
+    $green-special-bright: #00FFC4,
+    $green-special-pale: rgba(0, 255, 196, 0.4),
+    $button-border: #000000,
+    $button-background: #FFFFFF,
+    $error: #FF0101,
+    $table-text-weekday-cell: #909090,
+    $text-section-title: #292929,
+    $table-background-day-cell: rgba(0, 255, 196, 0.2),
+    $placeholder-input: rgba(0, 0, 0, 0.9),
+    $border-input: rgba(0, 0, 0, 0.2),
+);

@@ -1,0 +1,37 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.container {
+  height: 40px;
+  display: flex;
+  gap: 16px;
+
+  .icon-wrapper {
+    width: 40px;
+    height: 40px;
+    background: linear-gradient(0deg, #F0F0F0, #F0F0F0),
+  linear-gradient(0deg, rgba(247, 247, 247, 0.5), rgba(247, 247, 247, 0.5));
+    border-radius: 8px;
+    border: 1px solid #F0F0F0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+
+  .title {
+    font-size: 12px;
+    font-weight: 500;
+  }
+
+  .value {
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
+

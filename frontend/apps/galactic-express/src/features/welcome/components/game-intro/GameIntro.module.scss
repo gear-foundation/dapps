@@ -1,0 +1,24 @@
+@use 'utils' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.name {
+  font-size: 56px;
+  font-weight: 275;
+  color: #ffffff;
+  letter-spacing: 0.08em;
+}
+
+.description {
+  text-transform: capitalize;
+  width: 574px;
+  font-size: 12px;
+  font-weight: 275;
+  color: #ffffff;
+  letter-spacing: 0.08em;
+  line-height: 20px;
+}

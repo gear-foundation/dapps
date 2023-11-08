@@ -1,0 +1,104 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.dropzone {
+    &#{&} {
+        width: 100%;
+        min-width: 200px;
+        min-height: 100px;
+        background: theme-var($background-secondary);
+        border: 1px dashed theme-var($text-tertiary);
+        border-radius: 4px;
+        cursor: pointer;
+    }
+}
+
+.label {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    height: 100%;
+    width: 100%;
+
+    &-title {
+        font-size: 16px;
+        font-weight: 400;
+        color: theme-var($text-primary);
+    }
+
+    &-description {
+        width: 290px;
+        font-size: 14px;
+        font-weight: 400;
+        color: theme-var($text-tertiary);
+        text-align: center;
+    }
+}
+
+.uploaded-pic-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &-multi {
+        position: relative;
+        min-width: 96px;
+        min-height: 96px;
+        max-width: 96px;
+        max-height: 96px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+}
+
+.uploaded-pic {
+    position: absolute;
+    max-width: 100%;
+    max-height: 100%;
+
+    &-multi {
+        position: relative;
+        max-width: 100%;
+        max-height: 100%;
+    }
+}
+
+.uploadedPicContainer {
+    background: theme-var($background-secondary);
+    overflow: hidden;
+}
+
+.close-icon {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    padding: 2px;
+    background: theme-var($background-secondary);
+    border-radius: 4px;
+    z-index: 1;
+    cursor: pointer;
+
+    &-multi {
+        position: absolute;
+        width: 24px;
+        height: 24px;
+        border-radius: 4px;
+        background: theme-var($background-secondary);
+        right: 5px;
+        top: 5px;
+        z-index: 1;
+    }
+}
+
+.multi-previews-wrapper {
+    display: flex;
+    gap: 3px;
+    flex-wrap: wrap;
+    padding-top: 16px;
+}

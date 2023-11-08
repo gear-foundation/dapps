@@ -1,0 +1,13 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.item-text {
+    font-size: 12px;
+    font-weight: 400;
+}
