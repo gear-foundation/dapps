@@ -1,0 +1,27 @@
+{
+    "name": "randomness-oracle-feeder",
+    "version": "0.1.0",
+    "description": "Randomness off-chain relay",
+    "main": "index.ts",
+    "author": "Gear Technologies",
+    "license": "MIT",
+    "scripts": {
+        "start": "yarn ts-node src/index.ts",
+        "build": "yarn tsc",
+        "format": "yarn prettier --write ."
+    },
+    "devDependencies": {
+        "@types/node": "^18.8.3",
+        "prettier": "^2.7.1",
+        "ts-node": "^10.9.1",
+        "typescript": "^5.0.2"
+    },
+    "dependencies": {
+        "@gear-js/api": "0.30.1",
+        "@polkadot/api": "10.1.4",
+        "@polkadot/keyring": "11.1.1",
+        "@polkadot/util": "^11.1.1",
+        "dotenv": "^16.0.3",
+        "isomorphic-unfetch": "^4.0.2"
+    }
+}

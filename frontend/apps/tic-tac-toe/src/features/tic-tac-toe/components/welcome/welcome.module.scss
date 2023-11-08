@@ -1,0 +1,83 @@
+@use '@/utils' as * ;
+
+.title {
+  line-height: 1;
+}
+
+.image {
+  position: relative;
+
+  &::before {
+    content: '';
+    display: block;
+    padding-top: 100%;
+  }
+
+  picture {
+    position: absolute;
+    inset: 0 0 0 -10px;
+    display: block;
+    margin: 0 -25px;
+
+    @media screen and (max-width: 767px) {
+      left: 0;
+      right: 0;
+      margin: 0 -16px;
+    }
+  }
+
+  img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left center;
+
+    @media screen and (max-width: 767px) {
+      object-position: 0;
+    }
+  }
+}
+
+.heading {
+  line-height: 1;
+
+  @media screen and (max-width: 767px) {
+    font-size: 42px;
+    text-align: center;
+  }
+}
+
+.text {
+  @media screen and (max-width: 767px) {
+    margin-right: auto;
+    margin-left: auto;
+    font-size: 16px;
+    line-height: 26px;
+    text-align: center;
+  }
+}
+
+.content {
+  @media screen and (max-width: 767px) {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+  }
+}
+
+.wrapper {
+  @media screen and (max-width: 767px) {
+    padding-top: 80px;
+    max-height: calc(100vh - 80px);
+    overflow: hidden;
+
+    > * + * {
+      margin-top: 50px;
+    }
+
+    @supports (height: 1svh) {
+      max-height: calc(100svh - 80px)
+    }
+  }
+}

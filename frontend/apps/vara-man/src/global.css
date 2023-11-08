@@ -1,0 +1,119 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'Kanit';
+  font-weight: 200;
+  src: url('@/assets/fonts/kanit-250.woff2') format('woff2');
+  font-display: swap;
+}
+
+@layer base {
+  html {
+    @apply bg-[#1e1e1e] font-kanit selection:bg-primary/20;
+  }
+
+  body {
+    @apply font-kanit !important;
+  }
+
+  .container {
+    @apply w-full max-w-[1150px] mx-auto px-5;
+  }
+}
+
+@layer components {
+  .typo-h1 {
+    @apply font-kanit text-[72px] leading-[86px] font-medium
+  }
+
+  .typo-h2 {
+    @apply font-kanit text-[40px] leading-[48px] font-bold tracking-[0.04em]
+  }
+
+  .btn {
+    @apply inline-flex justify-center items-center text-center py-2.5 px-8 text-[14px] font-semibold leading-5 tracking-[0.08em] rounded-full whitespace-nowrap cursor-pointer select-none;
+  }
+
+  .btn--primary {
+    @apply text-white bg-primary hover:bg-[#168b4e] active:bg-primary transition-colors;
+  }
+
+  .btn--theme-red {
+    @apply text-white bg-[#F24A4A] hover:bg-[#A02D30] active:bg-[#F24A4A] transition-colors;
+  }
+
+  .btn--ghost {
+    @apply text-white bg-white/10 hover:bg-white/30 active:bg-white/50 transition-colors
+  }
+
+  .btn--white {
+    @apply text-black bg-white hover:bg-[#DEDEDE] active:bg-neutral-300 transition-colors
+  }
+
+  .btn--error {
+    @apply text-white bg-red-500 hover:bg-red-600 active:bg-red-700 transition-colors
+  }
+
+  .btn--blue {
+    @apply text-white bg-blue-600 hover:bg-blue-700 active:bg-blue-800 transition-colors;
+  }
+
+  .btn:disabled {
+    @apply cursor-not-allowed bg-neutral-500
+  }
+
+  .btn--loading {
+    @apply opacity-90 gap-2 before:w-4 before:h-4 before:border-2 before:border-neutral-400 before:rounded-full before:border-l-transparent before:border-t-transparent before:animate-spin;
+  }
+
+
+  .level-mode {
+    --from: #8D8D8D;
+    --to: #1E1E1E;
+
+    @apply relative transition-colors;
+
+    @apply before:absolute before:-inset-0.5 before:-z-2 before:rounded-[10px] before:backdrop-blur-[2px] transition-colors
+    before:bg-gradient-to-bl before:from-[var(--from)] before:to-[var(--to)] before:from-5% before:to-95%;
+
+    @apply after:absolute after:inset-0 after:z-0 after:rounded-[8px] before:backdrop-blur-[2px] transition-colors
+    after:bg-gradient-to-bl after:from-[rgba(255,255,255,5%)] after:to-transparent after:from-5% after:to-95%;
+  }
+
+  .level-mode.level-mode--to-right {
+    @apply before:bg-gradient-to-br after:bg-gradient-to-br
+  }
+
+  .level-mode.level-mode--active {
+    @apply before:from-[#2F82EC] before:to-[#17B769] before:backdrop-blur-none;
+
+    @apply after:from-[#16b768] after:to-[#2f81ed] before:backdrop-blur-none;
+  }
+}
+
+.ellipse {
+  position: absolute;
+  top: 100%;
+  z-index: -20;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 276px;
+  height: 171px;
+  background: #ffffff;
+  opacity: 0.7;
+  filter: blur(50px);
+}
+
+
+.text-test {
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #1e1e1e;
+  /* Warning: no fallback */
+
+  background: linear-gradient(180deg, #2D84E7 0%, #16B768 96.47%);
+  background-clip: text;
+  -webkit-text-stroke: 2px transparent;
+}

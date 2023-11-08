@@ -1,0 +1,28 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+
+  > * + * {
+    margin-top: 16px;
+  }
+}
+
+.box {
+  display: flex;
+  width: fit-content;
+  margin: 0 auto;
+  padding: 19px;
+  background-color: #00ffc4;
+  border-radius: 4px;
+
+  svg {
+    width: 36px;
+    height: 36px;
+  }
+}
+
+.label * {
+  font-size: 24px;
+  font-weight: 600;
+  line-height: 36px;
+}

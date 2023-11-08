@@ -1,0 +1,30 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.footer {
+    position: relative;
+    height: 96px;
+    width: 100%;
+    background: theme-var($background-primary);
+}
+
+.container {
+    height: 100%;
+    padding: 20px 0;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: auto;
+}
+
+.rigts {
+    font-size: 16px;
+    font-weight: 400px;
+}
+
+.socials {
+    &-icon {
+        margin: 0 8px;
+    }
+}

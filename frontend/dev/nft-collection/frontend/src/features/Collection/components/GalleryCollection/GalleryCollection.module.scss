@@ -1,0 +1,40 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding-top: 40px;
+}
+
+.gallery-wrapper {
+  padding-top: 20px;
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+}
+
+.heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.title {
+  font-size: 40px;
+  font-weight: 500;
+  line-height: 48px;
+}
+
+.preferences {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+
+.results {
+  padding-top: 10px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #777777;
+}

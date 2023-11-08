@@ -1,0 +1,53 @@
+.table {
+box-shadow: 0px 4px 4px 0px #00000040;
+
+}
+
+.body {
+  outline: 1px solid #2BD07180;
+  border-radius: 8px;
+  background: #131315;
+}
+
+.bodyTr {
+  height: 43px;
+}
+
+.bodyTd {
+  padding: 0;
+  margin: 0;
+  border-spacing: 0;
+  height: 43px;
+  text-align: center;
+  border-right: 1px solid rgba(209,	207,	215, 0.1);
+  border-bottom: 1px solid rgba(209,	207,	215, 0.1);
+
+  &Index {
+    min-width: 64px;
+  }
+
+  &playerAddress{
+    min-width: 345px;
+  }
+
+  &Action {
+    min-width: 152px;
+    cursor: pointer;
+  }
+}
+
+.yourAddressSpan {
+  color: #2BD071;
+}
+
+.bodyTrWithYourAddress {
+  background: #2BD0711F;
+}
+
+.headTd {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+  color: #8C8B90;
+  padding-bottom: 8px;
+}

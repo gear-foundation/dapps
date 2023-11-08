@@ -1,0 +1,44 @@
+@use 'utils' as *;
+
+.inputWrapper {
+  display: flex;
+  align-items: center;
+  @include gap(12px, right);
+  width: 100%;
+  max-width: 300px;
+  padding: 12px 13px;
+  background-color: #ffffff;
+  border: 1px solid #0000003b;
+  border-radius: 4px;
+
+  @include lg {
+    max-width: 100%;
+  }
+
+  input {
+    width: 100%;
+    outline: none;
+    text-overflow: ellipsis;
+    line-height: 24px;
+    border: none;
+    padding: 0;
+
+    &::placeholder {
+      text-overflow: ellipsis;
+    }
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+
+  .reset {
+    display: inline-flex;
+    line-height: 1;
+    transition: opacity 250ms ease-out;
+
+    &:hover {
+      opacity: 0.5;
+    }
+  }
+}
