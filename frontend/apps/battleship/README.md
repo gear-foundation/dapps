@@ -10,7 +10,7 @@
 
 ## Description
 
-React application of [Battleship](https://github.com/gear-foundation/dapps/tree/master/frontend/battleship) based on [Rust smart-contract](https://github.com/gear-foundation/dapps/tree/master/contracts/battleship).
+React application of [Battleship](https://wiki.gear-tech.io/docs/examples/Gaming/battleship) based on [Rust smart-contract](https://github.com/gear-foundation/dapps/tree/master/contracts/battleship).
 
 ## Getting started
 

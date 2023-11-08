@@ -10,7 +10,7 @@
 
 ## Description
 
-React application of [_wiki link_](#) based on [Rust smart-contract](#).
+React application of [NFT Master](#) based on [Rust smart-contract](#https://github.com/gear-foundation/dapps/tree/master/contracts/nft-master).
 
 ## Getting started
 

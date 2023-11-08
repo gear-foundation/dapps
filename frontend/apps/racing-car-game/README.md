@@ -10,14 +10,14 @@
 
 ## Description
 
-Racing car game of [_wiki link_](#) based on [Rust smart-contract](#).
+React application of [Racing Cars Game](#https://wiki.gear-tech.io/docs/examples/Gaming/racingcars) based on [Rust smart-contract](#https://github.com/gear-foundation/dapps/tree/master/contracts/car-races).
 
 ## Getting started
 
 ### Install packages:
 
 ```sh
-npm install
+yarn install
 ```
 
 ### Declare environment variables:
@@ -31,5 +31,5 @@ In case of issues with the application, try to switch to another network or run 
 ### Run the app:
 
 ```sh
-npm run start
+yarn run start
 ```
