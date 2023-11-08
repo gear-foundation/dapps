@@ -1,6 +1,6 @@
 {
-  "name": "subscription",
-  "version": "0.1.3",
+  "name": "varatube",
+  "version": "1.0.1",
   "private": true,
   "dependencies": {
     "@gear-js/api": "0.35.1",
