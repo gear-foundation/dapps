@@ -5,13 +5,13 @@ use gstd::ActorId;
 pub const HASH_LENGTH: usize = 32;
 pub type Hash = [u8; HASH_LENGTH];
 pub const USERS: [&str; 5] = ["//Mike", "//John", "//Alex", "//Peter", "//Alice"];
-pub const USERS_FUND: u128 = 11_000_000_000_000;
+pub const USERS_FUND: u128 = 1_000_000_000_000_000;
 pub const SELLER: &str = "//Markus";
 pub const BUYER: &str = "//Jim";
 pub const TREASURY: &str = "//Treasury";
 pub const TREASURY_FEE: u16 = 3;
 pub const TOKEN_ID: u128 = 0;
-pub const NFT_PRICE: u128 = 11_000_000_000_000;
+pub const NFT_PRICE: u128 = 1_000_000_000_000_000;
 pub const BID_PERIOD: u64 = 3_600_000;
 pub const DURATION: u64 = 86_400_000;
 

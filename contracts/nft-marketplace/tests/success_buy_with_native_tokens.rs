@@ -39,7 +39,7 @@ async fn gclient_success_buy_with_native_tokens() -> gclient::Result<()> {
             &marketplace_contract,
             &nft_contract,
             common::TOKEN_ID.into(),
-            common::NFT_PRICE - 1000,
+            common::NFT_PRICE - 1_000_000_000_000,
             true,
         )
         .await?;

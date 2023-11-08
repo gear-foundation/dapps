@@ -23,7 +23,7 @@ fn offers() {
 
     let mut offers: BTreeMap<(Option<ContractId>, Price), ActorId> = BTreeMap::new();
     for i in 0..10 {
-        let offered_price = 10_000 * (i + 1) as u128;
+        let offered_price = 200_000_000_000_000 * (i + 1) as u128;
         system.mint_to(BUYER, offered_price);
         market
             .add_offer(
@@ -40,7 +40,7 @@ fn offers() {
     let mut tx_id: u64 = 100;
 
     for i in 10..20 {
-        let offered_price = 10_000 * (i + 1) as u128;
+        let offered_price = 200_000_000_000_000 * (i + 1) as u128;
         tx_id += 1;
         ft_program.mint(tx_id, BUYER, offered_price);
         tx_id += 1;
@@ -69,7 +69,7 @@ fn offers() {
         .contains_key(&(nft_program.actor_id(), TOKEN_ID.into())));
 
     // Accept offer (for fungible tokens)
-    let accepted_price = 10_000 * 15;
+    let accepted_price = 200_000_000_000_000 * 15;
     market
         .accept_offer(
             SELLER.into(),
@@ -104,7 +104,7 @@ fn offers() {
         .contains_key(&(Some(ft_program.actor_id()), accepted_price)));
 
     // Withdraw tokens
-    let withdrawn_tokens = 110_000;
+    let withdrawn_tokens = 2_200_000_000_000_000;
     market
         .withdraw(
             BUYER.into(),
@@ -116,7 +116,7 @@ fn offers() {
         .succeed((nft_program.actor_id(), TOKEN_ID.into(), withdrawn_tokens));
 
     // Withdraw native tokens
-    let withdrawn_tokens = 10_000 * 2_u128;
+    let withdrawn_tokens = 200_000_000_000_000 * 2_u128;
     market
         .withdraw(
             BUYER.into(),
@@ -132,7 +132,7 @@ fn offers() {
     assert_eq!(system.balance_of(BUYER), withdrawn_tokens);
 
     // Previous owner makes offer for native value
-    let offered_value = 1_000_000;
+    let offered_value = 20_000_000_000_000_000;
     let buyer_balance = system.balance_of(BUYER);
     let treasury_fee = offered_value * ((TREASURY_FEE * BASE_PERCENT) as u128) / 10_000u128;
 
@@ -231,7 +231,7 @@ fn offers_failures() {
             TOKEN_ID.into(),
             None,
             NFT_PRICE,
-            NFT_PRICE - 1000,
+            NFT_PRICE - 100_000_000_000,
         )
         .failed(MarketErr::WrongPrice);
 
@@ -302,8 +302,8 @@ fn offers_failures() {
             nft_program.actor_id(),
             TOKEN_ID.into(),
             None,
-            NFT_PRICE - 1000,
-            NFT_PRICE - 1000,
+            NFT_PRICE - 100_000_000_000,
+            NFT_PRICE - 100_000_000_000,
         )
         .failed(MarketErr::AuctionIsAlreadyExists);
 
