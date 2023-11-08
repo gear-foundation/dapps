@@ -3,7 +3,7 @@ export const LOCAL_STORAGE = {
 };
 
 export const ENV = {
-  NODE: 'wss://testnet.vara-network.io',
+  NODE: process.env.REACT_APP_NODE_ADDRESS as string,
 };
 
 export const ROUTES = {
