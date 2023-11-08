@@ -61,8 +61,8 @@
   "devDependencies": {
     "@types/jest": "27.5.1",
     "@types/node": "18.17.15",
-    "@types/react": "18.2.24",
-    "@types/react-dom": "18.2.8",
+    "@types/react": "18.2.33",
+    "@types/react-dom": "18.2.14",
     "@typescript-eslint/eslint-plugin": "6.7.3",
     "@typescript-eslint/parser": "6.7.3",
     "eslint": "8.16.0",
