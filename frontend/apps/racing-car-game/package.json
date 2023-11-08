@@ -1,6 +1,6 @@
 {
-  "name": "dapp-cb-racing-cars-frontend",
-  "version": "0.2.1",
+  "name": "racing-car-game",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "start": "craco start",

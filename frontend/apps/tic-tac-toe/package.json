@@ -1,7 +1,7 @@
 {
-  "name": "cb-tic-tac-toe-frontend",
+  "name": "tic-tac-toe",
   "private": true,
-  "version": "0.3.2",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite --host",

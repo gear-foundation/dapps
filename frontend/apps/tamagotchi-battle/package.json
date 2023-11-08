@@ -1,6 +1,6 @@
 {
-  "name": "gear-dapps-workshop-tamagotchi-battle",
-  "version": "0.1.3",
+  "name": "tamagotchi-battle",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "start": "react-app-rewired start",

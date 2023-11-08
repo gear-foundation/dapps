@@ -1,6 +1,6 @@
 {
-  "name": "@gear-js/game-of-chance",
-  "version": "0.1.4",
+  "name": "game-of-chance",
+  "version": "1.0.1",
   "private": true,
   "dependencies": {
     "@gear-js/api": "0.35.1",

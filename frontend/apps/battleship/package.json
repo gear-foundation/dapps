@@ -1,7 +1,7 @@
 {
-  "name": "frontend-battleship",
+  "name": "battleship",
   "private": true,
-  "version": "1.0.2",
+  "version": "1.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite --host",

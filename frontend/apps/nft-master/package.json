@@ -1,6 +1,6 @@
 {
-  "name": "nft-portal-frontend",
-  "version": "0.3.3",
+  "name": "nft-master",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "start": "react-app-rewired start",

@@ -1,6 +1,6 @@
 {
-  "name": "@gear-js/supply-chain",
-  "version": "0.1.3",
+  "name": "supply-chain",
+  "version": "1.0.1",
   "private": true,
   "dependencies": {
     "@gear-js/api": "0.35.1",
