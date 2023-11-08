@@ -1,9 +1,5 @@
 import { useAlert, useReadFullState } from '@gear-js/react-hooks'
-import {
-  getStateMetadata,
-  ProgramMetadata,
-  StateMetadata,
-} from '@gear-js/api'
+import { getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api'
 import { HexString } from '@polkadot/util/types'
 import { useEffect, useState } from 'react'
 

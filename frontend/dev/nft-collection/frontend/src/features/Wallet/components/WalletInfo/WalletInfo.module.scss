@@ -13,24 +13,24 @@
   margin-right: 20px;
 
   &-coin-image {
-      margin-right: 10px;
-      width: 20px;
-      height: 20px;
+    margin-right: 10px;
+    width: 20px;
+    height: 20px;
   }
 
   &-value {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -2%;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -2%;
   }
 
   &-currency-name {
-      margin: 8px 0 0 4px;
-      font-size: 10px;
-      font-weight: 400;
-      color: theme-var($text-primary);
-      opacity: 0.6;
-      text-transform: uppercase;
+    margin: 8px 0 0 4px;
+    font-size: 10px;
+    font-weight: 400;
+    color: theme-var($text-primary);
+    opacity: 0.6;
+    text-transform: uppercase;
   }
 }
 
@@ -50,21 +50,21 @@
   cursor: pointer;
 
   &-icon {
-      min-width: 16px;
-      min-height: 16px;
-      margin-right: 10px;
-      background: theme-var($background-primary);
-      border-radius: 50px;
+    min-width: 16px;
+    min-height: 16px;
+    margin-right: 10px;
+    background: theme-var($background-primary);
+    border-radius: 50px;
   }
 
   &-name {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 3%;
-      color: theme-var($text-secondary);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 3%;
+    color: theme-var($text-secondary);
   }
 }
 
 .score {
-  padding-right: 60px
+  padding-right: 60px;
 }

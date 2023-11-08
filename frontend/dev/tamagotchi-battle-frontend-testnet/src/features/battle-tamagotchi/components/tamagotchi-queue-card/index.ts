@@ -1,1 +1,1 @@
-export { TamagotchiQueueCard } from './tamagotchi-queue-card';
+export { TamagotchiQueueCard } from './tamagotchi-queue-card'

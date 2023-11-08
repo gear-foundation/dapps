@@ -4,7 +4,7 @@ import { Players } from 'components';
 import styles from './RoundResult.module.scss';
 
 type Props = {
-  onClickRoute: (route:string) => void;
+  onClickRoute: (route: string) => void;
   name: string;
   game: string;
   round: string;
@@ -14,7 +14,7 @@ type Props = {
 };
 
 function RoundResult({ name, game, round, winners, loosers, nextRound, onClickRoute }: Props) {
-  const getButtonText=nextRound ? 'Next Round' : 'Close';
+  const getButtonText = nextRound ? 'Next Round' : 'Close';
   return (
     <div className={styles.container}>
       <h2 className={styles.heading}>
@@ -23,8 +23,8 @@ function RoundResult({ name, game, round, winners, loosers, nextRound, onClickRo
       </h2>
       <h3 className={styles.subheading}>Round {round} result</h3>
       <Players heading="Advance to the next round" list={winners as []} className={styles.players} center />
-      <Players heading="Losers" list={loosers as Hex[] || []} center />
-      <Button text={getButtonText} size="large" className={styles.button} onClick={()=>onClickRoute('game')} />
+      <Players heading="Losers" list={(loosers as Hex[]) || []} center />
+      <Button text={getButtonText} size="large" className={styles.button} onClick={() => onClickRoute('game')} />
     </div>
   );
 }

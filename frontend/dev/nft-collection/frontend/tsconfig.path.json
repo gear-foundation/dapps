@@ -1,9 +1,9 @@
 {
-    "compilerOptions": {
-      "baseUrl": "./src",
-      "paths": {
-        "@/*": ["*"],
-        "@ui": ["ui"],
-      }
+  "compilerOptions": {
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["*"],
+      "@ui": ["ui"]
     }
   }
+}

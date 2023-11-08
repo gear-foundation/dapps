@@ -1,27 +1,15 @@
-import { flexRender, Table as TableType } from '@tanstack/react-table'
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table'
+import { flexRender, Table as TableType } from '@tanstack/react-table';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
-import styles from './table.module.scss'
+import styles from './table.module.scss';
 
 type LkContentTableLayoutProps<T> = BaseComponentProps & {
-  table: TableType<T>
-  isLoading?: boolean
-  className?: string
-}
+  table: TableType<T>;
+  isLoading?: boolean;
+  className?: string;
+};
 
-export function DataTable<TData>({
-  table,
-  isLoading,
-  className,
-  children,
-}: LkContentTableLayoutProps<TData>) {
+export function DataTable<TData>({ table, isLoading, className, children }: LkContentTableLayoutProps<TData>) {
   return (
     <Table className={className}>
       <TableHeader>
@@ -33,17 +21,10 @@ export function DataTable<TData>({
                 colSpan={header.colSpan}
                 scope="col"
                 style={{
-                  width:
-                    header.getSize() !== 150 ? header.getSize() : undefined,
+                  width: header.getSize() !== 150 ? header.getSize() : undefined,
                   minWidth: header.getContext().column.columnDef.minSize,
-                }}
-              >
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
+                }}>
+                {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
               </TableHead>
             ))}
           </TableRow>
@@ -59,9 +40,7 @@ export function DataTable<TData>({
             table.getRowModel().rows.map((row) => (
               <TableRow key={row.id} className={'bg-red-300'}>
                 {row.getVisibleCells().map((cell) => (
-                  <TableCell key={cell.id}>
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </TableCell>
+                  <TableCell key={cell.id}>{flexRender(cell.column.columnDef.cell, cell.getContext())}</TableCell>
                 ))}
               </TableRow>
             ))
@@ -71,7 +50,7 @@ export function DataTable<TData>({
         )}
       </TableBody>
     </Table>
-  )
+  );
 }
 
 // {/*<pre>*/}
@@ -84,30 +63,25 @@ function TableNoResults<TData>({ table }: { table: TableType<TData> }) {
       <TableCell
         colSpan={table.getAllColumns().length}
         rowSpan={table.getState().pagination.pageSize}
-        className={styles.notFound}
-      >
+        className={styles.notFound}>
         No results.
       </TableCell>
     </TableRow>
-  )
+  );
 }
 
 function TableLoadingState<TData>({ table }: { table: TableType<TData> }) {
   return (
     <>
-      {Array.from({ length: table.getState().pagination.pageSize }).map(
-        (row, i) => (
-          <TableRow key={i}>
-            {Array.from({ length: table.getAllColumns().length }).map(
-              (row, i) => (
-                <TableCell key={i}>
-                  <div />
-                </TableCell>
-              )
-            )}
-          </TableRow>
-        )
-      )}
+      {Array.from({ length: table.getState().pagination.pageSize }).map((row, i) => (
+        <TableRow key={i}>
+          {Array.from({ length: table.getAllColumns().length }).map((row, i) => (
+            <TableCell key={i}>
+              <div />
+            </TableCell>
+          ))}
+        </TableRow>
+      ))}
     </>
-  )
+  );
 }

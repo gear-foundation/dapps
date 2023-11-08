@@ -1,5 +1,5 @@
-import { PropsWithChildren } from 'react'
+import { PropsWithChildren } from 'react';
 
 export type BaseComponentProps = PropsWithChildren & {
-  className?: string
-}
+  className?: string;
+};

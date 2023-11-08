@@ -1,1 +1,1 @@
-export { WalletConnect, WalletChange } from './components'
+export { WalletConnect, WalletChange } from './components';

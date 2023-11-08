@@ -39,18 +39,17 @@
     justify-content: center;
     gap: 16px;
     margin: 40px 0;
-  
+
     .button {
       width: 240px;
 
       &:disabled {
         cursor: not-allowed;
       }
-      
+
       &-grey {
-        background: #F3F3F3;
+        background: #f3f3f3;
       }
     }
   }
 }
-

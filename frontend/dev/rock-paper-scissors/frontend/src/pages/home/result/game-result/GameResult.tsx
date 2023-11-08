@@ -9,7 +9,7 @@ type Props = {
   winner: Hex;
   loosers: Hex[];
   account: Hex;
-  onClickClose?:()=>void;
+  onClickClose?: () => void;
 };
 
 function GameResult({ onClickClose, name, game, winner, loosers, account }: Props) {
@@ -25,7 +25,7 @@ function GameResult({ onClickClose, name, game, winner, loosers, account }: Prop
         <p className={styles.address}>{winner}</p>
       </div>
       <Players heading="Loosers" list={loosers as Hex[]} center />
-      <Button text="Close" size="large" className={styles.button} onClick={onClickClose}/>
+      <Button text="Close" size="large" className={styles.button} onClick={onClickClose} />
     </div>
   );
 }

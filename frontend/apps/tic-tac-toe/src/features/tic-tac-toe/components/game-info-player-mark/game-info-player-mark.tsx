@@ -1,27 +1,23 @@
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
-import styles from './game-info-player-mark.module.scss'
-import { GameMark } from '../game-mark'
-import type { Mark } from '../../types'
-import { variantsPlayerMark } from '../../variants'
-import { BaseComponentProps } from '@/app/types'
+import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
+import styles from './game-info-player-mark.module.scss';
+import { GameMark } from '../game-mark';
+import type { Mark } from '../../types';
+import { variantsPlayerMark } from '../../variants';
+import { BaseComponentProps } from '@/app/types';
 
 type GameSelectedFigureProps = BaseComponentProps & {
-  mark: Mark
-  isNewGame: boolean
-}
+  mark: Mark;
+  isNewGame: boolean;
+};
 
-export function GameInfoPlayerMark({
-  mark,
-  className,
-  isNewGame,
-}: GameSelectedFigureProps) {
-  const [isShown, setIsShown] = useState(false)
+export function GameInfoPlayerMark({ mark, className, isNewGame }: GameSelectedFigureProps) {
+  const [isShown, setIsShown] = useState(false);
 
   useEffect(() => {
-    if (isNewGame && isShown) setIsShown(false)
+    if (isNewGame && isShown) setIsShown(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isNewGame])
+  }, [isNewGame]);
 
   return isNewGame && !isShown ? (
     <motion.div
@@ -29,10 +25,9 @@ export function GameInfoPlayerMark({
       animate="center"
       variants={variantsPlayerMark}
       onAnimationComplete={() => {
-        setIsShown(true)
+        setIsShown(true);
       }}
-      className={className}
-    >
+      className={className}>
       <div className={styles.wrapper}>
         <div className={styles.box}>
           <GameMark mark={mark} />
@@ -42,5 +37,5 @@ export function GameInfoPlayerMark({
         </div>
       </div>
     </motion.div>
-  ) : null
+  ) : null;
 }

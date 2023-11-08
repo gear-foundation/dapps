@@ -1,31 +1,22 @@
-import { Header } from '@tanstack/table-core'
-import clsx from 'clsx'
-import { ArrowDownAZ, ArrowUpAZ } from 'lucide-react'
-import { CaretDown } from '@/assets/images'
-import styles from './table.module.scss'
+import { Header } from '@tanstack/table-core';
+import clsx from 'clsx';
+import { ArrowDownAZ, ArrowUpAZ } from 'lucide-react';
+import { CaretDown } from '@/assets/images';
+import styles from './table.module.scss';
 
 type TableHeaderActionsProps<TData, TValue> = {
-  header: Header<TData, TValue>
-  title: string
-}
+  header: Header<TData, TValue>;
+  title: string;
+};
 
-export function DataTableHeaderActions<TData, TValue>({
-  header,
-  title,
-}: TableHeaderActionsProps<TData, TValue>) {
+export function DataTableHeaderActions<TData, TValue>({ header, title }: TableHeaderActionsProps<TData, TValue>) {
   return (
     <div className={styles['header-col']}>
-      <button
-        type="button"
-        onClick={header.column.getToggleSortingHandler()}
-        className={styles.sorting}
-      >
+      <button type="button" onClick={header.column.getToggleSortingHandler()} className={styles.sorting}>
         {{
           asc: <ArrowDownAZ width={16} height={16} />,
           desc: <ArrowUpAZ width={16} height={16} />,
-        }[header.column.getIsSorted() as string] ?? (
-          <CaretDown width={20} height={20} />
-        )}
+        }[header.column.getIsSorted() as string] ?? <CaretDown width={20} height={20} />}
       </button>
       {/*<DropdownMenu>*/}
       {/*  <DropdownMenuTrigger className="transition-colors hover:text-neutral-300">*/}
@@ -50,5 +41,5 @@ export function DataTableHeaderActions<TData, TValue>({
       {/*  </DropdownMenuContent>*/}
       {/*</DropdownMenu>*/}
     </div>
-  )
+  );
 }

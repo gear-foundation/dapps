@@ -1,7 +1,7 @@
-import { cva, type VariantProps } from 'class-variance-authority'
-import { ButtonHTMLAttributes } from 'react'
-import { Loader2 } from 'lucide-react'
-import styles from './buttons.module.scss'
+import { cva, type VariantProps } from 'class-variance-authority';
+import { ButtonHTMLAttributes } from 'react';
+import { Loader2 } from 'lucide-react';
+import styles from './buttons.module.scss';
 
 export const buttonVariants = cva('', {
   variants: {
@@ -32,12 +32,10 @@ export const buttonVariants = cva('', {
     state: 'normal',
     width: 'normal',
   },
-})
+});
 
-export interface ButtonProps
-  extends ButtonHTMLAttributes<HTMLButtonElement>,
-    VariantProps<typeof buttonVariants> {
-  isLoading?: boolean
+export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<typeof buttonVariants> {
+  isLoading?: boolean;
 }
 
 export function Button({
@@ -62,12 +60,9 @@ export function Button({
         className,
       })}
       disabled={disabled || isLoading}
-      {...props}
-    >
-      {isLoading && (
-        <Loader2 width={20} height={20} className={styles.loader} />
-      )}
+      {...props}>
+      {isLoading && <Loader2 width={20} height={20} className={styles.loader} />}
       {children}
     </button>
-  )
+  );
 }

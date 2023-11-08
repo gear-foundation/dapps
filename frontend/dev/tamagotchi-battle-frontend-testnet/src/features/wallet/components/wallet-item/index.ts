@@ -1,3 +1,3 @@
-import { WalletItem } from './WalletItem';
+import { WalletItem } from './WalletItem'
 
-export { WalletItem };
+export { WalletItem }

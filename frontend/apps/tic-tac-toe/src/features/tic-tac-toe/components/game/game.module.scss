@@ -1,4 +1,4 @@
-@use "@/utils" as *;
+@use '@/utils' as *;
 
 .game {
   display: grid;
@@ -15,7 +15,7 @@
   }
 
   @media screen and (max-width: 767px) {
-    grid-template-areas:  'heading' 'text' 'game' 'actions';
+    grid-template-areas: 'heading' 'text' 'game' 'actions';
     grid-template-columns: 1fr;
     grid-gap: 16px;
     padding: 0 16px;
@@ -37,7 +37,7 @@
     }
 
     .loose {
-      --color-to: #CFCFCF;
+      --color-to: #cfcfcf;
     }
   }
 
@@ -67,7 +67,6 @@
   &__field {
     grid-area: game;
     position: relative;
-
 
     @media screen and (max-width: 767px) {
       padding: 16px 0;

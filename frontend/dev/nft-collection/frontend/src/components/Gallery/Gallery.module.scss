@@ -3,7 +3,7 @@
   padding: 20px 0;
   position: relative;
   display: grid;
-  grid-template-columns: repeat(4, 1fr); 
+  grid-template-columns: repeat(4, 1fr);
   gap: 30px 10px;
 }
 
@@ -11,7 +11,7 @@
   position: relative;
   width: 100%;
   display: grid;
-  grid-template-columns: repeat(4, 1fr); 
+  grid-template-columns: repeat(4, 1fr);
   gap: 30px 10px;
 
   .empty-item {
@@ -51,7 +51,7 @@
 
 .item-enter {
   opacity: 0;
-  transform: scale(0.5); 
+  transform: scale(0.5);
 }
 
 .item-enter-active {
@@ -68,5 +68,5 @@
 .item-exit-active {
   opacity: 0;
   transform: scale(0.5);
-  transition: opacity 500ms, transform 500ms; 
+  transition: opacity 500ms, transform 500ms;
 }

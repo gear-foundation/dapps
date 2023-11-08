@@ -6,9 +6,9 @@
   align-items: center;
   flex-direction: column;
 
-  .timeUnit {    
+  .timeUnit {
     @include heading(0.5rem, 1.3125rem);
-  }  
+  }
 }
 
 .clockFace {

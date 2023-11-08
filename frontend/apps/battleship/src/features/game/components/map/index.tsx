@@ -1,4 +1,4 @@
-import Map from "./map"
-import MapEnemy from "./mapEnemy"
+import Map from './map';
+import MapEnemy from './mapEnemy';
 
-export { Map, MapEnemy }
+export { Map, MapEnemy };

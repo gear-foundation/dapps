@@ -24,12 +24,12 @@
   cursor: pointer;
   border: none;
   font-size: $fontSize;
-  padding: 0.625rem 1.25rem;  
+  padding: 0.625rem 1.25rem;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 5px;
   white-space: nowrap;
 
-  &:hover, 
+  &:hover,
   &:focus {
     color: $textColor;
     background: $buttonColorSecondaryHover;

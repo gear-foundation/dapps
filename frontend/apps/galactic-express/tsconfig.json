@@ -15,11 +15,9 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "baseUrl": "src",
+    "baseUrl": "src"
   },
-  "files":[
-    "index.d.ts"
-  ],
+  "files": ["index.d.ts"],
   "include": ["src", "./.eslintrc.js"],
   "exclude": ["node_modules", "dist"]
 }

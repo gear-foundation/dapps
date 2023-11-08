@@ -1,1 +1,1 @@
-export { LoadingError } from './loading-error'
+export { LoadingError } from './loading-error';

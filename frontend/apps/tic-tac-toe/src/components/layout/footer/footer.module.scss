@@ -18,7 +18,7 @@
 
   &.mobile {
     @media screen and (max-width: 767px) {
-      display: grid!important;
+      display: grid !important;
       grid-template-columns: 1fr 1fr;
       grid-gap: 20px;
       padding-bottom: 28px;
@@ -47,10 +47,9 @@
 }
 
 .banner {
-  @media screen and (max-width: 767px){
+  @media screen and (max-width: 767px) {
     padding-top: 24px;
   }
-
 
   &__container {
     position: relative;
@@ -61,10 +60,14 @@
     padding: 40px 56px 40px 40px;
     color: #fff;
     background-color: #000000;
-    background-image: radial-gradient(63.92% 185.86% at 41.88% 70.03%, rgba(0, 255, 196, 0.2) 0%, rgba(0, 255, 196, 0) 100%);
+    background-image: radial-gradient(
+      63.92% 185.86% at 41.88% 70.03%,
+      rgba(0, 255, 196, 0.2) 0%,
+      rgba(0, 255, 196, 0) 100%
+    );
     border-radius: 8px;
 
-    @media screen and (max-width: 767px){
+    @media screen and (max-width: 767px) {
       grid-template-columns: 1fr;
       padding: 16px;
     }
@@ -80,7 +83,7 @@
     margin: 0;
     background-color: #00ffc4;
 
-    @media screen and (max-width: 767px){
+    @media screen and (max-width: 767px) {
       top: 38px + 16px;
     }
   }
@@ -95,7 +98,7 @@
     line-height: 41px;
     letter-spacing: 0.02em;
 
-    @media screen and (max-width: 767px){
+    @media screen and (max-width: 767px) {
       font-size: 23px;
       line-height: 28px;
     }
@@ -115,7 +118,7 @@
     line-height: 25px;
     letter-spacing: 0;
 
-    @media screen and (max-width: 767px){
+    @media screen and (max-width: 767px) {
       font-size: 14px;
       line-height: 20px;
     }
@@ -135,7 +138,7 @@
     font-size: 18px;
     line-height: 25px;
 
-    @media screen and (max-width: 767px){
+    @media screen and (max-width: 767px) {
       align-items: flex-start;
       padding: 16px;
       font-size: 14px;
@@ -174,7 +177,7 @@
     background-color: #00ffc4;
     color: #0b1114;
 
-    @media screen and (max-width: 767px){
+    @media screen and (max-width: 767px) {
       padding: 4px;
     }
   }

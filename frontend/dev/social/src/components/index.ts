@@ -4,6 +4,6 @@ import { Filter } from './filter';
 import { OnLogin } from './on-login';
 import { MessageModal } from './message-modal';
 import { MessageItem } from './message-item';
-import { InfoText } from './info-text'
+import { InfoText } from './info-text';
 
 export { Header, Footer, ApiLoader, Loader, Filter, OnLogin, MessageModal, MessageItem, InfoText };

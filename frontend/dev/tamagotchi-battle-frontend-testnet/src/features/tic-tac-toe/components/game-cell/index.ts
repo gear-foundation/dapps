@@ -1,1 +1,1 @@
-export { GameCell } from './game-cell';
+export { GameCell } from './game-cell'

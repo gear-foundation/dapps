@@ -3,8 +3,7 @@ import { HexString } from '@polkadot/util/types';
 import { LOCAL_STORAGE } from 'consts';
 import { getStatus, getCountdown } from './status';
 
-const isLoggedIn = ({ address }: InjectedAccountWithMeta) =>
-  localStorage[LOCAL_STORAGE.ACCOUNT] === address;
+const isLoggedIn = ({ address }: InjectedAccountWithMeta) => localStorage[LOCAL_STORAGE.ACCOUNT] === address;
 
 const isWinner = (value: HexString) => !value.startsWith('0x00');
 

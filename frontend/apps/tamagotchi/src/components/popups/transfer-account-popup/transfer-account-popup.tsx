@@ -1,5 +1,5 @@
-import { Modal } from "@gear-js/ui";
-import { TransferAccountForm } from "@/components/forms/transfer-account-form";
+import { Modal } from '@gear-js/ui';
+import { TransferAccountForm } from '@/components/forms/transfer-account-form';
 
 export const TransferAccountPopup = ({ close }: { close: () => void }) => {
   return (

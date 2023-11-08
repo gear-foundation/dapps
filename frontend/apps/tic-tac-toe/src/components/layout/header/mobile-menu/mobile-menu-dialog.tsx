@@ -1,39 +1,36 @@
-import { Button } from '@/components/ui/button'
-import styles from './mobile-menu.module.scss'
-import { useState } from 'react'
-import { ADDRESS } from '@/app/consts'
-import { useAccount } from '@gear-js/react-hooks'
-import { WalletIcon } from '@/features/wallet'
-import { useNodes } from '@/app/hooks/use-nodes-sync'
-import { AnimatePresence, motion } from 'framer-motion'
-import {
-  variantsOverlay,
-  variantsPanel,
-} from '@/components/ui/modal/modal.variants'
-import { Dialog } from '@headlessui/react'
-import { useAuth } from '@/features/auth'
-import { DialogsLibrary } from '@/components/ui/dialogs'
-import { Sprite } from '@/components/ui/sprite'
-import { useGame } from '@/features/tic-tac-toe/hooks'
+import { Button } from '@/components/ui/button';
+import styles from './mobile-menu.module.scss';
+import { useState } from 'react';
+import { ADDRESS } from '@/app/consts';
+import { useAccount } from '@gear-js/react-hooks';
+import { WalletIcon } from '@/features/wallet';
+import { useNodes } from '@/app/hooks/use-nodes-sync';
+import { AnimatePresence, motion } from 'framer-motion';
+import { variantsOverlay, variantsPanel } from '@/components/ui/modal/modal.variants';
+import { Dialog } from '@headlessui/react';
+import { useAuth } from '@/features/auth';
+import { DialogsLibrary } from '@/components/ui/dialogs';
+import { Sprite } from '@/components/ui/sprite';
+import { useGame } from '@/features/tic-tac-toe/hooks';
 
 export type MobileMenuDialogProps = {
-  onClose?(): void
-  open: boolean
-  setOpen(value: boolean): void
-}
+  onClose?(): void;
+  open: boolean;
+  setOpen(value: boolean): void;
+};
 
 export function MobileMenuDialog({ setOpen, open }: MobileMenuDialogProps) {
-  const { account } = useAccount()
-  const { signOut } = useAuth()
-  const { nodes } = useNodes()
-  const { resetGame } = useGame()
-  const currentNode = nodes?.find((n) => n.address === ADDRESS.NODE)
+  const { account } = useAccount();
+  const { signOut } = useAuth();
+  const { nodes } = useNodes();
+  const { resetGame } = useGame();
+  const currentNode = nodes?.find((n) => n.address === ADDRESS.NODE);
 
   const handleLogoutButtonClick = () => {
-    signOut()
-    setOpen(false)
-    resetGame()
-  }
+    signOut();
+    setOpen(false);
+    resetGame();
+  };
 
   return (
     <AnimatePresence initial={false}>
@@ -46,29 +43,19 @@ export function MobileMenuDialog({ setOpen, open }: MobileMenuDialogProps) {
           static
           className={styles.modal}
           open={open}
-          onClose={setOpen}
-        >
-          <motion.div
-            variants={variantsOverlay}
-            className={styles.modal__backdrop}
-          />
+          onClose={setOpen}>
+          <motion.div variants={variantsOverlay} className={styles.modal__backdrop} />
 
           <div className={styles.modal__wrapper}>
             <div className={styles.modal__container}>
-              <Dialog.Panel
-                as={motion.div}
-                variants={variantsPanel}
-                className={styles.modal__content}
-              >
+              <Dialog.Panel as={motion.div} variants={variantsPanel} className={styles.modal__content}>
                 <div className={styles.item}>
                   <div className={styles.item__icon}>
                     <Sprite name="vara-sign" size={16} />
                   </div>
                   <div className={styles.item__text}>
                     <p className={styles.item__title}>{currentNode?.caption}</p>
-                    <p className={styles.item__helper}>
-                      {currentNode?.address}
-                    </p>
+                    <p className={styles.item__helper}>{currentNode?.address}</p>
                   </div>
                 </div>
                 <hr />
@@ -88,13 +75,8 @@ export function MobileMenuDialog({ setOpen, open }: MobileMenuDialogProps) {
                   variants={{
                     opened: { opacity: 1, transition: { delay: 0.3 } },
                     closed: { opacity: 0 },
-                  }}
-                >
-                  <Button
-                    variant="text"
-                    onClick={() => setOpen(false)}
-                    className={styles.modal__close}
-                  >
+                  }}>
+                  <Button variant="text" onClick={() => setOpen(false)} className={styles.modal__close}>
                     <Sprite name="close" width={25} height={24} />
                   </Button>
                 </motion.div>
@@ -104,19 +86,15 @@ export function MobileMenuDialog({ setOpen, open }: MobileMenuDialogProps) {
         </Dialog>
       )}
     </AnimatePresence>
-  )
+  );
 }
 
 function SwitchAccount({ onClose }: { onClose(): void }) {
-  const [openWallet, setOpenWallet] = useState(false)
+  const [openWallet, setOpenWallet] = useState(false);
   return (
     <>
       <Button onClick={() => setOpenWallet(true)}>Change account</Button>
-      <DialogsLibrary.WalletModal
-        open={openWallet}
-        setOpen={setOpenWallet}
-        onClose={onClose}
-      />
+      <DialogsLibrary.WalletModal open={openWallet} setOpen={setOpenWallet} onClose={onClose} />
     </>
-  )
+  );
 }

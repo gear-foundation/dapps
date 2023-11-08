@@ -1,17 +1,9 @@
 {
-  "include": [
-    "./src"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
+  "include": ["./src"],
+  "exclude": ["node_modules"],
   "compilerOptions": {
     "target": "ES2015",
-    "lib": [
-      "dom",
-      "dom.iterable",
-      "esnext"
-    ],
+    "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -27,15 +19,11 @@
     "jsx": "react-jsx",
     "baseUrl": "./src",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
       //      "@/app/*": ["./src/app/*"],
       //      "@/assets/*": ["./src/assets/*"],
       //      "@/components/*": ["./src/components/*"]
     }
   },
-  "files":[
-    "index.d.ts"
-  ],
+  "files": ["index.d.ts"]
 }

@@ -1,4 +1,4 @@
-@use "@/assets/styles/utils" as *;
+@use '@/assets/styles/utils' as *;
 
 //.viewport {
 //  padding: 4px;
@@ -29,12 +29,12 @@
   text-align: left;
   transition: color 350ms ease;
 
-  &[data-state="checked"] {
-    color: #0ED3A3;
+  &[data-state='checked'] {
+    color: #0ed3a3;
   }
 
   &[data-highlighted] {
-    color: #0ED3A3;
+    color: #0ed3a3;
   }
 
   &[data-disabled] {

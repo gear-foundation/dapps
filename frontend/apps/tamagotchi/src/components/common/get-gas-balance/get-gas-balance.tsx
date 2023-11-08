@@ -1,6 +1,6 @@
-import { TooltipWrapper, Button, buttonStyles } from '@gear-js/ui'
-import { cn } from '@/app/utils'
-import { SpriteIcon } from '@/components/ui/sprite-icon'
+import { TooltipWrapper, Button, buttonStyles } from '@gear-js/ui';
+import { cn } from '@/app/utils';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
 
 export const GetGasBalance = () => {
   return (
@@ -22,5 +22,5 @@ export const GetGasBalance = () => {
         />
       </TooltipWrapper>
     </div>
-  )
-}
+  );
+};

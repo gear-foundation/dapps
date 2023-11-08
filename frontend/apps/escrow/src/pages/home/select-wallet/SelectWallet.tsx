@@ -22,19 +22,12 @@ function SelectWallet({ wallets, onSubmit }: Props) {
   const handleSubmit = ({ id }: typeof initialValues) => onSubmit(id);
 
   // TODO: walletId should be number
-  const getOptions = () =>
-    wallets?.map(([id]) => ({ label: id, value: withoutCommas(id) }));
+  const getOptions = () => wallets?.map(([id]) => ({ label: id, value: withoutCommas(id) }));
   const options = getOptions() || [];
 
   return isAnyWallet ? (
     <form onSubmit={form.onSubmit(handleSubmit)}>
-      <Select
-        label="Wallet ID"
-        options={options}
-        color="light"
-        direction="y"
-        {...getInputProps('id')}
-      />
+      <Select label="Wallet ID" options={options} color="light" direction="y" {...getInputProps('id')} />
       <Button type="submit" text="Continue" icon={check} block />
     </form>
   ) : (

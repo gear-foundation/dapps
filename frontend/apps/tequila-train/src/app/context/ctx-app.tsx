@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useState } from "react";
+import { createContext, ReactNode, useState } from 'react';
 
 export const AppCtx = createContext({} as ReturnType<typeof useProgram>);
 
@@ -16,7 +16,7 @@ const useProgram = () => {
     openEmptyPopup,
     setOpenEmptyPopup,
     openWinnerPopup,
-    setOpenWinnerPopup
+    setOpenWinnerPopup,
   };
 };
 

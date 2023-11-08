@@ -101,7 +101,7 @@
     }
 
     &Active {
-      background: linear-gradient(270deg,rgba(100,255,219,.07) 0%,rgba(0,255,196,.07) 100%);
+      background: linear-gradient(270deg, rgba(100, 255, 219, 0.07) 0%, rgba(0, 255, 196, 0.07) 100%);
       cursor: not-allowed;
     }
 
@@ -156,7 +156,7 @@
   border: none;
   font-size: 14px;
   font-weight: 700;
-  letter-spacing: .54px;
+  letter-spacing: 0.54px;
   transition: opacity 300ms ease;
   cursor: pointer;
   @include gap(10px, right);
@@ -165,7 +165,6 @@
     opacity: 50%;
   }
 }
-
 
 .modal {
   position: relative;
@@ -263,4 +262,3 @@
     }
   }
 }
-

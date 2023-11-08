@@ -20,7 +20,6 @@ const useRockPaperScissors = (programID: Hex, metaBuffer: Buffer) => {
   const payloadWinner = useMemo(() => ({ Winner: null }), []);
   const payloadRound = useMemo(() => ({ CurrentRound: null }), []);
 
-  
   const gameState = useReadState<StateConfigType>(programID, metaBuffer, payloadConfig);
   const gameStageState = useReadState<StateGameStageType>(programID, metaBuffer, payloadGameStage);
   const lobbyState = useReadState<StateLobbyType>(programID, metaBuffer, payloadLobby);
@@ -28,7 +27,6 @@ const useRockPaperScissors = (programID: Hex, metaBuffer: Buffer) => {
   const timeLeft = useReadState<StateTimeLeftType>(programID, metaBuffer, payloadTime);
   const playerMoves = useReadState<PlayersMoveType>(programID, metaBuffer, payloadPlayerMoves);
   const roundState = useReadState<StateRoundType>(programID, metaBuffer, payloadRound);
-  
 
   const { betSize, moveTimeoutMs, revealTimeoutMs, entryTimeoutMs, playersCountLimit } = gameState.state?.Config || {};
   return {

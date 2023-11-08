@@ -1,5 +1,5 @@
-import { WALLET } from './consts';
+import { WALLET } from './consts'
 
-type WalletId = keyof typeof WALLET;
+type WalletId = keyof typeof WALLET
 
-export type { WalletId };
+export type { WalletId }

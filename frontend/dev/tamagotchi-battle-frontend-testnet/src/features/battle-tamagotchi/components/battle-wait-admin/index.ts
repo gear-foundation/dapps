@@ -1,1 +1,1 @@
-export { BattleWaitAdmin } from './battle-wait-admin';
+export { BattleWaitAdmin } from './battle-wait-admin'

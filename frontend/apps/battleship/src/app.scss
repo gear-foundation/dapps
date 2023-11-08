@@ -1,9 +1,9 @@
-@use "@/assets/styles";
-@import "global.css";
+@use '@/assets/styles';
+@import 'global.css';
 
 body {
-  background-image: url("./assets/images/bg.png");
-  background-color: #2B2B2B;
+  background-image: url('./assets/images/bg.png');
+  background-color: #2b2b2b;
 }
 
 #root {

@@ -1,9 +1,9 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import path from 'path'
-import nodePolyfills from 'vite-plugin-node-stdlib-browser'
-import eslint from 'vite-plugin-eslint'
-import svgr from 'vite-plugin-svgr'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
+import nodePolyfills from 'vite-plugin-node-stdlib-browser';
+import eslint from 'vite-plugin-eslint';
+import svgr from 'vite-plugin-svgr';
 // import autoprefixer from 'autoprefixer'
 
 // import wasm from "vite-plugin-wasm";
@@ -40,4 +40,4 @@ export default defineConfig({
   //     plugins: [autoprefixer],
   //   },
   // },
-})
+});

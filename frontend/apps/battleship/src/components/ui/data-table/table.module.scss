@@ -1,4 +1,4 @@
-@use "@/assets/styles/utils" as *;
+@use '@/assets/styles/utils' as *;
 
 .notFound {
   height: 80px;
@@ -43,7 +43,7 @@
     border: none;
 
     &:disabled {
-      --btn-text-color: #A0A0A0;
+      --btn-text-color: #a0a0a0;
     }
 
     &.left {

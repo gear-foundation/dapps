@@ -1,3 +1,3 @@
-import { Wallet } from './Wallet';
+import { Wallet } from './Wallet'
 
-export { Wallet };
+export { Wallet }

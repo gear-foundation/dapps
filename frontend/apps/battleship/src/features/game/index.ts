@@ -1,1 +1,1 @@
-export { ShipArrangement, GameProcess, GameEndModal, Map } from './components'
+export { ShipArrangement, GameProcess, GameEndModal, Map } from './components';

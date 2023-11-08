@@ -3,7 +3,7 @@
 .wrapper {
   display: inline-flex;
   align-items: center;
-  @include gap(10px,right);
+  @include gap(10px, right);
 
   svg {
     width: 20px;
@@ -37,7 +37,7 @@
 }
 
 .points {
-  @include gap(4px,right);
+  @include gap(4px, right);
 
   .balance {
     line-height: 20px;

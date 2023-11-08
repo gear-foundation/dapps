@@ -13,13 +13,13 @@
   touch-action: none;
 
   &:disabled,
-  &[aria-disabled="true"] {
+  &[aria-disabled='true'] {
     pointer-events: auto;
     cursor: not-allowed;
   }
 }
 
-a.base[aria-disabled="true"] {
+a.base[aria-disabled='true'] {
   pointer-events: none;
 }
 
@@ -103,7 +103,7 @@ a.base[aria-disabled="true"] {
     }
   }
 
-  &[aria-disabled="true"],
+  &[aria-disabled='true'],
   &:disabled {
     &::before {
       background: linear-gradient(270deg, rgba(100, 255, 219, 0.07) 0%, rgba(0, 255, 196, 0.07) 100%);
@@ -121,7 +121,7 @@ a.base[aria-disabled="true"] {
   --btn-bg-color: #000;
   --btn-text-color: #fff;
 
-  &:not(:disabled):not([aria-disabled="true"]) {
+  &:not(:disabled):not([aria-disabled='true']) {
     &:hover,
     &:focus-visible {
       --btn-bg-color: #404040;
@@ -138,7 +138,7 @@ a.base[aria-disabled="true"] {
   --btn-bg-color: #fff;
   --btn-text-color: #000;
 
-  &:not(:disabled):not([aria-disabled="true"]) {
+  &:not(:disabled):not([aria-disabled='true']) {
     &:hover,
     &:focus-visible {
       --btn-bg-color: #d4d4d4;
@@ -156,7 +156,7 @@ a.base[aria-disabled="true"] {
   --btn-border-color: #000;
   --btn-text-color: #000;
 
-  &:not(:disabled):not([aria-disabled="true"]) {
+  &:not(:disabled):not([aria-disabled='true']) {
     &:hover,
     &:focus-visible {
       --btn-bg-color: #000;

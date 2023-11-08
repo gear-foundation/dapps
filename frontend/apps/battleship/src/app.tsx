@@ -1,27 +1,27 @@
-import './app.scss'
-import '@gear-js/vara-ui/dist/style.css'
-import { useAccount, useApi } from '@gear-js/react-hooks'
-import { Routing } from './pages'
-import { ApiLoader } from '@/components'
-import { Header } from '@/components/layout'
-import { withProviders } from '@/app/hocs'
+import './app.scss';
+import '@gear-js/vara-ui/dist/style.css';
+import { useAccount, useApi } from '@gear-js/react-hooks';
+import { Routing } from './pages';
+import { ApiLoader } from '@/components';
+import { Header } from '@/components/layout';
+import { withProviders } from '@/app/hocs';
 
-import { useWalletSync } from '@/features/wallet/hooks'
-import { ADDRESS } from '@/app/consts'
-import { useEffect } from 'react'
+import { useWalletSync } from '@/features/wallet/hooks';
+import { ADDRESS } from '@/app/consts';
+import { useEffect } from 'react';
 
 function Component() {
-  const { isApiReady } = useApi()
-  const { isAccountReady } = useAccount()
+  const { isApiReady } = useApi();
+  const { isAccountReady } = useAccount();
 
-  useWalletSync()
+  useWalletSync();
 
-  const isAppReady = isApiReady && isAccountReady
+  const isAppReady = isApiReady && isAccountReady;
 
   useEffect(() => {
-    console.log('ADDRESS NODE:', ADDRESS.NODE)
-    console.log('ADDRESS GAME:', ADDRESS.GAME)
-  }, [])
+    console.log('ADDRESS NODE:', ADDRESS.NODE);
+    console.log('ADDRESS GAME:', ADDRESS.GAME);
+  }, []);
 
   return (
     <main>
@@ -34,7 +34,7 @@ function Component() {
         <ApiLoader />
       )}
     </main>
-  )
+  );
 }
 
-export const App = withProviders(Component)
+export const App = withProviders(Component);

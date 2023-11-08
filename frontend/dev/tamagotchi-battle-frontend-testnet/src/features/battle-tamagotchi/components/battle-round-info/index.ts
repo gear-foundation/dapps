@@ -1,1 +1,1 @@
-export { BattleRoundInfo } from './battle-round-info';
+export { BattleRoundInfo } from './battle-round-info'

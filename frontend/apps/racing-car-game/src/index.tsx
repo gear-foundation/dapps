@@ -7,10 +7,7 @@ import TagManager from 'react-gtm-module';
 import { App } from '@/App';
 import { ADDRESS } from '@/consts';
 
-if (
-  process.env.NODE_ENV === 'production' &&
-  process.env.REACT_APP_GTM_ID_CARS
-) {
+if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_GTM_ID_CARS) {
   TagManager.initialize({
     gtmId: process.env.REACT_APP_GTM_ID_CARS,
   });
@@ -30,7 +27,7 @@ if (ADDRESS.SENTRY_DSN) {
         ),
       }),
       new Sentry.Replay({
-        maskAllText: false
+        maskAllText: false,
       }),
     ],
     // Set 'tracePropagationTargets' to control for which URLs distributed tracing should be enabled

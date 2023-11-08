@@ -1,5 +1,12 @@
 import { GearApi, getWasmMetadata, Hex, Metadata, PayloadType } from '@gear-js/api';
-import { UploadProgramModel, UploadProgram, ProgramState, MessageModel, Action, Account } from "gear-program-interface-core";
+import {
+  UploadProgramModel,
+  UploadProgram,
+  ProgramState,
+  MessageModel,
+  Action,
+  Account,
+} from 'gear-program-interface-core';
 import { payloads } from './payloads';
 import * as Blake2b from 'blake2b';
 
@@ -39,7 +46,7 @@ export async function deploy(
     initPayload,
   };
 
-  UploadProgram(gearApi, account, code, programOptions, programIdHandler)
+  UploadProgram(gearApi, account, code, programOptions, programIdHandler);
 }
 
 async function sendAction(
@@ -50,13 +57,13 @@ async function sendAction(
   eventHandler: (event: any) => void,
 ) {
   const metaBuffer = await getMeta();
-  const meta = (metaBuffer !== null && metaBuffer !== undefined) ? await getWasmMetadata(metaBuffer) : null;
+  const meta = metaBuffer !== null && metaBuffer !== undefined ? await getWasmMetadata(metaBuffer) : null;
   let messageModel: MessageModel = {
     destination: programId,
     payload: payload,
   };
 
-  Action(gearApi, account, messageModel, eventHandler, meta,);
+  Action(gearApi, account, messageModel, eventHandler, meta);
 }
 
 export async function addPlayerInLobby(
@@ -66,13 +73,7 @@ export async function addPlayerInLobby(
   player: Hex,
   eventHandler: (event: any) => void,
 ) {
-  sendAction(
-    gearApi,
-    programId,
-    account,
-    payloads.addPlayerInLobby(player),
-    eventHandler,
-  )
+  sendAction(gearApi, programId, account, payloads.addPlayerInLobby(player), eventHandler);
 }
 
 export async function removePlayerFromLobby(
@@ -82,13 +83,7 @@ export async function removePlayerFromLobby(
   player: Hex,
   eventHandler: (event: any) => void,
 ) {
-  sendAction(
-    gearApi,
-    programId,
-    account,
-    payloads.removePlayerFromLobby(player),
-    eventHandler,
-  )
+  sendAction(gearApi, programId, account, payloads.removePlayerFromLobby(player), eventHandler);
 }
 
 export async function setLobbyPlayersList(
@@ -98,13 +93,7 @@ export async function setLobbyPlayersList(
   players_list: [Hex],
   eventHandler: (event: any) => void,
 ) {
-  sendAction(
-    gearApi,
-    programId,
-    account,
-    payloads.setLobbyPlayersList(players_list),
-    eventHandler,
-  )
+  sendAction(gearApi, programId, account, payloads.setLobbyPlayersList(players_list), eventHandler);
 }
 
 export async function setBetSize(
@@ -114,13 +103,7 @@ export async function setBetSize(
   betSize: number,
   eventHandler: (event: any) => void,
 ) {
-  sendAction(
-    gearApi,
-    programId,
-    account,
-    payloads.setBetSize(betSize),
-    eventHandler,
-  )
+  sendAction(gearApi, programId, account, payloads.setBetSize(betSize), eventHandler);
 }
 
 export async function makeMove(
@@ -138,13 +121,7 @@ export async function makeMove(
   const input = Buffer.from(moveWithPass);
   const result = Blake2b(output.length).update(input).digest('hex');
 
-  sendAction(
-    gearApi,
-    programId,
-    account,
-    payloads.makeMove(result),
-    eventHandler,
-  )
+  sendAction(gearApi, programId, account, payloads.makeMove(result), eventHandler);
 }
 
 export async function reveal(
@@ -155,50 +132,21 @@ export async function reveal(
   password: string,
   eventHandler: (event: any) => void,
 ) {
-  sendAction(
-    gearApi,
-    programId,
-    account,
-    payloads.reveal(move.toString() + password),
-    eventHandler,
-  )
+  sendAction(gearApi, programId, account, payloads.reveal(move.toString() + password), eventHandler);
 }
 
-export async function stopGame(
-  gearApi: GearApi,
-  programId: Hex,
-  account: Account,
-  eventHandler: (event: any) => void,
-) {
-  sendAction(
-    gearApi,
-    programId,
-    account,
-    payloads.stopGame,
-    eventHandler,
-  )
+export async function stopGame(gearApi: GearApi, programId: Hex, account: Account, eventHandler: (event: any) => void) {
+  sendAction(gearApi, programId, account, payloads.stopGame, eventHandler);
 }
 
-export async function currentBetSize(
-  gearApi: GearApi,
-  programId: Hex,
-  metaBuffer?: Buffer,
-) {
+export async function currentBetSize(gearApi: GearApi, programId: Hex, metaBuffer?: Buffer) {
   return await ProgramState(gearApi, programId, payloads.betSizeState, metaBuffer);
 }
 
-export async function currentLobbyList(
-  gearApi: GearApi,
-  programId: Hex,
-  metaBuffer?: Buffer,
-) {
+export async function currentLobbyList(gearApi: GearApi, programId: Hex, metaBuffer?: Buffer) {
   return await ProgramState(gearApi, programId, payloads.lobbyListState, metaBuffer);
 }
 
-export async function currentGameState(
-  gearApi: GearApi,
-  programId: Hex,
-  metaBuffer?: Buffer,
-) {
+export async function currentGameState(gearApi: GearApi, programId: Hex, metaBuffer?: Buffer) {
   return await ProgramState(gearApi, programId, payloads.gameState, metaBuffer);
 }

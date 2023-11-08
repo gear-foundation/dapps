@@ -1,1 +1,1 @@
-export { BattleRoundStatsAvatar } from './battle-round-stats-avatar';
+export { BattleRoundStatsAvatar } from './battle-round-stats-avatar'

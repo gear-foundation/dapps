@@ -4,18 +4,13 @@
 .subtitle {
   @include heading(20px, 1.3);
 
-  .line{
+  .line {
     display: inline-block;
     vertical-align: middle;
     width: 150px;
     border-width: 1px;
     border-style: solid;
-    border-image: 
-      linear-gradient(
-        to right, 
-        $subtitleLineColor, 
-        rgba($subtitleLineColor, 0)
-      ) 15%;
+    border-image: linear-gradient(to right, $subtitleLineColor, rgba($subtitleLineColor, 0)) 15%;
     margin-left: 0.625rem;
   }
 }

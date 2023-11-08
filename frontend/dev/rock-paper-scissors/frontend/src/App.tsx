@@ -7,7 +7,7 @@ import { useWasm } from 'hooks';
 
 function Component() {
   const { isApiReady } = useApi();
-  const { isAccountReady} = useAccount();
+  const { isAccountReady } = useAccount();
   const wasm = useWasm();
 
   return (

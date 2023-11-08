@@ -44,9 +44,7 @@ function Game({
       <div className={styles.players}>
         <BackButton onClick={() => onRouteChange('')} />
         <Players finishedPlayers={finishedPlayers as string[]} list={players as Hex[]} heading="Current players" />
-        {!admin && buttonVisible && (
-          <ButtonMove stage={stage} onRouteChange={onRouteChange} />
-        )}
+        {!admin && buttonVisible && <ButtonMove stage={stage} onRouteChange={onRouteChange} />}
       </div>
       <div className={styles.summary}>
         <h2 className={styles.heading}>{heading}</h2>

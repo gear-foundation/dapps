@@ -27,9 +27,8 @@ programs:
     path_to_wasm: ./programs/player.opt.wasm
     path_to_meta: ./programs/player.meta.txt
     payload: 0x00
-           
-transactions:
 
+transactions:
   - type: upload_program
     program: 0
     account: alice
@@ -45,5 +44,3 @@ transactions:
   - type: upload_program
     program: 3
     account: alice
-
- 

@@ -1,1 +1,1 @@
-export { HelpDescription } from './help-description'
+export { HelpDescription } from './help-description';

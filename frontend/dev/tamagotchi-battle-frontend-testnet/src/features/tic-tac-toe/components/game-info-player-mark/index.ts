@@ -1,1 +1,1 @@
-export { GameInfoPlayerMark } from './game-info-player-mark';
+export { GameInfoPlayerMark } from './game-info-player-mark'

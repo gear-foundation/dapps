@@ -29,8 +29,17 @@ function useWasmRequest(name: string) {
     const url = `${ADDRESS.DAPPS_API}?${params}`;
     fetch(url)
       .then((response) => response.json() as Promise<Result>)
-      .then(({ id, codeHash, metaWasmBase64  }) => ({ codeHash, metaBuffer: Buffer.from(metaWasmBase64, 'base64'), programId: id }))
-      .then(async ({ metaBuffer, programId, codeHash }) => ({ codeHash, metaBuffer, programId, meta: await getWasmMetadata(metaBuffer) }))
+      .then(({ id, codeHash, metaWasmBase64 }) => ({
+        codeHash,
+        metaBuffer: Buffer.from(metaWasmBase64, 'base64'),
+        programId: id,
+      }))
+      .then(async ({ metaBuffer, programId, codeHash }) => ({
+        codeHash,
+        metaBuffer,
+        programId,
+        meta: await getWasmMetadata(metaBuffer),
+      }))
       .then((result) => setProgram(result))
       .catch(({ message }: Error) => alert.error(message));
     // eslint-disable-next-line react-hooks/exhaustive-deps

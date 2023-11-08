@@ -1,10 +1,10 @@
-import { defineConfig, loadEnv, splitVendorChunkPlugin } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import path from 'path'
-import nodePolyfills from 'vite-plugin-node-stdlib-browser'
-import eslint from 'vite-plugin-eslint'
-import svgr from 'vite-plugin-svgr'
-import { sentryVitePlugin } from '@sentry/vite-plugin'
+import { defineConfig, loadEnv, splitVendorChunkPlugin } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
+import nodePolyfills from 'vite-plugin-node-stdlib-browser';
+import eslint from 'vite-plugin-eslint';
+import svgr from 'vite-plugin-svgr';
+import { sentryVitePlugin } from '@sentry/vite-plugin';
 
 // import { visualizer } from 'rollup-plugin-visualizer'
 // import autoprefixer from 'autoprefixer'
@@ -13,7 +13,7 @@ import { sentryVitePlugin } from '@sentry/vite-plugin'
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
+  const env = loadEnv(mode, process.cwd(), '');
   return {
     resolve: {
       alias: {
@@ -43,29 +43,22 @@ export default defineConfig(({ mode }) => {
               id.includes('@noble')
               // id.includes('rxjs') ||
             ) {
-              return 'polkadot'
+              return 'polkadot';
             }
             if (id.includes('@open-ish') || id.includes('tslib')) {
-              return '@open-ish'
+              return '@open-ish';
             }
             if (id.includes('react-router') || id.includes('@remix-run')) {
-              return '@react-router'
+              return '@react-router';
             }
-            if (
-              id.includes('@headlessui') ||
-              id.includes('@radix-ui') ||
-              id.includes('framer-motion')
-            ) {
-              return 'app-ui'
+            if (id.includes('@headlessui') || id.includes('@radix-ui') || id.includes('framer-motion')) {
+              return 'app-ui';
             }
-            if (
-              id.includes('@gear-js') ||
-              id.includes('react-transition-group')
-            ) {
-              return '@gear-js'
+            if (id.includes('@gear-js') || id.includes('react-transition-group')) {
+              return '@gear-js';
             }
             if (id.includes('@sentry')) {
-              return '@sentry'
+              return '@sentry';
             }
           },
         },
@@ -90,5 +83,5 @@ export default defineConfig(({ mode }) => {
       }),
     ],
     assetsInclude: ['**/*.wasm?inline', '**/*.txt?inline'],
-  }
-})
+  };
+});

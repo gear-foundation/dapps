@@ -1,25 +1,25 @@
-import { HelpDescription } from '../ui/typography'
-import styles from './game.module.scss'
-import { GameField } from '../game-field'
-import { GameInfoPlayerMark } from '../game-info-player-mark'
-import type { IGameInstance } from '../../types'
-import { GameCountdown } from '../game-countdown'
-import { GameSkipButton } from '../game-skip-button'
-import { GameStartButton } from '../game-start-button'
-import { Heading } from '@/components/ui/heading'
-import { TextGradient } from '@/components/ui/text-gradient'
-import { useGame } from '@/features/tic-tac-toe/hooks'
-import { BaseComponentProps } from '@/app/types'
-import { ProgramMetadata } from '@gear-js/api'
+import { HelpDescription } from '../ui/typography';
+import styles from './game.module.scss';
+import { GameField } from '../game-field';
+import { GameInfoPlayerMark } from '../game-info-player-mark';
+import type { IGameInstance } from '../../types';
+import { GameCountdown } from '../game-countdown';
+import { GameSkipButton } from '../game-skip-button';
+import { GameStartButton } from '../game-start-button';
+import { Heading } from '@/components/ui/heading';
+import { TextGradient } from '@/components/ui/text-gradient';
+import { useGame } from '@/features/tic-tac-toe/hooks';
+import { BaseComponentProps } from '@/app/types';
+import { ProgramMetadata } from '@gear-js/api';
 
 type GameProps = BaseComponentProps & {
-  game: IGameInstance
-  meta: ProgramMetadata
-}
+  game: IGameInstance;
+  meta: ProgramMetadata;
+};
 
 export function Game({ game, meta }: GameProps) {
-  const { gameResult, playerMark } = game
-  const { countdown } = useGame()
+  const { gameResult, playerMark } = game;
+  const { countdown } = useGame();
 
   return (
     <section className={styles.game}>
@@ -28,9 +28,7 @@ export function Game({ game, meta }: GameProps) {
           {!!gameResult ? (
             <>
               {gameResult === 'Player' && <TextGradient>You win</TextGradient>}
-              {gameResult === 'Bot' && (
-                <TextGradient className={styles.loose}>You lose</TextGradient>
-              )}
+              {gameResult === 'Bot' && <TextGradient className={styles.loose}>You lose</TextGradient>}
               {gameResult === 'Draw' && "It's a draw"}
             </>
           ) : (
@@ -56,8 +54,7 @@ export function Game({ game, meta }: GameProps) {
           </>
         ) : (
           <p>
-            Players take turns making their moves. <br /> Make sure to complete
-            your turn before the timer runs out.
+            Players take turns making their moves. <br /> Make sure to complete your turn before the timer runs out.
           </p>
         )}
       </HelpDescription>
@@ -79,12 +76,8 @@ export function Game({ game, meta }: GameProps) {
       <div className={styles.game__field}>
         <GameField game={game} meta={meta} />
 
-        <GameInfoPlayerMark
-          isNewGame={!gameResult}
-          mark={playerMark}
-          className={styles.choose}
-        />
+        <GameInfoPlayerMark isNewGame={!gameResult} mark={playerMark} className={styles.choose} />
       </div>
     </section>
-  )
+  );
 }

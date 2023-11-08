@@ -1,28 +1,17 @@
-import { cn } from '@/app/utils'
-import { BattleStatesList } from '@/app/types/battles'
-import { SpriteIcon } from '@/components/ui/sprite-icon'
+import { cn } from '@/app/utils';
+import { BattleStatesList } from '@/app/types/battles';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
 
 type Props = {
-  health?: number
-  isWinner?: boolean
-  state: BattleStatesList
-  isReverse?: boolean
-  children?: JSX.Element
-}
-export const TamagotchiBattleTopStats = ({
-  isWinner,
-  state,
-  health,
-  isReverse,
-  children,
-}: Props) => {
+  health?: number;
+  isWinner?: boolean;
+  state: BattleStatesList;
+  isReverse?: boolean;
+  children?: JSX.Element;
+};
+export const TamagotchiBattleTopStats = ({ isWinner, state, health, isReverse, children }: Props) => {
   return (
-    <div
-      className={cn(
-        'basis-[445px] flex gap-6 items-center',
-        isReverse && 'flex-row-reverse'
-      )}
-    >
+    <div className={cn('basis-[445px] flex gap-6 items-center', isReverse && 'flex-row-reverse')}>
       <div className="relative flex flex-col items-center w-fit">
         <div
           className={cn(
@@ -31,9 +20,8 @@ export const TamagotchiBattleTopStats = ({
               ? isWinner
                 ? 'bg-primary ring-primary'
                 : 'bg-error ring-error'
-              : 'bg-white ring-white'
-          )}
-        >
+              : 'bg-white ring-white',
+          )}>
           {children}
         </div>
         {/*<div className="absolute top-[calc(100%-8px)] inline-flex gap-2 items-center py-1 px-4 tracking-widest font-kanit font-semibold text-base leading-5 bg-[#404040] rounded-lg">*/}
@@ -49,22 +37,16 @@ export const TamagotchiBattleTopStats = ({
           <div
             className={cn(
               'absolute inset-0 -z-1 rounded-xl',
-              state === 'GameIsOver'
-                ? isWinner
-                  ? 'bg-primary'
-                  : 'bg-error'
-                : 'bg-primary'
+              state === 'GameIsOver' ? (isWinner ? 'bg-primary' : 'bg-error') : 'bg-primary',
             )}
             style={{ width: `${health}%` }}
           />
           <div className="flex gap-2 items-center justify-center">
             <SpriteIcon name="health" className="w-3.5 h-3.5" />
-            <span className="font-kanit font-medium leading-5">
-              {health} / 100
-            </span>
+            <span className="font-kanit font-medium leading-5">{health} / 100</span>
           </div>
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,12 +1,12 @@
-import styles from './game-reward.module.scss'
-import { GameRewardIcon } from '../../assets'
-import clsx from 'clsx'
-import { PointsBalance } from '@/components/ui/balance'
-import { BaseComponentProps } from '@/app/types'
+import styles from './game-reward.module.scss';
+import { GameRewardIcon } from '../../assets';
+import clsx from 'clsx';
+import { PointsBalance } from '@/components/ui/balance';
+import { BaseComponentProps } from '@/app/types';
 
 type GameRewardProps = BaseComponentProps & {
-  amount: string | null
-}
+  amount: string | null;
+};
 
 export function GameReward({ children, amount }: GameRewardProps) {
   return (
@@ -16,5 +16,5 @@ export function GameReward({ children, amount }: GameRewardProps) {
       </div>
       <PointsBalance value={amount || '0'} className={styles.balance} />
     </div>
-  )
+  );
 }

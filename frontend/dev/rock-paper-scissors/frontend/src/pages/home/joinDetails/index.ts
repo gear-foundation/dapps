@@ -1,3 +1,3 @@
-import { JoinDetails } from "./JoinDetails";
+import { JoinDetails } from './JoinDetails';
 
-export {JoinDetails}
+export { JoinDetails };

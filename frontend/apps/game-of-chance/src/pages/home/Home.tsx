@@ -19,12 +19,9 @@ function Home() {
   const cost = state?.participationCost || '';
   const prizeFund = state?.prizeFund || '';
   const players = state?.players || [];
-  const winner =
-    state && isWinner(state.winner) ? state.winner : ('' as HexString);
+  const winner = state && isWinner(state.winner) ? state.winner : ('' as HexString);
   const isOwner = account?.decodedAddress === admin;
-  const isPlayer = players.some(
-    (playerId) => playerId === account?.decodedAddress
-  );
+  const isPlayer = players.some((playerId) => playerId === account?.decodedAddress);
   const isParticipant = isPlayer || isOwner;
 
   const { status, countdown, resetStatus } = useLotteryStatus(endTime);
@@ -53,12 +50,8 @@ function Home() {
       )}
 
       {!isLotteryStarted && isOwner && <OwnerStart />}
-      {isLotteryActive && !isParticipant && (
-        <PlayerStart cost={cost} isToken={!!fungibleToken} />
-      )}
-      {!isLotteryActive && !isParticipant && (
-        <Content subheading={SUBHEADING.AWAIT} />
-      )}
+      {isLotteryActive && !isParticipant && <PlayerStart cost={cost} isToken={!!fungibleToken} />}
+      {!isLotteryActive && !isParticipant && <Content subheading={SUBHEADING.AWAIT} />}
     </>
   ) : (
     <Loader />

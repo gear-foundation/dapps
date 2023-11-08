@@ -1,8 +1,8 @@
-import { NavLink } from 'react-router-dom'
-import clsx from 'clsx'
-import styles from './navigation.module.scss'
+import { NavLink } from 'react-router-dom';
+import clsx from 'clsx';
+import styles from './navigation.module.scss';
 // import { useAuth } from '@/features/auth'
-import { ROUTES } from '@/app/consts'
+import { ROUTES } from '@/app/consts';
 
 const nav = [
   {
@@ -16,7 +16,7 @@ const nav = [
   //   url: ROUTES.NOTFOUND,
   //   label: '404',
   // },
-]
+];
 
 export function Navigation() {
   // const { authToken } = useAuth()
@@ -28,12 +28,9 @@ export function Navigation() {
             <li key={id}>
               <NavLink
                 to={url}
-                className={({ isActive }) =>
-                  clsx(styles.link, isActive ? styles.active : styles.base)
-                }
+                className={({ isActive }) => clsx(styles.link, isActive ? styles.active : styles.base)}
                 aria-disabled={isPrivate}
-                end
-              >
+                end>
                 {label}
               </NavLink>
             </li>
@@ -41,5 +38,5 @@ export function Navigation() {
         </ul>
       </nav>
     </div>
-  )
+  );
 }

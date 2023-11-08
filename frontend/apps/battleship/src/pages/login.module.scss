@@ -1,4 +1,4 @@
-@use "@/assets/styles/utils" as *;
+@use '@/assets/styles/utils' as *;
 
 .container {
   flex: 1;
@@ -52,7 +52,7 @@
   transition: color 250ms ease;
 
   &::after {
-    content: "";
+    content: '';
     position: absolute;
     left: 0;
     right: 0;

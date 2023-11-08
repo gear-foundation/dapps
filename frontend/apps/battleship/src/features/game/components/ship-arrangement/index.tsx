@@ -1,3 +1,3 @@
-import ShipArrangement from "./ship-arrangement"
+import ShipArrangement from './ship-arrangement';
 
-export { ShipArrangement }
+export { ShipArrangement };

@@ -1,30 +1,24 @@
-import * as Dialog from '@radix-ui/react-dialog'
-import { ReactNode } from 'react'
-import { CrossIcon } from '@/assets/images'
+import * as Dialog from '@radix-ui/react-dialog';
+import { ReactNode } from 'react';
+import { CrossIcon } from '@/assets/images';
 
 export function Modal({
   open,
   onOpenChange,
   children,
 }: {
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
-  children: ReactNode
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  children: ReactNode;
 }) {
   return (
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       {children}
     </Dialog.Root>
-  )
+  );
 }
 
-function ModalContent({
-  title,
-  children,
-}: {
-  title: string
-  children: ReactNode
-}) {
+function ModalContent({ title, children }: { title: string; children: ReactNode }) {
   return (
     <Dialog.Portal>
       <Dialog.Overlay className="fixed inset-0 bg-black/50 data-[state=closed]:animate-[dialog-overlay-hide_200ms] data-[state=open]:animate-[dialog-overlay-show_200ms]" />
@@ -39,9 +33,9 @@ function ModalContent({
         {children}
       </Dialog.Content>
     </Dialog.Portal>
-  )
+  );
 }
 
-Modal.Button = Dialog.Trigger
-Modal.Close = Dialog.Close
-Modal.Content = ModalContent
+Modal.Button = Dialog.Trigger;
+Modal.Close = Dialog.Close;
+Modal.Content = ModalContent;

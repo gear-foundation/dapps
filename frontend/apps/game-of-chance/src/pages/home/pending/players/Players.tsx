@@ -34,9 +34,7 @@ function Players({ list, balance }: Props) {
       {isAnyPlayer ? (
         <ul>{getPlayers()}</ul>
       ) : (
-        <p className={textClassName}>
-          There aren&apos;t any players at the moment.
-        </p>
+        <p className={textClassName}>There aren&apos;t any players at the moment.</p>
       )}
     </div>
   );

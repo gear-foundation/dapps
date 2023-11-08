@@ -1,44 +1,44 @@
-import { useAtom } from 'jotai'
-import { Account, useAccount } from '@gear-js/react-hooks'
-import { IS_AUTH_READY_ATOM } from './consts'
-import { useWallet } from '@/features/wallet/hooks'
-import { useEffect } from 'react'
+import { useAtom } from 'jotai';
+import { Account, useAccount } from '@gear-js/react-hooks';
+import { IS_AUTH_READY_ATOM } from './consts';
+import { useWallet } from '@/features/wallet/hooks';
+import { useEffect } from 'react';
 
 export function useAuth() {
-  const [isAuthReady, setIsAuthReady] = useAtom(IS_AUTH_READY_ATOM)
+  const [isAuthReady, setIsAuthReady] = useAtom(IS_AUTH_READY_ATOM);
 
-  const { login, logout } = useAccount()
-  const { resetWalletId } = useWallet()
+  const { login, logout } = useAccount();
+  const { resetWalletId } = useWallet();
 
   const signOut = () => {
-    logout()
-    resetWalletId()
-  }
+    logout();
+    resetWalletId();
+  };
 
   const auth = async () => {
-    setIsAuthReady(true)
-  }
+    setIsAuthReady(true);
+  };
 
   const signIn = async (_account: Account) => {
-    await login(_account)
-  }
+    await login(_account);
+  };
 
-  return { signIn, signOut, auth, isAuthReady }
+  return { signIn, signOut, auth, isAuthReady };
 }
 
 function useAuthSync() {
-  const { isAccountReady, account } = useAccount()
-  const { auth } = useAuth()
+  const { isAccountReady, account } = useAccount();
+  const { auth } = useAuth();
 
   useEffect(() => {
     if (!isAccountReady) {
-      return
+      return;
     }
 
-    auth()
+    auth();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAccountReady, account?.decodedAddress])
+  }, [isAccountReady, account?.decodedAddress]);
 }
 
-export { useAuthSync }
+export { useAuthSync };

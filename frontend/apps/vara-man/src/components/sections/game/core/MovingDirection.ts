@@ -3,6 +3,6 @@ const MovingDirection = {
   down: 1,
   left: 2,
   right: 3,
-}
+};
 
-export default MovingDirection
+export default MovingDirection;

@@ -3,63 +3,62 @@ programs:
     opt: ./nft_marketplace.opt.wasm
     meta: ./nft_marketplace.meta.wasm
     acc: alice
-    payload: 
+    payload:
       adminId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d'
       treasuryId: '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d'
       treasuryFee: 3
-  
-  2: 
+
+  2:
     opt: ./nft.opt.wasm
     meta: ./nft.meta.wasm
     acc: alice
-    payload: 
+    payload:
       name: AliceNft
       symbol: AN
       baseUri: 'https://gear-tech.io'
       royalties: null
 
-  3: 
+  3:
     opt: ./nft.opt.wasm
     meta: ./nft.meta.wasm
     acc: bob
-    payload: 
+    payload:
       name: BobNft
       symbol: BN
       baseUri: https://gear-tech.io
       royalties: null
-  
-  4: 
+
+  4:
     opt: ./nft.opt.wasm
     meta: ./nft.meta.wasm
     acc: mithriy
-    payload: 
+    payload:
       name: MithriyNft
       symbol: MN
       baseUri: https://gear-tech.io
       royalties: null
 
-  5: 
+  5:
     opt: ./nft.opt.wasm
     meta: ./nft.meta.wasm
     acc: squid
-    payload: 
+    payload:
       name: SquidNft
       symbol: SN
       baseUri: https://subsquid.io/
       royalties: null
-  
 
 steps:
-# upload the first nft contract
+  # upload the first nft contract
   - tx: upload_program
     program: 2
 
-# mint 2 tokens on the first nft
+  # mint 2 tokens on the first nft
   - tx: send_message
     program: 2
     acc: alice
-    payload: 
-      Mint: 
+    payload:
+      Mint:
         tokenMetadata:
           name: token_1_0
           description: description_1_0
@@ -69,89 +68,88 @@ steps:
   - tx: send_message
     program: 2
     acc: bob
-    payload: 
-      Mint: 
+    payload:
+      Mint:
         tokenMetadata:
           name: token_1_1
           description: description_1_1
           media: https://www.gear-tech.io/images/home/top/gear2.svg
           reference: https://github.com/gear-tech
 
-# Alice - 1-0
-# Bob - 1-1
+  # Alice - 1-0
+  # Bob - 1-1
 
-# Make a few transfers
+  # Make a few transfers
   - tx: send_message
     program: 2
     acc: alice
-    payload: 
-      Transfer: 
+    payload:
+      Transfer:
         to: _account-mithriy
         tokenId: 0
-  
+
   - tx: send_message
     program: 2
     acc: mithriy
-    payload: 
-      Transfer: 
+    payload:
+      Transfer:
         to: _account-bob
         tokenId: 0
-  
+
   - tx: send_message
     program: 2
     acc: bob
-    payload: 
-      Transfer: 
+    payload:
+      Transfer:
         to: _account-alice
         tokenId: 0
 
-# Alice - 1-0
-# Bob - 1-1
+  # Alice - 1-0
+  # Bob - 1-1
 
-# upload marketplace
+  # upload marketplace
   - tx: upload_program
     program: 1
 
-# upload new nft contract
+  # upload new nft contract
   - tx: upload_program
     program: 3
 
-# register nft contracts on marketplace
+  # register nft contracts on marketplace
   - tx: send_message
     program: 1
     acc: alice
-    payload: 
+    payload:
       AddNftContract: _program-2
 
   - tx: send_message
     program: 1
     acc: alice
-    payload: 
+    payload:
       AddNftContract: _program-3
 
-
-# mint one more token on the first nft
+  # mint one more token on the first nft
   - tx: send_message
     program: 2
     acc: mithriy
-    payload: 
-      Mint: 
+    payload:
+      Mint:
         tokenMetadata:
           name: token_1_2
           description: description_1_2
           media: https://www.gear-tech.io/images/home/top/gear2.svg
           reference: https://github.com/gear-tech
 
-# Alice - 1-0
-# Bob - 1-1
-# Mithriy 1-2
+  # Alice - 1-0
+  # Bob - 1-1
+  # Mithriy 1-2
 
-# mint 3 tokens on the second nft
+  # mint 3 tokens on the second nft
   - tx: send_message
     program: 3
     acc: alice
-    payload: 
-      Mint: 
+    payload:
+      Mint:
         tokenMetadata:
           name: token_2_0
           description: description_2_0
@@ -161,53 +159,52 @@ steps:
   - tx: send_message
     program: 3
     acc: bob
-    payload: 
-      Mint: 
+    payload:
+      Mint:
         tokenMetadata:
           name: token_2_1
           description: description_2_1
           media: https://www.gear-tech.io/images/home/top/gear2.svg
           reference: https://github.com/gear-tech
-      
+
   - tx: send_message
     program: 3
     acc: mithriy
-    payload: 
-      Mint: 
+    payload:
+      Mint:
         tokenMetadata:
           name: token_2_2
           description: description_2_2
           media: https://www.gear-tech.io/images/home/top/gear2.svg
           reference: https://github.com/gear-tech
 
-
-# Alice - 1-0, 2-0
-# Bob - 1-1, 2-1
-# Mithriy 1-2, 2-2
+  # Alice - 1-0, 2-0
+  # Bob - 1-1, 2-1
+  # Mithriy 1-2, 2-2
 
   - tx: send_message
     program: 2
     acc: bob
-    payload: 
-      Burn: 
+    payload:
+      Burn:
         tokenId: 1
-  
+
   - tx: send_message
     program: 3
     acc: bob
-    payload: 
-      Transfer: 
+    payload:
+      Transfer:
         to: _account-alice
         tokenId: 1
 
-# Alice - 1-0, 2-0, 2-1
-# Mithriy 1-2, 2-2
+  # Alice - 1-0, 2-0, 2-1
+  # Mithriy 1-2, 2-2
 
   # AddMarketData
   - tx: send_message
     program: 1
     acc: alice
-    payload: 
+    payload:
       AddMarketData:
         nftContractId: _program-2
         ftContractId: null
@@ -217,49 +214,49 @@ steps:
   - tx: send_message
     program: 1
     acc: alice
-    payload: 
+    payload:
       AddMarketData:
         nftContractId: _program-3
         ftContractId: null
         tokenId: 0
         price: null
-  
+
   - tx: send_message
     program: 1
     acc: mithriy
-    payload: 
+    payload:
       AddMarketData:
         nftContractId: _program-3
         ftContractId: null
         tokenId: 2
         price: 20000
-  
+
   - tx: send_message
     program: 1
     acc: mithriy
-    payload: 
+    payload:
       AddMarketData:
         nftContractId: _program-2
         ftContractId: null
         tokenId: 2
         price: 20000
-  
-  - tx: send_message
-    program: 1
-    acc: alice
-    payload: 
-      BuyItem:
-        nftContractId: _program-3
-        tokenId: 2
-    value: 20000
-  
-# Alice - 1-0, 2-0, 2-1(not listed), 2-2
-# Mithriy 1-2
 
   - tx: send_message
     program: 1
     acc: alice
-    payload: 
+    payload:
+      BuyItem:
+        nftContractId: _program-3
+        tokenId: 2
+    value: 20000
+
+  # Alice - 1-0, 2-0, 2-1(not listed), 2-2
+  # Mithriy 1-2
+
+  - tx: send_message
+    program: 1
+    acc: alice
+    payload:
       CreateAuction:
         nftContractId: _program-2
         ftContractId: null
@@ -267,11 +264,11 @@ steps:
         minPrice: 10000
         bidPeriod: 60000
         duration: 120000
-  
+
   - tx: send_message
     program: 1
     acc: mithriy
-    payload: 
+    payload:
       AddBid:
         nftContractId: _program-2
         tokenId: 0
@@ -281,7 +278,7 @@ steps:
   - tx: send_message
     program: 1
     acc: bob
-    payload: 
+    payload:
       AddBid:
         nftContractId: _program-2
         tokenId: 0
@@ -289,23 +286,23 @@ steps:
     value: 40000
 
   - timeout: 180000
-  
+
   - tx: send_message
     program: 1
     acc: alice
-    payload: 
+    payload:
       SettleAuction:
         nftContractId: _program-2
         tokenId: 0
 
-# Alice - 2-0, 2-1(not listed), 2-2
-# Bob - 1-0
-# Mithriy 1-2
- 
+  # Alice - 2-0, 2-1(not listed), 2-2
+  # Bob - 1-0
+  # Mithriy 1-2
+
   - tx: send_message
     program: 1
     acc: mithriy
-    payload: 
+    payload:
       AddOffer:
         nftContractId: _program-3
         ftContractId: null
@@ -316,34 +313,33 @@ steps:
   - tx: send_message
     program: 1
     acc: bob
-    payload: 
+    payload:
       AddOffer:
         nftContractId: _program-3
         ftContractId: null
         tokenId: 2
         price: 2000
     value: 2000
- 
+
   - tx: send_message
     program: 1
     acc: bob
-    payload: 
+    payload:
       Withdraw:
         nftContractId: _program-3
         ftContractId: null
         tokenId: 2
         price: 2000
- 
+
   - tx: send_message
     program: 1
     acc: alice
-    payload: 
+    payload:
       AcceptOffer:
         nftContractId: _program-3
         tokenId: 2
         ftContractId: null
         price: 5000
-
 # Alice - 2-0, 2-1(not listed)
 # Bob - 1-0
 # Mithriy 1-2, 2-2

@@ -1,23 +1,23 @@
-import { HexString } from '@polkadot/util/types'
+import { HexString } from '@polkadot/util/types';
 
 export type BalanceMain = {
-  admin: HexString
-  ftLogicId: HexString
-  transactions: []
-}
+  admin: HexString;
+  ftLogicId: HexString;
+  transactions: [];
+};
 export type BalanceLogic = {
-  admin: HexString
-  ftLogicId: HexString
-  transactions: []
-  ftokenId: HexString
-  idToStorage: Array<[string, HexString]>
-  instructions: []
-  storageCodeHash: HexString
-  transactionStatus: []
-}
+  admin: HexString;
+  ftLogicId: HexString;
+  transactions: [];
+  ftokenId: HexString;
+  idToStorage: Array<[string, HexString]>;
+  instructions: [];
+  storageCodeHash: HexString;
+  transactionStatus: [];
+};
 export type BalanceStorage = {
-  approvals: []
-  balances: Array<[HexString, string]>
-  ftLogicId: HexString
-  transactionStatus: []
-}
+  approvals: [];
+  balances: Array<[HexString, string]>;
+  ftLogicId: HexString;
+  transactionStatus: [];
+};

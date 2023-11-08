@@ -31,19 +31,29 @@ type MetaResult = {
   meta: string;
   metaWasm: string;
   program: Hex;
-}
+};
 
 type RPCmetaResponse = {
   id: number;
-  jsonrpc: "2.0";
+  jsonrpc: '2.0';
   result?: MetaResult;
   error?: RPCError;
-}
+};
 type RPCSuccessResponse = {
   id: number;
-  jsonrpc: "2.0";
+  jsonrpc: '2.0';
   result: MetaResult;
-}
+};
 
-
-export type { Params, Channel, Hex, Message, Metadata, ChannelState, ChannelsState, SubscriptionState, RPCSuccessResponse, RPCmetaResponse };
+export type {
+  Params,
+  Channel,
+  Hex,
+  Message,
+  Metadata,
+  ChannelState,
+  ChannelsState,
+  SubscriptionState,
+  RPCSuccessResponse,
+  RPCmetaResponse,
+};

@@ -1,1 +1,1 @@
-export { BattleWinner } from './battle-winner';
+export { BattleWinner } from './battle-winner'

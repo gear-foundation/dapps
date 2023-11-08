@@ -1,3 +1,3 @@
-import { TextGradient } from './text-gradient';
+import { TextGradient } from './text-gradient'
 
-export { TextGradient };
+export { TextGradient }

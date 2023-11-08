@@ -1,4 +1,4 @@
-import { Icons } from '@/components/ui/icons'
+import { Icons } from '@/components/ui/icons';
 
 export const gameNavData = [
   {
@@ -17,4 +17,4 @@ export const gameNavData = [
     icon: <Icons.statsCoinSilver className="w-8 h-8" />,
     color: '[--stats-theme:#B1C8D9]',
   },
-]
+];

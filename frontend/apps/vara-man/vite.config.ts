@@ -1,8 +1,8 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
-import path from 'path'
-import nodePolyfills from 'vite-plugin-node-stdlib-browser'
-import eslint from 'vite-plugin-eslint'
+import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react-swc';
+import path from 'path';
+import nodePolyfills from 'vite-plugin-node-stdlib-browser';
+import eslint from 'vite-plugin-eslint';
 
 // import wasm from "vite-plugin-wasm";
 // import topLevelAwait from "vite-plugin-top-level-await";
@@ -23,7 +23,7 @@ export default defineConfig({
   preview: {
     port: 3000,
   },
-  base: "./",
+  base: './',
   plugins: [
     // wasm(), topLevelAwait(),
     react(),
@@ -31,4 +31,4 @@ export default defineConfig({
     eslint(),
   ],
   assetsInclude: ['**/*.wasm?inline'],
-})
+});

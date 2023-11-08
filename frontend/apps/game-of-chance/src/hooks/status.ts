@@ -18,11 +18,7 @@ function useStatus(endTime: number) {
   return { status, updateStatus, resetStatus };
 }
 
-function useCountdown(
-  endTime: number,
-  status: string,
-  updateStatus: () => void
-) {
+function useCountdown(endTime: number, status: string, updateStatus: () => void) {
   const [countdown, setCountdown] = useState('');
 
   const handleCountdown = () => {

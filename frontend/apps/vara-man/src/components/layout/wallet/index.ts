@@ -1,1 +1,1 @@
-export { WalletModal } from './wallet-modal'
+export { WalletModal } from './wallet-modal';

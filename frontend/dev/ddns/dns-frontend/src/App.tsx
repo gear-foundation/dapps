@@ -9,7 +9,7 @@ function Component() {
   return (
     <>
       <Header />
-      <main>{(isApiReady) ? <Home /> : <ApiLoader />}</main>
+      <main>{isApiReady ? <Home /> : <ApiLoader />}</main>
       <Footer />
     </>
   );

@@ -1,5 +1,5 @@
 import { Button } from '@gear-js/ui';
-import {ReactComponent as BackSVG} from 'assets/images/icons/back.svg';
+import { ReactComponent as BackSVG } from 'assets/images/icons/back.svg';
 
 type Props = {
   onClick: () => void;

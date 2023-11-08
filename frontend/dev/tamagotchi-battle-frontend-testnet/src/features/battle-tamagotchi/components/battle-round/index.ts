@@ -1,1 +1,1 @@
-export { BattleRound } from './battle-round';
+export { BattleRound } from './battle-round'
