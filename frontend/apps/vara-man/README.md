@@ -10,7 +10,7 @@
 
 ## Description
 
-React application of [Tequila Train Game](https://wiki.gear-tech.io/docs/examples/Gaming/tequila-train) based on [Rust smart-contract](https://github.com/gear-foundation/dapps/tree/master/contracts/tequila-train).
+React application of [Vara-Man Game](#) based on [Rust smart-contract](https://github.com/gear-foundation/dapps/tree/master/contracts/vara-man).
 
 ## Getting started
 
