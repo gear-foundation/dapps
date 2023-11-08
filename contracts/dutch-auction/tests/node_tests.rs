@@ -92,7 +92,6 @@ async fn gclient_create_and_stop() -> Result<()> {
     // Approve NFT to auction
     let to = ActorId::from_slice(&auction_program_id.into_bytes()).unwrap();
     println!("INIT DONE. Auction_contract_id: {:?}", to);
-
     transaction_id += 1;
     let approve_action = NFTAction::Approve {
         transaction_id,
@@ -142,10 +141,9 @@ async fn gclient_create_and_stop() -> Result<()> {
 
     // Buy
     let buy = Action::Buy;
-    let value = 1_000_000_000;
-
+    let value = 11_000_000_000_000;
     let (message_id, _) = api
-        .send_message(auction_program_id, buy, 250_000_000_000, value)
+        .send_message(auction_program_id, buy, gas_info.burned * 2, value)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -266,7 +264,7 @@ async fn gclient_create_buy_reward() -> Result<()> {
         .await?;
 
     // Create Auction
-    let starting_price = 1_000_000_000;
+    let starting_price = 11_000_000_000_000;
     let discount_rate = 2_000_000;
     let nft_contract_actor_id = ActorId::from_slice(&nft_program_id.into_bytes()).unwrap();
     println!(
@@ -302,7 +300,7 @@ async fn gclient_create_buy_reward() -> Result<()> {
     // Buy
     let buy = Action::Buy;
     let buy_payload = buy.encode();
-    let value = 1_000_000_000;
+    let value = 11_000_000_000_000;
     let gas_info = api
         .calculate_handle_gas(None, auction_program_id, buy_payload, value, true)
         .await?;
