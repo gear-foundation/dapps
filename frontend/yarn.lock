@@ -2428,8 +2428,8 @@ __metadata:
     "@types/jest": "npm:27.5.1"
     "@types/lodash.isplainobject": "npm:4.0.7"
     "@types/node": "npm:18.15.11"
-    "@types/react": "npm:18.0.37"
-    "@types/react-dom": "npm:18.0.11"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
     "@typescript-eslint/eslint-plugin": "npm:5.25.0"
     "@typescript-eslint/parser": "npm:5.25.0"
     assert: "npm:2.0.0"
@@ -2475,8 +2475,8 @@ __metadata:
     "@testing-library/user-event": "npm:13.5.0"
     "@types/jest": "npm:27.5.1"
     "@types/node": "npm:18.15.11"
-    "@types/react": "npm:18.0.37"
-    "@types/react-dom": "npm:18.0.11"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
     "@typescript-eslint/eslint-plugin": "npm:5.25.0"
     "@typescript-eslint/parser": "npm:5.25.0"
     assert: "npm:2.0.0"
@@ -2520,8 +2520,8 @@ __metadata:
     "@testing-library/user-event": "npm:13.5.0"
     "@types/jest": "npm:27.5.1"
     "@types/node": "npm:18.15.11"
-    "@types/react": "npm:18.0.37"
-    "@types/react-dom": "npm:18.0.11"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
     "@typescript-eslint/eslint-plugin": "npm:5.25.0"
     "@typescript-eslint/parser": "npm:5.25.0"
     assert: "npm:2.0.0"
@@ -2567,8 +2567,8 @@ __metadata:
     "@testing-library/user-event": "npm:13.5.0"
     "@types/jest": "npm:27.5.1"
     "@types/node": "npm:18.15.11"
-    "@types/react": "npm:18.0.37"
-    "@types/react-dom": "npm:18.0.11"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
     "@typescript-eslint/eslint-plugin": "npm:5.25.0"
     "@typescript-eslint/parser": "npm:5.25.0"
     assert: "npm:2.0.0"
@@ -2641,8 +2641,8 @@ __metadata:
     "@testing-library/user-event": "npm:13.5.0"
     "@types/jest": "npm:27.5.1"
     "@types/node": "npm:18.15.11"
-    "@types/react": "npm:18.0.37"
-    "@types/react-dom": "npm:18.0.11"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
     "@typescript-eslint/eslint-plugin": "npm:5.25.0"
     "@typescript-eslint/parser": "npm:5.25.0"
     assert: "npm:2.0.0"
@@ -2687,8 +2687,8 @@ __metadata:
     "@testing-library/user-event": "npm:13.5.0"
     "@types/jest": "npm:27.5.1"
     "@types/node": "npm:18.15.11"
-    "@types/react": "npm:18.0.37"
-    "@types/react-dom": "npm:18.0.11"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
     "@typescript-eslint/eslint-plugin": "npm:5.25.0"
     "@typescript-eslint/parser": "npm:5.25.0"
     assert: "npm:2.0.0"
@@ -4378,19 +4378,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/wasm-bridge@npm:7.2.1":
-  version: 7.2.1
-  resolution: "@polkadot/wasm-bridge@npm:7.2.1"
-  dependencies:
-    "@polkadot/wasm-util": "npm:7.2.1"
-    tslib: "npm:^2.5.0"
-  peerDependencies:
-    "@polkadot/util": "*"
-    "@polkadot/x-randomvalues": "*"
-  checksum: 836d0d03414ed4f4c57588cd0aae427e6a7ef6944e638e22d8d1505cde6cb3dca1bc7d8cf1bac0258f215d7d167aa882567db294989c8a9742e12008e35d463d
-  languageName: node
-  linkType: hard
-
 "@polkadot/wasm-bridge@npm:7.2.2":
   version: 7.2.2
   resolution: "@polkadot/wasm-bridge@npm:7.2.2"
@@ -4404,17 +4391,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/wasm-crypto-asmjs@npm:7.2.1":
-  version: 7.2.1
-  resolution: "@polkadot/wasm-crypto-asmjs@npm:7.2.1"
-  dependencies:
-    tslib: "npm:^2.5.0"
-  peerDependencies:
-    "@polkadot/util": "*"
-  checksum: 99f170974785c04e5cad52f79fa830d66870fdcce6b4e06d8176b6cc8f9bf91b42be5dcf89669747d9db9ff5f9ced01febd1ce5f3d04fc9375707196715a3372
-  languageName: node
-  linkType: hard
-
 "@polkadot/wasm-crypto-asmjs@npm:7.2.2":
   version: 7.2.2
   resolution: "@polkadot/wasm-crypto-asmjs@npm:7.2.2"
@@ -4423,22 +4399,6 @@ __metadata:
   peerDependencies:
     "@polkadot/util": "*"
   checksum: 9a3f14b24ae8e130b2815a32f4e00bf13d75660ec11867d597415242fa2b9ea40acecca8bac0377852d3d3836d45d138f231bbfaf561cc5b810fa2c9816db86e
-  languageName: node
-  linkType: hard
-
-"@polkadot/wasm-crypto-init@npm:7.2.1":
-  version: 7.2.1
-  resolution: "@polkadot/wasm-crypto-init@npm:7.2.1"
-  dependencies:
-    "@polkadot/wasm-bridge": "npm:7.2.1"
-    "@polkadot/wasm-crypto-asmjs": "npm:7.2.1"
-    "@polkadot/wasm-crypto-wasm": "npm:7.2.1"
-    "@polkadot/wasm-util": "npm:7.2.1"
-    tslib: "npm:^2.5.0"
-  peerDependencies:
-    "@polkadot/util": "*"
-    "@polkadot/x-randomvalues": "*"
-  checksum: 45a93e2ffd0bfb69d3e8c0b82d3856d69818ff9581d3012541ea9bf5dad56cfea33ecd2c9e7d02facad7fe519b62acb3aa1f8da1fba98039a853b40ae74b58c9
   languageName: node
   linkType: hard
 
@@ -4458,18 +4418,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@polkadot/wasm-crypto-wasm@npm:7.2.1":
-  version: 7.2.1
-  resolution: "@polkadot/wasm-crypto-wasm@npm:7.2.1"
-  dependencies:
-    "@polkadot/wasm-util": "npm:7.2.1"
-    tslib: "npm:^2.5.0"
-  peerDependencies:
-    "@polkadot/util": "*"
-  checksum: 08b34550a3a8aa25ecc7403e4e68fd1263aea883230bc79e2736c3079857fa6b45d129d2676e6304f46949249739b037a1277385f0d85336de95b92b41561463
-  languageName: node
-  linkType: hard
-
 "@polkadot/wasm-crypto-wasm@npm:7.2.2":
   version: 7.2.2
   resolution: "@polkadot/wasm-crypto-wasm@npm:7.2.2"
@@ -4479,23 +4427,6 @@ __metadata:
   peerDependencies:
     "@polkadot/util": "*"
   checksum: dea92a16281c8d4858cb56bdd85f8b5ca56f3382ddf9321342693359051621c4ff65bc6bf4569df57cf0c65e6e56870b4a87c8d12214eb06cdd1ceae87220382
-  languageName: node
-  linkType: hard
-
-"@polkadot/wasm-crypto@npm:7.2.1":
-  version: 7.2.1
-  resolution: "@polkadot/wasm-crypto@npm:7.2.1"
-  dependencies:
-    "@polkadot/wasm-bridge": "npm:7.2.1"
-    "@polkadot/wasm-crypto-asmjs": "npm:7.2.1"
-    "@polkadot/wasm-crypto-init": "npm:7.2.1"
-    "@polkadot/wasm-crypto-wasm": "npm:7.2.1"
-    "@polkadot/wasm-util": "npm:7.2.1"
-    tslib: "npm:^2.5.0"
-  peerDependencies:
-    "@polkadot/util": "*"
-    "@polkadot/x-randomvalues": "*"
-  checksum: 70cc487fecbcb51be37a887907fbed695fefb2162200224462b87a2e75f758db8c6695a88f0fdd22c2cf308f30a887660b1184449dd8abc724ee6636c2d2c5d1
   languageName: node
   linkType: hard
 
@@ -4513,17 +4444,6 @@ __metadata:
     "@polkadot/util": "*"
     "@polkadot/x-randomvalues": "*"
   checksum: 55d0c22269802ad48e6d0fe3c889eb4d5f09a0329e0e0059fee47f60e82c700823c9bf9ba123b961d5523a3eb391d5e485612f84c9b348e4b18619109a0fae29
-  languageName: node
-  linkType: hard
-
-"@polkadot/wasm-util@npm:7.2.1":
-  version: 7.2.1
-  resolution: "@polkadot/wasm-util@npm:7.2.1"
-  dependencies:
-    tslib: "npm:^2.5.0"
-  peerDependencies:
-    "@polkadot/util": "*"
-  checksum: e8a352f1fcce0c6279d05feb79bc2844ff4e8757f8a5b8db91df8f0600cb6a4dd5cc818324d5fe035a050cf8663179285abe94f8c3b6c9fe5738c0efef51d558
   languageName: node
   linkType: hard
 
@@ -7048,15 +6968,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:18.2.8":
-  version: 18.2.8
-  resolution: "@types/react-dom@npm:18.2.8"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: a2afa9f626751f2314ddbecb5503122912ff646827b1c81b7b230ce04083c43b71c82b02244526eb88c1795019033364a4afee0f7f719e46116a51ca8e287613
-  languageName: node
-  linkType: hard
-
 "@types/react-dom@npm:^18.0.0":
   version: 18.2.15
   resolution: "@types/react-dom@npm:18.2.15"
@@ -7081,39 +6992,6 @@ __metadata:
     "@types/scheduler": "npm:*"
     csstype: "npm:^3.0.2"
   checksum: 79dd5d23da05bec54e7423ca17096e345eb8fd80a3bf8dd916bb5cdd60677d27c298523aa5b245d090fcc4ec100cfd58c1af4631fbac709d0a9d8be75f9d78a9
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:18.0.37":
-  version: 18.0.37
-  resolution: "@types/react@npm:18.0.37"
-  dependencies:
-    "@types/prop-types": "npm:*"
-    "@types/scheduler": "npm:*"
-    csstype: "npm:^3.0.2"
-  checksum: 1919fb9fb48d574fafeb196aced7ea1ee345525597afa6ad01049c7ce090a732bc500c4a392deb0a5fb9165d5ae5fe720b795e3023bb5a9b2b2a0fae059b4407
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:18.0.38":
-  version: 18.0.38
-  resolution: "@types/react@npm:18.0.38"
-  dependencies:
-    "@types/prop-types": "npm:*"
-    "@types/scheduler": "npm:*"
-    csstype: "npm:^3.0.2"
-  checksum: 39bad7b8ffe2288f7168fb35ce0fe12109771dcf985e673351074ca7ba8b67884686f92696692b90bbe28a68c2cfe3aabd691e717f88fbf19e01284a14abfdb5
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:18.2.24":
-  version: 18.2.24
-  resolution: "@types/react@npm:18.2.24"
-  dependencies:
-    "@types/prop-types": "npm:*"
-    "@types/scheduler": "npm:*"
-    csstype: "npm:^3.0.2"
-  checksum: a83c7ae0010b265012ef038e3e00e4708c27c523f0aa0631e44f934e9c5338a51b6db1901f91d8ba10d3dc292a3a200b2cb5e47430cde58fbf988969866fe75a
   languageName: node
   linkType: hard
 
@@ -9479,8 +9357,8 @@ __metadata:
     "@sentry/vite-plugin": "npm:2.7.1"
     "@types/lodash.isequal": "npm:4.5.6"
     "@types/node": "npm:18.16.19"
-    "@types/react": "npm:18.2.24"
-    "@types/react-dom": "npm:18.2.8"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
     "@types/react-gtm-module": "npm:2.0.1"
     "@vitejs/plugin-react-swc": "npm:3.3.2"
     autoprefixer: "npm:10.4.15"
@@ -10515,8 +10393,8 @@ __metadata:
     "@sentry/react": "npm:7.69.0"
     "@types/lodash.isequal": "npm:4.5.6"
     "@types/node": "npm:18.17.15"
-    "@types/react": "npm:18.2.24"
-    "@types/react-dom": "npm:18.2.8"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
     "@types/react-gtm-module": "npm:2.0.1"
     "@typescript-eslint/parser": "npm:^6.7.3"
     assert: "npm:2.1.0"
@@ -10573,8 +10451,8 @@ __metadata:
     "@testing-library/user-event": "npm:13.5.0"
     "@types/jest": "npm:27.5.1"
     "@types/node": "npm:18.17.15"
-    "@types/react": "npm:18.2.24"
-    "@types/react-dom": "npm:18.2.8"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
     "@typescript-eslint/eslint-plugin": "npm:6.7.3"
     "@typescript-eslint/parser": "npm:6.7.3"
     assert: "npm:2.0.0"
@@ -16853,8 +16731,8 @@ __metadata:
     "@radix-ui/react-scroll-area": "npm:1.0.4"
     "@sentry/react": "npm:7.69.0"
     "@types/node": "npm:18.17.1"
-    "@types/react": "npm:18.0.38"
-    "@types/react-dom": "npm:18.0.11"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
     "@types/react-gtm-module": "npm:2.0.1"
     "@typescript-eslint/eslint-plugin": "npm:5.25.0"
     "@typescript-eslint/parser": "npm:5.25.0"
@@ -20779,7 +20657,7 @@ __metadata:
     "@testing-library/user-event": "npm:13.5.0"
     "@types/jest": "npm:27.5.1"
     "@types/node": "npm:18.15.11"
-    "@types/react": "npm:18.0.37"
+    "@types/react": "npm:18.2.33"
     "@types/react-dom": "npm:18.0.11"
     "@typescript-eslint/eslint-plugin": "npm:5.25.0"
     "@typescript-eslint/parser": "npm:5.25.0"
@@ -21114,10 +20992,10 @@ __metadata:
     "@polkadot/extension-dapp": "npm:0.46.5"
     "@polkadot/types": "npm:10.10.1"
     "@polkadot/util": "npm:12.3.2"
-    "@polkadot/wasm-crypto": "npm:7.2.1"
+    "@polkadot/wasm-crypto": "npm:7.2.2"
     "@radix-ui/react-scroll-area": "npm:1.0.3"
-    "@types/react": "npm:18.0.37"
-    "@types/react-dom": "npm:18.0.11"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
     "@vitejs/plugin-react-swc": "npm:3.3.2"
     autoprefixer: "npm:10.4.14"
     buffer: "npm:6.0.3"
