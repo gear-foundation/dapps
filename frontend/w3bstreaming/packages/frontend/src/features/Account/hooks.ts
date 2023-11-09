@@ -1,20 +1,17 @@
 import { useSendMessage } from '@gear-js/react-hooks';
-import metaTxt from '@/assets/meta/meta.txt';
+import metaTxt from '@/assets/meta/w3bstreaming.meta.txt';
 import { ADDRESS } from '@/consts';
-import { useMetadata } from '@/hooks';
-
-function useEditProfileMetadata() {
-  return useMetadata(metaTxt);
-}
+import { useGetStreamMetadata } from '../CreateStream/hooks';
+import { useProgramMetadata } from '@/hooks';
 
 function useEditProfileMessage() {
-  const meta = useEditProfileMetadata();
+  const { meta } = useGetStreamMetadata();
 
   return useSendMessage(ADDRESS.CONTRACT, meta);
 }
 
 function useCreateStreamMetadata() {
-  return useMetadata(metaTxt);
+  return useProgramMetadata(metaTxt);
 }
 
 function useSubscribeToStreamMessage() {

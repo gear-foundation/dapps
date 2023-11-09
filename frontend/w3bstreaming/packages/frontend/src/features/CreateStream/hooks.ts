@@ -1,13 +1,13 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useSendMessage } from '@gear-js/react-hooks';
 import { ADDRESS } from '@/consts';
-import { useMetadata } from '@/hooks';
-import metaTxt from '@/assets/meta/meta.txt';
+import { useProgramMetadata } from '@/hooks';
+import metaTxt from '@/assets/meta/w3bstreaming.meta.txt';
 import { META_ATOM } from '@/atoms';
 
 function useCreateStreamMetadata() {
   const setMeta = useSetAtom(META_ATOM);
-  const metaData = useMetadata(metaTxt);
+  const metaData = useProgramMetadata(metaTxt);
 
   setMeta(metaData);
 }

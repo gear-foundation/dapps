@@ -13,29 +13,11 @@ import {
   useBalanceFormat,
 } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
-import metaTxt from '@/assets/meta/meta.txt';
 import { ADDRESS, LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
 import { Handler, ProgramStateRes } from '@/types';
 import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
 import { useAccountAvailableBalance } from './features/Wallet/hooks';
-
-function useProgramMetadata(source: string) {
-  const alert = useAlert();
-
-  const [metadata, setMetadata] = useState<ProgramMetadata>();
-
-  useEffect(() => {
-    fetch(source)
-      .then((response) => response.text())
-      .then((raw) => ProgramMetadata.from(`0x${raw}`))
-      .then((result) => setMetadata(result))
-      .catch(({ message }: Error) => alert.error(message));
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return metadata;
-}
+import { useGetStreamMetadata } from './features/CreateStream/hooks';
 
 function useContractAddress() {
   const [address] = useAtom(CONTRACT_ADDRESS_ATOM);
@@ -78,17 +60,22 @@ function useClickOutside(handler: Handler, ...refs: (RefObject<HTMLElement> | Mu
   }, [refs, handler]);
 }
 
-function useMetadata(source: RequestInfo | URL) {
-  const [data, setData] = useState<ProgramMetadata>();
+function useProgramMetadata(source: string) {
+  const alert = useAlert();
+
+  const [metadata, setMetadata] = useState<ProgramMetadata>();
 
   useEffect(() => {
     fetch(source)
-      .then((res) => res.text() as Promise<string>)
+      .then((response) => response.text())
       .then((raw) => ProgramMetadata.from(`0x${raw}`))
-      .then((meta) => setData(meta));
-  }, [source]);
+      .then((result) => setMetadata(result))
+      .catch(({ message }: Error) => alert.error(message));
 
-  return data;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return metadata;
 }
 
 function useMediaQuery(width: number) {
@@ -119,9 +106,8 @@ function useMediaQuery(width: number) {
 }
 
 function useProgramState() {
-  const programId = ADDRESS.CONTRACT;
-  const meta = useProgramMetadata(metaTxt);
-  const state: ProgramStateRes = useReadFullState(programId, meta, '0x');
+  const { meta } = useGetStreamMetadata();
+  const state: ProgramStateRes = useReadFullState(ADDRESS.CONTRACT, meta, '0x');
 
   return state;
 }
@@ -192,4 +178,4 @@ export const useHandleCalculateGas = (address: HexString, meta?: ProgramMetadata
   };
 };
 
-export { useProgramMetadata, useContractAddressSetup, useClickOutside, useMetadata, useMediaQuery, useProgramState };
+export { useProgramMetadata, useContractAddressSetup, useClickOutside, useMediaQuery, useProgramState };

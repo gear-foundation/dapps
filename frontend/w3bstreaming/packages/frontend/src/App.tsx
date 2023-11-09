@@ -15,6 +15,7 @@ import 'babel-polyfill';
 import { useProgramState } from './hooks';
 import { STREAM_TEASERS_ATOM, USERS_ATOM } from './atoms';
 import { useCreateStreamMetadata, useGetStreamMetadata } from './features/CreateStream/hooks';
+import { ADDRESS } from './consts';
 
 function AppComponent() {
   useCreateStreamMetadata();
@@ -34,6 +35,15 @@ function AppComponent() {
   }, [state, isStateRead, setStreamTeasers, setUsers]);
 
   const isAppReady = isApiReady && isAccountReady && isStateRead && isMeta;
+
+  useEffect(() => {
+    if (ADDRESS.CONTRACT) {
+      console.log('CONTRACT ADDRESS:');
+      console.log(ADDRESS.CONTRACT);
+      console.log('NODE:');
+      console.log(ADDRESS.NODE);
+    }
+  }, []);
 
   return (
     <div className={cx(styles['app-container'])}>
