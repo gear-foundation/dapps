@@ -107,7 +107,7 @@ async fn send_message_with_custom_limit<T: Decode>(
     println!("Modified gas limit: {modified_gas_limit}.");
 
     let (message_id, _) = client
-        .send_message(destination, payload, modified_gas_limit, 0, false)
+        .send_message(destination, payload, modified_gas_limit, 0)
         .await?;
 
     println!("Sending completed.");
@@ -237,7 +237,7 @@ async fn gclient_state_consistency() -> Result<()> {
             &mut listener,
             goc_actor_id,
             Action::Start {
-                duration: 17000,
+                duration: 30_000,
                 participation_cost: 10000,
                 fungible_token: Some(ft_actor_id.into())
             }

@@ -84,7 +84,9 @@ pub async fn balance_of(
 ) -> gclient::Result<u128> {
     let reply = send_message(api, program_id, FTokenAction::GetBalance(*account)).await?;
 
-    let FTokenEvent::Balance(balance) = FTokenEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `FTokenEvent` data.") else {
+    let FTokenEvent::Balance(balance) =
+        FTokenEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `FTokenEvent` data.")
+    else {
         std::panic!("Unexpected invalid `FTokenEvent`.");
     };
 
@@ -133,7 +135,7 @@ async fn send_message(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id.into(), payload, gas_info.burned * 2, 0)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;
@@ -142,7 +144,9 @@ async fn send_message(
 
 fn assert_ft_ok(reply: &[u8]) {
     #[allow(clippy::useless_asref)]
-    let FTokenEvent::Ok = FTokenEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `FTokenEvent` data.") else {
+    let FTokenEvent::Ok =
+        FTokenEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `FTokenEvent` data.")
+    else {
         std::panic!("Unexpected invalid `FTokenEvent`.");
     };
 }

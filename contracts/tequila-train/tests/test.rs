@@ -35,7 +35,7 @@ fn test() {
     assert!(!result.main_failed());
 
     let state: GameLauncher = program
-        .read_state()
+        .read_state(0)
         .expect("Unexpected invalid game state.");
     assert_eq!(
         state
@@ -73,7 +73,7 @@ fn test() {
     assert!(!result.main_failed());
 
     let state: GameLauncher = program
-        .read_state()
+        .read_state(0)
         .expect("Unexpected invalid game state.");
     assert_eq!(
         state

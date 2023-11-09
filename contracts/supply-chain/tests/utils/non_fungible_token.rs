@@ -95,6 +95,7 @@ impl NonFungibleTokenState<'_> {
         StateReply(
             self.0
                 .read_state_using_wasm(
+                    0,
                     "token",
                     gclient::code_from_os(
                         "../target/wasm32-unknown-unknown/debug/non_fungible_token_state.meta.wasm",

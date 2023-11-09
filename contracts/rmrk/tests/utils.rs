@@ -304,6 +304,7 @@ impl RMRKToken for Program<'_> {
     fn check_rmrk_owner(&self, token_id: u64, expected_token_id: Option<TokenId>, owner_id: u64) {
         let rmrk_owner: RMRKOwner = self
             .read_state_using_wasm(
+                0,
                 "rmrk_owner",
                 WASM_BINARY.into(),
                 Some(TokenId::from(token_id)),
@@ -320,7 +321,7 @@ impl RMRKToken for Program<'_> {
 
     fn check_balance(&self, account: ActorId, expected_balance: U256) {
         let balance: U256 = self
-            .read_state_using_wasm("balance", WASM_BINARY.into(), Some(account))
+            .read_state_using_wasm(0, "balance", WASM_BINARY.into(), Some(account))
             .expect("Failed to read state");
         assert_eq!(balance, expected_balance);
     }
@@ -332,6 +333,7 @@ impl RMRKToken for Program<'_> {
     ) {
         let pending_children: Vec<(CollectionId, TokenId)> = self
             .read_state_using_wasm(
+                0,
                 "pending_children",
                 WASM_BINARY.into(),
                 Some(TokenId::from(token_id)),
@@ -349,6 +351,7 @@ impl RMRKToken for Program<'_> {
     ) {
         let accepted_children: Vec<(CollectionId, TokenId)> = self
             .read_state_using_wasm(
+                0,
                 "accepted_children",
                 WASM_BINARY.into(),
                 Some(TokenId::from(token_id)),

@@ -132,13 +132,15 @@ pub async fn send_mtoken_message(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id.into(), payload, gas_info.burned * 2, 0)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;
     let reply = reply_data_result.expect("Unexpected invalid reply.");
 
-    let MTokenEvent::Ok = MTokenEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `MTokenEvent` data.") else {
+    let MTokenEvent::Ok =
+        MTokenEvent::decode(&mut reply.as_ref()).expect("Unexpected invalid `MTokenEvent` data.")
+    else {
         std::panic!("Unexpected invalid `MTokenEvent`.");
     };
 
@@ -323,13 +325,15 @@ pub async fn mtoken_get_balance(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id.into(), payload, gas_info.burned * 2, 0)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;
     let reply_data = reply_data_result.expect("Unexpected invalid reply.");
 
-    let MTokenEvent::Balance(balance) = MTokenEvent::decode(&mut reply_data.as_ref()).expect("Unexpected invalid `MTokenEvent` data.") else {
+    let MTokenEvent::Balance(balance) = MTokenEvent::decode(&mut reply_data.as_ref())
+        .expect("Unexpected invalid `MTokenEvent` data.")
+    else {
         std::panic!("Unexpected invalid `MTokenEvent`.");
     };
 
@@ -359,13 +363,15 @@ pub async fn mtoken_get_approval(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id.into(), payload, gas_info.burned * 2, 0)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;
     let reply_data = reply_data_result.expect("Unexpected invalid reply.");
 
-    let MTokenEvent::Approval(approval) = MTokenEvent::decode(&mut reply_data.as_ref()).expect("Unexpected invalid `MTokenEvent` data.") else {
+    let MTokenEvent::Approval(approval) = MTokenEvent::decode(&mut reply_data.as_ref())
+        .expect("Unexpected invalid `MTokenEvent` data.")
+    else {
         std::panic!("Unexpected invalid `MTokenEvent`.");
     };
 

@@ -4,7 +4,7 @@ pub use nft_marketplace::*;
 
 pub const BUYER: u64 = 100;
 pub const SELLER: u64 = 101;
-pub const NFT_PRICE: u128 = 100_000;
+pub const NFT_PRICE: u128 = 1_000_000_000_000_000;
 pub const ADMIN: u64 = 200;
 pub const TREASURY_ID: u64 = 300;
 pub const TREASURY_FEE: u16 = 3;

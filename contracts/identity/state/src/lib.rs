@@ -12,7 +12,7 @@ pub mod metafns {
             IdentityStateQuery::UserClaims(pkey) => {
                 IdentityStateReply::UserClaims(match state.user_claims.get(&pkey) {
                     None => vec![],
-                    Some(claims) => Vec::from_iter(claims.clone().into_iter()),
+                    Some(claims) => Vec::from_iter(claims.clone()),
                 })
             }
             IdentityStateQuery::Claim(pkey, piece_id) => IdentityStateReply::Claim(

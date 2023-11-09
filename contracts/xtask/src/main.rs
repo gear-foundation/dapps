@@ -5,7 +5,7 @@ use std::{
 };
 use xshell::Shell;
 
-const NODE_LINK: &str = "https://get.gear.rs/gear-v0.3.3-x86_64-unknown-linux-gnu.tar.xz";
+const NODE_LINK: &str = "https://get.gear.rs/gear-v1.0.1-x86_64-unknown-linux-gnu.tar.xz";
 
 fn main() -> Result<()> {
     let Some(command) = env::args().nth(1) else {

@@ -82,7 +82,12 @@ fn success_roll_finished() {
     assert!(result.contains(&(USER, Event::RollValueRequested(1u128).encode())));
 
     let meta_result: StateResponse = roll_dice_program
-        .read_state_using_wasm("query", state_wasm.clone(), Some(StateQuery::GetUsersData))
+        .read_state_using_wasm(
+            0,
+            "query",
+            state_wasm.clone(),
+            Some(StateQuery::GetUsersData),
+        )
         .unwrap();
     match meta_result {
         StateResponse::UsersData(users_data) => {
@@ -102,7 +107,7 @@ fn success_roll_finished() {
     assert!(!result.others_failed()); */
 
     let meta_result: StateResponse = roll_dice_program
-        .read_state_using_wasm("query", state_wasm, Some(StateQuery::GetUsersData))
+        .read_state_using_wasm(0, "query", state_wasm, Some(StateQuery::GetUsersData))
         .unwrap();
     match meta_result {
         StateResponse::UsersData(users_data) => {

@@ -278,7 +278,7 @@ pub fn transform_internal(
 }
 
 pub fn check_token_ids_for_owner(mtk: &Program<'_>, account: u64, ids: Vec<u128>) {
-    let state: State = mtk.read_state().expect("Can't read state");
+    let state: State = mtk.read_state(0).expect("Can't read state");
     let true_ids = state.tokens_ids_for_owner(&ActorId::from(account));
     if true_ids != ids {
         panic!(
@@ -288,7 +288,7 @@ pub fn check_token_ids_for_owner(mtk: &Program<'_>, account: u64, ids: Vec<u128>
 }
 
 pub fn check_balance(mtk: &Program<'_>, account: u64, token_id: u128, balance: u128) {
-    let state: State = mtk.read_state().expect("Can't read state");
+    let state: State = mtk.read_state(0).expect("Can't read state");
     let true_balance = state.get_balance(&ActorId::from(account), &token_id);
 
     if balance != true_balance {

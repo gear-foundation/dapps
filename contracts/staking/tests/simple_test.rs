@@ -447,7 +447,7 @@ fn meta_tests() {
 
     staking.total_staked = 3500;
     let stakers: HashMap<ActorId, Staker> = staking.stakers.clone().into_iter().collect();
-    let state: IoStaking = st.read_state().expect("Can't read state");
+    let state: IoStaking = st.read_state(0).expect("Can't read state");
 
     assert_eq!(state.stakers.len(), stakers.len());
 
