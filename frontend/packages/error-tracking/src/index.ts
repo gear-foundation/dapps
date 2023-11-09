@@ -11,7 +11,7 @@ import { useEffect } from 'react';
 import { Routes, createRoutesFromChildren, matchRoutes, useLocation, useNavigationType } from 'react-router-dom';
 import { getCRAEnv, getViteEnv } from './utils';
 
-function InitErrorTracking() {
+function initErrorTracking() {
   const dsn = getCRAEnv('SENTRY_DSN') || getViteEnv('SENTRY_DSN');
   const target = getCRAEnv('SENTRY_TARGET') || getViteEnv('SENTRY_TARGET') || 'localhost';
 
@@ -51,4 +51,4 @@ function InitErrorTracking() {
 
 const ErrorTrackingRoutes = withSentryReactRouterV6Routing(Routes);
 
-export { InitErrorTracking, ErrorTrackingRoutes, ErrorBoundary, withErrorBoundary };
+export { initErrorTracking, ErrorTrackingRoutes, ErrorBoundary, withErrorBoundary };
