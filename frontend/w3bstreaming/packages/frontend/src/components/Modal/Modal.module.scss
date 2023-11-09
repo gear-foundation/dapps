@@ -13,6 +13,11 @@
       background: rgba(0, 0, 0, 0.2);
       backdrop-filter: blur(10px);
     }
+
+    @include sm {
+      max-width: 100%;
+      top: auto;
+    }
   }
   
   .wrapper {

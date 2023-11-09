@@ -65,3 +65,26 @@
       right: -50%;      
     }
   }
+
+  @mixin square($size) {
+    width: $size;
+    height: $size;
+  }
+  
+  @mixin circle($size) {
+    @include square($size);
+    border-radius: 50%;
+  }
+
+  @mixin gap($value, $direction: bottom) {
+    $margin: 'margin-#{$direction}';
+  
+    > *:not(:last-child) {
+      #{$margin}: $value;
+    }
+  }
+  
+  @mixin textOverflow {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }

@@ -8,27 +8,41 @@
 
 .balance {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   padding: 12px 0;
   margin-right: 20px;
 
   &-coin-image {
-      margin-right: 10px;
+    align-self: center;
+    margin-right: 10px;
+    width: 24px;
+    height: 24px;
   }
 
   &-value {
-      font-size: 20px;
-      font-weight: 700;
-      letter-spacing: -2%;
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -2%;
+  }
+
+  &-decimals {
+    margin-left: 1px;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: theme-var($text-primary);
+    text-transform: uppercase;
+    opacity: 60%;
   }
 
   &-currency-name {
-      margin: 8px 0 0 4px;
-      font-size: 10px;
-      font-weight: 400;
-      color: theme-var($text-primary);
-      opacity: 0.6;
-      text-transform: uppercase;
+    margin-left: 4px;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: theme-var($text-primary);
+    text-transform: uppercase;
+    opacity: 60%;
   }
 }
 
@@ -47,17 +61,32 @@
   cursor: pointer;
 
   &-icon {
-      min-width: 16px;
-      min-height: 16px;
-      margin-right: 10px;
-      background: theme-var($background-primary);
-      border-radius: 50px;
+    min-width: 16px;
+    min-height: 16px;
+    margin-right: 10px;
+    background: theme-var($background-primary);
+    border-radius: 50px;
   }
 
   &-name {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: 3%;
-      color: theme-var($text-secondary);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    color: theme-var($text-secondary);
   }
+}
+
+.score {
+  padding-right: 60px;
+
+  @include md {
+    padding-right: 20px;
+  }
+}
+
+.connect-btn {
+  width: 200px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
 }

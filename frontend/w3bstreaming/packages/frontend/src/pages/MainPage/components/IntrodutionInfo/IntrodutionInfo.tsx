@@ -5,7 +5,7 @@ import mainFrame from '@/assets/icons/main-page-frame.png';
 import animImg from '@/assets/icons/main-page-wara-anim.png';
 import courtain from '@/assets/icons/courtain.png';
 import { cx } from '@/utils';
-import { WalletModal } from '@/features/Wallet/components';
+import { WalletModal } from '@/features/Wallet/components/WalletModal';
 
 function IntrodutionInfo() {
   const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
@@ -36,7 +36,7 @@ function IntrodutionInfo() {
         <img src={courtain} alt="courtain" className={cx(styles.courtain)} />
         <img src={animImg} alt="some stuff" className={cx(styles['upper-img'])} />
       </div>
-      {isWalletModalOpen && <WalletModal onClose={handleCloseWalletModal} />}
+      <WalletModal open={isWalletModalOpen} setOpen={setIsWalletModalOpen} onClose={handleCloseWalletModal} />
     </div>
   );
 }

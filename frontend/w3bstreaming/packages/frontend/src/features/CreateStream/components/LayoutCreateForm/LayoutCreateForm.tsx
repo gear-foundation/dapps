@@ -1,14 +1,17 @@
 import { useCallback } from 'react';
 import moment, { Moment } from 'moment';
 import { useForm, isNotEmpty } from '@mantine/form';
+import { useAlert, withoutCommas } from '@gear-js/react-hooks';
 import { Button, Calendar, DropzoneUploader, Input, InputArea } from '@/ui';
 import styles from './LayoutCreateForm.module.scss';
-import { cx } from '@/utils';
-import { FormValues, SectionProps } from './LayoutCreateForm.interface';
+import { cx, logger } from '@/utils';
+import { FormValues, LayoutCreateFormProps, SectionProps } from './LayoutCreateForm.interface';
 import { TimePicker } from '@/ui/TimePicker';
 import CreateSVG from '@/assets/icons/correct-icon.svg';
 import CrossSVG from '@/assets/icons/cross-circle-icon.svg';
 import { useCreateStreamSendMessage } from '../../hooks';
+import { useCheckBalance, useHandleCalculateGas } from '@/hooks';
+import { ADDRESS } from '@/consts';
 
 function Section({ title, children }: SectionProps) {
   return (
@@ -19,8 +22,12 @@ function Section({ title, children }: SectionProps) {
   );
 }
 
-function LayoutCreateForm() {
+function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
   const sendMessage = useCreateStreamSendMessage();
+  const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, meta);
+  const { checkBalance } = useCheckBalance();
+  const alert = useAlert();
+
   const form = useForm({
     initialValues: {
       title: '',
@@ -71,14 +78,44 @@ function LayoutCreateForm() {
       },
     };
 
-    sendMessage(payload, {
-      onSuccess: () => {
-        reset();
-      },
-      onError: () => {
-        console.log('error');
-      },
-    });
+    calculateGas(payload)
+      .then((res) => res.toHuman())
+      .then(({ min_limit }) => {
+        const minLimit = withoutCommas(min_limit as string);
+        const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
+        logger(`Calculating gas:`);
+        logger(`MIN_LIMIT ${min_limit}`);
+        logger(`LIMIT ${gasLimit}`);
+        logger(`Calculated gas SUCCESS`);
+        logger(`Sending message`);
+
+        checkBalance(
+          gasLimit,
+          () =>
+            sendMessage({
+              payload,
+              gasLimit,
+              onError: () => {
+                logger(`Errror send message`);
+              },
+              onSuccess: (messageId) => {
+                logger(`sucess on ID: ${messageId}`);
+                reset();
+              },
+              onInBlock: (messageId) => {
+                logger('messageInBlock');
+                logger(`messageID: ${messageId}`);
+              },
+            }),
+          () => {
+            logger(`Errror check balance`);
+          },
+        );
+      })
+      .catch((error) => {
+        logger(error);
+        alert.error('Gas calculation error');
+      });
   };
 
   const handleDropImg = (preview: string) => {

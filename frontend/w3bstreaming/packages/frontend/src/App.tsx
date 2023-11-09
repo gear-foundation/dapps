@@ -14,11 +14,14 @@ import styles from './App.module.scss';
 import 'babel-polyfill';
 import { useProgramState } from './hooks';
 import { STREAM_TEASERS_ATOM, USERS_ATOM } from './atoms';
+import { useCreateStreamMetadata, useGetStreamMetadata } from './features/CreateStream/hooks';
 
 function AppComponent() {
+  useCreateStreamMetadata();
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
   const { state, isStateRead } = useProgramState();
+  const { isMeta } = useGetStreamMetadata();
 
   const setStreamTeasers = useSetAtom(STREAM_TEASERS_ATOM);
   const setUsers = useSetAtom(USERS_ATOM);
@@ -30,7 +33,7 @@ function AppComponent() {
     }
   }, [state, isStateRead, setStreamTeasers, setUsers]);
 
-  const isAppReady = isApiReady && isAccountReady && isStateRead;
+  const isAppReady = isApiReady && isAccountReady && isStateRead && isMeta;
 
   return (
     <div className={cx(styles['app-container'])}>

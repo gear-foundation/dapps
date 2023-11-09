@@ -16,17 +16,19 @@
     "types": "*"
   },
   "dependencies": {
-    "@gear-js/api": "0.33.6",
-    "@gear-js/react-hooks": "0.6.8",
+    "@gear-js/api": "0.35.1",
+    "@gear-js/react-hooks": "0.9.0",
     "@gear-js/ui": "0.5.19",
+    "@headlessui/react": "^1.7.17",
     "@mantine/form": "^6.0.15",
-    "@polkadot/api": "10.9.1",
+    "@polkadot/api": "10.10.1",
     "@polkadot/extension-dapp": "0.46.5",
-    "@polkadot/extension-inject": "0.46.5",
     "@polkadot/react-identicon": "3.5.1",
-    "@polkadot/types": "10.9.1",
+    "@polkadot/types": "10.10.1",
     "@polkadot/util": "12.3.2",
+    "@polkadot/util-crypto": "12.3.2",
     "@polkadot/wasm-crypto": "7.2.2",
+    "@radix-ui/react-scroll-area": "^1.0.5",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
@@ -36,7 +38,8 @@
     "babel-polyfill": "^6.26.0",
     "buffer": "6.0.3",
     "clsx": "^1.2.1",
-    "jotai": "^2.2.1",
+    "framer-motion": "^10.16.4",
+    "jotai": "^2.5.1",
     "lodash.merge": "^4.6.2",
     "moment": "^2.29.4",
     "rc-time-picker": "^3.7.3",
@@ -74,5 +77,7 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
-  }
+  },
+  "main": "index.js",
+  "license": "MIT"
 }

@@ -6,6 +6,10 @@ export type Entries<T> = {
   [K in keyof T]: [K, T[K]];
 }[keyof T][];
 
+export type ArrayElement<ArrayType extends readonly unknown[]> = ArrayType extends readonly (infer ElementType)[]
+  ? ElementType
+  : never;
+
 export type Handler = (event: Event) => void;
 
 export interface GlobalState {

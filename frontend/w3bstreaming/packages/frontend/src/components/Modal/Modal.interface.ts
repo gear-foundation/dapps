@@ -3,5 +3,6 @@ import { ReactNode } from 'react';
 export type ModalProps = {
   heading: string;
   children: ReactNode;
-  onClose: () => void;
+  onClose: (() => void) | null;
+  className?: string;
 };

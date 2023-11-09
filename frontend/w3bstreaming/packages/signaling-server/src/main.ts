@@ -7,6 +7,7 @@ const main = async () => {
   console.log(`Connected to ${await api.chain()}`);
   await meta;
   console.log(`Metadata initialized`);
+  console.log(meta);
   server.listen(config.port, () => {
     console.log(`Server is running on port ${config.port}`);
   });

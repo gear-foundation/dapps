@@ -1,9 +1,12 @@
-import { useEffect, useState } from 'react';
-import { useAlert, useAccount } from '@gear-js/react-hooks';
 import { Buffer } from 'buffer';
+import { useEffect, useState } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { CreateType } from '@gear-js/api';
+import { formatBalance } from '@polkadot/util';
+import { useAlert, useAccount, useApi, useBalance } from '@gear-js/react-hooks';
 import { LOCAL_STORAGE } from '@/consts';
-import { WALLET } from './consts';
-import { WalletId } from './types';
+import { AVAILABLE_BALANCE, IS_AVAILABLE_BALANCE_READY, WALLET, WALLET_ID_LOCAL_STORAGE_KEY, WalletId } from './consts';
+import { SystemAccount } from './types';
 
 function useWasmMetadata(source: RequestInfo | URL) {
   const alert = useAlert();
@@ -29,7 +32,7 @@ function useWallet() {
 
   const resetWalletId = () => setWalletId(undefined);
 
-  const getWalletAccounts = (id: WalletId) => accounts.filter(({ meta }) => meta.source === id);
+  const getWalletAccounts = (id: WalletId) => accounts?.filter(({ meta }) => meta.source === id) || [];
 
   const saveWallet = () => walletId && localStorage.setItem(LOCAL_STORAGE.WALLET, walletId);
 
@@ -41,4 +44,77 @@ function useWallet() {
   return { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts, saveWallet, removeWallet };
 }
 
-export { useWasmMetadata, useWallet };
+function useWalletSync() {
+  const { account, isAccountReady } = useAccount();
+  const { address } = account || {};
+
+  useEffect(() => {
+    if (!isAccountReady) return;
+    if (!account) return localStorage.removeItem(WALLET_ID_LOCAL_STORAGE_KEY);
+
+    localStorage.setItem(WALLET_ID_LOCAL_STORAGE_KEY, account.meta.source);
+  }, [isAccountReady, address, account]);
+}
+
+export function useAccountAvailableBalance() {
+  const isAvailableBalanceReady = useAtomValue(IS_AVAILABLE_BALANCE_READY);
+  const availableBalance = useAtomValue(AVAILABLE_BALANCE);
+  const setAvailableBalance = useSetAtom(AVAILABLE_BALANCE);
+  return { isAvailableBalanceReady, availableBalance, setAvailableBalance };
+}
+
+export function useAccountAvailableBalanceSync() {
+  const { isAccountReady, account } = useAccount();
+  const { api, isApiReady } = useApi();
+  const { balance, isBalanceReady } = useBalance(account?.decodedAddress);
+
+  const isReady = useAtomValue(IS_AVAILABLE_BALANCE_READY);
+  const setIsReady = useSetAtom(IS_AVAILABLE_BALANCE_READY);
+  const setAvailableBalance = useSetAtom(AVAILABLE_BALANCE);
+
+  useEffect(() => {
+    if (!api || !isApiReady || !isAccountReady) return;
+
+    if (account && balance) {
+      api.query.system.account(account.decodedAddress).then((res) => {
+        const systemAccount = res.toJSON() as SystemAccount;
+
+        const total = balance.toString();
+        const fee = CreateType.create('u128', systemAccount.data.feeFrozen).toString();
+
+        const getBalance = (b: string) => () => {
+          const [unit] = api.registry.chainTokens;
+          const [decimals] = api.registry.chainDecimals;
+
+          const existentialDeposit = formatBalance(api.existentialDeposit, {
+            decimals,
+            forceUnit: unit,
+            withSiFull: false,
+            withSi: false,
+            withUnit: unit,
+            withZero: false,
+          });
+
+          const value = formatBalance(b.toString(), {
+            decimals,
+            forceUnit: unit,
+            withSiFull: false,
+            withSi: false,
+            withUnit: unit,
+          });
+
+          return { value, unit, existentialDeposit };
+        };
+
+        setAvailableBalance(getBalance(`${+total - +fee}`));
+        if (!isReady) {
+          setIsReady(true);
+        }
+      });
+    } else {
+      setIsReady(true);
+    }
+  }, [account, api, isAccountReady, isApiReady, isReady, balance, isBalanceReady, setAvailableBalance, setIsReady]);
+}
+
+export { useWalletSync, useWallet, useWasmMetadata };

@@ -18,6 +18,9 @@
     "jsx": "react-jsx",
     "baseUrl": "src",
   },
+  "files":[
+    "index.d.ts"
+  ],
   "include": ["src", "react-app-env.d.ts"],
   "exclude": ["node_modules", "dist"],
 }

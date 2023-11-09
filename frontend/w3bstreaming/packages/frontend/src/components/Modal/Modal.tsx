@@ -7,7 +7,7 @@ import { ModalProps } from './Modal.interface';
 import { cx } from '@/utils';
 import { Button } from '@/ui';
 
-function Modal({ heading, children, onClose }: ModalProps) {
+function Modal({ heading, children, onClose, className }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);
 
   const disableScroll = () => document.body.classList.add('modal-open');
@@ -33,16 +33,16 @@ function Modal({ heading, children, onClose }: ModalProps) {
     const isBackdropClick = target === ref.current;
 
     if (isBackdropClick) {
-      onClose();
+      onClose?.();
     }
   };
 
   return (
-    <dialog ref={ref} onClick={handleClick} className={cx(styles.modal)}>
+    <dialog ref={ref} onClick={handleClick} className={cx(styles.modal, className || '')}>
       <div className={cx(styles.wrapper)}>
         <header className={cx(styles.header)}>
           <h2>{heading}</h2>
-          <Button variant="icon" size="small" label="" icon={crossSVG} onClick={onClose} />
+          {onClose && <Button variant="icon" size="small" label="" icon={crossSVG} onClick={onClose} />}
         </header>
         {children}
       </div>

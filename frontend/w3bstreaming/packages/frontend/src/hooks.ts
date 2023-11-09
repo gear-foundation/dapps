@@ -1,12 +1,23 @@
 import { useEffect, useState, MutableRefObject, RefObject, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { ProgramMetadata } from '@gear-js/api';
-import { useAlert, useReadFullState } from '@gear-js/react-hooks';
+import { stringShorten } from '@polkadot/util';
+import { AnyJson, AnyNumber } from '@polkadot/types/types';
+import { HexString, ProgramMetadata } from '@gear-js/api';
+import {
+  useAlert,
+  useReadFullState,
+  useHandleCalculateGas as useCalculateGasNative,
+  withoutCommas,
+  useApi,
+  useAccount,
+  useBalanceFormat,
+} from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
 import metaTxt from '@/assets/meta/meta.txt';
 import { ADDRESS, LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
 import { Handler, ProgramStateRes } from '@/types';
 import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
+import { useAccountAvailableBalance } from './features/Wallet/hooks';
 
 function useProgramMetadata(source: string) {
   const alert = useAlert();
@@ -114,5 +125,71 @@ function useProgramState() {
 
   return state;
 }
+
+export function useCheckBalance() {
+  const { api } = useApi();
+  const { account } = useAccount();
+  const { availableBalance } = useAccountAvailableBalance();
+  const { getChainBalanceValue } = useBalanceFormat();
+  const alert = useAlert();
+
+  const checkBalance = (limit: number, callback: () => void, onError?: () => void) => {
+    const chainBalance = Number(getChainBalanceValue(Number(withoutCommas(availableBalance?.value || ''))).toFixed());
+    const valuePerGas = Number(withoutCommas(api!.valuePerGas!.toHuman()));
+    const chainEDeposit = Number(
+      getChainBalanceValue(Number(withoutCommas(availableBalance?.existentialDeposit || ''))).toFixed(),
+    );
+
+    const chainEDepositWithLimit = chainEDeposit + limit * valuePerGas;
+    console.log('LIMIT:');
+    console.log(limit);
+    console.log(limit * valuePerGas);
+    console.log('existentialDeposit:');
+    console.log(Number(withoutCommas(availableBalance?.existentialDeposit || '')));
+    console.log('eDeposit');
+    console.log(chainEDeposit);
+    console.log('eDeposit + Limit:');
+    console.log(chainEDepositWithLimit);
+    console.log('balance:');
+    console.log(Number(withoutCommas(availableBalance!.value)));
+    console.log('chain balance:');
+    console.log(getChainBalanceValue(Number(withoutCommas(availableBalance?.value || ''))).toFixed());
+    console.log('low balance: ');
+    console.log(chainBalance < chainEDepositWithLimit);
+
+    if (!chainBalance || chainBalance < chainEDepositWithLimit) {
+      alert.error(`Low balance on ${stringShorten(account?.decodedAddress || '', 8)}`);
+
+      if (onError) {
+        onError();
+      }
+
+      return;
+    }
+
+    callback();
+  };
+
+  return { checkBalance };
+}
+
+export const useHandleCalculateGas = (address: HexString, meta?: ProgramMetadata) => {
+  const { availableBalance } = useAccountAvailableBalance();
+  const calculateGasNative = useCalculateGasNative(address, meta);
+
+  const alert = useAlert();
+
+  return (initPayload: AnyJson, value?: AnyNumber | undefined) => {
+    const balance = Number(withoutCommas(availableBalance?.value || ''));
+    const existentialDeposit = Number(withoutCommas(availableBalance?.existentialDeposit || ''));
+    console.log(balance);
+    console.log(existentialDeposit);
+    if (!balance || balance < existentialDeposit) {
+      alert.error(`Low balance when calculating gas`);
+    }
+
+    return calculateGasNative(initPayload, value);
+  };
+};
 
 export { useProgramMetadata, useContractAddressSetup, useClickOutside, useMetadata, useMediaQuery, useProgramState };

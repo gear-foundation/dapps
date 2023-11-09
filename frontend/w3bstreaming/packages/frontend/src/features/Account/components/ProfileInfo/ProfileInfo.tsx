@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useAlert, withoutCommas } from '@gear-js/react-hooks';
 import { useForm, isNotEmpty } from '@mantine/form';
 import styles from './ProfileInfo.module.scss';
 import { FormValues } from './ProfileInfo.interfaces';
-import { cx } from '@/utils';
+import { cx, logger } from '@/utils';
 import { Button, DropzoneUploader, Input } from '@/ui';
 import EditProfileIcon from '@/assets/icons/edit-profile-icon.svg';
 import SuccessIcon from '@/assets/icons/success-icon.svg';
@@ -13,13 +13,20 @@ import defaultUserImg from '@/assets/icons/no-avatar-user-img.png';
 import { useEditProfileMessage } from '../../hooks';
 import { User } from '../../types';
 import { USERS_ATOM } from '@/atoms';
+import { useGetStreamMetadata } from '@/features/CreateStream/hooks';
+import { useCheckBalance, useHandleCalculateGas } from '@/hooks';
+import { ADDRESS } from '@/consts';
 
 function ProfileInfo() {
   const { account } = useAccount();
+  const alert = useAlert();
+  const { meta } = useGetStreamMetadata();
   const users = useAtomValue(USERS_ATOM);
   const sendMessage = useEditProfileMessage();
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [isEditingProfile, setIsEditingProfile] = useState<boolean>(false);
+  const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, meta);
+  const { checkBalance } = useCheckBalance();
 
   const form = useForm<FormValues>({
     initialValues: {
@@ -60,26 +67,56 @@ function ProfileInfo() {
       },
     };
 
-    sendMessage(payload, {
-      onSuccess: () => {
-        if (isEditingProfile) {
-          setIsEditingProfile(false);
-        }
-        setUserInfo((prev) =>
-          prev
-            ? {
-                ...prev,
-                name,
-                surname,
-                imgLink,
-              }
-            : prev,
+    calculateGas(payload)
+      .then((res) => res.toHuman())
+      .then(({ min_limit }) => {
+        const minLimit = withoutCommas(min_limit as string);
+        const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
+        logger(`Calculating gas:`);
+        logger(`MIN_LIMIT ${min_limit}`);
+        logger(`LIMIT ${gasLimit}`);
+        logger(`Calculated gas SUCCESS`);
+        logger(`Sending message`);
+
+        checkBalance(
+          gasLimit,
+          () =>
+            sendMessage({
+              payload,
+              gasLimit,
+              onError: () => {
+                logger(`Errror send message`);
+              },
+              onSuccess: (messageId) => {
+                logger(`sucess on ID: ${messageId}`);
+                if (isEditingProfile) {
+                  setIsEditingProfile(false);
+                }
+                setUserInfo((prev) =>
+                  prev
+                    ? {
+                        ...prev,
+                        name,
+                        surname,
+                        imgLink,
+                      }
+                    : prev,
+                );
+              },
+              onInBlock: (messageId) => {
+                logger('messageInBlock');
+                logger(`messageID: ${messageId}`);
+              },
+            }),
+          () => {
+            logger(`Errror check balance`);
+          },
         );
-      },
-      onError: () => {
-        console.log('error');
-      },
-    });
+      })
+      .catch((error) => {
+        logger(error);
+        alert.error('Gas calculation error');
+      });
   };
 
   useEffect(() => {

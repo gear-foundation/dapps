@@ -85,7 +85,7 @@ function Header({ menu }: HeaderProps) {
         </>
       )}
 
-      {isWalletModalOpen && <WalletModal onClose={handleCloseWalletModal} />}
+      <WalletModal open={isWalletModalOpen} setOpen={setIsMobileMenuOpen} onClose={handleCloseWalletModal} />
     </>
   );
 }

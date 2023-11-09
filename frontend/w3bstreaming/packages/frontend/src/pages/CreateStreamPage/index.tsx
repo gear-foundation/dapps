@@ -4,14 +4,16 @@ import { useAtomValue } from 'jotai';
 import { useAccount } from '@gear-js/react-hooks';
 import { CreateStreamRestrictModal } from '@/features/Auth/components';
 import { LayoutCreateForm } from '@/features/CreateStream/components/LayoutCreateForm';
-
+import { useGetStreamMetadata } from '@/features/CreateStream/hooks';
 import { USERS_ATOM } from '@/atoms';
+import { Loader } from '@/components';
 
 function CreateStreamPage() {
   const { account } = useAccount();
   const users = useAtomValue(USERS_ATOM);
   const navigate = useNavigate();
   const [isModal, setIsModal] = useState<boolean>(false);
+  const { meta, isMeta } = useGetStreamMetadata();
 
   const handleCloseModal = () => {
     setIsModal(false);
@@ -28,11 +30,13 @@ function CreateStreamPage() {
     }
   }, [users, account?.decodedAddress]);
 
-  return (
+  return isMeta ? (
     <>
-      <LayoutCreateForm />
+      <LayoutCreateForm meta={meta} />
       {isModal && <CreateStreamRestrictModal onClose={handleCloseModal} />}
     </>
+  ) : (
+    <Loader />
   );
 }
 

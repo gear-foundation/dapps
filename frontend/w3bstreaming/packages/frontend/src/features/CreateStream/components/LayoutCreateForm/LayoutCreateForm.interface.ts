@@ -1,3 +1,4 @@
+import { ProgramMetadata } from '@gear-js/api';
 import { Moment } from 'moment';
 
 export interface SectionProps {
@@ -12,4 +13,8 @@ export interface FormValues {
   startTime: Moment;
   endTime: Moment;
   imgLink: string;
+}
+
+export interface LayoutCreateFormProps {
+  meta?: ProgramMetadata;
 }
