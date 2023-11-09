@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import TagManager from 'react-gtm-module';
-import { InitErrorTracking } from 'error-tracking';
+import { initErrorTracking } from 'error-tracking';
 import { App } from './app';
 
 if (import.meta.env.MODE === 'production' && import.meta.env.VITE_GTM_ID_TTT) {
@@ -10,7 +10,7 @@ if (import.meta.env.MODE === 'production' && import.meta.env.VITE_GTM_ID_TTT) {
   });
 }
 
-InitErrorTracking();
+initErrorTracking();
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

@@ -19,7 +19,6 @@
     "@polkadot/wasm-crypto": "7.2.2",
     "@polkadot/x-randomvalues": "12.4.2",
     "@radix-ui/react-scroll-area": "1.0.4",
-    "@sentry/react": "7.69.0",
     "assert": "2.0.0",
     "buffer": "6.0.3",
     "class-variance-authority": "0.7.0",

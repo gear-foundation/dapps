@@ -19,7 +19,6 @@
     "@polkadot/util-crypto": "12.3.2",
     "@radix-ui/react-dialog": "1.0.4",
     "@radix-ui/react-scroll-area": "1.0.4",
-    "@sentry/react": "7.69.0",
     "buffer": "6.0.3",
     "class-variance-authority": "0.6.1",
     "clsx": "1.2.1",
@@ -36,7 +35,6 @@
     "socket.io-client": "4.7.2"
   },
   "devDependencies": {
-    "@sentry/vite-plugin": "2.7.1",
     "@types/lodash.isequal": "4.5.6",
     "@types/node": "18.16.19",
     "@types/react": "18.2.33",

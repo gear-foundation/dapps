@@ -1,10 +1,9 @@
-import { defineConfig, loadEnv, splitVendorChunkPlugin } from 'vite';
+import { defineConfig, splitVendorChunkPlugin } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import nodePolyfills from 'vite-plugin-node-stdlib-browser';
 import eslint from 'vite-plugin-eslint';
 import svgr from 'vite-plugin-svgr';
-import { sentryVitePlugin } from '@sentry/vite-plugin';
 
 // import { visualizer } from 'rollup-plugin-visualizer'
 // import autoprefixer from 'autoprefixer'
@@ -13,7 +12,6 @@ import { sentryVitePlugin } from '@sentry/vite-plugin';
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
   return {
     resolve: {
       alias: {
@@ -72,15 +70,6 @@ export default defineConfig(({ mode }) => {
       react(),
       nodePolyfills(),
       eslint(),
-      // Put the Sentry vite plugin after all other plugins
-      sentryVitePlugin({
-        disable: (process.env.NODE_ENV || env.NODE_ENV) !== 'production',
-        url: 'https://sentry.vara-network.io',
-        org: process.env.SENTRY_ORG || env.SENTRY_ORG,
-        project: process.env.SENTRY_PROJECT_TTT || env.SENTRY_PROJECT_TTT,
-        authToken: process.env.SENTRY_AUTH_TOKEN || env.SENTRY_AUTH_TOKEN,
-        telemetry: false,
-      }),
     ],
     assetsInclude: ['**/*.wasm?inline', '**/*.txt?inline'],
   };
