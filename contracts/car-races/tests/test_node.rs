@@ -94,13 +94,7 @@ async fn gclient_start_game_test() -> Result<()> {
         .calculate_handle_gas(None, program_id, allow_messages_payload.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(
-            program_id,
-            allow_messages_payload,
-            gas_info.min_limit,
-            0,
-            false,
-        )
+        .send_message(program_id, allow_messages_payload, gas_info.min_limit, 0)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
@@ -128,13 +122,7 @@ async fn gclient_start_game_test() -> Result<()> {
         .calculate_handle_gas(None, program_id, add_strategy_payload.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(
-            program_id,
-            add_strategy_payload,
-            gas_info.min_limit,
-            0,
-            false,
-        )
+        .send_message(program_id, add_strategy_payload, gas_info.min_limit, 0)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
@@ -145,7 +133,7 @@ async fn gclient_start_game_test() -> Result<()> {
         .calculate_handle_gas(None, program_id, start_game_payload.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(program_id, start_game_payload, gas_info.min_limit, 0, false)
+        .send_message(program_id, start_game_payload, gas_info.min_limit, 0)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
@@ -158,7 +146,7 @@ async fn gclient_start_game_test() -> Result<()> {
         .calculate_handle_gas(None, program_id, move_payload.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(program_id, move_payload, gas_info.min_limit, 0, false)
+        .send_message(program_id, move_payload, gas_info.min_limit, 0)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);

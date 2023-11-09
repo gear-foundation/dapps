@@ -171,6 +171,6 @@ impl StudentNft for Program<'_> {
     }
 
     fn get_state(&self) -> StudentNftState {
-        self.read_state().expect("Unexpected invalid state.")
+        self.read_state(0).expect("Unexpected invalid state.")
     }
 }

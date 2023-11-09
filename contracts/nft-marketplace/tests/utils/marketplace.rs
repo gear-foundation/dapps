@@ -273,7 +273,7 @@ pub struct MarketMetaState<'a>(&'a InnerProgram<'a>);
 
 impl MarketMetaState<'_> {
     pub fn state(&self) -> MetaStateReply<nft_marketplace_io::Market> {
-        MetaStateReply(self.0.read_state().expect("Unexpected invalid state."))
+        MetaStateReply(self.0.read_state(0).expect("Unexpected invalid state."))
     }
 }
 

@@ -92,7 +92,7 @@ pub fn buy_tokens(sys: &System, ico: &Program<'_>, amount: u128, price: u128) {
 }
 
 pub fn balance_of(ico: &Program<'_>, amount: u128) {
-    let state: State = ico.read_state().unwrap();
+    let state: State = ico.read_state(0).unwrap();
     assert_eq!(
         amount,
         state.balance_of(&USER_ID.into()),

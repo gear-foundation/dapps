@@ -107,7 +107,7 @@ pub struct GOCMetaState<'a>(&'a InnerProgram<'a>);
 
 impl GOCMetaState<'_> {
     pub fn all(self) -> MetaStateReply<State> {
-        MetaStateReply(self.0.read_state().unwrap())
+        MetaStateReply(self.0.read_state(0).unwrap())
     }
 }
 

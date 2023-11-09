@@ -209,7 +209,7 @@ impl Contract {
         let fee_to_result: Result<FactoryEvent, FactoryError> =
             utils::send(self.factory, FactoryAction::GetFeeTo)?.await?;
         let Ok(FactoryEvent::FeeToSet(fee_receiver)) = fee_to_result else {
-                return Err(Error::FeeToGettingFailed);
+            return Err(Error::FeeToGettingFailed);
         };
 
         let is_fee_on = !fee_receiver.is_zero();

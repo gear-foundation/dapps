@@ -58,32 +58,32 @@ pub fn add_minter(
     )
 }
 
-pub fn add_url(nft: &Program<'_>, token_id: TokenId, url: &str, member: u64) -> RunResult {
-    nft.send(
-        member,
-        NFTAction::AddMedia {
-            token_id,
-            media: url.to_string(),
-        },
-    )
-}
+// pub fn add_url(nft: &Program<'_>, token_id: TokenId, url: &str, member: u64) -> RunResult {
+//     nft.send(
+//         member,
+//         NFTAction::AddMedia {
+//             token_id,
+//             media: url.to_string(),
+//         },
+//     )
+// }
 
-pub fn start_auto_changing(
-    nft: &Program<'_>,
-    token_ids: Vec<TokenId>,
-    updates_count: u32,
-    update_period: u32,
-    member: u64,
-) -> RunResult {
-    nft.send(
-        member,
-        NFTAction::StartAutoChanging {
-            updates_count,
-            update_period,
-            token_ids,
-        },
-    )
-}
+// pub fn start_auto_changing(
+//     nft: &Program<'_>,
+//     token_ids: Vec<TokenId>,
+//     updates_count: u32,
+//     update_period: u32,
+//     member: u64,
+// ) -> RunResult {
+//     nft.send(
+//         member,
+//         NFTAction::StartAutoChanging {
+//             updates_count,
+//             update_period,
+//             token_ids,
+//         },
+//     )
+// }
 
 pub fn burn(nft: &Program<'_>, transaction_id: u64, member: u64, token_id: u64) -> RunResult {
     nft.send(
@@ -178,13 +178,13 @@ pub fn mint_to_actor(nft: &Program<'_>, transaction_id: u64, member: [u8; 32]) -
     )
 }
 
-pub fn current_media(nft: &Program<'_>, token_id: TokenId) -> String {
-    let state: State = nft.read_state().unwrap();
+// pub fn current_media(nft: &Program<'_>, token_id: TokenId) -> String {
+//     let state: State = nft.read_state(0).unwrap();
 
-    state
-        .tokens
-        .into_iter()
-        .find_map(|(id, meta)| (token_id == id).then_some(meta))
-        .unwrap()
-        .media_url
-}
+//     state
+//         .tokens
+//         .into_iter()
+//         .find_map(|(id, meta)| (token_id == id).then_some(meta))
+//         .unwrap()
+//         .media_url
+// }

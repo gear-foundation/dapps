@@ -262,7 +262,7 @@ impl PairState<'_> {
     ) -> StateReply<T> {
         StateReply(
             self.0
-                .read_state_using_wasm(WASM_EXPORTS[fn_index], WASM_BINARY.into(), argument)
+                .read_state_using_wasm(0, WASM_EXPORTS[fn_index], WASM_BINARY.into(), argument)
                 .unwrap(),
         )
     }

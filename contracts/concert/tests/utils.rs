@@ -109,7 +109,7 @@ pub fn check_current_concert(
     number_of_tickets: u128,
     tickets_left: u128,
 ) {
-    let state: State = concert_program.read_state().expect("Can't read state");
+    let state: State = concert_program.read_state(0).expect("Can't read state");
     let CurrentConcert {
         name: true_name,
         description: true_description,
@@ -139,7 +139,7 @@ pub fn check_user_tickets(
     user: ActorId,
     tickets: Vec<Option<TokenMetadata>>,
 ) {
-    let state: State = concert_program.read_state().expect("Can't read state");
+    let state: State = concert_program.read_state(0).expect("Can't read state");
     let true_tickets = state.user_tickets(user);
     if tickets != true_tickets {
         std::panic!("CONCERT: User tickets differ.");
@@ -147,7 +147,7 @@ pub fn check_user_tickets(
 }
 
 pub fn check_buyers(concert_program: &Program<'_>, buyers: Vec<ActorId>) {
-    let state: State = concert_program.read_state().expect("Can't read state");
+    let state: State = concert_program.read_state(0).expect("Can't read state");
     if buyers != state.buyers {
         std::panic!("CONCERT: Buyers list differs.");
     }

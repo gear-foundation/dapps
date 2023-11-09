@@ -241,6 +241,7 @@ pub fn check_valid_state_utils(
 pub fn query_state(id_program: &Program<'_>, query: IdentityStateQuery) -> IdentityStateReply {
     id_program
         .read_state_using_wasm(
+            0,
             "query",
             std::fs::read("../target/wasm32-unknown-unknown/debug/identity_state.meta.wasm")
                 .unwrap(),

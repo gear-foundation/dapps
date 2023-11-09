@@ -39,7 +39,7 @@ extern fn init() {
         },
         owner: msg::source(),
         base_image: config.base_image,
-        layers: HashMap::from_iter(config.layers.into_iter()),
+        layers: HashMap::from_iter(config.layers),
         ..Default::default()
     };
     unsafe { CONTRACT = Some(nft) };

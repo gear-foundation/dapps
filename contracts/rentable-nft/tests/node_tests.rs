@@ -61,7 +61,7 @@ async fn gclient_mint_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id, mint_payload, gas_info.burned * 2, 0)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -129,7 +129,7 @@ async fn gclient_burn_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id, mint_payload, gas_info.burned * 2, 0)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -148,7 +148,7 @@ async fn gclient_burn_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, burn_payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id, burn_payload, gas_info.burned * 2, 0)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -166,7 +166,7 @@ async fn gclient_burn_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, burn_payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id, burn_payload, gas_info.burned * 2, 0)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -234,7 +234,7 @@ async fn gclient_transfer_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id, mint_payload, gas_info.burned * 2, 0)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -254,7 +254,7 @@ async fn gclient_transfer_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, transfer_payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id, transfer_payload, gas_info.burned * 2, 0)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -313,7 +313,7 @@ async fn gclient_owner_test() -> Result<()> {
         .calculate_handle_gas(None, program_id, mint_payload.encode(), 0, true)
         .await?;
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id, mint_payload, gas_info.burned * 2, 0)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
@@ -325,7 +325,7 @@ async fn gclient_owner_test() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, owner_payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id, owner_payload, gas_info.burned * 2, 0)
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
 
@@ -392,7 +392,7 @@ async fn gclient_approved() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, mint_payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id, mint_payload, gas_info.burned * 2, 0)
         .await?;
 
     assert!(listener.message_processed(message_id).await?.succeed());
@@ -411,7 +411,7 @@ async fn gclient_approved() -> Result<()> {
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id, approve_payload, gas_info.burned * 2, 0, false)
+        .send_message(program_id, approve_payload, gas_info.burned * 2, 0)
         .await?;
 
     let processed = listener.message_processed(message_id).await?;
