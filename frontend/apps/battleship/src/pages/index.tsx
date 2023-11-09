@@ -1,8 +1,9 @@
-import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+import { useAccount } from '@gear-js/react-hooks';
+import { Navigate, Route, useLocation } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
+import { ErrorTrackingRoutes } from 'error-tracking';
 import { ROUTES } from '@/app/consts';
 import { Loader } from '@/components';
-import { useAccount } from '@gear-js/react-hooks';
 
 const routes = [
   { path: ROUTES.HOME, Page: lazy(() => import('./login')) },
@@ -27,7 +28,7 @@ function RequireAuth({ children }: { children: JSX.Element }) {
 
 export function Routing() {
   return (
-    <Routes>
+    <ErrorTrackingRoutes>
       {routes.map(({ path, Page, isPrivate }) => (
         <Route
           key={path}
@@ -45,6 +46,6 @@ export function Routing() {
           }
         />
       ))}
-    </Routes>
+    </ErrorTrackingRoutes>
   );
 }
