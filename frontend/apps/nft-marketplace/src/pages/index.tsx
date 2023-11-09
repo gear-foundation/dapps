@@ -1,4 +1,5 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route } from 'react-router-dom';
+import { ErrorTrackingRoutes } from 'error-tracking';
 import { OnLogin, InfoText } from 'components';
 import { Listing } from './listing';
 import { Listings } from './listings';
@@ -30,7 +31,7 @@ function Routing() {
       />
     ));
 
-  return <Routes>{getRoutes()}</Routes>;
+  return <ErrorTrackingRoutes>{getRoutes()}</ErrorTrackingRoutes>;
 }
 
 export { Routing };

@@ -1,8 +1,9 @@
-import { Route, Routes } from 'react-router-dom';
-import { Home } from './home';
-import { Battle } from './battle';
+import { Route } from 'react-router-dom';
+import { ErrorTrackingRoutes } from 'error-tracking';
 import { useInitBattleData } from 'features/battle/hooks';
 import { ROUTES } from '../app/consts';
+import { Home } from './home';
+import { Battle } from './battle';
 
 const routes = [
   { path: ROUTES.HOME, Page: Home },
@@ -14,10 +15,10 @@ export const Routing = () => {
   useInitBattleData();
 
   return (
-    <Routes>
+    <ErrorTrackingRoutes>
       {routes.map(({ path, Page }) => (
         <Route key={path} path={path} element={<Page />} />
       ))}
-    </Routes>
+    </ErrorTrackingRoutes>
   );
 };

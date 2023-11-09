@@ -1,5 +1,6 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { Route, Routes } from 'react-router-dom';
+import { Route } from 'react-router-dom';
+import { ErrorTrackingRoutes } from 'error-tracking';
 import { Content } from 'components';
 import { Home } from './home';
 
@@ -17,7 +18,7 @@ function Routing() {
       />
     ));
 
-  return <Routes>{getRoutes()}</Routes>;
+  return <ErrorTrackingRoutes>{getRoutes()}</ErrorTrackingRoutes>;
 }
 
 export { Routing };
