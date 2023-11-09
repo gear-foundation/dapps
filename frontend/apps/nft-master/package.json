@@ -24,6 +24,7 @@
     "buffer": "6.0.3",
     "class-variance-authority": "0.7.0",
     "clsx": "1.2.1",
+    "error-tracking": "workspace:*",
     "graphql": "^16.8.1",
     "jotai": "2.1.0",
     "keen-slider": "6.8.5",

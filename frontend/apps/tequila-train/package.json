@@ -24,6 +24,7 @@
     "@polkadot/wasm-crypto": "7.2.2",
     "@radix-ui/react-scroll-area": "1.0.3",
     "clsx": "1.2.1",
+    "error-tracking": "workspace:*",
     "framer-motion": "10.12.4",
     "react": "18.2.0",
     "react-dom": "18.2.0",
