@@ -9,9 +9,11 @@
     "bump:hooks": "yarn bump @gear-js/react-hooks",
     "bump:ui": "yarn bump @gear-js/ui",
     "bump:vara-ui": "yarn bump @gear-js/vara-ui",
-    "bump:polkadot": "yarn bump @polkadot/api @polkadot/types"
+    "bump:polkadot": "yarn bump @polkadot/api @polkadot/types",
+    "build:error-tracking": "yarn build workspace error-tracking"
   },
   "workspaces": [
-    "./apps/*"
+    "./apps/*",
+    "./packages/*"
   ]
 }
