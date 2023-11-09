@@ -26,6 +26,7 @@
     "babel-polyfill": "6.26.0",
     "buffer": "6.0.3",
     "clsx": "1.2.1",
+    "error-tracking": "workspace:*",
     "framer-motion": "10.16.4",
     "jotai": "2.2.1",
     "lodash.isequal": "4.5.0",

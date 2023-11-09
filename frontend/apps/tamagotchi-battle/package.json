@@ -27,6 +27,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "1.2.1",
     "dayjs": "1.11.7",
+    "error-tracking": "workspace:*",
     "framer-motion": "9.0.7",
     "jotai": "^2.4.3",
     "keen-slider": "6.8.5",

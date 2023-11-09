@@ -5539,6 +5539,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry-internal/tracing@npm:7.79.0":
+  version: 7.79.0
+  resolution: "@sentry-internal/tracing@npm:7.79.0"
+  dependencies:
+    "@sentry/core": "npm:7.79.0"
+    "@sentry/types": "npm:7.79.0"
+    "@sentry/utils": "npm:7.79.0"
+  checksum: 5ca2c783c7638869850cb713b5fa50d368ff5b65ee78b399354e13884a87698b967d8c344e738686be3788bbf1975c9747c5ef7f86bed6932410f1221968fc82
+  languageName: node
+  linkType: hard
+
 "@sentry/browser@npm:7.69.0":
   version: 7.69.0
   resolution: "@sentry/browser@npm:7.69.0"
@@ -5550,6 +5561,19 @@ __metadata:
     "@sentry/utils": "npm:7.69.0"
     tslib: "npm:^2.4.1 || ^1.9.3"
   checksum: 33fdc1ec8c1b8521e9011906d225657d2c364b0813a160f27a081513ad86ade184ed0ab72c347dc6597d43ec1c3d1c6fc0a473bf8374f8a267a4a9851893a970
+  languageName: node
+  linkType: hard
+
+"@sentry/browser@npm:7.79.0":
+  version: 7.79.0
+  resolution: "@sentry/browser@npm:7.79.0"
+  dependencies:
+    "@sentry-internal/tracing": "npm:7.79.0"
+    "@sentry/core": "npm:7.79.0"
+    "@sentry/replay": "npm:7.79.0"
+    "@sentry/types": "npm:7.79.0"
+    "@sentry/utils": "npm:7.79.0"
+  checksum: 467e63f5396e9a39613ac828f2a4462804729d20fd777e12051e592ac5101658a87bcaeaa428cbf82e719f003cc9e90f1db9e7cc831e3e2ea631a6b214ede229
   languageName: node
   linkType: hard
 
@@ -5605,6 +5629,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry/core@npm:7.79.0":
+  version: 7.79.0
+  resolution: "@sentry/core@npm:7.79.0"
+  dependencies:
+    "@sentry/types": "npm:7.79.0"
+    "@sentry/utils": "npm:7.79.0"
+  checksum: a565a80dcf43fc7a06b30586d9f318e0afe4dad5e2b3fe418ae0cdca5fb809ced4933bdce042177ae3d55b2aa8f9fa89296a50434e64c11b47ceb4daaa42a0cd
+  languageName: node
+  linkType: hard
+
 "@sentry/node@npm:^7.60.0":
   version: 7.78.0
   resolution: "@sentry/node@npm:7.78.0"
@@ -5633,6 +5667,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@sentry/react@npm:7.79.0":
+  version: 7.79.0
+  resolution: "@sentry/react@npm:7.79.0"
+  dependencies:
+    "@sentry/browser": "npm:7.79.0"
+    "@sentry/types": "npm:7.79.0"
+    "@sentry/utils": "npm:7.79.0"
+    hoist-non-react-statics: "npm:^3.3.2"
+  peerDependencies:
+    react: 15.x || 16.x || 17.x || 18.x
+  checksum: 0bcf46b5b37f59c80f639784b75d6d17191d195836f836364c51e5587b22dbc017daa8fa7d133a93c270de1c387ca7587fd858374f1699ffdf155698172d6f02
+  languageName: node
+  linkType: hard
+
 "@sentry/replay@npm:7.69.0":
   version: 7.69.0
   resolution: "@sentry/replay@npm:7.69.0"
@@ -5641,6 +5689,18 @@ __metadata:
     "@sentry/types": "npm:7.69.0"
     "@sentry/utils": "npm:7.69.0"
   checksum: 42b13ba0ff96c1495cdcafbaaac1945ad5c96cd4cf4654fd08d0f0ec891ae9167b2ffe814a642838a6e422e555a39c777e0cc691e76257d10029bd7102a29c10
+  languageName: node
+  linkType: hard
+
+"@sentry/replay@npm:7.79.0":
+  version: 7.79.0
+  resolution: "@sentry/replay@npm:7.79.0"
+  dependencies:
+    "@sentry-internal/tracing": "npm:7.79.0"
+    "@sentry/core": "npm:7.79.0"
+    "@sentry/types": "npm:7.79.0"
+    "@sentry/utils": "npm:7.79.0"
+  checksum: e3a8e503d67224020100301a91e890488bab00331cad3f3eeda5889722d4185ac64639d35cca2631b0fdf41123abb5e5abf4344dea3aa6be4c95869bfbb8074b
   languageName: node
   linkType: hard
 
@@ -5655,6 +5715,13 @@ __metadata:
   version: 7.78.0
   resolution: "@sentry/types@npm:7.78.0"
   checksum: 1defabe6e0c68b15fe4268576b97ece6a78a09fd224e853b40a00eb3cb5d7b6322fe78d7e6351dc0fa8e9aa07524ba8c42678d13aafe5f84826237b04fed8290
+  languageName: node
+  linkType: hard
+
+"@sentry/types@npm:7.79.0":
+  version: 7.79.0
+  resolution: "@sentry/types@npm:7.79.0"
+  checksum: c9b05abd5e0c8a653180dcb9a8602d21b3876bd5c691a3f36eb3306de7433dc2abdcd12baa91bba4c907067c23537b96a751357f6888ce84605ed090b7452fea
   languageName: node
   linkType: hard
 
@@ -5674,6 +5741,15 @@ __metadata:
   dependencies:
     "@sentry/types": "npm:7.78.0"
   checksum: f786cdf47923862c13d794ab9cd28b7812fdf6dbcc0107c11ec05813f679ca9c02d08cd0faf6e424175d4de2504060af539a8fddc35a1713ed969d289f1ffdcf
+  languageName: node
+  linkType: hard
+
+"@sentry/utils@npm:7.79.0":
+  version: 7.79.0
+  resolution: "@sentry/utils@npm:7.79.0"
+  dependencies:
+    "@sentry/types": "npm:7.79.0"
+  checksum: b61c824c1ea600dc4073968cb2a30ff9c58569363ac7fe7d202647951da9b3782bcdc50045cde122ef55c74c06cfbfb9604c27d2ed1b0b4d6eddc2cccbc1016f
   languageName: node
   linkType: hard
 
@@ -8640,6 +8716,7 @@ __metadata:
     buffer: "npm:6.0.3"
     class-variance-authority: "npm:0.6.1"
     clsx: "npm:1.2.1"
+    error-tracking: "workspace:*"
     eslint: "npm:8.43.0"
     eslint-config-react-app: "npm:7.0.1"
     framer-motion: "npm:10.12.17"
@@ -10771,6 +10848,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"error-tracking@workspace:*, error-tracking@workspace:packages/error-tracking":
+  version: 0.0.0-use.local
+  resolution: "error-tracking@workspace:packages/error-tracking"
+  dependencies:
+    "@sentry/react": "npm:7.79.0"
+    typescript: "npm:5.2.2"
+  peerDependencies:
+    react: 18.2.0
+    react-router-dom: 6.10.0
+  languageName: unknown
+  linkType: soft
+
 "es-abstract@npm:^1.17.2, es-abstract@npm:^1.22.1":
   version: 1.22.3
   resolution: "es-abstract@npm:1.22.3"
@@ -11162,6 +11251,7 @@ __metadata:
     assert: "npm:2.0.0"
     buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
+    error-tracking: "workspace:*"
     eslint: "npm:8.16.0"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:17.0.0"
@@ -12752,6 +12842,7 @@ __metadata:
     assert: "npm:2.0.0"
     buffer: "npm:6.0.3"
     clsx: "npm:^1.2.1"
+    error-tracking: "workspace:*"
     eslint: "npm:8.16.0"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:17.0.0"
@@ -12801,6 +12892,7 @@ __metadata:
     assert: "npm:2.0.0"
     buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
+    error-tracking: "workspace:*"
     eslint: "npm:8.16.0"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:17.0.0"
@@ -16338,6 +16430,7 @@ __metadata:
     assert: "npm:2.0.0"
     buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
+    error-tracking: "workspace:*"
     eslint: "npm:8.16.0"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:17.0.0"
@@ -16385,6 +16478,7 @@ __metadata:
     buffer: "npm:6.0.3"
     class-variance-authority: "npm:0.7.0"
     clsx: "npm:1.2.1"
+    error-tracking: "workspace:*"
     eslint: "npm:8.16.0"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:17.0.0"
@@ -16566,6 +16660,7 @@ __metadata:
     assert: "npm:2.0.0"
     buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
+    error-tracking: "workspace:*"
     eslint: "npm:8.16.0"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:17.0.0"
@@ -18491,6 +18586,7 @@ __metadata:
     babel-polyfill: "npm:6.26.0"
     buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
+    error-tracking: "workspace:*"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:17.0.0"
     eslint-config-prettier: "npm:8.8.0"
@@ -20440,6 +20536,7 @@ __metadata:
     assert: "npm:2.0.0"
     buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
+    error-tracking: "workspace:*"
     eslint: "npm:8.16.0"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:17.0.0"
@@ -20584,6 +20681,7 @@ __metadata:
     assert: "npm:2.0.0"
     buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
+    error-tracking: "workspace:*"
     eslint: "npm:8.16.0"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:17.0.0"
@@ -20799,6 +20897,7 @@ __metadata:
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:1.2.1"
     dayjs: "npm:1.11.7"
+    error-tracking: "workspace:*"
     eslint: "npm:8.44.0"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:17.0.0"
@@ -20850,6 +20949,7 @@ __metadata:
     buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
     dayjs: "npm:1.11.7"
+    error-tracking: "workspace:*"
     eslint: "npm:8.44.0"
     eslint-config-react-app: "npm:7.0.1"
     node-stdlib-browser: "npm:1.2.0"
@@ -20945,6 +21045,7 @@ __metadata:
     autoprefixer: "npm:10.4.14"
     buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
+    error-tracking: "workspace:*"
     eslint: "npm:8.39.0"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:17.0.0"
@@ -21092,6 +21193,7 @@ __metadata:
     buffer: "npm:6.0.3"
     class-variance-authority: "npm:0.6.1"
     clsx: "npm:1.2.1"
+    error-tracking: "workspace:*"
     eslint: "npm:8.48.0"
     eslint-config-react-app: "npm:7.0.1"
     framer-motion: "npm:10.16.2"
@@ -21467,6 +21569,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"typescript@npm:5.2.2":
+  version: 5.2.2
+  resolution: "typescript@npm:5.2.2"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 91ae3e6193d0ddb8656d4c418a033f0f75dec5e077ebbc2bd6d76439b93f35683936ee1bdc0e9cf94ec76863aa49f27159b5788219b50e1cd0cd6d110aa34b07
+  languageName: node
+  linkType: hard
+
 "typescript@patch:typescript@npm%3A4.9.5#optional!builtin<compat/typescript>":
   version: 4.9.5
   resolution: "typescript@patch:typescript@npm%3A4.9.5#optional!builtin<compat/typescript>::version=4.9.5&hash=289587"
@@ -21474,6 +21586,16 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: e3333f887c6829dfe0ab6c1dbe0dd1e3e2aeb56c66460cb85c5440c566f900c833d370ca34eb47558c0c69e78ced4bfe09b8f4f98b6de7afed9b84b8d1dd06a1
+  languageName: node
+  linkType: hard
+
+"typescript@patch:typescript@npm%3A5.2.2#optional!builtin<compat/typescript>":
+  version: 5.2.2
+  resolution: "typescript@patch:typescript@npm%3A5.2.2#optional!builtin<compat/typescript>::version=5.2.2&hash=f3b441"
+  bin:
+    tsc: bin/tsc
+    tsserver: bin/tsserver
+  checksum: 062c1cee1990e6b9419ce8a55162b8dc917eb87f807e4de0327dbc1c2fa4e5f61bc0dd4e034d38ff541d1ed0479b53bcee8e4de3a4075c51a1724eb6216cb6f5
   languageName: node
   linkType: hard
 
@@ -21850,6 +21972,7 @@ __metadata:
     buffer: "npm:6.0.3"
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:1.2.1"
+    error-tracking: "workspace:*"
     eslint: "npm:8.46.0"
     eslint-config-react-app: "npm:7.0.1"
     framer-motion: "npm:10.16.1"
@@ -21900,6 +22023,7 @@ __metadata:
     assert: "npm:2.0.0"
     buffer: "npm:6.0.3"
     clsx: "npm:1.2.1"
+    error-tracking: "workspace:*"
     eslint: "npm:8.16.0"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:17.0.0"
