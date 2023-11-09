@@ -1,4 +1,5 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route } from 'react-router-dom';
+import { ErrorTrackingRoutes } from 'error-tracking';
 import { Home } from './home';
 
 const routes = [{ path: '/', Page: Home }];
@@ -6,7 +7,7 @@ const routes = [{ path: '/', Page: Home }];
 function Routing() {
   const getRoutes = () => routes.map(({ path, Page }) => <Route key={path} path={path} element={<Page />} />);
 
-  return <Routes>{getRoutes()}</Routes>;
+  return <ErrorTrackingRoutes>{getRoutes()}</ErrorTrackingRoutes>;
 }
 
 export { Routing };

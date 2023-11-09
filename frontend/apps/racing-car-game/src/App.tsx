@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { useSetAtom } from 'jotai';
 import { useAccount, useApi } from '@gear-js/react-hooks';
-import * as Sentry from '@sentry/react';
+import { ErrorTrackingRoutes } from 'error-tracking';
 import { GamePage, MainPage } from '@/pages';
 import { Header, Footer } from '@/components';
 import { withProviders } from '@/hocs';
@@ -19,8 +19,6 @@ import { ApiLoader } from './components/ApiLoader';
 import { useGameState } from './features/Game/hooks';
 import { useAuth, useAuthSync } from './features/Auth/hooks';
 import { ADDRESS } from '@/consts';
-
-const SafeRoutes = ADDRESS.SENTRY_DSN ? Sentry.withSentryReactRouterV6Routing(Routes) : Routes;
 
 function AppComponent() {
   const { isApiReady } = useApi();
@@ -61,7 +59,7 @@ function AppComponent() {
         <>
           <Header />
 
-          <SafeRoutes>
+          <ErrorTrackingRoutes>
             <Route
               path="*"
               element={
@@ -97,7 +95,7 @@ function AppComponent() {
                 </div>
               }
             />
-          </SafeRoutes>
+          </ErrorTrackingRoutes>
         </>
       ) : (
         <ApiLoader />

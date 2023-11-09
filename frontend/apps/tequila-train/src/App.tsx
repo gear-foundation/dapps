@@ -1,18 +1,19 @@
-import './index.css';
-import './App.scss';
 import { useApi, useAccount } from '@gear-js/react-hooks';
+import { Routing } from 'pages';
 import { Footer, Header } from 'components/layout';
 import { ApiLoader } from 'components/loaders/api-loader';
 import { withProviders } from 'app/hocs';
-import { Home } from './pages/home';
+import './index.css';
+import './App.scss';
 
 const Component = () => {
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
-      <main className="flex flex-col flex-1">{isApiReady && isAccountReady ? <Home /> : <ApiLoader />}</main>
+      <main className="flex flex-col flex-1">{isApiReady && isAccountReady ? <Routing /> : <ApiLoader />}</main>
       <Footer />
     </div>
   );

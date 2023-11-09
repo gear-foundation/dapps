@@ -1,4 +1,5 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route } from 'react-router-dom';
+import { ErrorTrackingRoutes } from 'error-tracking';
 import { ROUTES } from 'consts';
 import { ProtectedRoute } from 'features/auth/components';
 import { Home } from './home';
@@ -27,7 +28,7 @@ function Routing() {
       />
     ));
 
-  return <Routes>{getRoutes()}</Routes>;
+  return <ErrorTrackingRoutes>{getRoutes()}</ErrorTrackingRoutes>;
 }
 
 export { Routing };
