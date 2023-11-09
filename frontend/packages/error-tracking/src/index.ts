@@ -9,10 +9,11 @@ import {
 } from '@sentry/react';
 import { useEffect } from 'react';
 import { Routes, createRoutesFromChildren, matchRoutes, useLocation, useNavigationType } from 'react-router-dom';
+import { getCRAEnv, getViteEnv } from './utils';
 
 function InitErrorTracking() {
-  const dsn = process.env.REACT_APP_SENTRY_DSN;
-  const target = process.env.REACT_APP_SENTRY_TARGET || 'localhost';
+  const dsn = getCRAEnv('SENTRY_DSN') || getViteEnv('SENTRY_DSN');
+  const target = getCRAEnv('SENTRY_TARGET') || getViteEnv('SENTRY_TARGET') || 'localhost';
 
   // See docs for support of different versions of variation of react router
   // https://docs.sentry.io/platforms/javascript/guides/react/configuration/integrations/react-router/

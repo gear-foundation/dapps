@@ -5,10 +5,11 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "removeComments": true,
-    "module": "commonjs",
+    "module": "ESNext",
     "target": "esnext",
     "strict": true,
     "allowJs": true,
-    "declaration": true
+    "declaration": true,
+    "types": ["node", "./src/index.d.ts"]
   }
 }

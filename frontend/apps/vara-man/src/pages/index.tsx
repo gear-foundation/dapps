@@ -1,5 +1,6 @@
-import { Route, Routes } from 'react-router-dom';
+import { Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
+import { ErrorTrackingRoutes } from 'error-tracking';
 import { useInitGame } from '@/app/hooks/use-game';
 
 const routes = [
@@ -13,7 +14,7 @@ export const Routing = () => {
   useInitGame();
 
   return (
-    <Routes>
+    <ErrorTrackingRoutes>
       {routes.map(({ path, Page }) => (
         <Route
           key={path}
@@ -25,6 +26,6 @@ export const Routing = () => {
           }
         />
       ))}
-    </Routes>
+    </ErrorTrackingRoutes>
   );
 };

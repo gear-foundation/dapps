@@ -1,10 +1,8 @@
-import { Route, Routes } from 'react-router-dom';
-import { ADDRESS, ROUTES } from '@/app/consts';
-import * as Sentry from '@sentry/react';
+import { Route } from 'react-router-dom';
+import { ErrorTrackingRoutes } from 'error-tracking';
+import { ROUTES } from '@/app/consts';
 import Home from '@/pages/home';
 import NotFoundPage from '@/pages/not-found';
-
-const SafeRoutes = ADDRESS.SENTRY_DSN ? Sentry.withSentryReactRouterV6Routing(Routes) : Routes;
 
 const routes = [
   { path: ROUTES.HOME, Page: Home },
@@ -13,10 +11,10 @@ const routes = [
 
 export function Routing() {
   return (
-    <SafeRoutes>
+    <ErrorTrackingRoutes>
       {routes.map(({ path, Page }) => (
         <Route key={path} path={path} element={<Page />} />
       ))}
-    </SafeRoutes>
+    </ErrorTrackingRoutes>
   );
 }
