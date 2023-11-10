@@ -79,8 +79,5 @@
   },
   "lint-staged": {
     "./**/*.{js,css,ts,tsx}": "eslint --fix"
-  },
-  "workspaces": [
-    "/frontend/galactic-express/"
-  ]
+  }
 }
