@@ -17,8 +17,9 @@ RUN apk add xsel
 ARG REACT_APP_NODE_ADDRESS
 ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
     DISABLE_ESLINT_PLUGIN=true 
-    
-RUN yarn install
+
+RUN yarn set version latest
+RUN yarn install --check-files
 
 RUN yarn build:galactic-express
 
