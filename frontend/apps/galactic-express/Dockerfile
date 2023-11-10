@@ -2,9 +2,11 @@ FROM node:18-alpine
 MAINTAINER gear
 
 COPY /frontend/package.json .
+COPY /frontend/yarn.lock .
+COPY /frontend/.yarnrc.yml .
 
-COPY /frontend/apps/galactic-express /frontend/apps/galactic-express
-COPY /frontend/packages /frontend/packages
+COPY ./frontend/apps/galactic-express ./frontend/apps/galactic-express
+COPY ./frontend/packages ./frontend/packages
 
 WORKDIR /frontend/apps/galactic-express
 
@@ -18,7 +20,7 @@ ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
     
 RUN yarn install
 
-RUN yarn build
+RUN yarn build:galactic-express
 
 RUN npm install --global serve
 
