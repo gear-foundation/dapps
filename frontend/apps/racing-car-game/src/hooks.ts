@@ -13,14 +13,13 @@ import {
 import { HexString } from '@polkadot/util/types';
 import { AnyJson, AnyNumber } from '@polkadot/types/types';
 import { stringShorten } from '@polkadot/util';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import metaTxt from '@/assets/meta/meta.txt';
 import { ACCOUNT_ID_LOCAL_STORAGE_KEY, ADDRESS, LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
-import { Handler, INodeSection, ProgramStateRes } from '@/types';
-import { CONTRACT_ADDRESS_ATOM, nodesAtom } from '@/atoms';
+import { Handler, ProgramStateRes } from '@/types';
+import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
 import { WALLET_ID_LOCAL_STORAGE_KEY } from './features/Wallet/consts';
 import { AUTH_TOKEN_LOCAL_STORAGE_KEY } from './features/Auth/consts';
-import { get } from './utils';
 import { useAccountAvailableBalance } from './features/Wallet/hooks';
 
 export function useProgramMetadata(source: string) {
@@ -230,43 +229,6 @@ export function useLoginByParams() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [accounts, query]);
-}
-
-export function useNodes() {
-  const nodes = useAtomValue(nodesAtom);
-  const setNodes = useSetAtom(nodesAtom);
-
-  return { nodes, setNodes };
-}
-
-export function useNodesSync() {
-  const alert = useAlert();
-  const { setNodes } = useNodes();
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setLoading(true);
-
-    const getNodes = async () => {
-      try {
-        const res1 = await get<INodeSection[]>(ADDRESS.BASE_NODES);
-        const res2 = await get<INodeSection[]>(ADDRESS.STAGING_NODES);
-        const merged = [...res1, ...res2].map((n) => n.nodes.map((node) => ({ ...node, caption: n.caption }))).flat();
-
-        const nodes = [...new Map(merged.map((o) => [o.address, o])).values()];
-
-        setNodes(nodes);
-        // console.log({ nodes })
-      } catch (e) {
-        alert.error((e as any).message);
-      } finally {
-        setLoading(false);
-      }
-    };
-    getNodes();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 }
 
 export const useHandleCalculateGas = (address: HexString, meta?: ProgramMetadata) => {

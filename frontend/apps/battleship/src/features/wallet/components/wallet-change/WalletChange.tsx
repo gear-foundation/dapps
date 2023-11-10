@@ -5,7 +5,7 @@ import { Text } from '@/components/ui/text';
 import { Button } from '@/components/ui/button';
 
 import { useAuth } from '@/features/auth';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useApi } from '@gear-js/react-hooks';
 import { useWallet } from '../../hooks';
 
 import { AvaVaraBlack } from '@/assets/images';
@@ -19,6 +19,7 @@ type Props = {
 };
 
 export function WalletChange({ onClose, openConnectWallet }: Props) {
+  const { api } = useApi();
   const { account } = useAccount();
   const { signOut } = useAuth();
 
@@ -59,7 +60,7 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
           <AvaVaraBlack width={32} height={32} />
           <div>
             <Text weight="semibold" size="md">
-              {ADDRESS.NAME}
+              {api?.runtimeVersion.specName.toHuman()}
             </Text>
             <Text size="sm" className={styles.address}>
               {ADDRESS.NODE}

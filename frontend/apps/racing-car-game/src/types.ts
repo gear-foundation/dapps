@@ -82,21 +82,6 @@ export interface ProgramStateRes<T> {
   error: string;
 }
 
-export type INode = {
-  address: string;
-  isCustom: boolean;
-  icon?: string;
-};
-
-export type INodeSection = {
-  caption: string;
-  nodes: INode[];
-};
-
-export type ICustomNode = INode & {
-  caption: string;
-};
-
 export type ContractError = {
   message?: string;
 };

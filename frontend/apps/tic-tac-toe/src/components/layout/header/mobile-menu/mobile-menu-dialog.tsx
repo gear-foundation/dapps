@@ -2,9 +2,8 @@ import { Button } from '@/components/ui/button';
 import styles from './mobile-menu.module.scss';
 import { useState } from 'react';
 import { ADDRESS } from '@/app/consts';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useApi } from '@gear-js/react-hooks';
 import { WalletIcon } from '@/features/wallet';
-import { useNodes } from '@/app/hooks/use-nodes-sync';
 import { AnimatePresence, motion } from 'framer-motion';
 import { variantsOverlay, variantsPanel } from '@/components/ui/modal/modal.variants';
 import { Dialog } from '@headlessui/react';
@@ -20,11 +19,10 @@ export type MobileMenuDialogProps = {
 };
 
 export function MobileMenuDialog({ setOpen, open }: MobileMenuDialogProps) {
+  const { api } = useApi();
   const { account } = useAccount();
   const { signOut } = useAuth();
-  const { nodes } = useNodes();
   const { resetGame } = useGame();
-  const currentNode = nodes?.find((n) => n.address === ADDRESS.NODE);
 
   const handleLogoutButtonClick = () => {
     signOut();
@@ -54,8 +52,8 @@ export function MobileMenuDialog({ setOpen, open }: MobileMenuDialogProps) {
                     <Sprite name="vara-sign" size={16} />
                   </div>
                   <div className={styles.item__text}>
-                    <p className={styles.item__title}>{currentNode?.caption}</p>
-                    <p className={styles.item__helper}>{currentNode?.address}</p>
+                    <p className={styles.item__title}>{api?.runtimeVersion.specName.toHuman()}</p>
+                    <p className={styles.item__helper}>{ADDRESS.NODE}</p>
                   </div>
                 </div>
                 <hr />
