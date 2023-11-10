@@ -5,7 +5,7 @@
   "version": "1.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite --host",
+    "start": "vite --open",
     "build": "tsc && vite build",
     "preview": "vite preview",
     "deploy": "tsc && vite build && npx thirdweb@latest upload dist"
