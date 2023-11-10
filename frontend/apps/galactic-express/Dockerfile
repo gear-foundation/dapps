@@ -1,11 +1,12 @@
 FROM node:18-alpine
 MAINTAINER gear
 
-WORKDIR /src
+WORKDIR /usr/src
 
-COPY package.json .
-COPY tsconfig.json .
-COPY . /src
+COPY /frontend/package.json .
+COPY /frontend/tsconfig.json .
+
+COPY . /usr/src
 
 RUN apk update
 
@@ -21,4 +22,4 @@ RUN yarn build
 
 RUN npm install --global serve
 
-CMD ["serve", "-s", "/src/build"]
+CMD ["serve", "-s", "/usr/src/build"]
