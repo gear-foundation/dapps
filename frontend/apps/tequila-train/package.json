@@ -3,8 +3,8 @@
   "private": true,
   "version": "1.0.1",
   "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
+    "start": "yarn build:packages && react-app-rewired start",
+    "build": "yarn build:packages && react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
