@@ -4,9 +4,8 @@ MAINTAINER gear
 WORKDIR /usr/src
 
 COPY /frontend/package.json .
-COPY /frontend/tsconfig.json .
 
-COPY . /usr/src
+COPY /frontend/apps/galactic-express /frontend/apps/galactic-express
 
 RUN apk update
 
