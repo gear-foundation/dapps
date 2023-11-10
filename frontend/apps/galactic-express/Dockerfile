@@ -18,7 +18,7 @@ ARG REACT_APP_NODE_ADDRESS
 ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
     DISABLE_ESLINT_PLUGIN=true 
 
-RUN yarn set version latest
+RUN yarn set version 4.0.1
 RUN yarn install --check-files
 
 RUN yarn build:galactic-express
