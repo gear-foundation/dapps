@@ -4,6 +4,7 @@ MAINTAINER gear
 COPY /frontend/package.json .
 
 COPY /frontend/apps/galactic-express /frontend/apps/galactic-express
+COPY /frontend/packages /frontend/packages
 
 WORKDIR /frontend/apps/galactic-express
 
