@@ -1,11 +1,11 @@
 FROM node:18-alpine
 MAINTAINER gear
 
-WORKDIR /usr/src
-
 COPY /frontend/package.json .
 
 COPY /frontend/apps/galactic-express /frontend/apps/galactic-express
+
+WORKDIR /frontend/apps/galactic-express
 
 RUN apk update
 
@@ -21,4 +21,4 @@ RUN yarn build
 
 RUN npm install --global serve
 
-CMD ["serve", "-s", "/usr/src/build"]
+CMD ["serve", "-s", "/frontend/apps/galactic-expres/build"]
