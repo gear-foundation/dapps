@@ -1,5 +1,4 @@
 FROM node:18-alpine
-MAINTAINER gear
 
 WORKDIR /usr/src
 
