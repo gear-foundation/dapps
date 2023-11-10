@@ -52,7 +52,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: frontend/apps/galactic-express/Dockerfile
-          context: frontend/apps/galactic-express
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
