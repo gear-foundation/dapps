@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Dialog } from '@headlessui/react';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useApi } from '@gear-js/react-hooks';
 import { Button } from '@/ui';
 import { ADDRESS } from '@/consts';
 import { useAuth } from '@/features/Auth/hooks';
@@ -12,7 +12,6 @@ import styles from './MobileMenu.module.scss';
 import { variantsOverlay, variantsPanel } from '../Modal/modal.variants';
 import crossIcon from '@/assets/icons/cross-icon.svg';
 import { MobileMenuDialogProps } from './MobileMenu.interfaces';
-import { useNodes } from '@/hooks';
 import { cx } from '@/utils';
 
 function SwitchAccount({ onClose }: { onClose(): void }) {
@@ -26,10 +25,9 @@ function SwitchAccount({ onClose }: { onClose(): void }) {
 }
 
 export function MobileMenuDialog({ setOpen, open }: MobileMenuDialogProps) {
+  const { api } = useApi();
   const { account } = useAccount();
   const { signOut } = useAuth();
-  const { nodes } = useNodes();
-  const currentNode = nodes?.find((n) => n.address === ADDRESS.NODE);
 
   return (
     <AnimatePresence initial={false}>
@@ -51,8 +49,8 @@ export function MobileMenuDialog({ setOpen, open }: MobileMenuDialogProps) {
                 <div className={styles.item}>
                   <VaraSignIcon width={32} height={32} />
                   <div className={styles.item__text}>
-                    <p className={styles.item__title}>{currentNode?.caption}</p>
-                    <p className={styles.item__helper}>{currentNode?.address}</p>
+                    <p className={styles.item__title}>{api?.runtimeVersion.specName.toHuman()}</p>
+                    <p className={styles.item__helper}>{ADDRESS.NODE}</p>
                   </div>
                 </div>
                 <hr />
