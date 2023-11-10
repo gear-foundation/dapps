@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router';
 import { AnimatePresence, motion } from 'framer-motion';
 import { decodeAddress } from '@gear-js/api';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
@@ -22,7 +21,6 @@ function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
   const alert = useAlert();
   const { extensions, account, accounts } = useAccount();
   const { signIn, signOut } = useAuth();
-  const navigate = useNavigate();
 
   const { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts } = useWallet();
 
@@ -59,7 +57,6 @@ function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
 
       const handleClick = async () => {
         await signIn(_account);
-        navigate('/');
         setOpen(false);
         onClose();
       };

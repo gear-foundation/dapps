@@ -1,0 +1,18 @@
+@use '@gear-js/ui/variables' as *;
+@import url('https://fonts.googleapis.com/css2?family=Anuphan:wght@300;400;500;600;700&display=swap');
+
+.container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+
+  .text {
+    font-family: 'Anuphan';
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 16.8px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+  }
+}

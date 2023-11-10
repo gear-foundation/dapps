@@ -5,4 +5,9 @@
   justify-content: space-between;
   padding: 25px 0;
   border-top: 1px solid $lineColor;
+
+  .socials-wrapper {
+    display: flex;
+    gap: 24px;
+  }
 }
