@@ -8,7 +8,7 @@ COPY /frontend/yarn.lock .
 COPY /frontend/.yarnrc.yml .
 
 COPY ./frontend/apps/galactic-express ./apps/galactic-express
-COPY ./frontend/packages ./packages
+COPY ./frontend/packages/* ./packages/*
 
 RUN apk update
 
