@@ -1,14 +1,14 @@
 FROM node:18-alpine
 MAINTAINER gear
 
-WORKDIR /src
+WORKDIR /frontend
 
 COPY /frontend/package.json .
 COPY /frontend/yarn.lock .
 COPY /frontend/.yarnrc.yml .
 
-COPY ./frontend/apps/galactic-express ./frontend/apps/galactic-express
-COPY ./frontend/packages ./frontend/packages
+COPY ./frontend/apps/galactic-express ./apps/galactic-express
+COPY ./frontend/packages ./packages
 
 RUN apk update
 
