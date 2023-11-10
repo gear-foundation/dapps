@@ -8,10 +8,5 @@
     "build:all": "yarn workspaces foreach -ptR --from '{dns,goc}' run build",
     "env:goc": "node dev/generateEnv.js goc-frontend/.env",
     "env:dns": "node dev/generateEnv.js dns-frontend/.env"
-  },
-  "workspaces": [
-    "dns-frontend",
-    "goc-frontend",
-    "dev"
-  ]
+  }
 }
