@@ -1,7 +1,7 @@
 import { AlertContainerFactory } from '@gear-js/react-hooks/dist/esm/types';
 import clsx from 'clsx';
 import { useEffect } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation } from 'react-router-dom';
 
 export const cx = (...styles: string[]) => clsx(...styles);
 

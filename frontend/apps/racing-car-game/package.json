@@ -3,8 +3,8 @@
   "version": "1.0.1",
   "private": true,
   "scripts": {
-    "start": "yarn build:packages && craco start",
-    "build": "yarn build:packages && craco build"
+    "start": "yarn build:packages && react-app-rewired start",
+    "build": "yarn build:packages && react-app-rewired build"
   },
   "dependencies": {
     "@gear-js/api": "0.35.1",
@@ -33,7 +33,7 @@
     "react-dom": "18.2.0",
     "react-gtm-module": "2.0.11",
     "react-router": "6.11.1",
-    "react-router-dom": "6.11.1",
+    "react-router-dom": "6.10.0",
     "react-scripts": "5.0.1",
     "react-transition-group": "^4.4.5",
     "sass": "1.62.0",
@@ -55,6 +55,7 @@
     "eslint-plugin-jsx-a11y": "6.7.1",
     "eslint-plugin-react": "7.33.2",
     "eslint-plugin-react-hooks": "4.6.0",
+    "react-app-rewired": "2.2.1",
     "types": "*",
     "typescript": "4.9.5"
   },

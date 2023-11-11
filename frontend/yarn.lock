@@ -18375,10 +18375,11 @@ __metadata:
     jotai: "npm:2.2.1"
     lodash.isequal: "npm:4.5.0"
     react: "npm:18.2.0"
+    react-app-rewired: "npm:2.2.1"
     react-dom: "npm:18.2.0"
     react-gtm-module: "npm:2.0.11"
     react-router: "npm:6.11.1"
-    react-router-dom: "npm:6.11.1"
+    react-router-dom: "npm:6.10.0"
     react-scripts: "npm:5.0.1"
     react-transition-group: "npm:^4.4.5"
     sass: "npm:1.62.0"
@@ -18635,19 +18636,6 @@ __metadata:
     react: ">=16.8"
     react-dom: ">=16.8"
   checksum: c62e4b4aac2067e64af632e113b8db0626b846ec88fb668e84492ceb04179a0789120844263e35dead1e13f70f6554c1a463c7c33d8feed579bf5a2a02f916f4
-  languageName: node
-  linkType: hard
-
-"react-router-dom@npm:6.11.1":
-  version: 6.11.1
-  resolution: "react-router-dom@npm:6.11.1"
-  dependencies:
-    "@remix-run/router": "npm:1.6.1"
-    react-router: "npm:6.11.1"
-  peerDependencies:
-    react: ">=16.8"
-    react-dom: ">=16.8"
-  checksum: 17f1f9c3d71604fb9e270b672a97accbee0bedf5b8cb03518fd20068aa4d653fcbb46c2dfd5cd04a41864bed21cc23c275d7af39e4be2224435529779bf7e7e4
   languageName: node
   linkType: hard
 
