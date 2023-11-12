@@ -29,4 +29,4 @@ RUN yarn build
 
 RUN npm install --global serve
 
-CMD ["serve", "-s", "/frontend/apps/galactic-expres/build"]
+CMD ["serve", "-s", "/frontend/apps/galactic-express/build"]
