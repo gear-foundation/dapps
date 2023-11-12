@@ -26,6 +26,4 @@ WORKDIR /frontend/apps/vara-man
 
 RUN yarn install
 
-RUN npm install --global serve
-
-CMD ["serve", "-s", "/frontend/apps/vara-man/build"]
+CMD ["yarn", "start"]
