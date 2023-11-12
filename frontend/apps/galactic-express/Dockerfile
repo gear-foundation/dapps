@@ -6,7 +6,7 @@ WORKDIR /frontend
 COPY /frontend/package.json .
 COPY /frontend/yarn.lock .
 COPY /frontend/.yarnrc.yml .
-COPY /frontend/.yarn/releases .
+COPY /frontend/.yarn/releases .yarn/releases
 
 COPY ./frontend/apps/galactic-express ./apps/galactic-express
 COPY ./frontend/packages/* ./packages/*
