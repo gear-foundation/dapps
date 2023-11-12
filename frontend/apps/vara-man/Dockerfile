@@ -28,6 +28,4 @@ RUN yarn install
 
 RUN yarn build
 
-RUN npm install --global serve
-
-CMD ["serve", "-s", "/frontend/apps/vara-man/build"]
+CMD ["yarn", "run", "dev"]
