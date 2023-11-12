@@ -1,9 +1,15 @@
 FROM node:18-alpine
 MAINTAINER gear
 
-WORKDIR /usr/src
+WORKDIR /frontend
 
-COPY . /usr/src
+COPY /frontend/package.json .
+COPY /frontend/yarn.lock .
+COPY /frontend/.yarnrc.yml .
+COPY /frontend/.yarn/releases .yarn/releases
+
+COPY ./frontend/apps/vara-man ./apps/vara-man
+COPY ./frontend/packages/* ./packages/*
 
 RUN apk update
 
@@ -15,9 +21,13 @@ ARG VITE_NODE_ADDRESS \
 ENV VITE_NODE_ADDRESS=${VITE_NODE_ADDRESS} \
     VITE_GAME_ADDRESS=${VITE_GAME_ADDRESS} \
     DISABLE_ESLINT_PLUGIN=true
+    
+WORKDIR /frontend/apps/vara-man
 
 RUN yarn install
 
-RUN yarn run build
+RUN yarn build
 
-CMD ["yarn", "run", "dev"]
+RUN npm install --global serve
+
+CMD ["serve", "-s", "/frontend/apps/vara-man/build"]
