@@ -6,7 +6,7 @@ WORKDIR /frontend
 COPY /frontend/package.json .
 COPY /frontend/yarn.lock .
 COPY /frontend/.yarnrc.yml .
-COPY /frontend/.yarn/releases/* .
+COPY /frontend/.yarn/releases .
 
 COPY ./frontend/apps/galactic-express ./apps/galactic-express
 COPY ./frontend/packages/* ./packages/*
@@ -18,6 +18,8 @@ RUN apk add xsel
 ARG REACT_APP_NODE_ADDRESS
 ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
     DISABLE_ESLINT_PLUGIN=true 
+
+WORKDIR /frontend/apps/galactic-express
 
 RUN yarn install
 
