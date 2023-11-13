@@ -2,12 +2,12 @@ name: Deploy Tamagochi Battle
 
 on:
   push:
-    branches: ["master"]
+    branches: ['master']
     paths:
       - frontend/tamagotchi-battle/frontend/**
   workflow_dispatch:
 
-concurrency: 
+concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
@@ -23,7 +23,6 @@ env:
   ENVIRONMENT: tamagotchi-battle
 
 jobs:
-
   build-and-push-image:
     runs-on: ubuntu-latest
     environment: tamagotchi-battle
@@ -50,7 +49,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ env.FRONTEND }}:latest
           build-args: |
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            REACT_APP_BATTLE_ADDRESS=${{ secrets.REACT_APP_BATTLE_ADDRESS }}
+            REACT_APP_CONTRACT_ADDRESS=${{ secrets.REACT_APP_CONTRACT_ADDRESS }}
 
   deploy-to-k8s:
     needs: [build-and-push-image]
