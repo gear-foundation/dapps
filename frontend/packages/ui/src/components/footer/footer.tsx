@@ -33,8 +33,8 @@ function Footer({ vara }: Props) {
 
   return (
     <footer className={cx(styles.footer, vara && styles.vara)}>
-      <div className={styles.list}>
-        <ul className={styles.list}>{getSocials()}</ul>
+      <div className={styles.column}>
+        <ul className={styles.socials}>{getSocials()}</ul>
 
         <small className={cx(styles.copyright, vara && styles.vara)}>
           &copy; {year} Gear Foundation, Inc. All Rights Reserved.

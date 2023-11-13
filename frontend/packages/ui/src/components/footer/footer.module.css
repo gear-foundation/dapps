@@ -7,19 +7,38 @@
   &.vara {
     border-top: none;
 
-    /* svg path {
+    & svg path {
       fill: #000;
-    } */
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    text-align: center;
   }
 }
 
-.list {
+.footer,
+.column {
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+  }
+}
+
+.footer,
+.socials,
+.column {
+  gap: 24px;
+
+  @media screen and (max-width: 768px) {
+    gap: 18px;
+  }
+}
+
+.socials,
+.column,
+.explorerLink {
   display: flex;
   align-items: center;
-
-  & > *:not(:last-child) {
-    margin-right: 24px;
-  }
 }
 
 .copyright {
@@ -32,16 +51,12 @@
 }
 
 .explorerLink {
-  display: flex;
-  align-items: center;
+  justify-content: center;
+  gap: 8px;
   font-size: 12px;
   font-weight: 700;
   color: #fff;
   text-transform: uppercase;
-
-  & > *:not(:last-child) {
-    margin-right: 8px;
-  }
 
   &.vara {
     color: #000;
