@@ -33,6 +33,7 @@ function Footer({ vara }: Props) {
 
   return (
     <footer className={cx(styles.footer, vara && styles.vara)}>
+      {/* TODO: should be wrapped in a container? */}
       <div className={styles.column}>
         <ul className={styles.socials}>{getSocials()}</ul>
 
