@@ -7,8 +7,7 @@ on:
     paths:
       - frontend/nft-master/**
 
-
-concurrency: 
+concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
@@ -18,7 +17,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  KUBECTL_VERSION: "v1.22.17"
+  KUBECTL_VERSION: 'v1.22.17'
   KUBE_NAMESPACE: gear-dapps
   KUBE_DEPLOYMENT_PREFIX: simple-nft
   REGISTRY: ghcr.io/${{ github.repository }}
@@ -77,12 +76,8 @@ jobs:
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            REACT_APP_DEFAULT_NODES_URL=${{ secrets.REACT_APP_DEFAULT_NODES_URL }}
             REACT_APP_IPFS_GATEWAY_ADDRESS=${{ secrets.REACT_APP_IPFS_GATEWAY_ADDRESS }}
-            REACT_APP_MASTER_NFT_ADDRESS=${{ secrets.REACT_APP_MASTER_NFT_ADDRESS }}
-            REACT_APP_NFT_EXPLORER_URL=${{ secrets.REACT_APP_NFT_EXPLORER_URL }}
-            REACT_APP_NFT_STATE_SOCKET=${{ secrets.REACT_APP_NFT_STATE_SOCKET }}
-            REACT_APP_AUTH_API_ADDRESS=${{ secrets.REACT_APP_AUTH_API_ADDRESS }}
+            REACT_APP_CONTRACT_ADDRESS=${{ secrets.REACT_APP_CONTRACT_ADDRESS }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

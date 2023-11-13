@@ -7,8 +7,6 @@ import { Header } from '@/components/layout';
 import { withProviders } from '@/app/hocs';
 
 import { useWalletSync } from '@/features/wallet/hooks';
-import { ADDRESS } from '@/app/consts';
-import { useEffect } from 'react';
 
 function Component() {
   const { isApiReady } = useApi();
@@ -17,11 +15,6 @@ function Component() {
   useWalletSync();
 
   const isAppReady = isApiReady && isAccountReady;
-
-  useEffect(() => {
-    console.log('ADDRESS NODE:', ADDRESS.NODE);
-    console.log('ADDRESS GAME:', ADDRESS.GAME);
-  }, []);
 
   return (
     <main>

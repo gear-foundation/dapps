@@ -14,7 +14,7 @@ declare module '*.txt' {
 }
 
 interface ImportMetaEnv {
-  readonly VITE_GAME_ADDRESS: string;
+  readonly VITE_CONTRACT_ADDRESS: string;
   readonly VITE_NODE_ADDRESS: HexString;
 }
 

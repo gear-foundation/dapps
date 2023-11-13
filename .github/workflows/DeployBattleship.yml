@@ -2,7 +2,7 @@ name: Deploy BattleShips
 
 on:
   push:
-    branches: ["master"]
+    branches: ['master']
     paths:
       - frontend/battleship/**
   workflow_dispatch:
@@ -53,8 +53,7 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}-${{ env.FRONTEND }}:latest
           build-args: |
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
-            VITE_GAME_ADDRESS=${{ secrets.VITE_GAME_ADDRESS }}
-            VITE_NAME_ADDRESS=${{ secrets.VITE_NAME_ADDRESS }}
+            VITE_CONTRACT_ADDRESS=${{ secrets.VITE_CONTRACT_ADDRESS }}
             VITE_BACKEND_ADDRESS=${{ secrets.VITE_BACKEND_ADDRESS }}
 
   deploy-to-k8s:

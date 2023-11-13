@@ -7,8 +7,7 @@ on:
     paths:
       - frontend/apps/vara-man/**
 
-
-concurrency: 
+concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
@@ -18,7 +17,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  KUBECTL_VERSION: "v1.22.17"
+  KUBECTL_VERSION: 'v1.22.17'
   KUBE_NAMESPACE: gear-dapps
   KUBE_DEPLOYMENT_PREFIX: vara-man
   REGISTRY: ghcr.io/${{ github.repository }}
@@ -76,8 +75,7 @@ jobs:
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
-            VITE_GAME_ADDRESS=${{ secrets.VITE_GAME_ADDRESS_VARA_MAN }}
-
+            VITE_CONTRACT_ADDRESS=${{ secrets.VITE_CONTRACT_ADDRESS_VARA_MAN }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

@@ -7,7 +7,7 @@ on:
     paths:
       - frontend/racing-car-game/**
 
-concurrency: 
+concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
@@ -17,7 +17,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  KUBECTL_VERSION: "v1.22.17"
+  KUBECTL_VERSION: 'v1.22.17'
   KUBE_NAMESPACE: gear-dapps
   KUBE_DEPLOYMENT_PREFIX: dapps-racing
   REGISTRY: ghcr.io/${{ github.repository }}
@@ -77,8 +77,6 @@ jobs:
           build-args: |
             REACT_APP_CONTRACT_ADDRESS=${{ secrets.REACT_APP_CONTRACT_ADDRESS }}
             REACT_APP_NODE=${{ secrets.REACT_APP_NODE }}
-            REACT_APP_DEFAULT_NODES_URL=${{ secrets.REACT_APP_DEFAULT_NODES_URL }}
-            REACT_APP_STAGING_NODES_URL=${{ secrets.REACT_APP_STAGING_NODES_URL }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

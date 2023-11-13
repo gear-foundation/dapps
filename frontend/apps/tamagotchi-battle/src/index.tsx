@@ -1,23 +1,20 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
+import React from 'react';
+import ReactDOM from 'react-dom/client';
 import TagManager from 'react-gtm-module';
-import { initErrorTracking } from 'error-tracking';
-import 'keen-slider/keen-slider.min.css';
+import { initErrorTracking, logPublicEnvs } from 'error-tracking';
 import { App } from './app';
 
-if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_GTM_ID) {
+if (import.meta.env.MODE === 'production' && import.meta.env.VITE_GTM_ID_TTT) {
   TagManager.initialize({
-    gtmId: process.env.REACT_APP_GTM_ID,
+    gtmId: import.meta.env.VITE_GTM_ID_TTT,
   });
 }
 
 initErrorTracking();
+logPublicEnvs();
 
-const container = document.getElementById('root');
-const root = createRoot(container as HTMLElement);
-
-root.render(
-  <StrictMode>
+ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
+  <React.StrictMode>
     <App />
-  </StrictMode>,
+  </React.StrictMode>,
 );
