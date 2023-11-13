@@ -37,7 +37,8 @@
     "react-scripts": "5.0.1",
     "react-transition-group": "^4.4.5",
     "sass": "1.62.0",
-    "socket.io-client": "^4.7.2"
+    "socket.io-client": "^4.7.2",
+    "ui": "workspace:*"
   },
   "devDependencies": {
     "@craco/craco": "7.1.0",

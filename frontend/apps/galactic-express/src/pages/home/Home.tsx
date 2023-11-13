@@ -17,7 +17,7 @@ function Home() {
 
   const isUserAdmin = admin === account?.decodedAddress;
   const isStateComing = !!state;
-  console.log(state);
+
   return (
     <>
       {(!isContractAddressInitialized || (!Number(sessionId) && isSessionEnded)) && (

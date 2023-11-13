@@ -3,8 +3,9 @@ import { Route, Routes } from 'react-router-dom';
 import { useSetAtom } from 'jotai';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { ErrorTrackingRoutes } from 'error-tracking';
+import { Footer } from 'ui';
 import { GamePage, MainPage } from '@/pages';
-import { Header, Footer } from '@/components';
+import { Header } from '@/components';
 import { withProviders } from '@/hocs';
 import { ScrollToTop, cx } from '@/utils';
 import { LOGIN, PLAY, START } from '@/App.routes';
@@ -67,9 +68,8 @@ function AppComponent() {
                       <Route path={`/${LOGIN}`} element={<LoginPage />} />
                     </Routes>
                   </div>
-                  <div className={cx(styles['main-footer'])}>
-                    <Footer />
-                  </div>
+
+                  <Footer />
                 </>
               }
             />
