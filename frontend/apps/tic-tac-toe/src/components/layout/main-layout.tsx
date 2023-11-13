@@ -1,5 +1,6 @@
-import { ApiLoader, Footer, Header } from '@/components';
 import { PropsWithChildren } from 'react';
+import { Footer } from 'ui';
+import { ApiLoader, Header } from '@/components';
 import { useIsAppReady, useIsAppReadySync } from '@/app/hooks/use-is-app-ready';
 import { useWalletSync } from '@/features/wallet/hooks';
 import { useAuthSync } from '@/features/auth/hooks';

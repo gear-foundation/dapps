@@ -1,9 +1,10 @@
 import './global.css';
 import './app.scss';
 import { useApi, useAccount } from '@gear-js/react-hooks';
+import { Footer } from 'ui';
 import { Routing } from './pages';
 import { ApiLoader } from './components/loaders/api-loader';
-import { Footer, Header } from '@/components/layout';
+import { Header } from '@/components/layout';
 import { withProviders } from '@/app/hocs';
 
 const Component = () => {

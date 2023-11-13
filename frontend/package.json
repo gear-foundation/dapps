@@ -11,7 +11,8 @@
     "bump:vara-ui": "yarn bump @gear-js/vara-ui",
     "bump:polkadot": "yarn bump @polkadot/api @polkadot/types",
     "build:error-tracking": "yarn workspace error-tracking build",
-    "build:packages": "yarn build:error-tracking"
+    "build:ui": "yarn workspace ui build",
+    "build:packages": "yarn build:error-tracking && yarn build:ui"
   },
   "workspaces": [
     "./apps/*",

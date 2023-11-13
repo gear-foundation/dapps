@@ -1,4 +1,4 @@
-export { Header, Footer, Container } from './layout';
+export { Header, Container } from './layout';
 export { ApiLoader, Loader } from './loaders';
 export { Modal } from './ui/modal';
 export { Button, buttonVariants } from './ui/button';

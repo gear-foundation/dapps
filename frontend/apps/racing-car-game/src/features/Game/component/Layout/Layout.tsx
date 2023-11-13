@@ -6,6 +6,7 @@ import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { Bytes } from '@polkadot/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { UserMessageSent } from '@gear-js/api';
+import { Footer } from 'ui';
 import styles from './Layout.module.scss';
 import { cx, logger, withoutCommas } from '@/utils';
 import { Heading } from '../Heading';
@@ -16,7 +17,7 @@ import shootSVG from '@/assets/icons/shoot-icon.svg';
 import { ReactComponent as GearLogoIcon } from '@/assets/icons/gear-logo-icon.svg';
 import { CURRENT_GAME, IS_SUBSCRIBED_ATOM } from '@/atoms';
 import { usePlayerMoveMessage, useStartGameMessage } from '../../hooks';
-import { Footer, Loader } from '@/components';
+import { Loader } from '@/components';
 import { MessageDetails, RepliesQueue, UserMessage, WinStatus } from './Layout.interface';
 import { PLAY } from '@/App.routes';
 import { ContractError, DecodedReply, DecodedReplyItem, GameState } from '@/types';
@@ -414,13 +415,7 @@ function LayoutComponent() {
                   />
                 </div>
               )}
-              {currentGame.state !== 'Finished' && (
-                <>
-                  <div className={cx(styles.footer)}>
-                    <Footer />
-                  </div>
-                </>
-              )}
+              {currentGame.state !== 'Finished' && <Footer />}
               {currentGame.state === 'Finished' && (
                 <div className={cx(styles['footer-wrapper'])}>
                   <div className={styles.banner}>

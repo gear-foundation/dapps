@@ -35,6 +35,7 @@
     "react-scripts": "5.0.1",
     "react-transition-group": "4.4.5",
     "socket.io-client": "4.7.2",
+    "ui": "workspace:*",
     "urql": "^4.0.5"
   },
   "devDependencies": {
