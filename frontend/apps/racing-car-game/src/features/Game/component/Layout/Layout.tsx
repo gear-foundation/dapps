@@ -6,12 +6,12 @@ import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { Bytes } from '@polkadot/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { UserMessageSent } from '@gear-js/api';
-import { Footer } from 'ui';
+import { Container, Footer } from 'ui';
 import styles from './Layout.module.scss';
 import { cx, logger, withoutCommas } from '@/utils';
 import { Heading } from '../Heading';
 import { Road } from '../Road';
-import { Button } from '@/ui';
+import { Button } from '@/components/ui';
 import accelerateSVG from '@/assets/icons/accelerate-icon.svg';
 import shootSVG from '@/assets/icons/shoot-icon.svg';
 import { ReactComponent as GearLogoIcon } from '@/assets/icons/gear-logo-icon.svg';
@@ -415,7 +415,11 @@ function LayoutComponent() {
                   />
                 </div>
               )}
-              {currentGame.state !== 'Finished' && <Footer />}
+              {currentGame.state !== 'Finished' && (
+                <Container>
+                  <Footer vara />
+                </Container>
+              )}
               {currentGame.state === 'Finished' && (
                 <div className={cx(styles['footer-wrapper'])}>
                   <div className={styles.banner}>
@@ -458,7 +462,9 @@ function LayoutComponent() {
                       </li>
                     </ul>
                   </div>
-                  <Footer />
+                  <Container>
+                    <Footer vara />
+                  </Container>
                 </div>
               )}
             </>

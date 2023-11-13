@@ -12,6 +12,13 @@
   box-sizing: content-box;
 }
 
+#modal-root {
+  > div > div > div {
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+}
+
 #alert-root {
   position: fixed;
   right: 22px;

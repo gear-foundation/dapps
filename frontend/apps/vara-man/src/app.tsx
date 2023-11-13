@@ -1,5 +1,5 @@
 import { useApi, useAccount } from '@gear-js/react-hooks';
-import { Footer } from 'ui';
+import { Container, Footer } from 'ui';
 import { Routing } from './pages';
 import { ApiLoader } from './components/loaders/api-loader';
 import { Header } from '@/components/layout';
@@ -16,7 +16,10 @@ const Component = () => {
       <main className="flex flex-col flex-1 relative container pt-3 pb-5">
         {isApiReady && isAccountReady ? <Routing /> : <ApiLoader />}
       </main>
-      <Footer />
+
+      <Container className="z-1">
+        <Footer />
+      </Container>
     </div>
   );
 };

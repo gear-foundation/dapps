@@ -17,7 +17,6 @@ module.exports = (config) => {
       ...config.resolve,
       alias: {
         '@': path.resolve(__dirname, `${SRC}`),
-        '@ui': path.resolve(__dirname, `${SRC}/ui`),
       },
     },
     devServer: {

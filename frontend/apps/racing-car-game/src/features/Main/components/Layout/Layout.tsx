@@ -1,7 +1,7 @@
 import { useAtomValue } from 'jotai';
 import { useNavigate } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
-import { Button } from '@ui';
+import { Button } from '@/components/ui';
 import { CURRENT_GAME } from '@/atoms';
 import { START } from '@/App.routes';
 import { Welcome } from '@/features/Main/components';
