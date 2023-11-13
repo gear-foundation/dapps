@@ -6,7 +6,7 @@ import { cx } from '@/utils';
 import styles from './BurgerMenu.module.scss';
 import { BurgerMenuProps } from './BurgerMenu.interfaces';
 import closeMenuIcon from '@/assets/icons/cross-icon.svg';
-import { Button } from '@/ui';
+import { Button } from '@/components/ui';
 import { ADDRESS } from '@/consts';
 import { WalletModal } from '@/features/Wallet/components';
 import { WalletInfo } from '@/features/Wallet/components/WalletInfo';

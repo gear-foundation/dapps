@@ -1,7 +1,7 @@
 import './app.scss';
 import './index.css';
 import { useApi, useAccount } from '@gear-js/react-hooks';
-import { Footer } from 'ui';
+import { Container, Footer } from 'ui';
 import { Header } from 'components/layout';
 import { ApiLoader } from 'components/loaders/api-loader';
 import { useWalletSync } from 'features/wallet/hooks';
@@ -25,7 +25,12 @@ const Component = () => {
       <main className="flex flex-col flex-1 smh:gap-1 gap-4 xxl:gap-8 pt-3 pb-5">
         {isApiReady && isAccountReady ? <Routing /> : <ApiLoader />}
       </main>
-      {pathname !== ROUTES.GAME && <Footer />}
+
+      {pathname !== ROUTES.GAME && (
+        <Container>
+          <Footer />
+        </Container>
+      )}
     </div>
   );
 };

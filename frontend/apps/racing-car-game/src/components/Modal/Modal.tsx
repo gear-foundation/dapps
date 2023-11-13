@@ -5,7 +5,7 @@ import crossSVG from '@/assets/icons/cross-icon.svg';
 import styles from './Modal.module.scss';
 import { ModalProps } from './Modal.interface';
 import { cx } from '@/utils';
-import { Button } from '@/ui';
+import { Button } from '@/components/ui';
 
 function Modal({ heading, children, onClose, className }: ModalProps) {
   const ref = useRef<HTMLDialogElement>(null);

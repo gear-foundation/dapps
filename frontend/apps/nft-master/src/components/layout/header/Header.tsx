@@ -3,7 +3,6 @@ import { Wallet } from 'features/wallet';
 import { Search } from 'features/nfts';
 import { useResizeEffect } from 'hooks';
 import { Button, Sprite } from 'components';
-import { CrossIcon, HamburgerIcon } from 'assets/images';
 import clsx from 'clsx';
 import { useAccount } from '@gear-js/react-hooks';
 import { Container } from '../container';

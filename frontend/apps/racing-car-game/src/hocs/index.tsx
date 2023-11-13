@@ -7,7 +7,7 @@ import {
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ADDRESS } from 'consts';
-import { Alert, alertStyles } from '@/ui';
+import { Alert, alertStyles } from '@/components/ui';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;

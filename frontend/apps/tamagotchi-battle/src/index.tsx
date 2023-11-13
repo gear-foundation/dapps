@@ -4,9 +4,9 @@ import TagManager from 'react-gtm-module';
 import { initErrorTracking, logPublicEnvs } from 'error-tracking';
 import { App } from './app';
 
-if (import.meta.env.MODE === 'production' && import.meta.env.VITE_GTM_ID_TTT) {
+if (process.env.MODE === 'production' && process.env.VITE_GTM_ID_TTT) {
   TagManager.initialize({
-    gtmId: import.meta.env.VITE_GTM_ID_TTT,
+    gtmId: process.env.VITE_GTM_ID_TTT,
   });
 }
 

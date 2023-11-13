@@ -3,7 +3,7 @@ import { Route, Routes } from 'react-router-dom';
 import { useSetAtom } from 'jotai';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { ErrorTrackingRoutes } from 'error-tracking';
-import { Footer } from 'ui';
+import { Container, Footer } from 'ui';
 import { GamePage, MainPage } from '@/pages';
 import { Header } from '@/components';
 import { withProviders } from '@/hocs';
@@ -69,7 +69,9 @@ function AppComponent() {
                     </Routes>
                   </div>
 
-                  <Footer />
+                  <Container>
+                    <Footer vara />
+                  </Container>
                 </>
               }
             />

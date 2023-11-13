@@ -5,6 +5,7 @@ import { useWalletSync } from '../../features/wallet/hooks';
 import { useAuthSync, useAutoLogin } from '../../features/auth/hooks';
 import { Header } from './header';
 import { ApiLoader } from '../loaders';
+import { Container } from './container';
 
 type MainLayoutProps = BaseComponentProps;
 
@@ -19,11 +20,15 @@ export function MainLayout({ children }: MainLayoutProps) {
   return (
     <>
       <Header />
+
       <main>
         {!isAppReady && <ApiLoader />}
         {isAppReady && children}
       </main>
-      <Footer />
+
+      <Container>
+        <Footer vara />
+      </Container>
     </>
   );
 }
