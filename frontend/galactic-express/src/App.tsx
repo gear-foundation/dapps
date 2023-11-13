@@ -5,6 +5,8 @@ import { withProviders } from 'hocs';
 import 'App.scss';
 import { useAuthSync } from 'features/auth/hooks';
 import { useAccountAvailableBalance, useAccountAvailableBalanceSync, useWalletSync } from 'features/wallet/hooks';
+import { useEffect } from 'react';
+import { ADDRESS } from 'consts';
 
 function Component() {
   const { isApiReady } = useApi();
@@ -16,6 +18,11 @@ function Component() {
   useWalletSync();
   useAuthSync();
   useAccountAvailableBalanceSync();
+
+  useEffect(() => {
+    console.log('NODE:');
+    console.log(ADDRESS.NODE);
+  }, []);
 
   return (
     <>
