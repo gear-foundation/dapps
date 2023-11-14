@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
 import { cx } from '@/utils';
-import { Link } from '../ui';
+import { Link } from '@/ui';
 import styles from './Header.module.scss';
 import logo from '@/assets/icons/logo-vara-black.svg';
 import { HeaderProps } from './Header.interfaces';
