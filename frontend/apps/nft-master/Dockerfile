@@ -1,9 +1,15 @@
 FROM node:18-alpine
 MAINTAINER gear
 
-WORKDIR /usr/src
+WORKDIR /frontend
 
-COPY . /usr/src
+COPY /frontend/package.json .
+COPY /frontend/yarn.lock .
+COPY /frontend/.yarnrc.yml .
+COPY /frontend/.yarn/releases .yarn/releases
+
+COPY ./frontend/apps/nft-master ./apps/nft-master
+COPY ./frontend/packages ./packages
 
 RUN apk update
 
@@ -11,27 +17,20 @@ RUN apk add xsel
 
 ARG REACT_APP_NODE_ADDRESS \
     REACT_APP_IPFS_GATEWAY_ADDRESS \
-    REACT_APP_CONTRACT_ADDRESS \
-    REACT_APP_AUTH_API_ADDRESS \
-    REACT_APP_NFT_STATE_SOCKET \
-    REACT_APP_NFT_EXPLORER_URL
+    REACT_APP_MASTER_NFT_ADDRESS \
+    REACT_APP_IPFS_ADDRESS
 ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
+    REACT_APP_IPFS_ADDRESS=${REACT_APP_IPFS_ADDRESS} \
     REACT_APP_IPFS_GATEWAY_ADDRESS=${REACT_APP_IPFS_GATEWAY_ADDRESS} \
-    REACT_APP_CONTRACT_ADDRESS=${REACT_APP_CONTRACT_ADDRESS} \
-    REACT_APP_AUTH_API_ADDRESS=${REACT_APP_AUTH_API_ADDRESS} \
-    REACT_APP_NFT_STATE_SOCKET=${REACT_APP_NFT_STATE_SOCKET} \
-    REACT_APP_NFT_EXPLORER_URL=${REACT_APP_NFT_EXPLORER_URL} \
+    REACT_APP_MASTER_NFT_ADDRESS=${REACT_APP_MASTER_NFT_ADDRESS} \
     DISABLE_ESLINT_PLUGIN=true
+    
+WORKDIR /frontend/apps/nft-master
 
-RUN \
-    if [ -f yarn.lock ]; then yarn --frozen-lockfile; \
-    elif [ -f package-lock.json ]; then npm ci; \
-    elif [ -f pnpm-lock.yaml ]; then yarn global add pnpm && pnpm i; \
-    else echo "Lockfile not found." && exit 1; \
-    fi
+RUN yarn install
 
 RUN yarn build
 
 RUN npm install --global serve
 
-CMD ["serve", "-s", "/usr/src/build"]
+CMD ["serve", "-s", "/frontend/apps/nft-master/build"]
