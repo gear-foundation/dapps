@@ -9,7 +9,9 @@ COPY /frontend/.yarnrc.yml .
 COPY /frontend/.yarn/releases .yarn/releases
 
 COPY ./frontend/apps/galactic-express ./apps/galactic-express
-COPY ./frontend/packages/* ./packages/*
+COPY ./frontend/packages/error-tracking ./packages/error-tracking
+COPY ./frontend/packages/ui ./packages/ui
+
 
 RUN apk update
 
