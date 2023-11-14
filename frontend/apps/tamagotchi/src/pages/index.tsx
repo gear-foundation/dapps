@@ -1,6 +1,6 @@
 import { lazy, Suspense } from 'react';
 import { Route } from 'react-router-dom';
-import { ErrorTrackingRoutes } from 'error-tracking';
+import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
 import { useTamagotchiInit } from '@/app/hooks/use-tamagotchi';
 import { useThrottleWasmState } from '@/app/hooks/use-read-wasm-state';
 import { Loader } from '@/components/loaders/loader';

@@ -1,5 +1,5 @@
 import { PropsWithChildren } from 'react';
-import { Footer } from 'ui';
+import { Footer } from '@dapps-frontend/ui';
 import { ApiLoader, Header } from '@/components';
 import { useIsAppReady, useIsAppReadySync } from '@/app/hooks/use-is-app-ready';
 import { useWalletSync } from '@/features/wallet/hooks';

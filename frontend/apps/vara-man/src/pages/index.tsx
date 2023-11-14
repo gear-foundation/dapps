@@ -1,6 +1,6 @@
 import { Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
-import { ErrorTrackingRoutes } from 'error-tracking';
+import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
 import { useInitGame } from '@/app/hooks/use-game';
 
 const routes = [

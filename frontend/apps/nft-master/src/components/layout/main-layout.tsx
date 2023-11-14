@@ -1,4 +1,4 @@
-import { Footer } from 'ui';
+import { Footer } from '@dapps-frontend/ui';
 import { BaseComponentProps } from '../../app/types';
 import { useIsAppReady, useIsAppReadySync } from '../../app/hooks/use-is-app-ready';
 import { useWalletSync } from '../../features/wallet/hooks';

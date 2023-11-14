@@ -6,7 +6,7 @@ import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { Bytes } from '@polkadot/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { UserMessageSent } from '@gear-js/api';
-import { Container, Footer } from 'ui';
+import { Container, Footer } from '@dapps-frontend/ui';
 import styles from './Layout.module.scss';
 import { cx, logger, withoutCommas } from '@/utils';
 import { Heading } from '../Heading';

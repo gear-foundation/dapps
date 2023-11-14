@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dapps-frontend/error-tracking": "workspace:*",
+    "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.35.2",
     "@gear-js/react-hooks": "0.9.2",
     "@gear-js/ui": "0.5.19",
@@ -28,7 +30,6 @@
     "buffer": "6.0.3",
     "class-variance-authority": "0.6.1",
     "clsx": "1.2.1",
-    "error-tracking": "workspace:*",
     "framer-motion": "10.12.17",
     "jotai": "2.2.1",
     "lucide-react": "0.259.0",

@@ -1,6 +1,6 @@
 import { createRoot } from 'react-dom/client';
 import TagManager from 'react-gtm-module';
-import { initErrorTracking, logPublicEnvs } from 'error-tracking';
+import { initErrorTracking, logPublicEnvs } from '@dapps-frontend/error-tracking';
 import { App } from '@/App';
 import './styles/global.scss';
 

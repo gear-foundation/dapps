@@ -9,6 +9,8 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
+    "@dapps-frontend/error-tracking": "workspace:*",
+    "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.35.1",
     "@gear-js/react-hooks": "0.9.0",
     "@mantine/form": "6.0.8",
@@ -22,7 +24,6 @@
     "buffer": "6.0.3",
     "class-variance-authority": "0.7.0",
     "clsx": "1.2.1",
-    "error-tracking": "workspace:*",
     "graphql": "^16.8.1",
     "jotai": "2.1.0",
     "keen-slider": "6.8.5",
@@ -34,7 +35,6 @@
     "react-scripts": "5.0.1",
     "react-transition-group": "4.4.5",
     "socket.io-client": "4.7.2",
-    "ui": "workspace:*",
     "urql": "^4.0.5"
   },
   "devDependencies": {

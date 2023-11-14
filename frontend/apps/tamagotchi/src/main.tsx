@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { initErrorTracking, logPublicEnvs } from 'error-tracking';
+import { initErrorTracking, logPublicEnvs } from '@dapps-frontend/error-tracking';
 import { App } from './app';
 
 initErrorTracking();

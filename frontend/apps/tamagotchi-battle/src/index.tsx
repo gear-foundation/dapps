@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import TagManager from 'react-gtm-module';
-import { initErrorTracking, logPublicEnvs } from 'error-tracking';
+import { initErrorTracking, logPublicEnvs } from '@dapps-frontend/error-tracking';
 import { App } from './app';
 
 if (process.env.MODE === 'production' && process.env.VITE_GTM_ID_TTT) {

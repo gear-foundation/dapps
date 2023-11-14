@@ -1,7 +1,7 @@
 import './global.css';
 import './app.scss';
 import { useApi, useAccount } from '@gear-js/react-hooks';
-import { Container, Footer } from 'ui';
+import { Container, Footer } from '@dapps-frontend/ui';
 import { Routing } from './pages';
 import { ApiLoader } from './components/loaders/api-loader';
 import { Header } from '@/components/layout';

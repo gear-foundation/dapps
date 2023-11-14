@@ -1,6 +1,6 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { Route } from 'react-router-dom';
-import { ErrorTrackingRoutes } from 'error-tracking';
+import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
 import { Content } from 'components';
 import { Home } from './home';
 
