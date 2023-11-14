@@ -5,7 +5,7 @@ on:
   push:
     branches: ['master', 'main', 'staging']
     paths:
-      - frontend/nft-master/**
+      - frontend/apps/nft-master/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -70,14 +70,15 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          file: frontend/nft-master/Dockerfile
+          file: frontend/apps/nft-master/Dockerfile
           context: frontend/nft-master
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
             REACT_APP_IPFS_GATEWAY_ADDRESS=${{ secrets.REACT_APP_IPFS_GATEWAY_ADDRESS }}
-            REACT_APP_CONTRACT_ADDRESS=${{ secrets.REACT_APP_CONTRACT_ADDRESS }}
+            REACT_APP_IPFS_ADDRESS=${{ secrets.REACT_APP_IPFS_ADDRESS }}
+            REACT_APP_MASTER_NFT_ADDRES=${{ secrets.REACT_APP_MASTER_NFT_ADDRES }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
