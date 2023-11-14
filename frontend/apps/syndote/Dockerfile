@@ -1,22 +1,31 @@
-FROM node:16-alpine AS builder
-MAINTAINER GEAR
+FROM node:18-alpine
+MAINTAINER gear
 
-ARG REACT_APP_NODE_ADDRESS  \
+WORKDIR /frontend
+
+COPY /frontend/package.json .
+COPY /frontend/yarn.lock .
+COPY /frontend/.yarnrc.yml .
+COPY /frontend/.yarn/releases .yarn/releases
+
+COPY ./frontend/apps/syndote ./apps/syndote
+COPY ./frontend/packages ./packages
+
+RUN apk update
+
+RUN apk add xsel
+
+ARG REACT_APP_SYNDOTE_NODE_ADDRESS  \
     REACT_APP_CONTRACT_ADDRESS
-ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
-    REACT_APP_CONTRACT_ADDRESSS=${REACT_APP_CONTRACT_ADDRESS}
+ENV REACT_APP_SYNDOTE_NODE_ADDRESS=${REACT_APP_SYNDOTE_NODE_ADDRESS} \
+    REACT_APP_CONTRACT_ADDRESS=${REACT_APP_CONTRACT_ADDRESS}
 
-WORKDIR /src
-COPY package.json .
-COPY yarn.lock .
-COPY tsconfig.json .
-COPY .yarn .yarn
-COPY .yarnrc.yml .
-COPY ./apps/syndote apps/syndote
+WORKDIR /frontend/apps/syndote
 
 RUN yarn install
-RUN yarn build:syndote
 
-FROM nginx:alpine
-RUN rm -vf /usr/share/nginx/html/*
-COPY --from=builder /src/apps/syndote/build /usr/share/nginx/html
+RUN yarn build
+
+RUN npm install --global serve
+
+CMD ["serve", "-s", "/frontend/apps/syndote/build"]
