@@ -8,7 +8,7 @@ COPY /frontend/.yarnrc.yml .
 COPY /frontend/.yarn/releases .yarn/releases
 
 COPY ./frontend/apps/game-of-chance ./apps/game-of-chance
-COPY ./frontend/packages/* ./packages/*
+COPY ./frontend/packages ./packages
 
 RUN apk update
 

@@ -8,7 +8,7 @@ COPY /frontend/.yarnrc.yml .
 COPY /frontend/.yarn/releases .yarn/releases
 
 COPY ./frontend/apps/escrow ./apps/escrow
-COPY ./frontend/packages/* ./packages/*
+COPY ./frontend/packages ./packages
 
 RUN apk update
 
