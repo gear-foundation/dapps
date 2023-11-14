@@ -1,5 +1,5 @@
 import { Route } from 'react-router-dom';
-import { ErrorTrackingRoutes } from 'error-tracking';
+import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
 import { Home } from './home';
 
 const routes = [{ path: '/', Page: Home }];

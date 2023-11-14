@@ -3,6 +3,8 @@
   "version": "1.0.1",
   "private": true,
   "dependencies": {
+    "@dapps-frontend/error-tracking": "workspace:*",
+    "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.35.1",
     "@gear-js/react-hooks": "0.9.0",
     "@gear-js/ui": "0.5.19",
@@ -23,7 +25,6 @@
     "assert": "2.0.0",
     "buffer": "6.0.3",
     "clsx": "1.2.1",
-    "error-tracking": "workspace:*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-router-dom": "6.10.0",

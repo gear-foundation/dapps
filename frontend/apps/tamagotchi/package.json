@@ -9,6 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@dapps-frontend/error-tracking": "workspace:*",
+    "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.35.1",
     "@gear-js/react-hooks": "0.9.0",
     "@gear-js/ui": "0.5.19",
@@ -24,12 +26,10 @@
     "buffer": "6.0.3",
     "clsx": "1.2.1",
     "dayjs": "1.11.7",
-    "error-tracking": "workspace:*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-router-dom": "6.10.0",
-    "react-transition-group": "4.4.5",
-    "ui": "workspace:*"
+    "react-transition-group": "4.4.5"
   },
   "devDependencies": {
     "@types/react": "18.2.33",

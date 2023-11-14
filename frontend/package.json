@@ -1,5 +1,5 @@
 {
-  "name": "frontend",
+  "name": "dapps-frontend",
   "version": "1.0.1",
   "private": true,
   "packageManager": "yarn@4.0.1",
@@ -10,8 +10,8 @@
     "bump:ui": "yarn bump @gear-js/ui",
     "bump:vara-ui": "yarn bump @gear-js/vara-ui",
     "bump:polkadot": "yarn bump @polkadot/api @polkadot/types",
-    "build:error-tracking": "yarn workspace error-tracking build",
-    "build:ui": "yarn workspace ui build",
+    "build:error-tracking": "yarn workspace @dapps-frontend/error-tracking build",
+    "build:ui": "yarn workspace @dapps-frontend/ui build",
     "build:packages": "yarn build:error-tracking && yarn build:ui"
   },
   "workspaces": [

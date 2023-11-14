@@ -1,7 +1,7 @@
 import './app.scss';
 import './index.css';
 import { useApi, useAccount } from '@gear-js/react-hooks';
-import { Container, Footer } from 'ui';
+import { Container, Footer } from '@dapps-frontend/ui';
 import { Header } from 'components/layout';
 import { ApiLoader } from 'components/loaders/api-loader';
 import { useWalletSync } from 'features/wallet/hooks';

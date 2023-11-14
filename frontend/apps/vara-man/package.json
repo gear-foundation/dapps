@@ -11,6 +11,8 @@
     "deploy": "tsc && vite build && npx thirdweb@latest upload dist"
   },
   "dependencies": {
+    "@dapps-frontend/error-tracking": "workspace:*",
+    "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.35.1",
     "@gear-js/react-hooks": "0.9.0",
     "@gear-js/ui": "0.5.19",
@@ -24,14 +26,12 @@
     "buffer": "6.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "1.2.1",
-    "error-tracking": "workspace:*",
     "framer-motion": "10.16.1",
     "lucide-react": "0.220.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-router-dom": "6.10.0",
-    "react-transition-group": "4.4.5",
-    "ui": "workspace:*"
+    "react-transition-group": "4.4.5"
   },
   "devDependencies": {
     "@types/react": "18.2.33",

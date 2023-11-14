@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import TagManager from 'react-gtm-module';
-import { initErrorTracking, logPublicEnvs } from 'error-tracking';
+import { initErrorTracking, logPublicEnvs } from '@dapps-frontend/error-tracking';
 import 'keen-slider/keen-slider.min.css';
 import { App } from './app';
 
