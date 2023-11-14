@@ -13,6 +13,6 @@ Token primitives, helpers for contracts, and everything else that wasn't include
 
 Include the following line under the `[dependencies]` table in your contract's `Cargo.toml` file:
 ```toml
-gear-lib = { git = "https://github.com/gear-foundation/dapps", tag = "0.3.3" }
-gear-lib-derive = { git = "https://github.com/gear-foundation/dapps", tag = "0.3.3" }
+gear-lib = { git = "https://github.com/gear-foundation/dapps", tag = "v1.0.1" }
+gear-lib-derive = { git = "https://github.com/gear-foundation/dapps", tag = "v1.0.1" }
 ```
