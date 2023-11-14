@@ -5,7 +5,7 @@ on:
   push:
     branches: ['master', 'main', 'staging']
     paths:
-      - frontend/racing-car-game/**
+      - frontend/apps/racing-car-game/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -70,8 +70,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: frontend/racing-car-game
-          file: frontend/racing-car-game/Dockerfile
+          file: frontend/apps/racing-car-game/Dockerfile
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
