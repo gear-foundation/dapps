@@ -6,7 +6,7 @@ import { useWallet } from '../../hooks';
 import { WalletItem } from '../wallet-item';
 import styles from './WalletModal.module.scss';
 import { copyToClipboard, isMobileDevice } from '@/app/utils';
-import { useGame, usePending } from '@/features/tic-tac-toe/hooks';
+import { useGame } from '@/features/tic-tac-toe/hooks';
 import { useAuth } from '@/features/auth';
 import { ScrollArea } from '@/components/ui/scroll-area/scroll-area';
 import { WalletIcon } from '../wallet-icon';
