@@ -78,7 +78,7 @@ jobs:
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
             REACT_APP_IPFS_GATEWAY_ADDRESS=${{ secrets.REACT_APP_IPFS_GATEWAY_ADDRESS }}
             REACT_APP_IPFS_ADDRESS=${{ secrets.REACT_APP_IPFS_ADDRESS }}
-            REACT_APP_MASTER_NFT_ADDRES=${{ secrets.REACT_APP_MASTER_NFT_ADDRES }}
+            REACT_APP_MASTER_NFT_ADDRESS=${{ secrets.REACT_APP_MASTER_NFT_ADDRESS }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
