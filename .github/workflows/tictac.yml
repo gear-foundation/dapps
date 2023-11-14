@@ -5,7 +5,7 @@ on:
   push:
     branches: ['master', 'main', 'staging']
     paths:
-      - frontend/tic-tac-toe/**
+      - frontend/apps/tic-tac-toe/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -70,8 +70,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: frontend/tic-tac-toe
-          file: frontend/tic-tac-toe/Dockerfile
+          file: frontend/apps/tic-tac-toe/Dockerfile
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
