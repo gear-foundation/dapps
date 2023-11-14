@@ -1,46 +1,32 @@
-# Build stage
-FROM node:18-alpine AS build
-MAINTAINER GEAR
-
-WORKDIR /opt/fe
-
-COPY . /opt/fe
-
-ARG VITE_NODE_ADDRESS \
-    VITE_CONTRACT_ADDRESS \
-    VITE_DEFAULT_NODES_URL \
-    VITE_STAGING_NODES_URL
-
-ENV VITE_NODE_ADDRESS=${VITE_NODE_ADDRESS} \
-    VITE_CONTRACT_ADDRESS=${VITE_CONTRACT_ADDRESS} \
-    VITE_DEFAULT_NODES_URL=${VITE_DEFAULT_NODES_URL} \
-    VITE_STAGING_NODES_URL=${VITE_STAGING_NODES_URL}
-
-RUN apk update --no-cache && \
-    apk add --no-cache xsel && \
-    yarn install && \
-    yarn build && \
-    rm -rf /var/cache/apk/*
-
-# Run stage
 FROM node:18-alpine
+MAINTAINER gear
 
-WORKDIR /opt/fe
+WORKDIR /frontend
 
-COPY . /opt/fe
-COPY --from=build /opt/fe/dist /opt/fe/dist
-COPY --from=build /opt/fe/node_modules /opt/fe/node_modules
+COPY /frontend/package.json .
+COPY /frontend/yarn.lock .
+COPY /frontend/.yarnrc.yml .
+COPY /frontend/.yarn/releases .yarn/releases
 
-ARG VITE_NODE_ADDRESS \
-    VITE_CONTRACT_ADDRESS \
-    VITE_DEFAULT_NODES_URL \
-    VITE_STAGING_NODES_URL
+COPY ./frontend/apps/tic-tac-toe ./apps/tic-tac-toe
+COPY ./frontend/packages ./packages
 
-ENV VITE_NODE_ADDRESS=${VITE_NODE_ADDRESS} \
-    VITE_CONTRACT_ADDRESS=${VITE_CONTRACT_ADDRESS} \
-    VITE_DEFAULT_NODES_URL=${VITE_DEFAULT_NODES_URL} \
-    VITE_STAGING_NODES_URL=${VITE_STAGING_NODES_URL}
+RUN apk update
 
-EXPOSE 3000
+RUN apk add xsel
 
-CMD ["yarn", "preview"]
+ARG VITE_GAME_ADDRESS \
+    VITE_NODE_ADDRESS
+ENV VITE_GAME_ADDRESS=${VITE_GAME_ADDRESS} \
+    VITE_NODE_ADDRESS=${VITE_NODE_ADDRESS} \
+    DISABLE_ESLINT_PLUGIN=true
+    
+WORKDIR /frontend/apps/tic-tac-toe
+
+RUN yarn install
+
+RUN yarn build
+
+RUN npm install --global serve
+
+CMD ["serve", "-s", "/frontend/apps/tic-tac-toe/build"]

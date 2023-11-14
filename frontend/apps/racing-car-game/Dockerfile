@@ -1,9 +1,15 @@
 FROM node:18-alpine
 MAINTAINER gear
 
-WORKDIR /usr/src
+WORKDIR /frontend
 
-COPY . /usr/src
+COPY /frontend/package.json .
+COPY /frontend/yarn.lock .
+COPY /frontend/.yarnrc.yml .
+COPY /frontend/.yarn/releases .yarn/releases
+
+COPY ./frontend/apps/racing-car-game ./apps/racing-car-game
+COPY ./frontend/packages ./packages
 
 RUN apk update
 
@@ -14,6 +20,8 @@ ARG REACT_APP_CONTRACT_ADDRESS \
 ENV REACT_APP_CONTRACT_ADDRESS=${REACT_APP_CONTRACT_ADDRESS} \
     REACT_APP_NODE=${REACT_APP_NODE} \
     DISABLE_ESLINT_PLUGIN=true
+    
+WORKDIR /frontend/apps/racing-car-game
 
 RUN yarn install
 
@@ -21,4 +29,4 @@ RUN yarn build
 
 RUN npm install --global serve
 
-CMD ["serve", "-s", "/usr/src/build"]
+CMD ["serve", "-s", "/frontend/apps/racing-car-game/build"]
