@@ -71,7 +71,6 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: frontend/apps/nft-master/Dockerfile
-          context: frontend/nft-master
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
