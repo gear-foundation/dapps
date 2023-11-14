@@ -11,7 +11,7 @@ import styles from './Layout.module.scss';
 import { cx, logger, withoutCommas } from '@/utils';
 import { Heading } from '../Heading';
 import { Road } from '../Road';
-import { Button } from '@/components/ui';
+import { Button } from '@/ui';
 import accelerateSVG from '@/assets/icons/accelerate-icon.svg';
 import shootSVG from '@/assets/icons/shoot-icon.svg';
 import { ReactComponent as GearLogoIcon } from '@/assets/icons/gear-logo-icon.svg';

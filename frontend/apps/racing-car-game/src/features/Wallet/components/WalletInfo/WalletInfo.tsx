@@ -7,7 +7,7 @@ import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
 import varaCoin from '@/assets/icons/vara-coin.svg';
 import tVaraCoin from '@/assets/icons/tvara-coin.svg';
 import { WalletInfoProps } from './WalletInfo.interfaces';
-import { Button } from '@/components/ui';
+import { Button } from '@/ui';
 import { WalletModal } from '../WalletModal';
 import styles from './WalletInfo.module.scss';
 import { useAccountAvailableBalance } from '../../hooks';

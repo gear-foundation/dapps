@@ -4,7 +4,7 @@ import burgerMenuIcon from '@/assets/icons/burger-menu-icon.svg';
 import crossIcon from '@/assets/icons/cross-icon.svg';
 import styles from './MobileMenu.module.scss';
 import { MobileMenuDialog } from './MobileMenuDialog';
-import { Button } from '@/components/ui';
+import { Button } from '@/ui';
 
 export function MobileMenu() {
   const [open, setOpen] = useState(false);

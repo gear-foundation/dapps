@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { Dialog } from '@headlessui/react';
 import { useAccount, useApi } from '@gear-js/react-hooks';
-import { Button } from '@/components/ui';
+import { Button } from '@/ui';
 import { ADDRESS } from '@/consts';
 import { useAuth } from '@/features/Auth/hooks';
 import { AccountIcon } from '@/features/Wallet/components/account-icon';
