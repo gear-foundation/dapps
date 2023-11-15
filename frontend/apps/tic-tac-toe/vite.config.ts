@@ -5,11 +5,6 @@ import nodePolyfills from 'vite-plugin-node-stdlib-browser';
 import eslint from 'vite-plugin-eslint';
 import svgr from 'vite-plugin-svgr';
 
-// import { visualizer } from 'rollup-plugin-visualizer'
-// import autoprefixer from 'autoprefixer'
-// import wasm from "vite-plugin-wasm";
-// import topLevelAwait from "vite-plugin-top-level-await";
-
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => {
   return {
@@ -27,19 +22,16 @@ export default defineConfig(({ mode }) => {
       host: true,
     },
     build: {
+      outDir: 'build',
       sourcemap: true,
       rollupOptions: {
         output: {
           manualChunks(id) {
-            // if (id.includes('@polkadot/types')) {
-            //   return 'polkadot-types'
-            // }
             if (
               id.includes('@polkadot') ||
               id.includes('@substrate') ||
               id.includes('@scure') ||
               id.includes('@noble')
-              // id.includes('rxjs') ||
             ) {
               return 'polkadot';
             }
@@ -62,15 +54,7 @@ export default defineConfig(({ mode }) => {
         },
       },
     },
-    plugins: [
-      // wasm(), topLevelAwait(),
-      // visualizer(),
-      splitVendorChunkPlugin(),
-      svgr(),
-      react(),
-      nodePolyfills(),
-      eslint(),
-    ],
+    plugins: [splitVendorChunkPlugin(), svgr(), react(), nodePolyfills(), eslint()],
     assetsInclude: ['**/*.wasm?inline', '**/*.txt?inline'],
   };
 });
