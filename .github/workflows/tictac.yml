@@ -75,7 +75,7 @@ jobs:
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
-            VITE_GAME_ADDRESS=${{ secrets.VITE_GAME_ADDRESS_TIC_TAC }}
+            VITE_CONTRACT_ADDRESS=${{ secrets.VITE_CONTRACT_ADDRESS_TIC_TAC }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
