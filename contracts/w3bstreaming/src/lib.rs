@@ -1,7 +1,7 @@
 #![no_std]
 
 use gstd::{exec, msg, prelude::*};
-use w3bstreaming_io::{Action, ActionResult, Contract, Profile, Role, Stream, Subscription};
+use w3bstreaming_io::{Action, ActionResult, Contract, Profile, Role, State, Stream, Subscription};
 
 static mut CONTRACT: Option<Contract> = None;
 
@@ -101,9 +101,6 @@ extern fn handle() {
 
 #[no_mangle]
 extern fn state() {
-    msg::reply::<Contract>(
-        unsafe { CONTRACT.take().expect("The contract is not initialized") },
-        0,
-    )
-    .expect("`state()` failed");
+    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
+    msg::reply::<State>(contract.into(), 0).expect("Failed to share state");
 }

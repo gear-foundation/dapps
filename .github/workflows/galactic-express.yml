@@ -7,6 +7,11 @@ on:
       - frontend/galactic-express/**
   workflow_dispatch:
 
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
@@ -19,16 +24,9 @@ env:
   ENVIRONMENT: galactic-express
 
 jobs:
-  wait-previous-run:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: mktcode/consecutive-workflow-action@v1 # please read security note
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
 
   build-and-push-image:
     runs-on: ubuntu-latest
-    needs: [wait-previous-run]
     environment: galactic-express
     permissions:
       contents: read

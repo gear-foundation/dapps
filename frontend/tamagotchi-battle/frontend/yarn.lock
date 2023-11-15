@@ -1363,15 +1363,15 @@
   resolved "https://registry.yarnpkg.com/@floating-ui/utils/-/utils-0.1.6.tgz#22958c042e10b67463997bd6ea7115fe28cbcaf9"
   integrity sha512-OfX7E2oUDYxtBvsuS4e/jSn4Q9Qb6DzgeYtsAdkPZ47znpoNsMgZw0+tVijiv3uGNR6dgNlty6r9rzIzHjtd/A==
 
-"@gear-js/api@0.35.1":
-  version "0.35.1"
-  resolved "https://registry.yarnpkg.com/@gear-js/api/-/api-0.35.1.tgz#9f09f48c40fb92dd139b803a526b4b01203c9a21"
-  integrity sha512-ar6LHPoSFa6a54Vy/CSMrTHPVQaxnVXG777xF37r3aT5aJcTqZ7DCgR7YcAeu4bIzoTcPPeD1Wg3sLVQlxjwzw==
+"@gear-js/api@0.35.2":
+  version "0.35.2"
+  resolved "https://registry.yarnpkg.com/@gear-js/api/-/api-0.35.2.tgz#4868d900ffaf716ee7ae6ee64834b43c49187f4a"
+  integrity sha512-mgbBH16qOsSkv1grkQeGxfhIG29C4WBepo1VogJvTAi1mnqcY8XqrOq5T9ilx7CMAi0ENMRDSTIA7usMRUdA7w==
 
-"@gear-js/react-hooks@0.9.0":
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/@gear-js/react-hooks/-/react-hooks-0.9.0.tgz#d9f073cbd65bed2d4634b8e03f7bdcbe12de18e4"
-  integrity sha512-1r37WG4z5I9RJzLvibSvZn5u/wutvjPLGLmUj5f+XTJAijOMQ6nk78A3kFBII/PrLz3zpRooxwjRcsuUPOwFJg==
+"@gear-js/react-hooks@0.9.2":
+  version "0.9.2"
+  resolved "https://registry.yarnpkg.com/@gear-js/react-hooks/-/react-hooks-0.9.2.tgz#3376ba98a5fd27a42dad256896eac162cd06bbf2"
+  integrity sha512-oKsGfaI0gbazVSeNWmyaXrujPExr+L4GoRKULtXn8uRwsH0k6wt9n+JhTNsRJn63LFTv8YkZTx6HiN6gvFgZmA==
 
 "@gear-js/ui@0.5.19":
   version "0.5.19"
@@ -2900,6 +2900,11 @@
   version "5.61.0"
   resolved "https://registry.yarnpkg.com/@typescript-eslint/parser/-/parser-5.61.0.tgz#7fbe3e2951904bb843f8932ebedd6e0635bffb70"
   integrity sha512-yGr4Sgyh8uO6fSi9hw3jAFXNBHbCtKKFMdX2IkT3ZqpKmtAq3lHS4ixB/COFuAIJpwl9/AqF7j72ZDWYKmIfvg==
+  dependencies:
+    "@typescript-eslint/scope-manager" "5.61.0"
+    "@typescript-eslint/types" "5.61.0"
+    "@typescript-eslint/typescript-estree" "5.61.0"
+    debug "^4.3.4"
 
 "@typescript-eslint/parser@^5.5.0":
   version "5.62.0"

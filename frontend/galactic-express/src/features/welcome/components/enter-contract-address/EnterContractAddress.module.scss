@@ -10,11 +10,22 @@
 
 .form {
   padding: 10px 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
 }
 
 .input.input {
-  display: grid;
-  grid-template-columns: 2fr 6fr;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.input label {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  opacity: 0.6;
 }
 
 .button {

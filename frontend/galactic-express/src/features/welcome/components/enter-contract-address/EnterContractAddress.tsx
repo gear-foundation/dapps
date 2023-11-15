@@ -5,6 +5,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { CURRENT_CONTRACT_ADDRESS_ATOM, IS_CONTRACT_ADDRESS_INITIALIZED_ATOM } from 'atoms';
 import { useNewSessionMessage } from 'features/session/hooks';
 import styles from './EnterContractAddress.module.scss';
+import { GetStarted } from '../get-started';
 
 export interface ContractFormValues {
   [key: string]: string;
@@ -74,15 +75,18 @@ function EnterContractAddress({ doesSessionExist, isUserAdmin, isStateComing }: 
     <div className={cx(styles.container)}>
       <form onSubmit={handleSubmit} className={cx(styles.form)}>
         <Input
-          label="Contract address:"
+          label="Enter program address:"
           name="address"
+          placeholder="0x2872..."
           value={formValues.address}
           onChange={handleChange}
           className={cx(styles.input)}
           required
         />
-        <Button type="submit" text="Continue" className={styles.button} size="large" disabled={!formValues.address} />
+        <Button type="submit" text="Continue" className={styles.button} size="medium" disabled={!formValues.address} />
       </form>
+
+      <GetStarted />
     </div>
   );
 }
