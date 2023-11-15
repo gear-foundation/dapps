@@ -7,8 +7,7 @@ on:
     paths:
       - frontend/apps/battleship/**
 
-
-concurrency: 
+concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
@@ -18,7 +17,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  KUBECTL_VERSION: "v1.22.17"
+  KUBECTL_VERSION: 'v1.22.17'
   KUBE_NAMESPACE: gear-dapps
   KUBE_DEPLOYMENT_PREFIX: battleship
   REGISTRY: ghcr.io/${{ github.repository }}
@@ -78,7 +77,6 @@ jobs:
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
             VITE_CONTRACT_ADDRESS=${{ secrets.VITE_CONTRACT_ADDRESS_BATTLE }}
             VITE_BACKEND_ADDRESS=${{ secrets.VITE_BACKEND_ADDRESS }}
-
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
