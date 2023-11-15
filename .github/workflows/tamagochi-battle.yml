@@ -80,7 +80,7 @@ jobs:
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            REACT_APP_BATTLE_ADDRESS=${{ secrets.REACT_APP_BATTLE_ADDRESS }}
+            REACT_APP_CONTRACT_ADDRESS=${{ secrets.REACT_APP_CONTRACT_ADDRESS }}
             
 
   deploy-to-k8s:

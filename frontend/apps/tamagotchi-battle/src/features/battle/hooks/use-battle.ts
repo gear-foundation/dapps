@@ -33,7 +33,7 @@ export function useInitBattleData() {
 
   useEffect(() => {
     if (window) {
-      (window as any).BattleAddress = process.env.REACT_APP_BATTLE_ADDRESS as HexString;
+      (window as any).BattleAddress = process.env.REACT_APP_CONTRACT_ADDRESS as HexString;
     }
   }, []);
 
