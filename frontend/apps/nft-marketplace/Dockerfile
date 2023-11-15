@@ -1,30 +1,37 @@
-FROM node:16-alpine AS builder
-MAINTAINER GEAR
+FROM node:18-alpine
+
+WORKDIR /frontend
+
+COPY /frontend/package.json .
+COPY /frontend/yarn.lock .
+COPY /frontend/.yarnrc.yml .
+COPY /frontend/.yarn/releases .yarn/releases
+
+COPY ./frontend/apps/nft-marketplace ./apps/nft-marketplace
+COPY ./frontend/packages ./packages
+
+RUN apk update
+
+RUN apk add xsel
 
 ARG REACT_APP_NODE_ADDRESS  \
     REACT_APP_IPFS_ADDRESS  \
-    REACT_APP_MARKETPLACE_NFT_CONTRACT_ADDRESS  \
+    REACT_APP_NFT_CONTRACT_ADDRESS  \
     REACT_APP_MARKETPLACE_CONTRACT_ADDRESS \
-    REACT_APP_DAPPS_API_ADDRESS \
     REACT_APP_IPFS_GATEWAY_ADDRESS
 ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
     REACT_APP_IPFS_ADDRESS=${REACT_APP_IPFS_ADDRESS} \
-    REACT_APP_MARKETPLACE_NFT_CONTRACT_ADDRESS=${REACT_APP_MARKETPLACE_NFT_CONTRACT_ADDRESS} \
     REACT_APP_MARKETPLACE_CONTRACT_ADDRESS=${REACT_APP_MARKETPLACE_CONTRACT_ADDRESS} \
-    REACT_APP_DAPPS_API_ADDRESS=${REACT_APP_DAPPS_API_ADDRESS} \
+    REACT_APP_NFT_CONTRACT_ADDRESS=${REACT_APP_NFT_CONTRACT_ADDRESS} \
     REACT_APP_IPFS_GATEWAY_ADDRESS=${REACT_APP_IPFS_GATEWAY_ADDRESS}
+    DISABLE_ESLINT_PLUGIN=true
 
-WORKDIR /src
-COPY package.json .
-COPY yarn.lock .
-COPY tsconfig.json .
-COPY .yarn .yarn
-COPY .yarnrc.yml .
+WORKDIR /frontend/apps/nft-marketplace
 
-COPY ./apps/marketplace apps/marketplace
 RUN yarn install
-RUN yarn build:marketplace
 
-FROM nginx:alpine
-RUN rm -vf /usr/share/nginx/html/*
-COPY --from=builder /src/apps/marketplace/build /usr/share/nginx/html
+RUN yarn build
+
+RUN npm install --global serve
+
+CMD ["serve", "-s", "/frontend/apps/nft-marketplace/build"]
