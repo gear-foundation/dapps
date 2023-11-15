@@ -111,14 +111,14 @@ impl From<Contract> for State {
         Self {
             streams: contract
                 .streams
-                .iter()
-                .map(|(stream_id, streams)| (stream_id.clone(), streams.clone()))
+                .into_iter()
+                .map(|(stream_id, streams)| (stream_id, streams))
                 .collect(),
 
             users: contract
                 .users
-                .iter()
-                .map(|(id, profile)| (*id, profile.clone()))
+                .into_iter()
+                .map(|(id, profile)| (id, profile))
                 .collect(),
         }
     }
