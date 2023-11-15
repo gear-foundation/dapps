@@ -33,21 +33,27 @@ export const AccountComponent = () => {
 
     setIsPending(true);
 
-    calculateGas(payload)
-      .then((res) => res.toHuman())
-      .then(({ min_limit }) => {
-        const limit = withoutCommas(min_limit as string);
+    // calculateGas(payload)
+    //   .then((res) => res.toHuman())
+    //   .then(({ min_limit }) => {
+    //     const limit = withoutCommas(min_limit as string);
 
-        handleMessage({
-          payload,
-          gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
-          onSuccess,
-          onError,
-        });
-      })
-      .catch(() => {
-        alert('Gas calculation error');
-      });
+    //     handleMessage({
+    //       payload,
+    //       gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
+    //       onSuccess,
+    //       onError,
+    //     });
+    //   })
+    //   .catch(() => {
+    //     alert('Gas calculation error');
+    //   });
+
+    handleMessage({
+      payload,
+      onSuccess,
+      onError,
+    });
   };
 
   return (
