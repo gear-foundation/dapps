@@ -32,63 +32,81 @@ export const BattleRoundPlayers = () => {
 
     setIsPending(true);
 
-    calculateGas(payload)
-      .then((res) => res.toHuman())
-      .then(({ min_limit }) => {
-        const limit = withoutCommas(min_limit as string);
+    // calculateGas(payload)
+    //   .then((res) => res.toHuman())
+    //   .then(({ min_limit }) => {
+    //     const limit = withoutCommas(min_limit as string);
 
-        handleMessage({
-          payload,
-          gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
-          onSuccess,
-          onError,
-        });
-      })
-      .catch(() => {
-        alert.error('Gas calculation error');
-      });
+    //     handleMessage({
+    //       payload,
+    //       gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
+    //       onSuccess,
+    //       onError,
+    //     });
+    //   })
+    //   .catch(() => {
+    //     alert.error('Gas calculation error');
+    //   });
+
+    handleMessage({
+      payload,
+      onSuccess,
+      onError,
+    });
   };
   const onAttack = () => {
     const payload = { MakeMove: { pair_id: currentPairIdx, tmg_move: { Attack: null } } };
 
     setIsPending(true);
 
-    calculateGas(payload)
-      .then((res) => res.toHuman())
-      .then(({ min_limit }) => {
-        const limit = withoutCommas(min_limit as string);
+    // calculateGas(payload)
+    //   .then((res) => res.toHuman())
+    //   .then(({ min_limit }) => {
+    //     const limit = withoutCommas(min_limit as string);
 
-        handleMessage({
-          payload,
-          gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
-          onSuccess,
-          onError,
-        });
-      })
-      .catch(() => {
-        alert.error('Gas calculation error');
-      });
+    //     handleMessage({
+    //       payload,
+    //       gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
+    //       onSuccess,
+    //       onError,
+    //     });
+    //   })
+    //   .catch(() => {
+    //     alert.error('Gas calculation error');
+    //   });
+
+    handleMessage({
+      payload,
+      onSuccess,
+      onError,
+    });
   };
   const onDefence = () => {
     const payload = { MakeMove: { pair_id: currentPairIdx, tmg_move: { Defence: null } } };
 
     setIsPending(true);
 
-    calculateGas(payload)
-      .then((res) => res.toHuman())
-      .then(({ min_limit }) => {
-        const limit = withoutCommas(min_limit as string);
+    // calculateGas(payload)
+    //   .then((res) => res.toHuman())
+    //   .then(({ min_limit }) => {
+    //     const limit = withoutCommas(min_limit as string);
 
-        handleMessage({
-          payload,
-          gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
-          onSuccess,
-          onError,
-        });
-      })
-      .catch(() => {
-        alert.error('Gas calculation error');
-      });
+    //     handleMessage({
+    //       payload,
+    //       gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
+    //       onSuccess,
+    //       onError,
+    //     });
+    //   })
+    //   .catch(() => {
+    //     alert.error('Gas calculation error');
+    //   });
+
+    handleMessage({
+      payload,
+      onSuccess,
+      onError,
+    });
   };
 
   const cnWrapper = 'relative flex flex-col';

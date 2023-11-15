@@ -35,24 +35,33 @@ export const CreateTamagotchiForm = () => {
   const handleSubmit = form.onSubmit((values) => {
     const payload = { Register: { tmg_id: values.programId } };
 
-    calculateGas(payload)
-      .then((res) => res.toHuman())
-      .then(({ min_limit }) => {
-        const limit = withoutCommas(min_limit as string);
+    // calculateGas(payload)
+    //   .then((res) => res.toHuman())
+    //   .then(({ min_limit }) => {
+    //     const limit = withoutCommas(min_limit as string);
 
-        handleMessage({
-          payload,
-          gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
-          onSuccess: () => {
-            form.reset();
-            navigate('/battle');
-          },
-          onError: () => form.reset(),
-        });
-      })
-      .catch(() => {
-        alert('Gas calculation error');
-      });
+    //     handleMessage({
+    //       payload,
+    //       gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
+    //       onSuccess: () => {
+    //         form.reset();
+    //         navigate('/battle');
+    //       },
+    //       onError: () => form.reset(),
+    //     });
+    //   })
+    //   .catch(() => {
+    //     alert('Gas calculation error');
+    //   });
+
+    handleMessage({
+      payload,
+      onSuccess: () => {
+        form.reset();
+        navigate('/battle');
+      },
+      onError: () => form.reset(),
+    });
   });
 
   return (
