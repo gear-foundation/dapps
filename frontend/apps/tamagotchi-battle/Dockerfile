@@ -1,14 +1,27 @@
 FROM node:18-alpine
-MAINTAINER GEAR
+MAINTAINER gear
 
-WORKDIR /usr/src
+WORKDIR /frontend
 
-COPY . /usr/src
+COPY /frontend/package.json .
+COPY /frontend/yarn.lock .
+COPY /frontend/.yarnrc.yml .
+COPY /frontend/.yarn/releases .yarn/releases
 
-ARG REACT_APP_NODE_ADDRESS  \
-    REACT_APP_GAME_ADDRESS
+COPY ./frontend/apps/tamagotchi-battle ./apps/tamagotchi-battle
+COPY ./frontend/packages ./packages
+
+RUN apk update
+
+RUN apk add xsel
+
+ARG REACT_APP_BATTLE_ADDRESS \
+    REACT_APP_NODE_ADDRESS
 ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
-    REACT_APP_GAME_ADDRESS=${REACT_APP_GAME_ADDRESS}
+    REACT_APP_BATTLE_ADDRESS=${REACT_APP_BATTLE_ADDRESS} \
+    DISABLE_ESLINT_PLUGIN=true
+    
+WORKDIR /frontend/apps/tamagotchi-battle
 
 RUN yarn install
 
@@ -16,4 +29,4 @@ RUN yarn build
 
 RUN npm install --global serve
 
-CMD ["serve", "-s", "/usr/src/build"]
+CMD ["serve", "-s", "/frontend/apps/tamagotchi-battle/build"]
