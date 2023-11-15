@@ -39,6 +39,14 @@ pub struct Contract {
     pub users: BTreeMap<ActorId, Profile>,
 }
 
+#[derive(Encode, Decode, Default, TypeInfo, Clone)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct State {
+    pub streams: Vec<(String, Stream)>,
+    pub users: Vec<(ActorId, Profile)>,
+}
+
 #[derive(Encode, Decode, TypeInfo, Clone)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
@@ -96,4 +104,22 @@ impl Metadata for ProgramMetadata {
     type Others = InOut<(), ()>;
     type Signal = ();
     type State = Out<Contract>;
+}
+
+impl From<Contract> for State {
+    fn from(contract: Contract) -> Self {
+        Self {
+            streams: contract
+                .streams
+                .iter()
+                .map(|(stream_id, streams)| (stream_id.clone(), streams.clone()))
+                .collect(),
+
+            users: contract
+                .users
+                .iter()
+                .map(|(id, profile)| (*id, profile.clone()))
+                .collect(),
+        }
+    }
 }
