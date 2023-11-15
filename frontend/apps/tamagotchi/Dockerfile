@@ -22,4 +22,8 @@ WORKDIR /frontend/apps/tamagotchi
 
 RUN yarn install
 
-CMD ["yarn", "start"]
+RUN yarn build
+
+RUN npm install --global serve
+
+CMD ["serve", "-s", "/frontend/apps/tamagotchi/build"]
