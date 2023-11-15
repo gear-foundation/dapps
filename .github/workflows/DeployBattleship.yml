@@ -76,7 +76,7 @@ jobs:
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
-            VITE_GAME_ADDRESS=${{ secrets.VITE_GAME_ADDRESS }}
+            VITE_GAME_ADDRESS=${{ secrets.VITE_GAME_ADDRESS_BATTLE }}
             VITE_BACKEND_ADDRESS=${{ secrets.VITE_BACKEND_ADDRESS }}
 
 
