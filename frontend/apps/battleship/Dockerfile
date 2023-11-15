@@ -1,41 +1,33 @@
-# Build stage
-FROM node:18-alpine AS build
-
-WORKDIR /opt/fe
-
-COPY . /opt/fe
-
-ARG VITE_NODE_ADDRESS \
-    VITE_CONTRACT_ADDRESS \
-    VITE_BACKEND_ADDRESS
-
-ENV VITE_NODE_ADDRESS=${VITE_NODE_ADDRESS} \
-    VITE_CONTRACT_ADDRESS=${VITE_CONTRACT_ADDRESS} \
-    VITE_BACKEND_ADDRESS=${VITE_BACKEND_ADDRESS}
-
-RUN apk update --no-cache && \
-    apk add --no-cache xsel && \
-    yarn install && \
-    yarn build && \
-    rm -rf /var/cache/apk/*
-
-# Run stage
 FROM node:18-alpine
 
-WORKDIR /opt/fe
+WORKDIR /frontend
 
-COPY . /opt/fe
-COPY --from=build /opt/fe/dist /opt/fe/dist
-COPY --from=build /opt/fe/node_modules /opt/fe/node_modules
+COPY /frontend/package.json .
+COPY /frontend/yarn.lock .
+COPY /frontend/.yarnrc.yml .
+COPY /frontend/.yarn/releases .yarn/releases
+
+COPY ./frontend/apps/battleship ./apps/battleship
+COPY ./frontend/packages ./packages
+
+RUN apk update
+
+RUN apk add xsel
 
 ARG VITE_NODE_ADDRESS \
-    VITE_CONTRACT_ADDRESS \
+    VITE_GAME_ADDRESS \
     VITE_BACKEND_ADDRESS
 
 ENV VITE_NODE_ADDRESS=${VITE_NODE_ADDRESS} \
-    VITE_CONTRACT_ADDRESS=${VITE_CONTRACT_ADDRESS} \
+    VITE_GAME_ADDRESS=${VITE_GAME_ADDRESS} \
     VITE_BACKEND_ADDRESS=${VITE_BACKEND_ADDRESS}
 
-EXPOSE 3000
+WORKDIR /frontend/apps/battleship
 
-CMD ["yarn", "preview"]
+RUN yarn install
+
+RUN yarn build
+
+RUN npm install --global serve
+
+CMD ["serve", "-s", "/frontend/apps/battleship/build"]
