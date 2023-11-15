@@ -63,8 +63,7 @@ export const CreateTamagotchiForm = () => {
       onError: () => form.reset(),
     });
   });
-  console.log(isPending);
-  console.log(battle?.state);
+
   return (
     <form onSubmit={handleSubmit} className="flex items-start justify-center gap-6">
       <div className="basis-[400px]">
