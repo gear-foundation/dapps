@@ -1,5 +1,5 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import isEqual from 'lodash.isequal';
 import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
@@ -416,7 +416,7 @@ function LayoutComponent() {
                 </div>
               )}
               {currentGame.state !== 'Finished' && (
-                <Container>
+                <Container className={cx(styles.footer)}>
                   <Footer vara />
                 </Container>
               )}
