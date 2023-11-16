@@ -11,7 +11,7 @@ export const LOCAL_STORAGE = {
 };
 
 export const ADDRESS = {
-  NODE: process.env.REACT_APP_NODE,
+  NODE: process.env.REACT_APP_NODE_ADDRESS,
   CONTRACT: process.env.REACT_APP_CONTRACT_ADDRESS as HexString,
   BASE_NODES: process.env.REACT_APP_DEFAULT_NODES_URL as string,
   STAGING_NODES: process.env.REACT_APP_STAGING_NODES_URL as string,
