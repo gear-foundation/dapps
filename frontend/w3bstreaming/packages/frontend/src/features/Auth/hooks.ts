@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAtom } from 'jotai';
+import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import { Account, useAccount } from '@gear-js/react-hooks';
 import { useWallet } from '../Wallet/hooks';
 import { IS_AUTH_READY_ATOM, USER_ADDRESS_ATOM } from './atoms';
@@ -59,7 +60,7 @@ export function useAuth() {
     setIsAuthReady(true);
   };
 
-  const signIn = async (_account: Account) => {
+  const signIn = async (_account: InjectedAccountWithMeta) => {
     await login(_account);
   };
 

@@ -22,7 +22,7 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
   const [showedTeasers, setShowedTeasers] = useState<FormattedTeaser[]>([]);
 
   useEffect(() => {
-    if (streamTeasers) {
+    if (streamTeasers && Object.keys(streamTeasers).length) {
       setTeasers(
         Object.keys(streamTeasers)
           .map((key) => ({ ...streamTeasers[key], id: key }))
@@ -74,11 +74,15 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
         <Search onChange={handleChangedSearchedValue} value={searchedValue} />
       </div>
       <div className={cx(styles.content)}>
-        {showedTeasers.slice(0, showedTeasersCount).map((item) => (
-          <Link to={`/stream/${item.id}`} key={item.title + item.description + item.startTime + item.endTime}>
-            <StreamTeaser broadcasterInfo={users?.[item?.broadcaster]} {...item} />
-          </Link>
-        ))}
+        {showedTeasers.length > 0 ? (
+          showedTeasers.slice(0, showedTeasersCount).map((item) => (
+            <Link to={`/stream/${item.id}`} key={item.title + item.description + item.startTime + item.endTime}>
+              <StreamTeaser broadcasterInfo={users?.[item?.broadcaster]} {...item} />
+            </Link>
+          ))
+        ) : (
+          <div>No streams yet</div>
+        )}
       </div>
       {!showedTeasers.length && searchedValue ? (
         <h3 className={cx(styles['no-streams-found'])}>No streams found</h3>

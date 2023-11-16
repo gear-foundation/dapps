@@ -107,7 +107,19 @@ function useMediaQuery(width: number) {
 
 function useProgramState() {
   const { meta } = useGetStreamMetadata();
-  const state: ProgramStateRes = useReadFullState(ADDRESS.CONTRACT, meta, '0x');
+  const { api } = useApi();
+  const programId = ADDRESS.CONTRACT;
+  // const state: ProgramStateRes = useReadFullState(ADDRESS.CONTRACT, meta, '0x');
+
+  useEffect(() => {
+    if (!api || !meta || !programId) return;
+    api.programState
+      .read({ programId, payload: '0x' }, meta)
+      .then((codec) => codec.toHuman())
+      .then((state) => console.log(state));
+  }, [api, meta, programId]);
+
+  const state = { state: { streams: {}, users: {} }, isStateRead: true };
 
   return state;
 }

@@ -21,6 +21,6 @@
   "files":[
     "index.d.ts"
   ],
-  "include": ["src", "react-app-env.d.ts"],
+  "include": ["src", "react-app-env.d.ts", "./.eslintrc.js"],
   "exclude": ["node_modules", "dist"],
 }
