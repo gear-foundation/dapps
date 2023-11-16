@@ -19,4 +19,9 @@ export interface UsersTableProps {
     column: string;
   };
   sortedColumns?: string[];
+  name: string;
+}
+
+export interface EmptyTableContentProps {
+  name: string;
 }

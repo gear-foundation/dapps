@@ -1,13 +1,22 @@
 import { useState } from 'react';
 import styles from './UsersTable.module.scss';
-import { UsersTableProps } from './UsersTable.interfaces';
+import { EmptyTableContentProps, UsersTableProps } from './UsersTable.interfaces';
 import { cx } from '@/utils';
 import { Table } from '@/ui';
 import img from '@/assets/icons/no-avatar-user-img.png';
 import { CellValue, TableRow } from '@/ui/Table/Table.interfaces';
 import { SubscribeModal } from '../SubscribeModal';
 
-function UsersTable({ data, columns, searchParams, sortedColumns }: UsersTableProps) {
+function EmptyTableContent({ name }: EmptyTableContentProps) {
+  return (
+    <td>
+      <h3 className={cx(styles['empty-user-table-title'])}>No {name}</h3>
+      <span className={cx(styles['empty-user-table-caption'])}>You don&apos;t have {name} yet ...</span>
+    </td>
+  );
+}
+
+function UsersTable({ data, columns, searchParams, sortedColumns, name }: UsersTableProps) {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [idToUnsubscribe, setIdToUnsubscribe] = useState<string | null>(null);
 
@@ -55,6 +64,7 @@ function UsersTable({ data, columns, searchParams, sortedColumns }: UsersTablePr
         }}
         searchParams={{ ...searchParams, placeholder: 'Search transactions' }}
         sortedColumns={sortedColumns}
+        renderEmpty={<EmptyTableContent name={name || ''} />}
       />
       {isModalOpen && <SubscribeModal type="unsubscribe" speakerId={idToUnsubscribe} onClose={handleCloseModal} />}
     </div>

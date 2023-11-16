@@ -42,7 +42,7 @@ function withData(
       setSome(false);
     }, [account, users]);
 
-    return <>{some ? <Loader /> : <Component {...props} data={data} />}</>;
+    return <>{some ? <Loader /> : <Component {...props} data={data} name={type} />}</>;
   };
 }
 

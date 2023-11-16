@@ -49,6 +49,7 @@ function Table({
   renderCell,
   renderHeaderCell,
   className,
+  renderEmpty,
 }: TableProps) {
   const [tableData, setTableData] = useState<TableRow[]>(rows || []);
   const [searchedValue, setSearchedValue] = useState<string>('');
@@ -162,10 +163,12 @@ function Table({
               </>
             ) : (
               <tr className={cx(styles['empty-table'])}>
-                <td>
-                  <h3 className={cx(styles['empty-table-title'])}>No subscribers</h3>
-                  <span className={cx(styles['empty-table-caption'])}>You don&apos;t have subscribers yet ...</span>
-                </td>
+                {renderEmpty || (
+                  <td>
+                    <h3 className={cx(styles['empty-table-title'])}>No items</h3>
+                    <span className={cx(styles['empty-table-caption'])}>You don&apos;t have any items yet ...</span>
+                  </td>
+                )}
               </tr>
             )}
           </Body>

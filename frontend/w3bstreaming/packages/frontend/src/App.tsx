@@ -16,9 +16,11 @@ import { useProgramState } from './hooks';
 import { STREAM_TEASERS_ATOM, USERS_ATOM } from './atoms';
 import { useCreateStreamMetadata, useGetStreamMetadata } from './features/CreateStream/hooks';
 import { ADDRESS } from './consts';
+import { useAccountAvailableBalanceSync } from './features/Wallet/hooks';
 
 function AppComponent() {
   useCreateStreamMetadata();
+  useAccountAvailableBalanceSync();
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
   const { state, isStateRead } = useProgramState();

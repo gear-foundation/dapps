@@ -1,3 +1,5 @@
+import { ReactElement } from 'react';
+
 export type CellValue = string | number | null | undefined;
 export interface TableRow {
   id: string | number;
@@ -10,6 +12,7 @@ export interface TableProps {
   sortedColumns?: string[];
   pagination?: Pagination;
   searchParams?: SearchParams;
+  renderEmpty?: ReactElement;
   renderCell?: (columnName: string | number, value: CellValue, row: TableRow) => CellValue | JSX.Element;
   renderHeaderCell?: (name: string | number) => CellValue;
   className?: {
