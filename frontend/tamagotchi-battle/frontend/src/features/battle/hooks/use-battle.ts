@@ -5,7 +5,7 @@ import { useProgramMetadata, useReadState } from 'app/hooks/api';
 import { useBattle } from '../context';
 import { BATTLE_ADDRESS } from '../consts';
 import meta from '../assets/meta/battle.meta.txt';
-import type { UserMessageSent } from '@gear-js/api';
+import type { HexString, UserMessageSent } from '@gear-js/api';
 import type { UnsubscribePromise } from '@polkadot/api/types';
 import type { BattleStatePlayer, BattleStateResponse } from '../types/battles';
 import type { BattleCurrentStateVariants, RoundDamageType } from '../types/battles';
@@ -33,7 +33,7 @@ export function useInitBattleData() {
 
   useEffect(() => {
     if (window) {
-      (window as any).BattleAddress = '0x644c1e6f60cd2e7ddcb503ae4923fb5486dddaf9933733d7bc473fbaef67efc8';
+      (window as any).BattleAddress = process.env.REACT_APP_BATTLE_ADDRESS as HexString;
     }
   }, []);
 
