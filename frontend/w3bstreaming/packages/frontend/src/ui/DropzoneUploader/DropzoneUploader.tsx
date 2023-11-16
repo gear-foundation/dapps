@@ -6,9 +6,11 @@ import closeIcon from '@/assets/icons/cross-icon.svg';
 import styles from './DropzoneUploader.module.scss';
 import { Button } from '../Button';
 import { DropzoneUploaderProps } from './DropzoneUploader.interface';
+import { ADDRESS } from '@/consts';
 
 function DropzoneUploader({ text, previewLink, onDropFile }: DropzoneUploaderProps) {
-  const uploadUrl = 'http://127.0.0.1:5001/api/v0/add';
+  const uploadUrl = ADDRESS.IPFS_NODE;
+
   const [preview, setPreview] = useState(previewLink || '');
 
   useEffect(() => {
@@ -17,17 +19,20 @@ function DropzoneUploader({ text, previewLink, onDropFile }: DropzoneUploaderPro
     }
   }, [preview, onDropFile]);
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const formData = new FormData();
-    formData.append('file', acceptedFiles[0]);
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const formData = new FormData();
+      formData.append('file', acceptedFiles[0]);
 
-    fetch(uploadUrl, {
-      method: 'POST',
-      body: formData,
-    })
-      .then((res) => res.json())
-      .then(({ Hash }) => setPreview(`http://localhost:8080/ipfs/${Hash}`));
-  }, []);
+      fetch(uploadUrl, {
+        method: 'POST',
+        body: formData,
+      })
+        .then((res) => res.json())
+        .then(({ Hash }) => setPreview(`${ADDRESS.IPFS_GATEWAY}/${Hash}`));
+    },
+    [uploadUrl],
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

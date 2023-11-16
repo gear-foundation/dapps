@@ -13,6 +13,8 @@ export const ADDRESS = {
   NODES: 'https://idea.gear-tech.io/gear-nodes',
   CONTRACT: (process.env.REACT_APP_STREAMING_PROGRAM_ADDRESS ||
     '0xd564fdc32fb4d5d288fd78575f0e8e88c0ff91eb055f9a4a825a54ab222001af') as HexString,
+  IPFS_GATEWAY: process.env.REACT_APP_STREAMING_IPFS_GATEWAY as string,
+  IPFS_NODE: process.env.REACT_APP_STREAMING_IPFS_NODE as string,
 };
 
 export const SEARCH_PARAMS = {

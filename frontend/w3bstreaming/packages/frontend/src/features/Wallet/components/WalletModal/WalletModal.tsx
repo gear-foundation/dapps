@@ -94,7 +94,6 @@ function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
 
       const handleClick = async () => {
         await signIn(_account);
-        navigate('/');
         setOpen(false);
         onClose();
       };

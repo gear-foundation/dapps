@@ -6,7 +6,7 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
   const { account } = useAccount();
 
   if (!account) {
-    return <Navigate to="/" replace />;
+    return <Navigate to="/" />;
   }
 
   return children;
