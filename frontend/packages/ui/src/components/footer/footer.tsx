@@ -18,7 +18,6 @@ const SOCIALS = [
 
 function Footer({ vara }: Props) {
   const { account } = useAccount();
-  console.log('account: ', account);
 
   const year = new Date().getFullYear();
 
