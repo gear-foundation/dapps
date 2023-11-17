@@ -1,24 +1,16 @@
 import { useAccount } from '@gear-js/react-hooks';
 import cx from 'clsx';
 
-import { Props } from '../../types';
-import { ReactComponent as TwitterSVG } from './assets/twitter.svg';
-import { ReactComponent as GithubSVG } from './assets/github.svg';
-import { ReactComponent as DiscordSVG } from './assets/discord.svg';
-import { ReactComponent as MediumSVG } from './assets/medium.svg';
 import { ReactComponent as UserSVG } from './assets/user.svg';
+import { SOCIALS } from './consts';
 import styles from './footer.module.css';
 
-const SOCIALS = [
-  { href: 'https://twitter.com/gear_techs', SVG: TwitterSVG },
-  { href: 'https://github.com/gear-tech', SVG: GithubSVG },
-  { href: 'https://discord.com/invite/7BQznC9uD9', SVG: DiscordSVG },
-  { href: 'https://medium.com/@gear_techs', SVG: MediumSVG },
-];
+type Props = {
+  vara?: boolean;
+};
 
 function Footer({ vara }: Props) {
   const { account } = useAccount();
-
   const year = new Date().getFullYear();
 
   const getSocials = () =>
