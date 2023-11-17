@@ -36,16 +36,19 @@ jobs:
         run: |
           branch_name=${GITHUB_REF#refs/heads/}
           echo "branch_name=$branch_name" >> $GITHUB_ENV
+
       - name: Get short SHA
         id: sha
         run: |
           sha_short=$(git rev-parse --short HEAD)
           echo "sha_short=$sha_short" >> $GITHUB_ENV
+
       - name: Set IMAGE_NAME
         id: image
         run: |
           image_name=${{ env.REGISTRY }}-${{ env.KUBE_DEPLOYMENT_PREFIX }}:${{ env.branch_name }}-${{ env.sha_short }}
           echo "image_name=$image_name" >> $GITHUB_OUTPUT
+
   build-and-push-image:
     needs: [prepair]
     runs-on: ubuntu-latest
@@ -73,6 +76,7 @@ jobs:
           build-args: |
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
             VITE_CONTRACT_ADDRESS=${{ secrets.VITE_CONTRACT_ADDRESS_VARA_MAN }}
+
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
     runs-on: ubuntu-latest
@@ -92,12 +96,14 @@ jobs:
             set image deployment/${{ env.KUBE_DEPLOYMENT_PREFIX }}-${{ env.ENVIRONMENT }} \
             ${{ env.KUBE_DEPLOYMENT_PREFIX }}-${{ env.ENVIRONMENT }}=${{ needs.prepair.outputs.image_name }} \
             -n ${{ env.KUBE_NAMESPACE }}
+
       - name: Restart deployment
         uses: kodermax/kubectl-aws-eks@1.1.0
         with:
           args: |
             rollout restart deployment/${{ env.KUBE_DEPLOYMENT_PREFIX }}-${{ env.ENVIRONMENT }} \
             -n ${{ env.KUBE_NAMESPACE }}
+
       - name: Check deployment
         uses: kodermax/kubectl-aws-eks@1.1.0
         with:

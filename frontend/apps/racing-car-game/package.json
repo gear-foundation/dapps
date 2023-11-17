@@ -1,0 +1,76 @@
+{
+  "name": "racing-car-game",
+  "version": "1.0.1",
+  "private": true,
+  "scripts": {
+    "start": "yarn build:packages && react-app-rewired start",
+    "build": "yarn build:packages && react-app-rewired build"
+  },
+  "dependencies": {
+    "@dapps-frontend/error-tracking": "workspace:*",
+    "@dapps-frontend/ui": "workspace:*",
+    "@gear-js/api": "0.35.1",
+    "@gear-js/react-hooks": "0.9.0",
+    "@gear-js/ui": "0.5.19",
+    "@headlessui/react": "1.7.17",
+    "@mantine/form": "6.0.15",
+    "@polkadot/api": "10.10.1",
+    "@polkadot/extension-dapp": "0.46.5",
+    "@polkadot/react-identicon": "3.5.1",
+    "@polkadot/types": "10.10.1",
+    "@polkadot/util": "12.3.2",
+    "@radix-ui/react-scroll-area": "1.0.4",
+    "assert": "2.1.0",
+    "axios": "1.4.0",
+    "babel-polyfill": "6.26.0",
+    "buffer": "6.0.3",
+    "clsx": "1.2.1",
+    "framer-motion": "10.16.4",
+    "jotai": "2.2.1",
+    "lodash.isequal": "4.5.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-gtm-module": "2.0.11",
+    "react-router": "6.11.1",
+    "react-router-dom": "6.10.0",
+    "react-scripts": "5.0.1",
+    "react-transition-group": "^4.4.5",
+    "sass": "1.62.0",
+    "socket.io-client": "^4.7.2"
+  },
+  "devDependencies": {
+    "@craco/craco": "7.1.0",
+    "@types/lodash.isequal": "4.5.6",
+    "@types/node": "18.17.15",
+    "@types/react": "18.2.33",
+    "@types/react-dom": "18.2.14",
+    "@types/react-gtm-module": "2.0.1",
+    "@typescript-eslint/parser": "^6.7.3",
+    "eslint-config-airbnb": "19.0.4",
+    "eslint-config-airbnb-typescript": "17.0.0",
+    "eslint-config-prettier": "8.8.0",
+    "eslint-config-react-app": "7.0.1",
+    "eslint-plugin-import": "2.27.5",
+    "eslint-plugin-jsx-a11y": "6.7.1",
+    "eslint-plugin-react": "7.33.2",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "react-app-rewired": "2.2.1",
+    "types": "*",
+    "typescript": "4.9.5"
+  },
+  "eslintConfig": {
+    "extends": "./.eslintrc.js"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

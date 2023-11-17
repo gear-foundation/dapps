@@ -1,0 +1,229 @@
+@use '@/assets/styles/utils' as *;
+
+.content {
+  flex: 1 1 100%;
+  max-height: 430px;
+}
+
+.list {
+  display: grid;
+  grid-gap: 15px;
+  width: 100%;
+
+  &--scroll {
+    padding-right: 20px;
+  }
+
+  .walletButton {
+    width: 100%;
+    padding-right: 20px;
+    padding-left: 24px;
+    justify-content: space-between;
+
+    &:hover {
+      & .statusAccounts {
+        color: #00b387;
+      }
+    }
+
+    .wallet {
+      display: flex;
+      align-items: center;
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 120%;
+      letter-spacing: 0.02em;
+      color: #000;
+    }
+
+    .icon {
+      margin-right: 8px;
+      background-color: #fff;
+      border-radius: 50%;
+      border: 1px solid #ebeeee;
+    }
+  }
+}
+
+.status {
+  display: block;
+  text-align: right;
+
+  &Text {
+    display: block;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 12px;
+    color: #a2a2a2;
+  }
+
+  &Accounts {
+    display: block;
+    font-weight: 700;
+    font-size: 11px;
+    line-height: 10px;
+    letter-spacing: 0.02em;
+    color: #02f8bf;
+    transition: color 250ms ease;
+  }
+}
+
+.account {
+  @include gap(10px, right);
+  display: flex;
+  align-items: center;
+
+  &Button {
+    @include gap(12px, right);
+    justify-content: center;
+    display: inline-grid;
+    grid-template-columns: auto auto;
+    width: 100%;
+    padding-right: 24px;
+    padding-left: 24px;
+    font-weight: 600;
+    font-size: 16px;
+
+    span {
+      display: block;
+      max-width: 22ch;
+      white-space: nowrap;
+      @include textOverflow;
+    }
+  }
+
+  &Icon {
+    pointer-events: none;
+  }
+}
+
+.footer {
+  margin-top: 22px;
+  display: flex;
+  justify-content: space-between;
+
+  .walletButton {
+    @include gap(8px, right);
+    display: flex;
+    align-items: center;
+    background-color: transparent;
+    transition: all 0.3s;
+
+    &:hover {
+      opacity: 0.5;
+    }
+  }
+}
+
+.changeText {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #00b387;
+}
+
+.textButton {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  transition: opacity 300ms ease;
+  @include gap(10px, right);
+
+  &:hover {
+    opacity: 50%;
+  }
+}
+
+.modal {
+  position: relative;
+  z-index: 50;
+
+  &__backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+
+    @media screen and (min-width: 768px) {
+      background-color: rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+    }
+  }
+
+  &__wrapper {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    overflow-y: hidden;
+  }
+
+  &__container {
+    display: flex;
+    min-height: 100%;
+    align-items: flex-end;
+    justify-content: center;
+
+    @media screen and (min-width: 768px) {
+      align-items: center;
+    }
+  }
+
+  &__content {
+    --opacity-closed: 0%;
+    --opacity-open: 100%;
+
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    background-color: #f6f8f8;
+
+    @media screen and (min-width: 768px) {
+      --scale-closed: 90%;
+      --scale-open: 100%;
+
+      padding: 30px 32px;
+      border-radius: 4px;
+    }
+
+    @media screen and (max-width: 767px) {
+      --y-closed: 32px;
+      --y-open: 0px;
+
+      padding: 32px 16px 32px;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+
+  &__title {
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 120%;
+    letter-spacing: 0.02em;
+    text-transform: capitalize;
+    color: #222424;
+  }
+
+  &__close {
+    position: relative;
+    bottom: 2px;
+    left: 5px;
+    margin-left: auto;
+    transition: color 350ms ease;
+
+    &:hover {
+      color: #777777;
+    }
+  }
+}

@@ -1,0 +1,40 @@
+body {
+  font-family: 'Anuphan', sans-serif;
+  color: #000;
+  background-color: #fff;
+  font-variant-numeric: lining-nums proportional-nums;
+
+  @supports not (font-variation-settings: 'wdth' 115) {
+    & {
+      font-family: 'Anuphan-Fallback', sans-serif;
+    }
+  }
+
+  &.modal-open {
+    overflow-y: hidden;
+  }
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 100vw;
+
+  @supports (height: 1svh) {
+    min-height: 100svh;
+  }
+}
+
+main {
+  position: relative; // for loaders
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 32px 0;
+  overflow-x: hidden;
+
+  @media screen and (max-width: 767px) {
+    padding: 0;
+  }
+}

@@ -1,0 +1,194 @@
+@use 'utils' as *;
+
+.heading {
+  margin-bottom: 40px;
+  font-weight: 500;
+  font-size: 40px;
+  line-height: 120%;
+}
+
+.list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  width: 100%;
+}
+
+.nft {
+  //max-width: 380px;
+  padding: 30px;
+  background: url(../../assets/bg.svg) center/100% 100% no-repeat;
+}
+
+.collection {
+  margin-bottom: 2px;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 120%;
+}
+
+.name {
+  margin-bottom: 10px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 120%;
+  color: #ffffff;
+}
+
+.media {
+  //height: 320px;
+  display: flex;
+  align-items: flex-end;
+  padding: 20px;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 2px;
+
+  aspect-ratio: 1/1;
+}
+
+.footer {
+  @include gap(16px, right);
+  flex: 1;
+  padding: 5px 5px 5px 15px;
+  display: flex;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.07);
+  backdrop-filter: blur(10px);
+  border-radius: 2px;
+  overflow: hidden;
+
+  .link {
+    font-size: 14px;
+  }
+}
+
+.owner {
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+  line-height: 120%;
+  overflow: hidden;
+
+  &Heading {
+    font-weight: 500;
+    font-size: 10px;
+  }
+
+  &Text {
+    @include textOverflow;
+    font-weight: 700;
+    font-size: 14px;
+    letter-spacing: 0.04em;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.leftButton,
+.rightButton {
+  @include circle(40px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #000000;
+  background-color: transparent;
+  transition: all 0.3s;
+
+  &:hover {
+    opacity: 0.5;
+  }
+}
+
+.rightButton {
+  transform: rotate(180deg);
+  margin-left: 20px;
+}
+
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 436px;
+  padding: 0 20px;
+  text-align: center;
+  background: url('../../assets/placeholder.svg') center/100% 100% no-repeat;
+  @include gap(18px);
+
+  @include lg {
+    background-size: 150% 100%;
+  }
+
+  @include sm {
+    background-size: 340% 100%;
+  }
+
+  &Heading {
+    font-weight: 500;
+    font-size: 28px;
+    line-height: 120%;
+  }
+
+  &Text {
+    max-width: 400px;
+    font-weight: 400;
+    font-size: 18px;
+    line-height: 140%;
+  }
+
+  &TextMax {
+    max-width: 994px;
+  }
+
+  &__actions {
+    display: grid;
+    grid-template-columns: 175px 175px;
+    justify-content: center;
+    width: 100%;
+    grid-gap: 16px;
+
+    @include sm {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
+.button {
+  margin-top: 16px;
+  padding: 16px 32px;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 18px;
+  letter-spacing: 0.03em;
+  background-color: #35ffd0;
+  border-radius: 2px;
+  transition: all 0.3s;
+
+  &:not(:disabled):hover {
+    background-color: #29c6a1;
+  }
+}
+
+.wrapper,
+.content {
+  display: grid;
+  align-items: center;
+}
+
+.background {
+  position: fixed;
+  top: 0;
+  left: 10%;
+  right: 0;
+  bottom: 10%;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  overflow: visible;
+}

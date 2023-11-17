@@ -1,0 +1,39 @@
+@use 'assets/styles';
+@use '@gear-js/ui/variables' as *;
+
+#root {
+  max-width: 1200px;
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 0 16px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: content-box;
+}
+
+#modal-root {
+  > div > div > div {
+    max-height: 50vh;
+    overflow-y: auto;
+  }
+}
+
+main {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  padding: 30px 0 60px;
+  position: relative; // for loaders
+}
+
+body {
+  background: $bgColor url(assets/images/bg.svg) center/cover no-repeat;
+}
+
+.link-text {
+  transition: opacity 150ms ease-in;
+
+  &:hover {
+    opacity: 0.5;
+  }
+}

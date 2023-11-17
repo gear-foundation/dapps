@@ -1,0 +1,51 @@
+@use '@/assets/styles/utils' as *;
+
+.map {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.block {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ffffff;
+  border: 1px solid #cfcfcf;
+  cursor: pointer;
+
+  opacity: 0.5;
+}
+
+.buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+
+  button,
+  button span {
+    width: 100%;
+  }
+}
+
+.shipBlock {
+  background: url('../../assets/images/ship.svg'), rgba(0, 255, 196, 0.7);
+}
+
+.hitShip {
+  background: rgba(217, 217, 217);
+}
+
+.deadShip {
+  background: rgba(255, 222, 222);
+}
