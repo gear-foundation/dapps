@@ -2,8 +2,6 @@ import { decodeAddress } from '@gear-js/api';
 import { useAccount, useAlert, useHandleCalculateGas, useSendMessage, withoutCommas } from '@gear-js/react-hooks';
 import { useCallback, useEffect, useMemo } from 'react';
 import { useAtom } from 'jotai';
-import { useMutation } from 'urql';
-import { socket } from 'utils';
 import metaMasterNFT from 'assets/master_nft.meta.txt';
 import { sleep, usePendingUI, useProgramMetadata, useReadStateFromApi } from 'hooks';
 import { useSearchParams } from 'react-router-dom';
