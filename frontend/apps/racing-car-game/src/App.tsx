@@ -19,6 +19,7 @@ import { LoginPage } from './pages/LoginPage';
 import { ApiLoader } from './components/ApiLoader';
 import { useGameState } from './features/Game/hooks';
 import { useAuth, useAuthSync } from './features/Auth/hooks';
+import { ADDRESS } from '@/consts';
 
 function AppComponent() {
   const { isApiReady } = useApi();
@@ -28,6 +29,15 @@ function AppComponent() {
   const { isAuthReady } = useAuth();
   const setCurrentGame = useSetAtom(CURRENT_GAME);
   const setIsCurrentRead = useSetAtom(IS_CURRENT_GAME_READ_ATOM);
+
+  useEffect(() => {
+    if (ADDRESS.CONTRACT) {
+      console.log('CONTRACT ADDRESS:');
+      console.log(ADDRESS.CONTRACT);
+      console.log('NODE:');
+      console.log(ADDRESS.NODE);
+    }
+  }, []);
 
   useEffect(() => {
     if (isAccountReady && account?.decodedAddress && isStateRead) {
