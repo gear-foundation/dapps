@@ -4,7 +4,7 @@ import { Button, buttonStyles } from '@gear-js/ui';
 import { Wallet } from 'features/wallet';
 import { useBattle } from 'features/battle/context';
 import { useBattleMessage } from 'features/battle/hooks';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { cn } from 'app/utils';
 import { BATTLE_ADDRESS } from 'features/battle/consts';
 import { useProgramMetadata } from 'app/hooks/api';
@@ -16,9 +16,14 @@ export const AccountComponent = () => {
   const calculateGas = useHandleCalculateGas(BATTLE_ADDRESS, meta);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setIsAdmin(false);
+    if (battle?.state === 'Registration') navigate('/');
+  };
   const handleMessage = useBattleMessage();
 
   const onSuccess = () => setIsPending(false);
