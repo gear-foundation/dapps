@@ -3,13 +3,14 @@
   "version": "1.0.1",
   "private": true,
   "scripts": {
-    "start": "yarn build:packages && react-app-rewired start",
-    "build": "yarn build:packages && react-app-rewired build",
+    "start": "yarn build:packages && yarn build:hooks && react-app-rewired start",
+    "build": "yarn build:packages && yarn build:hooks && react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
+    "@dapps-frontend/hooks": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@fireworks-js/react": "2.10.7",
     "@gear-js/api": "0.35.2",
@@ -28,7 +29,6 @@
     "@radix-ui/react-scroll-area": "1.0.4",
     "class-variance-authority": "^0.7.0",
     "clsx": "1.2.1",
-    "dayjs": "1.11.7",
     "framer-motion": "9.0.7",
     "jotai": "^2.4.3",
     "keen-slider": "6.8.5",

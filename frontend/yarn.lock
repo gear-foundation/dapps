@@ -1908,7 +1908,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dapps-frontend/hooks@workspace:packages/hooks":
+"@dapps-frontend/hooks@workspace:*, @dapps-frontend/hooks@workspace:packages/hooks":
   version: 0.0.0-use.local
   resolution: "@dapps-frontend/hooks@workspace:packages/hooks"
   dependencies:
@@ -20985,6 +20985,7 @@ __metadata:
   resolution: "tamagotchi-battle@workspace:apps/tamagotchi-battle"
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
+    "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@fireworks-js/react": "npm:2.10.7"
     "@gear-js/api": "npm:0.35.2"
@@ -21010,7 +21011,6 @@ __metadata:
     buffer: "npm:6.0.3"
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:1.2.1"
-    dayjs: "npm:1.11.7"
     eslint: "npm:8.44.0"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:17.0.0"
