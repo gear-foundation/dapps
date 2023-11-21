@@ -1,0 +1,25 @@
+@use '@/utils' as *;
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  max-width: 380px;
+  padding: 16px;
+  background-color: #00ffc412;
+  border-radius: 4px;
+  @include flex-gap(16px);
+}
+
+.balance {
+  @include flex-gap(8px);
+}
+
+.text {
+  display: flex;
+  align-items: center;
+  color: #00b387;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 140%;
+  @include flex-gap(8px);
+}

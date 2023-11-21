@@ -1,0 +1,37 @@
+{
+  "name": "@dapps-frontend/ui",
+  "version": "0.0.1",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "start": "vite dev -p 6006",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "peerDependencies": {
+    "@gear-js/react-hooks": "0.9.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "devDependencies": {
+    "@types/react": "18.2.33",
+    "@types/react-dom": "18.2.14",
+    "@typescript-eslint/eslint-plugin": "6.0.0",
+    "@typescript-eslint/parser": "6.0.0",
+    "@vitejs/plugin-react": "4.0.3",
+    "clsx": "2.0.0",
+    "eslint": "8.45.0",
+    "eslint-plugin-react-hooks": "4.6.0",
+    "eslint-plugin-react-refresh": "0.4.3",
+    "typescript": "5.0.2",
+    "vite": "4.4.5",
+    "vite-plugin-dts": "3.5.1",
+    "vite-plugin-svgr": "3.2.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "main": "dist/ui.js",
+  "types": "dist/index.d.ts"
+}

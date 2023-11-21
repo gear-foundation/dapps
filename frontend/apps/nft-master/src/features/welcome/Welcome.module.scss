@@ -1,0 +1,52 @@
+@use 'utils' as *;
+
+.container {
+  display: flex;
+  flex: 1;
+  //width: 100%;
+  //justify-content: center;
+  //align-content: center;
+  //min-height: 75vh;
+  @include lg {
+    padding-top: Min(30vh, 200px);
+  }
+}
+
+.welcome {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  max-width: 375px;
+
+  @include lg {
+    max-width: 100%;
+    align-items: center;
+    text-align: center;
+  }
+
+  &:not(:last-child) {
+    margin-bottom: 50px;
+  }
+}
+
+.heading {
+  margin-bottom: 24px;
+
+  @include lg {
+    margin-bottom: 16px;
+    font-size: 48px;
+    line-height: 58px;
+  }
+}
+
+.text {
+  margin-bottom: 48px;
+
+  @include lg {
+    max-width: 335px;
+    margin: 0 auto 24px;
+    font-size: 16px;
+  }
+}

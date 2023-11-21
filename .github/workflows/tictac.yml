@@ -5,9 +5,9 @@ on:
   push:
     branches: ['master', 'main', 'staging']
     paths:
-      - frontend/tic-tac-toe/**
+      - frontend/apps/tic-tac-toe/**
 
-concurrency: 
+concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
@@ -17,7 +17,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  KUBECTL_VERSION: "v1.22.17"
+  KUBECTL_VERSION: 'v1.22.17'
   KUBE_NAMESPACE: gear-dapps
   KUBE_DEPLOYMENT_PREFIX: tic-tac-toe
   REGISTRY: ghcr.io/${{ github.repository }}
@@ -70,15 +70,12 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: frontend/tic-tac-toe
-          file: frontend/tic-tac-toe/Dockerfile
+          file: frontend/apps/tic-tac-toe/Dockerfile
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
-            VITE_DEFAULT_NODES_URL=${{ secrets.VITE_DEFAULT_NODES_URL }}
-            VITE_GAME_ADDRESS=${{ secrets.VITE_GAME_ADDRESS }}
-            VITE_STAGING_NODES_URL=${{ secrets.VITE_STAGING_NODES_URL }}
+            VITE_CONTRACT_ADDRESS=${{ secrets.VITE_CONTRACT_ADDRESS_TIC_TAC }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

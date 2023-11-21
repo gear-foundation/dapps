@@ -5,9 +5,9 @@ on:
   push:
     branches: ['master', 'main', 'staging']
     paths:
-      - frontend/racing-car-game/**
+      - frontend/apps/racing-car-game/**
 
-concurrency: 
+concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
@@ -17,7 +17,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  KUBECTL_VERSION: "v1.22.17"
+  KUBECTL_VERSION: 'v1.22.17'
   KUBE_NAMESPACE: gear-dapps
   KUBE_DEPLOYMENT_PREFIX: dapps-racing
   REGISTRY: ghcr.io/${{ github.repository }}
@@ -70,15 +70,12 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: frontend/racing-car-game
-          file: frontend/racing-car-game/Dockerfile
+          file: frontend/apps/racing-car-game/Dockerfile
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
-            REACT_APP_CONTRACT_ADDRESS=${{ secrets.REACT_APP_CONTRACT_ADDRESS }}
-            REACT_APP_NODE=${{ secrets.REACT_APP_NODE }}
-            REACT_APP_DEFAULT_NODES_URL=${{ secrets.REACT_APP_DEFAULT_NODES_URL }}
-            REACT_APP_STAGING_NODES_URL=${{ secrets.REACT_APP_STAGING_NODES_URL }}
+            REACT_APP_CONTRACT_ADDRESS=${{ secrets.REACT_APP_CONTRACT_ADDRESS_RACING }}
+            REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

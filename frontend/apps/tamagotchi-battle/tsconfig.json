@@ -1,0 +1,29 @@
+{
+  "include": ["./src"],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "target": "ES2015",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "baseUrl": "./src",
+    "paths": {
+      "@/*": ["./src/*"]
+      //      "@/app/*": ["./src/app/*"],
+      //      "@/assets/*": ["./src/assets/*"],
+      //      "@/components/*": ["./src/components/*"]
+    }
+  },
+  "files": ["index.d.ts"]
+}
