@@ -66,9 +66,8 @@ export const CreateTamagotchiForm = () => {
 
   return (
     <form onSubmit={handleSubmit} className="flex items-start justify-center gap-6">
-      <div className="basis-[400px]">
-        <Input placeholder="Insert program ID" direction="y" {...getInputProps('programId')} />
-      </div>
+      <Input placeholder="Insert program ID" direction="y" {...getInputProps('programId')} />
+
       <div className="whitespace-nowrap">
         <Button
           text="Create Tamagotchi"
