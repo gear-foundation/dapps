@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useAtomValue } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import { useAccount, useAlert, withoutCommas } from '@gear-js/react-hooks';
 import { useForm, isNotEmpty } from '@mantine/form';
 import styles from './ProfileInfo.module.scss';
 import { FormValues } from './ProfileInfo.interfaces';
 import { cx, logger } from '@/utils';
-import { Button, DropzoneUploader, Input } from '@/ui';
+import { Button, Input } from '@/ui';
 import EditProfileIcon from '@/assets/icons/edit-profile-icon.svg';
 import SuccessIcon from '@/assets/icons/success-icon.svg';
 import CrossIcon from '@/assets/icons/cross-circle-icon.svg';
@@ -16,6 +16,9 @@ import { USERS_ATOM } from '@/atoms';
 import { useGetStreamMetadata } from '@/features/CreateStream/hooks';
 import { useCheckBalance, useHandleCalculateGas } from '@/hooks';
 import { ADDRESS } from '@/consts';
+import { IS_CREATING_ACCOUNT_ATOM } from '../../atoms';
+import { PictureDropzone } from '@/features/CreateStream/components/PictureDropzone';
+import picImage from '@/assets/icons/picture.png';
 
 function ProfileInfo() {
   const { account } = useAccount();
@@ -25,6 +28,7 @@ function ProfileInfo() {
   const sendMessage = useEditProfileMessage();
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [isEditingProfile, setIsEditingProfile] = useState<boolean>(false);
+  const [isCreatingAccount, setIsCreatingAccount] = useAtom(IS_CREATING_ACCOUNT_ATOM);
   const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, meta);
   const { checkBalance } = useCheckBalance();
 
@@ -54,11 +58,12 @@ function ProfileInfo() {
     setIsEditingProfile(false);
   };
 
-  const handleDropImg = (prev: string) => {
-    setFieldValue('imgLink', prev);
+  const handleDropImg = (prev: string[]) => {
+    setFieldValue('imgLink', prev[0]);
   };
 
   const handleSubmit = ({ name, surname, imgLink }: FormValues) => {
+    setIsCreatingAccount(true);
     const payload = {
       EditProfile: {
         name,
@@ -86,6 +91,7 @@ function ProfileInfo() {
               gasLimit,
               onError: () => {
                 logger(`Errror send message`);
+                setIsCreatingAccount(false);
               },
               onSuccess: (messageId) => {
                 logger(`sucess on ID: ${messageId}`);
@@ -102,6 +108,7 @@ function ProfileInfo() {
                       }
                     : prev,
                 );
+                setIsCreatingAccount(false);
               },
               onInBlock: (messageId) => {
                 logger('messageInBlock');
@@ -110,10 +117,12 @@ function ProfileInfo() {
             }),
           () => {
             logger(`Errror check balance`);
+            setIsCreatingAccount(false);
           },
         );
       })
       .catch((error) => {
+        setIsCreatingAccount(false);
         logger(error);
         alert.error('Gas calculation error');
       });
@@ -121,15 +130,13 @@ function ProfileInfo() {
 
   useEffect(() => {
     if (users && account?.decodedAddress) {
-      if (users[account.decodedAddress]) {
-        setUserInfo(users[account.decodedAddress]);
-      }
+      setUserInfo(users[account.decodedAddress] || null);
     }
   }, [users, account?.decodedAddress]);
 
   return (
     <div className={cx(styles['profile-info'])}>
-      {userInfo && !isEditingProfile ? (
+      {!!userInfo && !isEditingProfile ? (
         <>
           <img src={userInfo?.imgLink || defaultUserImg} alt="profile" className={cx(styles['profile-info-image'])} />
           <p className={cx(styles['profile-info-name'])}>
@@ -139,15 +146,24 @@ function ProfileInfo() {
       ) : (
         <form onSubmit={onSubmit(handleSubmit)}>
           <div className={cx(styles['dropzone-wrapper'])}>
-            <DropzoneUploader text="" onDropFile={handleDropImg} previewLink={getInputProps('imgLink').value} />
+            <PictureDropzone
+              onDropFile={handleDropImg}
+              previewLinks={getInputProps('imgLink').value ? [getInputProps('imgLink').value] : undefined}
+              content={
+                <div className={cx(styles.label)}>
+                  <img src={picImage} alt="upload" />
+                  <h5 className={cx(styles['label-title'])}>Upload photo</h5>
+                </div>
+              }
+            />
           </div>
           <div className={cx(styles['profile-info-form-fields'])}>
             <div className={cx(styles['form-item'])}>
-              <Input placeholder="Enter name" {...getInputProps('name')} />
+              <Input placeholder="Enter name" disabled={isCreatingAccount} {...getInputProps('name')} />
               <span className={cx(styles['field-error'])}>{errors.name}</span>
             </div>
             <div className={cx(styles['form-item'])}>
-              <Input placeholder="Enter surname" {...getInputProps('surname')} />
+              <Input placeholder="Enter surname" disabled={isCreatingAccount} {...getInputProps('surname')} />
               <span className={cx(styles['field-error'])}>{errors.surname}</span>
             </div>
           </div>
@@ -158,6 +174,7 @@ function ProfileInfo() {
               label="Save"
               icon={SuccessIcon}
               type="submit"
+              isLoading={isCreatingAccount}
               className={cx(styles['save-button'])}
             />
             <Button
@@ -167,6 +184,7 @@ function ProfileInfo() {
               icon={CrossIcon}
               onClick={handleCancelEditing}
               className={cx(styles['save-button'])}
+              disabled={isCreatingAccount}
             />
           </div>
         </form>

@@ -2,7 +2,7 @@ import { useCallback } from 'react';
 import moment, { Moment } from 'moment';
 import { useForm, isNotEmpty } from '@mantine/form';
 import { useAlert, withoutCommas } from '@gear-js/react-hooks';
-import { Button, Calendar, DropzoneUploader, Input, InputArea } from '@/ui';
+import { Button, Calendar, Input, InputArea } from '@/ui';
 import styles from './LayoutCreateForm.module.scss';
 import { cx, logger } from '@/utils';
 import { FormValues, LayoutCreateFormProps, SectionProps } from './LayoutCreateForm.interface';
@@ -12,6 +12,7 @@ import CrossSVG from '@/assets/icons/cross-circle-icon.svg';
 import { useCreateStreamSendMessage } from '../../hooks';
 import { useCheckBalance, useHandleCalculateGas } from '@/hooks';
 import { ADDRESS } from '@/consts';
+import { PictureDropzone } from '../PictureDropzone';
 
 function Section({ title, children }: SectionProps) {
   return (
@@ -118,8 +119,8 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
       });
   };
 
-  const handleDropImg = (preview: string) => {
-    setFieldValue('imgLink', preview);
+  const handleDropImg = (preview: string[]) => {
+    setFieldValue('imgLink', preview[0]);
   };
 
   const handleTimePickerDisabledHours = useCallback(() => {
@@ -151,7 +152,7 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
         <div className={cx(styles.content)}>
           <div className={cx(styles.left)}>
             <div className={cx(styles['dropzone-wrapper'])}>
-              <DropzoneUploader onDropFile={handleDropImg} />
+              <PictureDropzone onDropFile={handleDropImg} />
             </div>
             <Section title="Stream info">
               <div className={cx(styles.inputs)}>

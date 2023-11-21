@@ -76,3 +76,19 @@
     flex-direction: column;
     gap: 10px;
 }
+
+.label {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    height: 100%;
+    width: 100%;
+
+    &-title {
+        font-size: 16px;
+        font-weight: 400;
+        color: theme-var($text-primary);
+    }
+}

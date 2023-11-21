@@ -1,42 +1,52 @@
 import { useDropzone } from 'react-dropzone';
-import { useCallback, useEffect, useState } from 'react';
+import { MouseEvent, useEffect, useState } from 'react';
 import { cx } from '@/utils';
 import picImage from '@/assets/icons/picture.png';
 import closeIcon from '@/assets/icons/cross-icon.svg';
 import styles from './DropzoneUploader.module.scss';
 import { Button } from '../Button';
 import { DropzoneUploaderProps } from './DropzoneUploader.interface';
-import { ADDRESS } from '@/consts';
 
-function DropzoneUploader({ text, previewLink, onDropFile }: DropzoneUploaderProps) {
-  const uploadUrl = ADDRESS.IPFS_NODE;
-
-  const [preview, setPreview] = useState(previewLink || '');
+function DropzoneUploader({
+  content,
+  uploadConfig,
+  onDropFile,
+  className,
+  multi,
+  previewLinks,
+}: DropzoneUploaderProps) {
+  // const uploadUrl = 'http://127.0.0.1:5001/api/v0/add';
+  const uploadUrl = `${uploadConfig.address}/add`;
+  const [preview, setPreview] = useState<string[]>(previewLinks || []);
 
   useEffect(() => {
-    if (preview) {
-      onDropFile(preview);
-    }
-  }, [preview, onDropFile]);
+    onDropFile(preview);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [preview]);
 
-  const onDrop = useCallback(
-    (acceptedFiles: File[]) => {
-      const formData = new FormData();
-      formData.append('file', acceptedFiles[0]);
+  const onDrop = (acceptedFiles: File[]) => {
+    const formData = new FormData();
+    formData.append('file', acceptedFiles[0]);
 
-      fetch(uploadUrl, {
-        method: 'POST',
-        body: formData,
-      })
-        .then((res) => res.json())
-        .then(({ Hash }) => setPreview(`${ADDRESS.IPFS_GATEWAY}/${Hash}`));
-    },
-    [uploadUrl],
-  );
+    fetch(uploadUrl, {
+      method: 'POST',
+      body: formData,
+    })
+      .then((res) => res.json())
+      .then(({ Hash }) => {
+        const link = `${uploadConfig.gateway}/`;
+
+        if (multi) {
+          setPreview((prev) => [...prev, `${link}${Hash}`]);
+        } else {
+          setPreview([`${link}${Hash}`]);
+        }
+      });
+  };
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    maxFiles: 1,
+    maxFiles: multi ? undefined : 1,
     accept: {
       'image/png': [],
       'image/jpg': [],
@@ -45,43 +55,73 @@ function DropzoneUploader({ text, previewLink, onDropFile }: DropzoneUploaderPro
     minSize: 760,
   });
 
-  const handleRemovePreview = () => {
-    setPreview('');
+  const handleRemovePreview = (e: MouseEvent<HTMLButtonElement>, link?: string) => {
+    e.stopPropagation();
+    if (multi) {
+      setPreview((prev) => prev.filter((item) => item !== link));
+    } else {
+      setPreview([]);
+    }
   };
 
   return (
-    <div {...getRootProps()} className={cx(styles.dropzone)}>
-      {!preview ? (
-        <>
-          <input {...getInputProps()} />
-          {isDragActive ? (
-            <div className={cx(styles.label)}>
-              <p className={cx(styles['label-title'])}>Drop the files here ...</p>
+    <>
+      <div {...getRootProps()} className={cx(styles.dropzone, className || '')}>
+        {!preview.length || multi ? (
+          <>
+            <input {...getInputProps()} />
+            {isDragActive ? (
+              <div className={cx(styles.label)}>
+                <p className={cx(styles['label-title'])}>Drop the files here ...</p>
+              </div>
+            ) : (
+              <>
+                {!content ? (
+                  <div className={cx(styles.label)}>
+                    <img src={picImage} alt="upload" />
+                    <h5 className={cx(styles['label-title'])}>Upload photo</h5>
+                    <p className={cx(styles['label-description'])}>
+                      Image not less than 1280x760 in JPG, JPEG or PNG format, up to 1 MB in size
+                    </p>
+                  </div>
+                ) : (
+                  <>{content}</>
+                )}
+              </>
+            )}
+          </>
+        ) : null}
+        {!!preview.length && !multi && (
+          <div className={cx(styles['uploaded-pic-wrapper'])}>
+            <img src={preview[0]} alt="preview" className={cx(styles['uploaded-pic'])} />
+            <Button
+              icon={closeIcon}
+              variant="text"
+              className={cx(styles['close-icon'])}
+              label=""
+              onClick={handleRemovePreview}
+            />
+          </div>
+        )}
+      </div>
+
+      {!!preview.length && multi && (
+        <div className={cx(styles['multi-previews-wrapper'])}>
+          {preview.map((link) => (
+            <div key={link} className={cx(styles['uploaded-pic-wrapper-multi'])}>
+              <img src={link} alt="preview" className={cx(styles['uploaded-pic-multi'])} />
+              <Button
+                icon={closeIcon}
+                variant="text"
+                className={cx(styles['close-icon-multi'])}
+                label=""
+                onClick={(e) => handleRemovePreview(e, link)}
+              />
             </div>
-          ) : (
-            <div className={cx(styles.label)}>
-              <img src={picImage} alt="upload" />
-              <h5 className={cx(styles['label-title'])}>Upload photo</h5>
-              <p className={cx(styles['label-description'])}>
-                {text !== undefined || 'Image not less than 1280x760 in JPG, JPEG or PNG format, up to 1 MB in size'}
-              </p>
-            </div>
-          )}
-        </>
-      ) : null}
-      {preview && (
-        <div className={cx(styles['uploaded-pic-wrapper'])}>
-          <img src={preview} alt="preview" className={cx(styles['uploaded-pic'])} />
-          <Button
-            icon={closeIcon}
-            variant="text"
-            className={cx(styles['close-icon'])}
-            label=""
-            onClick={handleRemovePreview}
-          />
+          ))}
         </div>
       )}
-    </div>
+    </>
   );
 }
 

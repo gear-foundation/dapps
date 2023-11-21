@@ -14,7 +14,7 @@ import {
 } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
 import { ADDRESS, LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
-import { Handler, ProgramStateRes } from '@/types';
+import { Handler, ProgramState, ProgramStateRes } from '@/types';
 import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
 import { useAccountAvailableBalance } from './features/Wallet/hooks';
 import { useGetStreamMetadata } from './features/CreateStream/hooks';
@@ -109,17 +109,23 @@ function useProgramState() {
   const { meta } = useGetStreamMetadata();
   const { api } = useApi();
   const programId = ADDRESS.CONTRACT;
+  const [commonState, setCommonState] = useState<ProgramState | null>(null);
+  const [isStateRead, setIsStateRead] = useState<boolean>(false);
   // const state: ProgramStateRes = useReadFullState(ADDRESS.CONTRACT, meta, '0x');
 
   useEffect(() => {
     if (!api || !meta || !programId) return;
+
     api.programState
       .read({ programId, payload: '0x' }, meta)
       .then((codec) => codec.toHuman())
-      .then((state) => console.log(state));
+      .then((state) => {
+        setCommonState(state as any);
+        setIsStateRead(true);
+      });
   }, [api, meta, programId]);
 
-  const state = { state: { streams: {}, users: {} }, isStateRead: true };
+  const state = { state: commonState, isStateRead };
 
   return state;
 }
