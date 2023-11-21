@@ -1,3 +1,3 @@
-import { Footer, Container } from './components';
+import { Footer, Container, StartDisclaimer } from './components';
 
-export { Footer, Container };
+export { Footer, Container, StartDisclaimer };
