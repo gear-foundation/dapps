@@ -124,17 +124,17 @@ fn check_two_times() {
     );
 
     failure_register_player(&game, USERS[0], 0);
-    check_register_player(&game, USERS[0], 500);
-    check_register_player(&game, USERS[1], 500);
-    check_register_player(&game, USERS[2], 500);
-    check_register_player(&game, USERS[3], 500);
+    check_register_player(&game, USERS[0], 30_000_000_000_000);
+    check_register_player(&game, USERS[1], 30_000_000_000_000);
+    check_register_player(&game, USERS[2], 30_000_000_000_000);
+    check_register_player(&game, USERS[3], 30_000_000_000_000);
 }
 
 #[test]
 fn check_twice_in_a_row() {
     let sys = System::new();
     let game = common_init_and_register(&sys);
-    sys.mint_to(USERS[3] + 1, 1_000_000_000);
+    sys.mint_to(USERS[3] + 1, 100_000_000_000_000);
     check_change_next_game_config(
         &game,
         USERS[0],
@@ -166,11 +166,11 @@ fn check_twice_in_a_row() {
     );
 
     failure_register_player(&game, USERS[0], 0);
-    check_register_player(&game, USERS[0], 500);
-    check_register_player(&game, USERS[1], 500);
-    check_register_player(&game, USERS[2], 500);
-    check_register_player(&game, USERS[3], 500);
-    failure_register_player(&game, USERS[3] + 1, 500);
+    check_register_player(&game, USERS[0], 30_000_000_000_000);
+    check_register_player(&game, USERS[1], 30_000_000_000_000);
+    check_register_player(&game, USERS[2], 30_000_000_000_000);
+    check_register_player(&game, USERS[3], 30_000_000_000_000);
+    failure_register_player(&game, USERS[3] + 1, 30_000_000_000_000);
 }
 
 #[test]

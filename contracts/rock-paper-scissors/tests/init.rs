@@ -17,7 +17,7 @@ pub fn init(
     USERS
         .iter()
         .copied()
-        .for_each(|id| sys.mint_to(id, 1_000_000_000));
+        .for_each(|id| sys.mint_to(id, 100_000_000_000_000));
 
     let program = Program::current_opt(sys);
     let result = program.send(

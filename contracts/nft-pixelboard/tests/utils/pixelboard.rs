@@ -2,8 +2,10 @@ use super::common::{InitResult, Program, RunResult};
 use super::{FOREIGN_USER, OWNER};
 use gear_lib_old::non_fungible_token::token::TokenMetadata;
 use gstd::ActorId;
-use gtest::{Program as InnerProgram, System, EXISTENTIAL_DEPOSIT};
+use gtest::{Program as InnerProgram, System};
 use nft_pixelboard_io::*;
+
+pub const EXISTENTIAL_DEPOSIT: u128 = 10_000_000_000_000;
 
 type NFTPixelboardRunResult<T> = RunResult<T, NFTPixelboardEvent, NFTPixelboardError>;
 

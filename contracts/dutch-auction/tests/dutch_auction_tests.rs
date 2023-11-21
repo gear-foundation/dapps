@@ -14,13 +14,13 @@ fn buy() {
 
     let nft_program = sys.get_program(2);
     let token_id: u64 = 0;
-    let result = auction.send_with_value(USERS[1], Action::Buy, 1_000_000_000);
+    let result = auction.send_with_value(USERS[1], Action::Buy, 1_000_000_000_000_000);
 
     println!("{:?}", result.decoded_log::<Result<Event, Error>>());
     assert!(result.contains(&(
         USERS[1],
         Ok::<Event, Error>(Event::Bought {
-            price: 1_000_000_000,
+            price: 1_000_000_000_000_000,
         })
         .encode()
     )));
@@ -43,8 +43,8 @@ fn buy() {
     let buyer_balance = sys.balance_of(USERS[1]);
     let seller_balance = sys.balance_of(USERS[0]);
 
-    assert_eq!(buyer_balance, 0);
-    assert_eq!(seller_balance, 2_000_000_000);
+    assert_eq!(buyer_balance, 9_000_000_000_000_000);
+    assert_eq!(seller_balance, 11_000_000_000_000_000);
 }
 
 #[test]
@@ -53,23 +53,27 @@ fn buy_later_with_lower_price() {
 
     let auction = init(&sys);
     sys.spend_blocks(100_000);
-    let result = auction.send_with_value(USERS[1], Action::Buy, 900_000_000);
+    println!("BALANCE: {:?}", sys.balance_of(USERS[1]));
+    let result = auction.send_with_value(USERS[1], Action::Buy, 999_999_900_000_000);
 
     assert!(result.contains(&(
         USERS[1],
-        Ok::<Event, Error>(Event::Bought { price: 900_000_000 }).encode()
+        Ok::<Event, Error>(Event::Bought {
+            price: 999_999_900_000_000,
+        })
+        .encode()
     )));
 
     sys.claim_value_from_mailbox(USERS[0]);
-
+    println!("BALANCE: {:?}", sys.balance_of(USERS[1]));
     auction.send_with_value(USERS[0], Action::Reward, 0);
     sys.claim_value_from_mailbox(USERS[0]);
 
     let buyer_balance = sys.balance_of(USERS[1]);
     let seller_balance = sys.balance_of(USERS[0]);
 
-    assert_eq!(buyer_balance, 100_000_000);
-    assert_eq!(seller_balance, 1_900_000_000);
+    assert_eq!(buyer_balance, 9_000_000_100_000_000);
+    assert_eq!(seller_balance, 10_999_999_900_000_000);
 }
 
 #[test]
@@ -77,8 +81,8 @@ fn buy_two_times() {
     let sys = System::new();
 
     let auction = init(&sys);
-    auction.send_with_value(USERS[1], Action::Buy, 1_000_000_000);
-    let result = auction.send_with_value(USERS[2], Action::Buy, 1_000_000_000);
+    auction.send_with_value(USERS[1], Action::Buy, 1_000_000_000_000_000);
+    let result = auction.send_with_value(USERS[2], Action::Buy, 1_000_000_000_000_000);
     println!("{:?}", result.decoded_log::<Result<Event, Error>>());
     assert!(result.contains(&(
         USERS[2],
@@ -92,7 +96,7 @@ fn buy_too_late() {
 
     let auction = init(&sys);
     sys.spend_blocks(DURATION);
-    let result = auction.send_with_value(USERS[1], Action::Buy, 1_000_000_000);
+    let result = auction.send_with_value(USERS[1], Action::Buy, 100_000_000_000_000);
 
     assert!(result.contains(&(
         USERS[1],
@@ -105,7 +109,7 @@ fn buy_with_less_money() {
     let sys = System::new();
 
     let auction = init(&sys);
-    let result = auction.send_with_value(USERS[1], Action::Buy, 999_000_000);
+    let result = auction.send_with_value(USERS[1], Action::Buy, 999_000_000_000_000);
 
     assert!(result.contains(&(
         USERS[1],
@@ -119,7 +123,7 @@ fn create_auction_twice_in_a_row() {
 
     let auction = init(&sys);
     init_nft(&sys, USERS[1]);
-    let result = update_auction(&auction, USERS[1], 3, 999_000_000);
+    let result = update_auction(&auction, USERS[1], 3, 999_000_000_000_000);
 
     assert!(result.contains(&(
         USERS[1],
@@ -135,7 +139,7 @@ fn create_auction_twice_after_time_and_stop() {
     sys.spend_blocks(DURATION);
     let owner_user = USERS[0];
     init_nft(&sys, USERS[1]);
-    let result = update_auction(&auction, USERS[1], 3, 999_000_000);
+    let result = update_auction(&auction, USERS[1], 3, 999_000_000_000_000);
     println!("{:?}", result.decoded_log::<Result<Event, Error>>());
 
     let result = auction.send(owner_user, Action::ForceStop);

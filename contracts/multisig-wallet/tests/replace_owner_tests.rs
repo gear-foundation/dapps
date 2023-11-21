@@ -9,14 +9,14 @@ fn common_init<'a>(sys: &'a System, users: &[u64], required: u32) -> Program<'a>
 
     let wallet = Program::current_opt(sys);
 
-    sys.mint_to(USERS[0], 1_000_000_000);
+    sys.mint_to(USERS[0], 10_000_000_000_000);
     wallet.send_with_value(
         USERS[0],
         MWInitConfig {
             owners: users.iter().copied().map(|x| x.into()).collect(),
             required,
         },
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     wallet
@@ -71,7 +71,7 @@ fn send_directly() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..2], 1);
 
-    sys.mint_to(USERS[0], 1_000_000_000);
+    sys.mint_to(USERS[0], 10_000_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::ReplaceOwner {
@@ -79,7 +79,7 @@ fn send_directly() {
             new_owner: USERS[2].into(),
         }
         .encode(),
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     assert!(res.main_failed());
@@ -221,7 +221,7 @@ fn remove_owner_then_replace() {
         MWAction::SubmitTransaction {
             destination: USERS[3].into(),
             data: vec![],
-            value: 1000,
+            value: 10_000_000_000_000,
             description: None,
         },
     );
@@ -281,7 +281,7 @@ fn add_owner_then_replace() {
         MWAction::SubmitTransaction {
             destination: USERS[2].into(),
             data: vec![],
-            value: 1000,
+            value: 10_000_000_000_000,
             description: None,
         },
     );
