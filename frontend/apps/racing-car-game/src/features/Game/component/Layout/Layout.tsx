@@ -1,6 +1,6 @@
 import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue } from 'jotai';
 import isEqual from 'lodash.isequal';
 import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { Bytes } from '@polkadot/types';
@@ -15,7 +15,7 @@ import { Button } from '@/ui';
 import accelerateSVG from '@/assets/icons/accelerate-icon.svg';
 import shootSVG from '@/assets/icons/shoot-icon.svg';
 import { ReactComponent as GearLogoIcon } from '@/assets/icons/gear-logo-icon.svg';
-import { CURRENT_GAME, IS_SUBSCRIBED_ATOM } from '@/atoms';
+import { CURRENT_GAME, IS_CURRENT_GAME_READ_ATOM, IS_SUBSCRIBED_ATOM } from '@/atoms';
 import { usePlayerMoveMessage, useStartGameMessage } from '../../hooks';
 import { Loader } from '@/components';
 import { MessageDetails, RepliesQueue, UserMessage, WinStatus } from './Layout.interface';
@@ -33,6 +33,7 @@ import {
 
 function LayoutComponent() {
   const [currentGame, setCurrentGame] = useAtom(CURRENT_GAME);
+  const isCurrentGameRead = useAtomValue(IS_CURRENT_GAME_READ_ATOM);
   const [isPlayerAction, setIsPlayerAction] = useState<boolean>(true);
   const [isLoading, setIsLoading] = useAtom(IS_STARTING_NEW_GAME_ATOM);
   const [isRoadLoaded, setIsRoadLoaded] = useState(false);
@@ -252,7 +253,7 @@ function LayoutComponent() {
 
   const handleStartNewGame = useCallback(
     (startManually?: boolean) => {
-      if (meta && (!currentGame || startManually)) {
+      if (meta && isCurrentGameRead && (!currentGame || startManually)) {
         const payload = {
           StartGame: null,
         };
