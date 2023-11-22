@@ -1,12 +1,11 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import TagManager from 'react-gtm-module';
 import { initErrorTracking, logPublicEnvs, initAnalytics } from '@dapps-frontend/error-tracking';
 import 'keen-slider/keen-slider.min.css';
 import { App } from './app';
 
 
-initAnalytics()
+initAnalytics();
 initErrorTracking();
 logPublicEnvs();
 

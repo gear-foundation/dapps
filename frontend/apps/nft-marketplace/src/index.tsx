@@ -6,7 +6,7 @@ import { App } from './App';
 
 initErrorTracking();
 logPublicEnvs({ marketplaceContract: ADDRESS.MARKETPLACE_CONTRACT, nftContract: ADDRESS.NFT_CONTRACT });
-initAnalytics()
+initAnalytics();
 
 const container = document.getElementById('root');
 const root = createRoot(container as HTMLElement);
