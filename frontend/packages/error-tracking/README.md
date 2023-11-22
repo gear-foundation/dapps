@@ -123,3 +123,41 @@ In case of custom variable names, function accepts object:
 ```ts
 logPublicEnvs({ marketplaceContractAddress });
 ```
+
+## Analytics
+
+### Configure
+
+Specify Google Analytics environment variable:
+
+```sh
+REACT_APP_GTM_ID=
+```
+
+or
+
+```sh
+VITE_GTM_ID=
+```
+
+### Use:
+
+In the root of your application, call `initAnalytics` function:
+
+```jsx
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
+import { initAnalytics } from '@dapps-frontend/error-tracking';
+import { App } from './App';
+
+initAnalytics();
+
+const container = document.getElementById('root');
+const root = createRoot(container as HTMLElement);
+
+root.render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
+```
