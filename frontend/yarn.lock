@@ -1901,6 +1901,7 @@ __metadata:
   resolution: "@dapps-frontend/error-tracking@workspace:packages/error-tracking"
   dependencies:
     "@sentry/react": "npm:7.79.0"
+    react-gtm-module: "npm:2.0.11"
     typescript: "npm:5.2.2"
   peerDependencies:
     react: 18.2.0

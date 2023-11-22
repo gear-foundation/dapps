@@ -1,9 +1,10 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { initErrorTracking, logPublicEnvs } from '@dapps-frontend/error-tracking';
+import { initErrorTracking, logPublicEnvs, InitializeGoogleAnalytics } from '@dapps-frontend/error-tracking';
 import { ADDRESS } from 'consts';
 import { App } from './App';
 
+InitializeGoogleAnalytics();
 initErrorTracking();
 logPublicEnvs({ ftContract: ADDRESS.FT_CONTRACT });
 
