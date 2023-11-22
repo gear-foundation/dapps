@@ -128,7 +128,7 @@ logPublicEnvs({ marketplaceContractAddress });
 
 ### Configure
 
-Specify Sentry environment variables:
+Specify Google Analytics environment variable:
 
 ```sh
 REACT_APP_GTM_ID=
