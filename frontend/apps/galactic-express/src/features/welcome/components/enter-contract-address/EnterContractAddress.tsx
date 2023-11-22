@@ -1,11 +1,11 @@
 import { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 import { Button, Input } from '@gear-js/ui';
+import { StartDisclaimer } from '@dapps-frontend/ui';
 import { cx } from 'utils';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { CURRENT_CONTRACT_ADDRESS_ATOM, IS_CONTRACT_ADDRESS_INITIALIZED_ATOM } from 'atoms';
 import { useNewSessionMessage } from 'features/session/hooks';
 import styles from './EnterContractAddress.module.scss';
-import { GetStarted } from '../get-started';
 
 export interface ContractFormValues {
   [key: string]: string;
@@ -86,7 +86,7 @@ function EnterContractAddress({ doesSessionExist, isUserAdmin, isStateComing }: 
         <Button type="submit" text="Continue" className={styles.button} size="medium" disabled={!formValues.address} />
       </form>
 
-      <GetStarted />
+      <StartDisclaimer fileName="galactic_express" wikiPath="Gaming/galactic-express" />
     </div>
   );
 }
