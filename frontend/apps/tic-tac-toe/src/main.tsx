@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import TagManager from 'react-gtm-module';
-import { initErrorTracking, logPublicEnvs, InitializeGoogleAnalytics } from '@dapps-frontend/error-tracking';
+import { initErrorTracking, logPublicEnvs, initAnalytics } from '@dapps-frontend/error-tracking';
 import { App } from './app';
 
-InitializeGoogleAnalytics()
+initAnalytics()
 initErrorTracking();
 logPublicEnvs();
 

@@ -1,6 +1,6 @@
 import { initErrorTracking, ErrorTrackingRoutes, ErrorBoundary, withErrorBoundary } from './error-tracking';
 import { logPublicEnvs } from './public-env-logger';
-import { InitializeGoogleAnalytics } from './initialize-google-analytics';
+import { initAnalytics } from './initialize-google-analytics';
 
 export {
   initErrorTracking,
@@ -8,5 +8,5 @@ export {
   ErrorBoundary,
   withErrorBoundary,
   logPublicEnvs,
-  InitializeGoogleAnalytics,
+  initAnalytics,
 };
