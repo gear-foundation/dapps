@@ -1,6 +1,5 @@
 import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import { useSetAtom } from 'jotai';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { AccountPage, CreateStreamPage, MainPage, StreamPage } from '@/pages';
 import { Header, Footer } from '@/components';
@@ -13,7 +12,6 @@ import { Loader } from './components/Loader';
 import styles from './App.module.scss';
 import 'babel-polyfill';
 import { useProgramState } from './hooks';
-import { STREAM_TEASERS_ATOM, USERS_ATOM } from './atoms';
 import { useCreateStreamMetadata, useGetStreamMetadata } from './features/CreateStream/hooks';
 import { ADDRESS } from './consts';
 import { useAccountAvailableBalanceSync } from './features/Wallet/hooks';
@@ -23,18 +21,8 @@ function AppComponent() {
   useAccountAvailableBalanceSync();
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
-  const { state, isStateRead } = useProgramState();
+  const { isStateRead } = useProgramState();
   const { isMeta } = useGetStreamMetadata();
-
-  const setStreamTeasers = useSetAtom(STREAM_TEASERS_ATOM);
-  const setUsers = useSetAtom(USERS_ATOM);
-
-  useEffect(() => {
-    if (state && isStateRead) {
-      setStreamTeasers(state.streams);
-      setUsers(state.users);
-    }
-  }, [state, isStateRead, setStreamTeasers, setUsers]);
 
   const isAppReady = isApiReady && isAccountReady && isStateRead && isMeta;
 

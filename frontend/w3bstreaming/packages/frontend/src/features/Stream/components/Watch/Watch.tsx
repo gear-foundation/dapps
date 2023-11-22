@@ -1,6 +1,6 @@
 import { MutableRefObject, useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router';
-import { web3FromAddress } from '@polkadot/extension-dapp';
+import { web3Enable, web3FromAddress } from '@polkadot/extension-dapp';
 import { SignerResult } from '@polkadot/api/types';
 import { stringToHex } from '@polkadot/util';
 import { useAccount } from '@gear-js/react-hooks';
@@ -126,6 +126,7 @@ function Watch({ socket, streamId }: WatchProps) {
   useEffect(() => {
     if (account?.address && !publicKey) {
       const { address } = account;
+      web3Enable('streaming');
       web3FromAddress(address)
         .then(({ signer }) => {
           if (!signer.signRaw) {
@@ -134,7 +135,8 @@ function Watch({ socket, streamId }: WatchProps) {
 
           return signer.signRaw({ address, data: stringToHex(address), type: 'bytes' });
         })
-        .then((res) => setPublicKey(res));
+        .then((res) => setPublicKey(res))
+        .catch(() => console.log('error'));
     }
   }, [account, account?.address, publicKey]);
 

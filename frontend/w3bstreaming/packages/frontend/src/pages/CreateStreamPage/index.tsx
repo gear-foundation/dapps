@@ -1,16 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useAtomValue } from 'jotai';
 import { useAccount } from '@gear-js/react-hooks';
 import { CreateStreamRestrictModal } from '@/features/Auth/components';
 import { LayoutCreateForm } from '@/features/CreateStream/components/LayoutCreateForm';
 import { useGetStreamMetadata } from '@/features/CreateStream/hooks';
-import { USERS_ATOM } from '@/atoms';
 import { Loader } from '@/components';
+import { useProgramState } from '@/hooks';
 
 function CreateStreamPage() {
   const { account } = useAccount();
-  const users = useAtomValue(USERS_ATOM);
+  const {
+    state: { users },
+  } = useProgramState();
   const navigate = useNavigate();
   const [isModal, setIsModal] = useState<boolean>(false);
   const { meta, isMeta } = useGetStreamMetadata();

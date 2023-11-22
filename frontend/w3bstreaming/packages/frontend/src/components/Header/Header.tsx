@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { useSetAtom } from 'jotai';
 import { useLocation } from 'react-router-dom';
 import { Button, Link } from '@ui';
 import { useAccount } from '@gear-js/react-hooks';
@@ -8,8 +7,6 @@ import { cx } from '@/utils';
 import styles from './Header.module.scss';
 import logo from '@/assets/icons/logo.png';
 import { HeaderProps } from './Header.interfaces';
-import { STREAM_TEASERS_ATOM } from '@/atoms';
-import { useStreamTeasersState } from '@/features/StreamTeasers/hooks';
 import { useMediaQuery } from '@/hooks';
 import menuIcon from '@/assets/icons/burger-menu-icon.svg';
 import { BurgerMenu } from '../BurgerMenu/BurgerMenu';
@@ -18,21 +15,12 @@ function Header({ menu }: HeaderProps) {
   const location = useLocation();
   const { account } = useAccount();
   const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
-  const setStreamTeasers = useSetAtom(STREAM_TEASERS_ATOM);
   const isMobile = useMediaQuery(600);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-
-  const { streamTeasers } = useStreamTeasersState();
 
   const burgerMenuHandler = () => {
     setIsMobileMenuOpen(false);
   };
-
-  useEffect(() => {
-    if (streamTeasers) {
-      setStreamTeasers(streamTeasers);
-    }
-  }, [streamTeasers, setStreamTeasers]);
 
   useEffect(() => {
     if (isMobileMenuOpen && !isMobile) {

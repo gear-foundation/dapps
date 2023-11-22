@@ -10,7 +10,7 @@ import { SubscribeModalProps } from './SubscribeModal.interface';
 import { useSubscribeToStreamMessage } from '../../hooks';
 import styles from './SubscribeModal.module.scss';
 import { useGetStreamMetadata } from '@/features/CreateStream/hooks';
-import { useCheckBalance, useHandleCalculateGas } from '@/hooks';
+import { useCheckBalance, useHandleCalculateGas, useProgramState } from '@/hooks';
 import { ADDRESS } from '@/consts';
 
 function SubscribeModal({ speakerId, type, onClose }: SubscribeModalProps) {
@@ -19,30 +19,29 @@ function SubscribeModal({ speakerId, type, onClose }: SubscribeModalProps) {
   const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, meta);
   const { checkBalance } = useCheckBalance();
   const alert = useAlert();
+  const { updateState } = useProgramState();
 
   const handleCancelModal = () => {
     onClose();
   };
 
-  const handleUnsubscribe = () => {
+  const handleSubscribe = (action: 'sub' | 'unsub') => {
     if (speakerId) {
-      const payload = {
-        Unsubscribe: {
-          account_id: speakerId,
-        },
-      };
-
-      handleCancelModal();
-    }
-  };
-
-  const handleSubscribe = () => {
-    if (speakerId) {
-      const payload = {
-        Subscribe: {
-          account_id: speakerId,
-        },
-      };
+      if (action === 'unsub') {
+        return;
+      }
+      const payload =
+        action === 'sub'
+          ? {
+              Subscribe: {
+                account_id: speakerId,
+              },
+            }
+          : {
+              Unsubscribe: {
+                account_id: speakerId,
+              },
+            };
 
       calculateGas(payload)
         .then((res) => res.toHuman())
@@ -66,7 +65,7 @@ function SubscribeModal({ speakerId, type, onClose }: SubscribeModalProps) {
                 },
                 onSuccess: (messageId) => {
                   logger(`sucess on ID: ${messageId}`);
-                  window.location.reload();
+                  updateState();
                 },
                 onInBlock: (messageId) => {
                   logger('messageInBlock');
@@ -104,14 +103,14 @@ function SubscribeModal({ speakerId, type, onClose }: SubscribeModalProps) {
 
           <div className={cx(styles.controls)}>
             {type === 'subscribe' && (
-              <Button variant="primary" label="Subscribe" icon={playSVG} onClick={handleSubscribe} />
+              <Button variant="primary" label="Subscribe" icon={playSVG} onClick={() => handleSubscribe('sub')} />
             )}
             {type === 'unsubscribe' && (
               <Button
                 variant="primary"
                 label="Unsubscribe"
                 icon={playlistCrossedSVG}
-                onClick={handleUnsubscribe}
+                onClick={() => handleSubscribe('unsub')}
                 className={cx(styles['unsubscribe-button'])}
               />
             )}

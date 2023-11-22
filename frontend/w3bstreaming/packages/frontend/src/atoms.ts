@@ -10,4 +10,6 @@ export const STREAM_TEASERS_ATOM = atom<Streams | null>(null);
 
 export const USERS_ATOM = atom<UsersRes | null>(null);
 
+export const IS_STATE_READ_ATOM = atom<boolean>(false);
+
 export const META_ATOM = atom<ProgramMetadata | undefined>(undefined);

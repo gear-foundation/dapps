@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAtom, useAtomValue } from 'jotai';
+import { useAtom } from 'jotai';
 import { useAccount, useAlert, withoutCommas } from '@gear-js/react-hooks';
 import { useForm, isNotEmpty } from '@mantine/form';
 import styles from './ProfileInfo.module.scss';
@@ -12,9 +12,8 @@ import CrossIcon from '@/assets/icons/cross-circle-icon.svg';
 import defaultUserImg from '@/assets/icons/no-avatar-user-img.png';
 import { useEditProfileMessage } from '../../hooks';
 import { User } from '../../types';
-import { USERS_ATOM } from '@/atoms';
 import { useGetStreamMetadata } from '@/features/CreateStream/hooks';
-import { useCheckBalance, useHandleCalculateGas } from '@/hooks';
+import { useCheckBalance, useHandleCalculateGas, useProgramState } from '@/hooks';
 import { ADDRESS } from '@/consts';
 import { IS_CREATING_ACCOUNT_ATOM } from '../../atoms';
 import { PictureDropzone } from '@/features/CreateStream/components/PictureDropzone';
@@ -24,7 +23,10 @@ function ProfileInfo() {
   const { account } = useAccount();
   const alert = useAlert();
   const { meta } = useGetStreamMetadata();
-  const users = useAtomValue(USERS_ATOM);
+  const {
+    state: { users },
+    updateState,
+  } = useProgramState();
   const sendMessage = useEditProfileMessage();
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [isEditingProfile, setIsEditingProfile] = useState<boolean>(false);
@@ -44,7 +46,7 @@ function ProfileInfo() {
     },
   });
 
-  const { getInputProps, setFieldValue, onSubmit, errors } = form;
+  const { getInputProps, setFieldValue, onSubmit, errors, reset } = form;
 
   const handleEditProfile = () => {
     setIsEditingProfile(true);
@@ -108,6 +110,8 @@ function ProfileInfo() {
                       }
                     : prev,
                 );
+                reset();
+                updateState();
                 setIsCreatingAccount(false);
               },
               onInBlock: (messageId) => {
@@ -129,9 +133,14 @@ function ProfileInfo() {
   };
 
   useEffect(() => {
-    if (users && account?.decodedAddress) {
-      setUserInfo(users[account.decodedAddress] || null);
+    if (users && account?.decodedAddress && users[account.decodedAddress]) {
+      setUserInfo(users[account.decodedAddress]);
+    } else {
+      setUserInfo(null);
     }
+    handleCancelEditing();
+    reset();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, account?.decodedAddress]);
 
   return (
@@ -177,15 +186,17 @@ function ProfileInfo() {
               isLoading={isCreatingAccount}
               className={cx(styles['save-button'])}
             />
-            <Button
-              variant="outline"
-              size="large"
-              label="Cancel"
-              icon={CrossIcon}
-              onClick={handleCancelEditing}
-              className={cx(styles['save-button'])}
-              disabled={isCreatingAccount}
-            />
+            {!!isEditingProfile && (
+              <Button
+                variant="outline"
+                size="large"
+                label="Cancel"
+                icon={CrossIcon}
+                onClick={handleCancelEditing}
+                className={cx(styles['save-button'])}
+                disabled={isCreatingAccount}
+              />
+            )}
           </div>
         </form>
       )}

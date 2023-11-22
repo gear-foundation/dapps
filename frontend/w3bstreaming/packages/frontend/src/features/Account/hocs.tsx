@@ -1,10 +1,9 @@
 import { FC, useEffect, useState } from 'react';
-import { useAtomValue } from 'jotai';
 import { useAccount } from '@gear-js/react-hooks';
 import { SubscribersData, SubscriptionsData, UsersTableProps } from './components/UsersTable/UsersTable.interfaces';
 import { WithDataProps } from './types';
-import { USERS_ATOM } from '@/atoms';
 import { Loader } from '@/components';
+import { useProgramState } from '@/hooks';
 
 function withData(
   Component: FC<UsersTableProps>,
@@ -12,7 +11,9 @@ function withData(
 ): (props: WithDataProps) => JSX.Element {
   return function Wrapped({ name, ...props }: WithDataProps) {
     const { account } = useAccount();
-    const users = useAtomValue(USERS_ATOM);
+    const {
+      state: { users },
+    } = useProgramState();
     const [data, setData] = useState<SubscribersData[] | SubscriptionsData[]>([]);
     const [some, setSome] = useState<boolean>(true);
 

@@ -5,7 +5,6 @@ import { AnyJson, AnyNumber } from '@polkadot/types/types';
 import { HexString, ProgramMetadata } from '@gear-js/api';
 import {
   useAlert,
-  useReadFullState,
   useHandleCalculateGas as useCalculateGasNative,
   withoutCommas,
   useApi,
@@ -14,8 +13,8 @@ import {
 } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
 import { ADDRESS, LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
-import { Handler, ProgramState, ProgramStateRes } from '@/types';
-import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
+import { Handler } from '@/types';
+import { CONTRACT_ADDRESS_ATOM, IS_STATE_READ_ATOM, STREAM_TEASERS_ATOM, USERS_ATOM } from '@/atoms';
 import { useAccountAvailableBalance } from './features/Wallet/hooks';
 import { useGetStreamMetadata } from './features/CreateStream/hooks';
 
@@ -109,23 +108,31 @@ function useProgramState() {
   const { meta } = useGetStreamMetadata();
   const { api } = useApi();
   const programId = ADDRESS.CONTRACT;
-  const [commonState, setCommonState] = useState<ProgramState | null>(null);
-  const [isStateRead, setIsStateRead] = useState<boolean>(false);
+  const [streamTeasers, setStreamTeasers] = useAtom(STREAM_TEASERS_ATOM);
+  const [users, setUsers] = useAtom(USERS_ATOM);
+  const [isStateRead, setIsStateRead] = useAtom(IS_STATE_READ_ATOM);
   // const state: ProgramStateRes = useReadFullState(ADDRESS.CONTRACT, meta, '0x');
 
-  useEffect(() => {
+  const triggerState = useCallback(() => {
     if (!api || !meta || !programId) return;
 
     api.programState
       .read({ programId, payload: '0x' }, meta)
       .then((codec) => codec.toHuman())
-      .then((state) => {
-        setCommonState(state as any);
+      .then((state: any) => {
+        setStreamTeasers(state.streams);
+        setUsers(state.users);
         setIsStateRead(true);
       });
-  }, [api, meta, programId]);
+  }, [api, meta, programId, setStreamTeasers, setUsers, setIsStateRead]);
 
-  const state = { state: commonState, isStateRead };
+  useEffect(() => {
+    if (!isStateRead) {
+      triggerState();
+    }
+  }, [isStateRead, triggerState]);
+
+  const state = { state: { streamTeasers, users }, isStateRead, updateState: triggerState };
 
   return state;
 }

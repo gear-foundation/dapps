@@ -1,21 +1,19 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
-import { useAtomValue } from 'jotai';
 import { Button, Search } from '@ui';
 import { cx } from '@/utils';
 import { StreamTeaser } from '../StreamTeaser/StreamTeaser';
 import styles from './StreamTeasersList.module.scss';
-import { useStreamTeasersState } from '../../hooks';
 // import { selectTeasersMenu } from '../../config';
 import { FormattedTeaser } from '../../types';
 import { StreamTeasersListProps } from './StreamTeasersList.interfaces';
-
-import { USERS_ATOM } from '@/atoms';
+import { useProgramState } from '@/hooks';
 
 function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 }: StreamTeasersListProps) {
-  const { streamTeasers } = useStreamTeasersState();
-  const users = useAtomValue(USERS_ATOM);
+  const {
+    state: { streamTeasers, users },
+  } = useProgramState();
   const [teasers, setTeasers] = useState<FormattedTeaser[]>([]);
   const [showedTeasersCount, setShowedTeasersCount] = useState<number>(initialTeasersCount);
   const [searchedValue, setSearchedValue] = useState<string>('');

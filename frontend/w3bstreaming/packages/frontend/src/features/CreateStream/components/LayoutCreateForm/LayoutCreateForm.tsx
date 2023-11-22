@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useAtom } from 'jotai';
 import moment, { Moment } from 'moment';
 import { useForm, isNotEmpty } from '@mantine/form';
 import { useAlert, withoutCommas } from '@gear-js/react-hooks';
@@ -8,11 +9,12 @@ import { cx, logger } from '@/utils';
 import { FormValues, LayoutCreateFormProps, SectionProps } from './LayoutCreateForm.interface';
 import { TimePicker } from '@/ui/TimePicker';
 import CreateSVG from '@/assets/icons/correct-icon.svg';
-import CrossSVG from '@/assets/icons/cross-circle-icon.svg';
 import { useCreateStreamSendMessage } from '../../hooks';
-import { useCheckBalance, useHandleCalculateGas } from '@/hooks';
+import { useCheckBalance, useHandleCalculateGas, useProgramState } from '@/hooks';
 import { ADDRESS } from '@/consts';
 import { PictureDropzone } from '../PictureDropzone';
+
+import { IS_CREATING_STREAM } from '../../atoms';
 
 function Section({ title, children }: SectionProps) {
   return (
@@ -28,6 +30,8 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
   const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, meta);
   const { checkBalance } = useCheckBalance();
   const alert = useAlert();
+  const [isCreatingStream, setIsCreatingStream] = useAtom(IS_CREATING_STREAM);
+  const { updateState } = useProgramState();
 
   const form = useForm({
     initialValues: {
@@ -79,6 +83,8 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
       },
     };
 
+    setIsCreatingStream(true);
+
     calculateGas(payload)
       .then((res) => res.toHuman())
       .then(({ min_limit }) => {
@@ -98,10 +104,13 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
               gasLimit,
               onError: () => {
                 logger(`Errror send message`);
+                setIsCreatingStream(false);
               },
               onSuccess: (messageId) => {
                 logger(`sucess on ID: ${messageId}`);
                 reset();
+                setIsCreatingStream(false);
+                updateState();
               },
               onInBlock: (messageId) => {
                 logger('messageInBlock');
@@ -110,12 +119,14 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
             }),
           () => {
             logger(`Errror check balance`);
+            setIsCreatingStream(false);
           },
         );
       })
       .catch((error) => {
         logger(error);
         alert.error('Gas calculation error');
+        setIsCreatingStream(false);
       });
   };
 
@@ -157,15 +168,31 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
             <Section title="Stream info">
               <div className={cx(styles.inputs)}>
                 <div className={cx(styles.input)}>
-                  <Input size="large" placeholder="Type stream title" {...getInputProps('title')} />
+                  <Input
+                    size="large"
+                    placeholder="Type stream title"
+                    {...getInputProps('title')}
+                    disabled={isCreatingStream}
+                  />
                   <span className={cx(styles['field-error'])}>{errors.title}</span>
                 </div>
                 <div className={cx(styles.input)}>
-                  <InputArea placeholder="Type stream description" {...getInputProps('description')} />
+                  <InputArea
+                    placeholder="Type stream description"
+                    {...getInputProps('description')}
+                    disabled={isCreatingStream}
+                  />
                 </div>
                 <div className={cx(styles.controls)}>
-                  <Button variant="primary" label="Create" icon={CreateSVG} size="large" type="submit" />
-                  <Button variant="text" label="Cancel" icon={CrossSVG} size="large" />
+                  <Button
+                    variant="primary"
+                    label="Create"
+                    icon={CreateSVG}
+                    size="large"
+                    type="submit"
+                    isLoading={isCreatingStream}
+                  />
+                  {/* <Button variant="text" label="Cancel" icon={CrossSVG} size="large" /> */}
                 </div>
               </div>
             </Section>
@@ -182,12 +209,14 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
                   disabledHours={handleTimePickerDisabledHours}
                   disabledMinutes={handleTimePickerDisabledMinutes}
                   onChange={(time: Moment) => handleChangeDate('startTime', time)}
+                  disabled={isCreatingStream}
                 />
                 -
                 <TimePicker
                   disabledHours={handleTimePickerDisabledHours}
                   disabledMinutes={handleTimePickerDisabledMinutes}
                   onChange={(time: Moment) => handleChangeDate('endTime', time)}
+                  disabled={isCreatingStream}
                 />
               </div>
               <span className={cx(styles['field-error'])}>{errors.startTime}</span>

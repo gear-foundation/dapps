@@ -1,17 +1,16 @@
-import { useAtomValue } from 'jotai';
 import { useParams } from 'react-router';
 import { useAccount } from '@gear-js/react-hooks';
 import { Watch, Broadcast } from '@/features/Stream/components';
-
-import { STREAM_TEASERS_ATOM, USERS_ATOM } from '@/atoms';
 import { Layout } from '@/features/Stream/components/Layout';
 import { socket } from '@/utils';
+import { useProgramState } from '@/hooks';
 
 function StreamPage() {
   const { account } = useAccount();
   const { id: streamId } = useParams();
-  const users = useAtomValue(USERS_ATOM);
-  const streamTeasers = useAtomValue(STREAM_TEASERS_ATOM);
+  const {
+    state: { users, streamTeasers },
+  } = useProgramState();
 
   const streamTeaser = streamTeasers?.[streamId as string];
 
