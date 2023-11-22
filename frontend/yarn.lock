@@ -1908,7 +1908,6 @@ __metadata:
   resolution: "@dapps-frontend/error-tracking@workspace:packages/error-tracking"
   dependencies:
     "@sentry/react": "npm:7.79.0"
-    "@types/react-gtm-module": "npm:2.0.3"
     react-gtm-module: "npm:2.0.11"
     typescript: "npm:5.2.2"
   peerDependencies:
@@ -7036,13 +7035,6 @@ __metadata:
   dependencies:
     "@types/react": "npm:*"
   checksum: 70e86f15f69f89b8f179139ab2e8a8aa9765e742789f5dd5a46fec40d4300ada8fe3349cceda42b9964a018982d7ccb7d791b47f781966c992bfd37da909fbd3
-  languageName: node
-  linkType: hard
-
-"@types/react-gtm-module@npm:2.0.3":
-  version: 2.0.3
-  resolution: "@types/react-gtm-module@npm:2.0.3"
-  checksum: 73895910e375fd45315a285b8b5019f7d923f3aefd0bd26b421166253d9b8bdc3273e63764910b3e0ac6192e3eeedb5bee6db0aeb64137776968312fe675302a
   languageName: node
   linkType: hard
 
