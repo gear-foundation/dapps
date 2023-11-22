@@ -124,11 +124,11 @@ In case of custom variable names, function accepts object:
 logPublicEnvs({ marketplaceContractAddress });
 ```
 
-## Google Analytics
+## Analytics
 
 ### Configure
 
-Specify Sentry environment variables:
+Specify Google Analytics environment variable:
 
 ```sh
 REACT_APP_GTM_ID=
