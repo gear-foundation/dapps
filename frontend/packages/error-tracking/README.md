@@ -124,7 +124,7 @@ In case of custom variable names, function accepts object:
 logPublicEnvs({ marketplaceContractAddress });
 ```
 
-## Google Analytics
+## Analytics
 
 ### Configure
 
