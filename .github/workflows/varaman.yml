@@ -6,6 +6,7 @@ on:
     branches: ['master', 'main', 'staging']
     paths:
       - frontend/apps/vara-man/**
+      - frontend/packages/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
