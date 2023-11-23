@@ -4,9 +4,9 @@ import { initErrorTracking, logPublicEnvs, initAnalytics } from '@dapps-frontend
 import { ADDRESS } from 'consts';
 import { App } from './App';
 
+initAnalytics();
 initErrorTracking();
 logPublicEnvs({ marketplaceContract: ADDRESS.MARKETPLACE_CONTRACT, nftContract: ADDRESS.NFT_CONTRACT });
-initAnalytics();
 
 const container = document.getElementById('root');
 const root = createRoot(container as HTMLElement);
