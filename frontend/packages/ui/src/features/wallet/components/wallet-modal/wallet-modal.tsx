@@ -87,25 +87,28 @@ function WalletModal({ close }: Props) {
   };
 
   return (
-    <Modal heading="Wallet connection" close={close}>
-      <ul className={styles.list}>{getAccounts() || getWallets()}</ul>
+    <Modal
+      heading="Wallet connection"
+      close={close}
+      footer={
+        wallet ? (
+          <div className={styles.footer}>
+            <button type="button" className={styles.walletButton} onClick={resetWalletId}>
+              <WalletItem icon={wallet.SVG} name={wallet.name} />
 
-      {wallet && (
-        <footer className={styles.footer}>
-          <button type="button" className={styles.walletButton} onClick={resetWalletId}>
-            <WalletItem icon={wallet.SVG} name={wallet.name} />
-
-            <span className={styles.changeText}>Change</span>
-          </button>
-
-          {account && (
-            <button type="button" className={styles.logoutButton} onClick={handleLogoutButtonClick}>
-              <ExitSVG />
-              <span>Logout</span>
+              <span className={styles.changeText}>Change</span>
             </button>
-          )}
-        </footer>
-      )}
+
+            {account && (
+              <button type="button" className={styles.logoutButton} onClick={handleLogoutButtonClick}>
+                <ExitSVG />
+                <span>Logout</span>
+              </button>
+            )}
+          </div>
+        ) : null
+      }>
+      <ul className={styles.list}>{getAccounts() || getWallets()}</ul>
     </Modal>
   );
 }
