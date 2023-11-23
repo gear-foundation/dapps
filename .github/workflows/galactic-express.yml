@@ -6,6 +6,7 @@ on:
     branches: ['master', 'main', 'staging']
     paths:
       - frontend/apps/galactic-express/**
+      - frontend/packages/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
