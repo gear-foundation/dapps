@@ -5,7 +5,7 @@ edition.workspace = true
 publish.workspace = true
 
 [dependencies]
-gstd.workspace = true
+gstd = { workspace = true, features = ["debug"] }
 tamagotchi-battle-io.workspace = true
 tamagotchi-io.workspace = true
 
