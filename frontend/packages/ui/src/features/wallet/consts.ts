@@ -14,6 +14,4 @@ const WALLET = {
 
 const WALLETS = Object.entries(WALLET) as Entries<typeof WALLET>;
 
-const LOCAL_STORAGE_WALLET_ID_KEY = 'wallet_id';
-
-export { WALLET, WALLETS, LOCAL_STORAGE_WALLET_ID_KEY };
+export { WALLET, WALLETS };

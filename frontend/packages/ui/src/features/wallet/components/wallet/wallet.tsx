@@ -14,7 +14,7 @@ function Wallet() {
   return isAccountReady ? (
     <>
       {account ? (
-        <AccountButton address={account.address} name={account.meta.name} color="light" onClick={openModal} />
+        <AccountButton address={account.address} name={account.meta.name} onClick={openModal} />
       ) : (
         <Button text="Connect Wallet" color="lightGreen" onClick={openModal} />
       )}

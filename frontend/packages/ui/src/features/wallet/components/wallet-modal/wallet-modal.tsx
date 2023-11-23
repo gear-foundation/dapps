@@ -1,15 +1,15 @@
-import Identicon from '@polkadot/react-identicon';
 import { decodeAddress } from '@gear-js/api';
+import { useAccount, useAlert } from '@gear-js/react-hooks';
+import { Button, Modal, buttonStyles } from '@gear-js/ui';
 import clsx from 'clsx';
 
 import { ReactComponent as CopySVG } from '../../assets/copy.svg';
 import { ReactComponent as ExitSVG } from '../../assets/exit.svg';
 import { WALLETS } from '../../consts';
 import { useWallet } from '../../hooks';
+import { AccountButton } from '../account-button';
 import { WalletItem } from '../wallet-item';
 import styles from './wallet-modal.module.css';
-import { useAccount } from '@gear-js/react-hooks';
-import { Modal } from '@gear-js/ui';
 
 type Props = {
   close: () => void;
@@ -17,9 +17,8 @@ type Props = {
 
 function WalletModal({ close }: Props) {
   const { extensions, account, login, logout } = useAccount();
-
-  const { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts, saveWallet, removeWallet } =
-    useWallet();
+  const alert = useAlert();
+  const { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts } = useWallet();
 
   const getWallets = () =>
     WALLETS.map(([id, { SVG, name }]) => {
@@ -33,8 +32,19 @@ function WalletModal({ close }: Props) {
 
       return (
         <li key={id}>
-          <button type="button" className={styles.walletButton} onClick={onClick} disabled={!isEnabled}>
-            <WalletItem icon={SVG} name={name} />
+          <button
+            type="button"
+            className={clsx(
+              buttonStyles.button,
+              buttonStyles.large,
+              buttonStyles.light,
+              buttonStyles.block,
+              styles.walletButton,
+              isEnabled && styles.enabled,
+            )}
+            onClick={onClick}
+            disabled={!isEnabled}>
+            <WalletItem SVG={SVG} name={name} />
 
             <div className={styles.status}>
               <p className={styles.statusText}>{status}</p>
@@ -51,64 +61,71 @@ function WalletModal({ close }: Props) {
       const { address, meta } = _account;
 
       const isActive = address === account?.address;
-      const buttonClassName = clsx(styles.accountButton, isActive && styles.active);
+      const color = isActive ? 'primary' : 'light';
 
       const handleClick = () => {
+        if (isActive) return;
+
         login(_account);
-        saveWallet();
         close();
       };
 
       const handleCopyClick = () => {
         const decodedAddress = decodeAddress(address);
 
-        navigator.clipboard.writeText(decodedAddress).then(() => console.log('Copied!'));
-        close();
+        navigator.clipboard.writeText(decodedAddress).then(() => {
+          close();
+          alert.success('Copied');
+        });
       };
 
       return (
         <li key={address} className={styles.account}>
-          <button type="button" className={buttonClassName} onClick={handleClick} disabled={isActive}>
-            <Identicon value={address} size={21} theme="polkadot" />
-            <span>{meta.name}</span>
-          </button>
-
-          <button type="button" onClick={handleCopyClick}>
-            <CopySVG />
-          </button>
+          <AccountButton address={address} name={meta.name} size="large" color={color} onClick={handleClick} block />
+          <Button icon={CopySVG} color="transparent" onClick={handleCopyClick} />
         </li>
       );
     });
 
   const handleLogoutButtonClick = () => {
     logout();
-    removeWallet();
     close();
   };
 
   return (
     <Modal
-      heading="Wallet connection"
+      heading="Connect Wallet"
       close={close}
       footer={
         wallet ? (
           <div className={styles.footer}>
-            <button type="button" className={styles.walletButton} onClick={resetWalletId}>
-              <WalletItem icon={wallet.SVG} name={wallet.name} />
+            <button
+              type="button"
+              className={clsx(buttonStyles.button, buttonStyles.transparent)}
+              onClick={resetWalletId}>
+              <WalletItem SVG={wallet.SVG} name={wallet.name} />
 
               <span className={styles.changeText}>Change</span>
             </button>
 
-            {account && (
-              <button type="button" className={styles.logoutButton} onClick={handleLogoutButtonClick}>
-                <ExitSVG />
-                <span>Logout</span>
-              </button>
-            )}
+            {account && <Button icon={ExitSVG} text="Logout" color="transparent" onClick={handleLogoutButtonClick} />}
           </div>
         ) : null
       }>
-      <ul className={styles.list}>{getAccounts() || getWallets()}</ul>
+      {extensions?.length ? (
+        <ul className={styles.list}>{getAccounts() || getWallets()}</ul>
+      ) : (
+        <div className={styles.instruction}>
+          <p>A compatible wallet wasn't found or is disabled.</p>
+          <p>
+            Please, install it following the{' '}
+            <a href="https://wiki.vara-network.io/docs/account/create-account/" target="_blank" rel="noreferrer">
+              instructions
+            </a>
+            .
+          </p>
+        </div>
+      )}
     </Modal>
   );
 }

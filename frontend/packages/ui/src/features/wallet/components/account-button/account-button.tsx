@@ -7,16 +7,24 @@ import styles from './account-button.module.css';
 type Props = {
   name: string | undefined;
   address: string;
-  size?: ButtonProps['size'];
   color?: ButtonProps['color'];
+  size?: ButtonProps['size'];
+  block?: ButtonProps['block'];
   onClick: () => void;
 };
 
-function AccountButton({ address, name, onClick, size = 'medium', color = 'primary' }: Props) {
+function AccountButton({ address, name, onClick, size = 'medium', color = 'light', block }: Props) {
   return (
     <button
       type="button"
-      className={cx(buttonStyles.button, buttonStyles.noWrap, buttonStyles[size], buttonStyles[color], styles.button)}
+      className={cx(
+        buttonStyles.button,
+        buttonStyles.noWrap,
+        buttonStyles[size],
+        buttonStyles[color],
+        block && buttonStyles.block,
+        styles.button,
+      )}
       onClick={onClick}>
       <Identicon value={address} size={16} theme="polkadot" className={buttonStyles.icon} /> {name}
     </button>
