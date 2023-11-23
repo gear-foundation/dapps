@@ -1,0 +1,20 @@
+.button {
+  margin-left: auto;
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 12px 24px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  background-color: #00b387;
+  border-radius: 20px;
+
+  &.active {
+    background-color: #fff;
+    color: #222424;
+  }
+}
