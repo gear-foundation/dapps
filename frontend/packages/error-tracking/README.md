@@ -140,6 +140,8 @@ or
 VITE_GTM_ID=
 ```
 
+Where `GTM_ID` is a [Google Tag Manager ID](https://support.google.com/tagmanager/answer/12326985?hl=en).
+
 ### Use:
 
 In the root of your application, call `initAnalytics` function:
