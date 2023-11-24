@@ -89,7 +89,7 @@ fn submit_and_execute_automatically() {
         MWAction::SubmitTransaction {
             destination: USERS[3].into(),
             data: vec![],
-            value: 10_000_000_000_0000,
+            value: 100_000_000_000_000,
             description: None,
         },
         100_000_000_000_000,
