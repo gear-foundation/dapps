@@ -1,8 +1,6 @@
 #![no_std]
 
-use gstd::{
-    collections::BTreeMap, exec, msg, prelude::*, ActorId, MessageId, ReservationId,
-};
+use gstd::{collections::BTreeMap, exec, msg, prelude::*, ActorId, MessageId, ReservationId};
 use tamagotchi_battle_io::*;
 use tamagotchi_io::{TmgAction, TmgReply};
 
@@ -232,7 +230,6 @@ impl Battle {
     }
 
     fn check_if_move_made(&mut self, pair_id: PairId, tmg_id: Option<TamagotchiId>) {
-
         assert!(
             msg::source() == exec::program_id() || self.admins.contains(&msg::source()),
             "Only program or admin can send this message"
@@ -247,8 +244,8 @@ impl Battle {
                     ReservationId::reserve(reservation_amount, RESERVATION_DURATION)
                         .expect("Reservation across execution");
                 self.reservations.insert(tmg_id, reservation_id);
-            } 
-        } 
+            }
+        }
         if pair.game_is_over {
             return;
         }

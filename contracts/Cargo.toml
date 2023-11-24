@@ -112,7 +112,7 @@ members = [
 homepage = "https://wiki.gear-tech.io/docs/examples/prerequisites"
 documentation = "https://dapps.gear.rs"
 authors = ["Gear Foundation <hello@gear.foundation>"]
-version = "1.0.1"
+version = "1.0.2"
 license = "MIT"
 edition = "2021"
 publish = false
@@ -226,12 +226,12 @@ supply-chain-deploy.path = "supply-chain/deploy"
 
 # Gear
 
-gstd = { git = "https://github.com/gear-tech/gear", rev = "40959cc95c2c88766c7b274a1cf09c20f89f3182" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", tag = "v1.0.1" }
-gmeta = { git = "https://github.com/gear-tech/gear", tag = "v1.0.1" }
-gclient = { git = "https://github.com/gear-tech/gear", tag = "v1.0.1" }
-gtest = { git = "https://github.com/gear-tech/gear", rev = "40959cc95c2c88766c7b274a1cf09c20f89f3182" }
-gear-core = { git = "https://github.com/gear-tech/gear", tag = "v1.0.1" }
+gstd = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
+gmeta = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
+gclient = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
+gtest = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
+gear-core = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
 
 # External
 

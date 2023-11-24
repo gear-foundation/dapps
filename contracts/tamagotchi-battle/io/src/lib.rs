@@ -94,7 +94,7 @@ pub enum BattleAction {
     StartBattle,
     AddAdmin(ActorId),
     CheckIfMoveMade {
-       // round: 
+        // round:
         pair_id: PairId,
         tmg_id: Option<TamagotchiId>,
     },
