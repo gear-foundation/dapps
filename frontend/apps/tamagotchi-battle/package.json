@@ -1,6 +1,6 @@
 {
   "name": "tamagotchi-battle",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
     "start": "yarn build:packages && yarn build:hooks && react-app-rewired start",
