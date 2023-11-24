@@ -1,6 +1,7 @@
 import { ChangeEvent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import { motion } from 'framer-motion';
 import { Button, Search } from '@ui';
 import { cx } from '@/utils';
 import { StreamTeaser } from '../StreamTeaser/StreamTeaser';
@@ -74,9 +75,15 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
       <div className={cx(styles.content)}>
         {showedTeasers.length > 0 ? (
           showedTeasers.slice(0, showedTeasersCount).map((item) => (
-            <Link to={`/stream/${item.id}`} key={item.title + item.description + item.startTime + item.endTime}>
-              <StreamTeaser broadcasterInfo={users?.[item?.broadcaster]} {...item} />
-            </Link>
+            <motion.div
+              key={item.title + item.description + item.startTime + item.endTime}
+              initial={{ opacity: 0 }}
+              whileInView={{ opacity: 1 }}
+              viewport={{ once: false }}>
+              <Link to={`/stream/${item.id}`} key={item.title + item.description + item.startTime + item.endTime}>
+                <StreamTeaser broadcasterInfo={users?.[item?.broadcaster]} {...item} />
+              </Link>
+            </motion.div>
           ))
         ) : (
           <div>No streams yet</div>

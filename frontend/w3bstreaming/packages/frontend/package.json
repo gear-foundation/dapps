@@ -45,7 +45,7 @@
     "babel-polyfill": "^6.26.0",
     "buffer": "6.0.3",
     "clsx": "^1.2.1",
-    "framer-motion": "^10.16.4",
+    "framer-motion": "^10.16.5",
     "jotai": "^2.5.1",
     "lodash.merge": "^4.6.2",
     "moment": "^2.29.4",
