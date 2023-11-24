@@ -38,7 +38,7 @@ fn check_game_over() {
         .iter()
         .for_each(|user| sys.claim_value_from_mailbox(*user));
 
-    check_users_balance(&sys, &USERS[1], 1_000_000_000 + COMMON_BET * 3);
+    check_users_balance(&sys, &USERS[1], 100_000_000_000_000 + COMMON_BET * 3);
 }
 
 #[test]
@@ -360,7 +360,7 @@ fn check_five_different_moves() {
     ];
     let mut users = USERS.to_vec();
     users.push(USERS[3] + 1);
-    sys.mint_to(USERS[3] + 1, 1_000_000_000);
+    sys.mint_to(USERS[3] + 1, 100_000_000_000_000);
 
     let game = reach_reveal_stage_with_init(&sys, users.as_slice(), &moves);
 
