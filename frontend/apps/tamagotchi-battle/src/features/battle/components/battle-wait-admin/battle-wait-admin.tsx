@@ -1,45 +1,20 @@
 import { buttonStyles } from '@gear-js/ui';
 import { SpriteIcon } from 'components/ui/sprite-icon';
-import { useHandleCalculateGas, withoutCommas } from '@gear-js/react-hooks';
-import { BATTLE_ADDRESS } from 'features/battle/consts';
-import { useProgramMetadata } from 'app/hooks/api';
 import { useBattle } from '../../context';
 import { useBattleMessage } from '../../hooks';
 import { cn } from 'app/utils';
-import metaTxt from '../../assets/meta/battle.meta.txt';
 
 export const BattleWaitAdmin = () => {
   const { players, isPending, setIsPending } = useBattle();
   const handleMessage = useBattleMessage();
-  const meta = useProgramMetadata(metaTxt);
-  const calculateGas = useHandleCalculateGas(BATTLE_ADDRESS, meta);
 
   const handler = () => {
     const payload = { StartBattle: null };
+    const onSuccess = () => setIsPending(false);
+    const onError = () => setIsPending(false);
 
     setIsPending(true);
-
-    // calculateGas(payload)
-    //   .then((res) => res.toHuman())
-    //   .then(({ min_limit }) => {
-    //     const limit = withoutCommas(min_limit as string);
-
-    //     handleMessage({
-    //       payload,
-    //       gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
-    //       onSuccess: () => setIsPending(false),
-    //       onError: () => setIsPending(false),
-    //     });
-    //   })
-    //   .catch(() => {
-    //     alert('Gas calculation error');
-    //   });
-
-    handleMessage({
-      payload,
-      onSuccess: () => setIsPending(false),
-      onError: () => setIsPending(false),
-    });
+    handleMessage({ payload, onSuccess, onError });
   };
 
   return (
