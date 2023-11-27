@@ -1,9 +1,23 @@
-import { Logo } from './logo';
-import { AccountComponent } from './account';
+import { Link, useLocation } from 'react-router-dom';
+import { Wallet } from '@dapps-frontend/ui';
+import { SpriteIcon } from '@/components/ui/sprite-icon';
 
-export const Header = () => (
-  <header className="container flex justify-between items-center py-7.5">
-    <Logo />
-    <AccountComponent />
-  </header>
-);
+export const Header = () => {
+  const { pathname } = useLocation();
+
+  return (
+    <header className="container flex justify-between items-center py-7.5">
+      {pathname !== '/' ? (
+        <Link to="/" className="inline-flex text-white transition-colors hover:text-opacity-70">
+          <SpriteIcon name="logo" width={180} height={44} className="h-10" />
+        </Link>
+      ) : (
+        <span className="inline-flex text-white">
+          <SpriteIcon name="logo" width={180} height={44} className="h-10" />
+        </span>
+      )}
+
+      <Wallet />
+    </header>
+  );
+};
