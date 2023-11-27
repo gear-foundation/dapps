@@ -14,7 +14,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom', '@gear-js/react-hooks'],
+      external: ['react', 'react-dom', '@gear-js/api', '@gear-js/react-hooks', '@gear-js/ui'],
       resolve: { alias: { '@': '/src' } },
       output: {
         globals: { react: 'React', 'react-dom': 'ReactDOM' },
