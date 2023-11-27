@@ -1,6 +1,7 @@
 export interface IWatchMsg {
   streamId: string;
   signedMsg: string;
+  encodedId: string;
 }
 
 export interface IBroadcastMsg {
@@ -15,8 +16,12 @@ export interface IOfferMsg {
   streamId: string;
 }
 
+export interface IStopWatchingMsg {
+  streamId: string;
+}
+
 export interface IAnswerMsg {
-  broadcasterId: string;
+  watcherId: string;
   description: RTCSessionDescription;
 }
 
@@ -27,4 +32,8 @@ export interface ICandidateMsg {
 
 export interface IErrorResponse {
   message: string;
+}
+
+export interface GetInfoForUserMsg {
+  streamId: string;
 }
