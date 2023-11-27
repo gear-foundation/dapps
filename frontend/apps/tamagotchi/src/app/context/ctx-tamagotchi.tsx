@@ -1,12 +1,21 @@
-import { createContext, ReactNode, useContext, useState } from 'react';
+import { useAccount } from '@gear-js/react-hooks';
+import { createContext, ReactNode, useContext, useEffect, useState } from 'react';
 import type { TamagotchiState } from '@/app/types/lessons';
 import type { StoreItemsNames } from '@/app/types/ft-store';
 
 export const TamagotchiCtx = createContext({} as ReturnType<typeof useProgram>);
 
 const useProgram = () => {
+  const { account, isAccountReady } = useAccount();
+
   const [tamagotchi, setTamagotchi] = useState<TamagotchiState>();
   const [tamagotchiItems, setTamagotchiItems] = useState<StoreItemsNames[]>([]);
+
+  useEffect(() => {
+    if (!isAccountReady) return;
+
+    setTamagotchi(undefined);
+  }, [account, isAccountReady]);
 
   return {
     tamagotchi,

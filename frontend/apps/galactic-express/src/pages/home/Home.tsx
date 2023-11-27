@@ -1,10 +1,10 @@
-import { Start, Session, useLaunchState } from 'features/session';
+import { useAccount } from '@gear-js/react-hooks';
 import { CURRENT_CONTRACT_ADDRESS_ATOM, IS_CONTRACT_ADDRESS_INITIALIZED_ATOM } from 'atoms';
 import { useAtomValue } from 'jotai';
+import { Wallet } from '@dapps-frontend/ui';
+import { Start, Session, useLaunchState } from 'features/session';
 import { Welcome } from 'features/welcome/components/welcome';
-import { useAccount } from '@gear-js/react-hooks';
 import { EnterContractAddress } from 'features/welcome/components/enter-contract-address';
-import { WalletInfo } from 'features/wallet/components';
 
 function Home() {
   const { account } = useAccount();
@@ -29,7 +29,7 @@ function Home() {
               isStateComing={isStateComing}
             />
           ) : (
-            <WalletInfo account={account} />
+            <Wallet />
           )}
         </Welcome>
       )}
