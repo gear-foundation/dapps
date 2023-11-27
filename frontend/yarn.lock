@@ -1901,10 +1901,33 @@ __metadata:
   resolution: "@dapps-frontend/error-tracking@workspace:packages/error-tracking"
   dependencies:
     "@sentry/react": "npm:7.79.0"
+    "@types/react-gtm-module": "npm:2.0.3"
+    react-gtm-module: "npm:2.0.11"
     typescript: "npm:5.2.2"
   peerDependencies:
     react: 18.2.0
     react-router-dom: 6.10.0
+  languageName: unknown
+  linkType: soft
+
+"@dapps-frontend/hooks@workspace:*, @dapps-frontend/hooks@workspace:packages/hooks":
+  version: 0.0.0-use.local
+  resolution: "@dapps-frontend/hooks@workspace:packages/hooks"
+  dependencies:
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
+    "@typescript-eslint/eslint-plugin": "npm:6.0.0"
+    "@typescript-eslint/parser": "npm:6.0.0"
+    "@vitejs/plugin-react": "npm:4.0.3"
+    eslint: "npm:8.45.0"
+    eslint-plugin-react-hooks: "npm:4.6.0"
+    eslint-plugin-react-refresh: "npm:0.4.3"
+    typescript: "npm:5.0.2"
+    vite: "npm:4.4.5"
+    vite-plugin-dts: "npm:3.5.1"
+  peerDependencies:
+    react: 18.2.0
+    react-dom: 18.2.0
   languageName: unknown
   linkType: soft
 
@@ -1926,7 +1949,7 @@ __metadata:
     vite-plugin-dts: "npm:3.5.1"
     vite-plugin-svgr: "npm:3.2.0"
   peerDependencies:
-    "@gear-js/react-hooks": 0.9.0
+    "@gear-js/react-hooks": 0.9.2
     react: 18.2.0
     react-dom: 18.2.0
   languageName: unknown
@@ -2456,17 +2479,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gear-js/api@npm:0.35.1":
-  version: 0.35.1
-  resolution: "@gear-js/api@npm:0.35.1"
-  peerDependencies:
-    "@polkadot/api": 10.10.1
-    "@polkadot/wasm-crypto": 7.2.2
-    rxjs: 7.8.1
-  checksum: 7072190499fe7bd775897768f22d3bbf99e782b84e829fbd5cf28e2efbcf7d575f4f480067cf5e1463d573ae09ab54b14d4ca1ba0107ffd84823800a95e1e615
-  languageName: node
-  linkType: hard
-
 "@gear-js/api@npm:0.35.2":
   version: 0.35.2
   resolution: "@gear-js/api@npm:0.35.2"
@@ -2475,19 +2487,6 @@ __metadata:
     "@polkadot/wasm-crypto": 7.2.2
     rxjs: 7.8.1
   checksum: 4d931fa304e3f249e5f158d2ea20e8c8f1ba8d27598c3eea857ff5db0139eb71f7bd8376fd9b8ce080fc3d089def84bab7a46722262834e8f946afbc1cd10948
-  languageName: node
-  linkType: hard
-
-"@gear-js/react-hooks@npm:0.9.0":
-  version: 0.9.0
-  resolution: "@gear-js/react-hooks@npm:0.9.0"
-  peerDependencies:
-    "@gear-js/api": 0.35.1
-    "@polkadot/api": 10.10.1
-    "@polkadot/extension-dapp": 0.46.5
-    react: 18.2.0
-    react-transition-group: 4.4.5
-  checksum: 4345c6e876fd7e3694190b668973fa80444eb5b2be7e15d7ff3765ebde779f4083d0229183136054c126fcc9004c57973eb48a38457db15c16bb9950ca6a5782
   languageName: node
   linkType: hard
 
@@ -6591,10 +6590,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-gtm-module@npm:2.0.1":
-  version: 2.0.1
-  resolution: "@types/react-gtm-module@npm:2.0.1"
-  checksum: ec54f1c8c47b1c95dc8085095e510e872e5b54bb50f9beafebeb9e558679877f86bd6425e37dd1b8f0a13e60c5c1b926fa65a8614bc1a8d88375e936cda12d93
+"@types/react-gtm-module@npm:2.0.3":
+  version: 2.0.3
+  resolution: "@types/react-gtm-module@npm:2.0.3"
+  checksum: 73895910e375fd45315a285b8b5019f7d923f3aefd0bd26b421166253d9b8bdc3273e63764910b3e0ac6192e3eeedb5bee6db0aeb64137776968312fe675302a
   languageName: node
   linkType: hard
 
@@ -11282,8 +11281,8 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.35.1"
-    "@gear-js/react-hooks": "npm:0.9.0"
+    "@gear-js/api": "npm:0.35.2"
+    "@gear-js/react-hooks": "npm:0.9.2"
     "@gear-js/ui": "npm:0.5.19"
     "@mantine/form": "npm:4.2.12"
     "@polkadot/api": "npm:10.10.1"
@@ -12905,8 +12904,8 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.35.1"
-    "@gear-js/react-hooks": "npm:0.9.0"
+    "@gear-js/api": "npm:0.35.2"
+    "@gear-js/react-hooks": "npm:0.9.2"
     "@gear-js/ui": "npm:0.5.19"
     "@headlessui/react": "npm:^1.7.17"
     "@mantine/form": "npm:6.0.8"
@@ -12958,8 +12957,8 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.35.1"
-    "@gear-js/react-hooks": "npm:0.9.0"
+    "@gear-js/api": "npm:0.35.2"
+    "@gear-js/react-hooks": "npm:0.9.2"
     "@gear-js/ui": "npm:0.4.0"
     "@mantine/form": "npm:4.2.12"
     "@polkadot/api": "npm:10.10.1"
@@ -16510,8 +16509,8 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.35.1"
-    "@gear-js/react-hooks": "npm:0.9.0"
+    "@gear-js/api": "npm:0.35.2"
+    "@gear-js/react-hooks": "npm:0.9.2"
     "@gear-js/ui": "npm:0.4.0"
     "@polkadot/api": "npm:10.10.1"
     "@polkadot/extension-dapp": "npm:0.46.5"
@@ -16559,8 +16558,8 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.35.1"
-    "@gear-js/react-hooks": "npm:0.9.0"
+    "@gear-js/api": "npm:0.35.2"
+    "@gear-js/react-hooks": "npm:0.9.2"
     "@mantine/form": "npm:6.0.8"
     "@polkadot/api": "npm:10.10.1"
     "@polkadot/extension-dapp": "npm:0.46.5"
@@ -16571,7 +16570,6 @@ __metadata:
     "@types/node": "npm:18.17.1"
     "@types/react": "npm:18.2.33"
     "@types/react-dom": "npm:18.2.14"
-    "@types/react-gtm-module": "npm:2.0.1"
     "@typescript-eslint/eslint-plugin": "npm:5.25.0"
     "@typescript-eslint/parser": "npm:5.25.0"
     assert: "npm:2.0.0"
@@ -16594,7 +16592,6 @@ __metadata:
     react: "npm:18.2.0"
     react-app-rewired: "npm:2.2.1"
     react-dom: "npm:18.2.0"
-    react-gtm-module: "npm:2.0.11"
     react-router-dom: "npm:6.10.0"
     react-scripts: "npm:5.0.1"
     react-transition-group: "npm:4.4.5"
@@ -16739,8 +16736,8 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.35.1"
-    "@gear-js/react-hooks": "npm:0.9.0"
+    "@gear-js/api": "npm:0.35.2"
+    "@gear-js/react-hooks": "npm:0.9.2"
     "@gear-js/ui": "npm:0.4.0"
     "@polkadot/api": "npm:10.10.1"
     "@polkadot/extension-dapp": "npm:0.46.5"
@@ -18655,8 +18652,8 @@ __metadata:
     "@craco/craco": "npm:7.1.0"
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.35.1"
-    "@gear-js/react-hooks": "npm:0.9.0"
+    "@gear-js/api": "npm:0.35.2"
+    "@gear-js/react-hooks": "npm:0.9.2"
     "@gear-js/ui": "npm:0.5.19"
     "@headlessui/react": "npm:1.7.17"
     "@mantine/form": "npm:6.0.15"
@@ -18670,7 +18667,6 @@ __metadata:
     "@types/node": "npm:18.17.15"
     "@types/react": "npm:18.2.33"
     "@types/react-dom": "npm:18.2.14"
-    "@types/react-gtm-module": "npm:2.0.1"
     "@typescript-eslint/parser": "npm:^6.7.3"
     assert: "npm:2.1.0"
     axios: "npm:1.4.0"
@@ -18691,7 +18687,6 @@ __metadata:
     react: "npm:18.2.0"
     react-app-rewired: "npm:2.2.1"
     react-dom: "npm:18.2.0"
-    react-gtm-module: "npm:2.0.11"
     react-router: "npm:6.11.1"
     react-router-dom: "npm:6.10.0"
     react-scripts: "npm:5.0.1"
@@ -20604,8 +20599,8 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.35.1"
-    "@gear-js/react-hooks": "npm:0.9.0"
+    "@gear-js/api": "npm:0.35.2"
+    "@gear-js/react-hooks": "npm:0.9.2"
     "@gear-js/ui": "npm:0.4.0"
     "@mantine/form": "npm:4.2.12"
     "@polkadot/api": "npm:10.10.1"
@@ -20750,8 +20745,8 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.35.1"
-    "@gear-js/react-hooks": "npm:0.9.0"
+    "@gear-js/api": "npm:0.35.2"
+    "@gear-js/react-hooks": "npm:0.9.2"
     "@gear-js/ui": "npm:0.5.19"
     "@mantine/form": "npm:4.2.12"
     "@polkadot/api": "npm:10.10.1"
@@ -20963,6 +20958,7 @@ __metadata:
   resolution: "tamagotchi-battle@workspace:apps/tamagotchi-battle"
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
+    "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@fireworks-js/react": "npm:2.10.7"
     "@gear-js/api": "npm:0.35.2"
@@ -20988,7 +20984,6 @@ __metadata:
     buffer: "npm:6.0.3"
     class-variance-authority: "npm:^0.7.0"
     clsx: "npm:1.2.1"
-    dayjs: "npm:1.11.7"
     eslint: "npm:8.44.0"
     eslint-config-airbnb: "npm:19.0.4"
     eslint-config-airbnb-typescript: "npm:17.0.0"
@@ -21023,8 +21018,8 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.35.1"
-    "@gear-js/react-hooks": "npm:0.9.0"
+    "@gear-js/api": "npm:0.35.2"
+    "@gear-js/react-hooks": "npm:0.9.2"
     "@gear-js/ui": "npm:0.5.19"
     "@headlessui-float/react": "npm:0.11.0"
     "@headlessui/react": "npm:1.7.13"
@@ -21117,8 +21112,8 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.35.1"
-    "@gear-js/react-hooks": "npm:0.9.0"
+    "@gear-js/api": "npm:0.35.2"
+    "@gear-js/react-hooks": "npm:0.9.2"
     "@gear-js/ui": "npm:0.5.19"
     "@headlessui/react": "npm:1.7.13"
     "@mantine/form": "npm:6.0.19"
@@ -21266,8 +21261,8 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.35.1"
-    "@gear-js/react-hooks": "npm:0.9.0"
+    "@gear-js/api": "npm:0.35.2"
+    "@gear-js/react-hooks": "npm:0.9.2"
     "@headlessui/react": "npm:1.7.17"
     "@polkadot/api": "npm:10.10.1"
     "@polkadot/extension-dapp": "npm:0.46.5"
@@ -21280,7 +21275,6 @@ __metadata:
     "@types/node": "npm:18.16.19"
     "@types/react": "npm:18.2.33"
     "@types/react-dom": "npm:18.2.14"
-    "@types/react-gtm-module": "npm:2.0.1"
     "@vitejs/plugin-react-swc": "npm:3.3.2"
     autoprefixer: "npm:10.4.15"
     buffer: "npm:6.0.3"
@@ -21297,7 +21291,6 @@ __metadata:
     react: "npm:18.2.0"
     react-countdown: "npm:2.3.5"
     react-dom: "npm:18.2.0"
-    react-gtm-module: "npm:2.0.11"
     react-router-dom: "npm:6.10.0"
     react-transition-group: "npm:4.4.5"
     rollup-plugin-visualizer: "npm:5.9.2"
@@ -22091,8 +22084,8 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.35.1"
-    "@gear-js/react-hooks": "npm:0.9.0"
+    "@gear-js/api": "npm:0.35.2"
+    "@gear-js/react-hooks": "npm:0.9.2"
     "@gear-js/ui": "npm:0.5.19"
     "@headlessui/react": "npm:1.7.14"
     "@mantine/form": "npm:6.0.10"
@@ -22138,8 +22131,8 @@ __metadata:
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.35.1"
-    "@gear-js/react-hooks": "npm:0.9.0"
+    "@gear-js/api": "npm:0.35.2"
+    "@gear-js/react-hooks": "npm:0.9.2"
     "@gear-js/ui": "npm:0.5.19"
     "@mantine/form": "npm:4.2.12"
     "@polkadot/api": "npm:10.10.1"

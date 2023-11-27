@@ -1,6 +1,6 @@
 {
   "name": "dapps-frontend",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "packageManager": "yarn@4.0.1",
   "scripts": {
@@ -12,6 +12,7 @@
     "bump:polkadot": "yarn bump @polkadot/api @polkadot/types",
     "build:error-tracking": "yarn workspace @dapps-frontend/error-tracking build",
     "build:ui": "yarn workspace @dapps-frontend/ui build",
+    "build:hooks": "yarn workspace @dapps-frontend/hooks build",
     "build:packages": "yarn build:error-tracking && yarn build:ui"
   },
   "workspaces": [

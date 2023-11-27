@@ -3,21 +3,15 @@ import { buttonStyles } from '@gear-js/ui';
 import { SpriteIcon } from 'components/ui/sprite-icon';
 import { useBattleMessage } from '../../hooks';
 import { useEffect, useState } from 'react';
-import { BATTLE_ADDRESS } from 'features/battle/consts';
 import { cn, toNumber } from 'app/utils';
-import { useProgramMetadata } from 'app/hooks/api';
-import { useAccount, useAlert, useHandleCalculateGas, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
-import metaTxt from '../../assets/meta/battle.meta.txt';
 
 export const BattleRoundPlayers = () => {
   const { account } = useAccount();
   const { rivals, currentPlayer, currentPairIdx, roundDamage, battle, isPending, setIsPending, isAdmin } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
-  const alert = useAlert();
-  const meta = useProgramMetadata(metaTxt);
-  const calculateGas = useHandleCalculateGas(BATTLE_ADDRESS, meta);
 
   useEffect(() => {
     if (battle && account && currentPlayer) {
@@ -27,86 +21,26 @@ export const BattleRoundPlayers = () => {
 
   const onSuccess = () => setIsPending(false);
   const onError = () => setIsPending(false);
+
   const onNewRound = () => {
     const payload = { StartBattle: null };
 
     setIsPending(true);
-
-    // calculateGas(payload)
-    //   .then((res) => res.toHuman())
-    //   .then(({ min_limit }) => {
-    //     const limit = withoutCommas(min_limit as string);
-
-    //     handleMessage({
-    //       payload,
-    //       gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
-    //       onSuccess,
-    //       onError,
-    //     });
-    //   })
-    //   .catch(() => {
-    //     alert.error('Gas calculation error');
-    //   });
-
-    handleMessage({
-      payload,
-      onSuccess,
-      onError,
-    });
+    handleMessage({ payload, onSuccess, onError });
   };
+
   const onAttack = () => {
     const payload = { MakeMove: { pair_id: currentPairIdx, tmg_move: { Attack: null } } };
 
     setIsPending(true);
-
-    // calculateGas(payload)
-    //   .then((res) => res.toHuman())
-    //   .then(({ min_limit }) => {
-    //     const limit = withoutCommas(min_limit as string);
-
-    //     handleMessage({
-    //       payload,
-    //       gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
-    //       onSuccess,
-    //       onError,
-    //     });
-    //   })
-    //   .catch(() => {
-    //     alert.error('Gas calculation error');
-    //   });
-
-    handleMessage({
-      payload,
-      onSuccess,
-      onError,
-    });
+    handleMessage({ payload, onSuccess, onError });
   };
+
   const onDefence = () => {
     const payload = { MakeMove: { pair_id: currentPairIdx, tmg_move: { Defence: null } } };
 
     setIsPending(true);
-
-    // calculateGas(payload)
-    //   .then((res) => res.toHuman())
-    //   .then(({ min_limit }) => {
-    //     const limit = withoutCommas(min_limit as string);
-
-    //     handleMessage({
-    //       payload,
-    //       gasLimit: Math.floor(Number(limit) + Number(limit) * 0.2),
-    //       onSuccess,
-    //       onError,
-    //     });
-    //   })
-    //   .catch(() => {
-    //     alert.error('Gas calculation error');
-    //   });
-
-    handleMessage({
-      payload,
-      onSuccess,
-      onError,
-    });
+    handleMessage({ payload, onSuccess, onError });
   };
 
   const cnWrapper = 'relative flex flex-col';

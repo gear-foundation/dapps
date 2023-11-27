@@ -6,6 +6,7 @@ on:
     branches: ['master', 'main', 'staging']
     paths:
       - frontend/apps/syndote/**
+      - frontend/packages/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
