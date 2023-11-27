@@ -1,9 +1,8 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { Link } from 'react-router-dom';
-import { StartDisclaimer } from '@dapps-frontend/ui';
+import { StartDisclaimer, Wallet } from '@dapps-frontend/ui';
 import { CreateTamagotchiForm } from 'features/battle/components/create-tamagotchi-form';
 import { useBattle } from 'features/battle/context';
-import { Wallet } from 'features/wallet';
 
 export const Home = () => {
   const { battle } = useBattle();
@@ -50,9 +49,7 @@ export const Home = () => {
               <StartDisclaimer fileName="tamagotchi" wikiPath="Gaming/tamagotchi" className="m-auto mt-9" />
             </div>
           ) : (
-            <div className="text-center">
-              <Wallet />
-            </div>
+            <Wallet />
           )}
         </div>
       </div>

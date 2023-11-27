@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import { Button, buttonStyles } from '@gear-js/ui';
 import { Wallet } from '@dapps-frontend/ui';
 import { useBattle } from 'features/battle/context';
@@ -7,16 +6,8 @@ import { Link, useLocation } from 'react-router-dom';
 import { cn } from 'app/utils';
 
 export const AccountComponent = () => {
-  const { battle, isAdmin, isPending, setIsPending, setIsAdmin } = useBattle();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { battle, isAdmin, isPending, setIsPending } = useBattle();
   const { pathname } = useLocation();
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setIsAdmin(false);
-    if (battle?.state === 'Registration') navigate('/');
-  };
 
   const handleMessage = useBattleMessage();
 

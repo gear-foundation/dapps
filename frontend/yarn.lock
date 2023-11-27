@@ -1942,7 +1942,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dapps-frontend/ui@workspace:packages/ui"
   dependencies:
-    "@gear-js/ui": "npm:0.5.21"
     "@polkadot/react-identicon": "npm:3.6.4"
     "@types/react": "npm:18.2.33"
     "@types/react-dom": "npm:18.2.14"
@@ -1959,6 +1958,7 @@ __metadata:
     vite-plugin-svgr: "npm:3.2.0"
   peerDependencies:
     "@gear-js/react-hooks": 0.9.2
+    "@gear-js/ui": 0.5.21
     react: 18.2.0
     react-dom: 18.2.0
   languageName: unknown
@@ -2526,6 +2526,16 @@ __metadata:
     react: ">=17.0.2"
     sass: ^1.49.9
   checksum: 4a83264e9485b08dd1b8da0e7cf0a8932f8569772d1a060be6ad5ad041ef1678a1d588e47cb70fa9e2039b528c93fc363bc3f62472d8f6ffcaea1cee5631300f
+  languageName: node
+  linkType: hard
+
+"@gear-js/ui@npm:0.5.21":
+  version: 0.5.21
+  resolution: "@gear-js/ui@npm:0.5.21"
+  peerDependencies:
+    react: ">=17.0.2"
+    sass: 1.62.0
+  checksum: 26b6e55a302c2eaf268733957cefec2c502e410c3c61390e93e6702f52a4ff13da49b6018ee00a722faa9b68e519cd272db6436c0cbb74c23f6644b0a49e635e
   languageName: node
   linkType: hard
 
