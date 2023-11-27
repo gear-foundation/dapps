@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "rm -rf dist && tsc",
-    "start": "node dist/main.js",
+    "start": "node dist/src/main.js",
     "watch": "ts-node-dev src/main.ts"
   },
   "keywords": [],
