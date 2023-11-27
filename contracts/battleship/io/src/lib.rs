@@ -25,6 +25,7 @@ pub enum StateQuery {
     All,
     Game(ActorId),
     BotContractId,
+    SessionForTheAccount(ActorId)
 }
 
 #[derive(Encode, Decode, TypeInfo)]
@@ -34,6 +35,7 @@ pub enum StateReply {
     All(BattleshipState),
     Game(Option<GameState>),
     BotContractId(ActorId),
+    SessionForTheAccount(Option<Session>),
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
@@ -45,6 +47,28 @@ pub struct BattleshipState {
     pub admin: ActorId,
 }
 
+// This structure is for creating a gaming session, which allows players to predefine certain actions for an account that will play the game on their behalf for a certain period of time. 
+// Sessions can be used to send transactions from a dApp on behalf of a user without requiring their confirmation with a wallet. 
+// The user is guaranteed that the dApp can only execute transactions that comply with the allowed_actions of the session until the session expires.
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct Session {
+    // the address of the player who will play on behalf of the user
+    pub key: ActorId,
+    // until what time the session is valid
+    pub expires: u64,
+    // what messages are allowed to be sent by the account (key)
+    pub allowed_actions: Vec<ActionsForSession>,
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum ActionsForSession {
+    StartGame,
+    Turn,
+}
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
@@ -68,11 +92,13 @@ impl Entity {
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum BattleshipAction {
-    StartGame { ships: Ships },
-    Turn { step: u8 },
+    StartGame { ships: Ships, session_for_account: Option<ActorId> },
+    Turn { step: u8, session_for_account: Option<ActorId> },
     ChangeBot { bot: ActorId },
     ClearState { leave_active_games: bool },
     DeleteGame { player_address: ActorId },
+    CreateSession { key: ActorId, duration: u64, allowed_actions: Vec<ActionsForSession>},
+    DeleteSession,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
@@ -82,6 +108,8 @@ pub enum BattleshipReply {
     MessageSentToBot,
     EndGame(BattleshipParticipants),
     BotChanged(ActorId),
+    SessionCreated,
+    SessionDeleted,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
