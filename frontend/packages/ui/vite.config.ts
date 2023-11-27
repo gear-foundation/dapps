@@ -15,6 +15,7 @@ export default defineConfig({
     },
     rollupOptions: {
       external: ['react', 'react-dom', '@gear-js/react-hooks'],
+      resolve: { alias: { '@': '/src' } },
       output: {
         globals: { react: 'React', 'react-dom': 'ReactDOM' },
         intro: 'import "./style.css";',

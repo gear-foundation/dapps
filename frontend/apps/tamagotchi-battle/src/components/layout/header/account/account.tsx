@@ -1,23 +1,13 @@
-import { useState } from 'react';
 import { Button, buttonStyles } from '@gear-js/ui';
-import { Wallet } from 'features/wallet';
+import { Wallet } from '@dapps-frontend/ui';
 import { useBattle } from 'features/battle/context';
 import { useBattleMessage } from 'features/battle/hooks';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { cn } from 'app/utils';
 
 export const AccountComponent = () => {
-  const { battle, isAdmin, isPending, setIsPending, setIsAdmin } = useBattle();
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const { battle, isAdmin, isPending, setIsPending } = useBattle();
   const { pathname } = useLocation();
-  const navigate = useNavigate();
-
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => {
-    setIsModalOpen(false);
-    setIsAdmin(false);
-    if (battle?.state === 'Registration') navigate('/');
-  };
 
   const handleMessage = useBattleMessage();
 
@@ -41,7 +31,8 @@ export const AccountComponent = () => {
           Battle Page
         </Link>
       )}
-      <Wallet isModalOpen={isModalOpen} openModal={openModal} closeModal={closeModal} />
+
+      <Wallet />
     </div>
   );
 };
