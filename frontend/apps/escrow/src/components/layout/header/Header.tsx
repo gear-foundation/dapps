@@ -1,16 +1,16 @@
-import { Logo } from './logo';
-import { Account } from './account';
+import { Link } from 'react-router-dom';
+import { Wallet } from '@dapps-frontend/ui';
+import { ReactComponent as LogoSVG } from 'assets/images/logo.svg';
 import styles from './Header.module.scss';
 
-type Props = {
-  isAccountVisible: boolean;
-};
-
-function Header({ isAccountVisible }: Props) {
+function Header() {
   return (
     <header className={styles.header}>
-      <Logo />
-      {isAccountVisible && <Account />}
+      <Link to="/">
+        <LogoSVG />
+      </Link>
+
+      <Wallet />
     </header>
   );
 }
