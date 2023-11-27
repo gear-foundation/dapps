@@ -1,14 +1,9 @@
-import { GearApi, StateMetadata, getStateMetadata } from '@gear-js/api';
+import { GearApi, ProgramMetadata } from '@gear-js/api';
 import config from '../config';
 import { readFileSync } from 'fs';
 
 export const api = new GearApi({ providerAddress: config.wsAddress });
 
-export const stateWasm = readFileSync(config.pathToStateWasm);
+export const res = readFileSync(config.pathToMeta, 'utf-8');
 
-export let stateMeta: StateMetadata;
-
-export const isMetaReady = getStateMetadata(stateWasm).then((meta) => {
-  stateMeta = meta;
-  return true;
-});
+export const meta = ProgramMetadata.from(`0x${res}`);

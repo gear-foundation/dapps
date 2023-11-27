@@ -1,0 +1,63 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.header {
+    height: 100px;
+    width: 100%;
+    box-sizing: border-box;
+    background: theme-var($background-secondary);
+}
+
+.container {
+    height: 100%;
+    padding: 20px 0;
+    max-width: 1200px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: auto;
+
+    @include lg {
+        padding-left: 10px;
+        padding-right: 10px;
+    }
+}
+
+.menu {
+    list-style: none;
+    display: flex;
+
+    @include lg {
+        align-items: center;
+    }
+}
+
+.menu-item {
+    margin: 0 30px;
+    font-size: 18px;
+    font-weight: 500;
+
+    @include lg {
+        margin: 0 10px;
+    }
+
+    &--active {
+        color: theme-var($green-special)
+    }
+}
+
+.blur-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(39, 44, 63, 0.11);
+    backdrop-filter: blur(16px);
+    z-index: 4;
+    width: 100%;
+    height: 100%;
+    display: none;
+
+    @include lg {
+        display: block
+    }
+}
