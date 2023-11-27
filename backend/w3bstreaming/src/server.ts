@@ -14,7 +14,7 @@ import {
   IWatchMsg,
   IStopWatchingMsg,
   GetInfoForUserMsg,
-} from 'types';
+} from '../types';
 
 const app = express();
 app.use(cors());
