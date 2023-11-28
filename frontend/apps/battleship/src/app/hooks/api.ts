@@ -51,5 +51,6 @@ export function useReadState<T>({
   payload?: AnyJson;
 }) {
   const metadata = useProgramMetadata(meta);
+
   return useReadFullState<T>(programId, metadata, payload);
 }
