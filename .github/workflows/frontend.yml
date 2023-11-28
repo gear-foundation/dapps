@@ -15,7 +15,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: frontend-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
@@ -27,65 +27,55 @@ jobs:
       fail-fast: false # TODO: Remove me
       matrix:
         include:
-          - subdir: battleship
+          # Apps
+          - subdir: apps/battleship
             build: build
-          - subdir: ddns
-            build: build:all
-          - subdir: escrow
-            build: build
-            test: test
-          - subdir: galactic-express
+          - subdir: apps/escrow
             build: build
             test: test
-          - subdir: game-of-chance
+          - subdir: apps/galactic-express
             build: build
             test: test
-          - subdir: nft-collection/frontend
-            build: build
-          - subdir: nft-marketplace/frontend
+          - subdir: apps/game-of-chance
             build: build
             test: test
-          - subdir: nft-marketplace/indexer
+          - subdir: apps/nft-marketplace
             build: build
             test: test
-          - subdir: nft-master
+          - subdir: apps/nft-master
             build: build
             test: test
-          - subdir: non-fungible-token
+          - subdir: apps/non-fungible-token
             build: build
             test: test
-          - subdir: oracle/producer
+          - subdir: apps/racing-car-game
             build: build
-          - subdir: oracle/randomness-oracle-feeder
-            build: build
-          - subdir: racing-car-game
-            build: build
-          - subdir: rock-paper-scissors/api
-            build: build
-          - subdir: supply-chain
+          - subdir: apps/supply-chain
             build: build
             test: test
-          - subdir: syndote/frontend
+          - subdir: apps/syndote
             build: build
             test: test
-          - subdir: tamagotchi
+          - subdir: apps/tamagotchi
             build: build
-          - subdir: tamagotchi-battle/frontend
-            build: build
-            test: test
-          - subdir: tamagotchi-battle/frontend-testnet
-            build: build
-          - subdir: tequila-train/frontend
+          - subdir: apps/tamagotchi-battle
             build: build
             test: test
-          - subdir: tic-tac-toe
-            build: build
-          - subdir: vara-man
-            build: build
-          - subdir: varatube
+          - subdir: apps/tequila-train
             build: build
             test: test
-          - subdir: w3bstreaming
+          - subdir: apps/tic-tac-toe
+            build: build
+          - subdir: apps/vara-man
+            build: build
+          - subdir: apps/varatube
+            build: build
+            test: test
+
+          # Packages
+          - subdir: packages/error-tracking
+            build: build
+          - subdir: packages/ui
             build: build
 
     runs-on: ubuntu-latest

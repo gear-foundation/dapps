@@ -21,7 +21,7 @@ permissions:
   pages: write
 
 concurrency:
-  group: contracts-${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
