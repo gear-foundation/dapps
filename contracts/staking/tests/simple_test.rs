@@ -82,7 +82,7 @@ fn update_staking(staking: &mut Staking, reward: u128, time: u64) {
 }
 
 /// Calculates the reward produced so far
-fn produced(staking: &mut Staking, time: u64) -> u128 {
+fn produced(staking: &Staking, time: u64) -> u128 {
     let mut elapsed_time = time - staking.produced_time;
 
     if elapsed_time > staking.distribution_time {
@@ -120,7 +120,7 @@ fn update_reward(staking: &mut Staking, time: u64) {
 }
 
 /// Calculates the reward of the staker that is currently available
-fn calc_reward(staking: &mut Staking, source: &ActorId) -> u128 {
+fn calc_reward(staking: &Staking, source: &ActorId) -> u128 {
     if let Some(staker) = staking.stakers.get(source) {
         return get_max_reward(staking, staker.balance) + staker.reward_allowed
             - staker.reward_debt
@@ -235,7 +235,7 @@ fn send_reward() {
     sys.spend_blocks(1);
 
     update_reward(&mut staking, time + 3000);
-    let reward = calc_reward(&mut staking, &5.into());
+    let reward = calc_reward(&staking, &5.into());
 
     staking
         .stakers
@@ -257,7 +257,7 @@ fn send_reward() {
     sys.spend_blocks(1);
 
     update_reward(&mut staking, time + 4000);
-    let reward = calc_reward(&mut staking, &6.into());
+    let reward = calc_reward(&staking, &6.into());
 
     staking
         .stakers
@@ -357,7 +357,7 @@ fn withdraw() {
     sys.spend_blocks(1);
 
     update_reward(&mut staking, time + 4000);
-    let reward = calc_reward(&mut staking, &5.into());
+    let reward = calc_reward(&staking, &5.into());
 
     staking
         .stakers
@@ -374,7 +374,7 @@ fn withdraw() {
     sys.spend_blocks(2);
 
     update_reward(&mut staking, time + 6000);
-    let reward = calc_reward(&mut staking, &6.into());
+    let reward = calc_reward(&staking, &6.into());
 
     staking
         .stakers
@@ -447,7 +447,7 @@ fn meta_tests() {
 
     staking.total_staked = 3500;
     let stakers: HashMap<ActorId, Staker> = staking.stakers.clone().into_iter().collect();
-    let state: IoStaking = st.read_state().expect("Can't read state");
+    let state: IoStaking = st.read_state(0).expect("Can't read state");
 
     assert_eq!(state.stakers.len(), stakers.len());
 

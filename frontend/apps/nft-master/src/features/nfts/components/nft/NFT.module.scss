@@ -1,0 +1,240 @@
+@use 'utils' as *;
+
+.nft {
+  &__container {
+    display: flex;
+    gap: 60px;
+    margin-bottom: 100px;
+
+    @include lg {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+
+  &__image {
+    flex: 1 1 584px;
+    width: 100%;
+  }
+
+  &__info {
+    flex: 1 1 556px;
+    width: 100%;
+  }
+}
+
+.loaderWrapper {
+  position: relative;
+  height: 200px;
+}
+
+.image {
+  width: 100%;
+  margin-bottom: 25px;
+  padding: 32px;
+  background: url(../../assets/bg-secondary.svg) center/ 100% 100% no-repeat;
+
+  &__container {
+    position: relative;
+
+    @supports (aspect-ratio: 1/1) {
+      aspect-ratio: 1/1;
+    }
+
+    @supports not (aspect-ratio: 1/1) {
+      padding-top: 100%;
+    }
+  }
+
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
+    background: linear-gradient(180deg, #f5f5f5 0%, rgba(#d5d5d5, 0.1) 100%);
+    object-fit: cover;
+  }
+}
+
+.footer {
+  display: grid;
+  grid-template-columns: 1fr min-content;
+  grid-gap: 20px;
+  align-items: center;
+  padding: 30px 22px;
+  color: #fff;
+  background: linear-gradient(183.24deg, rgba(0, 0, 0, 0.2) 32.24%, rgba(14, 211, 163, 0.2) 91.35%), #000000;
+  border-radius: 4px;
+  overflow: hidden;
+
+  @include lg {
+    grid-template-columns: 1fr;
+  }
+
+  &Wrapper {
+    width: 100%;
+    padding: 0 32px;
+
+    @include lg {
+      padding: 0;
+    }
+  }
+
+  .ownerButton {
+    padding: 12px 20px;
+    font-weight: 700;
+    font-size: 14px;
+    line-height: 18px;
+    letter-spacing: 0.03em;
+    white-space: nowrap;
+    background-color: #09ffc6;
+    border-radius: 2px;
+    transition: all 0.3s;
+
+    &:hover {
+      background-color: #29c6a1;
+    }
+  }
+}
+
+.owner {
+  display: inline-grid;
+  grid-gap: 5px;
+  font-weight: 500;
+  line-height: 120%;
+  color: #fff;
+  overflow: hidden;
+
+  &Heading {
+    font-size: 12px;
+  }
+
+  &Text {
+    @include textOverflow;
+    font-size: 18px;
+  }
+}
+
+.name {
+  font-weight: 500;
+  font-size: 64px;
+  line-height: 120%;
+
+  @include lg {
+    font-size: 48px;
+  }
+}
+
+.collection {
+  margin-bottom: 20px;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 140%;
+}
+
+.description {
+  margin-bottom: 22px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 160%;
+  color: rgba(#000000, 0.4);
+  white-space: pre-line;
+}
+
+.header {
+  margin-bottom: 30px;
+  padding: 16px 10px 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f5f7f7;
+  border-radius: 4px;
+}
+
+.label {
+  font-weight: 500;
+  font-size: 18px;
+  line-height: 160%;
+}
+
+.inputWrapper {
+  @include gap(12px, right);
+  width: 60%;
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  border-radius: 4px;
+
+  input {
+    width: 100%;
+    outline: none;
+  }
+}
+
+.details {
+  margin-bottom: 20px;
+  max-height: 33vh;
+  overflow-y: auto;
+}
+
+.detail {
+  padding: 10px 0;
+  display: flex;
+  align-items: center;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 160%;
+  position: relative;
+  white-space: pre-line;
+
+  &::before {
+    @include square(25px);
+    content: '';
+    flex-shrink: 0;
+    margin-right: 10px;
+    background-image: url(../../assets/badge.svg);
+  }
+
+  &:not(:last-child) {
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      height: 1px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='556' height='1' fill='none'%3E%3Cpath stroke='url(%23a)' stroke-dasharray='3 3' stroke-linecap='round' d='M.5.5h555' opacity='.2'/%3E%3Cdefs%3E%3ClinearGradient id='a' x1='0' x2='556' y1='1.999' y2='1.999' gradientUnits='userSpaceOnUse'%3E%3Cstop stop-opacity='0'/%3E%3Cstop offset='.495'/%3E%3Cstop offset='1' stop-opacity='0'/%3E%3C/linearGradient%3E%3C/defs%3E%3C/svg%3E")
+        center/100% no-repeat;
+    }
+  }
+}
+
+.buttons {
+  @include gap(24px, right);
+  display: flex;
+  align-items: center;
+
+  > button {
+    padding-right: 24px;
+    padding-left: 24px;
+    font-size: 16px;
+  }
+}
+
+.transferButton {
+  @include gap(11px, right);
+  padding: 17px 24px;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 100%;
+  letter-spacing: 0.03em;
+  background-color: transparent;
+  border: 2px solid #000000;
+  border-radius: 2px;
+  transition: all 0.3s;
+
+  &:hover {
+    opacity: 0.5;
+  }
+}

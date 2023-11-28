@@ -16,7 +16,7 @@ mod sale;
 const MIN_TREASURY_FEE: u16 = 0;
 const MAX_TREASURT_FEE: u16 = 5;
 pub const BASE_PERCENT: u16 = 100;
-pub const MINIMUM_VALUE: u64 = 500;
+pub const MINIMUM_VALUE: u64 = 11_000_000_000_000;
 
 static mut MARKET: Option<Market> = None;
 

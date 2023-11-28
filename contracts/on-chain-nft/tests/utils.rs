@@ -94,7 +94,8 @@ pub fn check_token_uri(
     metadata: TokenMetadata,
     content: Vec<String>,
 ) {
-    match nft.read_state_using_wasm::<TokenId, Option<Vec<u8>>>(
+    match nft.read_state_using_wasm::<TokenId, _, Option<Vec<u8>>>(
+        0,
         "token_uri",
         WASM_BINARY.into(),
         Some(token_id.into()),
@@ -129,7 +130,8 @@ pub fn check_token_uri(
 }
 
 pub fn check_token_from_state(nft: &Program<'_>, owner_id: u64, token_id: u64) {
-    match nft.read_state_using_wasm::<NFTQuery, Option<Vec<u8>>>(
+    match nft.read_state_using_wasm::<NFTQuery, _, Option<Vec<u8>>>(
+        0,
         "base",
         WASM_BINARY.into(),
         Some(NFTQuery::Token {
@@ -137,7 +139,9 @@ pub fn check_token_from_state(nft: &Program<'_>, owner_id: u64, token_id: u64) {
         }),
     ) {
         Ok(reply) => {
-            let NFTQueryReply::Token { token } = NFTQueryReply::decode(&mut reply.unwrap().as_ref()).unwrap() else {
+            let NFTQueryReply::Token { token } =
+                NFTQueryReply::decode(&mut reply.unwrap().as_ref()).unwrap()
+            else {
                 std::panic!()
             };
 

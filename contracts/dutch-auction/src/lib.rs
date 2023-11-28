@@ -51,7 +51,11 @@ impl Auction {
         self.status = Status::Purchased { price };
 
         let refund = value - price;
-        let refund = if refund < 500 { 0 } else { refund };
+        let refund = if refund < 10_000_000_000_000 {
+            0
+        } else {
+            refund
+        };
 
         let reply = match msg::send_for_reply(
             self.nft.contract_id,

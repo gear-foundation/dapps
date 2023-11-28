@@ -1,0 +1,19 @@
+{
+  "name": "@dapps-frontend/error-tracking",
+  "version": "0.0.1",
+  "scripts": {
+    "build": "tsc"
+  },
+  "peerDependencies": {
+    "react": "18.2.0",
+    "react-router-dom": "6.10.0"
+  },
+  "devDependencies": {
+    "typescript": "5.2.2"
+  },
+  "dependencies": {
+    "@sentry/react": "7.79.0"
+  },
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts"
+}

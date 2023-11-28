@@ -19,7 +19,7 @@ fn success_init() {
     assert!(!result.main_failed());
 
     let oracle_state: RandomnessOracle = oracle_program
-        .read_state()
+        .read_state(0)
         .expect("Unexpected invalid oracle state.");
 
     assert_eq!(oracle_state.owner, OWNER.into());

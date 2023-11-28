@@ -93,7 +93,7 @@ async fn send_message<T: Decode>(
     println!("Sending a payload: `{payload:?}`.");
 
     let (message_id, _) = client
-        .send_message(destination, payload, 250_000_000_000, 0, false)
+        .send_message(destination, payload, 250_000_000_000, 0)
         .await?;
 
     println!("Sending completed.");
@@ -109,7 +109,7 @@ async fn send_message<T: Decode>(
 #[tokio::test]
 async fn gclient_battle() -> Result<()> {
     // let address = WSAddress::new("wss://node-workshop.gear.rs", 443);
-    // let client = GearApi::init_with(address, "//Alice").await?;
+    //let client = GearApi::dev().await?;
     let client = GearApi::dev_from_path("../target/tmp/gear")
         .await?
         .with("//Alice")?;
@@ -166,16 +166,16 @@ async fn gclient_battle() -> Result<()> {
             .clone()
             .with(PLAYERS[i])
             .expect("Unable to change signer.");
-        assert!(
-            Ok(BattleEvent::Registered { tmg_id })
-                == send_message(
-                    &client,
-                    &mut listener,
-                    battle_id,
-                    BattleAction::Register { tmg_id },
-                    true
-                )
-                .await?
+        assert_eq!(
+            Ok(BattleEvent::Registered { tmg_id }),
+            send_message(
+                &client,
+                &mut listener,
+                battle_id,
+                BattleAction::Register { tmg_id },
+                false
+            )
+            .await?
         );
         println!("Tamagotchi {i} is registered.");
     }

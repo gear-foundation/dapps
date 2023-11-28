@@ -26,10 +26,10 @@ pub enum StrategyAction {
 extern fn handle() {
     let random_choice = get_random_value(10);
     match random_choice {
-        0 | 1 | 2 => {
+        0..=2 => {
             msg::reply(StrategyAction::BuyAcceleration, 0).expect("Error in sending a message");
         }
-        3 | 4 | 5 | 6 | 7 | 8 | 9 => {
+        3..=9 => {
             msg::reply(StrategyAction::BuyShell, 0).expect("Error in sending a message");
         }
         _ => {

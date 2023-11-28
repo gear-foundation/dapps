@@ -1,0 +1,17 @@
+@use '@gear-js/ui/variables' as *;
+
+.footer {
+  padding: 20px 0;
+}
+
+.footer__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.footer__socials {
+  display: flex;
+  align-items: center;
+  color: #bcbcbc;
+}

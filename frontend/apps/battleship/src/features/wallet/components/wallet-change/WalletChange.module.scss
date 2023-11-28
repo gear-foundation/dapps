@@ -1,0 +1,44 @@
+.changeAccount {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.network {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  .address {
+    color: #72707d;
+  }
+}
+
+hr {
+  border: 1px solid rgba(114, 112, 125, 0.2);
+  margin: 1px;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 4px 0px 8px;
+}
+
+.buttons {
+  display: flex;
+  gap: 16px;
+
+  button {
+    padding: 7px 16px;
+    font-size: 1rem;
+    width: 100%;
+  }
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}

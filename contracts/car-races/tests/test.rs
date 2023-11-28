@@ -59,28 +59,26 @@ fn success_run_game() {
 
     assert!(!run_result.main_failed());
 
-    // TODO: uncomment when we switch to 1.0.1 version
+    for _i in 0..40 {
+        let run_result = game.send(
+            ADMIN,
+            GameAction::PlayerMove {
+                strategy_action: StrategyAction::BuyShell,
+            },
+        );
 
-    // for _i in 0..40 {
-    //     let run_result = game.send(
-    //         ADMIN,
-    //         GameAction::PlayerMove {
-    //             strategy_action: StrategyAction::BuyShell,
-    //         },
-    //     );
+        assert!(!run_result.main_failed());
 
-    //     assert!(!run_result.main_failed());
-
-    //     let reply = game
-    //         .read_state(StateQuery::AllGames)
-    //         .expect("Unexpected invalid state.");
-    //     if let StateReply::AllGames(state) = reply {
-    //         let (_id, game) = &state[0];
-    //         if game.state == GameState::Finished {
-    //             break;
-    //         }
-    //     }
-    // }
+        let reply = game
+            .read_state(StateQuery::AllGames)
+            .expect("Unexpected invalid state.");
+        if let StateReply::AllGames(state) = reply {
+            let (_id, game) = &state[0];
+            if game.state == GameState::Finished {
+                break;
+            }
+        }
+    }
 }
 
 #[test]
@@ -114,14 +112,13 @@ fn success_add_admin() {
     let run_result = game.send(ADMIN, GameAction::AddAdmin(1.into()));
     assert!(!run_result.main_failed());
 
-    // TODO: uncomment when we switch to 1.0.1 version
-    // let reply = game
-    //     .read_state(StateQuery::Admins)
-    //     .expect("Unexpected invalid state.");
-    // if let StateReply::Admins(admins) = reply {
-    //     let true_admins: Vec<ActorId> = vec![100.into(), 1.into()];
-    //     assert_eq!(true_admins, admins, "Wrong admins");
-    // }
+    let reply = game
+        .read_state(StateQuery::Admins)
+        .expect("Unexpected invalid state.");
+    if let StateReply::Admins(admins) = reply {
+        let true_admins: Vec<ActorId> = vec![100.into(), 1.into()];
+        assert_eq!(true_admins, admins, "Wrong admins");
+    }
 }
 
 #[test]
@@ -193,35 +190,33 @@ fn failures_test() {
     let run_result = game.send(ADMIN, GameAction::StartGame);
     assert!(run_result.main_failed());
 
-    // TODO: uncomment when we switch to 1.0.1 version
+    for _i in 0..40 {
+        let run_result = game.send(
+            ADMIN,
+            GameAction::PlayerMove {
+                strategy_action: StrategyAction::BuyShell,
+            },
+        );
 
-    // for _i in 0..40 {
-    //     let run_result = game.send(
-    //         ADMIN,
-    //         GameAction::PlayerMove {
-    //             strategy_action: StrategyAction::BuyShell,
-    //         },
-    //     );
+        assert!(!run_result.main_failed());
 
-    //     assert!(!run_result.main_failed());
+        let reply = game
+            .read_state(StateQuery::AllGames)
+            .expect("Unexpected invalid state.");
+        if let StateReply::AllGames(state) = reply {
+            let (_id, game) = &state[0];
+            if game.state == GameState::Finished {
+                break;
+            }
+        }
+    }
 
-    //     let reply = game
-    //         .read_state(StateQuery::AllGames)
-    //         .expect("Unexpected invalid state.");
-    //     if let StateReply::AllGames(state) = reply {
-    //         let (_id, game) = &state[0];
-    //         if game.state == GameState::Finished {
-    //             break;
-    //         }
-    //     }
-    // }
-
-    // // The game's already over
-    // let run_result = game.send(
-    //     ADMIN,
-    //     GameAction::PlayerMove {
-    //         strategy_action: StrategyAction::BuyShell,
-    //     },
-    // );
-    // assert!(run_result.main_failed());
+    // The game's already over
+    let run_result = game.send(
+        ADMIN,
+        GameAction::PlayerMove {
+            strategy_action: StrategyAction::BuyShell,
+        },
+    );
+    assert!(run_result.main_failed());
 }

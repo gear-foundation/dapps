@@ -302,7 +302,7 @@ fn turn() -> u8 {
     random[0] % 2
 }
 
-fn make_move(game: &mut GameInstance) -> Option<usize> {
+fn make_move(game: &GameInstance) -> Option<usize> {
     match game.bot_mark {
         Mark::O => {
             // if on any of the winning lines there are 2 own pieces and 0 strangers

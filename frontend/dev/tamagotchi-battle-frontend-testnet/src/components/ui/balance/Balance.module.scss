@@ -1,0 +1,46 @@
+@use '@/assets/styles/utils' as *;
+
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+  @include gap(10px, right);
+
+  svg {
+    width: 20px;
+    height: 20px;
+    color: #000;
+  }
+}
+
+.balance {
+  display: block;
+  line-height: 22px;
+
+  > * + * {
+    margin-left: 4px;
+  }
+}
+
+.amount {
+  display: inline-block;
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 20px;
+  letter-spacing: -0.02em;
+}
+
+.unit {
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1.4;
+  color: rgba(#fff, 0.6);
+}
+
+.points {
+  @include gap(4px, right);
+
+  .balance {
+    line-height: 20px;
+    letter-spacing: -0.4px;
+  }
+}

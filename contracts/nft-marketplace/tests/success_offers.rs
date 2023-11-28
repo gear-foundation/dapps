@@ -35,7 +35,7 @@ async fn gclient_success_offers() -> gclient::Result<()> {
         let mut listener = buyer_api.subscribe().await?;
 
         for i in 0..10 {
-            let offered_price = 10_000 * (i + 1) as u128;
+            let offered_price = 200_000_000_000_000 * (i + 1) as u128;
 
             marketplace::add_offer(
                 &buyer_api,
@@ -53,7 +53,7 @@ async fn gclient_success_offers() -> gclient::Result<()> {
 
         let mut tx_id: u64 = 100;
         for i in 10..20 {
-            let offered_price = 10_000 * (i + 1) as u128;
+            let offered_price = 200_000_000_000_000 * (i + 1) as u128;
 
             tx_id += 1;
             ft::mint(
@@ -102,7 +102,7 @@ async fn gclient_success_offers() -> gclient::Result<()> {
         .items
         .contains_key(&(nft_contract, common::TOKEN_ID.into())));
 
-    let accepted_price = 10_000 * 15;
+    let accepted_price = 200_000_000_000_000 * 15;
     {
         let seller_api = gear_api_from_path().with(common::SELLER)?;
         let mut listener = seller_api.subscribe().await?;
@@ -159,7 +159,7 @@ async fn gclient_success_offers() -> gclient::Result<()> {
         let buyer_api = gear_api_from_path().with(common::BUYER)?;
         let mut listener = buyer_api.subscribe().await?;
 
-        let withdrawn_tokens = 110_000;
+        let withdrawn_tokens = 2_200_000_000_000_000;
         marketplace::withdraw(
             &buyer_api,
             &mut listener,
@@ -172,7 +172,7 @@ async fn gclient_success_offers() -> gclient::Result<()> {
         )
         .await?;
 
-        let withdrawn_tokens = 10_000 * 2_u128;
+        let withdrawn_tokens = 200_000_000_000_000 * 2_u128;
         marketplace::withdraw(
             &buyer_api,
             &mut listener,
@@ -186,7 +186,7 @@ async fn gclient_success_offers() -> gclient::Result<()> {
         .await?;
     }
 
-    let offered_value = 1_000_000;
+    let offered_value = 20_000_000_000_000_000;
 
     {
         let seller_api = gear_api_from_path().with(common::SELLER)?;

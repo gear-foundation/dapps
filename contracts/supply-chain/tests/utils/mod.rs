@@ -4,7 +4,7 @@ use gstd::{
     prelude::*,
     ActorId,
 };
-use gtest::{Program as InnerProgram, System, EXISTENTIAL_DEPOSIT};
+use gtest::{Program as InnerProgram, System};
 use supply_chain_io::*;
 use supply_chain_state::{WASM_BINARY, WASM_EXPORTS};
 
@@ -18,6 +18,7 @@ pub use self::non_fungible_token::NonFungibleToken;
 pub use common::initialize_system;
 pub use fungible_token::FungibleToken;
 
+pub const EXISTENTIAL_DEPOSIT: u128 = 10_000_000_000_000;
 pub const FOREIGN_USER: u64 = 1029384756123;
 pub const PRODUCER: u64 = 5;
 pub const DISTRIBUTOR: u64 = 7;
@@ -413,7 +414,7 @@ impl SupplyChainState<'_> {
     ) -> StateReply<T> {
         StateReply(
             self.0
-                .read_state_using_wasm(WASM_EXPORTS[fn_index], WASM_BINARY.into(), argument)
+                .read_state_using_wasm(0, WASM_EXPORTS[fn_index], WASM_BINARY.into(), argument)
                 .unwrap(),
         )
     }

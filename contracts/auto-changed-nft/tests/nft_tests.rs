@@ -1,5 +1,4 @@
-use gear_lib_old::non_fungible_token::io::*;
-use gear_lib_old::non_fungible_token::token::TokenId;
+use gear_lib_old::non_fungible_token::{io::*, token::TokenId};
 use gstd::{ActorId, Encode};
 use gtest::System;
 mod utils;
@@ -347,7 +346,6 @@ fn auto_change_success() {
 
     // Start update
     assert_eq!(current_media(&nft, token_id), link1);
-
     sys.spend_blocks(updates_period);
     assert_eq!(current_media(&nft, token_id), link4);
 

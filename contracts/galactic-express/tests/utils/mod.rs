@@ -106,6 +106,6 @@ impl<'a> GalEx<'a> {
     }
 
     pub fn state(&self) -> State {
-        self.0.read_state().unwrap()
+        self.0.read_state(0).unwrap()
     }
 }

@@ -96,8 +96,8 @@ fn check_register_more_then_possible() {
     let sys = System::new();
     let game = common_init(&sys);
 
-    sys.mint_to(USERS[3] + 1, 1_000_000_000);
-    sys.mint_to(USERS[3] + 2, 1_000_000_000);
+    sys.mint_to(USERS[3] + 1, 100_000_000_000_000);
+    sys.mint_to(USERS[3] + 2, 100_000_000_000_000);
 
     register_players(&game, &USERS[0..4], COMMON_BET);
     check_register_player(&game, USERS[3] + 1, COMMON_BET);

@@ -1,7 +1,7 @@
 use common::{InitResult, MetaStateReply, Program, RunResult, TransactionalProgram};
 use game_of_chance_io::*;
 use gstd::{prelude::*, ActorId};
-use gtest::{Program as InnerProgram, System, EXISTENTIAL_DEPOSIT};
+use gtest::{Program as InnerProgram, System};
 use rand::{RngCore, SeedableRng};
 use rand_xoshiro::Xoshiro128PlusPlus;
 
@@ -14,6 +14,7 @@ pub use common::initialize_system;
 pub use fungible_token::FungibleToken;
 
 pub const FOREIGN_USER: u64 = 9999999;
+pub const EXISTENTIAL_DEPOSIT: u128 = 10_000_000_000_000;
 
 type GOCRunResult<T> = RunResult<T, Event, Error>;
 
@@ -107,7 +108,7 @@ pub struct GOCMetaState<'a>(&'a InnerProgram<'a>);
 
 impl GOCMetaState<'_> {
     pub fn all(self) -> MetaStateReply<State> {
-        MetaStateReply(self.0.read_state().unwrap())
+        MetaStateReply(self.0.read_state(0).unwrap())
     }
 }
 

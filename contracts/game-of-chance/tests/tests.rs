@@ -4,8 +4,8 @@ mod utils;
 
 const ADMIN: u64 = 3;
 const PLAYERS: [u64; 3] = [4, 5, 6];
-const AMOUNT: u128 = 12345;
-const PARTICIPATION_COST: u128 = 10000;
+const AMOUNT: u128 = 30_000_000_000_000;
+const PARTICIPATION_COST: u128 = 20_000_000_000_000;
 const DURATION: u64 = 2000;
 const DURATION_IN_SECS: u32 = (DURATION / 1000) as _;
 

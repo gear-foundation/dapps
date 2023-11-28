@@ -15,7 +15,6 @@ async fn gclient_fail_offers() -> gclient::Result<()> {
     {
         let seller_api = gear_api_from_path().with(common::SELLER)?;
         let mut listener = seller_api.subscribe().await?;
-
         marketplace::add_market_data(
             &seller_api,
             &mut listener,
@@ -32,7 +31,6 @@ async fn gclient_fail_offers() -> gclient::Result<()> {
     {
         let buyer_api = gear_api_from_path().with(common::BUYER)?;
         let mut listener = buyer_api.subscribe().await?;
-
         marketplace::add_offer(
             &buyer_api,
             &mut listener,
@@ -54,7 +52,7 @@ async fn gclient_fail_offers() -> gclient::Result<()> {
             None,
             common::TOKEN_ID.into(),
             common::NFT_PRICE,
-            common::NFT_PRICE - 1000,
+            common::NFT_PRICE - 1_000_000_000_000,
             true,
         )
         .await?;
@@ -150,8 +148,8 @@ async fn gclient_fail_offers() -> gclient::Result<()> {
             &nft_contract,
             None,
             common::TOKEN_ID.into(),
-            common::NFT_PRICE - 1000,
-            common::NFT_PRICE - 1000,
+            common::NFT_PRICE - 1_000_000_000_000,
+            common::NFT_PRICE - 1_000_000_000_000,
             true,
         )
         .await?;
