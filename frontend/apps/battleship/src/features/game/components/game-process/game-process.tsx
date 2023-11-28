@@ -79,6 +79,7 @@ export default function GameProcess() {
           setCanExecute(true);
         },
         withVoucher: isVoucher,
+        gasLimit: 100000000000,
       });
     }
   };

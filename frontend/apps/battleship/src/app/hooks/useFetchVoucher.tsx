@@ -32,20 +32,25 @@ export function useFetchVoucher(account: string | undefined) {
   useEffect(() => {
     if (account && isVoucherExists !== undefined) {
       const fetchData = async () => {
-        setIsLoading(true);
-        const availableBack = await fetch(ADDRESS.BACK);
+        try {
+          setIsLoading(true);
+          const availableBack = await fetch(ADDRESS.BACK);
 
-        if (availableBack?.status === 200) {
-          if (isVoucherExists) {
-            setVoucher(true);
-          } else {
-            const createdVoucher = await createVoucher();
-            if (createdVoucher) {
+          if (availableBack?.status === 200) {
+            if (isVoucherExists) {
               setVoucher(true);
+            } else {
+              const createdVoucher = await createVoucher();
+              if (createdVoucher) {
+                setVoucher(true);
+              }
             }
           }
+          setIsLoading(false);
+
+        } catch (error) {
+          setIsLoading(false);
         }
-        setIsLoading(false);
       };
 
       fetchData();

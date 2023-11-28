@@ -36,7 +36,6 @@ export default function ShipArrangement() {
 
   const onGameStart = async () => {
     await updateBalance();
-
     if (!isLoading) {
       setPending(true);
       message({
@@ -46,6 +45,7 @@ export default function ShipArrangement() {
           },
         },
         withVoucher: isVoucher,
+        gasLimit: 100000000000,
       });
     }
   };
