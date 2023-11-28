@@ -1,7 +1,7 @@
 use battleship_io::{
     ActionsForSession, BattleshipAction, BattleshipInit, BattleshipParticipants, BattleshipReply,
-    BattleshipState, BotBattleshipAction, Entity, Game, GameState, Session, Ships, StateQuery,
-    StateReply, Step,
+    BattleshipState, BotBattleshipAction, Config, Entity, Game, GameState, Session, Ships,
+    StateQuery, StateReply, Step,
 };
 use gstd::{
     collections::{BTreeMap, HashMap},
@@ -11,8 +11,6 @@ use gstd::{
 };
 
 static mut BATTLESHIP: Option<Battleship> = None;
-pub const GAS_FOR_START: u64 = 100_000_000_000;
-pub const GAS_FOR_MOVE: u64 = 100_000_000_000;
 
 #[derive(Debug, Default)]
 struct Battleship {
@@ -21,6 +19,7 @@ struct Battleship {
     pub bot_address: ActorId,
     pub admin: ActorId,
     pub sessions: HashMap<ActorId, Session>,
+    pub config: Config,
 }
 
 impl Battleship {
@@ -94,7 +93,7 @@ impl Battleship {
         let msg_id = msg::send_with_gas(
             self.bot_address,
             BotBattleshipAction::Start,
-            GAS_FOR_START,
+            self.config.gas_for_start,
             0,
         )
         .expect("Error in sending a message");
@@ -149,7 +148,7 @@ impl Battleship {
         let msg_id = msg::send_with_gas(
             self.bot_address,
             BotBattleshipAction::Turn(board),
-            GAS_FOR_MOVE,
+            self.config.gas_for_turn,
             0,
         )
         .expect("Error in sending a message");
@@ -165,6 +164,15 @@ impl Battleship {
         );
         self.bot_address = bot;
         msg::reply(BattleshipReply::BotChanged(bot), 0).expect("Error in sending a reply");
+    }
+
+    fn change_config(&mut self, config: Config) {
+        assert!(
+            msg::source() == self.admin,
+            "Only the admin can change the configuration"
+        );
+        self.config = config.clone();
+        msg::reply(BattleshipReply::ConfigChanged(config), 0).expect("Error in sending a reply");
     }
 
     fn clear_state(&mut self, leave_active_games: bool) {
@@ -221,11 +229,15 @@ impl Battleship {
 
 #[no_mangle]
 extern fn init() {
-    let BattleshipInit { bot_address } = msg::load().expect("Unable to decode BattleshipInit");
+    let BattleshipInit {
+        bot_address,
+        config,
+    } = msg::load().expect("Unable to decode BattleshipInit");
     unsafe {
         BATTLESHIP = Some(Battleship {
             bot_address,
             admin: msg::source(),
+            config,
             ..Default::default()
         });
     }
@@ -250,6 +262,7 @@ extern fn handle() {
             session_for_account,
         } => battleship.player_move(step, session_for_account),
         BattleshipAction::ChangeBot { bot } => battleship.change_bot(bot),
+        BattleshipAction::ChangeConfig { config } => battleship.change_config(config),
         BattleshipAction::ClearState { leave_active_games } => {
             battleship.clear_state(leave_active_games)
         }
@@ -328,6 +341,10 @@ extern fn state() {
             msg::reply(StateReply::BotContractId(battleship.bot_address), 0)
                 .expect("Unable to share the state");
         }
+        StateQuery::Config => {
+            msg::reply(StateReply::Config(battleship.config), 0)
+                .expect("Unable to share the state");
+        }
         StateQuery::SessionForTheAccount(account) => {
             msg::reply(
                 StateReply::SessionForTheAccount(battleship.sessions.get(&account).cloned()),
@@ -344,6 +361,7 @@ impl From<Battleship> for BattleshipState {
             games,
             bot_address,
             admin,
+            config,
             ..
         } = value;
 
@@ -370,6 +388,7 @@ impl From<Battleship> for BattleshipState {
             games,
             bot_address,
             admin,
+            config,
         }
     }
 }

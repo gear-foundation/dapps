@@ -15,6 +15,10 @@ fn init_battleship(sys: &System) {
         3,
         BattleshipInit {
             bot_address: 2.into(),
+            config: Config {
+                gas_for_start: 3_000_000_000,
+                gas_for_turn: 3_000_000_000,
+            },
         },
     );
     assert!(!res.main_failed());

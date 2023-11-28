@@ -25,6 +25,7 @@ pub enum StateQuery {
     All,
     Game(ActorId),
     BotContractId,
+    Config,
     SessionForTheAccount(ActorId)
 }
 
@@ -35,6 +36,7 @@ pub enum StateReply {
     All(BattleshipState),
     Game(Option<GameState>),
     BotContractId(ActorId),
+    Config(Config),
     SessionForTheAccount(Option<Session>),
 }
 
@@ -45,6 +47,7 @@ pub struct BattleshipState {
     pub games: Vec<(ActorId, GameState)>,
     pub bot_address: ActorId,
     pub admin: ActorId,
+    pub config: Config,
 }
 
 // This structure is for creating a gaming session, which allows players to predefine certain actions for an account that will play the game on their behalf for a certain period of time. 
@@ -95,6 +98,7 @@ pub enum BattleshipAction {
     StartGame { ships: Ships, session_for_account: Option<ActorId> },
     Turn { step: u8, session_for_account: Option<ActorId> },
     ChangeBot { bot: ActorId },
+    ChangeConfig { config: Config },
     ClearState { leave_active_games: bool },
     DeleteGame { player_address: ActorId },
     CreateSession { key: ActorId, duration: u64, allowed_actions: Vec<ActionsForSession>},
@@ -108,6 +112,7 @@ pub enum BattleshipReply {
     MessageSentToBot,
     EndGame(BattleshipParticipants),
     BotChanged(ActorId),
+    ConfigChanged(Config),
     SessionCreated,
     SessionDeleted,
 }
@@ -126,6 +131,15 @@ pub enum Step {
 #[scale_info(crate = gstd::scale_info)]
 pub struct BattleshipInit {
     pub bot_address: ActorId,
+    pub config: Config,
+}
+
+#[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct Config {
+    pub gas_for_start: u64,
+    pub gas_for_turn: u64,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]

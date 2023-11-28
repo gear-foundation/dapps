@@ -1,5 +1,6 @@
 use battleship_io::{
-    BattleshipAction, BattleshipInit, BattleshipState, Entity, Ships, StateQuery, StateReply,
+    BattleshipAction, BattleshipInit, BattleshipState, Config, Entity, Ships, StateQuery,
+    StateReply,
 };
 use gclient::{EventListener, EventProcessor, GearApi, Result};
 use gear_core::ids::ProgramId;
@@ -62,6 +63,10 @@ async fn gclient_start_game_test() -> Result<()> {
 
     let init_battleship = BattleshipInit {
         bot_address: bot_actor_id.into(),
+        config: Config {
+            gas_for_start: 3_000_000_000,
+            gas_for_turn: 3_000_000_000,
+        },
     }
     .encode();
 
@@ -127,6 +132,10 @@ async fn gclient_turn_test() -> Result<()> {
 
     let init_battleship = BattleshipInit {
         bot_address: bot_actor_id.into(),
+        config: Config {
+            gas_for_start: 3_000_000_000,
+            gas_for_turn: 3_000_000_000,
+        },
     }
     .encode();
 
