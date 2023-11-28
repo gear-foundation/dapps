@@ -26,7 +26,6 @@ concurrency:
 
 jobs:
   all:
-    if: false # REMOVE ME!
     name: All
     runs-on: self-hosted
     steps:
