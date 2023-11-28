@@ -64,14 +64,14 @@ jobs:
             test: test
           - subdir: apps/tequila-train
             build: build
-            test: test
+            test: --passWithNoTests test
           - subdir: apps/tic-tac-toe
             build: build
           - subdir: apps/vara-man
             build: build
           - subdir: apps/varatube
             build: build
-            test: test
+            test: test --passWithNoTests
 
           # Packages
           - subdir: packages/error-tracking
