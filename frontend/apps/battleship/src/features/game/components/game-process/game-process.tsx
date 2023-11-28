@@ -77,17 +77,15 @@ export default function GameProcess() {
     await updateBalance();
 
     if (!isLoading) {
-      checkBalance(gasLimit, () =>
-        message({
-          payload: { Turn: { step: indexCell } },
-          gasLimit,
-          withVoucher: isVoucher,
-          onSuccess: () => {
-            setPending(false);
-            setCanExecute(true);
-          },
-        }),
-      );
+      message({
+        payload: { Turn: { step: indexCell } },
+        onSuccess: () => {
+          setPending(false);
+          setCanExecute(true);
+        },
+        withVoucher: isVoucher,
+        gasLimit: 100000000000,
+      });
     }
   };
 

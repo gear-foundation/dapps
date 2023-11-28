@@ -40,7 +40,6 @@ export default function ShipArrangement() {
     const gasLimit = 100000000000;
 
     await updateBalance();
-
     if (!isLoading) {
       setPending(true);
 
@@ -51,10 +50,10 @@ export default function ShipArrangement() {
               ships: shipsField,
             },
           },
-          withVoucher: isVoucher,
-          gasLimit,
-        }),
-      );
+        },
+        withVoucher: isVoucher,
+        gasLimit: 100000000000,
+      });
     }
   };
 
