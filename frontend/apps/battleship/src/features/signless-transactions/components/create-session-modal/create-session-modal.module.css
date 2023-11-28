@@ -1,0 +1,17 @@
+.inputs {
+  /* TODO: if there's margin-bottom on top element (?), label overflow is broken  */
+  /* remove after @gear-js/vara-ui fix */
+  padding-top: 8px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.button {
+  /* TODO: button 'block' props should handle this */
+  /* remove after @gear-js/vara-ui fix  */
+  width: 100%;
+  justify-content: center;
+}
