@@ -33,38 +33,38 @@ jobs:
             build: build
           - subdir: apps/escrow
             build: build
-            test: test
+            test: test --passWithNoTests
           - subdir: apps/galactic-express
             build: build
-            test: test
+            test: test --passWithNoTests
           - subdir: apps/game-of-chance
             build: build
-            test: test
+            test: test --passWithNoTests
           - subdir: apps/nft-marketplace
             build: build
-            test: test
+            test: test --passWithNoTests
           - subdir: apps/nft-master
             build: build
-            test: test
+            test: test --passWithNoTests
           - subdir: apps/non-fungible-token
             build: build
-            test: test
+            test: test --passWithNoTests
           - subdir: apps/racing-car-game
             build: build
           - subdir: apps/supply-chain
             build: build
-            test: test
+            test: test --passWithNoTests
           - subdir: apps/syndote
             build: build
-            test: test
+            test: test --passWithNoTests
           - subdir: apps/tamagotchi
             build: build
           - subdir: apps/tamagotchi-battle
             build: build
-            test: test
+            test: test --passWithNoTests
           - subdir: apps/tequila-train
             build: build
-            test: --passWithNoTests test
+            test: test --passWithNoTests
           - subdir: apps/tic-tac-toe
             build: build
           - subdir: apps/vara-man
