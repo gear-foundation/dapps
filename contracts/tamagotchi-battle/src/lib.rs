@@ -1,8 +1,6 @@
 #![no_std]
 
-use gstd::{
-    collections::BTreeMap, debug, exec, msg, prelude::*, ActorId, MessageId, ReservationId,
-};
+use gstd::{collections::BTreeMap, exec, msg, prelude::*, ActorId, MessageId, ReservationId};
 use tamagotchi_battle_io::*;
 use tamagotchi_io::{TmgAction, TmgReply};
 
@@ -13,7 +11,7 @@ const HEALTH: u16 = 2_500;
 const MAX_PARTICIPANTS: u8 = 50;
 const MAX_STEPS_IN_ROUND: u8 = 5;
 const COLORS: [&str; 6] = ["Green", "Red", "Blue", "Purple", "Orange", "Yellow"];
-const TIME_FOR_MOVE: u32 = 60;
+const TIME_FOR_MOVE: u32 = 20;
 const GAS_AMOUNT: u64 = 10_000_000_000;
 const RESERVATION_AMOUNT: u64 = 200_000_000_000;
 const RESERVATION_DURATION: u32 = 86_400;
@@ -179,7 +177,6 @@ impl Battle {
             // his gas then reserved and saved again
             let reservation_id = self.reservations.remove(&first_tmg).expect("Can't be None");
             let msg_id = send_delayed_msg_from_rsv(reservation_id, pair_id as u8, &first_tmg);
-
             let pair = Pair {
                 owner_ids: vec![first_owner, second_owner],
                 tmg_ids: vec![first_tmg, second_tmg],
@@ -187,7 +184,7 @@ impl Battle {
                 rounds: 0,
                 game_is_over: false,
                 winner: ActorId::zero(),
-                move_deadline: exec::block_timestamp() + (TIME_FOR_MOVE * 1_000) as u64,
+                move_deadline: exec::block_timestamp() + (TIME_FOR_MOVE * 3_000) as u64,
                 msg_id,
             };
             self.pairs.insert(pair_id as u8, pair);
@@ -233,16 +230,13 @@ impl Battle {
     }
 
     fn check_if_move_made(&mut self, pair_id: PairId, tmg_id: Option<TamagotchiId>) {
-        debug!("Delayed message");
         assert!(
             msg::source() == exec::program_id() || self.admins.contains(&msg::source()),
             "Only program or admin can send this message"
         );
         let pair = self.pairs.get(&pair_id).expect("Pair does not exist");
-
         // message was sent from reservation
         if let Some(tmg_id) = tmg_id {
-            debug!("SAVE GAS FROM RESERVATION {:?}", pair.moves);
             if exec::gas_available() >= GAS_AMOUNT {
                 // return gas to previous player
                 let reservation_amount = exec::gas_available() - GAS_AMOUNT;
@@ -341,7 +335,6 @@ impl Battle {
                 .expect("Player does not exist")
                 .clone(),
         );
-        debug!("GAS  {:?}", exec::gas_available());
         players.push(
             self.players
                 .get(&pair.tmg_ids[1])
@@ -393,10 +386,9 @@ impl Battle {
                 }
             }
 
-            debug!("GAS  {:?}", exec::gas_available());
             send_round_result(&self.admins[0], pair_id, &[loss_0, loss_1], &moves);
         }
-        pair.move_deadline = exec::block_timestamp() + (TIME_FOR_MOVE * 1_000) as u64;
+        pair.move_deadline = exec::block_timestamp() + (TIME_FOR_MOVE * 3_000) as u64;
         pair.game_is_over
     }
 

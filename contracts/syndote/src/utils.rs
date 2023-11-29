@@ -80,7 +80,7 @@ pub fn bankrupt_and_penalty(
     admin: &ActorId,
     players: &mut HashMap<ActorId, PlayerInfo>,
     players_queue: &mut Vec<ActorId>,
-    properties: &mut [Option<(ActorId, Gears, Price, Rent)>],
+    properties: &[Option<(ActorId, Gears, Price, Rent)>],
     properties_in_bank: &mut HashSet<u8>,
     ownership: &mut [ActorId],
 ) {

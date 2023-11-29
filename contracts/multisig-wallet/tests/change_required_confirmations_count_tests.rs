@@ -25,7 +25,7 @@ fn common() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..3], 2);
 
-    sys.mint_to(USERS[0], 1_000_000_000);
+    sys.mint_to(USERS[0], 10_000_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -34,7 +34,7 @@ fn common() {
             value: 0,
             description: None,
         },
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     let expect = MWEvent::Submission {
@@ -57,7 +57,7 @@ fn common() {
         MWAction::SubmitTransaction {
             destination: USERS[3].into(),
             data: vec![],
-            value: 1000,
+            value: 10_000_000_000_000,
             description: None,
         },
     );
@@ -78,7 +78,7 @@ fn make_greater() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..3], 2);
 
-    sys.mint_to(USERS[0], 1_000_000_000);
+    sys.mint_to(USERS[0], 10_000_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -87,7 +87,7 @@ fn make_greater() {
             value: 0,
             description: None,
         },
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     let expect = MWEvent::Submission {
@@ -110,7 +110,7 @@ fn make_greater() {
         MWAction::SubmitTransaction {
             destination: USERS[3].into(),
             data: vec![],
-            value: 1000,
+            value: 10_000_000_000_000,
             description: None,
         },
     );
@@ -145,11 +145,11 @@ fn try_to_send_directly() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..3], 1);
 
-    sys.mint_to(USERS[0], 1_000_000_000);
+    sys.mint_to(USERS[0], 10_000_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::ChangeRequiredConfirmationsCount(3).encode(),
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     assert!(res.main_failed());
@@ -160,7 +160,7 @@ fn required_greater_than_owners_count() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..3], 1);
 
-    sys.mint_to(USERS[0], 1_000_000_000);
+    sys.mint_to(USERS[0], 10_000_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -169,7 +169,7 @@ fn required_greater_than_owners_count() {
             value: 0,
             description: None,
         },
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     assert!(res.others_failed());
@@ -180,7 +180,7 @@ fn zero_required_confirmations() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..3], 1);
 
-    sys.mint_to(USERS[0], 1_000_000_000);
+    sys.mint_to(USERS[0], 10_000_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -189,7 +189,7 @@ fn zero_required_confirmations() {
             value: 0,
             description: None,
         },
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     assert!(res.others_failed());

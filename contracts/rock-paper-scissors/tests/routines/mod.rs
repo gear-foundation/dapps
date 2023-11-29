@@ -5,8 +5,8 @@ use rock_paper_scissors_io::*;
 pub const USERS: &[u64] = &[3, 4, 5, 6];
 pub const COMMON_USERS_SET: &[u64] = &[3, 4, 5];
 pub const DEFAULT_PASSWORD: &str = "pass12";
-pub const COMMON_BET: u128 = 1_000_000;
-pub const START_BALANCE: u128 = 1_000_000_000;
+pub const COMMON_BET: u128 = 20_000_000_000_000;
+pub const START_BALANCE: u128 = 100_000_000_000_000;
 pub const COMMON_PLAYERS_COUNT_LIMIT: u8 = 5;
 pub const COMMON_TIMEOUT: u64 = 5_000;
 pub const COMMON_CONFIG: GameConfig = GameConfig {
