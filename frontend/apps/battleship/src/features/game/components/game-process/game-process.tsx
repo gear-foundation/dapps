@@ -9,6 +9,7 @@ import { getFormattedTime } from '../../utils';
 import { Loader } from '@/components';
 import { useAccount } from '@gear-js/react-hooks';
 import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
+import { useCheckBalance } from '@/features/wallet/hooks';
 
 export default function GameProcess() {
   const { account } = useAccount();
@@ -23,6 +24,7 @@ export default function GameProcess() {
   const { gameState } = useGame();
   const { setPending } = usePending();
   const message = useGameMessage();
+  const { checkBalance } = useCheckBalance();
 
   const [isOpenEndModal, setIsOpenEndModal] = useState(false);
   const openEndModal = () => setIsOpenEndModal(true);
@@ -70,17 +72,22 @@ export default function GameProcess() {
   }, [gameState]);
 
   const onClickCell = async (indexCell: number) => {
+    const gasLimit = 100000000000;
+
     await updateBalance();
+
     if (!isLoading) {
-      message({
-        payload: { Turn: { step: indexCell } },
-        onSuccess: () => {
-          setPending(false);
-          setCanExecute(true);
-        },
-        withVoucher: isVoucher,
-        gasLimit: 100000000000,
-      });
+      checkBalance(gasLimit, () =>
+        message({
+          payload: { Turn: { step: indexCell } },
+          gasLimit,
+          withVoucher: isVoucher,
+          onSuccess: () => {
+            setPending(false);
+            setCanExecute(true);
+          },
+        }),
+      );
     }
   };
 

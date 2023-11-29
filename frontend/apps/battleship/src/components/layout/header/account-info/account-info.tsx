@@ -1,12 +1,13 @@
 import clsx from 'clsx';
 
-import { useApi, useAccount, useBalance, useBalanceFormat } from '@gear-js/react-hooks';
+import { useApi, useAccount } from '@gear-js/react-hooks';
 
 import { VaraBalance } from '@/components/ui/balance';
 import { Button } from '@/components/ui/button';
 import { AvaVaraBlack, ChevronDown, CrossIcon } from '@/assets/images';
 
 import styles from './account-info.module.scss';
+import { useAccountAvailableBalance } from '@/features/wallet/hooks';
 
 type AccountInfoProps = BaseComponentProps & {
   openWallet: () => void;
@@ -16,9 +17,8 @@ type AccountInfoProps = BaseComponentProps & {
 export function AccountInfo({ className, openWallet, isOpen }: AccountInfoProps) {
   const { isApiReady } = useApi();
   const { account } = useAccount();
-  const { balance } = useBalance(account?.address);
-  const { getFormattedBalance } = useBalanceFormat();
-  const formattedBalance = isApiReady && balance ? getFormattedBalance(balance) : undefined;
+  const { availableBalance: balance } = useAccountAvailableBalance();
+  const formattedBalance = isApiReady && (balance || undefined);
 
   return (
     <>
