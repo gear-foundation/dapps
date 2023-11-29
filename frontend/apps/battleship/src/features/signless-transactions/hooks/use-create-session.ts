@@ -7,13 +7,12 @@ import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
 
 function useCreateSession() {
   const metadata = useProgramMetadata(metaTxt);
-  const sendMessage = useSendMessageHandler(ADDRESS.GAME, metadata);
+  const sendMessage = useSendMessageHandler(ADDRESS.GAME, metadata, { disableAlerts: true });
 
-  const createSession = (accountAddress: HexString, duration: number, allowedActions: string) => {
-    const key = accountAddress;
+  const createSession = (key: HexString, duration: number, allowedActions: string, onSuccess: () => void) => {
     const payload = { CreateSession: { duration, allowedActions, key } };
 
-    sendMessage({ payload });
+    sendMessage({ payload, onSuccess });
   };
 
   return createSession;

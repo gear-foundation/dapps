@@ -1,10 +1,9 @@
-import { AnyJson } from '@polkadot/types/types';
 import { HexString } from '@polkadot/util/types';
 
 type Session = {
   key: HexString;
-  duration: string;
-  allowed_actions: AnyJson;
+  expires: string;
+  allowedActions: string[];
 };
 
 type State = {

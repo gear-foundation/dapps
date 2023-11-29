@@ -1,23 +1,35 @@
-import { decodeAddress } from '@gear-js/api';
 import { Keyring } from '@polkadot/api';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
 
-const getRandomAccount = () => {
-  const privateKey = mnemonicGenerate();
+const MULTIPLIER = {
+  MS: 1000,
+  SECONDS: 60,
+  MINUTES: 60,
+  HOURS: 24,
+};
+
+const getRandomAccount = (password: string) => {
+  const seed = mnemonicGenerate();
 
   const keyring = new Keyring({ type: 'sr25519' });
+  const pair = keyring.addFromUri(seed);
 
-  const pair = keyring.addFromMnemonic(privateKey);
-  const publicKey = decodeAddress(pair.address);
+  if (!pair.isLocked) pair.lock();
+  const json = pair.toJson(password);
 
-  return { publicKey, privateKey };
+  return json;
 };
 
-const getMilliseconds = (minutes: number) => {
-  const SECONDS_MULTIPLIER = 60;
-  const MILLISECONDS_MULTIPLIER = 1000;
+const getMilliseconds = (minutes: number) => minutes * MULTIPLIER.MS * MULTIPLIER.SECONDS;
 
-  return minutes * SECONDS_MULTIPLIER * MILLISECONDS_MULTIPLIER;
+const getDoubleDigits = (value: number) => (value < 10 ? `0${value}` : value);
+
+const getHMS = (ms: number) => {
+  const seconds = Math.floor((ms / MULTIPLIER.MS) % MULTIPLIER.SECONDS);
+  const minutes = Math.floor((ms / (MULTIPLIER.MS * MULTIPLIER.SECONDS)) % MULTIPLIER.MINUTES);
+  const hours = Math.floor((ms / (MULTIPLIER.MS * MULTIPLIER.SECONDS * MULTIPLIER.MINUTES)) % MULTIPLIER.HOURS);
+
+  return `${getDoubleDigits(hours)}:${getDoubleDigits(minutes)}:${getDoubleDigits(seconds)}`;
 };
 
-export { getRandomAccount, getMilliseconds };
+export { getRandomAccount, getMilliseconds, getHMS };
