@@ -16,24 +16,24 @@ impl Metadata for NftMetadata {
     type State = InOut<StateQuery, StateReply>;
 }
 
-#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[derive(Default, Debug, Encode, Decode, TypeInfo)]
 pub struct Config {
     pub max_mint_count: Option<u128>,
 }
 
-#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[derive(Default, Debug, Encode, Decode, TypeInfo)]
 pub struct InitNft {
     pub collection: Collection,
     pub config: Config,
 }
 
-#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[derive(Default, Debug, Encode, Decode, TypeInfo)]
 pub struct Collection {
     pub name: String,
     pub description: String,
 }
 
-#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum NftAction {
     Mint { token_metadata: TokenMetadata },
     Burn { token_id: TokenId },
@@ -43,7 +43,7 @@ pub enum NftAction {
     IsApproved { to: ActorId, token_id: TokenId },
 }
 
-#[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum NftEvent {
     Mint {
         to: ActorId,
@@ -73,8 +73,7 @@ pub enum NftEvent {
     },
 }
 
-#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
-
+#[derive(Default, Debug, Encode, Decode, TypeInfo, Clone)]
 pub struct TokenMetadata {
     // ex. "CryptoKitty #100"
     pub name: String,
@@ -86,16 +85,7 @@ pub struct TokenMetadata {
     pub reference: String,
 }
 
-#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
-pub struct Nft {
-    pub owner: ActorId,
-    pub name: String,
-    pub description: String,
-    pub media_url: String,
-    pub attrib_url: String,
-}
-
-#[derive(Default, Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
+#[derive(Default, Debug, Encode, Decode, TypeInfo)]
 pub struct State {
     pub owner_by_id: Vec<(TokenId, ActorId)>,
     pub token_approvals: Vec<(TokenId, Vec<ActorId>)>,

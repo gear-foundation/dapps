@@ -30,7 +30,7 @@ async fn gclient_mint_test() -> Result<()> {
     let state = get_state(&api, &program_id)
         .await
         .expect("Unexpected invalid state.");
-    assert_eq!(state.owner_by_id, [(0 as u128, ALICE.into())]);
+    assert_eq!(state.owner_by_id, [(0_u128, ALICE.into())]);
     assert_eq!(state.tokens_for_owner, [(ALICE.into(), vec![0])]);
 
     assert!(listener.blocks_running().await?);
@@ -97,7 +97,7 @@ async fn gclient_transfer_test() -> Result<()> {
     let state = get_state(&api, &program_id)
         .await
         .expect("Unexpected invalid state.");
-    assert_eq!(state.owner_by_id, [(0 as u128, 4.into())]);
+    assert_eq!(state.owner_by_id, [(0_u128, 4.into())]);
     assert_eq!(state.tokens_for_owner, [(4.into(), vec![0])]);
 
     assert!(listener.blocks_running().await?);
@@ -131,7 +131,7 @@ async fn gclient_approved() -> Result<()> {
     let state = get_state(&api, &program_id)
         .await
         .expect("Unexpected invalid state.");
-    assert_eq!(state.token_approvals, [(0 as u128, vec![3.into()])]);
+    assert_eq!(state.token_approvals, [(0_u128, vec![3.into()])]);
 
     // Transfer
     let (message_id, _) = transfer(&api, &program_id, 4.into(), 0).await?;

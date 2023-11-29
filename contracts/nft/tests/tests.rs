@@ -28,7 +28,7 @@ fn mint_success() {
     assert!(res.contains(&(USERS[0], message)));
 
     let state = get_state(&nft).expect("Unexpected invalid state.");
-    assert_eq!(state.owner_by_id, [(0 as u128, USERS[0].into())]);
+    assert_eq!(state.owner_by_id, [(0_u128, USERS[0].into())]);
     assert_eq!(state.tokens_for_owner, [(USERS[0].into(), vec![0])]);
 }
 
@@ -110,7 +110,7 @@ fn transfer_success() {
     assert!(res.contains(&(USERS[0], message)));
 
     let state = get_state(&nft).expect("Unexpected invalid state.");
-    assert_eq!(state.owner_by_id, [(0 as u128, USERS[1].into())]);
+    assert_eq!(state.owner_by_id, [(0_u128, USERS[1].into())]);
     assert_eq!(state.tokens_for_owner, [(USERS[1].into(), vec![0])]);
 }
 
@@ -144,7 +144,7 @@ fn approve_success() {
     .encode();
     assert!(res.contains(&(USERS[0], message)));
     let state = get_state(&nft).expect("Unexpected invalid state.");
-    assert_eq!(state.token_approvals, [(0 as u128, vec![USERS[1].into()])]);
+    assert_eq!(state.token_approvals, [(0_u128, vec![USERS[1].into()])]);
 
     assert!(!transfer(&nft, USERS[1], USERS[2], 0).main_failed());
 
