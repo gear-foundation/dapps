@@ -70,3 +70,22 @@ function Home() {
 
 export { Home };
 ```
+
+### Wallet
+
+Wallet connection via `polkadot.js` extension api. Displays connected account with free balance.
+
+```jsx
+import { Wallet } from '@dapps-frontend/ui';
+
+function Connect() {
+  return (
+    <>
+      <h2>Connect your account to start the game:</h2>
+      <Wallet />
+    </>
+  );
+}
+
+export { Connect };
+```

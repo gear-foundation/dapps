@@ -111,5 +111,5 @@ jobs:
         with:
           args: |
             rollout status deployment/${{ env.KUBE_DEPLOYMENT_PREFIX }}-${{ env.ENVIRONMENT }} \
-            --timeout=120s \
+            --timeout=240s \
             -n ${{ env.KUBE_NAMESPACE }}

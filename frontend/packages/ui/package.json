@@ -14,7 +14,11 @@
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
+  "dependencies": {
+    "@polkadot/react-identicon": "3.6.4"
+  },
   "devDependencies": {
+    "@gear-js/ui": "0.5.21",
     "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",
     "@typescript-eslint/eslint-plugin": "6.0.0",
