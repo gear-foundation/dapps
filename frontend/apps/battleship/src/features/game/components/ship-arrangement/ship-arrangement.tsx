@@ -11,12 +11,14 @@ import { generateShipsField } from './shipGenerator';
 import { convertShipsToField } from '../../utils';
 import { useAccount } from '@gear-js/react-hooks';
 import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
+import { useCheckBalance } from '@/features/wallet/hooks';
 
 export default function ShipArrangement() {
   const { account } = useAccount();
   const { isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address);
   const message = useGameMessage();
   const { setPending } = usePending();
+  const { checkBalance } = useCheckBalance();
 
   const [shipLayout, setShipLayout] = useState<string[]>([]);
   const [shipsField, setShipsField] = useState<number[][]>([]);
@@ -35,18 +37,24 @@ export default function ShipArrangement() {
   };
 
   const onGameStart = async () => {
+    const gasLimit = 100000000000;
+
     await updateBalance();
+
     if (!isLoading) {
       setPending(true);
-      message({
-        payload: {
-          StartGame: {
-            ships: shipsField,
+
+      checkBalance(gasLimit, () =>
+        message({
+          payload: {
+            StartGame: {
+              ships: shipsField,
+            },
           },
-        },
-        withVoucher: isVoucher,
-        gasLimit: 100000000000,
-      });
+          withVoucher: isVoucher,
+          gasLimit,
+        }),
+      );
     }
   };
 
