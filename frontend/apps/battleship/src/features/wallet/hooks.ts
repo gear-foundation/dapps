@@ -20,7 +20,6 @@ import { formatBalance, stringShorten } from '@polkadot/util';
 import { CreateType } from '@gear-js/api';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { ADDRESS } from '@/app/consts';
-import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
 
 function useWalletSync() {
   const { account, isAccountReady } = useAccount();
@@ -135,7 +134,6 @@ function useCheckBalance(isVoucher: boolean) {
     );
 
     const chainEDepositWithLimit = chainEDeposit + limit * valuePerGas;
-    console.log(chainEDepositWithLimit);
 
     if (
       isVoucher && isVoucherExists && !!voucherBalance

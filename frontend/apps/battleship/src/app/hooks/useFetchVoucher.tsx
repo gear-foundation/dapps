@@ -39,10 +39,8 @@ export function useFetchVoucher(account: string | undefined) {
 
           if (availableBack?.status === 200) {
             if (isVoucherExists) {
-              console.log('EXISTS');
               setVoucher(true);
             } else {
-              console.log('CRET');
               const createdVoucher = await createVoucher();
               if (createdVoucher) {
                 setVoucher(true);
