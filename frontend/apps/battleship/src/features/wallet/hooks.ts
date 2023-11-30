@@ -118,10 +118,9 @@ function useAccountAvailableBalanceSync() {
   }, [account, api, isAccountReady, isApiReady, isReady, balance]);
 }
 
-function useCheckBalance() {
+function useCheckBalance(isVoucher: boolean) {
   const { api } = useApi();
   const { account } = useAccount();
-  const { isVoucher } = useFetchVoucher(ADDRESS.GAME);
   const { availableBalance } = useAccountAvailableBalance();
   const { getChainBalanceValue } = useBalanceFormat();
   const { isVoucherExists, voucherBalance } = useVoucher(ADDRESS.GAME);
