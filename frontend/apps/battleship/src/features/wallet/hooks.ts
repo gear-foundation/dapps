@@ -67,7 +67,7 @@ function useAccountAvailableBalance() {
 function useAccountAvailableBalanceSync() {
   const { isAccountReady, account } = useAccount();
   const { api, isApiReady } = useApi();
-  const { balance, isBalanceReady } = useBalance(account?.decodedAddress);
+  const { balance } = useBalance(account?.decodedAddress);
 
   const isReady = useAtomValue(IS_AVAILABLE_BALANCE_READY);
   const setIsReady = useSetAtom(IS_AVAILABLE_BALANCE_READY);
@@ -115,7 +115,7 @@ function useAccountAvailableBalanceSync() {
     } else {
       setIsReady(true);
     }
-  }, [account, api, isAccountReady, isApiReady, isReady, balance, isBalanceReady, setAvailableBalance, setIsReady]);
+  }, [account, api, isAccountReady, isApiReady, isReady, balance]);
 }
 
 function useCheckBalance() {
