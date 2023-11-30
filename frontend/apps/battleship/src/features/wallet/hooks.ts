@@ -20,6 +20,7 @@ import { formatBalance, stringShorten } from '@polkadot/util';
 import { CreateType } from '@gear-js/api';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { ADDRESS } from '@/app/consts';
+import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
 
 function useWalletSync() {
   const { account, isAccountReady } = useAccount();
@@ -117,12 +118,13 @@ function useAccountAvailableBalanceSync() {
   }, [account, api, isAccountReady, isApiReady, isReady, balance]);
 }
 
-function useCheckBalance(isVoucher: boolean) {
+function useCheckBalance() {
   const { api } = useApi();
   const { account } = useAccount();
+  const { isVoucher } = useFetchVoucher(ADDRESS.GAME);
   const { availableBalance } = useAccountAvailableBalance();
   const { getChainBalanceValue } = useBalanceFormat();
-  const { voucherBalance } = useVoucher(ADDRESS.GAME);
+  const { isVoucherExists, voucherBalance } = useVoucher(ADDRESS.GAME);
   const { getFormattedBalanceValue } = useBalanceFormat();
   const alert = useAlert();
 
@@ -134,9 +136,10 @@ function useCheckBalance(isVoucher: boolean) {
     );
 
     const chainEDepositWithLimit = chainEDeposit + limit * valuePerGas;
+    console.log(chainEDepositWithLimit);
 
     if (
-      isVoucher && !!voucherBalance
+      isVoucher && isVoucherExists && !!voucherBalance
         ? getFormattedBalanceValue(voucherBalance.toString()).toFixed() < VOUCHER_MIN_LIMIT
         : !chainBalance || chainBalance < chainEDepositWithLimit
     ) {

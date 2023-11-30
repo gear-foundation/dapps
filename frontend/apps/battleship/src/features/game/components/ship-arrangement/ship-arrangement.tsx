@@ -18,7 +18,7 @@ export default function ShipArrangement() {
   const { isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address);
   const message = useGameMessage();
   const { setPending } = usePending();
-  const { checkBalance } = useCheckBalance(isVoucher);
+  const { checkBalance } = useCheckBalance();
 
   const [shipLayout, setShipLayout] = useState<string[]>([]);
   const [shipsField, setShipsField] = useState<number[][]>([]);
@@ -40,6 +40,7 @@ export default function ShipArrangement() {
     const gasLimit = 100000000000;
 
     await updateBalance();
+
     if (!isLoading) {
       setPending(true);
 
@@ -50,10 +51,10 @@ export default function ShipArrangement() {
               ships: shipsField,
             },
           },
-        },
-        withVoucher: isVoucher,
-        gasLimit: 100000000000,
-      });
+          withVoucher: isVoucher,
+          gasLimit,
+        }),
+      );
     }
   };
 
