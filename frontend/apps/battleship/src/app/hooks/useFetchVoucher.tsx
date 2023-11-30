@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useVoucher, useBalanceFormat } from '@gear-js/react-hooks';
 import { ADDRESS } from '../consts';
+import { VOUCHER_MIN_LIMIT } from '@/features/wallet/consts';
 
 export function useFetchVoucher(account: string | undefined) {
   const { isVoucherExists, voucherBalance } = useVoucher(ADDRESS.GAME);
@@ -47,7 +48,6 @@ export function useFetchVoucher(account: string | undefined) {
             }
           }
           setIsLoading(false);
-
         } catch (error) {
           setIsLoading(false);
         }
@@ -60,7 +60,7 @@ export function useFetchVoucher(account: string | undefined) {
 
   const updateBalance = useCallback(async () => {
     const formattedBalance = voucherBalance && getFormattedBalanceValue(voucherBalance.toString()).toFixed();
-    const isBalanceLow = formattedBalance < 3;
+    const isBalanceLow = formattedBalance < VOUCHER_MIN_LIMIT;
 
     if (isBalanceLow) {
       const createdVoucher = await createVoucher();
