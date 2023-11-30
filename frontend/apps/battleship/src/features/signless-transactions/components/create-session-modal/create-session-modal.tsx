@@ -1,12 +1,14 @@
 import { Button, Input, Modal, ModalProps, Textarea } from '@gear-js/vara-ui';
-import { ChangeEvent, FormEvent, useState } from 'react';
-
-import styles from './create-session-modal.module.css';
 import { useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { decodeAddress, toJSON } from '@gear-js/api';
+import { useForm } from 'react-hook-form';
+
 import { ADDRESS } from '@/app/consts';
+
+import { useSignlessTransactions } from '../../context';
 import { useCreateSession, useIssueVoucher } from '../../hooks';
-import { getMilliseconds, getRandomAccount } from '../../utils';
-import { toJSON } from '@gear-js/api';
+import { getMilliseconds, getRandomPair } from '../../utils';
+import styles from './create-session-modal.module.css';
 
 type Props = Pick<ModalProps, 'close'>;
 
@@ -22,36 +24,41 @@ function CreateSessionModal({ close }: Props) {
   const { getChainBalanceValue } = useBalanceFormat();
   const [unit] = api?.registry.chainTokens || ['Unit'];
 
-  const [values, setValues] = useState(DEFAULT_VALUES);
+  const { register, handleSubmit } = useForm({ defaultValues: DEFAULT_VALUES });
+  const { setPassword, setPairJson } = useSignlessTransactions();
 
   const createSession = useCreateSession();
   const issueVoucher = useIssueVoucher();
 
-  const onChange = ({ target }: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-    setValues((prevValues) => ({ ...prevValues, [target.name]: target.value }));
-
-  const getInputProps = (name: keyof typeof DEFAULT_VALUES) => ({ onChange, name, value: values[name] });
-
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    const value = getChainBalanceValue(values.value);
+  const onSubmit = (values: typeof DEFAULT_VALUES) => {
+    const value = getChainBalanceValue(values.value).toFixed();
     const duration = getMilliseconds(+values.duration);
     const actions = toJSON(values.actions);
 
-    const { publicKey } = getRandomAccount();
+    const { password } = values;
+    const pair = getRandomPair(password);
+    const decodedAddress = decodeAddress(pair.address);
 
-    issueVoucher(ADDRESS.GAME, value, () => createSession(publicKey, duration, actions));
+    const onSuccess = () => {
+      setPassword(password);
+      setPairJson(pair);
+
+      close();
+    };
+
+    issueVoucher(ADDRESS.GAME, decodedAddress, value, () =>
+      createSession(decodedAddress, duration, actions, onSuccess),
+    );
   };
 
   return (
     <Modal heading="Create Signless Session" close={close}>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.inputs}>
-          <Input type="number" label={`Value (${unit})`} {...getInputProps('value')} />
-          <Input type="number" label="Duration (minutes)" {...getInputProps('duration')} />
-          <Textarea label="Actions (JSON)" {...getInputProps('actions')} />
-          <Input type="password" label="Password" {...getInputProps('password')} />
+          <Input type="number" label={`Value (${unit})`} {...register('value')} />
+          <Input type="number" label="Duration (minutes)" {...register('duration')} />
+          <Textarea label="Actions (JSON)" {...register('actions')} />
+          <Input type="password" label="Password" {...register('password')} />
         </div>
 
         <Button type="submit" text="Submit" className={styles.button} />

@@ -1,5 +1,5 @@
 import { useEffect, useMemo } from 'react';
-import { useAccount, useSendMessage } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import meta from './assets/meta/battleship.meta.txt';
 import { IGameInstance } from './types';
@@ -7,6 +7,7 @@ import { gameAtom, isActiveGameAtom, pendingAtom } from './store';
 import { ADDRESS } from './consts';
 import { useProgramMetadata } from '@/app/hooks';
 import { useReadState } from '@/app/hooks/api';
+import { useSignlessSendMessage } from '../signless-transactions/hooks/use-signless-send-message';
 
 export function useGame() {
   const gameState = useAtomValue(gameAtom);
@@ -59,9 +60,8 @@ export const useInitGame = () => {
 
 export function useGameMessage() {
   const metadata = useProgramMetadata(meta);
-  return useSendMessage(programIdGame, metadata, {
-    disableAlerts: true,
-  });
+
+  return useSignlessSendMessage(ADDRESS.GAME, metadata, { disableAlerts: true });
 }
 
 export function usePending() {

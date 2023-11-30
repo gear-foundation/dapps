@@ -1,0 +1,3 @@
+const LOCAL_STORAGE_SIGNLESS_PAIR_KEY = 'signlessPair';
+
+export { LOCAL_STORAGE_SIGNLESS_PAIR_KEY };

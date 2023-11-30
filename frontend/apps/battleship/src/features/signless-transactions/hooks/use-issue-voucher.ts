@@ -41,13 +41,13 @@ function useIssueVoucher() {
     if (status.isInvalid) alert.error('');
   };
 
-  const issueVoucher = async (programId: HexString, value: string, onSuccess: () => void) => {
+  const issueVoucher = async (programId: HexString, address: HexString, value: string, onSuccess: () => void) => {
     if (!isApiReady || !account) return;
 
-    const { decodedAddress, meta } = account;
+    const { meta } = account;
 
     try {
-      const { extrinsic } = api.voucher.issue(decodedAddress, programId, value);
+      const { extrinsic } = api.voucher.issue(address, programId, value);
 
       const { signer } = await web3FromSource(meta.source);
 

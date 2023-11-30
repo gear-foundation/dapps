@@ -8,9 +8,12 @@ import { useSession } from '../../hooks';
 import { getHMS } from '../../utils';
 import { CreateSessionModal } from '../create-session-modal';
 import styles from './signless-transactions.module.css';
+import { useSignlessTransactions } from '../../context';
+import { EnableSessionModal } from '../enable-session-modal';
 
 function SignlessTransactions() {
   const { account } = useAccount();
+  const { password } = useSignlessTransactions();
 
   const { session, isSessionReady } = useSession();
 
@@ -20,26 +23,34 @@ function SignlessTransactions() {
 
   const countdown = useCountdown(expireTimestamp);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const openModal = () => setIsModalOpen(true);
-  const closeModal = () => setIsModalOpen(false);
+  const [modal, setModal] = useState('');
+  const openCreateModal = () => setModal('create');
+  const openEnableModal = () => setModal('enable');
+  const closeModal = () => setModal('');
 
   return account && isSessionReady ? (
-    isSessionActive ? (
-      <div className={styles.active}>
-        <p>Signless Session is Active</p>
-        <p>Expires: {countdown ? getHMS(countdown) : '-- : -- : --'}</p>
-        <p>Approved Actions: {session?.allowedActions.join()}</p>
-      </div>
-    ) : (
-      <>
-        <div>
-          <Button text="Enable Signless Transactions" size="small" color="dark" onClick={openModal} />
-        </div>
+    <>
+      {isSessionActive ? (
+        <>
+          {!password && (
+            <Button text="Unlock Signless Transactions" size="small" color="dark" onClick={openEnableModal} />
+          )}
 
-        {isModalOpen && <CreateSessionModal close={closeModal} />}
-      </>
-    )
+          <div className={styles.active}>
+            <p>Signless Session is Active</p>
+            <p>Expires: {countdown ? getHMS(countdown) : '-- : -- : --'}</p>
+            <p>Approved Actions: {session?.allowedActions.join()}</p>
+          </div>
+        </>
+      ) : (
+        <div>
+          <Button text="Enable Signless Transactions" size="small" color="dark" onClick={openCreateModal} />
+        </div>
+      )}
+
+      {modal === 'enable' && <EnableSessionModal close={closeModal} />}
+      {modal === 'create' && <CreateSessionModal close={closeModal} />}
+    </>
   ) : null;
 }
 

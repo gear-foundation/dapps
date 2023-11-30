@@ -8,16 +8,13 @@ const MULTIPLIER = {
   HOURS: 24,
 };
 
-const getRandomAccount = (password: string) => {
+const getRandomPair = (password: string) => {
   const seed = mnemonicGenerate();
 
   const keyring = new Keyring({ type: 'sr25519' });
-  const pair = keyring.addFromUri(seed);
+  const pair = keyring.addFromMnemonic(seed);
 
-  if (!pair.isLocked) pair.lock();
-  const json = pair.toJson(password);
-
-  return json;
+  return pair.toJson(password);
 };
 
 const getMilliseconds = (minutes: number) => minutes * MULTIPLIER.MS * MULTIPLIER.SECONDS;
@@ -32,4 +29,4 @@ const getHMS = (ms: number) => {
   return `${getDoubleDigits(hours)}:${getDoubleDigits(minutes)}:${getDoubleDigits(seconds)}`;
 };
 
-export { getRandomAccount, getMilliseconds, getHMS };
+export { getRandomPair, getMilliseconds, getHMS };
