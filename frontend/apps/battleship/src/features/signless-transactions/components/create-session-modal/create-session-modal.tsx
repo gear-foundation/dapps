@@ -19,6 +19,8 @@ const DEFAULT_VALUES = {
   password: '',
 };
 
+const ACTIONS = ['StartGame', 'Turn'];
+
 function CreateSessionModal({ close }: Props) {
   const { api } = useApi();
   const { getChainBalanceValue } = useBalanceFormat();
@@ -46,8 +48,8 @@ function CreateSessionModal({ close }: Props) {
       close();
     };
 
-    issueVoucher(ADDRESS.GAME, decodedAddress, value, () =>
-      createSession(decodedAddress, duration, actions, onSuccess),
+    createSession(decodedAddress, duration, actions, () =>
+      issueVoucher(ADDRESS.GAME, decodedAddress, value, onSuccess),
     );
   };
 

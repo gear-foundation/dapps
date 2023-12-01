@@ -10,7 +10,15 @@ import {
 
 import { useSignlessTransactions } from '../context';
 
-type SendSignlessMessageOptions = Omit<SendMessageOptions, 'payload'> & { payload: Record<string, AnyJson> };
+type Payload = Record<string, Record<string, AnyJson>>;
+type SendSignlessMessageOptions = Omit<SendMessageOptions, 'payload'> & { payload: Payload };
+
+const getSinglessPayload = (payload: Payload, sessionForAccount: HexString | null | undefined) => {
+  const [entry] = Object.entries(payload);
+  const [key, value] = entry;
+
+  return { ...payload, [key]: { ...value, sessionForAccount } };
+};
 
 function useSignlessSendMessage(
   destination: HexString,
@@ -23,8 +31,7 @@ function useSignlessSendMessage(
 
   const sendSignlessMessage = (args: SendSignlessMessageOptions) => {
     const sessionForAccount = pair ? account?.decodedAddress : null;
-    const payload = { ...args.payload, sessionForAccount };
-
+    const payload = getSinglessPayload(args.payload, sessionForAccount);
     const withVoucher = !!pair;
 
     sendMessage({ ...args, payload, withVoucher });
@@ -44,7 +51,7 @@ function useSignlessSendMessageHandler(
 
   const sendSignlessMessage = (args: Omit<SendSignlessMessageOptions, 'gasLimit'>) => {
     const sessionForAccount = pair ? account?.decodedAddress : null;
-    const payload = { ...args.payload, sessionForAccount };
+    const payload = getSinglessPayload(args.payload, sessionForAccount);
     const withVoucher = !!pair;
 
     sendMessage({ ...args, payload, withVoucher });
