@@ -1,6 +1,6 @@
-import { Button, Input, Modal, ModalProps, Textarea } from '@gear-js/vara-ui';
+import { Button, Input, Modal, ModalProps } from '@gear-js/vara-ui';
 import { useApi, useBalanceFormat } from '@gear-js/react-hooks';
-import { decodeAddress, toJSON } from '@gear-js/api';
+import { decodeAddress } from '@gear-js/api';
 import { useForm } from 'react-hook-form';
 
 import { ADDRESS } from '@/app/consts';
@@ -15,7 +15,6 @@ type Props = Pick<ModalProps, 'close'>;
 const DEFAULT_VALUES = {
   value: '0',
   duration: '0',
-  actions: '[ "StartGame" ]',
   password: '',
 };
 
@@ -35,7 +34,6 @@ function CreateSessionModal({ close }: Props) {
   const onSubmit = (values: typeof DEFAULT_VALUES) => {
     const value = getChainBalanceValue(values.value).toFixed();
     const duration = getMilliseconds(+values.duration);
-    const actions = toJSON(values.actions);
 
     const { password } = values;
     const pair = getRandomPair(password);
@@ -48,7 +46,7 @@ function CreateSessionModal({ close }: Props) {
       close();
     };
 
-    createSession(decodedAddress, duration, actions, () =>
+    createSession(decodedAddress, duration, ACTIONS, () =>
       issueVoucher(ADDRESS.GAME, decodedAddress, value, onSuccess),
     );
   };
@@ -59,7 +57,6 @@ function CreateSessionModal({ close }: Props) {
         <div className={styles.inputs}>
           <Input type="number" label={`Value (${unit})`} {...register('value')} />
           <Input type="number" label="Duration (minutes)" {...register('duration')} />
-          <Textarea label="Actions (JSON)" {...register('actions')} />
           <Input type="password" label="Password" {...register('password')} />
         </div>
 

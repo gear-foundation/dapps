@@ -9,7 +9,7 @@ function useCreateSession() {
   const metadata = useProgramMetadata(metaTxt);
   const sendMessage = useSendMessageHandler(ADDRESS.GAME, metadata, { disableAlerts: true });
 
-  const createSession = (key: HexString, duration: number, allowedActions: string, onSuccess: () => void) => {
+  const createSession = (key: HexString, duration: number, allowedActions: string[], onSuccess: () => void) => {
     const payload = { CreateSession: { duration, allowedActions, key } };
 
     sendMessage({ payload, onSuccess });
