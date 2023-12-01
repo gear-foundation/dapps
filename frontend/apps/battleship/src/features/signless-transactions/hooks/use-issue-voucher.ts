@@ -19,14 +19,17 @@ function useIssueVoucher() {
     return `${errorMethod}: ${formattedDocs}`;
   };
 
-  const handleEventsStatus = (events: EventRecord[], onSuccess: () => void) => {
+  const handleEventsStatus = (events: EventRecord[], onSuccess: () => void, onError: () => void) => {
     if (!isApiReady) return Promise.reject(new Error('API is not initialized'));
 
     events.forEach(({ event }) => {
       const { method, section } = event;
       const alertOptions = { title: `${section}.${method}` };
 
-      if (method === 'ExtrinsicFailed') return alert.error(getExtrinsicFailedMessage(event), alertOptions);
+      if (method === 'ExtrinsicFailed') {
+        onError();
+        return alert.error(getExtrinsicFailedMessage(event), alertOptions);
+      }
 
       if (method === 'VoucherIssued') {
         alert.success('Voucher issued', alertOptions);
@@ -36,24 +39,35 @@ function useIssueVoucher() {
   };
 
   // TODO: sign transaction helper
-  const handleEvents = ({ events, status }: ISubmittableResult, onSuccess: () => void) => {
-    if (status.isInBlock) return handleEventsStatus(events, onSuccess);
-    if (status.isInvalid) alert.error('');
+  const handleEvents = ({ events, status }: ISubmittableResult, onSuccess: () => void, onError: () => void) => {
+    if (status.isInBlock) return handleEventsStatus(events, onSuccess, onError);
+
+    if (status.isInvalid) {
+      alert.error('Transaction error. Status: isInvalid');
+      onError();
+    }
   };
 
-  const issueVoucher = async (programId: HexString, address: HexString, value: string, onSuccess: () => void) => {
+  const issueVoucher = async (
+    programId: HexString,
+    address: HexString,
+    value: string,
+    onSuccess: () => void,
+    onError: () => void,
+  ) => {
     if (!isApiReady || !account) return;
 
     const { meta } = account;
 
     try {
       const { extrinsic } = api.voucher.issue(address, programId, value);
-
       const { signer } = await web3FromSource(meta.source);
 
-      extrinsic.signAndSend(account.address, { signer }, (events) => handleEvents(events, onSuccess));
+      extrinsic.signAndSend(account.address, { signer }, (events) => handleEvents(events, onSuccess, onError));
     } catch (error) {
       if (error instanceof Error) alert.error(error.message);
+
+      onError();
     }
   };
 

@@ -28,7 +28,7 @@ function CreateSessionModal({ close }: Props) {
   const { register, handleSubmit } = useForm({ defaultValues: DEFAULT_VALUES });
   const { setPassword, setPairJson } = useSignlessTransactions();
 
-  const createSession = useCreateSession();
+  const { createSession, deleteSession } = useCreateSession();
   const issueVoucher = useIssueVoucher();
 
   const onSubmit = (values: typeof DEFAULT_VALUES) => {
@@ -42,12 +42,11 @@ function CreateSessionModal({ close }: Props) {
     const onSuccess = () => {
       setPassword(password);
       setPairJson(pair);
-
       close();
     };
 
     createSession(decodedAddress, duration, ACTIONS, () =>
-      issueVoucher(ADDRESS.GAME, decodedAddress, value, onSuccess),
+      issueVoucher(ADDRESS.GAME, decodedAddress, value, onSuccess, deleteSession),
     );
   };
 

@@ -9,13 +9,19 @@ function useCreateSession() {
   const metadata = useProgramMetadata(metaTxt);
   const sendMessage = useSendMessageHandler(ADDRESS.GAME, metadata, { disableAlerts: true });
 
+  const deleteSession = () => {
+    const payload = { DeleteSession: null };
+
+    sendMessage({ payload });
+  };
+
   const createSession = (key: HexString, duration: number, allowedActions: string[], onSuccess: () => void) => {
     const payload = { CreateSession: { duration, allowedActions, key } };
 
     sendMessage({ payload, onSuccess });
   };
 
-  return createSession;
+  return { createSession, deleteSession };
 }
 
 export { useCreateSession };

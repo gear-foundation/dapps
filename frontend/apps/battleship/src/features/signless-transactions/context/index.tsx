@@ -61,7 +61,6 @@ function SignlessTransactionsProvider({ children }: Props) {
       setPairJson,
       pair,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [password, pair],
   );
 
