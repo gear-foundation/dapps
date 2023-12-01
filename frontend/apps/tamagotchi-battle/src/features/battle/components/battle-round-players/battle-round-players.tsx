@@ -49,7 +49,7 @@ export const BattleRoundPlayers = () => {
   return (
     <>
       {battle && (
-        <div className="relative grow grid grid-cols-[40%_40%] justify-between gap-10 mt-10 xxl:mt-15">
+        <div className="relative grow grid grid-cols-[40%_40%] justify-between gap-10 mt-10 xxl:mt-27">
           <div className={cnWrapper}>
             <TamagotchiAvatar
               color={rivals[0].color}

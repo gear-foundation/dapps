@@ -57,7 +57,7 @@ export const BattlePlayersQueue = () => {
   }, [players, w]);
 
   return (
-    <section ref={ref} className="flex justify-center items-end mt-auto px-5  min-h-[132px] xxl:min-h-[208px]">
+    <section ref={ref} className="flex justify-center items-end mt-auto px-5  min-h-[132px] xxl:min-h-[185px]">
       <AnimatePresence key="battle-players-queue">
         {init.current &&
           (isSlider ? (
