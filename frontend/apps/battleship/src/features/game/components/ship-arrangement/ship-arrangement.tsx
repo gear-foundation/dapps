@@ -18,7 +18,7 @@ export default function ShipArrangement() {
   const { isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address);
   const message = useGameMessage();
   const { setPending } = usePending();
-  const { checkBalance } = useCheckBalance();
+  const { checkBalance } = useCheckBalance(isVoucher);
 
   const [shipLayout, setShipLayout] = useState<string[]>([]);
   const [shipsField, setShipsField] = useState<number[][]>([]);

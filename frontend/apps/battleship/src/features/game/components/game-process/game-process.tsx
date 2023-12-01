@@ -24,7 +24,7 @@ export default function GameProcess() {
   const { gameState } = useGame();
   const { setPending } = usePending();
   const message = useGameMessage();
-  const { checkBalance } = useCheckBalance();
+  const { checkBalance } = useCheckBalance(isVoucher);
 
   const [isOpenEndModal, setIsOpenEndModal] = useState(false);
   const openEndModal = () => setIsOpenEndModal(true);
