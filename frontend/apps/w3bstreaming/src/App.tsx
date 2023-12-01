@@ -13,7 +13,6 @@ import styles from './App.module.scss';
 import 'babel-polyfill';
 import { useProgramState } from './hooks';
 import { useCreateStreamMetadata, useGetStreamMetadata } from './features/CreateStream/hooks';
-import { ADDRESS } from './consts';
 import { useAccountAvailableBalanceSync } from './features/Wallet/hooks';
 
 function AppComponent() {
@@ -25,15 +24,6 @@ function AppComponent() {
   const { isMeta } = useGetStreamMetadata();
 
   const isAppReady = isApiReady && isAccountReady && isStateRead && isMeta;
-
-  useEffect(() => {
-    if (ADDRESS.CONTRACT) {
-      console.log('CONTRACT ADDRESS:');
-      console.log(ADDRESS.CONTRACT);
-      console.log('NODE:');
-      console.log(ADDRESS.NODE);
-    }
-  }, []);
 
   return (
     <div className={cx(styles['app-container'])}>

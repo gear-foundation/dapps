@@ -9,12 +9,12 @@ export const LOCAL_STORAGE = {
 };
 
 export const ADDRESS = {
-  NODE: (process.env.REACT_APP_STREAMING_NODE || 'wss://testnet.vara-network.io') as string,
+  NODE: (process.env.REACT_APP_NODE_ADDRESS || 'wss://testnet.vara-network.io') as string,
   NODES: 'https://idea.gear-tech.io/gear-nodes',
-  CONTRACT: (process.env.REACT_APP_STREAMING_PROGRAM_ADDRESS ||
+  CONTRACT: (process.env.REACT_APP_CONTRACT_ADDRESS ||
     '0xd564fdc32fb4d5d288fd78575f0e8e88c0ff91eb055f9a4a825a54ab222001af') as HexString,
-  IPFS_GATEWAY: process.env.REACT_APP_STREAMING_IPFS_GATEWAY as string,
-  IPFS_NODE: process.env.REACT_APP_STREAMING_IPFS_NODE as string,
+  IPFS_GATEWAY: process.env.REACT_APP_IPFS_GATEWAY_ADDRESS as string,
+  IPFS_NODE: process.env.REACT_APP_IPFS_ADDRESS as string,
 };
 
 export const SEARCH_PARAMS = {
