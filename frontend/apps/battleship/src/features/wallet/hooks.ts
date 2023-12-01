@@ -122,7 +122,7 @@ function useCheckBalance(isVoucher: boolean) {
   const { account } = useAccount();
   const { availableBalance } = useAccountAvailableBalance();
   const { getChainBalanceValue } = useBalanceFormat();
-  const { isVoucherExists, voucherBalance } = useVoucher(ADDRESS.GAME);
+  const { voucherBalance } = useVoucher(ADDRESS.GAME);
   const { getFormattedBalanceValue } = useBalanceFormat();
   const alert = useAlert();
 
@@ -136,7 +136,7 @@ function useCheckBalance(isVoucher: boolean) {
     const chainEDepositWithLimit = chainEDeposit + limit * valuePerGas;
 
     if (
-      isVoucher && isVoucherExists && !!voucherBalance
+      isVoucher && !!voucherBalance
         ? getFormattedBalanceValue(voucherBalance.toString()).toFixed() < VOUCHER_MIN_LIMIT
         : !chainBalance || chainBalance < chainEDepositWithLimit
     ) {
