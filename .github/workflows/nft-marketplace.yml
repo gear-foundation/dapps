@@ -6,6 +6,7 @@ on:
     branches: ['master', 'main', 'staging']
     paths:
       - frontend/apps/nft-marketplace/**
+      - frontend/packages/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -93,7 +94,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Update deployment image
-        uses: kodermax/kubectl-aws-eks@1.1.0
+        uses: kodermax/kubectl-aws-eks@main
         with:
           args: |
             set image deployment/${{ env.KUBE_DEPLOYMENT_PREFIX }}-${{ env.ENVIRONMENT }} \
@@ -101,16 +102,16 @@ jobs:
             -n ${{ env.KUBE_NAMESPACE }}
 
       - name: Restart deployment
-        uses: kodermax/kubectl-aws-eks@1.1.0
+        uses: kodermax/kubectl-aws-eks@main
         with:
           args: |
             rollout restart deployment/${{ env.KUBE_DEPLOYMENT_PREFIX }}-${{ env.ENVIRONMENT }} \
             -n ${{ env.KUBE_NAMESPACE }}
 
       - name: Check deployment
-        uses: kodermax/kubectl-aws-eks@1.1.0
+        uses: kodermax/kubectl-aws-eks@main
         with:
           args: |
             rollout status deployment/${{ env.KUBE_DEPLOYMENT_PREFIX }}-${{ env.ENVIRONMENT }} \
-            --timeout=120s \
+            --timeout=240s \
             -n ${{ env.KUBE_NAMESPACE }}

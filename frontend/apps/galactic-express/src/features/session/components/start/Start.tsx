@@ -4,7 +4,7 @@ import { UserMessageSent, encodeAddress } from '@gear-js/api';
 import { Button } from '@gear-js/ui';
 import { useAtomValue, useSetAtom } from 'jotai';
 import { CURRENT_CONTRACT_ADDRESS_ATOM, IS_CONTRACT_ADDRESS_INITIALIZED_ATOM } from 'atoms';
-import { Bytes, Vec, u8 } from '@polkadot/types';
+import { Bytes } from '@polkadot/types';
 import { useAccount, useApi, withoutCommas } from '@gear-js/react-hooks';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import src from 'assets/images/earth.gif';

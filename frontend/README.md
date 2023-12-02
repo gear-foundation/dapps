@@ -4,6 +4,6 @@ Workspace for frontend applications.
 
 Applications ready for use and production.
 
-### [@dapps-frontend/packages](https://github.com/gear-foundation/dapps/tree/master/frontend/apps)
+### [@dapps-frontend/packages](https://github.com/gear-foundation/dapps/tree/master/frontend/packages)
 
 Shared packages used across applications.

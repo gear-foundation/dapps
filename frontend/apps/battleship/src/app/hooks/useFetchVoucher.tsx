@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useVoucher, useBalanceFormat } from '@gear-js/react-hooks';
 import { ADDRESS } from '../consts';
+import { VOUCHER_MIN_LIMIT } from '@/features/wallet/consts';
 
 export function useFetchVoucher(account: string | undefined) {
   const { isVoucherExists, voucherBalance } = useVoucher(ADDRESS.GAME);
@@ -32,20 +33,24 @@ export function useFetchVoucher(account: string | undefined) {
   useEffect(() => {
     if (account && isVoucherExists !== undefined) {
       const fetchData = async () => {
-        setIsLoading(true);
-        const availableBack = await fetch(ADDRESS.BACK);
+        try {
+          setIsLoading(true);
+          const availableBack = await fetch(ADDRESS.BACK);
 
-        if (availableBack?.status === 200) {
-          if (isVoucherExists) {
-            setVoucher(true);
-          } else {
-            const createdVoucher = await createVoucher();
-            if (createdVoucher) {
+          if (availableBack?.status === 200) {
+            if (isVoucherExists) {
               setVoucher(true);
+            } else {
+              const createdVoucher = await createVoucher();
+              if (createdVoucher) {
+                setVoucher(true);
+              }
             }
           }
+          setIsLoading(false);
+        } catch (error) {
+          setIsLoading(false);
         }
-        setIsLoading(false);
       };
 
       fetchData();
@@ -55,7 +60,7 @@ export function useFetchVoucher(account: string | undefined) {
 
   const updateBalance = useCallback(async () => {
     const formattedBalance = voucherBalance && getFormattedBalanceValue(voucherBalance.toString()).toFixed();
-    const isBalanceLow = formattedBalance < 3;
+    const isBalanceLow = formattedBalance < VOUCHER_MIN_LIMIT;
 
     if (isBalanceLow) {
       const createdVoucher = await createVoucher();

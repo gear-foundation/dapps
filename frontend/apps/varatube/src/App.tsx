@@ -14,7 +14,7 @@ function Component() {
 
   return (
     <>
-      <Header isAccountVisible={isAccountReady} />
+      <Header />
       <main>{isAppReady ? <Routing /> : <ApiLoader />}</main>
       <Footer />
     </>
