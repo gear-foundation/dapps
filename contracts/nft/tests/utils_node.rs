@@ -51,7 +51,7 @@ pub async fn init(api: &GearApi) -> Result<(MessageId, ProgramId, H256)> {
     .await
 }
 
-pub async fn mint(api: &GearApi, program_id: &ProgramId) -> Result<(MessageId, H256)> {
+pub async fn mint(api: &GearApi, program_id: &ProgramId, to: ActorId) -> Result<(MessageId, H256)> {
     let token_metadata = TokenMetadata {
         name: "CryptoKitty".to_string(),
         description: "Description".to_string(),
@@ -59,7 +59,7 @@ pub async fn mint(api: &GearApi, program_id: &ProgramId) -> Result<(MessageId, H
         reference: "http://".to_string(),
     };
 
-    let mint_payload = NftAction::Mint { token_metadata };
+    let mint_payload = NftAction::Mint { to, token_metadata };
 
     let gas_info = api
         .calculate_handle_gas(None, *program_id, mint_payload.encode(), 0, true)

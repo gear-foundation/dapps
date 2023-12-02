@@ -35,7 +35,7 @@ pub struct Collection {
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum NftAction {
-    Mint { token_metadata: TokenMetadata },
+    Mint { to: ActorId, token_metadata: TokenMetadata },
     Burn { token_id: TokenId },
     Transfer { to: ActorId, token_id: TokenId },
     Approve { to: ActorId, token_id: TokenId },
@@ -45,19 +45,19 @@ pub enum NftAction {
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum NftEvent {
-    Mint {
+    Minted {
         to: ActorId,
         token_metadata: TokenMetadata,
     },
-    Burn {
+    Burnt {
         token_id: TokenId,
     },
-    Transfer {
+    Transferred {
         from: ActorId,
         to: ActorId,
         token_id: TokenId,
     },
-    Approval {
+    Approved {
         owner: ActorId,
         approved_account: ActorId,
         token_id: TokenId,
@@ -88,7 +88,7 @@ pub struct TokenMetadata {
 #[derive(Default, Debug, Encode, Decode, TypeInfo)]
 pub struct State {
     pub owner_by_id: Vec<(TokenId, ActorId)>,
-    pub token_approvals: Vec<(TokenId, Vec<ActorId>)>,
+    pub token_approvals: Vec<(TokenId, ActorId)>,
     pub token_metadata_by_id: Vec<(TokenId, TokenMetadata)>,
     pub tokens_for_owner: Vec<(ActorId, Vec<TokenId>)>,
     pub token_id: TokenId,
@@ -118,7 +118,7 @@ pub enum StateReply {
     Owner(ActorId),
     CurrentTokenId(TokenId),
     OwnerById(Option<ActorId>),
-    TokenApprovals(Option<Vec<ActorId>>),
+    TokenApprovals(Option<ActorId>),
     TokenMetadata(Option<TokenMetadata>),
     OwnerTokens(Option<Vec<TokenId>>),
 }

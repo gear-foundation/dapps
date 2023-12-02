@@ -11,9 +11,9 @@ use nft_io::*;
 #[derive(Debug, Default)]
 pub struct Nft {
     pub owner_by_id: HashMap<TokenId, ActorId>,
-    pub token_approvals: HashMap<TokenId, HashSet<ActorId>>,
+    pub token_approvals: HashMap<TokenId, ActorId>,
     pub token_metadata_by_id: HashMap<TokenId, TokenMetadata>,
-    pub tokens_for_owner: HashMap<ActorId, Vec<TokenId>>,
+    pub tokens_for_owner: HashMap<ActorId, HashSet<TokenId>>,
     pub token_id: TokenId,
     pub owner: ActorId,
     pub collection: Collection,
@@ -37,20 +37,27 @@ unsafe extern fn init() {
 
 impl Nft {
     /// Mint a new nft using `TokenMetadata`
-    fn mint(&mut self, token_metadata: TokenMetadata) -> NftEvent {
-        let msg_src = msg::source();
+    fn mint(&mut self, to: &ActorId, token_metadata: TokenMetadata) -> NftEvent {
         self.check_config();
-        self.check_zero_address(&msg_src);
-        self.owner_by_id.insert(self.token_id, msg_src);
+        self.check_zero_address(to);
+        self.owner_by_id.insert(self.token_id, *to);
         self.tokens_for_owner
-            .entry(msg_src)
-            .and_modify(|tokens| tokens.push(self.token_id))
-            .or_insert_with(|| vec![self.token_id]);
+            .entry(*to)
+            .and_modify(|tokens| {
+                tokens.insert(self.token_id);
+            })
+            .or_insert_with(|| {
+                let mut set = HashSet::new();
+                set.insert(self.token_id);
+                set
+            });
         self.token_metadata_by_id
             .insert(self.token_id, token_metadata.clone());
 
-        NftEvent::Mint {
-            to: msg_src,
+        self.token_id += 1;
+
+        NftEvent::Minted {
+            to: *to,
             token_metadata,
         }
     }
@@ -66,13 +73,14 @@ impl Nft {
         self.token_metadata_by_id.remove(&token_id);
 
         if let Some(tokens) = self.tokens_for_owner.get_mut(&owner) {
-            tokens.retain(|&token| token != token_id);
+            tokens.remove(&token_id);
             if tokens.is_empty() {
                 self.tokens_for_owner.remove(&owner);
             }
         }
+        self.token_approvals.remove(&token_id);
 
-        NftEvent::Burn { token_id }
+        NftEvent::Burnt { token_id }
     }
     ///  Transfer token from `token_id` to address `to`
     fn transfer(&mut self, to: &ActorId, token_id: TokenId) -> NftEvent {
@@ -90,11 +98,17 @@ impl Nft {
         // push token to new owner
         self.tokens_for_owner
             .entry(*to)
-            .and_modify(|tokens| tokens.push(token_id))
-            .or_insert_with(|| vec![token_id]);
+            .and_modify(|tokens| {
+                tokens.insert(token_id);
+            })
+            .or_insert_with(|| {
+                let mut set = HashSet::new();
+                set.insert(token_id);
+                set
+            });
         // remove token from old owner
         if let Some(tokens) = self.tokens_for_owner.get_mut(&owner) {
-            tokens.retain(|&token| token != token_id);
+            tokens.remove(&token_id);
             if tokens.is_empty() {
                 self.tokens_for_owner.remove(&owner);
             }
@@ -102,7 +116,7 @@ impl Nft {
         // remove approvals if any
         self.token_approvals.remove(&token_id);
 
-        NftEvent::Transfer {
+        NftEvent::Transferred {
             from: owner,
             to: *to,
             token_id,
@@ -116,14 +130,9 @@ impl Nft {
             .expect("NonFungibleToken: token does not exist");
         self.check_owner(owner);
         self.check_zero_address(to);
-        self.token_approvals
-            .entry(token_id)
-            .and_modify(|approvals| {
-                approvals.insert(*to);
-            })
-            .or_insert_with(|| HashSet::from([*to]));
+        self.token_approvals.insert(token_id, *to);
 
-        NftEvent::Approval {
+        NftEvent::Approved {
             owner: *owner,
             approved_account: *to,
             token_id,
@@ -143,16 +152,21 @@ impl Nft {
     }
     /// Get confirmation about approval to address `to` and `token_id`
     fn is_approved_to(&self, to: &ActorId, token_id: TokenId) -> NftEvent {
-        let approved = self
-            .token_approvals
-            .get(&token_id)
-            .expect("NonFungibleToken: token has no approvals")
-            .contains(to);
-        NftEvent::IsApproved {
-            to: *to,
-            token_id,
-            approved,
+        if !self.owner_by_id.contains_key(&token_id) {
+            panic!("Token does not exist")
         }
+        self.token_approvals.get(&token_id).map_or_else(
+            || NftEvent::IsApproved {
+                to: *to,
+                token_id,
+                approved: false,
+            },
+            |approval_id| NftEvent::IsApproved {
+                to: *to,
+                token_id,
+                approved: *approval_id == *to,
+            },
+        )
     }
 
     /// Checking the configuration with current contract data
@@ -181,7 +195,7 @@ impl Nft {
     /// Checks that `msg::source()` is allowed to manage the token with indicated `token_id`
     fn can_transfer(&self, token_id: TokenId, owner: &ActorId) {
         if let Some(approved_accounts) = self.token_approvals.get(&token_id) {
-            if approved_accounts.contains(&msg::source()) {
+            if approved_accounts == &msg::source() {
                 return;
             }
         }
@@ -194,7 +208,7 @@ unsafe extern fn handle() {
     let action: NftAction = msg::load().expect("Could not load NftAction");
     let nft = NFT.get_or_insert(Default::default());
     let result = match action {
-        NftAction::Mint { token_metadata } => nft.mint(token_metadata),
+        NftAction::Mint { to, token_metadata } => nft.mint(&to, token_metadata),
         NftAction::Burn { token_id } => nft.burn(token_id),
         NftAction::Transfer { to, token_id } => nft.transfer(&to, token_id),
         NftAction::Approve { to, token_id } => nft.approve(&to, token_id),
@@ -234,12 +248,8 @@ extern fn state() {
             .expect("Unable to share the state");
         }
         StateQuery::TokenApprovals { token_id } => {
-            let approvals = nft
-                .token_approvals
-                .get(&token_id)
-                .map(|hashset| hashset.iter().cloned().collect());
-            msg::reply(StateReply::TokenApprovals(approvals), 0)
-                .expect("Unable to share the state");
+            let approval = nft.token_approvals.get(&token_id).cloned();
+            msg::reply(StateReply::TokenApprovals(approval), 0).expect("Unable to share the state");
         }
         StateQuery::TokenMetadata { token_id } => {
             msg::reply(
@@ -249,11 +259,11 @@ extern fn state() {
             .expect("Unable to share the state");
         }
         StateQuery::OwnerTokens { owner } => {
-            msg::reply(
-                StateReply::OwnerTokens(nft.tokens_for_owner.get(&owner).cloned()),
-                0,
-            )
-            .expect("Unable to share the state");
+            let tokens = nft
+                .tokens_for_owner
+                .get(&owner)
+                .map(|hashset| hashset.iter().cloned().collect());
+            msg::reply(StateReply::OwnerTokens(tokens), 0).expect("Unable to share the state");
         }
     }
 }
@@ -278,7 +288,7 @@ impl From<Nft> for State {
 
         let token_approvals = token_approvals
             .iter()
-            .map(|(key, approvals)| (*key, approvals.iter().copied().collect()))
+            .map(|(key, approvals)| (*key, *approvals))
             .collect();
 
         let token_metadata_by_id = token_metadata_by_id
@@ -288,7 +298,7 @@ impl From<Nft> for State {
 
         let tokens_for_owner = tokens_for_owner
             .iter()
-            .map(|(id, tokens)| (*id, tokens.clone()))
+            .map(|(id, tokens)| (*id, tokens.into_iter().cloned().collect()))
             .collect();
 
         Self {

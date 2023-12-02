@@ -1,3 +1,4 @@
+use gstd::ActorId;
 use gtest::{Program, RunResult, System};
 use nft_io::*;
 
@@ -24,10 +25,11 @@ pub fn init_nft(sys: &System) {
     assert!(!res.main_failed());
 }
 
-pub fn mint(nft: &Program<'_>, member: u64) -> RunResult {
+pub fn mint(nft: &Program<'_>, member: u64, to: ActorId) -> RunResult {
     nft.send(
         member,
         NftAction::Mint {
+            to,
             token_metadata: TokenMetadata {
                 name: "CryptoKitty".to_string(),
                 description: "Description".to_string(),

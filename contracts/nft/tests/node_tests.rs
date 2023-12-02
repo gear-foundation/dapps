@@ -23,7 +23,7 @@ async fn gclient_mint_test() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     // Mint
-    let (message_id, _) = mint(&api, &program_id).await?;
+    let (message_id, _) = mint(&api, &program_id, ALICE.into()).await?;
     assert!(listener.message_processed(message_id).await?.succeed());
 
     // Check State
@@ -51,7 +51,7 @@ async fn gclient_burn_test() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     // Mint
-    let (message_id, _) = mint(&api, &program_id).await?;
+    let (message_id, _) = mint(&api, &program_id, ALICE.into()).await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
 
@@ -84,7 +84,7 @@ async fn gclient_transfer_test() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     // Mint
-    let (message_id, _) = mint(&api, &program_id).await?;
+    let (message_id, _) = mint(&api, &program_id, ALICE.into()).await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
 
@@ -118,7 +118,7 @@ async fn gclient_approved() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     // Mint
-    let (message_id, _) = mint(&api, &program_id).await?;
+    let (message_id, _) = mint(&api, &program_id, ALICE.into()).await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
 
@@ -131,7 +131,7 @@ async fn gclient_approved() -> Result<()> {
     let state = get_state(&api, &program_id)
         .await
         .expect("Unexpected invalid state.");
-    assert_eq!(state.token_approvals, [(0_u128, vec![3.into()])]);
+    assert_eq!(state.token_approvals, [(0_u128, 3.into())]);
 
     // Transfer
     let (message_id, _) = transfer(&api, &program_id, 4.into(), 0).await?;
@@ -162,7 +162,7 @@ async fn gclient_owner_test() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     // Mint
-    let (message_id, _) = mint(&api, &program_id).await?;
+    let (message_id, _) = mint(&api, &program_id, ALICE.into()).await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
 
@@ -195,7 +195,7 @@ async fn gclient_is_approved_test() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     // Mint
-    let (message_id, _) = mint(&api, &program_id).await?;
+    let (message_id, _) = mint(&api, &program_id, ALICE.into()).await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
 

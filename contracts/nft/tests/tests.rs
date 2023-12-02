@@ -13,23 +13,23 @@ fn mint_success() {
     init_nft(&sys);
     let nft = sys.get_program(1);
 
-    let res = mint(&nft, USERS[0]);
+    let res = mint(&nft, USERS[0], USERS[1].into());
     let token_metadata = TokenMetadata {
         name: "CryptoKitty".to_string(),
         description: "Description".to_string(),
         media: "http://".to_string(),
         reference: "http://".to_string(),
     };
-    let message = NftEvent::Mint {
-        to: USERS[0].into(),
+    let message = NftEvent::Minted {
+        to: USERS[1].into(),
         token_metadata,
     }
     .encode();
     assert!(res.contains(&(USERS[0], message)));
 
     let state = get_state(&nft).expect("Unexpected invalid state.");
-    assert_eq!(state.owner_by_id, [(0_u128, USERS[0].into())]);
-    assert_eq!(state.tokens_for_owner, [(USERS[0].into(), vec![0])]);
+    assert_eq!(state.owner_by_id, [(0_u128, USERS[1].into())]);
+    assert_eq!(state.tokens_for_owner, [(USERS[1].into(), vec![0])]);
 }
 
 #[test]
@@ -54,14 +54,14 @@ fn mint_failures() {
     assert!(!res.main_failed());
 
     // zero address
-    let res = mint(&nft, 0);
+    let res = mint(&nft, USERS[0], 0.into());
     assert!(res.main_failed());
 
     // limit_exceed
     let nft = sys.get_program(1);
-    let res = mint(&nft, USERS[0]);
+    let res = mint(&nft, USERS[0], USERS[1].into());
     assert!(!res.main_failed());
-    let res = mint(&nft, USERS[1]);
+    let res = mint(&nft, USERS[0], USERS[1].into());
     assert!(res.main_failed())
 }
 
@@ -70,11 +70,11 @@ fn burn_success() {
     let sys = System::new();
     init_nft(&sys);
     let nft = sys.get_program(1);
-    assert!(!mint(&nft, USERS[0]).main_failed());
-
-    let res = burn(&nft, USERS[0], 0);
-    let message = NftEvent::Burn { token_id: 0 }.encode();
-    assert!(res.contains(&(USERS[0], message)));
+    let res = mint(&nft, USERS[0], USERS[1].into());
+    assert!(!res.main_failed());
+    let res = burn(&nft, USERS[1], 0);
+    let message = NftEvent::Burnt { token_id: 0 }.encode();
+    assert!(res.contains(&(USERS[1], message)));
 
     let state = get_state(&nft).expect("Unexpected invalid state.");
     assert!(state.owner_by_id.is_empty());
@@ -86,11 +86,11 @@ fn burn_failures() {
     let sys = System::new();
     init_nft(&sys);
     let nft = sys.get_program(1);
-    assert!(!mint(&nft, USERS[0]).main_failed());
+    mint(&nft, USERS[0], USERS[1].into());
     // must fail since the token doesn't exist
-    assert!(burn(&nft, USERS[0], 1).main_failed());
+    assert!(burn(&nft, USERS[1], 1).main_failed());
     // must fail since the caller is not the token owner
-    assert!(burn(&nft, USERS[1], 0).main_failed());
+    assert!(burn(&nft, USERS[0], 0).main_failed());
 }
 
 #[test]
@@ -98,20 +98,20 @@ fn transfer_success() {
     let sys = System::new();
     init_nft(&sys);
     let nft = sys.get_program(1);
-    assert!(!mint(&nft, USERS[0]).main_failed());
+    assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
 
-    let res = transfer(&nft, USERS[0], USERS[1], 0);
-    let message = NftEvent::Transfer {
-        from: USERS[0].into(),
-        to: USERS[1].into(),
+    let res = transfer(&nft, USERS[1], USERS[2], 0);
+    let message = NftEvent::Transferred {
+        from: USERS[1].into(),
+        to: USERS[2].into(),
         token_id: 0,
     }
     .encode();
-    assert!(res.contains(&(USERS[0], message)));
+    assert!(res.contains(&(USERS[1], message)));
 
     let state = get_state(&nft).expect("Unexpected invalid state.");
-    assert_eq!(state.owner_by_id, [(0_u128, USERS[1].into())]);
-    assert_eq!(state.tokens_for_owner, [(USERS[1].into(), vec![0])]);
+    assert_eq!(state.owner_by_id, [(0_u128, USERS[2].into())]);
+    assert_eq!(state.tokens_for_owner, [(USERS[2].into(), vec![0])]);
 }
 
 #[test]
@@ -119,14 +119,14 @@ fn transfer_failures() {
     let sys = System::new();
     init_nft(&sys);
     let nft = sys.get_program(1);
-    assert!(!mint(&nft, USERS[0]).main_failed());
+    assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
 
     // must fail since the token doesn't exist
-    assert!(transfer(&nft, USERS[0], USERS[1], 1).main_failed());
+    assert!(transfer(&nft, USERS[1], USERS[2], 1).main_failed());
     // must fail since the caller is not the token owner
-    assert!(transfer(&nft, USERS[1], USERS[0], 0).main_failed());
+    assert!(transfer(&nft, USERS[0], USERS[2], 0).main_failed());
     // must fail since transfer to the zero address
-    assert!(transfer(&nft, USERS[0], ZERO_ID, 0).main_failed());
+    assert!(transfer(&nft, USERS[1], ZERO_ID, 0).main_failed());
 }
 
 #[test]
@@ -134,19 +134,19 @@ fn approve_success() {
     let sys = System::new();
     init_nft(&sys);
     let nft = sys.get_program(1);
-    assert!(!mint(&nft, USERS[0]).main_failed());
-    let res = approve(&nft, USERS[0], USERS[1], 0);
-    let message = NftEvent::Approval {
-        owner: USERS[0].into(),
-        approved_account: USERS[1].into(),
+    assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
+    let res = approve(&nft, USERS[1], USERS[2], 0);
+    let message = NftEvent::Approved {
+        owner: USERS[1].into(),
+        approved_account: USERS[2].into(),
         token_id: 0,
     }
     .encode();
-    assert!(res.contains(&(USERS[0], message)));
+    assert!(res.contains(&(USERS[1], message)));
     let state = get_state(&nft).expect("Unexpected invalid state.");
-    assert_eq!(state.token_approvals, [(0_u128, vec![USERS[1].into()])]);
+    assert_eq!(state.token_approvals, [(0_u128, USERS[2].into())]);
 
-    assert!(!transfer(&nft, USERS[1], USERS[2], 0).main_failed());
+    assert!(!transfer(&nft, USERS[2], USERS[0], 0).main_failed());
 
     let state = get_state(&nft).expect("Unexpected invalid state.");
     assert!(state.token_approvals.is_empty());
@@ -157,20 +157,20 @@ fn approve_failures() {
     let sys = System::new();
     init_nft(&sys);
     let nft = sys.get_program(1);
-    assert!(!mint(&nft, USERS[0]).main_failed());
+    assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
     // must fail since the token doesn't exist
-    assert!(approve(&nft, USERS[0], USERS[1], 1).main_failed());
+    assert!(approve(&nft, USERS[1], USERS[2], 1).main_failed());
     // must fail since the caller is not the token owner
-    assert!(approve(&nft, USERS[1], USERS[0], 0).main_failed());
+    assert!(approve(&nft, USERS[0], USERS[2], 0).main_failed());
     // must fail since approval to the zero address
-    assert!(approve(&nft, USERS[0], ZERO_ID, 0).main_failed());
+    assert!(approve(&nft, USERS[1], ZERO_ID, 0).main_failed());
 
     //approve
-    assert!(!approve(&nft, USERS[0], USERS[1], 0).main_failed());
+    assert!(!approve(&nft, USERS[1], USERS[2], 0).main_failed());
     //transfer
-    assert!(!transfer(&nft, USERS[1], USERS[2], 0).main_failed());
+    assert!(!transfer(&nft, USERS[1], USERS[0], 0).main_failed());
     //must fail since approval was removed after transferring
-    assert!(transfer(&nft, USERS[1], USERS[0], 0).main_failed());
+    assert!(transfer(&nft, USERS[2], USERS[0], 0).main_failed());
 }
 
 #[test]
@@ -178,13 +178,12 @@ fn owner_success() {
     let sys = System::new();
     init_nft(&sys);
     let nft = sys.get_program(1);
-    assert!(!mint(&nft, USERS[0]).main_failed());
-    assert!(!approve(&nft, USERS[0], USERS[1], 0).main_failed());
+    assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
     let res = owner_of(&nft, USERS[1], 0);
 
     let message = NftEvent::Owner {
         token_id: 0,
-        owner: ActorId::from(USERS[0]),
+        owner: ActorId::from(USERS[1]),
     }
     .encode();
     assert!(res.contains(&(USERS[1], message)));
@@ -195,8 +194,7 @@ fn owner_failure() {
     let sys = System::new();
     init_nft(&sys);
     let nft = sys.get_program(1);
-    assert!(!mint(&nft, USERS[0]).main_failed());
-    assert!(!approve(&nft, USERS[0], USERS[1], 0).main_failed());
+    assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
     let res = owner_of(&nft, USERS[1], 1);
     assert!(res.main_failed());
 }
@@ -206,26 +204,17 @@ fn is_approved_to_success() {
     let sys = System::new();
     init_nft(&sys);
     let nft = sys.get_program(1);
-    assert!(!mint(&nft, USERS[0]).main_failed());
-    assert!(!approve(&nft, USERS[0], USERS[1], 0).main_failed());
+    assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
+    assert!(!approve(&nft, USERS[1], USERS[2], 0).main_failed());
 
-    let res = is_approved_to(&nft, USERS[1], 0, USERS[1]);
+    let res = is_approved_to(&nft, USERS[0], 0, USERS[2]);
     let message = NftEvent::IsApproved {
-        to: USERS[1].into(),
+        to: USERS[2].into(),
         token_id: 0,
         approved: true,
     }
     .encode();
-    assert!(res.contains(&(USERS[1], message)));
-
-    let res = is_approved_to(&nft, USERS[1], 0, USERS[0]);
-    let message = NftEvent::IsApproved {
-        to: USERS[0].into(),
-        token_id: 0,
-        approved: false,
-    }
-    .encode();
-    assert!(res.contains(&(USERS[1], message)));
+    assert!(res.contains(&(USERS[0], message)));
 }
 
 #[test]
@@ -233,8 +222,8 @@ fn is_approved_to_failure() {
     let sys = System::new();
     init_nft(&sys);
     let nft = sys.get_program(1);
-    assert!(!mint(&nft, USERS[0]).main_failed());
-    assert!(!approve(&nft, USERS[0], USERS[1], 0).main_failed());
-    let res = is_approved_to(&nft, USERS[1], 1, USERS[1]);
+    assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
+    assert!(!approve(&nft, USERS[1], USERS[2], 0).main_failed());
+    let res = is_approved_to(&nft, USERS[1], 1, USERS[2]);
     assert!(res.main_failed());
 }
