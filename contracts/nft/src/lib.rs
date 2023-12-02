@@ -130,6 +130,7 @@ impl Nft {
             .expect("NonFungibleToken: token does not exist");
         self.check_owner(owner);
         self.check_zero_address(to);
+        self.check_approve(&token_id);
         self.token_approvals.insert(token_id, *to);
 
         NftEvent::Approved {
@@ -200,6 +201,12 @@ impl Nft {
             }
         }
         self.check_owner(owner);
+    }
+    /// Check the existence of a approve
+    fn check_approve(&self, token_id: &TokenId) {
+        if self.token_approvals.contains_key(token_id){
+            panic!("Approve has already been issued");
+        }
     }
 }
 
