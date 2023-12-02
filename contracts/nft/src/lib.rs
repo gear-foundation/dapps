@@ -204,7 +204,7 @@ impl Nft {
     }
     /// Check the existence of a approve
     fn check_approve(&self, token_id: &TokenId) {
-        if self.token_approvals.contains_key(token_id){
+        if self.token_approvals.contains_key(token_id) {
             panic!("Approve has already been issued");
         }
     }
