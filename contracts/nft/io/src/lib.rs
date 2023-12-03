@@ -35,12 +35,28 @@ pub struct Collection {
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum NftAction {
-    Mint { to: ActorId, token_metadata: TokenMetadata },
-    Burn { token_id: TokenId },
-    Transfer { to: ActorId, token_id: TokenId },
-    Approve { to: ActorId, token_id: TokenId },
-    Owner { token_id: TokenId },
-    IsApproved { to: ActorId, token_id: TokenId },
+    Mint {
+        to: ActorId,
+        token_metadata: TokenMetadata,
+    },
+    Burn {
+        token_id: TokenId,
+    },
+    Transfer {
+        to: ActorId,
+        token_id: TokenId,
+    },
+    Approve {
+        to: ActorId,
+        token_id: TokenId,
+    },
+    Owner {
+        token_id: TokenId,
+    },
+    IsApproved {
+        to: ActorId,
+        token_id: TokenId,
+    },
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
