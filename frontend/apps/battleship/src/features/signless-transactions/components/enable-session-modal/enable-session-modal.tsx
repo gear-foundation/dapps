@@ -21,7 +21,7 @@ function EnableSessionModal({ close }: Props) {
       unlockPair(password);
       close();
     } catch (error) {
-      const [, message] = String(error).split('Error: ');
+      const message = String(error);
       setError('password', { message });
     }
   };
