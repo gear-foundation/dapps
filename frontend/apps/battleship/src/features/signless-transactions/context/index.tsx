@@ -1,5 +1,5 @@
 import { KeyringPair } from '@polkadot/keyring/types';
-import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
+import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { LOCAL_STORAGE_SIGNLESS_PAIR_KEY } from './consts';
 import { Session } from './types';
@@ -32,7 +32,7 @@ type Props = {
 function SignlessTransactionsProvider({ children }: Props) {
   const { session, isSessionReady } = useSession();
 
-  const [pair, setPair] = useState(getSavedPair());
+  const [pair, setPair] = useState<KeyringPair | undefined>();
 
   const unlockPair = (password: string) => {
     const savedPair = getSavedPair();
@@ -47,6 +47,13 @@ function SignlessTransactionsProvider({ children }: Props) {
 
     setPair(value);
   };
+
+  useEffect(() => {
+    if (!isSessionReady) return;
+    if (!session) return setPair(undefined);
+
+    setPair(getSavedPair());
+  }, [isSessionReady, session]);
 
   const value = useMemo(
     () => ({

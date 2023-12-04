@@ -9,19 +9,13 @@ import { State } from './types';
 
 function useSession() {
   const { account } = useAccount();
-  const { decodedAddress } = account || {};
-
   const metadata = useProgramMetadata(metaTxt);
 
-  const payload = useMemo(
-    () => (decodedAddress ? { SessionForTheAccount: decodedAddress } : undefined),
-    [decodedAddress],
-  );
-
-  const { state, isStateRead } = useReadFullState<State>(ADDRESS.GAME, metadata, payload);
+  const payload = useMemo(() => ({ SessionForTheAccount: account?.decodedAddress }), [account]);
+  const { state } = useReadFullState<State>(ADDRESS.GAME, metadata, payload);
 
   const session = state?.SessionForTheAccount;
-  const isSessionReady = isStateRead;
+  const isSessionReady = session !== undefined;
 
   return { session, isSessionReady };
 }
