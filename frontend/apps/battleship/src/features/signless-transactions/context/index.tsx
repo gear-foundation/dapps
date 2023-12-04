@@ -45,8 +45,12 @@ function SignlessTransactionsProvider({ children }: Props) {
   };
 
   useEffect(() => {
-    setPair(undefined);
+    if (!session) setPair(undefined);
   }, [session]);
+
+  useEffect(() => {
+    setPair(undefined);
+  }, [account]);
 
   const value = useMemo(
     () => ({
