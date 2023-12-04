@@ -1,6 +1,7 @@
 import { Button, Input, Modal, ModalProps } from '@gear-js/vara-ui';
 import { useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { decodeAddress } from '@gear-js/api';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { ADDRESS } from '@/app/consts';
@@ -33,11 +34,15 @@ function CreateSessionModal({ close }: Props) {
   const { errors } = formState;
 
   const { savePair } = useSignlessTransactions();
-
   const { createSession, deleteSession } = useCreateSession();
   const issueVoucher = useIssueVoucher();
 
+  const [isLoading, setIsLoading] = useState(false);
+  const disableLoading = () => setIsLoading(false);
+
   const onSubmit = (values: typeof DEFAULT_VALUES) => {
+    setIsLoading(true);
+
     const { password } = values;
     const value = getChainBalanceValue(values.value).toFixed();
     const duration = getMilliseconds(+values.duration);
@@ -45,14 +50,19 @@ function CreateSessionModal({ close }: Props) {
     const pair = getRandomPair();
     const decodedAddress = decodeAddress(pair.address);
 
-    const onSuccess = () => {
+    const onVoucherSuccess = () => {
       savePair(pair, password);
       close();
     };
 
-    createSession(decodedAddress, duration, ACTIONS, () =>
-      issueVoucher(ADDRESS.GAME, decodedAddress, value, onSuccess, deleteSession),
-    );
+    const onVoucherError = () => {
+      deleteSession();
+      disableLoading();
+    };
+
+    const onCreateSuccess = () => issueVoucher(ADDRESS.GAME, decodedAddress, value, onVoucherSuccess, onVoucherError);
+
+    createSession(decodedAddress, duration, ACTIONS, onCreateSuccess, disableLoading);
   };
 
   return (
@@ -90,7 +100,7 @@ function CreateSessionModal({ close }: Props) {
           />
         </div>
 
-        <Button type="submit" text="Submit" className={styles.button} />
+        <Button type="submit" text="Submit" className={styles.button} isLoading={isLoading} />
       </form>
     </Modal>
   );

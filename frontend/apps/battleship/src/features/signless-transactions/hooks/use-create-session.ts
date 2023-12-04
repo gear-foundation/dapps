@@ -15,10 +15,16 @@ function useCreateSession() {
     sendMessage({ payload });
   };
 
-  const createSession = (key: HexString, duration: number, allowedActions: string[], onSuccess: () => void) => {
+  const createSession = (
+    key: HexString,
+    duration: number,
+    allowedActions: string[],
+    onSuccess: () => void,
+    onError: () => void,
+  ) => {
     const payload = { CreateSession: { duration, allowedActions, key } };
 
-    sendMessage({ payload, onSuccess });
+    sendMessage({ payload, onSuccess, onError });
   };
 
   return { createSession, deleteSession };

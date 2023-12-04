@@ -1,4 +1,5 @@
 import { Button, Input, Modal, ModalProps } from '@gear-js/vara-ui';
+import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useSignlessTransactions } from '../../context';
@@ -15,14 +16,19 @@ function EnableSessionModal({ close }: Props) {
   const { errors } = formState;
 
   const { unlockPair } = useSignlessTransactions();
+  const [isLoading, setIsLoading] = useState(false);
 
   const onSubmit = ({ password }: typeof DEFAULT_VALUES) => {
+    setIsLoading(true);
+
     try {
       unlockPair(password);
       close();
     } catch (error) {
       const message = String(error);
+
       setError('password', { message });
+      setIsLoading(false);
     }
   };
 
@@ -35,7 +41,8 @@ function EnableSessionModal({ close }: Props) {
           error={errors.password?.message}
           {...register('password', { required: 'Field is required' })}
         />
-        <Button type="submit" text="Submit" className={styles.button} />
+
+        <Button type="submit" text="Submit" className={styles.button} isLoading={isLoading} />
       </form>
     </Modal>
   );
