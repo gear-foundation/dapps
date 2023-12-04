@@ -213,7 +213,7 @@ impl Nft {
 #[no_mangle]
 unsafe extern fn handle() {
     let action: NftAction = msg::load().expect("Could not load NftAction");
-    let nft = NFT.get_or_insert(Default::default());
+    let nft = NFT.as_mut().expect("`NFT` is not initialized.");
     let result = match action {
         NftAction::Mint { to, token_metadata } => nft.mint(&to, token_metadata),
         NftAction::Burn { token_id } => nft.burn(token_id),
