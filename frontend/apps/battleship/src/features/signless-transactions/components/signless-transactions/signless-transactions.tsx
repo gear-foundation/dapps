@@ -12,10 +12,12 @@ import { getHMS } from '../../utils';
 import { CreateSessionModal } from '../create-session-modal';
 import { EnableSessionModal } from '../enable-session-modal';
 import styles from './signless-transactions.module.css';
+import { useCreateSession } from '../../hooks';
 
 function SignlessTransactions() {
   const { account } = useAccount();
   const { pair, session, isSessionReady } = useSignlessTransactions();
+  const { deleteSession } = useCreateSession();
 
   const [modal, setModal] = useState('');
   const openCreateModal = () => setModal('create');
@@ -31,10 +33,22 @@ function SignlessTransactions() {
   const sessionBalance = balance ? getFormattedBalance(balance) : undefined;
 
   return account && isSessionReady ? (
-    <>
+    <div>
       {session ? (
         <>
-          {!pair && <Button text="Unlock Signless Transactions" size="small" color="dark" onClick={openEnableModal} />}
+          <div className={styles.buttons}>
+            {!pair && (
+              <Button text="Unlock Signless Transactions" size="small" color="dark" onClick={openEnableModal} />
+            )}
+
+            <Button
+              text="Close Signless Session"
+              size="small"
+              color="transparent"
+              className={styles.closeButton}
+              onClick={deleteSession}
+            />
+          </div>
 
           <div className={styles.session}>
             <p>Signless Session is Active</p>
@@ -49,14 +63,12 @@ function SignlessTransactions() {
           </div>
         </>
       ) : (
-        <div>
-          <Button text="Enable Signless Transactions" size="small" color="dark" onClick={openCreateModal} />
-        </div>
+        <Button text="Enable Signless Transactions" size="small" color="dark" onClick={openCreateModal} />
       )}
 
       {modal === 'enable' && <EnableSessionModal close={closeModal} />}
       {modal === 'create' && <CreateSessionModal close={closeModal} />}
-    </>
+    </div>
   ) : null;
 }
 

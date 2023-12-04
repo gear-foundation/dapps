@@ -10,7 +10,7 @@ function useCreateSession() {
   const sendMessage = useSendMessageHandler(ADDRESS.GAME, metadata, { disableAlerts: true });
 
   const deleteSession = () => {
-    const payload = { DeleteSession: null };
+    const payload = { DeleteSessionFromAccount: null };
 
     sendMessage({ payload });
   };
