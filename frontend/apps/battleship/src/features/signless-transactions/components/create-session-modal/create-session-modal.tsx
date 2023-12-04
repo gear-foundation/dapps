@@ -13,19 +13,25 @@ import styles from './create-session-modal.module.css';
 type Props = Pick<ModalProps, 'close'>;
 
 const DEFAULT_VALUES = {
-  value: '0',
-  duration: '0',
+  value: '',
+  duration: '',
   password: '',
 };
+
+const REQUIRED_MESSAGE = 'Field is required';
 
 const ACTIONS = ['StartGame', 'Turn'];
 
 function CreateSessionModal({ close }: Props) {
   const { api } = useApi();
-  const { getChainBalanceValue } = useBalanceFormat();
+  const { getChainBalanceValue, getFormattedBalanceValue } = useBalanceFormat();
+  // TODO: omit type after @gear-js/react-hooks BigNumber.js types fix
+  const eDeposit: string = getFormattedBalanceValue(api?.existentialDeposit.toString() || '0').toFixed();
   const [unit] = api?.registry.chainTokens || ['Unit'];
 
-  const { register, handleSubmit } = useForm({ defaultValues: DEFAULT_VALUES });
+  const { register, handleSubmit, formState } = useForm({ defaultValues: DEFAULT_VALUES });
+  const { errors } = formState;
+
   const { savePair } = useSignlessTransactions();
 
   const { createSession, deleteSession } = useCreateSession();
@@ -53,9 +59,35 @@ function CreateSessionModal({ close }: Props) {
     <Modal heading="Create Signless Session" close={close}>
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.inputs}>
-          <Input type="number" label={`Value (${unit})`} {...register('value')} />
-          <Input type="number" label="Duration (minutes)" {...register('duration')} />
-          <Input type="password" label="Password" {...register('password')} />
+          <Input
+            type="number"
+            label={`Value (${unit})`}
+            error={errors.value?.message}
+            {...register('value', {
+              required: REQUIRED_MESSAGE,
+              min: { value: eDeposit, message: `Minimum value is ${eDeposit}` },
+            })}
+          />
+
+          <Input
+            type="number"
+            label="Duration (minutes)"
+            error={errors.duration?.message}
+            {...register('duration', {
+              required: REQUIRED_MESSAGE,
+              min: { value: 1, message: 'Minimum value is 1' },
+            })}
+          />
+
+          <Input
+            type="password"
+            label="Password"
+            error={errors.password?.message}
+            {...register('password', {
+              required: REQUIRED_MESSAGE,
+              minLength: { value: 6, message: 'Minimum length is 6' },
+            })}
+          />
         </div>
 
         <Button type="submit" text="Submit" className={styles.button} />
