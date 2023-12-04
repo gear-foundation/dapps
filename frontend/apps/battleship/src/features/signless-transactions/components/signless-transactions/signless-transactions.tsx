@@ -34,9 +34,7 @@ function SignlessTransactions() {
     <>
       {session ? (
         <>
-          {pair?.isLocked && (
-            <Button text="Unlock Signless Transactions" size="small" color="dark" onClick={openEnableModal} />
-          )}
+          {!pair && <Button text="Unlock Signless Transactions" size="small" color="dark" onClick={openEnableModal} />}
 
           <div className={styles.session}>
             <p>Signless Session is Active</p>

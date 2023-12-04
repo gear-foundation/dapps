@@ -3,25 +3,9 @@ import { KeyringPair } from '@polkadot/keyring/types';
 import { useAccount } from '@gear-js/react-hooks';
 import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
 
-import { LOCAL_STORAGE_SIGNLESS_PAIR_KEY } from './consts';
-import { Session, Storage } from './types';
+import { DEFAULT_VALUES, SIGNLESS_STORAGE_KEY } from './consts';
+import { Storage, Value } from './types';
 import { useSession } from './hooks';
-
-type Value = {
-  pair: KeyringPair | undefined;
-  savePair: (pair: KeyringPair, password: string) => void;
-  unlockPair: (password: string) => void;
-  session: Session | null | undefined;
-  isSessionReady: boolean;
-};
-
-const DEFAULT_VALUES = {
-  pair: undefined,
-  savePair: () => {},
-  unlockPair: () => {},
-  session: undefined,
-  isSessionReady: false,
-};
 
 const SignlessTransactionsContext = createContext<Value>(DEFAULT_VALUES);
 const { Provider } = SignlessTransactionsContext;
@@ -36,46 +20,33 @@ function SignlessTransactionsProvider({ children }: Props) {
 
   const [pair, setPair] = useState<KeyringPair | undefined>();
 
-  const getStorage = () => {
-    const storage = localStorage[LOCAL_STORAGE_SIGNLESS_PAIR_KEY];
+  const getStorage = () => JSON.parse(localStorage[SIGNLESS_STORAGE_KEY] || '{}') as Storage;
 
-    return storage ? (JSON.parse(storage) as Storage) : {};
-  };
-
-  const getSavedPair = () => {
+  const unlockPair = (password: string) => {
     if (!account) throw new Error('No account address');
 
     const pairJson = getStorage()[account.address];
-    if (!pairJson) return;
+    if (!pairJson) throw new Error('Pair not found');
 
     const keyring = new Keyring({ type: 'sr25519' });
-    return keyring.addFromJson(pairJson);
-  };
+    const result = keyring.addFromJson(pairJson);
 
-  const unlockPair = (password: string) => {
-    const savedPair = getSavedPair();
-    savedPair?.unlock(password);
-
-    setPair(savedPair);
+    result.unlock(password);
+    setPair(result);
   };
 
   const savePair = (value: KeyringPair, password: string) => {
     if (!account) throw new Error('No account address');
 
-    const pairJson = value.toJson(password);
-    const storage = { ...getStorage(), [account.address]: pairJson };
+    const storage = { ...getStorage(), [account.address]: value.toJson(password) };
 
-    localStorage.setItem(LOCAL_STORAGE_SIGNLESS_PAIR_KEY, JSON.stringify(storage));
+    localStorage.setItem(SIGNLESS_STORAGE_KEY, JSON.stringify(storage));
     setPair(value);
   };
 
   useEffect(() => {
     if (!isSessionReady) return;
     if (!session) return setPair(undefined);
-
-    setPair(getSavedPair());
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSessionReady, session]);
 
   const value = useMemo(

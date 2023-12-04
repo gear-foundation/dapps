@@ -1,3 +1,11 @@
-const LOCAL_STORAGE_SIGNLESS_PAIR_KEY = 'signlessPair';
+const SIGNLESS_STORAGE_KEY = 'signless';
 
-export { LOCAL_STORAGE_SIGNLESS_PAIR_KEY };
+const DEFAULT_VALUES = {
+  pair: undefined,
+  savePair: () => {},
+  unlockPair: () => {},
+  session: undefined,
+  isSessionReady: false,
+};
+
+export { SIGNLESS_STORAGE_KEY, DEFAULT_VALUES };

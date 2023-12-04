@@ -1,5 +1,5 @@
 import { HexString } from '@polkadot/util/types';
-import { KeyringPair$Json } from '@polkadot/keyring/types';
+import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
 
 type Session = {
   key: HexString;
@@ -13,4 +13,12 @@ type State = {
 
 type Storage = Record<string, KeyringPair$Json | undefined>;
 
-export type { State, Session, Storage };
+type Value = {
+  pair: KeyringPair | undefined;
+  savePair: (pair: KeyringPair, password: string) => void;
+  unlockPair: (password: string) => void;
+  session: Session | null | undefined;
+  isSessionReady: boolean;
+};
+
+export type { State, Session, Storage, Value };
