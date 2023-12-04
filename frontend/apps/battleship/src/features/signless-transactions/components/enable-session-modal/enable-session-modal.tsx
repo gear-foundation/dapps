@@ -29,7 +29,12 @@ function EnableSessionModal({ close }: Props) {
   return (
     <Modal heading="Enable Signless Session" close={close}>
       <form onSubmit={handleSubmit(onSubmit)} className={styles.inputs}>
-        <Input type="password" label="Password" {...register('password')} error={errors.password?.message} />
+        <Input
+          type="password"
+          label="Password"
+          error={errors.password?.message}
+          {...register('password', { required: 'Field is required' })}
+        />
         <Button type="submit" text="Submit" className={styles.button} />
       </form>
     </Modal>
