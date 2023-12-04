@@ -11,18 +11,25 @@ const DEFAULT_VALUES = {
 };
 
 function EnableSessionModal({ close }: Props) {
-  const { register, handleSubmit } = useForm({ defaultValues: DEFAULT_VALUES });
-  const { setPassword } = useSignlessTransactions();
+  const { register, handleSubmit, setError, formState } = useForm({ defaultValues: DEFAULT_VALUES });
+  const { errors } = formState;
+
+  const { unlockPair } = useSignlessTransactions();
 
   const onSubmit = ({ password }: typeof DEFAULT_VALUES) => {
-    setPassword(password);
-    close();
+    try {
+      unlockPair(password);
+      close();
+    } catch (error) {
+      const [, message] = String(error).split('Error: ');
+      setError('password', { message });
+    }
   };
 
   return (
     <Modal heading="Enable Signless Session" close={close}>
       <form onSubmit={handleSubmit(onSubmit)} className={styles.inputs}>
-        <Input type="password" label="Password" {...register('password')} />
+        <Input type="password" label="Password" {...register('password')} error={errors.password?.message} />
         <Button type="submit" text="Submit" className={styles.button} />
       </form>
     </Modal>

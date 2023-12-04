@@ -5,7 +5,7 @@ import { ADDRESS } from '@/app/consts';
 import { useProgramMetadata } from '@/app/hooks';
 import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
 
-import { State } from '../types';
+import { State } from './types';
 
 function useSession() {
   const { account } = useAccount();

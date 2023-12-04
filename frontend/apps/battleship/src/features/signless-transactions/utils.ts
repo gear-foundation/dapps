@@ -8,13 +8,13 @@ const MULTIPLIER = {
   HOURS: 24,
 };
 
-const getRandomPair = (password: string) => {
+const getRandomPair = () => {
   const seed = mnemonicGenerate();
 
   const keyring = new Keyring({ type: 'sr25519' });
   const pair = keyring.addFromMnemonic(seed);
 
-  return pair.toJson(password);
+  return pair;
 };
 
 const getMilliseconds = (minutes: number) => minutes * MULTIPLIER.MS * MULTIPLIER.SECONDS;

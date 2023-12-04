@@ -6,7 +6,10 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  margin-bottom: 32px;
+
+  &:not(:last-child) {
+    margin-bottom: 32px;
+  }
 }
 
 .button {

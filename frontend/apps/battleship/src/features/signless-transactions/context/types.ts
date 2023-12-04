@@ -10,4 +10,4 @@ type State = {
   SessionForTheAccount: Session | null;
 };
 
-export type { State };
+export type { State, Session };

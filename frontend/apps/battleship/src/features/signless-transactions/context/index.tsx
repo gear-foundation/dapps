@@ -1,21 +1,25 @@
-import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
-import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { Keyring } from '@polkadot/api';
+import { KeyringPair } from '@polkadot/keyring/types';
+import { ReactNode, createContext, useContext, useMemo, useState } from 'react';
 
-import { LOCAL_STORAGE_SIGNLESS_PAIR_KEY } from '../consts';
+import { LOCAL_STORAGE_SIGNLESS_PAIR_KEY } from './consts';
+import { Session } from './types';
+import { useSession } from './hooks';
+import { getSavedPair } from './utils';
 
 type Value = {
-  password: string;
-  setPassword: (value: string) => void;
-  setPairJson: (value: KeyringPair$Json) => void;
   pair: KeyringPair | undefined;
+  savePair: (pair: KeyringPair, password: string) => void;
+  unlockPair: (password: string) => void;
+  session: Session | null | undefined;
+  isSessionReady: boolean;
 };
 
 const DEFAULT_VALUES = {
-  password: '',
-  setPassword: () => {},
-  setPairJson: () => {},
   pair: undefined,
+  savePair: () => {},
+  unlockPair: () => {},
+  session: undefined,
+  isSessionReady: false,
 };
 
 const SignlessTransactionsContext = createContext<Value>(DEFAULT_VALUES);
@@ -25,43 +29,34 @@ type Props = {
   children: ReactNode;
 };
 
-const DEFAULT_PAIR_JSON = localStorage[LOCAL_STORAGE_SIGNLESS_PAIR_KEY]
-  ? (JSON.parse(localStorage[LOCAL_STORAGE_SIGNLESS_PAIR_KEY]) as KeyringPair$Json)
-  : undefined;
-
 function SignlessTransactionsProvider({ children }: Props) {
-  const [pairJson, setPairJson] = useState(DEFAULT_PAIR_JSON);
-  const [password, setPassword] = useState('');
+  const { session, isSessionReady } = useSession();
 
-  const pair = useMemo(() => {
-    if (!password || !pairJson) return;
+  const [pair, setPair] = useState(getSavedPair());
 
-    try {
-      const keyring = new Keyring({ type: 'sr25519' });
-      const pair = keyring.addFromJson(pairJson);
+  const unlockPair = (password: string) => {
+    const savedPair = getSavedPair();
+    savedPair?.unlock(password);
 
-      pair.unlock(password);
+    setPair(savedPair);
+  };
 
-      return pair;
-    } catch (error) {
-      console.log('error: ', error);
-    }
-  }, [pairJson, password]);
-
-  useEffect(() => {
-    if (!pairJson) return localStorage.removeItem(LOCAL_STORAGE_SIGNLESS_PAIR_KEY);
-
+  const savePair = (value: KeyringPair, password: string) => {
+    const pairJson = value.toJson(password);
     localStorage.setItem(LOCAL_STORAGE_SIGNLESS_PAIR_KEY, JSON.stringify(pairJson));
-  }, [pairJson]);
+
+    setPair(value);
+  };
 
   const value = useMemo(
     () => ({
-      password,
-      setPassword,
-      setPairJson,
       pair,
+      savePair,
+      unlockPair,
+      session,
+      isSessionReady,
     }),
-    [password, pair],
+    [pair, session, isSessionReady],
   );
 
   return <Provider value={value}>{children}</Provider>;

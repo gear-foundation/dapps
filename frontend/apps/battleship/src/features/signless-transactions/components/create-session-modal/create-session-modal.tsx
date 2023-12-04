@@ -26,22 +26,21 @@ function CreateSessionModal({ close }: Props) {
   const [unit] = api?.registry.chainTokens || ['Unit'];
 
   const { register, handleSubmit } = useForm({ defaultValues: DEFAULT_VALUES });
-  const { setPassword, setPairJson } = useSignlessTransactions();
+  const { savePair } = useSignlessTransactions();
 
   const { createSession, deleteSession } = useCreateSession();
   const issueVoucher = useIssueVoucher();
 
   const onSubmit = (values: typeof DEFAULT_VALUES) => {
+    const { password } = values;
     const value = getChainBalanceValue(values.value).toFixed();
     const duration = getMilliseconds(+values.duration);
 
-    const { password } = values;
-    const pair = getRandomPair(password);
+    const pair = getRandomPair();
     const decodedAddress = decodeAddress(pair.address);
 
     const onSuccess = () => {
-      setPassword(password);
-      setPairJson(pair);
+      savePair(pair, password);
       close();
     };
 
