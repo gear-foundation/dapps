@@ -45,9 +45,8 @@ function SignlessTransactionsProvider({ children }: Props) {
   };
 
   useEffect(() => {
-    if (!isSessionReady) return;
-    if (!session) return setPair(undefined);
-  }, [isSessionReady, session]);
+    setPair(undefined);
+  }, [session]);
 
   const value = useMemo(
     () => ({
