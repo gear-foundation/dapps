@@ -15,11 +15,11 @@ export default function GameProcess() {
   const { account } = useAccount();
   const { isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address);
 
-  const [canExecute, setCanExecute] = useState(false);
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
   const [elapsedTime, setElapsedTime] = useState('');
   const [totalGameTime, setTotalGameTime] = useState('');
+  const [isDisabledCell, setDisabledCell] = useState(false)
 
   const { gameState } = useGame();
   const { setPending } = usePending();
@@ -77,14 +77,20 @@ export default function GameProcess() {
     await updateBalance();
 
     if (!isLoading) {
+      setDisabledCell(true)
+
       checkBalance(gasLimit, () =>
         message({
           payload: { Turn: { step: indexCell } },
+          onInBlock: (messageId) => {
+            if (messageId) {
+              setDisabledCell(false)
+            }
+          },
           gasLimit,
           withVoucher: isVoucher,
           onSuccess: () => {
             setPending(false);
-            setCanExecute(true);
           },
         }),
       );
@@ -152,8 +158,14 @@ export default function GameProcess() {
           })}
         </div>
       </div>
+
       <div>
-        <MapEnemy sizeBlock={68} onClickCell={onClickCell} canExecute={canExecute} shipStatusArray={enemiesShips} />
+        <MapEnemy
+          sizeBlock={68}
+          onClickCell={onClickCell}
+          shipStatusArray={enemiesShips}
+          isDisabledCell={isDisabledCell}
+        />
       </div>
 
       {isOpenEndModal && gameState && (
