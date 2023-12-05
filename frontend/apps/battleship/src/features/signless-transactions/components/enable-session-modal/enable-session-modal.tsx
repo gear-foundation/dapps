@@ -34,7 +34,7 @@ function EnableSessionModal({ close }: Props) {
 
   return (
     <Modal heading="Enable Signless Session" close={close}>
-      <form onSubmit={handleSubmit(onSubmit)} className={styles.inputs}>
+      <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
         <Input
           type="password"
           label="Password"

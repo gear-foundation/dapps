@@ -1,4 +1,4 @@
-.inputs {
+.form {
   /* TODO: if there's margin-bottom on top element (?), label overflow is broken  */
   /* remove after @gear-js/vara-ui fix */
   padding-top: 8px;
@@ -17,4 +17,26 @@
   /* remove after @gear-js/vara-ui fix  */
   width: 100%;
   justify-content: center;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+
+  .account {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    & span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .heading {
+    margin-bottom: 2px;
+  }
 }

@@ -1,7 +1,9 @@
 import { Button, Input, Modal, ModalProps } from '@gear-js/vara-ui';
 import { useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { decodeAddress } from '@gear-js/api';
-import { useState } from 'react';
+import { KeyringPair } from '@polkadot/keyring/types';
+import Identicon from '@polkadot/react-identicon';
+import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { ADDRESS } from '@/app/consts';
@@ -13,27 +15,25 @@ import styles from './create-session-modal.module.css';
 
 type Props = Pick<ModalProps, 'close'>;
 
-const DEFAULT_VALUES = {
-  value: '',
-  duration: '',
-  password: '',
-};
-
+const DEFAULT_VALUES = { password: '' };
 const REQUIRED_MESSAGE = 'Field is required';
 
+const DURATION_MINUTES = 5;
+const VOUCHER_VALUE = 10;
 const ACTIONS = ['StartGame', 'Turn'];
 
 function CreateSessionModal({ close }: Props) {
   const { api } = useApi();
-  const { getChainBalanceValue, getFormattedBalanceValue } = useBalanceFormat();
-  // TODO: omit type after @gear-js/react-hooks BigNumber.js types fix
-  const eDeposit: string = getFormattedBalanceValue(api?.existentialDeposit.toString() || '0').toFixed();
   const [unit] = api?.registry.chainTokens || ['Unit'];
+  const { getChainBalanceValue } = useBalanceFormat();
 
   const { register, handleSubmit, formState } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
-  const { savePair } = useSignlessTransactions();
+  const { savePair, storagePair } = useSignlessTransactions();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const pair = useMemo(() => storagePair || getRandomPair(), []);
+
   const { createSession, deleteSession } = useCreateSession();
   const issueVoucher = useIssueVoucher();
 
@@ -44,14 +44,13 @@ function CreateSessionModal({ close }: Props) {
     setIsLoading(true);
 
     const { password } = values;
-    const value = getChainBalanceValue(values.value).toFixed();
-    const duration = getMilliseconds(+values.duration);
-
-    const pair = getRandomPair();
+    const value = getChainBalanceValue(VOUCHER_VALUE).toFixed();
+    const duration = getMilliseconds(DURATION_MINUTES);
     const decodedAddress = decodeAddress(pair.address);
 
     const onVoucherSuccess = () => {
-      savePair(pair, password);
+      if (!storagePair) savePair(pair as KeyringPair, password);
+
       close();
     };
 
@@ -67,28 +66,33 @@ function CreateSessionModal({ close }: Props) {
 
   return (
     <Modal heading="Create Signless Session" close={close}>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className={styles.inputs}>
-          <Input
-            type="number"
-            label={`Value (${unit})`}
-            error={errors.value?.message}
-            {...register('value', {
-              required: REQUIRED_MESSAGE,
-              min: { value: eDeposit, message: `Minimum value is ${eDeposit}` },
-            })}
-          />
+      <ul className={styles.summary}>
+        <li>
+          <h4 className={styles.heading}>
+            {storagePair ? 'Account from the storage:' : 'Randomly generated account:'}
+          </h4>
 
-          <Input
-            type="number"
-            label="Duration (minutes)"
-            error={errors.duration?.message}
-            {...register('duration', {
-              required: REQUIRED_MESSAGE,
-              min: { value: 1, message: 'Minimum value is 1' },
-            })}
-          />
+          <div className={styles.account}>
+            <Identicon value={pair.address} theme="polkadot" size={14} />
+            <span>{pair.address}</span>
+          </div>
+        </li>
 
+        <li>
+          <h4 className={styles.heading}>Voucher to issue:</h4>
+          <p>
+            {VOUCHER_VALUE} {unit}
+          </p>
+        </li>
+
+        <li>
+          <h4 className={styles.heading}>Session duration:</h4>
+          <p>{DURATION_MINUTES} minutes</p>
+        </li>
+      </ul>
+
+      <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
+        {!storagePair && (
           <Input
             type="password"
             label="Password"
@@ -98,7 +102,7 @@ function CreateSessionModal({ close }: Props) {
               minLength: { value: 6, message: 'Minimum length is 6' },
             })}
           />
-        </div>
+        )}
 
         <Button type="submit" text="Submit" className={styles.button} isLoading={isLoading} />
       </form>

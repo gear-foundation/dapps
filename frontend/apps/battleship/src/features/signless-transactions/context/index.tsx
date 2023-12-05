@@ -21,19 +21,13 @@ function SignlessTransactionsProvider({ children }: Props) {
   const [pair, setPair] = useState<KeyringPair | undefined>();
 
   const getStorage = () => JSON.parse(localStorage[SIGNLESS_STORAGE_KEY] || '{}') as Storage;
-
-  const getSinglessPair = () => {
-    if (!account) throw new Error('No account address');
-
-    return getStorage()[account.address];
-  };
+  const storagePair = account ? getStorage()[account.address] : undefined;
 
   const unlockPair = (password: string) => {
-    const pairJson = getSinglessPair();
-    if (!pairJson) throw new Error('Pair not found');
+    if (!storagePair) throw new Error('Pair not found');
 
     const keyring = new Keyring({ type: 'sr25519' });
-    const result = keyring.addFromJson(pairJson);
+    const result = keyring.addFromJson(storagePair);
 
     result.unlock(password);
     setPair(result);
@@ -68,6 +62,7 @@ function SignlessTransactionsProvider({ children }: Props) {
   const value = useMemo(
     () => ({
       pair,
+      storagePair,
       savePair,
       deletePair,
       unlockPair,
