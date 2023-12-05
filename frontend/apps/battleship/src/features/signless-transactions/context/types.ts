@@ -16,6 +16,7 @@ type Storage = Record<string, KeyringPair$Json | undefined>;
 type Value = {
   pair: KeyringPair | undefined;
   savePair: (pair: KeyringPair, password: string) => void;
+  deletePair: () => void;
   unlockPair: (password: string) => void;
   session: Session | null | undefined;
   isSessionReady: boolean;

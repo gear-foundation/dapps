@@ -1,5 +1,5 @@
 import { Keyring } from '@polkadot/api';
-import { KeyringPair } from '@polkadot/keyring/types';
+import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import { useAccount } from '@gear-js/react-hooks';
 import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
 
@@ -22,10 +22,14 @@ function SignlessTransactionsProvider({ children }: Props) {
 
   const getStorage = () => JSON.parse(localStorage[SIGNLESS_STORAGE_KEY] || '{}') as Storage;
 
-  const unlockPair = (password: string) => {
+  const getSinglessPair = () => {
     if (!account) throw new Error('No account address');
 
-    const pairJson = getStorage()[account.address];
+    return getStorage()[account.address];
+  };
+
+  const unlockPair = (password: string) => {
+    const pairJson = getSinglessPair();
     if (!pairJson) throw new Error('Pair not found');
 
     const keyring = new Keyring({ type: 'sr25519' });
@@ -35,13 +39,22 @@ function SignlessTransactionsProvider({ children }: Props) {
     setPair(result);
   };
 
-  const savePair = (value: KeyringPair, password: string) => {
+  const setStoragePair = (value: KeyringPair$Json | undefined) => {
     if (!account) throw new Error('No account address');
 
-    const storage = { ...getStorage(), [account.address]: value.toJson(password) };
+    const storage = { ...getStorage(), [account.address]: value };
 
     localStorage.setItem(SIGNLESS_STORAGE_KEY, JSON.stringify(storage));
+  };
+
+  const savePair = (value: KeyringPair, password: string) => {
+    setStoragePair(value.toJson(password));
     setPair(value);
+  };
+
+  const deletePair = () => {
+    setStoragePair(undefined);
+    setPair(undefined);
   };
 
   useEffect(() => {
@@ -56,6 +69,7 @@ function SignlessTransactionsProvider({ children }: Props) {
     () => ({
       pair,
       savePair,
+      deletePair,
       unlockPair,
       session,
       isSessionReady,
