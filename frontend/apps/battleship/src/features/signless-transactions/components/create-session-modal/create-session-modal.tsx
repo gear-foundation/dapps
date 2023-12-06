@@ -11,6 +11,7 @@ import { ADDRESS } from '@/app/consts';
 import { useSignlessTransactions } from '../../context';
 import { useCreateSession, useIssueVoucher } from '../../hooks';
 import { getMilliseconds, getRandomPair } from '../../utils';
+import { EnableSessionModal } from '../enable-session-modal';
 import styles from './create-session-modal.module.css';
 
 type Props = Pick<ModalProps, 'close'>;
@@ -37,6 +38,9 @@ function CreateSessionModal({ close }: Props) {
   const { createSession, deleteSession } = useCreateSession();
   const issueVoucher = useIssueVoucher();
 
+  const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
+  const openEnableModal = () => setIsEnableModalOpen(true);
+
   const [isLoading, setIsLoading] = useState(false);
   const disableLoading = () => setIsLoading(false);
 
@@ -49,9 +53,12 @@ function CreateSessionModal({ close }: Props) {
     const decodedAddress = decodeAddress(pair.address);
 
     const onVoucherSuccess = () => {
-      if (!storagePair) savePair(pair as KeyringPair, password);
-
-      close();
+      if (storagePair) {
+        openEnableModal();
+      } else {
+        savePair(pair as KeyringPair, password);
+        close();
+      }
     };
 
     const onVoucherError = () => {
@@ -65,48 +72,52 @@ function CreateSessionModal({ close }: Props) {
   };
 
   return (
-    <Modal heading="Create Signless Session" close={close}>
-      <ul className={styles.summary}>
-        <li>
-          <h4 className={styles.heading}>
-            {storagePair ? 'Account from the storage:' : 'Randomly generated account:'}
-          </h4>
+    <>
+      <Modal heading="Create Signless Session" close={close}>
+        <ul className={styles.summary}>
+          <li>
+            <h4 className={styles.heading}>
+              {storagePair ? 'Account from the storage:' : 'Randomly generated account:'}
+            </h4>
 
-          <div className={styles.account}>
-            <Identicon value={pair.address} theme="polkadot" size={14} />
-            <span>{pair.address}</span>
-          </div>
-        </li>
+            <div className={styles.account}>
+              <Identicon value={pair.address} theme="polkadot" size={14} />
+              <span>{pair.address}</span>
+            </div>
+          </li>
 
-        <li>
-          <h4 className={styles.heading}>Voucher to issue:</h4>
-          <p>
-            {VOUCHER_VALUE} {unit}
-          </p>
-        </li>
+          <li>
+            <h4 className={styles.heading}>Voucher to issue:</h4>
+            <p>
+              {VOUCHER_VALUE} {unit}
+            </p>
+          </li>
 
-        <li>
-          <h4 className={styles.heading}>Session duration:</h4>
-          <p>{DURATION_MINUTES} minutes</p>
-        </li>
-      </ul>
+          <li>
+            <h4 className={styles.heading}>Session duration:</h4>
+            <p>{DURATION_MINUTES} minutes</p>
+          </li>
+        </ul>
 
-      <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-        {!storagePair && (
-          <Input
-            type="password"
-            label="Password"
-            error={errors.password?.message}
-            {...register('password', {
-              required: REQUIRED_MESSAGE,
-              minLength: { value: 6, message: 'Minimum length is 6' },
-            })}
-          />
-        )}
+        <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
+          {!storagePair && (
+            <Input
+              type="password"
+              label="Password"
+              error={errors.password?.message}
+              {...register('password', {
+                required: REQUIRED_MESSAGE,
+                minLength: { value: 6, message: 'Minimum length is 6' },
+              })}
+            />
+          )}
 
-        <Button type="submit" text="Submit" className={styles.button} isLoading={isLoading} />
-      </form>
-    </Modal>
+          <Button type="submit" text="Submit" className={styles.button} isLoading={isLoading} />
+        </form>
+      </Modal>
+
+      {isEnableModalOpen && <EnableSessionModal close={close} />}
+    </>
   );
 }
 
