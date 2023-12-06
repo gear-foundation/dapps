@@ -21609,6 +21609,7 @@ __metadata:
     "@polkadot/api": "npm:10.10.1"
     "@polkadot/extension-dapp": "npm:0.46.5"
     "@polkadot/react-identicon": "npm:3.5.1"
+    "@polkadot/types": "npm:10.10.1"
     "@polkadot/util": "npm:12.3.2"
     "@polkadot/util-crypto": "npm:12.5.1"
     "@polkadot/wasm-crypto": "npm:7.2.2"

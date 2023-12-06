@@ -1,13 +1,15 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useVoucher, useBalanceFormat } from '@gear-js/react-hooks';
-import { ENV, VOUCHER_MIN_LIMIT } from '../consts';
+import { ENV, IS_CREATING_VOUCHER_ATOM, IS_UPDATING_VOUCHER_ATOM, VOUCHER_MIN_LIMIT } from '../consts';
 import { BATTLE_ADDRESS } from 'features/battle/consts';
+import { useAtom } from 'jotai';
 
 export function useFetchVoucher(account: string | undefined) {
   const { isVoucherExists, voucherBalance } = useVoucher(BATTLE_ADDRESS);
   const { getFormattedBalanceValue } = useBalanceFormat();
   const [voucher, setVoucher] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isCreating, setIsCreating] = useAtom(IS_CREATING_VOUCHER_ATOM);
+  const [isUpdating, setIsUpdating] = useAtom(IS_UPDATING_VOUCHER_ATOM);
 
   const createVoucher = async () => {
     try {
@@ -36,7 +38,7 @@ export function useFetchVoucher(account: string | undefined) {
     if (account && isVoucherExists !== undefined) {
       const fetchData = async () => {
         try {
-          setIsLoading(true);
+          setIsCreating(true);
           const availableBack = await fetch(ENV.BACK);
 
           if (availableBack?.status === 200) {
@@ -51,9 +53,9 @@ export function useFetchVoucher(account: string | undefined) {
               }
             }
           }
-          setIsLoading(false);
+          setIsCreating(false);
         } catch (error) {
-          setIsLoading(false);
+          setIsCreating(false);
         }
       };
 
@@ -67,17 +69,33 @@ export function useFetchVoucher(account: string | undefined) {
     const isBalanceLow = formattedBalance < VOUCHER_MIN_LIMIT;
 
     if (isBalanceLow) {
+      setIsUpdating(true);
+
       const createdVoucher = await createVoucher();
 
       if (createdVoucher) {
         setVoucher(true);
       }
+
+      setIsUpdating(false);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [voucherBalance]);
 
+  useEffect(() => {
+    setVoucher(false);
+  }, [account]);
+
+  useEffect(() => {
+    if (voucher) {
+      updateBalance();
+    }
+  }, [updateBalance, voucher]);
+
   const isVoucher = useMemo(() => voucher, [voucher]);
+
+  const isLoading = isCreating || isUpdating;
 
   return { isVoucher, isLoading, updateBalance };
 }

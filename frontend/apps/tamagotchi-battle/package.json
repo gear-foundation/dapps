@@ -22,6 +22,7 @@
     "@polkadot/api": "10.10.1",
     "@polkadot/extension-dapp": "0.46.5",
     "@polkadot/react-identicon": "3.5.1",
+    "@polkadot/types": "10.10.1",
     "@polkadot/util": "12.3.2",
     "@polkadot/util-crypto": "12.5.1",
     "@polkadot/wasm-crypto": "7.2.2",

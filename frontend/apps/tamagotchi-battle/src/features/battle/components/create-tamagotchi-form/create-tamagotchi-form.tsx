@@ -8,7 +8,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import { useFetchVoucher } from 'app/hooks/use-fetch-voucher';
 import { useCheckBalance } from 'features/wallet/hooks';
 import { GAS_LIMIT } from 'app/consts';
-import { useBattleMessage2 } from 'features/battle/hooks/use-battle';
+import { useBattleMessage } from 'features/battle/hooks/use-battle';
 
 const createTamagotchiInitial = {
   programId: '' as HexString,
@@ -22,9 +22,9 @@ const validate: Record<string, typeof hexRequired> = {
 
 export const CreateTamagotchiForm = () => {
   const { battle, isPending } = useBattle();
-  const handleMessage = useBattleMessage2();
+  const handleMessage = useBattleMessage();
   const { account } = useAccount();
-  const { isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address);
+  const { isVoucher, isLoading } = useFetchVoucher(account?.address);
   const { checkBalance } = useCheckBalance(isVoucher);
   const navigate = useNavigate();
   const form = useForm({
@@ -43,8 +43,6 @@ export const CreateTamagotchiForm = () => {
     };
 
     const onError = () => form.reset();
-
-    await updateBalance();
 
     checkBalance(
       GAS_LIMIT,

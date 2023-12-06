@@ -148,9 +148,3 @@ export function useBattleMessage() {
     isMaxGasLimit: true,
   });
 }
-
-export function useBattleMessage2() {
-  const metadata = useProgramMetadata(meta);
-
-  return useSendMessageHandler(programId, metadata);
-}

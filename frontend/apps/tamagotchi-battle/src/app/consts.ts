@@ -16,6 +16,9 @@ export const ROUTES = {
   NOTFOUND: '*',
 };
 
-export const VOUCHER_MIN_LIMIT = 3;
+export const VOUCHER_MIN_LIMIT = 18;
 
 export const GAS_LIMIT = 250000000000;
+
+export const IS_CREATING_VOUCHER_ATOM = atom<boolean>(false);
+export const IS_UPDATING_VOUCHER_ATOM = atom<boolean>(false);

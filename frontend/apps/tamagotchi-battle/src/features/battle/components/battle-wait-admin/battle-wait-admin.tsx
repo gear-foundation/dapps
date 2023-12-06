@@ -12,7 +12,7 @@ export const BattleWaitAdmin = () => {
   const { players, isPending, setIsPending } = useBattle();
   const handleMessage = useBattleMessage();
   const { account } = useAccount();
-  const { isVoucher, updateBalance } = useFetchVoucher(account?.address);
+  const { isVoucher, isLoading } = useFetchVoucher(account?.address);
   const { checkBalance } = useCheckBalance(isVoucher);
 
   const handler = async () => {
@@ -21,8 +21,6 @@ export const BattleWaitAdmin = () => {
     const onError = () => setIsPending(false);
 
     setIsPending(true);
-
-    await updateBalance();
 
     checkBalance(
       GAS_LIMIT,
@@ -50,7 +48,7 @@ export const BattleWaitAdmin = () => {
               buttonStyles.button,
             )}
             onClick={handler}
-            disabled={isPending || players.length < 2}>
+            disabled={isPending || players.length < 2 || isLoading}>
             <SpriteIcon name="swords" className="w-5 h-5" /> <span>Start Battle</span>
           </button>
         </div>

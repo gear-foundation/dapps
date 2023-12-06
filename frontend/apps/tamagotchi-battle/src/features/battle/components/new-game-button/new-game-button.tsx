@@ -9,7 +9,7 @@ import { Button } from '@gear-js/ui';
 export const NewGameButton = () => {
   const { account } = useAccount();
   const { isPending, setIsPending } = useBattle();
-  const { isVoucher, updateBalance } = useFetchVoucher(account?.address);
+  const { isVoucher, isLoading } = useFetchVoucher(account?.address);
   const { checkBalance } = useCheckBalance(isVoucher);
   const handleMessage = useBattleMessage();
 
@@ -21,8 +21,6 @@ export const NewGameButton = () => {
 
     setIsPending(true);
 
-    await updateBalance();
-
     checkBalance(
       GAS_LIMIT,
       () => {
@@ -32,5 +30,5 @@ export const NewGameButton = () => {
     );
   };
 
-  return <Button text="Start New Game" color="primary" onClick={handler} disabled={isPending} />;
+  return <Button text="Start New Game" color="primary" onClick={handler} disabled={isPending || isLoading} />;
 };

@@ -9,7 +9,6 @@ import {
 } from '@gear-js/react-hooks';
 import { stringShorten } from '@polkadot/util';
 import { BATTLE_ADDRESS } from 'features/battle/consts';
-// import { useFreeAccountBalance } from '@dapps-frontend/ui/dist/features';
 import { VOUCHER_MIN_LIMIT } from 'app/consts';
 
 export function useCheckBalance(isVoucher: boolean) {
