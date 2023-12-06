@@ -51,7 +51,7 @@ function useIssueVoucher() {
   const issueVoucher = async (
     programId: HexString,
     address: HexString,
-    value: string,
+    value: number,
     onSuccess: () => void,
     onError: () => void,
   ) => {

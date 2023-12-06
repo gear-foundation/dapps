@@ -21,6 +21,7 @@ type Value = {
   unlockPair: (password: string) => void;
   session: Session | null | undefined;
   isSessionReady: boolean;
+  voucherBalance: number;
 };
 
 export type { State, Session, Storage, Value };

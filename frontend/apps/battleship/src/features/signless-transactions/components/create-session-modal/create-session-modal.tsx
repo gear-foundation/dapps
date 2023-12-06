@@ -20,18 +20,18 @@ const DEFAULT_VALUES = { password: '' };
 const REQUIRED_MESSAGE = 'Field is required';
 
 const DURATION_MINUTES = 5;
-const VOUCHER_VALUE = 10;
+const BALANCE_VALUE_TO_START_GAME = 20;
+const BALANCE_VALUE_TO_ISSUE_VOUCHER = 5;
 const ACTIONS = ['StartGame', 'Turn'];
 
 function CreateSessionModal({ close }: Props) {
   const { api } = useApi();
-  const [unit] = api?.registry.chainTokens || ['Unit'];
-  const { getChainBalanceValue } = useBalanceFormat();
+  const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
 
   const { register, handleSubmit, formState } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
-  const { savePair, storagePair } = useSignlessTransactions();
+  const { savePair, storagePair, voucherBalance } = useSignlessTransactions();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const pair = useMemo(() => storagePair || getRandomPair(), []);
 
@@ -44,15 +44,31 @@ function CreateSessionModal({ close }: Props) {
   const [isLoading, setIsLoading] = useState(false);
   const disableLoading = () => setIsLoading(false);
 
+  const issueVoucherValue = useMemo(() => {
+    if (!api) throw new Error('API is not initialized');
+
+    const minValue = api.existentialDeposit.toNumber();
+
+    const valueToStart = getChainBalanceValue(BALANCE_VALUE_TO_START_GAME).toNumber();
+    const valueToIssueVoucher = getChainBalanceValue(BALANCE_VALUE_TO_ISSUE_VOUCHER).toNumber();
+
+    const totalValueToStart = minValue + valueToStart;
+    const totalValueToIssueVoucher = minValue + valueToIssueVoucher;
+
+    return voucherBalance < totalValueToIssueVoucher ? totalValueToStart - voucherBalance : 0;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [api, voucherBalance]);
+
+  const formattedIssueVoucherValue = getFormattedBalance(issueVoucherValue);
+
   const onSubmit = (values: typeof DEFAULT_VALUES) => {
     setIsLoading(true);
 
     const { password } = values;
-    const value = getChainBalanceValue(VOUCHER_VALUE).toFixed();
     const duration = getMilliseconds(DURATION_MINUTES);
     const decodedAddress = decodeAddress(pair.address);
 
-    const onVoucherSuccess = () => {
+    const onFinalSuccess = () => {
       if (storagePair) {
         openEnableModal();
       } else {
@@ -66,7 +82,9 @@ function CreateSessionModal({ close }: Props) {
       disableLoading();
     };
 
-    const onCreateSuccess = () => issueVoucher(ADDRESS.GAME, decodedAddress, value, onVoucherSuccess, onVoucherError);
+    const onCreateSuccess = issueVoucherValue
+      ? () => issueVoucher(ADDRESS.GAME, decodedAddress, issueVoucherValue, onFinalSuccess, onVoucherError)
+      : onFinalSuccess;
 
     createSession(decodedAddress, duration, ACTIONS, onCreateSuccess, disableLoading);
   };
@@ -89,7 +107,7 @@ function CreateSessionModal({ close }: Props) {
           <li>
             <h4 className={styles.heading}>Voucher to issue:</h4>
             <p>
-              {VOUCHER_VALUE} {unit}
+              {formattedIssueVoucherValue.value} {formattedIssueVoucherValue.unit}
             </p>
           </li>
 

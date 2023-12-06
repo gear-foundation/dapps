@@ -1,11 +1,8 @@
-import { generateVoucherId } from '@gear-js/api';
 import { Button } from '@gear-js/vara-ui';
-import { useAccount, useBalance, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
 import { useState } from 'react';
 
 import { useCountdown } from '@dapps-frontend/hooks';
-
-import { ADDRESS } from '@/app/consts';
 
 import { useSignlessTransactions } from '../../context';
 import { useCreateSession } from '../../hooks';
@@ -16,7 +13,7 @@ import styles from './signless-transactions.module.css';
 
 function SignlessTransactions() {
   const { account } = useAccount();
-  const { pair, session, isSessionReady } = useSignlessTransactions();
+  const { pair, session, isSessionReady, voucherBalance } = useSignlessTransactions();
   const { deleteSession } = useCreateSession();
 
   const [modal, setModal] = useState('');
@@ -27,10 +24,8 @@ function SignlessTransactions() {
   const expireTimestamp = +withoutCommas(session?.expires || '0');
   const countdown = useCountdown(expireTimestamp);
 
-  const voucherId = session ? generateVoucherId(session.key, ADDRESS.GAME) : undefined;
-  const { balance } = useBalance(voucherId);
   const { getFormattedBalance } = useBalanceFormat();
-  const sessionBalance = balance ? getFormattedBalance(balance) : undefined;
+  const sessionBalance = voucherBalance ? getFormattedBalance(voucherBalance) : undefined;
 
   return account && isSessionReady ? (
     <div>
