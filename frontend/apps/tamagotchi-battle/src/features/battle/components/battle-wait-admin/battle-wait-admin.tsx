@@ -3,18 +3,34 @@ import { SpriteIcon } from 'components/ui/sprite-icon';
 import { useBattle } from '../../context';
 import { useBattleMessage } from '../../hooks';
 import { cn } from 'app/utils';
+import { useAccount } from '@gear-js/react-hooks';
+import { useFetchVoucher } from 'app/hooks/use-fetch-voucher';
+import { useCheckBalance } from 'features/wallet/hooks';
+import { GAS_LIMIT } from 'app/consts';
 
 export const BattleWaitAdmin = () => {
   const { players, isPending, setIsPending } = useBattle();
   const handleMessage = useBattleMessage();
+  const { account } = useAccount();
+  const { isVoucher, updateBalance } = useFetchVoucher(account?.address);
+  const { checkBalance } = useCheckBalance(isVoucher);
 
-  const handler = () => {
+  const handler = async () => {
     const payload = { StartBattle: null };
     const onSuccess = () => setIsPending(false);
     const onError = () => setIsPending(false);
 
     setIsPending(true);
-    handleMessage({ payload, onSuccess, onError });
+
+    await updateBalance();
+
+    checkBalance(
+      GAS_LIMIT,
+      () => {
+        handleMessage({ payload, onSuccess, onError, withVoucher: isVoucher });
+      },
+      onError,
+    );
   };
 
   return (

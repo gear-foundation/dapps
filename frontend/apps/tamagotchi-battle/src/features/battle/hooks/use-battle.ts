@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAccount, useApi, useSendMessageHandler } from '@gear-js/react-hooks';
+import { useAccount, useApi, useSendMessage, useSendMessageHandler } from '@gear-js/react-hooks';
 import { useProgramMetadata, useReadState } from 'app/hooks/api';
 import { useBattle } from '../context';
 import { BATTLE_ADDRESS } from '../consts';
@@ -147,4 +147,10 @@ export function useBattleMessage() {
   return useSendMessageHandler(programId, metadata, {
     isMaxGasLimit: true,
   });
+}
+
+export function useBattleMessage2() {
+  const metadata = useProgramMetadata(meta);
+
+  return useSendMessageHandler(programId, metadata);
 }

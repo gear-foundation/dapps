@@ -6,12 +6,17 @@ import { useEffect, useState } from 'react';
 import { cn, toNumber } from 'app/utils';
 import { useAccount } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
+import { useFetchVoucher } from 'app/hooks/use-fetch-voucher';
+import { useCheckBalance } from 'features/wallet/hooks';
+import { GAS_LIMIT } from 'app/consts';
 
 export const BattleRoundPlayers = () => {
   const { account } = useAccount();
   const { rivals, currentPlayer, currentPairIdx, roundDamage, battle, isPending, setIsPending, isAdmin } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
+  const { isVoucher, updateBalance } = useFetchVoucher(account?.address);
+  const { checkBalance } = useCheckBalance(isVoucher);
 
   useEffect(() => {
     if (battle && account && currentPlayer) {
@@ -22,25 +27,52 @@ export const BattleRoundPlayers = () => {
   const onSuccess = () => setIsPending(false);
   const onError = () => setIsPending(false);
 
-  const onNewRound = () => {
+  const onNewRound = async () => {
     const payload = { StartBattle: null };
 
     setIsPending(true);
-    handleMessage({ payload, onSuccess, onError });
+
+    await updateBalance();
+
+    checkBalance(
+      GAS_LIMIT,
+      () => {
+        handleMessage({ payload, onSuccess, onError, withVoucher: isVoucher });
+      },
+      onError,
+    );
   };
 
-  const onAttack = () => {
+  const onAttack = async () => {
     const payload = { MakeMove: { pair_id: currentPairIdx, tmg_move: { Attack: null } } };
 
     setIsPending(true);
-    handleMessage({ payload, onSuccess, onError });
+
+    await updateBalance();
+
+    checkBalance(
+      GAS_LIMIT,
+      () => {
+        handleMessage({ payload, onSuccess, onError });
+      },
+      onError,
+    );
   };
 
-  const onDefence = () => {
+  const onDefence = async () => {
     const payload = { MakeMove: { pair_id: currentPairIdx, tmg_move: { Defence: null } } };
 
     setIsPending(true);
-    handleMessage({ payload, onSuccess, onError });
+
+    await updateBalance();
+
+    checkBalance(
+      GAS_LIMIT,
+      () => {
+        handleMessage({ payload, onSuccess, onError });
+      },
+      onError,
+    );
   };
 
   const cnWrapper = 'relative flex flex-col';
