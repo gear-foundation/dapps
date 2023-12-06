@@ -13,7 +13,7 @@ import styles from './signless-transactions.module.css';
 
 function SignlessTransactions() {
   const { account } = useAccount();
-  const { pair, session, isSessionReady, voucherBalance } = useSignlessTransactions();
+  const { pair, session, isSessionReady, voucherBalance, storagePair } = useSignlessTransactions();
   const { deleteSession } = useCreateSession();
 
   const [modal, setModal] = useState('');
@@ -32,8 +32,12 @@ function SignlessTransactions() {
       {session ? (
         <>
           <div className={styles.buttons}>
-            {!pair && (
-              <Button text="Unlock Signless Transactions" size="small" color="dark" onClick={openEnableModal} />
+            {storagePair ? (
+              !pair && (
+                <Button text="Unlock Signless Transactions" size="small" color="dark" onClick={openEnableModal} />
+              )
+            ) : (
+              <p>Signless account not found in the storage.</p>
             )}
 
             <Button
