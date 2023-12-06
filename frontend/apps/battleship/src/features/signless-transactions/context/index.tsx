@@ -1,7 +1,7 @@
 import { Keyring } from '@polkadot/api';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import { useAccount, useBalance } from '@gear-js/react-hooks';
-import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { ReactNode, createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
 import { DEFAULT_VALUES, SIGNLESS_STORAGE_KEY } from './consts';
 import { Storage, Value } from './types';
@@ -34,33 +34,42 @@ function SignlessTransactionsProvider({ children }: Props) {
 
   const voucherBalance = useVoucherBalance(storagePair?.address);
 
-  const unlockPair = (password: string) => {
-    if (!storagePair) throw new Error('Pair not found');
+  const unlockPair = useCallback(
+    (password: string) => {
+      if (!storagePair) throw new Error('Pair not found');
 
-    const keyring = new Keyring({ type: 'sr25519' });
-    const result = keyring.addFromJson(storagePair);
+      const keyring = new Keyring({ type: 'sr25519' });
+      const result = keyring.addFromJson(storagePair);
 
-    result.unlock(password);
-    setPair(result);
-  };
+      result.unlock(password);
+      setPair(result);
+    },
+    [storagePair],
+  );
 
-  const setStoragePair = (value: KeyringPair$Json | undefined) => {
-    if (!account) throw new Error('No account address');
+  const setStoragePair = useCallback(
+    (value: KeyringPair$Json | undefined) => {
+      if (!account) throw new Error('No account address');
 
-    const storage = { ...getStorage(), [account.address]: value };
+      const storage = { ...getStorage(), [account.address]: value };
 
-    localStorage.setItem(SIGNLESS_STORAGE_KEY, JSON.stringify(storage));
-  };
+      localStorage.setItem(SIGNLESS_STORAGE_KEY, JSON.stringify(storage));
+    },
+    [account],
+  );
 
-  const savePair = (value: KeyringPair, password: string) => {
-    setStoragePair(value.toJson(password));
-    setPair(value);
-  };
+  const savePair = useCallback(
+    (value: KeyringPair, password: string) => {
+      setStoragePair(value.toJson(password));
+      setPair(value);
+    },
+    [setStoragePair],
+  );
 
-  const deletePair = () => {
+  const deletePair = useCallback(() => {
     setStoragePair(undefined);
     setPair(undefined);
-  };
+  }, [setStoragePair]);
 
   useEffect(() => {
     if (!session) setPair(undefined);
@@ -81,8 +90,7 @@ function SignlessTransactionsProvider({ children }: Props) {
       isSessionReady,
       voucherBalance,
     }),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [pair, session, isSessionReady, voucherBalance],
+    [pair, storagePair, savePair, deletePair, unlockPair, session, isSessionReady, voucherBalance],
   );
 
   return <Provider value={value}>{children}</Provider>;
