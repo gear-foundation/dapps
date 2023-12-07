@@ -1,15 +1,20 @@
 import { useBattle } from 'features/battle/context';
-import { useFetchVoucher } from 'app/hooks/use-fetch-voucher';
+import { useFetchVoucher } from '@dapps-frontend/gasless-transactions';
 import { useAccount } from '@gear-js/react-hooks';
 import { useCheckBalance } from 'features/wallet/hooks';
 import { useBattleMessage } from 'features/battle/hooks';
-import { GAS_LIMIT } from 'app/consts';
+import { ENV, GAS_LIMIT } from 'app/consts';
 import { Button } from '@gear-js/ui';
+import { BATTLE_ADDRESS } from 'features/battle/consts';
 
 export const NewGameButton = () => {
   const { account } = useAccount();
   const { isPending, setIsPending } = useBattle();
-  const { isVoucher, isLoading } = useFetchVoucher(account?.address);
+  const { isVoucher, isLoading } = useFetchVoucher({
+    accountAddress: account?.address,
+    programId: BATTLE_ADDRESS,
+    backendAddress: ENV.BACK,
+  });
   const { checkBalance } = useCheckBalance(isVoucher);
   const handleMessage = useBattleMessage();
 

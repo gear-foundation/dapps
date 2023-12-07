@@ -6,16 +6,21 @@ import { useEffect, useState } from 'react';
 import { cn, toNumber } from 'app/utils';
 import { useAccount } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
-import { useFetchVoucher } from 'app/hooks/use-fetch-voucher';
 import { useCheckBalance } from 'features/wallet/hooks';
-import { GAS_LIMIT } from 'app/consts';
+import { ENV, GAS_LIMIT } from 'app/consts';
+import { useFetchVoucher } from '@dapps-frontend/gasless-transactions';
+import { BATTLE_ADDRESS } from 'features/battle/consts';
 
 export const BattleRoundPlayers = () => {
   const { account } = useAccount();
   const { rivals, currentPlayer, currentPairIdx, roundDamage, battle, isPending, setIsPending, isAdmin } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
-  const { isVoucher, isLoading } = useFetchVoucher(account?.address);
+  const { isVoucher, isLoading } = useFetchVoucher({
+    accountAddress: account?.address,
+    programId: BATTLE_ADDRESS,
+    backendAddress: ENV.BACK,
+  });
   const { checkBalance } = useCheckBalance(isVoucher);
 
   useEffect(() => {

@@ -4,15 +4,20 @@ import { useBattle } from '../../context';
 import { useBattleMessage } from '../../hooks';
 import { cn } from 'app/utils';
 import { useAccount } from '@gear-js/react-hooks';
-import { useFetchVoucher } from 'app/hooks/use-fetch-voucher';
+import { useFetchVoucher } from '@dapps-frontend/gasless-transactions';
 import { useCheckBalance } from 'features/wallet/hooks';
-import { GAS_LIMIT } from 'app/consts';
+import { ENV, GAS_LIMIT } from 'app/consts';
+import { BATTLE_ADDRESS } from 'features/battle/consts';
 
 export const BattleWaitAdmin = () => {
   const { players, isPending, setIsPending } = useBattle();
   const handleMessage = useBattleMessage();
   const { account } = useAccount();
-  const { isVoucher, isLoading } = useFetchVoucher(account?.address);
+  const { isVoucher, isLoading } = useFetchVoucher({
+    accountAddress: account?.address,
+    programId: BATTLE_ADDRESS,
+    backendAddress: ENV.BACK,
+  });
   const { checkBalance } = useCheckBalance(isVoucher);
 
   const handler = async () => {
