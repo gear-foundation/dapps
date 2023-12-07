@@ -8,18 +8,23 @@ import { useGame, useGameMessage, usePending } from '../../hooks';
 import { getFormattedTime } from '../../utils';
 import { Loader } from '@/components';
 import { useAccount } from '@gear-js/react-hooks';
-import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
+import { useFetchVoucher } from '@dapps-frontend/gasless-transactions';
 import { useCheckBalance } from '@/features/wallet/hooks';
+import { ADDRESS } from '@/app/consts';
 
 export default function GameProcess() {
   const { account } = useAccount();
-  const { isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address);
+  const { isVoucher, isLoading } = useFetchVoucher({
+    accountAddress: account?.address,
+    programId: ADDRESS.GAME,
+    backendAddress: ADDRESS.BACK,
+  });
 
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
   const [elapsedTime, setElapsedTime] = useState('');
   const [totalGameTime, setTotalGameTime] = useState('');
-  const [isDisabledCell, setDisabledCell] = useState(false)
+  const [isDisabledCell, setDisabledCell] = useState(false);
 
   const { gameState } = useGame();
   const { setPending } = usePending();
@@ -74,17 +79,15 @@ export default function GameProcess() {
   const onClickCell = async (indexCell: number) => {
     const gasLimit = 100000000000;
 
-    await updateBalance();
-
     if (!isLoading) {
-      setDisabledCell(true)
+      setDisabledCell(true);
 
       checkBalance(gasLimit, () =>
         message({
           payload: { Turn: { step: indexCell } },
           onInBlock: (messageId) => {
             if (messageId) {
-              setDisabledCell(false)
+              setDisabledCell(false);
             }
           },
           gasLimit,
@@ -164,7 +167,7 @@ export default function GameProcess() {
           sizeBlock={68}
           onClickCell={onClickCell}
           shipStatusArray={enemiesShips}
-          isDisabledCell={isDisabledCell}
+          isDisabledCell={isDisabledCell || isLoading}
         />
       </div>
 

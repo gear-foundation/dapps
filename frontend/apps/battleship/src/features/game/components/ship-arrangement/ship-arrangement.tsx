@@ -10,12 +10,18 @@ import { useGameMessage, usePending } from '../../hooks';
 import { generateShipsField } from './shipGenerator';
 import { convertShipsToField } from '../../utils';
 import { useAccount } from '@gear-js/react-hooks';
-import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
+import { useFetchVoucher } from '@dapps-frontend/gasless-transactions';
 import { useCheckBalance } from '@/features/wallet/hooks';
+import { ADDRESS } from '@/app/consts';
 
 export default function ShipArrangement() {
   const { account } = useAccount();
-  const { isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address);
+  const { isVoucher, isLoading } = useFetchVoucher({
+    accountAddress: account?.address,
+    programId: ADDRESS.GAME,
+    backendAddress: ADDRESS.BACK,
+  });
+
   const message = useGameMessage();
   const { setPending } = usePending();
   const { checkBalance } = useCheckBalance(isVoucher);
@@ -38,8 +44,6 @@ export default function ShipArrangement() {
 
   const onGameStart = async () => {
     const gasLimit = 100000000000;
-
-    await updateBalance();
 
     if (!isLoading) {
       setPending(true);
