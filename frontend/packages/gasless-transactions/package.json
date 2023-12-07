@@ -36,5 +36,6 @@
   "files": [
     "dist"
   ],
-  "main": "dist/gasless-transactions.js"
+  "main": "dist/gasless-transactions.js",
+  "types": "dist/index.d.ts"
 }
