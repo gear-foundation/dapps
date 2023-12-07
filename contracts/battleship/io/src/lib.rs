@@ -7,6 +7,9 @@ use gstd::{
     ActorId,
 };
 
+// Minimum duration of session: 3 mins = 180_000 ms = 60 blocks
+pub const MINIMUM_SESSION_SURATION_MS: u64 = 180_000;
+
 pub struct BattleshipMetadata;
 
 impl Metadata for BattleshipMetadata {
@@ -28,7 +31,7 @@ pub enum StateQuery {
     SessionForTheAccount(ActorId)
 }
 
-#[derive(Encode, Decode, TypeInfo)]
+#[derive(Encode, Decode, TypeInfo, Debug)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {
@@ -50,7 +53,7 @@ pub struct BattleshipState {
 // This structure is for creating a gaming session, which allows players to predefine certain actions for an account that will play the game on their behalf for a certain period of time. 
 // Sessions can be used to send transactions from a dApp on behalf of a user without requiring their confirmation with a wallet. 
 // The user is guaranteed that the dApp can only execute transactions that comply with the allowed_actions of the session until the session expires.
-#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct Session {
@@ -98,9 +101,25 @@ pub enum BattleshipAction {
     ClearState { leave_active_games: bool },
     DeleteGame { player_address: ActorId },
     CreateSession { key: ActorId, duration: u64, allowed_actions: Vec<ActionsForSession>},
-    DeleteSession,
+    DeleteSessionFromProgram {account: ActorId},
+    DeleteSessionFromAccount,
+    UpdateConfig {
+        gas_for_start: Option<u64>,
+        gas_for_move: Option<u64>,
+        gas_to_delete_session: Option<u64>,
+        block_duration_ms: Option<u64>,
+    }
 }
 
+#[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct Config {
+    pub gas_for_start: u64,
+    pub gas_for_move: u64,
+    pub gas_to_delete_session: u64,
+    pub block_duration_ms: u64,
+}
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
@@ -110,6 +129,7 @@ pub enum BattleshipReply {
     BotChanged(ActorId),
     SessionCreated,
     SessionDeleted,
+    ConfigUpdated,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
@@ -126,6 +146,7 @@ pub enum Step {
 #[scale_info(crate = gstd::scale_info)]
 pub struct BattleshipInit {
     pub bot_address: ActorId,
+    pub config: Config,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]

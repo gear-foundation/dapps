@@ -1,18 +1,16 @@
 use battleship_io::{
     ActionsForSession, BattleshipAction, BattleshipInit, BattleshipParticipants, BattleshipReply,
-    BattleshipState, BotBattleshipAction, Entity, Game, GameState, Session, Ships, StateQuery,
-    StateReply, Step,
+    BattleshipState, BotBattleshipAction, Config, Entity, Game, GameState, Session, Ships,
+    StateQuery, StateReply, Step, MINIMUM_SESSION_SURATION_MS,
 };
 use gstd::{
     collections::{BTreeMap, HashMap},
-    exec, msg,
+    debug, exec, msg,
     prelude::*,
     ActorId, MessageId,
 };
 
 static mut BATTLESHIP: Option<Battleship> = None;
-pub const GAS_FOR_START: u64 = 100_000_000_000;
-pub const GAS_FOR_MOVE: u64 = 100_000_000_000;
 
 #[derive(Debug, Default)]
 struct Battleship {
@@ -21,6 +19,7 @@ struct Battleship {
     pub bot_address: ActorId,
     pub admin: ActorId,
     pub sessions: HashMap<ActorId, Session>,
+    pub config: Config,
 }
 
 impl Battleship {
@@ -30,6 +29,11 @@ impl Battleship {
         duration: u64,
         allowed_actions: Vec<ActionsForSession>,
     ) {
+        assert!(
+            duration >= MINIMUM_SESSION_SURATION_MS,
+            "Duration is too small"
+        );
+
         let msg_source = msg::source();
         let block_timestamp = exec::block_timestamp();
         if let Some(Session {
@@ -43,31 +47,64 @@ impl Battleship {
             }
         }
 
+        let expires = block_timestamp + duration;
+
+        let number_of_blocks = u32::try_from(duration.div_ceil(self.config.block_duration_ms))
+            .expect("Duration it to large");
+
         assert!(
             !allowed_actions.is_empty(),
             "No messages for approval were passed."
         );
 
-        self.sessions.entry(msg_source).or_insert_with(|| Session {
+        self.sessions.entry(msg_source).insert(Session {
             key: *key,
-            expires: block_timestamp + duration,
+            expires,
             allowed_actions,
         });
+
+        msg::send_with_gas_delayed(
+            exec::program_id(),
+            BattleshipAction::DeleteSessionFromProgram {
+                account: msg::source(),
+            },
+            self.config.gas_to_delete_session,
+            0,
+            number_of_blocks,
+        )
+        .expect("Error in sending a delayed msg");
 
         msg::reply(BattleshipReply::SessionCreated, 0).expect("Error in sending a reply");
     }
 
-    fn delete_session(&mut self) {
-        assert!(
-            self.sessions.remove(&msg::source()).is_some(),
-            "No active session"
+    fn delete_session_from_program(&mut self, session_for_account: &ActorId) {
+        assert_eq!(
+            exec::program_id(),
+            msg::source(),
+            "The msg source must be the program"
         );
+
+        if let Some(session) = self.sessions.remove(session_for_account) {
+            debug!("session expires {:?}", session.expires);
+            debug!("timestamp {:?}", exec::block_timestamp());
+            debug!("timestamp {:?}", session.expires - exec::block_timestamp());
+            assert!(
+                session.expires <= exec::block_timestamp(),
+                "Too early to delete session"
+            );
+        }
 
         msg::reply(BattleshipReply::SessionDeleted, 0).expect("Error in sending a reply");
     }
+
+    fn delete_session_from_account(&mut self) {
+        assert!(self.sessions.remove(&msg::source()).is_some(), "No session");
+
+        msg::reply(BattleshipReply::SessionDeleted, 0).expect("Error in sending a reply");
+    }
+
     fn start_game(&mut self, mut ships: Ships, session_for_account: Option<ActorId>) {
         let player = self.get_player(&session_for_account, ActionsForSession::StartGame);
-
         if let Some(game) = self.games.get(&player) {
             assert!(game.game_over, "Please finish the previous game");
         }
@@ -94,7 +131,7 @@ impl Battleship {
         let msg_id = msg::send_with_gas(
             self.bot_address,
             BotBattleshipAction::Start,
-            GAS_FOR_START,
+            self.config.gas_for_start,
             0,
         )
         .expect("Error in sending a message");
@@ -149,7 +186,7 @@ impl Battleship {
         let msg_id = msg::send_with_gas(
             self.bot_address,
             BotBattleshipAction::Turn(board),
-            GAS_FOR_MOVE,
+            self.config.gas_for_move,
             0,
         )
         .expect("Error in sending a message");
@@ -217,14 +254,49 @@ impl Battleship {
         };
         player
     }
+
+    fn update_config(
+        &mut self,
+        gas_for_start: Option<u64>,
+        gas_for_move: Option<u64>,
+        gas_to_delete_session: Option<u64>,
+        block_duration_ms: Option<u64>,
+    ) {
+        assert_eq!(
+            msg::source(),
+            self.admin,
+            "Only admin can change configurable parameters"
+        );
+        if let Some(gas_for_start) = gas_for_start {
+            self.config.gas_for_start = gas_for_start;
+        }
+
+        if let Some(gas_for_move) = gas_for_move {
+            self.config.gas_for_move = gas_for_move;
+        }
+
+        if let Some(gas_to_delete_session) = gas_to_delete_session {
+            self.config.gas_to_delete_session = gas_to_delete_session;
+        }
+
+        if let Some(block_duration_ms) = block_duration_ms {
+            self.config.block_duration_ms = block_duration_ms;
+        }
+
+        msg::reply(BattleshipReply::ConfigUpdated, 0).expect("Error in sending a reply");
+    }
 }
 
 #[no_mangle]
 extern fn init() {
-    let BattleshipInit { bot_address } = msg::load().expect("Unable to decode BattleshipInit");
+    let BattleshipInit {
+        bot_address,
+        config,
+    } = msg::load().expect("Unable to decode BattleshipInit");
     unsafe {
         BATTLESHIP = Some(Battleship {
             bot_address,
+            config,
             admin: msg::source(),
             ..Default::default()
         });
@@ -259,7 +331,21 @@ extern fn handle() {
             duration,
             allowed_actions,
         } => battleship.create_session(&key, duration, allowed_actions),
-        BattleshipAction::DeleteSession => battleship.delete_session(),
+        BattleshipAction::DeleteSessionFromProgram { account } => {
+            battleship.delete_session_from_program(&account)
+        }
+        BattleshipAction::DeleteSessionFromAccount => battleship.delete_session_from_account(),
+        BattleshipAction::UpdateConfig {
+            gas_for_start,
+            gas_for_move,
+            gas_to_delete_session,
+            block_duration_ms,
+        } => battleship.update_config(
+            gas_for_start,
+            gas_for_move,
+            gas_to_delete_session,
+            block_duration_ms,
+        ),
     }
 }
 
