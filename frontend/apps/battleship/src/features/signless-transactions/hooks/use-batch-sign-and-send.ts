@@ -8,6 +8,7 @@ import { useGetExtrinsicFailedError } from './use-get-extrinsic-failed-error';
 type Options = Partial<{
   onSuccess: () => void;
   onError: (error: string) => void;
+  onFinally: () => void;
 }>;
 
 function useBatchSignAndSend(type?: 'all' | 'force') {
@@ -32,7 +33,7 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
 
   const handleStatus = (
     { status, events }: ISubmittableResult,
-    { onSuccess = () => {}, onError = () => {} }: Options = {},
+    { onSuccess = () => {}, onError = () => {}, onFinally = () => {} }: Options = {},
   ) => {
     if (!isApiReady) throw new Error('API is not initialized');
 
@@ -44,13 +45,15 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
       .forEach(({ event }) => {
         const { method } = event;
 
-        if (method === 'ExtrinsicSuccess') onSuccess();
+        if (method === 'ExtrinsicSuccess' || method === 'ExtrinsicFailed') onFinally();
+
+        if (method === 'ExtrinsicSuccess') return onSuccess();
 
         if (method === 'ExtrinsicFailed') {
           const message = getExtrinsicFailedError(event);
 
           onError(message);
-          console.error(message);
+          return console.error(message);
         }
       });
   };

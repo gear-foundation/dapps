@@ -6,10 +6,8 @@ import Identicon from '@polkadot/react-identicon';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
-import { ADDRESS } from '@/app/consts';
-
 import { useSignlessTransactions } from '../../context';
-import { useCreateSession, useIssueVoucher } from '../../hooks';
+import { useCreateSession } from '../../hooks';
 import { getMilliseconds, getRandomPair } from '../../utils';
 import { EnableSessionModal } from '../enable-session-modal';
 import styles from './create-session-modal.module.css';
@@ -35,14 +33,12 @@ function CreateSessionModal({ close }: Props) {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const pair = useMemo(() => storagePair || getRandomPair(), []);
 
-  const { createSession, deleteSession } = useCreateSession();
-  const issueVoucher = useIssueVoucher();
+  const { createSession } = useCreateSession();
 
   const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
   const openEnableModal = () => setIsEnableModalOpen(true);
 
   const [isLoading, setIsLoading] = useState(false);
-  const disableLoading = () => setIsLoading(false);
 
   const issueVoucherValue = useMemo(() => {
     if (!api) throw new Error('API is not initialized');
@@ -66,9 +62,10 @@ function CreateSessionModal({ close }: Props) {
 
     const { password } = values;
     const duration = getMilliseconds(DURATION_MINUTES);
-    const decodedAddress = decodeAddress(pair.address);
+    const key = decodeAddress(pair.address);
+    const allowedActions = ACTIONS;
 
-    const onFinalSuccess = () => {
+    const onSuccess = () => {
       if (storagePair) {
         openEnableModal();
       } else {
@@ -77,16 +74,9 @@ function CreateSessionModal({ close }: Props) {
       }
     };
 
-    const onVoucherError = () => {
-      deleteSession();
-      disableLoading();
-    };
+    const onFinally = () => setIsLoading(false);
 
-    const onCreateSuccess = issueVoucherValue
-      ? () => issueVoucher(ADDRESS.GAME, decodedAddress, issueVoucherValue, onFinalSuccess, onVoucherError)
-      : onFinalSuccess;
-
-    createSession(decodedAddress, duration, ACTIONS, onCreateSuccess, disableLoading);
+    createSession({ duration, key, allowedActions }, issueVoucherValue, { onSuccess, onFinally });
   };
 
   return (
