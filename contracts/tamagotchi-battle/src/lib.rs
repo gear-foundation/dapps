@@ -207,7 +207,11 @@ impl Battle {
 
         let current_turn = pair.moves.len();
         let owner = pair.owner_ids[current_turn];
-        assert_eq!(owner, msg::source(), "It is not your turn or not your game!");
+        assert_eq!(
+            owner,
+            msg::source(),
+            "It is not your turn or not your game!"
+        );
 
         // let pair_ids = self
         //     .players_to_pairs

@@ -28,7 +28,7 @@ pub enum StateQuery {
     All,
     Game(ActorId),
     BotContractId,
-    SessionForTheAccount(ActorId)
+    SessionForTheAccount(ActorId),
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
@@ -50,8 +50,8 @@ pub struct BattleshipState {
     pub admin: ActorId,
 }
 
-// This structure is for creating a gaming session, which allows players to predefine certain actions for an account that will play the game on their behalf for a certain period of time. 
-// Sessions can be used to send transactions from a dApp on behalf of a user without requiring their confirmation with a wallet. 
+// This structure is for creating a gaming session, which allows players to predefine certain actions for an account that will play the game on their behalf for a certain period of time.
+// Sessions can be used to send transactions from a dApp on behalf of a user without requiring their confirmation with a wallet.
 // The user is guaranteed that the dApp can only execute transactions that comply with the allowed_actions of the session until the session expires.
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
@@ -95,20 +95,38 @@ impl Entity {
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum BattleshipAction {
-    StartGame { ships: Ships, session_for_account: Option<ActorId> },
-    Turn { step: u8, session_for_account: Option<ActorId> },
-    ChangeBot { bot: ActorId },
-    ClearState { leave_active_games: bool },
-    DeleteGame { player_address: ActorId },
-    CreateSession { key: ActorId, duration: u64, allowed_actions: Vec<ActionsForSession>},
-    DeleteSessionFromProgram {account: ActorId},
+    StartGame {
+        ships: Ships,
+        session_for_account: Option<ActorId>,
+    },
+    Turn {
+        step: u8,
+        session_for_account: Option<ActorId>,
+    },
+    ChangeBot {
+        bot: ActorId,
+    },
+    ClearState {
+        leave_active_games: bool,
+    },
+    DeleteGame {
+        player_address: ActorId,
+    },
+    CreateSession {
+        key: ActorId,
+        duration: u64,
+        allowed_actions: Vec<ActionsForSession>,
+    },
+    DeleteSessionFromProgram {
+        account: ActorId,
+    },
     DeleteSessionFromAccount,
     UpdateConfig {
         gas_for_start: Option<u64>,
         gas_for_move: Option<u64>,
         gas_to_delete_session: Option<u64>,
         block_duration_ms: Option<u64>,
-    }
+    },
 }
 
 #[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]

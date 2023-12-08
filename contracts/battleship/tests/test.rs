@@ -1,6 +1,6 @@
 use battleship_io::{
-    ActionsForSession, BattleshipAction, BattleshipInit, BattleshipReply, Config, Entity,
-    GameState, Session, Ships, StateQuery, StateReply, MINIMUM_SESSION_SURATION_MS, BattleshipParticipants,
+    ActionsForSession, BattleshipAction, BattleshipInit, BattleshipParticipants, BattleshipReply,
+    Config, Entity, GameState, Session, Ships, StateQuery, StateReply, MINIMUM_SESSION_SURATION_MS,
 };
 use gstd::prelude::*;
 use gtest::{Program, System};
@@ -591,7 +591,7 @@ fn complete_session_game() {
     }
 }
 
-// Checks whether the session is correctly terminated when a user attempts to delete it prematurely, 
+// Checks whether the session is correctly terminated when a user attempts to delete it prematurely,
 // ensuring that the contract handles early termination scenarios appropriately.
 #[test]
 fn premature_session_deletion_by_user() {
@@ -624,7 +624,7 @@ fn premature_session_deletion_by_user() {
 
     check_session_in_state(&battleship, main_account, Some(session));
 
-    // delete session 
+    // delete session
     let res = battleship.send(main_account, BattleshipAction::DeleteSessionFromAccount);
     assert!(res.contains(&(main_account, BattleshipReply::SessionDeleted.encode())));
 

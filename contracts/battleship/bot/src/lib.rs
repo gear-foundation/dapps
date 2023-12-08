@@ -34,11 +34,25 @@ extern fn handle() {
     match action {
         BotBattleshipAction::Start => {
             let ships = generate_field();
-            msg::reply(BattleshipAction::StartGame { ships, session_for_account: None }, 0).expect("Error in sending a reply");
+            msg::reply(
+                BattleshipAction::StartGame {
+                    ships,
+                    session_for_account: None,
+                },
+                0,
+            )
+            .expect("Error in sending a reply");
         }
         BotBattleshipAction::Turn(board) => {
             let step = move_analysis(board);
-            msg::reply(BattleshipAction::Turn { step, session_for_account: None }, 0).expect("Error in sending a reply");
+            msg::reply(
+                BattleshipAction::Turn {
+                    step,
+                    session_for_account: None,
+                },
+                0,
+            )
+            .expect("Error in sending a reply");
         }
     }
 }
