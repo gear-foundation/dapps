@@ -1,3 +1,3 @@
-import { useCountdown } from './hooks';
+import { useCountdown, useProgramMetadata } from './hooks';
 
-export { useCountdown };
+export { useCountdown, useProgramMetadata };

@@ -2,8 +2,9 @@ import { HexString } from '@gear-js/api';
 import { useAlert, useApi, useHandleCalculateGas } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 
+import { useProgramMetadata } from '@dapps-frontend/hooks';
+
 import { ADDRESS } from '@/app/consts';
-import { useProgramMetadata } from '@/app/hooks';
 import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
 
 import { useBatchSignAndSend } from './use-batch-sign-and-send';

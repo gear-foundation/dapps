@@ -1,8 +1,9 @@
 import { useAccount, useReadFullState } from '@gear-js/react-hooks';
 import { useMemo } from 'react';
 
+import { useProgramMetadata } from '@dapps-frontend/hooks';
+
 import { ADDRESS } from '@/app/consts';
-import { useProgramMetadata } from '@/app/hooks';
 import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
 
 import { State } from './types';
