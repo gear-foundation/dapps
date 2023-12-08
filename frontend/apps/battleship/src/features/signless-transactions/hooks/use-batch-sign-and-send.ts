@@ -36,9 +36,7 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
     { onSuccess = () => {}, onError = () => {}, onFinally = () => {} }: Options = {},
   ) => {
     if (!isApiReady) throw new Error('API is not initialized');
-
-    const { isInBlock, isFinalized } = status;
-    if (!isInBlock && !isFinalized) return;
+    if (!status.isInBlock) return;
 
     events
       .filter(({ event }) => event.section === 'system')
@@ -53,7 +51,7 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
           const message = getExtrinsicFailedError(event);
 
           onError(message);
-          return console.error(message);
+          console.error(message);
         }
       });
   };
