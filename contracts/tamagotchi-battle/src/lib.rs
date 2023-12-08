@@ -52,7 +52,16 @@ impl Battle {
             .expect("Error in sending a reply `BattleEvent::RegistrationStarted`");
     }
 
-    async fn register(&mut self, tmg_id: &TamagotchiId) {
+    async fn register(&mut self, tmg_id: &TamagotchiId) -> Result<BattleReply, BattleError>{
+
+        match self.state {
+            BattleState::Registration => {
+                
+            },
+            _ => {
+                Err(BattleError::WrongState)
+            }
+        }
         assert_eq!(
             self.state,
             BattleState::Registration,
@@ -110,6 +119,18 @@ impl Battle {
     /// It must also be sent when the game is on but a round is ended (the contract is in the `BattleState::WaitNextRound` state)
     /// BattleState::WaitNextRound` state means the the battles in pairs are over and winners are expecting to play in the next round
     fn start_battle(&mut self) {
+
+        match self.state {
+            BattleState::Registration | BattleState::WaitNextRound => {
+                
+            },
+            BattleState::GameIsOn => {
+                
+            },
+            _ => {
+                Err(BattleError::WrongState)
+            }
+        }
         assert!(
             self.state == BattleState::Registration || self.state == BattleState::WaitNextRound,
             "The battle can be started from registration stage of after completing a round"
@@ -139,6 +160,8 @@ impl Battle {
 
     fn split_into_pairs(&mut self) {
         let mut players_len = self.players_ids.len();
+
+        let last_updated = exec::block_timestamp();
 
         for pair_id in 0..self.players_ids.len() {
             let first_tmg_id = get_random_value(players_len as u8);
@@ -186,6 +209,7 @@ impl Battle {
                 winner: ActorId::zero(),
                 move_deadline: exec::block_timestamp() + (TIME_FOR_MOVE * 3_000) as u64,
                 msg_id,
+                last_updated,
             };
             self.pairs.insert(pair_id as u8, pair);
 

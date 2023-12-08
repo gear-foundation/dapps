@@ -66,7 +66,10 @@ pub struct Pair {
     pub winner: ActorId,
     pub move_deadline: u64,
     pub msg_id: MessageId,
+    pub last_updated: u64,
+
 }
+
 
 #[derive(Debug, PartialEq, Eq, Encode, Decode, TypeInfo, Default, Clone)]
 #[codec(crate = gstd::codec)]
@@ -103,7 +106,7 @@ pub enum BattleAction {
 #[derive(Encode, Decode, TypeInfo, PartialEq, Eq, Debug)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub enum BattleEvent {
+pub enum BattleReply {
     RegistrationStarted,
     Registered { tmg_id: TamagotchiId },
     MoveMade,
@@ -115,4 +118,11 @@ pub enum BattleEvent {
     RoundResult((PairId, u16, u16, Option<Move>, Option<Move>)),
     NewRound,
     AdminAdded,
+}
+
+#[derive(Encode, Decode, TypeInfo, PartialEq, Eq, Debug)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum BattleError {
+    WrongState,
 }
