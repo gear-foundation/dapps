@@ -1,18 +1,19 @@
 import { buttonStyles } from '@gear-js/ui';
 import clsx from 'clsx';
 import { Link } from 'react-router-dom';
-import { Logo } from './logo';
-import { Account } from './account';
+import { Wallet } from '@dapps-frontend/ui';
+import logo from 'assets/images/logo.png';
+import { useFTBalance } from 'hooks/api';
 import styles from './Header.module.scss';
 
-type Props = {
-  isAccountVisible: boolean;
-};
+function Header() {
+  const tokens = useFTBalance();
 
-function Header({ isAccountVisible }: Props) {
   return (
     <header className={styles.header}>
-      <Logo />
+      <Link to="/">
+        <img src={logo} alt="" style={{ maxWidth: '150px' }} />
+      </Link>
 
       <Link
         to="subscription"
@@ -20,7 +21,13 @@ function Header({ isAccountVisible }: Props) {
         My Subscription
       </Link>
 
-      {isAccountVisible && <Account />}
+      {tokens && (
+        <p className={styles.balance}>
+          <span className={styles.currency}>Tokens:</span> {tokens}
+        </p>
+      )}
+
+      <Wallet />
     </header>
   );
 }

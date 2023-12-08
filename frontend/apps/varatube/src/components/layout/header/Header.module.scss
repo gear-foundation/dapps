@@ -1,3 +1,5 @@
+@use '@gear-js/ui/variables' as *;
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -8,4 +10,13 @@
   max-height: 32px;
   margin-right: 48px;
   margin-left: auto;
+}
+
+.balance {
+  margin-right: 48px;
+  font-size: $fontSizeMedium;
+
+  .currency {
+    color: $textColorSecondary;
+  }
 }

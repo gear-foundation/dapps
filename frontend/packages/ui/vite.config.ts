@@ -10,11 +10,12 @@ export default defineConfig({
 
   build: {
     lib: {
-      entry: resolve(__dirname, 'src/components/index.ts'),
+      entry: resolve(__dirname, 'src/index.ts'),
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom', '@gear-js/react-hooks'],
+      external: ['react', 'react-dom', '@gear-js/api', '@gear-js/react-hooks'],
+      resolve: { alias: { '@': '/src' } },
       output: {
         globals: { react: 'React', 'react-dom': 'ReactDOM' },
         intro: 'import "./style.css";',

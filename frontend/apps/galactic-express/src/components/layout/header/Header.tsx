@@ -1,60 +1,51 @@
-import { useState } from 'react';
-import { WalletModal, WalletInfo } from 'features/wallet/components';
-import { Link, useLocation } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
+import { useLocation, Link } from 'react-router-dom';
+import { Wallet } from '@dapps-frontend/ui';
+import { ReactComponent as GalexSVG } from 'assets/images/logo.svg';
+import { ReactComponent as VaraSVG } from 'assets/images/logo-vara.svg';
 import { cx } from 'utils';
 import styles from './Header.module.scss';
-import { Logo } from './logo';
 
-interface Menu {
-  [key: string]: {
-    url: string;
-  };
-}
 interface HeaderProps {
-  menu?: Menu;
+  menu?: Record<string, { url: string }>;
 }
 
 function Header({ menu }: HeaderProps) {
   const location = useLocation();
   const { account } = useAccount();
-  const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
-
-  const handleCloseWalletModal = () => {
-    setIsWalletModalOpen(false);
-  };
 
   return (
-    <>
-      <header className={cx(styles.header)}>
-        <div className={cx(styles.container)}>
-          <Logo />
-          {account && (
-            <nav className={cx(styles.menu)}>
-              {menu &&
-                Object.keys(menu).map((item) => {
-                  const { url } = menu[item];
+    <header className={cx(styles.header)}>
+      <div className={cx(styles.container)}>
+        <Link to="/">
+          <VaraSVG className={cx(styles['vara-logo'])} />
+          <GalexSVG />
+        </Link>
 
-                  return (
-                    <Link to={url} key={item}>
-                      <p
-                        className={cx(
-                          styles['menu-item'],
-                          location.pathname === `/${url}` ? styles['menu-item--active'] : '',
-                        )}>
-                        {item}
-                      </p>
-                    </Link>
-                  );
-                })}
-            </nav>
-          )}
-          <WalletInfo account={account} />
-        </div>
-      </header>
+        {account && (
+          <nav className={cx(styles.menu)}>
+            {menu &&
+              Object.keys(menu).map((item) => {
+                const { url } = menu[item];
 
-      <WalletModal onClose={handleCloseWalletModal} open={isWalletModalOpen} setOpen={setIsWalletModalOpen} />
-    </>
+                return (
+                  <Link to={url} key={item}>
+                    <p
+                      className={cx(
+                        styles['menu-item'],
+                        location.pathname === `/${url}` ? styles['menu-item--active'] : '',
+                      )}>
+                      {item}
+                    </p>
+                  </Link>
+                );
+              })}
+          </nav>
+        )}
+
+        <Wallet />
+      </div>
+    </header>
   );
 }
 
