@@ -236,8 +236,8 @@ fn success_test() {
             .expect("Unexpected invalid state.");
         if let StateReply::All(state) = reply {
             if !(state.games[0].1.bot_board[step as usize] == Entity::Empty
-                || state.games[0].1.bot_board[step as usize] == Entity::Ship)
-                && !state.games[0].1.game_over
+                || state.games[0].1.bot_board[step as usize] == Entity::Ship
+                || state.games[0].1.game_over)
             {
                 let res = battleship.send(
                     3,
@@ -635,7 +635,7 @@ fn premature_session_deletion_by_user() {
     assert!(res.main_failed());
 }
 
-fn check_session_in_state(battleship: &Program, account: u64, session: Option<Session>) {
+fn check_session_in_state(battleship: &Program<'_>, account: u64, session: Option<Session>) {
     let reply = battleship
         .read_state(StateQuery::SessionForTheAccount(account.into()))
         .expect("Error in reading the state");
@@ -647,13 +647,13 @@ fn check_session_in_state(battleship: &Program, account: u64, session: Option<Se
     }
 }
 
-fn get_game(battleship: &Program, player_id: u64) -> GameState {
+fn get_game(battleship: &Program<'_>, player_id: u64) -> GameState {
     let reply = battleship
         .read_state(StateQuery::Game(player_id.into()))
         .expect("Error in reading the state");
 
     if let StateReply::Game(Some(game_state)) = reply {
-        return game_state;
+        game_state
     } else {
         gstd::panic!("Wrong received state reply");
     }
