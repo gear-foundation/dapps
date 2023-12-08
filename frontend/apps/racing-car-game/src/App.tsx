@@ -12,7 +12,7 @@ import { LOGIN, PLAY, START } from '@/App.routes';
 import styles from './App.module.scss';
 import 'babel-polyfill';
 import { useLoginByParams } from './hooks';
-import { CURRENT_GAME } from './atoms';
+import { CURRENT_GAME, IS_CURRENT_GAME_READ_ATOM } from './atoms';
 import { ProtectedRoute } from './features/Auth/components';
 import { useAccountAvailableBalance, useAccountAvailableBalanceSync, useWalletSync } from './features/Wallet/hooks';
 import { LoginPage } from './pages/LoginPage';
@@ -27,10 +27,12 @@ function AppComponent() {
   const { isAvailableBalanceReady } = useAccountAvailableBalance();
   const { isAuthReady } = useAuth();
   const setCurrentGame = useSetAtom(CURRENT_GAME);
+  const setIsCurrentRead = useSetAtom(IS_CURRENT_GAME_READ_ATOM);
 
   useEffect(() => {
     if (isAccountReady && account?.decodedAddress && isStateRead) {
       setCurrentGame(game.Game);
+      setIsCurrentRead(true);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account?.decodedAddress, isAccountReady, isStateRead]);

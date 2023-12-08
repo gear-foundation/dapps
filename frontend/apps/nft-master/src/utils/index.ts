@@ -1,4 +1,3 @@
-import { io } from 'socket.io-client';
 import { Client, cacheExchange, fetchExchange } from 'urql';
 import { isHex } from '@polkadot/util';
 import { HexString } from '@polkadot/util/types';
@@ -52,10 +51,6 @@ export const copyToClipboard = async ({
 };
 
 export const isProgramIdValid = (value: string): value is HexString => isHex(value, 256);
-
-export const socket = io(ADDRESS.GAME_STATE_SOCKET, {
-  transports: ['websocket'],
-});
 
 export const urqlClient = new Client({
   url: ADDRESS.EXPLORER_URL || 'https://nft-explorer.vara-network.io/graphql',

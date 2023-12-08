@@ -126,7 +126,7 @@ export const TamagotchiAvatar = ({
                     animate="center"
                     exit="exit"
                     transition={{ ...transition, delay: 1.2 }}
-                    className="absolute -top-4 inset-0 h-fit leading-4 text-center text-white"
+                    className="absolute -top-4 inset-0 h-fit leading-4 text-center text-white xxl:top-12"
                     aria-hidden>
                     <p
                       className={cn(

@@ -1,6 +1,9 @@
+import { atom } from 'jotai';
 import { EnkryptSVG, PolkadotSVG, SubWalletSVG, TalismanSVG, NovaSVG } from './assets';
 
 export const WALLET_ID_LOCAL_STORAGE_KEY = 'wallet';
+
+export const VOUCHER_MIN_LIMIT = 3;
 
 const isNovaWallet = window?.walletExtension?.isNovaWallet;
 
@@ -15,3 +18,9 @@ export const WALLET = {
 };
 
 export const WALLETS = Object.entries(WALLET) as Entries<typeof WALLET>;
+
+export const IS_AVAILABLE_BALANCE_READY = atom<boolean>(false);
+
+export const AVAILABLE_BALANCE = atom<undefined | { value: string; unit: string; existentialDeposit: string }>(
+  undefined,
+);

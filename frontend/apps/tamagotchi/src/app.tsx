@@ -10,6 +10,7 @@ import { withProviders } from '@/app/hocs';
 const Component = () => {
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
+
   return (
     <div className="flex flex-col min-h-screen">
       <Header />
