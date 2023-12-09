@@ -9,6 +9,8 @@ const DEFAULT_VALUES = {
   session: undefined,
   isSessionReady: false,
   voucherBalance: 0,
+  createSession: () => {},
+  deleteSession: () => {},
 };
 
 export { SIGNLESS_STORAGE_KEY, DEFAULT_VALUES };

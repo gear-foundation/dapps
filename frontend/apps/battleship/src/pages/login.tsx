@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useAccount } from '@gear-js/react-hooks';
 
+import { SignlessTransactions } from '@dapps-frontend/signless-transactions';
+
 import battleshipImage from '@/assets/images/illustration-battleship.png';
 import { Button, buttonVariants } from '@/components/ui/button/button';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
-import { SignlessTransactions } from '@/features/signless-transactions';
 
 import styles from './login.module.scss';
 

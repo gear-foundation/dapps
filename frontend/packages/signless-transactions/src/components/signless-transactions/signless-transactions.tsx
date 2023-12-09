@@ -5,7 +5,6 @@ import { useState } from 'react';
 import { useCountdown } from '@dapps-frontend/hooks';
 
 import { useSignlessTransactions } from '../../context';
-import { useCreateSession } from '../../hooks';
 import { getHMS } from '../../utils';
 import { CreateSessionModal } from '../create-session-modal';
 import { EnableSessionModal } from '../enable-session-modal';
@@ -13,8 +12,7 @@ import styles from './signless-transactions.module.css';
 
 function SignlessTransactions() {
   const { account } = useAccount();
-  const { pair, session, isSessionReady, voucherBalance, storagePair } = useSignlessTransactions();
-  const { deleteSession } = useCreateSession();
+  const { pair, session, isSessionReady, voucherBalance, storagePair, deleteSession } = useSignlessTransactions();
 
   const [modal, setModal] = useState('');
   const openCreateModal = () => setModal('create');

@@ -1,18 +1,14 @@
+import { HexString, ProgramMetadata } from '@gear-js/api';
 import { useAccount, useReadFullState } from '@gear-js/react-hooks';
 import { useMemo } from 'react';
 
-import { ADDRESS } from '@/app/consts';
-import { useProgramMetadata } from '@/app/hooks';
-import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
-
 import { State } from './types';
 
-function useSession() {
+function useSession(programId: HexString, metadata: ProgramMetadata | undefined) {
   const { account } = useAccount();
-  const metadata = useProgramMetadata(metaTxt);
 
   const payload = useMemo(() => ({ SessionForTheAccount: account?.decodedAddress }), [account]);
-  const { state } = useReadFullState<State>(ADDRESS.GAME, metadata, payload);
+  const { state } = useReadFullState<State>(programId, metadata, payload);
 
   const session = state?.SessionForTheAccount;
   const isSessionReady = session !== undefined;

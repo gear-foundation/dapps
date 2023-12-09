@@ -3,13 +3,13 @@ import { useAccount } from '@gear-js/react-hooks';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 
 import { useProgramMetadata } from '@dapps-frontend/hooks';
+import { useSignlessSendMessage } from '@dapps-frontend/signless-transactions';
 
 import meta from './assets/meta/battleship.meta.txt';
 import { IGameInstance } from './types';
 import { gameAtom, isActiveGameAtom, pendingAtom } from './store';
 import { ADDRESS } from './consts';
 import { useReadState } from '@/app/hooks/api';
-import { useSignlessSendMessage } from '../signless-transactions/hooks/use-signless-send-message';
 
 export function useGame() {
   const gameState = useAtomValue(gameAtom);

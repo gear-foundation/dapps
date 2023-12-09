@@ -7,7 +7,6 @@ import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useSignlessTransactions } from '../../context';
-import { useCreateSession } from '../../hooks';
 import { getMilliseconds, getRandomPair } from '../../utils';
 import { EnableSessionModal } from '../enable-session-modal';
 import styles from './create-session-modal.module.css';
@@ -29,11 +28,9 @@ function CreateSessionModal({ close }: Props) {
   const { register, handleSubmit, formState } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
-  const { savePair, storagePair, voucherBalance } = useSignlessTransactions();
+  const { savePair, storagePair, voucherBalance, createSession } = useSignlessTransactions();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const pair = useMemo(() => storagePair || getRandomPair(), []);
-
-  const { createSession } = useCreateSession();
 
   const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
   const openEnableModal = () => setIsEnableModalOpen(true);

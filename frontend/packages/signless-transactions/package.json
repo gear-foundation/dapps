@@ -10,11 +10,13 @@
     "preview": "vite preview"
   },
   "peerDependencies": {
+    "@gear-js/api": "0.35.2",
     "@gear-js/react-hooks": "0.9.3",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
   "dependencies": {
+    "@dapps-frontend/hooks": "workspace:*",
     "@polkadot/react-identicon": "3.6.4"
   },
   "devDependencies": {
@@ -36,6 +38,6 @@
   "files": [
     "dist"
   ],
-  "main": "dist/ui.js",
+  "main": "dist/signless-transactions.js",
   "types": "dist/index.d.ts"
 }

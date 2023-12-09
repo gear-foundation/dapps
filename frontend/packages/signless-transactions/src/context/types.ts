@@ -1,6 +1,8 @@
 import { HexString } from '@polkadot/util/types';
 import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
 
+import { useCreateSession } from '../hooks';
+
 type Session = {
   key: HexString;
   expires: string;
@@ -22,6 +24,8 @@ type Value = {
   session: Session | null | undefined;
   isSessionReady: boolean;
   voucherBalance: number;
+  createSession: (...args: Parameters<ReturnType<typeof useCreateSession>['createSession']>) => void;
+  deleteSession: () => void;
 };
 
 export type { State, Session, Storage, Value };
