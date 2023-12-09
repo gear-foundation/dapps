@@ -76,6 +76,7 @@ jobs:
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
+            REACT_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_GALEX }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

@@ -1,4 +1,4 @@
-name: Deploy BattleShips
+name: Build and Deploy BattleShips
 
 on:
   workflow_dispatch:
