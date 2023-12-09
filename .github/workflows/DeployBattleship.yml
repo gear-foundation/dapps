@@ -78,6 +78,7 @@ jobs:
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
             VITE_CONTRACT_ADDRESS=${{ secrets.VITE_CONTRACT_ADDRESS_BATTLE }}
             VITE_BACKEND_ADDRESS=${{ secrets.VITE_BACKEND_ADDRESS }}
+            VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN_BATTLE }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
