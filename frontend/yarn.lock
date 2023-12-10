@@ -13478,6 +13478,8 @@ __metadata:
   resolution: "frontend@workspace:apps/w3bstreaming"
   dependencies:
     "@craco/craco": "npm:7.1.0"
+    "@dapps-frontend/error-tracking": "workspace:*"
+    "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.35.2"
     "@gear-js/react-hooks": "npm:0.9.2"
     "@gear-js/ui": "npm:0.5.21"
