@@ -4,23 +4,14 @@ import { Heading } from '@/components/ui/heading';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { Text } from '@/components/ui/text';
 import { Map } from '../';
-
 import styles from './ShipArrangement.module.scss';
 import { useGameMessage, usePending } from '../../hooks';
 import { generateShipsField } from './shipGenerator';
-import { convertShipsToField } from '../../utils';
-import { useAccount } from '@gear-js/react-hooks';
-import { useFetchVoucher } from '@dapps-frontend/gasless-transactions';
+import { convertShipsToField, useFetchVoucher } from '../../utils';
 import { useCheckBalance } from '@/features/wallet/hooks';
-import { ADDRESS } from '@/app/consts';
 
 export default function ShipArrangement() {
-  const { account } = useAccount();
-  const { isVoucher, isLoading } = useFetchVoucher({
-    accountAddress: account?.address,
-    programId: ADDRESS.GAME,
-    backendAddress: ADDRESS.BACK,
-  });
+  const { isVoucher, isLoading } = useFetchVoucher();
 
   const message = useGameMessage();
   const { setPending } = usePending();
