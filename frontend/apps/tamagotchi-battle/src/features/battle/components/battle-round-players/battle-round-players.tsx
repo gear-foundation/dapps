@@ -3,15 +3,15 @@ import { buttonStyles } from '@gear-js/ui';
 import { SpriteIcon } from 'components/ui/sprite-icon';
 import { useBattleMessage } from '../../hooks';
 import { useEffect, useState } from 'react';
-import { cn, toNumber } from 'app/utils';
-import { useAccount } from '@gear-js/react-hooks';
+import { cn, gasLimitToNumber, toNumber } from 'app/utils';
+import { useAccount, useApi } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
 import { useCheckBalance } from 'features/wallet/hooks';
-import { GAS_LIMIT } from 'app/consts';
 import { useFetchVoucher } from 'features/battle/utils/init-gasless-transactions';
 
 export const BattleRoundPlayers = () => {
   const { account } = useAccount();
+  const { api } = useApi();
   const { rivals, currentPlayer, currentPairIdx, roundDamage, battle, isPending, setIsPending, isAdmin } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
@@ -33,7 +33,7 @@ export const BattleRoundPlayers = () => {
     setIsPending(true);
 
     checkBalance(
-      GAS_LIMIT,
+      gasLimitToNumber(api?.blockGasLimit),
       () => {
         handleMessage({ payload, onSuccess, onError, withVoucher: isVoucher });
       },
@@ -47,7 +47,7 @@ export const BattleRoundPlayers = () => {
     setIsPending(true);
 
     checkBalance(
-      GAS_LIMIT,
+      gasLimitToNumber(api?.blockGasLimit),
       () => {
         handleMessage({ payload, onSuccess, onError });
       },
@@ -61,7 +61,7 @@ export const BattleRoundPlayers = () => {
     setIsPending(true);
 
     checkBalance(
-      GAS_LIMIT,
+      gasLimitToNumber(api?.blockGasLimit),
       () => {
         handleMessage({ payload, onSuccess, onError });
       },

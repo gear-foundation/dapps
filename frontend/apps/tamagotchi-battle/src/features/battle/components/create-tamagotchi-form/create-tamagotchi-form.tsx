@@ -1,13 +1,13 @@
 import { Button, Input } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
-import { hexRequired } from 'app/utils';
+import { gasLimitToNumber, hexRequired } from 'app/utils';
 import { useBattle } from '../../context';
 import { useNavigate } from 'react-router-dom';
 import { HexString } from '@polkadot/util/types';
 import { useFetchVoucher } from 'features/battle/utils/init-gasless-transactions';
 import { useCheckBalance } from 'features/wallet/hooks';
-import { GAS_LIMIT } from 'app/consts';
 import { useBattleMessage } from 'features/battle/hooks/use-battle';
+import { useApi } from '@gear-js/react-hooks';
 
 const createTamagotchiInitial = {
   programId: '' as HexString,
@@ -23,6 +23,7 @@ export const CreateTamagotchiForm = () => {
   const { battle, isPending } = useBattle();
   const handleMessage = useBattleMessage();
   const { isVoucher, isLoading } = useFetchVoucher();
+  const { api } = useApi();
   const { checkBalance } = useCheckBalance(isVoucher);
   const navigate = useNavigate();
   const form = useForm({
@@ -43,7 +44,7 @@ export const CreateTamagotchiForm = () => {
     const onError = () => form.reset();
 
     checkBalance(
-      GAS_LIMIT,
+      gasLimitToNumber(api?.blockGasLimit),
       () => {
         handleMessage({ payload, onSuccess, onError, withVoucher: isVoucher });
       },

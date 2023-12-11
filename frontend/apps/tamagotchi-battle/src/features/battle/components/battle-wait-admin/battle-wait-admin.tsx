@@ -2,12 +2,13 @@ import { buttonStyles } from '@gear-js/ui';
 import { SpriteIcon } from 'components/ui/sprite-icon';
 import { useBattle } from '../../context';
 import { useBattleMessage } from '../../hooks';
-import { cn } from 'app/utils';
+import { cn, gasLimitToNumber } from 'app/utils';
 import { useFetchVoucher } from 'features/battle/utils/init-gasless-transactions';
 import { useCheckBalance } from 'features/wallet/hooks';
-import { GAS_LIMIT } from 'app/consts';
+import { useApi } from '@gear-js/react-hooks';
 
 export const BattleWaitAdmin = () => {
+  const { api } = useApi();
   const { players, isPending, setIsPending } = useBattle();
   const handleMessage = useBattleMessage();
   const { isVoucher, isLoading } = useFetchVoucher();
@@ -21,7 +22,7 @@ export const BattleWaitAdmin = () => {
     setIsPending(true);
 
     checkBalance(
-      GAS_LIMIT,
+      gasLimitToNumber(api?.blockGasLimit),
       () => {
         handleMessage({ payload, onSuccess, onError, withVoucher: isVoucher });
       },
