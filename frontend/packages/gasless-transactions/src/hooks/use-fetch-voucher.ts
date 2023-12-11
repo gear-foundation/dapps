@@ -1,23 +1,25 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useVoucher, useBalanceFormat } from '@gear-js/react-hooks';
-import { ADDRESS } from '../consts';
-import { VOUCHER_MIN_LIMIT } from '@/features/wallet/consts';
+import { useVoucher, useBalanceFormat, useAccount } from '@gear-js/react-hooks';
+import { IS_CREATING_VOUCHER_ATOM, IS_UPDATING_VOUCHER_ATOM } from '../atoms';
+import { useAtom } from 'jotai';
+import { UseFetchVoucherProps } from '../types';
 
-export function useFetchVoucher(account: string | undefined) {
-  const { isVoucherExists, voucherBalance } = useVoucher(ADDRESS.GAME);
+export function useFetchVoucher({ programId, backendAddress, voucherLimit }: UseFetchVoucherProps) {
+  const { isVoucherExists, voucherBalance } = useVoucher(programId);
   const { getFormattedBalanceValue } = useBalanceFormat();
-
+  const { account } = useAccount();
   const [voucher, setVoucher] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isCreating, setIsCreating] = useAtom(IS_CREATING_VOUCHER_ATOM);
+  const [isUpdating, setIsUpdating] = useAtom(IS_UPDATING_VOUCHER_ATOM);
 
   const createVoucher = async () => {
     try {
-      const response = await fetch(ADDRESS.BACK, {
+      const response = await fetch(backendAddress, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ account }),
+        body: JSON.stringify({ account: account?.address }),
       });
 
       if (response.status === 200) {
@@ -31,48 +33,67 @@ export function useFetchVoucher(account: string | undefined) {
   };
 
   useEffect(() => {
-    if (account && isVoucherExists !== undefined) {
+    if (account?.address && isVoucherExists !== undefined) {
       const fetchData = async () => {
         try {
-          setIsLoading(true);
-          const availableBack = await fetch(ADDRESS.BACK);
+          setIsCreating(true);
+          const availableBack = await fetch(backendAddress);
 
           if (availableBack?.status === 200) {
             if (isVoucherExists) {
+              console.log('EXISTS');
               setVoucher(true);
             } else {
               const createdVoucher = await createVoucher();
               if (createdVoucher) {
+                console.log('CREATED');
                 setVoucher(true);
               }
             }
           }
-          setIsLoading(false);
+          setIsCreating(false);
         } catch (error) {
-          setIsLoading(false);
+          setIsCreating(false);
         }
       };
 
       fetchData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, isVoucherExists]);
+  }, [account?.address, isVoucherExists]);
 
   const updateBalance = useCallback(async () => {
     const formattedBalance = voucherBalance && getFormattedBalanceValue(voucherBalance.toString()).toFixed();
-    const isBalanceLow = formattedBalance < VOUCHER_MIN_LIMIT;
+    const isBalanceLow = formattedBalance < (voucherLimit || 18);
 
     if (isBalanceLow) {
+      setIsUpdating(true);
+
       const createdVoucher = await createVoucher();
+
       if (createdVoucher) {
         setVoucher(true);
       }
+
+      setIsUpdating(false);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [voucherBalance]);
 
+  useEffect(() => {
+    setVoucher(false);
+  }, [account?.address]);
+
+  useEffect(() => {
+    if (voucher) {
+      updateBalance();
+    }
+  }, [updateBalance, voucher]);
+
   const isVoucher = useMemo(() => voucher, [voucher]);
+
+  const isLoading = isCreating || isUpdating;
 
   return { isVoucher, isLoading, updateBalance };
 }
