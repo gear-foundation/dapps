@@ -30,8 +30,7 @@
     "vite-plugin-dts": "3.5.1"
   },
   "dependencies": {
-    "jotai": "2.6.0",
-    "vite-plugin-node-stdlib-browser": "0.2.1"
+    "jotai": "2.6.0"
   },
   "files": [
     "dist"
