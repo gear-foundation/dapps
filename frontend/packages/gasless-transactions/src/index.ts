@@ -1,3 +1,6 @@
-import { useFetchVoucher } from './hooks';
+import { useFetchVoucher as useFetchVoucherHook } from './hooks';
+import { InitVoucher } from './types';
 
-export { useFetchVoucher };
+export const initVoucher = ({ programId, backendAddress, voucherLimit }: InitVoucher) => ({
+  useFetchVoucher: () => useFetchVoucherHook({ programId, backendAddress, voucherLimit }),
+});

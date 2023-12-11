@@ -1,12 +1,13 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
-import { useVoucher, useBalanceFormat } from '@gear-js/react-hooks';
+import { useVoucher, useBalanceFormat, useAccount } from '@gear-js/react-hooks';
 import { IS_CREATING_VOUCHER_ATOM, IS_UPDATING_VOUCHER_ATOM } from '../atoms';
 import { useAtom } from 'jotai';
 import { UseFetchVoucherProps } from '../types';
 
-export function useFetchVoucher({ accountAddress, programId, backendAddress, voucherLimit }: UseFetchVoucherProps) {
+export function useFetchVoucher({ programId, backendAddress, voucherLimit }: UseFetchVoucherProps) {
   const { isVoucherExists, voucherBalance } = useVoucher(programId);
   const { getFormattedBalanceValue } = useBalanceFormat();
+  const { account } = useAccount();
   const [voucher, setVoucher] = useState(false);
   const [isCreating, setIsCreating] = useAtom(IS_CREATING_VOUCHER_ATOM);
   const [isUpdating, setIsUpdating] = useAtom(IS_UPDATING_VOUCHER_ATOM);
@@ -18,7 +19,7 @@ export function useFetchVoucher({ accountAddress, programId, backendAddress, vou
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ account: accountAddress }),
+        body: JSON.stringify({ account: account?.address }),
       });
 
       if (response.status === 200) {
@@ -32,7 +33,7 @@ export function useFetchVoucher({ accountAddress, programId, backendAddress, vou
   };
 
   useEffect(() => {
-    if (accountAddress && isVoucherExists !== undefined) {
+    if (account?.address && isVoucherExists !== undefined) {
       const fetchData = async () => {
         try {
           setIsCreating(true);
@@ -59,7 +60,7 @@ export function useFetchVoucher({ accountAddress, programId, backendAddress, vou
       fetchData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountAddress, isVoucherExists]);
+  }, [account?.address, isVoucherExists]);
 
   const updateBalance = useCallback(async () => {
     const formattedBalance = voucherBalance && getFormattedBalanceValue(voucherBalance.toString()).toFixed();
@@ -82,7 +83,7 @@ export function useFetchVoucher({ accountAddress, programId, backendAddress, vou
 
   useEffect(() => {
     setVoucher(false);
-  }, [accountAddress]);
+  }, [account?.address]);
 
   useEffect(() => {
     if (voucher) {

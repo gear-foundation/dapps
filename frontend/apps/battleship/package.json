@@ -4,12 +4,13 @@
   "version": "1.0.2",
   "type": "module",
   "scripts": {
-    "start": "yarn build:packages && vite --open",
-    "build": "yarn build:packages && tsc && vite build",
+    "start": "yarn build:packages && yarn build:gasless-transactions && vite --open",
+    "build": "yarn build:packages && yarn build:gasless-transactions && tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
+    "@dapps-frontend/gasless-transactions": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.35.2",
     "@gear-js/react-hooks": "0.9.2",

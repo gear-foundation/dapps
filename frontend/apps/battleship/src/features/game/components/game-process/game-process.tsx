@@ -1,24 +1,15 @@
 import { useEffect, useState } from 'react';
 import { Text } from '@/components/ui/text';
 import { GameEndModal, Map } from '@/features/game';
-
 import styles from './GameProcess.module.scss';
 import { MapEnemy } from '../map';
 import { useGame, useGameMessage, usePending } from '../../hooks';
-import { getFormattedTime } from '../../utils';
+import { getFormattedTime, useFetchVoucher } from '../../utils';
 import { Loader } from '@/components';
-import { useAccount } from '@gear-js/react-hooks';
-import { useFetchVoucher } from '@dapps-frontend/gasless-transactions';
 import { useCheckBalance } from '@/features/wallet/hooks';
-import { ADDRESS } from '@/app/consts';
 
 export default function GameProcess() {
-  const { account } = useAccount();
-  const { isVoucher, isLoading } = useFetchVoucher({
-    accountAddress: account?.address,
-    programId: ADDRESS.GAME,
-    backendAddress: ADDRESS.BACK,
-  });
+  const { isVoucher, isLoading } = useFetchVoucher();
 
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
