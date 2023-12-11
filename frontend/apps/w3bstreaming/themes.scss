@@ -1,0 +1,6 @@
+@import 'variables';
+@import 'mixins';
+
+:root.light {
+    @include spread-map($theme-map-light);
+}

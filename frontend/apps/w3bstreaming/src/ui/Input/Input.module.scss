@@ -1,0 +1,41 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.wrapper {
+    width: 100%;
+    padding-left: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 4px;
+    position: relative;
+}
+
+.size {
+    &-small {
+        height: 30px;
+    }
+
+    &-medium {
+        height: 40px;
+    }
+
+    &-large {
+        height: 50px;
+    }
+}
+
+.input {
+    border: none;
+    outline: none;
+    background: transparent;
+    height: 100%;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 400;
+    color: theme-var($text-primary);
+
+    &::placeholder {
+        font-size: 16px;
+        font-weight: 400;
+        color: theme-var($placeholder-input)
+    }
+}
