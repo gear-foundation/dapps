@@ -7,20 +7,15 @@ import { cn, toNumber } from 'app/utils';
 import { useAccount } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
 import { useCheckBalance } from 'features/wallet/hooks';
-import { ENV, GAS_LIMIT } from 'app/consts';
-import { useFetchVoucher } from '@dapps-frontend/gasless-transactions';
-import { BATTLE_ADDRESS } from 'features/battle/consts';
+import { GAS_LIMIT } from 'app/consts';
+import { useFetchVoucher } from 'features/battle/utils/init-gasless-transactions';
 
 export const BattleRoundPlayers = () => {
   const { account } = useAccount();
   const { rivals, currentPlayer, currentPairIdx, roundDamage, battle, isPending, setIsPending, isAdmin } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
-  const { isVoucher, isLoading } = useFetchVoucher({
-    accountAddress: account?.address,
-    programId: BATTLE_ADDRESS,
-    backendAddress: ENV.BACK,
-  });
+  const { isVoucher, isLoading } = useFetchVoucher();
   const { checkBalance } = useCheckBalance(isVoucher);
 
   useEffect(() => {

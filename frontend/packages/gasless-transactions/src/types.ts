@@ -4,7 +4,7 @@ export type UseFetchVoucherProps = {
   voucherLimit?: number;
 };
 
-export type InitVoucher = {
+export type InitGasslessTransactions = {
   programId: `0x${string}`;
   backendAddress: string;
   voucherLimit?: number;

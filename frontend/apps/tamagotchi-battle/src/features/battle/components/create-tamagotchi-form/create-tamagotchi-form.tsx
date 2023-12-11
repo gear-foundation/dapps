@@ -4,12 +4,10 @@ import { hexRequired } from 'app/utils';
 import { useBattle } from '../../context';
 import { useNavigate } from 'react-router-dom';
 import { HexString } from '@polkadot/util/types';
-import { useAccount } from '@gear-js/react-hooks';
-import { useFetchVoucher } from '@dapps-frontend/gasless-transactions';
+import { useFetchVoucher } from 'features/battle/utils/init-gasless-transactions';
 import { useCheckBalance } from 'features/wallet/hooks';
-import { ENV, GAS_LIMIT } from 'app/consts';
+import { GAS_LIMIT } from 'app/consts';
 import { useBattleMessage } from 'features/battle/hooks/use-battle';
-import { BATTLE_ADDRESS } from 'features/battle/consts';
 
 const createTamagotchiInitial = {
   programId: '' as HexString,
@@ -24,12 +22,7 @@ const validate: Record<string, typeof hexRequired> = {
 export const CreateTamagotchiForm = () => {
   const { battle, isPending } = useBattle();
   const handleMessage = useBattleMessage();
-  const { account } = useAccount();
-  const { isVoucher, isLoading } = useFetchVoucher({
-    accountAddress: account?.address,
-    programId: BATTLE_ADDRESS,
-    backendAddress: ENV.BACK,
-  });
+  const { isVoucher, isLoading } = useFetchVoucher();
   const { checkBalance } = useCheckBalance(isVoucher);
   const navigate = useNavigate();
   const form = useForm({

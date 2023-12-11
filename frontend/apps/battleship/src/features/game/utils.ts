@@ -1,5 +1,5 @@
 import { ADDRESS } from '@/app/consts';
-import { initVoucher } from '@dapps-frontend/gasless-transactions';
+import { initGasslessTransactions } from '@dapps-frontend/gasless-transactions';
 
 type ShipLayout = ('Empty' | 'Ship')[];
 
@@ -44,7 +44,7 @@ export const getFormattedTime = (time: number) => {
   return formattedTime;
 };
 
-export const { useFetchVoucher } = initVoucher({
+export const { useFetchVoucher } = initGasslessTransactions({
   programId: ADDRESS.GAME,
   backendAddress: ADDRESS.BACK,
 });

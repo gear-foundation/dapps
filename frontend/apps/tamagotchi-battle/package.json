@@ -3,13 +3,14 @@
   "version": "1.0.2",
   "private": true,
   "scripts": {
-    "start": "yarn build:packages && yarn build:hooks && react-app-rewired start",
-    "build": "yarn build:packages && yarn build:hooks && react-app-rewired build",
+    "start": "yarn build:packages && yarn build:hooks && yarn build:gasless-transactions && react-app-rewired start",
+    "build": "yarn build:packages && yarn build:hooks && yarn build:gasless-transactions && react-app-rewired build",
     "test": "react-app-rewired test",
     "eject": "react-scripts eject"
   },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
+    "@dapps-frontend/gasless-transactions": "workspace:*",
     "@dapps-frontend/hooks": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@fireworks-js/react": "2.10.7",
