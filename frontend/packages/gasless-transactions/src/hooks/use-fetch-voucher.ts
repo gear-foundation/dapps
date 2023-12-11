@@ -12,6 +12,16 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit }: Use
   const [isCreating, setIsCreating] = useAtom(IS_CREATING_VOUCHER_ATOM);
   const [isUpdating, setIsUpdating] = useAtom(IS_UPDATING_VOUCHER_ATOM);
 
+  useEffect(() => {
+    console.log('isVoucherExists:');
+    console.log(isVoucherExists);
+  }, [isVoucherExists]); // TODO remove before release
+
+  useEffect(() => {
+    console.log('Balance:');
+    console.log(getFormattedBalanceValue(voucherBalance?.toString() || '').toFixed());
+  }, [voucherBalance]); // TODO remove before release
+
   const createVoucher = async () => {
     try {
       const response = await fetch(backendAddress, {
