@@ -4,18 +4,15 @@ import { Heading } from '@/components/ui/heading';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { Text } from '@/components/ui/text';
 import { Map } from '../';
-
 import styles from './ShipArrangement.module.scss';
 import { useGameMessage, usePending } from '../../hooks';
 import { generateShipsField } from './shipGenerator';
-import { convertShipsToField } from '../../utils';
-import { useAccount } from '@gear-js/react-hooks';
-import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
+import { convertShipsToField, useFetchVoucher } from '../../utils';
 import { useCheckBalance } from '@/features/wallet/hooks';
 
 export default function ShipArrangement() {
-  const { account } = useAccount();
-  const { isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address);
+  const { isVoucher, isLoading } = useFetchVoucher();
+
   const message = useGameMessage();
   const { setPending } = usePending();
   const { checkBalance } = useCheckBalance(isVoucher);
@@ -38,8 +35,6 @@ export default function ShipArrangement() {
 
   const onGameStart = async () => {
     const gasLimit = 100000000000;
-
-    await updateBalance();
 
     if (!isLoading) {
       setPending(true);
