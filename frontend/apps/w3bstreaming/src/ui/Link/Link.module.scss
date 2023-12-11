@@ -1,0 +1,62 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    outline: none;
+    box-shadow: none;
+    border-radius: 2px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:disabled {
+        opacity: 0.5;
+    }
+}
+
+.variant {
+    &-primary {
+        border: none;
+        background: theme-var($green-special-bright);
+        color: theme-var($text-primary);
+    }
+
+    &-outline {
+        border: 2px solid theme-var($button-border);
+        background: transparent;
+        color: theme-var($text-primary);
+    }
+
+    &-icon {
+        border: none;
+        background: transparent;
+        color: theme-var($text-primary);
+    }
+
+    &-text {
+        border: none;
+        background: transparent;
+        color: theme-var($text-primary);
+    }
+}
+
+.size {
+    &-small {
+        height: 30px;
+        width: 150px;
+    }
+
+    &-medium {
+        height: 40px;
+        width: 160px;
+    }
+
+    &-large {
+        height: 50px;
+        width: 180px;
+    }
+}
