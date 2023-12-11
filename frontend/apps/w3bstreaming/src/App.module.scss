@@ -1,0 +1,14 @@
+.app-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.main-content {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: auto;
+}

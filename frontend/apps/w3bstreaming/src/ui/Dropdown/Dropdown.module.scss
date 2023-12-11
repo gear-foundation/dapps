@@ -1,0 +1,89 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.container {
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.dropdown {
+    outline: none;
+    border: none;
+    background: transparent;
+    font-size: inherit;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.dropdown-toggle-arrow {
+    &-rotated {
+        transform: rotate(180deg);
+        transition: transform 150ms;
+    }
+
+    &-small {
+        height: 20px;
+    }
+
+    &-medium {
+        height: 26px;
+    }
+
+    &-large {
+        height: 34px;
+    }
+}
+
+.dropdown-label {
+    padding-right: 14px;
+}
+  
+.dropdown-menu {
+    position: absolute;
+    top: 120%;
+    max-width: 320px;
+    max-height: 400px;
+    width: max-content;
+    z-index: 1;
+    padding: 30px;
+    border-radius: 4px;
+    background: theme-var($background-primary);
+    box-shadow: 6px 8px 16px rgba(0, 0, 0, 0.08);
+    overflow-y: auto;
+
+    &-item {
+        margin: 10px 0;
+    }
+
+    &-button {
+        background: transparent;
+        border: none;
+        outline: none;
+        font-size: 18px;
+        font-weight: 400;
+        text-align: left;
+        cursor: pointer;
+
+        &:hover {
+            color: theme-var($green-special);
+        }
+    }
+}
+
+.dropdown-menu-align {
+    &-left {
+        left: 86%;
+    }
+
+    &-center {
+        left: 0
+    }
+
+    &-right {
+        left: -106%
+    }
+
+}
