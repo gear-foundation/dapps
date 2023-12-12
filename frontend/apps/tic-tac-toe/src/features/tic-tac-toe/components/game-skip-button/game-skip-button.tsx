@@ -28,9 +28,9 @@ export function GameSkipButton({ meta }: Props) {
     setIsLoading(false);
     unsubscribe();
   };
+
   const onSuccess = () => {
     setIsLoading(false);
-    console.log('success on skip');
   };
 
   const onNextTurn = () => {
@@ -44,8 +44,6 @@ export function GameSkipButton({ meta }: Props) {
     calculateGas(payload)
       .then((res) => res.toHuman())
       .then(({ min_limit }) => {
-        console.log('min_limit================');
-        console.log(min_limit);
         const minLimit = withoutCommas(min_limit as string);
         const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
 
