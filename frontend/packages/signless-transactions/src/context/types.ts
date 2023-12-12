@@ -1,5 +1,5 @@
 import { HexString } from '@polkadot/util/types';
-import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
+import type { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
 
 import { useCreateSession } from '../hooks';
 
