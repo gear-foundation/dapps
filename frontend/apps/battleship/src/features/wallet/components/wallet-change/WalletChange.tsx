@@ -4,7 +4,6 @@ import Identicon from '@polkadot/react-identicon';
 import { Text } from '@/components/ui/text';
 import { Button } from '@/components/ui/button';
 
-import { useAuth } from '@/features/auth';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { useWallet } from '../../hooks';
 
@@ -20,8 +19,7 @@ type Props = {
 
 export function WalletChange({ onClose, openConnectWallet }: Props) {
   const { api } = useApi();
-  const { account } = useAccount();
-  const { signOut } = useAuth();
+  const { account, logout } = useAccount();
 
   const { walletAccounts } = useWallet();
 
@@ -49,7 +47,7 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
   };
 
   const handleLogoutButtonClick = () => {
-    signOut();
+    logout();
     onClose();
   };
 
