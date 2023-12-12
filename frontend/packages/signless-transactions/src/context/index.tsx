@@ -1,6 +1,5 @@
-import { HexString, decodeAddress, generateVoucherId } from '@gear-js/api';
+import { GearKeyring, HexString, decodeAddress, generateVoucherId } from '@gear-js/api';
 import { useAccount, useBalance } from '@gear-js/react-hooks';
-import { Keyring } from '@polkadot/api';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
@@ -44,10 +43,8 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
   const unlockPair = (password: string) => {
     if (!storagePair) throw new Error('Pair not found');
 
-    const keyring = new Keyring({ type: 'sr25519' });
-    const result = keyring.addFromJson(storagePair);
+    const result = GearKeyring.fromJson(storagePair, password);
 
-    result.unlock(password);
     setPair(result);
   };
 
