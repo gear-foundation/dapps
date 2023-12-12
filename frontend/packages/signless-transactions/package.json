@@ -23,6 +23,7 @@
     "react-hook-form": "7.49.0"
   },
   "devDependencies": {
+    "@polkadot/keyring": "12.6.1",
     "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",
     "@typescript-eslint/eslint-plugin": "6.0.0",
