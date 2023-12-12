@@ -15,7 +15,7 @@
     "@dapps-frontend/signless-transactions": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.35.2",
-    "@gear-js/react-hooks": "0.9.3",
+    "@gear-js/react-hooks": "0.9.4",
     "@gear-js/ui": "0.5.21",
     "@gear-js/vara-ui": "0.0.2",
     "@mantine/form": "6.0.15",
