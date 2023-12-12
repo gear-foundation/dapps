@@ -1,20 +1,8 @@
-import { Keyring } from '@polkadot/api';
-import { mnemonicGenerate } from '@polkadot/util-crypto';
-
 const MULTIPLIER = {
   MS: 1000,
   SECONDS: 60,
   MINUTES: 60,
   HOURS: 24,
-};
-
-const getRandomPair = () => {
-  const seed = mnemonicGenerate();
-
-  const keyring = new Keyring({ type: 'sr25519' });
-  const pair = keyring.addFromMnemonic(seed);
-
-  return pair;
 };
 
 const getMilliseconds = (minutes: number) => minutes * MULTIPLIER.MS * MULTIPLIER.SECONDS;
@@ -29,4 +17,4 @@ const getHMS = (ms: number) => {
   return `${getDoubleDigits(hours)}:${getDoubleDigits(minutes)}:${getDoubleDigits(seconds)}`;
 };
 
-export { getRandomPair, getMilliseconds, getHMS };
+export { getMilliseconds, getHMS };

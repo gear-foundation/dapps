@@ -21,7 +21,6 @@ export default defineConfig({
         '@gear-js/react-hooks',
         '@polkadot/extension-dapp',
         '@polkadot/wasm-crypto',
-        '@polkadot/util-crypto',
       ],
       resolve: { alias: { '@': '/src' } },
       output: {
