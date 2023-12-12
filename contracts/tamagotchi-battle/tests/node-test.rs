@@ -2,16 +2,15 @@ use fmt::Debug;
 use gclient::{EventListener, EventProcessor, GearApi, Result};
 use gstd::{collections::BTreeMap, prelude::*, ActorId};
 use tamagotchi_battle_io::*;
+use tamagotchi_io::TmgInit;
 
+use gear_core::ids::ProgramId;
 const PATHS: [&str; 2] = [
-    "../target/wasm32-unknown-unknown/debug/tamagotchi.opt.wasm",
-    "../target/wasm32-unknown-unknown/debug/tamagotchi_battle.opt.wasm",
+    "../target/wasm32-unknown-unknown/release/tamagotchi.opt.wasm",
+    "../target/wasm32-unknown-unknown/release/tamagotchi_battle.opt.wasm",
 ];
-const META_WASM: &str = "../target/wasm32-unknown-unknown/debug/tamagotchi_battle_state.meta.wasm";
 
-pub const PLAYERS: &[&str] = &[
-    "//John", "//Mike", "//Dan", "//Bot", "//Jack", "//Mops", "//Alex",
-];
+pub const PLAYERS: &[&str] = &["//John", "//Mike"];
 
 fn decode<T: Decode>(payload: Vec<u8>) -> Result<T> {
     Ok(T::decode(&mut payload.as_slice())?)
@@ -41,11 +40,13 @@ impl ApiUtils for GearApi {
     }
 }
 
-async fn common_upload_program(
+async fn upload_program(
     client: &GearApi,
-    code: Vec<u8>,
+    listener: &mut EventListener,
+    path: &str,
     payload: impl Encode,
-) -> Result<([u8; 32], [u8; 32])> {
+) -> Result<ProgramId> {
+    let code = gclient::code_from_os(path)?;
     let encoded_payload = payload.encode();
     let gas_limit = client
         .calculate_upload_gas(None, code.clone(), encoded_payload, 0, true)
@@ -61,35 +62,20 @@ async fn common_upload_program(
             0,
         )
         .await?;
-
-    Ok((message_id.into(), program_id.into()))
-}
-async fn upload_program(
-    client: &GearApi,
-    listener: &mut EventListener,
-    path: &str,
-    payload: impl Encode,
-) -> Result<[u8; 32]> {
-    let (message_id, program_id) =
-        common_upload_program(client, gclient::code_from_os(path)?, payload).await?;
-
     assert!(listener
         .message_processed(message_id.into())
         .await?
         .succeed());
-
     Ok(program_id)
 }
 
 async fn send_message<T: Decode>(
     client: &GearApi,
     listener: &mut EventListener,
-    destination: [u8; 32],
+    destination: ProgramId,
     payload: impl Encode + Debug,
     _increase_gas: bool,
 ) -> Result<Result<T, String>> {
-    let destination = destination.into();
-
     println!("Sending a payload: `{payload:?}`.");
 
     let (message_id, _) = client
@@ -106,71 +92,55 @@ async fn send_message<T: Decode>(
     })
 }
 
-#[tokio::test]
-async fn gclient_battle() -> Result<()> {
-    // let address = WSAddress::new("wss://node-workshop.gear.rs", 443);
-    //let client = GearApi::dev().await?;
-    let client = GearApi::dev_from_path("../target/tmp/gear")
-        .await?
-        .with("//Alice")?;
-    let mut listener = client.subscribe().await?;
-    // Fund players
-    let alice_balance = client.total_balance(client.account_id()).await?;
-    let amount = alice_balance / 20;
+async fn transfer_balances(client: &GearApi, account: &str) -> Result<()> {
+    let account_id: [u8; 32] = client.get_specific_actor_id(account).into();
+    client
+        .transfer(account_id.into(), 50_000_000_000_000)
+        .await?;
+    Ok(())
+}
 
-    for player in PLAYERS {
-        client
-            .transfer(
-                client
-                    .get_specific_actor_id(player)
-                    .encode()
-                    .as_slice()
-                    .try_into()
-                    .expect("Unexpected invalid `ProgramId`."),
-                amount,
-            )
-            .await?;
-    }
+async fn upload_tamagotchis(
+    client: &GearApi,
+    listener: &mut EventListener,
+) -> Result<Vec<ActorId>> {
     let mut tmg_ids: Vec<ActorId> = Vec::new();
-    let mut actor_ids_to_str: BTreeMap<ActorId, &str> = BTreeMap::new();
-
-    // upload tamagotchis
-    for player in PLAYERS.iter() {
+    for player in PLAYERS.into_iter() {
         let client = client
             .clone()
             .with(player)
             .expect("Unable to change signer.");
-        let actor_id = client.get_actor_id();
-        actor_ids_to_str.insert(actor_id, player);
 
-        let tmg_id = upload_program(&client, &mut listener, PATHS[0], player.to_string()).await?;
+        let payload = TmgInit {
+            name: player.to_string(),
+        };
+        let tmg_id = upload_program(&client, listener, PATHS[0], payload).await?;
         println!("Tamagotchi `{player}` is initialized.");
+        let tmg_id: [u8; 32] = tmg_id.into();
         tmg_ids.push(tmg_id.into());
     }
+    Ok(tmg_ids)
+}
 
-    let client = client
-        .clone()
-        .with("//Alice")
-        .expect("Unable to change signer.");
-
-    // upload battle contract
-    let battle_id = upload_program(&client, &mut listener, PATHS[1], "").await?;
-
-    let battle_id_hex = hex::encode(battle_id);
-    println!("BATTLE ID {:?}", battle_id_hex);
-
-    // register tamagotchis
+async fn register_tamagotchis(
+    client: &GearApi,
+    listener: &mut EventListener,
+    battle_id: ProgramId,
+    tmg_ids: Vec<ActorId>,
+) -> Result<()> {
     for i in 0..PLAYERS.len() {
         let tmg_id = tmg_ids[i];
         let client = client
             .clone()
             .with(PLAYERS[i])
             .expect("Unable to change signer.");
+        let expected_reply: Result<BattleReply, BattleError> =
+            Ok(BattleReply::Registered { tmg_id });
         assert_eq!(
-            Ok(BattleEvent::Registered { tmg_id }),
+            Ok(expected_reply),
             send_message(
                 &client,
-                &mut listener,
+                listener,
                 battle_id,
                 BattleAction::Register { tmg_id },
                 false
@@ -179,175 +149,235 @@ async fn gclient_battle() -> Result<()> {
         );
         println!("Tamagotchi {i} is registered.");
     }
+    Ok(())
+}
 
+async fn start_battle(
+    client: &GearApi,
+    listener: &mut EventListener,
+    battle_id: ProgramId,
+) -> Result<()> {
     let client = client
         .clone()
         .with("//Alice")
         .expect("Unable to change signer.");
     // start battle
+    let expected_reply: Result<BattleReply, BattleError> = Ok(BattleReply::BattleStarted);
     assert!(
-        Ok(BattleEvent::BattleStarted)
+        Ok(expected_reply)
             == send_message(
                 &client,
-                &mut listener,
+                listener,
                 battle_id,
                 BattleAction::StartBattle,
                 true
             )
             .await?
     );
+    Ok(())
+}
+#[tokio::test]
+async fn single_pair() -> Result<()> {
+    // let address = WSAddress::new("wss://node-workshop.gear.rs", 443);
+    let client = GearApi::dev().await?;
+    // let client = GearApi::dev_from_path("../target/tmp/gear")
+    //     .await?
+    //     .with("//Alice")?;
+    let mut listener = client.subscribe().await?;
 
-    // read pair_ids for players
-    for player in PLAYERS.iter() {
-        let player_id = client.get_specific_actor_id(player);
-        let pair_ids: Vec<PairId> = client
-            .read_state_using_wasm_by_path(
-                battle_id.into(),
-                vec![],
-                "pairs_for_player",
-                META_WASM,
-                Some(player_id),
-            )
-            .await?;
-        println!(" Pairs {:?} for players {:?} ", pair_ids, player);
+    for player in PLAYERS {
+        transfer_balances(&client, player).await?;
     }
+    // let mut tmg_ids: Vec<ActorId> = Vec::new();
+    // let mut actor_ids_to_str: BTreeMap<ActorId, &str> = BTreeMap::new();
 
-    let mut battle_state = BattleState::GameIsOn;
+    // upload tamagotchis
+    let tmg_ids = upload_tamagotchis(&client, &mut listener).await?;
 
-    while battle_state != BattleState::GameIsOver {
-        let tmg_ids: Vec<ActorId> = client
-            .read_state_using_wasm_by_path(
-                battle_id.into(),
-                vec![],
-                "tmg_ids",
-                META_WASM,
-                <Option<()>>::None,
-            )
-            .await?;
-        println!("Tmg Ids {:?}", tmg_ids);
+    let client = client
+        .clone()
+        .with("//Alice")
+        .expect("Unable to change signer.");
 
-        if battle_state == BattleState::WaitNextRound {
-            let client = client
-                .clone()
-                .with("//Alice")
-                .expect("Unable to change signer.");
-            // start battle
-            assert_eq!(
-                Ok(BattleEvent::BattleStarted),
-                send_message(
-                    &client,
-                    &mut listener,
-                    battle_id,
-                    BattleAction::StartBattle,
-                    true
-                )
-                .await?
-            );
-        }
-        let pair_ids: Vec<PairId> = client
-            .read_state_using_wasm_by_path(
-                battle_id.into(),
-                vec![],
-                "pair_ids",
-                META_WASM,
-                <Option<()>>::None,
-            )
-            .await?;
-        println!("Current Pair Ids {:?}", pair_ids);
-        for pair_id in pair_ids.iter() {
-            let mut game_is_over = false;
-            while !game_is_over {
-                let pair: Pair = client
-                    .read_state_using_wasm_by_path(
-                        battle_id.into(),
-                        vec![],
-                        "pair",
-                        META_WASM,
-                        Some(pair_id),
-                    )
-                    .await?;
+    // upload battle contract
+    let battle_id = upload_program(
+        &client,
+        &mut listener,
+        PATHS[1],
+        Config {
+            max_power: 10_000,
+            max_range: 10_000,
+            min_range: 3_000,
+            health: 2_500,
+            max_steps_in_round: 5,
+            max_participants: 50,
+            time_for_move: 20,
+            min_gas_amount: 5_000_000_000,
+            block_duration_ms: 3_000,
+        },
+    )
+    .await?;
 
-                let (power, health): (u16, u16) = client
-                    .read_state_using_wasm_by_path(
-                        battle_id.into(),
-                        vec![],
-                        "power_and_health",
-                        META_WASM,
-                        Some(pair.tmg_ids[0]),
-                    )
-                    .await?;
+    // let battle_id_hex = hex::encode(battle_id);
+    // println!("BATTLE ID {:?}", battle_id_hex);
 
-                println!(
-                    "Power {:?} and health {:?} for first tamagotchi",
-                    power, health
-                );
+    // register tamagotchis
+    register_tamagotchis(&client, &mut listener, battle_id, tmg_ids).await?;
 
-                let (power, health): (u16, u16) = client
-                    .read_state_using_wasm_by_path(
-                        battle_id.into(),
-                        vec![],
-                        "power_and_health",
-                        META_WASM,
-                        Some(pair.tmg_ids[1]),
-                    )
-                    .await?;
+    // start battle
+    start_battle(&client, &mut listener, battle_id).await?;
 
-                println!(
-                    "Power {:?} and health {:?} for first tamagotchi",
-                    power, health
-                );
+    // // read pair_ids for players
+    // for player in PLAYERS.iter() {
+    //     let player_id = client.get_specific_actor_id(player);
+    //     let pair_ids: Vec<PairId> = client
+    //         .read_state_using_wasm_by_path(
+    //             battle_id.into(),
+    //             vec![],
+    //             "pairs_for_player",
+    //             META_WASM,
+    //             Some(player_id),
+    //         )
+    //         .await?;
+    //     println!(" Pairs {:?} for players {:?} ", pair_ids, player);
+    // }
 
-                let current_player: ActorId = client
-                    .read_state_using_wasm_by_path(
-                        battle_id.into(),
-                        vec![],
-                        "current_turn",
-                        META_WASM,
-                        Some(pair_id),
-                    )
-                    .await?;
-                let player = actor_ids_to_str.get(&current_player).unwrap();
-                println!("current pair {:?} current_player {:?}", pair_id, player);
-                let client = client
-                    .clone()
-                    .with(player)
-                    .expect("Unable to change signer.");
-                assert!(
-                    Ok(BattleEvent::MoveMade)
-                        == send_message(
-                            &client,
-                            &mut listener,
-                            battle_id,
-                            BattleAction::MakeMove {
-                                pair_id: *pair_id,
-                                tmg_move: Move::Attack
-                            },
-                            true,
-                        )
-                        .await?
-                );
-                game_is_over = client
-                    .read_state_using_wasm_by_path(
-                        battle_id.into(),
-                        vec![],
-                        "game_is_over",
-                        META_WASM,
-                        Some(pair_id),
-                    )
-                    .await?;
-            }
-        }
-        battle_state = client
-            .read_state_using_wasm_by_path(
-                battle_id.into(),
-                vec![],
-                "battle_state",
-                META_WASM,
-                <Option<()>>::None,
-            )
-            .await?;
-        println!("Battle state {:?}", battle_state);
-    }
+    // let mut battle_state = BattleState::GameIsOn;
+
+    // while battle_state != BattleState::GameIsOver {
+    //     let tmg_ids: Vec<ActorId> = client
+    //         .read_state_using_wasm_by_path(
+    //             battle_id.into(),
+    //             vec![],
+    //             "tmg_ids",
+    //             META_WASM,
+    //             <Option<()>>::None,
+    //         )
+    //         .await?;
+    //     println!("Tmg Ids {:?}", tmg_ids);
+
+    //     if battle_state == BattleState::WaitNextRound {
+    //         let client = client
+    //             .clone()
+    //             .with("//Alice")
+    //             .expect("Unable to change signer.");
+    //         // start battle
+    //         assert_eq!(
+    //             Ok(BattleEvent::BattleStarted),
+    //             send_message(
+    //                 &client,
+    //                 &mut listener,
+    //                 battle_id,
+    //                 BattleAction::StartBattle,
+    //                 true
+    //             )
+    //             .await?
+    //         );
+    //     }
+    //     let pair_ids: Vec<PairId> = client
+    //         .read_state_using_wasm_by_path(
+    //             battle_id.into(),
+    //             vec![],
+    //             "pair_ids",
+    //             META_WASM,
+    //             <Option<()>>::None,
+    //         )
+    //         .await?;
+    //     println!("Current Pair Ids {:?}", pair_ids);
+    //     for pair_id in pair_ids.iter() {
+    //         let mut game_is_over = false;
+    //         while !game_is_over {
+    //             let pair: Pair = client
+    //                 .read_state_using_wasm_by_path(
+    //                     battle_id.into(),
+    //                     vec![],
+    //                     "pair",
+    //                     META_WASM,
+    //                     Some(pair_id),
+    //                 )
+    //                 .await?;
+
+    //             let (power, health): (u16, u16) = client
+    //                 .read_state_using_wasm_by_path(
+    //                     battle_id.into(),
+    //                     vec![],
+    //                     "power_and_health",
+    //                     META_WASM,
+    //                     Some(pair.tmg_ids[0]),
+    //                 )
+    //                 .await?;
+
+    //             println!(
+    //                 "Power {:?} and health {:?} for first tamagotchi",
+    //                 power, health
+    //             );
+
+    //             let (power, health): (u16, u16) = client
+    //                 .read_state_using_wasm_by_path(
+    //                     battle_id.into(),
+    //                     vec![],
+    //                     "power_and_health",
+    //                     META_WASM,
+    //                     Some(pair.tmg_ids[1]),
+    //                 )
+    //                 .await?;
+
+    //             println!(
+    //                 "Power {:?} and health {:?} for first tamagotchi",
+    //                 power, health
+    //             );
+
+    //             let current_player: ActorId = client
+    //                 .read_state_using_wasm_by_path(
+    //                     battle_id.into(),
+    //                     vec![],
+    //                     "current_turn",
+    //                     META_WASM,
+    //                     Some(pair_id),
+    //                 )
+    //                 .await?;
+    //             let player = actor_ids_to_str.get(&current_player).unwrap();
+    //             println!("current pair {:?} current_player {:?}", pair_id, player);
+    //             let client = client
+    //                 .clone()
+    //                 .with(player)
+    //                 .expect("Unable to change signer.");
+    //             assert!(
+    //                 Ok(BattleEvent::MoveMade)
+    //                     == send_message(
+    //                         &client,
+    //                         &mut listener,
+    //                         battle_id,
+    //                         BattleAction::MakeMove {
+    //                             pair_id: *pair_id,
+    //                             tmg_move: Move::Attack
+    //                         },
+    //                         true,
+    //                     )
+    //                     .await?
+    //             );
+    //             game_is_over = client
+    //                 .read_state_using_wasm_by_path(
+    //                     battle_id.into(),
+    //                     vec![],
+    //                     "game_is_over",
+    //                     META_WASM,
+    //                     Some(pair_id),
+    //                 )
+    //                 .await?;
+    //         }
+    //     }
+    //     battle_state = client
+    //         .read_state_using_wasm_by_path(
+    //             battle_id.into(),
+    //             vec![],
+    //             "battle_state",
+    //             META_WASM,
+    //             <Option<()>>::None,
+    //         )
+    //         .await?;
+    //     println!("Battle state {:?}", battle_state);
+    // }
     // // first round
     // println!("First round");
     // let round: Round = client
