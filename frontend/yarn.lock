@@ -1981,6 +1981,7 @@ __metadata:
   dependencies:
     "@dapps-frontend/hooks": "workspace:*"
     "@gear-js/vara-ui": "npm:0.0.2"
+    "@polkadot/keyring": "npm:12.6.1"
     "@polkadot/react-identicon": "npm:3.6.4"
     "@types/react": "npm:18.2.33"
     "@types/react-dom": "npm:18.2.14"
@@ -3851,6 +3852,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@polkadot/keyring@npm:12.6.1, @polkadot/keyring@npm:^12.6.1":
+  version: 12.6.1
+  resolution: "@polkadot/keyring@npm:12.6.1"
+  dependencies:
+    "@polkadot/util": "npm:12.6.1"
+    "@polkadot/util-crypto": "npm:12.6.1"
+    tslib: "npm:^2.6.2"
+  peerDependencies:
+    "@polkadot/util": 12.6.1
+    "@polkadot/util-crypto": 12.6.1
+  checksum: 568ef6293538ccc9aec44350a82be66b272963aa73cb2054407188e3ae0b3846de4afc4495418a4725ae60baff81a5cd0d96363c279bcc3708e59aff65e38466
+  languageName: node
+  linkType: hard
+
 "@polkadot/keyring@npm:^11.1.3":
   version: 11.1.3
   resolution: "@polkadot/keyring@npm:11.1.3"
@@ -3876,20 +3891,6 @@ __metadata:
     "@polkadot/util": 12.5.1
     "@polkadot/util-crypto": 12.5.1
   checksum: c9c76a1ced4adf2175ecbc6264fe499d20719d88e81a7e023c5fce11fcf8f40f3481ac155ce69dd8fca180e31ec5d6d8ce5178b946944a6061990f7887f8354d
-  languageName: node
-  linkType: hard
-
-"@polkadot/keyring@npm:^12.6.1":
-  version: 12.6.1
-  resolution: "@polkadot/keyring@npm:12.6.1"
-  dependencies:
-    "@polkadot/util": "npm:12.6.1"
-    "@polkadot/util-crypto": "npm:12.6.1"
-    tslib: "npm:^2.6.2"
-  peerDependencies:
-    "@polkadot/util": 12.6.1
-    "@polkadot/util-crypto": 12.6.1
-  checksum: 568ef6293538ccc9aec44350a82be66b272963aa73cb2054407188e3ae0b3846de4afc4495418a4725ae60baff81a5cd0d96363c279bcc3708e59aff65e38466
   languageName: node
   linkType: hard
 
