@@ -2,19 +2,19 @@ import { Suspense, useEffect } from 'react';
 import { decodeAddress } from '@gear-js/api';
 import { useAlert, useAccount } from '@gear-js/react-hooks';
 import Identicon from '@polkadot/react-identicon';
-import { ScrollArea } from '@radix-ui/react-scroll-area';
 
 import { copyToClipboard } from '@/app/utils';
-import { useAuth } from '@/features/auth';
+import { CopyDecoded } from '@/assets/images/';
 
 import { Button } from '@/components/ui/button';
 import { ModalBottom } from '@/components/ui/modal';
 
+import { WALLETS } from '../../consts';
 import { useWallet } from '../../hooks';
-import { CopyDecoded } from '@/assets/images/';
 
 import styles from './WalletConnect.module.scss';
-import { WALLETS } from '../../consts';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { ROUTES } from '@/app/consts';
 
 type Props = {
   onClose(): void;
@@ -22,8 +22,10 @@ type Props = {
 
 export function WalletConnect({ onClose }: Props) {
   const alert = useAlert();
-  const { extensions, account, accounts } = useAccount();
-  const { signIn } = useAuth();
+  const { extensions, account, accounts, login } = useAccount();
+
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const { walletAccounts, setWalletId, getWalletAccounts } = useWallet();
 
@@ -71,8 +73,11 @@ export function WalletConnect({ onClose }: Props) {
       const isActive = address === account?.address;
 
       const handleClick = async () => {
-        await signIn(_account);
+        login(_account);
         onClose();
+
+        const from = location.state?.from?.pathname || ROUTES.HOME;
+        navigate(from, { replace: true });
       };
 
       const handleCopyClick = () => {

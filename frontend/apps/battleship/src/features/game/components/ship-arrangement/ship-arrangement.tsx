@@ -34,7 +34,7 @@ export default function ShipArrangement() {
   };
 
   const onGameStart = async () => {
-    const gasLimit = 100000000000;
+    const gasLimit = 120000000000;
 
     if (!isLoading) {
       setPending(true);

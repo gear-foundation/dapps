@@ -68,7 +68,7 @@ export default function GameProcess() {
   }, [gameState]);
 
   const onClickCell = async (indexCell: number) => {
-    const gasLimit = 100000000000;
+    const gasLimit = 120000000000;
 
     if (!isLoading) {
       setDisabledCell(true);

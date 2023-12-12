@@ -1,7 +1,6 @@
 import { NavLink } from 'react-router-dom';
 import clsx from 'clsx';
 import styles from './navigation.module.scss';
-// import { useAuth } from '@/features/auth'
 import { ROUTES } from '@/app/consts';
 
 const nav = [
@@ -11,15 +10,9 @@ const nav = [
     label: 'Play',
     isPrivate: true,
   },
-  // {
-  //   id: 'notfound',
-  //   url: ROUTES.NOTFOUND,
-  //   label: '404',
-  // },
 ];
 
 export function Navigation() {
-  // const { authToken } = useAuth()
   return (
     <div>
       <nav>
