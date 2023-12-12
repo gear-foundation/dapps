@@ -1,13 +1,13 @@
 import { Button, Input, Modal, ModalProps } from '@gear-js/vara-ui';
 import { useApi, useBalanceFormat } from '@gear-js/react-hooks';
-import { decodeAddress } from '@gear-js/api';
-import { KeyringPair } from '@polkadot/keyring/types';
+import { GearKeyring, decodeAddress } from '@gear-js/api';
+import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import Identicon from '@polkadot/react-identicon';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useSignlessTransactions } from '../../context';
-import { getMilliseconds, getRandomPair } from '../../utils';
+import { getMilliseconds } from '../../utils';
 import { EnableSessionModal } from '../enable-session-modal';
 import styles from './create-session-modal.module.css';
 
@@ -30,7 +30,14 @@ function CreateSessionModal({ close }: Props) {
 
   const { savePair, storagePair, voucherBalance, createSession } = useSignlessTransactions();
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const pair = useMemo(() => storagePair || getRandomPair(), []);
+  const [pair, setPair] = useState<KeyringPair | KeyringPair$Json | undefined>(storagePair);
+
+  useEffect(() => {
+    if (pair) return;
+
+    GearKeyring.create('signlessPair').then((result) => setPair(result.keyring));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
   const openEnableModal = () => setIsEnableModalOpen(true);
@@ -55,6 +62,8 @@ function CreateSessionModal({ close }: Props) {
   const formattedIssueVoucherValue = getFormattedBalance(issueVoucherValue);
 
   const onSubmit = (values: typeof DEFAULT_VALUES) => {
+    if (!pair) return;
+
     setIsLoading(true);
 
     const { password } = values;
@@ -85,10 +94,12 @@ function CreateSessionModal({ close }: Props) {
               {storagePair ? 'Account from the storage:' : 'Randomly generated account:'}
             </h4>
 
-            <div className={styles.account}>
-              <Identicon value={pair.address} theme="polkadot" size={14} />
-              <span>{pair.address}</span>
-            </div>
+            {pair && (
+              <div className={styles.account}>
+                <Identicon value={pair.address} theme="polkadot" size={14} />
+                <span>{pair.address}</span>
+              </div>
+            )}
           </li>
 
           <li>
