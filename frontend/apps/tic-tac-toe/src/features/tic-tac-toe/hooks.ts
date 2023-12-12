@@ -34,24 +34,11 @@ export function useGame() {
       const isPassed = Date.now() - timeLeft > 0;
       const isNew = prev?.value !== game.lastTime;
 
-      console.log('Last Time:');
-      console.log(game.lastTime);
-      console.log('turnDeadlineMs:');
-      console.log(configState?.turnDeadlineMs);
-      console.log('timeLeft:');
-      console.log(timeLeft);
-      console.log('isPassed:');
-      console.log(isPassed);
-      console.log('isNew:');
-      console.log(isNew);
-
       return isNew ? { value: game.lastTime, isActive: isNew && !isPassed } : prev;
     });
   };
 
   const updateGame = (game: IGameInstance) => {
-    console.log('Game recieved:');
-    console.log(game);
     setGameState(game);
     updateCountdown(game);
   };
@@ -62,7 +49,6 @@ export function useGame() {
   };
 
   const resetGame = () => {
-    console.log('reset all');
     setGameState(null);
     setCountdown(undefined);
   };
@@ -90,9 +76,6 @@ export function useOnceGameState(metadata?: ProgramMetadata) {
   );
   const payloadConfig = useMemo(() => ({ Config: null }), []);
 
-  console.log(account?.decodedAddress);
-  console.log(!!metadata);
-
   const {
     state: stateConfig,
     error: configError,
@@ -113,9 +96,6 @@ export function useOnceGameState(metadata?: ProgramMetadata) {
     meta: metadata,
   });
 
-  console.log('GAME FROM READ STATE STATE:');
-  console.log(stateGame);
-
   return {
     stateGame,
     stateConfig,
@@ -129,8 +109,6 @@ export const useInitGame = () => {
   const { account } = useAccount();
   const { gameState } = useGame();
 
-  console.log(gameState);
-
   return {
     isGameReady: account?.decodedAddress ? gameState !== undefined : true,
   };
@@ -140,27 +118,18 @@ export const useInitGameSync = (metadata?: ProgramMetadata) => {
   const { account } = useAccount();
   const { stateGame, stateConfig, error, triggerGame, triggerConfig } = useOnceGameState(metadata);
   const { updateGame, resetGame, setConfigState } = useGame();
-  console.log(stateConfig?.Config);
-  useEffect(() => {
-    console.log('FETCH CONFIG:');
-    console.log(!!isApiReady);
-    console.log(!!api);
-    console.log(!!account?.decodedAddress);
-    console.log(!!metadata);
 
+  useEffect(() => {
     if (!isApiReady || !api || !metadata || stateConfig?.Config) return;
 
-    console.log('fetch config', isApiReady);
     triggerConfig(metadata);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isApiReady, api, metadata, account?.decodedAddress]);
 
   useEffect(() => {
-    console.log('Running trigger state effect');
     if (!isApiReady || !api || !metadata || !stateConfig?.Config) return;
 
-    console.log('trigger game state');
     triggerGame(metadata);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isApiReady, api, metadata, stateConfig?.Config, account?.decodedAddress]);
@@ -173,16 +142,10 @@ export const useInitGameSync = (metadata?: ProgramMetadata) => {
   }, [stateConfig?.Config]);
 
   useEffect(() => {
-    console.log(stateGame);
-    console.log(stateConfig);
     if (stateGame === undefined) return;
-
-    console.log({ stateGame });
 
     const game = stateGame?.Game;
 
-    console.log('GAME');
-    console.log(game);
     game ? updateGame(game) : resetGame();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -194,10 +157,7 @@ export const useInitGameSync = (metadata?: ProgramMetadata) => {
 };
 
 export function useGameMessage(meta: ProgramMetadata) {
-  return useSendMessage(programIdGame, meta, {
-    disableAlerts: true,
-    isMaxGasLimit: true,
-  });
+  return useSendMessage(programIdGame, meta, { disableAlerts: true });
 }
 
 export function usePending() {
@@ -212,7 +172,6 @@ export function useSubscriptionOnGameMessage(meta: ProgramMetadata) {
 
   useEffect(() => {
     if (!isOpened) return;
-    console.log('received: ', reply);
     const game = reply?.MoveMade?.game || reply?.GameStarted?.game;
 
     if (game && !isEqual(game.board, gameState?.board)) {
@@ -240,8 +199,7 @@ export const useHandleCalculateGas = (address: HexString, meta: ProgramMetadata)
   return (initPayload: AnyJson, value?: AnyNumber | undefined) => {
     const balance = Number(withoutCommas(availableBalance?.value || ''));
     const existentialDeposit = Number(withoutCommas(availableBalance?.existentialDeposit || ''));
-    console.log(balance);
-    console.log(existentialDeposit);
+
     if (!balance || balance < existentialDeposit) {
       alert.error(`Low balance when calculating gas`);
     }
