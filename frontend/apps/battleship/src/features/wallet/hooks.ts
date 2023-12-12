@@ -1,13 +1,18 @@
+import { CreateType, decodeAddress } from '@gear-js/api';
 import {
   useAccount,
   useAlert,
   useApi,
   useBalance,
   useBalanceFormat,
-  useVoucher,
+  useVoucherBalance,
   withoutCommas,
 } from '@gear-js/react-hooks';
+import { formatBalance, stringShorten } from '@polkadot/util';
 import { useEffect, useState } from 'react';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { useSignlessTransactions } from '@dapps-frontend/signless-transactions';
+import { ADDRESS } from '@/app/consts';
 import {
   AVAILABLE_BALANCE,
   IS_AVAILABLE_BALANCE_READY,
@@ -16,10 +21,6 @@ import {
   WALLET_ID_LOCAL_STORAGE_KEY,
 } from './consts';
 import { SystemAccount, WalletId } from './types';
-import { formatBalance, stringShorten } from '@polkadot/util';
-import { CreateType } from '@gear-js/api';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { ADDRESS } from '@/app/consts';
 
 function useWalletSync() {
   const { account, isAccountReady } = useAccount();
@@ -119,10 +120,14 @@ function useAccountAvailableBalanceSync() {
 
 function useCheckBalance(isVoucher: boolean) {
   const { api } = useApi();
+
   const { account } = useAccount();
+  const { pair } = useSignlessTransactions();
+  const accountAddress = pair ? decodeAddress(pair.address) : account?.decodedAddress;
+  const { voucherBalance } = useVoucherBalance(ADDRESS.GAME, accountAddress);
+
   const { availableBalance } = useAccountAvailableBalance();
   const { getChainBalanceValue } = useBalanceFormat();
-  const { voucherBalance } = useVoucher(ADDRESS.GAME);
   const { getFormattedBalanceValue } = useBalanceFormat();
   const alert = useAlert();
 
