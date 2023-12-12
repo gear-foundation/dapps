@@ -1,7 +1,7 @@
 import { Button, Input, Modal, ModalProps } from '@gear-js/vara-ui';
 import { useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { GearKeyring, decodeAddress } from '@gear-js/api';
-import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
+import type { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import Identicon from '@polkadot/react-identicon';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
