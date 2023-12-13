@@ -50,10 +50,10 @@ pub enum NftAction {
         to: ActorId,
         token_id: TokenId,
     },
-    Owner {
+    GetOwner {
         token_id: TokenId,
     },
-    IsApproved {
+    CheckIfApproved {
         to: ActorId,
         token_id: TokenId,
     },
@@ -82,7 +82,7 @@ pub enum NftEvent {
         owner: ActorId,
         token_id: TokenId,
     },
-    IsApproved {
+    CheckIfApproved {
         to: ActorId,
         token_id: TokenId,
         approved: bool,

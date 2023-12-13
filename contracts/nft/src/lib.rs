@@ -157,12 +157,12 @@ impl Nft {
             panic!("Token does not exist")
         }
         self.token_approvals.get(&token_id).map_or_else(
-            || NftEvent::IsApproved {
+            || NftEvent::CheckIfApproved {
                 to: *to,
                 token_id,
                 approved: false,
             },
-            |approval_id| NftEvent::IsApproved {
+            |approval_id| NftEvent::CheckIfApproved {
                 to: *to,
                 token_id,
                 approved: *approval_id == *to,
@@ -211,16 +211,16 @@ impl Nft {
 }
 
 #[no_mangle]
-unsafe extern fn handle() {
+extern fn handle() {
     let action: NftAction = msg::load().expect("Could not load NftAction");
-    let nft = NFT.as_mut().expect("`NFT` is not initialized.");
+    let nft = unsafe { NFT.as_mut().expect("`NFT` is not initialized.") };
     let result = match action {
         NftAction::Mint { to, token_metadata } => nft.mint(&to, token_metadata),
         NftAction::Burn { token_id } => nft.burn(token_id),
         NftAction::Transfer { to, token_id } => nft.transfer(&to, token_id),
         NftAction::Approve { to, token_id } => nft.approve(&to, token_id),
-        NftAction::Owner { token_id } => nft.owner(token_id),
-        NftAction::IsApproved { to, token_id } => nft.is_approved_to(&to, token_id),
+        NftAction::GetOwner { token_id } => nft.owner(token_id),
+        NftAction::CheckIfApproved { to, token_id } => nft.is_approved_to(&to, token_id),
     };
     msg::reply(result, 0).expect("Failed to encode or reply with `NftEvent`.");
 }
@@ -289,23 +289,23 @@ impl From<Nft> for State {
         } = value;
 
         let owner_by_id = owner_by_id
-            .iter()
-            .map(|(hash, actor_id)| (*hash, *actor_id))
+            .into_iter()
+            .map(|(hash, actor_id)| (hash, actor_id))
             .collect();
 
         let token_approvals = token_approvals
-            .iter()
-            .map(|(key, approvals)| (*key, *approvals))
+            .into_iter()
+            .map(|(key, approvals)| (key, approvals))
             .collect();
 
         let token_metadata_by_id = token_metadata_by_id
-            .iter()
-            .map(|(id, metadata)| (*id, metadata.clone()))
+            .into_iter()
+            .map(|(id, metadata)| (id, metadata))
             .collect();
 
         let tokens_for_owner = tokens_for_owner
-            .iter()
-            .map(|(id, tokens)| (*id, tokens.into_iter().cloned().collect()))
+            .into_iter()
+            .map(|(id, tokens)| (id, tokens.into_iter().collect()))
             .collect();
 
         Self {
