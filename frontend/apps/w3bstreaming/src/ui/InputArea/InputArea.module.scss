@@ -1,0 +1,42 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.wrapper {
+    width: 100%;
+    padding: 5px 5px 5px 20px;
+    border: 1px solid theme-var($border-input);
+    border-radius: 4px;
+}
+
+.size {
+    &-small {
+        height: 70px;
+    }
+
+    &-medium {
+        height: 80px;
+    }
+
+    &-large {
+        height: 90px;
+    }
+}
+
+.input {
+    font-family: "Anuphan";
+    border: none;
+    outline: none;
+    background: transparent;
+    height: 100%;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 400;
+    color: theme-var($text-primary);
+    resize: none;
+
+    &::placeholder {
+        font-size: 16px;
+        font-weight: 400;
+        color: theme-var($placeholder-input)
+    }
+}

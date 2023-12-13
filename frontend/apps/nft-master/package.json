@@ -12,7 +12,7 @@
     "@dapps-frontend/error-tracking": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.35.2",
-    "@gear-js/react-hooks": "0.9.2",
+    "@gear-js/react-hooks": "0.9.4",
     "@mantine/form": "6.0.8",
     "@polkadot/api": "10.10.1",
     "@polkadot/extension-dapp": "0.46.5",

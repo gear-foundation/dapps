@@ -13,7 +13,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom'],
+      external: ['react', 'react-dom', '@gear-js/api', '@gear-js/react-hooks'],
       output: {
         globals: { react: 'React', 'react-dom': 'ReactDOM' },
       },
