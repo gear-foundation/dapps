@@ -7,8 +7,8 @@ ENV REACT_APP_SIGNALING_SERVER=${REACT_APP_SIGNALING_SERVER} \
     PATH_TO_META=${PATH_TO_META} \
     PROGRAM_ID=${PROGRAM_ID}
 
-WORKDIR /app
-COPY . .
+WORKDIR /apps
+COPY ./backend/w3bstreaming /apps
 
 RUN yarn install
 RUN yarn build
