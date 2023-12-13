@@ -1,13 +1,13 @@
 import { Button, Input, Modal, ModalProps } from '@gear-js/vara-ui';
 import { useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { GearKeyring, decodeAddress } from '@gear-js/api';
-import type { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
+import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import Identicon from '@polkadot/react-identicon';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 
 import { useSignlessTransactions } from '../../context';
-import { getMilliseconds } from '../../utils';
+import { getMilliseconds, getVaraAddress } from '../../utils';
 import { EnableSessionModal } from '../enable-session-modal';
 import styles from './create-session-modal.module.css';
 
@@ -97,7 +97,7 @@ function CreateSessionModal({ close }: Props) {
             {pair && (
               <div className={styles.account}>
                 <Identicon value={pair.address} theme="polkadot" size={14} />
-                <span>{pair.address}</span>
+                <span>{getVaraAddress(pair.address)}</span>
               </div>
             )}
           </li>
