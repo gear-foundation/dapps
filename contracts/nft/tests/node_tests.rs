@@ -166,7 +166,7 @@ async fn gclient_owner_test() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
 
-    let owner_payload = NftAction::Owner { token_id: 0 };
+    let owner_payload = NftAction::GetOwner { token_id: 0 };
 
     let gas_info = api
         .calculate_handle_gas(None, program_id, owner_payload.encode(), 0, true)
@@ -204,7 +204,7 @@ async fn gclient_is_approved_test() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
     assert!(listener.blocks_running().await?);
 
-    let is_approved_payload = NftAction::IsApproved {
+    let is_approved_payload = NftAction::CheckIfApproved {
         to: 3.into(),
         token_id: 0,
     };

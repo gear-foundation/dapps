@@ -62,7 +62,7 @@ pub fn transfer(nft: &Program<'_>, from: u64, to: u64, token_id: u64) -> RunResu
 pub fn owner_of(nft: &Program<'_>, from: u64, token_id: u64) -> RunResult {
     nft.send(
         from,
-        NftAction::Owner {
+        NftAction::GetOwner {
             token_id: token_id.into(),
         },
     )
@@ -71,7 +71,7 @@ pub fn owner_of(nft: &Program<'_>, from: u64, token_id: u64) -> RunResult {
 pub fn is_approved_to(nft: &Program<'_>, from: u64, token_id: u64, to: u64) -> RunResult {
     nft.send(
         from,
-        NftAction::IsApproved {
+        NftAction::CheckIfApproved {
             to: to.into(),
             token_id: token_id.into(),
         },

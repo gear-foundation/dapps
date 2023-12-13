@@ -208,7 +208,7 @@ fn is_approved_to_success() {
     assert!(!approve(&nft, USERS[1], USERS[2], 0).main_failed());
 
     let res = is_approved_to(&nft, USERS[0], 0, USERS[2]);
-    let message = NftEvent::IsApproved {
+    let message = NftEvent::CheckIfApproved {
         to: USERS[2].into(),
         token_id: 0,
         approved: true,
