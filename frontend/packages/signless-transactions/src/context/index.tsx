@@ -1,6 +1,6 @@
 import { GearKeyring, HexString, decodeAddress, generateVoucherId } from '@gear-js/api';
 import { useAccount, useBalance } from '@gear-js/react-hooks';
-import type { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
+import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
 import { useProgramMetadata } from '@dapps-frontend/hooks';
