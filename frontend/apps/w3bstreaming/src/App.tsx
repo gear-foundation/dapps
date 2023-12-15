@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { AccountPage, CreateStreamPage, MainPage, StreamPage } from '@/pages';

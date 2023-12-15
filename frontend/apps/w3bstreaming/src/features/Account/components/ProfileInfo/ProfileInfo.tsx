@@ -5,7 +5,7 @@ import { useForm, isNotEmpty } from '@mantine/form';
 import styles from './ProfileInfo.module.scss';
 import { FormValues } from './ProfileInfo.interfaces';
 import { cx, logger } from '@/utils';
-import { Button, Input } from '@/ui';
+import { Button, TextField } from '@/ui';
 import EditProfileIcon from '@/assets/icons/edit-profile-icon.svg';
 import SuccessIcon from '@/assets/icons/success-icon.svg';
 import CrossIcon from '@/assets/icons/cross-circle-icon.svg';
@@ -25,7 +25,7 @@ function ProfileInfo() {
   const { meta } = useGetStreamMetadata();
   const {
     state: { users },
-    updateState,
+    updateUsers,
   } = useProgramState();
   const sendMessage = useEditProfileMessage();
   const [userInfo, setUserInfo] = useState<User | null>(null);
@@ -111,7 +111,7 @@ function ProfileInfo() {
                     : prev,
                 );
                 reset();
-                updateState();
+                updateUsers();
                 setIsCreatingAccount(false);
               },
               onInBlock: (messageId) => {
@@ -168,11 +168,11 @@ function ProfileInfo() {
           </div>
           <div className={cx(styles['profile-info-form-fields'])}>
             <div className={cx(styles['form-item'])}>
-              <Input placeholder="Enter name" disabled={isCreatingAccount} {...getInputProps('name')} />
+              <TextField label="Enter name" disabled={isCreatingAccount} {...getInputProps('name')} />
               <span className={cx(styles['field-error'])}>{errors.name}</span>
             </div>
             <div className={cx(styles['form-item'])}>
-              <Input placeholder="Enter surname" disabled={isCreatingAccount} {...getInputProps('surname')} />
+              <TextField label="Enter surname" disabled={isCreatingAccount} {...getInputProps('surname')} />
               <span className={cx(styles['field-error'])}>{errors.surname}</span>
             </div>
           </div>

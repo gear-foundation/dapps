@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router';
 import { Socket, io } from 'socket.io-client';
+import { ADDRESS } from './consts';
 
 export const cx = (...styles: string[]) => clsx(...styles);
 
@@ -52,9 +53,7 @@ export const copyToClipboard = async ({
   }
 };
 
-const address = process.env.REACT_APP_SIGNALING_SERVER || 'ws://127.0.0.1:3001';
-
-export const socket: Socket = io(address);
+export const socket: Socket = io(ADDRESS.SIGNALING_SERVER);
 
 export function ScrollToTop() {
   const { pathname } = useLocation();
