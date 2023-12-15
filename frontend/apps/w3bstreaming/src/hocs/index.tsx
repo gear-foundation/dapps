@@ -4,7 +4,7 @@ import {
   AccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
-import { Alert, alertStyles } from '@gear-js/ui';
+import { Alert, alertStyles } from '@gear-js/vara-ui';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ADDRESS } from 'consts';

@@ -90,12 +90,12 @@ function Layout({
               <span>{connectionsCount}</span>
             </div>
           )}
-          <div className={cx(styles.time)}>
+          {/* <div className={cx(styles.time)}>
             <img src={timerSVG} alt="time" />
             <span>
               {startTime.getHours()}:{startTime.getMinutes().toString().padStart(2, '0')}
             </span>
-          </div>
+          </div> */}
         </div>
         {isBroadcaster ? (
           <Button variant="outline" label="Edit Profile" icon={editProfileSVG} onClick={handleRedirectToAccount} />

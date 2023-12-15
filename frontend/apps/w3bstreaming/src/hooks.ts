@@ -13,8 +13,14 @@ import {
 } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
 import { ADDRESS, LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
-import { Handler } from '@/types';
-import { CONTRACT_ADDRESS_ATOM, IS_STATE_READ_ATOM, STREAM_TEASERS_ATOM, USERS_ATOM } from '@/atoms';
+import { Handler, StreamsState, UsersState } from '@/types';
+import {
+  CONTRACT_ADDRESS_ATOM,
+  IS_STREAMS_READ_ATOM,
+  IS_USERS_READ_ATOM,
+  STREAM_TEASERS_ATOM,
+  USERS_ATOM,
+} from '@/atoms';
 import { useAccountAvailableBalance } from './features/Wallet/hooks';
 import { useGetStreamMetadata } from './features/CreateStream/hooks';
 
@@ -110,29 +116,78 @@ function useProgramState() {
   const programId = ADDRESS.CONTRACT;
   const [streamTeasers, setStreamTeasers] = useAtom(STREAM_TEASERS_ATOM);
   const [users, setUsers] = useAtom(USERS_ATOM);
-  const [isStateRead, setIsStateRead] = useAtom(IS_STATE_READ_ATOM);
-  // const state: ProgramStateRes = useReadFullState(ADDRESS.CONTRACT, meta, '0x');
+  const [isStreamsRead, setIsStreamsRead] = useAtom(IS_STREAMS_READ_ATOM);
+  const [isUsersRead, setIsUsersRead] = useAtom(IS_USERS_READ_ATOM);
 
-  const triggerState = useCallback(() => {
+  const triggerStreamsState = useCallback(() => {
     if (!api || !meta || !programId) return;
 
+    const payload = {
+      Streams: null,
+    };
+
     api.programState
-      .read({ programId, payload: '0x' }, meta)
+      .read({ programId, payload }, meta)
       .then((codec) => codec.toHuman())
       .then((state: any) => {
-        setStreamTeasers(state.streams);
-        setUsers(state.users);
-        setIsStateRead(true);
+        console.log(state);
+        setStreamTeasers(
+          (state as StreamsState).Streams.reduce(
+            (acc, item) => ({
+              ...acc,
+              [item[0]]: item[1],
+            }),
+            {},
+          ),
+        );
+        setIsStreamsRead(true);
       });
-  }, [api, meta, programId, setStreamTeasers, setUsers, setIsStateRead]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [api, meta, programId, setStreamTeasers]);
+
+  const triggerUsersState = useCallback(() => {
+    if (!api || !meta || !programId) return;
+
+    const payload = {
+      Users: null,
+    };
+
+    api.programState
+      .read({ programId, payload }, meta)
+      .then((codec) => codec.toHuman())
+      .then((state: any) => {
+        setUsers(
+          (state as UsersState).Users.reduce(
+            (acc, item) => ({
+              ...acc,
+              [item[0]]: item[1],
+            }),
+            {},
+          ),
+        );
+        setIsUsersRead(true);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [api, meta, programId, setUsers]);
 
   useEffect(() => {
-    if (!isStateRead) {
-      triggerState();
+    if (!isStreamsRead) {
+      triggerStreamsState();
     }
-  }, [isStateRead, triggerState]);
+  }, [isStreamsRead, triggerStreamsState]);
 
-  const state = { state: { streamTeasers, users }, isStateRead, updateState: triggerState };
+  useEffect(() => {
+    if (!isUsersRead) {
+      triggerUsersState();
+    }
+  }, [isUsersRead, triggerUsersState]);
+
+  const state = {
+    state: { streamTeasers, users },
+    isStateRead: isStreamsRead && isUsersRead,
+    updateStreams: triggerStreamsState,
+    updateUsers: triggerUsersState,
+  };
 
   return state;
 }
