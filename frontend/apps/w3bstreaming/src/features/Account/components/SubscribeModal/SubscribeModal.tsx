@@ -1,7 +1,8 @@
+import { useAtom } from 'jotai';
+import { useNavigate } from 'react-router';
 import { Loader, Modal } from 'components';
-import { useAlert, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount, useAlert, withoutCommas } from '@gear-js/react-hooks';
 import { cx, logger } from '@/utils';
-import varaIcon from '@/assets/icons/vara-coin-silver.png';
 import playSVG from '@/assets/icons/play-icon.svg';
 import cancelSVG from '@/assets/icons/cross-circle-icon.svg';
 import playlistCrossedSVG from '@/assets/icons/playlist-crossed-icon.svg';
@@ -12,24 +13,36 @@ import styles from './SubscribeModal.module.scss';
 import { useGetStreamMetadata } from '@/features/CreateStream/hooks';
 import { useCheckBalance, useHandleCalculateGas, useProgramState } from '@/hooks';
 import { ADDRESS } from '@/consts';
+import { IS_SUBSCRIBING_ATOM } from '../../atoms';
+import { ACCOUNT } from '@/App.routes';
 
 function SubscribeModal({ speakerId, type, onClose }: SubscribeModalProps) {
   const { meta, isMeta } = useGetStreamMetadata();
+  const [isLoading, setIsLoading] = useAtom(IS_SUBSCRIBING_ATOM);
   const sendSubscribeMessage = useSubscribeToStreamMessage();
   const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, meta);
   const { checkBalance } = useCheckBalance();
   const alert = useAlert();
-  const { updateState } = useProgramState();
+  const navigate = useNavigate();
+  const { account } = useAccount();
+  const {
+    state: { users },
+  } = useProgramState();
+  const { updateUsers } = useProgramState();
 
   const handleCancelModal = () => {
     onClose();
   };
 
+  const handleRedirectToAccount = () => {
+    handleCancelModal();
+    navigate(`/${ACCOUNT}`);
+  };
+
   const handleSubscribe = (action: 'sub' | 'unsub') => {
     if (speakerId) {
-      if (action === 'unsub') {
-        return;
-      }
+      setIsLoading(true);
+
       const payload =
         action === 'sub'
           ? {
@@ -62,10 +75,14 @@ function SubscribeModal({ speakerId, type, onClose }: SubscribeModalProps) {
                 gasLimit,
                 onError: () => {
                   logger(`Errror send message`);
+                  setIsLoading(false);
+                  handleCancelModal();
                 },
                 onSuccess: (messageId) => {
                   logger(`sucess on ID: ${messageId}`);
-                  updateState();
+                  updateUsers();
+                  setIsLoading(false);
+                  handleCancelModal();
                 },
                 onInBlock: (messageId) => {
                   logger('messageInBlock');
@@ -74,15 +91,17 @@ function SubscribeModal({ speakerId, type, onClose }: SubscribeModalProps) {
               }),
             () => {
               logger(`Errror check balance`);
+              setIsLoading(false);
+              handleCancelModal();
             },
           );
         })
         .catch((error) => {
           logger(error);
           alert.error('Gas calculation error');
+          setIsLoading(false);
+          handleCancelModal();
         });
-
-      handleCancelModal();
     }
   };
 
@@ -90,32 +109,41 @@ function SubscribeModal({ speakerId, type, onClose }: SubscribeModalProps) {
     <Modal heading={type === 'subscribe' ? 'Subscribe' : 'Unsubscribe'} onClose={onClose}>
       {isMeta ? (
         <div className={cx(styles.container)}>
-          <p className={cx(styles.description)}>Are you sure you want to {type} from this streamer?</p>
+          {users?.[account?.decodedAddress || ''] ? (
+            <>
+              <p className={cx(styles.description)}>
+                Are you sure you want to {type} {type === 'subscribe' ? 'to' : 'from'} this streamer?
+              </p>
+              <div className={cx(styles.controls)}>
+                {type === 'subscribe' && (
+                  <Button
+                    variant="primary"
+                    label="Subscribe"
+                    isLoading={isLoading}
+                    icon={playSVG}
+                    onClick={() => handleSubscribe('sub')}
+                  />
+                )}
+                {type === 'unsubscribe' && (
+                  <Button
+                    variant="primary"
+                    label="Unsubscribe"
+                    isLoading={isLoading}
+                    icon={playlistCrossedSVG}
+                    onClick={() => handleSubscribe('unsub')}
+                    className={cx(styles['unsubscribe-button'])}
+                  />
+                )}
+                <Button variant="text" label="Cancel" icon={cancelSVG} onClick={handleCancelModal} />
+              </div>
+            </>
+          ) : (
+            <div className={cx(styles['create-account-container'])}>
+              <span>Create an account first to subscribe</span>
 
-          {type === 'subscribe' && (
-            <div className={cx(styles['cont-per-month'])}>
-              <span className={cx(styles['cont-per-month-label'])}>Per month:</span>
-              <img src={varaIcon} alt="vara" className={cx(styles['cont-per-month-vara'])} />
-              <span className={cx(styles['cont-per-month-value'])}>1</span>
-              <span className={cx(styles['cont-per-month-currency'])}>vara</span>
+              <Button variant="primary" label="Create an account" onClick={handleRedirectToAccount} />
             </div>
           )}
-
-          <div className={cx(styles.controls)}>
-            {type === 'subscribe' && (
-              <Button variant="primary" label="Subscribe" icon={playSVG} onClick={() => handleSubscribe('sub')} />
-            )}
-            {type === 'unsubscribe' && (
-              <Button
-                variant="primary"
-                label="Unsubscribe"
-                icon={playlistCrossedSVG}
-                onClick={() => handleSubscribe('unsub')}
-                className={cx(styles['unsubscribe-button'])}
-              />
-            )}
-            <Button variant="text" label="Cancel" icon={cancelSVG} onClick={handleCancelModal} />
-          </div>
         </div>
       ) : (
         <Loader />

@@ -52,3 +52,10 @@
   background: theme-var($error);
   color: theme-var($text-secondary);
 }
+
+.create-account-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 24px;
+} 
