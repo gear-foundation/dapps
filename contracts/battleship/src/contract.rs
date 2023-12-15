@@ -50,7 +50,7 @@ impl Battleship {
         let expires = block_timestamp + duration;
 
         let number_of_blocks = u32::try_from(duration.div_ceil(self.config.block_duration_ms))
-            .expect("Duration it to large");
+            .expect("Duration is too large");
 
         assert!(
             !allowed_actions.is_empty(),
@@ -85,9 +85,6 @@ impl Battleship {
         );
 
         if let Some(session) = self.sessions.remove(session_for_account) {
-            debug!("session expires {:?}", session.expires);
-            debug!("timestamp {:?}", exec::block_timestamp());
-            debug!("timestamp {:?}", session.expires - exec::block_timestamp());
             assert!(
                 session.expires <= exec::block_timestamp(),
                 "Too early to delete session"
