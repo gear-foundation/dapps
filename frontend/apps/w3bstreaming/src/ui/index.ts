@@ -7,5 +7,5 @@ export * from './Link';
 export * from './Calendar';
 export * from './DropzoneUploader';
 export * from './TimePicker';
-export * from './Input';
+export * from './TextField';
 export * from './InputArea';

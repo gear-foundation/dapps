@@ -2,21 +2,28 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { motion } from 'framer-motion';
-import { Button, Search } from '@ui';
+import { HexString } from '@gear-js/api';
+import { useAccount, withoutCommas } from '@gear-js/react-hooks';
+import { Button, Dropdown, Search } from '@ui';
 import { cx } from '@/utils';
 import { StreamTeaser } from '../StreamTeaser/StreamTeaser';
 import styles from './StreamTeasersList.module.scss';
-// import { selectTeasersMenu } from '../../config';
+import { selectTeasersMenuAll, selectTeasersMenuAuthorized } from '../../config';
 import { FormattedTeaser } from '../../types';
 import { StreamTeasersListProps } from './StreamTeasersList.interfaces';
 import { useProgramState } from '@/hooks';
 
 function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 }: StreamTeasersListProps) {
+  const { account } = useAccount();
   const {
     state: { streamTeasers, users },
   } = useProgramState();
+  const selectTeasersMenu = users?.[account?.decodedAddress as HexString]
+    ? { ...selectTeasersMenuAll, ...selectTeasersMenuAuthorized }
+    : selectTeasersMenuAll;
   const [teasers, setTeasers] = useState<FormattedTeaser[]>([]);
   const [showedTeasersCount, setShowedTeasersCount] = useState<number>(initialTeasersCount);
+  const [selectedStreamsOption, setSelectedStreamsOption] = useState<string>(selectTeasersMenu.all.label);
   const [searchedValue, setSearchedValue] = useState<string>('');
   const [showedTeasers, setShowedTeasers] = useState<FormattedTeaser[]>([]);
 
@@ -54,22 +61,58 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
     setShowedTeasersCount(initialTeasersCount);
   }, [searchedValue, teasers, initialTeasersCount]);
 
-  // const handleSelectTypeOfStreams = ({ value }: (typeof selectTeasersMenu)[keyof typeof selectTeasersMenu]) => {
-  //   console.log(value); //TODO connect the data
-  // };
+  const handleSelectTypeOfStreams = ({ value, label }: (typeof selectTeasersMenu)[keyof typeof selectTeasersMenu]) => {
+    setSearchedValue('');
+    setShowedTeasersCount(initialTeasersCount);
+    setSelectedStreamsOption(label);
+
+    if (value === 'subscription') {
+      const foundTeasers = teasers.filter((teaser) =>
+        users?.[teaser.broadcaster].subscribers.includes(account?.decodedAddress || ''),
+      );
+      setShowedTeasers(foundTeasers);
+
+      return;
+    }
+
+    if (value === 'upcoming') {
+      const foundStreams = teasers.filter(
+        (teaser) => moment.unix(Number(withoutCommas(teaser.startTime)) / 1000).valueOf() > moment().valueOf(),
+      );
+      setShowedTeasers(foundStreams);
+
+      return;
+    }
+
+    if (value === 'my') {
+      const foundTeasers = teasers.filter((teaser) => teaser.broadcaster === account?.decodedAddress);
+      setShowedTeasers(foundTeasers);
+
+      return;
+    }
+
+    setShowedTeasers(teasers);
+  };
+
+  useEffect(() => {
+    setShowedTeasers(teasers);
+    setSearchedValue('');
+    setSelectedStreamsOption(selectTeasersMenu.all.label);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account?.decodedAddress]);
 
   return (
     <div className={cx(styles.container)}>
       <div className={cx(styles.header)}>
-        {/* <Dropdown
-          label={<h3 className={cx(styles['dropdown-title'])}>All streams</h3>}
+        <Dropdown
+          label={<h3 className={cx(styles['dropdown-title'])}>{selectedStreamsOption}</h3>}
           menu={selectTeasersMenu}
           activeValue={selectTeasersMenu.all.value}
           toggleArrowSize="medium"
           alignMenu="left"
           onItemClick={handleSelectTypeOfStreams}
-        /> */}
-        <h3 className={cx(styles['dropdown-title'])}>All streams</h3>
+        />
         <Search onChange={handleChangedSearchedValue} value={searchedValue} />
       </div>
       <div className={cx(styles.content)}>

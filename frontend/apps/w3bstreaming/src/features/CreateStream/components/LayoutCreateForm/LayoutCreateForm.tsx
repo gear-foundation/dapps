@@ -3,7 +3,7 @@ import { useAtom } from 'jotai';
 import moment, { Moment } from 'moment';
 import { useForm, isNotEmpty } from '@mantine/form';
 import { useAlert, withoutCommas } from '@gear-js/react-hooks';
-import { Button, Calendar, Input, InputArea } from '@/ui';
+import { Button, Calendar, TextField, InputArea } from '@/ui';
 import styles from './LayoutCreateForm.module.scss';
 import { cx, logger } from '@/utils';
 import { FormValues, LayoutCreateFormProps, SectionProps } from './LayoutCreateForm.interface';
@@ -13,7 +13,6 @@ import { useCreateStreamSendMessage } from '../../hooks';
 import { useCheckBalance, useHandleCalculateGas, useProgramState } from '@/hooks';
 import { ADDRESS } from '@/consts';
 import { PictureDropzone } from '../PictureDropzone';
-
 import { IS_CREATING_STREAM } from '../../atoms';
 
 function Section({ title, children }: SectionProps) {
@@ -31,7 +30,7 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
   const { checkBalance } = useCheckBalance();
   const alert = useAlert();
   const [isCreatingStream, setIsCreatingStream] = useAtom(IS_CREATING_STREAM);
-  const { updateState } = useProgramState();
+  const { updateStreams } = useProgramState();
 
   const form = useForm({
     initialValues: {
@@ -110,7 +109,7 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
                 logger(`sucess on ID: ${messageId}`);
                 reset();
                 setIsCreatingStream(false);
-                updateState();
+                updateStreams();
               },
               onInBlock: (messageId) => {
                 logger('messageInBlock');
@@ -168,9 +167,9 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
             <Section title="Stream info">
               <div className={cx(styles.inputs)}>
                 <div className={cx(styles.input)}>
-                  <Input
+                  <TextField
                     size="large"
-                    placeholder="Type stream title"
+                    label="Stream title"
                     {...getInputProps('title')}
                     disabled={isCreatingStream}
                   />
@@ -178,7 +177,7 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
                 </div>
                 <div className={cx(styles.input)}>
                   <InputArea
-                    placeholder="Type stream description"
+                    placeholder="Stream description"
                     {...getInputProps('description')}
                     disabled={isCreatingStream}
                   />

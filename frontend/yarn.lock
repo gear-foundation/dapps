@@ -2616,6 +2616,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gear-js/vara-ui@npm:0.0.3":
+  version: 0.0.3
+  resolution: "@gear-js/vara-ui@npm:0.0.3"
+  peerDependencies:
+    react: ^18.2.0
+    react-dom: ^18.2.0
+  checksum: ef6ff05e6c54e5621ec1c2d1c11b34612d9021e8ff50d45d4a52c458351b3993332947c608ae849de8c9c04510bd393690fb4988e3716356aa1b00fee5ed19de
+  languageName: node
+  linkType: hard
+
 "@headlessui-float/react@npm:0.10.1":
   version: 0.10.1
   resolution: "@headlessui-float/react@npm:0.10.1"
@@ -13791,6 +13801,7 @@ __metadata:
     "@gear-js/api": "npm:0.35.2"
     "@gear-js/react-hooks": "npm:0.9.4"
     "@gear-js/ui": "npm:0.5.21"
+    "@gear-js/vara-ui": "npm:0.0.3"
     "@headlessui/react": "npm:1.7.17"
     "@mantine/form": "npm:6.0.15"
     "@polkadot/api": "npm:10.10.1"
