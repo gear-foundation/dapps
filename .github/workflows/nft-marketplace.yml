@@ -80,6 +80,7 @@ jobs:
             REACT_APP_IPFS_ADDRESS=${{ secrets.REACT_APP_IPFS_ADDRESS }}
             REACT_APP_NFT_CONTRACT_ADDRESS=${{ secrets.REACT_APP_NFT_CONTRACT_ADDRESS }}
             REACT_APP_MARKETPLACE_CONTRACT_ADDRESS=${{ secrets.REACT_APP_MARKETPLACE_CONTRACT_ADDRESS }}
+            REACT_APP_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_NFT_MARKETPLACE }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
