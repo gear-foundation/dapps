@@ -8,7 +8,7 @@ COPY /frontend/yarn.lock .
 COPY /frontend/.yarnrc.yml .
 COPY /frontend/.yarn/releases .yarn/releases
 
-COPY ./frontend/apps/nft-master ./apps/nft-master
+COPY ./frontend/apps/w3bstreaming ./apps/w3bstreaming
 COPY ./frontend/packages ./packages
 
 RUN apk update
@@ -16,20 +16,18 @@ RUN apk update
 RUN apk add xsel
 
 ARG REACT_APP_NODE_ADDRESS \
-    REACT_APP_IPFS_GATEWAY_ADDRESS \
     REACT_APP_CONTRACT_ADDRESS \
+    REACT_APP_IPFS_GATEWAY_ADDRESS \
     REACT_APP_IPFS_ADDRESS \
-    REACT_APP_SENTRY_DSN \
-    REACT_APP_NFT_EXPLORER_URL
+    REACT_APP_SIGNALING_SERVER
 ENV REACT_APP_NODE_ADDRESS=${REACT_APP_NODE_ADDRESS} \
-    REACT_APP_IPFS_ADDRESS=${REACT_APP_IPFS_ADDRESS} \
-    REACT_APP_IPFS_GATEWAY_ADDRESS=${REACT_APP_IPFS_GATEWAY_ADDRESS} \
     REACT_APP_CONTRACT_ADDRESS=${REACT_APP_CONTRACT_ADDRESS} \
-    REACT_APP_SENTRY_DSN=${REACT_APP_SENTRY_DSN} \
-    REACT_APP_NFT_EXPLORER_URL=${REACT_APP_NFT_EXPLORER_URL} \
+    REACT_APP_IPFS_GATEWAY_ADDRESS=${REACT_APP_IPFS_GATEWAY_ADDRESS} \
+    REACT_APP_IPFS_ADDRESS=${REACT_APP_IPFS_ADDRESS} \
+    REACT_APP_SIGNALING_SERVER=${REACT_APP_SIGNALING_SERVER}\
     DISABLE_ESLINT_PLUGIN=true
 
-WORKDIR /frontend/apps/nft-master
+WORKDIR /frontend/apps/w3bstreaming
 
 RUN yarn install
 
@@ -37,4 +35,4 @@ RUN yarn build
 
 RUN npm install --global serve
 
-CMD ["serve", "-s", "/frontend/apps/nft-master/build"]
+CMD ["serve", "-s", "/frontend/apps/w3bstreaming/build"]
