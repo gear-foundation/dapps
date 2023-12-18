@@ -6,7 +6,7 @@ import { cx } from '@/utils';
 function Footer() {
   return (
     <Container className={cx(styles.container)}>
-      <img src={logo} alt="" />
+      <img src={logo} alt="vara-logo" />
       <VaraFooter vara />
     </Container>
   );
