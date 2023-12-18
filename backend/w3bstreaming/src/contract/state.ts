@@ -24,9 +24,7 @@ export async function isUserSubscribed(
 ): Promise<boolean> {
   const state = await getStateUsers();
 
-  return (
-    state.Users?.find(
-      user => user[0] === broadcasterId
-    )?.[1]?.subscribers?.includes(watcherId) || false
-  );
+  return !!state.Users?.find(
+    user => user[0] === broadcasterId
+  )?.[1]?.subscribers?.includes(watcherId);
 }
