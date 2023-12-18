@@ -14,7 +14,7 @@ function getEnv(envName: string, default_?: string): string {
 
 export default {
   port: process.env.PORT || 3001,
-  wsAddress: getEnv('WS_ADDRESS', 'ws://127.0.0.1:9944'),
+  wsAddress: getEnv('REACT_APP_NODE_ADDRESS', 'ws://127.0.0.1:9944'),
   pathToMeta: getEnv('PATH_TO_META', '../../meta/w3bstreaming.meta.txt'),
   programId: getEnv('PROGRAM_ID'),
 };
