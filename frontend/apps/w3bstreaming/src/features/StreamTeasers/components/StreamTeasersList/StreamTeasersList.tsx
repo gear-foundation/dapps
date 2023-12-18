@@ -33,10 +33,9 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
         Object.keys(streamTeasers)
           .map((key) => ({ ...streamTeasers[key], id: key }))
           .sort((a, b) => {
-            const aStartTime = moment.unix(Number(a.startTime.replace(/,/g, '')));
-            const bStartTime = moment.unix(Number(b.startTime.replace(/,/g, '')));
+            const aStartTime = moment(Number(a.startTime.replace(/,/g, '')));
+            const bStartTime = moment(Number(b.startTime.replace(/,/g, '')));
 
-            // Сортировка по убыванию
             return bStartTime.diff(aStartTime);
           }),
       );
@@ -49,17 +48,12 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
 
   const handleChangedSearchedValue = (e: ChangeEvent<HTMLInputElement>) => {
     setSearchedValue(e.target.value);
-    const foundTeasers = teasers.filter((teaser) => teaser.title.toLowerCase().includes(e.target.value.toLowerCase()));
-
-    setShowedTeasers(foundTeasers);
   };
 
   useEffect(() => {
-    const foundTeasers = teasers.filter((teaser) => teaser.title.toLowerCase().includes(searchedValue.toLowerCase()));
-
-    setShowedTeasers(foundTeasers);
+    setShowedTeasers(teasers);
     setShowedTeasersCount(initialTeasersCount);
-  }, [searchedValue, teasers, initialTeasersCount]);
+  }, [teasers, initialTeasersCount]);
 
   const handleSelectTypeOfStreams = ({ value, label }: (typeof selectTeasersMenu)[keyof typeof selectTeasersMenu]) => {
     setSearchedValue('');
@@ -76,16 +70,28 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
     }
 
     if (value === 'upcoming') {
-      const foundStreams = teasers.filter(
-        (teaser) => moment.unix(Number(withoutCommas(teaser.startTime)) / 1000).valueOf() > moment().valueOf(),
-      );
+      const foundStreams = teasers
+        .filter((teaser) => moment.unix(Number(withoutCommas(teaser.startTime)) / 1000).valueOf() > moment().valueOf())
+        .sort((a, b) =>
+          moment.unix(Number(withoutCommas(a.startTime)) / 1000).valueOf() >
+          moment.unix(Number(withoutCommas(b.startTime)) / 1000).valueOf()
+            ? 1
+            : -1,
+        );
       setShowedTeasers(foundStreams);
 
       return;
     }
 
     if (value === 'my') {
-      const foundTeasers = teasers.filter((teaser) => teaser.broadcaster === account?.decodedAddress);
+      const foundTeasers = teasers
+        .filter((teaser) => teaser.broadcaster === account?.decodedAddress)
+        .sort((a, b) =>
+          moment.unix(Number(withoutCommas(a.startTime)) / 1000).valueOf() >
+          moment.unix(Number(withoutCommas(b.startTime)) / 1000).valueOf()
+            ? 1
+            : -1,
+        );
       setShowedTeasers(foundTeasers);
 
       return;
@@ -102,6 +108,9 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account?.decodedAddress]);
 
+  const getSearchedTeasers = (items: FormattedTeaser[]) =>
+    items.filter((teaser) => teaser.title.toLowerCase().includes(searchedValue));
+
   return (
     <div className={cx(styles.container)}>
       <div className={cx(styles.header)}>
@@ -117,25 +126,27 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
       </div>
       <div className={cx(styles.content)}>
         {showedTeasers.length > 0 ? (
-          showedTeasers.slice(0, showedTeasersCount).map((item) => (
-            <motion.div
-              key={item.title + item.description + item.startTime + item.endTime}
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: false }}>
-              <Link to={`/stream/${item.id}`} key={item.title + item.description + item.startTime + item.endTime}>
-                <StreamTeaser broadcasterInfo={users?.[item?.broadcaster]} {...item} />
-              </Link>
-            </motion.div>
-          ))
+          getSearchedTeasers(showedTeasers)
+            .slice(0, showedTeasersCount)
+            .map((item) => (
+              <motion.div
+                key={item.title + item.description + item.startTime + item.endTime}
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: false }}>
+                <Link to={`/stream/${item.id}`} key={item.title + item.description + item.startTime + item.endTime}>
+                  <StreamTeaser broadcasterInfo={users?.[item?.broadcaster]} {...item} />
+                </Link>
+              </motion.div>
+            ))
         ) : (
           <div>No streams yet</div>
         )}
       </div>
-      {!showedTeasers.length && searchedValue ? (
+      {!getSearchedTeasers(showedTeasers).length && searchedValue ? (
         <h3 className={cx(styles['no-streams-found'])}>No streams found</h3>
       ) : null}
-      {showedTeasersCount <= showedTeasers.length && (
+      {showedTeasersCount <= getSearchedTeasers(showedTeasers).length && (
         <div className={cx(styles['view-more-button-wrapper'])}>
           <Button variant="outline" size="medium" label="View More" onClick={handleExpandPage} />
         </div>

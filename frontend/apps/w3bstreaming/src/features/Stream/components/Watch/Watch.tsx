@@ -14,22 +14,57 @@ import { Button } from '@/ui';
 
 function Watch({ socket, streamId }: WatchProps) {
   const navigate = useNavigate();
+  const publicKey: MutableRefObject<SignerResult | null> = useRef(null);
+  const retryIntervalId: MutableRefObject<ReturnType<typeof setInterval> | null> = useRef(null);
   const remoteVideo: MutableRefObject<HTMLVideoElement | null> = useRef(null);
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const peerConnection: MutableRefObject<RTCPeerConnection | null> = useRef(null);
   const { account } = useAccount();
-  const [publicKey, setPublicKey] = useState<SignerResult | null>(null);
   const [streamStatus, setStreamStatus] = useState<StreamState>('ready-to-play');
-  const retryIntervalId: MutableRefObject<ReturnType<typeof setInterval> | null> = useRef(null);
 
-  const handlePlayStream = useCallback(() => {
-    if (!account?.decodedAddress || !publicKey?.signature || !streamId || !socket) {
+  const handleGetPublicKey = async () => {
+    if (account?.address && !publicKey.current) {
+      const { address } = account;
+
+      web3Enable('streaming');
+
+      try {
+        const { signer } = await web3FromAddress(address);
+
+        if (!signer.signRaw) {
+          throw new Error('signRaw does not exist');
+        }
+
+        publicKey.current = await signer.signRaw({ address, data: stringToHex(address), type: 'bytes' });
+
+        return !!publicKey.current;
+      } catch {
+        console.log('signRaw does not exist');
+
+        return false;
+      }
+    }
+  };
+
+  const handlePlayStream = useCallback(async () => {
+    if (!account?.decodedAddress || !streamId || !socket) {
       return;
     }
+
     setStreamStatus('loading');
+
+    if (!publicKey.current?.signature) {
+      const isPublicKey = await handleGetPublicKey();
+
+      if (!isPublicKey) {
+        setStreamStatus('ready-to-play');
+        return;
+      }
+    }
+
     socket.emit('watch', account?.decodedAddress, {
       streamId,
-      signedMsg: publicKey?.signature,
+      signedMsg: publicKey.current?.signature,
       encodedId: account.address,
     });
     peerConnection.current = new RTCPeerConnection(RTC_CONFIG);
@@ -98,7 +133,8 @@ function Watch({ socket, streamId }: WatchProps) {
       peerConnection.current = null;
       socket.off();
     });
-  }, [account?.address, account?.decodedAddress, publicKey?.signature, socket, streamId]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account?.address, account?.decodedAddress, socket, streamId]);
 
   useEffect(
     () => () => {
@@ -123,30 +159,21 @@ function Watch({ socket, streamId }: WatchProps) {
     }
   }, [localStream]);
 
-  useEffect(() => {
-    if (account?.address && !publicKey) {
-      const { address } = account;
-      web3Enable('streaming');
-      web3FromAddress(address)
-        .then(({ signer }) => {
-          if (!signer.signRaw) {
-            throw new Error('signRaw does not exist');
-          }
-
-          return signer.signRaw({ address, data: stringToHex(address), type: 'bytes' });
-        })
-        .then((res) => setPublicKey(res))
-        .catch(() => console.log('error'));
-    }
-  }, [account, account?.address, publicKey]);
-
-  useEffect(() => {
+  const autoWatch = useCallback(async () => {
     if (streamStatus === 'not-started') {
-      if (account?.address && publicKey?.signature && !retryIntervalId.current) {
+      if (!publicKey.current?.signature) {
+        const isPublicKey = await handleGetPublicKey();
+
+        if (!isPublicKey) {
+          return;
+        }
+      }
+
+      if (account?.address && !retryIntervalId.current) {
         retryIntervalId.current = setInterval(() => {
           socket.emit('watch', account?.decodedAddress, {
             streamId,
-            signedMsg: publicKey?.signature,
+            signedMsg: publicKey.current?.signature,
             encodedId: account.address,
           });
         }, 2000);
@@ -158,7 +185,12 @@ function Watch({ socket, streamId }: WatchProps) {
         clearInterval(retryIntervalId.current);
       }
     }
-  }, [streamStatus, account?.address, account?.decodedAddress, publicKey?.signature, streamId, socket]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [streamStatus, account?.address, account?.decodedAddress, streamId, socket]);
+
+  useEffect(() => {
+    autoWatch();
+  }, [autoWatch]);
 
   const handlePlayerReady = (player: HTMLVideoElement) => {
     remoteVideo.current = player;

@@ -130,7 +130,6 @@ function useProgramState() {
       .read({ programId, payload }, meta)
       .then((codec) => codec.toHuman())
       .then((state: any) => {
-        console.log(state);
         setStreamTeasers(
           (state as StreamsState).Streams.reduce(
             (acc, item) => ({
