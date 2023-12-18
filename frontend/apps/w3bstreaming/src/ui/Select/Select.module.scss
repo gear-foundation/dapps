@@ -1,0 +1,104 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.select {
+  font-family:
+    'Roboto','Helvetica','Arial',sans-serif;
+	position: relative;
+	width: 100%;
+}
+
+.select-text {
+	position: relative;
+	font-family: inherit;
+	background-color: transparent;
+	width: 100%;
+	padding: 13px 10px 13px 16px;
+	font-size: 18px;
+	border-radius: 0;
+	border: 1px solid #c0c0c0;
+  border-radius: 4px;
+	border-bottom: 1px solid rgba(0,0,0, 0.12);
+}
+
+.select-text:focus {
+	outline: none;
+	border-bottom: 1px solid rgba(0,0,0, 0);
+}
+
+.select .select-text {
+	appearance: none;
+	-webkit-appearance:none
+}
+
+.select:after {
+	position: absolute;
+	top: 22px;
+	right: 14px;
+	width: 0;
+	height: 0;
+	padding: 0;
+	content: '';
+	border-left: 6px solid transparent;
+	border-right: 6px solid transparent;
+	border-top: 6px solid #0C0C0D80;
+	pointer-events: none;
+}
+
+.select-label {
+	font-size: 16px;
+	font-weight: normal;
+	position: absolute;
+	pointer-events: none;
+	left: 16px;
+	top: 16px;
+	transition: 0.2s ease all;
+}
+
+.select-text:focus ~ .select-label, .select-text:valid ~ .select-label {
+	color: #199680;
+	transform: translate(0, -130%);
+  padding-left: 4px;
+  padding-right: 4px;
+	transition: 0.2s ease all;
+	font-size: 12px;
+  background-color: white;
+}
+
+.select-bar {
+	position: relative;
+	display: block;
+	width: 100%;
+}
+
+.select-bar:before, .select-bar:after {
+	content: '';
+	height: 2px;
+	width: 0;
+	bottom: 1px;
+	position: absolute;
+	background: #199680;
+	transition: 0.2s ease all;
+}
+
+.select-bar:before {
+	left: 50%;
+}
+
+.select-bar:after {
+	right: 50%;
+}
+
+.select-text:focus ~ .select-bar:before, .select-text:focus ~ .select-bar:after {
+	width: 50%;
+}
+
+.select-highlight {
+	position: absolute;
+	height: 60%;
+	width: 100px;
+	top: 25%;
+	left: 0;
+	pointer-events: none;
+	opacity: 0.5;
+}

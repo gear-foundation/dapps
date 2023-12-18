@@ -31,42 +31,46 @@ function AppComponent() {
         <>
           <Header menu={routes} />
           <div className={cx(styles['main-content'])}>
-            <Routes>
-              <Route
-                path="/"
-                element={
-                  <AuthRoute>
-                    <MainPage />
-                  </AuthRoute>
-                }
-              />
-              <Route
-                path={`/${ACCOUNT}`}
-                element={
-                  <ProtectedRoute>
-                    <AccountPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path={`/${CREATE_STREAM}`}
-                element={
-                  <ProtectedRoute>
-                    <CreateStreamPage />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path={`/${STREAM}`}
-                element={
-                  <ProtectedRoute>
-                    <StreamPage />
-                  </ProtectedRoute>
-                }
-              />
-            </Routes>
+            <div className={cx(styles['wrapped-content'])}>
+              <Routes>
+                <Route
+                  path="/"
+                  element={
+                    <AuthRoute>
+                      <MainPage />
+                    </AuthRoute>
+                  }
+                />
+                <Route
+                  path={`/${ACCOUNT}`}
+                  element={
+                    <ProtectedRoute>
+                      <AccountPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path={`/${CREATE_STREAM}`}
+                  element={
+                    <ProtectedRoute>
+                      <CreateStreamPage />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path={`/${STREAM}`}
+                  element={
+                    <ProtectedRoute>
+                      <StreamPage />
+                    </ProtectedRoute>
+                  }
+                />
+              </Routes>
+            </div>
+            <div className={cx(styles['teasers-list-wrapper'])}>
+              <StreamTeasersList />
+            </div>
           </div>
-          <StreamTeasersList />
           <Footer />
         </>
       ) : (
