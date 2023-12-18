@@ -5,7 +5,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import { WalletModal, WalletInfo } from '@/features/Wallet/components';
 import { cx } from '@/utils';
 import styles from './Header.module.scss';
-import logo from '@/assets/icons/logo.png';
+import logo from '@/assets/icons/logo.svg';
 import { HeaderProps } from './Header.interfaces';
 import { useMediaQuery } from '@/hooks';
 import menuIcon from '@/assets/icons/burger-menu-icon.svg';

@@ -1,5 +1,6 @@
+import moment from 'moment';
 import { FC, useEffect, useState } from 'react';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, withoutCommas } from '@gear-js/react-hooks';
 import { SubscribersData, SubscriptionsData, UsersTableProps } from './components/UsersTable/UsersTable.interfaces';
 import { WithDataProps } from './types';
 import { Loader } from '@/components';
@@ -26,17 +27,28 @@ function withData(
               id: user.accountId,
               Streamer: `${users[user.accountId].name} ${users[user.accountId].surname}`,
               img: users[user.accountId].imgLink,
-              'Date of next write-off': user.nextWriteOff,
+              'Date of next write-off': user.nextWriteOff || 'N/A',
+              'Subscription Date': moment(Number(withoutCommas(user.subDate))).format('M.D.YYYY'),
             })) || [];
           setData(subscriptionsData);
         }
         if (type === 'subscribers') {
           const subcribersData =
-            users[account.decodedAddress]?.subscribers?.map((id: string) => ({
-              id,
-              img: users[id].imgLink,
-              User: users[id].name || users[id].surname ? `${users[id].name} ${users[id].surname}` : id,
-            })) || [];
+            users[account.decodedAddress]?.subscribers?.map((id: string) => {
+              const subscriber = users[id];
+              const subscribtion = subscriber.subscriptions.find(
+                (subscription) => subscription.accountId === account.decodedAddress,
+              );
+
+              return {
+                id,
+                img: subscriber.imgLink,
+                User: subscriber.name || subscriber.surname ? `${subscriber.name} ${subscriber.surname}` : id,
+                'Subscription Date': moment(Number(withoutCommas(subscribtion?.subDate || ''))).format('M.D.YYYY'),
+                'Date of next write-off': subscribtion?.nextWriteOff || 'N/A',
+                'Last payment date': '\u2013',
+              };
+            }) || [];
           setData(subcribersData);
         }
       }

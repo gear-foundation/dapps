@@ -5,6 +5,7 @@ export interface SubscriptionsData extends TableRow {
   Streamer: string;
   img: string;
   'Date of next write-off': string;
+  'Subscription Date': string;
 }
 
 export interface SubscribersData extends TableRow {
