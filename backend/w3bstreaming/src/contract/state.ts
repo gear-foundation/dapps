@@ -2,26 +2,29 @@ import { HexString } from '@polkadot/util/types';
 
 import config from '../config';
 import { api, meta } from './init';
+import { UsersState } from './types';
 
-export async function getState(): Promise<any> {
+export async function getStateUsers(): Promise<UsersState> {
   const state = await api.programState.read(
     {
       programId: config.programId as HexString,
-      payload: '0x',
+      payload: {
+        Users: null,
+      },
     },
     meta
   );
 
-  return state.toJSON() as boolean;
+  return state.toHuman() as unknown as UsersState;
 }
 
 export async function isUserSubscribed(
   broadcasterId: string,
   watcherId: string
 ): Promise<boolean> {
-  const state = await getState();
+  const state = await getStateUsers();
 
-  return (
-    state.users?.[broadcasterId]?.subscribers?.includes(watcherId) || false
-  );
+  return !!state.Users?.find(
+    user => user[0] === broadcasterId
+  )?.[1]?.subscribers?.includes(watcherId);
 }
