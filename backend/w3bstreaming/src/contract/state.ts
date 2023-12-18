@@ -15,7 +15,7 @@ export async function getStateUsers(): Promise<UsersState> {
     meta
   );
 
-  return state.toHuman() as any;
+  return state.toHuman() as unknown as UsersState;
 }
 
 export async function isUserSubscribed(
