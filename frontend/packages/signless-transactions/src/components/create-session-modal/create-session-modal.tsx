@@ -1,13 +1,12 @@
 import { Button, Input, Modal, ModalProps } from '@gear-js/vara-ui';
-import { useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { GearKeyring, decodeAddress } from '@gear-js/api';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
-import Identicon from '@polkadot/react-identicon';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-
+import { ReactComponent as FileCopyIcon } from '../../assets/icons/file-copy-fill.svg';
 import { useSignlessTransactions } from '../../context';
-import { getMilliseconds, getVaraAddress } from '../../utils';
+import { copyToClipboard, getMilliseconds, getVaraAddress, shortenString } from '../../utils';
 import { EnableSessionModal } from '../enable-session-modal';
 import styles from './create-session-modal.module.css';
 
@@ -23,6 +22,7 @@ const ACTIONS = ['StartGame', 'Turn'];
 
 function CreateSessionModal({ close }: Props) {
   const { api } = useApi();
+  const alert = useAlert();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
 
   const { register, handleSubmit, formState } = useForm({ defaultValues: DEFAULT_VALUES });
@@ -87,31 +87,38 @@ function CreateSessionModal({ close }: Props) {
 
   return (
     <>
-      <Modal heading="Create Signless Session" close={close}>
+      <Modal heading="Enable Signless Session" close={close}>
         <ul className={styles.summary}>
-          <li>
+          <li className={styles['summary-item']}>
             <h4 className={styles.heading}>
               {storagePair ? 'Account from the storage:' : 'Randomly generated account:'}
             </h4>
-
+            <div className={styles.separator} />
             {pair && (
               <div className={styles.account}>
-                <Identicon value={pair.address} theme="polkadot" size={14} />
-                <span>{getVaraAddress(pair.address)}</span>
+                <span className={styles.value}>{shortenString(getVaraAddress(pair.address), 4)}</span>
+                <FileCopyIcon
+                  onClick={() => copyToClipboard({ value: getVaraAddress(pair.address), alert })}
+                  className={styles.copy}
+                />
               </div>
             )}
           </li>
 
-          <li>
+          <li className={styles['summary-item']}>
             <h4 className={styles.heading}>Voucher to issue:</h4>
-            <p>
-              {formattedIssueVoucherValue.value} {formattedIssueVoucherValue.unit}
+            <div className={styles.separator} />
+            <p className={styles.value}>
+              {formattedIssueVoucherValue.value.replace(/\.(.*\d{2})/, (match) => `.${match.slice(1, 3)}`)}
+              {` `}
+              {formattedIssueVoucherValue.unit}
             </p>
           </li>
 
-          <li>
+          <li className={styles['summary-item']}>
             <h4 className={styles.heading}>Session duration:</h4>
-            <p>{DURATION_MINUTES} minutes</p>
+            <div className={styles.separator} />
+            <p className={styles.value}>{DURATION_MINUTES} min</p>
           </li>
         </ul>
 
@@ -119,7 +126,7 @@ function CreateSessionModal({ close }: Props) {
           {!storagePair && (
             <Input
               type="password"
-              label="Password"
+              label="Set password"
               error={errors.password?.message}
               {...register('password', {
                 required: REQUIRED_MESSAGE,
@@ -128,7 +135,7 @@ function CreateSessionModal({ close }: Props) {
             />
           )}
 
-          <Button type="submit" text="Submit" className={styles.button} isLoading={isLoading} />
+          <Button type="submit" text="Create Signless session" className={styles.button} isLoading={isLoading} />
         </form>
       </Modal>
 

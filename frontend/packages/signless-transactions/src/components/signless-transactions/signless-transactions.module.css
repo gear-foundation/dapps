@@ -1,20 +1,121 @@
+.container {
+  width: 100%;
+}
+
+.session-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+  background: #F7F9FA;
+  border: 1px solid #00FFC4;
+  border-radius: 4px;
+
+  .title-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+}
+
 .session {
-  text-align: center;
-  font-size: 14px;
-  line-height: 1.4;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 6px 0 14px 0;
+
+  .title {
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 26px;
+  }
+
+  .session-item {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .separator {
+    height: 20px;
+    margin: 0 6px;
+    border-bottom: 1px solid #DADADA;
+    flex: 1;
+  }
+
+  .account {
+    display: flex;
+    align-items: center;
+    text-transform: uppercase;
+    gap: 5px;
+
+    .copy {
+      cursor: pointer;
+    }
+
+    & span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  .value {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 28px;
+  }
+
+  .heading {
+    margin-bottom: 2px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 28px;
+  }
+
 }
 
 .buttons {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   gap: 4px;
 
   &:not(:last-child) {
-    margin-bottom: 8px;
+    margin-bottom: 12px;
   }
+
+  .enable-button {
+    color: #d00;
+    gap: 8px;
+
+    & .item-icon path {
+      fill: #d00;
+    }
+  }
+
+  
 }
 
 .closeButton {
-  color: rgb(221, 0, 0);
+  background: #E9E9E9;
+  display: flex;
+  justify-content: center;
+}
+
+.enable-button {
+  background: transparent;
+}
+
+.enable-button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: transparent;
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+
+  .item-text {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19.2px;
+  }
 }
