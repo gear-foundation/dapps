@@ -1,7 +1,7 @@
 import { AlertContainerFactory } from '@gear-js/react-hooks';
 import clsx from 'clsx';
-import { useEffect } from 'react';
-import { useLocation } from 'react-router';
+import { useEffect, useLayoutEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Socket, io } from 'socket.io-client';
 import { ADDRESS } from './consts';
 
@@ -55,17 +55,12 @@ export const copyToClipboard = async ({
 
 export const socket: Socket = io(ADDRESS.SIGNALING_SERVER);
 
-export function ScrollToTop() {
+export function useScrollToTop() {
   const { pathname } = useLocation();
 
   useEffect(() => {
-    document.documentElement.scrollTo({
-      top: 0,
-      left: 0,
-    });
+    document.documentElement.scrollTo(0, 0);
   }, [pathname]);
-
-  return null;
 }
 
 export const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(

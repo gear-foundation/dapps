@@ -3,7 +3,7 @@ import { useAccount, useApi } from '@gear-js/react-hooks';
 import { AccountPage, CreateStreamPage, MainPage, StreamPage } from '@/pages';
 import { Header, Footer } from '@/components';
 import { withProviders } from '@/hocs';
-import { ScrollToTop, cx } from '@/utils';
+import { useScrollToTop, cx } from '@/utils';
 import { routes, CREATE_STREAM, ACCOUNT, STREAM } from '@/App.routes';
 import { StreamTeasersList } from '@/features/StreamTeasers';
 import { ProtectedRoute, AuthRoute } from '@/features/Auth/components';
@@ -15,8 +15,10 @@ import { useCreateStreamMetadata, useGetStreamMetadata } from './features/Create
 import { useAccountAvailableBalanceSync } from './features/Wallet/hooks';
 
 function AppComponent() {
+  useScrollToTop();
   useCreateStreamMetadata();
   useAccountAvailableBalanceSync();
+
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
   const { isStateRead } = useProgramState();
@@ -26,7 +28,6 @@ function AppComponent() {
 
   return (
     <div className={cx(styles['app-container'])}>
-      <ScrollToTop />
       {isAppReady ? (
         <>
           <Header menu={routes} />

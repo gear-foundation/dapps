@@ -1,5 +1,5 @@
 import { MutableRefObject, useEffect, useRef, useState, useCallback } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { web3Enable, web3FromAddress } from '@polkadot/extension-dapp';
 import { SignerResult } from '@polkadot/api/types';
 import { stringToHex } from '@polkadot/util';

@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { Loader, Modal } from 'components';
 import { useAccount, useAlert, withoutCommas } from '@gear-js/react-hooks';
 import { cx, logger } from '@/utils';

@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import Identicon from '@polkadot/react-identicon';
-
+import { motion } from 'framer-motion';
 import { Text } from '@/components/ui/text';
 import { Button } from '@/components/ui/button';
 
@@ -52,7 +52,7 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
   };
 
   return (
-    <div>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
       <div className={styles.changeAccount}>
         <div className={styles.network}>
           <AvaVaraBlack width={32} height={32} />
@@ -79,6 +79,6 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
           </Button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -1,4 +1,4 @@
-import { useParams } from 'react-router';
+import { useParams } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
 import { Watch, Broadcast } from '@/features/Stream/components';
 import { Layout } from '@/features/Stream/components/Layout';

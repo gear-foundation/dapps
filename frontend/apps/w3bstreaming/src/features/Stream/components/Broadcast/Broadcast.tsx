@@ -1,5 +1,5 @@
 import { MutableRefObject, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
 import styles from './Broadcast.module.scss';
 import { cx } from '@/utils';
