@@ -1,16 +1,16 @@
 import { Button } from '@gear-js/vara-ui';
-import { useAccount, useAlert, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
 import { useState } from 'react';
-import { ReactComponent as CopySVG } from '../../assets/icons/file-copy-fill.svg';
 import { useCountdown } from '@dapps-frontend/hooks';
 import { ReactComponent as SignlessSVG } from '../../assets/icons/signless.svg';
 import { ReactComponent as PowerSVG } from '../../assets/icons/power.svg';
 import { useSignlessTransactions } from '../../context';
-import { copyToClipboard, getHMS, getVaraAddress, shortenString } from '../../utils';
+import { getHMS } from '../../utils';
 import { CreateSessionModal } from '../create-session-modal';
 import { EnableSessionModal } from '../enable-session-modal';
 import styles from './signless-transactions.module.css';
 import { SignlessParams } from '../signless-params-list';
+import { AccountPair } from '../account-pair';
 
 function SignlessTransactions() {
   const { account } = useAccount();
@@ -20,7 +20,6 @@ function SignlessTransactions() {
   const openCreateModal = () => setModal('create');
   const openEnableModal = () => setModal('enable');
   const closeModal = () => setModal('');
-  const alert = useAlert();
   const expireTimestamp = +withoutCommas(session?.expires || '0');
   const countdown = useCountdown(expireTimestamp);
 
@@ -56,19 +55,7 @@ function SignlessTransactions() {
               params={[
                 {
                   heading: storagePair ? 'Account from the storage:' : 'Randomly generated account:',
-                  value: pair ? (
-                    <span className={styles.accountWrapper}>
-                      <span className={styles.account}>{shortenString(getVaraAddress(pair.address), 4)}</span>
-                      <Button
-                        icon={CopySVG}
-                        color="transparent"
-                        className={styles.copy}
-                        onClick={() => copyToClipboard({ value: getVaraAddress(pair.address), alert })}
-                      />
-                    </span>
-                  ) : (
-                    <span>Inactive</span>
-                  ),
+                  value: pair ? <AccountPair pair={pair} /> : <span>Inactive</span>,
                 },
                 {
                   heading: 'Remaining balance:',

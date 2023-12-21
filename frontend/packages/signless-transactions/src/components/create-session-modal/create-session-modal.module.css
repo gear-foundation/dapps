@@ -18,21 +18,3 @@
   justify-content: center;
 }
 
-.accountWrapper {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.account {
-  text-transform: uppercase;
-
-  .copy {
-    cursor: pointer;
-  }
-
-  & span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}

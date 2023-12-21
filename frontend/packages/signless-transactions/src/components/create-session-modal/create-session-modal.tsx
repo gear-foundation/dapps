@@ -1,15 +1,15 @@
 import { Button, Input, Modal, ModalProps } from '@gear-js/vara-ui';
-import { useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { GearKeyring, decodeAddress } from '@gear-js/api';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ReactComponent as CopySVG } from '../../assets/icons/file-copy-fill.svg';
 import { useSignlessTransactions } from '../../context';
-import { copyToClipboard, getMilliseconds, getVaraAddress, shortenString } from '../../utils';
+import { getMilliseconds } from '../../utils';
 import { EnableSessionModal } from '../enable-session-modal';
 import styles from './create-session-modal.module.css';
 import { SignlessParams } from '../signless-params-list';
+import { AccountPair } from '../account-pair';
 
 type Props = Pick<ModalProps, 'close'>;
 
@@ -23,7 +23,6 @@ const ACTIONS = ['StartGame', 'Turn'];
 
 function CreateSessionModal({ close }: Props) {
   const { api } = useApi();
-  const alert = useAlert();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
 
   const { register, handleSubmit, formState } = useForm({ defaultValues: DEFAULT_VALUES });
@@ -93,19 +92,7 @@ function CreateSessionModal({ close }: Props) {
           params={[
             {
               heading: storagePair ? 'Account from the storage:' : 'Randomly generated account:',
-              value: pair ? (
-                <span className={styles.accountWrapper}>
-                  <span className={styles.account}>{shortenString(getVaraAddress(pair.address), 4)}</span>
-                  <Button
-                    icon={CopySVG}
-                    color="transparent"
-                    className={styles.copy}
-                    onClick={() => copyToClipboard({ value: getVaraAddress(pair.address), alert })}
-                  />
-                </span>
-              ) : (
-                <span />
-              ),
+              value: pair ? <AccountPair pair={pair} /> : <span />,
             },
             {
               heading: 'Voucher to issue:',

@@ -19,25 +19,6 @@
 
 }
 
-.accountWrapper {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.account {
-  text-transform: uppercase;
-
-  .copy {
-    cursor: pointer;
-  }
-
-  & span {
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-}
-
 .title {
   font-size: 16px;
   font-weight: 600;
