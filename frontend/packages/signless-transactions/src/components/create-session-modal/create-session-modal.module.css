@@ -18,50 +18,21 @@
   justify-content: center;
 }
 
-.summary {
+.accountWrapper {
   display: flex;
-  flex-direction: column;
-  padding: 17px 0 14px 0;
-  background: #F7F9FA;
+  align-items: center;
+  gap: 5px;
+}
 
-  .summary-item {
-    display: flex;
-    justify-content: space-between;
+.account {
+  text-transform: uppercase;
+
+  .copy {
+    cursor: pointer;
   }
 
-  .separator {
-    height: 20px;
-    margin: 0 6px;
-    border-bottom: 1px solid #DADADA;
-    flex: 1;
-  }
-
-  .account {
-    display: flex;
-    align-items: center;
-    text-transform: uppercase;
-    gap: 5px;
-
-    .copy {
-      cursor: pointer;
-    }
-
-    & span {
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-
-  .value {
-    font-size: 14px;
-    font-weight: 600;
-    line-height: 28px;
-  }
-
-  .heading {
-    margin-bottom: 2px;
-    font-size: 14px;
-    font-weight: 400;
-    line-height: 28px;
+  & span {
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 }

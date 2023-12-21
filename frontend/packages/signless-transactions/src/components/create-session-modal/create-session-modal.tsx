@@ -4,11 +4,12 @@ import { GearKeyring, decodeAddress } from '@gear-js/api';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { ReactComponent as FileCopyIcon } from '../../assets/icons/file-copy-fill.svg';
+import { ReactComponent as CopySVG } from '../../assets/icons/file-copy-fill.svg';
 import { useSignlessTransactions } from '../../context';
 import { copyToClipboard, getMilliseconds, getVaraAddress, shortenString } from '../../utils';
 import { EnableSessionModal } from '../enable-session-modal';
 import styles from './create-session-modal.module.css';
+import { SignlessParams } from '../signless-params-list';
 
 type Props = Pick<ModalProps, 'close'>;
 
@@ -88,39 +89,34 @@ function CreateSessionModal({ close }: Props) {
   return (
     <>
       <Modal heading="Enable Signless Session" close={close}>
-        <ul className={styles.summary}>
-          <li className={styles['summary-item']}>
-            <h4 className={styles.heading}>
-              {storagePair ? 'Account from the storage:' : 'Randomly generated account:'}
-            </h4>
-            <div className={styles.separator} />
-            {pair && (
-              <div className={styles.account}>
-                <span className={styles.value}>{shortenString(getVaraAddress(pair.address), 4)}</span>
-                <FileCopyIcon
-                  onClick={() => copyToClipboard({ value: getVaraAddress(pair.address), alert })}
-                  className={styles.copy}
-                />
-              </div>
-            )}
-          </li>
-
-          <li className={styles['summary-item']}>
-            <h4 className={styles.heading}>Voucher to issue:</h4>
-            <div className={styles.separator} />
-            <p className={styles.value}>
-              {formattedIssueVoucherValue.value.replace(/\.(.*\d{2})/, (match) => `.${match.slice(1, 3)}`)}
-              {` `}
-              {formattedIssueVoucherValue.unit}
-            </p>
-          </li>
-
-          <li className={styles['summary-item']}>
-            <h4 className={styles.heading}>Session duration:</h4>
-            <div className={styles.separator} />
-            <p className={styles.value}>{DURATION_MINUTES} min</p>
-          </li>
-        </ul>
+        <SignlessParams
+          params={[
+            {
+              heading: storagePair ? 'Account from the storage:' : 'Randomly generated account:',
+              value: pair ? (
+                <span className={styles.accountWrapper}>
+                  <span className={styles.account}>{shortenString(getVaraAddress(pair.address), 4)}</span>
+                  <Button
+                    icon={CopySVG}
+                    color="transparent"
+                    className={styles.copy}
+                    onClick={() => copyToClipboard({ value: getVaraAddress(pair.address), alert })}
+                  />
+                </span>
+              ) : (
+                <span />
+              ),
+            },
+            {
+              heading: 'Voucher to issue:',
+              value: `${formattedIssueVoucherValue.value} ${formattedIssueVoucherValue.unit}`,
+            },
+            {
+              heading: 'Session duration:',
+              value: `${DURATION_MINUTES} min`,
+            },
+          ]}
+        />
 
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
           {!storagePair && (

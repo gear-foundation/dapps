@@ -1,15 +1,16 @@
 import { Button } from '@gear-js/vara-ui';
 import { useAccount, useAlert, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
 import { useState } from 'react';
-import { ReactComponent as FileCopyIcon } from '../../assets/icons/file-copy-fill.svg';
+import { ReactComponent as CopySVG } from '../../assets/icons/file-copy-fill.svg';
 import { useCountdown } from '@dapps-frontend/hooks';
-import { ReactComponent as SignlessIcon } from '../../assets/icons/signless.svg';
-import { ReactComponent as PowerIcon } from '../../assets/icons/power.svg';
+import { ReactComponent as SignlessSVG } from '../../assets/icons/signless.svg';
+import { ReactComponent as PowerSVG } from '../../assets/icons/power.svg';
 import { useSignlessTransactions } from '../../context';
 import { copyToClipboard, getHMS, getVaraAddress, shortenString } from '../../utils';
 import { CreateSessionModal } from '../create-session-modal';
 import { EnableSessionModal } from '../enable-session-modal';
 import styles from './signless-transactions.module.css';
+import { SignlessParams } from '../signless-params-list';
 
 function SignlessTransactions() {
   const { account } = useAccount();
@@ -33,11 +34,11 @@ function SignlessTransactions() {
           <div className={styles.buttons}>
             {storagePair ? (
               !pair && (
-                <button className={styles['enable-button']} onClick={openEnableModal}>
-                  <div className={styles['item-icon']}>
-                    <SignlessIcon />
+                <button className={styles.enableButton} onClick={openEnableModal}>
+                  <div className={styles.itemIcon}>
+                    <SignlessSVG />
                   </div>
-                  <span className={styles['item-text']}>Unlock signless transactions</span>
+                  <span className={styles.itemText}>Unlock signless transactions</span>
                 </button>
               )
             ) : (
@@ -45,49 +46,47 @@ function SignlessTransactions() {
             )}
           </div>
 
-          <div className={styles['session-container']}>
-            <div className={styles['title-wrapper']}>
-              <SignlessIcon />
+          <div className={styles.sessionContainer}>
+            <div className={styles.titleWrapper}>
+              <SignlessSVG />
               <h3 className={styles.title}>Signless Session is active</h3>
             </div>
-            <ul className={styles.session}>
-              <li className={styles['session-item']}>
-                <p className={styles.heading}>
-                  {storagePair ? 'Account from the storage:' : 'Randomly generated account:'}
-                </p>
-                <div className={styles.separator} />
-                {pair && (
-                  <div className={styles.account}>
-                    <span className={styles.value}>{shortenString(getVaraAddress(pair.address), 4)}</span>
-                    <FileCopyIcon
-                      onClick={() => copyToClipboard({ value: getVaraAddress(pair.address), alert })}
-                      className={styles.copy}
-                    />
-                  </div>
-                )}
-              </li>
-              {sessionBalance && (
-                <li className={styles['session-item']}>
-                  <p className={styles.heading}>Remaining balance:</p>
-                  <div className={styles.separator} />
-                  <p className={styles.value}>
-                    {sessionBalance.value} {sessionBalance.unit}
-                  </p>
-                </li>
-              )}
-              <li className={styles['session-item']}>
-                <p className={styles.heading}>Approved Actions: </p>
-                <div className={styles.separator} />
-                <p className={styles.value}>{session.allowedActions.join(', ')}</p>
-              </li>
-              <li className={styles['session-item']}>
-                <p className={styles.heading}>Expires: </p>
-                <div className={styles.separator} />
-                <p className={styles.value}>{countdown ? getHMS(countdown) : '-- : -- : --'}</p>
-              </li>
-            </ul>
+
+            <SignlessParams
+              params={[
+                {
+                  heading: storagePair ? 'Account from the storage:' : 'Randomly generated account:',
+                  value: pair ? (
+                    <span className={styles.accountWrapper}>
+                      <span className={styles.account}>{shortenString(getVaraAddress(pair.address), 4)}</span>
+                      <Button
+                        icon={CopySVG}
+                        color="transparent"
+                        className={styles.copy}
+                        onClick={() => copyToClipboard({ value: getVaraAddress(pair.address), alert })}
+                      />
+                    </span>
+                  ) : (
+                    <span>Inactive</span>
+                  ),
+                },
+                {
+                  heading: 'Remaining balance:',
+                  value: sessionBalance ? `${sessionBalance.value} ${sessionBalance.unit}` : '-',
+                },
+                {
+                  heading: 'Approved Actions:',
+                  value: session.allowedActions.join(', '),
+                },
+                {
+                  heading: 'Expires:',
+                  value: countdown ? getHMS(countdown) : '-- : -- : --',
+                },
+              ]}
+            />
+
             <Button
-              icon={PowerIcon}
+              icon={PowerSVG}
               text="Log Out"
               color="light"
               className={styles.closeButton}
@@ -96,12 +95,13 @@ function SignlessTransactions() {
           </div>
         </>
       ) : (
-        <button className={styles['enable-button']} onClick={openCreateModal}>
-          <div className={styles['item-icon']}>
-            <SignlessIcon />
-          </div>
-          <span className={styles['item-text']}>Enable signless transactions</span>
-        </button>
+        <Button
+          icon={SignlessSVG}
+          color="transparent"
+          text="Enable signless transactions"
+          className={styles.enableButton}
+          onClick={openCreateModal}
+        />
       )}
 
       {modal === 'enable' && <EnableSessionModal close={closeModal} />}
