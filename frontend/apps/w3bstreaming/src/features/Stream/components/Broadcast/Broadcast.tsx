@@ -18,7 +18,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
   const localVideo: MutableRefObject<HTMLVideoElement | null> = useRef(null);
   const conns: MutableRefObject<Record<string, RTCPeerConnection>> = useRef({});
   const commonStream: MutableRefObject<MediaStream> = useRef(new MediaStream());
-  const mediaTrackSequence: MutableRefObject<MediaStreamSequence> = useRef(new MediaStreamSequence());
+  const mediaTrackSequence: MutableRefObject<MediaStreamSequence> = useRef(new MediaStreamSequence()); //to store the order of media tracks in commonStream.current
 
   const micTransceiver: MutableRefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
   const camTransceiver: MutableRefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
@@ -33,6 +33,126 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
   const handleGoToAccountPage = () => {
     navigate('/account');
+  };
+
+  const updatesDevices = async () => {
+    try {
+      const devices = await navigator.mediaDevices.enumerateDevices();
+
+      const requestedStream = await navigator.mediaDevices.getUserMedia({
+        video: devices.some((device) => device.kind === 'videoinput'),
+        audio: devices.some((device) => device.kind === 'audioinput'),
+      });
+
+      const sequence = mediaTrackSequence.current;
+
+      //stops current audio and video
+      const microphoneIndex = sequence.getIndex('microphone');
+
+      if (microphoneIndex !== undefined && commonStream.current.getTracks()[microphoneIndex]) {
+        commonStream.current.removeTrack(commonStream.current.getTracks()[microphoneIndex]);
+        sequence.removeByType('microphone');
+      }
+
+      Object.keys(conns.current).forEach((id) => {
+        micTransceiver.current[id]?.stop();
+      });
+
+      const cameraIndex = sequence.getIndex('camera');
+
+      if (cameraIndex !== undefined && commonStream.current.getTracks()[cameraIndex]) {
+        commonStream.current.removeTrack(commonStream.current.getTracks()[cameraIndex]);
+        sequence.removeByType('camera');
+      }
+
+      Object.keys(conns.current).forEach((id) => {
+        camTransceiver.current[id]?.stop();
+      });
+
+      //sets new ones
+      const micTrack = requestedStream.getAudioTracks()?.[0];
+
+      if (micTrack) {
+        commonStream.current.addTrack(micTrack);
+        sequence.add('microphone');
+
+        Object.keys(conns.current).forEach((id) => {
+          micTransceiver.current[id] = conns.current[id].addTransceiver(micTrack, {
+            direction: 'sendonly',
+            streams: [commonStream.current],
+          });
+        });
+        setIsSoundMuted(false);
+      } else {
+        setIsSoundMuted(true);
+      }
+
+      const camTrack = requestedStream.getVideoTracks()?.[0];
+
+      if (camTrack) {
+        commonStream.current.addTrack(camTrack);
+        sequence.add('camera');
+
+        Object.keys(conns.current).forEach((id) => {
+          camTransceiver.current[id] = conns.current[id].addTransceiver(camTrack, {
+            direction: 'sendonly',
+            streams: [commonStream.current],
+          });
+        });
+        setIsCameraBlocked(false);
+      } else {
+        setIsCameraBlocked(true);
+      }
+
+      setLocalStream(requestedStream);
+    } catch (error) {
+      console.log(error);
+      //if no devices at all then they're got removed from commonStream.current automatically
+      //we need just remove them from sequence
+      const sequence = mediaTrackSequence.current;
+
+      sequence.removeByType('microphone');
+      sequence.removeByType('camera');
+      setIsSoundMuted(true);
+      setIsCameraBlocked(true);
+    }
+  };
+
+  useEffect(() => {
+    navigator.mediaDevices.addEventListener('devicechange', () => {
+      updatesDevices();
+    });
+  }, []);
+
+  const loadDevices = async () => {
+    //gets the list of available devices
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    //finds some video and audio devices from devices and puts them together as a stream
+    const requestedStream = await navigator.mediaDevices.getUserMedia({
+      video: devices.some((device) => device.kind === 'videoinput'),
+      audio: devices.some((device) => device.kind === 'audioinput'),
+    });
+    const sequence = mediaTrackSequence.current;
+
+    const micTrack = requestedStream.getAudioTracks()?.[0];
+
+    if (micTrack) {
+      commonStream.current.addTrack(micTrack);
+      sequence.add('microphone');
+    } else {
+      setIsSoundMuted(true);
+    }
+
+    const camTrack = requestedStream.getVideoTracks()?.[0];
+
+    if (camTrack) {
+      commonStream.current.addTrack(camTrack);
+      sequence.add('camera');
+    } else {
+      setIsCameraBlocked(true);
+    }
+
+    setLocalStream(requestedStream);
   };
 
   const handleScreenShare = async () => {
@@ -223,53 +343,37 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
     }
 
     try {
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const requestedStream = await navigator.mediaDevices.getUserMedia({
-        video: devices.some((device) => device.kind === 'videoinput'),
-        audio: devices.some((device) => device.kind === 'audioinput'),
-      });
-      const sequence = mediaTrackSequence.current;
-
-      const micTrack = requestedStream.getAudioTracks()?.[0];
-
-      if (micTrack) {
-        commonStream.current.addTrack(micTrack);
-        sequence.add('microphone');
-      } else {
-        setIsSoundMuted(true);
-      }
-
-      const camTrack = requestedStream.getVideoTracks()?.[0];
-
-      if (camTrack) {
-        commonStream.current.addTrack(camTrack);
-        sequence.add('camera');
-      } else {
-        setIsCameraBlocked(true);
-      }
-
-      setLocalStream(requestedStream);
+      loadDevices();
 
       socket.emit('broadcast', account?.decodedAddress, { streamId });
 
       socket.on('watch', (idOfWatcher: string, msg: WatchMsg) => {
         conns.current[idOfWatcher] = new RTCPeerConnection(RTC_CONFIG);
+        const sequence = mediaTrackSequence.current;
 
-        if (micTrack) {
-          micTransceiver.current[idOfWatcher] = conns.current[idOfWatcher]?.addTransceiver(micTrack, {
-            direction: 'sendonly',
-            streams: [commonStream.current],
-          });
+        const micIndex = sequence.getIndex('microphone');
+
+        if (micIndex !== undefined) {
+          micTransceiver.current[idOfWatcher] = conns.current[idOfWatcher]?.addTransceiver(
+            commonStream.current.getTracks()[micIndex].clone(),
+            {
+              direction: 'sendonly',
+              streams: [commonStream.current],
+            },
+          );
         }
 
         const camIndex = sequence.getIndex('camera');
 
-        if (camTrack && camIndex !== undefined) {
+        if (camIndex !== undefined) {
           if (commonStream.current.getTracks()[camIndex].enabled) {
-            camTransceiver.current[idOfWatcher] = conns.current[idOfWatcher]?.addTransceiver(camTrack, {
-              direction: 'sendonly',
-              streams: [commonStream.current],
-            });
+            camTransceiver.current[idOfWatcher] = conns.current[idOfWatcher]?.addTransceiver(
+              commonStream.current.getTracks()[camIndex].clone(),
+              {
+                direction: 'sendonly',
+                streams: [commonStream.current],
+              },
+            );
           }
         }
 

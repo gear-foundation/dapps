@@ -25,11 +25,13 @@ export class MediaStreamSequence {
   }
 
   reindexAfter(i: number) {
-    this.mediaTrackSequence.forEach((value, key) => {
-      if (value > i) {
-        this.mediaTrackSequence.set(key, value - 1);
-      }
-    });
+    if (this.mediaTrackSequence.size) {
+      this.mediaTrackSequence.forEach((value, key) => {
+        if (value > i) {
+          this.mediaTrackSequence.set(key, value - 1);
+        }
+      });
+    }
   }
 
   getIndex(type: MediaTrackSequenceType) {
