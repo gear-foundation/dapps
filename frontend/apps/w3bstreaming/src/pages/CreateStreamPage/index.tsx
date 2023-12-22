@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
 import { CreateStreamRestrictModal } from '@/features/Auth/components';
 import { LayoutCreateForm } from '@/features/CreateStream/components/LayoutCreateForm';
