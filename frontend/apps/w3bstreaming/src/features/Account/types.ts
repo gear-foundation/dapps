@@ -12,7 +12,7 @@ export interface User {
   subscribers: string[];
   subscriptions: SubscriptionUser[];
   role: string;
-  timezone: string;
+  timeZone: string;
 }
 
 export interface UsersRes {

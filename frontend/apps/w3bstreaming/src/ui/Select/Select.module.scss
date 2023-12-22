@@ -56,7 +56,7 @@
 	transition: 0.2s ease all;
 }
 
-.select-text:focus ~ .select-label, .select-text:valid ~ .select-label {
+.select-text:focus ~ .select-label, .select-text:valid ~ .select-label, .select-text:disabled ~ .select-label {
 	color: #313635;
 	transform: translate(0, -150%);
 	padding-left: 4px;

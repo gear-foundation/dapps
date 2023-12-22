@@ -41,7 +41,7 @@ function ProfileInfo() {
       name: userInfo?.name || '',
       surname: userInfo?.surname || '',
       imgLink: userInfo?.imgLink || '',
-      timezone: userInfo?.timezone || '',
+      timezone: userInfo?.timeZone || '',
     },
     validate: {
       name: isNotEmpty('You must enter name'),
@@ -58,7 +58,7 @@ function ProfileInfo() {
     setFieldValue('name', userInfo?.name || '');
     setFieldValue('surname', userInfo?.surname || '');
     setFieldValue('imgLink', userInfo?.imgLink || '');
-    setFieldValue('timezone', userInfo?.timezone || '');
+    setFieldValue('timezone', userInfo?.timeZone || '');
   };
 
   const handleCancelEditing = () => {
@@ -76,7 +76,7 @@ function ProfileInfo() {
         name,
         surname,
         imgLink,
-        timeZone: Number(timezone.split('|')[1]) || 0,
+        timeZone: timezone,
       },
     };
 
@@ -160,7 +160,7 @@ function ProfileInfo() {
 
         return {
           label: `${zone} (${abbr} ${offset})`,
-          value: `${zone} (${abbr} ${offset})`,
+          value: zone,
         };
       }
 
@@ -169,7 +169,7 @@ function ProfileInfo() {
 
       return {
         label: `${zone} (${abbr} ${offset})`,
-        value: `${zone} (${abbr} ${offset})`,
+        value: zone,
       };
     });
   };
@@ -247,6 +247,12 @@ function ProfileInfo() {
             <span className={cx(styles['profile-info-subs-caption'])}>subscribers</span>
           </p>
           <p className={cx(styles['profile-info-role'])}>{userInfo?.role}</p>
+          <span className={cx(styles['profile-info-timezone'])}>
+            {userInfo.timeZone.replace('/', ', ')}{' '}
+            <span className={cx(styles.abbr)}>
+              ({moment.tz(userInfo.timeZone).zoneAbbr()} {moment.tz(userInfo.timeZone).format('Z')})
+            </span>
+          </span>
           <Button
             variant="outline"
             size="large"
