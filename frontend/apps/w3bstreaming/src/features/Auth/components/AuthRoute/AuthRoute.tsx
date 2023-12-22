@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router';
+import { Navigate } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
 import { AuthRouteProps } from './AuthRoute.interface';
 import { ACCOUNT } from '@/App.routes';

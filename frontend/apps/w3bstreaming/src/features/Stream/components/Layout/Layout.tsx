@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
 import styles from './Layout.module.scss';

@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
 import { cx } from '@/utils';
 import { WalletInfo } from '@/features/Wallet/components';

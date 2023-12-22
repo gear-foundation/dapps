@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
+import moment from 'moment-timezone';
 import { useAccount, useAlert, withoutCommas } from '@gear-js/react-hooks';
 import { useForm, isNotEmpty } from '@mantine/form';
 import styles from './ProfileInfo.module.scss';
@@ -18,6 +19,7 @@ import { ADDRESS } from '@/consts';
 import { IS_CREATING_ACCOUNT_ATOM } from '../../atoms';
 import { PictureDropzone } from '@/features/CreateStream/components/PictureDropzone';
 import picImage from '@/assets/icons/picture.png';
+import { Select } from '@/ui/Select';
 
 function ProfileInfo() {
   const { account } = useAccount();
@@ -39,10 +41,12 @@ function ProfileInfo() {
       name: userInfo?.name || '',
       surname: userInfo?.surname || '',
       imgLink: userInfo?.imgLink || '',
+      timezone: userInfo?.timeZone || '',
     },
     validate: {
-      name: isNotEmpty('You must enter surname'),
+      name: isNotEmpty('You must enter name'),
       surname: isNotEmpty('You must enter surname'),
+      timezone: isNotEmpty('You must select your timezone'),
     },
   });
 
@@ -54,6 +58,7 @@ function ProfileInfo() {
     setFieldValue('name', userInfo?.name || '');
     setFieldValue('surname', userInfo?.surname || '');
     setFieldValue('imgLink', userInfo?.imgLink || '');
+    setFieldValue('timezone', userInfo?.timeZone || '');
   };
 
   const handleCancelEditing = () => {
@@ -64,13 +69,14 @@ function ProfileInfo() {
     setFieldValue('imgLink', prev[0]);
   };
 
-  const handleSubmit = ({ name, surname, imgLink }: FormValues) => {
+  const handleSubmit = ({ name, surname, imgLink, timezone }: FormValues) => {
     setIsCreatingAccount(true);
     const payload = {
       EditProfile: {
         name,
         surname,
         imgLink,
+        timeZone: timezone,
       },
     };
 
@@ -107,6 +113,7 @@ function ProfileInfo() {
                         name,
                         surname,
                         imgLink,
+                        timezone,
                       }
                     : prev,
                 );
@@ -143,6 +150,30 @@ function ProfileInfo() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [users, account?.decodedAddress]);
 
+  const handleGetTimezones = () => {
+    const zones = moment.tz.names();
+
+    return zones.map((zone) => {
+      if (zone.includes('/')) {
+        const abbr = moment.tz(zone).zoneAbbr();
+        const offset = moment.tz(zone).format('Z');
+
+        return {
+          label: `${zone} (${abbr} ${offset})`,
+          value: zone,
+        };
+      }
+
+      const abbr = moment.tz(zone).zoneAbbr();
+      const offset = moment.tz(zone).format('Z');
+
+      return {
+        label: `${zone} (${abbr} ${offset})`,
+        value: zone,
+      };
+    });
+  };
+
   return (
     <div className={cx(styles['profile-info'])}>
       {!!userInfo && !isEditingProfile ? (
@@ -174,6 +205,15 @@ function ProfileInfo() {
             <div className={cx(styles['form-item'])}>
               <TextField label="Enter surname" disabled={isCreatingAccount} {...getInputProps('surname')} />
               <span className={cx(styles['field-error'])}>{errors.surname}</span>
+            </div>
+            <div className={cx(styles['form-item'])}>
+              <Select
+                label="Timezone"
+                disabled={isCreatingAccount}
+                options={handleGetTimezones()}
+                {...getInputProps('timezone')}
+              />
+              <span className={cx(styles['field-error'])}>{errors.timezone}</span>
             </div>
           </div>
           <div className={cx(styles.controls)}>
@@ -207,6 +247,12 @@ function ProfileInfo() {
             <span className={cx(styles['profile-info-subs-caption'])}>subscribers</span>
           </p>
           <p className={cx(styles['profile-info-role'])}>{userInfo?.role}</p>
+          <span className={cx(styles['profile-info-timezone'])}>
+            {userInfo.timeZone.replace('/', ', ')}{' '}
+            <span className={cx(styles.abbr)}>
+              ({moment.tz(userInfo.timeZone).zoneAbbr()} {moment.tz(userInfo.timeZone).format('Z')})
+            </span>
+          </span>
           <Button
             variant="outline"
             size="large"
