@@ -110,6 +110,7 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
                 reset();
                 setIsCreatingStream(false);
                 updateStreams();
+                alert.success('Stream has been successfully created');
               },
               onInBlock: (messageId) => {
                 logger('messageInBlock');
@@ -162,7 +163,10 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
         <div className={cx(styles.content)}>
           <div className={cx(styles.left)}>
             <div className={cx(styles['dropzone-wrapper'])}>
-              <PictureDropzone onDropFile={handleDropImg} />
+              <PictureDropzone
+                onDropFile={handleDropImg}
+                previewLinks={getInputProps('imgLink').value ? [getInputProps('imgLink').value] : undefined}
+              />
             </div>
             <Section title="Stream info">
               <div className={cx(styles.inputs)}>

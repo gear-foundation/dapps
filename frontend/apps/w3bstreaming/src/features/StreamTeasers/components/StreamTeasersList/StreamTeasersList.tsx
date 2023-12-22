@@ -33,10 +33,10 @@ function StreamTeasersList({ initialTeasersCount = 6, streamTeasersToExpand = 3 
         Object.keys(streamTeasers)
           .map((key) => ({ ...streamTeasers[key], id: key }))
           .sort((a, b) => {
-            const aStartTime = moment(Number(a.startTime.replace(/,/g, '')));
-            const bStartTime = moment(Number(b.startTime.replace(/,/g, '')));
+            const aTimeCreation = moment(Number(a.timeCreation.replace(/,/g, '')));
+            const bTimeCreation = moment(Number(b.timeCreation.replace(/,/g, '')));
 
-            return bStartTime.diff(aStartTime);
+            return bTimeCreation.diff(aTimeCreation);
           }),
       );
     }

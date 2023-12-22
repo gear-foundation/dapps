@@ -13,6 +13,7 @@ export interface Stream {
   description?: string;
   broadcasterInfo?: User;
   watchers: [];
+  timeCreation: string;
 }
 
 export interface Streams {
@@ -28,4 +29,5 @@ export interface FormattedTeaser {
   description?: string;
   imgLink?: string;
   watchers: [];
+  timeCreation: string;
 }
