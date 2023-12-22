@@ -2,8 +2,7 @@
 @use '~styles/mixins' as *;
 
 .select {
-  font-family:
-    'Roboto','Helvetica','Arial',sans-serif;
+  	font-family: 'Anuphan', 'Roboto', 'Helvetica', 'Arial', sans-serif;
 	position: relative;
 	width: 100%;
 }
@@ -14,11 +13,12 @@
 	background-color: transparent;
 	width: 100%;
 	padding: 13px 10px 13px 16px;
-	font-size: 18px;
+	font-size: 16px;
 	border-radius: 0;
 	border: 1px solid #c0c0c0;
-  border-radius: 4px;
+  	border-radius: 4px;
 	border-bottom: 1px solid rgba(0,0,0, 0.12);
+	cursor: pointer;
 }
 
 .select-text:focus {
@@ -52,17 +52,22 @@
 	pointer-events: none;
 	left: 16px;
 	top: 16px;
+	transform: translate(0, -10%);
 	transition: 0.2s ease all;
 }
 
-.select-text:focus ~ .select-label, .select-text:valid ~ .select-label {
-	color: #199680;
-	transform: translate(0, -130%);
-  padding-left: 4px;
-  padding-right: 4px;
+.select-text:focus ~ .select-label, .select-text:valid ~ .select-label, .select-text:disabled ~ .select-label {
+	color: #313635;
+	transform: translate(0, -150%);
+	padding-left: 4px;
+	padding-right: 4px;
 	transition: 0.2s ease all;
 	font-size: 12px;
-  background-color: white;
+  	background-color: white;
+}
+
+.select-text:focus ~ .select-label {
+	color: #199680;
 }
 
 .select-bar {
