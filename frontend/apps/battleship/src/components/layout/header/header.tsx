@@ -1,13 +1,10 @@
 import { useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
-
 import { Container } from '@/components/ui/container';
 import { WalletChange, WalletConnect } from '@/features/wallet/components';
-
 import { AccountInfo } from './account-info';
 import ModalBackground from './ModalBackground';
 import { Logo } from './logo';
-
 import styles from './header.module.scss';
 
 export function Header() {

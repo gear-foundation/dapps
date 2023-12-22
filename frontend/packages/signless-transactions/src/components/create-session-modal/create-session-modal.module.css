@@ -1,11 +1,10 @@
 .form {
   /* TODO: if there's margin-bottom on top element (?), label overflow is broken  */
   /* remove after @gear-js/vara-ui fix */
-  padding-top: 8px;
-
+  padding-top: 20px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 32px;
 
   &:not(:last-child) {
     margin-bottom: 32px;
@@ -19,24 +18,3 @@
   justify-content: center;
 }
 
-.summary {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  margin-bottom: 16px;
-
-  .account {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-
-    & span {
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
-
-  .heading {
-    margin-bottom: 2px;
-  }
-}
