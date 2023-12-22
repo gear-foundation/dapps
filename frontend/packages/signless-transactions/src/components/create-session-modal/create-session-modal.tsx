@@ -2,14 +2,14 @@ import { Button, Input, Modal, ModalProps } from '@gear-js/vara-ui';
 import { useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { GearKeyring, decodeAddress } from '@gear-js/api';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
-import Identicon from '@polkadot/react-identicon';
 import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
-
 import { useSignlessTransactions } from '../../context';
-import { getMilliseconds, getVaraAddress } from '../../utils';
+import { getMilliseconds } from '../../utils';
 import { EnableSessionModal } from '../enable-session-modal';
 import styles from './create-session-modal.module.css';
+import { SignlessParams } from '../signless-params-list';
+import { AccountPair } from '../account-pair';
 
 type Props = Pick<ModalProps, 'close'>;
 
@@ -87,39 +87,29 @@ function CreateSessionModal({ close }: Props) {
 
   return (
     <>
-      <Modal heading="Create Signless Session" close={close}>
-        <ul className={styles.summary}>
-          <li>
-            <h4 className={styles.heading}>
-              {storagePair ? 'Account from the storage:' : 'Randomly generated account:'}
-            </h4>
-
-            {pair && (
-              <div className={styles.account}>
-                <Identicon value={pair.address} theme="polkadot" size={14} />
-                <span>{getVaraAddress(pair.address)}</span>
-              </div>
-            )}
-          </li>
-
-          <li>
-            <h4 className={styles.heading}>Voucher to issue:</h4>
-            <p>
-              {formattedIssueVoucherValue.value} {formattedIssueVoucherValue.unit}
-            </p>
-          </li>
-
-          <li>
-            <h4 className={styles.heading}>Session duration:</h4>
-            <p>{DURATION_MINUTES} minutes</p>
-          </li>
-        </ul>
+      <Modal heading="Enable Signless Session" close={close}>
+        <SignlessParams
+          params={[
+            {
+              heading: storagePair ? 'Account from the storage:' : 'Randomly generated account:',
+              value: pair ? <AccountPair pair={pair} /> : <span />,
+            },
+            {
+              heading: 'Voucher to issue:',
+              value: `${formattedIssueVoucherValue.value} ${formattedIssueVoucherValue.unit}`,
+            },
+            {
+              heading: 'Session duration:',
+              value: `${DURATION_MINUTES} min`,
+            },
+          ]}
+        />
 
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
           {!storagePair && (
             <Input
               type="password"
-              label="Password"
+              label="Set password"
               error={errors.password?.message}
               {...register('password', {
                 required: REQUIRED_MESSAGE,
@@ -128,7 +118,7 @@ function CreateSessionModal({ close }: Props) {
             />
           )}
 
-          <Button type="submit" text="Submit" className={styles.button} isLoading={isLoading} />
+          <Button type="submit" text="Create Signless session" className={styles.button} isLoading={isLoading} />
         </form>
       </Modal>
 

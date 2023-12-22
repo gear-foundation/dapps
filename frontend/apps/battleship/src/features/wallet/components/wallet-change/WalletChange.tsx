@@ -4,13 +4,12 @@ import Identicon from '@polkadot/react-identicon';
 import { Text } from '@/components/ui/text';
 import { Button } from '@/components/ui/button';
 
-import { useAccount, useApi } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 import { useWallet } from '../../hooks';
 
-import { AvaVaraBlack } from '@/assets/images';
-import { ADDRESS } from '@/app/consts';
-
 import styles from './WalletChange.module.scss';
+import { MenuOptions } from '@dapps-frontend/ui';
+import { SignlessTransactions } from '@dapps-frontend/signless-transactions';
 
 type Props = {
   onClose(): void;
@@ -18,7 +17,6 @@ type Props = {
 };
 
 export function WalletChange({ onClose, openConnectWallet }: Props) {
-  const { api } = useApi();
   const { account, logout } = useAccount();
 
   const { walletAccounts } = useWallet();
@@ -54,20 +52,7 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
   return (
     <div>
       <div className={styles.changeAccount}>
-        <div className={styles.network}>
-          <AvaVaraBlack width={32} height={32} />
-          <div>
-            <Text weight="semibold" size="md">
-              {api?.runtimeVersion.specName.toHuman()}
-            </Text>
-            <Text size="sm" className={styles.address}>
-              {ADDRESS.NODE}
-            </Text>
-          </div>
-        </div>
-
-        <hr />
-
+        <MenuOptions customItems={[{ option: <SignlessTransactions /> }]} />
         <div>
           <ul className={styles.list}>{getAccounts()}</ul>
         </div>
