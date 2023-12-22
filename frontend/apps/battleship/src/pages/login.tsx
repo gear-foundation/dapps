@@ -2,9 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useAccount } from '@gear-js/react-hooks';
-
-import { SignlessTransactions } from '@dapps-frontend/signless-transactions';
-
 import battleshipImage from '@/assets/images/illustration-battleship.png';
 import { Button, buttonVariants } from '@/components/ui/button/button';
 import { Heading } from '@/components/ui/heading';
@@ -44,8 +41,6 @@ export default function Login() {
         <Button className={buttonVariants()} onClick={account ? onClickStartGame : openWallet}>
           {account ? 'Start the Game' : 'Connect wallet'}
         </Button>
-
-        <SignlessTransactions />
 
         <div className={styles.bottom}>
           <img src={battleshipImage} alt="" width={300} />S

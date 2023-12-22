@@ -1,0 +1,21 @@
+.container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.item {
+  padding-left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-svg {
+  margin-left: 2px;
+}
+
+.user-svg path {
+  fill: #000000
+}
