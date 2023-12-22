@@ -1,0 +1,21 @@
+[package]
+name = "nft"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+nft-io.workspace = true
+gmeta.workspace = true
+
+[dev-dependencies]
+sp-core.workspace = true
+gclient.workspace = true
+gtest.workspace = true
+gear-core.workspace = true
+tokio.workspace = true
+
+[build-dependencies]
+nft-io.workspace = true
+gear-wasm-builder.workspace = true
