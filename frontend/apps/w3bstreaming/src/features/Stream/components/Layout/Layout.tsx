@@ -4,7 +4,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import styles from './Layout.module.scss';
 import { cx, socket } from '@/utils';
 import { Button } from '@/ui';
-import speakerPhoto from '@/assets/icons/Ellipse 21.png';
+import speakerPhoto from '@/assets/icons/no-avatar-user-img.png';
 import editProfileSVG from '@/assets/icons/edit-profile-icon.svg';
 import timerSVG from '@/assets/icons/timer-icon.svg';
 import eyeSVG from '@/assets/icons/eye-icon.svg';

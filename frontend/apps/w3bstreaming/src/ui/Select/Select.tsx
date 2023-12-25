@@ -9,7 +9,9 @@ function Select({ label, size, placeholder, options, ...props }: SelectProps) {
       <select className={styles['select-text']} {...props}>
         <option value="" disabled selected />
         {options.map((option) => (
-          <option value={option.value}>{option.label}</option>
+          <option value={option.value} key={`${option.label}-${option.value}`}>
+            {option.label}
+          </option>
         ))}
       </select>
       <span className={styles['select-highlight']} />
