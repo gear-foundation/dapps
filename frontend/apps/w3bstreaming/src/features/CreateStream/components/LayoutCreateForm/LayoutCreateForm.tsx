@@ -1,4 +1,5 @@
 import { useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAtom } from 'jotai';
 import moment, { Moment } from 'moment';
 import { useForm, isNotEmpty } from '@mantine/form';
@@ -14,6 +15,7 @@ import { useCheckBalance, useHandleCalculateGas, useProgramState } from '@/hooks
 import { ADDRESS } from '@/consts';
 import { PictureDropzone } from '../PictureDropzone';
 import { IS_CREATING_STREAM } from '../../atoms';
+import { STREAMS } from '@/App.routes';
 
 function Section({ title, children }: SectionProps) {
   return (
@@ -29,6 +31,7 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
   const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, meta);
   const { checkBalance } = useCheckBalance();
   const alert = useAlert();
+  const navigate = useNavigate();
   const [isCreatingStream, setIsCreatingStream] = useAtom(IS_CREATING_STREAM);
   const { updateStreams } = useProgramState();
 
@@ -111,6 +114,7 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
                 setIsCreatingStream(false);
                 updateStreams();
                 alert.success('Stream has been successfully created');
+                navigate(`/${STREAMS}`);
               },
               onInBlock: (messageId) => {
                 logger('messageInBlock');
