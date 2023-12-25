@@ -36,6 +36,18 @@ function ProfileInfo() {
   const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, meta);
   const { checkBalance } = useCheckBalance();
 
+  const validateName = (value: string, name: string) => {
+    if (value.length > 16) {
+      return `${name} must be less than 16 symbols`;
+    }
+
+    if (!value.length) {
+      return `You must enter ${name}`;
+    }
+
+    return null;
+  };
+
   const form = useForm<FormValues>({
     initialValues: {
       name: userInfo?.name || '',
@@ -44,8 +56,8 @@ function ProfileInfo() {
       timezone: userInfo?.timeZone || '',
     },
     validate: {
-      name: isNotEmpty('You must enter name'),
-      surname: isNotEmpty('You must enter surname'),
+      name: (val) => validateName(val, 'Name'),
+      surname: (val) => validateName(val, 'Surname'),
       timezone: isNotEmpty('You must select your timezone'),
     },
   });
