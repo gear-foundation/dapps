@@ -31,7 +31,7 @@ export function MenuOptions({ customItems }: Props) {
         <UserSVG className={clsx(styles['user-svg'])} />
         <span>View in Blockchain Explorer</span>
       </a>
-      <a target="_blank" rel="noreferrer" className={clsx(styles.item)}>
+      <a href="https://vara.network/ecosystem" target="_blank" rel="noreferrer" className={clsx(styles.item)}>
         <GridSVG className={clsx(styles['user-svg'])} />
         <span>View other projects on Vara</span>
       </a>
