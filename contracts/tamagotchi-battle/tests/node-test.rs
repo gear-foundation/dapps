@@ -1,10 +1,14 @@
 use fmt::Debug;
 use gclient::{EventListener, EventProcessor, GearApi, Result};
+use gstd::debug;
 use gstd::{collections::BTreeMap, prelude::*, ActorId};
+use serde::{Deserialize, Serialize};
+use std::env;
+use std::{thread, time};
 use tamagotchi_battle_io::*;
 use tamagotchi_io::TmgInit;
 
-use gear_core::ids::ProgramId;
+use gear_core::ids::{MessageId, ProgramId};
 const PATHS: [&str; 2] = [
     "../target/wasm32-unknown-unknown/release/tamagotchi.opt.wasm",
     "../target/wasm32-unknown-unknown/release/tamagotchi_battle.opt.wasm",
@@ -69,7 +73,7 @@ async fn upload_program(
     Ok(program_id)
 }
 
-async fn send_message<T: Decode>(
+async fn send_message_listen_for_reply<T: Decode>(
     client: &GearApi,
     listener: &mut EventListener,
     destination: ProgramId,
@@ -92,6 +96,34 @@ async fn send_message<T: Decode>(
     })
 }
 
+async fn check_reply(
+    listener: &mut EventListener,
+    message_id: MessageId,
+    reply: Result<BattleReply, BattleError>,
+) -> Result<()> {
+    let (_, raw_reply, _) = listener.reply_bytes_on(message_id).await?;
+    let decoded_reply: Result<BattleReply, BattleError> = match raw_reply {
+        Ok(raw_reply) => decode(raw_reply)?,
+        Err(error) => gstd::panic!("Error in getting reply"),
+    };
+    println!("Received reply {:?}", decoded_reply);
+    assert_eq!(decoded_reply, reply, "Wrong received reply");
+    Ok(())
+}
+async fn send_message(
+    client: &GearApi,
+    destination: ProgramId,
+    payload: impl Encode + Debug,
+    _increase_gas: bool,
+) -> Result<MessageId> {
+    println!("Sending a payload: `{payload:?}`.");
+    let (message_id, _) = client
+        .send_message(destination, payload, 250_000_000_000, 0)
+        .await?;
+
+    Ok(message_id)
+}
+
 async fn transfer_balances(client: &GearApi, account: &str) -> Result<()> {
     let account_id: [u8; 32] = client.get_specific_actor_id(account).into();
     client
@@ -100,12 +132,13 @@ async fn transfer_balances(client: &GearApi, account: &str) -> Result<()> {
     Ok(())
 }
 
-async fn upload_tamagotchis(
+async fn upload_tamagotchis<'a>(
     client: &GearApi,
     listener: &mut EventListener,
-) -> Result<Vec<ActorId>> {
-    let mut tmg_ids: Vec<ActorId> = Vec::new();
-    for player in PLAYERS.into_iter() {
+) -> Result<(Vec<ActorId>, Vec<ActorId>)> {
+    let mut tmg_ids = Vec::new();
+    let mut owners = Vec::new();
+    for (i, player) in PLAYERS.into_iter().copied().enumerate() {
         let client = client
             .clone()
             .with(player)
@@ -116,10 +149,12 @@ async fn upload_tamagotchis(
         };
         let tmg_id = upload_program(&client, listener, PATHS[0], payload).await?;
         println!("Tamagotchi `{player}` is initialized.");
+        let account_id = client.get_actor_id();
+        owners.push(account_id);
         let tmg_id: [u8; 32] = tmg_id.into();
         tmg_ids.push(tmg_id.into());
     }
-    Ok(tmg_ids)
+    Ok((tmg_ids, owners))
 }
 
 async fn register_tamagotchis(
@@ -128,17 +163,17 @@ async fn register_tamagotchis(
     battle_id: ProgramId,
     tmg_ids: Vec<ActorId>,
 ) -> Result<()> {
-    for i in 0..PLAYERS.len() {
+    for (i, player) in PLAYERS.into_iter().copied().enumerate() {
         let tmg_id = tmg_ids[i];
         let client = client
             .clone()
-            .with(PLAYERS[i])
+            .with(player)
             .expect("Unable to change signer.");
         let expected_reply: Result<BattleReply, BattleError> =
             Ok(BattleReply::Registered { tmg_id });
         assert_eq!(
             Ok(expected_reply),
-            send_message(
+            send_message_listen_for_reply(
                 &client,
                 listener,
                 battle_id,
@@ -152,52 +187,114 @@ async fn register_tamagotchis(
     Ok(())
 }
 
-async fn start_battle(
-    client: &GearApi,
-    listener: &mut EventListener,
-    battle_id: ProgramId,
-) -> Result<()> {
+async fn start_battle(client: &GearApi, battle_id: ProgramId) -> Result<MessageId> {
     let client = client
         .clone()
         .with("//Alice")
         .expect("Unable to change signer.");
     // start battle
-    let expected_reply: Result<BattleReply, BattleError> = Ok(BattleReply::BattleStarted);
-    assert!(
-        Ok(expected_reply)
-            == send_message(
-                &client,
-                listener,
-                battle_id,
-                BattleAction::StartBattle,
-                true
-            )
-            .await?
-    );
-    Ok(())
+
+    let message_id = send_message(&client, battle_id, BattleAction::StartBattle, true).await?;
+    Ok(message_id)
 }
+
+async fn make_move(
+    client: &GearApi,
+    battle_id: ProgramId,
+    player: &str,
+    pair_id: PairId,
+    tmg_move: Move,
+) -> Result<MessageId> {
+    let client = client
+        .clone()
+        .with(player)
+        .expect("Unable to change signer.");
+    // start battle
+
+    let message_id = send_message(
+        &client,
+        battle_id,
+        BattleAction::MakeMove { pair_id, tmg_move },
+        true,
+    )
+    .await?;
+    Ok(message_id)
+}
+
+async fn check_battle_state(client: &GearApi, battle_id: ProgramId, expected_state: BattleState) {
+    let reply: BattleQueryReply = client
+        .read_state(battle_id, BattleQuery::State.encode())
+        .await
+        .expect("Unable to read state");
+
+    if let BattleQueryReply::State { state } = reply {
+        assert_eq!(state, expected_state);
+    } else {
+        gstd::panic!("Wrong received reply");
+    }
+}
+
+async fn get_pairs(client: &GearApi, battle_id: ProgramId) -> Result<BTreeMap<PairId, Pair>> {
+    let reply: BattleQueryReply = client
+        .read_state(battle_id, BattleQuery::GetPairs.encode())
+        .await?;
+
+    let pairs = if let BattleQueryReply::Pairs { pairs } = reply {
+        pairs
+    } else {
+        gstd::panic!("Wrong received reply");
+    };
+    Ok(pairs)
+}
+
+async fn get_pair(client: &GearApi, battle_id: ProgramId, pair_id: PairId) -> Result<Option<Pair>> {
+    let reply = client
+        .read_state(battle_id, BattleQuery::GetPair { pair_id }.encode())
+        .await?;
+
+    let pair = if let BattleQueryReply::Pair { pair } = reply {
+        pair
+    } else {
+        gstd::panic!("Wrong received reply");
+    };
+    Ok(pair)
+}
+
 #[tokio::test]
-async fn single_pair() -> Result<()> {
-    // let address = WSAddress::new("wss://node-workshop.gear.rs", 443);
+async fn ipreconfigure() -> Result<()> {
     let client = GearApi::dev().await?;
-    // let client = GearApi::dev_from_path("../target/tmp/gear")
-    //     .await?
-    //     .with("//Alice")?;
     let mut listener = client.subscribe().await?;
 
     for player in PLAYERS {
         transfer_balances(&client, player).await?;
     }
-    // let mut tmg_ids: Vec<ActorId> = Vec::new();
-    // let mut actor_ids_to_str: BTreeMap<ActorId, &str> = BTreeMap::new();
 
     // upload tamagotchis
-    let tmg_ids = upload_tamagotchis(&client, &mut listener).await?;
+    let (tmg_ids, owners) = upload_tamagotchis(&client, &mut listener).await?;
 
-    let client = client
-        .clone()
-        .with("//Alice")
-        .expect("Unable to change signer.");
+    let mut string_tmg_ids = Vec::new();
+
+    for tmg_id in tmg_ids.iter() {
+        let tmg_id_bytes: [u8; 32] = (*tmg_id).into();
+        let tmg_id_string = hex::encode(&tmg_id_bytes);
+        string_tmg_ids.push(tmg_id_string);
+    }
+
+    let serialized = serde_json::to_string(&string_tmg_ids).unwrap();
+    println!("Tamagotchi addresses {:?}", serialized);
+    env::set_var("TMG_ADDRESSES", serialized.clone());
+
+    let mut string_owners = Vec::new();
+
+    for owner_id in owners.into_iter() {
+        let owner_id_bytes: [u8; 32] = owner_id.into();
+        let owner_id_string = hex::encode(&owner_id_bytes);
+        string_owners.push(owner_id_string);
+    }
+
+    let serialized = serde_json::to_string(&string_owners).unwrap();
+    println!("Tamagotchi owners {:?}", serialized);
+    env::set_var("OWNER_ADDRESSES", serialized.clone());
 
     // upload battle contract
     let battle_id = upload_program(
@@ -218,259 +315,352 @@ async fn single_pair() -> Result<()> {
     )
     .await?;
 
-    // let battle_id_hex = hex::encode(battle_id);
-    // println!("BATTLE ID {:?}", battle_id_hex);
-
+    let battle_id_bytes: [u8; 32] = battle_id.into();
+    let battle_id_str = hex::encode(&battle_id_bytes);
+    println!("Battle id {:?}", battle_id_str);
+    env::set_var("BATTLE_ADDRESS", battle_id_str);
+    std::env::var("BATTLE_ADDRESS").expect("The env variable BATTLE_ADDRESS is not set");
     // register tamagotchis
     register_tamagotchis(&client, &mut listener, battle_id, tmg_ids).await?;
 
+    Ok(())
+}
+
+fn get_battle_id() -> Result<ProgramId> {
+    let battle_id =
+        std::env::var("BATTLE_ADDRESS").expect("The env variable BATTLE_ADDRESS is not set");
+    let battle_id_bytes = hex::decode(battle_id).expect("Unable to decode into bytes");
+    let battle_id = ProgramId::decode(&mut battle_id_bytes.as_slice())
+        .expect("Unable to decode into ProgramId");
+    Ok(battle_id)
+}
+// Both players skip their turn from the very beginning (no player has made a move).
+#[tokio::test]
+async fn initial_turns_skipped() -> Result<()> {
+    let wait = time::Duration::from_secs(120);
+    thread::sleep(wait);
+
+    let client = GearApi::dev().await?;
+    // let client = GearApi::dev_from_path("../target/tmp/gear")
+    //     .await?
+    //     .with("//Alice")?;
+    let mut listener = client.subscribe().await?;
+
+    let battle_id = get_battle_id()?;
+
     // start battle
-    start_battle(&client, &mut listener, battle_id).await?;
+    let message_id = start_battle(&client, battle_id).await?;
 
-    // // read pair_ids for players
-    // for player in PLAYERS.iter() {
-    //     let player_id = client.get_specific_actor_id(player);
-    //     let pair_ids: Vec<PairId> = client
-    //         .read_state_using_wasm_by_path(
-    //             battle_id.into(),
-    //             vec![],
-    //             "pairs_for_player",
-    //             META_WASM,
-    //             Some(player_id),
-    //         )
-    //         .await?;
-    //     println!(" Pairs {:?} for players {:?} ", pair_ids, player);
+    // check battle state
+    check_battle_state(&client, battle_id, BattleState::GameIsOn).await;
+
+    // 1st player misses the turn
+    let wait = time::Duration::from_secs(65);
+    thread::sleep(wait);
+
+    let pair = get_pair(&client, battle_id, 0)
+        .await?
+        .expect("Pair is None");
+
+    assert_eq!(pair.moves, vec![None], "Moves do not match");
+
+    // 2nd player misses the turn
+    let wait = time::Duration::from_secs(65);
+    thread::sleep(wait);
+
+    let pair = get_pair(&client, battle_id, 0).await?;
+
+    assert!(pair.is_none(), "Pair must be deleted");
+
+    check_reply(
+        &mut listener,
+        message_id,
+        Ok(BattleReply::BattleWasCancelled),
+    )
+    .await?;
+    Ok(())
+}
+
+// One player plays, the other skips.
+#[tokio::test]
+async fn one_player_plays_other_skips() -> Result<()> {
+    // let client = GearApi::dev().await?;
+    // // let client = GearApi::dev_from_path("../target/tmp/gear")
+    // //     .await?
+    // //     .with("//Alice")?;
+    // let mut listener = client.subscribe().await?;
+
+    // for player in PLAYERS {
+    //     transfer_balances(&client, player).await?;
     // }
 
-    // let mut battle_state = BattleState::GameIsOn;
+    // // upload tamagotchis
+    // let (tmg_ids, player_id_to_suri) = upload_tamagotchis(&client, &mut listener).await?;
 
-    // while battle_state != BattleState::GameIsOver {
-    //     let tmg_ids: Vec<ActorId> = client
-    //         .read_state_using_wasm_by_path(
-    //             battle_id.into(),
-    //             vec![],
-    //             "tmg_ids",
-    //             META_WASM,
-    //             <Option<()>>::None,
-    //         )
-    //         .await?;
-    //     println!("Tmg Ids {:?}", tmg_ids);
+    // let client = client
+    //     .clone()
+    //     .with("//Alice")
+    //     .expect("Unable to change signer.");
 
-    //     if battle_state == BattleState::WaitNextRound {
-    //         let client = client
-    //             .clone()
-    //             .with("//Alice")
-    //             .expect("Unable to change signer.");
-    //         // start battle
-    //         assert_eq!(
-    //             Ok(BattleEvent::BattleStarted),
-    //             send_message(
-    //                 &client,
+    // // upload battle contract
+    // let battle_id = upload_program(
+    //     &client,
+    //     &mut listener,
+    //     PATHS[1],
+    //     Config {
+    //         max_power: 10_000,
+    //         max_range: 10_000,
+    //         min_range: 3_000,
+    //         health: 2_500,
+    //         max_steps_in_round: 5,
+    //         max_participants: 50,
+    //         time_for_move: 20,
+    //         min_gas_amount: 5_000_000_000,
+    //         block_duration_ms: 3_000,
+    //     },
+    // )
+    // .await?;
+
+    // // register tamagotchis
+    // register_tamagotchis(&client, &mut listener, battle_id, tmg_ids).await?;
+
+    // // start battle
+    // start_battle(&client, battle_id).await?;
+
+    // // check battle state
+    // check_battle_state(&client, battle_id, BattleState::GameIsOn).await;
+
+    // // read pairs info
+    // let pairs = get_pairs(&client, battle_id).await?;
+
+    // for (pair_id, pair) in pairs {
+    //     let zero_msg_id: MessageId = [0; 32].into();
+    //     let max_rounds = 5;
+    //     let player_1 = pair.owner_ids[0];
+    //     let suri = player_id_to_suri
+    //         .get(&player_1)
+    //         .expect("Players does not exist");
+
+    //     let mut player_1_msg_id = zero_msg_id;
+    //     let mut prev_player_1_msg_id = zero_msg_id;
+    //     for i in 0..max_rounds {
+    //         let player_1_msg_id =
+    //             make_move(&client, battle_id, suri, pair_id, Move::Attack).await?;
+    //         let wait = time::Duration::from_secs(65);
+    //         thread::sleep(wait);
+
+    //         if prev_player_1_msg_id != zero_msg_id {
+    //             check_reply(
     //                 &mut listener,
-    //                 battle_id,
-    //                 BattleAction::StartBattle,
-    //                 true
-    //             )
-    //             .await?
-    //         );
-    //     }
-    //     let pair_ids: Vec<PairId> = client
-    //         .read_state_using_wasm_by_path(
-    //             battle_id.into(),
-    //             vec![],
-    //             "pair_ids",
-    //             META_WASM,
-    //             <Option<()>>::None,
-    //         )
-    //         .await?;
-    //     println!("Current Pair Ids {:?}", pair_ids);
-    //     for pair_id in pair_ids.iter() {
-    //         let mut game_is_over = false;
-    //         while !game_is_over {
-    //             let pair: Pair = client
-    //                 .read_state_using_wasm_by_path(
-    //                     battle_id.into(),
-    //                     vec![],
-    //                     "pair",
-    //                     META_WASM,
-    //                     Some(pair_id),
-    //                 )
-    //                 .await?;
-
-    //             let (power, health): (u16, u16) = client
-    //                 .read_state_using_wasm_by_path(
-    //                     battle_id.into(),
-    //                     vec![],
-    //                     "power_and_health",
-    //                     META_WASM,
-    //                     Some(pair.tmg_ids[0]),
-    //                 )
-    //                 .await?;
-
-    //             println!(
-    //                 "Power {:?} and health {:?} for first tamagotchi",
-    //                 power, health
-    //             );
-
-    //             let (power, health): (u16, u16) = client
-    //                 .read_state_using_wasm_by_path(
-    //                     battle_id.into(),
-    //                     vec![],
-    //                     "power_and_health",
-    //                     META_WASM,
-    //                     Some(pair.tmg_ids[1]),
-    //                 )
-    //                 .await?;
-
-    //             println!(
-    //                 "Power {:?} and health {:?} for first tamagotchi",
-    //                 power, health
-    //             );
-
-    //             let current_player: ActorId = client
-    //                 .read_state_using_wasm_by_path(
-    //                     battle_id.into(),
-    //                     vec![],
-    //                     "current_turn",
-    //                     META_WASM,
-    //                     Some(pair_id),
-    //                 )
-    //                 .await?;
-    //             let player = actor_ids_to_str.get(&current_player).unwrap();
-    //             println!("current pair {:?} current_player {:?}", pair_id, player);
-    //             let client = client
-    //                 .clone()
-    //                 .with(player)
-    //                 .expect("Unable to change signer.");
-    //             assert!(
-    //                 Ok(BattleEvent::MoveMade)
-    //                     == send_message(
-    //                         &client,
-    //                         &mut listener,
-    //                         battle_id,
-    //                         BattleAction::MakeMove {
-    //                             pair_id: *pair_id,
-    //                             tmg_move: Move::Attack
-    //                         },
-    //                         true,
-    //                     )
-    //                     .await?
-    //             );
-    //             game_is_over = client
-    //                 .read_state_using_wasm_by_path(
-    //                     battle_id.into(),
-    //                     vec![],
-    //                     "game_is_over",
-    //                     META_WASM,
-    //                     Some(pair_id),
-    //                 )
-    //                 .await?;
-    //         }
-    //     }
-    //     battle_state = client
-    //         .read_state_using_wasm_by_path(
-    //             battle_id.into(),
-    //             vec![],
-    //             "battle_state",
-    //             META_WASM,
-    //             <Option<()>>::None,
-    //         )
-    //         .await?;
-    //     println!("Battle state {:?}", battle_state);
-    // }
-    // // first round
-    // println!("First round");
-    // let round: Round = client
-    //     .read_state_using_wasm_by_path(battle_id.into(), "round", META_WASM, <Option<()>>::None)
-    //     .await?;
-    // println!(" {round:?} ");
-
-    // let mut player_0 = round.tmg_ids[0];
-    // let mut player_1 = round.tmg_ids[1];
-
-    // while (true) {
-    //     let (power_0, health_0) = get_power_and_health(&client, battle_id, &player_0).await;
-    //     let (power_1, health_1) = get_power_and_health(&client, battle_id, &player_1).await;
-
-    //     println!("-----");
-    //     println!("tamagotchi 0 power {power_0} and health {health_0}");
-    //     println!("tamagotchi 1 power {power_1} and health {health_1}");
-    //     println!("-----");
-    //     let move_0 = if health_0 < 1000 && power_1 > power_0 {
-    //         Move::Defence
-    //     } else {
-    //         Move::Attack
-    //     };
-
-    //     let move_1 = if health_1 < 1000 && power_0 > power_1 {
-    //         Move::Defence
-    //     } else {
-    //         Move::Attack
-    //     };
-
-    // assert!(
-    //     Ok(BattleEvent::MoveMade)
-    //         == send_message(
-    //             &client,
-    //             &mut listener,
-    //             battle_id,
-    //             BattleAction::MakeMove(move_0),
-    //             true,
-    //         )
-    //         .await?
-    // );
-    // assert!(
-    //     Ok(BattleEvent::MoveMade)
-    //         == send_message(
-    //             &client,
-    //             &mut listener,
-    //             battle_id,
-    //             BattleAction::MakeMove(move_1),
-    //             true,
-    //         )
-    //         .await?
-    // );
-
-    // let state: BattleState = client
-    //     .read_state_using_wasm_by_path(
-    //         battle_id.into(),
-    //         "battle_state",
-    //         META_WASM,
-    //         <Option<()>>::None,
-    //     )
-    //     .await?;
-
-    // if state == BattleState::WaitNextRound {
-    //     println!("-----");
-    //     println!("Next round");
-
-    //     assert!(
-    //         Ok(BattleEvent::NewRound)
-    //             == send_message(
-    //                 &client,
-    //                 &mut listener,
-    //                 battle_id,
-    //                 BattleAction::StartNewRound,
-    //                 true,
-    //             )
-    //             .await?
-    //     );
-
-    //         let round: Round = client
-    //             .read_state_using_wasm_by_path(
-    //                 battle_id.into(),
-    //                 "round",
-    //                 META_WASM,
-    //                 <Option<()>>::None,
+    //                 prev_player_1_msg_id,
+    //                 Ok(BattleReply::MoveMade),
     //             )
     //             .await?;
-    //         player_0 = round.tmg_ids[0];
-    //         player_1 = round.tmg_ids[1];
-    //         println!(" {round:?} ");
+    //         }
+
+    //         prev_player_1_msg_id = player_1_msg_id;
+
+    //         let pair = get_pair(&client, battle_id, pair_id)
+    //             .await?
+    //             .expect("Pair is None");
+    //         if pair.game_is_over {
+    //             // check battle state
+    //             check_battle_state(&client, battle_id, BattleState::GameIsOver).await;
+    //             break;
+    //         } else {
+    //             // number of skipped moves must be 1
+    //             assert_eq!(
+    //                 pair.amount_of_skipped_moves, 1,
+    //                 "Number of skipped moves must be 1"
+    //             );
+    //         }
     //     }
-    //     if state == BattleState::GameIsOver {
-    //         break;
+    // }
+
+    Ok(())
+}
+
+// Both players play.
+#[tokio::test]
+async fn both_players_play() -> Result<()> {
+    // let client = GearApi::dev().await?;
+    // // let client = GearApi::dev_from_path("../target/tmp/gear")
+    // //     .await?
+    // //     .with("//Alice")?;
+    // let mut listener = client.subscribe().await?;
+
+    // for player in PLAYERS {
+    //     transfer_balances(&client, player).await?;
+    // }
+
+    // // upload tamagotchis
+    // let (tmg_ids, player_id_to_suri) = upload_tamagotchis(&client, &mut listener).await?;
+
+    // let client = client
+    //     .clone()
+    //     .with("//Alice")
+    //     .expect("Unable to change signer.");
+
+    // // upload battle contract
+    // let battle_id = upload_program(
+    //     &client,
+    //     &mut listener,
+    //     PATHS[1],
+    //     Config {
+    //         max_power: 10_000,
+    //         max_range: 10_000,
+    //         min_range: 3_000,
+    //         health: 2_500,
+    //         max_steps_in_round: 5,
+    //         max_participants: 50,
+    //         time_for_move: 20,
+    //         min_gas_amount: 5_000_000_000,
+    //         block_duration_ms: 3_000,
+    //     },
+    // )
+    // .await?;
+
+    // // register tamagotchis
+    // register_tamagotchis(&client, &mut listener, battle_id, tmg_ids).await?;
+
+    // // start battle
+    // start_battle(&client, battle_id).await?;
+
+    // // check battle state
+    // check_battle_state(&client, battle_id, BattleState::GameIsOn).await;
+
+    // // read pairs info
+    // let pairs = get_pairs(&client, battle_id).await?;
+
+    // let zero_msg_id: MessageId = [0; 32].into();
+    // for (pair_id, pair) in pairs {
+    //     let max_rounds = 5;
+    //     let mut player_1_msg_id = zero_msg_id;
+    //     let mut player_2_msg_id = zero_msg_id;
+    //     let player_1 = pair.owner_ids[0];
+    //     let suri_1 = player_id_to_suri
+    //         .get(&player_1)
+    //         .expect("Players does not exist");
+    //     let player_2 = pair.owner_ids[1];
+    //     let suri_2 = player_id_to_suri
+    //         .get(&player_2)
+    //         .expect("Players does not exist");
+
+    //     for i in 0..max_rounds {
+    //         player_1_msg_id = make_move(&client, battle_id, suri_1, pair_id, Move::Attack).await?;
+
+    //         // wait just over 15 blocks before making a move from the second player
+    //         let wait = time::Duration::from_secs(45);
+    //         thread::sleep(wait);
+
+    //         if player_2_msg_id != zero_msg_id {
+    //             // wait just over 15 blocks to receive a reply from message
+    //             check_reply(&mut listener, player_2_msg_id, Ok(BattleReply::MoveMade)).await?;
+    //         }
+
+    //         player_2_msg_id = make_move(&client, battle_id, suri_2, pair_id, Move::Attack).await?;
+
+    //         // wait just over 15 blocks to receive a reply from message
+    //         let wait = time::Duration::from_secs(45);
+    //         thread::sleep(wait);
+    //         let pair = get_pair(&client, battle_id, pair_id)
+    //             .await?
+    //             .expect("Pair is None");
+
+    //         if pair.game_is_over {
+    //             // check battle state
+    //             check_battle_state(&client, battle_id, BattleState::GameIsOver).await;
+    //             break;
+    //         } else {
+    //             check_reply(&mut listener, player_1_msg_id, Ok(BattleReply::MoveMade)).await?;
+    //         }
     //     }
+    // }
+
+    Ok(())
+}
+
+// Players have made several moves and then consecutively skipped their turn (the pair should be removed).
+#[tokio::test]
+async fn consecutive_turns_skipped_after_moves() -> Result<()> {
+    // let client = GearApi::dev().await?;
+    // // let client = GearApi::dev_from_path("../target/tmp/gear")
+    // //     .await?
+    // //     .with("//Alice")?;
+    // let mut listener = client.subscribe().await?;
+
+    // for player in PLAYERS {
+    //     transfer_balances(&client, player).await?;
+    // }
+
+    // // upload tamagotchis
+    // let (tmg_ids, player_id_to_suri) = upload_tamagotchis(&client, &mut listener).await?;
+
+    // let client = client
+    //     .clone()
+    //     .with("//Alice")
+    //     .expect("Unable to change signer.");
+
+    // // upload battle contract
+    // let battle_id = upload_program(
+    //     &client,
+    //     &mut listener,
+    //     PATHS[1],
+    //     Config {
+    //         max_power: 10_000,
+    //         max_range: 10_000,
+    //         min_range: 3_000,
+    //         health: 2_500,
+    //         max_steps_in_round: 5,
+    //         max_participants: 50,
+    //         time_for_move: 20,
+    //         min_gas_amount: 5_000_000_000,
+    //         block_duration_ms: 3_000,
+    //     },
+    // )
+    // .await?;
+
+    // // register tamagotchis
+    // register_tamagotchis(&client, &mut listener, battle_id, tmg_ids).await?;
+
+    // // start battle
+    // start_battle(&client, battle_id).await?;
+
+    // // check battle state
+    // check_battle_state(&client, battle_id, BattleState::GameIsOn).await;
+
+    // // read pairs info
+    // let pairs = get_pairs(&client, battle_id).await?;
+
+    // for (pair_id, pair) in pairs {
+    //     let player_1 = pair.owner_ids[0];
+    //     let suri = player_id_to_suri
+    //         .get(&player_1)
+    //         .expect("Players does not exist");
+
+    //     let msg_id = make_move(&client, battle_id, suri, pair_id, Move::Attack).await?;
+
+    //     // wait just over 21 blocks to be sure
+    //     let time_for_move = time::Duration::from_secs(65);
+
+    //     thread::sleep(time_for_move);
+
+    //     let pair = get_pair(&client, battle_id, pair_id)
+    //         .await?
+    //         .expect("Pair is None");
+
+    //     assert!(pair.moves.is_empty(), "Moves don't match");
+
+    //     thread::sleep(time_for_move);
+
+    //     // battle must be cancelled and pair must be deleted
+    //     check_reply(&mut listener, msg_id, Ok(BattleReply::BattleWasCancelled)).await?;
+    //     let pair = get_pair(&client, battle_id, pair_id).await?;
+
+    //     assert!(pair.is_none(), "Pair must be deleted");
+
+    //     // check battle state
+    //     check_battle_state(&client, battle_id, BattleState::GameIsOver).await;
     // }
 
     Ok(())

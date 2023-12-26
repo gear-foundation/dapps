@@ -4,28 +4,17 @@ use gstd::{
     collections::{BTreeMap, BTreeSet},
     debug, exec, msg,
     prelude::*,
-    ActorId, MessageId, ReservationId,
+    ActorId,
 };
 use tamagotchi_battle_io::*;
 use tamagotchi_io::{TmgAction, TmgReply};
 mod pair;
 use pair::*;
 mod utils;
-use utils::{generate_penalty_damage, generate_power, get_random_value};
+use utils::{generate_power, get_random_value, BattleUtils};
 mod player;
-use player::*;
 
-const MAX_POWER: u16 = 10_000;
-const MAX_RANGE: u16 = 7_000;
-const MIN_RANGE: u16 = 3_000;
-const HEALTH: u16 = 2_500;
-const MAX_PARTICIPANTS: u8 = 50;
-const MAX_STEPS_IN_ROUND: u8 = 5;
 const COLORS: [&str; 6] = ["Green", "Red", "Blue", "Purple", "Orange", "Yellow"];
-const TIME_FOR_MOVE: u32 = 20;
-const GAS_AMOUNT: u64 = 10_000_000_000;
-const RESERVATION_AMOUNT: u64 = 200_000_000_000;
-const RESERVATION_DURATION: u32 = 86_400;
 
 #[derive(Default, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
@@ -40,7 +29,6 @@ struct Battle {
     pairs: BTreeMap<PairId, Pair>,
     players_to_pairs: BTreeMap<ActorId, BTreeSet<PairId>>,
     completed_games: u8,
-    reservations: BTreeMap<ActorId, ReservationId>,
     config: Config,
 }
 
@@ -48,11 +36,7 @@ static mut BATTLE: Option<Battle> = None;
 
 impl Battle {
     fn start_registration(&mut self) -> Result<BattleReply, BattleError> {
-        assert_eq!(
-            self.state,
-            BattleState::GameIsOver,
-            "The previous game must be over"
-        );
+        self.check_state(BattleState::GameIsOver)?;
         self.state = BattleState::Registration;
         self.current_winner = ActorId::zero();
         self.players_ids = Vec::new();
@@ -64,28 +48,19 @@ impl Battle {
     }
 
     async fn register(&mut self, tmg_id: &TamagotchiId) -> Result<BattleReply, BattleError> {
-        match self.state {
-            BattleState::Registration => {}
-            _ => return Err(BattleError::WrongState),
-        }
+        self.check_state(BattleState::Registration)?;
 
-        assert!(
-            self.players_ids.len() < MAX_PARTICIPANTS as usize,
-            "Maximum number of players was reached"
-        );
+        self.check_max_participants()?;
 
-        if self.players_ids.contains(tmg_id) {
-            panic!("This tamagotchi is already in game!");
-        }
+        self.check_if_tmg_in_game(tmg_id)?;
+
         let (owner, name, date_of_birth) = get_tmg_info(tmg_id).await;
 
-        if owner != msg::source() {
-            panic!("It is not your Tamagotchi");
-        }
+        check_tmg_owner(owner, msg::source())?;
 
         if !self.players.contains_key(tmg_id) {
-            let power = generate_power(self.config.min_range, self.config.max_range, *tmg_id);
-            let defence = MAX_POWER - power;
+            let power = generate_power(self.config.min_power, self.config.max_power, *tmg_id);
+            let defence = self.config.max_power - power;
             let color_index = get_random_value(COLORS.len() as u8);
             let player = Player {
                 owner,
@@ -94,7 +69,7 @@ impl Battle {
                 tmg_id: *tmg_id,
                 defence,
                 power,
-                health: HEALTH,
+                health: self.config.health,
                 color: COLORS[color_index as usize].to_string(),
                 victories: 0,
             };
@@ -102,15 +77,11 @@ impl Battle {
         } else {
             self.players
                 .entry(*tmg_id)
-                .and_modify(|player| player.health = HEALTH);
+                .and_modify(|player| player.health = self.config.health);
         }
 
         self.players_ids.push(*tmg_id);
         self.current_players.push(*tmg_id);
-
-        let reservation_id = ReservationId::reserve(RESERVATION_AMOUNT, RESERVATION_DURATION)
-            .expect("reservation across executions");
-        self.reservations.insert(*tmg_id, reservation_id);
 
         Ok(BattleReply::Registered { tmg_id: *tmg_id })
     }
@@ -120,13 +91,9 @@ impl Battle {
     /// It must also be sent when the game is on but a round is ended (the contract is in the `BattleState::WaitNextRound` state)
     /// BattleState::WaitNextRound` state means the the battles in pairs are over and winners are expecting to play in the next round
     fn start_battle(&mut self) -> Result<BattleReply, BattleError> {
-        debug!("Before starting the battle");
         match self.state {
             BattleState::Registration | BattleState::WaitNextRound => {
-                debug!("Before registration");
-                if self.players_ids.len() <= 1 {
-                    return Err(BattleError::NotEnoughPlayers);
-                }
+                self.check_min_player_amount()?;
                 self.check_admin(&msg::source())?;
 
                 // Clear the state if the state is `BattleState::WaitNextRound`
@@ -134,18 +101,17 @@ impl Battle {
                 self.players_to_pairs = BTreeMap::new();
                 self.completed_games = 0;
 
-                self.split_into_pairs();
+                self.split_into_pairs()?;
 
                 self.state = BattleState::GameIsOn;
 
                 // After the battle starts, the contract waits for a specific period of time (`time_for_move` from the config),
                 // usually equivalent to one minute, to check whether all participants have made their move.
-                debug!(" {:?}", self.config.time_for_move);
                 exec::wait_for(self.config.time_for_move + 1);
             }
             BattleState::GameIsOn => {
-                debug!("Checking moves");
                 let mut number_of_missed_turns = 0;
+                // if both players missed their turns then pair is removed from the battle
                 let mut pair_ids_to_remove = Vec::new();
                 let timestamp = exec::block_timestamp();
                 let time_for_move_ms =
@@ -154,18 +120,14 @@ impl Battle {
                 for (pair_id, pair) in self.pairs.iter_mut() {
                     // If the last update of the structure was more than the time_for_move ago,
                     //the contract sets the player's move to None and allows the second player to make their move.
-                    debug!("time_for_move {:?}", time_for_move_ms);
-                    debug!("delta {:?}", timestamp.saturating_sub(pair.last_updated));
                     if timestamp.saturating_sub(pair.last_updated) >= time_for_move_ms {
                         if pair.moves.is_empty() {
-                            debug!("First player missed turn");
                             pair.moves.push(None);
                             pair.last_updated = timestamp;
                             number_of_missed_turns += 1;
                         } else {
                             // If the contract observes that both players have missed their turn,
                             // it removes that pair from the game.
-                            debug!("Second player missed turn");
                             pair_ids_to_remove.push((
                                 *pair_id,
                                 pair.owner_ids[0],
@@ -176,13 +138,14 @@ impl Battle {
                 }
 
                 for (id, owner_0, owner_1) in pair_ids_to_remove.into_iter() {
-                    self.pairs.remove(&id);
-                    self.remove_pair_id_from_player(owner_0, id);
-                    self.remove_pair_id_from_player(owner_1, id);
+                    self.remove_pair(&id, vec![owner_0, owner_1]);
                 }
 
                 if number_of_missed_turns > 0 {
                     exec::wait_for(self.config.time_for_move + 1);
+                }
+                if self.pairs.is_empty() {
+                    return Ok(BattleReply::BattleWasCancelled);
                 }
             }
             _ => return Err(BattleError::WrongState),
@@ -190,75 +153,30 @@ impl Battle {
         Ok(BattleReply::BattleStarted)
     }
 
-    fn split_into_pairs(&mut self) {
-        let mut players_len = self.players_ids.len();
+    fn split_into_pairs(&mut self) -> Result<(), BattleError> {
+        let mut players_len = self.players_ids.len() as u8;
 
         let last_updated = exec::block_timestamp();
 
-        for pair_id in 0..self.players_ids.len() {
-            let first_tmg_id = get_random_value(players_len as u8);
-            let first_tmg = self.players_ids.remove(first_tmg_id as usize);
-
-            let first_owner = if let Some(player) = self.players.get_mut(&first_tmg) {
-                player.health = HEALTH;
-                player.owner
-            } else {
-                panic!("Can't be None: Tmg does not exsit");
-            };
-
-            players_len -= 1;
-
-            let second_tmg_id = get_random_value(players_len as u8);
-            let second_tmg = self.players_ids.remove(second_tmg_id as usize);
-            let second_owner = if let Some(player) = self.players.get_mut(&second_tmg) {
-                player.health = HEALTH;
-                player.owner
-            } else {
-                panic!("Can't be None: Tmg does not exsit");
-            };
-
-            players_len -= 1;
-
-            self.players_to_pairs
-                .entry(first_owner)
-                .and_modify(|pair_ids| {
-                    pair_ids.insert(pair_id as u8);
-                })
-                .or_insert_with(|| BTreeSet::from([pair_id as u8]));
-            self.players_to_pairs
-                .entry(second_owner)
-                .and_modify(|pair_ids| {
-                    pair_ids.insert(pair_id as u8);
-                })
-                .or_insert_with(|| BTreeSet::from([pair_id as u8]));
-
-            let pair = Pair {
-                owner_ids: vec![first_owner, second_owner],
-                tmg_ids: vec![first_tmg, second_tmg],
-                moves: Vec::new(),
-                rounds: 0,
-                game_is_over: false,
-                winner: ActorId::zero(),
-                last_updated,
-                msg_ids_in_waitlist: BTreeSet::new(),
-            };
-            self.pairs.insert(pair_id as u8, pair);
+        for pair_id in 0..self.players_ids.len() as u8 {
+            self.create_pair(&mut players_len, pair_id, last_updated)?;
 
             if players_len == 1 || players_len == 0 {
-                break;
+                return Ok(());
             }
         }
+        Ok(())
     }
 
     fn make_move(&mut self, pair_id: PairId, tmg_move: Move) -> Result<BattleReply, BattleError> {
         self.check_state(BattleState::GameIsOn)?;
         let pairs_len = self.pairs.len() as u8;
+
         let pair = get_mut_pair(&mut self.pairs, pair_id)?;
 
         if pair.game_is_over {
             return Err(BattleError::GameIsOver);
         }
-
         let current_msg_id = msg::id();
         let timestamp = exec::block_timestamp();
 
@@ -267,10 +185,25 @@ impl Battle {
         if pair.msg_ids_in_waitlist.remove(&current_msg_id) {
             let time_for_move_ms =
                 self.config.block_duration_ms * u64::from(self.config.time_for_move);
-
             if timestamp.saturating_sub(pair.last_updated) >= time_for_move_ms {
                 // the move was skipped
-                pair.moves.push(None)
+                pair.moves.push(None);
+                pair.amount_of_skipped_moves += 1;
+
+                // if two turns are missed in a row
+                if pair.amount_of_skipped_moves >= 2 {
+                    let owners = pair.owner_ids.clone();
+                    self.remove_pair(&pair_id, owners);
+                    let pairs_len = pairs_len - 1;
+                    check_all_games_completion(
+                        self.completed_games,
+                        pairs_len,
+                        &mut self.state,
+                        &mut self.current_winner,
+                        &self.players_ids,
+                    );
+                    return Ok(BattleReply::BattleWasCancelled);
+                }
             } else {
                 return Ok(BattleReply::MoveMade);
             }
@@ -283,20 +216,22 @@ impl Battle {
             check_tmg_owner(tmg_owner, msg_source)?;
             is_pair_id_in_player_pair_ids(&self.players_to_pairs, &msg_source, pair_id)?;
             pair.moves.push(Some(tmg_move));
+            pair.amount_of_skipped_moves = 0;
         }
 
         if pair.moves.len() == 2 {
             let (tmg_id_0, tmg_id_1) = (pair.tmg_ids[0], pair.tmg_ids[1]);
             let mut player_0 = get_player(&self.players, &tmg_id_0)?;
             let mut player_1 = get_player(&self.players, &tmg_id_1)?;
+
+            // save moves fo event
+            let moves = pair.moves.clone();
             let (health_loss_0, health_loss_1) = pair.process_round_outcome(
                 &mut player_0,
                 &mut player_1,
-                pairs_len,
-                self.completed_games,
-                self.config.max_steps_in_round,
-                self.config.min_range,
-                self.config.max_power,
+                &mut self.players_ids,
+                &mut self.completed_games,
+                &self.config,
             );
 
             self.players.insert(tmg_id_0, player_0);
@@ -314,15 +249,15 @@ impl Battle {
                 &self.admins[0],
                 pair_id,
                 &[health_loss_0, health_loss_1],
-                &pair.moves,
+                &moves,
             );
         }
-
         if !pair.game_is_over {
             // After the move was made, the contract waits for a specific period of time (`time_for_move` from the config),
             // usually equivalent to one minute, to check whether the next player has made his move.
             pair.msg_ids_in_waitlist.insert(current_msg_id);
-            exec::wait_for(self.config.time_for_move);
+            pair.last_updated = timestamp;
+            exec::wait_for(self.config.time_for_move + 1);
         }
 
         Ok(BattleReply::MoveMade)
@@ -334,26 +269,6 @@ impl Battle {
         }
         self.admins.push(*new_admin);
         Ok(BattleReply::AdminAdded)
-    }
-
-    fn check_admin(&self, account: &ActorId) -> Result<(), BattleError> {
-        if !self.admins.contains(&msg::source()) {
-            return Err(BattleError::NotAdmin);
-        }
-        Ok(())
-    }
-
-    fn check_state(&self, state: BattleState) -> Result<(), BattleError> {
-        if self.state != state {
-            return Err(BattleError::WrongState);
-        }
-        Ok(())
-    }
-
-    fn remove_pair_id_from_player(&mut self, player: ActorId, pair_id: PairId) {
-        self.players_to_pairs.entry(player).and_modify(|pair_ids| {
-            pair_ids.remove(&pair_id);
-        });
     }
 }
 
@@ -368,6 +283,7 @@ async fn main() {
         BattleAction::StartBattle => battle.start_battle(),
         BattleAction::AddAdmin(new_admin) => battle.add_admin(&new_admin),
     };
+    debug!("reply {:?}", reply);
     msg::reply(reply, 0).expect("Error in sending a reply");
 }
 
@@ -403,21 +319,26 @@ pub async fn get_tmg_info(tmg_id: &ActorId) -> (ActorId, String, u64) {
 extern fn state() {
     let query: BattleQuery = msg::load().expect("Unable to load the query");
     let battle = unsafe { BATTLE.take().expect("Unexpected error in taking state") };
-    match query {
+    let reply = match query {
         BattleQuery::GetPlayer { tmg_id } => {
             let player = battle.players.get(&tmg_id).cloned();
-            msg::reply(BattleQueryReply::Player { player }, 0).expect("Failed to share state");
+            BattleQueryReply::Player { player }
         }
-        BattleQuery::PlayersIds => {
-            msg::reply(
-                BattleQueryReply::PlayersIds {
-                    players_ids: battle.players_ids,
-                },
-                0,
-            )
-            .expect("Failed to share state");
+        BattleQuery::PlayersIds => BattleQueryReply::PlayersIds {
+            players_ids: battle.players_ids,
+        },
+        BattleQuery::State => BattleQueryReply::State {
+            state: battle.state,
+        },
+        BattleQuery::GetPairs => BattleQueryReply::Pairs {
+            pairs: battle.pairs,
+        },
+        BattleQuery::GetPair { pair_id } => {
+            let pair = battle.pairs.get(&pair_id).cloned();
+            BattleQueryReply::Pair { pair }
         }
-    }
+    };
+    msg::reply(reply, 0).expect("Failed to share state");
 }
 
 fn send_round_result(admin: &ActorId, pair_id: PairId, losses: &[u16], moves: &[Option<Move>]) {
@@ -440,8 +361,10 @@ fn get_mut_pair(
     pair_id: PairId,
 ) -> Result<&mut Pair, BattleError> {
     if let Some(pair) = pairs.get_mut(&pair_id) {
+        debug!("getting pair");
         Ok(pair)
     } else {
+        debug!("pair does not exist");
         Err(BattleError::PairDoesNotExist)
     }
 }
@@ -465,11 +388,17 @@ fn check_all_games_completion(
     players_ids: &Vec<ActorId>,
 ) {
     if completed_games == pairs_len {
-        if players_ids.len() == 1 {
-            *state = BattleState::GameIsOver;
-            *current_winner = players_ids[0];
-        } else {
-            *state = BattleState::WaitNextRound;
+        match players_ids.len() {
+            0 => {
+                *state = BattleState::GameIsOver;
+            }
+            1 => {
+                *state = BattleState::GameIsOver;
+                *current_winner = players_ids[0];
+            }
+            _ => {
+                *state = BattleState::WaitNextRound;
+            }
         }
     }
 }

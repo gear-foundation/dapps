@@ -1,15 +1,14 @@
 use crate::{player::PlayerFunc, utils::generate_penalty_damage, Move, Pair, Player};
-use gstd::{exec, prelude::*, ActorId};
+use gstd::{prelude::*, ActorId};
+use tamagotchi_battle_io::Config;
 pub trait PairFunc {
     fn process_round_outcome(
         &mut self,
         player_0: &mut Player,
         player_1: &mut Player,
-        pairs_len: u8,
-        completed_games: u8,
-        max_steps_in_round: u8,
-        min_power: u16,
-        max_power: u16,
+        players_ids: &mut Vec<ActorId>,
+        completed_games: &mut u8,
+        config: &Config,
     ) -> (u16, u16);
 }
 
@@ -18,11 +17,9 @@ impl PairFunc for Pair {
         &mut self,
         player_0: &mut Player,
         player_1: &mut Player,
-        pairs_len: u8,
-        completed_games: u8,
-        max_steps_in_round: u8,
-        min_power: u16,
-        max_power: u16,
+        players_ids: &mut Vec<ActorId>,
+        completed_games: &mut u8,
+        config: &Config,
     ) -> (u16, u16) {
         let mut health_loss_0: u16 = 0;
         let mut health_loss_1: u16 = 0;
@@ -103,7 +100,7 @@ impl PairFunc for Pair {
             _ => unreachable!(),
         };
 
-        if self.rounds == max_steps_in_round && winner.is_none() {
+        if self.rounds == config.max_steps_in_round && winner.is_none() {
             winner = if player_0.health >= player_1.health {
                 player_1.health = 0;
                 Some(0)
@@ -115,19 +112,20 @@ impl PairFunc for Pair {
 
         if let Some(id) = winner {
             self.game_is_over = true;
+            *completed_games += 1;
             if id == 0 {
-                player_0.update_structure(min_power, max_power, true);
+                player_0.update_structure(config.min_power, config.max_power, true);
                 self.winner = player_0.tmg_id;
+                players_ids.push(player_0.tmg_id);
             } else {
-                player_1.update_structure(min_power, max_power, true);
+                player_1.update_structure(config.min_power, config.max_power, true);
                 self.winner = player_1.tmg_id;
+                players_ids.push(player_1.tmg_id);
             }
         } else {
-            player_0.update_structure(min_power, max_power, false);
-            player_1.update_structure(min_power, max_power, false);
+            player_0.update_structure(config.min_power, config.max_power, false);
+            player_1.update_structure(config.min_power, config.max_power, false);
         }
-
-        // (health_loss_0, health_loss_1)
 
         self.moves = Vec::new();
         self.rounds += 1;

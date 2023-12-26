@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata, Out, In};
+use gmeta::{InOut, Metadata, In};
 use gstd::{collections::{BTreeMap, BTreeSet}, prelude::*, ActorId, MessageId, ReservationId};
 
 pub type TamagotchiId = ActorId;
@@ -52,8 +52,7 @@ pub struct Player {
 #[scale_info(crate = gstd::scale_info)]
 pub struct Config {
     pub max_power: u16,
-    pub max_range: u16,
-    pub min_range: u16,
+    pub min_power: u16,
     pub health: u16,
     pub max_participants: u8,
     pub max_steps_in_round: u8,
@@ -70,7 +69,7 @@ pub enum Move {
     Defence,
 }
 
-#[derive(Default, Debug, Encode, Decode, TypeInfo, Clone)]
+#[derive(Default, Debug, Encode, Decode, TypeInfo, Clone, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct Pair {
@@ -82,6 +81,7 @@ pub struct Pair {
     pub winner: ActorId,
     pub last_updated: u64,
     pub msg_ids_in_waitlist: BTreeSet<MessageId>,
+    pub amount_of_skipped_moves: u8,
 }
 
 #[derive(Debug, PartialEq, Eq, Encode, Decode, TypeInfo, Default, Clone)]
@@ -126,6 +126,7 @@ pub enum BattleReply {
     RoundResult((PairId, u16, u16, Option<Move>, Option<Move>)),
     NewRound,
     AdminAdded,
+    BattleWasCancelled,
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq, Eq, Debug)]
@@ -138,9 +139,11 @@ pub enum BattleError {
     GameIsOver,
     PairDoesNotExist,
     PlayerDoesNotExist,
-    NotTmgOwner,
     NoGamesForPlayer,
     NotPlayerGame,
+    MaxNumberWasReached,
+    TmgInGame,
+    NotTmgOwner,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
@@ -149,6 +152,9 @@ pub enum BattleError {
 pub enum BattleQuery {
     GetPlayer {tmg_id: ActorId},
     PlayersIds,
+    State,
+    GetPairs,
+    GetPair { pair_id: PairId }
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq, Eq, Debug)]
@@ -157,4 +163,7 @@ pub enum BattleQuery {
 pub enum BattleQueryReply {
     Player { player: Option<Player>},
     PlayersIds { players_ids: Vec<ActorId>},
+    State{ state: BattleState},
+    Pairs {pairs: BTreeMap<PairId, Pair>},
+    Pair { pair: Option<Pair> }
 }

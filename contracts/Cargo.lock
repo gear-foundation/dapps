@@ -7344,12 +7344,13 @@ name = "tamagotchi-battle"
 version = "1.0.2"
 dependencies = [
  "gclient",
+ "gear-core",
  "gear-wasm-builder",
  "gstd",
+ "gtest",
  "hex",
  "tamagotchi",
  "tamagotchi-battle-io",
- "tamagotchi-battle-state",
  "tamagotchi-io",
  "tokio",
 ]
@@ -7360,16 +7361,6 @@ version = "1.0.2"
 dependencies = [
  "gmeta",
  "gstd",
-]
-
-[[package]]
-name = "tamagotchi-battle-state"
-version = "1.0.2"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "tamagotchi-battle-io",
 ]
 
 [[package]]

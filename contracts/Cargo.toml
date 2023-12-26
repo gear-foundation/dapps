@@ -92,7 +92,6 @@ members = [
     "tamagotchi",
     "tamagotchi/state",
     "tamagotchi-battle",
-    "tamagotchi-battle/state",
     "tequila-train",
     "tequila-train/state",
     "tic-tac-toe",
