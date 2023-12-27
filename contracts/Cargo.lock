@@ -7349,6 +7349,8 @@ dependencies = [
  "gstd",
  "gtest",
  "hex",
+ "serde",
+ "serde_json",
  "tamagotchi",
  "tamagotchi-battle-io",
  "tamagotchi-io",
