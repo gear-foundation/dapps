@@ -1,5 +1,6 @@
 use battleship_io::{
-    BattleshipAction, BattleshipInit, BattleshipState, Entity, Ships, StateQuery, StateReply,
+    BattleshipAction, BattleshipInit, BattleshipState, Config, Entity, Ships, StateQuery,
+    StateReply,
 };
 use gclient::{EventListener, EventProcessor, GearApi, Result};
 use gear_core::ids::ProgramId;
@@ -62,6 +63,12 @@ async fn gclient_start_game_test() -> Result<()> {
 
     let init_battleship = BattleshipInit {
         bot_address: bot_actor_id.into(),
+        config: Config {
+            gas_for_move: 5_000_000_000,
+            gas_for_start: 5_000_000_000,
+            gas_to_delete_session: 5_000_000_000,
+            block_duration_ms: 3_000,
+        },
     }
     .encode();
 
@@ -95,7 +102,10 @@ async fn gclient_start_game_test() -> Result<()> {
         ship_4: vec![16, 21],
     };
 
-    let start_payload = BattleshipAction::StartGame { ships };
+    let start_payload = BattleshipAction::StartGame {
+        ships,
+        session_for_account: None,
+    };
 
     let gas_info = api
         .calculate_handle_gas(None, program_id, start_payload.encode(), 0, true)
@@ -127,6 +137,12 @@ async fn gclient_turn_test() -> Result<()> {
 
     let init_battleship = BattleshipInit {
         bot_address: bot_actor_id.into(),
+        config: Config {
+            gas_for_start: 5_000_000_000,
+            gas_for_move: 5_000_000_000,
+            gas_to_delete_session: 5_000_000_000,
+            block_duration_ms: 3_000,
+        },
     }
     .encode();
 
@@ -160,7 +176,10 @@ async fn gclient_turn_test() -> Result<()> {
             ship_3: vec![4, 9],
             ship_4: vec![16, 21],
         };
-        let start_payload = BattleshipAction::StartGame { ships };
+        let start_payload = BattleshipAction::StartGame {
+            ships,
+            session_for_account: None,
+        };
 
         let gas_info = api
             .calculate_handle_gas(None, program_id, start_payload.encode(), 0, true)
@@ -181,7 +200,10 @@ async fn gclient_turn_test() -> Result<()> {
                 || state.games[0].1.bot_board[step as usize] == Entity::Ship)
                 && !state.games[0].1.game_over
             {
-                let turn_payload = BattleshipAction::Turn { step };
+                let turn_payload = BattleshipAction::Turn {
+                    step,
+                    session_for_account: None,
+                };
                 let gas_info = api
                     .calculate_handle_gas(None, program_id, turn_payload.encode(), 0, true)
                     .await?;
