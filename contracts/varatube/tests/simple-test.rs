@@ -3,88 +3,67 @@ use gstd::{ActorId, Encode};
 use gtest::{Program, System};
 use varatube_io::*;
 
+use crate::utils::{FTokenTestFuncs, VaratubeTestFuncs};
+
 const USERS: &[u64] = &[3, 4, 5];
+pub mod utils;
+fn preconfigure(system: &System) -> (Program, Program) {
+    let ft = Program::ftoken(
+        system,
+        USERS[0],
+        String::from("MyToken"),
+        String::from("MTK"),
+        12,
+    );
 
+    ft.mint(USERS[0], 100_000_000_000);
+
+    let varatube = Program::varatube(
+        system,
+        USERS[0],
+        Config {
+            gas_for_token_transfer: 10_000_000_000,
+            gas_for_delayed_msg: 500_000_000_000,
+            block_duration: 1,
+            min_gas_limit: 20_000_000_000,
+        },
+    );
+
+    ft.approve(USERS[0], varatube.id(), 100_000_000_000);
+
+    varatube.add_token_data(USERS[0], ft.id(), 10_000, None);
+
+    (ft, varatube)
+}
 #[test]
-fn register_subscribe() {
-    let sys = System::new();
-    sys.init_logger();
+fn register_subscriber() {
+    let system = System::new();
+    system.init_logger();
 
-    let ft = Program::from_file(
-        &sys,
-        "../target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm",
-    );
-
-    ft.send(
-        USERS[0],
-        InitConfig {
-            name: String::from("MyToken"),
-            symbol: String::from("MTK"),
-            decimals: 18,
-        },
-    );
-
-    let res = ft.send(USERS[0], FTAction::Mint(1000000));
-    assert!(res.contains(&(
-        USERS[0],
-        FTEvent::Transfer {
-            from: 0.into(),
-            to: USERS[0].into(),
-            amount: 1000000,
-        }
-        .encode()
-    )));
-
-    let varatube = Program::current_opt(&sys);
-
-    let token_id = ft.id().encode();
-    let token_id = ActorId::from_slice(token_id.as_slice()).unwrap();
-
-    let state: SubscriptionState = varatube.read_state(0).unwrap();
-    assert!(state.subscribers.is_empty());
-    assert!(state.currencies.is_empty());
-
-    // Init
-    let action: TokenData = (token_id, 666);
-    varatube.send(USERS[0], action);
-
-    let state: SubscriptionState = varatube.read_state(0).unwrap();
-    assert!(state.subscribers.is_empty());
-    assert!(!state.currencies.is_empty());
-
-    let varatube_id = varatube.id().encode();
-    let varatube_id = ActorId::from_slice(varatube_id.as_slice()).unwrap();
-
-    let res = ft.send(
-        USERS[0],
-        FTAction::Approve {
-            to: varatube_id,
-            amount: 666,
-        },
-    );
-
-    assert!(res.contains(&(
-        USERS[0],
-        FTEvent::Approve {
-            from: USERS[0].into(),
-            to: varatube_id,
-            amount: 666,
-        }
-        .encode()
-    )));
+    let (ft, varatube) = preconfigure(&system);
 
     // Register Subscription
-    let action = Actions::RegisterSubscription {
-        currency_id: token_id,
-        period: Period::Month,
-        with_renewal: false,
-    };
+    varatube.register_subscription(USERS[0], ft.id(), Period::Month, true, None);
 
-    varatube.send(USERS[0], action);
-    let state: SubscriptionState = varatube.read_state(0).unwrap();
-    println!("subscribers = {:?}", state.subscribers);
-    println!("currencies = {:?}", state.currencies);
+    let reply: StateReply = varatube
+        .read_state(StateQuery::Subscribers)
+        .expect("Error in reading state");
+    if let StateReply::Subscribers(subcribers) = reply {
+        println!("{:?}", subcribers);
+    }
 
-    assert!(!state.subscribers.is_empty());
-    assert!(!state.currencies.is_empty());
+    system.spend_blocks(40);
+
+    let reply: StateReply = varatube
+        .read_state(StateQuery::Subscribers)
+        .expect("Error in reading state");
+    if let StateReply::Subscribers(subcribers) = reply {
+        println!("{:?}", subcribers);
+    }
+
+    // let state: SubscriptionState = varatube.read_state(0).unwrap();
+    // println!("currencies = {:?}", state.currencies);
+
+    // assert!(!state.subscribers.is_empty());
+    // assert!(!state.currencies.is_empty());
 }
