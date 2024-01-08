@@ -1,9 +1,29 @@
 @use '@gear-js/ui/variables' as *;
 
 .header {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    z-index: 9;
+
+    @media screen and (max-width: 767px) {
+      background: #1A1A1F;
+      position: relative;
+    }
+}
+
+.content {
+  margin: auto;
+  width: 100%;
+  max-width: 1200px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  
+  @media screen and (max-width: 767px) {
+    padding: 0 26px;
+  }
 }
 
 .link {
@@ -18,5 +38,20 @@
 
   .currency {
     color: $textColorSecondary;
+  }
+}
+
+.mobileMenuWrapper {
+  background: #1A1A1F;
+  background: linear-gradient(180deg, rgba(26,26,31,1) 0%, rgba(0,0,0,1) 60%);
+}
+
+.menuOptionsIcon,.menuOptionsItem {
+  @media screen and (max-width: 767px) {
+    color: #fff;
+
+    & path {
+      fill: #fff;
+    }
   }
 }
