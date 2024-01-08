@@ -13,7 +13,7 @@ function Header() {
     <header className={styles.header}>
       <div className={styles.content}>
         <Link to="/">
-          <img src={logo} alt="" style={{ maxWidth: '150px' }} />
+          <img src={logo} alt="logo" className={styles.logo} />
         </Link>
 
         <Link

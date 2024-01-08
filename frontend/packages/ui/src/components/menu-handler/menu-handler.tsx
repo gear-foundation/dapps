@@ -41,7 +41,7 @@ export function MenuHandler({ customItems, className }: Props) {
 
   return (
     <div className={clsx(styles.container, className?.container)} ref={menuRef}>
-      <div className={styles.walletWrapper}>
+      <div>
         <Wallet isWalletModalOpen={isWalletModalOpen} walletModalHandler={setIsWalletModalOpen} />
       </div>
       {account && (

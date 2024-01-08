@@ -108,7 +108,6 @@ function Subscription() {
   };
 
   const saveSubscriptionValues = (values: { isRenewal: boolean; period: string }) => {
-    console.log(values);
     setValuesToTransfer(values);
     openApproveModal();
   };
