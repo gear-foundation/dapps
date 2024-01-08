@@ -99,7 +99,6 @@ members = [
     "vara-man",
     "vara-man/state",
     "varatube",
-    "varatube/state",
     "w3bstreaming",
 
     # Noncontract crates

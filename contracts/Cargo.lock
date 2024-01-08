@@ -7955,6 +7955,7 @@ version = "1.0.2"
 dependencies = [
  "fungible-token",
  "fungible-token-io",
+ "gear-core",
  "gear-wasm-builder",
  "gstd",
  "gtest",
@@ -7967,16 +7968,6 @@ version = "1.0.2"
 dependencies = [
  "gmeta",
  "gstd",
-]
-
-[[package]]
-name = "varatube-state"
-version = "1.0.2"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "varatube-io",
 ]
 
 [[package]]
