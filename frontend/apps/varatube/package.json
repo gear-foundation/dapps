@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
+    "@dapps-frontend/signless-transactions": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.35.2",
     "@gear-js/react-hooks": "0.9.4",
@@ -26,6 +27,7 @@
     "buffer": "6.0.3",
     "clsx": "1.2.1",
     "ipfs-http-client": "60.0.0",
+    "jotai": "2.6.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-router-dom": "6.10.0",

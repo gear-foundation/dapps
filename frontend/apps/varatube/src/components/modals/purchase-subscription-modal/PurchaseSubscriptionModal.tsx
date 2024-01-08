@@ -3,14 +3,7 @@ import { useForm as useMantineForm } from '@mantine/form';
 import { UseFormInput } from '@mantine/form/lib/use-form';
 import { ChangeEvent } from 'react';
 import styles from './PurchaseSubscriptionModal.module.scss';
-
-const periods = [
-  { label: 'Year', value: 'Year' },
-  { label: '9 months', value: 'NineMonths' },
-  { label: '6 months', value: 'SixMonths' },
-  { label: '3 months', value: 'ThreeMonths' },
-  { label: '1 month', value: 'Month' },
-];
+import { periods } from 'consts';
 
 const initialValues = { isRenewal: true, period: periods[0].value };
 

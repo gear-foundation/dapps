@@ -2010,7 +2010,9 @@ __metadata:
   resolution: "@dapps-frontend/ui@workspace:packages/ui"
   dependencies:
     "@gear-js/ui": "npm:0.5.21"
+    "@headlessui/react": "npm:1.7.17"
     "@polkadot/react-identicon": "npm:3.6.4"
+    "@radix-ui/react-scroll-area": "npm:1.0.5"
     "@types/react": "npm:18.2.33"
     "@types/react-dom": "npm:18.2.14"
     "@typescript-eslint/eslint-plugin": "npm:6.0.0"
@@ -2020,6 +2022,7 @@ __metadata:
     eslint: "npm:8.45.0"
     eslint-plugin-react-hooks: "npm:4.6.0"
     eslint-plugin-react-refresh: "npm:0.4.3"
+    framer-motion: "npm:10.16.16"
     typescript: "npm:5.0.2"
     vite: "npm:4.4.5"
     vite-plugin-dts: "npm:3.5.1"
@@ -13687,6 +13690,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"framer-motion@npm:10.16.16":
+  version: 10.16.16
+  resolution: "framer-motion@npm:10.16.16"
+  dependencies:
+    "@emotion/is-prop-valid": "npm:^0.8.2"
+    tslib: "npm:^2.4.0"
+  peerDependencies:
+    react: ^18.0.0
+    react-dom: ^18.0.0
+  dependenciesMeta:
+    "@emotion/is-prop-valid":
+      optional: true
+  peerDependenciesMeta:
+    react:
+      optional: true
+    react-dom:
+      optional: true
+  checksum: 4cd620971e6ac044461783ee94d8fe39dafd11d658f1b2fb06f025c0c502d022bb3bf24dd95b9486325fce27e437ce575b8f033c7770539b4fb3af62a5742e71
+  languageName: node
+  linkType: hard
+
 "framer-motion@npm:10.16.2":
   version: 10.16.2
   resolution: "framer-motion@npm:10.16.2"
@@ -23864,6 +23888,7 @@ __metadata:
   resolution: "varatube@workspace:apps/varatube"
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
+    "@dapps-frontend/signless-transactions": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.35.2"
     "@gear-js/react-hooks": "npm:0.9.4"
@@ -23896,6 +23921,7 @@ __metadata:
     eslint-plugin-react: "npm:7.32.2"
     eslint-plugin-react-hooks: "npm:4.6.0"
     ipfs-http-client: "npm:60.0.0"
+    jotai: "npm:2.6.0"
     react: "npm:18.2.0"
     react-app-rewired: "npm:2.2.1"
     react-dom: "npm:18.2.0"

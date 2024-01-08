@@ -12,4 +12,14 @@ const LOCAL_STORAGE = {
   WALLET: 'wallet',
 };
 
-export { ADDRESS, LOCAL_STORAGE };
+const periods = [
+  { label: 'Year', value: 'Year', rate: 12 },
+  { label: '9 months', value: 'NineMonths', rate: 9 },
+  { label: '6 months', value: 'SixMonths', rate: 6 },
+  { label: '3 months', value: 'ThreeMonths', rate: 3 },
+  { label: '1 month', value: 'Month', rate: 1 },
+];
+
+const VOUCHER_MIN_LIMIT = 18;
+
+export { ADDRESS, LOCAL_STORAGE, periods, VOUCHER_MIN_LIMIT };
