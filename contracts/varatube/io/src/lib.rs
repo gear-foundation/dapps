@@ -1,7 +1,7 @@
 #![no_std]
 
-use gmeta::{In, Metadata, Out, InOut};
-use gstd::{collections::BTreeMap, prelude::*, ActorId};
+use gmeta::{In, Metadata, InOut};
+use gstd::{prelude::*, ActorId};
 
 pub type TokenData = (ActorId, Price);
 pub type Price = u128;
@@ -15,7 +15,7 @@ impl Metadata for SubscriptionMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = Out<SubscriptionState>;
+    type State = InOut<StateQuery, StateReply>;
 }
 
 /// Actions callable by a user on the subscription contract
@@ -43,7 +43,7 @@ pub enum Actions {
     },
     UpdateConfig {
         gas_for_token_transfer: Option<u64>,
-        gas_for_delayed_msg: Option<u64>,
+        gas_to_start_subscription_update: Option<u64>,
         block_duration: Option<u32>,
     }
 }
@@ -83,8 +83,9 @@ pub enum Error {
 #[scale_info(crate = gstd::scale_info)]
 pub struct Config {
     pub gas_for_token_transfer: u64,
-    pub gas_for_delayed_msg: u64,
+    pub gas_to_start_subscription_update: u64,
     pub block_duration: u32,
+    pub min_gas_limit: u64,
 }
 
 /// Set of time periods for which a subscription can be purchased
@@ -132,28 +133,7 @@ impl Period {
             Period::NineMonths => Self::Month.as_secs() * 9,
             Period::SixMonths => Self::Month.as_secs() * 6,
             Period::ThreeMonths => Self::Month.as_secs() * 3,
-            Period::Month => Self::SECOND * 30,
-        }
-    }
-}
-
-/// State of the subscription contract
-#[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub struct SubscriptionState {
-    pub subscribers: BTreeMap<ActorId, SubscriberData>,
-    pub currencies: BTreeMap<ActorId, Price>,
-}
-
-type V = (BTreeMap<ActorId, SubscriberData>, BTreeMap<ActorId, Price>);
-
-impl From<V> for SubscriptionState {
-    fn from(value: V) -> Self {
-        let (subscribers, currencies) = value;
-        SubscriptionState {
-            subscribers,
-            currencies,
+            Period::Month => Self::SECOND * 30 * 24 * 60 * 60,
         }
     }
 }
@@ -209,7 +189,7 @@ pub enum StateQuery {
 #[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {
    Admins(Vec<ActorId>),
-   Currencies(BTreeMap<ActorId, Price>),
-   Subscribers(BTreeMap<ActorId, SubscriberData>),
+   Currencies(Vec<(ActorId, Price)>),
+   Subscribers(Vec<(ActorId, SubscriberData)>),
    Config(Config)
 }

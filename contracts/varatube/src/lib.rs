@@ -1,6 +1,6 @@
 #![no_std]
 
-use gstd::{async_main, collections::BTreeMap, exec, msg, prelude::*, ActorId};
+use gstd::{async_main, collections::HashMap, exec, msg, prelude::*, ActorId};
 use varatube_io::*;
 
 pub mod utils;
@@ -9,8 +9,8 @@ use utils::*;
 #[derive(Default)]
 struct VaraTube {
     admins: Vec<ActorId>,
-    currencies: BTreeMap<ActorId, Price>,
-    subscribers: BTreeMap<ActorId, SubscriberData>,
+    currencies: HashMap<ActorId, Price>,
+    subscribers: HashMap<ActorId, SubscriberData>,
     config: Config,
 }
 
@@ -53,7 +53,7 @@ impl VaraTube {
             &program_id,
             &subscriber,
             period.to_blocks(self.config.block_duration),
-            self.config.gas_for_delayed_msg,
+            Some(self.config.gas_to_start_subscription_update),
         ) {
             Ok(_) => {
                 let start_date = exec::block_timestamp();
@@ -120,19 +120,26 @@ impl VaraTube {
                 &this_program,
                 subscriber,
                 period.to_blocks(self.config.block_duration),
-                self.config.gas_for_delayed_msg,
+                None,
             ) {
                 Ok(_) => {
+                    // It's necessary to check if there is enough gas for the next auto-subscription.
+                    // If not, then the `renewal_date` should be set to None
+                    let renewal_date = if exec::gas_available() <= self.config.min_gas_limit {
+                        Some((
+                            current_date + period.as_millis(),
+                            current_block + period.to_blocks(self.config.block_duration),
+                        ))
+                    } else {
+                        None
+                    };
                     self.add_subscriber(
                         subscriber,
                         SubscriberData {
                             currency_id,
                             period,
                             subscription_start: Some((current_date, current_block)),
-                            renewal_date: Some((
-                                current_date + period.as_millis(),
-                                current_block + period.to_blocks(self.config.block_duration),
-                            )),
+                            renewal_date,
                         },
                     );
                 }
@@ -181,7 +188,7 @@ impl VaraTube {
                 &this_program,
                 &subscriber,
                 period.to_blocks(self.config.block_duration),
-                self.config.gas_for_delayed_msg,
+                Some(self.config.gas_to_start_subscription_update),
             )?;
 
             let current_date = exec::block_timestamp();
@@ -217,7 +224,7 @@ impl VaraTube {
     fn update_config(
         &mut self,
         gas_for_token_transfer: Option<u64>,
-        gas_for_delayed_msg: Option<u64>,
+        gas_to_start_subscription_update: Option<u64>,
         block_duration: Option<u32>,
     ) -> Result<Reply, Error> {
         self.check_if_admin(&msg::source())?;
@@ -226,8 +233,8 @@ impl VaraTube {
             self.config.gas_for_token_transfer = gas_for_token_transfer;
         }
 
-        if let Some(gas_for_delayed_msg) = gas_for_delayed_msg {
-            self.config.gas_for_delayed_msg = gas_for_delayed_msg;
+        if let Some(gas_to_start_subscription_update) = gas_to_start_subscription_update {
+            self.config.gas_to_start_subscription_update = gas_to_start_subscription_update;
         }
 
         if let Some(block_duration) = block_duration {
@@ -274,9 +281,13 @@ async fn main() {
         Actions::AddTokenData { token_id, price } => varatube.add_token_data(token_id, price),
         Actions::UpdateConfig {
             gas_for_token_transfer,
-            gas_for_delayed_msg,
+            gas_to_start_subscription_update,
             block_duration,
-        } => varatube.update_config(gas_for_token_transfer, gas_for_delayed_msg, block_duration),
+        } => varatube.update_config(
+            gas_for_token_transfer,
+            gas_to_start_subscription_update,
+            block_duration,
+        ),
     };
     msg::reply(reply, 0).expect("Error during sending a reply");
 }
@@ -286,18 +297,12 @@ extern fn state() {
     let query: StateQuery = msg::load().expect("state: wrong payload: expected `StateQuery`");
     let varatube = unsafe { VARATUBE.take().expect("The contract is not initiazlied") };
     let reply = match query {
-        StateQuery::Admins => {
-            StateReply::Admins(varatube.admins)
-        }
-        StateQuery::Currencies => {
-            StateReply::Currencies(varatube.currencies)
-        }
+        StateQuery::Admins => StateReply::Admins(varatube.admins),
+        StateQuery::Currencies => StateReply::Currencies(varatube.currencies.into_iter().collect()),
         StateQuery::Subscribers => {
-            StateReply::Subscribers(varatube.subscribers)
+            StateReply::Subscribers(varatube.subscribers.into_iter().collect())
         }
-        StateQuery::Config => {
-            StateReply::Config(varatube.config)
-        }
+        StateQuery::Config => StateReply::Config(varatube.config),
     };
     msg::reply(reply, 0).expect("Error in sharing state");
 }

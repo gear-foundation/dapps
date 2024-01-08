@@ -99,20 +99,35 @@ pub fn send_delayed_subscription_renewal(
     program_id: &ActorId,
     subsciber: &ActorId,
     delay: u32,
-    gas_limit: u64,
+    gas_limit: Option<u64>,
 ) -> Result<(), Error> {
-    if msg::send_with_gas_delayed(
-        *program_id,
-        Actions::UpdateSubscription {
-            subscriber: *subsciber,
-        },
-        gas_limit,
-        0,
-        delay,
-    )
-    .is_err()
-    {
-        return Err(Error::ErrorDuringSendingDelayedMsg);
+    if let Some(gas_limit) = gas_limit {
+        if msg::send_with_gas_delayed(
+            *program_id,
+            Actions::UpdateSubscription {
+                subscriber: *subsciber,
+            },
+            gas_limit,
+            0,
+            delay,
+        )
+        .is_err()
+        {
+            return Err(Error::ErrorDuringSendingDelayedMsg);
+        }
+    } else {
+        if msg::send_delayed(
+            *program_id,
+            Actions::UpdateSubscription {
+                subscriber: *subsciber,
+            },
+            0,
+            delay,
+        )
+        .is_err()
+        {
+            return Err(Error::ErrorDuringSendingDelayedMsg);
+        }
     }
     Ok(())
 }
