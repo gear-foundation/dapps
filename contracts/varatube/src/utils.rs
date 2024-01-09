@@ -26,8 +26,8 @@ impl VaraTube {
 
     /// Ger subscriber.
     pub fn get_subscriber(&self, subscriber: &ActorId) -> Result<SubscriberData, Error> {
-        if let Some(subscraber_data) = self.subscribers.get(subscriber) {
-            Ok(*subscraber_data)
+        if let Some(subscriber_data) = self.subscribers.get(subscriber) {
+            Ok(*subscriber_data)
         } else {
             Err(Error::AccountDoesNotExist)
         }

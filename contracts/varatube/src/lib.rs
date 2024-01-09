@@ -1,6 +1,6 @@
 #![no_std]
 
-use gstd::{async_main, collections::HashMap, exec, msg, prelude::*, ActorId};
+use gstd::{async_main, collections::HashMap, debug, exec, msg, prelude::*, ActorId};
 use varatube_io::*;
 
 pub mod utils;
@@ -125,7 +125,7 @@ impl VaraTube {
                 Ok(_) => {
                     // It's necessary to check if there is enough gas for the next auto-subscription.
                     // If not, then the `renewal_date` should be set to None
-                    let renewal_date = if exec::gas_available() <= self.config.min_gas_limit {
+                    let renewal_date = if exec::gas_available() > self.config.min_gas_limit {
                         Some((
                             current_date + period.as_millis(),
                             current_block + period.to_blocks(self.config.block_duration),
@@ -164,7 +164,6 @@ impl VaraTube {
         subscription_data.renewal_date = None;
 
         self.add_subscriber(&subscriber, subscription_data);
-
         Ok(Reply::SubscriptionCancelled)
     }
 
@@ -303,6 +302,9 @@ extern fn state() {
             StateReply::Subscribers(varatube.subscribers.into_iter().collect())
         }
         StateQuery::Config => StateReply::Config(varatube.config),
+        StateQuery::GetSubscriber(account) => {
+            StateReply::SubscriberData(varatube.subscribers.get(&account).cloned())
+        }
     };
     msg::reply(reply, 0).expect("Error in sharing state");
 }

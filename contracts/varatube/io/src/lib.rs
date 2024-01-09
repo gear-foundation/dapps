@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, Metadata, InOut};
+use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 
 pub type TokenData = (ActorId, Price);
@@ -31,12 +31,16 @@ pub enum Actions {
         with_renewal: bool,
     },
     /// Update (renew or end) an existing subscription.
-    UpdateSubscription { subscriber: ActorId },
+    UpdateSubscription {
+        subscriber: ActorId,
+    },
     /// Cancel existing subscription
     CancelSubscription,
     /// Initialize or delete a pending subscription (which can be the case
     /// if `RegisterSubscription` action failed due to out-of-gas)
-    ManagePendingSubscription { enable: bool },
+    ManagePendingSubscription {
+        enable: bool,
+    },
     AddTokenData {
         token_id: ActorId,
         price: Price,
@@ -45,7 +49,7 @@ pub enum Actions {
         gas_for_token_transfer: Option<u64>,
         gas_to_start_subscription_update: Option<u64>,
         block_duration: Option<u32>,
-    }
+    },
 }
 
 /// The contract's replies in case of successful message execution.
@@ -90,7 +94,7 @@ pub struct Config {
 
 /// Set of time periods for which a subscription can be purchased
 /// in context of the sucbscription contract.
-#[derive(Debug, Clone, Copy, Default, Encode, Decode, TypeInfo)]
+#[derive(Debug, Clone, Copy, Default, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum Period {
@@ -119,7 +123,7 @@ impl Period {
         }
     }
 
-    pub fn to_blocks(&self, target_block_time: u32) -> u32 {      
+    pub fn to_blocks(&self, target_block_time: u32) -> u32 {
         self.as_secs().div_ceil(target_block_time)
     }
 
@@ -139,7 +143,7 @@ impl Period {
 }
 
 /// Subscriber's data
-#[derive(Debug, Clone, Copy, Default, Encode, Decode, TypeInfo)]
+#[derive(Debug, Clone, Copy, Default, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct SubscriberData {
@@ -177,10 +181,11 @@ pub struct SubscriberDataState {
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum StateQuery {
-   Admins,
-   Currencies,
-   Subscribers,
-   Config,
+    Admins,
+    Currencies,
+    Subscribers,
+    Config,
+    GetSubscriber(ActorId),
 }
 
 /// Subscriber's state
@@ -188,8 +193,9 @@ pub enum StateQuery {
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {
-   Admins(Vec<ActorId>),
-   Currencies(Vec<(ActorId, Price)>),
-   Subscribers(Vec<(ActorId, SubscriberData)>),
-   Config(Config)
+    Admins(Vec<ActorId>),
+    Currencies(Vec<(ActorId, Price)>),
+    Subscribers(Vec<(ActorId, SubscriberData)>),
+    Config(Config),
+    SubscriberData(Option<SubscriberData>),
 }

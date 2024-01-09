@@ -2,7 +2,9 @@ use fungible_token_io::{FTAction, InitConfig, IoFungibleToken};
 use gear_core::ids::ProgramId;
 use gstd::Encode;
 use gtest::{Program, System};
-use varatube_io::{Actions, Config, Error, Period, Price, Reply};
+use varatube_io::{
+    Actions, Config, Error, Period, Price, Reply, StateQuery, StateReply, SubscriberData,
+};
 
 pub trait FTokenTestFuncs {
     fn ftoken(system: &System, from: u64, name: String, symbol: String, decimals: u8) -> Program;
@@ -78,6 +80,7 @@ pub trait VaratubeTestFuncs {
     fn update_subscription(&self, from: u64, subscriber: u64, error: Option<Error>);
     fn cancel_subscription(&self, from: u64, error: Option<Error>);
     fn add_token_data(&self, from: u64, currency_id: ProgramId, price: Price, error: Option<Error>);
+    fn get_subscriber_data(&self, subscriber: u64) -> Option<SubscriberData>;
 }
 
 impl VaratubeTestFuncs for Program<'_> {
@@ -161,6 +164,17 @@ impl VaratubeTestFuncs for Program<'_> {
         } else {
             let expected_reply: Result<Reply, Error> = Ok(Reply::PaymentAdded);
             assert!(result.contains(&(from, expected_reply.encode())));
+        }
+    }
+
+    fn get_subscriber_data(&self, subscriber: u64) -> Option<SubscriberData> {
+        let state: StateReply = self
+            .read_state(StateQuery::GetSubscriber(subscriber.into()))
+            .expect("Unable to read varatube state");
+        if let StateReply::SubscriberData(subscriber_data) = state {
+            subscriber_data
+        } else {
+            gstd::panic!("Wrong received reply");
         }
     }
 }
