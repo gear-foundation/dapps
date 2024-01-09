@@ -7,14 +7,26 @@ use varatube_io::{
 };
 
 pub trait FTokenTestFuncs {
-    fn ftoken(system: &System, from: u64, name: String, symbol: String, decimals: u8) -> Program<'_>;
+    fn ftoken(
+        system: &System,
+        from: u64,
+        name: String,
+        symbol: String,
+        decimals: u8,
+    ) -> Program<'_>;
     fn mint(&self, from: u64, amount: u128);
     fn check_balance(&self, account: u64, expected_amount: u128);
     fn approve(&self, from: u64, approved_account: ProgramId, amount: u128);
 }
 
 impl FTokenTestFuncs for Program<'_> {
-    fn ftoken(system: &System, from: u64, name: String, symbol: String, decimals: u8) -> Program<'_> {
+    fn ftoken(
+        system: &System,
+        from: u64,
+        name: String,
+        symbol: String,
+        decimals: u8,
+    ) -> Program<'_> {
         let ftoken = Program::from_file(
             system,
             "../target/wasm32-unknown-unknown/release/fungible_token.opt.wasm",
