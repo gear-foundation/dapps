@@ -7307,6 +7307,7 @@ dependencies = [
 name = "syndote-io"
 version = "1.0.2"
 dependencies = [
+ "gcore",
  "gmeta",
  "gstd",
 ]

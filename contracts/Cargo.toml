@@ -232,6 +232,7 @@ gmeta = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
 gclient = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
 gtest = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
 gear-core = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
+gcore = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
 
 # External
 
