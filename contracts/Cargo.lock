@@ -4214,6 +4214,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "nft"
+version = "1.0.2"
+dependencies = [
+ "gclient",
+ "gear-core",
+ "gear-wasm-builder",
+ "gmeta",
+ "gstd",
+ "gtest",
+ "nft-io",
+ "sp-core 22.0.0",
+ "tokio",
+]
+
+[[package]]
+name = "nft-io"
+version = "1.0.2"
+dependencies = [
+ "gear-lib-old",
+ "gmeta",
+ "gstd",
+ "parity-scale-codec",
+ "primitive-types",
+ "scale-info",
+]
+
+[[package]]
 name = "nft-marketplace"
 version = "1.0.2"
 dependencies = [
