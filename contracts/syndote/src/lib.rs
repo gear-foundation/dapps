@@ -14,7 +14,6 @@ pub mod messages;
 pub mod strategic_actions;
 pub mod utils;
 
-const RESERVATION_AMOUNT: u64 = 245_000_000_000;
 const GAS_FOR_ROUND: u64 = 60_000_000_000;
 
 pub const NUMBER_OF_CELLS: u8 = 40;
@@ -43,49 +42,47 @@ pub struct Game {
     ownership: Vec<ActorId>,
     game_status: GameStatus,
     winner: ActorId,
+    config: Config,
 }
 
 static mut GAME: Option<Game> = None;
 static mut RESERVATION: Option<Vec<ReservationId>> = None;
 
 impl Game {
-    fn change_admin(&mut self, admin: &ActorId) {
+    fn change_admin(&mut self, admin: &ActorId)-> Result<GameReply, GameError> {
         assert_eq!(msg::source(), self.admin);
         self.admin = *admin;
-        msg::reply(GameEvent::AdminChanged, 0).expect("Error in a reply `GameEvent::AdminChanged`");
+        Ok(GameReply::AdminChanged)
     }
-    fn reserve_gas(&self) {
-        unsafe {
-            let reservation_id = ReservationId::reserve(RESERVATION_AMOUNT, 600)
-                .expect("reservation across executions");
-            let reservations = RESERVATION.get_or_insert(Default::default());
-            reservations.push(reservation_id);
-        }
-        msg::reply(GameEvent::GasReserved, 0).expect("");
-    }
-    fn start_registration(&mut self) {
+
+    fn start_registration(&mut self) -> Result<GameReply, GameError>{
         self.check_status(GameStatus::Finished);
         self.only_admin();
         let mut game: Game = Game {
             admin: self.admin,
             ..Default::default()
         };
+      
         init_properties(&mut game.properties, &mut game.ownership);
         *self = game;
-        msg::reply(GameEvent::StartRegistration, 0)
-            .expect("Error in sending a reply `GameEvent::StartRegistration");
+       Ok(GameReply::RegistrationStarted)
     }
 
-    fn register(&mut self, player: &ActorId) {
+    fn register(&mut self, player: &ActorId) -> Result<GameReply, GameError> {
         self.check_status(GameStatus::Registration);
         assert!(
             !self.players.contains_key(player),
             "You have already registered"
         );
+        let reservation_id = match ReservationId::reserve(self.config.reservation_amount, self.config.reservation_duration) {
+            Ok(id) => id,
+            Err(_) => return Err(GameError::ReservationError)
+        };
         self.players.insert(
             *player,
             PlayerInfo {
                 balance: INITIAL_BALANCE,
+                reservation_id,
                 ..Default::default()
             },
         );
@@ -93,11 +90,10 @@ impl Game {
         if self.players_queue.len() == NUMBER_OF_PLAYERS as usize {
             self.game_status = GameStatus::Play;
         }
-        msg::reply(GameEvent::Registered, 0)
-            .expect("Error in sending a reply `GameEvent::Registered`");
+        Ok(GameReply::Registered)
     }
 
-    async fn play(&mut self) {
+    async fn play(&mut self)-> Result<GameReply, GameError>  {
         //self.check_status(GameStatus::Play);
         assert!(
             msg::source() == self.admin || msg::source() == exec::program_id(),
@@ -108,14 +104,11 @@ impl Game {
             if self.players_queue.len() <= 1 {
                 self.winner = self.players_queue[0];
                 self.game_status = GameStatus::Finished;
-                msg::reply(
-                    GameEvent::GameFinished {
+                return Ok(
+                    GameReply::GameFinished {
                         winner: self.winner,
                     },
-                    0,
                 )
-                .expect("Error in sending a reply `GameEvent::GameFinished`");
-                break;
             }
             if exec::gas_available() <= GAS_FOR_ROUND {
                 unsafe {
@@ -123,9 +116,7 @@ impl Game {
                     if let Some(id) = reservations.pop() {
                         msg::send_from_reservation(id, exec::program_id(), GameAction::Play, 0)
                             .expect("Failed to send message");
-                        msg::reply(GameEvent::NextRoundFromReservation, 0).expect("");
-
-                        break;
+                        return Ok(GameReply::NextRoundFromReservation);
                     } else {
                         panic!("GIVE ME MORE GAS");
                     };
@@ -226,7 +217,7 @@ impl Game {
 
                 msg::send(
                     self.admin,
-                    GameEvent::Step {
+                    GameReply::Step {
                         players: self
                             .players
                             .iter()
@@ -242,6 +233,11 @@ impl Game {
                 .expect("Error in sending a message `GameEvent::Step`");
             }
         }
+        Ok(
+            GameReply::GameFinished {
+                winner: self.winner,
+            },
+        )
     }
 }
 
@@ -249,9 +245,8 @@ impl Game {
 async fn main() {
     let action: GameAction = msg::load().expect("Could not load `GameAction`");
     let game: &mut Game = unsafe { GAME.get_or_insert(Default::default()) };
-    match action {
+    let reply = match action {
         GameAction::Register { player } => game.register(&player),
-        GameAction::ReserveGas => game.reserve_gas(),
         GameAction::StartRegistration => game.start_registration(),
         GameAction::Play => game.play().await,
         GameAction::ThrowRoll {
@@ -271,7 +266,8 @@ async fn main() {
             properties_for_sale,
         } => game.pay_rent(properties_for_sale),
         GameAction::ChangeAdmin(admin) => game.change_admin(&admin),
-    }
+    };
+    msg::reply(reply, 0).expect("Error during sending a reply");
 }
 
 #[no_mangle]

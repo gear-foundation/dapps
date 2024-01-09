@@ -7,3 +7,4 @@ publish.workspace = true
 [dependencies]
 gstd.workspace = true
 gmeta.workspace = true
+gcore.workspace = true

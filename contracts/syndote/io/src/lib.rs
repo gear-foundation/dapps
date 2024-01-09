@@ -1,7 +1,7 @@
 #![no_std]
 
 use gmeta::{InOut, Metadata, Out};
-use gstd::{collections::BTreeSet, prelude::*, ActorId};
+use gstd::{collections::BTreeSet, prelude::*, ActorId, ReservationId};
 
 pub type Price = u32;
 pub type Rent = u32;
@@ -19,7 +19,7 @@ pub struct SynMetadata;
 
 impl Metadata for SynMetadata {
     type Init = ();
-    type Handle = InOut<GameAction, GameEvent>;
+    type Handle = InOut<GameAction, Result<GameReply, GameError>>;
     type Reply = ();
     type Others = ();
     type Signal = ();
@@ -53,7 +53,6 @@ pub enum GameAction {
     Register {
         player: ActorId,
     },
-    ReserveGas,
     Play,
     ThrowRoll {
         pay_fine: bool,
@@ -77,9 +76,9 @@ pub enum GameAction {
 #[derive(Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub enum GameEvent {
+pub enum GameReply {
     Registered,
-    StartRegistration,
+    RegistrationStarted,
     GameFinished {
         winner: ActorId,
     },
@@ -101,7 +100,18 @@ pub enum GameEvent {
     AdminChanged,
 }
 
-#[derive(Default, Debug, Clone, Encode, Decode, TypeInfo)]
+#[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum GameError {
+    AlreadyReistered,
+    ReservationError,
+    WrongGameStatus,
+    OnlyAdmin,
+    NotInTheGame,
+    StrategicError,
+}
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct PlayerInfo {
@@ -113,6 +123,23 @@ pub struct PlayerInfo {
     pub cells: BTreeSet<u8>,
     pub penalty: u8,
     pub lost: bool,
+    pub reservation_id: ReservationId,
+}
+
+impl Default for PlayerInfo {
+    fn default() -> Self {
+        PlayerInfo {
+            position: 0,
+            balance: 0,
+            debt: 0,
+            in_jail: false,
+            round: 0,
+            cells: BTreeSet::new(),
+            penalty: 0,
+            lost: false,
+            reservation_id: gcore::ReservationId::from([0; 32]).into(),
+        }
+    }
 }
 
 #[derive(PartialEq, Eq, Encode, Decode, Clone, TypeInfo, Copy)]
@@ -147,4 +174,10 @@ impl Default for GameStatus {
     fn default() -> Self {
         Self::Registration
     }
+}
+
+#[derive(Default, Clone)]
+pub struct Config {
+    pub reservation_amount: u64,
+    pub reservation_duration: u32,
 }

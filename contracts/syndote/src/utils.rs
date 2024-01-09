@@ -211,9 +211,6 @@ pub fn init_properties(
     }
 }
 
-pub enum GameError {
-    StrategicError,
-}
 
 impl From<Game> for GameState {
     fn from(game: Game) -> GameState {

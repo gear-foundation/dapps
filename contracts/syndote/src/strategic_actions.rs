@@ -3,14 +3,13 @@ use crate::*;
 impl Game {
     // to throw rolls to go out from the prison
     // `pay_fine`: to pay fine or not if there is not double
-    pub fn throw_roll(&mut self, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) {
+    pub fn throw_roll(&mut self, pay_fine: bool, properties_for_sale: Option<Vec<u8>>)-> Result<GameReply, GameError>  {
         self.only_player();
         let player_info = match get_player_info(&self.current_player, &mut self.players, self.round)
         {
             Ok(player_info) => player_info,
             Err(_) => {
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             }
         };
 
@@ -18,8 +17,7 @@ impl Game {
         if !player_info.in_jail {
             //     debug!("PENALTY: PLAYER IS NOT IN JAIL");
             player_info.penalty += 1;
-            reply_strategic_error();
-            return;
+            return Err(GameError::StrategicError);
         }
 
         if let Some(properties) = properties_for_sale {
@@ -33,8 +31,7 @@ impl Game {
             )
             .is_err()
             {
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             };
         }
 
@@ -45,31 +42,26 @@ impl Game {
         } else if pay_fine {
             if player_info.balance < FINE {
                 player_info.penalty += 1;
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             }
             player_info.balance -= FINE;
             player_info.in_jail = false;
         }
         player_info.round = self.round;
-        msg::reply(
-            GameEvent::Jail {
+       Ok(
+            GameReply::Jail {
                 in_jail: player_info.in_jail,
                 position: player_info.position,
-            },
-            0,
-        )
-        .expect("Error in sending a reply `GameEvent::Jail`");
+            })
     }
 
-    pub fn add_gear(&mut self, properties_for_sale: Option<Vec<u8>>) {
+    pub fn add_gear(&mut self, properties_for_sale: Option<Vec<u8>>)-> Result<GameReply, GameError>  {
         self.only_player();
         let player_info = match get_player_info(&self.current_player, &mut self.players, self.round)
         {
             Ok(player_info) => player_info,
             Err(_) => {
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             }
         };
 
@@ -84,8 +76,7 @@ impl Game {
             )
             .is_err()
             {
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             };
         }
 
@@ -93,8 +84,7 @@ impl Game {
         if player_info.balance < COST_FOR_UPGRADE {
             //  debug!("PENALTY: NOT ENOUGH BALANCE FOR UPGRADE");
             player_info.penalty += 1;
-            reply_strategic_error();
-            return;
+            return Err(GameError::StrategicError);
         }
 
         let position = player_info.position;
@@ -103,38 +93,34 @@ impl Game {
             if account != &msg::source() {
                 //       debug!("PENALTY: TRY TO UPGRADE NOT OWN CELL");
                 player_info.penalty += 1;
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             }
             gears
         } else {
             player_info.penalty += 1;
-            reply_strategic_error();
-            return;
+            return Err(GameError::StrategicError);
         };
 
         // maximum amount of gear is reached
         if gears.len() == 3 {
             //        debug!("PENALTY: MAXIMUM AMOUNT OF GEARS ON CELL");
             player_info.penalty += 1;
-            reply_strategic_error();
-            return;
+            return Err(GameError::StrategicError);
         }
 
         gears.push(Gear::Bronze);
         player_info.balance -= COST_FOR_UPGRADE;
         player_info.round = self.round;
-        reply_strategic_success();
+        Ok(GameReply::StrategicSuccess)
     }
 
-    pub fn upgrade(&mut self, properties_for_sale: Option<Vec<u8>>) {
+    pub fn upgrade(&mut self, properties_for_sale: Option<Vec<u8>>) -> Result<GameReply, GameError> {
         self.only_player();
         let player_info = match get_player_info(&self.current_player, &mut self.players, self.round)
         {
             Ok(player_info) => player_info,
             Err(_) => {
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             }
         };
 
@@ -149,8 +135,7 @@ impl Game {
             )
             .is_err()
             {
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             };
         }
 
@@ -158,8 +143,7 @@ impl Game {
         if player_info.balance < COST_FOR_UPGRADE {
             //       debug!("PENALTY: NOT ENOUGH BALANCE FOR UPGRADE");
             player_info.penalty += 1;
-            reply_strategic_error();
-            return;
+            return Err(GameError::StrategicError);
         }
 
         let position = player_info.position;
@@ -167,15 +151,13 @@ impl Game {
         if let Some((account, gears, price, rent)) = &mut self.properties[position as usize] {
             if account != &msg::source() {
                 player_info.penalty += 1;
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             }
             // if nothing to upgrade
             if gears.is_empty() {
                 //        debug!("PENALTY: NOTHING TO UPGRADE");
                 player_info.penalty += 1;
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             }
             for gear in gears {
                 if *gear != Gear::Gold {
@@ -189,24 +171,22 @@ impl Game {
             }
         } else {
             player_info.penalty += 1;
-            reply_strategic_error();
-            return;
+            return Err(GameError::StrategicError);
         };
 
         player_info.balance -= COST_FOR_UPGRADE;
         player_info.round = self.round;
-        reply_strategic_success();
+        Ok(GameReply::StrategicSuccess)
     }
 
     // if a cell is free, a player can buy it
-    pub fn buy_cell(&mut self, properties_for_sale: Option<Vec<u8>>) {
+    pub fn buy_cell(&mut self, properties_for_sale: Option<Vec<u8>>) -> Result<GameReply, GameError> {
         self.only_player();
         let player_info = match get_player_info(&self.current_player, &mut self.players, self.round)
         {
             Ok(player_info) => player_info,
             Err(_) => {
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             }
         };
         let position = player_info.position;
@@ -222,8 +202,7 @@ impl Game {
             )
             .is_err()
             {
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             };
         }
 
@@ -232,38 +211,34 @@ impl Game {
             if account != &mut ActorId::zero() {
                 //       debug!("PENALTY: THAT CELL IS ALREDY BOUGHT");
                 player_info.penalty += 1;
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             }
             // if a player has not enough balance
             if player_info.balance < *price {
                 player_info.penalty += 1;
                 //      debug!("PENALTY: NOT ENOUGH BALANCE FOR BUYING");
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             }
             player_info.balance -= *price;
             *account = msg::source();
         } else {
             player_info.penalty += 1;
             //       debug!("PENALTY: THAT FIELD CAN'T BE SOLD");
-            reply_strategic_error();
-            return;
+            return Err(GameError::StrategicError);
         };
         player_info.cells.insert(position);
         self.ownership[position as usize] = msg::source();
         player_info.round = self.round;
-        reply_strategic_success();
+        Ok(GameReply::StrategicSuccess)
     }
 
-    pub fn pay_rent(&mut self, properties_for_sale: Option<Vec<u8>>) {
+    pub fn pay_rent(&mut self, properties_for_sale: Option<Vec<u8>>)  -> Result<GameReply, GameError> {
         self.only_player();
         let player_info = match get_player_info(&self.current_player, &mut self.players, self.round)
         {
             Ok(player_info) => player_info,
             Err(_) => {
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             }
         };
         if let Some(properties) = properties_for_sale {
@@ -277,8 +252,7 @@ impl Game {
             )
             .is_err()
             {
-                reply_strategic_error();
-                return;
+                return Err(GameError::StrategicError);
             };
         }
 
@@ -288,8 +262,7 @@ impl Game {
         if account == msg::source() {
             player_info.penalty += 1;
             //   debug!("PENALTY: PAY RENT TO HIMSELF");
-            reply_strategic_error();
-            return;
+            return Err(GameError::StrategicError);
         }
 
         let rent = if let Some((_, _, _, rent)) = self.properties[position as usize] {
@@ -300,15 +273,13 @@ impl Game {
         if rent == 0 {
             //    debug!("PENALTY: CELL WITH NO PROPERTIES");
             player_info.penalty += 1;
-            reply_strategic_error();
-            return;
+            return Err(GameError::StrategicError);
         };
 
         if player_info.balance < rent {
             //    debug!("PENALTY: NOT ENOUGH BALANCE TO PAY RENT");
             player_info.penalty += 1;
-            reply_strategic_error();
-            return;
+            return Err(GameError::StrategicError);
         }
         player_info.balance -= rent;
         player_info.debt = 0;
@@ -316,15 +287,8 @@ impl Game {
         self.players.entry(account).and_modify(|player_info| {
             player_info.balance = player_info.balance.saturating_add(rent)
         });
-        reply_strategic_success();
+        Ok(GameReply::StrategicSuccess)
     }
 }
 
-fn reply_strategic_error() {
-    msg::reply(GameEvent::StrategicError, 0).expect("Error in a reply `GameEvent::StrategicError`");
-}
 
-fn reply_strategic_success() {
-    msg::reply(GameEvent::StrategicSuccess, 0)
-        .expect("Error in a reply `GameEvent::StrategicSuccess`");
-}
