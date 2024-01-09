@@ -115,19 +115,18 @@ pub fn send_delayed_subscription_renewal(
         {
             return Err(Error::ErrorDuringSendingDelayedMsg);
         }
-    } else {
-        if msg::send_delayed(
-            *program_id,
-            Actions::UpdateSubscription {
-                subscriber: *subsciber,
-            },
-            0,
-            delay,
-        )
-        .is_err()
-        {
-            return Err(Error::ErrorDuringSendingDelayedMsg);
-        }
+    } else if msg::send_delayed(
+        *program_id,
+        Actions::UpdateSubscription {
+            subscriber: *subsciber,
+        },
+        0,
+        delay,
+    )
+    .is_err()
+    {
+        return Err(Error::ErrorDuringSendingDelayedMsg);
     }
+
     Ok(())
 }

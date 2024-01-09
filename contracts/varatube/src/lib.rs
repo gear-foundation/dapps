@@ -1,6 +1,6 @@
 #![no_std]
 
-use gstd::{async_main, collections::HashMap, debug, exec, msg, prelude::*, ActorId};
+use gstd::{async_main, collections::HashMap, exec, msg, prelude::*, ActorId};
 use varatube_io::*;
 
 pub mod utils;
@@ -95,7 +95,7 @@ impl VaraTube {
             period,
             renewal_date,
             ..
-        } = self.get_subscriber(&subscriber)?;
+        } = self.get_subscriber(subscriber)?;
 
         let current_block = exec::block_height();
         let current_date = exec::block_timestamp();
