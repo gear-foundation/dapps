@@ -1,5 +1,3 @@
-use fungible_token_io::{FTAction, FTEvent, InitConfig};
-use gstd::{ActorId, Encode};
 use gtest::{Program, System};
 use varatube_io::*;
 
@@ -7,7 +5,7 @@ use crate::utils::{FTokenTestFuncs, VaratubeTestFuncs};
 
 const USERS: &[u64] = &[3, 4, 5];
 pub mod utils;
-fn preconfigure(system: &System) -> (Program, Program) {
+fn preconfigure(system: &System) -> (Program<'_>, Program<'_>) {
     let ft = Program::ftoken(
         system,
         USERS[0],
