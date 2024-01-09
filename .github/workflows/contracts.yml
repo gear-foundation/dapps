@@ -21,7 +21,7 @@ permissions:
   pages: write
 
 concurrency:
-  group: ${{ github.ref }}
+  group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -54,7 +54,7 @@ jobs:
 
       - name: Upload the GitHub Pages artifact
         if: github.ref == 'refs/heads/master'
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: contracts/target/doc
 
@@ -69,4 +69,4 @@ jobs:
     runs-on: self-hosted
     steps:
       - name: Deploy GitHub Pages
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4

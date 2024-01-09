@@ -20,5 +20,9 @@ export default defineConfig({
   },
   plugins: [react(), nodePolyfills(), eslint(), checker({ typescript: true })],
   assetsInclude: ['**/*.wasm?inline'],
+
+  define: {
+    'process.env': {},
+  },
   build: { outDir: 'build' },
 });

@@ -1,0 +1,100 @@
+name: Frontend CI
+
+on:
+  pull_request:
+    paths-ignore: contracts/**
+  push:
+    paths-ignore: contracts/**
+    branches: [master]
+
+defaults:
+  run:
+    working-directory: frontend
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: false
+  DISABLE_ESLINT_PLUGIN: true
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        include:
+          # Apps
+          - subdir: apps/battleship
+            build: build
+          - subdir: apps/escrow
+            build: build
+            test: test --passWithNoTests
+          - subdir: apps/galactic-express
+            build: build
+            test: test --passWithNoTests
+          - subdir: apps/game-of-chance
+            build: build
+            test: test --passWithNoTests
+          - subdir: apps/nft-marketplace
+            build: build
+            test: test --passWithNoTests
+          - subdir: apps/nft-master
+            build: build
+            test: test --passWithNoTests
+          - subdir: apps/non-fungible-token
+            build: build
+            test: test --passWithNoTests
+          - subdir: apps/racing-car-game
+            build: build
+          - subdir: apps/supply-chain
+            build: build
+            test: test --passWithNoTests
+          - subdir: apps/syndote
+            build: build
+            test: test --passWithNoTests
+          - subdir: apps/tamagotchi
+            build: build
+          - subdir: apps/tamagotchi-battle
+            build: build
+            test: test --passWithNoTests
+          - subdir: apps/tequila-train
+            build: build
+            test: test --passWithNoTests
+          - subdir: apps/tic-tac-toe
+            build: build
+          - subdir: apps/vara-man
+            build: build
+          - subdir: apps/varatube
+            build: build
+            test: test --passWithNoTests
+
+          # Packages
+          - subdir: packages/error-tracking
+            build: build
+          - subdir: packages/ui
+            build: build
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: sudo npm i -g yarn
+
+      - name: Build
+        if: ${{ matrix.build }} != null
+        run: yarn --cwd ${{ matrix.subdir }} && yarn --cwd ${{ matrix.subdir }} ${{ matrix.build }}
+
+      - name: Test
+        if: ${{ matrix.test }} != null
+        run: yarn --cwd ${{ matrix.subdir }} && yarn --cwd ${{ matrix.subdir }} ${{ matrix.test }}

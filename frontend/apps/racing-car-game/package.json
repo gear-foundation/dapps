@@ -1,6 +1,6 @@
 {
   "name": "racing-car-game",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": true,
   "scripts": {
     "start": "yarn build:packages && react-app-rewired start",
@@ -9,9 +9,9 @@
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
-    "@gear-js/api": "0.35.1",
-    "@gear-js/react-hooks": "0.9.0",
-    "@gear-js/ui": "0.5.19",
+    "@gear-js/api": "0.35.2",
+    "@gear-js/react-hooks": "0.9.2",
+    "@gear-js/ui": "0.5.21",
     "@headlessui/react": "1.7.17",
     "@mantine/form": "6.0.15",
     "@polkadot/api": "10.10.1",
@@ -30,7 +30,6 @@
     "lodash.isequal": "4.5.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-gtm-module": "2.0.11",
     "react-router": "6.11.1",
     "react-router-dom": "6.10.0",
     "react-scripts": "5.0.1",
@@ -44,7 +43,6 @@
     "@types/node": "18.17.15",
     "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",
-    "@types/react-gtm-module": "2.0.1",
     "@typescript-eslint/parser": "^6.7.3",
     "eslint-config-airbnb": "19.0.4",
     "eslint-config-airbnb-typescript": "17.0.0",

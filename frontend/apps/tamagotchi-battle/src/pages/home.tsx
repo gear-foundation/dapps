@@ -1,9 +1,8 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { CreateTamagotchiForm } from 'features/battle/components/create-tamagotchi-form';
 import { Link } from 'react-router-dom';
+import { StartDisclaimer, Wallet } from '@dapps-frontend/ui';
+import { CreateTamagotchiForm } from 'features/battle/components/create-tamagotchi-form';
 import { useBattle } from 'features/battle/context';
-import { cn } from 'app/utils';
-import { Wallet } from 'features/wallet';
 
 export const Home = () => {
   const { battle } = useBattle();
@@ -22,9 +21,9 @@ export const Home = () => {
           />
         </div>
       )}
-      <div className={cn('flex flex-col items-center gap-9', account ? 'mt-12' : 'm-auto')}>
-        <div className="flex flex-col items-center gap-9 text-center w-full">
-          <div className="space-y-6">
+      <div className="flex flex-col items-center gap-9 m-auto">
+        <div className="flex flex-col items-center gap-9 w-full">
+          <div className="space-y-6 text-center">
             {account ? (
               battle &&
               (battle.state === 'Registration' ? (
@@ -44,11 +43,14 @@ export const Home = () => {
             )}
           </div>
 
-          <div className="w-full">{account ? <CreateTamagotchiForm /> : <Wallet />}</div>
-
-          {/*<div className="w-full">*/}
-          {/*  <Link to={'/test'}>Test page</Link> <Link to={'/battle'}>Battle page</Link>*/}
-          {/*</div>*/}
+          {account ? (
+            <div>
+              <CreateTamagotchiForm />
+              <StartDisclaimer fileName="tamagotchi" wikiPath="Gaming/tamagotchi" className="m-auto mt-9" />
+            </div>
+          ) : (
+            <Wallet />
+          )}
         </div>
       </div>
     </section>
