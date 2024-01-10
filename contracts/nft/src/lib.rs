@@ -46,11 +46,7 @@ impl Nft {
             .and_modify(|tokens| {
                 tokens.insert(self.token_id);
             })
-            .or_insert_with(|| {
-                let mut set = HashSet::new();
-                set.insert(self.token_id);
-                set
-            });
+            .or_insert_with(|| HashSet::from([self.token_id]));
         self.token_metadata_by_id
             .insert(self.token_id, token_metadata.clone());
 
@@ -101,11 +97,7 @@ impl Nft {
             .and_modify(|tokens| {
                 tokens.insert(token_id);
             })
-            .or_insert_with(|| {
-                let mut set = HashSet::new();
-                set.insert(token_id);
-                set
-            });
+            .or_insert_with(|| HashSet::from([token_id]));
         // remove token from old owner
         if let Some(tokens) = self.tokens_for_owner.get_mut(&owner) {
             tokens.remove(&token_id);
