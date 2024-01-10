@@ -16,6 +16,7 @@ export const ADDRESS = {
   IPFS_GATEWAY: 'https://ipfs-gw.gear-tech.io/ipfs' as string,
   IPFS_NODE: process.env.REACT_APP_IPFS_ADDRESS as string,
   SIGNALING_SERVER: process.env.REACT_APP_SIGNALING_SERVER || 'ws://127.0.0.1:3001',
+  BACKEND_SERVER: process.env.REACT_APP_BACKEND_SERVER || 'http://127.0.0.1:3001',
 };
 
 export const SEARCH_PARAMS = {

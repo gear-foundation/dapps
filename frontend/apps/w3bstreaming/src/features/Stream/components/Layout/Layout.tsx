@@ -7,6 +7,8 @@ import { Button } from '@/ui';
 import speakerPhoto from '@/assets/icons/no-avatar-user-img.png';
 import editProfileSVG from '@/assets/icons/edit-profile-icon.svg';
 import timerSVG from '@/assets/icons/timer-icon.svg';
+import unsubSVG from '@/assets/icons/unsubscribe.svg';
+import subscribeSVG from '@/assets/icons/subscribe.svg';
 import eyeSVG from '@/assets/icons/eye-icon.svg';
 import { LayoutProps } from './Layout.interfaces';
 import { SubscribeModal } from '@/features/Account/components/SubscribeModal';
@@ -43,16 +45,22 @@ function Layout({
     if (account?.decodedAddress) {
       socket.emit('getWatchersCount', account?.decodedAddress, { streamId });
       socket.emit('getIsStreaming', account?.decodedAddress, { streamId });
-
-      socket.on('watchersCount', (connections) => {
-        setConnectionsCount(connections);
-      });
-
-      socket.on('isStreaming', (isStreaming) => {
-        setIsStreamGoing(isStreaming);
-      });
     }
   }, [streamId, account?.decodedAddress]);
+
+  useEffect(() => {
+    socket.on('watchersCount', (connections) => {
+      setConnectionsCount(connections);
+    });
+
+    socket.on('isStreaming', (isStreaming) => {
+      setIsStreamGoing(isStreaming);
+    });
+
+    return () => {
+      socket.off();
+    };
+  }, []);
 
   return (
     <div className={cx(styles.layout)}>
@@ -67,7 +75,7 @@ function Layout({
                   isStreamGoing ? styles['card-top-speaker-photo-on-air'] : '',
                 )}
                 src={broadcasterInfo?.imgLink || speakerPhoto}
-                alt=""
+                alt="speaker"
               />
               {isStreamGoing && <div className={cx(styles['card-top-speaker-photo-caption-on-air'])}>on air</div>}
             </div>
@@ -79,23 +87,23 @@ function Layout({
             </div>
           </div>
         </div>
-        <div className={cx(styles['stream-info'])}>Stream Info</div>
+        <div className={cx(styles['stream-info'])}>Stream info</div>
         <div className={cx(styles['stream-description'])}>{description}</div>
       </div>
       <div className={cx(styles.right)}>
         <div className={cx(styles['views-and-time'])}>
+          <div className={cx(styles.time)}>
+            <img src={timerSVG} alt="time" />
+            <span>
+              {startTime.getHours()}:{startTime.getMinutes().toString().padStart(2, '0')}
+            </span>
+          </div>
           {isStreamGoing && (
             <div className={cx(styles.views)}>
               <img src={eyeSVG} alt="views" />
               <span>{connectionsCount}</span>
             </div>
           )}
-          {/* <div className={cx(styles.time)}>
-            <img src={timerSVG} alt="time" />
-            <span>
-              {startTime.getHours()}:{startTime.getMinutes().toString().padStart(2, '0')}
-            </span>
-          </div> */}
         </div>
         {isBroadcaster ? (
           <Button variant="outline" label="Edit Profile" icon={editProfileSVG} onClick={handleRedirectToAccount} />
@@ -105,11 +113,19 @@ function Layout({
               <Button
                 variant="primary"
                 label="Unsubscribe"
+                size="large"
+                icon={unsubSVG}
                 onClick={handleOpenSubscribeModal}
                 className={cx(styles['unsubscribe-button'])}
               />
             ) : (
-              <Button variant="primary" label="Subscribe" onClick={handleOpenSubscribeModal} />
+              <Button
+                variant="primary"
+                label="Subscribe"
+                icon={subscribeSVG}
+                size="large"
+                onClick={handleOpenSubscribeModal}
+              />
             )}
           </>
         )}
