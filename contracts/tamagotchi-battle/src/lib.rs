@@ -54,7 +54,7 @@ impl Battle {
 
         self.check_if_tmg_in_game(tmg_id)?;
 
-        let (owner, name, date_of_birth) = get_tmg_info(tmg_id).await;
+        let (owner, name, date_of_birth) = get_tmg_info(tmg_id).await?;
 
         check_tmg_owner(owner, msg::source())?;
 
@@ -298,20 +298,20 @@ unsafe extern fn init() {
     BATTLE = Some(battle);
 }
 
-pub async fn get_tmg_info(tmg_id: &ActorId) -> (ActorId, String, u64) {
+pub async fn get_tmg_info(tmg_id: &ActorId) -> Result<(ActorId, String, u64), BattleError> {
     let reply: Result<TmgReply, Error> = msg::send_for_reply_as(*tmg_id, TmgAction::TmgInfo, 0, 0)
         .expect("Error in sending a message `TmgAction::TmgInfo")
         .await
         .expect("Unable to decode TmgReply");
-    if let Ok(TmgReply::TmgInfo {
-        owner,
-        name,
-        date_of_birth,
-    }) = reply
-    {
-        (owner, name, date_of_birth)
-    } else {
-        panic!("Wrong received message");
+
+    match reply {
+        Ok(TmgReply::TmgInfo {
+            owner,
+            name,
+            date_of_birth,
+        }) => Ok((owner, name, date_of_birth)),
+        Err(Error::TamagotchiHasDied) => Err(BattleError::TamagotchiHasDied),
+        _ => panic!("Wrong received message"),
     }
 }
 

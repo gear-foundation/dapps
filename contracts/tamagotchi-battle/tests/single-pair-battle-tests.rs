@@ -121,3 +121,15 @@ fn make_move() {
 
     system.spend_blocks(2000);
 }
+
+#[test]
+fn test_tamagotchi_has_died() {
+    let system = System::new();
+    system.init_logger();
+    let tmg_battle = Program::tmg_battle(&system);
+
+    let players = vec![100];
+    let tmg_ids = upload_tmg(&system, players.clone());
+    system.spend_blocks(100_000);
+    tmg_battle.register(players[0], tmg_ids[0], Some(BattleError::TamagotchiHasDied));
+}

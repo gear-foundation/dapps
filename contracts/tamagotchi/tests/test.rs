@@ -34,7 +34,6 @@ fn success_test() {
     let expected_reply = Ok::<TmgReply, Error>(TmgReply::Age(time_ms.into())).encode();
     assert_eq!(reply, expected_reply);
 
-    // system.spend_blocks(1000);
     let res = tamagotchi.send(USERS[0], TmgAction::Feed);
     assert!(!res.main_failed());
     let res = tamagotchi.send(USERS[0], TmgAction::Play);
@@ -55,10 +54,7 @@ fn failures_test() {
     init_tamagotchi(&system);
     let tamagotchi = system.get_program(1);
 
-    let time_sec = 100_000;
-    let time_ms = time_sec * 1_000;
-
-    system.spend_blocks(time_sec);
+    system.spend_blocks(100_000);
 
     let res = tamagotchi.send(USERS[0], TmgAction::Age);
     assert!(!res.main_failed());

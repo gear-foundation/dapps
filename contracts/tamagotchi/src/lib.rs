@@ -68,6 +68,9 @@ impl Tamagotchi {
     }
 
     fn tmg_info(&self) -> Result<TmgReply, Error> {
+        if self.tmg_is_dead() {
+            return Err(Error::TamagotchiHasDied);
+        }
         Ok(TmgReply::TmgInfo {
             owner: self.owner,
             name: self.name.clone(),
