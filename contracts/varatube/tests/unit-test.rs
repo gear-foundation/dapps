@@ -91,7 +91,7 @@ fn register_subscriber_without_subscription_renewal() {
     let (ft, varatube) = preconfigure(&system);
 
     // Register Subscription
-    varatube.register_subscription(USERS[0], ft.id(), Period::Month, true, None);
+    varatube.register_subscription(USERS[0], ft.id(), Period::Month, false, None);
 
     let subscriber_data = varatube
         .get_subscriber_data(USERS[0])
@@ -100,10 +100,7 @@ fn register_subscriber_without_subscription_renewal() {
         currency_id: <[u8; 32]>::from(ft.id()).into(),
         period: Period::Month,
         subscription_start: Some((system.block_timestamp(), system.block_height())),
-        renewal_date: Some((
-            system.block_timestamp() + Period::Month.as_millis(),
-            system.block_height() + Period::Month.to_blocks(1),
-        )),
+        renewal_date: None,
     };
     assert_eq!(
         subscriber_data, expected_subscriber_data,
