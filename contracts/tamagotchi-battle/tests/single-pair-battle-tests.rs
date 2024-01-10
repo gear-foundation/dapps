@@ -1,7 +1,7 @@
 use gstd::{prelude::*, ActorId};
-use gtest::{CoreLog, Log, Program, System};
+use gtest::{Program, System};
 use tamagotchi_battle_io::{
-    Battle, BattleAction, BattleError, BattleQuery, BattleQueryReply, BattleReply, Config,
+    BattleAction, BattleError, BattleQuery, BattleQueryReply, BattleReply, Config,
 };
 use tamagotchi_io::TmgInit;
 pub const ADMIN: u64 = 10;

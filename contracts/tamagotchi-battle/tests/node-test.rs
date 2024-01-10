@@ -1,8 +1,6 @@
 use fmt::Debug;
 use gclient::{EventListener, EventProcessor, GearApi, Result};
-use gstd::debug;
 use gstd::{collections::BTreeMap, prelude::*, ActorId};
-use serde::{Deserialize, Serialize};
 use std::env;
 use std::{thread, time};
 use tamagotchi_battle_io::*;
@@ -104,7 +102,7 @@ async fn check_reply(
     let (_, raw_reply, _) = listener.reply_bytes_on(message_id).await?;
     let decoded_reply: Result<BattleReply, BattleError> = match raw_reply {
         Ok(raw_reply) => decode(raw_reply)?,
-        Err(error) => gstd::panic!("Error in getting reply"),
+        Err(_error) => gstd::panic!("Error in getting reply"),
     };
     println!("Received reply {:?}", decoded_reply);
     assert_eq!(decoded_reply, reply, "Wrong received reply");
@@ -138,7 +136,7 @@ async fn upload_tamagotchis<'a>(
 ) -> Result<(Vec<ActorId>, Vec<ActorId>)> {
     let mut tmg_ids = Vec::new();
     let mut owners = Vec::new();
-    for (i, player) in PLAYERS.into_iter().copied().enumerate() {
+    for player in PLAYERS.into_iter().copied() {
         let client = client
             .clone()
             .with(player)
@@ -303,8 +301,7 @@ async fn ipreconfigure() -> Result<()> {
         PATHS[1],
         Config {
             max_power: 10_000,
-            max_range: 10_000,
-            min_range: 3_000,
+            min_power: 3_000,
             health: 2_500,
             max_steps_in_round: 5,
             max_participants: 50,
