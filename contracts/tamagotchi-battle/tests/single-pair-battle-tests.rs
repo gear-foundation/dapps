@@ -24,8 +24,7 @@ impl BattleTestFunc for Program<'_> {
             ADMIN,
             Config {
                 max_power: 10_000,
-                max_range: 10_000,
-                min_range: 3_000,
+                min_power: 3_000,
                 health: 2_500,
                 max_steps_in_round: 5,
                 max_participants: 50,

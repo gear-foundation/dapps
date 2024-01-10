@@ -7,11 +7,19 @@ use gstd::{prelude::*, ActorId};
 pub type AttributeId = u32;
 pub type TransactionId = u64;
 
+pub const HUNGER_PER_BLOCK: u64 = 1;
+pub const BOREDOM_PER_BLOCK: u64 = 2;
+pub const ENERGY_PER_BLOCK: u64 = 2;
+pub const FILL_PER_FEED: u64 = 10_000;
+pub const FILL_PER_ENTERTAINMENT: u64 = 10_000;
+pub const FILL_PER_SLEEP: u64 = 10_000;
+pub const MAX_VALUE: u64 = 100_000;
+
 pub struct ProgramMetadata;
 
 impl Metadata for ProgramMetadata {
     type Init = In<TmgInit>;
-    type Handle = InOut<TmgAction, TmgReply>;
+    type Handle = InOut<TmgAction, Result<TmgReply, Error>>;
     type Reply = ();
     type Others = ();
     type Signal = ();
@@ -23,6 +31,21 @@ impl Metadata for ProgramMetadata {
 #[scale_info(crate = gstd::scale_info)]
 pub struct TmgInit {
     pub name: String,
+}
+
+#[derive(Default, Encode, Decode, TypeInfo, Debug)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct Tamagotchi {
+    pub name: String,
+    pub date_of_birth: u64,
+    pub owner: ActorId,
+    pub fed: u64,
+    pub fed_block: u64,
+    pub entertained: u64,
+    pub entertained_block: u64,
+    pub rested: u64,
+    pub rested_block: u64,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
@@ -53,37 +76,9 @@ pub enum TmgReply {
     },
 }
 
-#[derive(Default, Encode, Decode, TypeInfo)]
+#[derive(Encode, Debug, PartialEq, Eq, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub struct Tamagotchi {
-    pub name: String,
-    pub date_of_birth: u64,
-    pub owner: ActorId,
-    pub fed: u64,
-    pub fed_block: u64,
-    pub entertained: u64,
-    pub entertained_block: u64,
-    pub rested: u64,
-    pub rested_block: u64,
-    pub allowed_account: Option<ActorId>,
+pub enum Error {
+    TamagotchiHasDied,
 }
-
-#[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub struct TmgCurrentState {
-    pub fed: u64,
-    pub entertained: u64,
-    pub rested: u64,
-}
-
-pub const HUNGER_PER_BLOCK: u64 = 1;
-pub const BOREDOM_PER_BLOCK: u64 = 2;
-pub const ENERGY_PER_BLOCK: u64 = 2;
-
-pub const FILL_PER_FEED: u64 = 2_000;
-pub const FILL_PER_ENTERTAINMENT: u64 = 2_000;
-pub const FILL_PER_SLEEP: u64 = 2_000;
-
-pub const MAX_VALUE: u64 = 10_000;

@@ -7,7 +7,7 @@ use gstd::{
     ActorId,
 };
 use tamagotchi_battle_io::*;
-use tamagotchi_io::{TmgAction, TmgReply};
+use tamagotchi_io::{Error, TmgAction, TmgReply};
 mod pair;
 use pair::*;
 mod utils;
@@ -299,15 +299,15 @@ unsafe extern fn init() {
 }
 
 pub async fn get_tmg_info(tmg_id: &ActorId) -> (ActorId, String, u64) {
-    let reply: TmgReply = msg::send_for_reply_as(*tmg_id, TmgAction::TmgInfo, 0, 0)
+    let reply: Result<TmgReply, Error> = msg::send_for_reply_as(*tmg_id, TmgAction::TmgInfo, 0, 0)
         .expect("Error in sending a message `TmgAction::TmgInfo")
         .await
         .expect("Unable to decode TmgReply");
-    if let TmgReply::TmgInfo {
+    if let Ok(TmgReply::TmgInfo {
         owner,
         name,
         date_of_birth,
-    } = reply
+    }) = reply
     {
         (owner, name, date_of_birth)
     } else {

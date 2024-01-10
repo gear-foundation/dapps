@@ -22,40 +22,37 @@ struct Tamagotchi {
 static mut TAMAGOTCHI: Option<Tamagotchi> = None;
 
 impl Tamagotchi {
-    fn feed(&mut self) {
-        assert!(!self.tmg_is_dead(), "Tamagotchi has died");
-        self.fed += FILL_PER_FEED - self.calculate_hunger();
+    fn feed(&mut self) -> Result<TmgReply, Error> {
+        if self.tmg_is_dead() {
+            return Err(Error::TamagotchiHasDied);
+        }
+        self.fed = self.fed - self.calculate_hunger() + FILL_PER_FEED;
         self.fed_block = exec::block_timestamp();
-        self.fed = if self.fed > MAX_VALUE {
-            MAX_VALUE
-        } else {
-            self.fed
-        };
-        msg::reply(TmgReply::Fed, 0).expect("Error in a reply `TmgEvent::Fed`");
+        self.fed = self.fed.min(MAX_VALUE);
+
+        Ok(TmgReply::Fed)
     }
 
-    fn play(&mut self) {
-        assert!(!self.tmg_is_dead(), "Tamagotchi has died");
-        self.entertained += FILL_PER_ENTERTAINMENT - self.calculate_boredom();
+    fn play(&mut self) -> Result<TmgReply, Error> {
+        if self.tmg_is_dead() {
+            return Err(Error::TamagotchiHasDied);
+        }
+        self.entertained = self.entertained - self.calculate_boredom() + FILL_PER_ENTERTAINMENT;
         self.entertained_block = exec::block_timestamp();
-        self.entertained = if self.entertained > MAX_VALUE {
-            MAX_VALUE
-        } else {
-            self.entertained
-        };
-        msg::reply(TmgReply::Entertained, 0).expect("Error in a reply `TmgEvent::Entertained`");
+        self.entertained = self.entertained.min(MAX_VALUE);
+
+        Ok(TmgReply::Entertained)
     }
 
-    fn sleep(&mut self) {
-        assert!(!self.tmg_is_dead(), "Tamagotchi has died");
-        self.rested += FILL_PER_SLEEP - self.calculate_energy();
+    fn sleep(&mut self) -> Result<TmgReply, Error> {
+        if self.tmg_is_dead() {
+            return Err(Error::TamagotchiHasDied);
+        }
+        self.rested = self.rested - self.calculate_energy() + FILL_PER_SLEEP;
         self.rested_block = exec::block_timestamp();
-        self.rested = if self.rested > MAX_VALUE {
-            MAX_VALUE
-        } else {
-            self.rested
-        };
-        msg::reply(TmgReply::Slept, 0).expect("Error in a reply `TmgEvent::Slept`");
+        self.rested = self.rested.min(MAX_VALUE);
+
+        Ok(TmgReply::Slept)
     }
 
     fn calculate_hunger(&self) -> u64 {
@@ -70,16 +67,19 @@ impl Tamagotchi {
         ENERGY_PER_BLOCK * ((exec::block_timestamp() - self.rested_block) / 1000)
     }
 
-    fn tmg_info(&self) {
-        msg::reply(
-            TmgReply::TmgInfo {
-                owner: self.owner,
-                name: self.name.clone(),
-                date_of_birth: self.date_of_birth,
-            },
-            0,
-        )
-        .expect("Error in a reply `TmgEvent::TmgInfo");
+    fn tmg_info(&self) -> Result<TmgReply, Error> {
+        Ok(TmgReply::TmgInfo {
+            owner: self.owner,
+            name: self.name.clone(),
+            date_of_birth: self.date_of_birth,
+        })
+    }
+
+    fn get_age(&self) -> Result<TmgReply, Error> {
+        if self.tmg_is_dead() {
+            return Err(Error::TamagotchiHasDied);
+        }
+        Ok(TmgReply::Age(exec::block_timestamp() - self.date_of_birth))
     }
 
     fn tmg_is_dead(&self) -> bool {
@@ -94,20 +94,15 @@ impl Tamagotchi {
 extern fn handle() {
     let action: TmgAction = msg::load().expect("Unable to decode `TmgAction`");
     let tmg = unsafe { TAMAGOTCHI.get_or_insert(Default::default()) };
-    match action {
-        TmgAction::Name => {
-            msg::reply(TmgReply::Name(tmg.name.clone()), 0)
-                .expect("Error in a reply `TmgEvent::Name`");
-        }
-        TmgAction::Age => {
-            let age = exec::block_timestamp() - tmg.date_of_birth;
-            msg::reply(TmgReply::Age(age), 0).expect("Error in a reply `TmgEvent::Age`");
-        }
+    let reply = match action {
+        TmgAction::Name => Ok(TmgReply::Name(tmg.name.clone())),
+        TmgAction::Age => tmg.get_age(),
         TmgAction::Feed => tmg.feed(),
         TmgAction::Play => tmg.play(),
         TmgAction::Sleep => tmg.sleep(),
         TmgAction::TmgInfo => tmg.tmg_info(),
-    }
+    };
+    msg::reply(reply, 0).expect("Error during sending a reply");
 }
 
 #[no_mangle]

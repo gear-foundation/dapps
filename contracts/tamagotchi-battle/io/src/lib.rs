@@ -1,7 +1,11 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata, In};
-use gstd::{collections::{BTreeMap, BTreeSet}, prelude::*, ActorId, MessageId, ReservationId};
+use gmeta::{In, InOut, Metadata};
+use gstd::{
+    collections::{BTreeMap, BTreeSet},
+    prelude::*,
+    ActorId, MessageId, ReservationId,
+};
 
 pub type TamagotchiId = ActorId;
 pub type PairId = u8;
@@ -100,13 +104,8 @@ pub enum BattleState {
 #[scale_info(crate = gstd::scale_info)]
 pub enum BattleAction {
     StartRegistration,
-    Register {
-        tmg_id: TamagotchiId,
-    },
-    MakeMove {
-        pair_id: PairId,
-        tmg_move: Move,
-    },
+    Register { tmg_id: TamagotchiId },
+    MakeMove { pair_id: PairId, tmg_move: Move },
     StartBattle,
     AddAdmin(ActorId),
 }
@@ -150,20 +149,20 @@ pub enum BattleError {
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum BattleQuery {
-    GetPlayer {tmg_id: ActorId},
+    GetPlayer { tmg_id: ActorId },
     PlayersIds,
     State,
     GetPairs,
-    GetPair { pair_id: PairId }
+    GetPair { pair_id: PairId },
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq, Eq, Debug)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum BattleQueryReply {
-    Player { player: Option<Player>},
-    PlayersIds { players_ids: Vec<ActorId>},
-    State{ state: BattleState},
-    Pairs {pairs: BTreeMap<PairId, Pair>},
-    Pair { pair: Option<Pair> }
+    Player { player: Option<Player> },
+    PlayersIds { players_ids: Vec<ActorId> },
+    State { state: BattleState },
+    Pairs { pairs: BTreeMap<PairId, Pair> },
+    Pair { pair: Option<Pair> },
 }
