@@ -143,7 +143,7 @@ pub enum BattleError {
     MaxNumberWasReached,
     TmgInGame,
     NotTmgOwner,
-    TamagotchiHasDied
+    TamagotchiHasDied,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
