@@ -12,6 +12,7 @@ function StreamTeaser({ title, startTime, description, imgLink, broadcasterInfo 
     <div className={cx(styles.card)}>
       <div className={cx(styles['card-top'])}>
         <img className={cx(styles['card-top-image'])} src={imgLink || noStreamPreviewImg} alt="" />
+        <div className={cx(styles['card-top-blur'])} />
         <div className={cx(styles['card-top-date-container'])}>
           <div className={cx(styles['card-top-date'])}>
             <img className={cx(styles['card-top-date-image'])} src={streamDateIcon} alt="" />

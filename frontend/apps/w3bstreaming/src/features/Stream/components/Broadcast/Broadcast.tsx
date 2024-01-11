@@ -1,4 +1,4 @@
-import { MutableRefObject, useEffect, useRef, useState } from 'react';
+import { MutableRefObject, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
 import styles from './Broadcast.module.scss';
@@ -10,6 +10,7 @@ import { Button } from '@/ui';
 import StreamSignalSVG from '@/assets/icons/signal-stream-icon.svg';
 import { MediaStreamSequence } from '../../utils';
 import { BroadcastProps, AnswerMsg, CandidateMsg, WatchMsg, StreamStatus, StreamType } from './Broadcast.interface';
+import { ADDRESS } from '@/consts';
 
 function Broadcast({ socket, streamId }: BroadcastProps) {
   const { account } = useAccount();
@@ -28,8 +29,32 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [isSoundMuted, setIsSoundMuted] = useState<boolean>(false);
   const [isCameraBlocked, setIsCameraBlocked] = useState<boolean>(false);
-  const [streamStatus, setStreamStatus] = useState<StreamStatus>('not-started');
+  const [streamStatus, setStreamStatus] = useState<StreamStatus>('loading');
   const [streamType, setStreamType] = useState<StreamType>('camera');
+
+  const handleGetIsAlreadyHaveStream = async (address: string) => {
+    const res = await fetch(`${ADDRESS.BACKEND_SERVER}/is-already-having-stream?address=${address}`);
+    const isHave = await res.json();
+
+    return isHave;
+  };
+
+  const handleCheckIsAlreadyHaveStream = useCallback(async () => {
+    if (account?.decodedAddress) {
+      const isHave = await handleGetIsAlreadyHaveStream(account?.decodedAddress);
+
+      if (isHave) {
+        setStreamStatus('already-have');
+        return;
+      }
+
+      setStreamStatus('not-started');
+    }
+  }, [account?.decodedAddress]);
+
+  useEffect(() => {
+    handleCheckIsAlreadyHaveStream();
+  }, [handleCheckIsAlreadyHaveStream]);
 
   const handleGoToAccountPage = () => {
     navigate('/account');
@@ -342,6 +367,15 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
       return;
     }
 
+    setStreamStatus('loading');
+
+    const isHavingAnotherStream = await handleGetIsAlreadyHaveStream(account?.decodedAddress);
+
+    if (isHavingAnotherStream) {
+      setStreamStatus('already-have');
+      return;
+    }
+
     try {
       loadDevices();
 
@@ -415,20 +449,22 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
                 description: conns.current[idOfWatcher]?.localDescription,
                 userId: idOfWatcher,
                 streamId: msg.streamId,
-                mediaSequence: mediaTrackSequence.current,
               }),
-            );
+            )
+            .catch(() => {
+              console.log('error when setLocalDescription');
+            });
         };
       });
 
-      socket.on('candidate', (idOfWatcher: string, msg: CandidateMsg) => {
-        conns.current[idOfWatcher]
-          ?.addIceCandidate(new RTCIceCandidate(msg.candidate))
-          .catch((e: any) => console.error(e));
+      socket.on('candidate', (userId: string, { candidate }: CandidateMsg) => {
+        conns.current[userId]?.addIceCandidate(new RTCIceCandidate(candidate)).catch((e: any) => console.error(e));
       });
 
-      socket.on('answer', (_: string, msg: AnswerMsg) => {
-        conns.current[msg.watcherId]?.setRemoteDescription(msg.description);
+      socket.on('answer', (_: string, { userId, description }: AnswerMsg) => {
+        conns.current[userId]?.setRemoteDescription(description).catch(() => {
+          console.log('error when setRemoteDescription');
+        });
       });
     } catch (error) {
       if (
@@ -441,7 +477,9 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
   };
 
   const handleStopStream = () => {
-    localStream?.getTracks().forEach((track) => track.stop());
+    if (localStream) {
+      localStream?.getTracks().forEach((track) => track.stop());
+    }
     Object.keys(conns.current).forEach((id) => {
       conns.current[id]?.close();
     });
@@ -449,7 +487,6 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
       streamId,
     });
     setStreamStatus('ended');
-    socket.off();
   };
 
   useEffect(() => {
@@ -466,30 +503,26 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
   useEffect(() => {
     socket.on('stopWatching', (id) => {
-      camTransceiver.current?.[id]?.stop();
-      delete camTransceiver.current?.[id];
+      try {
+        camTransceiver.current?.[id]?.stop();
+        delete camTransceiver.current?.[id];
 
-      micTransceiver.current?.[id]?.stop();
-      delete micTransceiver.current?.[id];
+        micTransceiver.current?.[id]?.stop();
+        delete micTransceiver.current?.[id];
 
-      scrAudioTransceiver.current?.[id]?.stop();
-      delete scrAudioTransceiver.current?.[id];
+        scrAudioTransceiver.current?.[id]?.stop();
+        delete scrAudioTransceiver.current?.[id];
 
-      scrCaptureTransceiver.current?.[id]?.stop();
-      delete scrCaptureTransceiver.current?.[id];
+        scrCaptureTransceiver.current?.[id]?.stop();
+        delete scrCaptureTransceiver.current?.[id];
 
-      conns.current?.[id]?.close();
-      delete conns.current?.[id];
+        conns.current?.[id]?.close();
+        delete conns.current?.[id];
+      } catch {
+        console.log('error when stop a peer connection');
+      }
     });
   }, [socket]);
-
-  useEffect(
-    () => () => {
-      handleStopStream();
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [],
-  );
 
   const handlePlayerReady = (player: HTMLVideoElement) => {
     localVideo.current = player;
@@ -508,6 +541,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
         isSharingScreen={streamType === 'screen'}
         onShareScreen={handleScreenShare}
       />
+      {streamStatus === 'loading' && <div className={cx(styles['start-stream-curtain'])}>loading...</div>}
       {streamStatus === 'not-started' && (
         <div className={cx(styles['start-stream-curtain'])}>
           <Button variant="primary" label="Start Stream" icon={StreamSignalSVG} onClick={startStream} />
@@ -518,6 +552,11 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
           <h3>You&apos;ve ended the stream</h3>
           <Button variant="primary" label="Repeat" icon={StreamSignalSVG} onClick={startStream} />
           <Button variant="outline" label="Close" onClick={handleGoToAccountPage} />
+        </div>
+      )}
+      {streamStatus === 'already-have' && (
+        <div className={cx(styles['start-stream-curtain'])}>
+          <h3>You already have a stream running</h3>
         </div>
       )}
     </div>

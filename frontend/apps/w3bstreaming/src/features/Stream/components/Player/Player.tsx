@@ -28,6 +28,7 @@ function Player({
   onShareScreen,
 }: PlayerProps) {
   const playerRef: MutableRefObject<HTMLVideoElement | null> = useRef(null);
+  const playerContainer: MutableRefObject<HTMLDivElement | null> = useRef(null);
   const prevVolume: MutableRefObject<number> = useRef(0);
   const [isOnPause, setIsOnPause] = useState<boolean>(false);
   const [volume, setVolume] = useState(50);
@@ -70,7 +71,7 @@ function Player({
     if (document.fullscreenElement) {
       document.exitFullscreen();
     } else {
-      playerRef.current?.requestFullscreen();
+      playerContainer.current?.requestFullscreen();
     }
   };
 
@@ -83,7 +84,7 @@ function Player({
   };
 
   return (
-    <div className={cx(styles['player-container'])}>
+    <div className={cx(styles['player-container'])} ref={playerContainer}>
       <video
         className={cx(styles.player)}
         controls={false}
@@ -99,10 +100,12 @@ function Player({
       </video>
       <div className={cx(styles.controls)}>
         <div className={cx(styles.left, styles.part)}>
-          <div className={cx(styles.volume)}>
-            <Button variant="icon" label="" icon={volume ? VolumeSVG : VolumeMutedSVG} onClick={handleMuteVolume} />
-            <input type="range" min="0" max="100" onChange={handleVolumeChange} value={volume} />
-          </div>
+          {mode === 'watch' && (
+            <div className={cx(styles.volume)}>
+              <Button variant="icon" label="" icon={volume ? VolumeSVG : VolumeMutedSVG} onClick={handleMuteVolume} />
+              <input type="range" min="0" max="100" onChange={handleVolumeChange} value={volume} />
+            </div>
+          )}
         </div>
         <div className={cx(styles.center, styles.part)}>
           {mode === 'watch' && (

@@ -1,6 +1,6 @@
 import { AlertContainerFactory } from '@gear-js/react-hooks';
 import clsx from 'clsx';
-import { useEffect, useLayoutEffect } from 'react';
+import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Socket, io } from 'socket.io-client';
 import { ADDRESS } from './consts';
