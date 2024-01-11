@@ -4,7 +4,7 @@ use gstd::{
     collections::{HashMap, HashSet},
     exec, msg,
     prelude::*,
-    ActorId, ReservationId,
+    ActorId, MessageId, ReservationId,
 };
 use messages::*;
 use syndote_io::*;
@@ -13,8 +13,6 @@ use utils::*;
 pub mod messages;
 pub mod strategic_actions;
 pub mod utils;
-
-const GAS_FOR_ROUND: u64 = 60_000_000_000;
 
 pub const NUMBER_OF_CELLS: u8 = 40;
 pub const NUMBER_OF_PLAYERS: u8 = 4;
@@ -34,6 +32,7 @@ pub struct Game {
     round: u128,
     players: HashMap<ActorId, PlayerInfo>,
     players_queue: Vec<ActorId>,
+    current_turn: u8,
     current_player: ActorId,
     current_step: u64,
     // mapping from cells to built properties,
@@ -43,29 +42,30 @@ pub struct Game {
     game_status: GameStatus,
     winner: ActorId,
     config: Config,
+    current_msg_id: MessageId,
+    awaiting_reply_msg_id: MessageId,
 }
 
 static mut GAME: Option<Game> = None;
-static mut RESERVATION: Option<Vec<ReservationId>> = None;
 
 impl Game {
-    fn change_admin(&mut self, admin: &ActorId)-> Result<GameReply, GameError> {
+    fn change_admin(&mut self, admin: &ActorId) -> Result<GameReply, GameError> {
         assert_eq!(msg::source(), self.admin);
         self.admin = *admin;
         Ok(GameReply::AdminChanged)
     }
 
-    fn start_registration(&mut self) -> Result<GameReply, GameError>{
+    fn start_registration(&mut self) -> Result<GameReply, GameError> {
         self.check_status(GameStatus::Finished);
         self.only_admin();
         let mut game: Game = Game {
             admin: self.admin,
             ..Default::default()
         };
-      
+
         init_properties(&mut game.properties, &mut game.ownership);
         *self = game;
-       Ok(GameReply::RegistrationStarted)
+        Ok(GameReply::RegistrationStarted)
     }
 
     fn register(&mut self, player: &ActorId) -> Result<GameReply, GameError> {
@@ -74,9 +74,12 @@ impl Game {
             !self.players.contains_key(player),
             "You have already registered"
         );
-        let reservation_id = match ReservationId::reserve(self.config.reservation_amount, self.config.reservation_duration) {
+        let reservation_id = match ReservationId::reserve(
+            self.config.reservation_amount,
+            self.config.reservation_duration,
+        ) {
             Ok(id) => id,
-            Err(_) => return Err(GameError::ReservationError)
+            Err(_) => return Err(GameError::ReservationError),
         };
         self.players.insert(
             *player,
@@ -93,75 +96,35 @@ impl Game {
         Ok(GameReply::Registered)
     }
 
-    async fn play(&mut self)-> Result<GameReply, GameError>  {
+    fn play(&mut self) -> Result<GameReply, GameError> {
         //self.check_status(GameStatus::Play);
         assert!(
             msg::source() == self.admin || msg::source() == exec::program_id(),
             "Only admin or the program can send that message"
         );
 
-        while self.game_status == GameStatus::Play {
-            if self.players_queue.len() <= 1 {
-                self.winner = self.players_queue[0];
-                self.game_status = GameStatus::Finished;
-                return Ok(
-                    GameReply::GameFinished {
-                        winner: self.winner,
-                    },
-                )
-            }
-            if exec::gas_available() <= GAS_FOR_ROUND {
-                unsafe {
-                    let reservations = RESERVATION.get_or_insert(Default::default());
-                    if let Some(id) = reservations.pop() {
-                        msg::send_from_reservation(id, exec::program_id(), GameAction::Play, 0)
-                            .expect("Failed to send message");
-                        return Ok(GameReply::NextRoundFromReservation);
-                    } else {
-                        panic!("GIVE ME MORE GAS");
-                    };
+        match self.game_status {
+            GameStatus::Play | GameStatus::Wait => {
+                if self.game_status == GameStatus::Wait {
+                    // This status means that the player has missed their turn or their strategy did not manage to make a move within the allotted time.
+                    // The player is removed from the game.
+                    self.exclude_player_from_game(self.current_player);
+
+                    // If the value of current_turn was 0 (meaning the player who missed their turn and was removed was the last in the array),
+                    // then this value remains the same.
+                    // If the value was 1, 2, or 3, then it is properly decreased by one.
+                    self.current_turn = self.current_turn.saturating_sub(1);
                 }
-            }
-
-            // // check penalty and debt of the players for the previous round
-            // // if penalty is equal to 5 points we remove the player from the game
-            // // if a player has a debt and he has not enough balance to pay it
-            // // he is also removed from the game
-            // bankrupt_and_penalty(
-            //     &self.admin,
-            //     &mut self.players,
-            //     &mut self.players_queue,
-            //     &mut self.properties,
-            //     &mut self.properties_in_bank,
-            //     &mut self.ownership,
-            // );
-
-            // if self.players_queue.len() <= 1 {
-            //     self.winner = self.players_queue[0];
-            //     self.game_status = GameStatus::Finished;
-            //     msg::reply(
-            //         GameEvent::GameFinished {
-            //             winner: self.winner,
-            //         },
-            //         0,
-            //     )
-            //     .expect("Error in sending a reply `GameEvent::GameFinished`");
-            //     break;
-            // }
-            self.round = self.round.wrapping_add(1);
-            for player in self.players_queue.clone() {
-                self.current_player = player;
+                let current_player: ActorId = self.players_queue[self.current_turn as usize];
+                self.current_player = current_player;
                 self.current_step += 1;
-                // we save the state before the player's step in case
-                // the player's contract does not reply or is executed with a panic.
-                // Then we roll back all the changes that the player could have made.
-                let mut state = self.clone();
-                let player_info = self
-                    .players
-                    .get_mut(&player)
-                    .expect("Cant be None: Get Player");
 
-                // if a player is in jail we don't throw rolls for him
+                let mut player_info = self
+                    .players
+                    .get(&current_player)
+                    .expect("Cant be None: Get Player")
+                    .clone();
+
                 let position = if player_info.in_jail {
                     player_info.position
                 } else {
@@ -176,95 +139,58 @@ impl Game {
                 // This is done in order to penalize the participant's contract
                 // if he misses the rent
                 let account = self.ownership[position as usize];
-                if account != player && account != ActorId::zero() {
+                if account != current_player && !account.is_zero() {
                     if let Some((_, _, _, rent)) = self.properties[position as usize] {
                         player_info.debt = rent;
                     }
                 }
+                // If the new position is behind the previous one, it indicates that the player has completed a circuit around the board,
+                // and his balance should be accordingly updated.
+                if position <= player_info.position {
+                    player_info.balance += NEW_CIRCLE;
+                }
                 player_info.position = position;
                 player_info.in_jail = position == JAIL_POSITION;
-                state.players.insert(player, player_info.clone());
-                match position {
-                    0 => {
-                        player_info.balance += NEW_CIRCLE;
-                        player_info.round = self.round;
-                    }
-                    // free cells (it can be lottery or penalty): TODO as a task on hackathon
-                    2 | 4 | 7 | 16 | 20 | 30 | 33 | 36 | 38 => {
-                        player_info.round = self.round;
-                    }
-                    _ => {
-                        let reply = take_your_turn(&player, &state).await;
+                player_info.round = self.round;
 
-                        if reply.is_err() {
-                            player_info.penalty = PENALTY;
-                        }
+                self.players.insert(current_player, player_info.clone());
+                self.current_turn = (self.current_turn + 1) % self.players.len() as u8;
+                match position {
+                    // free cells (it can be lottery or penalty): TODO as a task on hackathon
+                    0 | 2 | 4 | 7 | 16 | 20 | 30 | 33 | 36 | 38 => {}
+                    _ => {
+                        let game_info = self.get_game_info();
+                        self.awaiting_reply_msg_id =
+                            take_your_turn(player_info.reservation_id, &current_player, game_info);
                     }
                 }
-
-                // check penalty and debt of the players for the previous round
-                // if penalty is equal to 5 points we remove the player from the game
-                // if a player has a debt and he has not enough balance to pay it
-                // he is also removed from the game
-                bankrupt_and_penalty(
-                    &self.admin,
-                    &mut self.players,
-                    &mut self.players_queue,
-                    &self.properties,
-                    &mut self.properties_in_bank,
-                    &mut self.ownership,
-                );
-
-                msg::send(
-                    self.admin,
-                    GameReply::Step {
-                        players: self
-                            .players
-                            .iter()
-                            .map(|(key, value)| (*key, value.clone()))
-                            .collect(),
-                        properties: self.properties.clone(),
-                        current_player: self.current_player,
-                        current_step: self.current_step,
-                        ownership: self.ownership.clone(),
-                    },
-                    0,
-                )
-                .expect("Error in sending a message `GameEvent::Step`");
+                if self.current_msg_id != MessageId::zero() {
+                    self.current_msg_id = msg::id();
+                }
+                self.game_status = GameStatus::Wait;
+                exec::wait_for(self.config.time_for_step);
             }
+            GameStatus::Finished => {
+                return Ok(GameReply::GameFinished {
+                    winner: self.winner,
+                });
+            }
+            GameStatus::Registration => return Err(GameError::WrongGameStatus),
         }
-        Ok(
-            GameReply::GameFinished {
-                winner: self.winner,
-            },
-        )
     }
 }
 
-#[gstd::async_main]
-async fn main() {
+#[no_mangle]
+extern fn handle() {
     let action: GameAction = msg::load().expect("Could not load `GameAction`");
-    let game: &mut Game = unsafe { GAME.get_or_insert(Default::default()) };
+    let game: &mut Game = unsafe {
+        GAME.as_mut()
+            .expect("Unexpected: Contract is not initialized")
+    };
     let reply = match action {
         GameAction::Register { player } => game.register(&player),
         GameAction::StartRegistration => game.start_registration(),
-        GameAction::Play => game.play().await,
-        GameAction::ThrowRoll {
-            pay_fine,
-            properties_for_sale,
-        } => game.throw_roll(pay_fine, properties_for_sale),
-        GameAction::AddGear {
-            properties_for_sale,
-        } => game.add_gear(properties_for_sale),
-        GameAction::Upgrade {
-            properties_for_sale,
-        } => game.upgrade(properties_for_sale),
-        GameAction::BuyCell {
-            properties_for_sale,
-        } => game.buy_cell(properties_for_sale),
-        GameAction::PayRent {
-            properties_for_sale,
-        } => game.pay_rent(properties_for_sale),
+        GameAction::Play => game.play(),
         GameAction::ChangeAdmin(admin) => game.change_admin(&admin),
     };
     msg::reply(reply, 0).expect("Error during sending a reply");
@@ -285,4 +211,101 @@ extern fn state() {
     let game = unsafe { GAME.take().expect("Game is not initialized") };
     let game_state: GameState = game.into();
     msg::reply(game_state, 0).expect("Failed to share state");
+}
+
+#[no_mangle]
+extern fn handle_reply() {
+    let reply_to = msg::reply_to().expect("Unable to get the msg id");
+
+    let game: &mut Game = unsafe {
+        GAME.as_mut()
+            .expect("Unexpected: Contract is not initialized")
+    };
+    let current_player = game.current_player;
+    if game.awaiting_reply_msg_id == reply_to {
+        let reply: Result<StrategicAction, gstd::errors::Error> = msg::load();
+        match reply {
+            Ok(strategic_action) => match strategic_action {
+                StrategicAction::AddGear {
+                    properties_for_sale,
+                } => game.add_gear(properties_for_sale),
+                StrategicAction::BuyCell {
+                    properties_for_sale,
+                } => game.buy_cell(properties_for_sale),
+                StrategicAction::PayRent {
+                    properties_for_sale,
+                } => game.pay_rent(properties_for_sale),
+                StrategicAction::ThrowRoll {
+                    pay_fine,
+                    properties_for_sale,
+                } => game.throw_roll(pay_fine, properties_for_sale),
+                StrategicAction::Upgrade {
+                    properties_for_sale,
+                } => game.upgrade(properties_for_sale),
+                StrategicAction::Skip => {},
+            },
+            _ => {
+                game.exclude_player_from_game(game.current_player);
+            }
+        };
+    }
+
+    // check penalty and debt of the players for the previous round
+    // if penalty is equal to 5 points we remove the player from the game
+    // if a player has a debt and he has not enough balance to pay it
+    // he is also removed from the game
+    bankrupt_and_penalty(
+        &game.admin,
+        &mut game.players,
+        &mut game.players_queue,
+        &game.properties,
+        &mut game.properties_in_bank,
+        &mut game.ownership,
+    );
+
+    match game.players_queue.len() {
+        0 => {
+            // All players have been removed from the game (either penalized or bankrupt)
+            game.game_status = GameStatus::Finished;
+        }
+        1 => {
+            game.winner = game.players_queue[0];
+            game.game_status = GameStatus::Finished;
+        }
+        _ => {
+            game.game_status = GameStatus::Play;
+            let gas_available = exec::gas_available();
+
+            if gas_available > game.config.min_gas_limit {
+                let reservation_id = ReservationId::reserve(
+                    gas_available - game.config.min_gas_limit / 10,
+                    game.config.reservation_duration,
+                )
+                .expect("Error during reservation");
+                game.players
+                    .entry(current_player)
+                    .and_modify(|info| info.reservation_id = reservation_id);
+            }
+        }
+    }
+
+    msg::send_with_gas(
+        game.admin,
+        GameReply::Step {
+            players: game
+                .players
+                .iter()
+                .map(|(key, value)| (*key, value.clone()))
+                .collect(),
+            properties: game.properties.clone(),
+            current_player: game.current_player,
+            current_step: game.current_step,
+            ownership: game.ownership.clone(),
+        },
+        0,
+        0,
+    )
+    .expect("Error in sending a message `GameEvent::Step`");
+
+    exec::wake(game.current_msg_id).expect("Unable to wake the msg");
 }

@@ -1,12 +1,11 @@
 #![no_std]
 use gmeta::{InOut, Metadata};
-use gstd::prelude::*;
 use syndote_io::*;
 pub struct PlayerMetadata;
 
 impl Metadata for PlayerMetadata {
     type Init = ();
-    type Handle = InOut<YourTurn, String>;
+    type Handle = InOut<YourTurn, StrategicAction>;
     type Reply = ();
     type Others = ();
     type Signal = ();

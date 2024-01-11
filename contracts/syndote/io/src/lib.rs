@@ -11,8 +11,7 @@ pub type Gears = Vec<Gear>;
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct YourTurn {
-    pub players: Vec<(ActorId, PlayerInfo)>,
-    pub properties: Vec<Option<(ActorId, Gears, Price, Rent)>>,
+    pub game_info: GameInfo,
 }
 
 pub struct SynMetadata;
@@ -24,6 +23,19 @@ impl Metadata for SynMetadata {
     type Others = ();
     type Signal = ();
     type State = Out<GameState>;
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct GameInfo {
+    pub properties_in_bank: Vec<u8>,
+    pub players: Vec<(ActorId, PlayerInfo)>,
+    pub players_queue: Vec<ActorId>,
+    // mapping from cells to built properties,
+    pub properties: Vec<Option<(ActorId, Gears, u32, u32)>>,
+    // mapping from cells to accounts who have properties on it
+    pub ownership: Vec<ActorId>,
 }
 
 #[derive(Clone, Default, Encode, Decode, TypeInfo)]
@@ -50,10 +62,15 @@ pub struct GameState {
 #[scale_info(crate = gstd::scale_info)]
 pub enum GameAction {
     StartRegistration,
-    Register {
-        player: ActorId,
-    },
+    Register { player: ActorId },
     Play,
+    ChangeAdmin(ActorId),
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum StrategicAction {
     ThrowRoll {
         pay_fine: bool,
         properties_for_sale: Option<Vec<u8>>,
@@ -70,7 +87,7 @@ pub enum GameAction {
     PayRent {
         properties_for_sale: Option<Vec<u8>>,
     },
-    ChangeAdmin(ActorId),
+    Skip,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
@@ -168,6 +185,7 @@ pub enum GameStatus {
     Registration,
     Play,
     Finished,
+    Wait,
 }
 
 impl Default for GameStatus {
@@ -180,4 +198,7 @@ impl Default for GameStatus {
 pub struct Config {
     pub reservation_amount: u64,
     pub reservation_duration: u32,
+    pub time_for_step: u32,
+    pub min_gas_limit: u64,
+    pub number_of_players: u8,
 }

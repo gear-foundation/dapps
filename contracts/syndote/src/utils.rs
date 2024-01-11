@@ -7,11 +7,28 @@ impl Game {
     pub fn only_admin(&self) {
         assert_eq!(msg::source(), self.admin, "Only admin can start the game");
     }
-    pub fn only_player(&self) {
-        assert!(
-            self.players.contains_key(&msg::source()),
-            "You are not in the game"
-        );
+
+    pub fn get_game_info(&self) -> GameInfo {
+        GameInfo {
+            properties_in_bank: self.properties_in_bank.clone().into_iter().collect(),
+            players: self.players.clone().into_iter().collect(),
+            players_queue: self.players_queue.clone(),
+            properties: self.properties.clone(),
+            ownership: self.ownership.clone(),
+        }
+    }
+
+    pub fn exclude_player_from_game(&mut self, player: ActorId) {
+        self.players_queue.retain(|&p| p != player);
+        self.players.entry(player).and_modify(|info| {
+            info.lost = true;
+            info.balance = 0;
+
+            for cell in info.cells.iter() {
+                self.ownership[*cell as usize] = self.admin;
+                self.properties_in_bank.insert(*cell);
+            }
+        });
     }
 }
 
@@ -46,7 +63,6 @@ pub fn sell_property(
 ) -> Result<(), GameError> {
     for property in properties_for_sale {
         if ownership[*property as usize] != msg::source() {
-            //       debug!("PENALTY: TRY TO SELL NOT OWN PROPERTY");
             player_info.penalty += 1;
             return Err(GameError::StrategicError);
         }
@@ -210,7 +226,6 @@ pub fn init_properties(
         ownership.push(ActorId::zero());
     }
 }
-
 
 impl From<Game> for GameState {
     fn from(game: Game) -> GameState {
