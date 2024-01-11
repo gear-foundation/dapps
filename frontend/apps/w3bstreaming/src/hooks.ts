@@ -206,21 +206,6 @@ export function useCheckBalance() {
     );
 
     const chainEDepositWithLimit = chainEDeposit + limit * valuePerGas;
-    console.log('LIMIT:');
-    console.log(limit);
-    console.log(limit * valuePerGas);
-    console.log('existentialDeposit:');
-    console.log(Number(withoutCommas(availableBalance?.existentialDeposit || '')));
-    console.log('eDeposit');
-    console.log(chainEDeposit);
-    console.log('eDeposit + Limit:');
-    console.log(chainEDepositWithLimit);
-    console.log('balance:');
-    console.log(Number(withoutCommas(availableBalance!.value)));
-    console.log('chain balance:');
-    console.log(getChainBalanceValue(Number(withoutCommas(availableBalance?.value || ''))).toFixed());
-    console.log('low balance: ');
-    console.log(chainBalance < chainEDepositWithLimit);
 
     if (!chainBalance || chainBalance < chainEDepositWithLimit) {
       alert.error(`Low balance on ${stringShorten(account?.decodedAddress || '', 8)}`);
@@ -247,8 +232,7 @@ export const useHandleCalculateGas = (address: HexString, meta?: ProgramMetadata
   return (initPayload: AnyJson, value?: AnyNumber | undefined) => {
     const balance = Number(withoutCommas(availableBalance?.value || ''));
     const existentialDeposit = Number(withoutCommas(availableBalance?.existentialDeposit || ''));
-    console.log(balance);
-    console.log(existentialDeposit);
+
     if (!balance || balance < existentialDeposit) {
       alert.error(`Low balance when calculating gas`);
     }

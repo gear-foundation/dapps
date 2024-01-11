@@ -11,6 +11,7 @@ import { Player } from '../Player';
 import { Loader } from '@/components';
 import { RTC_CONFIG } from '../../config';
 import { Button } from '@/ui';
+import { useProgramState } from '@/hooks';
 
 function Watch({ socket, streamId }: WatchProps) {
   const navigate = useNavigate();
@@ -20,6 +21,9 @@ function Watch({ socket, streamId }: WatchProps) {
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const peerConnection: MutableRefObject<RTCPeerConnection | null> = useRef(null);
   const { account } = useAccount();
+  const {
+    state: { streamTeasers },
+  } = useProgramState();
   const [streamStatus, setStreamStatus] = useState<StreamState>('ready-to-play');
 
   const handleGetPublicKey = async () => {
@@ -67,25 +71,32 @@ function Watch({ socket, streamId }: WatchProps) {
       signedMsg: publicKey.current?.signature,
       encodedId: account.address,
     });
+
     peerConnection.current = new RTCPeerConnection(RTC_CONFIG);
-    socket.on('offer', (broadcasterAddress: string, msg: OfferMsg) => {
+
+    socket.on('offer', (broadcasterId: string, { description, userId }: OfferMsg) => {
       peerConnection.current
-        ?.setRemoteDescription(msg.description)
+        ?.setRemoteDescription(description)
         .then(() => peerConnection.current?.createAnswer())
         .then((answer: any) => peerConnection.current?.setLocalDescription(answer))
         .then(() => {
-          socket.emit('answer', broadcasterAddress, {
-            watcherId: account?.decodedAddress,
+          socket.emit('answer', broadcasterId, {
+            userId,
+            streamId,
             description: peerConnection.current?.localDescription,
           });
           setLocalStream(null);
+        })
+        .catch(() => {
+          console.log('error when setLocalDescription');
         });
 
       peerConnection.current!.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
         if (event.candidate) {
-          socket.emit('candidate', broadcasterAddress, {
+          socket.emit('candidate', broadcasterId, {
             candidate: event.candidate,
-            id: account?.decodedAddress,
+            userId,
+            streamId,
           });
         }
       };
@@ -99,17 +110,25 @@ function Watch({ socket, streamId }: WatchProps) {
       };
 
       peerConnection.current!.onnegotiationneeded = async () => {
-        await peerConnection.current!.setRemoteDescription(msg.description);
+        try {
+          await peerConnection.current!.setRemoteDescription(description);
+        } catch {
+          console.log('error when setRemoteDescription');
+        }
+
         peerConnection
           .current!.createAnswer()
           .then((answer) => {
             peerConnection.current!.setLocalDescription(answer);
           })
           .then(() => {
-            socket.emit('answer', broadcasterAddress, {
+            socket.emit('answer', broadcasterId, {
               watcherId: account?.decodedAddress,
               description: peerConnection.current?.localDescription,
             });
+          })
+          .catch(() => {
+            console.log('error when setLocalDescription');
           });
       };
     });
@@ -127,18 +146,16 @@ function Watch({ socket, streamId }: WatchProps) {
       peerConnection.current?.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch((err) => console.error(err));
     });
 
-    socket.on('stopBroadcasting', (broadcasterId, msg) => {
+    socket.on('stopBroadcasting', () => {
       setStreamStatus('ended');
       peerConnection.current?.close();
       peerConnection.current = null;
-      socket.off();
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account?.address, account?.decodedAddress, socket, streamId]);
 
   useEffect(
     () => () => {
-      console.log('ffff');
       socket.emit('stopWatching', account?.decodedAddress, { streamId });
       peerConnection.current?.close();
       peerConnection.current = null;
@@ -210,7 +227,22 @@ function Watch({ socket, streamId }: WatchProps) {
       )}
       {streamStatus === 'ready-to-play' && (
         <div className={cx(styles['broadcast-not-available'])}>
-          <Button variant="primary" label="Play Stream" onClick={handlePlayStream} />
+          {streamTeasers?.[streamId].imgLink && (
+            <>
+              <img
+                src={streamTeasers?.[streamId].imgLink}
+                alt="stream background"
+                className={cx(styles['stream-background'])}
+              />
+              <div className={cx(styles['backdrop-filter'])} />
+            </>
+          )}
+          <Button
+            variant="primary"
+            label="Play Stream"
+            className={cx(styles['play-stream-button'])}
+            onClick={handlePlayStream}
+          />
         </div>
       )}
       {streamStatus === 'not-subscribed' && (

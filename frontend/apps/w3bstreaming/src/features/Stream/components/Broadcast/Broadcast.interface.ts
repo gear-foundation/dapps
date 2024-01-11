@@ -16,7 +16,8 @@ export interface WatchMsg {
 }
 
 export interface AnswerMsg {
-  watcherId: string;
+  userId: string;
+  streamId: string;
   description: RTCSessionDescription;
 }
 
@@ -25,6 +26,6 @@ export interface CandidateMsg {
   candidate: RTCIceCandidate;
 }
 
-export type StreamStatus = 'not-started' | 'streaming' | 'ended';
+export type StreamStatus = 'not-started' | 'streaming' | 'ended' | 'already-have' | 'loading';
 
 export type StreamType = 'camera' | 'screen';
