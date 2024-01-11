@@ -146,11 +146,10 @@ function Watch({ socket, streamId }: WatchProps) {
       peerConnection.current?.addIceCandidate(new RTCIceCandidate(msg.candidate)).catch((err) => console.error(err));
     });
 
-    socket.on('stopBroadcasting', (broadcasterId, msg) => {
+    socket.on('stopBroadcasting', () => {
       setStreamStatus('ended');
       peerConnection.current?.close();
       peerConnection.current = null;
-      // socket.off();
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account?.address, account?.decodedAddress, socket, streamId]);
