@@ -1,0 +1,8 @@
+@use '@gear-js/ui/variables' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}

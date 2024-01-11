@@ -1,0 +1,67 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.burger {
+  & path {
+    fill: #fff;
+    stroke: #fff;
+  }
+}
+
+.contextMenuWrapper {
+    position: relative;
+}
+
+.dropdownContainer {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    width: max-content;
+    padding: 24px 24px 24px 12px;
+    color: #000;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0px 10px 20px 0px #5B5B5B26;
+    display: block;
+
+    @media screen and (max-width: 767px) {
+        display: none;
+      }
+}
+
+.dropdownHeader {
+    display: flex;
+    justify-content: flex-end;
+
+    & .closeIcon {
+        position: relative;
+        top: -14px;
+        left: 14px;
+    }
+}
+
+.balanceWrapper {
+    display: none;
+    
+    @media screen and (max-width: 767px) {
+        display: block;
+      }
+}
+
+.mobileWrapper {
+    position: absolute;
+    left: 0;
+    top: 100%;
+    width: 100%;
+    padding: 16px;
+    display: none;
+
+    @media screen and (max-width: 767px) {
+        display: block;
+      }
+
+    
+}

@@ -23,9 +23,10 @@
     // custom
     "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
     }
   },
   "include": ["src"],
+  "files": ["env.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
