@@ -97,7 +97,7 @@ pub trait VaratubeTestFuncs {
 
 impl VaratubeTestFuncs for Program<'_> {
     fn varatube(system: &System, from: u64, config: Config) -> Program<'_> {
-        let varatube = Program::current(&system);
+        let varatube = Program::current(system);
         let res = varatube.send(from, config);
         assert!(!res.main_failed());
         varatube
