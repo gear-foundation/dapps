@@ -72,7 +72,9 @@ function AppComponent() {
               <StreamTeasersList />
             </div>
           </div>
-          <Footer />
+          <div className={cx(styles['footer-wrapper'])}>
+            <Footer />
+          </div>
         </>
       ) : (
         <Loader />

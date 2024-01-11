@@ -10,7 +10,7 @@
 
 ## Description
 
-React application of Streaming based on Streaming smart contract.
+Backend address for [react streaming application](https://github.com/gear-foundation/dapps/tree/master/frontend/apps/w3bstreaming).
 
 ## Getting started
 
@@ -28,12 +28,14 @@ In order for all features to work as expected, the node and it's runtime version
 
 In case of issues with the application, try to switch to another network or run your own local node and specify its address in the `.env` file. When applicable, make sure the smart contract(s) wasm files are uploaded and running in this network accordingly.
 
+### Build the app:
+
+```sh
+yarn build
+```
+
 ### Run the app:
 
 ```sh
 yarn start
 ```
-
-### Backend server:
-
-You also may install [Streaming backend server](https://github.com/gear-foundation/dapps/tree/master/backend/w3bstreaming) to run it on your local machine

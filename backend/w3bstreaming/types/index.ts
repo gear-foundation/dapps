@@ -21,12 +21,14 @@ export interface IStopWatchingMsg {
 }
 
 export interface IAnswerMsg {
-  watcherId: string;
+  userId: string;
+  streamId: string;
   description: RTCSessionDescription;
 }
 
 export interface ICandidateMsg {
-  id: string;
+  userId: string;
+  streamId: string;
   candidate: RTCIceCandidate;
 }
 
