@@ -13,7 +13,7 @@ import { WalletItem } from '../wallet-item';
 import styles from './wallet-modal.module.css';
 import { WalletModalProps } from './wallet-modal.interface';
 import { AccountIcon } from '../account-icon';
-import { variantsPanel, variantsOverlay } from '@/components/modal/modal.variants';
+import { variantsPanel, variantsOverlay } from './wallet-modal.variants';
 import { ScrollArea } from '@/components/scroll-area';
 import { ArrayElement } from '@/types';
 import { Wallets } from '../../types';

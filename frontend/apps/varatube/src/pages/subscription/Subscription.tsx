@@ -19,7 +19,7 @@ function Subscription() {
   const alert = useAlert();
   const { decodedAddress } = account || {};
   const [valuesToTransfer, setValuesToTransfer] = useState<InitialValues | null>(null);
-  const { subscriptionsState, isSubscriptionsStateRead } = useProgramState();
+  const { subscriptionsState, isSubscriptionsStateRead, updateState } = useProgramState();
   const varatubeMetadata = useProgramMetadata(varatubeMeta);
   const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, varatubeMetadata);
   const { checkBalance } = useCheckBalance();
@@ -57,6 +57,10 @@ function Subscription() {
           sendMessage({
             payload,
             gasLimit,
+            onSuccess: () => {
+              updateState();
+              alert.success('Unsubscribed successfully');
+            },
           });
         });
       })
@@ -95,6 +99,7 @@ function Subscription() {
               onSuccess: () => {
                 closeModal();
                 clearValues();
+                updateState();
                 alert.success('Subscribed successfully');
               },
             });
