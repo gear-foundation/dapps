@@ -1980,7 +1980,7 @@ __metadata:
   resolution: "@dapps-frontend/signless-transactions@workspace:packages/signless-transactions"
   dependencies:
     "@dapps-frontend/hooks": "workspace:*"
-    "@gear-js/vara-ui": "npm:0.0.2"
+    "@gear-js/vara-ui": "npm:0.0.6"
     "@polkadot/keyring": "npm:12.6.1"
     "@polkadot/react-identicon": "npm:3.6.4"
     "@types/react": "npm:18.2.33"
@@ -2010,6 +2010,7 @@ __metadata:
   resolution: "@dapps-frontend/ui@workspace:packages/ui"
   dependencies:
     "@gear-js/ui": "npm:0.5.21"
+    "@gear-js/vara-ui": "npm:0.0.6"
     "@headlessui/react": "npm:1.7.17"
     "@polkadot/react-identicon": "npm:3.6.4"
     "@radix-ui/react-scroll-area": "npm:1.0.5"
@@ -2609,23 +2610,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gear-js/vara-ui@npm:0.0.2":
-  version: 0.0.2
-  resolution: "@gear-js/vara-ui@npm:0.0.2"
+"@gear-js/vara-ui@npm:0.0.6":
+  version: 0.0.6
+  resolution: "@gear-js/vara-ui@npm:0.0.6"
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 3bcf652f2cbd077e9daa34a5aee8771cc03d163a388f05aac73f2fe297e4c2e6a3144133d00c97aa6f1972291c41e270ec74c89eaf3a4769b8d7854c49d32fdb
-  languageName: node
-  linkType: hard
-
-"@gear-js/vara-ui@npm:0.0.3":
-  version: 0.0.3
-  resolution: "@gear-js/vara-ui@npm:0.0.3"
-  peerDependencies:
-    react: ^18.2.0
-    react-dom: ^18.2.0
-  checksum: ef6ff05e6c54e5621ec1c2d1c11b34612d9021e8ff50d45d4a52c458351b3993332947c608ae849de8c9c04510bd393690fb4988e3716356aa1b00fee5ed19de
+  checksum: f7bc79a6c1cb1af2fca88cb6cd32a3faf41a4d48f189d6176194a9e8270799f4b28d848280c32af39f7605966072dc128ec0e0def8cff5267d6cc385aaf67ab7
   languageName: node
   linkType: hard
 
@@ -9575,7 +9566,7 @@ __metadata:
     "@gear-js/api": "npm:0.35.2"
     "@gear-js/react-hooks": "npm:0.9.4"
     "@gear-js/ui": "npm:0.5.21"
-    "@gear-js/vara-ui": "npm:0.0.2"
+    "@gear-js/vara-ui": "npm:0.0.6"
     "@mantine/form": "npm:6.0.15"
     "@polkadot/api": "npm:10.10.1"
     "@polkadot/extension-dapp": "npm:0.46.5"
@@ -13832,7 +13823,7 @@ __metadata:
     "@gear-js/api": "npm:0.35.2"
     "@gear-js/react-hooks": "npm:0.9.4"
     "@gear-js/ui": "npm:0.5.21"
-    "@gear-js/vara-ui": "npm:0.0.3"
+    "@gear-js/vara-ui": "npm:0.0.6"
     "@headlessui/react": "npm:1.7.17"
     "@mantine/form": "npm:6.0.15"
     "@polkadot/api": "npm:10.10.1"

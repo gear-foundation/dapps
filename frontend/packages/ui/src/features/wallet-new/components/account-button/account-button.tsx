@@ -5,7 +5,7 @@ import cx from 'clsx';
 import styles from './account-button.module.css';
 
 type Props = {
-  name: string | undefined;
+  name?: string;
   address: string;
   className?: string;
   onClick: () => void;
@@ -13,13 +13,8 @@ type Props = {
 
 function AccountButton({ address, name, className, onClick }: Props) {
   return (
-    <Button
-      text={`${name}`}
-      type="button"
-      size="default"
-      color="dark"
-      className={cx(styles.button, className)}
-      onClick={onClick}>
+    <Button type="button" size="default" color="dark" className={cx(styles.button, className)} onClick={onClick}>
+      <span>{name}</span>
       <Identicon value={address} size={16} theme="polkadot" />
     </Button>
   );
