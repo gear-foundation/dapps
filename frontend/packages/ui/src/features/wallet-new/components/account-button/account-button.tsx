@@ -5,7 +5,7 @@ import cx from 'clsx';
 import styles from './account-button.module.css';
 
 type Props = {
-  name?: string;
+  name: string | undefined;
   address: string;
   className?: string;
   onClick: () => void;
