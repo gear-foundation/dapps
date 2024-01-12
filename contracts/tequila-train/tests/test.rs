@@ -69,8 +69,6 @@ impl TestFunc for Program<'_> {
             assert!(result.contains(&(from, reply.encode())));
         } else {
             reply = Ok(Event::Skipped);
-            let res = &result.decoded_log::<Result<Event, Error>>();
-            println!("RESULT: {:?}", res);
             assert!(result.contains(&(from, reply.encode())));
         }
     }
@@ -94,8 +92,6 @@ impl TestFunc for Program<'_> {
         let reply: Result<Event, Error>;
         if let Some(error) = error {
             reply = Err(error);
-            let res = &result.decoded_log::<Result<Event, Error>>();
-            println!("RESULT: {:?}", res);
             assert!(result.contains(&(from, reply.encode())));
         } else {
             reply = Ok(Event::Placed {
@@ -103,8 +99,6 @@ impl TestFunc for Program<'_> {
                 track_id,
                 remove_train,
             });
-            let res = &result.decoded_log::<Result<Event, Error>>();
-            println!("RESULT: {:?}", res);
             assert!(result.contains(&(from, reply.encode())));
         }
     }
@@ -224,7 +218,6 @@ fn failures_test() {
             .players,
         vec![(0.into(), "A".to_owned()), (1.into(), "B".to_owned())]
     );
-    println!("STATE: {:?}", state);
 
     program.restart_game(
         2,
