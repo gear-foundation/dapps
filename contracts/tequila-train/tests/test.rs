@@ -162,7 +162,7 @@ fn failures_test() {
 
     let program = Program::current_opt(&system);
 
-    let result = program.send(2, Some(2 as u64));
+    let result = program.send(2, Some(2_u64));
     assert!(!result.main_failed());
 
     program.start_game(
