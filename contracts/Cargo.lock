@@ -7459,16 +7459,8 @@ dependencies = [
  "enum-iterator 1.4.1",
  "gmeta",
  "gstd",
-]
-
-[[package]]
-name = "tequila-train-state"
-version = "1.0.2"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "tequila-train-io",
+ "parity-scale-codec",
+ "scale-info",
 ]
 
 [[package]]
@@ -7964,16 +7956,8 @@ version = "1.0.2"
 dependencies = [
  "gmeta",
  "gstd",
-]
-
-[[package]]
-name = "vara-man-state"
-version = "1.0.2"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "vara-man-io",
+ "parity-scale-codec",
+ "scale-info",
 ]
 
 [[package]]

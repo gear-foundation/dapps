@@ -15,33 +15,6 @@ struct VaraMan {
     admins: Vec<ActorId>,
 }
 
-impl From<VaraMan> for VaraManState {
-    fn from(value: VaraMan) -> Self {
-        let VaraMan {
-            games,
-            players,
-            status,
-            config,
-            admins,
-        } = value;
-
-        let games = games.iter().map(|(id, game)| (*id, game.clone())).collect();
-
-        let players = players
-            .iter()
-            .map(|(actor_id, player)| (*actor_id, player.clone()))
-            .collect();
-
-        Self {
-            games,
-            players,
-            status,
-            config,
-            admins,
-        }
-    }
-}
-
 static mut VARA_MAN: Option<VaraMan> = None;
 
 #[gstd::async_main]
@@ -207,8 +180,7 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
             }
         }
         VaraManAction::AddAdmin(admin) => {
-            let msg_source = msg::source();
-            if vara_man.admins.contains(&msg_source) {
+            if vara_man.admins.contains(&msg::source()) {
                 vara_man.admins.push(admin);
                 VaraManEvent::AdminAdded(admin)
             } else {
@@ -237,42 +209,62 @@ extern fn state() {
 
     let query: StateQuery = msg::load().expect("Unable to load the state query");
 
-    match query {
-        StateQuery::All => {
-            msg::reply(StateReply::All(contract.into()), 0).expect("Unable to share the state")
-        }
+    let reply = match query {
+        StateQuery::All => StateReply::All(contract.into()),
         StateQuery::AllGames => {
             let games = contract
                 .games
-                .iter()
-                .map(|(id, game)| (*id, game.clone()))
+                .into_iter()
+                .map(|(id, game)| (id, game))
                 .collect();
-            msg::reply(StateReply::AllGames(games), 0).expect("Unable to share the state")
+            StateReply::AllGames(games)
         }
         StateQuery::AllPlayers => {
             let players = contract
                 .players
-                .iter()
-                .map(|(id, player)| (*id, player.clone()))
+                .into_iter()
+                .map(|(id, player)| (id, player))
                 .collect();
-            msg::reply(StateReply::AllPlayers(players), 0).expect("Unable to share the state")
+            StateReply::AllPlayers(players)
         }
         StateQuery::Game { player_address } => {
             let game: Option<GameInstance> = contract.games.get(&player_address).cloned();
-            msg::reply(StateReply::Game(game), 0).expect("Unable to share the state")
+            StateReply::Game(game)
         }
         StateQuery::Player { player_address } => {
             let player: Option<Player> = contract.players.get(&player_address).cloned();
-            msg::reply(StateReply::Player(player), 0).expect("Unable to share the state")
+            StateReply::Player(player)
         }
-        StateQuery::Config => {
-            msg::reply(StateReply::Config(contract.config), 0).expect("Unable to share the state")
-        }
-        StateQuery::Admins => {
-            msg::reply(StateReply::Admins(contract.admins), 0).expect("Unable to share the state")
-        }
-        StateQuery::Status => {
-            msg::reply(StateReply::Status(contract.status), 0).expect("Unable to share the state")
-        }
+        StateQuery::Config => StateReply::Config(contract.config),
+        StateQuery::Admins => StateReply::Admins(contract.admins),
+        StateQuery::Status => StateReply::Status(contract.status),
     };
+    msg::reply(reply, 0).expect("Unable to share the state");
+}
+
+impl From<VaraMan> for VaraManState {
+    fn from(value: VaraMan) -> Self {
+        let VaraMan {
+            games,
+            players,
+            status,
+            config,
+            admins,
+        } = value;
+
+        let games = games.into_iter().map(|(id, game)| (id, game)).collect();
+
+        let players = players
+            .into_iter()
+            .map(|(actor_id, player)| (actor_id, player))
+            .collect();
+
+        Self {
+            games,
+            players,
+            status,
+            config,
+            admins,
+        }
+    }
 }

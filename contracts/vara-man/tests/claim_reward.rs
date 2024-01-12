@@ -68,8 +68,8 @@ fn success_reward_scale() {
 
     vara_man.change_status(ADMIN, Status::Started);
 
-    // let state = vara_man.get_state();
-    // assert!(state.players.is_empty() && state.games.is_empty());
+    let state = vara_man.get_state().expect("Unexpected invalid state.");
+    assert!(state.players.is_empty() && state.games.is_empty());
 
     vara_man.register_player(utils::PLAYERS[0], "John", false);
     vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
