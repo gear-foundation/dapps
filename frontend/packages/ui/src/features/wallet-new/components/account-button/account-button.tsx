@@ -13,13 +13,8 @@ type Props = {
 
 function AccountButton({ address, name, className, onClick }: Props) {
   return (
-    <Button
-      text={`${name}`}
-      type="button"
-      size="default"
-      color="dark"
-      className={cx(styles.button, className)}
-      onClick={onClick}>
+    <Button type="button" size="default" color="dark" className={cx(styles.button, className)} onClick={onClick}>
+      <span>{name}</span>
       <Identicon value={address} size={16} theme="polkadot" />
     </Button>
   );
