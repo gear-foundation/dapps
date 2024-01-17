@@ -46,7 +46,6 @@ members = [
     "identity",
     "identity/state",
     "multi-token",
-    "multi-token/state",
     "multisig-wallet",
     "multisig-wallet/state",
     "nft",  

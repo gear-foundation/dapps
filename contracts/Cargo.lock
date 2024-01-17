@@ -4153,8 +4153,6 @@ name = "multi-token"
 version = "1.0.2"
 dependencies = [
  "gclient",
- "gear-lib-derive",
- "gear-lib-old",
  "gear-wasm-builder",
  "gmeta",
  "gstd",
@@ -4170,17 +4168,6 @@ dependencies = [
  "gear-lib-old",
  "gmeta",
  "gstd",
-]
-
-[[package]]
-name = "multi-token-state"
-version = "1.0.2"
-dependencies = [
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "multi-token-io",
 ]
 
 [[package]]

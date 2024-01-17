@@ -1,4 +1,3 @@
-pub use gear_lib_old::multitoken::{io::*, state::*};
 use gstd::{ActorId, Encode, String};
 pub use gtest::{Program, System};
 use multi_token_io::*;
@@ -11,9 +10,9 @@ pub fn init_mtk(sys: &System, from: u64) {
 
     let res = mtk.send(
         from,
-        InitMTK {
-            name: String::from("MTK Simple"),
-            symbol: String::from("MTK"),
+        InitMtk {
+            name: String::from("Mtk Simple"),
+            symbol: String::from("Mtk"),
             base_uri: String::from("http://mtk.simple"),
         },
     );
@@ -24,30 +23,31 @@ pub fn init_mtk(sys: &System, from: u64) {
 pub fn mint_internal(
     mtk: &Program<'_>,
     from: u64,
+    token_id: TokenId,
     amount: u128,
-    token_id: u128,
     token_metadata: Option<TokenMetadata>,
-    should_fail: bool,
+    error: Option<MtkError>,
 ) {
     let res = mtk.send(
         from,
-        MyMTKAction::Mint {
+        MtkAction::Mint {
+            token_id,
             amount,
             token_metadata,
         },
     );
-    if should_fail {
-        assert!(res.main_failed());
+
+    if let Some(error) = error {
+        assert!(res.contains(&(from, Err::<MtkEvent, MtkError>(error).encode())));
     } else {
         assert!(res.contains(&(
             from,
-            MTKEvent::Transfer {
-                operator: from.into(),
+            Ok::<MtkEvent, MtkError>(MtkEvent::Transfer {
                 from: ActorId::zero(),
                 to: from.into(),
                 ids: vec![token_id],
                 amounts: vec![amount],
-            }
+            })
             .encode()
         )));
     }
@@ -62,20 +62,19 @@ pub fn mint_batch_internal(
 ) {
     let res = mtk.send(
         from,
-        MyMTKAction::MintBatch {
+        MtkAction::MintBatch {
             ids: ids.clone(),
             amounts: amounts.clone(),
             tokens_metadata,
         },
     );
 
-    let codec = MTKEvent::Transfer {
-        operator: from.into(),
+    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::Transfer {
         from: ActorId::zero(),
         to: from.into(),
         ids,
         amounts,
-    }
+    })
     .encode();
     assert!(res.contains(&(from, codec)));
 }
@@ -85,28 +84,27 @@ pub fn burn_internal(
     from: u64,
     token_id: u128,
     amount: u128,
-    should_fail: bool,
+    error: Option<MtkError>,
 ) {
     let res = mtk.send(
         from,
-        MyMTKAction::Burn {
+        MtkAction::Burn {
             id: token_id,
             amount,
         },
     );
 
-    if should_fail {
-        assert!(res.main_failed());
+    if let Some(error) = error {
+        assert!(res.contains(&(from, Err::<MtkEvent, MtkError>(error).encode())));
     } else {
         assert!(res.contains(&(
             from,
-            MTKEvent::Transfer {
-                operator: from.into(),
+            Ok::<MtkEvent, MtkError>(MtkEvent::Transfer {
                 from: from.into(),
                 to: ActorId::zero(),
                 ids: vec![token_id],
                 amounts: vec![amount],
-            }
+            })
             .encode()
         )));
     }
@@ -115,19 +113,18 @@ pub fn burn_internal(
 pub fn burn_batch_internal(mtk: &Program<'_>, from: u64, ids: Vec<u128>, amounts: Vec<u128>) {
     let res = mtk.send(
         from,
-        MyMTKAction::BurnBatch {
+        MtkAction::BurnBatch {
             ids: ids.clone(),
             amounts: amounts.clone(),
         },
     );
 
-    let codec = MTKEvent::Transfer {
-        operator: from.into(),
+    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::Transfer {
         from: from.into(),
         to: ActorId::zero(),
         ids,
         amounts,
-    }
+    })
     .encode();
     assert!(res.contains(&(from, codec)));
 }
@@ -135,7 +132,7 @@ pub fn burn_batch_internal(mtk: &Program<'_>, from: u64, ids: Vec<u128>, amounts
 pub fn balance_internal(mtk: &Program<'_>, from: u64, token_id: u128, amount: u128) {
     let res = mtk.send(
         from,
-        MyMTKAction::BalanceOf {
+        MtkAction::BalanceOf {
             account: from.into(),
             id: token_id,
         },
@@ -143,11 +140,11 @@ pub fn balance_internal(mtk: &Program<'_>, from: u64, token_id: u128, amount: u1
 
     assert!(res.contains(&(
         from,
-        MTKEvent::BalanceOf(vec![BalanceReply {
+        Ok::<MtkEvent, MtkError>(MtkEvent::BalanceOf(vec![BalanceReply {
             account: from.into(),
             id: token_id,
             amount,
-        }])
+        }]))
         .encode()
     )));
 }
@@ -161,7 +158,7 @@ pub fn balance_of_batch_internal(
 ) {
     let res = mtk.send(
         from,
-        MyMTKAction::BalanceOfBatch {
+        MtkAction::BalanceOfBatch {
             accounts: accounts.clone(),
             ids: ids.clone(),
         },
@@ -177,7 +174,7 @@ pub fn balance_of_batch_internal(
         })
         .collect();
 
-    let codec = MTKEvent::BalanceOf(replies).encode();
+    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::BalanceOf(replies)).encode();
 
     assert!(res.contains(&(from, codec)));
 }
@@ -188,11 +185,11 @@ pub fn transfer_internal(
     to: u64,
     token_id: u128,
     amount: u128,
-    should_fail: bool,
+    error: Option<MtkError>,
 ) {
     let res = mtk.send(
         from,
-        MyMTKAction::TransferFrom {
+        MtkAction::TransferFrom {
             from: from.into(),
             to: to.into(),
             id: token_id,
@@ -200,16 +197,16 @@ pub fn transfer_internal(
         },
     );
 
-    let codec = MTKEvent::Transfer {
-        operator: from.into(),
+    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::Transfer {
         from: from.into(),
         to: to.into(),
         ids: vec![token_id],
         amounts: vec![amount],
-    }
+    })
     .encode();
-    if should_fail {
-        assert!(res.main_failed());
+
+    if let Some(error) = error {
+        assert!(res.contains(&(from, Err::<MtkEvent, MtkError>(error).encode())));
     } else {
         assert!(res.contains(&(from, codec)));
     }
@@ -224,7 +221,7 @@ pub fn transfer_batch_internal(
 ) {
     let res = mtk.send(
         from,
-        MyMTKAction::BatchTransferFrom {
+        MtkAction::BatchTransferFrom {
             from: from.into(),
             to: to.into(),
             ids: ids.clone(),
@@ -232,13 +229,12 @@ pub fn transfer_batch_internal(
         },
     );
 
-    let codec = MTKEvent::Transfer {
-        operator: from.into(),
+    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::Transfer {
         from: from.into(),
         to: to.into(),
         ids,
         amounts,
-    }
+    })
     .encode();
 
     assert!(res.contains(&(from, codec)));
@@ -259,20 +255,19 @@ pub fn transform_internal(
     }
     let res = mtk.send(
         from,
-        MyMTKAction::Transform {
+        MtkAction::Transform {
             id: token_id,
             amount,
             nfts,
         },
     );
 
-    let codec = MTKEvent::Transfer {
-        operator: from.into(),
+    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::Transfer {
         from: ActorId::zero(),
         to: ActorId::zero(),
         ids,
         amounts: vec![NFT_COUNT; amount as usize],
-    }
+    })
     .encode();
     assert!(res.contains(&(from, codec)));
 }
