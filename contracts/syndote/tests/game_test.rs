@@ -37,7 +37,6 @@ fn game() {
                 reservation_duration: 86_400,
                 time_for_step: 10,
                 min_gas_limit: 10_000_000_000,
-                number_of_players: 4,
             }
         )
         .main_failed());

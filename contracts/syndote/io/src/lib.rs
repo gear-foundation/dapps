@@ -206,7 +206,6 @@ pub struct Config {
     pub reservation_duration: u32,
     pub time_for_step: u32,
     pub min_gas_limit: u64,
-    pub wait_duration: u32,   
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]

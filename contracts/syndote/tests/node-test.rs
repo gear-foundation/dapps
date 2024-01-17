@@ -92,7 +92,6 @@ async fn syndote() -> Result<()> {
                 reservation_duration: 1_000,
                 time_for_step: 10,
                 min_gas_limit: 10_000_000_000,
-                number_of_players: 4,
             },
             10_000_000_000,
             0,
