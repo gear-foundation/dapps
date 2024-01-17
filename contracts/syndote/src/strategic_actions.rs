@@ -4,17 +4,13 @@ impl Game {
     // to throw rolls to go out from the prison
     // `pay_fine`: to pay fine or not if there is not double
     pub fn throw_roll(&mut self, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) {
-        let player_info = match get_player_info(&self.current_player, &mut self.players, self.round)
-        {
-            Ok(player_info) => player_info,
-            Err(_) => {
-                return;
-            }
-        };
+        let player = self.current_player;
+        let player_info = self.players.get_mut(&player).expect("Can't be None");
 
         // If a player is not in the jail
         if !player_info.in_jail {
             player_info.penalty += 1;
+            debug!("penatly jail");
             return;
         }
 
@@ -29,6 +25,8 @@ impl Game {
             )
             .is_err()
             {
+                player_info.penalty += 1;
+                debug!("penatly sell");
                 return;
             };
         }
@@ -40,6 +38,7 @@ impl Game {
         } else if pay_fine {
             if player_info.balance < FINE {
                 player_info.penalty += 1;
+                debug!("PENALTY");
                 return;
             }
             player_info.balance -= FINE;
@@ -50,12 +49,7 @@ impl Game {
 
     pub fn add_gear(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let player = self.current_player;
-        let player_info = match get_player_info(&player, &mut self.players, self.round) {
-            Ok(player_info) => player_info,
-            Err(_) => {
-                return;
-            }
-        };
+        let player_info = self.players.get_mut(&player).expect("Can't be None");
 
         if let Some(properties) = properties_for_sale {
             if sell_property(
@@ -95,7 +89,7 @@ impl Game {
 
         // maximum amount of gear is reached
         if gears.len() == 3 {
-            //        debug!("PENALTY: MAXIMUM AMOUNT OF GEARS ON CELL");
+            debug!("PENALTY: MAXIMUM AMOUNT OF GEARS ON CELL");
             player_info.penalty += 1;
             return;
         }
@@ -107,12 +101,7 @@ impl Game {
 
     pub fn upgrade(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let player = self.current_player;
-        let player_info = match get_player_info(&player, &mut self.players, self.round) {
-            Ok(player_info) => player_info,
-            Err(_) => {
-                return;
-            }
-        };
+        let player_info = self.players.get_mut(&player).expect("Can't be None");
 
         if let Some(properties) = properties_for_sale {
             if sell_property(
@@ -171,12 +160,8 @@ impl Game {
     // if a cell is free, a player can buy it
     pub fn buy_cell(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let player = self.current_player;
-        let player_info = match get_player_info(&player, &mut self.players, self.round) {
-            Ok(player_info) => player_info,
-            Err(_) => {
-                return;
-            }
-        };
+        let player_info = self.players.get_mut(&player).expect("Can't be None");
+
         let position = player_info.position;
 
         if let Some(properties) = properties_for_sale {
@@ -190,28 +175,30 @@ impl Game {
             )
             .is_err()
             {
+                player_info.penalty += 1;
+                debug!("penatly sell");
                 return;
             };
         }
 
         // if a player on the field that can't be sold (for example, jail)
         if let Some((account, _, price, _)) = self.properties[position as usize].as_mut() {
-            if account != &player {
-                //       debug!("PENALTY: THAT CELL IS ALREDY BOUGHT");
+            if !account.is_zero() {
+                debug!("PENALTY: THAT CELL IS ALREDY BOUGHT");
                 player_info.penalty += 1;
                 return;
             }
             // if a player has not enough balance
             if player_info.balance < *price {
                 player_info.penalty += 1;
-                //      debug!("PENALTY: NOT ENOUGH BALANCE FOR BUYING");
+                debug!("PENALTY: NOT ENOUGH BALANCE FOR BUYING");
                 return;
             }
             player_info.balance -= *price;
             *account = msg::source();
         } else {
             player_info.penalty += 1;
-            //       debug!("PENALTY: THAT FIELD CAN'T BE SOLD");
+            debug!("PENALTY: THAT FIELD CAN'T BE SOLD");
             return;
         };
         player_info.cells.insert(position);
@@ -221,12 +208,7 @@ impl Game {
 
     pub fn pay_rent(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let player = self.current_player;
-        let player_info = match get_player_info(&player, &mut self.players, self.round) {
-            Ok(player_info) => player_info,
-            Err(_) => {
-                return;
-            }
-        };
+        let player_info = self.players.get_mut(&player).expect("Can't be None");
         if let Some(properties) = properties_for_sale {
             if sell_property(
                 &self.admin,
@@ -247,7 +229,7 @@ impl Game {
 
         if account == player {
             player_info.penalty += 1;
-            //   debug!("PENALTY: PAY RENT TO HIMSELF");
+            debug!("PENALTY: PAY RENT TO HIMSELF");
             return;
         }
 
@@ -257,13 +239,13 @@ impl Game {
             0
         };
         if rent == 0 {
-            //    debug!("PENALTY: CELL WITH NO PROPERTIES");
+            debug!("PENALTY: CELL WITH NO PROPERTIES");
             player_info.penalty += 1;
             return;
         };
 
         if player_info.balance < rent {
-            //    debug!("PENALTY: NOT ENOUGH BALANCE TO PAY RENT");
+            debug!("PENALTY: NOT ENOUGH BALANCE TO PAY RENT");
             player_info.penalty += 1;
             return;
         }

@@ -30,27 +30,14 @@ impl Game {
             }
         });
     }
-}
 
-pub fn get_player_info<'a>(
-    player: &'a ActorId,
-    players: &'a mut HashMap<ActorId, PlayerInfo>,
-    current_round: u128,
-) -> Result<&'a mut PlayerInfo, GameError> {
-    if &msg::source() != player {
-        //        debug!("PENALTY: WRONG MSG::SOURCE()");
-        players.entry(msg::source()).and_modify(|player_info| {
-            player_info.penalty += 1;
-        });
-        return Err(GameError::StrategicError);
+    pub fn get_player_info(&self) -> Result<PlayerInfo, GameError> {
+        if let Some(player_info) = self.players.get(&self.current_player) {
+            Ok(player_info.clone())
+        } else {
+            Err(GameError::PlayerDoesNotExist)
+        }
     }
-    let player_info = players.get_mut(player).expect("Cant be None: Get Player");
-    if player_info.round >= current_round {
-        //   debug!("PENALTY: MOVE ALREADY MADE");
-        player_info.penalty += 1;
-        return Err(GameError::StrategicError);
-    }
-    Ok(player_info)
 }
 
 pub fn sell_property(
@@ -99,6 +86,7 @@ pub fn bankrupt_and_penalty(
     properties: &[Option<(ActorId, Gears, Price, Rent)>],
     properties_in_bank: &mut HashSet<u8>,
     ownership: &mut [ActorId],
+    current_turn: &mut u8,
 ) {
     for (player, mut player_info) in players.clone() {
         if player_info.debt > 0 {
@@ -124,12 +112,17 @@ pub fn bankrupt_and_penalty(
         if (player_info.penalty >= PENALTY || player_info.debt > 0) && players_queue.len() > 1 {
             player_info.lost = true;
             player_info.balance = 0;
+            debug!(
+                "EXCLUDED: penalty {:?} debt {:?}",
+                player_info.penalty, player_info.debt
+            );
             players_queue.retain(|&p| p != player);
             for cell in &player_info.cells.clone() {
                 ownership[*cell as usize] = *admin;
                 properties_in_bank.insert(*cell);
             }
             players.insert(player, player_info);
+            *current_turn = current_turn.saturating_sub(1);
         }
     }
 }

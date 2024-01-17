@@ -8,19 +8,19 @@ fn game() {
     system.init_logger();
     let player_1 = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/syndote_player.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
     );
     let player_2 = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/syndote_player.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
     );
     let player_3 = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/syndote_player.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
     );
     let player_4 = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/syndote_player.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
     );
     let game = Program::current_opt(&system);
 
@@ -29,7 +29,18 @@ fn game() {
     assert!(!player_3.send::<_, ActorId>(10, 5.into()).main_failed());
     assert!(!player_4.send::<_, ActorId>(10, 5.into()).main_failed());
 
-    assert!(!game.send(10, 0x00).main_failed());
+    assert!(!game
+        .send(
+            10,
+            Config {
+                reservation_amount: 400_000_000_000,
+                reservation_duration: 86_400,
+                time_for_step: 10,
+                min_gas_limit: 10_000_000_000,
+                number_of_players: 4,
+            }
+        )
+        .main_failed());
 
     assert!(!game
         .send(10, GameAction::Register { player: 1.into() })

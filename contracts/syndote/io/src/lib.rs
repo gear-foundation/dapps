@@ -1,7 +1,7 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata, Out};
-use gstd::{collections::BTreeSet, prelude::*, ActorId, ReservationId};
+use gmeta::{InOut, Metadata, Out, In};
+use gstd::{collections::BTreeSet,MessageId, prelude::*, ActorId, ReservationId};
 
 pub type Price = u32;
 pub type Rent = u32;
@@ -17,7 +17,7 @@ pub struct YourTurn {
 pub struct SynMetadata;
 
 impl Metadata for SynMetadata {
-    type Init = ();
+    type Init = In<Config>;
     type Handle = InOut<GameAction, Result<GameReply, GameError>>;
     type Reply = ();
     type Others = ();
@@ -57,17 +57,18 @@ pub struct GameState {
     pub winner: ActorId,
 }
 
-#[derive(Encode, Decode, TypeInfo)]
+#[derive(Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum GameAction {
     StartRegistration,
+    MakeReservation,
     Register { player: ActorId },
     Play,
     ChangeAdmin(ActorId),
 }
 
-#[derive(Encode, Decode, TypeInfo)]
+#[derive(Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum StrategicAction {
@@ -90,7 +91,7 @@ pub enum StrategicAction {
     Skip,
 }
 
-#[derive(Encode, Decode, TypeInfo)]
+#[derive(PartialEq, Eq,Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum GameReply {
@@ -115,9 +116,10 @@ pub enum GameReply {
     GasReserved,
     NextRoundFromReservation,
     AdminChanged,
+    ReservationMade,
 }
 
-#[derive(Encode, Decode, TypeInfo)]
+#[derive(Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum GameError {
@@ -127,8 +129,10 @@ pub enum GameError {
     OnlyAdmin,
     NotInTheGame,
     StrategicError,
+    PlayerDoesNotExist,
+    NoGasForPlaying,
 }
-#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[derive(PartialEq, Eq, Debug, Clone, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct PlayerInfo {
@@ -159,7 +163,7 @@ impl Default for PlayerInfo {
     }
 }
 
-#[derive(PartialEq, Eq, Encode, Decode, Clone, TypeInfo, Copy)]
+#[derive(Debug, PartialEq, Eq, Encode, Decode, Clone, TypeInfo, Copy)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum Gear {
@@ -194,11 +198,27 @@ impl Default for GameStatus {
     }
 }
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub struct Config {
     pub reservation_amount: u64,
     pub reservation_duration: u32,
     pub time_for_step: u32,
     pub min_gas_limit: u64,
-    pub number_of_players: u8,
+    pub wait_duration: u32,   
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum StateQuery {
+    MessageId,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum StateReply {
+    MessageId(MessageId),
 }
