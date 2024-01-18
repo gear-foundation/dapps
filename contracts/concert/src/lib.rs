@@ -1,16 +1,13 @@
 #![no_std]
 
 use concert_io::*;
-use gear_lib_old::multitoken::io::*;
 use gstd::{
     collections::{HashMap, HashSet},
     msg,
     prelude::*,
     ActorId,
 };
-use multi_token_io::MyMTKAction;
-
-include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
+use multi_token_io::{BalanceReply, MtkAction, MtkEvent, TokenId, TokenMetadata};
 
 const ZERO_ID: ActorId = ActorId::zero();
 const NFT_COUNT: u128 = 1;
@@ -31,6 +28,7 @@ struct Concert {
     concert_id: u128,
     running: bool,
     metadata: HashMap<ActorId, HashMap<u128, Option<TokenMetadata>>>,
+    token_id: u128,
 }
 
 static mut CONTRACT: Option<Concert> = None;
@@ -50,19 +48,29 @@ unsafe extern fn init() {
 async unsafe fn main() {
     let action: ConcertAction = msg::load().expect("Could not load Action");
     let concert: &mut Concert = unsafe { CONTRACT.get_or_insert(Default::default()) };
-    match action {
+    let reply = match action {
         ConcertAction::Create {
             creator,
             name,
             description,
             number_of_tickets,
             date,
-        } => concert.create_concert(name, description, creator, number_of_tickets, date),
+            token_id,
+        } => concert.create_concert(
+            name,
+            description,
+            creator,
+            number_of_tickets,
+            date,
+            token_id,
+        ),
         ConcertAction::Hold => concert.hold_concert().await,
         ConcertAction::BuyTickets { amount, metadata } => {
             concert.buy_tickets(amount, metadata).await
         }
-    }
+    };
+    msg::reply(reply, 0)
+        .expect("Failed to encode or reply with `Result<ConcertEvent, ConcertError>`.");
 }
 
 impl Concert {
@@ -73,9 +81,10 @@ impl Concert {
         creator: ActorId,
         number_of_tickets: u128,
         date: u128,
-    ) {
+        token_id: u128,
+    ) -> Result<ConcertEvent, ConcertError> {
         if self.running {
-            panic!("CONCERT: There is already a concert registered.")
+            return Err(ConcertError::AlreadyRegistered);
         }
         self.creator = creator;
         self.concert_id = self.id_counter;
@@ -86,33 +95,35 @@ impl Concert {
         self.date = date;
         self.running = true;
         self.tickets_left = number_of_tickets;
-        msg::reply(
-            ConcertEvent::Creation {
-                creator,
-                concert_id: self.concert_id,
-                number_of_tickets,
-                date,
-            },
-            0,
-        )
-        .expect("Error during a replying with ConcertEvent::Creation");
+        self.token_id = token_id;
+
+        Ok(ConcertEvent::Creation {
+            creator,
+            concert_id: self.concert_id,
+            number_of_tickets,
+            date,
+        })
     }
 
-    async fn buy_tickets(&mut self, amount: u128, mtd: Vec<Option<TokenMetadata>>) {
+    async fn buy_tickets(
+        &mut self,
+        amount: u128,
+        mtd: Vec<Option<TokenMetadata>>,
+    ) -> Result<ConcertEvent, ConcertError> {
         if msg::source() == ZERO_ID {
-            panic!("CONCERT: Message from zero address");
+            return Err(ConcertError::ZeroAddress);
         }
 
         if amount < 1 {
-            panic!("CONCERT: Can not buy less than 1 ticket");
+            return Err(ConcertError::LessThanOneTicket);
         }
 
         if self.tickets_left < amount {
-            panic!("CONCERT: Not enough tickets");
+            return Err(ConcertError::NotEnoughTickets);
         }
 
         if mtd.len() != amount as usize {
-            panic!("CONCERT: Metadata not provided for all the tickets");
+            return Err(ConcertError::NotEnoughMetadata);
         }
 
         for meta in mtd {
@@ -125,33 +136,30 @@ impl Concert {
 
         self.buyers.insert(msg::source());
         self.tickets_left -= amount;
-        msg::send_for_reply_as::<_, MTKEvent>(
+        msg::send_for_reply_as::<_, MtkEvent>(
             self.contract_id,
-            MyMTKAction::Mint {
+            MtkAction::Mint {
+                token_id: self.token_id,
                 amount,
                 token_metadata: None,
             },
             0,
             0,
         )
-        .expect("Error in async message to MTK contract")
+        .expect("Error in async message to Mtk contract")
         .await
         .expect("CONCERT: Error minting concert tokens");
 
-        msg::reply(
-            ConcertEvent::Purchase {
-                concert_id: self.concert_id,
-                amount,
-            },
-            0,
-        )
-        .expect("Error during a replying with ConcertEvent::Purchase");
+        Ok(ConcertEvent::Purchase {
+            concert_id: self.concert_id,
+            amount,
+        })
     }
 
     // MINT SEVERAL FOR A USER
-    async fn hold_concert(&mut self) {
+    async fn hold_concert(&mut self) -> Result<ConcertEvent, ConcertError> {
         if msg::source() != self.creator {
-            panic!("CONCERT: Only creator can hold a concert");
+            return Err(ConcertError::NotCreator);
         }
         // get balances from a contract
         let accounts: Vec<_> = self.buyers.clone().into_iter().collect();
@@ -159,36 +167,36 @@ impl Concert {
             .take(accounts.len())
             .collect();
 
-        let balance_response: MTKEvent = msg::send_for_reply_as(
+        let balance_response: MtkEvent = msg::send_for_reply_as(
             self.contract_id,
-            MyMTKAction::BalanceOfBatch {
+            MtkAction::BalanceOfBatch {
                 accounts,
                 ids: tokens,
             },
             0,
             0,
         )
-        .expect("Error in async message to MTK contract")
+        .expect("Error in async message to Mtk contract")
         .await
         .expect("CONCERT: Error getting balances from the contract");
         let balances: Vec<BalanceReply> =
-            if let MTKEvent::BalanceOf(balance_response) = balance_response {
+            if let MtkEvent::BalanceOf(balance_response) = balance_response {
                 balance_response
             } else {
                 Vec::new()
             };
         // we know each user balance now
         for balance in &balances {
-            msg::send_for_reply_as::<_, MTKEvent>(
+            msg::send_for_reply_as::<_, MtkEvent>(
                 self.contract_id,
-                MyMTKAction::Burn {
+                MtkAction::Burn {
                     id: balance.id,
                     amount: balance.amount,
                 },
                 0,
                 0,
             )
-            .expect("Error in async message to MTK contract")
+            .expect("Error in async message to Mtk contract")
             .await
             .expect("CONCERT: Error burning balances");
         }
@@ -204,9 +212,9 @@ impl Concert {
                     amounts.push(NFT_COUNT);
                     meta.push(token_meta);
                 }
-                msg::send_for_reply_as::<_, MTKEvent>(
+                msg::send_for_reply_as::<_, MtkEvent>(
                     self.contract_id,
-                    MyMTKAction::MintBatch {
+                    MtkAction::MintBatch {
                         ids,
                         amounts,
                         tokens_metadata: meta,
@@ -214,19 +222,16 @@ impl Concert {
                     0,
                     0,
                 )
-                .expect("Error in async message to MTK contract")
+                .expect("Error in async message to Mtk contract")
                 .await
                 .expect("CONCERT: Error minting tickets");
             }
         }
         self.running = false;
-        msg::reply(
-            ConcertEvent::Hold {
-                concert_id: self.concert_id,
-            },
-            0,
-        )
-        .expect("Error during a replying with ConcertEvent::Hold");
+
+        Ok(ConcertEvent::Hold {
+            concert_id: self.concert_id,
+        })
     }
 }
 
@@ -254,6 +259,7 @@ impl From<Concert> for State {
             concert_id,
             running,
             metadata,
+            token_id,
         } = value;
 
         let buyers = buyers.iter().copied().collect();
@@ -278,6 +284,7 @@ impl From<Concert> for State {
             concert_id,
             running,
             metadata,
+            token_id,
         }
     }
 }

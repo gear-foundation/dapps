@@ -8,7 +8,6 @@ members = [
     "battleship",
     "car-races",
     "concert",
-    "concert/state",
     "crowdsale",
     "crowdsale/state",
     "dao",

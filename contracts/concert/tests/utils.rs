@@ -1,12 +1,12 @@
 use concert_io::*;
-use gear_lib_old::multitoken::io::TokenMetadata;
 use gstd::{prelude::*, ActorId, Encode};
 use gtest::{Program, System};
-use multi_token_io::InitMTK;
+use multi_token_io::{InitMtk, TokenMetadata};
 
 pub const USER: u64 = 193;
 pub const MTK_ID: u64 = 2;
 pub const CONCERT_ID: u128 = 0;
+pub const TOKEN_ID: u128 = 1;
 pub const NUMBER_OF_TICKETS: u128 = 100;
 pub const AMOUNT: u128 = 1;
 pub const DATE: u128 = 100000;
@@ -26,7 +26,7 @@ pub fn init_concert(sys: &System) -> Program<'_> {
     );
     let res = mtk_program.send(
         USER,
-        InitMTK {
+        InitMtk {
             name: String::from("Multitoken for a concert"),
             symbol: String::from("MTC"),
             base_uri: String::from(""),
@@ -55,6 +55,7 @@ pub fn create(
     number_of_tickets: u128,
     date: u128,
     concert_id: u128,
+    token_id: u128,
 ) {
     let res = concert_program.send(
         USER,
@@ -64,17 +65,18 @@ pub fn create(
             description,
             number_of_tickets,
             date,
+            token_id,
         },
     );
 
     assert!(res.contains(&(
         USER,
-        ConcertEvent::Creation {
+        Ok::<ConcertEvent, ConcertError>(ConcertEvent::Creation {
             creator,
             concert_id,
             number_of_tickets,
             date,
-        }
+        })
         .encode()
     )));
 }
@@ -84,21 +86,28 @@ pub fn buy(
     concert_id: u128,
     amount: u128,
     metadata: Vec<Option<TokenMetadata>>,
-    should_fail: bool,
+    error: Option<ConcertError>,
 ) {
     let res = concert_program.send(USER, ConcertAction::BuyTickets { amount, metadata });
 
-    if should_fail {
-        assert!(res.main_failed());
+    if let Some(error) = error {
+        assert!(res.contains(&(USER, Err::<ConcertEvent, ConcertError>(error).encode())));
     } else {
-        assert!(res.contains(&(USER, ConcertEvent::Purchase { concert_id, amount }.encode())));
+        assert!(res.contains(&(
+            USER,
+            Ok::<ConcertEvent, ConcertError>(ConcertEvent::Purchase { concert_id, amount })
+                .encode()
+        )));
     }
 }
 
 pub fn hold(concert_program: &Program<'_>, concert_id: u128) {
-    let res = concert_program.send(USER, ConcertAction::Hold {});
+    let res = concert_program.send(USER, ConcertAction::Hold);
 
-    assert!(res.contains(&(USER, ConcertEvent::Hold { concert_id }.encode())));
+    assert!(res.contains(&(
+        USER,
+        Ok::<ConcertEvent, ConcertError>(ConcertEvent::Hold { concert_id }).encode()
+    )));
 }
 
 pub fn check_current_concert(

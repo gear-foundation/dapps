@@ -224,11 +224,7 @@ impl SimpleMtk {
     /// Arguments:
     /// * `accounts`: The vectors of IDs of the actor
     /// * `id`: The vector of token IDs which balance will be returned
-    fn balance_of(
-        &self,
-        accounts: Vec<ActorId>,
-        ids: Vec<TokenId>,
-    ) -> Result<MtkEvent, MtkError> {
+    fn balance_of(&self, accounts: Vec<ActorId>, ids: Vec<TokenId>) -> Result<MtkEvent, MtkError> {
         if accounts.len() != ids.len() {
             return Err(MtkError::LengthMismatch);
         }
@@ -269,7 +265,7 @@ impl SimpleMtk {
             return Err(MtkError::SenderAndRecipientAddressesAreSame);
         }
 
-        if from != &msg_src || self.is_approved(from, &msg_src) {
+        if from != &msg_src && !self.is_approved(from, &msg_src) {
             return Err(MtkError::CallerIsNotOwnerOrApproved);
         }
 

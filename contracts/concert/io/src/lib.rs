@@ -1,14 +1,14 @@
 #![no_std]
 
-use gear_lib_old::multitoken::io::*;
 use gmeta::{In, InOut, Metadata, Out};
 use gstd::{prelude::*, ActorId};
+use multi_token_io::TokenMetadata;
 
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
     type Init = In<InitConcert>;
-    type Handle = InOut<ConcertAction, ConcertEvent>;
+    type Handle = InOut<ConcertAction, Result<ConcertEvent, ConcertError>>;
     type Reply = ();
     type Others = ();
     type Signal = ();
@@ -38,6 +38,7 @@ pub struct State {
     pub running: bool,
     /// user to token id to metadata
     pub metadata: Vec<(ActorId, Tickets)>,
+    pub token_id: u128,
 }
 
 pub type Tickets = Vec<(u128, Option<TokenMetadata>)>;
@@ -87,6 +88,7 @@ pub enum ConcertAction {
         description: String,
         number_of_tickets: u128,
         date: u128,
+        token_id: u128,
     },
     Hold,
     BuyTickets {
@@ -112,6 +114,18 @@ pub enum ConcertEvent {
         concert_id: u128,
         amount: u128,
     },
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum ConcertError {
+    AlreadyRegistered,
+    ZeroAddress,
+    LessThanOneTicket,
+    NotEnoughTickets,
+    NotEnoughMetadata,
+    NotCreator,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]

@@ -951,7 +951,6 @@ version = "1.0.2"
 dependencies = [
  "concert-io",
  "gclient",
- "gear-lib-old",
  "gear-wasm-builder",
  "gstd",
  "gtest",
@@ -964,20 +963,9 @@ dependencies = [
 name = "concert-io"
 version = "1.0.2"
 dependencies = [
- "gear-lib-old",
  "gmeta",
  "gstd",
-]
-
-[[package]]
-name = "concert-state"
-version = "1.0.2"
-dependencies = [
- "concert-io",
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
+ "multi-token-io",
 ]
 
 [[package]]
@@ -4165,7 +4153,6 @@ dependencies = [
 name = "multi-token-io"
 version = "1.0.2"
 dependencies = [
- "gear-lib-old",
  "gmeta",
  "gstd",
 ]

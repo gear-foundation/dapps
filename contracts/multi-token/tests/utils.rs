@@ -59,6 +59,7 @@ pub fn mint_batch_internal(
     ids: Vec<u128>,
     amounts: Vec<u128>,
     tokens_metadata: Vec<Option<TokenMetadata>>,
+    error: Option<MtkError>,
 ) {
     let res = mtk.send(
         from,
@@ -76,7 +77,12 @@ pub fn mint_batch_internal(
         amounts,
     })
     .encode();
-    assert!(res.contains(&(from, codec)));
+
+    if let Some(error) = error {
+        assert!(res.contains(&(from, Err::<MtkEvent, MtkError>(error).encode())));
+    } else {
+        assert!(res.contains(&(from, codec)));
+    }
 }
 
 pub fn burn_internal(
@@ -110,7 +116,13 @@ pub fn burn_internal(
     }
 }
 
-pub fn burn_batch_internal(mtk: &Program<'_>, from: u64, ids: Vec<u128>, amounts: Vec<u128>) {
+pub fn burn_batch_internal(
+    mtk: &Program<'_>,
+    from: u64,
+    ids: Vec<u128>,
+    amounts: Vec<u128>,
+    error: Option<MtkError>,
+) {
     let res = mtk.send(
         from,
         MtkAction::BurnBatch {
@@ -126,7 +138,11 @@ pub fn burn_batch_internal(mtk: &Program<'_>, from: u64, ids: Vec<u128>, amounts
         amounts,
     })
     .encode();
-    assert!(res.contains(&(from, codec)));
+    if let Some(error) = error {
+        assert!(res.contains(&(from, Err::<MtkEvent, MtkError>(error).encode())));
+    } else {
+        assert!(res.contains(&(from, codec)));
+    }
 }
 
 pub fn balance_internal(mtk: &Program<'_>, from: u64, token_id: u128, amount: u128) {
@@ -218,6 +234,7 @@ pub fn transfer_batch_internal(
     to: u64,
     ids: Vec<u128>,
     amounts: Vec<u128>,
+    error: Option<MtkError>,
 ) {
     let res = mtk.send(
         from,
@@ -237,7 +254,11 @@ pub fn transfer_batch_internal(
     })
     .encode();
 
-    assert!(res.contains(&(from, codec)));
+    if let Some(error) = error {
+        assert!(res.contains(&(from, Err::<MtkEvent, MtkError>(error).encode())));
+    } else {
+        assert!(res.contains(&(from, codec)));
+    }
 }
 
 pub fn transform_internal(
@@ -270,6 +291,38 @@ pub fn transform_internal(
     })
     .encode();
     assert!(res.contains(&(from, codec)));
+}
+
+pub fn approve(mtk: &Program<'_>, from: u64, to: u64, error: Option<MtkError>) {
+    let res = mtk.send(from, MtkAction::Approve { account: to.into() });
+
+    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::Approval {
+        from: from.into(),
+        to: to.into(),
+    })
+    .encode();
+
+    if let Some(error) = error {
+        assert!(res.contains(&(from, Err::<MtkEvent, MtkError>(error).encode())));
+    } else {
+        assert!(res.contains(&(from, codec)));
+    }
+}
+
+pub fn revoke_approval(mtk: &Program<'_>, from: u64, to: u64, error: Option<MtkError>) {
+    let res = mtk.send(from, MtkAction::RevokeApproval { account: to.into() });
+
+    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::RevokeApproval {
+        from: from.into(),
+        to: to.into(),
+    })
+    .encode();
+
+    if let Some(error) = error {
+        assert!(res.contains(&(from, Err::<MtkEvent, MtkError>(error).encode())));
+    } else {
+        assert!(res.contains(&(from, codec)));
+    }
 }
 
 pub fn check_token_ids_for_owner(mtk: &Program<'_>, account: u64, ids: Vec<u128>) {
