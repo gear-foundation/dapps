@@ -331,7 +331,7 @@ fn test_approve_and_revoke() {
     check_balance(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT);
     // USERS[1] should have no token_ids before
     check_token_ids_for_owner(&mtk, USERS[1], vec![]);
-    let res = mtk.send(
+    mtk.send(
         USERS[1],
         MtkAction::TransferFrom {
             from: USERS[0].into(),

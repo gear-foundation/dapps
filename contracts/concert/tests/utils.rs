@@ -55,7 +55,6 @@ pub fn create(
     number_of_tickets: u128,
     date: u128,
     concert_id: u128,
-    token_id: u128,
 ) {
     let res = concert_program.send(
         USER,
@@ -65,7 +64,7 @@ pub fn create(
             description,
             number_of_tickets,
             date,
-            token_id,
+            token_id: TOKEN_ID,
         },
     );
 

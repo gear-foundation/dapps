@@ -16,7 +16,6 @@ fn create_concert() {
         NUMBER_OF_TICKETS,
         DATE,
         CONCERT_ID,
-        TOKEN_ID,
     );
 
     check_current_concert(
@@ -42,7 +41,6 @@ fn buy_tickets() {
         NUMBER_OF_TICKETS,
         DATE,
         CONCERT_ID,
-        TOKEN_ID,
     );
 
     let metadata = vec![Some(TokenMetadata {
@@ -71,7 +69,6 @@ fn buy_tickets_failures() {
         NUMBER_OF_TICKETS,
         DATE,
         CONCERT_ID,
-        TOKEN_ID,
     );
 
     // MUST FAIL since Zero address
@@ -128,7 +125,6 @@ fn hold_concert() {
         NUMBER_OF_TICKETS,
         DATE,
         CONCERT_ID,
-        TOKEN_ID,
     );
 
     let metadata = vec![Some(TokenMetadata {
