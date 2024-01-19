@@ -182,7 +182,7 @@ impl VaratubeTestFuncs for Program<'_> {
         if let StateReply::SubscriberData(subscriber_data) = state {
             subscriber_data
         } else {
-            gstd::panic!("Wrong received reply");
+            panic!("Wrong received reply");
         }
     }
 }
