@@ -11,8 +11,7 @@ impl VaraTube {
     /// Add pending subscription.
     ///
     /// Inserting `data` is actually currency id and subscription period.
-    pub fn add_pending_subscriber(&mut self, subscriber: &ActorId, data: (ActorId, Period)) {
-        let (currency_id, period) = data;
+    pub fn add_pending_subscriber(&mut self, subscriber: &ActorId, (currency_id, period): (ActorId, Period)) {
         self.subscribers.insert(
             *subscriber,
             SubscriberData {
