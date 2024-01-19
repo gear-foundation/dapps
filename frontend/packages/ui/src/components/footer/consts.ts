@@ -4,10 +4,10 @@ import { ReactComponent as DiscordSVG } from './assets/discord.svg';
 import { ReactComponent as MediumSVG } from './assets/medium.svg';
 
 const SOCIALS = [
-  { href: 'https://twitter.com/gear_techs', SVG: TwitterSVG },
-  { href: 'https://github.com/gear-tech', SVG: GithubSVG },
-  { href: 'https://discord.com/invite/7BQznC9uD9', SVG: DiscordSVG },
-  { href: 'https://medium.com/@gear_techs', SVG: MediumSVG },
+  { href: 'https://twitter.com/VaraNetwork', SVG: TwitterSVG },
+  { href: 'https://github.com/gear-foundation', SVG: GithubSVG },
+  { href: 'https://discord.gg/x8ZeSy6S6K', SVG: DiscordSVG },
+  { href: 'https://medium.com/@VaraNetwork', SVG: MediumSVG },
 ];
 
 export { SOCIALS };
