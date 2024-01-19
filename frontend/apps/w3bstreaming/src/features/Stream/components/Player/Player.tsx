@@ -34,9 +34,14 @@ function Player({
   const [volume, setVolume] = useState(50);
 
   useEffect(() => {
-    playerRef.current?.load();
-    onReady?.(playerRef.current as HTMLVideoElement);
-  }, [onReady]);
+    try {
+      playerRef.current?.load();
+      onReady?.(playerRef.current as HTMLVideoElement);
+    } catch {
+      console.log('error');
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     const player = playerRef.current;
