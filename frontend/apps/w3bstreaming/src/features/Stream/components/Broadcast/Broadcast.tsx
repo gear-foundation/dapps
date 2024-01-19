@@ -8,18 +8,28 @@ import { Player } from '../Player';
 import { Button } from '@/ui';
 
 import StreamSignalSVG from '@/assets/icons/signal-stream-icon.svg';
-import { MediaStreamSequence } from '../../utils';
 import { BroadcastProps, AnswerMsg, CandidateMsg, WatchMsg, StreamStatus, StreamType } from './Broadcast.interface';
 import { ADDRESS } from '@/consts';
+import { TrackIds } from '../../types';
+import { useProgramState } from '@/hooks';
 
 function Broadcast({ socket, streamId }: BroadcastProps) {
   const { account } = useAccount();
   const navigate = useNavigate();
+  const {
+    state: { streamTeasers },
+  } = useProgramState();
 
   const localVideo: MutableRefObject<HTMLVideoElement | null> = useRef(null);
   const conns: MutableRefObject<Record<string, RTCPeerConnection>> = useRef({});
   const commonStream: MutableRefObject<MediaStream> = useRef(new MediaStream());
-  const mediaTrackSequence: MutableRefObject<MediaStreamSequence> = useRef(new MediaStreamSequence()); //to store the order of media tracks in commonStream.current
+
+  const trackIds: MutableRefObject<TrackIds> = useRef({
+    microphone: null,
+    camera: null,
+    screenSound: null,
+    screenCapture: null,
+  });
 
   const micTransceiver: MutableRefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
   const camTransceiver: MutableRefObject<Record<string, RTCRtpTransceiver | null>> = useRef({});
@@ -69,25 +79,22 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
         audio: devices.some((device) => device.kind === 'audioinput'),
       });
 
-      const sequence = mediaTrackSequence.current;
+      const microphoneId = trackIds.current.microphone;
 
-      //stops current audio and video
-      const microphoneIndex = sequence.getIndex('microphone');
-
-      if (microphoneIndex !== undefined && commonStream.current.getTracks()[microphoneIndex]) {
-        commonStream.current.removeTrack(commonStream.current.getTracks()[microphoneIndex]);
-        sequence.removeByType('microphone');
+      if (microphoneId && commonStream.current.getTrackById(microphoneId)) {
+        commonStream.current.removeTrack(commonStream.current.getTrackById(microphoneId) as MediaStreamTrack);
+        trackIds.current.microphone = null;
       }
 
       Object.keys(conns.current).forEach((id) => {
         micTransceiver.current[id]?.stop();
       });
 
-      const cameraIndex = sequence.getIndex('camera');
+      const cameraId = trackIds.current.camera;
 
-      if (cameraIndex !== undefined && commonStream.current.getTracks()[cameraIndex]) {
-        commonStream.current.removeTrack(commonStream.current.getTracks()[cameraIndex]);
-        sequence.removeByType('camera');
+      if (cameraId && commonStream.current.getTrackById(cameraId)) {
+        commonStream.current.removeTrack(commonStream.current.getTrackById(cameraId) as MediaStreamTrack);
+        trackIds.current.camera = null;
       }
 
       Object.keys(conns.current).forEach((id) => {
@@ -99,7 +106,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
       if (micTrack) {
         commonStream.current.addTrack(micTrack);
-        sequence.add('microphone');
+        trackIds.current.microphone = micTrack.id;
 
         Object.keys(conns.current).forEach((id) => {
           micTransceiver.current[id] = conns.current[id].addTransceiver(micTrack, {
@@ -116,7 +123,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
       if (camTrack) {
         commonStream.current.addTrack(camTrack);
-        sequence.add('camera');
+        trackIds.current.camera = camTrack.id;
 
         Object.keys(conns.current).forEach((id) => {
           camTransceiver.current[id] = conns.current[id].addTransceiver(camTrack, {
@@ -133,11 +140,10 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
     } catch (error) {
       console.log(error);
       //if no devices at all then they're got removed from commonStream.current automatically
-      //we need just remove them from sequence
-      const sequence = mediaTrackSequence.current;
+      //we need just remove their ids
 
-      sequence.removeByType('microphone');
-      sequence.removeByType('camera');
+      trackIds.current.microphone = null;
+      trackIds.current.camera = null;
       setIsSoundMuted(true);
       setIsCameraBlocked(true);
     }
@@ -157,13 +163,12 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
       video: devices.some((device) => device.kind === 'videoinput'),
       audio: devices.some((device) => device.kind === 'audioinput'),
     });
-    const sequence = mediaTrackSequence.current;
 
     const micTrack = requestedStream.getAudioTracks()?.[0];
 
     if (micTrack) {
       commonStream.current.addTrack(micTrack);
-      sequence.add('microphone');
+      trackIds.current.microphone = micTrack.id;
     } else {
       setIsSoundMuted(true);
     }
@@ -172,7 +177,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
     if (camTrack) {
       commonStream.current.addTrack(camTrack);
-      sequence.add('camera');
+      trackIds.current.camera = camTrack.id;
     } else {
       setIsCameraBlocked(true);
     }
@@ -195,25 +200,24 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
           return;
         }
 
-        const sequence = mediaTrackSequence.current;
-
         //replaces camera remote track to null
-        const indexOfCameraTrack = sequence.getIndex('camera');
-        if (indexOfCameraTrack !== undefined) {
+        const idOfCameraTrack = trackIds.current.camera;
+        if (idOfCameraTrack) {
           Object.keys(conns.current).forEach((id) => {
             if (camTransceiver.current[id]) {
               camTransceiver.current[id]?.stop();
             }
           });
-          commonStream.current.getTracks()[indexOfCameraTrack].enabled = false;
+          (commonStream.current.getTrackById(idOfCameraTrack) as MediaStreamTrack).enabled = false;
         }
 
         //adds or replaces screenSound remote tracks to value
         const requestedScreenAudioTrack = screenStream.getAudioTracks()?.[0];
-        const indexOfExistingScreenAudioTrack = sequence.getIndex('screenSound');
+        const idOfExistingScreenAudioTrack = trackIds.current.screenSound;
 
-        if (indexOfExistingScreenAudioTrack === undefined && requestedScreenAudioTrack) {
-          sequence.add('screenSound');
+        if (!idOfExistingScreenAudioTrack && requestedScreenAudioTrack) {
+          trackIds.current.screenSound = requestedScreenAudioTrack.id;
+
           commonStream.current.addTrack(requestedScreenAudioTrack);
           Object.keys(conns.current).forEach((id) => {
             scrAudioTransceiver.current[id] = conns.current[id]?.addTransceiver(requestedScreenAudioTrack, {
@@ -225,10 +229,11 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
         //adds or replaces screenCapture remote tracks to value
         const requestedScreenCaptureTrack = screenStream.getVideoTracks()?.[0];
-        const indexOfExistingScreenCaptureTrack = sequence.getIndex('screenCapture');
+        const idOfExistingScreenCaptureTrack = trackIds.current.screenCapture;
 
-        if (indexOfExistingScreenCaptureTrack === undefined && requestedScreenCaptureTrack) {
-          sequence.add('screenCapture');
+        if (!idOfExistingScreenCaptureTrack && requestedScreenCaptureTrack) {
+          trackIds.current.screenCapture = requestedScreenCaptureTrack.id;
+
           commonStream.current.addTrack(requestedScreenCaptureTrack);
           Object.keys(conns.current).forEach((id) => {
             scrCaptureTransceiver.current[id] = conns.current[id]?.addTransceiver(requestedScreenCaptureTrack, {
@@ -239,41 +244,47 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
         }
 
         //creates new local stream
-        const indexes = sequence.getIndexes(['microphone', 'screenSound', 'screenCapture']);
+
+        const ids = [trackIds.current.microphone, trackIds.current.screenSound, trackIds.current.screenCapture];
 
         setLocalStream(
-          () => new MediaStream(indexes.map((index) => commonStream.current.getTracks()[index as number])),
+          () =>
+            new MediaStream(
+              ids.filter((id) => !!id).map((id) => commonStream.current.getTrackById(id as string) as MediaStreamTrack),
+            ),
         );
 
         screenStream.getTracks()[0].onended = () => {
           //replacing screenSound and screenCapture remote tracks to null
-
-          const audInd = sequence.getIndex('screenSound');
-          if (audInd) {
+          const audId = trackIds.current.screenSound;
+          if (audId) {
             Object.keys(conns.current).forEach((id) => {
               scrAudioTransceiver.current[id]?.stop();
               scrAudioTransceiver.current[id] = null;
             });
-            commonStream.current.removeTrack(commonStream.current.getTracks()[audInd]);
-            sequence.removeByType('screenSound');
+            commonStream.current.removeTrack(commonStream.current.getTrackById(audId) as MediaStreamTrack);
+            trackIds.current.screenSound = null;
           }
 
-          const capInd = sequence.getIndex('screenCapture');
-          if (capInd) {
+          const capId = trackIds.current.screenCapture;
+          if (capId) {
             Object.keys(conns.current).forEach((id) => {
               scrCaptureTransceiver.current[id]?.stop();
               scrCaptureTransceiver.current[id] = null;
             });
-            commonStream.current.removeTrack(commonStream.current.getTracks()[capInd]);
-            sequence.removeByType('screenCapture');
+            commonStream.current.removeTrack(commonStream.current.getTrackById(capId) as MediaStreamTrack);
+            trackIds.current.screenCapture = null;
           }
 
           //replacing camera remote track to value
-          if (indexOfCameraTrack) {
-            commonStream.current.getTracks()[indexOfCameraTrack].enabled = true;
+          const idOfCameraTrackNew = trackIds.current.camera;
+
+          if (idOfCameraTrackNew) {
+            (commonStream.current.getTrackById(idOfCameraTrackNew) as MediaStreamTrack).enabled = true;
+
             Object.keys(conns.current).forEach((id) => {
               camTransceiver.current[id] = conns.current[id].addTransceiver(
-                commonStream.current.getTracks()[indexOfCameraTrack].clone(),
+                commonStream.current.getTrackById(idOfCameraTrackNew) as MediaStreamTrack,
                 {
                   direction: 'sendonly',
                   streams: [commonStream.current],
@@ -282,9 +293,14 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
             });
           }
 
-          const newRequiredIndexes = sequence.getIndexes(['microphone', 'camera']);
+          const newRequiredId = [trackIds.current.microphone, trackIds.current.camera];
           setLocalStream(
-            () => new MediaStream(newRequiredIndexes.map((index) => commonStream.current.getTracks()[index as number])),
+            () =>
+              new MediaStream(
+                newRequiredId
+                  .filter((id) => !!id)
+                  .map((id) => commonStream.current.getTrackById(id as string) as MediaStreamTrack),
+              ),
           );
           setStreamType('camera');
         };
@@ -296,11 +312,10 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
   };
 
   const handleMuteSound = (isMuted: boolean) => {
-    const sequence = mediaTrackSequence.current;
-    const indexOfMicrophone = sequence.getIndex('microphone');
+    const idOfMicrophone = trackIds.current.microphone;
 
     if (isMuted) {
-      if (indexOfMicrophone !== undefined) {
+      if (idOfMicrophone) {
         Object.keys(conns.current).forEach((id) => {
           const transceiver = micTransceiver.current[id];
 
@@ -308,12 +323,12 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
             transceiver.sender.track.enabled = true;
           }
         });
-        commonStream.current.getTracks()[indexOfMicrophone].enabled = true;
+        (commonStream.current.getTrackById(idOfMicrophone) as MediaStreamTrack).enabled = true;
         setIsSoundMuted(() => false);
       }
     }
     if (!isMuted) {
-      if (indexOfMicrophone !== undefined) {
+      if (idOfMicrophone) {
         Object.keys(conns.current).forEach((id) => {
           const transceiver = micTransceiver.current[id];
 
@@ -321,7 +336,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
             transceiver.sender.track.enabled = false;
           }
         });
-        commonStream.current.getTracks()[indexOfMicrophone].enabled = false;
+        (commonStream.current.getTrackById(idOfMicrophone) as MediaStreamTrack).enabled = false;
         setIsSoundMuted(() => true);
       }
     }
@@ -329,11 +344,10 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
   const handleBlockCamera = (isBlocked: boolean) => {
     if (streamType === 'camera') {
-      const sequence = mediaTrackSequence.current;
-      const indexOfCamera = sequence.getIndex('camera');
+      const idOfCamera = trackIds.current.camera;
 
       if (isBlocked) {
-        if (indexOfCamera !== undefined) {
+        if (idOfCamera) {
           Object.keys(conns.current).forEach((id) => {
             const transceiver = camTransceiver.current[id];
 
@@ -341,12 +355,12 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
               transceiver.sender.track.enabled = true;
             }
           });
-          commonStream.current.getTracks()[indexOfCamera].enabled = true;
+          (commonStream.current.getTrackById(idOfCamera) as MediaStreamTrack).enabled = true;
         }
       }
 
       if (!isBlocked) {
-        if (indexOfCamera !== undefined) {
+        if (idOfCamera) {
           Object.keys(conns.current).forEach((id) => {
             const transceiver = camTransceiver.current[id];
 
@@ -354,7 +368,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
               transceiver.sender.track.enabled = false;
             }
           });
-          commonStream.current.getTracks()[indexOfCamera].enabled = false;
+          (commonStream.current.getTrackById(idOfCamera) as MediaStreamTrack).enabled = false;
         }
       }
 
@@ -377,19 +391,18 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
     }
 
     try {
-      loadDevices();
+      await loadDevices();
 
       socket.emit('broadcast', account?.decodedAddress, { streamId });
 
       socket.on('watch', (idOfWatcher: string, msg: WatchMsg) => {
         conns.current[idOfWatcher] = new RTCPeerConnection(RTC_CONFIG);
-        const sequence = mediaTrackSequence.current;
 
-        const micIndex = sequence.getIndex('microphone');
+        const micId = trackIds.current.microphone;
 
-        if (micIndex !== undefined) {
+        if (micId) {
           micTransceiver.current[idOfWatcher] = conns.current[idOfWatcher]?.addTransceiver(
-            commonStream.current.getTracks()[micIndex].clone(),
+            (commonStream.current.getTrackById(micId) as MediaStreamTrack).clone(),
             {
               direction: 'sendonly',
               streams: [commonStream.current],
@@ -397,25 +410,11 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
           );
         }
 
-        const camIndex = sequence.getIndex('camera');
+        const camId = trackIds.current.camera;
 
-        if (camIndex !== undefined) {
-          if (commonStream.current.getTracks()[camIndex].enabled) {
-            camTransceiver.current[idOfWatcher] = conns.current[idOfWatcher]?.addTransceiver(
-              commonStream.current.getTracks()[camIndex].clone(),
-              {
-                direction: 'sendonly',
-                streams: [commonStream.current],
-              },
-            );
-          }
-        }
-
-        const scrSoundIndex = sequence.getIndex('screenSound');
-
-        if (scrSoundIndex !== undefined) {
-          scrAudioTransceiver.current[idOfWatcher] = conns.current[idOfWatcher].addTransceiver(
-            commonStream.current.getTracks()[scrSoundIndex].clone(),
+        if (camId) {
+          camTransceiver.current[idOfWatcher] = conns.current[idOfWatcher]?.addTransceiver(
+            (commonStream.current.getTrackById(camId) as MediaStreamTrack).clone(),
             {
               direction: 'sendonly',
               streams: [commonStream.current],
@@ -423,11 +422,23 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
           );
         }
 
-        const scrCaptureIndex = sequence.getIndex('screenCapture');
+        const scrSoundId = trackIds.current.screenSound;
 
-        if (scrCaptureIndex !== undefined) {
+        if (scrSoundId) {
           scrAudioTransceiver.current[idOfWatcher] = conns.current[idOfWatcher].addTransceiver(
-            commonStream.current.getTracks()[scrCaptureIndex].clone(),
+            commonStream.current.getTrackById(scrSoundId) as MediaStreamTrack,
+            {
+              direction: 'sendonly',
+              streams: [commonStream.current],
+            },
+          );
+        }
+
+        const scrCaptureId = trackIds.current.screenCapture;
+
+        if (scrCaptureId) {
+          scrAudioTransceiver.current[idOfWatcher] = conns.current[idOfWatcher].addTransceiver(
+            commonStream.current.getTrackById(scrCaptureId) as MediaStreamTrack,
             {
               direction: 'sendonly',
               streams: [commonStream.current],
@@ -544,7 +555,23 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
       {streamStatus === 'loading' && <div className={cx(styles['start-stream-curtain'])}>loading...</div>}
       {streamStatus === 'not-started' && (
         <div className={cx(styles['start-stream-curtain'])}>
-          <Button variant="primary" label="Start Stream" icon={StreamSignalSVG} onClick={startStream} />
+          {streamTeasers?.[streamId]?.imgLink && (
+            <>
+              <img
+                src={streamTeasers?.[streamId]?.imgLink}
+                alt="stream background"
+                className={cx(styles['stream-background'])}
+              />
+              <div className={cx(styles['backdrop-filter'])} />
+            </>
+          )}
+          <Button
+            variant="primary"
+            label="Start Stream"
+            icon={StreamSignalSVG}
+            className={cx(styles['start-stream-button'])}
+            onClick={startStream}
+          />
         </div>
       )}
       {streamStatus === 'ended' && (
