@@ -11,7 +11,11 @@ impl VaraTube {
     /// Add pending subscription.
     ///
     /// Inserting `data` is actually currency id and subscription period.
-    pub fn add_pending_subscriber(&mut self, subscriber: &ActorId, (currency_id, period): (ActorId, Period)) {
+    pub fn add_pending_subscriber(
+        &mut self,
+        subscriber: &ActorId,
+        (currency_id, period): (ActorId, Period),
+    ) {
         self.subscribers.insert(
             *subscriber,
             SubscriberData {
@@ -25,7 +29,10 @@ impl VaraTube {
 
     /// Ger subscriber.
     pub fn get_subscriber(&self, subscriber: &ActorId) -> Result<SubscriberData, Error> {
-        self.subscribers.get(subscriber)[.copied()].ok_or(Error::AccountDoesNotExist)
+        self.subscribers
+            .get(subscriber)
+            .copied()
+            .ok_or(Error::AccountDoesNotExist)
     }
 
     /// Remove subscriber.
@@ -97,7 +104,7 @@ pub fn send_delayed_subscription_renewal(
     gas_limit: Option<u64>,
 ) -> Result<(), Error> {
     if let Some(gas_limit) = gas_limit {
-        if msg::send_with_gas_delayed(
+        msg::send_with_gas_delayed(
             *program_id,
             Actions::UpdateSubscription {
                 subscriber: *subsciber,
