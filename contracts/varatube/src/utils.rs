@@ -111,10 +111,7 @@ pub fn send_delayed_subscription_renewal(
             0,
             delay,
         )
-        .is_err()
-        {
-            return Err(Error::ErrorDuringSendingDelayedMsg);
-        }
+        .map_err(|_| Error::ErrorDuringSendingDelayedMsg)?;
     } else if msg::send_delayed(
         *program_id,
         Actions::UpdateSubscription {
