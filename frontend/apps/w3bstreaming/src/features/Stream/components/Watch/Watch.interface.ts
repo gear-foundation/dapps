@@ -1,5 +1,4 @@
 import { Socket } from 'socket.io-client';
-import { MediaStreamSequence } from '../../utils';
 
 export interface WatchProps {
   socket: Socket;
@@ -23,7 +22,6 @@ export interface OfferMsg {
   userId: string;
   description: RTCSessionDescription;
   streamId: string;
-  mediaSequence: MediaStreamSequence;
 }
 
 export interface CandidateMsg {
