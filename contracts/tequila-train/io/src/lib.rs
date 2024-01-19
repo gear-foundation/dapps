@@ -173,7 +173,20 @@ pub enum Event {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-pub struct Error(pub String);
+pub enum Error {
+    WrongPlayersCount,
+    GameHasAlreadyStarted,
+    GameHasNotStartedYet,
+    NameAlreadyExistsOrYouRegistered,
+    LimitHasBeenReached,
+    GameStalled,
+    GameFinished,
+    NotYourTurn,
+    InvalidTile,
+    InvalidTileId,
+    InvalidTileOwner,
+    InvalidTrack,
+}
 
 #[derive(Debug, TypeInfo, Encode, Decode, Clone, Default)]
 pub struct TrackData {
@@ -359,7 +372,7 @@ impl GameState {
     pub fn skip_turn(&mut self, player: ActorId) -> Result<Event, Error> {
         let i = self.current_player as usize;
         if self.players[i].0 != player {
-            return Err(Error("It is not your turn".to_owned()));
+            return Err(Error::NotYourTurn);
         }
 
         self.tracks[i].has_train = true;
@@ -467,14 +480,14 @@ impl GameState {
     ) -> Result<Event, Error> {
         let i = self.current_player as usize;
         if self.players[i].0 != player {
-            return Err(Error("It is not your turn".to_owned()));
+            return Err(Error::NotYourTurn);
         }
 
         // check player owns the tile
         match self.tile_to_player.get(&tile_id) {
-            None => return Err(Error("Invalid tile id".to_owned())),
+            None => return Err(Error::InvalidTileId),
             Some(user_id) if *user_id != self.current_player => {
-                return Err(Error("Wrong tile owner".to_owned()))
+                return Err(Error::InvalidTileOwner)
             }
             _ => (),
         }
@@ -486,14 +499,14 @@ impl GameState {
                 .get(track_id as usize)
                 .map_or(false, |data| data.has_train)
         {
-            return Err(Error("Invalid track".to_owned()));
+            return Err(Error::InvalidTrack);
         }
 
         let tile = self.tiles[tile_id as usize];
         let track_index = track_id as usize;
         match self.can_put_tile(tile, track_index) {
             Some(tile) => self.tracks[track_index].tiles.push(tile),
-            None => return Err(Error("Invalid tile".to_owned())),
+            None => return Err(Error::InvalidTile),
         }
 
         // remove train if all criterea met

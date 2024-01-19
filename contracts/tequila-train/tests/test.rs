@@ -163,38 +163,27 @@ fn failures_test() {
     let result = program.send(2, Some(2_u64));
     assert!(!result.main_failed());
 
-    program.start_game(
-        2,
-        Some(Error("The number of players is incorrect".to_owned())),
-    );
-    program.restart_game(
-        2,
-        None,
-        Some(Error("The game hasn't started yet".to_owned())),
-    );
+    program.start_game(2, Some(Error::WrongPlayersCount));
+    program.restart_game(2, None, Some(Error::GameHasNotStartedYet));
     program.register(2, 0.into(), "A".to_owned(), None);
     program.register(
         2,
         1.into(),
         "A".to_owned(),
-        Some(Error(
-            "This name already exists, or you have already registered".to_owned(),
-        )),
+        Some(Error::NameAlreadyExistsOrYouRegistered),
     );
     program.register(
         2,
         0.into(),
         "B".to_owned(),
-        Some(Error(
-            "This name already exists, or you have already registered".to_owned(),
-        )),
+        Some(Error::NameAlreadyExistsOrYouRegistered),
     );
     program.register(2, 1.into(), "B".to_owned(), None);
     program.register(
         2,
         3.into(),
         "C".to_owned(),
-        Some(Error("The player limit has been reached".to_owned())),
+        Some(Error::LimitHasBeenReached),
     );
 
     program.start_game(2, None);
@@ -202,9 +191,9 @@ fn failures_test() {
         2,
         3.into(),
         "C".to_owned(),
-        Some(Error("The game has already started".to_owned())),
+        Some(Error::GameHasAlreadyStarted),
     );
-    program.start_game(2, Some(Error("The game has already started".to_owned())));
+    program.start_game(2, Some(Error::GameHasAlreadyStarted));
 
     let state: GameLauncherState = program
         .read_state(0)
@@ -217,19 +206,9 @@ fn failures_test() {
         vec![(0.into(), "A".to_owned()), (1.into(), "B".to_owned())]
     );
 
-    program.restart_game(
-        2,
-        Some(10),
-        Some(Error("The limit should lie in the range [2,8]".to_owned())),
-    );
-    program.place(
-        3,
-        0,
-        0,
-        false,
-        Some(Error("It is not your turn".to_owned())),
-    );
-    program.place(0, 3, 0, false, Some(Error("Invalid tile id".to_owned())));
-    program.place(0, 1, 1, false, Some(Error("Invalid track".to_owned())));
-    program.place(0, 1, 0, false, Some(Error("Invalid tile".to_owned())));
+    program.restart_game(2, Some(10), Some(Error::WrongPlayersCount));
+    program.place(3, 0, 0, false, Some(Error::NotYourTurn));
+    program.place(0, 3, 0, false, Some(Error::InvalidTileId));
+    program.place(0, 1, 1, false, Some(Error::InvalidTrack));
+    program.place(0, 1, 0, false, Some(Error::InvalidTile));
 }

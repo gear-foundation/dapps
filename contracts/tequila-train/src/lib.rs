@@ -18,7 +18,7 @@ impl GameLauncher {
     fn check_limit_range(maybe_limit: Option<u64>) -> Result<(), Error> {
         if let Some(limit) = maybe_limit {
             if !(2..=8).contains(&limit) {
-                return Err(Error("The limit should lie in the range [2,8]".to_owned()));
+                return Err(Error::WrongPlayersCount);
             }
         }
         Ok(())
@@ -26,7 +26,7 @@ impl GameLauncher {
 
     fn check_players_count(&self) -> Result<(), Error> {
         if !(2..=8).contains(&(self.players.len() as u32)) {
-            return Err(Error("The number of players is incorrect".to_owned()));
+            return Err(Error::WrongPlayersCount);
         }
         Ok(())
     }
@@ -42,7 +42,7 @@ impl GameLauncher {
 
     pub fn start(&mut self) -> Result<Event, Error> {
         if self.is_started {
-            return Err(Error("The game has already started".to_owned()));
+            return Err(Error::GameHasAlreadyStarted);
         }
         self.check_players_count()?;
 
@@ -57,7 +57,7 @@ impl GameLauncher {
 
     pub fn restart(&mut self, maybe_limit: Option<u64>) -> Result<Event, Error> {
         if !self.is_started {
-            return Err(Error("The game hasn't started yet".to_owned()));
+            return Err(Error::GameHasNotStartedYet);
         }
         Self::check_limit_range(maybe_limit)?;
 
@@ -72,23 +72,19 @@ impl GameLauncher {
 
     pub fn register(&mut self, player: ActorId, name: String) -> Result<Event, Error> {
         if self.is_started {
-            return Err(Error("The game has already started".to_owned()));
+            return Err(Error::GameHasAlreadyStarted);
         }
 
         if self.players.iter().any(|(p, n)| p == &player || n == &name) {
-            return Err(Error(
-                "This name already exists, or you have already registered".to_owned(),
-            ));
+            return Err(Error::NameAlreadyExistsOrYouRegistered);
         }
 
         if let Some(limit) = self.maybe_limit {
             if (self.players.len() as u64) >= limit {
-                return Err(Error("The player limit has been reached".to_owned()));
+                return Err(Error::LimitHasBeenReached);
             }
         } else if self.players.len() >= 8 {
-            return Err(Error(
-                "The number of players cannot be more than 8".to_owned(),
-            ));
+            return Err(Error::LimitHasBeenReached);
         }
 
         self.players.push((player, name.clone()));
@@ -125,14 +121,10 @@ fn process_handle() -> Result<Event, Error> {
     if let Some(game_state) = &game_launcher.game_state {
         match game_state.state() {
             State::Stalled => {
-                return Err(Error(
-                    "The game stalled. No one is able to make a turn".to_owned(),
-                ));
+                return Err(Error::GameStalled);
             }
-            State::Winner(winner) => {
-                return Err(Error(format!(
-                    "The game is already finished. The winner is: {winner:?}"
-                )));
+            State::Winner(_winner) => {
+                return Err(Error::GameFinished);
             }
             _ => (),
         };
@@ -146,7 +138,7 @@ fn process_handle() -> Result<Event, Error> {
             if let Some(game_state) = &mut game_launcher.game_state {
                 game_state.skip_turn(player)
             } else {
-                Err(Error("Game is not started!".to_owned()))
+                Err(Error::GameHasNotStartedYet)
             }
         }
         Command::Place {
@@ -157,7 +149,7 @@ fn process_handle() -> Result<Event, Error> {
             if let Some(game_state) = &mut game_launcher.game_state {
                 game_state.make_turn(player, tile_id, track_id, remove_train)
             } else {
-                Err(Error("Game is not started!".to_owned()))
+                Err(Error::GameHasNotStartedYet)
             }
         }
         Command::Register { player, name } => game_launcher.register(player, name),
