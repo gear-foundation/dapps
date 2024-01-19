@@ -1,11 +1,28 @@
 use crate::*;
 impl Game {
-    pub fn check_status(&self, game_status: GameStatus) {
-        assert_eq!(self.game_status, game_status, "Wrong game status");
+    pub fn check_status(&self, game_status: GameStatus) -> Result<(), GameError> {
+        if self.game_status != game_status {
+            return Err(GameError::WrongGameStatus);
+        }
+        Ok(())
     }
 
-    pub fn only_admin(&self) {
-        assert_eq!(msg::source(), self.admin, "Only admin can start the game");
+    pub fn only_admin(&self) -> Result<(), GameError> {
+        if msg::source() != self.admin {
+            return Err(GameError::OnlyAdmin);
+        }
+        Ok(())
+    }
+
+    pub fn only_admin_or_program(
+        &self,
+        program_id: &ActorId,
+        msg_source: &ActorId,
+    ) -> Result<(), GameError> {
+        if *msg_source != self.admin && *msg_source != *program_id {
+            return Err(GameError::MsgSourceMustBeAdminOrProgram);
+        }
+        Ok(())
     }
 
     pub fn get_game_info(&self) -> GameInfo {
@@ -37,6 +54,13 @@ impl Game {
         } else {
             Err(GameError::PlayerDoesNotExist)
         }
+    }
+
+    pub fn player_already_registered(&self, player: &ActorId) -> Result<(), GameError> {
+        if self.players.contains_key(player) {
+            return Err(GameError::AlreadyReistered);
+        }
+        Ok(())
     }
 }
 

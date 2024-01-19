@@ -23,7 +23,6 @@ pub const FINE: u32 = 1_000;
 pub const PENALTY: u8 = 5;
 pub const INITIAL_BALANCE: u32 = 15_000;
 pub const NEW_CIRCLE: u32 = 2_000;
-pub const WAIT_DURATION: u32 = 5;
 
 #[derive(Clone, Default)]
 pub struct Game {
@@ -45,14 +44,13 @@ pub struct Game {
     current_msg_id: MessageId,
     awaiting_reply_msg_id: MessageId,
     reservations: Vec<ReservationId>,
-    temp_reserv_num: u32,
 }
 
 static mut GAME: Option<Game> = None;
 
 impl Game {
     fn change_admin(&mut self, admin: &ActorId) -> Result<GameReply, GameError> {
-        assert_eq!(msg::source(), self.admin);
+        self.only_admin()?;
         self.admin = *admin;
         Ok(GameReply::AdminChanged)
     }
@@ -70,8 +68,8 @@ impl Game {
     }
 
     fn start_registration(&mut self) -> Result<GameReply, GameError> {
-        self.check_status(GameStatus::Finished);
-        self.only_admin();
+        self.check_status(GameStatus::Finished)?;
+        self.only_admin()?;
         let mut game: Game = Game {
             admin: self.admin,
             ..Default::default()
@@ -83,11 +81,8 @@ impl Game {
     }
 
     fn register(&mut self, player: &ActorId) -> Result<GameReply, GameError> {
-        self.check_status(GameStatus::Registration);
-        assert!(
-            !self.players.contains_key(player),
-            "You have already registered"
-        );
+        self.check_status(GameStatus::Registration)?;
+        self.player_already_registered(player)?;
         let reservation_id = match ReservationId::reserve(
             self.config.reservation_amount,
             self.config.reservation_duration,
@@ -95,7 +90,6 @@ impl Game {
             Ok(id) => id,
             Err(_) => return Err(GameError::ReservationError),
         };
-        self.temp_reserv_num += 1;
         self.players.insert(
             *player,
             PlayerInfo {
@@ -112,14 +106,9 @@ impl Game {
     }
 
     fn play(&mut self) -> Result<GameReply, GameError> {
-        //self.check_status(GameStatus::Play);
         let program_id = exec::program_id();
         let msg_source = msg::source();
-        assert!(
-            msg_source == self.admin || msg_source == program_id,
-            "Only admin or the program can send that message"
-        );
-        debug!("Status {:?}", self.game_status);
+        self.only_admin_or_program(&program_id, &msg_source)?;
 
         if exec::gas_available() < self.config.min_gas_limit {
             if let Some(id) = self.reservations.pop() {
@@ -128,16 +117,12 @@ impl Game {
                         .expect("Error during sending a message");
                 return Ok(GameReply::NextRoundFromReservation);
             } else {
-                debug!("No gas");
+                self.game_status = GameStatus::WaitingForGasFromAdmin;
                 return Err(GameError::NoGasForPlaying);
             }
         }
         match self.game_status {
             GameStatus::Play => {
-                debug!("Turn {:?}", self.current_turn);
-                debug!("Step {:?}", self.current_step);
-                debug!("GAS {:?}", exec::gas_available());
-
                 while self.game_status != GameStatus::Finished {
                     self.make_step()?;
                 }
@@ -169,7 +154,7 @@ impl Game {
                     winner: self.winner,
                 });
             }
-            GameStatus::Registration => return Err(GameError::WrongGameStatus),
+            _ => return Err(GameError::WrongGameStatus),
         }
     }
 
@@ -210,19 +195,16 @@ impl Game {
         match position {
             // free cells (it can be lottery or penalty): TODO as a task on hackathon
             0 | 2 | 4 | 7 | 16 | 20 | 30 | 33 | 36 | 38 => {
-                debug!("nothing");
                 return Ok(());
             }
             _ => {
                 let game_info = self.get_game_info();
                 self.awaiting_reply_msg_id =
                     take_your_turn(player_info.reservation_id, &current_player, game_info);
-                debug!("sending msg");
                 if self.current_msg_id == MessageId::zero() {
                     self.current_msg_id = msg::id();
                 }
                 self.game_status = GameStatus::Wait;
-                debug!("go to wait");
                 exec::wait_for(self.config.time_for_step);
             }
         }
@@ -280,7 +262,6 @@ extern fn handle_reply() {
     let current_player = game.current_player;
     if game.awaiting_reply_msg_id == reply_to {
         let reply: Result<StrategicAction, gstd::errors::Error> = msg::load();
-        debug!("reply {:?}", reply);
         match reply {
             Ok(strategic_action) => match strategic_action {
                 StrategicAction::AddGear {
@@ -308,7 +289,6 @@ extern fn handle_reply() {
         };
     }
 
-    debug!("Number of players {:?}", game.players_queue.len());
     match game.players_queue.len() {
         0 => {
             // All players have been removed from the game (either penalized or bankrupt)
@@ -319,22 +299,24 @@ extern fn handle_reply() {
             game.game_status = GameStatus::Finished;
         }
         _ => {
-            game.game_status = GameStatus::Play;
             let gas_available = exec::gas_available();
-            debug!("GAS HANDLE REPLY {:?}", gas_available);
             if gas_available > game.config.min_gas_limit {
-                debug!("res_num {:?}", game.temp_reserv_num);
-                let reservation_id = ReservationId::reserve(
+                match ReservationId::reserve(
                     gas_available - game.config.min_gas_limit / 5,
                     game.config.reservation_duration,
-                )
-                .expect("Error during reservation");
-                game.temp_reserv_num += 1;
-                game.players
-                    .entry(current_player)
-                    .and_modify(|info| info.reservation_id = reservation_id);
+                ) {
+                    Ok(id) => {
+                        game.game_status = GameStatus::Play;
+                        game.players
+                            .entry(current_player)
+                            .and_modify(|info| info.reservation_id = id);
+                    }
+                    Err(_) => {
+                        game.game_status = GameStatus::WaitingForGasForStrategy(current_player);
+                    }
+                };
             } else {
-                debug!("NO GAS");
+                game.game_status = GameStatus::WaitingForGasForStrategy(current_player);
             }
         }
     }
@@ -355,7 +337,6 @@ extern fn handle_reply() {
             &mut game.current_turn,
         );
     }
-    debug!("Before msg");
     msg::send_with_gas(
         game.admin,
         GameReply::Step {
@@ -373,7 +354,6 @@ extern fn handle_reply() {
         0,
     )
     .expect("Error in sending a message `GameEvent::Step`");
-    debug!("After msg");
-    debug!("REMAINDER {:?}", exec::gas_available());
+
     exec::wake(game.current_msg_id).expect("Unable to wake the msg");
 }

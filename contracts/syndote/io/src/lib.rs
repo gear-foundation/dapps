@@ -125,12 +125,13 @@ pub enum GameReply {
 pub enum GameError {
     AlreadyReistered,
     ReservationError,
-    WrongGameStatus,
     OnlyAdmin,
     NotInTheGame,
     StrategicError,
     PlayerDoesNotExist,
     NoGasForPlaying,
+    WrongGameStatus,
+    MsgSourceMustBeAdminOrProgram,
 }
 #[derive(PartialEq, Eq, Debug, Clone, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
@@ -190,6 +191,8 @@ pub enum GameStatus {
     Play,
     Finished,
     Wait,
+    WaitingForGasFromAdmin,
+    WaitingForGasForStrategy(ActorId),
 }
 
 impl Default for GameStatus {
