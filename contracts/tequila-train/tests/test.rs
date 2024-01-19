@@ -27,14 +27,12 @@ impl TestFunc for Program<'_> {
             },
         );
         assert!(!result.main_failed());
-        let reply: Result<Event, Error>;
-        if let Some(error) = error {
-            reply = Err(error);
-            assert!(result.contains(&(from, reply.encode())));
+        let reply = if let Some(error) = error {
+            Err(error)
         } else {
-            reply = Ok(Event::Registered { player, name });
-            assert!(result.contains(&(from, reply.encode())));
-        }
+            Ok(Event::Registered { player, name })
+        };
+        assert!(result.contains(&(from, reply.encode())));
     }
     fn start_game(&self, from: u64, error: Option<Error>) {
         let result = self.send(from, Command::StartGame);
@@ -56,7 +54,7 @@ impl TestFunc for Program<'_> {
             reply = Err(error);
             assert!(result.contains(&(from, reply.encode())));
         } else {
-            reply = Ok(Event::GameRestarted(players_limit));
+            reply = Ok(Event::GameRestarted { players_limit });
             assert!(result.contains(&(from, reply.encode())));
         }
     }
@@ -118,7 +116,7 @@ fn success_test() {
     program.register(2, 1.into(), "B".to_owned(), None);
     program.start_game(2, None);
 
-    let state: GameLauncher = program
+    let state: GameLauncherState = program
         .read_state(0)
         .expect("Unexpected invalid game state.");
     assert_eq!(
@@ -134,7 +132,7 @@ fn success_test() {
     program.register(2, 3.into(), "D".to_owned(), None);
     program.start_game(2, None);
 
-    let state: GameLauncher = program
+    let state: GameLauncherState = program
         .read_state(0)
         .expect("Unexpected invalid game state.");
 
@@ -146,7 +144,7 @@ fn success_test() {
         vec![(2.into(), "C".to_owned()), (3.into(), "D".to_owned())]
     );
     program.place(2, 27, 0, false, None);
-    let state: GameLauncher = program
+    let state: GameLauncherState = program
         .read_state(0)
         .expect("Unexpected invalid game state.");
     assert!(!state.game_state.unwrap().tracks[0].tiles.is_empty());
@@ -208,7 +206,7 @@ fn failures_test() {
     );
     program.start_game(2, Some(Error("The game has already started".to_owned())));
 
-    let state: GameLauncher = program
+    let state: GameLauncherState = program
         .read_state(0)
         .expect("Unexpected invalid game state.");
     assert_eq!(

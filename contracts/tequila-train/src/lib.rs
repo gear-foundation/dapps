@@ -1,17 +1,107 @@
 #![no_std]
 
-use gstd::{msg, prelude::*};
+use gstd::{msg, prelude::*, ActorId};
 use tequila_train_io::*;
+
+#[derive(Debug, Default)]
+pub struct GameLauncher {
+    pub game_state: Option<GameState>,
+    pub players: Vec<(ActorId, String)>,
+    pub is_started: bool,
+    pub maybe_limit: Option<u64>,
+}
 
 /// All game initializing logic is inside `GameState` constructor.
 static mut GAME_LAUNCHER: Option<GameLauncher> = None;
 
+impl GameLauncher {
+    fn check_limit_range(maybe_limit: Option<u64>) -> Result<(), Error> {
+        if let Some(limit) = maybe_limit {
+            if !(2..=8).contains(&limit) {
+                return Err(Error("The limit should lie in the range [2,8]".to_owned()));
+            }
+        }
+        Ok(())
+    }
+
+    fn check_players_count(&self) -> Result<(), Error> {
+        if !(2..=8).contains(&(self.players.len() as u32)) {
+            return Err(Error("The number of players is incorrect".to_owned()));
+        }
+        Ok(())
+    }
+
+    pub fn new_with_limit(limit: u64) -> Self {
+        Self::check_limit_range(Some(limit)).expect("The limit should lie in the range [2,8]");
+
+        GameLauncher {
+            maybe_limit: Some(limit),
+            ..Default::default()
+        }
+    }
+
+    pub fn start(&mut self) -> Result<Event, Error> {
+        if self.is_started {
+            return Err(Error("The game has already started".to_owned()));
+        }
+        self.check_players_count()?;
+
+        self.is_started = true;
+        self.game_state = GameState::new(&Players {
+            players: self.players.clone(),
+        });
+
+        assert!(self.game_state.is_some());
+        Ok(Event::GameStarted)
+    }
+
+    pub fn restart(&mut self, maybe_limit: Option<u64>) -> Result<Event, Error> {
+        if !self.is_started {
+            return Err(Error("The game hasn't started yet".to_owned()));
+        }
+        Self::check_limit_range(maybe_limit)?;
+
+        self.is_started = false;
+        self.game_state = None;
+        self.maybe_limit = maybe_limit;
+        self.players.clear();
+        Ok(Event::GameRestarted {
+            players_limit: maybe_limit,
+        })
+    }
+
+    pub fn register(&mut self, player: ActorId, name: String) -> Result<Event, Error> {
+        if self.is_started {
+            return Err(Error("The game has already started".to_owned()));
+        }
+
+        if self.players.iter().any(|(p, n)| p == &player || n == &name) {
+            return Err(Error(
+                "This name already exists, or you have already registered".to_owned(),
+            ));
+        }
+
+        if let Some(limit) = self.maybe_limit {
+            if (self.players.len() as u64) >= limit {
+                return Err(Error("The player limit has been reached".to_owned()));
+            }
+        } else if self.players.len() >= 8 {
+            return Err(Error(
+                "The number of players cannot be more than 8".to_owned(),
+            ));
+        }
+
+        self.players.push((player, name.clone()));
+        Ok(Event::Registered { player, name })
+    }
+}
+
 #[no_mangle]
 extern fn init() {
-    let maybe_limit: Option<u64> = msg::load().expect("Unexpected invalid payload.");
+    let Init { players_limit } = msg::load().expect("Unexpected invalid payload.");
 
     unsafe {
-        GAME_LAUNCHER = Some(if let Some(limit) = maybe_limit {
+        GAME_LAUNCHER = Some(if let Some(limit) = players_limit {
             GameLauncher::new_with_limit(limit)
         } else {
             GameLauncher::default()
@@ -78,13 +168,30 @@ fn process_handle() -> Result<Event, Error> {
 
 #[no_mangle]
 extern fn state() {
-    msg::reply(
-        unsafe {
-            GAME_LAUNCHER
-                .clone()
-                .expect("Game launcher is not initialized")
-        },
-        0,
-    )
-    .expect("Failed to encode or reply with the game state");
+    let game_launcher = unsafe {
+        GAME_LAUNCHER
+            .take()
+            .expect("Game launcher is not initialized")
+    };
+
+    msg::reply::<GameLauncherState>(game_launcher.into(), 0)
+        .expect("Failed to encode or reply with the game state");
+}
+
+impl From<GameLauncher> for GameLauncherState {
+    fn from(
+        GameLauncher {
+            game_state,
+            players,
+            is_started,
+            maybe_limit,
+        }: GameLauncher,
+    ) -> Self {
+        Self {
+            game_state,
+            players,
+            is_started,
+            maybe_limit,
+        }
+    }
 }

@@ -13,12 +13,24 @@ use gstd::{exec, msg};
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
-    type Init = In<Option<u64>>;
+    type Init = In<Init>;
     type Handle = InOut<Command, Result<Event, Error>>;
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = Out<GameLauncher>;
+    type State = Out<GameLauncherState>;
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+pub struct Init {
+    pub players_limit: Option<u64>,
+}
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub struct GameLauncherState {
+    pub game_state: Option<GameState>,
+    pub players: Vec<(ActorId, String)>,
+    pub is_started: bool,
+    pub maybe_limit: Option<u64>,
 }
 
 #[derive(
@@ -90,7 +102,7 @@ pub fn build_tile_collection() -> Vec<Tile> {
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
 pub struct Players {
-    players: Vec<(ActorId, String)>,
+    pub players: Vec<(ActorId, String)>,
 }
 
 impl Players {
@@ -151,10 +163,9 @@ pub enum Event {
         name: String,
     },
     GameStarted,
-    GameRestarted(
-        /// Optional players limit.
-        Option<u64>,
-    ),
+    GameRestarted {
+        players_limit: Option<u64>,
+    },
     GameFinished {
         winner: ActorId,
     },
@@ -190,94 +201,6 @@ pub enum State {
     Winner((ActorId, String)),
     #[default]
     Registration,
-}
-
-#[derive(Debug, Clone, Default, TypeInfo, Encode, Decode)]
-pub struct GameLauncher {
-    pub game_state: Option<GameState>,
-    pub players: Vec<(ActorId, String)>,
-    pub is_started: bool,
-    pub maybe_limit: Option<u64>,
-}
-
-impl GameLauncher {
-    fn check_limit_range(maybe_limit: Option<u64>) -> Result<(), Error> {
-        if let Some(limit) = maybe_limit {
-            if !(2..=8).contains(&limit) {
-                return Err(Error("The limit should lie in the range [2,8]".to_owned()));
-            }
-        }
-        Ok(())
-    }
-
-    fn check_players_count(&self) -> Result<(), Error> {
-        if !(2..=8).contains(&(self.players.len() as u32)) {
-            return Err(Error("The number of players is incorrect".to_owned()));
-        }
-        Ok(())
-    }
-
-    pub fn new_with_limit(limit: u64) -> Self {
-        Self::check_limit_range(Some(limit)).expect("The limit should lie in the range [2,8]");
-
-        GameLauncher {
-            maybe_limit: Some(limit),
-            ..Default::default()
-        }
-    }
-
-    pub fn start(&mut self) -> Result<Event, Error> {
-        if self.is_started {
-            return Err(Error("The game has already started".to_owned()));
-        }
-        self.check_players_count()?;
-
-        self.is_started = true;
-        self.game_state = GameState::new(&Players {
-            players: self.players.clone(),
-        });
-
-        assert!(self.game_state.is_some());
-        Ok(Event::GameStarted)
-    }
-
-    pub fn restart(&mut self, maybe_limit: Option<u64>) -> Result<Event, Error> {
-        if !self.is_started {
-            return Err(Error("The game hasn't started yet".to_owned()));
-        }
-        Self::check_limit_range(maybe_limit)?;
-
-        self.is_started = false;
-        self.game_state = None;
-        self.maybe_limit = maybe_limit;
-        self.players.clear();
-        Ok(Event::GameRestarted(maybe_limit))
-    }
-
-    pub fn register(&mut self, player: ActorId, name: String) -> Result<Event, Error> {
-        if self.is_started {
-            return Err(Error("The game has already started".to_owned()));
-        }
-
-        if self.players.iter().any(|(p, n)| p == &player || n == &name) {
-            return Err(Error(
-                "This name already exists, or you have already registered".to_owned(),
-            ));
-        }
-
-        if let Some(limit) = self.maybe_limit {
-            if (self.players.len() as u64) >= limit {
-                return Err(Error("The player limit has been reached".to_owned()));
-            }
-        } else if self.players.len() >= 8 {
-            return Err(Error(
-                "The number of players cannot be more than 8".to_owned(),
-            ));
-        }
-
-        self.players.push((player, name.clone()));
-        Ok(Event::Registered { player, name })
-    }
 }
 
 #[cfg(not(test))]
