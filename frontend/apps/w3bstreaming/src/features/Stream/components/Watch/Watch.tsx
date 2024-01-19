@@ -75,6 +75,8 @@ function Watch({ socket, streamId }: WatchProps) {
     peerConnection.current = new RTCPeerConnection(RTC_CONFIG);
 
     socket.on('offer', (broadcasterId: string, { description, userId }: OfferMsg) => {
+      setLocalStream(null);
+
       peerConnection.current
         ?.setRemoteDescription(description)
         .then(() => peerConnection.current?.createAnswer())
@@ -85,7 +87,6 @@ function Watch({ socket, streamId }: WatchProps) {
             streamId,
             description: peerConnection.current?.localDescription,
           });
-          setLocalStream(null);
         })
         .catch(() => {
           console.log('error when setLocalDescription');
