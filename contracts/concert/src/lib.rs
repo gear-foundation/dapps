@@ -139,7 +139,7 @@ impl Concert {
         msg::send_for_reply_as::<_, MtkEvent>(
             self.contract_id,
             MtkAction::Mint {
-                token_id: self.token_id,
+                id: self.token_id,
                 amount,
                 token_metadata: None,
             },
