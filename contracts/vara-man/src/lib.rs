@@ -135,7 +135,7 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                     return VaraManEvent::Error("Native tokens transfer failed.".to_owned());
                 }
 
-                player.claimed_gold_coins += player
+                player.claimed_gold_coins = player
                     .claimed_gold_coins
                     .checked_add(gold_coins)
                     .expect("Math overflow!");
