@@ -402,7 +402,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
         if (micId) {
           micTransceiver.current[idOfWatcher] = conns.current[idOfWatcher]?.addTransceiver(
-            (commonStream.current.getTrackById(micId) as MediaStreamTrack).clone(),
+            commonStream.current.getTrackById(micId) as MediaStreamTrack,
             {
               direction: 'sendonly',
               streams: [commonStream.current],
@@ -414,7 +414,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
         if (camId) {
           camTransceiver.current[idOfWatcher] = conns.current[idOfWatcher]?.addTransceiver(
-            (commonStream.current.getTrackById(camId) as MediaStreamTrack).clone(),
+            commonStream.current.getTrackById(camId) as MediaStreamTrack,
             {
               direction: 'sendonly',
               streams: [commonStream.current],
@@ -448,7 +448,7 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
 
         conns.current[idOfWatcher]!.onicecandidate = (event: RTCPeerConnectionIceEvent) => {
           if (event.candidate) {
-            socket.emit('candidate', idOfWatcher, { id: account.address, candidate: event.candidate });
+            socket.emit('candidate', idOfWatcher, { userId: account.address, candidate: event.candidate, streamId });
           }
         };
 

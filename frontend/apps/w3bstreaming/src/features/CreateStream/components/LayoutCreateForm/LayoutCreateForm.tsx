@@ -79,8 +79,8 @@ function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
       NewStream: {
         startTime: startTimestamp,
         endDate: endTimestamp,
-        title,
-        description,
+        title: title.trim(),
+        description: description?.trim(),
         imgLink,
       },
     };
