@@ -23,7 +23,7 @@ pub fn init_mtk(sys: &System, from: u64) {
 pub fn mint_internal(
     mtk: &Program<'_>,
     from: u64,
-    token_id: TokenId,
+    id: TokenId,
     amount: u128,
     token_metadata: Option<TokenMetadata>,
     error: Option<MtkError>,
@@ -31,7 +31,7 @@ pub fn mint_internal(
     let res = mtk.send(
         from,
         MtkAction::Mint {
-            token_id,
+            id,
             amount,
             token_metadata,
         },

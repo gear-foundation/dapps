@@ -43,7 +43,7 @@ pub struct State {
     pub token_metadata: Vec<(TokenId, TokenMetadata)>,
     // owner for nft
     pub owners: Vec<(TokenId, ActorId)>,
-    pub owner: ActorId,
+    pub creator: ActorId,
     pub supply: Vec<(TokenId, u128)>,
 }
 
@@ -68,11 +68,11 @@ pub enum MtkAction {
     ///
     /// # Requirements:
     /// * if minting an NFT `amount` MUST equal to 1.
-    /// * a sender MUST be an owner or an approved account.
     ///
     /// On success returns `MtkEvent::Transfer`.
     Mint {
-        token_id: TokenId,
+        /// Token id
+        id: TokenId,
         /// Token amount.
         amount: u128,
         /// Token metadata, applicable if minting an NFT.

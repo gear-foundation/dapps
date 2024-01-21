@@ -13,7 +13,7 @@ const ZERO_ID: ActorId = ActorId::zero();
 #[derive(Debug, Default)]
 pub struct SimpleMtk {
     pub tokens: MtkData,
-    pub owner: ActorId,
+    pub creator: ActorId,
     pub supply: HashMap<TokenId, u128>,
 }
 
@@ -35,7 +35,7 @@ extern fn init() {
                 base_uri,
                 ..Default::default()
             },
-            owner: msg::source(),
+            creator: msg::source(),
             ..Default::default()
         });
     }
@@ -50,21 +50,16 @@ extern fn state() {
 }
 
 #[no_mangle]
-unsafe extern fn handle() {
+extern fn handle() {
     let action: MtkAction = msg::load().expect("Failed to decode `MtkAction` message.");
     let multi_token = unsafe { CONTRACT.as_mut().expect("`SimpleMtk` is not initialized.") };
 
     let reply = match action {
         MtkAction::Mint {
-            token_id,
+            id,
             amount,
             token_metadata,
-        } => multi_token.mint(
-            &msg::source(),
-            vec![token_id],
-            vec![amount],
-            vec![token_metadata],
-        ),
+        } => multi_token.mint(&msg::source(), vec![id], vec![amount], vec![token_metadata]),
         MtkAction::Burn { id, amount } => multi_token.burn(vec![id], vec![amount]),
         MtkAction::BalanceOf { account, id } => multi_token.balance_of(vec![account], vec![id]),
         MtkAction::BalanceOfBatch { accounts, ids } => multi_token.balance_of(accounts, ids),
@@ -465,7 +460,7 @@ impl From<SimpleMtk> for State {
     fn from(value: SimpleMtk) -> Self {
         let SimpleMtk {
             tokens,
-            owner,
+            creator,
             supply,
         } = value;
 
@@ -498,7 +493,7 @@ impl From<SimpleMtk> for State {
             approvals,
             token_metadata,
             owners,
-            owner,
+            creator,
             supply,
         }
     }
