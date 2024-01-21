@@ -45,7 +45,7 @@ pub fn mint_internal(
             Ok::<MtkEvent, MtkError>(MtkEvent::Transfer {
                 from: ActorId::zero(),
                 to: from.into(),
-                ids: vec![token_id],
+                ids: vec![id],
                 amounts: vec![amount],
             })
             .encode()
