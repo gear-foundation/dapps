@@ -3,7 +3,7 @@ use crate::utils::ADMIN;
 use gstd::ActorId;
 use gtest::{Program, System};
 use utils::VaraMan;
-use vara_man_io::{Player, Status};
+use vara_man_io::{Player, Status, VaraManError};
 
 #[test]
 fn success() {
@@ -20,9 +20,9 @@ fn success() {
     let player_1_id: ActorId = utils::PLAYERS[1].into();
     let player_2_id: ActorId = utils::PLAYERS[2].into();
 
-    vara_man.register_player(utils::PLAYERS[0], "John", false);
-    vara_man.register_player(utils::PLAYERS[1], "Jack", false);
-    vara_man.register_player(utils::PLAYERS[2], "James", false);
+    vara_man.register_player(utils::PLAYERS[0], "John", None);
+    vara_man.register_player(utils::PLAYERS[1], "Jack", None);
+    vara_man.register_player(utils::PLAYERS[2], "James", None);
 
     let state = vara_man.get_state().expect("Unexpected invalid state.");
 
@@ -64,8 +64,12 @@ fn fail_player_already_registered() {
     let vara_man = Program::vara_man(&system);
     vara_man.change_status(ADMIN, Status::Started);
 
-    vara_man.register_player(utils::PLAYERS[0], "John", false);
-    vara_man.register_player(utils::PLAYERS[0], "John", true);
+    vara_man.register_player(utils::PLAYERS[0], "John", None);
+    vara_man.register_player(
+        utils::PLAYERS[0],
+        "John",
+        Some(VaraManError::AlreadyRegistered),
+    );
 
     let state = vara_man.get_state().expect("Unexpected invalid state.");
     assert_eq!(state.players.len(), 1);

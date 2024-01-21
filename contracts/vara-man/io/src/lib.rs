@@ -18,7 +18,7 @@ pub struct VaraManMetadata;
 
 impl Metadata for VaraManMetadata {
     type Init = In<VaraManInit>;
-    type Handle = InOut<VaraManAction, VaraManEvent>;
+    type Handle = InOut<VaraManAction, Result<VaraManEvent, VaraManError>>;
     type Others = ();
     type Reply = ();
     type Signal = ();
@@ -53,6 +53,21 @@ pub enum VaraManAction {
     ChangeStatus(Status),
     ChangeConfig(Config),
     AddAdmin(ActorId),
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+pub enum VaraManError {
+    WrongStatus,
+    EmptyName,
+    AlreadyRegistered,
+    NotRegistered,
+    AlreadyStartGame,
+    LivesEnded,
+    AmountGreaterThanAllowed,
+    TransferFailed,
+    AlreadyClaimed,
+    NotAdmin,
+    ConfigIsInvalid,
 }
 
 #[derive(Encode, Decode, TypeInfo)]

@@ -3,7 +3,7 @@ use crate::utils::ADMIN;
 use gstd::ActorId;
 use gtest::{Program, System};
 use utils::VaraMan;
-use vara_man_io::{Level, Status};
+use vara_man_io::{Level, Status, VaraManError};
 
 #[test]
 fn success() {
@@ -18,8 +18,8 @@ fn success() {
 
     let player_0_id: ActorId = utils::PLAYERS[0].into();
 
-    vara_man.register_player(utils::PLAYERS[0], "John", false);
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
+    vara_man.register_player(utils::PLAYERS[0], "John", None);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, None);
 
     let state = vara_man.get_state().expect("Unexpected invalid state.");
 
@@ -40,7 +40,11 @@ fn fail_player_must_register() {
     let state = vara_man.get_state().expect("Unexpected invalid state.");
     assert!(state.games.is_empty());
 
-    vara_man.start_game(utils::PLAYERS[0], Level::Hard, true);
+    vara_man.start_game(
+        utils::PLAYERS[0],
+        Level::Hard,
+        Some(VaraManError::NotRegistered),
+    );
 
     let state = vara_man.get_state().expect("Unexpected invalid state.");
     assert_eq!(state.games.len(), 0);
@@ -57,15 +61,19 @@ fn fail_player_has_exhausted_all_attempts() {
     let state = vara_man.get_state().expect("Unexpected invalid state.");
     assert!(state.games.is_empty());
 
-    vara_man.register_player(utils::PLAYERS[0], "John", false);
+    vara_man.register_player(utils::PLAYERS[0], "John", None);
 
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
-    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
-    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
-    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, true);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, None);
+    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, None);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, None);
+    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, None);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, None);
+    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, None);
+    vara_man.start_game(
+        utils::PLAYERS[0],
+        Level::Easy,
+        Some(VaraManError::LivesEnded),
+    );
 
     let state = vara_man.get_state().expect("Unexpected invalid state.");
     assert_eq!(state.games.len(), 0);
@@ -79,23 +87,27 @@ fn success_add_admin() {
     let vara_man = Program::vara_man(&system);
     vara_man.change_status(ADMIN, Status::Started);
 
-    vara_man.register_player(utils::PLAYERS[0], "John", false);
+    vara_man.register_player(utils::PLAYERS[0], "John", None);
 
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
-    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
-    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
-    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, true);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, None);
+    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, None);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, None);
+    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, None);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, None);
+    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, None);
+    vara_man.start_game(
+        utils::PLAYERS[0],
+        Level::Easy,
+        Some(VaraManError::LivesEnded),
+    );
 
     vara_man.add_admin(ADMIN, utils::PLAYERS[0].into());
 
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
-    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
-    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
-    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, false);
-    vara_man.start_game(utils::PLAYERS[0], Level::Easy, false);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, None);
+    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, None);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, None);
+    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, None);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, None);
+    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, None);
+    vara_man.start_game(utils::PLAYERS[0], Level::Easy, None);
 }

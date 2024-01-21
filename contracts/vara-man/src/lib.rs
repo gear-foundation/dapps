@@ -3,7 +3,7 @@
 use gstd::{collections::HashMap, msg, prelude::*, ActorId};
 use vara_man_io::{
     Config, GameInstance, Player, StateQuery, StateReply, Status, VaraMan as VaraManState,
-    VaraManAction, VaraManEvent, VaraManInit,
+    VaraManAction, VaraManError, VaraManEvent, VaraManInit,
 };
 
 #[derive(Debug, Default)]
@@ -27,21 +27,24 @@ async fn main() {
     msg::reply(result, 0).expect("Unexpected invalid reply result.");
 }
 
-async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraManEvent {
+async fn process_handle(
+    action: VaraManAction,
+    vara_man: &mut VaraMan,
+) -> Result<VaraManEvent, VaraManError> {
     match action {
         VaraManAction::RegisterPlayer { name } => {
             let actor_id = msg::source();
 
             if vara_man.status == Status::Paused {
-                return VaraManEvent::Error("Incorrect whole game status.".to_owned());
+                return Err(VaraManError::WrongStatus);
             }
 
             if name.is_empty() {
-                return VaraManEvent::Error("Username is empty.".to_owned());
+                return Err(VaraManError::EmptyName);
             }
 
             if vara_man.players.contains_key(&actor_id) {
-                VaraManEvent::Error("Player is already registered.".to_owned())
+                Err(VaraManError::AlreadyRegistered)
             } else {
                 vara_man.players.insert(
                     actor_id,
@@ -53,26 +56,26 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                     },
                 );
 
-                VaraManEvent::PlayerRegistered(actor_id)
+                Ok(VaraManEvent::PlayerRegistered(actor_id))
             }
         }
         VaraManAction::StartGame { level } => {
             let player_address = msg::source();
 
             if vara_man.status == Status::Paused {
-                return VaraManEvent::Error("Incorrect whole game status.".to_owned());
+                return Err(VaraManError::WrongStatus);
             }
 
             let Some(player) = vara_man.players.get_mut(&player_address) else {
-                return VaraManEvent::Error("Player must be registered to play.".to_owned());
+                return Err(VaraManError::NotRegistered);
             };
 
             if vara_man.games.get(&player_address).is_some() {
-                return VaraManEvent::Error("Player is already StartGame".to_owned());
+                return Err(VaraManError::AlreadyStartGame);
             };
 
             if !player.is_have_lives() && !vara_man.admins.contains(&player_address) {
-                return VaraManEvent::Error("Player has exhausted all his lives.".to_owned());
+                return Err(VaraManError::LivesEnded);
             }
 
             vara_man.games.insert(
@@ -85,7 +88,7 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                 },
             );
 
-            VaraManEvent::GameStarted
+            Ok(VaraManEvent::GameStarted)
         }
         VaraManAction::ClaimReward {
             silver_coins,
@@ -96,17 +99,17 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
             if let Some(game) = vara_man.games.get(&player_address) {
                 // Check that game is not paused
                 if vara_man.status == Status::Paused {
-                    return VaraManEvent::Error("Incorrect whole game status.".to_owned());
+                    return Err(VaraManError::WrongStatus);
                 }
 
                 // Check that player is registered
                 let Some(player) = vara_man.players.get_mut(&player_address) else {
-                    return VaraManEvent::Error("Player must be registered to claim.".to_owned());
+                    return Err(VaraManError::NotRegistered);
                 };
 
                 // Check passed coins range
                 if silver_coins > game.silver_coins || gold_coins > game.gold_coins {
-                    return VaraManEvent::Error("Coin(s) amount is gt than allowed.".to_owned());
+                    return Err(VaraManError::AmountGreaterThanAllowed);
                 }
 
                 let (tokens_per_gold_coin, tokens_per_silver_coin) = vara_man
@@ -132,7 +135,7 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                     .expect("Math overflow!");
 
                 if msg::send(player_address, 0u8, tokens_amount as u128).is_err() {
-                    return VaraManEvent::Error("Native tokens transfer failed.".to_owned());
+                    return Err(VaraManError::TransferFailed);
                 }
 
                 player.claimed_gold_coins = player
@@ -150,41 +153,39 @@ async fn process_handle(action: VaraManAction, vara_man: &mut VaraMan) -> VaraMa
                     player.lives -= 1;
                 }
 
-                VaraManEvent::RewardClaimed {
+                Ok(VaraManEvent::RewardClaimed {
                     player_address,
                     silver_coins,
                     gold_coins,
-                }
+                })
             } else {
-                VaraManEvent::Error(
-                    "The reward has already been claimed, start a new game".to_owned(),
-                )
+                Err(VaraManError::AlreadyClaimed)
             }
         }
         VaraManAction::ChangeStatus(status) => {
             if vara_man.admins.contains(&msg::source()) {
                 vara_man.status = status;
-                VaraManEvent::StatusChanged(status)
+                Ok(VaraManEvent::StatusChanged(status))
             } else {
-                VaraManEvent::Error("Only admin can change whole game status.".to_owned())
+                Err(VaraManError::NotAdmin)
             }
         }
         VaraManAction::ChangeConfig(config) => {
             if !vara_man.admins.contains(&msg::source()) {
-                VaraManEvent::Error("Only admin can change whole game config.".to_owned())
+                Err(VaraManError::NotAdmin)
             } else if !config.is_valid() {
-                VaraManEvent::Error("Provided config is invalid.".to_owned())
+                return Err(VaraManError::ConfigIsInvalid);
             } else {
                 vara_man.config = config;
-                VaraManEvent::ConfigChanged(config)
+                Ok(VaraManEvent::ConfigChanged(config))
             }
         }
         VaraManAction::AddAdmin(admin) => {
             if vara_man.admins.contains(&msg::source()) {
                 vara_man.admins.push(admin);
-                VaraManEvent::AdminAdded(admin)
+                Ok(VaraManEvent::AdminAdded(admin))
             } else {
-                VaraManEvent::Error("Only an admin can add another admin.".to_owned())
+                Err(VaraManError::NotAdmin)
             }
         }
     }
