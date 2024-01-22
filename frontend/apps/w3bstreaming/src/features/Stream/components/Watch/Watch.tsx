@@ -104,7 +104,12 @@ function Watch({ socket, streamId }: WatchProps) {
 
       peerConnection.current!.ontrack = (event: RTCTrackEvent) => {
         if (event.streams[0]) {
-          setLocalStream(() => event.streams[0]);
+          const audioTracks = event.streams[0].getAudioTracks();
+          const videoTracks = event.streams[0].getVideoTracks();
+
+          const str = new MediaStream([...audioTracks, videoTracks[videoTracks.length - 1]]);
+
+          setLocalStream(str);
         } else {
           setLocalStream((prev) => new MediaStream([...(prev ? prev!.getTracks() : []), event.track]));
         }
