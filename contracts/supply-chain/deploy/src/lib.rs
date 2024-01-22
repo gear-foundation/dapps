@@ -24,7 +24,7 @@ pub struct Client {
 
 impl Client {
     pub async fn global() -> Result<Self> {
-        let client = GearApi::gear().await?;
+        let client = GearApi::vara_testnet().await?;
         let listener = client.subscribe().await?;
 
         Ok(Self { client, listener })

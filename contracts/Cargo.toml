@@ -49,7 +49,7 @@ members = [
     "multi-token/state",
     "multisig-wallet",
     "multisig-wallet/state",
-    "nft",  
+    "nft",
     "nft-marketplace",
     "nft-marketplace/state",
     "nft-master",
@@ -229,12 +229,12 @@ supply-chain-deploy.path = "supply-chain/deploy"
 
 # Gear
 
-gstd = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
-gmeta = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
-gclient = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
-gtest = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
-gear-core = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
+gstd = "1.1.0"
+gear-wasm-builder = "1.1.0"
+gmeta = "1.1.0"
+gclient = "1.1.0"
+gtest = "1.1.0"
+gear-core = "1.1.0"
 
 # External
 
