@@ -390,7 +390,7 @@ checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
 
 [[package]]
 name = "auto-changed-nft"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "auto-changed-nft-io",
  "gclient",
@@ -409,7 +409,7 @@ dependencies = [
 
 [[package]]
 name = "auto-changed-nft-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gmeta",
@@ -419,7 +419,7 @@ dependencies = [
 
 [[package]]
 name = "auto-changed-nft-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "auto-changed-nft-io",
  "gear-lib-old",
@@ -481,7 +481,7 @@ checksum = "8c3c1a368f70d6cf7302d78f8f7093da241fb8e8807c05cc9e51a125895a6d5b"
 
 [[package]]
 name = "battleship"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "battleship-bot",
  "battleship-io",
@@ -496,7 +496,7 @@ dependencies = [
 
 [[package]]
 name = "battleship-bot"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "battleship-io",
  "gear-wasm-builder",
@@ -505,7 +505,7 @@ dependencies = [
 
 [[package]]
 name = "battleship-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -786,7 +786,7 @@ dependencies = [
 
 [[package]]
 name = "car-races"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "car-1",
  "car-2",
@@ -955,7 +955,7 @@ dependencies = [
 
 [[package]]
 name = "concert"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "concert-io",
  "gclient",
@@ -970,7 +970,7 @@ dependencies = [
 
 [[package]]
 name = "concert-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gmeta",
@@ -979,7 +979,7 @@ dependencies = [
 
 [[package]]
 name = "concert-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "concert-io",
  "gear-lib-old",
@@ -1247,7 +1247,7 @@ dependencies = [
 
 [[package]]
 name = "crowdsale"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "crowdsale-io",
  "gclient",
@@ -1264,7 +1264,7 @@ dependencies = [
 
 [[package]]
 name = "crowdsale-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -1272,7 +1272,7 @@ dependencies = [
 
 [[package]]
 name = "crowdsale-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "crowdsale-io",
  "gear-wasm-builder",
@@ -1406,7 +1406,7 @@ dependencies = [
 
 [[package]]
 name = "dao"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "blake2-rfc",
  "dao-io",
@@ -1423,7 +1423,7 @@ dependencies = [
 
 [[package]]
 name = "dao-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -1431,7 +1431,7 @@ dependencies = [
 
 [[package]]
 name = "dao-light"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "dao-light-io",
  "fungible-token",
@@ -1443,7 +1443,7 @@ dependencies = [
 
 [[package]]
 name = "dao-light-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -1451,7 +1451,7 @@ dependencies = [
 
 [[package]]
 name = "dao-light-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "dao-light-io",
  "gear-wasm-builder",
@@ -1461,7 +1461,7 @@ dependencies = [
 
 [[package]]
 name = "dao-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "dao-io",
  "gear-wasm-builder",
@@ -1541,7 +1541,7 @@ dependencies = [
 
 [[package]]
 name = "ddns"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "ddns-io",
  "gear-wasm-builder",
@@ -1550,7 +1550,7 @@ dependencies = [
 
 [[package]]
 name = "ddns-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -1558,7 +1558,7 @@ dependencies = [
 
 [[package]]
 name = "ddns-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "ddns-io",
  "gear-wasm-builder",
@@ -1568,7 +1568,7 @@ dependencies = [
 
 [[package]]
 name = "decentralized-git"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "decentralized-git-io",
  "decentralized-git-user-io",
@@ -1578,7 +1578,7 @@ dependencies = [
 
 [[package]]
 name = "decentralized-git-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -1586,7 +1586,7 @@ dependencies = [
 
 [[package]]
 name = "decentralized-git-master"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "decentralized-git-master-io",
  "decentralized-git-user-io",
@@ -1596,7 +1596,7 @@ dependencies = [
 
 [[package]]
 name = "decentralized-git-master-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -1604,7 +1604,7 @@ dependencies = [
 
 [[package]]
 name = "decentralized-git-master-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "decentralized-git-master-io",
  "gear-wasm-builder",
@@ -1614,7 +1614,7 @@ dependencies = [
 
 [[package]]
 name = "decentralized-git-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "decentralized-git-io",
  "gear-wasm-builder",
@@ -1624,7 +1624,7 @@ dependencies = [
 
 [[package]]
 name = "decentralized-git-user"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "decentralized-git-io",
  "decentralized-git-user-io",
@@ -1634,7 +1634,7 @@ dependencies = [
 
 [[package]]
 name = "decentralized-git-user-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -1642,7 +1642,7 @@ dependencies = [
 
 [[package]]
 name = "decentralized-git-user-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "decentralized-git-user-io",
  "gear-wasm-builder",
@@ -1686,7 +1686,7 @@ dependencies = [
 
 [[package]]
 name = "dex"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "dex-factory",
  "dex-factory-io",
@@ -1710,7 +1710,7 @@ dependencies = [
 
 [[package]]
 name = "dex-factory"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "dex-factory-io",
  "dex-io",
@@ -1720,7 +1720,7 @@ dependencies = [
 
 [[package]]
 name = "dex-factory-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "dex-io",
  "gmeta",
@@ -1729,7 +1729,7 @@ dependencies = [
 
 [[package]]
 name = "dex-factory-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "dex-factory-io",
  "gear-wasm-builder",
@@ -1739,7 +1739,7 @@ dependencies = [
 
 [[package]]
 name = "dex-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib",
  "gmeta",
@@ -1749,7 +1749,7 @@ dependencies = [
 
 [[package]]
 name = "dex-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "dex-io",
  "gear-wasm-builder",
@@ -1815,7 +1815,7 @@ checksum = "9ea835d29036a4087793836fa931b08837ad5e957da9e23886b29586fb9b6650"
 
 [[package]]
 name = "dutch-auction"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "dutch-auction-io",
  "gclient",
@@ -1832,7 +1832,7 @@ dependencies = [
 
 [[package]]
 name = "dutch-auction-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -1841,7 +1841,7 @@ dependencies = [
 
 [[package]]
 name = "dutch-auction-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "dutch-auction-io",
  "gear-wasm-builder",
@@ -1878,7 +1878,7 @@ checksum = "545b22097d44f8a9581187cdf93de7a71e4722bf51200cfaba810865b49a495d"
 
 [[package]]
 name = "dynamic-nft"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "dynamic-nft-io",
  "gclient",
@@ -1897,7 +1897,7 @@ dependencies = [
 
 [[package]]
 name = "dynamic-nft-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gmeta",
@@ -1907,7 +1907,7 @@ dependencies = [
 
 [[package]]
 name = "dynamic-nft-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "dynamic-nft-io",
  "gear-lib-old",
@@ -2133,7 +2133,7 @@ dependencies = [
 
 [[package]]
 name = "escrow"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "escrow-io",
  "gclient",
@@ -2149,7 +2149,7 @@ dependencies = [
 
 [[package]]
 name = "escrow-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -2158,7 +2158,7 @@ dependencies = [
 
 [[package]]
 name = "escrow-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "escrow-io",
  "gear-wasm-builder",
@@ -2223,7 +2223,7 @@ checksum = "25cbce373ec4653f1a01a31e8a5e5ec0c622dc27ff9c4e6606eefef5cbbed4a5"
 
 [[package]]
 name = "feeds"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "feeds-channel",
  "feeds-channel-io",
@@ -2235,7 +2235,7 @@ dependencies = [
 
 [[package]]
 name = "feeds-channel"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "async-trait",
  "feeds-channel-io",
@@ -2246,7 +2246,7 @@ dependencies = [
 
 [[package]]
 name = "feeds-channel-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -2254,7 +2254,7 @@ dependencies = [
 
 [[package]]
 name = "feeds-channel-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "feeds-channel-io",
  "gear-wasm-builder",
@@ -2264,7 +2264,7 @@ dependencies = [
 
 [[package]]
 name = "feeds-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -2272,7 +2272,7 @@ dependencies = [
 
 [[package]]
 name = "feeds-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "feeds-io",
  "gear-wasm-builder",
@@ -2440,7 +2440,7 @@ dependencies = [
 
 [[package]]
 name = "fungible-token"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "fungible-token-io",
  "gear-wasm-builder",
@@ -2451,7 +2451,7 @@ dependencies = [
 
 [[package]]
 name = "fungible-token-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -2459,7 +2459,7 @@ dependencies = [
 
 [[package]]
 name = "fungible-token-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "fungible-token-io",
  "gear-wasm-builder",
@@ -2600,7 +2600,7 @@ dependencies = [
 
 [[package]]
 name = "galactic-express"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "galactic-express-io",
  "gear-lib",
@@ -2612,7 +2612,7 @@ dependencies = [
 
 [[package]]
 name = "galactic-express-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib",
  "gmeta",
@@ -2630,7 +2630,7 @@ dependencies = [
 
 [[package]]
 name = "game-of-chance"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "game-of-chance-io",
  "gclient",
@@ -2650,7 +2650,7 @@ dependencies = [
 
 [[package]]
 name = "game-of-chance-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -2838,7 +2838,7 @@ dependencies = [
 
 [[package]]
 name = "gear-lib"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "ahash 0.8.7",
  "gstd",
@@ -2848,7 +2848,7 @@ dependencies = [
 
 [[package]]
 name = "gear-lib-derive"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "quote",
  "syn 2.0.48",
@@ -2856,7 +2856,7 @@ dependencies = [
 
 [[package]]
 name = "gear-lib-old"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gstd",
  "primitive-types",
@@ -3481,7 +3481,7 @@ dependencies = [
 
 [[package]]
 name = "horse-races"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "fungible-token",
  "fungible-token-io",
@@ -3496,7 +3496,7 @@ dependencies = [
 
 [[package]]
 name = "horse-races-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -3504,7 +3504,7 @@ dependencies = [
 
 [[package]]
 name = "horse-races-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -3624,7 +3624,7 @@ checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
 
 [[package]]
 name = "identity"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -3638,7 +3638,7 @@ dependencies = [
 
 [[package]]
 name = "identity-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -3646,7 +3646,7 @@ dependencies = [
 
 [[package]]
 name = "identity-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -4354,7 +4354,7 @@ checksum = "7843ec2de400bcbc6a6328c958dc38e5359da6e93e72e37bc5246bf1ae776389"
 
 [[package]]
 name = "multi-token"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gclient",
  "gear-lib-derive",
@@ -4369,7 +4369,7 @@ dependencies = [
 
 [[package]]
 name = "multi-token-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gmeta",
@@ -4378,7 +4378,7 @@ dependencies = [
 
 [[package]]
 name = "multi-token-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gear-wasm-builder",
@@ -4389,7 +4389,7 @@ dependencies = [
 
 [[package]]
 name = "multisig-wallet"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -4400,7 +4400,7 @@ dependencies = [
 
 [[package]]
 name = "multisig-wallet-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -4409,7 +4409,7 @@ dependencies = [
 
 [[package]]
 name = "multisig-wallet-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -4419,7 +4419,7 @@ dependencies = [
 
 [[package]]
 name = "nft"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gclient",
  "gear-core",
@@ -4434,7 +4434,7 @@ dependencies = [
 
 [[package]]
 name = "nft-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gmeta",
@@ -4446,7 +4446,7 @@ dependencies = [
 
 [[package]]
 name = "nft-marketplace"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "async-trait",
  "blake2-rfc",
@@ -4468,7 +4468,7 @@ dependencies = [
 
 [[package]]
 name = "nft-marketplace-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -4477,7 +4477,7 @@ dependencies = [
 
 [[package]]
 name = "nft-marketplace-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -4487,7 +4487,7 @@ dependencies = [
 
 [[package]]
 name = "nft-master"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gclient",
  "gear-wasm-builder",
@@ -4499,7 +4499,7 @@ dependencies = [
 
 [[package]]
 name = "nft-master-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -4507,7 +4507,7 @@ dependencies = [
 
 [[package]]
 name = "nft-master-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -4517,7 +4517,7 @@ dependencies = [
 
 [[package]]
 name = "nft-pixelboard"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gear-wasm-builder",
@@ -4534,7 +4534,7 @@ dependencies = [
 
 [[package]]
 name = "nft-pixelboard-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gmeta",
@@ -4543,7 +4543,7 @@ dependencies = [
 
 [[package]]
 name = "nft-pixelboard-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gear-wasm-builder",
@@ -4595,7 +4595,7 @@ dependencies = [
 
 [[package]]
 name = "non-fungible-token"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gclient",
  "gear-lib-derive",
@@ -4614,7 +4614,7 @@ dependencies = [
 
 [[package]]
 name = "non-fungible-token-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gmeta",
@@ -4624,7 +4624,7 @@ dependencies = [
 
 [[package]]
 name = "non-fungible-token-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gear-wasm-builder",
@@ -4768,7 +4768,7 @@ dependencies = [
 
 [[package]]
 name = "on-chain-nft"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gclient",
  "gear-lib-derive",
@@ -4785,7 +4785,7 @@ dependencies = [
 
 [[package]]
 name = "on-chain-nft-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gmeta",
@@ -4794,7 +4794,7 @@ dependencies = [
 
 [[package]]
 name = "on-chain-nft-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gear-wasm-builder",
@@ -4829,7 +4829,7 @@ checksum = "ff011a302c396a5197692431fc1948019154afc178baf7d8e37367442a4601cf"
 
 [[package]]
 name = "oracle"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "async-trait",
  "gclient",
@@ -4844,7 +4844,7 @@ dependencies = [
 
 [[package]]
 name = "oracle-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -4852,7 +4852,7 @@ dependencies = [
 
 [[package]]
 name = "oracle-randomness"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "async-trait",
  "gear-wasm-builder",
@@ -4862,7 +4862,7 @@ dependencies = [
 
 [[package]]
 name = "oracle-randomness-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -4870,7 +4870,7 @@ dependencies = [
 
 [[package]]
 name = "oracle-randomness-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -4880,7 +4880,7 @@ dependencies = [
 
 [[package]]
 name = "oracle-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -5054,7 +5054,7 @@ checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
 
 [[package]]
 name = "ping"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -5064,7 +5064,7 @@ dependencies = [
 
 [[package]]
 name = "ping-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -5072,7 +5072,7 @@ dependencies = [
 
 [[package]]
 name = "ping-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -5502,7 +5502,7 @@ dependencies = [
 
 [[package]]
 name = "rentable-nft"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gclient",
  "gear-lib-derive",
@@ -5521,7 +5521,7 @@ dependencies = [
 
 [[package]]
 name = "rentable-nft-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gmeta",
@@ -5531,7 +5531,7 @@ dependencies = [
 
 [[package]]
 name = "rentable-nft-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gear-wasm-builder",
@@ -5595,7 +5595,7 @@ dependencies = [
 
 [[package]]
 name = "rmrk"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -5610,7 +5610,7 @@ dependencies = [
 
 [[package]]
 name = "rmrk-catalog"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -5620,7 +5620,7 @@ dependencies = [
 
 [[package]]
 name = "rmrk-catalog-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -5629,7 +5629,7 @@ dependencies = [
 
 [[package]]
 name = "rmrk-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -5639,7 +5639,7 @@ dependencies = [
 
 [[package]]
 name = "rmrk-resource"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -5650,7 +5650,7 @@ dependencies = [
 
 [[package]]
 name = "rmrk-resource-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -5659,7 +5659,7 @@ dependencies = [
 
 [[package]]
 name = "rmrk-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -5671,7 +5671,7 @@ dependencies = [
 
 [[package]]
 name = "rmrk-types"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gstd",
  "primitive-types",
@@ -5679,7 +5679,7 @@ dependencies = [
 
 [[package]]
 name = "rock-paper-scissors"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gclient",
  "gear-wasm-builder",
@@ -5693,7 +5693,7 @@ dependencies = [
 
 [[package]]
 name = "rock-paper-scissors-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -5701,7 +5701,7 @@ dependencies = [
 
 [[package]]
 name = "rock-paper-scissors-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -5711,7 +5711,7 @@ dependencies = [
 
 [[package]]
 name = "roll-the-dice"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -5724,7 +5724,7 @@ dependencies = [
 
 [[package]]
 name = "roll-the-dice-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -5732,7 +5732,7 @@ dependencies = [
 
 [[package]]
 name = "roll-the-dice-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -6260,7 +6260,7 @@ dependencies = [
 
 [[package]]
 name = "sharded-fungible-token"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gear-wasm-builder",
@@ -6278,7 +6278,7 @@ dependencies = [
 
 [[package]]
 name = "sharded-fungible-token-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -6287,7 +6287,7 @@ dependencies = [
 
 [[package]]
 name = "sharded-fungible-token-logic"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gear-wasm-builder",
@@ -6301,7 +6301,7 @@ dependencies = [
 
 [[package]]
 name = "sharded-fungible-token-logic-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -6312,7 +6312,7 @@ dependencies = [
 
 [[package]]
 name = "sharded-fungible-token-storage"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -6322,7 +6322,7 @@ dependencies = [
 
 [[package]]
 name = "sharded-fungible-token-storage-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -6331,7 +6331,7 @@ dependencies = [
 
 [[package]]
 name = "sharded-multi-token"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "blake2-rfc",
  "gclient",
@@ -6349,7 +6349,7 @@ dependencies = [
 
 [[package]]
 name = "sharded-multi-token-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -6358,7 +6358,7 @@ dependencies = [
 
 [[package]]
 name = "sharded-multi-token-logic"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -6371,7 +6371,7 @@ dependencies = [
 
 [[package]]
 name = "sharded-multi-token-logic-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -6382,7 +6382,7 @@ dependencies = [
 
 [[package]]
 name = "sharded-multi-token-storage"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -6392,7 +6392,7 @@ dependencies = [
 
 [[package]]
 name = "sharded-multi-token-storage-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -7640,7 +7640,7 @@ checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 
 [[package]]
 name = "staking"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -7655,7 +7655,7 @@ dependencies = [
 
 [[package]]
 name = "staking-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -7663,7 +7663,7 @@ dependencies = [
 
 [[package]]
 name = "staking-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -7691,7 +7691,7 @@ checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
 
 [[package]]
 name = "student-nft"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gclient",
  "gear-wasm-builder",
@@ -7703,7 +7703,7 @@ dependencies = [
 
 [[package]]
 name = "student-nft-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -7711,7 +7711,7 @@ dependencies = [
 
 [[package]]
 name = "student-nft-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -7841,7 +7841,7 @@ dependencies = [
 
 [[package]]
 name = "supply-chain"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gclient",
  "gear-lib-old",
@@ -7863,7 +7863,7 @@ dependencies = [
 
 [[package]]
 name = "supply-chain-deploy"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "clap",
  "gclient",
@@ -7880,7 +7880,7 @@ dependencies = [
 
 [[package]]
 name = "supply-chain-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-lib-old",
  "gmeta",
@@ -7889,7 +7889,7 @@ dependencies = [
 
 [[package]]
 name = "supply-chain-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -7921,7 +7921,7 @@ dependencies = [
 
 [[package]]
 name = "syndote"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -7932,7 +7932,7 @@ dependencies = [
 
 [[package]]
 name = "syndote-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -7940,7 +7940,7 @@ dependencies = [
 
 [[package]]
 name = "syndote-player"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -7950,7 +7950,7 @@ dependencies = [
 
 [[package]]
 name = "syndote-player-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -7959,7 +7959,7 @@ dependencies = [
 
 [[package]]
 name = "tamagotchi"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -7968,7 +7968,7 @@ dependencies = [
 
 [[package]]
 name = "tamagotchi-battle"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gclient",
  "gear-wasm-builder",
@@ -7983,7 +7983,7 @@ dependencies = [
 
 [[package]]
 name = "tamagotchi-battle-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -7991,7 +7991,7 @@ dependencies = [
 
 [[package]]
 name = "tamagotchi-battle-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -8001,7 +8001,7 @@ dependencies = [
 
 [[package]]
 name = "tamagotchi-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -8009,7 +8009,7 @@ dependencies = [
 
 [[package]]
 name = "tamagotchi-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -8044,7 +8044,7 @@ dependencies = [
 
 [[package]]
 name = "tequila-train"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -8054,7 +8054,7 @@ dependencies = [
 
 [[package]]
 name = "tequila-train-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "enum-iterator 1.4.1",
  "gmeta",
@@ -8063,7 +8063,7 @@ dependencies = [
 
 [[package]]
 name = "tequila-train-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -8132,7 +8132,7 @@ dependencies = [
 
 [[package]]
 name = "tic-tac-toe"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gclient",
  "gear-core",
@@ -8147,7 +8147,7 @@ dependencies = [
 
 [[package]]
 name = "tic-tac-toe-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -8588,7 +8588,7 @@ checksum = "830b7e5d4d90034032940e4ace0d9a9a057e7a45cd94e6c007832e39edb82f6d"
 
 [[package]]
 name = "vara-man"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "blake2-rfc",
  "gclient",
@@ -8601,7 +8601,7 @@ dependencies = [
 
 [[package]]
 name = "vara-man-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -8609,7 +8609,7 @@ dependencies = [
 
 [[package]]
 name = "vara-man-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -8619,7 +8619,7 @@ dependencies = [
 
 [[package]]
 name = "varatube"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "fungible-token",
  "fungible-token-io",
@@ -8631,7 +8631,7 @@ dependencies = [
 
 [[package]]
 name = "varatube-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -8639,7 +8639,7 @@ dependencies = [
 
 [[package]]
 name = "varatube-state"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gmeta",
@@ -8655,7 +8655,7 @@ checksum = "49874b5167b65d7193b8aba1567f5c7d93d001cafc34600cee003eda787e483f"
 
 [[package]]
 name = "w3bstreaming"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -8664,7 +8664,7 @@ dependencies = [
 
 [[package]]
 name = "w3bstreaming-io"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
@@ -9955,7 +9955,7 @@ checksum = "7e2c411759b501fb9501aac2b1b2d287a6e93e5bdcf13c25306b23e1b716dd0e"
 
 [[package]]
 name = "xtask"
-version = "1.0.2"
+version = "1.1.0"
 dependencies = [
  "anyhow",
  "xshell",
