@@ -202,11 +202,11 @@ impl Concert {
         }
 
         for actor in &self.buyers {
-            let mut ids = vec![];
-            let mut amounts = vec![];
-            let mut meta = vec![];
             let actor_metadata = self.metadata.get(actor);
             if let Some(actor_md) = actor_metadata.cloned() {
+                let mut ids = vec![];
+                let mut amounts = vec![];
+                let mut meta = vec![];
                 for (token, token_meta) in actor_md {
                     ids.push(token);
                     amounts.push(NFT_COUNT);
@@ -262,11 +262,11 @@ impl From<Concert> for State {
             token_id,
         } = value;
 
-        let buyers = buyers.iter().copied().collect();
+        let buyers = buyers.into_iter().collect();
 
         let metadata = metadata
-            .iter()
-            .map(|(k, v)| (*k, v.iter().map(|(k, v)| (*k, v.clone())).collect()))
+            .into_iter()
+            .map(|(k, v)| (k, v.into_iter().map(|(k, v)| (k, v)).collect()))
             .collect();
 
         State {
