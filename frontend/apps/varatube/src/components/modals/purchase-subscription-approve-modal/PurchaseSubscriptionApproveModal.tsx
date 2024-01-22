@@ -7,7 +7,7 @@ function PurchaseSubscriptionApproveModal({ amount, close, onSubmit }: Props) {
   return (
     <Modal heading="Purchase subscription" close={close}>
       <div className={styles.container}>
-        You're going to transfer {amount} Vara
+        You're going to transfer {amount} Tokens
         <Button text="Approve" onClick={onSubmit} />
       </div>
     </Modal>
