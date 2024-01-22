@@ -22,16 +22,6 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit = 18 }
   const [isCreating, setIsCreating] = useAtom(IS_CREATING_VOUCHER_ATOM);
   const [isUpdating, setIsUpdating] = useAtom(IS_UPDATING_VOUCHER_ATOM);
 
-  useEffect(() => {
-    console.log('isVoucherExists:');
-    console.log(isVoucherExists);
-  }, [isVoucherExists]); // TODO remove before release
-
-  useEffect(() => {
-    console.log('Balance:');
-    console.log(getFormattedBalanceValue(voucherBalance?.toString() || '').toFixed());
-  }, [voucherBalance]); // TODO remove before release
-
   const createVoucher = async () => {
     try {
       const response = await fetch(backendAddress, {
@@ -46,14 +36,14 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit = 18 }
         return true;
       }
     } catch (error) {
-      console.log('error: ', error);
+      console.error('error creating voucher: ', error);
     }
 
     return false;
   };
 
   useEffect(() => {
-    if (accountAddress && isVoucherExists !== undefined) {
+    if (accountAddress && isVoucherExists !== undefined && backendAddress) {
       const fetchData = async () => {
         try {
           setIsCreating(true);
@@ -61,12 +51,10 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit = 18 }
 
           if (availableBack?.status === 200) {
             if (isVoucherExists) {
-              console.log('EXISTS');
               setVoucher(true);
             } else {
               const createdVoucher = await createVoucher();
               if (createdVoucher) {
-                console.log('CREATED');
                 setVoucher(true);
               }
             }
@@ -80,7 +68,7 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit = 18 }
       fetchData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accountAddress, isVoucherExists]);
+  }, [accountAddress, isVoucherExists, backendAddress]);
 
   const updateBalance = useCallback(async () => {
     const formattedBalance = voucherBalance && getFormattedBalanceValue(voucherBalance.toString()).toFixed();
