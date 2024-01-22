@@ -41,7 +41,7 @@ function ProfileInfo() {
       return `${name} must be less than 16 symbols`;
     }
 
-    if (!value.length) {
+    if (!value.trim().length) {
       return `You must enter ${name}`;
     }
 

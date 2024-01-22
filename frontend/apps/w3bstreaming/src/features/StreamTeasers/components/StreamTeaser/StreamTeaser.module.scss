@@ -128,9 +128,14 @@
    );
 
     &-label {
-        padding-bottom: 10px;
+        margin-bottom: 10px;
         font-size: 22px;
         font-weight: 600;
+        line-height: 22px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
     }
 
     &-description {
