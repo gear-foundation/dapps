@@ -108,7 +108,6 @@ pub async fn start_game(
 pub async fn claim_reward(
     api: &GearApi,
     program_id: &ActorId,
-    game_id: u64,
     silver_coins: u64,
     gold_coins: u64,
     error: Option<VaraManError>,

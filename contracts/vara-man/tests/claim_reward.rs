@@ -29,8 +29,8 @@ fn success() {
 
     vara_man.change_status(ADMIN, Status::Started);
 
-    // let state = vara_man.get_state();
-    // assert!(state.players.is_empty() && state.games.is_empty());
+    let state = vara_man.get_state().expect("Unexpected invalid state.");
+    assert!(state.players.is_empty() && state.games.is_empty());
 
     vara_man.register_player(utils::PLAYERS[0], "John", None);
     vara_man.start_game(utils::PLAYERS[0], Level::Easy, None);
@@ -41,6 +41,10 @@ fn success() {
     // 15 tokens total, with 12 decimals precision
     system.claim_value_from_mailbox(utils::PLAYERS[0]);
     assert_eq!(system.balance_of(utils::PLAYERS[0]), 15_000_000_000_000);
+
+    let state = vara_man.get_state().expect("Unexpected invalid state.");
+    assert_eq!(state.players[0].1.claimed_gold_coins, 1);
+    assert_eq!(state.players[0].1.claimed_silver_coins, 10);
 }
 
 #[test]
@@ -107,8 +111,8 @@ fn fail_rewards_already_claimed() {
 
     vara_man.change_status(ADMIN, Status::Started);
 
-    // let state = vara_man.get_state();
-    // assert!(state.players.is_empty() && state.games.is_empty());
+    let state = vara_man.get_state().expect("Unexpected invalid state.");
+    assert!(state.players.is_empty() && state.games.is_empty());
 
     vara_man.register_player(utils::PLAYERS[0], "John", None);
     vara_man.start_game(utils::PLAYERS[0], Level::Easy, None);
@@ -119,7 +123,12 @@ fn fail_rewards_already_claimed() {
     system.claim_value_from_mailbox(utils::PLAYERS[0]);
     assert_eq!(system.balance_of(utils::PLAYERS[0]), 15_000_000_000_000);
 
-    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, Some(VaraManError::GameDoesNotExist));
+    vara_man.claim_reward(
+        utils::PLAYERS[0],
+        10,
+        1,
+        Some(VaraManError::GameDoesNotExist),
+    );
 
     system.claim_value_from_mailbox(utils::PLAYERS[0]);
     assert_eq!(system.balance_of(utils::PLAYERS[0]), 15_000_000_000_000);
@@ -150,8 +159,8 @@ fn fail_coin_amount_is_gt_than_allowed() {
 
     vara_man.change_status(ADMIN, Status::Started);
 
-    // let state = vara_man.get_state();
-    // assert!(state.players.is_empty() && state.games.is_empty());
+    let state = vara_man.get_state().expect("Unexpected invalid state.");
+    assert!(state.players.is_empty() && state.games.is_empty());
 
     vara_man.register_player(utils::PLAYERS[0], "John", None);
     vara_man.start_game(utils::PLAYERS[0], Level::Easy, None);
