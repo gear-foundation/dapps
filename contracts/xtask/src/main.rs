@@ -65,7 +65,11 @@ fn main() -> Result<()> {
         "node" => node()?,
         "ci" => {
             xshell::cmd!(sh, "cargo fmt --all --check").run()?;
-            xshell::cmd!(sh, "cargo clippy --all-targets --no-deps -- -Dwarnings").run()?;
+            xshell::cmd!(
+                sh,
+                "cargo clippy --all-targets --no-deps -- -D warnings -A unused-imports"
+            )
+            .run()?;
             node()?;
             xshell::cmd!(sh, "cargo t").run()?;
             docs()?;

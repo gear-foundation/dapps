@@ -626,10 +626,14 @@ mod tests {
                         .unwrap()
                 )
             );
-            assert!(manager
-                .actors_for_tx
-                .iter()
-                .eq(txs.iter().map(|(k, v)| (k, v))));
+            assert_eq!(
+                manager
+                    .actors_for_tx
+                    .iter()
+                    .map(|(&k, &v)| (k, v))
+                    .collect::<Vec<_>>(),
+                txs
+            );
             assert!(manager
                 .cached_transactions()
                 .eq(iter::once((&ActorId::from(1), &228))));
