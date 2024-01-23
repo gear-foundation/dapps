@@ -499,6 +499,8 @@ version = "1.0.2"
 dependencies = [
  "gmeta",
  "gstd",
+ "parity-scale-codec",
+ "scale-info",
 ]
 
 [[package]]
@@ -7551,7 +7553,9 @@ version = "1.0.2"
 dependencies = [
  "gmeta",
  "gstd",
+ "parity-scale-codec",
  "primitive-types",
+ "scale-info",
 ]
 
 [[package]]

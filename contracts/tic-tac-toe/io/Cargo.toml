@@ -9,3 +9,5 @@ authors.workspace = true
 gmeta.workspace = true
 gstd.workspace = true
 primitive-types = { workspace = true, features = ["scale-info"] }
+parity-scale-codec.workspace = true
+scale-info.workspace = true
