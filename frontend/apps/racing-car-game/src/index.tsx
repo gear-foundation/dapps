@@ -1,15 +1,9 @@
 import { createRoot } from 'react-dom/client';
-import TagManager from 'react-gtm-module';
-import { initErrorTracking, logPublicEnvs } from '@dapps-frontend/error-tracking';
+import { initErrorTracking, logPublicEnvs, initAnalytics } from '@dapps-frontend/error-tracking';
 import { App } from '@/App';
 import './styles/global.scss';
 
-if (process.env.NODE_ENV === 'production' && process.env.REACT_APP_GTM_ID_CARS) {
-  TagManager.initialize({
-    gtmId: process.env.REACT_APP_GTM_ID_CARS,
-  });
-}
-
+initAnalytics();
 initErrorTracking();
 logPublicEnvs();
 
