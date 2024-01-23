@@ -152,7 +152,7 @@ async fn process_handle(
                     player.lives -= 1;
                 }
 
-                Ok(VaraManEvent::RewardClaimed {
+                Ok(VaraManEvent::GameFinished {
                     player_address,
                     silver_coins,
                     gold_coins,

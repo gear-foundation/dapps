@@ -32,12 +32,12 @@ pub struct VaraManInit {
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum VaraManEvent {
-    GameStarted,
-    RewardClaimed {
+    GameFinished {
         player_address: ActorId,
         silver_coins: u64,
         gold_coins: u64,
     },
+    GameStarted,
     AdminAdded(ActorId),
     PlayerRegistered(ActorId),
     StatusChanged(Status),
