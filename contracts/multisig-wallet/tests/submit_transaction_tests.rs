@@ -30,7 +30,7 @@ fn common() {
         MWAction::SubmitTransaction {
             destination: USERS[3].into(),
             data: vec![],
-            value: 1000,
+            value: 10_000_000_000_000,
             description: Some("test".to_string()),
         },
     );
@@ -51,7 +51,7 @@ fn submit_several_transactions() {
         MWAction::SubmitTransaction {
             destination: USERS[3].into(),
             data: vec![],
-            value: 1000,
+            value: 10_000_000_000_000,
             description: None,
         },
     );
@@ -67,7 +67,7 @@ fn submit_several_transactions() {
         MWAction::SubmitTransaction {
             destination: USERS[3].into(),
             data: vec![],
-            value: 1000,
+            value: 10_000_000_000_000,
             description: None,
         },
     );
@@ -83,16 +83,16 @@ fn submit_several_transactions() {
 fn submit_and_execute_automatically() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..3], 1);
-    sys.mint_to(USERS[0], 1_000_000_000);
+    sys.mint_to(USERS[0], 100_000_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
             destination: USERS[3].into(),
             data: vec![],
-            value: 10000,
+            value: 100_000_000_000_000,
             description: None,
         },
-        1_000_000_000,
+        100_000_000_000_000,
     );
 
     let expect = MWEvent::Submission {
@@ -106,16 +106,16 @@ fn submit_and_execute_automatically() {
 fn submit_transaction_with_zero_destination() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..3], 2);
-    sys.mint_to(USERS[0], 10000);
+    sys.mint_to(USERS[0], 10_000_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
             destination: ZERO_ID,
             data: vec![],
-            value: 1000,
+            value: 10_000_000_000_000,
             description: None,
         },
-        10000,
+        10_000_000_000_000,
     );
 
     assert!(res.main_failed());

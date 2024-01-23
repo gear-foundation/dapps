@@ -28,7 +28,7 @@ fn buy_tokens_with_change() {
     start_sale(&ico, 2, 0);
 
     let amount: u128 = 5;
-    let change = 600;
+    let change = 10_000_000_000_000;
     let res = ico.send_with_value(
         USER_ID,
         IcoAction::Buy(amount),

@@ -49,6 +49,7 @@ members = [
     "multi-token/state",
     "multisig-wallet",
     "multisig-wallet/state",
+    "nft",  
     "nft-marketplace",
     "nft-marketplace/state",
     "nft-master",
@@ -112,7 +113,7 @@ members = [
 homepage = "https://wiki.gear-tech.io/docs/examples/prerequisites"
 documentation = "https://dapps.gear.rs"
 authors = ["Gear Foundation <hello@gear.foundation>"]
-version = "1.0.1"
+version = "1.0.2"
 license = "MIT"
 edition = "2021"
 publish = false
@@ -126,6 +127,7 @@ dex-factory.path = "dex/factory"
 feeds-channel.path = "feeds/channel"
 fungible-token.path = "fungible-token"
 multi-token.path = "multi-token"
+nft.path = "nft"
 non-fungible-token.path = "non-fungible-token"
 oracle.path = "oracle"
 oracle-randomness.path = "oracle/randomness"
@@ -182,6 +184,7 @@ horse-races-io.path = "horse-races/io"
 identity-io.path = "identity/io"
 multi-token-io.path = "multi-token/io"
 multisig-wallet-io.path = "multisig-wallet/io"
+nft-io.path = "nft/io"
 nft-marketplace-io.path = "nft-marketplace/io"
 nft-master-io.path = "nft-master/io"
 nft-pixelboard-io.path = "nft-pixelboard/io"
@@ -226,12 +229,12 @@ supply-chain-deploy.path = "supply-chain/deploy"
 
 # Gear
 
-gstd = { git = "https://github.com/gear-tech/gear", tag = "v1.0.1" }
-gear-wasm-builder = { git = "https://github.com/gear-tech/gear", tag = "v1.0.1" }
-gmeta = { git = "https://github.com/gear-tech/gear", tag = "v1.0.1" }
-gclient = { git = "https://github.com/gear-tech/gear", tag = "v1.0.1" }
-gtest = { git = "https://github.com/gear-tech/gear", tag = "v1.0.1" }
-gear-core = { git = "https://github.com/gear-tech/gear", tag = "v1.0.1" }
+gstd = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
+gear-wasm-builder = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
+gmeta = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
+gclient = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
+gtest = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
+gear-core = { git = "https://github.com/gear-tech/gear", tag = "v1.0.2" }
 
 # External
 

@@ -1,0 +1,13 @@
+[package]
+name = "nft-io"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+gstd.workspace = true
+gear-lib-old.workspace = true
+primitive-types.workspace = true
+gmeta.workspace = true
+scale-info.workspace = true
+parity-scale-codec.workspace = true

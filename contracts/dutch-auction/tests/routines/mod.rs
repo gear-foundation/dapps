@@ -14,7 +14,7 @@ pub const DURATION: u32 = 169 * 60 * 60;
 pub fn init(sys: &System) -> Program<'_> {
     USERS
         .iter()
-        .for_each(|user| sys.mint_to(*user, 1_000_000_000));
+        .for_each(|user| sys.mint_to(*user, 10_000_000_000_000_000));
     let owner_user = USERS[0];
 
     sys.init_logger();
@@ -24,7 +24,7 @@ pub fn init(sys: &System) -> Program<'_> {
     auction_program.send(owner_user, ());
 
     init_nft(sys, owner_user);
-    let result = update_auction(&auction_program, owner_user, 2, 1_000_000_000);
+    let result = update_auction(&auction_program, owner_user, 2, 1_000_000_000_000_000);
     println!(
         "update_auction result = {:?}",
         result.decoded_log::<Result<Event, Error>>()
@@ -34,7 +34,7 @@ pub fn init(sys: &System) -> Program<'_> {
         owner_user,
         Ok::<Event, Error>(Event::AuctionStarted {
             token_owner: owner_user.into(),
-            price: 1_000_000_000,
+            price: 1_000_000_000_000_000,
             token_id: 0.into(),
         })
         .encode()

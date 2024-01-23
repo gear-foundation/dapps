@@ -219,7 +219,7 @@ impl Game {
                     &self.admin,
                     &mut self.players,
                     &mut self.players_queue,
-                    &mut self.properties,
+                    &self.properties,
                     &mut self.properties_in_bank,
                     &mut self.ownership,
                 );
