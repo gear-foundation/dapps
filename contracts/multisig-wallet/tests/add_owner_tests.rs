@@ -25,7 +25,7 @@ fn common() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..1], 1);
 
-    sys.mint_to(USERS[0], 1_000_000_000);
+    sys.mint_to(USERS[0], 10_000_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -34,7 +34,7 @@ fn common() {
             value: 0,
             description: None,
         },
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     let expect = MWEvent::Submission {
@@ -48,7 +48,7 @@ fn common() {
         MWAction::SubmitTransaction {
             destination: USERS[2].into(),
             data: vec![],
-            value: 1000,
+            value: 10_000_000_000_000,
             description: None,
         },
     );
@@ -65,11 +65,11 @@ fn try_to_send_directly() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..1], 1);
 
-    sys.mint_to(USERS[0], 1_000_000_000);
+    sys.mint_to(USERS[0], 10_000_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::AddOwner(USERS[1].into()).encode(),
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     assert!(res.main_failed());
@@ -80,7 +80,7 @@ fn try_to_add_existing_owner() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..2], 1);
 
-    sys.mint_to(USERS[0], 1_000_000_000);
+    sys.mint_to(USERS[0], 10_000_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -89,7 +89,7 @@ fn try_to_add_existing_owner() {
             value: 0,
             description: None,
         },
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     assert!(res.others_failed());
@@ -100,7 +100,7 @@ fn try_to_add_the_same_owner_twice() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..1], 1);
 
-    sys.mint_to(USERS[0], 2_000_000_000);
+    sys.mint_to(USERS[0], 20_000_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -109,7 +109,7 @@ fn try_to_add_the_same_owner_twice() {
             value: 0,
             description: None,
         },
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     let expect = MWEvent::Submission {
@@ -126,7 +126,7 @@ fn try_to_add_the_same_owner_twice() {
             value: 0,
             description: None,
         },
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     assert!(res.others_failed());
@@ -138,7 +138,7 @@ fn try_to_add_to_max_owners() {
     let max: [u64; 50] = (3..=52).collect::<Vec<_>>().try_into().unwrap();
     let wallet = common_init(&sys, &max, 1);
 
-    sys.mint_to(USERS[0], 1_000_000_000);
+    sys.mint_to(USERS[0], 10_000_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -147,7 +147,7 @@ fn try_to_add_to_max_owners() {
             value: 0,
             description: None,
         },
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     assert!(res.others_failed());
@@ -158,7 +158,7 @@ fn remove_than_add() {
     let sys = System::new();
     let wallet = common_init(&sys, &USERS[0..3], 1);
 
-    sys.mint_to(USERS[0], 2_000_000_000);
+    sys.mint_to(USERS[0], 20_000_000_000_000);
     let res = wallet.send_with_value(
         USERS[0],
         MWAction::SubmitTransaction {
@@ -167,7 +167,7 @@ fn remove_than_add() {
             value: 0,
             description: None,
         },
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     let expect = MWEvent::Submission {
@@ -184,7 +184,7 @@ fn remove_than_add() {
             value: 0,
             description: None,
         },
-        1_000_000_000,
+        10_000_000_000_000,
     );
 
     let expect = MWEvent::Submission {
@@ -198,7 +198,7 @@ fn remove_than_add() {
         MWAction::SubmitTransaction {
             destination: USERS[2].into(),
             data: vec![],
-            value: 1000,
+            value: 10_000_000_000_000,
             description: None,
         },
     );

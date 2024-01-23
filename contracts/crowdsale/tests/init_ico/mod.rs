@@ -13,9 +13,9 @@ pub const USER_ID: u64 = 12345;
 
 pub const ZERO_ID: ActorId = ActorId::zero();
 
-pub const TOKENS_CNT: u128 = 100;
-pub const START_PRICE: u128 = 1000;
-pub const PRICE_INCREASE_STEP: u128 = 100;
+pub const TOKENS_CNT: u128 = 100_000_000_000_000;
+pub const START_PRICE: u128 = 10_000_000_000_000;
+pub const PRICE_INCREASE_STEP: u128 = 100_000_000_000_000;
 pub const TIME_INCREASE_STEP: u128 = 1000;
 
 fn init_ico(sys: &System) {
@@ -33,13 +33,11 @@ fn init_ico(sys: &System) {
 
 pub fn init(sys: &System) {
     sys.init_logger();
-
     let ft = Program::ftoken(OWNER_ID, TOKEN_ADDRESS, sys);
     ft.mint(0, OWNER_ID, OWNER_ID, TOKENS_CNT, false);
     ft.approve(1, OWNER_ID, ICO_CONTRACT_ID, TOKENS_CNT, false);
-
     init_ico(sys);
-    sys.mint_to(USER_ID, 100_000);
+    sys.mint_to(USER_ID, 100_000_000_000_000);
 }
 
 pub fn start_sale(ico: &Program<'_>, ico_duration: u64, expected_tx_id: u64) {
