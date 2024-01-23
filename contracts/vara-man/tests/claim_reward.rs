@@ -119,7 +119,7 @@ fn fail_rewards_already_claimed() {
     system.claim_value_from_mailbox(utils::PLAYERS[0]);
     assert_eq!(system.balance_of(utils::PLAYERS[0]), 15_000_000_000_000);
 
-    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, Some(VaraManError::AlreadyClaimed));
+    vara_man.claim_reward(utils::PLAYERS[0], 10, 1, Some(VaraManError::GameDoesNotExist));
 
     system.claim_value_from_mailbox(utils::PLAYERS[0]);
     assert_eq!(system.balance_of(utils::PLAYERS[0]), 15_000_000_000_000);

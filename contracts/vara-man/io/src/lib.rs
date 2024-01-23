@@ -61,11 +61,12 @@ pub enum VaraManError {
     EmptyName,
     AlreadyRegistered,
     NotRegistered,
+    GameDoesNotExist,
     AlreadyStartGame,
     LivesEnded,
     AmountGreaterThanAllowed,
     TransferFailed,
-    AlreadyClaimed,
+    ThereIsNoSuchGame,
     NotAdmin,
     ConfigIsInvalid,
 }
@@ -196,7 +197,6 @@ pub struct GameInstance {
     pub level: Level,
     pub gold_coins: u64,
     pub silver_coins: u64,
-    pub is_claimed: bool,
     // pub map: Map,
 }
 // The following code is for generating the game map

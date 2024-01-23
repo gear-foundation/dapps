@@ -84,7 +84,6 @@ async fn process_handle(
                     level,
                     gold_coins: vara_man.config.gold_coins,
                     silver_coins: vara_man.config.silver_coins,
-                    is_claimed: false,
                 },
             );
 
@@ -159,7 +158,7 @@ async fn process_handle(
                     gold_coins,
                 })
             } else {
-                Err(VaraManError::AlreadyClaimed)
+                Err(VaraManError::GameDoesNotExist)
             }
         }
         VaraManAction::ChangeStatus(status) => {
