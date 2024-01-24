@@ -200,12 +200,9 @@ pub enum CarAction {
 
 #[derive(Encode, Decode, TypeInfo, PartialEq, Eq)]
 pub enum GameReply {
-    GameStarted,
-    NotEnoughGas,
     GameFinished,
-    GasReserved,
+    GameStarted,
     StrategyAdded,
-    PlayersMove,
     MoveMade,
     GameInstanceRemoved,
     InstancesRemoved,
