@@ -1,10 +1,13 @@
 import { Button, Input } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
-import { hexRequired } from 'app/utils';
+import { gasLimitToNumber, hexRequired } from 'app/utils';
 import { useBattle } from '../../context';
-import { useBattleMessage } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
 import { HexString } from '@polkadot/util/types';
+import { useFetchVoucher } from 'features/battle/utils/init-gasless-transactions';
+import { useCheckBalance } from 'features/wallet/hooks';
+import { useBattleMessage } from 'features/battle/hooks/use-battle';
+import { useApi } from '@gear-js/react-hooks';
 
 const createTamagotchiInitial = {
   programId: '' as HexString,
@@ -19,6 +22,9 @@ const validate: Record<string, typeof hexRequired> = {
 export const CreateTamagotchiForm = () => {
   const { battle, isPending } = useBattle();
   const handleMessage = useBattleMessage();
+  const { isVoucher, isLoading } = useFetchVoucher();
+  const { api } = useApi();
+  const { checkBalance } = useCheckBalance(isVoucher);
   const navigate = useNavigate();
   const form = useForm({
     initialValues: createTamagotchiInitial,
@@ -27,7 +33,7 @@ export const CreateTamagotchiForm = () => {
   });
   const { getInputProps, errors } = form;
 
-  const handleSubmit = form.onSubmit((values) => {
+  const handleSubmit = form.onSubmit(async (values) => {
     const payload = { Register: { tmg_id: values.programId } };
 
     const onSuccess = () => {
@@ -37,21 +43,32 @@ export const CreateTamagotchiForm = () => {
 
     const onError = () => form.reset();
 
-    handleMessage({ payload, onSuccess, onError });
+    checkBalance(
+      gasLimitToNumber(api?.blockGasLimit),
+      () => {
+        handleMessage({ payload, onSuccess, onError, withVoucher: isVoucher });
+      },
+      onError,
+    );
   });
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-start justify-center gap-6">
-      <Input placeholder="Insert program ID" direction="y" {...getInputProps('programId')} />
+    <>
+      <form onSubmit={handleSubmit} className="flex items-start justify-center gap-6">
+        <Input placeholder="Insert program ID" direction="y" {...getInputProps('programId')} />
 
-      <div className="whitespace-nowrap">
-        <Button
-          text="Create Tamagotchi"
-          color="primary"
-          type="submit"
-          disabled={Object.keys(errors).length > 0 || isPending || battle?.state !== 'Registration'}
-        />
-      </div>
-    </form>
+        <div className="whitespace-nowrap">
+          <Button
+            text="Create Tamagotchi"
+            color="primary"
+            type="submit"
+            disabled={Object.keys(errors).length > 0 || isPending || battle?.state !== 'Registration' || isLoading}
+          />
+        </div>
+      </form>
+      {battle?.state !== 'Registration' && (
+        <div>The battle has already started. Registration is not available now.</div>
+      )}
+    </>
   );
 };

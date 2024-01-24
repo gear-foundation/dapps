@@ -9,7 +9,7 @@
   display: flex;
   flex-direction: column;
   gap: 30px;
-  z-index: 1001;
+  z-index: 9;
 }
 
 .header__container {
@@ -35,11 +35,11 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.6); /* Задайте подходящий цвет затемнения */
+  background-color: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000; /* Убедитесь, что z-index достаточно большой, чтобы затемнение было поверх остального контента */
+  z-index: 8;
 }
 
 .noScroll {

@@ -1,4 +1,4 @@
-import { Footer, Container, StartDisclaimer } from './components';
-import { Wallet } from './features';
+import { Footer, Container, StartDisclaimer, MenuOptions, MobileMenu, MenuHandler } from './components';
+import { WalletNew, Wallet } from './features';
 
-export { Footer, Container, StartDisclaimer, Wallet };
+export { Footer, Container, StartDisclaimer, MenuOptions, WalletNew, Wallet, MobileMenu, MenuHandler };

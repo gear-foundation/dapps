@@ -2,12 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useAccount } from '@gear-js/react-hooks';
-
+import battleshipImage from '@/assets/images/illustration-battleship.png';
 import { Button, buttonVariants } from '@/components/ui/button/button';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
-import battleshipImage from '@/assets/images/illustration-battleship.png';
 import { WalletConnect } from '@/features/wallet';
 
 import styles from './login.module.scss';
@@ -42,8 +41,9 @@ export default function Login() {
         <Button className={buttonVariants()} onClick={account ? onClickStartGame : openWallet}>
           {account ? 'Start the Game' : 'Connect wallet'}
         </Button>
+
         <div className={styles.bottom}>
-          <img src={battleshipImage} alt="" width={300} />
+          <img src={battleshipImage} alt="" width={300} />S
         </div>
       </div>
 

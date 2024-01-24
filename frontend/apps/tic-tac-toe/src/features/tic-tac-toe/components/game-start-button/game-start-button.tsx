@@ -24,16 +24,13 @@ export function GameStartButton({ children, meta }: GameStartButtonProps) {
   const { subscribe, unsubscribe, isOpened } = useSubscriptionOnGameMessage(meta);
 
   useEffect(() => {
-    console.log({ isOpened });
     setIsLoading(isOpened);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpened]);
 
   const onError = () => {
     setIsLoading(false);
     unsubscribe();
-  };
-  const onSuccess = () => {
-    console.log('success on start');
   };
 
   const onGameStart = () => {
@@ -48,9 +45,6 @@ export function GameStartButton({ children, meta }: GameStartButtonProps) {
       .then(({ min_limit }) => {
         const minLimit = withoutCommas(min_limit as string);
         const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
-        console.log('min_limit================');
-        console.log(min_limit);
-        console.log(gasLimit);
 
         subscribe();
         checkBalance(
@@ -60,7 +54,6 @@ export function GameStartButton({ children, meta }: GameStartButtonProps) {
               payload,
               gasLimit,
               onError,
-              onSuccess,
             });
           },
           onError,

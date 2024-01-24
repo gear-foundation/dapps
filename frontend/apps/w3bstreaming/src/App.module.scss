@@ -1,0 +1,27 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.app-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.main-content {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.teasers-list-wrapper {
+  flex: 1;
+}
+
+.footer-wrapper {
+  background: theme-var($background-secondary);
+}

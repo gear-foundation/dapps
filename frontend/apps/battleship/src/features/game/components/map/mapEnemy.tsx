@@ -5,17 +5,21 @@ type Props = {
   sizeBlock: number;
   shipStatusArray: string[];
   onClickCell: (_: number) => void;
-  canExecute: boolean;
+  isDisabledCell: boolean;
 };
 
-export default function MapEnemy({ sizeBlock = 64, shipStatusArray, onClickCell, canExecute }: Props) {
+export default function MapEnemy({
+  sizeBlock = 64,
+  shipStatusArray,
+  onClickCell,
+  isDisabledCell,
+}: Props) {
   const numRows = 5;
   const numCols = 5;
 
   const handleCellClick = (cellIndex: number) => {
-    onClickCell(cellIndex);
-    if (!canExecute) {
-      return;
+    if (!isDisabledCell) {
+      onClickCell(cellIndex);
     }
   };
 

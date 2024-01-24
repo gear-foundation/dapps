@@ -3,24 +3,6 @@ import { useAlert } from '@gear-js/react-hooks';
 import { getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api';
 import { HexString } from '@polkadot/util/types';
 
-function useBuffer(source: string) {
-  const alert = useAlert();
-
-  const [buffer, setBuffer] = useState<Buffer>();
-
-  useEffect(() => {
-    fetch(source)
-      .then((response) => response.arrayBuffer())
-      .then((arrayBuffer) => Buffer.from(arrayBuffer))
-      .then((result) => setBuffer(result))
-      .catch(({ message }: Error) => alert.error(message));
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  return buffer;
-}
-
 function useProgramMetadata(source: string) {
   const alert = useAlert();
 
@@ -58,4 +40,4 @@ function useStateMetadata(wasm: Buffer | undefined) {
   return stateMetadata;
 }
 
-export { useBuffer, useProgramMetadata, useStateMetadata };
+export { useProgramMetadata, useStateMetadata };
