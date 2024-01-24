@@ -63,7 +63,7 @@ pub async fn register_player(
     api: &GearApi,
     program_id: &ActorId,
     name: &str,
-    error: bool,
+    error: Option<VaraManError>,
 ) -> gclient::Result<()> {
     let result = send_message(
         api,
@@ -75,10 +75,13 @@ pub async fn register_player(
     )
     .await?;
 
-    let event: VaraManEvent =
-        VaraManEvent::decode(&mut result.as_ref()).expect("Unexpected invalid result payload.");
+    let event: Result<VaraManEvent, VaraManError> =
+        Result::<VaraManEvent, VaraManError>::decode(&mut result.as_ref())
+            .expect("Unexpected invalid result payload.");
 
-    assert_eq!(matches!(event, VaraManEvent::Error(_)), error);
+    if let Some(error) = error {
+        assert_eq!(event.unwrap_err(), error);
+    }
 
     Ok(())
 }
@@ -87,14 +90,17 @@ pub async fn start_game(
     api: &GearApi,
     program_id: &ActorId,
     level: Level,
-    error: bool,
+    error: Option<VaraManError>,
 ) -> gclient::Result<()> {
     let result = send_message(api, program_id, VaraManAction::StartGame { level }, 0).await?;
 
-    let event: VaraManEvent =
-        VaraManEvent::decode(&mut result.as_ref()).expect("Unexpected invalid result payload.");
+    let event: Result<VaraManEvent, VaraManError> =
+        Result::<VaraManEvent, VaraManError>::decode(&mut result.as_ref())
+            .expect("Unexpected invalid result payload.");
 
-    assert_eq!(matches!(event, VaraManEvent::Error(_)), error);
+    if let Some(error) = error {
+        assert_eq!(event.unwrap_err(), error);
+    }
 
     Ok(())
 }
@@ -102,10 +108,9 @@ pub async fn start_game(
 pub async fn claim_reward(
     api: &GearApi,
     program_id: &ActorId,
-    game_id: u64,
     silver_coins: u64,
     gold_coins: u64,
-    error: bool,
+    error: Option<VaraManError>,
 ) -> gclient::Result<()> {
     let result = send_message(
         api,
@@ -118,10 +123,13 @@ pub async fn claim_reward(
     )
     .await?;
 
-    let event: VaraManEvent =
-        VaraManEvent::decode(&mut result.as_ref()).expect("Unexpected invalid result payload.");
+    let event: Result<VaraManEvent, VaraManError> =
+        Result::<VaraManEvent, VaraManError>::decode(&mut result.as_ref())
+            .expect("Unexpected invalid result payload.");
 
-    assert_eq!(matches!(event, VaraManEvent::Error(_)), error);
+    if let Some(error) = error {
+        assert_eq!(event.unwrap_err(), error);
+    }
 
     Ok(())
 }
@@ -130,14 +138,17 @@ pub async fn change_status(
     api: &GearApi,
     program_id: &ActorId,
     status: Status,
-    error: bool,
+    error: Option<VaraManError>,
 ) -> gclient::Result<()> {
     let result = send_message(api, program_id, VaraManAction::ChangeStatus(status), 0).await?;
 
-    let event: VaraManEvent =
-        VaraManEvent::decode(&mut result.as_ref()).expect("Unexpected invalid result payload.");
+    let event: Result<VaraManEvent, VaraManError> =
+        Result::<VaraManEvent, VaraManError>::decode(&mut result.as_ref())
+            .expect("Unexpected invalid result payload.");
 
-    assert_eq!(matches!(event, VaraManEvent::Error(_)), error);
+    if let Some(error) = error {
+        assert_eq!(event.unwrap_err(), error);
+    }
 
     Ok(())
 }
@@ -146,14 +157,17 @@ pub async fn change_config(
     api: &GearApi,
     program_id: &ActorId,
     config: Config,
-    error: bool,
+    error: Option<VaraManError>,
 ) -> gclient::Result<()> {
     let result = send_message(api, program_id, VaraManAction::ChangeConfig(config), 0).await?;
 
-    let event: VaraManEvent =
-        VaraManEvent::decode(&mut result.as_ref()).expect("Unexpected invalid result payload.");
+    let event: Result<VaraManEvent, VaraManError> =
+        Result::<VaraManEvent, VaraManError>::decode(&mut result.as_ref())
+            .expect("Unexpected invalid result payload.");
 
-    assert_eq!(matches!(event, VaraManEvent::Error(_)), error);
+    if let Some(error) = error {
+        assert_eq!(event.unwrap_err(), error);
+    }
 
     Ok(())
 }

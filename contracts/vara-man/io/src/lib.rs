@@ -14,12 +14,11 @@ pub const GAME_TIMEOUT_MS: i64 = 300_000;
 
 // pub type GameSeed = u64; // for random generation
 pub type Map = [[Entity; MAP_WIDTH]; MAP_HEIGHT];
-
 pub struct VaraManMetadata;
 
 impl Metadata for VaraManMetadata {
     type Init = In<VaraManInit>;
-    type Handle = InOut<VaraManAction, VaraManEvent>;
+    type Handle = InOut<VaraManAction, Result<VaraManEvent, VaraManError>>;
     type Others = ();
     type Reply = ();
     type Signal = ();
@@ -27,22 +26,18 @@ impl Metadata for VaraManMetadata {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct VaraManInit {
     pub config: Config,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum VaraManEvent {
-    GameStarted,
-    RewardClaimed {
+    GameFinished {
         player_address: ActorId,
         silver_coins: u64,
         gold_coins: u64,
     },
+    GameStarted,
     AdminAdded(ActorId),
     PlayerRegistered(ActorId),
     StatusChanged(Status),
@@ -51,8 +46,6 @@ pub enum VaraManEvent {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum VaraManAction {
     StartGame { level: Level },
     RegisterPlayer { name: String },
@@ -62,9 +55,23 @@ pub enum VaraManAction {
     AddAdmin(ActorId),
 }
 
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+pub enum VaraManError {
+    WrongStatus,
+    EmptyName,
+    AlreadyRegistered,
+    NotRegistered,
+    GameDoesNotExist,
+    AlreadyStartGame,
+    LivesEnded,
+    AmountGreaterThanAllowed,
+    TransferFailed,
+    ThereIsNoSuchGame,
+    NotAdmin,
+    ConfigIsInvalid,
+}
+
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StateQuery {
     All,
     AllGames,
@@ -77,8 +84,6 @@ pub enum StateQuery {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {
     All(VaraMan),
     AllGames(Vec<(ActorId, GameInstance)>),
@@ -91,8 +96,6 @@ pub enum StateReply {
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct VaraMan {
     pub games: Vec<(ActorId, GameInstance)>,
     pub players: Vec<(ActorId, Player)>,
@@ -102,8 +105,6 @@ pub struct VaraMan {
 }
 
 #[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Status {
     #[default]
     Paused,
@@ -111,8 +112,6 @@ pub enum Status {
 }
 
 #[derive(Debug, Default, Clone, Copy, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Config {
     pub one_coin_in_value: u64,
     pub tokens_per_gold_coin_easy: u64,
@@ -150,8 +149,6 @@ impl Config {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Player {
     pub name: String,
     pub lives: u64,
@@ -166,8 +163,6 @@ impl Player {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Level {
     Easy,
     Medium,
@@ -175,8 +170,6 @@ pub enum Level {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Effect {
     Speed,
     Slow,
@@ -184,8 +177,6 @@ pub enum Effect {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Entity {
     /// 25% chance to spawn.
     Empty,
@@ -202,13 +193,10 @@ pub enum Entity {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct GameInstance {
     pub level: Level,
     pub gold_coins: u64,
     pub silver_coins: u64,
-    pub is_claimed: bool,
     // pub map: Map,
 }
 // The following code is for generating the game map
