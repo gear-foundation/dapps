@@ -54,7 +54,7 @@ impl Metadata for ContractMetadata {
     ///
     /// We use the [`GameAction`] type for incoming and [`GameReply`] for outgoing
     /// messages.
-    type Handle = InOut<GameAction, GameReply>;
+    type Handle = InOut<GameAction, Result<GameReply, GameError>>;
     /// Asynchronous handle message type.
     ///
     /// Describes incoming/outgoing types for the `main()` function in case of
@@ -206,6 +206,23 @@ pub enum GameReply {
     GasReserved,
     StrategyAdded,
     PlayersMove,
+    MoveMade,
+    GameInstanceRemoved,
+    InstancesRemoved,
+    AdminAdded,
+    AdminRemoved,
+    ConfigUpdated,
+    StatusMessagesUpdated,
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub enum GameError {
+    NotAdmin,
+    MustBeTwoStrategies,
+    GameAlreadyStarted,
+    NotPlayerTurn,
+    NotProgram,
+    MessageProcessingSuspended,
 }
 
 impl Game {
