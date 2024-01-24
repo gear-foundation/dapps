@@ -10,7 +10,7 @@ async-trait.workspace = true
 oracle-io.workspace = true
 
 [dev-dependencies]
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 gtest.workspace = true
 gclient.workspace = true
 tokio.workspace = true

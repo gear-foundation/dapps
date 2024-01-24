@@ -13,7 +13,7 @@ sp-core-hashing.workspace = true
 
 [dev-dependencies]
 gtest.workspace = true
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 sp-core.workspace = true
 hex-literal.workspace = true
 gear-lib-old.workspace = true

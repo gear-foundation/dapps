@@ -5,7 +5,7 @@ edition.workspace = true
 publish.workspace = true
 
 [dependencies]
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 battleship-io.workspace = true
 
 [build-dependencies]
