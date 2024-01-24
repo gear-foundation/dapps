@@ -50,7 +50,7 @@ impl VaraTube {
     }
 
     pub fn check_if_subscriber_doesnt_exist(&self, subscriber: &ActorId) -> Result<(), Error> {
-        if self.subscribers.get(subscriber).is_some() {
+        if self.subscribers.contains_key(subscriber) {
             return Err(Error::AccountAlreadyRegistered);
         }
         Ok(())
