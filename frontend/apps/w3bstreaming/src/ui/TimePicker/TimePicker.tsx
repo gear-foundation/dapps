@@ -21,7 +21,7 @@ function TimePicker({ onChange, ...props }: TimePickerProps) {
       <ReactTimePicker
         format="h:mm A"
         showSecond={false}
-        value={value}
+        value={value as any}
         clearIcon={<></>}
         placement="bottomLeft"
         minuteStep={5}
