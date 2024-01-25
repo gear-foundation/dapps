@@ -1,7 +1,7 @@
 #![no_std]
 
 use fungible_token_io::{FTAction, FTEvent};
-use gstd::{collections::HashMap, debug, exec, msg, prelude::*, ActorId};
+use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId};
 use vara_man_io::{
     Config, GameInstance, Player, StateQuery, StateReply, Status, VaraMan as VaraManState,
     VaraManAction, VaraManError, VaraManEvent, VaraManInit,
@@ -146,7 +146,7 @@ async fn process_handle(
                                 .expect("Math overflow!"),
                         )
                         .expect("Math overflow!");
-                    debug!("FUNGIBLE_TOKEN: {:?}", fungible_tokens_amount);
+
                     let transfer_response: FTEvent = msg::send_for_reply_as(
                         ft_address,
                         FTAction::Transfer {
@@ -160,7 +160,6 @@ async fn process_handle(
                     .expect("Error in sending a message")
                     .await
                     .expect("Error in transfer Fungible Token");
-                    debug!("FUNGIBLE_TOKEN: {:?}", transfer_response);
                 }
 
                 player.claimed_gold_coins = player
