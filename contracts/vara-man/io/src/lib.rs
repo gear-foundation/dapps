@@ -57,7 +57,7 @@ pub enum VaraManAction {
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 pub enum VaraManError {
-    WrongStatus,
+    GameIsPaused,
     EmptyName,
     AlreadyRegistered,
     NotRegistered,
@@ -65,7 +65,8 @@ pub enum VaraManError {
     AlreadyStartGame,
     LivesEnded,
     AmountGreaterThanAllowed,
-    TransferFailed,
+    TransferNativeTokenFailed,
+    TransferFungibleTokenFailed,
     ThereIsNoSuchGame,
     NotAdmin,
     ConfigIsInvalid,
@@ -108,7 +109,11 @@ pub struct VaraMan {
 pub enum Status {
     #[default]
     Paused,
-    Started,
+    StartedUnrewarded,
+    StartedWithFungibleToken {
+        ft_address: ActorId,
+    },
+    StartedWithNativeToken,
 }
 
 #[derive(Debug, Default, Clone, Copy, Encode, Decode, TypeInfo)]

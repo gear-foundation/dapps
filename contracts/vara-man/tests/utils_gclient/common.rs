@@ -1,7 +1,10 @@
-use super::vara_man;
+use super::{common, vara_man};
 use blake2_rfc::blake2b;
-use gclient::{Error as GclientError, GearApi};
+use fungible_token_io::*;
+use gclient::{Error as GclientError, EventProcessor, GearApi, Result};
+use gear_core::ids::{MessageId, ProgramId};
 use gstd::{prelude::*, ActorId};
+use sp_core::H256;
 use vara_man_io::*;
 
 pub const HASH_LENGTH: usize = 32;
@@ -58,4 +61,80 @@ pub async fn upload_with_code_hash(
     };
 
     Ok(code_hash)
+}
+
+pub async fn init_ft(api: &GearApi) -> Result<(MessageId, ProgramId, H256)> {
+    let mut listener = api.subscribe().await?;
+    assert!(listener.blocks_running().await?);
+
+    let ft_init = InitConfig {
+        name: String::from("MyToken"),
+        symbol: String::from("MTK"),
+        decimals: 18,
+    }
+    .encode();
+
+    let path = "../target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm";
+
+    let gas_info = api
+        .calculate_upload_gas(None, gclient::code_from_os(path)?, ft_init.clone(), 0, true)
+        .await?;
+
+    api.upload_program_bytes(
+        gclient::code_from_os(path)?,
+        gclient::now_micros().to_le_bytes(),
+        ft_init,
+        gas_info.burned * 2,
+        0,
+    )
+    .await
+}
+
+pub async fn init_mint_transfer_ft(api: &GearApi, to: ActorId) -> gclient::Result<ActorId> {
+    let mut listener = api.subscribe().await?;
+    assert!(listener.blocks_running().await?);
+
+    let (message_id, program_ft_id, _hash) = init_ft(api).await?;
+    assert!(listener.message_processed(message_id).await?.succeed());
+
+    let ft_mint_payload = FTAction::Mint(100_000_000_000_000);
+
+    let gas_info = api
+        .calculate_handle_gas(None, program_ft_id, ft_mint_payload.encode(), 0, true)
+        .await
+        .unwrap();
+
+    let (message_id, _) = api
+        .send_message(program_ft_id, ft_mint_payload, gas_info.burned * 2, 0)
+        .await?;
+
+    assert!(listener.message_processed(message_id).await?.succeed());
+
+    let address = ActorId::new(
+        api.account_id()
+            .encode()
+            .try_into()
+            .expect("Unexpected invalid account id length."),
+    );
+
+    let ft_transfer_payload = FTAction::Transfer {
+        from: address,
+        to,
+        amount: 100_000_000_000_000,
+    };
+
+    let gas_info = api
+        .calculate_handle_gas(None, program_ft_id, ft_transfer_payload.encode(), 0, true)
+        .await
+        .unwrap();
+
+    let (message_id, _) = api
+        .send_message(program_ft_id, ft_transfer_payload, gas_info.burned * 2, 0)
+        .await?;
+    let program_ft_id: common::Hash = program_ft_id
+        .encode()
+        .try_into()
+        .expect("Unexpected invalid program id.");
+
+    Ok(program_ft_id.into())
 }

@@ -7,6 +7,7 @@ publish.workspace = true
 [dependencies]
 gstd.workspace = true
 vara-man-io.workspace = true
+fungible-token-io.workspace = true
 
 [dev-dependencies]
 gstd = { workspace = true, features = ["debug"] }
@@ -14,6 +15,11 @@ gtest.workspace = true
 gclient.workspace = true
 tokio.workspace = true
 blake2-rfc.workspace = true
+gear-core.workspace = true
+sp-core.workspace = true
+
+# External binaries
+fungible-token.workspace = true
 
 [build-dependencies]
 vara-man-io.workspace = true

@@ -8,7 +8,13 @@ use vara_man_io::{Level, Status, VaraManError};
 async fn gclient_success_register_player() -> gclient::Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     let vara_man_id = utils_gclient::common::init(&api).await?;
-    utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
+    utils_gclient::vara_man::change_status(
+        &api,
+        &vara_man_id,
+        Status::StartedWithNativeToken,
+        None,
+    )
+    .await?;
 
     {
         let api = api.with("//Peter")?;
@@ -36,10 +42,16 @@ async fn gclient_failures_register_player() -> gclient::Result<()> {
             &player_api,
             &vara_man_id,
             "Peter",
-            Some(VaraManError::WrongStatus),
+            Some(VaraManError::GameIsPaused),
         )
         .await?;
-        utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
+        utils_gclient::vara_man::change_status(
+            &api,
+            &vara_man_id,
+            Status::StartedWithNativeToken,
+            None,
+        )
+        .await?;
         utils_gclient::vara_man::register_player(
             &player_api,
             &vara_man_id,
@@ -64,7 +76,13 @@ async fn gclient_failures_register_player() -> gclient::Result<()> {
 async fn gclient_success_start_game() -> gclient::Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     let vara_man_id = utils_gclient::common::init(&api).await?;
-    utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
+    utils_gclient::vara_man::change_status(
+        &api,
+        &vara_man_id,
+        Status::StartedWithNativeToken,
+        None,
+    )
+    .await?;
 
     {
         let api = api.with("//Peter")?;
@@ -91,10 +109,16 @@ async fn gclient_failures_start_game() -> gclient::Result<()> {
             &player_api,
             &vara_man_id,
             Level::Easy,
-            Some(VaraManError::WrongStatus),
+            Some(VaraManError::GameIsPaused),
         )
         .await?;
-        utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
+        utils_gclient::vara_man::change_status(
+            &api,
+            &vara_man_id,
+            Status::StartedWithNativeToken,
+            None,
+        )
+        .await?;
         utils_gclient::vara_man::start_game(
             &player_api,
             &vara_man_id,
@@ -120,7 +144,13 @@ async fn gclient_failures_start_game() -> gclient::Result<()> {
 async fn gclient_success_claim_reward() -> gclient::Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     let vara_man_id = utils_gclient::common::init(&api).await?;
-    utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
+    utils_gclient::vara_man::change_status(
+        &api,
+        &vara_man_id,
+        Status::StartedWithNativeToken,
+        None,
+    )
+    .await?;
     let balance = api.total_balance(api.account_id()).await?;
     api.transfer(
         vara_man_id.encode().as_slice().try_into().unwrap(),
@@ -147,10 +177,51 @@ async fn gclient_success_claim_reward() -> gclient::Result<()> {
 }
 
 #[tokio::test]
+async fn gclient_success_claim_reward_fungible_token() -> gclient::Result<()> {
+    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
+    let mut listener = api.subscribe().await?; // Subscribing for events.
+                                               // Checking that blocks still running.
+    assert!(listener.blocks_running().await?);
+    let vara_man_id = utils_gclient::common::init(&api).await?;
+
+    let ft_address = utils_gclient::common::init_mint_transfer_ft(&api, vara_man_id).await?;
+
+    utils_gclient::vara_man::change_status(
+        &api,
+        &vara_man_id,
+        Status::StartedWithFungibleToken { ft_address },
+        None,
+    )
+    .await?;
+
+    {
+        let api = api.clone().with("//Peter")?;
+        utils_gclient::vara_man::register_player(&api, &vara_man_id, "Peter", None).await?;
+        utils_gclient::vara_man::start_game(&api, &vara_man_id, Level::Easy, None).await?;
+        utils_gclient::vara_man::claim_reward(&api, &vara_man_id, 10, 1, None).await?;
+
+        let state = utils_gclient::vara_man::get_state(&api, &vara_man_id)
+            .await
+            .expect("Unexpected invalid state.");
+
+        assert_eq!(state.players[0].1.claimed_gold_coins, 1);
+        assert_eq!(state.players[0].1.claimed_silver_coins, 10);
+        assert_eq!(state.players[0].1.lives, 2);
+    }
+    Ok(())
+}
+
+#[tokio::test]
 async fn gclient_failures_claim_reward() -> gclient::Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     let vara_man_id = utils_gclient::common::init(&api).await?;
-    utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
+    utils_gclient::vara_man::change_status(
+        &api,
+        &vara_man_id,
+        Status::StartedWithNativeToken,
+        None,
+    )
+    .await?;
 
     {
         let player_api = api.clone().with("//Peter")?;
@@ -170,10 +241,16 @@ async fn gclient_failures_claim_reward() -> gclient::Result<()> {
             &vara_man_id,
             10,
             1,
-            Some(VaraManError::WrongStatus),
+            Some(VaraManError::GameIsPaused),
         )
         .await?;
-        utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
+        utils_gclient::vara_man::change_status(
+            &api,
+            &vara_man_id,
+            Status::StartedWithNativeToken,
+            None,
+        )
+        .await?;
 
         utils_gclient::vara_man::claim_reward(
             &player_api,
@@ -188,7 +265,7 @@ async fn gclient_failures_claim_reward() -> gclient::Result<()> {
             &vara_man_id,
             10,
             1,
-            Some(VaraManError::TransferFailed),
+            Some(VaraManError::TransferNativeTokenFailed),
         )
         .await?;
 

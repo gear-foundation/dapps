@@ -1,6 +1,7 @@
 #![no_std]
 
-use gstd::{collections::HashMap, msg, prelude::*, ActorId};
+use fungible_token_io::{FTAction, FTEvent};
+use gstd::{collections::HashMap, debug, exec, msg, prelude::*, ActorId};
 use vara_man_io::{
     Config, GameInstance, Player, StateQuery, StateReply, Status, VaraMan as VaraManState,
     VaraManAction, VaraManError, VaraManEvent, VaraManInit,
@@ -36,7 +37,7 @@ async fn process_handle(
             let actor_id = msg::source();
 
             if vara_man.status == Status::Paused {
-                return Err(VaraManError::WrongStatus);
+                return Err(VaraManError::GameIsPaused);
             }
 
             if name.is_empty() {
@@ -63,7 +64,7 @@ async fn process_handle(
             let player_address = msg::source();
 
             if vara_man.status == Status::Paused {
-                return Err(VaraManError::WrongStatus);
+                return Err(VaraManError::GameIsPaused);
             }
 
             let Some(player) = vara_man.players.get_mut(&player_address) else {
@@ -98,7 +99,7 @@ async fn process_handle(
             if let Some(game) = vara_man.games.get(&player_address) {
                 // Check that game is not paused
                 if vara_man.status == Status::Paused {
-                    return Err(VaraManError::WrongStatus);
+                    return Err(VaraManError::GameIsPaused);
                 }
 
                 // Check that player is registered
@@ -110,31 +111,56 @@ async fn process_handle(
                 if silver_coins > game.silver_coins || gold_coins > game.gold_coins {
                     return Err(VaraManError::AmountGreaterThanAllowed);
                 }
-
                 let (tokens_per_gold_coin, tokens_per_silver_coin) = vara_man
                     .config
                     .get_tokens_per_gold_coin_for_level(game.level);
 
-                let tokens_amount = vara_man
-                    .config
-                    .one_coin_in_value
-                    .checked_mul(tokens_per_gold_coin)
-                    .expect("Math overflow!")
-                    .checked_mul(gold_coins)
-                    .expect("Math overflow!")
-                    .checked_add(
-                        vara_man
-                            .config
-                            .one_coin_in_value
-                            .checked_mul(tokens_per_silver_coin)
-                            .expect("Math overflow!")
-                            .checked_mul(silver_coins)
-                            .expect("Math overflow!"),
+                if vara_man.status == Status::StartedWithNativeToken {
+                    let native_tokens_amount = vara_man
+                        .config
+                        .one_coin_in_value
+                        .checked_mul(tokens_per_gold_coin)
+                        .expect("Math overflow!")
+                        .checked_mul(gold_coins)
+                        .expect("Math overflow!")
+                        .checked_add(
+                            vara_man
+                                .config
+                                .one_coin_in_value
+                                .checked_mul(tokens_per_silver_coin)
+                                .expect("Math overflow!")
+                                .checked_mul(silver_coins)
+                                .expect("Math overflow!"),
+                        )
+                        .expect("Math overflow!");
+                    if msg::send(player_address, 0u8, native_tokens_amount as u128).is_err() {
+                        return Err(VaraManError::TransferNativeTokenFailed);
+                    }
+                } else if let Status::StartedWithFungibleToken { ft_address } = vara_man.status {
+                    let fungible_tokens_amount = gold_coins
+                        .checked_mul(tokens_per_gold_coin)
+                        .expect("Math overflow!")
+                        .checked_add(
+                            silver_coins
+                                .checked_mul(tokens_per_silver_coin)
+                                .expect("Math overflow!"),
+                        )
+                        .expect("Math overflow!");
+                    debug!("FUNGIBLE_TOKEN: {:?}", fungible_tokens_amount);
+                    let transfer_response: FTEvent = msg::send_for_reply_as(
+                        ft_address,
+                        FTAction::Transfer {
+                            from: exec::program_id(),
+                            to: player_address,
+                            amount: fungible_tokens_amount.into(),
+                        },
+                        0,
+                        0,
                     )
-                    .expect("Math overflow!");
-
-                if msg::send(player_address, 0u8, tokens_amount as u128).is_err() {
-                    return Err(VaraManError::TransferFailed);
+                    .expect("Error in sending a message")
+                    .await
+                    .expect("Error in transfer Fungible Token");
+                    debug!("FUNGIBLE_TOKEN: {:?}", transfer_response);
                 }
 
                 player.claimed_gold_coins = player
@@ -148,7 +174,9 @@ async fn process_handle(
 
                 vara_man.games.remove(&player_address);
 
-                if !vara_man.admins.contains(&player_address) {
+                if vara_man.status != Status::StartedUnrewarded
+                    && !vara_man.admins.contains(&player_address)
+                {
                     player.lives -= 1;
                 }
 

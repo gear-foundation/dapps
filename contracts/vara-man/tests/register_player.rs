@@ -11,7 +11,7 @@ fn success() {
     system.init_logger();
 
     let vara_man = Program::vara_man(&system);
-    vara_man.change_status(ADMIN, Status::Started);
+    vara_man.change_status(ADMIN, Status::StartedWithNativeToken);
 
     let state = vara_man.get_state().expect("Unexpected invalid state.");
     assert!(state.players.is_empty());
@@ -62,7 +62,7 @@ fn fail_player_already_registered() {
     system.init_logger();
 
     let vara_man = Program::vara_man(&system);
-    vara_man.change_status(ADMIN, Status::Started);
+    vara_man.change_status(ADMIN, Status::StartedWithNativeToken);
 
     vara_man.register_player(utils::PLAYERS[0], "John", None);
     vara_man.register_player(

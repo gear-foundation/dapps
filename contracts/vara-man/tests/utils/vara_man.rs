@@ -1,4 +1,5 @@
 use super::{ADMIN, VARA_MAN_ID};
+use fungible_token_io::{FTAction, InitConfig};
 use gstd::{prelude::*, ActorId};
 use gtest::{Program, System};
 use vara_man_io::{VaraMan as VaraManState, *};
@@ -88,7 +89,8 @@ impl VaraMan for Program<'_> {
     fn send_tx(&self, from: u64, action: VaraManAction, error: Option<VaraManError>) {
         let result = self.send(from, action);
         assert!(!result.main_failed());
-
+        let res = &result.decoded_log::<Result<VaraManEvent, VaraManError>>();
+        println!("RESULT: {:?}", res);
         if let Some(error) = error {
             assert!(result.contains(&(from, Err::<VaraManEvent, VaraManError>(error).encode())));
         }
@@ -104,4 +106,39 @@ impl VaraMan for Program<'_> {
             None
         }
     }
+}
+
+#[allow(dead_code)]
+pub fn init_mint_transfer_fungible_token(sys: &System, from: u64, to: u64) -> Program<'_> {
+    sys.init_logger();
+    let ft = Program::from_file(
+        sys,
+        "../target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm",
+    );
+
+    let res = ft.send(
+        from,
+        InitConfig {
+            name: String::from("MyToken"),
+            symbol: String::from("MTK"),
+            decimals: 18,
+        },
+    );
+
+    assert!(!res.main_failed());
+
+    let res = ft.send(from, FTAction::Mint(100_000_000_000_000));
+    assert!(!res.main_failed());
+
+    let res = ft.send(
+        from,
+        FTAction::Transfer {
+            from: from.into(),
+            to: to.into(),
+            amount: 100_000_000_000_000,
+        },
+    );
+    assert!(!res.main_failed());
+
+    ft
 }

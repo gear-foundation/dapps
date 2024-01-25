@@ -7942,10 +7942,14 @@ name = "vara-man"
 version = "1.0.2"
 dependencies = [
  "blake2-rfc",
+ "fungible-token",
+ "fungible-token-io",
  "gclient",
+ "gear-core",
  "gear-wasm-builder",
  "gstd",
  "gtest",
+ "sp-core 22.0.0",
  "tokio",
  "vara-man-io",
 ]
