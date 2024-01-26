@@ -146,8 +146,8 @@ async fn process_handle(
                                 .expect("Math overflow!"),
                         )
                         .expect("Math overflow!");
-
-                    let transfer_response: FTEvent = msg::send_for_reply_as(
+                    
+                    let _transfer_response: FTEvent = msg::send_for_reply_as(
                         ft_address,
                         FTAction::Transfer {
                             from: exec::program_id(),
