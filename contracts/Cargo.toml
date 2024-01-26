@@ -231,7 +231,7 @@ gstd = "1.1.0"
 gear-wasm-builder = "1.1.0"
 gmeta = "1.1.0"
 gclient = "1.1.0"
-gtest = "1.1.0"
+gtest = { git = "https://github.com/gear-tech/gear", tag = "v1.1.0" }
 gear-core = "1.1.0"
 
 # External
