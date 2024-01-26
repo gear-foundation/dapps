@@ -13,6 +13,7 @@ import 'babel-polyfill';
 import { useProgramState } from './hooks';
 import { useCreateStreamMetadata, useGetStreamMetadata } from './features/CreateStream/hooks';
 import { useAccountAvailableBalanceSync } from './features/Wallet/hooks';
+import '@gear-js/vara-ui/dist/style.css';
 
 function AppComponent() {
   useScrollToTop();
