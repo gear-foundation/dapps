@@ -1,0 +1,33 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.content {
+    display: flex;
+    flex-wrap: wrap;
+    background: theme-var($background-secondary);
+    
+    @include lg {
+      padding: 0 20px;
+    }
+    
+    @include wings;
+
+  }
+
+  .row {
+    margin: 24px 0;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .step {
+    margin-left: -10px;
+  }
+
+  .title {
+    font-size: 40px;
+    font-weight: 500;
+    padding-bottom: 20px;
+  }

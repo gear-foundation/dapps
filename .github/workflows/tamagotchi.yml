@@ -76,6 +76,7 @@ jobs:
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
+            VITE_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_TAMAGOTCHI }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

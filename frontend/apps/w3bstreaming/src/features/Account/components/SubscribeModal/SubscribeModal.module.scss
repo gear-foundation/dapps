@@ -1,0 +1,61 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+.controls {
+  display: flex;
+}
+
+.description {
+  margin-bottom: 25px;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 25.6px;
+  color: #A0A0A0;
+  padding-bottom: 10px;
+}
+
+.cont-per-month {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 18px 0;
+  background: theme-var($background-primary);
+  margin-bottom: 25px;
+
+  &-label {
+    font-size: 16px;
+    font-weight: 500;
+    color: theme-var($text-primary);
+  }
+
+  &-value {
+    font-size: 20px;
+    font-weight: 700;
+    color: theme-var($text-primary);
+  }
+
+  &-vara {
+    margin: 0 10px;
+  }
+
+  &-currency {
+    font-size: 10px;
+    font-weight: 400;
+    color: theme-var($text-primary);
+    opacity: 0.6;
+    align-self: flex-end;
+    padding-bottom: 5px;
+  }
+}
+
+.unsubscribe-button {
+  background: theme-var($error);
+  color: theme-var($text-secondary);
+}
+
+.create-account-container {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 24px;
+} 

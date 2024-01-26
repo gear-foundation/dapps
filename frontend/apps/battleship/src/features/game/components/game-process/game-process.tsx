@@ -1,25 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Text } from '@/components/ui/text';
 import { GameEndModal, Map } from '@/features/game';
-
 import styles from './GameProcess.module.scss';
 import { MapEnemy } from '../map';
 import { useGame, useGameMessage, usePending } from '../../hooks';
-import { getFormattedTime } from '../../utils';
+import { getFormattedTime, useFetchVoucher } from '../../utils';
 import { Loader } from '@/components';
-import { useAccount } from '@gear-js/react-hooks';
-import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
 import { useCheckBalance } from '@/features/wallet/hooks';
 
 export default function GameProcess() {
-  const { account } = useAccount();
-  const { isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address);
+  const { isVoucher, isLoading } = useFetchVoucher();
 
-  const [canExecute, setCanExecute] = useState(false);
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
   const [elapsedTime, setElapsedTime] = useState('');
   const [totalGameTime, setTotalGameTime] = useState('');
+  const [isDisabledCell, setDisabledCell] = useState(false);
 
   const { gameState } = useGame();
   const { setPending } = usePending();
@@ -72,19 +68,23 @@ export default function GameProcess() {
   }, [gameState]);
 
   const onClickCell = async (indexCell: number) => {
-    const gasLimit = 100000000000;
-
-    await updateBalance();
+    const gasLimit = 120000000000;
 
     if (!isLoading) {
+      setDisabledCell(true);
+
       checkBalance(gasLimit, () =>
         message({
           payload: { Turn: { step: indexCell } },
+          onInBlock: (messageId) => {
+            if (messageId) {
+              setDisabledCell(false);
+            }
+          },
           gasLimit,
           withVoucher: isVoucher,
           onSuccess: () => {
             setPending(false);
-            setCanExecute(true);
           },
         }),
       );
@@ -152,8 +152,14 @@ export default function GameProcess() {
           })}
         </div>
       </div>
+
       <div>
-        <MapEnemy sizeBlock={68} onClickCell={onClickCell} canExecute={canExecute} shipStatusArray={enemiesShips} />
+        <MapEnemy
+          sizeBlock={68}
+          onClickCell={onClickCell}
+          shipStatusArray={enemiesShips}
+          isDisabledCell={isDisabledCell || isLoading}
+        />
       </div>
 
       {isOpenEndModal && gameState && (

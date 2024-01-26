@@ -80,6 +80,7 @@ jobs:
             REACT_APP_IPFS_GATEWAY_ADDRESS=${{ secrets.REACT_APP_IPFS_GATEWAY_ADDRESS }}
             REACT_APP_IPFS_ADDRESS=${{ secrets.REACT_APP_IPFS_ADDRESS }}
             REACT_APP_SIGNALING_SERVER=${{ secrets.REACT_APP_SIGNALING_SERVER_W3BSTEAMING }}
+            REACT_APP_BACKEND_SERVER=${{ secrets.REACT_APP_BACKEND_SERVER_W3BSTEAMING }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

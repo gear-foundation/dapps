@@ -1,53 +1,32 @@
-import { useAccount, useReadFullState, useReadWasmState, useSendMessageHandler } from '@gear-js/react-hooks';
+import { useAtom } from 'jotai';
+import { useAccount, useApi, useReadFullState, useSendMessage, useSendMessageHandler } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
-import stateWasm from 'assets/state/varatube_state.meta.wasm';
 import varatubeMeta from 'assets/state/varatube_meta.txt';
 import ftMeta from 'assets/state/ft_meta.txt';
 import { ADDRESS } from 'consts';
-import { useBuffer, useProgramMetadata } from './metadata';
-
-type FullSubState = {
-  [key: HexString]: {
-    isActive: boolean;
-    startDate: string;
-    endDate: string;
-    startBlock: string;
-    endBlock: string;
-    period: string;
-    renewalDate: string;
-    renewalBlock: string;
-    price: string;
-    willRenew: boolean;
-  };
-};
+import { useProgramMetadata } from './metadata';
+import { useCallback, useEffect } from 'react';
+import { IS_STATE_READ_ATOM, STATE_ATOM } from 'atoms';
+import { FullSubState } from 'types';
 
 function useSubscriptionMeta() {
   return useProgramMetadata(varatubeMeta);
 }
 
-function useSubscriptions() {
-  const programMetadata = useSubscriptionMeta();
-  const wasm = useBuffer(stateWasm);
-
-  const programId = ADDRESS.CONTRACT;
-  const functionName = 'all_subscriptions';
-  const payload = '0x';
-
-  const { state, isStateRead } = useReadWasmState<FullSubState>({
-    programId,
-    programMetadata,
-    wasm,
-    functionName,
-    payload,
-  });
-
-  return { subscriptionsState: state, isSubscriptionsStateRead: isStateRead };
+function useFTMeta() {
+  return useProgramMetadata(ftMeta);
 }
 
 function useSubscriptionsMessage() {
   const metadata = useSubscriptionMeta();
 
-  return useSendMessageHandler(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true });
+  return useSendMessage(ADDRESS.CONTRACT, metadata);
+}
+
+function useFTMessage() {
+  const metadata = useFTMeta();
+
+  return useSendMessageHandler(ADDRESS.FT_CONTRACT, metadata, { isMaxGasLimit: true });
 }
 
 type FTState = { balances: [[HexString, string]] };
@@ -66,4 +45,43 @@ function useFTBalance() {
   return balance;
 }
 
-export { useSubscriptions, useSubscriptionsMessage, useFTBalance };
+function useProgramState() {
+  const meta = useSubscriptionMeta();
+  const { api } = useApi();
+  const programId = ADDRESS.CONTRACT;
+  const [data, setData] = useAtom(STATE_ATOM);
+  const [isStateRead, setIsStateRead] = useAtom(IS_STATE_READ_ATOM);
+
+  const triggerState = useCallback(() => {
+    if (!api || !meta || !programId) return;
+
+    const payload = {
+      Subscribers: null,
+    };
+
+    api.programState
+      .read({ programId, payload }, meta)
+      .then((codec) => codec.toHuman())
+      .then((state: any) => {
+        setData(state);
+        setIsStateRead(true);
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [api, meta, programId, setData]);
+
+  useEffect(() => {
+    if (!isStateRead) {
+      triggerState();
+    }
+  }, [isStateRead, triggerState]);
+
+  const state = {
+    subscriptionsState: data?.Subscribers || null,
+    isSubscriptionsStateRead: isStateRead,
+    updateState: triggerState,
+  };
+
+  return state;
+}
+
+export { useSubscriptionsMessage, useFTBalance, useFTMessage, useProgramState };
