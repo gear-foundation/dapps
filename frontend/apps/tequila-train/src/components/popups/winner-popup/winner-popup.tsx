@@ -9,9 +9,10 @@ type Props = {
 };
 
 export const WinnerPopup = ({ setIsOpen, isOpen }: Props) => {
-  const { game, gameWasm: wasm } = useGame();
-  const winnerId = game?.gameState?.state?.winner;
-  const index = game?.players && winnerId ? game.gameState?.players.findIndex((id) => id === winnerId[0]) : -1;
+  const { game } = useGame();
+
+  const winnerId = game?.gameState?.state?.Winner;
+  const index = game?.players && winnerId ? game.gameState?.players.findIndex((id) => id[0] === winnerId[0]) : -1;
 
   return (
     <PopupContainer isOpen={isOpen} setIsOpen={setIsOpen} overlayCn="bg-black/90 backdrop-blur">
@@ -38,7 +39,7 @@ export const WinnerPopup = ({ setIsOpen, isOpen }: Props) => {
               <Dialog.Description
                 as="p"
                 className="text-lg xxl:text-[21px] leading-5 mt-6 text-center text-dark-500 font-extrabold tracking-[0.08em]">
-                <span className="text-[#00D1FF]">{wasm?.players && index > 0 ? wasm?.players[index][1] : 'Señor'}</span>{' '}
+                <span className="text-[#00D1FF]">{game?.gameState?.players && index > 0 ? game?.gameState?.players[index][1] : 'Señor'}</span>{' '}
                 is a winner! Take your tequila and enjoy!
               </Dialog.Description>
               <div className="absolute bottom-0 left-1/2 mt-4 w-[255px] -translate-x-1/2 translate-y-1/2">

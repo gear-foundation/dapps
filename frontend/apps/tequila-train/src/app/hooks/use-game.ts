@@ -1,27 +1,47 @@
 import { useApp, useGame } from 'app/context';
-import { useEffect } from 'react';
-import { useAccount, useReadWasmState, useSendMessageHandler } from '@gear-js/react-hooks';
-import { AnyJson } from '@polkadot/types/types';
+import { useEffect, useMemo } from 'react';
+import { useAccount, useSendMessageHandler } from '@gear-js/react-hooks';
 import { ENV } from 'app/consts';
 import meta from 'assets/meta/tequila_train.meta.txt';
-import metaWasm from 'assets/meta/tequila_state.meta.wasm';
-import { GameWasmStateResponse, IGameState } from '../types/game';
-import { useProgramMetadata, useStateMetadata, useReadState } from './use-metadata';
 
-export function useInitGame() {
+import { IState } from '../types/game';
+import { useProgramMetadata, useReadState } from './use-metadata';
+
+const programIdGame = ENV.game;
+
+function useGameState() {
+  const { account } = useAccount();
+
+  const payloadGame = useMemo(
+    () =>
+      account?.decodedAddress
+        ? account.decodedAddress
+        : undefined,
+    [account?.decodedAddress],
+  );
+
+  const { state, error } = useReadState<IState>({
+    programId: programIdGame,
+    meta,
+    payload: payloadGame,
+  });
+  
+  return { state, error };
+}
+
+export const useInitGame = () => {
   const { setIsAllowed, setOpenWinnerPopup } = useApp();
   const { account } = useAccount();
-  const { setGame, setPlayers, gameWasm } = useGame();
-  const { state } = useReadState<IGameState>({ programId: ENV.game, meta });
+  const { state } = useGameState();
+  const { setGame, setPlayers } = useGame();
 
   useEffect(() => {
     setGame(state);
-    if (state && account && state.isStarted && gameWasm) {
+    if (state && account && state.isStarted && state?.gameState) {
       setPlayers(state.players);
 
       setIsAllowed(account.decodedAddress === state.players[+state.gameState?.currentPlayer][0]);
-
-      if (state.gameState?.state?.winner) {
+      if (state.gameState?.state?.Winner) {
         setOpenWinnerPopup(true);
       }
     } else {
@@ -29,41 +49,13 @@ export function useInitGame() {
       setIsAllowed(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, account?.address, gameWasm]);
-}
+  }, [state, account?.address, state?.gameState]);
+};
 
 export function useGameMessage() {
   const metadata = useProgramMetadata(meta);
-  return useSendMessageHandler(ENV.game, metadata, { isMaxGasLimit: true });
-}
-
-export function useWasmState(argument?: AnyJson) {
-  const { game, setGameWasm, setPlayerTiles } = useGame();
-  const programMetadata = useProgramMetadata(meta);
-  const stateMetadata = useStateMetadata(metaWasm);
-
-  const programId = game?.isStarted ? ENV.game : undefined;
-  const wasm = stateMetadata?.buffer;
-  const functionName = 'game_state';
-  const payload = '0x';
-
-  const { state } = useReadWasmState<GameWasmStateResponse>({
-    programId,
-    wasm,
-    functionName,
-    argument,
-    programMetadata,
-    payload,
+  return useSendMessageHandler(programIdGame, metadata, {
+    disableAlerts: true,
+    isMaxGasLimit: true,
   });
-
-  useEffect(() => {
-    setGameWasm(state);
-
-    if (state) {
-      setPlayerTiles(state.playersTiles[+state.currentPlayer]);
-    } else {
-      setPlayerTiles(undefined);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state]);
 }
