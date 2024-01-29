@@ -98,7 +98,6 @@ members = [
     "tic-tac-toe",
     "vara-man",
     "varatube",
-    "varatube/state",
     "w3bstreaming",
 
     # Noncontract crates

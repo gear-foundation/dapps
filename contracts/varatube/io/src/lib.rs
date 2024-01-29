@@ -1,7 +1,7 @@
 #![no_std]
 
-use gmeta::{In, Metadata, Out};
-use gstd::{collections::BTreeMap, prelude::*, ActorId};
+use gmeta::{In, InOut, Metadata};
+use gstd::{prelude::*, ActorId};
 
 pub type TokenData = (ActorId, Price);
 pub type Price = u128;
@@ -10,12 +10,12 @@ pub type Price = u128;
 pub struct SubscriptionMetadata;
 
 impl Metadata for SubscriptionMetadata {
-    type Init = In<TokenData>;
-    type Handle = In<Actions>;
+    type Init = In<Config>;
+    type Handle = InOut<Actions, Result<Reply, Error>>;
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = Out<SubscriptionState>;
+    type State = InOut<StateQuery, StateReply>;
 }
 
 /// Actions callable by a user on the subscription contract
@@ -31,17 +31,70 @@ pub enum Actions {
         with_renewal: bool,
     },
     /// Update (renew or end) an existing subscription.
-    UpdateSubscription { subscriber: ActorId },
+    UpdateSubscription {
+        subscriber: ActorId,
+    },
     /// Cancel existing subscription
     CancelSubscription,
     /// Initialize or delete a pending subscription (which can be the case
     /// if `RegisterSubscription` action failed due to out-of-gas)
-    ManagePendingSubscription { enable: bool },
+    ManagePendingSubscription {
+        enable: bool,
+    },
+    AddTokenData {
+        token_id: ActorId,
+        price: Price,
+    },
+    UpdateConfig {
+        gas_for_token_transfer: Option<u64>,
+        gas_to_start_subscription_update: Option<u64>,
+        block_duration: Option<u32>,
+    },
+}
+
+/// The contract's replies in case of successful message execution.
+#[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum Reply {
+    SubscriptionRegistered,
+    SubscriptionUpdated,
+    SubscriptionCancelled,
+    PendingSubscriptionManaged,
+    PaymentAdded,
+    ConfigUpdated,
+}
+
+/// The contract's error replies in case of unsuccessful message execution.
+#[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum Error {
+    AccountAlreadyRegistered,
+    ErrorInSendingMsgToTransferTokens,
+    ErrorInReceivingReplyFromToken,
+    ErrorDuringSendingDelayedMsg,
+    AccountDoesNotExist,
+    WrongMsgSource,
+    UnregisteredPaymentMethod,
+    SubscriptionIsNotPending,
+    NotAdmin,
+}
+
+/// Actions callable by a user on the subscription contract
+#[derive(Debug, Encode, Decode, TypeInfo, Default)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct Config {
+    pub gas_for_token_transfer: u64,
+    pub gas_to_start_subscription_update: u64,
+    pub block_duration: u32,
+    pub min_gas_limit: u64,
 }
 
 /// Set of time periods for which a subscription can be purchased
 /// in context of the sucbscription contract.
-#[derive(Debug, Clone, Copy, Default, Encode, Decode, TypeInfo)]
+#[derive(Debug, Clone, Copy, Default, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum Period {
@@ -54,8 +107,6 @@ pub enum Period {
 }
 
 impl Period {
-    // TODO [cleanness] Must be changeable
-    const TARGET_BLOCK_TIME: u32 = Self::SECOND;
     const SECOND: u32 = 1;
 
     pub fn minimal_unit() -> Self {
@@ -72,8 +123,8 @@ impl Period {
         }
     }
 
-    pub fn to_blocks(&self) -> u32 {
-        self.as_secs() / Self::TARGET_BLOCK_TIME
+    pub fn to_blocks(&self, target_block_time: u32) -> u32 {
+        self.as_secs().div_ceil(target_block_time)
     }
 
     pub fn as_millis(&self) -> u64 {
@@ -86,34 +137,13 @@ impl Period {
             Period::NineMonths => Self::Month.as_secs() * 9,
             Period::SixMonths => Self::Month.as_secs() * 6,
             Period::ThreeMonths => Self::Month.as_secs() * 3,
-            Period::Month => Self::SECOND * 30,
-        }
-    }
-}
-
-/// State of the subscription contract
-#[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub struct SubscriptionState {
-    pub subscribers: BTreeMap<ActorId, SubscriberData>,
-    pub currencies: BTreeMap<ActorId, Price>,
-}
-
-type V = (BTreeMap<ActorId, SubscriberData>, BTreeMap<ActorId, Price>);
-
-impl From<V> for SubscriptionState {
-    fn from(value: V) -> Self {
-        let (subscribers, currencies) = value;
-        SubscriptionState {
-            subscribers,
-            currencies,
+            Period::Month => Self::SECOND * 30 * 24 * 60 * 60,
         }
     }
 }
 
 /// Subscriber's data
-#[derive(Debug, Clone, Copy, Default, Encode, Decode, TypeInfo)]
+#[derive(Debug, Clone, Copy, Default, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct SubscriberData {
@@ -121,9 +151,6 @@ pub struct SubscriberData {
     pub currency_id: ActorId,
     /// Subscription period
     pub period: Period,
-    // TODO [optimization] this must be calculated off-chain
-    /// Subscription start timestamp and block number.
-    ///
     /// If `None`, means that subscriber has paid for the
     /// subscription, but didn't succeed sending delayed
     /// message for subscription check/renewal.
@@ -148,4 +175,27 @@ pub struct SubscriberDataState {
     pub period: Period,
     pub will_renew: bool,
     pub price: u128,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum StateQuery {
+    Admins,
+    Currencies,
+    Subscribers,
+    Config,
+    GetSubscriber(ActorId),
+}
+
+/// Subscriber's state
+#[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum StateReply {
+    Admins(Vec<ActorId>),
+    Currencies(Vec<(ActorId, Price)>),
+    Subscribers(Vec<(ActorId, SubscriberData)>),
+    Config(Config),
+    SubscriberData(Option<SubscriberData>),
 }

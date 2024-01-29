@@ -1,322 +1,310 @@
 #![no_std]
 
-use fungible_token_io::{FTAction, FTEvent};
-use gstd::{async_main, collections::BTreeMap, exec, msg, prelude::*, ActorId};
+use gstd::{async_main, collections::HashMap, exec, msg, prelude::*, ActorId};
 use varatube_io::*;
 
-// TODO [cleanness] control tokens are of erc20 standard
-// TODO [cleanness] error workflow done by eco-system guys
-// TODO [cleanness + optimization] control errors between async calls
-// TODO [release] add readme + docs
-// TODO [cleanness + release] add tests (for ex: UpdateSubscription execution is the same as end date)
+pub mod utils;
+use utils::*;
 
-/// Supported means of payment
-static mut CURRENCIES: BTreeMap<ActorId, Price> = BTreeMap::new();
-/// Subscribers
-static mut SUBSCRIBERS: BTreeMap<ActorId, SubscriberData> = BTreeMap::new();
-
-/// Subscribers state manager
-struct Subscribers;
-
-/// Payment methods state.
-struct Currencies;
-
-impl Subscribers {
-    /// Add subscriber.
-    fn add_subscriber(subscriber: ActorId, data: SubscriberData) {
-        unsafe {
-            SUBSCRIBERS.insert(subscriber, data);
-        }
-    }
-
-    /// Add pending subscription.
-    ///
-    /// Inserting `data` is actually currency id and subscription period.
-    fn add_pending_subscriber(subscriber: ActorId, data: (ActorId, Period)) {
-        let (currency_id, period) = data;
-        unsafe {
-            SUBSCRIBERS.insert(
-                subscriber,
-                SubscriberData {
-                    currency_id,
-                    period,
-                    subscription_start: None,
-                    renewal_date: None,
-                },
-            );
-        }
-    }
-
-    /// Ger subscriber.
-    fn get_subscriber(subscriber: &ActorId) -> Option<SubscriberData> {
-        unsafe { SUBSCRIBERS.get(subscriber).copied() }
-    }
-
-    /// Remove subscriber.
-    fn delete_subscriber(subscriber: &ActorId) {
-        unsafe {
-            SUBSCRIBERS.remove(subscriber);
-        }
-    }
+#[derive(Default)]
+struct VaraTube {
+    admins: Vec<ActorId>,
+    currencies: HashMap<ActorId, Price>,
+    subscribers: HashMap<ActorId, SubscriberData>,
+    config: Config,
 }
 
-impl Currencies {
+static mut VARATUBE: Option<VaraTube> = None;
+
+impl VaraTube {
     /// Add a new mean of payment.
-    fn add_currency(currency: (ActorId, Price)) {
-        let (id, price) = currency;
-        unsafe {
-            CURRENCIES.insert(id, price);
-        }
+    pub fn add_token_data(&mut self, token_id: ActorId, price: Price) -> Result<Reply, Error> {
+        self.check_if_admin(&msg::source())?;
+        self.currencies.insert(token_id, price);
+        Ok(Reply::PaymentAdded)
     }
+    async fn register_subscription(
+        &mut self,
+        period: Period,
+        currency_id: &ActorId,
+        with_renewal: bool,
+    ) -> Result<Reply, Error> {
+        let price = self.get_price(currency_id)?;
+        let subscriber = msg::source();
+        // Check subscription requirements
 
-    /// Get price of subscription when paid by `currency_id`.
-    fn get_price(currency_id: &ActorId) -> Option<Price> {
-        unsafe { CURRENCIES.get(currency_id).copied() }
-    }
-}
+        self.check_if_subscriber_doesnt_exist(&subscriber)?;
 
-#[no_mangle]
-extern fn init() {
-    Currencies::add_currency(msg::load().expect("init: wrong payload: expected token id"));
-}
-
-#[async_main]
-async fn main() {
-    match msg::load().expect("handle: wrong payload: expected `Actions`") {
-        Actions::RegisterSubscription {
-            period,
+        let program_id = exec::program_id();
+        // Withdraw subscription fee.
+        transfer_tokens(
             currency_id,
-            with_renewal,
-        } => {
-            let price = Currencies::get_price(&currency_id)
-                .expect("RegisterSubscription: unregistered payment method");
-            let subscriber = msg::source();
-            // Check subscription requirements
-            if Subscribers::get_subscriber(&subscriber).is_some() {
-                panic!("RegisterSubscription: invalid subscription state");
-            }
-            // Withdraw subscription fee.
-            let _: FTEvent = msg::send_for_reply_as(
-                currency_id,
-                FTAction::Transfer {
-                    from: subscriber,
-                    to: exec::program_id(),
-                    amount: price * period.as_units(),
-                },
-                0,
-                0,
-            )
-            .unwrap_or_else(|e| panic!("RegisterSubscription: error sending async message: {e:?}"))
-            .await
-            .unwrap_or_else(|e| {
-                panic!("RegisterSubscription: token transfer ended up with an error {e:?}")
-            });
-            gstd::debug!("Before delayed msg");
-            // Send delayed message for state invalidation:
-            // - subscription renewal
-            // - subscription deletion
-            if msg::send_delayed(
-                exec::program_id(),
-                Actions::UpdateSubscription { subscriber },
-                0,
-                period.to_blocks(),
-            )
-            .is_ok()
-            {
-                gstd::debug!("Delayed ok");
+            &subscriber,
+            &program_id,
+            price * period.as_units(),
+            self.config.gas_for_token_transfer,
+        )
+        .await?;
+
+        // Send delayed message for state invalidation:
+        // - subscription renewal
+        // - subscription deletion
+        match send_delayed_subscription_renewal(
+            &program_id,
+            &subscriber,
+            period.to_blocks(self.config.block_duration),
+            Some(self.config.gas_to_start_subscription_update),
+        ) {
+            Ok(_) => {
                 let start_date = exec::block_timestamp();
                 let start_block = exec::block_height();
                 let renewal_date = if with_renewal {
                     Some((
                         start_date + period.as_millis(),
-                        start_block + period.to_blocks(),
+                        start_block + period.to_blocks(self.config.block_duration),
                     ))
                 } else {
                     None
                 };
-                Subscribers::add_subscriber(
-                    subscriber,
+                self.add_subscriber(
+                    &subscriber,
                     SubscriberData {
-                        currency_id,
+                        currency_id: *currency_id,
                         period,
                         renewal_date,
                         subscription_start: Some((start_date, start_block)),
                     },
                 );
-            } else {
-                // Delayed message sending is needed for storage invalidation and update.
-                // If this "sanity" message sending was failed, then we consider subscriber
-                // as pending, so he can enable/withdraw his subscription receiving back
-                // money.
-                gstd::debug!("Delayed NOT ok");
-                Subscribers::add_pending_subscriber(subscriber, (currency_id, period));
             }
-        }
-        Actions::UpdateSubscription { subscriber } => {
-            let this_program = exec::program_id();
-
-            // This message is only intended to be send from this program
-            if msg::source() != this_program {
-                panic!("UpdateSubscription: message allowed only for this program");
+            Err(_) => {
+                self.add_pending_subscriber(&subscriber, (*currency_id, period));
             }
+        };
 
-            let SubscriberData {
-                currency_id,
-                period,
-                renewal_date,
-                ..
-            } = Subscribers::get_subscriber(&subscriber)
-                .expect("UpdateSubscription: subscriber not found");
+        Ok(Reply::SubscriptionRegistered)
+    }
 
-            let current_block = exec::block_height();
-            let current_date = exec::block_timestamp();
+    async fn update_subscription(&mut self, subscriber: &ActorId) -> Result<Reply, Error> {
+        let this_program = exec::program_id();
 
-            // If user want to renew his subscription...
-            if renewal_date.is_some() {
-                let price = Currencies::get_price(&currency_id)
-                    .expect("UpdateSubscription: payment method was deleted");
-                let _: FTEvent = msg::send_for_reply_as(
-                    currency_id,
-                    FTAction::Transfer {
-                        from: subscriber,
-                        to: this_program,
-                        amount: price * period.as_units(),
-                    },
-                    0,
-                    0,
-                )
-                .unwrap_or_else(|e| {
-                    panic!("UpdateSubscription: error sending async message: {e:?}")
-                })
-                .await
-                .unwrap_or_else(|e| {
-                    Subscribers::delete_subscriber(&subscriber);
-                    panic!("UpdateSubscription: transfer ended up with an error {e:?}")
-                });
+        // This message is only intended to be send from this program
+        check_msg_source(msg::source(), this_program)?;
 
-                // Send delayed message for state invalidation:
-                // - subscription renewal
-                // - subscription deletion
-                if msg::send_delayed(
-                    this_program,
-                    Actions::UpdateSubscription { subscriber },
-                    0,
-                    period.to_blocks(),
-                )
-                .is_ok()
-                {
-                    Subscribers::add_subscriber(
+        let SubscriberData {
+            currency_id,
+            period,
+            renewal_date,
+            ..
+        } = self.get_subscriber(subscriber)?;
+
+        let current_block = exec::block_height();
+        let current_date = exec::block_timestamp();
+
+        // If user want to renew his subscription...
+        if renewal_date.is_some() {
+            let price = self.get_price(&currency_id)?;
+
+            transfer_tokens(
+                &currency_id,
+                subscriber,
+                &this_program,
+                price * period.as_units(),
+                self.config.gas_for_token_transfer,
+            )
+            .await?;
+
+            // Send delayed message for state invalidation:
+            // - subscription renewal
+            // - subscription deletion
+            match send_delayed_subscription_renewal(
+                &this_program,
+                subscriber,
+                period.to_blocks(self.config.block_duration),
+                None,
+            ) {
+                Ok(_) => {
+                    // It's necessary to check if there is enough gas for the next auto-subscription.
+                    // If not, then the `renewal_date` should be set to None
+                    let renewal_date = if exec::gas_available() > self.config.min_gas_limit {
+                        Some((
+                            current_date + period.as_millis(),
+                            current_block + period.to_blocks(self.config.block_duration),
+                        ))
+                    } else {
+                        None
+                    };
+                    self.add_subscriber(
                         subscriber,
                         SubscriberData {
                             currency_id,
                             period,
                             subscription_start: Some((current_date, current_block)),
-                            renewal_date: Some((
-                                current_date + period.as_millis(),
-                                current_block + period.to_blocks(),
-                            )),
+                            renewal_date,
                         },
                     );
-                } else {
+                }
+                Err(_) => {
                     // Delayed message sending is needed for storage invalidation and update.
                     // If this "sanity" message sending was failed, then we consider subscriber
                     // as pending, so he can enable/withdraw his subscription receiving back
                     // money.
-                    Subscribers::add_pending_subscriber(subscriber, (currency_id, period));
+                    self.add_pending_subscriber(subscriber, (currency_id, period));
                 }
-            } else {
-                Subscribers::delete_subscriber(&subscriber);
             }
+        } else {
+            self.delete_subscriber(subscriber);
         }
-        Actions::CancelSubscription => {
-            let subscriber = msg::source();
-            let subscription = Subscribers::get_subscriber(&subscriber);
-            if subscription.is_none() {
-                panic!("CancelSubscription: subscription not found");
-            }
+        Ok(Reply::SubscriptionUpdated)
+    }
 
-            let updated_subscription = {
-                let mut new_data = subscription.expect("checked");
-                new_data.renewal_date = None;
+    fn cancel_subscription(&mut self) -> Result<Reply, Error> {
+        let subscriber = msg::source();
+        let mut subscription_data = self.get_subscriber(&subscriber)?;
 
-                new_data
-            };
+        subscription_data.renewal_date = None;
 
-            Subscribers::add_subscriber(subscriber, updated_subscription);
+        self.add_subscriber(&subscriber, subscription_data);
+        Ok(Reply::SubscriptionCancelled)
+    }
+
+    async fn manage_pending_subscription(&mut self, enable: bool) -> Result<Reply, Error> {
+        let subscriber = msg::source();
+        let this_program = exec::program_id();
+
+        let SubscriberData {
+            subscription_start,
+            period,
+            currency_id,
+            ..
+        } = self.get_subscriber(&subscriber)?;
+
+        if subscription_start.is_some() {
+            return Err(Error::SubscriptionIsNotPending);
         }
-        Actions::ManagePendingSubscription { enable } => {
-            let subscriber = msg::source();
-            let this_program = exec::program_id();
 
-            if let Some(SubscriberData {
-                subscription_start,
-                period,
-                currency_id,
-                ..
-            }) = Subscribers::get_subscriber(&subscriber)
-            {
-                if subscription_start.is_some() {
-                    panic!("ManagePendingSubscription: subscription is not pending");
-                }
+        if enable {
+            send_delayed_subscription_renewal(
+                &this_program,
+                &subscriber,
+                period.to_blocks(self.config.block_duration),
+                Some(self.config.gas_to_start_subscription_update),
+            )?;
 
-                if enable {
-                    msg::send_delayed(
-                        this_program,
-                        Actions::UpdateSubscription { subscriber },
-                        0,
-                        period.to_blocks(),
-                    )
-                    .unwrap_or_else(|e| {
-                        panic!("ManagePendingSubscription: sending delayed message failed {e:?}")
-                    });
+            let current_date = exec::block_timestamp();
+            let current_block = exec::block_height();
+            self.add_subscriber(
+                &subscriber,
+                SubscriberData {
+                    currency_id,
+                    period,
+                    subscription_start: Some((current_date, current_block)),
+                    renewal_date: Some((
+                        current_date + period.as_millis(),
+                        current_block + period.to_blocks(self.config.block_duration),
+                    )),
+                },
+            );
+        } else {
+            let price = self.get_price(&currency_id)?;
+            transfer_tokens(
+                &currency_id,
+                &this_program,
+                &subscriber,
+                price * period.as_units(),
+                self.config.gas_for_token_transfer,
+            )
+            .await?;
 
-                    let current_date = exec::block_timestamp();
-                    let current_block = exec::block_height();
-                    Subscribers::add_subscriber(
-                        subscriber,
-                        SubscriberData {
-                            currency_id,
-                            period,
-                            subscription_start: Some((current_date, current_block)),
-                            renewal_date: Some((
-                                current_date + period.as_millis(),
-                                current_block + period.to_blocks(),
-                            )),
-                        },
-                    );
-                } else {
-                    let price = Currencies::get_price(&currency_id)
-                        .expect("ManagePendingSubscription: payment method was deleted");
-                    let _: FTEvent = msg::send_for_reply_as(
-                        currency_id,
-                        FTAction::Transfer {
-                            from: this_program,
-                            to: subscriber,
-                            amount: price * period.as_units(),
-                        },
-                        0,
-                        0,
-                    )
-                    .unwrap_or_else(|e| {
-                        panic!("ManagePendingSubscription: error sending async message: {e:?}")
-                    })
-                    .await
-                    .unwrap_or_else(|e| {
-                        panic!("ManagePendingSubscription: transfer ended up with an error {e:?}")
-                    });
+            self.delete_subscriber(&subscriber);
+        };
+        Ok(Reply::PendingSubscriptionManaged)
+    }
 
-                    Subscribers::delete_subscriber(&subscriber);
-                }
-            } else {
-                panic!("ManagePendingSubscription: can't manage non existing subscription");
-            }
+    fn update_config(
+        &mut self,
+        gas_for_token_transfer: Option<u64>,
+        gas_to_start_subscription_update: Option<u64>,
+        block_duration: Option<u32>,
+    ) -> Result<Reply, Error> {
+        self.check_if_admin(&msg::source())?;
+
+        if let Some(gas_for_token_transfer) = gas_for_token_transfer {
+            self.config.gas_for_token_transfer = gas_for_token_transfer;
         }
+
+        if let Some(gas_to_start_subscription_update) = gas_to_start_subscription_update {
+            self.config.gas_to_start_subscription_update = gas_to_start_subscription_update;
+        }
+
+        if let Some(block_duration) = block_duration {
+            self.config.block_duration = block_duration;
+        }
+
+        Ok(Reply::ConfigUpdated)
     }
 }
 
 #[no_mangle]
+extern fn init() {
+    let config: Config = msg::load().expect("Unable to decode the initial msg");
+    unsafe {
+        VARATUBE = Some(VaraTube {
+            admins: vec![msg::source()],
+            config,
+            ..Default::default()
+        })
+    }
+}
+
+#[async_main]
+async fn main() {
+    let action: Actions = msg::load().expect("handle: wrong payload: expected `Actions`");
+    let varatube = unsafe { VARATUBE.as_mut().expect("The contract is not initiazlied") };
+    let reply = match action {
+        Actions::RegisterSubscription {
+            period,
+            currency_id,
+            with_renewal,
+        } => {
+            varatube
+                .register_subscription(period, &currency_id, with_renewal)
+                .await
+        }
+        Actions::UpdateSubscription { subscriber } => {
+            varatube.update_subscription(&subscriber).await
+        }
+        Actions::CancelSubscription => varatube.cancel_subscription(),
+        Actions::ManagePendingSubscription { enable } => {
+            varatube.manage_pending_subscription(enable).await
+        }
+        Actions::AddTokenData { token_id, price } => varatube.add_token_data(token_id, price),
+        Actions::UpdateConfig {
+            gas_for_token_transfer,
+            gas_to_start_subscription_update,
+            block_duration,
+        } => varatube.update_config(
+            gas_for_token_transfer,
+            gas_to_start_subscription_update,
+            block_duration,
+        ),
+    };
+    msg::reply(reply, 0).expect("Error during sending a reply");
+}
+
+#[no_mangle]
 extern fn state() {
-    let ret_state = unsafe { SUBSCRIBERS.clone() };
-    let ret_state2 = unsafe { CURRENCIES.clone() };
-    msg::reply::<SubscriptionState>((ret_state, ret_state2).into(), 0).expect("`state()` failed");
+    let query: StateQuery = msg::load().expect("state: wrong payload: expected `StateQuery`");
+    let varatube = unsafe { VARATUBE.take().expect("The contract is not initiazlied") };
+    let reply = match query {
+        StateQuery::Admins => StateReply::Admins(varatube.admins),
+        StateQuery::Currencies => StateReply::Currencies(varatube.currencies.into_iter().collect()),
+        StateQuery::Subscribers => {
+            StateReply::Subscribers(varatube.subscribers.into_iter().collect())
+        }
+        StateQuery::Config => StateReply::Config(varatube.config),
+        StateQuery::GetSubscriber(account) => {
+            StateReply::SubscriberData(varatube.subscribers.get(&account).cloned())
+        }
+    };
+    msg::reply(reply, 0).expect("Error in sharing state");
 }
