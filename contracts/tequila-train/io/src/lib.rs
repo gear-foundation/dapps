@@ -145,10 +145,7 @@ pub enum Command {
         name: String,
     },
     StartGame,
-    RestartGame(
-        /// Optional players limit.
-        Option<u64>,
-    ),
+    RestartGame,
     AddAdmin(ActorId),
     DeleteAdmin(ActorId),
 }
@@ -166,9 +163,7 @@ pub enum Event {
         name: String,
     },
     GameStarted,
-    GameRestarted {
-        players_limit: Option<u64>,
-    },
+    GameRestarted,
     GameFinished {
         winner: ActorId,
     },

@@ -60,22 +60,18 @@ impl GameLauncher {
         Ok(Event::GameStarted)
     }
 
-    pub fn restart(&mut self, maybe_limit: Option<u64>) -> Result<Event, Error> {
+    pub fn restart(&mut self) -> Result<Event, Error> {
         if !self.admins.contains(&msg::source()) {
             return Err(Error::NotAdmin);
         }
         if !self.is_started {
             return Err(Error::GameHasNotStartedYet);
         }
-        Self::check_limit_range(maybe_limit)?;
 
         self.is_started = false;
         self.game_state = None;
-        self.maybe_limit = maybe_limit;
         self.players.clear();
-        Ok(Event::GameRestarted {
-            players_limit: maybe_limit,
-        })
+        Ok(Event::GameRestarted)
     }
     pub fn add_admin(&mut self, admin: &ActorId) -> Result<Event, Error> {
         if !self.admins.contains(&msg::source()) {
@@ -188,7 +184,7 @@ fn process_handle() -> Result<Event, Error> {
         }
         Command::Register { player, name } => game_launcher.register(player, name),
         Command::StartGame => game_launcher.start(),
-        Command::RestartGame(maybe_limit) => game_launcher.restart(maybe_limit),
+        Command::RestartGame => game_launcher.restart(),
         Command::AddAdmin(admin) => game_launcher.add_admin(&admin),
         Command::DeleteAdmin(admin) => game_launcher.delete_admin(&admin),
     }
