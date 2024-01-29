@@ -1,6 +1,6 @@
 #![no_std]
 
-use gstd::{msg, prelude::*, ActorId};
+use gstd::{msg, prelude::*, ActorId, exec};
 use tequila_train_io::*;
 
 #[derive(Debug, Default)]
@@ -67,6 +67,7 @@ impl GameLauncher {
         if !self.is_started {
             return Err(Error::GameHasNotStartedYet);
         }
+        exec::block_height();
 
         self.is_started = false;
         self.game_state = None;
@@ -148,19 +149,22 @@ fn process_handle() -> Result<Event, Error> {
             .expect("The contract is not initialized")
     };
 
-    if let Some(game_state) = &game_launcher.game_state {
-        match game_state.state() {
-            State::Stalled => {
-                return Err(Error::GameStalled);
-            }
-            State::Winner(_winner) => {
-                return Err(Error::GameFinished);
-            }
-            _ => (),
-        };
-    }
-
     let command: Command = msg::load().expect("Unexpected invalid command payload.");
+    if command != Command::RestartGame {
+        if let Some(game_state) = &game_launcher.game_state {
+            match &game_state.state {
+                State::Stalled => {
+                    return Err(Error::GameStalled);
+                }
+                State::Winner(_winner) => {
+                    return Err(Error::GameFinished);
+                }
+                _ => (),
+            };
+        }
+    }
+    
+
     let player = msg::source();
 
     match command {

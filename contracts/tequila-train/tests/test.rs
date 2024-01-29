@@ -5,7 +5,7 @@ use tequila_train_io::*;
 pub trait TestFunc {
     fn register(&self, from: u64, player: ActorId, name: String, error: Option<Error>);
     fn start_game(&self, from: u64, error: Option<Error>);
-    fn restart_game(&self, from: u64, players_limit: Option<u64>, error: Option<Error>);
+    fn restart_game(&self, from: u64, error: Option<Error>);
     fn add_admin(&self, from: u64, admin: ActorId, error: Option<Error>);
     fn delete_admin(&self, from: u64, admin: ActorId, error: Option<Error>);
     fn skip(&self, from: u64, error: Option<Error>);
@@ -46,13 +46,13 @@ impl TestFunc for Program<'_> {
         };
         assert!(result.contains(&(from, reply.encode())));
     }
-    fn restart_game(&self, from: u64, players_limit: Option<u64>, error: Option<Error>) {
-        let result = self.send(from, Command::RestartGame(players_limit));
+    fn restart_game(&self, from: u64, error: Option<Error>) {
+        let result = self.send(from, Command::RestartGame);
         assert!(!result.main_failed());
         let reply = if let Some(error) = error {
             Err(error)
         } else {
-            Ok(Event::GameRestarted { players_limit })
+            Ok(Event::GameRestarted)
         };
         assert!(result.contains(&(from, reply.encode())));
     }
@@ -141,7 +141,7 @@ fn success_test() {
         vec![(0.into(), "A".to_owned()), (1.into(), "B".to_owned())]
     );
 
-    program.restart_game(2, None, None);
+    program.restart_game(2, None);
     program.register(2, 2.into(), "C".to_owned(), None);
     program.register(2, 3.into(), "D".to_owned(), None);
     program.start_game(2, None);
@@ -178,7 +178,7 @@ fn failures_test() {
     assert!(!result.main_failed());
 
     program.start_game(2, Some(Error::WrongPlayersCount));
-    program.restart_game(2, None, Some(Error::GameHasNotStartedYet));
+    program.restart_game(2, Some(Error::GameHasNotStartedYet));
     program.register(2, 0.into(), "A".to_owned(), None);
     program.register(
         2,
@@ -220,7 +220,6 @@ fn failures_test() {
         vec![(0.into(), "A".to_owned()), (1.into(), "B".to_owned())]
     );
 
-    program.restart_game(2, Some(10), Some(Error::WrongPlayersCount));
     program.place(3, 0, 0, false, Some(Error::NotYourTurn));
     program.place(0, 3, 0, false, Some(Error::InvalidTileId));
     program.place(0, 1, 1, false, Some(Error::InvalidTrack));
@@ -244,7 +243,7 @@ fn add_admin_test() {
     program.add_admin(4, 3.into(), Some(Error::NotAdmin));
     program.add_admin(2, 3.into(), None);
     program.start_game(3, None);
-    program.restart_game(3, None, None);
+    program.restart_game(3, None);
     program.delete_admin(3, 2.into(), None);
     program.start_game(2, Some(Error::NotAdmin));
 }

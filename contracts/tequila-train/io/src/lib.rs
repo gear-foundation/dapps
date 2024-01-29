@@ -132,7 +132,7 @@ impl From<&[(ActorId, String)]> for Players {
     }
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug)]
+#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
 pub enum Command {
     Skip,
     Place {
