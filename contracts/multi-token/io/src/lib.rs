@@ -255,6 +255,9 @@ pub enum MtkError {
     WrongOwnerOrInsufficientBalance,
     InsufficientBalanceForTransfer,
     IncorrectData,
+    WrongId,
+    NoApprovals,
+    ThereIsNoThisApproval
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo, PartialEq, Eq)]

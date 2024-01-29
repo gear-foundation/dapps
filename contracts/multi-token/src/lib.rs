@@ -8,7 +8,6 @@ use gstd::{
 use multi_token_io::*;
 
 const NFT_COUNT: u128 = 1;
-const ZERO_ID: ActorId = ActorId::zero();
 
 #[derive(Debug, Default)]
 pub struct SimpleMtk {
@@ -103,7 +102,7 @@ impl SimpleMtk {
         amounts: Vec<u128>,
         meta: Vec<Option<TokenMetadata>>,
     ) -> Result<MtkEvent, MtkError> {
-        if *account == ZERO_ID {
+        if *account == ActorId::zero() {
             return Err(MtkError::ZeroAddress);
         }
 
@@ -141,7 +140,7 @@ impl SimpleMtk {
         }
 
         Ok(MtkEvent::Transfer {
-            from: ZERO_ID,
+            from: ActorId::zero(),
             to: *account,
             ids,
             amounts,
@@ -179,38 +178,44 @@ impl SimpleMtk {
             return Err(MtkError::LengthMismatch);
         }
 
+        let msg_src = &msg::source();
         ids.iter()
             .zip(amounts.clone())
             .try_for_each(|(id, amount)| {
                 if self.tokens.token_metadata.contains_key(id) && amount > 1 {
                     return Err(MtkError::AmountGreaterThanOneForNft);
                 }
-                self.check_opportunity_burn(&msg::source(), id, amount)
+                self.check_opportunity_burn(msg_src, id, amount)
             })?;
 
         ids.iter()
             .enumerate()
-            .for_each(|(i, id)| self.burn_impl(id, amounts[i]));
+            .for_each(|(i, id)| self.burn_impl(msg_src, id, amounts[i]));
 
         for (id, amount) in ids.iter().zip(amounts.iter()) {
-            let quantity = self.supply.get_mut(id).unwrap();
-            *quantity = quantity.saturating_sub(*amount);
+            if let Some(quantity) = self.supply.get_mut(id){
+                *quantity = quantity.saturating_sub(*amount);
+            } else {
+                return Err(MtkError::WrongId);
+            }
+
+            
         }
 
         Ok(MtkEvent::Transfer {
-            from: msg::source(),
-            to: ZERO_ID,
+            from: *msg_src,
+            to: ActorId::zero(),
             ids,
             amounts,
         })
     }
 
-    fn burn_impl(&mut self, id: &TokenId, amount: u128) {
+    fn burn_impl(&mut self, msg_source: &ActorId, id: &TokenId, amount: u128) {
         self.tokens.owners.remove(id);
         self.set_balance(
-            &msg::source(),
+            msg_source,
             id,
-            self.get_balance(&msg::source(), id).saturating_sub(amount),
+            self.get_balance(msg_source, id).saturating_sub(amount),
         );
     }
 
@@ -264,7 +269,7 @@ impl SimpleMtk {
             return Err(MtkError::CallerIsNotOwnerOrApproved);
         }
 
-        if to == &ZERO_ID {
+        if to == &ActorId::zero() {
             return Err(MtkError::ZeroAddress);
         }
 
@@ -309,19 +314,20 @@ impl SimpleMtk {
     /// Arguments:
     /// * `to`: An account that will be approved to manage the tokens
     fn approve(&mut self, to: &ActorId) -> Result<MtkEvent, MtkError> {
-        if to == &ZERO_ID {
+        if to == &ActorId::zero() {
             return Err(MtkError::ZeroAddress);
         }
+        let msg_src = &msg::source();
         self.tokens
             .approvals
-            .entry(msg::source())
+            .entry(*msg_src)
             .and_modify(|approvals| {
                 approvals.insert(*to);
             })
             .or_insert_with(|| HashSet::from([*to]));
 
         Ok(MtkEvent::Approval {
-            from: msg::source(),
+            from: *msg_src,
             to: *to,
         })
     }
@@ -333,14 +339,24 @@ impl SimpleMtk {
     /// Arguments:
     /// * `to`: An account that won't be able to manage the tokens
     fn revoke_approval(&mut self, to: &ActorId) -> Result<MtkEvent, MtkError> {
+        let msg_src = &msg::source();
         self.tokens
             .approvals
-            .get_mut(&msg::source())
+            .get_mut(msg_src)
             .expect("Caller has not approved any accounts")
             .remove(to);
 
+        if let Some(approvals) = self.tokens.approvals.get_mut(msg_src){
+            if !approvals.remove(to) {
+                return Err(MtkError::ThereIsNoThisApproval);
+            }
+        } else {
+            return Err(MtkError::NoApprovals);
+        }
+
+
         Ok(MtkEvent::RevokeApproval {
-            from: msg::source(),
+            from: *msg_src,
             to: *to,
         })
     }
@@ -373,8 +389,9 @@ impl SimpleMtk {
         }
 
         // burn FT (not to produce another message - just simply use burn_impl)
-        self.check_opportunity_burn(&msg::source(), &id, amount)?;
-        self.burn_impl(&id, amount);
+        let msg_src = &msg::source();
+        self.check_opportunity_burn(msg_src, &id, amount)?;
+        self.burn_impl(msg_src, &id, amount);
 
         for burn_info in nfts.iter() {
             if burn_info.account.is_zero() {
@@ -397,8 +414,12 @@ impl SimpleMtk {
 
             ids.extend_from_slice(&burn_info.nfts_ids);
         }
-        let quantity = self.supply.get_mut(&id).unwrap();
-        *quantity = quantity.saturating_sub(amount);
+
+        if let Some(quantity) = self.supply.get_mut(&id){
+            *quantity = quantity.saturating_sub(amount);
+        } else {
+            return Err(MtkError::WrongId);
+        }
 
         Ok(MtkEvent::Transfer {
             from: ActorId::zero(),
