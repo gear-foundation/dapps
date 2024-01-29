@@ -40,9 +40,10 @@ type IPhaseOther = Record<'registration' | 'playing' | 'stalled', null>;
 export type IGamePhase = Partial<IPhaseWinner & IPhaseOther>;
 
 export type IState = {
+  admins: string[];
   players: IPlayer[];
   isStarted: boolean;
-  maybeLimit: string;
+  maybeLimit: number | null;
   gameState: IGameState
 }
 

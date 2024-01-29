@@ -4,6 +4,7 @@ import { DominoTileType, IPlayer, IState, PlayerChoiceType } from '../types/game
 const useProgram = () => {
   const [game, setGame] = useState<IState>();
   const [players, setPlayers] = useState<IPlayer[]>([]);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [selectedDomino, setSelectedDomino] = useState<[number, DominoTileType]>();
   const [playerTiles, setPlayerTiles] = useState<DominoTileType[]>();
   const [playerChoice, setPlayerChoice] = useState<PlayerChoiceType>();
@@ -13,6 +14,8 @@ const useProgram = () => {
     setGame,
     players,
     setPlayers,
+    isAdmin,
+    setIsAdmin,
     playerTiles,
     setPlayerTiles,
     selectedDomino,

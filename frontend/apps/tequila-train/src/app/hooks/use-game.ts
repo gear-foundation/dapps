@@ -33,10 +33,18 @@ export const useInitGame = () => {
   const { setIsAllowed, setOpenWinnerPopup } = useApp();
   const { account } = useAccount();
   const { state } = useGameState();
-  const { setGame, setPlayers } = useGame();
+  const { setGame, setPlayers, setIsAdmin } = useGame();
 
   useEffect(() => {
     setGame(state);
+    const isAdmin = state?.admins.find((a) => a === account?.decodedAddress)
+
+    if (isAdmin) {
+      setIsAdmin(Boolean(isAdmin))
+    } else {
+      setIsAdmin(false)
+    }
+
     if (state && account && state.isStarted && state?.gameState) {
       setPlayers(state.players);
 
@@ -49,7 +57,7 @@ export const useInitGame = () => {
       setIsAllowed(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, account?.address, state?.gameState]);
+  }, [state, account?.address, state?.gameState, account?.decodedAddress]);
 };
 
 export function useGameMessage() {

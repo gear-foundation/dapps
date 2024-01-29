@@ -1,8 +1,27 @@
+import clsx from 'clsx';
 import { RegistrationForm } from './registration-form';
-import { useGame } from '../../../app/context';
+import { useApp, useGame } from '../../../app/context';
+import { useGameMessage } from 'app/hooks/use-game';
 
 export function RegistrationSection() {
-  const { game } = useGame();
+  const { game, isAdmin } = useGame();
+  const { setIsPending, isPending } = useApp();
+  const handleMessage = useGameMessage();
+
+  const onSuccess = () => {
+    setIsPending(false);
+  };
+  const onError = () => {
+    setIsPending(false);
+  };
+
+  const onStartGame = () => {
+    handleMessage({
+      payload: { StartGame: null },
+      onSuccess,
+      onError,
+    });
+  }
 
   return (
     <div className="container my-15 py-32 flex items-center">
@@ -26,7 +45,20 @@ export function RegistrationSection() {
           </p>
 
           <div className="mt-6">
-            <RegistrationForm />
+            {isAdmin && game?.players &&
+              ((game?.maybeLimit !== null
+                && game?.players.length === Number(game?.maybeLimit)) || game?.players.length === 8) ?
+              <button
+                type="submit"
+                className={clsx('btn btn--primary gap-2 tracking-[0.08em]', isPending && 'btn--loading')}
+                onClick={onStartGame}
+                disabled={isPending}
+              >
+                Start the game
+              </button> :
+              <RegistrationForm />
+
+            }
           </div>
         </div>
       </div>
