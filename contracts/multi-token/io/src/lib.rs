@@ -257,7 +257,7 @@ pub enum MtkError {
     IncorrectData,
     WrongId,
     NoApprovals,
-    ThereIsNoThisApproval
+    ThereIsNoThisApproval,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo, PartialEq, Eq)]

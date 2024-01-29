@@ -204,12 +204,11 @@ impl Concert {
         for actor in &self.buyers {
             let actor_metadata = self.metadata.get(actor);
             if let Some(actor_md) = actor_metadata.cloned() {
-                let mut ids = vec![];
-                let mut amounts = vec![];
+                let mut ids = Vec::with_capacity(actor_md.len());
+                let amounts = vec![NFT_COUNT; actor_md.len()];
                 let mut meta = vec![];
                 for (token, token_meta) in actor_md {
                     ids.push(token);
-                    amounts.push(NFT_COUNT);
                     meta.push(token_meta);
                 }
                 msg::send_for_reply_as::<_, MtkEvent>(
@@ -266,7 +265,7 @@ impl From<Concert> for State {
 
         let metadata = metadata
             .into_iter()
-            .map(|(k, v)| (k, v.into_iter().map(|(k, v)| (k, v)).collect()))
+            .map(|(k, v)| (k, v.into_iter().collect()))
             .collect();
 
         State {

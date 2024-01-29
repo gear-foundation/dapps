@@ -70,19 +70,17 @@ pub fn mint_batch_internal(
         },
     );
 
-    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::Transfer {
-        from: ActorId::zero(),
-        to: from.into(),
-        ids,
-        amounts,
-    })
-    .encode();
-
-    if let Some(error) = error {
-        assert!(res.contains(&(from, Err::<MtkEvent, MtkError>(error).encode())));
+    let expected = if let Some(error) = error {
+        Err(error)
     } else {
-        assert!(res.contains(&(from, codec)));
-    }
+        Ok(MtkEvent::Transfer {
+            from: ActorId::zero(),
+            to: from.into(),
+            ids,
+            amounts,
+        })
+    };
+    assert!(res.contains(&(from, expected.encode())));
 }
 
 pub fn burn_internal(
@@ -131,18 +129,17 @@ pub fn burn_batch_internal(
         },
     );
 
-    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::Transfer {
-        from: from.into(),
-        to: ActorId::zero(),
-        ids,
-        amounts,
-    })
-    .encode();
-    if let Some(error) = error {
-        assert!(res.contains(&(from, Err::<MtkEvent, MtkError>(error).encode())));
+    let expected = if let Some(error) = error {
+        Err(error)
     } else {
-        assert!(res.contains(&(from, codec)));
-    }
+        Ok(MtkEvent::Transfer {
+            from: from.into(),
+            to: ActorId::zero(),
+            ids,
+            amounts,
+        })
+    };
+    assert!(res.contains(&(from, expected.encode())));
 }
 
 pub fn balance_internal(mtk: &Program<'_>, from: u64, token_id: u128, amount: u128) {
@@ -190,9 +187,9 @@ pub fn balance_of_batch_internal(
         })
         .collect();
 
-    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::BalanceOf(replies)).encode();
+    let expected = Ok::<MtkEvent, MtkError>(MtkEvent::BalanceOf(replies)).encode();
 
-    assert!(res.contains(&(from, codec)));
+    assert!(res.contains(&(from, expected)));
 }
 
 pub fn transfer_internal(
@@ -213,19 +210,17 @@ pub fn transfer_internal(
         },
     );
 
-    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::Transfer {
-        from: from.into(),
-        to: to.into(),
-        ids: vec![token_id],
-        amounts: vec![amount],
-    })
-    .encode();
-
-    if let Some(error) = error {
-        assert!(res.contains(&(from, Err::<MtkEvent, MtkError>(error).encode())));
+    let expected = if let Some(error) = error {
+        Err(error)
     } else {
-        assert!(res.contains(&(from, codec)));
-    }
+        Ok(MtkEvent::Transfer {
+            from: from.into(),
+            to: to.into(),
+            ids: vec![token_id],
+            amounts: vec![amount],
+        })
+    };
+    assert!(res.contains(&(from, expected.encode())));
 }
 
 pub fn transfer_batch_internal(
@@ -246,19 +241,17 @@ pub fn transfer_batch_internal(
         },
     );
 
-    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::Transfer {
-        from: from.into(),
-        to: to.into(),
-        ids,
-        amounts,
-    })
-    .encode();
-
-    if let Some(error) = error {
-        assert!(res.contains(&(from, Err::<MtkEvent, MtkError>(error).encode())));
+    let expected = if let Some(error) = error {
+        Err(error)
     } else {
-        assert!(res.contains(&(from, codec)));
-    }
+        Ok(MtkEvent::Transfer {
+            from: from.into(),
+            to: to.into(),
+            ids,
+            amounts,
+        })
+    };
+    assert!(res.contains(&(from, expected.encode())));
 }
 
 pub fn transform_internal(
@@ -283,46 +276,41 @@ pub fn transform_internal(
         },
     );
 
-    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::Transfer {
+    let expected = Ok::<MtkEvent, MtkError>(MtkEvent::Transfer {
         from: ActorId::zero(),
         to: ActorId::zero(),
         ids,
         amounts: vec![NFT_COUNT; amount as usize],
     })
     .encode();
-    assert!(res.contains(&(from, codec)));
+    assert!(res.contains(&(from, expected)));
 }
 
 pub fn approve(mtk: &Program<'_>, from: u64, to: u64, error: Option<MtkError>) {
     let res = mtk.send(from, MtkAction::Approve { account: to.into() });
 
-    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::Approval {
-        from: from.into(),
-        to: to.into(),
-    })
-    .encode();
-
-    if let Some(error) = error {
-        assert!(res.contains(&(from, Err::<MtkEvent, MtkError>(error).encode())));
+    let expected = if let Some(error) = error {
+        Err(error)
     } else {
-        assert!(res.contains(&(from, codec)));
-    }
+        Ok(MtkEvent::Approval {
+            from: from.into(),
+            to: to.into(),
+        })
+    };
+    assert!(res.contains(&(from, expected.encode())));
 }
 
 pub fn revoke_approval(mtk: &Program<'_>, from: u64, to: u64, error: Option<MtkError>) {
     let res = mtk.send(from, MtkAction::RevokeApproval { account: to.into() });
-
-    let codec = Ok::<MtkEvent, MtkError>(MtkEvent::RevokeApproval {
-        from: from.into(),
-        to: to.into(),
-    })
-    .encode();
-
-    if let Some(error) = error {
-        assert!(res.contains(&(from, Err::<MtkEvent, MtkError>(error).encode())));
+    let expected = if let Some(error) = error {
+        Err(error)
     } else {
-        assert!(res.contains(&(from, codec)));
-    }
+        Ok(MtkEvent::RevokeApproval {
+            from: from.into(),
+            to: to.into(),
+        })
+    };
+    assert!(res.contains(&(from, expected.encode())));
 }
 
 pub fn check_token_ids_for_owner(mtk: &Program<'_>, account: u64, ids: Vec<u128>) {
