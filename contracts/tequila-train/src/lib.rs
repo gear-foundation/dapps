@@ -1,6 +1,6 @@
 #![no_std]
 
-use gstd::{msg, prelude::*, ActorId, exec};
+use gstd::{exec, msg, prelude::*, ActorId};
 use tequila_train_io::*;
 
 #[derive(Debug, Default)]
@@ -163,7 +163,6 @@ fn process_handle() -> Result<Event, Error> {
             };
         }
     }
-    
 
     let player = msg::source();
 
