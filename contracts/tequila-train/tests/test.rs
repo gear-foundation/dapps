@@ -6,6 +6,8 @@ pub trait TestFunc {
     fn register(&self, from: u64, player: ActorId, name: String, error: Option<Error>);
     fn start_game(&self, from: u64, error: Option<Error>);
     fn restart_game(&self, from: u64, players_limit: Option<u64>, error: Option<Error>);
+    fn add_admin(&self, from: u64, admin: ActorId, error: Option<Error>);
+    fn delete_admin(&self, from: u64, admin: ActorId, error: Option<Error>);
     fn skip(&self, from: u64, error: Option<Error>);
     fn place(
         &self,
@@ -37,38 +39,52 @@ impl TestFunc for Program<'_> {
     fn start_game(&self, from: u64, error: Option<Error>) {
         let result = self.send(from, Command::StartGame);
         assert!(!result.main_failed());
-        let reply: Result<Event, Error>;
-        if let Some(error) = error {
-            reply = Err(error);
-            assert!(result.contains(&(from, reply.encode())));
+        let reply = if let Some(error) = error {
+            Err(error)
         } else {
-            reply = Ok(Event::GameStarted);
-            assert!(result.contains(&(from, reply.encode())));
-        }
+            Ok(Event::GameStarted)
+        };
+        assert!(result.contains(&(from, reply.encode())));
     }
     fn restart_game(&self, from: u64, players_limit: Option<u64>, error: Option<Error>) {
         let result = self.send(from, Command::RestartGame(players_limit));
         assert!(!result.main_failed());
-        let reply: Result<Event, Error>;
-        if let Some(error) = error {
-            reply = Err(error);
-            assert!(result.contains(&(from, reply.encode())));
+        let reply = if let Some(error) = error {
+            Err(error)
         } else {
-            reply = Ok(Event::GameRestarted { players_limit });
-            assert!(result.contains(&(from, reply.encode())));
-        }
+            Ok(Event::GameRestarted { players_limit })
+        };
+        assert!(result.contains(&(from, reply.encode())));
+    }
+    fn add_admin(&self, from: u64, admin: ActorId, error: Option<Error>) {
+        let result = self.send(from, Command::AddAdmin(admin));
+        assert!(!result.main_failed());
+        let reply = if let Some(error) = error {
+            Err(error)
+        } else {
+            Ok(Event::AdminAdded(admin))
+        };
+        assert!(result.contains(&(from, reply.encode())));
+    }
+    fn delete_admin(&self, from: u64, admin: ActorId, error: Option<Error>) {
+        let result = self.send(from, Command::DeleteAdmin(admin));
+        assert!(!result.main_failed());
+        let reply = if let Some(error) = error {
+            Err(error)
+        } else {
+            Ok(Event::AdminDeleted(admin))
+        };
+        assert!(result.contains(&(from, reply.encode())));
     }
     fn skip(&self, from: u64, error: Option<Error>) {
         let result = self.send(from, Command::Skip);
         assert!(!result.main_failed());
-        let reply: Result<Event, Error>;
-        if let Some(error) = error {
-            reply = Err(error);
-            assert!(result.contains(&(from, reply.encode())));
+        let reply = if let Some(error) = error {
+            Err(error)
         } else {
-            reply = Ok(Event::Skipped);
-            assert!(result.contains(&(from, reply.encode())));
-        }
+            Ok(Event::Skipped)
+        };
+        assert!(result.contains(&(from, reply.encode())));
     }
     fn place(
         &self,
@@ -87,18 +103,16 @@ impl TestFunc for Program<'_> {
             },
         );
         assert!(!result.main_failed());
-        let reply: Result<Event, Error>;
-        if let Some(error) = error {
-            reply = Err(error);
-            assert!(result.contains(&(from, reply.encode())));
+        let reply = if let Some(error) = error {
+            Err(error)
         } else {
-            reply = Ok(Event::Placed {
+            Ok(Event::Placed {
                 tile_id,
                 track_id,
                 remove_train,
-            });
-            assert!(result.contains(&(from, reply.encode())));
-        }
+            })
+        };
+        assert!(result.contains(&(from, reply.encode())));
     }
 }
 #[test]
@@ -211,4 +225,26 @@ fn failures_test() {
     program.place(0, 3, 0, false, Some(Error::InvalidTileId));
     program.place(0, 1, 1, false, Some(Error::InvalidTrack));
     program.place(0, 1, 0, false, Some(Error::InvalidTile));
+}
+
+#[test]
+fn add_admin_test() {
+    let system = System::new();
+
+    system.init_logger();
+
+    let program = Program::current_opt(&system);
+
+    let result = program.send(2, 0);
+    assert!(!result.main_failed());
+
+    program.register(2, 0.into(), "A".to_owned(), None);
+    program.register(2, 1.into(), "B".to_owned(), None);
+    program.start_game(3, Some(Error::NotAdmin));
+    program.add_admin(4, 3.into(), Some(Error::NotAdmin));
+    program.add_admin(2, 3.into(), None);
+    program.start_game(3, None);
+    program.restart_game(3, None, None);
+    program.delete_admin(3, 2.into(), None);
+    program.start_game(2, Some(Error::NotAdmin));
 }

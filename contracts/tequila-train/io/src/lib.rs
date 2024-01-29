@@ -31,6 +31,7 @@ pub struct GameLauncherState {
     pub players: Vec<(ActorId, String)>,
     pub is_started: bool,
     pub maybe_limit: Option<u64>,
+    pub admins: Vec<ActorId>,
 }
 
 #[derive(
@@ -148,6 +149,8 @@ pub enum Command {
         /// Optional players limit.
         Option<u64>,
     ),
+    AddAdmin(ActorId),
+    DeleteAdmin(ActorId),
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Debug)]
@@ -170,6 +173,8 @@ pub enum Event {
         winner: ActorId,
     },
     GameStalled,
+    AdminAdded(ActorId),
+    AdminDeleted(ActorId),
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
@@ -186,6 +191,9 @@ pub enum Error {
     InvalidTileId,
     InvalidTileOwner,
     InvalidTrack,
+    NotAdmin,
+    AlreadyExists,
+    AdminDoesNotExist,
 }
 
 #[derive(Debug, TypeInfo, Encode, Decode, Clone, Default)]

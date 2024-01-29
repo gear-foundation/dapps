@@ -9,6 +9,7 @@ pub struct GameLauncher {
     pub players: Vec<(ActorId, String)>,
     pub is_started: bool,
     pub maybe_limit: Option<u64>,
+    pub admins: Vec<ActorId>,
 }
 
 /// All game initializing logic is inside `GameState` constructor.
@@ -36,11 +37,15 @@ impl GameLauncher {
 
         GameLauncher {
             maybe_limit: Some(limit),
+            admins: vec![msg::source()],
             ..Default::default()
         }
     }
 
     pub fn start(&mut self) -> Result<Event, Error> {
+        if !self.admins.contains(&msg::source()) {
+            return Err(Error::NotAdmin);
+        }
         if self.is_started {
             return Err(Error::GameHasAlreadyStarted);
         }
@@ -56,6 +61,9 @@ impl GameLauncher {
     }
 
     pub fn restart(&mut self, maybe_limit: Option<u64>) -> Result<Event, Error> {
+        if !self.admins.contains(&msg::source()) {
+            return Err(Error::NotAdmin);
+        }
         if !self.is_started {
             return Err(Error::GameHasNotStartedYet);
         }
@@ -68,6 +76,29 @@ impl GameLauncher {
         Ok(Event::GameRestarted {
             players_limit: maybe_limit,
         })
+    }
+    pub fn add_admin(&mut self, admin: &ActorId) -> Result<Event, Error> {
+        if !self.admins.contains(&msg::source()) {
+            return Err(Error::NotAdmin);
+        }
+        if self.admins.contains(admin) {
+            return Err(Error::AlreadyExists);
+        }
+        self.admins.push(*admin);
+        Ok(Event::AdminAdded(*admin))
+    }
+
+    pub fn delete_admin(&mut self, admin: &ActorId) -> Result<Event, Error> {
+        if !self.admins.contains(&msg::source()) {
+            return Err(Error::NotAdmin);
+        }
+        let index = self.admins.iter().position(|value| value == admin);
+        if let Some(id) = index {
+            self.admins.remove(id);
+        } else {
+            return Err(Error::AdminDoesNotExist);
+        }
+        Ok(Event::AdminDeleted(*admin))
     }
 
     pub fn register(&mut self, player: ActorId, name: String) -> Result<Event, Error> {
@@ -100,7 +131,10 @@ extern fn init() {
         GAME_LAUNCHER = Some(if let Some(limit) = players_limit {
             GameLauncher::new_with_limit(limit)
         } else {
-            GameLauncher::default()
+            GameLauncher {
+                admins: vec![msg::source()],
+                ..Default::default()
+            }
         })
     }
 }
@@ -155,6 +189,8 @@ fn process_handle() -> Result<Event, Error> {
         Command::Register { player, name } => game_launcher.register(player, name),
         Command::StartGame => game_launcher.start(),
         Command::RestartGame(maybe_limit) => game_launcher.restart(maybe_limit),
+        Command::AddAdmin(admin) => game_launcher.add_admin(&admin),
+        Command::DeleteAdmin(admin) => game_launcher.delete_admin(&admin),
     }
 }
 
@@ -177,6 +213,7 @@ impl From<GameLauncher> for GameLauncherState {
             players,
             is_started,
             maybe_limit,
+            admins,
         }: GameLauncher,
     ) -> Self {
         Self {
@@ -184,6 +221,7 @@ impl From<GameLauncher> for GameLauncherState {
             players,
             is_started,
             maybe_limit,
+            admins,
         }
     }
 }
