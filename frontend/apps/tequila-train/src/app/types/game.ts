@@ -30,45 +30,37 @@ export type StatePlayerTrackType = {
 };
 export type PlayerTrackType = {
   hasTrain: boolean;
-  tiles: DominoTileType[];
+  tiles: StateDominoTileType[];
 };
 
-type IPhaseWinner = Record<'winner', IPlayer>;
+type IPhaseWinner = Record<'Winner', string[]>;
 
 type IPhaseOther = Record<'registration' | 'playing' | 'stalled', null>;
 
 export type IGamePhase = Partial<IPhaseWinner & IPhaseOther>;
 
-export type IGameState = {
-  gameState: {
-    currentPlayer: string;
-    players: HexString[];
-    remainingTiles: string[];
-    shots: string[];
-    startTile: string;
-    state: IGamePhase;
-    tiles: StateDominoTileType[];
-    tileToPlayer: {};
-    tracks: StatePlayerTrackType[];
-    winner: null | HexString;
-  };
+export type IState = {
+  admins: string[];
   players: IPlayer[];
   isStarted: boolean;
-  maybeLimit: string;
+  maybeLimit: number | null;
+  gameState: IGameState
+}
+
+export type IGameState = {
+  currentPlayer: string;
+  players: HexString[];
+  remainingTiles: string[];
+  shots: string[];
+  startTile: string;
+  state: IGamePhase;
+  tiles: StateDominoTileType[];
+  tileToPlayer: {};
+  tracks: PlayerTrackType[];
+  Winner: null | string[];
 };
 
 export type IPlayer = [HexString, string];
-
-export type GameWasmStateResponse = {
-  currentPlayer: string;
-  players: IPlayer[];
-  playersTiles: Array<DominoTileType[]>;
-  shotCounters: string[];
-  startTile: DominoTileType;
-  state: IGamePhase;
-  tracks: PlayerTrackType[];
-  winner: null | HexString;
-};
 
 export type PlayerChoiceType = {
   tile?: DominoTileType;

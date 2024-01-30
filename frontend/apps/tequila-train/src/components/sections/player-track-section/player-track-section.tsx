@@ -1,6 +1,6 @@
 import { Icon } from '../../ui/icon';
 import clsx from 'clsx';
-import { getBgColors, isPartialSubset } from 'app/utils';
+import { findTile, getBgColors, isPartialSubset } from 'app/utils';
 import { DominoItem } from '../../common/domino-item';
 import { DominoZone } from '../../common/domino-zone';
 import { DominoTileType } from 'app/types/game';
@@ -25,7 +25,7 @@ const CARD_WIDTH = 72;
 export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }: Props) => {
   const { account } = useAccount();
   const { isAllowed } = useApp();
-  const { gameWasm: wasm, playerChoice } = useGame();
+  const { game, playerChoice } = useGame();
   const [isDisabled, setIsDisabled] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const [w] = useRefDimensions(ref);
@@ -43,30 +43,38 @@ export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }:
   }, [w, tiles]);
 
   const checkIsActiveDominoReverse = () => {
-    if (playerChoice?.tile && tiles && wasm) {
-      const lastTile = tiles.length > 0 ? tiles[tiles.length - 1] : wasm.startTile;
+    if (playerChoice?.tile && tiles && game) {
+      const lastTile = tiles.length > 0 ? tiles[tiles.length - 1] : game.gameState.startTile;
 
       return lastTile[1] === playerChoice.tile[0] ? false : lastTile[1] === playerChoice.tile[1];
     } else return false;
   };
 
   const checkIsRowDominoReverse = (tile: DominoTileType, i: number, tiles: DominoTileType[]) => {
-    if (wasm) {
-      const lastTile = tiles.length > 0 ? (i > 0 ? tiles[i - 1] : false) : wasm.startTile;
+
+    if (game) {
+      const lastTile = tiles.length > 0 ? (i > 0 ? tiles[i - 1] : false) : game.gameState.startTile;
       // console.log({ tile, lastTile });
       return lastTile ? (lastTile[1] === tile[0] ? false : lastTile[1] === tile[1]) : false;
     } else return false;
   };
 
   useEffect(() => {
-    if (playerChoice?.tile && tiles && wasm && !train && (active || isUserTrain)) {
-      setIsDisabled(
-        !isPartialSubset([tiles.length > 0 ? tiles[tiles.length - 1][1] : wasm.startTile[1]], playerChoice.tile),
-      );
+    if (playerChoice?.tile && tiles && game && !train && (active || isUserTrain)) {
+
+      const stateStartTile = game.gameState.startTile
+      const startTile = stateStartTile && findTile(stateStartTile, game.gameState.tiles)
+
+      if (startTile) {
+        setIsDisabled(
+          !isPartialSubset([tiles.length > 0 ? tiles[tiles.length - 1][1] : startTile[0]], playerChoice.tile),
+        );
+      }
     } else {
       setIsDisabled(false);
     }
-  }, [active, isUserTrain, playerChoice, tiles, train, wasm]);
+
+  }, [active, isUserTrain, playerChoice, tiles, train, game]);
 
   return (
     <div
@@ -93,7 +101,7 @@ export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }:
           />
         )}
         {isUserTrain &&
-          (account?.decodedAddress === wasm?.players[index][0] && !isDisabled && playerChoice?.tile_id !== undefined ? (
+          (account?.decodedAddress === game?.players[index][0] && !isDisabled && playerChoice?.tile_id !== undefined ? (
             <PlayerTrain index={index} />
           ) : (
             <Icon
@@ -110,9 +118,9 @@ export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }:
             !isUserTrain && 'col-span-2',
           )}>
           <TooltipWrapper
-            text={wasm?.players[index][1] || ''}
+            text={game?.players[index][1] || ''}
             className="after:text-dark-500 after:!bg-primary after:!transition-none after:!shadow-md">
-            <span className="line-clamp-2">{train ? 'Tequila Train' : `${wasm?.players[index][1]}`}</span>
+            <span className="line-clamp-2">{train ? 'Tequila Train' : `${game?.players[index][1]}`}</span>
           </TooltipWrapper>
         </h3>
       </div>
