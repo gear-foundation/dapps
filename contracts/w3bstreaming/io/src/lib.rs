@@ -6,8 +6,6 @@ use gstd::{collections::BTreeMap, prelude::*, ActorId};
 use scale_info::TypeInfo;
 
 #[derive(Encode, Decode, TypeInfo, Clone)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Stream {
     pub broadcaster: ActorId,
     pub start_time: u64,
@@ -19,8 +17,6 @@ pub struct Stream {
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Profile {
     pub name: Option<String>,
     pub surname: Option<String>,
@@ -32,31 +28,23 @@ pub struct Profile {
 }
 
 #[derive(Encode, Decode, Default, TypeInfo, Clone)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Contract {
     pub streams: BTreeMap<String, Stream>,
     pub users: BTreeMap<ActorId, Profile>,
 }
 
 #[derive(Encode, Decode, Default, TypeInfo, Clone)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct State {
     pub streams: Vec<(String, Stream)>,
     pub users: Vec<(ActorId, Profile)>,
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Role {
     Speaker,
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Subscription {
     pub account_id: ActorId,
     pub sub_date: u64,
@@ -64,8 +52,6 @@ pub struct Subscription {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Action {
     NewStream {
         title: String,
@@ -73,6 +59,17 @@ pub enum Action {
         start_time: u64,
         end_time: u64,
         img_link: String,
+    },
+    DeleteStream {
+        stream_id: String,
+    },
+    EditStream {
+        stream_id: String,
+        start_time: Option<u64>,
+        end_time: Option<u64>,
+        title: Option<String>,
+        img_link: Option<String>,
+        description: Option<String>,
     },
     Subscribe {
         account_id: ActorId,
@@ -85,10 +82,10 @@ pub enum Action {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum ActionResult {
     StreamIsScheduled { id: String },
+    StreamDeleted { id: String },
+    StreamEdited,
     Subscribed,
     ProfileEdited,
     StreamIsFinished { id: String },

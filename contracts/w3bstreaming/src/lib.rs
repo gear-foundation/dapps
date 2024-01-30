@@ -27,7 +27,8 @@ extern fn handle() {
             img_link,
         } => {
             let stream_id = exec::block_timestamp().to_string() + &title;
-            if let Some(profile) = contract.users.get_mut(&msg::source()) {
+            let msg_src = msg::source();
+            if let Some(profile) = contract.users.get_mut(&msg_src) {
                 profile.stream_ids.push(stream_id.clone());
             } else {
                 panic!("Account is no registered");
@@ -35,7 +36,7 @@ extern fn handle() {
             contract.streams.insert(
                 stream_id.clone(),
                 Stream {
-                    broadcaster: msg::source(),
+                    broadcaster: msg_src,
                     img_link,
                     start_time,
                     end_time,
@@ -47,21 +48,87 @@ extern fn handle() {
             msg::reply(ActionResult::StreamIsScheduled { id: stream_id }, 0)
                 .expect("Unable to send reply");
         }
+        Action::DeleteStream {
+            stream_id
+        } => {
+            let msg_src = msg::source();
+            if let Some(profile) = contract.users.get_mut(&msg_src) {
+                if let Some(index) = profile.stream_ids.iter().position(|x| *x == stream_id){
+                    profile.stream_ids.remove(index);
+                } else {
+                    panic!("Id is not exist");
+                }
+            } else {
+                panic!("Account is no registered");
+            }
+
+            if let Some(stream) = contract.streams.get(&stream_id) {
+                if stream.broadcaster == msg_src {
+                    contract.streams.remove(&stream_id);
+                }
+                else {
+                    panic!("You are not broadcaster");
+                }
+            } else {
+                panic!("Id is not exist");
+            }
+
+            msg::reply(ActionResult::StreamDeleted { id: stream_id }, 0)
+                .expect("Unable to send reply");
+        }
+        Action::EditStream {
+            stream_id,
+            start_time,
+            end_time,
+            title,
+            img_link,
+            description,
+        } => {
+            let msg_src = msg::source();
+
+            if let Some(stream) = contract.streams.get_mut(&stream_id) {
+                if stream.broadcaster == msg_src {
+                    if let Some(start_time) = start_time {
+                        stream.start_time = start_time;
+                    }
+                    if let Some(end_time) = end_time {
+                        stream.end_time = end_time;
+                    }
+                    if let Some(title) = title {
+                        stream.title = title;
+                    }
+                    if let Some(img_link) = img_link {
+                        stream.img_link = img_link;
+                    }
+                    stream.description = description;
+                }
+                else {
+                    panic!("You are not broadcaster");
+                }
+            } else {
+                panic!("Id is not exist");
+            }
+
+            msg::reply(ActionResult::StreamEdited, 0)
+                .expect("Unable to send reply");
+        }
         Action::Subscribe { account_id } => {
             if contract.users.get(&account_id).is_none() {
                 panic!("The user is not found");
             }
 
-            if contract.users.get(&msg::source()).is_none() {
+            let msg_src = msg::source();
+
+            if contract.users.get(&msg_src).is_none() {
                 panic!("You are not registered");
             }
 
             contract
                 .users
                 .entry(account_id)
-                .and_modify(|profile| profile.subscribers.push(msg::source()));
+                .and_modify(|profile| profile.subscribers.push(msg_src));
 
-            contract.users.entry(msg::source()).and_modify(|profile| {
+            contract.users.entry(msg_src).and_modify(|profile| {
                 profile.subscriptions.push(Subscription {
                     account_id,
                     sub_date: exec::block_timestamp(),
