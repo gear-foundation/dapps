@@ -1,7 +1,7 @@
 import { AlertContainerFactory } from '@gear-js/react-hooks';
 import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import { LOCAL_STORAGE } from 'app/consts';
-import { DominoTileType, StateDominoTileType } from '../types/game';
+import { DominoNumber, DominoTileType, StateDominoNumber, StateDominoTileType } from '../types/game';
 import { isHex } from '@polkadot/util';
 import { ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -70,3 +70,36 @@ export const isPartialSubset = (array1: any[], array2: any[]) => array2.some((el
 export const hexRequired = (value: string) =>
   !value ? 'Field is required' : !isHex(value) ? 'String must be in Hex format' : null;
 export const stringRequired = (value: string) => (!value ? 'Field is required' : null);
+
+const stringToNumberMapping: Record<StateDominoNumber, DominoNumber> = {
+  'Zero': "0",
+  'One': "1",
+  'Two': "2",
+  'Three': "3",
+  'Four': "4",
+  'Five': "5",
+  'Six': "6",
+  'Seven': "7",
+  'Eight': "8",
+  'Nine': "9",
+  'Ten': "10",
+  'Eleven': "11",
+  'Twelve': "12",
+};
+
+const convertTileStringToNumbers = (tile: StateDominoTileType): DominoTileType => {
+  return [stringToNumberMapping[tile.left], stringToNumberMapping[tile.right]];
+};
+
+export const findTile = (startTileString: string, tiles: StateDominoTileType[]): DominoTileType | null => {
+  const index = parseInt(startTileString, 10);
+  if (index >= 0 && index < tiles.length) {
+    return convertTileStringToNumbers(tiles[index]);
+  }
+  return null;
+};
+
+// function to convert tile in specific format to [number, number]
+export const convertFormattedTileToNumbers = (formattedTile: StateDominoTileType) => {
+  return convertTileStringToNumbers(formattedTile);
+};

@@ -1,10 +1,10 @@
 import { createContext, ReactNode, useState } from 'react';
-import { DominoTileType, GameWasmStateResponse, IGameState, IPlayer, PlayerChoiceType } from '../types/game';
+import { DominoTileType, IPlayer, IState, PlayerChoiceType } from '../types/game';
 
 const useProgram = () => {
-  const [game, setGame] = useState<IGameState>();
-  const [gameWasm, setGameWasm] = useState<GameWasmStateResponse>();
+  const [game, setGame] = useState<IState>();
   const [players, setPlayers] = useState<IPlayer[]>([]);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [selectedDomino, setSelectedDomino] = useState<[number, DominoTileType]>();
   const [playerTiles, setPlayerTiles] = useState<DominoTileType[]>();
   const [playerChoice, setPlayerChoice] = useState<PlayerChoiceType>();
@@ -12,10 +12,10 @@ const useProgram = () => {
   return {
     game,
     setGame,
-    gameWasm,
-    setGameWasm,
     players,
     setPlayers,
+    isAdmin,
+    setIsAdmin,
     playerTiles,
     setPlayerTiles,
     selectedDomino,
