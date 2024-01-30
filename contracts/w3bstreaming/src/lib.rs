@@ -1,22 +1,22 @@
 #![no_std]
 
 use gstd::{exec, msg, prelude::*};
-use w3bstreaming_io::{Action, ActionResult, Contract, Profile, Role, State, Stream, Subscription};
+use w3bstreaming_io::{Action, Event, Profile, Program, State, Stream, Subscription};
 
-static mut CONTRACT: Option<Contract> = None;
+static mut PROGRAM: Option<Program> = None;
 
 #[no_mangle]
 extern fn init() {
-    let contract = Contract {
+    let program = Program {
         ..Default::default()
     };
-    unsafe { CONTRACT = Some(contract) };
+    unsafe { PROGRAM = Some(program) };
 }
 
 #[no_mangle]
 extern fn handle() {
     let input: Action = msg::load().expect("Unable to load message");
-    let contract = unsafe { CONTRACT.as_mut().expect("The contract is not initialized") };
+    let program = unsafe { PROGRAM.as_mut().expect("The program is not initialized") };
 
     match input {
         Action::NewStream {
@@ -28,12 +28,12 @@ extern fn handle() {
         } => {
             let stream_id = exec::block_timestamp().to_string() + &title;
             let msg_src = msg::source();
-            if let Some(profile) = contract.users.get_mut(&msg_src) {
+            if let Some(profile) = program.users.get_mut(&msg_src) {
                 profile.stream_ids.push(stream_id.clone());
             } else {
                 panic!("Account is no registered");
             }
-            contract.streams.insert(
+            program.streams.insert(
                 stream_id.clone(),
                 Stream {
                     broadcaster: msg_src,
@@ -42,15 +42,14 @@ extern fn handle() {
                     end_time,
                     title,
                     description,
-                    watchers: Vec::new(),
                 },
             );
-            msg::reply(ActionResult::StreamIsScheduled { id: stream_id }, 0)
+            msg::reply(Event::StreamIsScheduled { id: stream_id }, 0)
                 .expect("Unable to send reply");
         }
         Action::DeleteStream { stream_id } => {
             let msg_src = msg::source();
-            if let Some(profile) = contract.users.get_mut(&msg_src) {
+            if let Some(profile) = program.users.get_mut(&msg_src) {
                 if let Some(index) = profile.stream_ids.iter().position(|x| *x == stream_id) {
                     profile.stream_ids.remove(index);
                 } else {
@@ -60,9 +59,9 @@ extern fn handle() {
                 panic!("Account is no registered");
             }
 
-            if let Some(stream) = contract.streams.get(&stream_id) {
+            if let Some(stream) = program.streams.get(&stream_id) {
                 if stream.broadcaster == msg_src {
-                    contract.streams.remove(&stream_id);
+                    program.streams.remove(&stream_id);
                 } else {
                     panic!("You are not broadcaster");
                 }
@@ -70,8 +69,7 @@ extern fn handle() {
                 panic!("Id is not exist");
             }
 
-            msg::reply(ActionResult::StreamDeleted { id: stream_id }, 0)
-                .expect("Unable to send reply");
+            msg::reply(Event::StreamDeleted { id: stream_id }, 0).expect("Unable to send reply");
         }
         Action::EditStream {
             stream_id,
@@ -83,7 +81,7 @@ extern fn handle() {
         } => {
             let msg_src = msg::source();
 
-            if let Some(stream) = contract.streams.get_mut(&stream_id) {
+            if let Some(stream) = program.streams.get_mut(&stream_id) {
                 if stream.broadcaster == msg_src {
                     if let Some(start_time) = start_time {
                         stream.start_time = start_time;
@@ -105,40 +103,39 @@ extern fn handle() {
                 panic!("Id is not exist");
             }
 
-            msg::reply(ActionResult::StreamEdited, 0).expect("Unable to send reply");
+            msg::reply(Event::StreamEdited, 0).expect("Unable to send reply");
         }
         Action::Subscribe { account_id } => {
-            if contract.users.get(&account_id).is_none() {
+            if program.users.get(&account_id).is_none() {
                 panic!("The user is not found");
             }
 
             let msg_src = msg::source();
 
-            if contract.users.get(&msg_src).is_none() {
+            if program.users.get(&msg_src).is_none() {
                 panic!("You are not registered");
             }
 
-            contract
+            program
                 .users
                 .entry(account_id)
                 .and_modify(|profile| profile.subscribers.push(msg_src));
 
-            contract.users.entry(msg_src).and_modify(|profile| {
+            program.users.entry(msg_src).and_modify(|profile| {
                 profile.subscriptions.push(Subscription {
                     account_id,
                     sub_date: exec::block_timestamp(),
-                    next_write_off: None,
                 })
             });
 
-            msg::reply(ActionResult::Subscribed, 0).expect("Unable to send reply");
+            msg::reply(Event::Subscribed, 0).expect("Unable to send reply");
         }
         Action::EditProfile {
             name,
             surname,
             img_link,
         } => {
-            contract
+            program
                 .users
                 .entry(msg::source())
                 .and_modify(|profile| {
@@ -153,16 +150,15 @@ extern fn handle() {
                     stream_ids: Vec::new(),
                     subscribers: Vec::new(),
                     subscriptions: Vec::new(),
-                    role: Role::Speaker,
                 });
 
-            msg::reply(ActionResult::ProfileEdited, 0).expect("Unable to send reply");
+            msg::reply(Event::ProfileEdited, 0).expect("Unable to send reply");
         }
     };
 }
 
 #[no_mangle]
 extern fn state() {
-    let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
-    msg::reply::<State>(contract.into(), 0).expect("Failed to share state");
+    let program = unsafe { PROGRAM.take().expect("Unexpected error in taking state") };
+    msg::reply::<State>(program.into(), 0).expect("Failed to share state");
 }

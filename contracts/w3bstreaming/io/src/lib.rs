@@ -13,7 +13,6 @@ pub struct Stream {
     pub title: String,
     pub img_link: String,
     pub description: Option<String>,
-    pub watchers: Vec<ActorId>,
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone)]
@@ -24,11 +23,10 @@ pub struct Profile {
     pub stream_ids: Vec<String>,
     pub subscribers: Vec<ActorId>,
     pub subscriptions: Vec<Subscription>,
-    pub role: Role,
 }
 
 #[derive(Encode, Decode, Default, TypeInfo, Clone)]
-pub struct Contract {
+pub struct Program {
     pub streams: BTreeMap<String, Stream>,
     pub users: BTreeMap<ActorId, Profile>,
 }
@@ -40,15 +38,9 @@ pub struct State {
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone)]
-pub enum Role {
-    Speaker,
-}
-
-#[derive(Encode, Decode, TypeInfo, Clone)]
 pub struct Subscription {
     pub account_id: ActorId,
     pub sub_date: u64,
-    pub next_write_off: Option<u64>,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
@@ -82,37 +74,35 @@ pub enum Action {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-pub enum ActionResult {
+pub enum Event {
     StreamIsScheduled { id: String },
     StreamDeleted { id: String },
     StreamEdited,
     Subscribed,
     ProfileEdited,
-    StreamIsFinished { id: String },
-    Error(String),
 }
 
 pub struct ProgramMetadata;
 
 impl Metadata for ProgramMetadata {
     type Init = ();
-    type Handle = InOut<Action, ActionResult>;
+    type Handle = InOut<Action, Event>;
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = Out<Contract>;
+    type State = Out<State>;
 }
 
-impl From<Contract> for State {
-    fn from(contract: Contract) -> Self {
+impl From<Program> for State {
+    fn from(program: Program) -> Self {
         Self {
-            streams: contract
+            streams: program
                 .streams
                 .into_iter()
                 .map(|(stream_id, streams)| (stream_id, streams))
                 .collect(),
 
-            users: contract
+            users: program
                 .users
                 .into_iter()
                 .map(|(id, profile)| (id, profile))

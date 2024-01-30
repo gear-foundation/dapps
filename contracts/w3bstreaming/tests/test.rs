@@ -1,5 +1,3 @@
-use std::vec;
-
 use gtest::{Program, System};
 use w3bstreaming_io::*;
 
@@ -25,6 +23,7 @@ fn edit_profile(
     assert_eq!(error, res.main_failed());
 }
 
+#[allow(clippy::too_many_arguments)]
 fn new_stream(
     web_stream: &Program<'_>,
     from: u64,
@@ -48,6 +47,7 @@ fn new_stream(
     assert_eq!(error, res.main_failed());
 }
 
+#[allow(clippy::too_many_arguments)]
 fn edit_stream(
     web_stream: &Program<'_>,
     from: u64,
@@ -126,7 +126,6 @@ fn success() {
         title: "title_update".to_string(),
         img_link: "img_link".to_string(),
         description: None,
-        watchers: vec![],
     };
 
     let state: State = web_stream.read_state(0).expect("Can't read state");
