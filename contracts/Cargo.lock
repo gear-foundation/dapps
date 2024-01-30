@@ -7993,6 +7993,7 @@ version = "1.0.2"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
+ "gtest",
  "w3bstreaming-io",
 ]
 

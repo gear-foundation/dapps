@@ -5,7 +5,7 @@ use gmeta::{InOut, Metadata, Out};
 use gstd::{collections::BTreeMap, prelude::*, ActorId};
 use scale_info::TypeInfo;
 
-#[derive(Encode, Decode, TypeInfo, Clone)]
+#[derive(Encode, Decode, TypeInfo, Clone, Debug, PartialEq, Eq)]
 pub struct Stream {
     pub broadcaster: ActorId,
     pub start_time: u64,
@@ -95,10 +95,10 @@ pub enum ActionResult {
 pub struct ProgramMetadata;
 
 impl Metadata for ProgramMetadata {
-    type Init = InOut<(), ()>;
+    type Init = ();
     type Handle = InOut<Action, ActionResult>;
-    type Reply = InOut<(), ()>;
-    type Others = InOut<(), ()>;
+    type Reply = ();
+    type Others = ();
     type Signal = ();
     type State = Out<Contract>;
 }

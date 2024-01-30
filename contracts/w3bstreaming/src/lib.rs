@@ -48,12 +48,10 @@ extern fn handle() {
             msg::reply(ActionResult::StreamIsScheduled { id: stream_id }, 0)
                 .expect("Unable to send reply");
         }
-        Action::DeleteStream {
-            stream_id
-        } => {
+        Action::DeleteStream { stream_id } => {
             let msg_src = msg::source();
             if let Some(profile) = contract.users.get_mut(&msg_src) {
-                if let Some(index) = profile.stream_ids.iter().position(|x| *x == stream_id){
+                if let Some(index) = profile.stream_ids.iter().position(|x| *x == stream_id) {
                     profile.stream_ids.remove(index);
                 } else {
                     panic!("Id is not exist");
@@ -65,8 +63,7 @@ extern fn handle() {
             if let Some(stream) = contract.streams.get(&stream_id) {
                 if stream.broadcaster == msg_src {
                     contract.streams.remove(&stream_id);
-                }
-                else {
+                } else {
                     panic!("You are not broadcaster");
                 }
             } else {
@@ -101,16 +98,14 @@ extern fn handle() {
                         stream.img_link = img_link;
                     }
                     stream.description = description;
-                }
-                else {
+                } else {
                     panic!("You are not broadcaster");
                 }
             } else {
                 panic!("Id is not exist");
             }
 
-            msg::reply(ActionResult::StreamEdited, 0)
-                .expect("Unable to send reply");
+            msg::reply(ActionResult::StreamEdited, 0).expect("Unable to send reply");
         }
         Action::Subscribe { account_id } => {
             if contract.users.get(&account_id).is_none() {
