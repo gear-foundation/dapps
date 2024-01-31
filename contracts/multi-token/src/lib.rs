@@ -193,11 +193,8 @@ impl SimpleMtk {
             .for_each(|(i, id)| self.burn_impl(msg_src, id, amounts[i]));
 
         for (id, amount) in ids.iter().zip(amounts.iter()) {
-            if let Some(quantity) = self.supply.get_mut(id) {
-                *quantity = quantity.saturating_sub(*amount);
-            } else {
-                return Err(MtkError::WrongId);
-            }
+            let quantity = self.supply.get_mut(id).ok_or(MtkError::WrongId)?;
+            *quantity = quantity.saturating_sub(*amount);
         }
 
         Ok(MtkEvent::Transfer {
@@ -339,12 +336,13 @@ impl SimpleMtk {
     fn revoke_approval(&mut self, to: &ActorId) -> Result<MtkEvent, MtkError> {
         let msg_src = &msg::source();
 
-        if let Some(approvals) = self.tokens.approvals.get_mut(msg_src) {
-            if !approvals.remove(to) {
-                return Err(MtkError::ThereIsNoThisApproval);
-            }
-        } else {
-            return Err(MtkError::NoApprovals);
+        let approvals = self
+            .tokens
+            .approvals
+            .get_mut(msg_src)
+            .ok_or(MtkError::NoApprovals)?;
+        if !approvals.remove(to) {
+            return Err(MtkError::ThereIsNoThisApproval);
         }
 
         Ok(MtkEvent::RevokeApproval {
@@ -407,11 +405,8 @@ impl SimpleMtk {
             ids.extend_from_slice(&burn_info.nfts_ids);
         }
 
-        if let Some(quantity) = self.supply.get_mut(&id) {
-            *quantity = quantity.saturating_sub(amount);
-        } else {
-            return Err(MtkError::WrongId);
-        }
+        let quantity = self.supply.get_mut(&id).ok_or(MtkError::WrongId)?;
+        *quantity = quantity.saturating_sub(amount);
 
         Ok(MtkEvent::Transfer {
             from: ActorId::zero(),
