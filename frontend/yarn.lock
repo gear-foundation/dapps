@@ -1960,6 +1960,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dapps-frontend/hooks@workspace:packages/hooks"
   dependencies:
+    "@polkadot/extension-inject": "npm:0.46.5"
     "@types/react": "npm:18.2.33"
     "@types/react-dom": "npm:18.2.14"
     "@typescript-eslint/eslint-plugin": "npm:6.0.0"
