@@ -5,9 +5,10 @@ import { useBattle } from '../../context';
 import { useNavigate } from 'react-router-dom';
 import { HexString } from '@polkadot/util/types';
 import { useFetchVoucher } from 'features/battle/utils/init-gasless-transactions';
-import { useCheckBalance } from 'features/wallet/hooks';
+import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useBattleMessage } from 'features/battle/hooks/use-battle';
 import { useApi } from '@gear-js/react-hooks';
+import { BATTLE_ADDRESS } from 'features/battle/consts';
 
 const createTamagotchiInitial = {
   programId: '' as HexString,
@@ -24,7 +25,7 @@ export const CreateTamagotchiForm = () => {
   const handleMessage = useBattleMessage();
   const { isVoucher, isLoading } = useFetchVoucher();
   const { api } = useApi();
-  const { checkBalance } = useCheckBalance(isVoucher);
+  const { checkBalance } = useCheckBalance(BATTLE_ADDRESS);
   const navigate = useNavigate();
   const form = useForm({
     initialValues: createTamagotchiInitial,
@@ -46,7 +47,12 @@ export const CreateTamagotchiForm = () => {
     checkBalance(
       gasLimitToNumber(api?.blockGasLimit),
       () => {
-        handleMessage({ payload, onSuccess, onError, withVoucher: isVoucher });
+        handleMessage({
+          payload,
+          onSuccess,
+          onError,
+          // withVoucher: isVoucher
+        });
       },
       onError,
     );

@@ -1,16 +1,17 @@
 import { useBattle } from 'features/battle/context';
 import { useFetchVoucher } from 'features/battle/utils/init-gasless-transactions';
-import { useCheckBalance } from 'features/wallet/hooks';
+import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useBattleMessage } from 'features/battle/hooks';
 import { Button } from '@gear-js/ui';
 import { useApi } from '@gear-js/react-hooks';
 import { gasLimitToNumber } from 'app/utils';
+import { BATTLE_ADDRESS } from 'features/battle/consts';
 
 export const NewGameButton = () => {
   const { api } = useApi();
   const { isPending, setIsPending } = useBattle();
   const { isVoucher, isLoading } = useFetchVoucher();
-  const { checkBalance } = useCheckBalance(isVoucher);
+  const { checkBalance } = useCheckBalance(BATTLE_ADDRESS);
   const handleMessage = useBattleMessage();
 
   const onSuccess = () => setIsPending(false);
@@ -24,7 +25,12 @@ export const NewGameButton = () => {
     checkBalance(
       gasLimitToNumber(api?.blockGasLimit),
       () => {
-        handleMessage({ payload, onSuccess, onError, withVoucher: isVoucher });
+        handleMessage({
+          payload,
+          onSuccess,
+          onError,
+          // withVoucher: isVoucher
+        });
       },
       onError,
     );
