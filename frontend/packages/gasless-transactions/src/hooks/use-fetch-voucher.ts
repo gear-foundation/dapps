@@ -1,5 +1,5 @@
 import { decodeAddress } from '@gear-js/api';
-import { useBalanceFormat, useAccount, useVoucher } from '@gear-js/react-hooks';
+import { useBalanceFormat, useAccount, useIsVoucherExists, useVouchers, useBalance } from '@gear-js/react-hooks';
 
 import { useSignlessTransactions } from '@dapps-frontend/signless-transactions';
 
@@ -14,7 +14,11 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit = 18 }
   const { account } = useAccount();
 
   const accountAddress = pair ? decodeAddress(pair.address) : account?.decodedAddress;
-  const { isVoucherExists, voucherBalance } = useVoucher(programId, accountAddress);
+  const { isVoucherExists } = useIsVoucherExists(programId, accountAddress);
+  const { isEachVoucherReady, vouchers } = useVouchers(accountAddress, programId);
+  const voucherKeys = isEachVoucherReady && vouchers ? Object.keys(vouchers) : [];
+  const firstVoucherKey = voucherKeys[0] as `0x${string}`;
+  const { balance } = useBalance(vouchers && voucherKeys.length ? vouchers[firstVoucherKey].owner : accountAddress);
 
   const { getFormattedBalanceValue } = useBalanceFormat();
 
@@ -71,8 +75,8 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit = 18 }
   }, [accountAddress, isVoucherExists, backendAddress]);
 
   const updateBalance = useCallback(async () => {
-    const formattedBalance = voucherBalance && getFormattedBalanceValue(voucherBalance.toString()).toFixed();
-    const isBalanceLow = formattedBalance < voucherLimit;
+    const formattedBalance = balance && getFormattedBalanceValue(balance.toString()).toFixed();
+    const isBalanceLow = Number(formattedBalance) < voucherLimit;
 
     if (isBalanceLow) {
       setIsUpdating(true);
@@ -87,7 +91,7 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit = 18 }
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [voucherBalance]);
+  }, [balance]);
 
   useEffect(() => {
     setVoucher(false);

@@ -50,7 +50,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     const message = getMessage({ CreateSession: session });
 
     const extrinsic = api.message.send(message, metadata);
-    const voucher = api.voucher.issue(session.key, programId, voucherValue);
+    const voucher = await api.voucher.issue(session.key, programId, voucherValue);
 
     const txs = [extrinsic, voucher.extrinsic];
     const options = { ..._options, onError };
