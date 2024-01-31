@@ -1960,7 +1960,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dapps-frontend/hooks@workspace:packages/hooks"
   dependencies:
-    "@dapps-frontend/signless-transactions": "workspace:*"
     "@types/react": "npm:18.2.33"
     "@types/react-dom": "npm:18.2.14"
     "@typescript-eslint/eslint-plugin": "npm:6.0.0"
@@ -1973,6 +1972,7 @@ __metadata:
     vite: "npm:4.4.5"
     vite-plugin-dts: "npm:3.5.1"
   peerDependencies:
+    "@dapps-frontend/signless-transactions": "workspace:*"
     "@gear-js/api": 0.36.2
     "@gear-js/react-hooks": 0.10.0
     "@polkadot/types": 10.10.1
