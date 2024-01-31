@@ -89,8 +89,6 @@ impl VaraMan for Program<'_> {
     fn send_tx(&self, from: u64, action: VaraManAction, error: Option<VaraManError>) {
         let result = self.send(from, action);
         assert!(!result.main_failed());
-        let res = &result.decoded_log::<Result<VaraManEvent, VaraManError>>();
-        println!("RESULT: {:?}", res);
         if let Some(error) = error {
             assert!(result.contains(&(from, Err::<VaraManEvent, VaraManError>(error).encode())));
         }
