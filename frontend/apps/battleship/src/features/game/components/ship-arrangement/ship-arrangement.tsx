@@ -8,14 +8,15 @@ import styles from './ShipArrangement.module.scss';
 import { useGameMessage, usePending } from '../../hooks';
 import { generateShipsField } from './shipGenerator';
 import { convertShipsToField, useFetchVoucher } from '../../utils';
-import { useCheckBalance } from '@/features/wallet/hooks';
+import { useCheckBalance } from '@dapps-frontend/hooks';
+import { ADDRESS } from '../../consts';
 
 export default function ShipArrangement() {
-  const { isVoucher, isLoading } = useFetchVoucher();
-
+  // const { isVoucher, isLoading } = useFetchVoucher();
+  const isLoading = false;
   const message = useGameMessage();
   const { setPending } = usePending();
-  const { checkBalance } = useCheckBalance(isVoucher);
+  const { checkBalance } = useCheckBalance(ADDRESS.GAME);
 
   const [shipLayout, setShipLayout] = useState<string[]>([]);
   const [shipsField, setShipsField] = useState<number[][]>([]);
@@ -46,7 +47,7 @@ export default function ShipArrangement() {
               ships: shipsField,
             },
           },
-          withVoucher: isVoucher,
+          // withVoucher: isVoucher,
           gasLimit,
         }),
       );
