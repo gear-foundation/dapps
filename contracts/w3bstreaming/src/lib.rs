@@ -49,24 +49,22 @@ extern fn handle() {
         }
         Action::DeleteStream { stream_id } => {
             let msg_src = msg::source();
-            if let Some(profile) = program.users.get_mut(&msg_src) {
-                if let Some(index) = profile.stream_ids.iter().position(|x| *x == stream_id) {
-                    profile.stream_ids.remove(index);
-                } else {
-                    panic!("Id is not exist");
-                }
-            } else {
-                panic!("Account is no registered");
-            }
+            let profile = program
+                .users
+                .get_mut(&msg_src)
+                .expect("Account is no registered");
+            let index = profile
+                .stream_ids
+                .iter()
+                .position(|x| *x == stream_id)
+                .expect("Id is not exist");
+            profile.stream_ids.remove(index);
 
-            if let Some(stream) = program.streams.get(&stream_id) {
-                if stream.broadcaster == msg_src {
-                    program.streams.remove(&stream_id);
-                } else {
-                    panic!("You are not broadcaster");
-                }
+            let stream = program.streams.get(&stream_id).expect("Id is not exist");
+            if stream.broadcaster == msg_src {
+                program.streams.remove(&stream_id);
             } else {
-                panic!("Id is not exist");
+                panic!("You are not broadcaster");
             }
 
             msg::reply(Event::StreamDeleted { id: stream_id }, 0).expect("Unable to send reply");
@@ -106,13 +104,13 @@ extern fn handle() {
             msg::reply(Event::StreamEdited, 0).expect("Unable to send reply");
         }
         Action::Subscribe { account_id } => {
-            if program.users.get(&account_id).is_none() {
+            if !program.users.contains_key(&account_id) {
                 panic!("The user is not found");
             }
 
             let msg_src = msg::source();
 
-            if program.users.get(&msg_src).is_none() {
+            if !program.users.contains_key(&msg_src) {
                 panic!("You are not registered");
             }
 
