@@ -8434,7 +8434,7 @@ version = "1.1.0"
 dependencies = [
  "fungible-token",
  "fungible-token-io",
- "gear-core",
+ "gear-core 1.1.0 (registry+https://github.com/rust-lang/crates.io-index)",
  "gear-wasm-builder",
  "gstd",
  "gtest",
@@ -8447,16 +8447,6 @@ version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
-]
-
-[[package]]
-name = "varatube-state"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "varatube-io",
 ]
 
 [[package]]

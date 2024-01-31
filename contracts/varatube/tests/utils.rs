@@ -1,5 +1,4 @@
 use fungible_token_io::{FTAction, InitConfig, IoFungibleToken};
-use gear_core::ids::ProgramId;
 use gstd::Encode;
 use gtest::{Program, System};
 use varatube_io::{
@@ -16,7 +15,7 @@ pub trait FTokenTestFuncs {
     ) -> Program<'_>;
     fn mint(&self, from: u64, amount: u128);
     fn check_balance(&self, account: u64, expected_amount: u128);
-    fn approve(&self, from: u64, approved_account: ProgramId, amount: u128);
+    fn approve(&self, from: u64, approved_account: [u8; 32], amount: u128);
 }
 
 impl FTokenTestFuncs for Program<'_> {
@@ -51,11 +50,10 @@ impl FTokenTestFuncs for Program<'_> {
         assert!(!res.main_failed());
     }
 
-    fn approve(&self, from: u64, approved_account: ProgramId, amount: u128) {
-        let program_id_bytes: [u8; 32] = approved_account.into();
+    fn approve(&self, from: u64, approved_account: [u8; 32], amount: u128) {
 
         let payload = FTAction::Approve {
-            to: program_id_bytes.into(),
+            to: approved_account.into(),
             amount,
         };
 
@@ -84,14 +82,14 @@ pub trait VaratubeTestFuncs {
     fn register_subscription(
         &self,
         from: u64,
-        currency_id: ProgramId,
+        currency_id: [u8; 32],
         period: Period,
         with_renewal: bool,
         error: Option<Error>,
     );
     fn update_subscription(&self, from: u64, subscriber: u64, error: Option<Error>);
     fn cancel_subscription(&self, from: u64, error: Option<Error>);
-    fn add_token_data(&self, from: u64, currency_id: ProgramId, price: Price, error: Option<Error>);
+    fn add_token_data(&self, from: u64, currency_id: [u8; 32], price: Price, error: Option<Error>);
     fn get_subscriber_data(&self, subscriber: u64) -> Option<SubscriberData>;
 }
 
@@ -105,16 +103,15 @@ impl VaratubeTestFuncs for Program<'_> {
     fn register_subscription(
         &self,
         from: u64,
-        currency_id: ProgramId,
+        currency_id: [u8; 32],
         period: Period,
         with_renewal: bool,
         error: Option<Error>,
     ) {
-        let program_id_bytes: [u8; 32] = currency_id.into();
         let result = self.send(
             from,
             Actions::RegisterSubscription {
-                currency_id: program_id_bytes.into(),
+                currency_id: currency_id.into(),
                 period,
                 with_renewal,
             },
@@ -155,15 +152,14 @@ impl VaratubeTestFuncs for Program<'_> {
     fn add_token_data(
         &self,
         from: u64,
-        currency_id: ProgramId,
+        currency_id: [u8; 32],
         price: Price,
         error: Option<Error>,
     ) {
-        let program_id_bytes: [u8; 32] = currency_id.into();
         let result = self.send(
             from,
             Actions::AddTokenData {
-                token_id: program_id_bytes.into(),
+                token_id: currency_id.into(),
                 price,
             },
         );
