@@ -51,7 +51,6 @@ impl FTokenTestFuncs for Program<'_> {
     }
 
     fn approve(&self, from: u64, approved_account: [u8; 32], amount: u128) {
-
         let payload = FTAction::Approve {
             to: approved_account.into(),
             amount,
@@ -149,13 +148,7 @@ impl VaratubeTestFuncs for Program<'_> {
         }
     }
 
-    fn add_token_data(
-        &self,
-        from: u64,
-        currency_id: [u8; 32],
-        price: Price,
-        error: Option<Error>,
-    ) {
+    fn add_token_data(&self, from: u64, currency_id: [u8; 32], price: Price, error: Option<Error>) {
         let result = self.send(
             from,
             Actions::AddTokenData {
