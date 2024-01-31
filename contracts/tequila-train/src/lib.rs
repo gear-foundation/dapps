@@ -1,6 +1,6 @@
 #![no_std]
 
-use gstd::{exec, msg, prelude::*, ActorId};
+use gstd::{msg, prelude::*, ActorId};
 use tequila_train_io::*;
 
 #[derive(Debug, Default)]
@@ -67,7 +67,6 @@ impl GameLauncher {
         if !self.is_started {
             return Err(Error::GameHasNotStartedYet);
         }
-        exec::block_height();
 
         self.is_started = false;
         self.game_state = None;
@@ -89,12 +88,12 @@ impl GameLauncher {
         if !self.admins.contains(&msg::source()) {
             return Err(Error::NotAdmin);
         }
-        let index = self.admins.iter().position(|value| value == admin);
-        if let Some(id) = index {
-            self.admins.remove(id);
-        } else {
-            return Err(Error::AdminDoesNotExist);
-        }
+        let index = self
+            .admins
+            .iter()
+            .position(|value| value == admin)
+            .ok_or(Error::AdminDoesNotExist)?;
+        self.admins.remove(index);
         Ok(Event::AdminDeleted(*admin))
     }
 
@@ -156,7 +155,7 @@ fn process_handle() -> Result<Event, Error> {
                 State::Stalled => {
                     return Err(Error::GameStalled);
                 }
-                State::Winner(_winner) => {
+                State::Winner(_) => {
                     return Err(Error::GameFinished);
                 }
                 _ => (),
