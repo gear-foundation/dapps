@@ -7,16 +7,15 @@ import {
   useVouchers,
   withoutCommas,
 } from '@gear-js/react-hooks';
-import { useSignlessTransactions } from '@dapps-frontend/signless-transactions';
 import { HexString, decodeAddress } from '@gear-js/api';
 import { stringShorten } from '@polkadot/util';
+import { KeyringPair } from '@polkadot/keyring/types';
 
-function useCheckBalance(programId: HexString) {
+function useCheckBalance(programId: HexString, signlessPair?: KeyringPair) {
   const { api } = useApi();
   const { account } = useAccount();
   const { vouchers, isEachVoucherReady } = useVouchers(account?.decodedAddress, programId);
-  const { pair } = useSignlessTransactions();
-  const voucherAddress = pair ? decodeAddress(pair.address) : account?.decodedAddress;
+  const voucherAddress = signlessPair ? decodeAddress(signlessPair.address) : account?.decodedAddress;
   const voucherKeys = isEachVoucherReady && vouchers ? Object.keys(vouchers) : [];
   const firstVoucherKey = voucherKeys[0] as `0x${string}`;
   const { balance } = useBalance(vouchers && voucherKeys.length ? vouchers[firstVoucherKey].owner : voucherAddress);
