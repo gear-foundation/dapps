@@ -1,4 +1,7 @@
-use battleship_io::{BattleshipAction, BattleshipInit, Entity, Ships, StateQuery, StateReply};
+use battleship_io::{
+    BattleshipAction, BattleshipError, BattleshipInit, BattleshipReply, Entity, Ships, StateQuery,
+    StateReply,
+};
 use gstd::prelude::*;
 use gtest::{Program, System};
 
@@ -34,7 +37,12 @@ fn failures_location_ships() {
         ship_4: vec![16, 21],
     };
     let res = battleship.send(3, BattleshipAction::StartGame { ships });
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::OutOfBounds).encode()
+    )));
+
     // wrong ship size
     let ships = Ships {
         ship_1: vec![19],
@@ -43,7 +51,11 @@ fn failures_location_ships() {
         ship_4: vec![16, 21],
     };
     let res = battleship.send(3, BattleshipAction::StartGame { ships });
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::WrongLength).encode()
+    )));
     // ship crossing
     let ships = Ships {
         ship_1: vec![1],
@@ -52,7 +64,11 @@ fn failures_location_ships() {
         ship_4: vec![16, 21],
     };
     let res = battleship.send(3, BattleshipAction::StartGame { ships });
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::IncorrectLocationShips).encode()
+    )));
     // the ship isn't solid
     let ships = Ships {
         ship_1: vec![19],
@@ -61,7 +77,11 @@ fn failures_location_ships() {
         ship_4: vec![16, 21],
     };
     let res = battleship.send(3, BattleshipAction::StartGame { ships });
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::IncorrectLocationShips).encode()
+    )));
     // the distance between the ships is not maintained
     let ships = Ships {
         ship_1: vec![5],
@@ -70,7 +90,11 @@ fn failures_location_ships() {
         ship_4: vec![16, 21],
     };
     let res = battleship.send(3, BattleshipAction::StartGame { ships });
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::IncorrectLocationShips).encode()
+    )));
 }
 
 #[test]
@@ -82,7 +106,11 @@ fn failures_test() {
 
     // the game hasn't started
     let res = battleship.send(3, BattleshipAction::Turn { step: 10 });
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::GameIsNotStarted).encode()
+    )));
 
     let ships = Ships {
         ship_1: vec![19],
@@ -100,14 +128,27 @@ fn failures_test() {
         ship_4: vec![16, 21],
     };
     let res = battleship.send(3, BattleshipAction::StartGame { ships });
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::GameIsAlreadyStarted).encode()
+    )));
+
     // outfield
     let res = battleship.send(3, BattleshipAction::Turn { step: 25 });
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::OutOfBounds).encode()
+    )));
 
     // only the admin can change the bot's contract address
     let res = battleship.send(4, BattleshipAction::ChangeBot { bot: 8.into() });
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        4,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::NotAdmin).encode()
+    )));
 
     let steps: Vec<u8> = (0..25).collect();
     for step in steps {
@@ -124,7 +165,12 @@ fn failures_test() {
                 } else {
                     // game is over
                     let res = battleship.send(3, BattleshipAction::Turn { step: 25 });
-                    assert!(res.main_failed());
+                    assert!(!res.main_failed());
+                    assert!(res.contains(&(
+                        3,
+                        Err::<BattleshipReply, BattleshipError>(BattleshipError::GameIsAlreadyOver)
+                            .encode()
+                    )));
                 }
             }
         }

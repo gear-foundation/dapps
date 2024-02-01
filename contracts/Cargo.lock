@@ -498,6 +498,8 @@ version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
+ "parity-scale-codec",
+ "scale-info",
 ]
 
 [[package]]
@@ -2606,6 +2608,8 @@ dependencies = [
  "gear-lib",
  "gmeta",
  "gstd",
+ "parity-scale-codec",
+ "scale-info",
 ]
 
 [[package]]
@@ -8011,7 +8015,9 @@ version = "1.1.0"
 dependencies = [
  "gmeta",
  "gstd",
+ "parity-scale-codec",
  "primitive-types",
+ "scale-info",
 ]
 
 [[package]]

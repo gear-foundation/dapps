@@ -11,7 +11,7 @@ pub struct BattleshipMetadata;
 
 impl Metadata for BattleshipMetadata {
     type Init = In<BattleshipInit>;
-    type Handle = InOut<BattleshipAction, BattleshipReply>;
+    type Handle = InOut<BattleshipAction, Result<BattleshipReply, BattleshipError>>;
     type Others = ();
     type Reply = ();
     type Signal = ();
@@ -19,8 +19,6 @@ impl Metadata for BattleshipMetadata {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StateQuery {
     All,
     Game(ActorId),
@@ -28,8 +26,6 @@ pub enum StateQuery {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {
     All(BattleshipState),
     Game(Option<GameState>),
@@ -37,8 +33,6 @@ pub enum StateReply {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct BattleshipState {
     pub games: Vec<(ActorId, GameState)>,
     pub bot_address: ActorId,
@@ -46,8 +40,6 @@ pub struct BattleshipState {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Entity {
     Empty,
     Unknown,
@@ -65,8 +57,6 @@ impl Entity {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleshipAction {
     StartGame { ships: Ships },
     Turn { step: u8 },
@@ -76,17 +66,29 @@ pub enum BattleshipAction {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleshipReply {
+    GameFinished(BattleshipParticipants),
     MessageSentToBot,
-    EndGame(BattleshipParticipants),
     BotChanged(ActorId),
+    StateCleared,
+    GameDeleted,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
+pub enum BattleshipError {
+    GameIsAlreadyStarted,
+    GameIsNotStarted,
+    IncorrectLocationShips,
+    OutOfBounds,
+    GameIsAlreadyOver,
+    ThisCellAlreadyKnown,
+    BotDidNotInitializeBoard,
+    NotYourTurn,
+    NotAdmin,
+    WrongLength,
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 pub enum Step {
     Missed,
     Injured,
@@ -94,15 +96,11 @@ pub enum Step {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct BattleshipInit {
     pub bot_address: ActorId,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Game {
     pub player_board: Vec<Entity>,
     pub bot_board: Vec<Entity>,
@@ -118,7 +116,7 @@ pub struct Game {
 
 impl Game {
     pub fn start_bot(&mut self, mut ships: Ships) {
-        let bot_board = ships.get_field();
+        let bot_board = ships.get_field().unwrap();
         self.bot_board = bot_board;
         ships.sort_by_length();
         self.bot_ships = ships;
@@ -217,8 +215,6 @@ impl Display for Ships {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Ships {
     pub ship_1: Vec<u8>,
     pub ship_2: Vec<u8>,
@@ -283,20 +279,19 @@ impl Ships {
         let has_non_empty = !vectors.iter().any(|vector: &&Vec<u8>| !vector.is_empty());
         has_non_empty
     }
-    pub fn get_field(&self) -> Vec<Entity> {
+    pub fn get_field(&self) -> Result<Vec<Entity>, BattleshipError> {
         let mut board = vec![Entity::Empty; 25];
         for position in self.iter() {
-            assert!(
-                board[*position as usize] != Entity::Ship,
-                "Incorrect location of ships"
-            );
+            if board[*position as usize] == Entity::Ship {
+                return Err(BattleshipError::IncorrectLocationShips);
+            }
             board[*position as usize] = Entity::Ship;
         }
-        board
+        Ok(board)
     }
-    pub fn check_correct_location(&self) -> bool {
+    pub fn check_correct_location(&self) -> Result<(), BattleshipError> {
         if self.iter().any(|&position| position > 24) {
-            return false;
+            return Err(BattleshipError::OutOfBounds);
         }
         // ship size check
         let mut vec_len = vec![
@@ -307,9 +302,9 @@ impl Ships {
         ];
         vec_len.sort();
         if vec_len != vec![1, 2, 2, 3] {
-            return false;
+            return Err(BattleshipError::WrongLength);
         }
-        let mut field = self.get_field();
+        let mut field = self.get_field()?;
         let mut ships = vec![
             self.ship_1.clone(),
             self.ship_2.clone(),
@@ -323,13 +318,13 @@ impl Ships {
             match (ship.len(), distance) {
                 (1, 0) | (2, 1) | (2, 5) => (),
                 (3, 2) | (3, 10) if (ship[2] + ship[0]) % ship[1] == 0 => (),
-                _ => return false,
+                _ => return Err(BattleshipError::IncorrectLocationShips),
             }
             // checking the distance between ships
             let mut occupy_cells = vec![];
             for position in ship {
                 if field[*position as usize] == Entity::Occupied {
-                    return false;
+                    return Err(BattleshipError::IncorrectLocationShips);
                 }
                 let cells = match *position {
                     0 => vec![1, 5, 6],
@@ -354,7 +349,7 @@ impl Ships {
             }
         }
 
-        true
+        Ok(())
     }
 
     pub fn count_alive_ships(&self) -> Vec<(u8, u8)> {
@@ -366,24 +361,18 @@ impl Ships {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleshipParticipants {
     Player,
     Bot,
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BotBattleshipAction {
     Start,
     Turn(Vec<Entity>),
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct GameState {
     pub player_board: Vec<Entity>,
     pub bot_board: Vec<Entity>,
