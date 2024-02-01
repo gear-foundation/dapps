@@ -18,7 +18,7 @@
     "@polkadot/extension-dapp": "0.46.5",
     "@polkadot/types": "10.10.1",
     "@polkadot/util": "12.3.2",
-    "@polkadot/util-crypto": "12.5.1",
+    "@polkadot/util-crypto": "12.3.2",
     "@radix-ui/react-dialog": "1.0.4",
     "@radix-ui/react-scroll-area": "1.0.4",
     "buffer": "6.0.3",
