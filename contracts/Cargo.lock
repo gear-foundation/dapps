@@ -951,7 +951,6 @@ version = "1.0.2"
 dependencies = [
  "concert-io",
  "gclient",
- "gear-lib-old",
  "gear-wasm-builder",
  "gstd",
  "gtest",
@@ -964,20 +963,11 @@ dependencies = [
 name = "concert-io"
 version = "1.0.2"
 dependencies = [
- "gear-lib-old",
  "gmeta",
  "gstd",
-]
-
-[[package]]
-name = "concert-state"
-version = "1.0.2"
-dependencies = [
- "concert-io",
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
+ "multi-token-io",
+ "parity-scale-codec",
+ "scale-info",
 ]
 
 [[package]]
@@ -4153,8 +4143,6 @@ name = "multi-token"
 version = "1.0.2"
 dependencies = [
  "gclient",
- "gear-lib-derive",
- "gear-lib-old",
  "gear-wasm-builder",
  "gmeta",
  "gstd",
@@ -4167,20 +4155,8 @@ dependencies = [
 name = "multi-token-io"
 version = "1.0.2"
 dependencies = [
- "gear-lib-old",
  "gmeta",
  "gstd",
-]
-
-[[package]]
-name = "multi-token-state"
-version = "1.0.2"
-dependencies = [
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "multi-token-io",
 ]
 
 [[package]]
