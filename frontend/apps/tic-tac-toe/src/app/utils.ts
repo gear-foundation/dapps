@@ -94,7 +94,3 @@ export function toNumber(value: string) {
 export const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
   navigator.userAgent,
 );
-
-export const socket = io(ADDRESS.GAME_STATE_SOCKET, {
-  transports: ['websocket'],
-});
