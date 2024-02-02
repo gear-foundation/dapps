@@ -147,22 +147,14 @@ fn failures_test() {
     assert!(!game_init_result.main_failed());
 
     // AllowMessages not true
-    let run_result = game.send(PLAYERS[0], GameAction::StartGame);
-    assert!(!run_result.main_failed());
-    assert!(run_result.contains(&(
-        PLAYERS[0],
-        Err::<GameReply, GameError>(GameError::MessageProcessingSuspended).encode()
-    )));
+    let run_result = game.send(ADMIN, GameAction::AddAdmin(1.into()));
+    assert!(run_result.main_failed());
 
     let run_result = game.send(ADMIN, GameAction::AllowMessages(true));
     assert!(!run_result.main_failed());
     // not admin
     let run_result = game.send(PLAYERS[0], GameAction::AddAdmin(2.into()));
-    assert!(!run_result.main_failed());
-    assert!(run_result.contains(&(
-        PLAYERS[0],
-        Err::<GameReply, GameError>(GameError::NotAdmin).encode()
-    )));
+    assert!(run_result.main_failed());
 
     let car_1 = Program::from_file(
         &system,
@@ -186,11 +178,7 @@ fn failures_test() {
     // There must be 2 strategies of cars
     let car_ids: Vec<ActorId> = vec![1.into(), 2.into(), 3.into()];
     let run_result = game.send(ADMIN, GameAction::AddStrategyIds { car_ids });
-    assert!(!run_result.main_failed());
-    assert!(run_result.contains(&(
-        ADMIN,
-        Err::<GameReply, GameError>(GameError::MustBeTwoStrategies).encode()
-    )));
+    assert!(run_result.main_failed());
 
     let car_ids: Vec<ActorId> = vec![2.into(), 3.into()];
     let run_result = game.send(ADMIN, GameAction::AddStrategyIds { car_ids });
@@ -200,11 +188,7 @@ fn failures_test() {
     assert!(!run_result.main_failed());
     // The game has already started
     let run_result = game.send(ADMIN, GameAction::StartGame);
-    assert!(!run_result.main_failed());
-    assert!(run_result.contains(&(
-        ADMIN,
-        Err::<GameReply, GameError>(GameError::GameAlreadyStarted).encode()
-    )));
+    assert!(run_result.main_failed());
 
     for _i in 0..40 {
         let run_result = game.send(
@@ -234,9 +218,5 @@ fn failures_test() {
             strategy_action: StrategyAction::BuyShell,
         },
     );
-    assert!(!run_result.main_failed());
-    assert!(run_result.contains(&(
-        ADMIN,
-        Err::<GameReply, GameError>(GameError::NotPlayerTurn).encode()
-    )));
+    assert!(run_result.main_failed());
 }

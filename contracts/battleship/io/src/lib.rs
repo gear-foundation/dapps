@@ -11,7 +11,7 @@ pub struct BattleshipMetadata;
 
 impl Metadata for BattleshipMetadata {
     type Init = In<BattleshipInit>;
-    type Handle = InOut<BattleshipAction, Result<BattleshipReply, BattleshipError>>;
+    type Handle = InOut<BattleshipAction, BattleshipReply>;
     type Others = ();
     type Reply = ();
     type Signal = ();
@@ -67,28 +67,14 @@ pub enum BattleshipAction {
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 pub enum BattleshipReply {
-    GameFinished(BattleshipParticipants),
     MessageSentToBot,
+    EndGame(BattleshipParticipants),
     BotChanged(ActorId),
-    StateCleared,
-    GameDeleted,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-pub enum BattleshipError {
-    GameIsAlreadyStarted,
-    GameIsNotStarted,
-    IncorrectLocationShips,
-    OutOfBounds,
-    GameIsAlreadyOver,
-    ThisCellAlreadyKnown,
-    BotDidNotInitializeBoard,
-    NotYourTurn,
-    NotAdmin,
-    WrongLength,
-}
-
-#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
 pub enum Step {
     Missed,
     Injured,
@@ -116,7 +102,7 @@ pub struct Game {
 
 impl Game {
     pub fn start_bot(&mut self, mut ships: Ships) {
-        let bot_board = ships.get_field().unwrap();
+        let bot_board = ships.get_field();
         self.bot_board = bot_board;
         ships.sort_by_length();
         self.bot_ships = ships;
@@ -279,19 +265,20 @@ impl Ships {
         let has_non_empty = !vectors.iter().any(|vector: &&Vec<u8>| !vector.is_empty());
         has_non_empty
     }
-    pub fn get_field(&self) -> Result<Vec<Entity>, BattleshipError> {
+    pub fn get_field(&self) -> Vec<Entity> {
         let mut board = vec![Entity::Empty; 25];
         for position in self.iter() {
-            if board[*position as usize] == Entity::Ship {
-                return Err(BattleshipError::IncorrectLocationShips);
-            }
+            assert!(
+                board[*position as usize] != Entity::Ship,
+                "Incorrect location of ships"
+            );
             board[*position as usize] = Entity::Ship;
         }
-        Ok(board)
+        board
     }
-    pub fn check_correct_location(&self) -> Result<(), BattleshipError> {
+    pub fn check_correct_location(&self) -> bool {
         if self.iter().any(|&position| position > 24) {
-            return Err(BattleshipError::OutOfBounds);
+            return false;
         }
         // ship size check
         let mut vec_len = vec![
@@ -302,9 +289,9 @@ impl Ships {
         ];
         vec_len.sort();
         if vec_len != vec![1, 2, 2, 3] {
-            return Err(BattleshipError::WrongLength);
+            return false;
         }
-        let mut field = self.get_field()?;
+        let mut field = self.get_field();
         let mut ships = vec![
             self.ship_1.clone(),
             self.ship_2.clone(),
@@ -318,13 +305,13 @@ impl Ships {
             match (ship.len(), distance) {
                 (1, 0) | (2, 1) | (2, 5) => (),
                 (3, 2) | (3, 10) if (ship[2] + ship[0]) % ship[1] == 0 => (),
-                _ => return Err(BattleshipError::IncorrectLocationShips),
+                _ => return false,
             }
             // checking the distance between ships
             let mut occupy_cells = vec![];
             for position in ship {
                 if field[*position as usize] == Entity::Occupied {
-                    return Err(BattleshipError::IncorrectLocationShips);
+                    return false;
                 }
                 let cells = match *position {
                     0 => vec![1, 5, 6],
@@ -349,7 +336,7 @@ impl Ships {
             }
         }
 
-        Ok(())
+        true
     }
 
     pub fn count_alive_ships(&self) -> Vec<(u8, u8)> {
@@ -384,4 +371,9 @@ pub struct GameState {
     pub total_shots: u64,
     pub game_over: bool,
     pub game_result: Option<BattleshipParticipants>,
+}
+
+#[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
+pub struct GameFinished {
+    pub result: Option<BattleshipParticipants>,
 }
