@@ -1,6 +1,5 @@
 use gclient::{EventProcessor, GearApi, Result};
 use gstd::{ActorId, Encode};
-use multi_token::WASM_BINARY_OPT;
 use multi_token_io::*;
 
 pub const TOKEN_ADDRESS: u64 = 1;
@@ -24,18 +23,19 @@ async fn gclient_init() -> Result<()> {
     // Checking that blocks still running.
     assert!(listener.blocks_running().await?);
 
-    let init = InitMTK {
-        name: String::from("MTK Simple"),
-        symbol: String::from("MTK"),
+    let init = InitMtk {
+        name: String::from("Mtk Simple"),
+        symbol: String::from("Mtk"),
         base_uri: String::from("http://mtk.simple"),
     };
 
     let init_payload = init.encode();
+    let path = "../target/wasm32-unknown-unknown/debug/multi_token.opt.wasm";
 
     let gas_info = api
         .calculate_upload_gas(
             None,
-            WASM_BINARY_OPT.to_vec(),
+            gclient::code_from_os(path)?,
             init_payload.clone(),
             0,
             true,
@@ -44,7 +44,7 @@ async fn gclient_init() -> Result<()> {
 
     let (message_id, _program_id, _hash) = api
         .upload_program_bytes(
-            WASM_BINARY_OPT.to_vec(),
+            gclient::code_from_os(path)?,
             gclient::now_micros().to_le_bytes(),
             init_payload,
             gas_info.burned * 2,

@@ -7,7 +7,6 @@ publish.workspace = true
 [dependencies]
 gstd.workspace = true
 multi-token-io.workspace = true
-gear-lib-old.workspace = true
 concert-io.workspace = true
 
 [dev-dependencies]
