@@ -200,9 +200,7 @@ extern fn handle_reply() {
                 game.end_time = exec::block_timestamp();
                 msg::send(
                     game_id,
-                    GameFinished {
-                        result: game.game_result.clone(),
-                    },
+                    BattleshipReply::EndGame(BattleshipParticipants::Bot),
                     0,
                 )
                 .expect("Unable to send the message about game over");

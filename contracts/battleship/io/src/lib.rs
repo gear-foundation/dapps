@@ -372,8 +372,3 @@ pub struct GameState {
     pub game_over: bool,
     pub game_result: Option<BattleshipParticipants>,
 }
-
-#[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
-pub struct GameFinished {
-    pub result: Option<BattleshipParticipants>,
-}
