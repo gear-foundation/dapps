@@ -5,7 +5,7 @@ use battleship_io::{
 };
 use gstd::{
     collections::{BTreeMap, HashMap},
-    debug, exec, msg,
+    exec, msg,
     prelude::*,
     ActorId, MessageId,
 };

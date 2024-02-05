@@ -180,7 +180,7 @@ fn failures_test() {
             .read_state(StateQuery::All)
             .expect("Unexpected invalid state.");
         if let StateReply::All(state) = reply {
-            if state.games[0].1.bot_board[step as usize] != Entity::Empty
+            if state.games[0].1.bot_board[step as usize] == Entity::Empty
                 || state.games[0].1.bot_board[step as usize] == Entity::Ship
             {
                 if !state.games[0].1.game_over {
