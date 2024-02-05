@@ -1,24 +1,19 @@
-import {
-  useAccount,
-  useAlert,
-  useApi,
-  useBalance,
-  useBalanceFormat,
-  useVouchers,
-  withoutCommas,
-} from '@gear-js/react-hooks';
-import { HexString, decodeAddress } from '@gear-js/api';
+import { useAccount, useAlert, useApi, useBalance, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
+import { decodeAddress } from '@gear-js/api';
 import { stringShorten } from '@polkadot/util';
 import { KeyringPair } from '@polkadot/keyring/types';
 
-function useCheckBalance(programId: HexString, signlessPair?: KeyringPair) {
+type Props = {
+  gaslessVoucherId?: `0x${string}`;
+  signlessPair?: KeyringPair;
+};
+
+function useCheckBalance({ signlessPair, gaslessVoucherId }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
-  const { vouchers, isEachVoucherReady } = useVouchers(account?.decodedAddress, programId);
   const voucherAddress = signlessPair ? decodeAddress(signlessPair.address) : account?.decodedAddress;
-  const voucherKeys = isEachVoucherReady && vouchers ? Object.keys(vouchers) : [];
-  const firstVoucherKey = voucherKeys[0] as `0x${string}`;
-  const { balance } = useBalance(vouchers && voucherKeys.length ? vouchers[firstVoucherKey].owner : voucherAddress);
+
+  const { balance } = useBalance(gaslessVoucherId || voucherAddress);
   const { getFormattedBalanceValue, getFormattedGasValue } = useBalanceFormat();
   const alert = useAlert();
 

@@ -1,5 +1,5 @@
 import { HexString, ProgramMetadata } from '@gear-js/api';
-import { useAlert, useApi } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
@@ -18,6 +18,7 @@ type Options = {
 function useCreateSession(programId: HexString, metadata: ProgramMetadata | undefined) {
   const { api, isApiReady } = useApi();
   const alert = useAlert();
+  const { account } = useAccount();
   const { batchSignAndSend } = useBatchSignAndSend('all');
 
   const onError = (message: string) => alert.error(message);
@@ -46,11 +47,30 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
   const createSession = async (session: Session, voucherValue: number, _options: Options) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!metadata) throw new Error('Metadata not found');
+    if (!account) throw new Error('Account not found');
+
+    const getVoucher = async (voucherId: `${string}` | undefined) => {
+      if (voucherId) {
+        const extrinsic = await api.voucher.revoke(session.key, voucherId);
+        return {
+          extrinsic,
+          voucherId,
+        };
+      }
+
+      const voucher = await api.voucher.issue(session.key, voucherValue, session.duration, [programId]);
+      return voucher;
+    };
 
     const message = getMessage({ CreateSession: session });
 
     const extrinsic = api.message.send(message, metadata);
-    const voucher = await api.voucher.issue(session.key, programId, voucherValue);
+
+    const vouchersForAccount = await api.voucher.getAllForAccount(account?.decodedAddress);
+
+    const accountVoucherId = Object.keys(vouchersForAccount)[0];
+
+    const voucher = await getVoucher(accountVoucherId);
 
     const txs = [extrinsic, voucher.extrinsic];
     const options = { ..._options, onError };
