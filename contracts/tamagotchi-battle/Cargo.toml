@@ -17,8 +17,11 @@ tamagotchi-battle-io.workspace = true
 gclient.workspace = true
 tokio.workspace = true
 hex.workspace = true
+gtest.workspace = true
+gear-core.workspace = true
+serde.workspace = true
+serde_json.workspace = true
 
 # External binaries
 
 tamagotchi.workspace = true
-tamagotchi-battle-state.workspace = true
