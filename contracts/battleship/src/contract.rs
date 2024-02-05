@@ -380,6 +380,12 @@ extern fn handle_reply() {
                 game.game_over = true;
                 game.game_result = Some(BattleshipParticipants::Bot);
                 game.end_time = exec::block_timestamp();
+                msg::send(
+                    game_id,
+                    BattleshipReply::EndGame(BattleshipParticipants::Bot),
+                    0,
+                )
+                .expect("Unable to send the message about game over");
             }
         }
         _ => (),
