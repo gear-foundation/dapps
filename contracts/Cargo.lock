@@ -7336,6 +7336,7 @@ version = "1.0.2"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
+ "gtest",
  "tamagotchi-io",
 ]
 
@@ -7371,16 +7372,6 @@ version = "1.0.2"
 dependencies = [
  "gmeta",
  "gstd",
-]
-
-[[package]]
-name = "tamagotchi-state"
-version = "1.0.2"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "tamagotchi-io",
 ]
 
 [[package]]

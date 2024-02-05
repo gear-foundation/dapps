@@ -90,7 +90,6 @@ members = [
     "syndote",
     "syndote/player",
     "tamagotchi",
-    "tamagotchi/state",
     "tamagotchi-battle",
     "tequila-train",
     "tequila-train/state",

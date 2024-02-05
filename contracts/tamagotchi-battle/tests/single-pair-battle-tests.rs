@@ -1,7 +1,7 @@
 use gstd::{prelude::*, ActorId};
-use gtest::{CoreLog, Log, Program, System};
+use gtest::{Program, System};
 use tamagotchi_battle_io::{
-    Battle, BattleAction, BattleError, BattleQuery, BattleQueryReply, BattleReply, Config,
+    BattleAction, BattleError, BattleQuery, BattleQueryReply, BattleReply, Config,
 };
 use tamagotchi_io::TmgInit;
 pub const ADMIN: u64 = 10;
@@ -24,8 +24,7 @@ impl BattleTestFunc for Program<'_> {
             ADMIN,
             Config {
                 max_power: 10_000,
-                max_range: 10_000,
-                min_range: 3_000,
+                min_power: 3_000,
                 health: 2_500,
                 max_steps_in_round: 5,
                 max_participants: 50,
@@ -121,4 +120,16 @@ fn make_move() {
     tmg_battle.start_battle(ADMIN, None);
 
     system.spend_blocks(2000);
+}
+
+#[test]
+fn test_tamagotchi_has_died() {
+    let system = System::new();
+    system.init_logger();
+    let tmg_battle = Program::tmg_battle(&system);
+
+    let players = vec![100];
+    let tmg_ids = upload_tmg(&system, players.clone());
+    system.spend_blocks(100_000);
+    tmg_battle.register(players[0], tmg_ids[0], Some(BattleError::TamagotchiHasDied));
 }

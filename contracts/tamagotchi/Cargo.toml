@@ -8,6 +8,9 @@ publish.workspace = true
 gstd.workspace = true
 tamagotchi-io.workspace = true
 
+[dev-dependencies]
+gtest.workspace = true
+
 [build-dependencies]
 gear-wasm-builder.workspace = true
 tamagotchi-io.workspace = true
