@@ -24,6 +24,7 @@ struct Battle {
     players: BTreeMap<ActorId, Player>,
     players_ids: Vec<ActorId>,
     current_players: Vec<ActorId>,
+    active_tmg_owners: Vec<ActorId>,
     state: BattleState,
     current_winner: ActorId,
     pairs: BTreeMap<PairId, Pair>,
@@ -43,6 +44,7 @@ impl Battle {
         self.completed_games = 0;
         self.players_to_pairs = BTreeMap::new();
         self.current_players = Vec::new();
+        self.active_tmg_owners = Vec::new();
         self.pairs = BTreeMap::new();
         Ok(BattleReply::RegistrationStarted)
     }
@@ -82,6 +84,7 @@ impl Battle {
 
         self.players_ids.push(*tmg_id);
         self.current_players.push(*tmg_id);
+        self.active_tmg_owners.push(owner);
 
         Ok(BattleReply::Registered { tmg_id: *tmg_id })
     }
@@ -260,7 +263,7 @@ impl Battle {
             exec::wait_for(self.config.time_for_move + 1);
         }
 
-        Ok(BattleReply::MoveMade)
+        Ok(BattleReply::GameFinished { players: self.active_tmg_owners.clone() })
     }
 
     fn add_admin(&mut self, new_admin: &ActorId) -> Result<BattleReply, BattleError> {
@@ -361,10 +364,8 @@ fn get_mut_pair(
     pair_id: PairId,
 ) -> Result<&mut Pair, BattleError> {
     if let Some(pair) = pairs.get_mut(&pair_id) {
-        debug!("getting pair");
         Ok(pair)
     } else {
-        debug!("pair does not exist");
         Err(BattleError::PairDoesNotExist)
     }
 }

@@ -127,6 +127,9 @@ pub enum BattleReply {
     NewRound,
     AdminAdded,
     BattleWasCancelled,
+    GameFinished {
+        players: Vec<ActorId>
+    }
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq, Eq, Debug)]
