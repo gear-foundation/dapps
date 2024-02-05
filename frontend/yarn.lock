@@ -23107,7 +23107,6 @@ __metadata:
     "@polkadot/extension-dapp": "npm:0.46.5"
     "@polkadot/types": "npm:10.11.2"
     "@polkadot/util": "npm:12.3.2"
-    "@polkadot/util-crypto": "npm:12.3.2"
     "@radix-ui/react-dialog": "npm:1.0.4"
     "@radix-ui/react-scroll-area": "npm:1.0.4"
     "@types/lodash.isequal": "npm:4.5.6"
