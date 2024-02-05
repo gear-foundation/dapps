@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
+import { useSignlessTransactions } from '@dapps-frontend/signless-transactions';
 import { Text } from '@/components/ui/text';
 import { GameEndModal, Map } from '@/features/game';
 import styles from './GameProcess.module.scss';
 import { MapEnemy } from '../map';
 import { useGame, useGameMessage, usePending } from '../../hooks';
-import { getFormattedTime } from '../../utils';
+import { getFormattedTime, useFetchVoucher } from '../../utils';
 import { Loader } from '@/components';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { ADDRESS } from '../../consts';
 
 export default function GameProcess() {
-  // const { isVoucher, isLoading } = useFetchVoucher();
-  const isLoading = false;
-
+  const { voucherId, isLoading } = useFetchVoucher();
+  const { pair } = useSignlessTransactions();
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
   const [elapsedTime, setElapsedTime] = useState('');
@@ -22,7 +22,7 @@ export default function GameProcess() {
   const { gameState } = useGame();
   const { setPending } = usePending();
   const message = useGameMessage();
-  const { checkBalance } = useCheckBalance(ADDRESS.GAME);
+  const { checkBalance } = useCheckBalance({ signlessPair: pair, gaslessVoucherId: voucherId });
 
   const [isOpenEndModal, setIsOpenEndModal] = useState(false);
   const openEndModal = () => setIsOpenEndModal(true);
@@ -84,7 +84,7 @@ export default function GameProcess() {
             }
           },
           gasLimit,
-          // withVoucher: isVoucher,
+          voucherId,
           onSuccess: () => {
             setPending(false);
           },

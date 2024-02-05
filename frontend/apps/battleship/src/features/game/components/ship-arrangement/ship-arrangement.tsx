@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useSignlessTransactions } from '@dapps-frontend/signless-transactions';
 import { Button } from '@gear-js/vara-ui';
 import { Heading } from '@/components/ui/heading';
 import { TextGradient } from '@/components/ui/text-gradient';
@@ -12,11 +13,11 @@ import { useCheckBalance } from '@dapps-frontend/hooks';
 import { ADDRESS } from '../../consts';
 
 export default function ShipArrangement() {
-  // const { isVoucher, isLoading } = useFetchVoucher();
-  const isLoading = false;
+  const { voucherId, isLoading } = useFetchVoucher();
+  const { pair } = useSignlessTransactions();
   const message = useGameMessage();
   const { setPending } = usePending();
-  const { checkBalance } = useCheckBalance(ADDRESS.GAME);
+  const { checkBalance } = useCheckBalance({ signlessPair: pair, gaslessVoucherId: voucherId });
 
   const [shipLayout, setShipLayout] = useState<string[]>([]);
   const [shipsField, setShipsField] = useState<number[][]>([]);
@@ -47,7 +48,7 @@ export default function ShipArrangement() {
               ships: shipsField,
             },
           },
-          // withVoucher: isVoucher,
+          voucherId,
           gasLimit,
         }),
       );
