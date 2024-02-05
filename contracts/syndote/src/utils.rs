@@ -1,67 +1,22 @@
+use crate::game::PENALTY;
 use crate::*;
-impl Game {
-    pub fn check_status(&self, game_status: GameStatus) -> Result<(), GameError> {
-        if self.game_status != game_status {
-            return Err(GameError::WrongGameStatus);
-        }
-        Ok(())
-    }
 
-    pub fn only_admin(&self) -> Result<(), GameError> {
-        if msg::source() != self.admin {
-            return Err(GameError::OnlyAdmin);
-        }
-        Ok(())
+pub fn get_game_session(
+    game_sessions: &mut HashMap<SessionId, Game>,
+    session_id: SessionId,
+) -> Result<&mut Game, GameError> {
+    if let Some(game) = game_sessions.get_mut(&session_id) {
+        Ok(game)
+    } else {
+        Err(GameError::GameDoesNotExist)
     }
+}
 
-    pub fn only_admin_or_program(
-        &self,
-        program_id: &ActorId,
-        msg_source: &ActorId,
-    ) -> Result<(), GameError> {
-        if *msg_source != self.admin && *msg_source != *program_id {
-            return Err(GameError::MsgSourceMustBeAdminOrProgram);
-        }
-        Ok(())
+pub fn check_reservation_validity(valid_until_block: u32) -> Result<(), GameError> {
+    if valid_until_block <= exec::block_height() {
+        return Err(GameError::ReservationNotValid);
     }
-
-    pub fn get_game_info(&self) -> GameInfo {
-        GameInfo {
-            properties_in_bank: self.properties_in_bank.clone().into_iter().collect(),
-            players: self.players.clone().into_iter().collect(),
-            players_queue: self.players_queue.clone(),
-            properties: self.properties.clone(),
-            ownership: self.ownership.clone(),
-        }
-    }
-
-    pub fn exclude_player_from_game(&mut self, player: ActorId) {
-        self.players_queue.retain(|&p| p != player);
-        self.players.entry(player).and_modify(|info| {
-            info.lost = true;
-            info.balance = 0;
-
-            for cell in info.cells.iter() {
-                self.ownership[*cell as usize] = self.admin;
-                self.properties_in_bank.insert(*cell);
-            }
-        });
-    }
-
-    pub fn get_player_info(&self) -> Result<PlayerInfo, GameError> {
-        if let Some(player_info) = self.players.get(&self.current_player) {
-            Ok(player_info.clone())
-        } else {
-            Err(GameError::PlayerDoesNotExist)
-        }
-    }
-
-    pub fn player_already_registered(&self, player: &ActorId) -> Result<(), GameError> {
-        if self.players.contains_key(player) {
-            return Err(GameError::AlreadyReistered);
-        }
-        Ok(())
-    }
+    Ok(())
 }
 
 pub fn sell_property(
@@ -136,10 +91,6 @@ pub fn bankrupt_and_penalty(
         if (player_info.penalty >= PENALTY || player_info.debt > 0) && players_queue.len() > 1 {
             player_info.lost = true;
             player_info.balance = 0;
-            debug!(
-                "EXCLUDED: penalty {:?} debt {:?}",
-                player_info.penalty, player_info.debt
-            );
             players_queue.retain(|&p| p != player);
             for cell in &player_info.cells.clone() {
                 ownership[*cell as usize] = *admin;
@@ -241,27 +192,5 @@ pub fn init_properties(
 
     for _i in 0..40 {
         ownership.push(ActorId::zero());
-    }
-}
-
-impl From<Game> for GameState {
-    fn from(game: Game) -> GameState {
-        GameState {
-            admin: game.admin,
-            properties_in_bank: game.properties_in_bank.iter().copied().collect(),
-            round: game.round,
-            players: game
-                .players
-                .iter()
-                .map(|(key, value)| (*key, value.clone()))
-                .collect(),
-            players_queue: game.players_queue,
-            current_player: game.current_player,
-            current_step: game.current_step,
-            properties: game.properties,
-            ownership: game.ownership,
-            game_status: game.game_status,
-            winner: game.winner,
-        }
     }
 }

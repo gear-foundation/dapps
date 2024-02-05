@@ -8,3 +8,5 @@ publish.workspace = true
 gstd.workspace = true
 gmeta.workspace = true
 gcore.workspace = true
+parity-scale-codec.workspace = true
+scale-info.workspace = true

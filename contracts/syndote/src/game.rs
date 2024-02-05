@@ -1,0 +1,397 @@
+use crate::{
+    bankrupt_and_penalty, check_reservation_validity, get_rolls, init_properties, take_your_turn,
+    GameAction, GameError, GameInfo, GameReply, GameStatus, Gears, PlayerInfo, Price, Rent,
+    SessionId, ValidUntilBlock,
+};
+use gstd::{
+    collections::{HashMap, HashSet},
+    exec, msg,
+    prelude::*,
+    ActorId, MessageId, ReservationId,
+};
+pub const NUMBER_OF_CELLS: u8 = 40;
+pub const NUMBER_OF_PLAYERS: u8 = 4;
+pub const JAIL_POSITION: u8 = 10;
+pub const LOTTERY_POSITION: u8 = 20;
+pub const COST_FOR_UPGRADE: u32 = 500;
+pub const FINE: u32 = 1_000;
+pub const PENALTY: u8 = 5;
+pub const INITIAL_BALANCE: u32 = 15_000;
+pub const NEW_CIRCLE: u32 = 2_000;
+
+#[derive(Clone, Default)]
+pub struct Game {
+    pub admin: ActorId,
+    pub properties_in_bank: HashSet<u8>,
+    pub round: u128,
+    pub players: HashMap<ActorId, PlayerInfo>,
+    pub players_queue: Vec<ActorId>,
+    pub current_turn: u8,
+    pub current_player: ActorId,
+    pub current_step: u64,
+    // mapping from cells to built properties,
+    pub properties: Vec<Option<(ActorId, Gears, Price, Rent)>>,
+    // mapping from cells to accounts who have properties on it
+    pub ownership: Vec<ActorId>,
+    pub game_status: GameStatus,
+    pub winner: ActorId,
+    pub current_msg_id: MessageId,
+    pub reservations: Vec<(ReservationId, ValidUntilBlock)>,
+}
+
+impl Game {
+    pub fn init_properties(&mut self) {
+        init_properties(&mut self.properties, &mut self.ownership);
+    }
+    pub fn make_reservation(
+        &mut self,
+        reservation_amount: u64,
+        reservation_duration_in_block: u32,
+    ) -> Result<(), GameError> {
+        let reservation_id = make_reservation(reservation_amount, reservation_duration_in_block)?;
+        let valid_until_block = exec::block_height() + reservation_duration_in_block;
+        self.reservations.push((reservation_id, valid_until_block));
+
+        Ok(())
+    }
+
+    pub fn register(
+        &mut self,
+        strategy_id: &ActorId,
+        reservation_amount: u64,
+        reservation_duration_in_block: u32,
+    ) -> Result<(), GameError> {
+        self.check_status(GameStatus::Registration)?;
+        self.player_already_registered(strategy_id)?;
+
+        let reservation_id = make_reservation(reservation_amount, reservation_duration_in_block)?;
+        let valid_until_block = exec::block_height() + reservation_duration_in_block;
+
+        self.players.insert(
+            *strategy_id,
+            PlayerInfo {
+                balance: INITIAL_BALANCE,
+                reservation_id: (reservation_id, valid_until_block),
+                ..Default::default()
+            },
+        );
+        self.players_queue.push(*strategy_id);
+        if self.players_queue.len() == NUMBER_OF_PLAYERS as usize {
+            self.game_status = GameStatus::Play;
+        }
+
+        Ok(())
+    }
+
+    pub fn play(
+        &mut self,
+        session_id: SessionId,
+        min_gas_limit: u64,
+        time_for_step: u32,
+        awaiting_reply_msg_id_to_session_id: &mut HashMap<MessageId, SessionId>,
+    ) -> Result<GameReply, GameError> {
+        let program_id = exec::program_id();
+        let msg_source = msg::source();
+        self.only_admin_or_program(&program_id, &msg_source)?;
+
+        if exec::gas_available() < min_gas_limit {
+            if let Some((id, valid_until_block)) = self.reservations.pop() {
+                check_reservation_validity(valid_until_block)?;
+                self.current_msg_id =
+                    msg::send_from_reservation(id, program_id, GameAction::Play { session_id }, 0)
+                        .expect("Error during sending a message");
+                return Ok(GameReply::NextRoundFromReservation);
+            } else {
+                self.game_status = GameStatus::WaitingForGasForGameContract;
+                return Err(GameError::AddGasToGameContract);
+            }
+        }
+        match self.game_status {
+            GameStatus::Play | GameStatus::WaitingForGasForGameContract => {
+                while self.game_status != GameStatus::Finished {
+                    self.make_step(
+                        session_id,
+                        time_for_step,
+                        awaiting_reply_msg_id_to_session_id,
+                    )?;
+                }
+
+                Ok(GameReply::GameFinished {
+                    session_id,
+                    winner: self.winner,
+                })
+            }
+            GameStatus::Wait => {
+                // This status means that the player has missed their turn or their strategy did not manage to make a move within the allotted time.
+                // The player is removed from the game.
+                self.exclude_player_from_game(self.current_player);
+
+                // If the value of current_turn was 0 (meaning the player who missed their turn and was removed was the last in the array),
+                // then this value remains the same.
+                // If the value was 1, 2, or 3, then it is properly decreased by one.
+                self.current_turn = self.current_turn.saturating_sub(1);
+
+                while self.game_status != GameStatus::Finished {
+                    self.make_step(
+                        session_id,
+                        time_for_step,
+                        awaiting_reply_msg_id_to_session_id,
+                    )?;
+                }
+
+                Ok(GameReply::GameFinished {
+                    session_id,
+                    winner: self.winner,
+                })
+            }
+            GameStatus::WaitingForGasForStrategy(_) => Err(GameError::AddGasToGameContract),
+            GameStatus::Finished => Ok(GameReply::GameFinished {
+                session_id,
+                winner: self.winner,
+            }),
+            _ => Err(GameError::WrongGameStatus),
+        }
+    }
+
+    fn make_step(
+        &mut self,
+        session_id: SessionId,
+        time_for_step: u32,
+        awaiting_reply_msg_id_to_session_id: &mut HashMap<MessageId, SessionId>,
+    ) -> Result<(), GameError> {
+        let current_player: ActorId = self.players_queue[self.current_turn as usize];
+        self.current_player = current_player;
+        self.current_step += 1;
+        let mut player_info = self.get_player_info()?;
+        let position = if player_info.in_jail {
+            player_info.position
+        } else {
+            let (r1, r2) = get_rolls();
+            let roll_sum = r1 + r2;
+            (player_info.position + roll_sum) % NUMBER_OF_CELLS
+        };
+
+        // If a player is on a cell that belongs to another player
+        // we write down a debt on him in the amount of the rent.
+        // This is done in order to penalize the participant's contract
+        // if he misses the rent
+        let account = self.ownership[position as usize];
+        if account != current_player && !account.is_zero() {
+            if let Some((_, _, _, rent)) = self.properties[position as usize] {
+                player_info.debt = rent;
+            }
+        }
+        // If the new position is behind the previous one, it indicates that the player has completed a circuit around the board,
+        // and his balance should be accordingly updated.
+        if position <= player_info.position {
+            player_info.balance += NEW_CIRCLE;
+        }
+        player_info.position = position;
+        player_info.in_jail = position == JAIL_POSITION;
+        player_info.round = self.round;
+        self.players.insert(current_player, player_info.clone());
+
+        self.current_turn = (self.current_turn + 1) % self.players_queue.len() as u8;
+        match position {
+            // free cells (it can be lottery or penalty): TODO as a task on hackathon
+            0 | 2 | 4 | 7 | 16 | 20 | 30 | 33 | 36 | 38 => Ok(()),
+            _ => {
+                let game_info = self.get_game_info();
+
+                // If the player's reservation is invalid,
+                // we remove the player from the game.
+                let (id, valid_until_block) = player_info.reservation_id;
+                match check_reservation_validity(valid_until_block) {
+                    Ok(_) => {
+                        let awaiting_reply_msg_id = take_your_turn(id, &current_player, game_info);
+                        awaiting_reply_msg_id_to_session_id
+                            .insert(awaiting_reply_msg_id, session_id);
+                        if self.current_msg_id == MessageId::zero() {
+                            self.current_msg_id = msg::id();
+                        }
+                        self.game_status = GameStatus::Wait;
+                        exec::wait_for(time_for_step);
+                    }
+                    Err(_) => {
+                        self.exclude_player_from_game(current_player);
+                        Ok(())
+                    }
+                }
+            }
+        }
+    }
+
+    pub fn finalize_turn_outcome(
+        &mut self,
+        min_gas_limit: u64,
+        reservation_duration_in_block: u32,
+    ) {
+        match self.players_queue.len() {
+            0 => {
+                // All players have been removed from the game (either penalized or bankrupt)
+                self.game_status = GameStatus::Finished;
+            }
+            1 => {
+                self.winner = self.players_queue[0];
+                self.game_status = GameStatus::Finished;
+            }
+            _ => {
+                let gas_available = exec::gas_available();
+                if gas_available > min_gas_limit {
+                    match ReservationId::reserve(
+                        gas_available - min_gas_limit,
+                        reservation_duration_in_block,
+                    ) {
+                        Ok(id) => {
+                            let valid_until_block =
+                                exec::block_height() + reservation_duration_in_block;
+                            self.game_status = GameStatus::Play;
+                            self.players
+                                .entry(self.current_player)
+                                .and_modify(|info| info.reservation_id = (id, valid_until_block));
+                        }
+                        Err(_) => {
+                            self.game_status =
+                                GameStatus::WaitingForGasForStrategy(self.current_player);
+                        }
+                    };
+                } else {
+                    self.game_status = GameStatus::WaitingForGasForStrategy(self.current_player);
+                }
+            }
+        }
+
+        if self.current_step % self.players_queue.len() as u64 == 0 {
+            self.round += 1;
+            // check penalty and debt of the players for the previous round
+            // if penalty is equal to 5 points we remove the player from the game
+            // if a player has a debt and he has not enough balance to pay it
+            // he is also removed from the game
+            bankrupt_and_penalty(
+                &self.admin,
+                &mut self.players,
+                &mut self.players_queue,
+                &self.properties,
+                &mut self.properties_in_bank,
+                &mut self.ownership,
+                &mut self.current_turn,
+            );
+        }
+
+        // message for front end
+        msg::send_with_gas(
+            self.admin,
+            GameReply::Step {
+                players: self
+                    .players
+                    .iter()
+                    .map(|(key, value)| (*key, value.clone()))
+                    .collect(),
+                properties: self.properties.clone(),
+                current_player: self.current_player,
+                current_step: self.current_step,
+                ownership: self.ownership.clone(),
+            },
+            0,
+            0,
+        )
+        .expect("Error in sending a message `GameEvent::Step`");
+
+        exec::wake(self.current_msg_id).expect("Unable to wake the msg");
+    }
+
+    pub fn add_gas_to_player_strategy(
+        &mut self,
+        reservation_amount: u64,
+        reservation_duration_in_block: u32,
+    ) -> Result<(), GameError> {
+        let strategy_id =
+            if let GameStatus::WaitingForGasForStrategy(strategy_id) = self.game_status {
+                strategy_id
+            } else {
+                return Err(GameError::WrongGameStatus);
+            };
+        let reservation_id = make_reservation(reservation_amount, reservation_duration_in_block)?;
+        let valid_until_block = exec::block_height() + reservation_duration_in_block;
+        self.players.entry(strategy_id).and_modify(|player_info| {
+            player_info.reservation_id = (reservation_id, valid_until_block)
+        });
+        self.game_status = GameStatus::Play;
+        Ok(())
+    }
+}
+
+impl Game {
+    pub fn check_status(&self, game_status: GameStatus) -> Result<(), GameError> {
+        if self.game_status != game_status {
+            return Err(GameError::WrongGameStatus);
+        }
+        Ok(())
+    }
+
+    pub fn only_admin(&self) -> Result<(), GameError> {
+        if msg::source() != self.admin {
+            return Err(GameError::OnlyAdmin);
+        }
+        Ok(())
+    }
+
+    pub fn only_admin_or_program(
+        &self,
+        program_id: &ActorId,
+        msg_source: &ActorId,
+    ) -> Result<(), GameError> {
+        if *msg_source != self.admin && *msg_source != *program_id {
+            return Err(GameError::MsgSourceMustBeAdminOrProgram);
+        }
+        Ok(())
+    }
+
+    pub fn get_game_info(&self) -> GameInfo {
+        GameInfo {
+            properties_in_bank: self.properties_in_bank.clone().into_iter().collect(),
+            players: self.players.clone().into_iter().collect(),
+            players_queue: self.players_queue.clone(),
+            properties: self.properties.clone(),
+            ownership: self.ownership.clone(),
+        }
+    }
+
+    pub fn exclude_player_from_game(&mut self, player: ActorId) {
+        self.players_queue.retain(|&p| p != player);
+        self.players.entry(player).and_modify(|info| {
+            info.lost = true;
+            info.balance = 0;
+
+            for cell in info.cells.iter() {
+                self.ownership[*cell as usize] = self.admin;
+                self.properties_in_bank.insert(*cell);
+            }
+        });
+    }
+
+    pub fn get_player_info(&self) -> Result<PlayerInfo, GameError> {
+        if let Some(player_info) = self.players.get(&self.current_player) {
+            Ok(player_info.clone())
+        } else {
+            Err(GameError::PlayerDoesNotExist)
+        }
+    }
+
+    pub fn player_already_registered(&self, player: &ActorId) -> Result<(), GameError> {
+        if self.players.contains_key(player) {
+            return Err(GameError::AlreadyReistered);
+        }
+        Ok(())
+    }
+}
+
+fn make_reservation(
+    reservation_amount: u64,
+    reservation_duration_in_block: u32,
+) -> Result<ReservationId, GameError> {
+    match ReservationId::reserve(reservation_amount, reservation_duration_in_block) {
+        Ok(id) => Ok(id),
+        Err(_) => Err(GameError::ReservationError),
+    }
+}
