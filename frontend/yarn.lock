@@ -21384,19 +21384,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sass@npm:1.58.3":
-  version: 1.58.3
-  resolution: "sass@npm:1.58.3"
-  dependencies:
-    chokidar: "npm:>=3.0.0 <4.0.0"
-    immutable: "npm:^4.0.0"
-    source-map-js: "npm:>=0.6.2 <2.0.0"
-  bin:
-    sass: sass.js
-  checksum: 8ed6d3e19422642b56c1e3d09e36307746f4515cd3a902994ec4d0ce6e5d32a09811f377842945a8cffb12646fa607fe46b387131f42488cb5f74e51b425e754
-  languageName: node
-  linkType: hard
-
 "sass@npm:1.62.0":
   version: 1.62.0
   resolution: "sass@npm:1.62.0"
@@ -23114,6 +23101,7 @@ __metadata:
     "@types/react": "npm:18.2.33"
     "@types/react-dom": "npm:18.2.14"
     "@vitejs/plugin-react-swc": "npm:3.3.2"
+    assert: "npm:2.0.0"
     autoprefixer: "npm:10.4.15"
     buffer: "npm:6.0.3"
     class-variance-authority: "npm:0.6.1"
@@ -23132,7 +23120,7 @@ __metadata:
     react-router-dom: "npm:6.10.0"
     react-transition-group: "npm:4.4.5"
     rollup-plugin-visualizer: "npm:5.9.2"
-    sass: "npm:1.58.3"
+    sass: "npm:1.62.0"
     socket.io-client: "npm:4.7.2"
     tailwindcss: "npm:3.3.3"
     typescript: "npm:4.9.5"
