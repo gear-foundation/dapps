@@ -13,7 +13,9 @@
     "build:error-tracking": "yarn workspace @dapps-frontend/error-tracking build",
     "build:ui": "yarn workspace @dapps-frontend/ui build",
     "build:hooks": "yarn workspace @dapps-frontend/hooks build",
-    "build:packages": "yarn build:error-tracking && yarn build:ui"
+    "build:signless-transactions": "yarn workspace @dapps-frontend/signless-transactions build",
+    "build:gasless-transactions": "yarn workspace @dapps-frontend/gasless-transactions build",
+    "build:packages": "yarn build:error-tracking && yarn build:ui && yarn build:hooks && yarn build:signless-transactions && yarn build:gasless-transactions"
   },
   "workspaces": [
     "./apps/*",

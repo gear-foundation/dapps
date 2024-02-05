@@ -15,7 +15,11 @@
     "react-dom": "18.2.0"
   },
   "dependencies": {
-    "@polkadot/react-identicon": "3.6.4"
+    "@gear-js/vara-ui": "0.0.6",
+    "@headlessui/react": "1.7.17",
+    "@polkadot/react-identicon": "3.6.4",
+    "@radix-ui/react-scroll-area": "1.0.5",
+    "framer-motion": "10.16.16"
   },
   "devDependencies": {
     "@gear-js/ui": "0.5.21",

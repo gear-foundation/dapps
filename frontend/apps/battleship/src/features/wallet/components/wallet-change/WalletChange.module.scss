@@ -4,13 +4,16 @@
   gap: 16px;
 }
 
-.network {
+.menu-item {
   display: flex;
   align-items: center;
   gap: 12px;
+  cursor: pointer;
 
-  .address {
-    color: #72707d;
+  .item-text {
+    font-size: 16px;
+    font-weight: 400;
+    line-height: 19.2px;
   }
 }
 

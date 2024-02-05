@@ -16,7 +16,6 @@ const ModalBackground = ({ isOpen, onClick }: Props) => {
           animate={{ opacity: 0.6 }}
           exit={{ opacity: 0 }}
           onClick={onClick}
-          style={{ zIndex: 1000 }}
         />
       )}
     </AnimatePresence>

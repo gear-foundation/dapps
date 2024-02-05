@@ -1,0 +1,14 @@
+@use './variables' as *;
+@use './mixins' as *;
+@use './resets' as *;
+@import url('https://fonts.googleapis.com/css2?family=Anuphan:wght@200;300;400;500;600;700&display=swap');
+
+:root {
+    @include spread-map($theme-standard);
+}
+
+body {
+    font-family: 'Anuphan';
+    font-weight: 400;
+    font-size: 16px;
+}

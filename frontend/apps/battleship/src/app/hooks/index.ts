@@ -1,1 +1,1 @@
-export { useProgramMetadata, useStateMetadata, useReadState } from './api';
+export { useStateMetadata, useReadState } from './api';

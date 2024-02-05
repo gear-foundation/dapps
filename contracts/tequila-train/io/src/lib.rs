@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, Metadata, Out};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{
     collections::{BTreeMap, BTreeSet},
     prelude::*,
@@ -13,12 +13,24 @@ use gstd::{exec, msg};
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
-    type Init = In<Option<u64>>;
-    type Handle = In<Command>;
+    type Init = In<Init>;
+    type Handle = InOut<Command, Result<Event, Error>>;
     type Others = ();
     type Reply = ();
     type Signal = ();
-    type State = Out<GameLauncher>;
+    type State = Out<GameLauncherState>;
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+pub struct Init {
+    pub players_limit: Option<u64>,
+}
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub struct GameLauncherState {
+    pub game_state: Option<GameState>,
+    pub players: Vec<(ActorId, String)>,
+    pub is_started: bool,
+    pub maybe_limit: Option<u64>,
 }
 
 #[derive(
@@ -34,8 +46,6 @@ impl Metadata for ContractMetadata {
     Encode,
     Decode,
 )]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Face {
     Zero,
     One,
@@ -53,8 +63,6 @@ pub enum Face {
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq, PartialOrd, Ord, TypeInfo, Encode, Decode)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Tile {
     pub left: Face,
     pub right: Face,
@@ -92,11 +100,9 @@ pub fn build_tile_collection() -> Vec<Tile> {
         .collect()
 }
 
-#[derive(Encode, Decode, Default, TypeInfo, Hash, PartialEq, PartialOrd, Eq, Ord, Clone, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
+#[derive(Encode, Decode, TypeInfo, Debug)]
 pub struct Players {
-    players: Vec<(ActorId, String)>,
+    pub players: Vec<(ActorId, String)>,
 }
 
 impl Players {
@@ -125,9 +131,7 @@ impl From<&[(ActorId, String)]> for Players {
     }
 }
 
-#[derive(Encode, Decode, TypeInfo, Hash, PartialEq, PartialOrd, Eq, Ord, Clone, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
+#[derive(Encode, Decode, TypeInfo, Debug)]
 pub enum Command {
     Skip,
     Place {
@@ -146,17 +150,51 @@ pub enum Command {
     ),
 }
 
+#[derive(Encode, Decode, TypeInfo, Clone, Debug)]
+pub enum Event {
+    Skipped,
+    Placed {
+        tile_id: u32,
+        track_id: u32,
+        remove_train: bool,
+    },
+    Registered {
+        player: ActorId,
+        name: String,
+    },
+    GameStarted,
+    GameRestarted {
+        players_limit: Option<u64>,
+    },
+    GameFinished {
+        winner: ActorId,
+    },
+    GameStalled,
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub enum Error {
+    WrongPlayersCount,
+    GameHasAlreadyStarted,
+    GameHasNotStartedYet,
+    NameAlreadyExistsOrYouRegistered,
+    LimitHasBeenReached,
+    GameStalled,
+    GameFinished,
+    NotYourTurn,
+    InvalidTile,
+    InvalidTileId,
+    InvalidTileOwner,
+    InvalidTrack,
+}
+
 #[derive(Debug, TypeInfo, Encode, Decode, Clone, Default)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct TrackData {
     pub tiles: Vec<Tile>,
     pub has_train: bool,
 }
 
 #[derive(Debug, TypeInfo, Encode, Decode, Clone, Default)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct GameState {
     pub players: Vec<(ActorId, String)>,
     pub tracks: Vec<TrackData>,
@@ -169,81 +207,13 @@ pub struct GameState {
     pub state: State,
 }
 
-#[derive(Clone, Debug, Encode, Decode, TypeInfo, Default, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
+#[derive(Clone, Debug, Encode, Decode, TypeInfo, Default)]
 pub enum State {
     Playing,
     Stalled,
     Winner((ActorId, String)),
     #[default]
     Registration,
-}
-
-#[derive(Debug, Clone, Default, TypeInfo, Encode, Decode)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub struct GameLauncher {
-    pub game_state: Option<GameState>,
-    pub players: Vec<(ActorId, String)>,
-    pub is_started: bool,
-    pub maybe_limit: Option<u64>,
-}
-
-impl GameLauncher {
-    fn assert_limit_range(maybe_limit: Option<u64>) {
-        if let Some(limit) = maybe_limit {
-            assert!((2..=8).contains(&limit));
-        }
-    }
-
-    fn assert_players_count(&self) {
-        assert!((2..=8).contains(&(self.players.len() as u32)))
-    }
-
-    pub fn new_with_limit(limit: u64) -> Self {
-        Self::assert_limit_range(Some(limit));
-
-        GameLauncher {
-            maybe_limit: Some(limit),
-            ..Default::default()
-        }
-    }
-
-    pub fn start(&mut self) {
-        assert!(!self.is_started);
-        self.assert_players_count();
-
-        self.is_started = true;
-        self.game_state = GameState::new(&Players {
-            players: self.players.clone(),
-        });
-
-        assert!(self.game_state.is_some());
-    }
-
-    pub fn restart(&mut self, maybe_limit: Option<u64>) {
-        assert!(self.is_started);
-        Self::assert_limit_range(maybe_limit);
-
-        self.is_started = false;
-        self.game_state = None;
-        self.maybe_limit = maybe_limit;
-        self.players.clear();
-    }
-
-    pub fn register(&mut self, player: ActorId, name: String) {
-        assert!(!self.is_started);
-        assert!(!self.players.iter().any(|(p, n)| p == &player || n == &name));
-
-        if let Some(limit) = self.maybe_limit {
-            assert!((self.players.len() as u64) < limit);
-        } else {
-            assert!(self.players.len() < 8);
-        }
-
-        self.players.push((player, name));
-    }
 }
 
 #[cfg(not(test))]
@@ -399,18 +369,21 @@ impl GameState {
         self.state.clone()
     }
 
-    pub fn skip_turn(&mut self, player: ActorId) {
+    pub fn skip_turn(&mut self, player: ActorId) -> Result<Event, Error> {
         let i = self.current_player as usize;
         if self.players[i].0 != player {
-            unreachable!("it is not your turn");
+            return Err(Error::NotYourTurn);
         }
 
         self.tracks[i].has_train = true;
 
-        self.post_actions();
+        if let Some(event) = self.post_actions() {
+            return Ok(event);
+        }
+        Ok(Event::Skipped)
     }
 
-    fn post_actions(&mut self) {
+    fn post_actions(&mut self) -> Option<Event> {
         // check if the current player wins
         let remaining_tiles = self
             .tile_to_player
@@ -418,8 +391,9 @@ impl GameState {
             .filter(|&player| *player == self.current_player)
             .count();
         if remaining_tiles == 0 {
-            self.state = State::Winner(self.players[self.current_player as usize].clone());
-            return;
+            let (winner, name) = self.players[self.current_player as usize].clone();
+            self.state = State::Winner((winner, name));
+            return Some(Event::GameFinished { winner });
         }
 
         // check if any next player is able to make a turn
@@ -466,7 +440,9 @@ impl GameState {
         if check_result.is_some() {
             // no one can make turn. Game is over
             self.state = State::Stalled;
+            return Some(Event::GameStalled);
         }
+        None
     }
 
     fn next_player(&self, current_player: u32) -> u32 {
@@ -495,16 +471,24 @@ impl GameState {
         false
     }
 
-    pub fn make_turn(&mut self, player: ActorId, tile_id: u32, track_id: u32, remove_train: bool) {
+    pub fn make_turn(
+        &mut self,
+        player: ActorId,
+        tile_id: u32,
+        track_id: u32,
+        remove_train: bool,
+    ) -> Result<Event, Error> {
         let i = self.current_player as usize;
         if self.players[i].0 != player {
-            unreachable!("it is not your turn");
+            return Err(Error::NotYourTurn);
         }
 
         // check player owns the tile
         match self.tile_to_player.get(&tile_id) {
-            None => unreachable!("invalid tile id"),
-            Some(user_id) if *user_id != self.current_player => unreachable!("wrong tile owner"),
+            None => return Err(Error::InvalidTileId),
+            Some(user_id) if *user_id != self.current_player => {
+                return Err(Error::InvalidTileOwner)
+            }
             _ => (),
         }
 
@@ -515,14 +499,14 @@ impl GameState {
                 .get(track_id as usize)
                 .map_or(false, |data| data.has_train)
         {
-            unreachable!("invalid track");
+            return Err(Error::InvalidTrack);
         }
 
         let tile = self.tiles[tile_id as usize];
         let track_index = track_id as usize;
         match self.can_put_tile(tile, track_index) {
             Some(tile) => self.tracks[track_index].tiles.push(tile),
-            None => unreachable!("invalid tile"),
+            None => return Err(Error::InvalidTile),
         }
 
         // remove train if all criterea met
@@ -534,7 +518,14 @@ impl GameState {
         // remove tile from player's set
         self.tile_to_player.remove(&tile_id);
 
-        self.post_actions();
+        if let Some(event) = self.post_actions() {
+            return Ok(event);
+        }
+        Ok(Event::Placed {
+            tile_id,
+            track_id,
+            remove_train,
+        })
     }
 
     fn can_put_tile(&self, tile: Tile, track_id: usize) -> Option<Tile> {

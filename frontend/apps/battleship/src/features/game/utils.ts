@@ -1,3 +1,6 @@
+import { ADDRESS } from '@/app/consts';
+import { initGasslessTransactions } from '@dapps-frontend/gasless-transactions';
+
 type ShipLayout = ('Empty' | 'Ship')[];
 
 export const getShipLayout = (shipStatusArray: string[]): number[][] => {
@@ -40,3 +43,8 @@ export const getFormattedTime = (time: number) => {
 
   return formattedTime;
 };
+
+export const { useFetchVoucher } = initGasslessTransactions({
+  programId: ADDRESS.GAME,
+  backendAddress: ADDRESS.BACK,
+});

@@ -1,0 +1,61 @@
+@use '~styles/variables' as *;
+@use '~styles/mixins' as *;
+
+  .input-container {
+    position: relative;
+  }
+  
+  .input {
+    height: 48px;
+    width: 100%;
+    padding-left: 16px;
+    border: 1px solid #c0c0c0;
+    border-radius: 4px;
+    box-sizing: border-box;
+  }
+
+  .label {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 16px;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .input, .label .text {
+    font-family: 'Anuphan';
+    font-size: 16px;
+  }
+
+  .input:focus {
+    outline: none;
+    border: 2px solid #199680;
+  }
+
+  .input:focus + .label .text {
+    font-size: 12px;
+    transform: translate(0, -50%);
+    background-color: white;
+    padding-left: 4px;
+    padding-right: 4px;
+    color: #199680;
+  }
+
+  .label .text {
+    transition: all 0.15s ease-out;
+  }
+
+  .input:focus + .label .text, :not(.input[value=""]) + .label .text {
+    color: #313635;
+    font-size: 12px;
+    transform: translate(0, -156%);
+    background-color: white;
+    padding-left: 4px;
+    padding-right: 4px;
+  }
+  
+  .input:focus + .label .text {
+    color: #199680;
+  }
