@@ -5,7 +5,7 @@ import {
   useApi,
   useBalance,
   useBalanceFormat,
-  useVoucherBalance,
+  // useVoucherBalance,
   withoutCommas,
 } from '@gear-js/react-hooks';
 import { formatBalance, stringShorten } from '@polkadot/util';
@@ -118,46 +118,4 @@ function useAccountAvailableBalanceSync() {
   }, [account, api, isAccountReady, isApiReady, isReady, balance]);
 }
 
-function useCheckBalance(isVoucher: boolean) {
-  const { api } = useApi();
-
-  const { account } = useAccount();
-  const { pair } = useSignlessTransactions();
-  const accountAddress = pair ? decodeAddress(pair.address) : account?.decodedAddress;
-  const { voucherBalance } = useVoucherBalance(ADDRESS.GAME, accountAddress);
-
-  const { availableBalance } = useAccountAvailableBalance();
-  const { getChainBalanceValue } = useBalanceFormat();
-  const { getFormattedBalanceValue } = useBalanceFormat();
-  const alert = useAlert();
-
-  const checkBalance = (limit: number, callback: () => void, onError?: () => void) => {
-    const chainBalance = Number(getChainBalanceValue(Number(withoutCommas(availableBalance?.value || ''))).toFixed());
-    const valuePerGas = Number(withoutCommas(api!.valuePerGas!.toHuman()));
-    const chainEDeposit = Number(
-      getChainBalanceValue(Number(withoutCommas(availableBalance?.existentialDeposit || ''))).toFixed(),
-    );
-
-    const chainEDepositWithLimit = chainEDeposit + limit * valuePerGas;
-
-    if (
-      isVoucher && !!voucherBalance
-        ? getFormattedBalanceValue(voucherBalance.toString()).toFixed() < VOUCHER_MIN_LIMIT
-        : !chainBalance || chainBalance < chainEDepositWithLimit
-    ) {
-      alert.error(`Low balance on ${stringShorten(account?.decodedAddress || '', 8)}`);
-
-      if (onError) {
-        onError();
-      }
-
-      return;
-    }
-
-    callback();
-  };
-
-  return { checkBalance };
-}
-
-export { useWalletSync, useWallet, useAccountAvailableBalance, useAccountAvailableBalanceSync, useCheckBalance };
+export { useWalletSync, useWallet, useAccountAvailableBalance, useAccountAvailableBalanceSync };

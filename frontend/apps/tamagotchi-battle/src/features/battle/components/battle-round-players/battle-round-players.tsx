@@ -6,8 +6,9 @@ import { useEffect, useState } from 'react';
 import { cn, gasLimitToNumber, toNumber } from 'app/utils';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
-import { useCheckBalance } from 'features/wallet/hooks';
+import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useFetchVoucher } from 'features/battle/utils/init-gasless-transactions';
+import { BATTLE_ADDRESS } from 'features/battle/consts';
 
 export const BattleRoundPlayers = () => {
   const { account } = useAccount();
@@ -15,8 +16,8 @@ export const BattleRoundPlayers = () => {
   const { rivals, currentPlayer, currentPairIdx, roundDamage, battle, isPending, setIsPending, isAdmin } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
-  const { isVoucher, isLoading } = useFetchVoucher();
-  const { checkBalance } = useCheckBalance(isVoucher);
+  const { voucherId, isLoading } = useFetchVoucher();
+  const { checkBalance } = useCheckBalance({ gaslessVoucherId: voucherId });
 
   useEffect(() => {
     if (battle && account && currentPlayer) {
@@ -35,7 +36,12 @@ export const BattleRoundPlayers = () => {
     checkBalance(
       gasLimitToNumber(api?.blockGasLimit),
       () => {
-        handleMessage({ payload, onSuccess, onError, withVoucher: isVoucher });
+        handleMessage({
+          payload,
+          onSuccess,
+          onError,
+          voucherId,
+        });
       },
       onError,
     );

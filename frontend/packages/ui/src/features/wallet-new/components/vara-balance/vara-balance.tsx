@@ -1,18 +1,24 @@
-import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import clsx from 'clsx';
+import { useAccount, useApi, useBalanceFormat, useDeriveBalancesAll } from '@gear-js/react-hooks';
 import { ReactComponent as VaraSVG } from '../../assets/vara.svg';
-import { useFreeAccountBalance } from '../../hooks';
 import styles from './vara-balance.module.css';
 
-function VaraBalance() {
+type Props = {
+  className?: string;
+};
+
+function VaraBalance({ className }: Props) {
+  const { account } = useAccount();
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
 
   const { getFormattedBalance } = useBalanceFormat();
-  const { freeAccountBalance } = useFreeAccountBalance();
-  const balance = isApiReady && freeAccountBalance ? getFormattedBalance(freeAccountBalance) : undefined;
+  const balances = useDeriveBalancesAll(account?.decodedAddress);
+  const balance =
+    isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
 
   return isAccountReady && balance ? (
-    <div className={styles.balance}>
+    <div className={clsx(styles.balance, className)}>
       <VaraSVG />
 
       <p className={styles.text}>
