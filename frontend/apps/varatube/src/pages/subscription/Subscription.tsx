@@ -25,7 +25,7 @@ function Subscription() {
   const { subscriptionsState, isSubscriptionsStateRead, updateState } = useProgramState();
   const varatubeMetadata = useProgramMetadata(varatubeMeta);
   const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, varatubeMetadata);
-  const { checkBalance } = useCheckBalance(ADDRESS.CONTRACT);
+  const { checkBalance } = useCheckBalance();
   const subscription = subscriptionsState && decodedAddress ? subscriptionsState[decodedAddress] : undefined;
   const [isSubscribing, setIsSubscribing] = useState<boolean>(false);
 

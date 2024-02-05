@@ -8,7 +8,8 @@ type Props = {
   signlessPair?: KeyringPair;
 };
 
-function useCheckBalance({ signlessPair, gaslessVoucherId }: Props) {
+function useCheckBalance(args?: Props) {
+  const { signlessPair, gaslessVoucherId } = args || {};
   const { api } = useApi();
   const { account } = useAccount();
   const voucherAddress = signlessPair ? decodeAddress(signlessPair.address) : account?.decodedAddress;
