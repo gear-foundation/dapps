@@ -10,8 +10,8 @@ import { BATTLE_ADDRESS } from 'features/battle/consts';
 export const NewGameButton = () => {
   const { api } = useApi();
   const { isPending, setIsPending } = useBattle();
-  const { isVoucher, isLoading } = useFetchVoucher();
-  const { checkBalance } = useCheckBalance(BATTLE_ADDRESS);
+  const { voucherId, isLoading } = useFetchVoucher();
+  const { checkBalance } = useCheckBalance({ gaslessVoucherId: voucherId });
   const handleMessage = useBattleMessage();
 
   const onSuccess = () => setIsPending(false);
@@ -29,7 +29,7 @@ export const NewGameButton = () => {
           payload,
           onSuccess,
           onError,
-          // withVoucher: isVoucher
+          voucherId,
         });
       },
       onError,

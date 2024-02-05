@@ -23,9 +23,9 @@ const validate: Record<string, typeof hexRequired> = {
 export const CreateTamagotchiForm = () => {
   const { battle, isPending } = useBattle();
   const handleMessage = useBattleMessage();
-  const { isVoucher, isLoading } = useFetchVoucher();
+  const { voucherId, isLoading } = useFetchVoucher();
   const { api } = useApi();
-  const { checkBalance } = useCheckBalance(BATTLE_ADDRESS);
+  const { checkBalance } = useCheckBalance({ gaslessVoucherId: voucherId });
   const navigate = useNavigate();
   const form = useForm({
     initialValues: createTamagotchiInitial,
@@ -51,7 +51,7 @@ export const CreateTamagotchiForm = () => {
           payload,
           onSuccess,
           onError,
-          // withVoucher: isVoucher
+          voucherId,
         });
       },
       onError,

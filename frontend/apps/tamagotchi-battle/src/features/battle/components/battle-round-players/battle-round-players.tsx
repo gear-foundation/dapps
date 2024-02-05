@@ -16,8 +16,8 @@ export const BattleRoundPlayers = () => {
   const { rivals, currentPlayer, currentPairIdx, roundDamage, battle, isPending, setIsPending, isAdmin } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
-  const { isVoucher, isLoading } = useFetchVoucher();
-  const { checkBalance } = useCheckBalance(BATTLE_ADDRESS);
+  const { voucherId, isLoading } = useFetchVoucher();
+  const { checkBalance } = useCheckBalance({ gaslessVoucherId: voucherId });
 
   useEffect(() => {
     if (battle && account && currentPlayer) {
@@ -40,7 +40,7 @@ export const BattleRoundPlayers = () => {
           payload,
           onSuccess,
           onError,
-          // withVoucher: isVoucher
+          voucherId,
         });
       },
       onError,

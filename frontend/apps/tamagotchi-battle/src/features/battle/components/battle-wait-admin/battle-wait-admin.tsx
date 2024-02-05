@@ -12,8 +12,8 @@ export const BattleWaitAdmin = () => {
   const { api } = useApi();
   const { players, isPending, setIsPending } = useBattle();
   const handleMessage = useBattleMessage();
-  const { isVoucher, isLoading } = useFetchVoucher();
-  const { checkBalance } = useCheckBalance(BATTLE_ADDRESS);
+  const { voucherId, isLoading } = useFetchVoucher();
+  const { checkBalance } = useCheckBalance({ gaslessVoucherId: voucherId });
 
   const handler = async () => {
     const payload = { StartBattle: null };
@@ -29,7 +29,7 @@ export const BattleWaitAdmin = () => {
           payload,
           onSuccess,
           onError,
-          // withVoucher: isVoucher
+          voucherId,
         });
       },
       onError,
