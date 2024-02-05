@@ -7296,11 +7296,14 @@ dependencies = [
 name = "syndote"
 version = "1.0.2"
 dependencies = [
+ "gclient",
+ "gear-core",
  "gear-wasm-builder",
  "gstd",
  "gtest",
  "syndote-io",
  "syndote-player",
+ "tokio",
 ]
 
 [[package]]
@@ -7310,6 +7313,8 @@ dependencies = [
  "gcore",
  "gmeta",
  "gstd",
+ "parity-scale-codec",
+ "scale-info",
 ]
 
 [[package]]
