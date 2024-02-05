@@ -3,7 +3,7 @@ import { useBalanceFormat, useAccount, useIsVoucherExists, useVouchers, useBalan
 
 import { useSignlessTransactions } from '@dapps-frontend/signless-transactions';
 
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAtom } from 'jotai';
 
 import { IS_CREATING_VOUCHER_ATOM, IS_UPDATING_VOUCHER_ATOM } from '../atoms';
@@ -17,12 +17,13 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit = 18 }
   const { isVoucherExists } = useIsVoucherExists(programId, accountAddress);
   const { isEachVoucherReady, vouchers } = useVouchers(accountAddress, programId);
   const voucherKeys = isEachVoucherReady && vouchers ? Object.keys(vouchers) : [];
-  const firstVoucherKey = voucherKeys[0] as `0x${string}`;
-  const { balance } = useBalance(vouchers && voucherKeys.length ? vouchers[firstVoucherKey].owner : accountAddress);
+  const existingVoucherId = voucherKeys[0] as `0x${string}`;
+
+  const { balance } = useBalance(vouchers && voucherKeys.length ? existingVoucherId : accountAddress);
 
   const { getFormattedBalanceValue } = useBalanceFormat();
 
-  const [voucher, setVoucher] = useState(false);
+  const [voucherId, setVoucherId] = useState<`0x${string}` | undefined>(undefined);
   const [isCreating, setIsCreating] = useAtom(IS_CREATING_VOUCHER_ATOM);
   const [isUpdating, setIsUpdating] = useAtom(IS_UPDATING_VOUCHER_ATOM);
 
@@ -37,7 +38,8 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit = 18 }
       });
 
       if (response.status === 200) {
-        return true;
+        const data = await response.json();
+        return data;
       }
     } catch (error) {
       console.error('error creating voucher: ', error);
@@ -47,7 +49,7 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit = 18 }
   };
 
   useEffect(() => {
-    if (accountAddress && isVoucherExists !== undefined && backendAddress) {
+    if (accountAddress && isVoucherExists !== undefined && voucherId && backendAddress) {
       const fetchData = async () => {
         try {
           setIsCreating(true);
@@ -55,11 +57,12 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit = 18 }
 
           if (availableBack?.status === 200) {
             if (isVoucherExists) {
-              setVoucher(true);
+              setVoucherId(existingVoucherId);
             } else {
-              const createdVoucher = await createVoucher();
-              if (createdVoucher) {
-                setVoucher(true);
+              const createdVoucherId = await createVoucher();
+
+              if (createdVoucherId) {
+                setVoucherId(createdVoucherId);
               }
             }
           }
@@ -81,10 +84,10 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit = 18 }
     if (isBalanceLow) {
       setIsUpdating(true);
 
-      const createdVoucher = await createVoucher();
+      const createdVoucherId = await createVoucher();
 
-      if (createdVoucher) {
-        setVoucher(true);
+      if (createdVoucherId) {
+        setVoucherId(createdVoucherId);
       }
 
       setIsUpdating(false);
@@ -94,18 +97,16 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit = 18 }
   }, [balance]);
 
   useEffect(() => {
-    setVoucher(false);
+    setVoucherId(undefined);
   }, [accountAddress]);
 
   useEffect(() => {
-    if (voucher) {
+    if (voucherId) {
       updateBalance();
     }
-  }, [updateBalance, voucher]);
-
-  const isVoucher = useMemo(() => voucher, [voucher]);
+  }, [updateBalance, voucherId]);
 
   const isLoading = isCreating || isUpdating;
 
-  return { isVoucher, isLoading, updateBalance };
+  return { voucherId, isLoading, updateBalance };
 }
