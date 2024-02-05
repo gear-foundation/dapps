@@ -49,7 +49,7 @@ export function useFetchVoucher({ programId, backendAddress, voucherLimit = 18 }
   };
 
   useEffect(() => {
-    if (accountAddress && isVoucherExists !== undefined && voucherId && backendAddress) {
+    if (accountAddress && isVoucherExists !== undefined && backendAddress) {
       const fetchData = async () => {
         try {
           setIsCreating(true);
