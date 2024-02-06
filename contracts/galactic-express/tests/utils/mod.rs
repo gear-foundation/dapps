@@ -10,8 +10,8 @@ pub mod prelude;
 pub use common::initialize_system;
 
 pub const FOREIGN_USER: u64 = 1029384756123;
-pub const ADMINS: [u64; 2] = [123, 321];
-pub const PLAYERS: [u64; 3] = [1234, 4321, 2332];
+pub const ADMINS: [u64; 2] = [10, 11];
+pub const PLAYERS: [u64; 3] = [12, 13, 14];
 
 type GalExResult<T, C = ()> = RunResult<T, C, Event, Error>;
 
@@ -31,17 +31,6 @@ impl<'a> GalEx<'a> {
         let is_active = system.is_active_program(program.id());
 
         InitResult::<_, Error>::new(Self(program), result, is_active).succeed()
-    }
-
-    pub fn change_admin(
-        &mut self,
-        from: u64,
-        actor: impl Into<ActorId>,
-    ) -> GalExResult<(u64, u64)> {
-        RunResult::new(
-            self.0.send(from, Action::ChangeAdmin(actor.into())),
-            |event, (old, new)| assert_eq!(Event::AdminChanged(old.into(), new.into()), event),
-        )
     }
 
     pub fn create_new_session(&mut self, from: u64) -> GalExResult<u128, Session> {
@@ -66,10 +55,17 @@ impl<'a> GalEx<'a> {
     pub fn register(
         &mut self,
         from: u64,
+        creator: ActorId,
         participant: Participant,
     ) -> GalExResult<(u64, Participant)> {
         RunResult::new(
-            self.0.send(from, Action::Register(participant)),
+            self.0.send(
+                from,
+                Action::Register {
+                    creator,
+                    participant,
+                },
+            ),
             |event, (actor, participant)| {
                 assert_eq!(Event::Registered(actor.into(), participant), event)
             },

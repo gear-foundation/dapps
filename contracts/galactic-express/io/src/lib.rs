@@ -35,12 +35,19 @@ pub const MAX_PAYLOAD: u8 = 100;
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct State {
+    pub games: Vec<(ActorId, GameState)>,
+}
+
+#[derive(Encode, Decode, TypeInfo, Debug)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct GameState {
     pub admin: ActorId,
-    pub session: Session,
-    pub is_session_ended: bool,
-    pub participants: Vec<(ActorId, Participant)>,
-    pub turns: Vec<Vec<(ActorId, Turn)>>,
-    pub rankings: Vec<(ActorId, u128)>,
+    pub session_id: u128,
+    pub altitude: u16,
+    pub weather: Weather,
+    pub reward: u128,
+    pub stage: StageState,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
@@ -56,7 +63,7 @@ pub struct Session {
 #[derive(Encode, Decode, TypeInfo, Debug)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub enum Stage {
+pub enum StageState {
     Registration(Vec<(ActorId, Participant)>),
     Results(Results),
 }
@@ -73,9 +80,11 @@ pub struct Results {
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum Action {
-    ChangeAdmin(ActorId),
     CreateNewSession,
-    Register(Participant),
+    Register {
+        creator: ActorId,
+        participant: Participant,
+    },
     StartGame(Participant),
 }
 
@@ -152,6 +161,7 @@ pub enum Error {
     SessionFull,
     NotEnoughParticipants,
     TxManager(TransactionManagerError),
+    NoSuchGame,
 }
 
 impl From<GstdError> for Error {

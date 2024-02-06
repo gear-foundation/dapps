@@ -82,6 +82,11 @@ impl Default for Stage {
 
 #[derive(Default)]
 struct Contract {
+    games: HashMap<ActorId, Game>,
+}
+
+#[derive(Default)]
+pub struct Game {
     admin: ActorId,
     session_id: u128,
     altitude: u16,
@@ -91,16 +96,21 @@ struct Contract {
 }
 
 impl Contract {
-    fn check_admin(&self) -> Result<(), Error> {
-        check_admin(self.admin)
-    }
-
     fn create_new_session(&mut self) -> Result<Event, Error> {
-        let stage = &mut self.stage;
+        let msg_src = msg::source();
+        if !self.games.contains_key(&msg_src) {
+            let game = Game {
+                admin: msg_src,
+                ..Default::default()
+            };
+            self.games.insert(msg_src, game);
+        }
+        let game = self.games.get_mut(&msg_src).expect("Critical error");
+
+        let stage = &mut game.stage;
 
         match stage {
             Stage::Registration(participants) => {
-                check_admin(self.admin)?;
                 participants.clear();
             }
             Stage::Results { .. } => *stage = Stage::Registration(HashMap::new()),
@@ -108,7 +118,7 @@ impl Contract {
 
         let mut random = Random::new()?;
 
-        self.weather = match random.next() % (Weather::Tornado as u8 + 1) {
+        game.weather = match random.next() % (Weather::Tornado as u8 + 1) {
             0 => Weather::Clear,
             1 => Weather::Cloudy,
             2 => Weather::Rainy,
@@ -117,28 +127,29 @@ impl Contract {
             5 => Weather::Tornado,
             _ => unreachable!(),
         };
-        self.altitude = random.generate(TURN_ALTITUDE.0, TURN_ALTITUDE.1) * TURNS as u16;
-        self.reward = random.generate(REWARD.0, REWARD.1);
+        game.altitude = random.generate(TURN_ALTITUDE.0, TURN_ALTITUDE.1) * TURNS as u16;
+        game.reward = random.generate(REWARD.0, REWARD.1);
 
         Ok(Event::NewSession(Session {
-            session_id: self.session_id,
-            altitude: self.altitude,
-            weather: self.weather,
-            reward: self.reward,
+            session_id: game.session_id,
+            altitude: game.altitude,
+            weather: game.weather,
+            reward: game.reward,
         }))
     }
 
-    fn register(&mut self, participant: Participant) -> Result<Event, Error> {
+    fn register(&mut self, creator: ActorId, participant: Participant) -> Result<Event, Error> {
         let msg_source = msg::source();
+        let game = self.games.get_mut(&creator).ok_or(Error::NoSuchGame)?;
 
-        if msg_source == self.admin {
+        if msg_source == game.admin {
             return Err(Error::AccessDenied);
         }
-        if let Stage::Results(_) = self.stage {
+        if let Stage::Results(_) = game.stage {
             return Err(Error::SessionEnded);
         }
 
-        let participants = self.stage.mut_participants()?;
+        let participants = game.stage.mut_participants()?;
 
         if participants.len() >= PARTICIPANTS - 1 {
             return Err(Error::SessionFull);
@@ -151,9 +162,12 @@ impl Contract {
     }
 
     async fn start_game(&mut self, mut participant: Participant) -> Result<Event, Error> {
-        self.check_admin()?;
+        let game = self
+            .games
+            .get_mut(&msg::source())
+            .ok_or(Error::NoSuchGame)?;
 
-        let participants = self.stage.mut_participants()?;
+        let participants = game.stage.mut_participants()?;
 
         if participants.is_empty() {
             return Err(Error::NotEnoughParticipants);
@@ -176,7 +190,7 @@ impl Contract {
                     turn_index,
                     remaining_fuel,
                     &mut random,
-                    self.weather,
+                    game.weather,
                     participant.payload_amount,
                 ) {
                     Ok(fuel_left) => {
@@ -209,7 +223,7 @@ impl Contract {
                         Turn::Alive {
                             fuel_left,
                             payload_amount,
-                        } => (*payload_amount as u128 + *fuel_left as u128) * self.altitude as u128,
+                        } => (*payload_amount as u128 + *fuel_left as u128) * game.altitude as u128,
                         Turn::Destroyed(_) => 0,
                     },
                 )
@@ -234,18 +248,10 @@ impl Contract {
             rankings: scores,
         };
 
-        self.session_id = self.session_id.wrapping_add(1);
-        self.stage = Stage::Results(results.clone());
+        game.session_id = game.session_id.wrapping_add(1);
+        game.stage = Stage::Results(results.clone());
 
         Ok(Event::GameFinished(results))
-    }
-}
-
-fn check_admin(admin: ActorId) -> Result<(), Error> {
-    if msg::source() != admin {
-        Err(Error::AccessDenied)
-    } else {
-        Ok(())
     }
 }
 
@@ -303,7 +309,6 @@ fn process_init() -> Result<(), Error> {
     unsafe {
         STATE = Some((
             Contract {
-                admin: msg::source(),
                 ..Default::default()
             },
             TransactionManager::new(),
@@ -323,17 +328,11 @@ async fn process_main() -> Result<Event, Error> {
     let (contract, _tx_manager) = state_mut()?;
 
     match action {
-        Action::ChangeAdmin(actor) => {
-            contract.check_admin()?;
-
-            let old_admin = contract.admin;
-
-            contract.admin = actor;
-
-            Ok(Event::AdminChanged(old_admin, contract.admin))
-        }
         Action::CreateNewSession => contract.create_new_session(),
-        Action::Register(participant) => contract.register(participant),
+        Action::Register {
+            creator,
+            participant,
+        } => contract.register(creator, participant),
         Action::StartGame(participant) => contract.start_game(participant).await,
     }
 }
@@ -347,47 +346,55 @@ extern fn state() {
 
 impl From<Contract> for State {
     fn from(value: Contract) -> Self {
-        let Contract {
-            admin,
-            session_id,
-            altitude,
-            weather,
-            reward,
-            stage,
-        } = value;
+        let Contract { games } = value;
 
-        let is_session_ended: bool;
-        let participants: Vec<(ActorId, Participant)>;
-        let turns: Vec<Vec<(ActorId, Turn)>>;
-        let rankings: Vec<(ActorId, u128)>;
+        let games = games
+            .into_iter()
+            .map(|(id, game)| {
+                // let stage = if let Stage::Registration(data) = game.stage {
+                //     StageState::Registration(data.into_iter().collect())
+                // } else if let Stage::Results(data) = game.stage {
+                //     StageState::Results(data)
+                // };
 
-        match stage {
-            Stage::Registration(participants_data) => {
-                is_session_ended = false;
-                participants = participants_data.into_iter().collect();
-                turns = vec![vec![]];
-                rankings = Vec::new();
-            }
-            Stage::Results(results) => {
-                is_session_ended = true;
-                participants = Vec::new();
-                turns = results.turns;
-                rankings = results.rankings;
-            }
-        };
+                let stage = match game.stage {
+                    Stage::Registration(participants_data) => {
+                        StageState::Registration(participants_data.into_iter().collect())
+                    }
+                    Stage::Results(results) => StageState::Results(results),
+                };
 
-        Self {
-            admin,
-            session: Session {
-                session_id,
-                altitude,
-                weather,
-                reward,
-            },
-            is_session_ended,
-            participants,
-            turns,
-            rankings,
-        }
+                let new_game = GameState {
+                    admin: game.admin,
+                    session_id: game.session_id,
+                    altitude: game.altitude,
+                    weather: game.weather,
+                    reward: game.reward,
+                    stage,
+                };
+                (id, new_game)
+            })
+            .collect();
+        // let is_session_ended: bool;
+        // let participants: Vec<(ActorId, Participant)>;
+        // let turns: Vec<Vec<(ActorId, Turn)>>;
+        // let rankings: Vec<(ActorId, u128)>;
+
+        // match stage {
+        //     Stage::Registration(participants_data) => {
+        //         is_session_ended = false;
+        //         participants = participants_data.into_iter().collect();
+        //         turns = vec![vec![]];
+        //         rankings = Vec::new();
+        //     }
+        //     Stage::Results(results) => {
+        //         is_session_ended = true;
+        //         participants = Vec::new();
+        //         turns = results.turns;
+        //         rankings = results.rankings;
+        //     }
+        // };
+
+        Self { games }
     }
 }
