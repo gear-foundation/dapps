@@ -209,7 +209,10 @@ impl Contract {
 
             let participants = game.stage.mut_participants()?;
 
-            if participants.remove(&msg_source).is_none() {
+            if participants.contains_key(&msg_source) {
+                msg::send_with_gas(msg_source, "", 0, game.bid).expect("Error in sending value");
+                participants.remove(&msg_source).expect("Critical error");
+            } else {
                 return Err(Error::NoSuchPlayer);
             }
 
