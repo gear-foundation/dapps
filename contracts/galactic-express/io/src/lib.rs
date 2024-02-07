@@ -4,6 +4,7 @@ use gear_lib::tx_manager::TransactionManagerError;
 use gmeta::{InOut, Metadata, Out};
 use gstd::{errors::Error as GstdError, prelude::*, ActorId};
 
+pub const EXISTENTIAL_DEPOSIT: u128 = 10_000_000_000_000;
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
@@ -50,16 +51,6 @@ pub struct GameState {
     pub stage: StageState,
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub struct Session {
-    pub session_id: u128,
-    pub altitude: u16,
-    pub weather: Weather,
-    pub reward: u128,
-}
-
 #[derive(Encode, Decode, TypeInfo, Debug)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
@@ -80,11 +71,17 @@ pub struct Results {
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum Action {
-    CreateNewSession,
+    CreateNewSession{
+        bid: u128,
+    },
     Register {
         creator: ActorId,
         participant: Participant,
     },
+    CancelRegistration {
+        creator: ActorId,
+    },
+    DeleteSession,
     StartGame(Participant),
 }
 
@@ -93,8 +90,16 @@ pub enum Action {
 #[scale_info(crate = gstd::scale_info)]
 pub enum Event {
     AdminChanged(ActorId, ActorId),
-    NewSession(Session),
+    NewSession{
+        session_id: u128,
+        altitude: u16,
+        weather: Weather,
+        reward: u128,
+        bid: u128,
+    },
     Registered(ActorId, Participant),
+    CancelRegistration,
+    SessionDeleted,
     GameFinished(Results),
 }
 
@@ -162,6 +167,9 @@ pub enum Error {
     NotEnoughParticipants,
     TxManager(TransactionManagerError),
     NoSuchGame,
+    WrongBid,
+    NoSuchPlayer,
+    LessThanExistentialDeposit,
 }
 
 impl From<GstdError> for Error {

@@ -9,6 +9,7 @@ use gstd::{
     ops::{Add, Rem, Sub},
     prelude::*,
     ActorId,
+    debug
 };
 use num_traits::FromBytes;
 
@@ -88,6 +89,7 @@ struct Contract {
 #[derive(Default)]
 pub struct Game {
     admin: ActorId,
+    bid: u128,
     session_id: u128,
     altitude: u16,
     weather: Weather,
@@ -96,11 +98,23 @@ pub struct Game {
 }
 
 impl Contract {
-    fn create_new_session(&mut self) -> Result<Event, Error> {
+    fn create_new_session(&mut self, bid: u128) -> Result<Event, Error> {
         let msg_src = msg::source();
+        let msg_value = msg::value();
+
+        if msg_value != bid {
+            msg::send_with_gas(msg_src, "", 0, msg_value).expect("Error in sending value");
+            return Err(Error::WrongBid);
+        }
+        if bid < EXISTENTIAL_DEPOSIT && bid != 0 {
+            msg::send_with_gas(msg_src, "", 0, msg_value).expect("Error in sending value");
+            return Err(Error::LessThanExistentialDeposit);
+        }
+
         if !self.games.contains_key(&msg_src) {
             let game = Game {
                 admin: msg_src,
+                bid,
                 ..Default::default()
             };
             self.games.insert(msg_src, game);
@@ -130,35 +144,86 @@ impl Contract {
         game.altitude = random.generate(TURN_ALTITUDE.0, TURN_ALTITUDE.1) * TURNS as u16;
         game.reward = random.generate(REWARD.0, REWARD.1);
 
-        Ok(Event::NewSession(Session {
+        Ok(Event::NewSession{
             session_id: game.session_id,
             altitude: game.altitude,
             weather: game.weather,
             reward: game.reward,
-        }))
+            bid,
+        })
+    }
+
+    fn delete_session(&mut self) -> Result<Event, Error> {
+        let msg_src = msg::source();
+        let game = self.games.get(&msg_src).ok_or(Error::NoSuchGame)?;
+
+        if let Stage::Registration(players) = &game.stage {
+            players.iter().for_each(|(id, _)| {
+                msg::send_with_gas(*id, "", 0, game.bid).expect("Error in sending value");
+            });
+        }
+        self.games.remove(&msg_src);
+        Ok(Event::SessionDeleted)
     }
 
     fn register(&mut self, creator: ActorId, participant: Participant) -> Result<Event, Error> {
         let msg_source = msg::source();
-        let game = self.games.get_mut(&creator).ok_or(Error::NoSuchGame)?;
+        let msg_value = msg::value();
 
-        if msg_source == game.admin {
-            return Err(Error::AccessDenied);
+
+        if let Some(game) = self.games.get_mut(&creator){
+            if msg_value != game.bid && game.bid != 0 {
+                msg::send_with_gas(msg_source, "", 0, msg_value).expect("Error in sending value");
+                return Err(Error::WrongBid);
+            }
+            if msg_source == game.admin {
+                return Err(Error::AccessDenied);
+            }
+            if let Stage::Results(_) = game.stage {
+                return Err(Error::SessionEnded);
+            }
+    
+            let participants = game.stage.mut_participants()?;
+    
+            if participants.len() >= PARTICIPANTS - 1 {
+                return Err(Error::SessionFull);
+            }
+    
+            participant.check()?;
+            participants.insert(msg_source, participant);
+    
+            Ok(Event::Registered(msg_source, participant))
         }
-        if let Stage::Results(_) = game.stage {
-            return Err(Error::SessionEnded);
+        else {
+            if msg_value != 0 {
+                msg::send_with_gas(msg_source, "", 0, msg_value).expect("Error in sending value");
+            }
+            
+            return Err(Error::NoSuchGame);
         }
 
-        let participants = game.stage.mut_participants()?;
+    }
 
-        if participants.len() >= PARTICIPANTS - 1 {
-            return Err(Error::SessionFull);
+    fn cancel_register(&mut self, creator: ActorId) -> Result<Event, Error> {
+        let msg_source = msg::source();
+
+        if let Some(game) = self.games.get_mut(&creator){
+
+            if let Stage::Results(_) = game.stage {
+                return Err(Error::SessionEnded);
+            }
+    
+            let participants = game.stage.mut_participants()?;
+
+            if participants.remove(&msg_source).is_none(){
+                return Err(Error::NoSuchPlayer);
+            }
+    
+            Ok(Event::CancelRegistration)
         }
-
-        participant.check()?;
-        participants.insert(msg_source, participant);
-
-        Ok(Event::Registered(msg_source, participant))
+        else {
+            return Err(Error::NoSuchGame);
+        }
     }
 
     async fn start_game(&mut self, mut participant: Participant) -> Result<Event, Error> {
@@ -245,8 +310,21 @@ impl Contract {
 
         let results = Results {
             turns: io_turns,
-            rankings: scores,
+            rankings: scores.clone(),
         };
+
+        if game.bid != 0 {
+            let max_value = scores.iter().map(|(_, value)| value).max().unwrap();
+            let winers: Vec<_> = scores.iter()
+                .filter_map(|(actor_id, value)| if value == max_value { Some(*actor_id) } else { None })
+                .collect();
+    
+            winers.iter().for_each(|id|{
+                msg::send_with_gas(*id, "", 0, game.bid * scores.len() as u128 / winers.len() as u128).expect("Error in sending value");
+            });
+        }
+
+
 
         game.session_id = game.session_id.wrapping_add(1);
         game.stage = Stage::Results(results.clone());
@@ -328,11 +406,15 @@ async fn process_main() -> Result<Event, Error> {
     let (contract, _tx_manager) = state_mut()?;
 
     match action {
-        Action::CreateNewSession => contract.create_new_session(),
+        Action::CreateNewSession{bid} => contract.create_new_session(bid),
         Action::Register {
             creator,
             participant,
         } => contract.register(creator, participant),
+        Action::CancelRegistration {
+            creator,
+        } => contract.cancel_register(creator),
+        Action::DeleteSession => contract.delete_session(),
         Action::StartGame(participant) => contract.start_game(participant).await,
     }
 }

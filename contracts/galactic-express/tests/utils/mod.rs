@@ -33,18 +33,23 @@ impl<'a> GalEx<'a> {
         InitResult::<_, Error>::new(Self(program), result, is_active).succeed()
     }
 
-    pub fn create_new_session(&mut self, from: u64) -> GalExResult<u128, Session> {
+    pub fn create_new_session(&mut self, from: u64, bid: u128) -> GalExResult<u128, u128> {
         RunResult::new(
-            self.0.send(from, Action::CreateNewSession),
+            self.0.send_with_value(from, Action::CreateNewSession{bid}, bid),
             |event, session_id| {
-                if let Event::NewSession(session) = event {
-                    assert_eq!(session.session_id, session_id);
+                if let Event::NewSession{
+                    session_id,
+                    altitude,
+                    reward,
+                    ..
+                } = event {
+                    assert_eq!(session_id, session_id);
                     assert!(((TURN_ALTITUDE.0 * (TURNS as u16))
                         ..(TURN_ALTITUDE.1 * (TURNS as u16)))
-                        .contains(&session.altitude));
-                    assert!((REWARD.0..REWARD.1).contains(&session.reward));
+                        .contains(&altitude));
+                    assert!((REWARD.0..REWARD.1).contains(&reward));
 
-                    session
+                    session_id
                 } else {
                     unreachable!()
                 }
@@ -57,14 +62,16 @@ impl<'a> GalEx<'a> {
         from: u64,
         creator: ActorId,
         participant: Participant,
+        bid: u128,
     ) -> GalExResult<(u64, Participant)> {
         RunResult::new(
-            self.0.send(
+            self.0.send_with_value(
                 from,
                 Action::Register {
                     creator,
                     participant,
                 },
+                bid,
             ),
             |event, (actor, participant)| {
                 assert_eq!(Event::Registered(actor.into(), participant), event)
