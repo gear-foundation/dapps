@@ -170,7 +170,7 @@ impl Contract {
         let msg_value = msg::value();
 
         if let Some(game) = self.games.get_mut(&creator) {
-            if msg_value != game.bid && game.bid != 0 {
+            if msg_value != game.bid {
                 msg::send_with_gas(msg_source, "", 0, msg_value).expect("Error in sending value");
                 return Err(Error::WrongBid);
             }
