@@ -42,7 +42,6 @@ fn test() {
             if let StageState::Results(results) = &state.games[i].1.stage {
                 assert_eq!(results.rankings.len(), 4);
             }
-
         }
     }
 }

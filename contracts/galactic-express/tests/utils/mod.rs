@@ -35,15 +35,17 @@ impl<'a> GalEx<'a> {
 
     pub fn create_new_session(&mut self, from: u64, bid: u128) -> GalExResult<u128, u128> {
         RunResult::new(
-            self.0.send_with_value(from, Action::CreateNewSession{bid}, bid),
-            |event, session_id| {
-                if let Event::NewSession{
+            self.0
+                .send_with_value(from, Action::CreateNewSession { bid }, bid),
+            |event, id| {
+                if let Event::NewSession {
                     session_id,
                     altitude,
                     reward,
                     ..
-                } = event {
-                    assert_eq!(session_id, session_id);
+                } = event
+                {
+                    assert_eq!(session_id, id);
                     assert!(((TURN_ALTITUDE.0 * (TURNS as u16))
                         ..(TURN_ALTITUDE.1 * (TURNS as u16)))
                         .contains(&altitude));

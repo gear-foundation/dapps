@@ -71,7 +71,7 @@ pub struct Results {
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum Action {
-    CreateNewSession{
+    CreateNewSession {
         bid: u128,
     },
     Register {
@@ -90,7 +90,7 @@ pub enum Action {
 #[scale_info(crate = gstd::scale_info)]
 pub enum Event {
     AdminChanged(ActorId, ActorId),
-    NewSession{
+    NewSession {
         session_id: u128,
         altitude: u16,
         weather: Weather,

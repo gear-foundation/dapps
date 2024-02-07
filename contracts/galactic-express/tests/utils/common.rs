@@ -47,7 +47,10 @@ impl<Check, CheckResult, Event: Decode + Debug, Error: Decode + Debug + PartialE
 
     #[track_caller]
     pub fn succeed(self, value: Check, index: usize) -> CheckResult {
-        (self.check)(decode::<Result<Event, Error>>(&self.result, index).unwrap(), value)
+        (self.check)(
+            decode::<Result<Event, Error>>(&self.result, index).unwrap(),
+            value,
+        )
     }
 }
 
