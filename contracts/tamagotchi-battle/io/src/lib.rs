@@ -158,6 +158,7 @@ pub enum BattleQuery {
     State,
     GetPairs,
     GetPair { pair_id: PairId },
+    Admins,
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq, Eq, Debug)]
@@ -169,4 +170,5 @@ pub enum BattleQueryReply {
     State { state: BattleState },
     Pairs { pairs: BTreeMap<PairId, Pair> },
     Pair { pair: Option<Pair> },
+    Admins { admins: Vec<ActorId>},
 }

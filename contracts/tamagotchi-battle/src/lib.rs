@@ -340,6 +340,9 @@ extern fn state() {
             let pair = battle.pairs.get(&pair_id).cloned();
             BattleQueryReply::Pair { pair }
         }
+        BattleQuery::Admins => {
+            BattleQueryReply::Admins { admins: battle.admins }
+        }
     };
     msg::reply(reply, 0).expect("Failed to share state");
 }
