@@ -1,13 +1,17 @@
 #![no_std]
 
-use gmeta::{InOut, Metadata, In};
-use gstd::{collections::BTreeSet,MessageId, prelude::*, ActorId, ReservationId};
+use gmeta::{In, InOut, Metadata};
+use gstd::{
+    collections::{BTreeSet, HashMap, HashSet},
+    prelude::*,
+    ActorId, MessageId, ReservationId,
+};
 
 pub type Price = u32;
 pub type Rent = u32;
 pub type Gears = Vec<Gear>;
 pub type ValidUntilBlock = u32;
-pub type SessionId = u32;
+pub type AdminId = ActorId;
 #[derive(Encode, Decode, TypeInfo)]
 pub struct YourTurn {
     pub game_info: GameInfo,
@@ -39,43 +43,168 @@ pub struct GameInfo {
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum GameAction {
     /// Message to create a game session.
-    /// Following this, a Game structure is created, 
-    /// where the account that sent the message becomes the admin of the game. 
+    /// Following this, a Game structure is created,
+    /// where the account that sent the message becomes the admin of the game.
     /// An ID is assigned to the Game structure to uniquely identify the session.
-    CreateGameSession,
+    /// The game's IS is the admin's address.
+    ///
+    /// - `entry_fee`: participation fee for the game
+    CreateGameSession { entry_fee: Option<u128> },
 
-    /// Message to reserve gas for a specific game session. 
-    /// During the game, which takes place entirely on-chain, the contract sends messages to game strategies in sequence, 
-    /// processes the replies, and monitors the correctness of the strategy replies. 
+    /// Message to reserve gas for a specific game session.
+    /// During the game, which takes place entirely on-chain, the contract sends messages to game strategies in sequence,
+    /// processes the replies, and monitors the correctness of the strategy replies.
     /// Gas is reserved for these actions.
-    /// 
-    /// - `session_id`: the ID of the session.
-    MakeReservation {
-        session_id: SessionId,
-    },
+    ///
+    /// - `admin_id`: the admin of the game.
+    MakeReservation { admin_id: AdminId },
 
-    /// Message for player registration. 
-    /// The player specifies the address of their strategy (the strategy must be preloaded in advance) 
+    /// Message for player registration.
+    /// The player specifies the address of their strategy (the strategy must be preloaded in advance)
     /// and the session ID in which they wish to register.
-    /// 
-    /// - `session_id`: the ID of the session.
+    ///
+    /// - `admin_id`: the admin of the game.
     /// - `strategy_id`: the address of the player strategy.
-    Register {  session_id: SessionId, strategy_id: ActorId },
-
-    /// Message to start the game. 
-    /// It must be sent by the game's admin (the account that created the game session).
-    /// 
-    /// - `session_id`: the ID of the session.
-    Play {
-        session_id: SessionId,
+    Register {
+        admin_id: AdminId,
+        strategy_id: ActorId,
     },
+
+    /// Message to start the game.
+    /// It must be sent by the game's admin (the account that created the game session).
+    ///
+    /// - `admin_id`: the admin of the game.
+    Play { admin_id: AdminId },
 
     /// Message to add gas to the player's strategy to continue the game.
-    /// 
-    /// - `session_id`: the ID of the session.
-    AddGasToPlayerStrategy {
-        session_id: SessionId,
-    }
+    ///
+    /// - `admin_id`: the admin of the game.
+    AddGasToPlayerStrategy { admin_id: AdminId },
+
+    /// Message to cancel game session.
+    ///
+    /// - `admin_id`: the admin of the game.
+    CancelGameSession { admin_id: AdminId },
+
+    /// Message to leave game
+    /// Can be called before the start of the game (for example, if the admin takes too long to start the game)
+    /// and during the game, if the game has stopped due to a lack of gas and the admin does not add more.
+    ///
+    /// - `admin_id`: the admin of the game.
+    ExitGame { admin_id: AdminId },
+}
+
+#[derive(PartialEq, Eq, Debug, Encode, Decode, TypeInfo)]
+pub enum GameReply {
+    // Reply on `CreateGameSession` message
+    GameSessionCreated {
+        admin_id: AdminId,
+    },
+
+    // Reply on `MakeReservation` message
+    ReservationMade,
+
+    // Reply on `Register` message
+    StrategyRegistered,
+
+    // Reply on `Play` message
+    // in case of successful completion of the game
+    GameFinished {
+        admin_id: AdminId,
+        winner: ActorId,
+    },
+
+    // Reply on `AddGasToPlayerStrategy`
+    GasForPlayerStrategyAdded,
+
+    // Reply on `CancelGame`
+    GameWasCancelled,
+
+    // Reply on `ExitGame`
+    PlayerLeftGame,
+
+    StrategicError,
+    StrategicSuccess,
+    Step {
+        players: Vec<(ActorId, PlayerInfo)>,
+        properties: Vec<Option<(ActorId, Gears, Price, Rent)>>,
+        current_player: ActorId,
+        ownership: Vec<ActorId>,
+        current_step: u64,
+    },
+    Jail {
+        in_jail: bool,
+        position: u8,
+    },
+    GasReserved,
+    NextRoundFromReservation,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+pub enum GameError {
+    /// Error reply on `Register`
+    /// In case if this strategy is already registered
+    StrategyAlreadyReistered,
+
+    /// Error reply on `Register`
+    /// In case if the account is already registered in the game
+    AccountAlreadyRegistered,
+
+    /// Error reply on `ExitGame`
+    /// In case if strategy for this account doesn't exist
+    StrategyDoesNotExist,
+    ReservationError,
+    OnlyAdmin,
+    NotInTheGame,
+    StrategicError,
+    PlayerDoesNotExist,
+    NoGasForPlaying,
+    WrongGameStatus,
+    MsgSourceMustBeAdminOrProgram,
+    GameDoesNotExist,
+    ReservationNotValid,
+
+    /// Error reply in case of insufficient gas
+    /// for the game contract during the game.
+    AddGasToGameContract,
+
+    /// Error reply on `Play` message
+    /// in case of insufficient gas for strategy
+    AddGasForStrategy(ActorId),
+
+    /// Error reply on `CreateGameSession`
+    /// In case a game session has already been created for the specified account.
+    GameSessionAlreadyExists,
+
+    /// Error reply on `CreateGameSession`
+    /// In case if indicated fee is less than ED
+    FeeIsLessThanED,
+
+    /// Error reply on `Register`
+    /// In case a player didn't attach the required amount of value
+    WrongValueAmount,
+}
+
+/// Type that should be used to query the state of contract.
+#[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]
+pub enum StateQuery {
+    /// Query to get the game session
+    GetGameSession { admin_id: AdminId },
+
+    /// Query to get the player info from the game session
+    GetPlayerInfo {
+        admin_id: AdminId,
+        account_id: ActorId,
+    }   
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]
+pub enum StateReply {
+    /// Reply on query `GetGameSession`
+    GameSession { game_session: Option<GameState> },
+
+    /// Reply on query `GetPlayerInfo`
+    PlayerInfo { player_info: Option<PlayerInfo> }
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
@@ -99,67 +228,9 @@ pub enum StrategicAction {
     Skip,
 }
 
-#[derive(PartialEq, Eq,Debug, Encode, Decode, TypeInfo)]
-pub enum GameReply {
-    // Reply on `CreateGameSession` message
-    GameSessionCreated {
-        session_id: SessionId,
-    },
-
-    // Reply on `MakeReservation` message
-    ReservationMade,
-
-    // Reply on `Register` message
-    StrategyRegistered,
-
-    // Reply on `Play` message
-    // in case of successful completion of the game
-    GameFinished {
-        session_id: SessionId,
-        winner: ActorId,
-    },
-
-    // Reply on `AddGasToPlayerStrategy`
-    GasForPlayerStrategyAdded,
-
-    StrategicError,
-    StrategicSuccess,
-    Step {
-        players: Vec<(ActorId, PlayerInfo)>,
-        properties: Vec<Option<(ActorId, Gears, Price, Rent)>>,
-        current_player: ActorId,
-        ownership: Vec<ActorId>,
-        current_step: u64,
-    },
-    Jail {
-        in_jail: bool,
-        position: u8,
-    },
-    GasReserved,
-    NextRoundFromReservation,
-}
-
-#[derive(Debug, Encode, Decode, TypeInfo)]
-pub enum GameError {
-    AlreadyReistered,
-    ReservationError,
-    OnlyAdmin,
-    NotInTheGame,
-    StrategicError,
-    PlayerDoesNotExist,
-    NoGasForPlaying,
-    WrongGameStatus,
-    MsgSourceMustBeAdminOrProgram,
-    GameDoesNotExist,
-    ReservationNotValid,
-    
-    // Error reply in case of insufficient gas 
-    // for the game contract during the game.
-    AddGasToGameContract,
-}
-
-#[derive(PartialEq, Eq, Debug, Clone, Encode, Decode, TypeInfo)]
+#[derive(PartialEq, Eq, Debug, Clone, Encode, Decode, TypeInfo, Default)]
 pub struct PlayerInfo {
+    pub owner_id: ActorId,
     pub position: u8,
     pub balance: u32,
     pub debt: u32,
@@ -168,23 +239,7 @@ pub struct PlayerInfo {
     pub cells: BTreeSet<u8>,
     pub penalty: u8,
     pub lost: bool,
-    pub reservation_id: (ReservationId, ValidUntilBlock),
-}
-
-impl Default for PlayerInfo {
-    fn default() -> Self {
-        PlayerInfo {
-            position: 0,
-            balance: 0,
-            debt: 0,
-            in_jail: false,
-            round: 0,
-            cells: BTreeSet::new(),
-            penalty: 0,
-            lost: false,
-            reservation_id: (gcore::ReservationId::from([0; 32]).into(), 0),
-        }
-    }
+    pub reservation_id: Option<(ReservationId, ValidUntilBlock)>,
 }
 
 #[derive(Debug, PartialEq, Eq, Encode, Decode, Clone, TypeInfo, Copy)]
@@ -226,26 +281,39 @@ pub struct Config {
     pub reservation_duration_in_block: u32,
     pub time_for_step: u32,
     pub min_gas_limit: u64,
+    pub gas_refill_timeout: u32,
 }
 
-#[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]
-pub enum StateQuery {
-    MessageId,
-    GameState,
+impl From<Game> for GameState {
+    fn from(game: Game) -> Self {
+        GameState {
+            admin_id: game.admin_id,
+            properties_in_bank: game.properties_in_bank.into_iter().collect(),
+            round: game.round,
+            players: game.players.into_iter().collect(),
+            owners_to_strategy_ids: game.owners_to_strategy_ids.into_iter().collect(),
+            players_queue: game.players_queue,
+            current_turn: game.current_turn,
+            current_player: game.current_player,
+            current_step: game.current_step,
+            properties: game.properties,
+            ownership: game.ownership,
+            game_status: game.game_status,
+            winner: game.winner,
+            reservations: game.reservations,
+            entry_fee: game.entry_fee,
+            prize_pool: game.prize_pool,
+        }
+    }
 }
-
-#[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]
-pub enum StateReply {
-    MessageId(MessageId),
-    GameState(GameState),
-}
-
-#[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]
-pub struct GameState {
-    pub admin: ActorId,
-    pub properties_in_bank: Vec<u8>,
+#[derive(Clone, Default)]
+pub struct Game {
+    pub admin_id: AdminId,
+    pub properties_in_bank: HashSet<u8>,
     pub round: u128,
-    pub players: Vec<(ActorId, PlayerInfo)>,
+    // strategy ID to PlayerInfo
+    pub players: HashMap<ActorId, PlayerInfo>,
+    pub owners_to_strategy_ids: HashMap<ActorId, ActorId>,
     pub players_queue: Vec<ActorId>,
     pub current_turn: u8,
     pub current_player: ActorId,
@@ -253,7 +321,33 @@ pub struct GameState {
     // mapping from cells to built properties,
     pub properties: Vec<Option<(ActorId, Gears, Price, Rent)>>,
     // mapping from cells to accounts who have properties on it
-    pub  ownership: Vec<ActorId>,
+    pub ownership: Vec<ActorId>,
     pub game_status: GameStatus,
     pub winner: ActorId,
+    pub current_msg_id: MessageId,
+    pub reservations: Vec<(ReservationId, ValidUntilBlock)>,
+    pub entry_fee: Option<u128>,
+    pub prize_pool: u128,
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode, Default)]
+pub struct GameState {
+    pub admin_id: ActorId,
+    pub properties_in_bank: Vec<u8>,
+    pub round: u128,
+    pub players: Vec<(ActorId, PlayerInfo)>,
+    pub owners_to_strategy_ids: Vec<(ActorId, ActorId)>,
+    pub players_queue: Vec<ActorId>,
+    pub current_turn: u8,
+    pub current_player: ActorId,
+    pub current_step: u64,
+    // mapping from cells to built properties,
+    pub properties: Vec<Option<(ActorId, Gears, Price, Rent)>>,
+    // mapping from cells to accounts who have properties on it
+    pub ownership: Vec<ActorId>,
+    pub game_status: GameStatus,
+    pub winner: ActorId,
+    pub reservations: Vec<(ReservationId, ValidUntilBlock)>,
+    pub entry_fee: Option<u128>,
+    pub prize_pool: u128,
 }

@@ -1,17 +1,6 @@
 use crate::game::PENALTY;
 use crate::*;
 
-pub fn get_game_session(
-    game_sessions: &mut HashMap<SessionId, Game>,
-    session_id: SessionId,
-) -> Result<&mut Game, GameError> {
-    if let Some(game) = game_sessions.get_mut(&session_id) {
-        Ok(game)
-    } else {
-        Err(GameError::GameDoesNotExist)
-    }
-}
-
 pub fn check_reservation_validity(valid_until_block: u32) -> Result<(), GameError> {
     if valid_until_block <= exec::block_height() {
         return Err(GameError::ReservationNotValid);

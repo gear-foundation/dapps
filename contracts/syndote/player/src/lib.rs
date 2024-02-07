@@ -1,5 +1,5 @@
 #![no_std]
-use gstd::{exec, msg, debug, prelude::*, ActorId};
+use gstd::{debug, exec, msg, prelude::*, ActorId};
 use syndote_io::*;
 //static mut MONOPOLY: ActorId = ActorId::zero();
 pub const COST_FOR_UPGRADE: u32 = 500;
@@ -18,7 +18,6 @@ extern fn handle() {
         .expect("Can't find my address")
         .clone();
 
-    
     if player_info.in_jail {
         if player_info.balance <= FINE {
             reply(StrategicAction::ThrowRoll {
@@ -38,15 +37,16 @@ extern fn handle() {
     let position = player_info.position;
 
     // debug!("BALANCE {:?}", my_player.balance);
-    let (my_cell, free_cell, gears, price) =
-        if let Some((account, gears, price, _)) = &message.game_info.properties[position as usize] {
-            let my_cell = account == &exec::program_id();
-            let free_cell = account == &ActorId::zero();
-            (my_cell, free_cell, gears, price)
-        } else {
-            reply(StrategicAction::Skip);
-            return;
-        };
+    let (my_cell, free_cell, gears, price) = if let Some((account, gears, price, _)) =
+        &message.game_info.properties[position as usize]
+    {
+        let my_cell = account == &exec::program_id();
+        let free_cell = account == &ActorId::zero();
+        (my_cell, free_cell, gears, price)
+    } else {
+        reply(StrategicAction::Skip);
+        return;
+    };
     debug!("my cell {:?}", my_cell);
     debug!("free cell {:?}", free_cell);
     if my_cell {
@@ -64,7 +64,7 @@ extern fn handle() {
         }
     }
     if free_cell {
-        if player_info.balance >= *price &&  player_info.balance >= 1_000 {
+        if player_info.balance >= *price && player_info.balance >= 1_000 {
             debug!("buy cell ");
             reply(StrategicAction::BuyCell {
                 properties_for_sale: None,

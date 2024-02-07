@@ -1,10 +1,17 @@
 use crate::game::*;
 use crate::*;
 
-impl Game {
+pub trait StrategicActions {
+    fn throw_roll(&mut self, pay_fine: bool, properties_for_sale: Option<Vec<u8>>);
+    fn add_gear(&mut self, properties_for_sale: Option<Vec<u8>>);
+    fn upgrade(&mut self, properties_for_sale: Option<Vec<u8>>);
+    fn buy_cell(&mut self, properties_for_sale: Option<Vec<u8>>);
+    fn pay_rent(&mut self, properties_for_sale: Option<Vec<u8>>);
+}
+impl StrategicActions for Game {
     // to throw rolls to go out from the prison
     // `pay_fine`: to pay fine or not if there is not double
-    pub fn throw_roll(&mut self, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) {
+    fn throw_roll(&mut self, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) {
         let player = self.current_player;
         let player_info = self.players.get_mut(&player).expect("Can't be None");
 
@@ -16,7 +23,7 @@ impl Game {
 
         if let Some(properties) = properties_for_sale {
             if sell_property(
-                &self.admin,
+                &self.admin_id,
                 &mut self.ownership,
                 &properties,
                 &mut self.properties_in_bank,
@@ -26,7 +33,6 @@ impl Game {
             .is_err()
             {
                 player_info.penalty += 1;
-                debug!("penatly sell");
                 return;
             };
         }
@@ -38,7 +44,6 @@ impl Game {
         } else if pay_fine {
             if player_info.balance < FINE {
                 player_info.penalty += 1;
-                debug!("PENALTY");
                 return;
             }
             player_info.balance -= FINE;
@@ -47,13 +52,13 @@ impl Game {
         player_info.round = self.round;
     }
 
-    pub fn add_gear(&mut self, properties_for_sale: Option<Vec<u8>>) {
+    fn add_gear(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let player = self.current_player;
         let player_info = self.players.get_mut(&player).expect("Can't be None");
 
         if let Some(properties) = properties_for_sale {
             if sell_property(
-                &self.admin,
+                &self.admin_id,
                 &mut self.ownership,
                 &properties,
                 &mut self.properties_in_bank,
@@ -68,7 +73,6 @@ impl Game {
 
         // if player did not check his balance itself
         if player_info.balance < COST_FOR_UPGRADE {
-            //  debug!("PENALTY: NOT ENOUGH BALANCE FOR UPGRADE");
             player_info.penalty += 1;
             return;
         }
@@ -77,7 +81,6 @@ impl Game {
 
         let gears = if let Some((account, gears, _, _)) = &mut self.properties[position as usize] {
             if account != &player {
-                //       debug!("PENALTY: TRY TO UPGRADE NOT OWN CELL");
                 player_info.penalty += 1;
                 return;
             }
@@ -98,13 +101,13 @@ impl Game {
         player_info.round = self.round;
     }
 
-    pub fn upgrade(&mut self, properties_for_sale: Option<Vec<u8>>) {
+    fn upgrade(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let player = self.current_player;
         let player_info = self.players.get_mut(&player).expect("Can't be None");
 
         if let Some(properties) = properties_for_sale {
             if sell_property(
-                &self.admin,
+                &self.admin_id,
                 &mut self.ownership,
                 &properties,
                 &mut self.properties_in_bank,
@@ -119,7 +122,6 @@ impl Game {
 
         // if player did not check his balance itself
         if player_info.balance < COST_FOR_UPGRADE {
-            //       debug!("PENALTY: NOT ENOUGH BALANCE FOR UPGRADE");
             player_info.penalty += 1;
             return;
         }
@@ -133,7 +135,6 @@ impl Game {
             }
             // if nothing to upgrade
             if gears.is_empty() {
-                //        debug!("PENALTY: NOTHING TO UPGRADE");
                 player_info.penalty += 1;
                 return;
             }
@@ -157,7 +158,7 @@ impl Game {
     }
 
     // if a cell is free, a player can buy it
-    pub fn buy_cell(&mut self, properties_for_sale: Option<Vec<u8>>) {
+    fn buy_cell(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let player = self.current_player;
         let player_info = self.players.get_mut(&player).expect("Can't be None");
 
@@ -165,7 +166,7 @@ impl Game {
 
         if let Some(properties) = properties_for_sale {
             if sell_property(
-                &self.admin,
+                &self.admin_id,
                 &mut self.ownership,
                 &properties,
                 &mut self.properties_in_bank,
@@ -201,12 +202,12 @@ impl Game {
         player_info.round = self.round;
     }
 
-    pub fn pay_rent(&mut self, properties_for_sale: Option<Vec<u8>>) {
+    fn pay_rent(&mut self, properties_for_sale: Option<Vec<u8>>) {
         let player = self.current_player;
         let player_info = self.players.get_mut(&player).expect("Can't be None");
         if let Some(properties) = properties_for_sale {
             if sell_property(
-                &self.admin,
+                &self.admin_id,
                 &mut self.ownership,
                 &properties,
                 &mut self.properties_in_bank,
