@@ -13,7 +13,7 @@ impl Metadata for ContractMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = Out<State>;
+    type State = InOut<StateQuery, StateReply>;
 }
 
 pub const PARTICIPANTS: usize = 4;
@@ -32,16 +32,27 @@ pub const MAX_FUEL: u8 = 100;
 // maximum payload value that can be entered by the user
 pub const MAX_PAYLOAD: u8 = 100;
 
-#[derive(Encode, Decode, TypeInfo, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub struct State {
-    pub games: Vec<(ActorId, GameState)>,
+#[derive(Encode, Decode, TypeInfo)]
+pub enum StateQuery {
+    All,
+    GetGame { creator_id: ActorId },
+    GetGameId { player_id: ActorId },
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+pub enum StateReply {
+    All(State),
+    Game(Option<GameState>),
+    GameId(Option<ActorId>),
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
+pub struct State {
+    pub games: Vec<(ActorId, GameState)>,
+    pub player_to_game_id: Vec<(ActorId, ActorId)>,
+}
+
+#[derive(Encode, Decode, TypeInfo, Debug)]
 pub struct GameState {
     pub admin: ActorId,
     pub session_id: u128,
@@ -52,24 +63,18 @@ pub struct GameState {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StageState {
     Registration(Vec<(ActorId, Participant)>),
     Results(Results),
 }
 
 #[derive(Encode, Decode, TypeInfo, Default, Clone, Debug, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Results {
     pub turns: Vec<Vec<(ActorId, Turn)>>,
     pub rankings: Vec<(ActorId, u128)>,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Action {
     CreateNewSession {
         bid: u128,
@@ -86,8 +91,6 @@ pub enum Action {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Event {
     AdminChanged(ActorId, ActorId),
     NewSession {
@@ -104,8 +107,6 @@ pub enum Event {
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Copy, Debug, Default, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Participant {
     pub fuel_amount: u8,
     pub payload_amount: u8,
@@ -122,8 +123,6 @@ impl Participant {
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Copy, Debug, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum HaltReason {
     PayloadOverload,
     FuelOverload,
@@ -134,16 +133,12 @@ pub enum HaltReason {
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Copy, Debug, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Turn {
     Alive { fuel_left: u8, payload_amount: u8 },
     Destroyed(HaltReason),
 }
 
 #[derive(Encode, Decode, TypeInfo, Default, Clone, Copy, Debug, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Weather {
     #[default]
     Clear,
@@ -155,8 +150,6 @@ pub enum Weather {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Error {
     StateUninitaliazed,
     GstdError(String),
@@ -170,6 +163,8 @@ pub enum Error {
     WrongBid,
     NoSuchPlayer,
     LessThanExistentialDeposit,
+    AlreadyRegistered,
+    SeveralRegistrations,
 }
 
 impl From<GstdError> for Error {

@@ -83,6 +83,7 @@ impl Default for Stage {
 #[derive(Default)]
 struct Contract {
     games: HashMap<ActorId, Game>,
+    player_to_game_id: HashMap<ActorId, ActorId>,
 }
 
 #[derive(Default)]
@@ -102,11 +103,11 @@ impl Contract {
         let msg_value = msg::value();
 
         if msg_value != bid {
-            msg::send_with_gas(msg_src, "", 0, msg_value).expect("Error in sending value");
+            send_value(msg_src, msg_value);
             return Err(Error::WrongBid);
         }
         if bid < EXISTENTIAL_DEPOSIT && bid != 0 {
-            msg::send_with_gas(msg_src, "", 0, msg_value).expect("Error in sending value");
+            send_value(msg_src, msg_value);
             return Err(Error::LessThanExistentialDeposit);
         }
 
@@ -158,20 +159,27 @@ impl Contract {
 
         if let Stage::Registration(players) = &game.stage {
             players.iter().for_each(|(id, _)| {
-                msg::send_with_gas(*id, "", 0, game.bid).expect("Error in sending value");
+                send_value(*id, game.bid);
+                self.player_to_game_id.remove(id);
             });
         }
         self.games.remove(&msg_src);
         Ok(Event::SessionDeleted)
     }
 
-    fn register(&mut self, creator: ActorId, participant: Participant) -> Result<Event, Error> {
-        let msg_source = msg::source();
-        let msg_value = msg::value();
+    fn register(
+        &mut self,
+        creator: ActorId,
+        participant: Participant,
+        msg_source: ActorId,
+        msg_value: u128,
+    ) -> Result<Event, Error> {
+        if self.player_to_game_id.contains_key(&msg_source) {
+            return Err(Error::SeveralRegistrations);
+        }
 
         if let Some(game) = self.games.get_mut(&creator) {
             if msg_value != game.bid {
-                msg::send_with_gas(msg_source, "", 0, msg_value).expect("Error in sending value");
                 return Err(Error::WrongBid);
             }
             if msg_source == game.admin {
@@ -183,18 +191,20 @@ impl Contract {
 
             let participants = game.stage.mut_participants()?;
 
+            if participants.contains_key(&msg_source) {
+                return Err(Error::AlreadyRegistered);
+            }
+
             if participants.len() >= PARTICIPANTS - 1 {
                 return Err(Error::SessionFull);
             }
 
             participant.check()?;
             participants.insert(msg_source, participant);
+            self.player_to_game_id.insert(msg_source, creator);
 
             Ok(Event::Registered(msg_source, participant))
         } else {
-            if msg_value != 0 {
-                msg::send_with_gas(msg_source, "", 0, msg_value).expect("Error in sending value");
-            }
             Err(Error::NoSuchGame)
         }
     }
@@ -210,8 +220,9 @@ impl Contract {
             let participants = game.stage.mut_participants()?;
 
             if participants.contains_key(&msg_source) {
-                msg::send_with_gas(msg_source, "", 0, game.bid).expect("Error in sending value");
+                send_value(msg_source, game.bid);
                 participants.remove(&msg_source).expect("Critical error");
+                self.player_to_game_id.remove(&msg_source);
             } else {
                 return Err(Error::NoSuchPlayer);
             }
@@ -323,17 +334,14 @@ impl Contract {
                 .collect();
 
             winers.iter().for_each(|id| {
-                msg::send_with_gas(
-                    *id,
-                    "",
-                    0,
-                    game.bid * scores.len() as u128 / winers.len() as u128,
-                )
-                .expect("Error in sending value");
+                send_value(*id, game.bid * scores.len() as u128 / winers.len() as u128);
             });
         }
 
         game.session_id = game.session_id.wrapping_add(1);
+        participants.into_iter().for_each(|(id, _)| {
+            self.player_to_game_id.remove(id);
+        });
         game.stage = Stage::Results(results.clone());
 
         Ok(Event::GameFinished(results))
@@ -385,6 +393,12 @@ fn turn(
     Ok(new_remaining_fuel)
 }
 
+fn send_value(destination: ActorId, value: u128) {
+    if value != 0 {
+        msg::send_with_gas(destination, "", 0, value).expect("Error in sending value");
+    }
+}
+
 #[no_mangle]
 extern fn init() {
     msg::reply(process_init(), 0).expect("failed to encode or reply from `main()`");
@@ -417,7 +431,15 @@ async fn process_main() -> Result<Event, Error> {
         Action::Register {
             creator,
             participant,
-        } => contract.register(creator, participant),
+        } => {
+            let msg_source = msg::source();
+            let msg_value = msg::value();
+            let reply = contract.register(creator, participant, msg_source, msg_value);
+            if reply.is_err() {
+                send_value(msg_source, msg_value);
+            }
+            reply
+        }
         Action::CancelRegistration { creator } => contract.cancel_register(creator),
         Action::DeleteSession => contract.delete_session(),
         Action::StartGame(participant) => contract.start_game(participant).await,
@@ -427,31 +449,19 @@ async fn process_main() -> Result<Event, Error> {
 #[no_mangle]
 extern fn state() {
     let (state, _tx_manager) = unsafe { STATE.take().expect("Unexpected error in taking state") };
-    msg::reply::<State>(state.into(), 0)
-        .expect("Failed to encode or reply with `State` from `state()`");
-}
-
-impl From<Contract> for State {
-    fn from(value: Contract) -> Self {
-        let Contract { games } = value;
-
-        let games = games
-            .into_iter()
-            .map(|(id, game)| {
-                // let stage = if let Stage::Registration(data) = game.stage {
-                //     StageState::Registration(data.into_iter().collect())
-                // } else if let Stage::Results(data) = game.stage {
-                //     StageState::Results(data)
-                // };
-
-                let stage = match game.stage {
+    let query: StateQuery = msg::load().expect("Unable to load the state query");
+    let reply = match query {
+        StateQuery::All => StateReply::All(state.into()),
+        StateQuery::GetGame { creator_id } => {
+            if let Some(game) = state.games.get(&creator_id) {
+                let stage = match &game.stage {
                     Stage::Registration(participants_data) => {
-                        StageState::Registration(participants_data.into_iter().collect())
+                        StageState::Registration(participants_data.clone().into_iter().collect())
                     }
-                    Stage::Results(results) => StageState::Results(results),
+                    Stage::Results(results) => StageState::Results(results.clone()),
                 };
 
-                let new_game = GameState {
+                let game_state = GameState {
                     admin: game.admin,
                     session_id: game.session_id,
                     altitude: game.altitude,
@@ -459,29 +469,52 @@ impl From<Contract> for State {
                     reward: game.reward,
                     stage,
                 };
-                (id, new_game)
+                StateReply::Game(Some(game_state))
+            } else {
+                StateReply::Game(None)
+            }
+        }
+        StateQuery::GetGameId { player_id } => {
+            StateReply::GameId(state.player_to_game_id.get(&player_id).copied())
+        }
+    };
+    msg::reply(reply, 0).expect("Unable to share the state");
+}
+
+impl From<Contract> for State {
+    fn from(value: Contract) -> Self {
+        let Contract {
+            games,
+            player_to_game_id,
+        } = value;
+
+        let games = games
+            .into_iter()
+            .map(|(id, game)| {
+                let stage = match game.stage {
+                    Stage::Registration(participants_data) => {
+                        StageState::Registration(participants_data.into_iter().collect())
+                    }
+                    Stage::Results(results) => StageState::Results(results),
+                };
+
+                let game_state = GameState {
+                    admin: game.admin,
+                    session_id: game.session_id,
+                    altitude: game.altitude,
+                    weather: game.weather,
+                    reward: game.reward,
+                    stage,
+                };
+                (id, game_state)
             })
             .collect();
-        // let is_session_ended: bool;
-        // let participants: Vec<(ActorId, Participant)>;
-        // let turns: Vec<Vec<(ActorId, Turn)>>;
-        // let rankings: Vec<(ActorId, u128)>;
 
-        // match stage {
-        //     Stage::Registration(participants_data) => {
-        //         is_session_ended = false;
-        //         participants = participants_data.into_iter().collect();
-        //         turns = vec![vec![]];
-        //         rankings = Vec::new();
-        //     }
-        //     Stage::Results(results) => {
-        //         is_session_ended = true;
-        //         participants = Vec::new();
-        //         turns = results.turns;
-        //         rankings = results.rankings;
-        //     }
-        // };
+        let player_to_game_id = player_to_game_id.into_iter().collect();
 
-        Self { games }
+        Self {
+            games,
+            player_to_game_id,
+        }
     }
 }
