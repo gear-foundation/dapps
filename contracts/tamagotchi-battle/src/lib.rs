@@ -343,6 +343,18 @@ extern fn state() {
         BattleQuery::Admins => {
             BattleQueryReply::Admins { admins: battle.admins }
         }
+        BattleQuery::CurrentPlayers => {
+            BattleQueryReply::CurrentPlayers { current_players: battle.current_players }
+        }
+        BattleQuery::Players => {
+            BattleQueryReply::Players {players: battle.players}
+        }
+        BattleQuery::CompletedGames => {
+            BattleQueryReply::CompletedGames { completed_games: battle.completed_games }
+        }
+        BattleQuery::Winner => {
+            BattleQueryReply::Winner { winner: battle.current_winner }
+        }
     };
     msg::reply(reply, 0).expect("Failed to share state");
 }

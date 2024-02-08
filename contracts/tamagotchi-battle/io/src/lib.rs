@@ -154,11 +154,15 @@ pub enum BattleError {
 #[scale_info(crate = gstd::scale_info)]
 pub enum BattleQuery {
     GetPlayer { tmg_id: ActorId },
+    Players,
     PlayersIds,
     State,
     GetPairs,
     GetPair { pair_id: PairId },
     Admins,
+    CurrentPlayers,
+    CompletedGames,
+    Winner,
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq, Eq, Debug)]
@@ -166,9 +170,13 @@ pub enum BattleQuery {
 #[scale_info(crate = gstd::scale_info)]
 pub enum BattleQueryReply {
     Player { player: Option<Player> },
+    Players { players: BTreeMap<ActorId, Player>},
     PlayersIds { players_ids: Vec<ActorId> },
     State { state: BattleState },
     Pairs { pairs: BTreeMap<PairId, Pair> },
     Pair { pair: Option<Pair> },
     Admins { admins: Vec<ActorId>},
+    CurrentPlayers { current_players: Vec<ActorId>},
+    CompletedGames {completed_games: u8},
+    Winner { winner: ActorId},
 }
