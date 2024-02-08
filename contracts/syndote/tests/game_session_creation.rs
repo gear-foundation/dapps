@@ -1,4 +1,4 @@
-use gtest::{System};
+use gtest::System;
 use syndote_io::*;
 pub mod utils;
 use syndote::game::GameSessionActions;

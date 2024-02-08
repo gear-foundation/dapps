@@ -1,4 +1,4 @@
-use gstd::{prelude::*, ActorId};
+use gstd::prelude::*;
 use gtest::{Program, RunResult, System};
 use syndote_io::*;
 pub const ADMIN_ID: u64 = 10;
@@ -15,7 +15,7 @@ pub trait SyndoteTestFunctions {
         entry_fee: Option<u128>,
         error: Option<GameError>,
     );
-    fn play(&self, from: u64, admin_id: u64, amount: u128);
+    fn play(&self, from: u64, admin_id: u64);
     fn cancel_game_session(&self, from: u64, admin_id: u64, error: Option<GameError>);
     fn exit_game(&self, from: u64, admin_id: u64, error: Option<GameError>);
     fn get_game_session(&self, admin_id: u64) -> Option<GameState>;
@@ -78,7 +78,7 @@ impl SyndoteTestFunctions for Program<'_> {
         };
         check_reply(&result, from, GameReply::StrategyRegistered, error);
     }
-    fn play(&self, from: u64, admin_id: u64, amount: u128) {
+    fn play(&self, from: u64, admin_id: u64) {
         let result = self.send(
             from,
             GameAction::Play {
@@ -136,7 +136,7 @@ impl SyndoteTestFunctions for Program<'_> {
 }
 
 fn check_reply(result: &RunResult, from: u64, expected_reply: GameReply, error: Option<GameError>) {
-    let mut reply: Result<GameReply, GameError>;
+    let reply: Result<GameReply, GameError>;
     if let Some(error) = error {
         reply = Err(error);
     } else {

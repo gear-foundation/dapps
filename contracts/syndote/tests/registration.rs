@@ -1,7 +1,7 @@
-use gtest::{System};
+use gtest::System;
 use syndote_io::*;
 pub mod utils;
-use syndote::game::{GameSessionActions, INITIAL_BALANCE};
+use syndote::game::INITIAL_BALANCE;
 use utils::{preconfigure, upload_strategy, SyndoteTestFunctions, ADMIN_ID, PLAYERS};
 
 // Test for successful registration in a game where a fee is required.
@@ -134,7 +134,35 @@ fn exit_game() {
     let player_info = game.get_player_info(ADMIN_ID, PLAYERS[0]);
     assert!(player_info.is_none());
 
-    let game_session = game.get_game_session(ADMIN_ID).expect("Game session does not exist");
+    let game_session = game
+        .get_game_session(ADMIN_ID)
+        .expect("Game session does not exist");
     assert!(game_session.owners_to_strategy_ids.is_empty());
     assert!(game_session.players.is_empty());
+}
+
+// Successful game session cancellation
+#[test]
+fn cancel_game_session() {
+    let system = System::new();
+    let game = preconfigure(&system);
+
+    // fee for the game: 50 VARA
+    let fee = 50_000_000_000_000;
+    game.create_game_session(ADMIN_ID, Some(fee), None);
+
+    for player in PLAYERS.iter().take(3) {
+        system.mint_to(*player, fee);
+        let strategy = upload_strategy(&system);
+        game.register(*player, ADMIN_ID, strategy.id().into(), Some(fee), None);
+    }
+
+    game.cancel_game_session(ADMIN_ID, ADMIN_ID, None);
+
+    for player in PLAYERS.iter().take(3) {
+        system.claim_value_from_mailbox(*player);
+        assert_eq!(system.balance_of(*player), fee);
+    }
+    let game_session = game.get_game_session(ADMIN_ID);
+    assert!(game_session.is_none());
 }
