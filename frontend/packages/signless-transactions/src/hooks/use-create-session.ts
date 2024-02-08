@@ -53,7 +53,9 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
     const extrinsic = api.message.send(message, metadata);
 
-    const voucher = await api.voucher.issue(session.key, voucherValue, session.duration, [programId], true);
+    const minDuration = api.voucher.minDuration;
+
+    const voucher = await api.voucher.issue(session.key, voucherValue, minDuration, [programId], true);
 
     const txs = [extrinsic, voucher.extrinsic];
     const options = { ..._options, onError };
@@ -75,11 +77,13 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
       const isNeedProlongDuration = currentBlockNumber.toNumber() > details.expiry;
 
       if (voucherValue || isNeedProlongDuration) {
+        const minDuration = api.voucher.minDuration;
+
         const voucherExtrinsic = await api.voucher.update(session.key, accountVoucherId, {
           balanceTopUp: voucherValue
             ? Number(getFormattedBalance(balance.toNumber()).value) + Number(getFormattedBalance(voucherValue).value)
             : undefined,
-          prolongDuration: isNeedProlongDuration ? session.duration : undefined,
+          prolongDuration: isNeedProlongDuration ? minDuration : undefined,
         });
 
         return voucherExtrinsic;
