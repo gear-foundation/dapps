@@ -10,14 +10,13 @@ import { useGameMessage, usePending } from '../../hooks';
 import { generateShipsField } from './shipGenerator';
 import { convertShipsToField, useFetchVoucher } from '../../utils';
 import { useCheckBalance } from '@dapps-frontend/hooks';
-import { ADDRESS } from '../../consts';
 
 export default function ShipArrangement() {
   const { voucherId, isLoading } = useFetchVoucher();
-  const { pair } = useSignlessTransactions();
+  const { pairVoucherId } = useSignlessTransactions();
   const message = useGameMessage();
   const { setPending } = usePending();
-  const { checkBalance } = useCheckBalance({ signlessPair: pair, gaslessVoucherId: voucherId });
+  const { checkBalance } = useCheckBalance({ signlessPairVoucherId: pairVoucherId, gaslessVoucherId: voucherId });
 
   const [shipLayout, setShipLayout] = useState<string[]>([]);
   const [shipsField, setShipsField] = useState<number[][]>([]);

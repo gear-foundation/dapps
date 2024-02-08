@@ -1,5 +1,5 @@
 import { HexString, ProgramMetadata } from '@gear-js/api';
-import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
@@ -20,26 +20,31 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
   const alert = useAlert();
   const { account } = useAccount();
   const { batchSignAndSend } = useBatchSignAndSend('all');
+  const { getFormattedBalance } = useBalanceFormat();
 
   const onError = (message: string) => alert.error(message);
 
   const getMessage = (payload: AnyJson) => {
     const destination = programId;
     // TODO: replace with calculation after release fix
-    const gasLimit = 10000000000;
+    const gasLimit = 250000000000;
 
     return { destination, payload, gasLimit };
   };
 
-  const deleteSession = async () => {
+  const deleteSession = async (sessionKey: string) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!metadata) throw new Error('Metadata not found');
 
     const message = getMessage({ DeleteSessionFromAccount: null });
     const extrinsic = api.message.send(message, metadata);
-    // const voucher = api.voucher.revoke(session.key, programId);
 
-    const txs = [extrinsic];
+    const vouchersForAccount = await api.voucher.getAllForAccount(sessionKey, programId);
+    const accountVoucherId = Object.keys(vouchersForAccount)[0];
+
+    const voucher = await api.voucher.revoke(sessionKey, accountVoucherId);
+
+    const txs = [extrinsic, voucher];
 
     batchSignAndSend(txs, { onError });
   };
@@ -49,28 +54,11 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!metadata) throw new Error('Metadata not found');
     if (!account) throw new Error('Account not found');
 
-    const getVoucher = async (voucherId: `${string}` | undefined) => {
-      if (voucherId) {
-        const extrinsic = await api.voucher.revoke(session.key, voucherId);
-        return {
-          extrinsic,
-          voucherId,
-        };
-      }
-
-      const voucher = await api.voucher.issue(session.key, voucherValue, session.duration, [programId]);
-      return voucher;
-    };
-
     const message = getMessage({ CreateSession: session });
 
     const extrinsic = api.message.send(message, metadata);
 
-    const vouchersForAccount = await api.voucher.getAllForAccount(account?.decodedAddress);
-
-    const accountVoucherId = Object.keys(vouchersForAccount)[0];
-
-    const voucher = await getVoucher(accountVoucherId);
+    const voucher = await api.voucher.issue(session.key, voucherValue, session.duration, [programId], true);
 
     const txs = [extrinsic, voucher.extrinsic];
     const options = { ..._options, onError };
@@ -78,7 +66,48 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     batchSignAndSend(txs, options);
   };
 
-  return { createSession, deleteSession };
+  const updateSession = async (session: Session, voucherValue: number, _options: Options) => {
+    if (!isApiReady) throw new Error('API is not initialized');
+    if (!metadata) throw new Error('Metadata not found');
+    if (!account) throw new Error('Account not found');
+
+    const updateVoucher = async (accountVoucherId: string) => {
+      const details = await api?.voucher.getDetails(session.key, accountVoucherId as `0x${string}`);
+
+      const finilizedBlockHash = await api?.blocks.getFinalizedHead();
+      const currentBlockNumber = await api.blocks.getBlockNumber(finilizedBlockHash.toHex());
+
+      if (voucherValue || currentBlockNumber.toNumber() > details.expiry) {
+        const voucherExtrinsic = await api.voucher.update(session.key, accountVoucherId, {
+          balanceTopUp: voucherValue ? Number(getFormattedBalance(balance.toNumber()).value) + voucherValue : 0,
+          prolongDuration: session.duration,
+        });
+
+        return voucherExtrinsic;
+      }
+
+      return null;
+    };
+
+    const message = getMessage({ CreateSession: session });
+
+    const extrinsic = await api.message.send(message, metadata);
+
+    const vouchersForAccount = await api.voucher.getAllForAccount(session.key, programId);
+
+    const accountVoucherId = Object.keys(vouchersForAccount)[0];
+
+    const balance = await api.balance.findOut(accountVoucherId);
+
+    const updatedVoucherExtrinsic = await updateVoucher(accountVoucherId);
+
+    const txs = updatedVoucherExtrinsic ? [extrinsic, updatedVoucherExtrinsic] : [extrinsic];
+    const options = { ..._options, onError };
+
+    batchSignAndSend(txs, options);
+  };
+
+  return { createSession, updateSession, deleteSession };
 }
 
 export { useCreateSession };

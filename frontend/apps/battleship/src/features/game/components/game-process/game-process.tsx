@@ -8,11 +8,10 @@ import { useGame, useGameMessage, usePending } from '../../hooks';
 import { getFormattedTime, useFetchVoucher } from '../../utils';
 import { Loader } from '@/components';
 import { useCheckBalance } from '@dapps-frontend/hooks';
-import { ADDRESS } from '../../consts';
 
 export default function GameProcess() {
   const { voucherId, isLoading } = useFetchVoucher();
-  const { pair } = useSignlessTransactions();
+  const { pairVoucherId } = useSignlessTransactions();
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
   const [elapsedTime, setElapsedTime] = useState('');
@@ -22,7 +21,7 @@ export default function GameProcess() {
   const { gameState } = useGame();
   const { setPending } = usePending();
   const message = useGameMessage();
-  const { checkBalance } = useCheckBalance({ signlessPair: pair, gaslessVoucherId: voucherId });
+  const { checkBalance } = useCheckBalance({ signlessPairVoucherId: pairVoucherId, gaslessVoucherId: voucherId });
 
   const [isOpenEndModal, setIsOpenEndModal] = useState(false);
   const openEndModal = () => setIsOpenEndModal(true);
