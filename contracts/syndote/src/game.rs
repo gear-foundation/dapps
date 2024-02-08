@@ -1,7 +1,6 @@
 use crate::{
     bankrupt_and_penalty, check_reservation_validity, get_rolls, init_properties, take_your_turn,
-    AdminId, Game, GameAction, GameError, GameInfo, GameReply, GameStatus, Gears, PlayerInfo,
-    Price, Rent, ValidUntilBlock,
+    AdminId, Game, GameAction, GameError, GameInfo, GameReply, GameStatus, PlayerInfo,
 };
 use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId, MessageId, ReservationId};
 pub const NUMBER_OF_CELLS: u8 = 40;
@@ -138,7 +137,9 @@ impl GameSessionActions for Game {
                 self.exclude_player_from_game(strategy_id);
                 self.current_turn = self.current_turn.saturating_sub(1);
             }
-            GameStatus::Registration => {}
+            GameStatus::Registration => {
+                self.players.remove(&strategy_id);
+            }
             _ => return Err(GameError::WrongGameStatus),
         }
         if let Some(fee) = self.entry_fee {

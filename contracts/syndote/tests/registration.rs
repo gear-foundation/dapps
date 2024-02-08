@@ -1,4 +1,4 @@
-use gtest::{Program, System};
+use gtest::{System};
 use syndote_io::*;
 pub mod utils;
 use syndote::game::{GameSessionActions, INITIAL_BALANCE};
@@ -33,19 +33,108 @@ fn successful_registration_fee_required() {
     assert_eq!(player_info.balance, INITIAL_BALANCE);
     assert!(player_info.reservation_id.is_some());
 
-    let game_session = game.get_game_session(ADMIN_ID).expect("Game does not exist");
+    let game_session = game
+        .get_game_session(ADMIN_ID)
+        .expect("Game does not exist");
     assert_eq!(game_session.prize_pool, fee);
 }
 
 // Test for successful registration in a game where no fee is required.
 #[test]
 fn successful_registration_no_fee_required() {
+    let system = System::new();
+    let game = preconfigure(&system);
 
+    game.create_game_session(ADMIN_ID, None, None);
+
+    let strategy = upload_strategy(&system);
+
+    game.register(PLAYERS[0], ADMIN_ID, strategy.id().into(), None, None);
+
+    let player_info = game
+        .get_player_info(ADMIN_ID, PLAYERS[0])
+        .expect("Player does not exist");
+    assert_eq!(player_info.owner_id, PLAYERS[0].into());
+    assert_eq!(player_info.balance, INITIAL_BALANCE);
+    assert!(player_info.reservation_id.is_some());
 }
 
 #[test]
-fn failed_cases() {
-    //     Test for attempting to register the same strategy.
+fn registration_failed_cases() {
+    let system = System::new();
+    let game = preconfigure(&system);
+
+    // fee for the game: 50 VARA
+    let fee = 50_000_000_000_000;
+    game.create_game_session(ADMIN_ID, Some(fee), None);
+
+    let strategy = upload_strategy(&system);
+
+    system.mint_to(PLAYERS[0], fee);
+    system.mint_to(PLAYERS[1], fee);
+
+    game.register(PLAYERS[0], ADMIN_ID, strategy.id().into(), Some(fee), None);
+
+    // Attempting to register the same strategy.
+    game.register(
+        PLAYERS[1],
+        ADMIN_ID,
+        strategy.id().into(),
+        Some(fee),
+        Some(GameError::StrategyAlreadyReistered),
+    );
+
+    // check that vara was returned to PLAYERS[1]
+    system.claim_value_from_mailbox(PLAYERS[1]);
+    assert_eq!(system.balance_of(PLAYERS[1]), fee);
+
     // Test for attempting to register from the same account.
-    // Test for attempting to register when the game is already in progress.
+    let new_strategy = upload_strategy(&system);
+    system.mint_to(PLAYERS[0], fee);
+    game.register(
+        PLAYERS[0],
+        ADMIN_ID,
+        new_strategy.id().into(),
+        Some(fee),
+        Some(GameError::AccountAlreadyRegistered),
+    );
+
+    // The players send the wrong vara amount
+    game.register(
+        PLAYERS[1],
+        ADMIN_ID,
+        new_strategy.id().into(),
+        Some(20_000_000_000_000),
+        Some(GameError::WrongValueAmount),
+    );
+}
+
+// Successful registration cancellation
+// Player leaves the game
+#[test]
+fn exit_game() {
+    let system = System::new();
+    let game = preconfigure(&system);
+
+    // fee for the game: 50 VARA
+    let fee = 50_000_000_000_000;
+    game.create_game_session(ADMIN_ID, Some(fee), None);
+
+    let strategy = upload_strategy(&system);
+
+    system.mint_to(PLAYERS[0], fee);
+
+    game.register(PLAYERS[0], ADMIN_ID, strategy.id().into(), Some(fee), None);
+
+    game.exit_game(PLAYERS[0], ADMIN_ID, None);
+
+    system.claim_value_from_mailbox(PLAYERS[0]);
+    assert_eq!(system.balance_of(PLAYERS[0]), fee);
+
+    let player_info = game.get_player_info(ADMIN_ID, PLAYERS[0]);
+    assert!(player_info.is_none());
+
+    let game_session = game.get_game_session(ADMIN_ID).expect("Game session does not exist");
+    assert!(game_session.owners_to_strategy_ids.is_empty());
+    assert!(game_session.players.is_empty());
 }

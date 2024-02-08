@@ -153,7 +153,12 @@ extern fn handle() {
         GameAction::CancelGameSession { admin_id } => game_manager.cancel_game_session(&admin_id),
         GameAction::ExitGame { admin_id } => game_manager.exit_game(&admin_id),
     };
-    msg::reply(reply, 0).expect("Error during sending a reply");
+    let value = if reply.is_err() {
+        msg::value()
+    } else {
+        0
+    };
+    msg::reply(reply, value).expect("Error during sending a reply");
 }
 
 #[no_mangle]

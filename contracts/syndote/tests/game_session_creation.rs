@@ -1,4 +1,4 @@
-use gtest::{Program, System};
+use gtest::{System};
 use syndote_io::*;
 pub mod utils;
 use syndote::game::GameSessionActions;
@@ -46,7 +46,7 @@ fn create_game_session_without_fee() {
 }
 
 #[test]
-fn failed_cases() {
+fn create_game_session_failed_cases() {
     let system = System::new();
     system.init_logger();
     let game = preconfigure(&system);
@@ -57,7 +57,7 @@ fn failed_cases() {
     let fee = 9_000_000_000_000;
     game.create_game_session(ADMIN_ID, Some(fee), Some(GameError::FeeIsLessThanED));
 
-    // successfull game session rcreation
+    // successfull game session creation
     game.create_game_session(ADMIN_ID, None, None);
 
     //The admin tries to create a game session specifying an entry fee that is less than ED.
