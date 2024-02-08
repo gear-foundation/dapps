@@ -180,13 +180,13 @@ fn test_game_state_fail_init() {
     let players = Players {
         players: vec![(actor1, "A".to_owned())],
     };
-    let game_state = GameState::new(&players);
+    let game_state = GameState::new(&players, 30_000);
     assert!(game_state.is_none());
 
     let players = Players {
         players: vec![(actor1, "B".to_owned()); 9],
     };
-    let game_state = GameState::new(&players);
+    let game_state = GameState::new(&players, 30_000);
     assert!(game_state.is_none());
 }
 
@@ -198,7 +198,7 @@ fn test_game_state() {
         players: vec![(actor1, "A".to_owned()), (actor2, "B".to_owned())],
     };
 
-    let game_state = GameState::new(&players).unwrap();
+    let game_state = GameState::new(&players, 30_000).unwrap();
 
     let mut counters = (0u32, 0u32);
     for player_id in game_state.tile_to_player.values() {

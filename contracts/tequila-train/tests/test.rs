@@ -2,16 +2,15 @@ use gstd::{ActorId, Encode};
 use gtest::{Program, System};
 use tequila_train_io::*;
 
-const ADMIN: u64 = 100;
 pub const PLAYERS: [u64; 3] = [10, 11, 12];
 
 pub trait TestFunc {
-    fn create_game(&self, from: u64, players_limit: u64, bid: u128, error: Option<Error>);
-    fn register(&self, from: u64, creator: ActorId, name: String, error: Option<Error>);
+    fn create_game(&self, from: u64, bid: u128, error: Option<Error>);
+    fn register(&self, from: u64, bid: u128, creator: ActorId, error: Option<Error>);
+    fn cancel_register(&self, from: u64, creator: ActorId, error: Option<Error>);
+    fn delete_player(&self, from: u64, player_id: ActorId, error: Option<Error>);
+    fn cancel_game(&self, from: u64, error: Option<Error>);
     fn start_game(&self, from: u64, error: Option<Error>);
-    fn restart_game(&self, from: u64, error: Option<Error>);
-    fn add_admin(&self, from: u64, admin: ActorId, error: Option<Error>);
-    fn delete_admin(&self, from: u64, admin: ActorId, error: Option<Error>);
     fn skip(&self, from: u64, creator: ActorId, error: Option<Error>);
     fn place(
         &self,
@@ -25,10 +24,11 @@ pub trait TestFunc {
 }
 
 impl TestFunc for Program<'_> {
-    fn create_game(&self, from: u64, players_limit: u64, bid: u128, error: Option<Error>) {
-        let result = self.send(
+    fn create_game(&self, from: u64, bid: u128, error: Option<Error>) {
+        let result = self.send_with_value(
             from,
-            Command::CtreateGame { players_limit, bid},
+            Command::CreateGame {bid},
+            bid,
         );
         assert!(!result.main_failed());
         let reply = if let Some(error) = error {
@@ -38,19 +38,64 @@ impl TestFunc for Program<'_> {
         };
         assert!(result.contains(&(from, reply.encode())));
     }
-    fn register(&self, from: u64, creator: ActorId, name: String, error: Option<Error>) {
-        let result = self.send(
+    fn register(&self, from: u64, bid: u128, creator: ActorId, error: Option<Error>) {
+        let result = self.send_with_value(
             from,
             Command::Register {
                 creator,
-                name: name.clone(),
+            },
+            bid
+        );
+        assert!(!result.main_failed());
+        let reply = if let Some(error) = error {
+            Err(error)
+        } else {
+            Ok(Event::Registered { player: from.into() })
+        };
+        assert!(result.contains(&(from, reply.encode())));
+    }
+    fn cancel_register(&self, from: u64, creator: ActorId, error: Option<Error>) {
+        let result = self.send(
+            from,
+            Command::CancelRegistration {
+                creator,
             },
         );
         assert!(!result.main_failed());
         let reply = if let Some(error) = error {
             Err(error)
         } else {
-            Ok(Event::Registered { player: from.into(), name })
+            Ok(Event::RegistrationCanceled)
+        };
+        assert!(result.contains(&(from, reply.encode())));
+    }
+    fn delete_player(&self, from: u64, player_id: ActorId, error: Option<Error>) {
+        let result = self.send(
+            from,
+            Command::DeletePlayer {
+                player_id,
+            },
+        );
+        assert!(!result.main_failed());
+        let reply = if let Some(error) = error {
+            Err(error)
+        } else {
+            Ok(Event::PlayerDeleted { player_id })
+        };
+        assert!(result.contains(&(from, reply.encode())));
+    }
+    fn cancel_game(&self, from: u64, error: Option<Error>) {
+        let result = self.send(
+            from,
+            Command::CancelGame,
+        );
+        let res = &result.decoded_log::<Result<Event, Error>>();
+        println!("RES: {:?}", res);
+        assert!(!result.main_failed());
+        let reply = if let Some(error) = error {
+            Err(error)
+        } else {
+            Ok(Event::GameCanceled)
         };
         assert!(result.contains(&(from, reply.encode())));
     }
@@ -63,36 +108,6 @@ impl TestFunc for Program<'_> {
             Err(error)
         } else {
             Ok(Event::GameStarted)
-        };
-        assert!(result.contains(&(from, reply.encode())));
-    }
-    fn restart_game(&self, from: u64, error: Option<Error>) {
-        let result = self.send(from, Command::RestartGame);
-        assert!(!result.main_failed());
-        let reply = if let Some(error) = error {
-            Err(error)
-        } else {
-            Ok(Event::GameRestarted)
-        };
-        assert!(result.contains(&(from, reply.encode())));
-    }
-    fn add_admin(&self, from: u64, admin: ActorId, error: Option<Error>) {
-        let result = self.send(from, Command::AddAdmin(admin));
-        assert!(!result.main_failed());
-        let reply = if let Some(error) = error {
-            Err(error)
-        } else {
-            Ok(Event::AdminAdded(admin))
-        };
-        assert!(result.contains(&(from, reply.encode())));
-    }
-    fn delete_admin(&self, from: u64, admin: ActorId, error: Option<Error>) {
-        let result = self.send(from, Command::DeleteAdmin(admin));
-        assert!(!result.main_failed());
-        let reply = if let Some(error) = error {
-            Err(error)
-        } else {
-            Ok(Event::AdminDeleted(admin))
         };
         assert!(result.contains(&(from, reply.encode())));
     }
@@ -156,32 +171,26 @@ fn success_test() {
     let result = program.send(2, config);
     assert!(!result.main_failed());
 
-    program.create_game(ADMIN, 6, 0, None);
+    program.create_game(PLAYERS[0], 0, None);
 
-    program.register(PLAYERS[0], ADMIN.into(), "A".to_owned(), None);
-    program.register(PLAYERS[1], ADMIN.into(), "B".to_owned(), None);
-    program.start_game(ADMIN, None);
+    program.register(PLAYERS[1], 0,  PLAYERS[0].into(), None);
+    program.register(PLAYERS[2], 0, PLAYERS[0].into(), None);
+    program.start_game(PLAYERS[0], None);
 
-    let state: GameLauncherState = program
-        .read_state(0)
-        .expect("Unexpected invalid game state.");
+    let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
     println!("STATE: {:?}", state);
 
-    program.skip(PLAYERS[0], ADMIN.into(), None);
-    let state: GameLauncherState = program
-        .read_state(0)
-        .expect("Unexpected invalid game state.");
+    let game = state.games[0].1.game_state.clone().unwrap();
+    let current_player = game.current_player;
 
-    let start_tile = state.games[0].1.game_state.clone().unwrap().start_tile;
-    let game_state = state.games[0].1.game_state.clone().unwrap();
-    let tile = game_state.tiles.get(start_tile as usize).unwrap();
-    println!("tile: {:?}", tile);
-    let tile = game_state.tiles.get(10 as usize).unwrap();
-    println!("tile: {:?}", tile);
+    program.skip(PLAYERS[current_player as usize], PLAYERS[0].into(), None);
+
+    let current_player = (current_player + 1) as usize % PLAYERS.len();
+    program.skip(PLAYERS[current_player], PLAYERS[0].into(), None);
+
     system.spend_blocks(30);
-    program.skip(PLAYERS[1], ADMIN.into(), None);
-
-    
+    let current_player = (current_player + 1) as usize % PLAYERS.len();
+    program.skip(PLAYERS[current_player], PLAYERS[0].into(), Some(Error::NotYourTurnOrYouLose));
 
     // program.place(PLAYERS[0], ADMIN.into(), 27, 0, false, None);
 
@@ -217,6 +226,122 @@ fn success_test() {
     // program.skip(2, None);
     // program.skip(3, None);
 }
+#[test]
+fn cancel_register() {
+    let system = System::new();
+
+    system.init_logger();
+
+    let program = Program::current_opt(&system);
+
+    let config = Config{
+        time_to_move: 30_000,
+    };
+
+    let result = program.send(2, config);
+    assert!(!result.main_failed());
+
+    let bid = 11_000_000_000_000;
+    system.mint_to(PLAYERS[0], bid);
+    program.create_game(PLAYERS[0], bid, None);
+
+    system.mint_to(PLAYERS[1], bid);
+    program.register(PLAYERS[1], bid, PLAYERS[0].into(), None);
+    let balance = system.balance_of(PLAYERS[1]);
+    assert_eq!(balance, 0);
+
+    let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
+    assert_eq!(state.games[0].1.initial_players.len(), 2);
+
+
+    program.cancel_register(PLAYERS[1], PLAYERS[0].into(), None);
+    system.claim_value_from_mailbox(PLAYERS[1]);
+    let balance = system.balance_of(PLAYERS[1]);
+    assert_eq!(balance, bid);
+
+    let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
+    assert_eq!(state.games[0].1.initial_players.len(), 1);
+
+}
+
+#[test]
+fn delete_player() {
+    let system = System::new();
+
+    system.init_logger();
+
+    let program = Program::current_opt(&system);
+
+    let config = Config{
+        time_to_move: 30_000,
+    };
+
+    let result = program.send(2, config);
+    assert!(!result.main_failed());
+
+    let bid = 11_000_000_000_000;
+    system.mint_to(PLAYERS[0], bid);
+    program.create_game(PLAYERS[0], bid, None);
+
+    system.mint_to(PLAYERS[1], bid);
+    program.register(PLAYERS[1], bid, PLAYERS[0].into(), None);
+    let balance = system.balance_of(PLAYERS[1]);
+    assert_eq!(balance, 0);
+
+    let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
+    assert_eq!(state.games[0].1.initial_players.len(), 2);
+
+
+    program.delete_player(PLAYERS[0], PLAYERS[1].into(), None);
+    system.claim_value_from_mailbox(PLAYERS[1]);
+    let balance = system.balance_of(PLAYERS[1]);
+    assert_eq!(balance, bid);
+
+    let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
+    assert_eq!(state.games[0].1.initial_players.len(), 1);
+
+}
+
+#[test]
+fn cancel_game() {
+    let system = System::new();
+
+    system.init_logger();
+
+    let program = Program::current_opt(&system);
+
+    let config = Config{
+        time_to_move: 30_000,
+    };
+
+    let result = program.send(2, config);
+    assert!(!result.main_failed());
+
+    let bid = 11_000_000_000_000;
+    system.mint_to(PLAYERS[0], bid);
+    program.create_game(PLAYERS[0], bid, None);
+
+    system.mint_to(PLAYERS[1], bid);
+    program.register(PLAYERS[1], bid, PLAYERS[0].into(), None);
+    let balance = system.balance_of(PLAYERS[1]);
+    assert_eq!(balance, 0);
+
+    let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
+    assert!(!state.games.is_empty());
+
+    program.cancel_game(PLAYERS[0], None);
+    system.claim_value_from_mailbox(PLAYERS[1]);
+    let balance = system.balance_of(PLAYERS[1]);
+    assert_eq!(balance, bid);
+    system.claim_value_from_mailbox(PLAYERS[0]);
+    let balance = system.balance_of(PLAYERS[0]);
+    assert_eq!(balance, bid);
+
+    let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
+    assert!(state.games.is_empty());
+
+}
+
 
 // #[test]
 // fn failures_test() {
@@ -278,24 +403,4 @@ fn success_test() {
 //     program.place(0, 1, 0, false, Some(Error::InvalidTile));
 // }
 
-// #[test]
-// fn add_admin_test() {
-//     let system = System::new();
 
-//     system.init_logger();
-
-//     let program = Program::current_opt(&system);
-
-//     let result = program.send(2, 0);
-//     assert!(!result.main_failed());
-
-//     program.register(2, 0.into(), "A".to_owned(), None);
-//     program.register(2, 1.into(), "B".to_owned(), None);
-//     program.start_game(3, Some(Error::NotAdmin));
-//     program.add_admin(4, 3.into(), Some(Error::NotAdmin));
-//     program.add_admin(2, 3.into(), None);
-//     program.start_game(3, None);
-//     program.restart_game(3, None);
-//     program.delete_admin(3, 2.into(), None);
-//     program.start_game(2, Some(Error::NotAdmin));
-// }

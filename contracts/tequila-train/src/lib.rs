@@ -1,48 +1,44 @@
 #![no_std]
 
-use gstd::{collections::HashMap, msg, prelude::*, ActorId, debug};
+use gstd::{collections::HashMap, msg, prelude::*, ActorId};
 use tequila_train_io::*;
 
 #[derive(Debug, Default)]
 pub struct GameLauncher {
     pub games: HashMap<ActorId, Game>,
+    pub players_to_game_creator: HashMap<ActorId, ActorId>,
     pub config: Config,
-    pub admins: Vec<ActorId>,
 }
 
 /// All game initializing logic is inside `GameState` constructor.
 static mut GAME_LAUNCHER: Option<GameLauncher> = None;
 
 impl GameLauncher {
-    // fn check_limit_range(maybe_limit: Option<u64>) -> Result<(), Error> {
-    //     if let Some(limit) = maybe_limit {
-    //         if !(2..=8).contains(&limit) {
-    //             return Err(Error::WrongPlayersCount);
-    //         }
-    //     }
-    //     Ok(())
-    // }
 
-    // fn check_players_count(&self) -> Result<(), Error> {
-    //     if !(2..=8).contains(&(self.players.len() as u32)) {
-    //         return Err(Error::WrongPlayersCount);
-    //     }
-    //     Ok(())
-    // }
-
-    pub fn create_game(&mut self, players_limit: u64, bid: u128) -> Result<Event, Error> {
+    pub fn create_game(&mut self, bid: u128) -> Result<Event, Error> {
         let msg_src = msg::source();
-        if players_limit > 8 {
-            return Err(Error::WrongPlayersCount);
+
+        if bid < EXISTENTIAL_DEPOSIT && bid != 0 {
+            return Err(Error::LessThanExistentialDeposit);
         }
-        if self.games.contains_key(&msg_src) {
-            return Err(Error::AlreadyExists);
+
+        let msg_value = msg::value();
+        if bid != msg_value {
+            return Err(Error::WrongBid);
         }
-        let game = Game {
-            players_limit,
+
+        if let Some(game) = self.games.get(&msg_src) {
+            if matches!(game.state, State::Registration | State::Playing) {
+                return Err(Error::AlreadyExists);
+            }
+        }
+
+        let mut game = Game {
             bid,
             ..Default::default()
         };
+        game.initial_players.insert(msg_src);
+
         self.games.insert(msg_src, game);
 
         Ok(Event::GameCreated)
@@ -66,84 +62,125 @@ impl GameLauncher {
             },
             self.config.time_to_move,
         );
-
-        assert!(game.game_state.is_some());
+        game.state = State::Playing;
         Ok(Event::GameStarted)
     }
 
-    pub fn restart(&mut self) -> Result<Event, Error> {
-        let msg_src = msg::source();
+    pub fn register(&mut self, creator: ActorId) -> Result<Event, Error> {
+
         let game = self
             .games
-            .get_mut(&msg_src)
+            .get_mut(&creator)
             .ok_or(Error::GameDoesNotExist)?;
-        if !game.is_started {
-            return Err(Error::GameHasNotStartedYet);
+
+        let msg_src = msg::source();
+
+
+        if game.is_started {
+            return Err(Error::GameHasAlreadyStarted);
+        }
+        if game.bid != 0 {
+            let bid_value = msg::value();
+            if bid_value != game.bid {
+                msg::send_with_gas(msg_src, "", 0, bid_value)
+                    .expect("Error in sending value");
+                return Err(Error::WrongBid);
+            }
         }
 
-        game.is_started = false;
-        game.game_state = None;
-        game.initial_players.clear();
-        Ok(Event::GameRestarted)
-    }
-    pub fn add_admin(&mut self, admin: &ActorId) -> Result<Event, Error> {
-        if !self.admins.contains(&msg::source()) {
-            return Err(Error::NotAdmin);
+        if game.initial_players.contains(&msg_src) {
+            return Err(Error::YouAlreadyRegistered);
         }
-        if self.admins.contains(admin) {
-            return Err(Error::AlreadyExists);
+        if self.players_to_game_creator.contains_key(&msg_src) {
+            return Err(Error::RegisteredInAnotherGame);
         }
-        self.admins.push(*admin);
-        Ok(Event::AdminAdded(*admin))
+        if game.initial_players.len() >= 8 {
+            return Err(Error::LimitHasBeenReached);
+        }
+
+        game.initial_players.insert(msg_src);
+        self.players_to_game_creator.insert(msg_src, creator);
+        Ok(Event::Registered {
+            player: msg_src,
+        })
     }
 
-    pub fn delete_admin(&mut self, admin: &ActorId) -> Result<Event, Error> {
-        if !self.admins.contains(&msg::source()) {
-            return Err(Error::NotAdmin);
-        }
-        let index = self
-            .admins
-            .iter()
-            .position(|value| value == admin)
-            .ok_or(Error::AdminDoesNotExist)?;
-        self.admins.remove(index);
-        Ok(Event::AdminDeleted(*admin))
-    }
-
-    pub fn register(&mut self, creator: ActorId, name: String) -> Result<Event, Error> {
+    pub fn cancel_register(&mut self, creator: ActorId) -> Result<Event, Error> {
         let game = self
             .games
             .get_mut(&creator)
             .ok_or(Error::GameDoesNotExist)?;
         let msg_src = msg::source();
-        let bid_value = msg::value();
 
         if game.is_started {
             return Err(Error::GameHasAlreadyStarted);
         }
-        if bid_value != game.bid {
-            msg::send_with_gas(msg_src, "", 0, bid_value)
+
+        if !game.initial_players.contains(&msg_src){
+            return Err(Error::NoSuchPlayer);
+        }
+
+        if game.bid != 0 {
+            msg::send_with_gas(msg_src, "", 0, game.bid)
                 .expect("Error in sending value");
-            return Err(Error::WrongBid);
+        }
+        game.initial_players.remove(&msg_src);
+        self.players_to_game_creator.remove(&msg_src);
+
+        Ok(Event::RegistrationCanceled)
+    }
+
+    pub fn delete_player(&mut self, player_id: ActorId) -> Result<Event, Error> {
+        let msg_src = msg::source();
+
+        let game = self
+            .games
+            .get_mut(&msg_src)
+            .ok_or(Error::GameDoesNotExist)?;
+
+        if game.is_started {
+            return Err(Error::GameHasAlreadyStarted);
         }
 
-        if game
-            .initial_players
-            .iter()
-            .any(|(p, n)| p == &msg_src || n == &name)
-        {
-            return Err(Error::NameAlreadyExistsOrYouRegistered);
+        if !game.initial_players.contains(&player_id){
+            return Err(Error::NoSuchPlayer);
         }
 
-        if game.initial_players.len() >= 8 {
-            return Err(Error::LimitHasBeenReached);
+        if game.bid != 0 {
+            msg::send_with_gas(player_id, "", 0, game.bid)
+                .expect("Error in sending value");
         }
+        game.initial_players.remove(&player_id);
+        self.players_to_game_creator.remove(&msg_src);
 
-        game.initial_players.push((msg_src, name.clone()));
-        Ok(Event::Registered {
-            player: msg_src,
-            name,
+        Ok(Event::PlayerDeleted {
+            player_id,
         })
+    }
+    pub fn cancel_game(&mut self) -> Result<Event, Error> {
+        let msg_src = msg::source();
+
+        let game = self
+            .games
+            .get_mut(&msg_src)
+            .ok_or(Error::GameDoesNotExist)?;
+
+        if game.state != State::Playing && game.state != State::Registration {
+            return Err(Error::GameFinished);
+        }
+
+        if game.bid != 0 {
+            game.initial_players.iter().for_each(|id| {
+                msg::send_with_gas(*id, "", 0, game.bid)
+                    .expect("Error in sending value");
+                self.players_to_game_creator.remove(id);
+            });
+        }
+
+        self.games.remove(&msg_src);
+
+
+        Ok(Event::GameCanceled)
     }
 }
 
@@ -152,7 +189,6 @@ extern fn init() {
     let config: Config = msg::load().expect("Unable to decode the initial msg");
     let game_launcher = GameLauncher {
         config,
-        admins: vec![msg::source()],
         ..Default::default()
     };
 
@@ -173,31 +209,22 @@ fn process_handle() -> Result<Event, Error> {
     };
 
     let command: Command = msg::load().expect("Unexpected invalid command payload.");
-    // if let Command::RestartGame{creator} !=  command {
-    //     let game = game_launcher.games.get_mut(&creator).ok_or(Error::GameDoesNotExist)?;
-
-    //     if let Some(game_state) = &game_launcher.game_state {
-    //         match &game_state.state {
-    //             State::Stalled => {
-    //                 return Err(Error::GameStalled);
-    //             }
-    //             State::Winner(_) => {
-    //                 return Err(Error::GameFinished);
-    //             }
-    //             _ => (),
-    //         };
-    //     }
-    // }
 
     match command {
-        Command::CtreateGame { players_limit, bid} => game_launcher.create_game(players_limit, bid),
+        Command::CreateGame { bid} => game_launcher.create_game(bid),
         Command::Skip { creator } => {
             let game = game_launcher
                 .games
                 .get_mut(&creator)
                 .ok_or(Error::GameDoesNotExist)?;
+
+            // a move can only be made with State::Playing
+            if game.state != State::Playing {
+                return Err(Error::GameHasNotStartedYet);
+            }
             let player = msg::source();
-            if game.initial_players.iter().find(|(id, _)| *id == player).is_none(){
+            // a non-registered player cannot make a move
+            if !game.initial_players.contains(&player){
                 return Err(Error::NotRegistered);
             }
             if let Some(game_state) = &mut game.game_state {
@@ -212,28 +239,50 @@ fn process_handle() -> Result<Event, Error> {
             track_id,
             remove_train,
         } => {
+
             let game = game_launcher
                 .games
                 .get_mut(&creator)
                 .ok_or(Error::GameDoesNotExist)?;
+
+            // a move can only be made with State::Playing
+            if game.state != State::Playing {
+                return Err(Error::GameHasNotStartedYet);
+            }
+
             let player = msg::source();
-            debug!("HERE");
-            if game.initial_players.iter().find(|(id, _)| *id == player).is_none(){
+            // a non-registered player cannot make a move
+            if !game.initial_players.contains(&player){
                 return Err(Error::NotRegistered);
             }
-            debug!("HERE 2");
             if let Some(game_state) = &mut game.game_state {
-                debug!("HERE 3");
-                game_state.make_turn(player, tile_id, track_id, remove_train, game.bid)
+                let result = game_state.make_turn(player, tile_id, track_id, remove_train, game.bid);
+                match result {
+                    Ok(Event::GameFinished { winner }) => {
+                        game.state = State::Winner(winner);
+                        game.initial_players.iter().for_each(|id| {
+                            game_launcher.players_to_game_creator.remove(id);
+                        })
+                    }
+                    Ok(Event::GameStalled) => {
+                        game.state = State::Stalled;
+                        game.initial_players.iter().for_each(|id| {
+                            game_launcher.players_to_game_creator.remove(id);
+                        })
+                    }
+                    _ => ()
+                }
+
+                result
             } else {
                 Err(Error::GameHasNotStartedYet)
             }
         }
-        Command::Register { creator, name } => game_launcher.register(creator, name),
+        Command::Register { creator} => game_launcher.register(creator),
+        Command::CancelRegistration { creator } => game_launcher.cancel_register(creator),
+        Command::DeletePlayer { player_id } => game_launcher.delete_player(player_id),
         Command::StartGame => game_launcher.start(),
-        Command::RestartGame => game_launcher.restart(),
-        Command::AddAdmin(admin) => game_launcher.add_admin(&admin),
-        Command::DeleteAdmin(admin) => game_launcher.delete_admin(&admin),
+        Command::CancelGame => game_launcher.cancel_game(),
     }
 }
 
@@ -244,8 +293,21 @@ extern fn state() {
             .take()
             .expect("Game launcher is not initialized")
     };
+    let query: StateQuery = msg::load().expect("Unable to load the state query");
+    let reply = match query {
+        StateQuery::All => StateReply::All(game_launcher.into()),
+        
+        StateQuery::GetGameId(player_id) => {
+            if let Some(game_id) = game_launcher.players_to_game_creator.get(&player_id) {
+                StateReply::GameId(Some(*game_id))
+            } else {
+                StateReply::GameId(None)
+            }
+            
+        }
 
-    msg::reply::<GameLauncherState>(game_launcher.into(), 0)
+    };
+    msg::reply(reply, 0)
         .expect("Failed to encode or reply with the game state");
 }
 
@@ -254,14 +316,15 @@ impl From<GameLauncher> for GameLauncherState {
         GameLauncher {
             games,
             config,
-            admins,
+            players_to_game_creator
         }: GameLauncher,
     ) -> Self {
-        let games = games.into_iter().map(|(id, game)| (id, game)).collect();
+        let games = games.into_iter().collect();
+        let players_to_game_creator = players_to_game_creator.into_iter().collect();
         Self {
             games,
             config,
-            admins,
+            players_to_game_creator
         }
     }
 }
