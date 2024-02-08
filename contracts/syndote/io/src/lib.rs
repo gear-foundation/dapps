@@ -195,7 +195,7 @@ pub enum StateQuery {
     GetPlayerInfo {
         admin_id: AdminId,
         account_id: ActorId,
-    }   
+    },
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]
@@ -204,7 +204,7 @@ pub enum StateReply {
     GameSession { game_session: Option<GameState> },
 
     /// Reply on query `GetPlayerInfo`
-    PlayerInfo { player_info: Option<PlayerInfo> }
+    PlayerInfo { player_info: Option<PlayerInfo> },
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
