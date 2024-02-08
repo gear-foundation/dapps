@@ -3,8 +3,7 @@
 use gmeta::{In, InOut, Metadata};
 use gstd::{
     collections::{BTreeMap, BTreeSet},
-    msg,
-    exec,
+    exec, msg,
     prelude::*,
     ActorId,
 };
@@ -32,11 +31,13 @@ pub struct GameLauncherState {
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateQuery {
     All,
-    GetGameId(ActorId),
+    GetGame { creator: ActorId },
+    GetGameId { player_id: ActorId },
 }
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateReply {
     All(GameLauncherState),
+    Game(Option<Game>),
     GameId(Option<ActorId>),
 }
 
@@ -372,10 +373,12 @@ impl GameState {
         // Remove starting tile from set
         tile_to_player.remove(&start_tile);
 
-        let players = initial_data.players.clone().into_iter().map(|id| Player{
-            id,
-            lose: false,
-        }).collect();
+        let players = initial_data
+            .players
+            .clone()
+            .into_iter()
+            .map(|id| Player { id, lose: false })
+            .collect();
 
         let current_player = (start_player + 1) % players_amount as u32;
 
@@ -396,19 +399,19 @@ impl GameState {
     pub fn skip_turn(&mut self, player: ActorId, bid: u128) -> Result<Event, Error> {
         let i = self.current_player as usize;
 
-        let number_missed_moves = ((exec::block_timestamp() - self.last_activity_time)/self.time_to_move) as usize;
+        let number_missed_moves =
+            ((exec::block_timestamp() - self.last_activity_time) / self.time_to_move) as usize;
         let count_of_players = self.players.len();
         for index in 1..=number_missed_moves {
-            self.players[(i + index - 1)%count_of_players].lose = true
+            self.players[(i + index - 1) % count_of_players].lose = true
         }
         let count_players_is_live = self.players.iter().filter(|&player| !player.lose).count();
 
         match count_players_is_live {
             0 => {
                 if bid != 0 {
-                    self.players.iter().for_each(|player|{
-                        msg::send_with_gas(player.id, "", 0, bid)
-                            .expect("Error in sending value");
+                    self.players.iter().for_each(|player| {
+                        msg::send_with_gas(player.id, "", 0, bid).expect("Error in sending value");
                     });
                 }
                 return Ok(Event::GameStalled);
@@ -420,7 +423,7 @@ impl GameState {
                 }
                 return Ok(Event::GameFinished { winner: player });
             }
-            _ => ()
+            _ => (),
         }
 
         if self.players[(i + number_missed_moves) % self.players.len()].id != player {
@@ -455,7 +458,9 @@ impl GameState {
         // check if any next player is able to make a turn
         let players_to_check = self.players.len();
         let check_result = (0..players_to_check).try_fold(self.current_player, |player, _| {
-            let next_player = self.next_player(player).expect("Error: there is no next player");
+            let next_player = self
+                .next_player(player)
+                .expect("Error: there is no next player");
             let remaining_tiles = self
                 .tile_to_player
                 .iter()
@@ -495,9 +500,8 @@ impl GameState {
         if check_result.is_some() {
             // no one can make turn. Game is over
             if bid != 0 {
-                self.players.iter().for_each(|player|{
-                    msg::send_with_gas(player.id, "", 0, bid)
-                        .expect("Error in sending value");
+                self.players.iter().for_each(|player| {
+                    msg::send_with_gas(player.id, "", 0, bid).expect("Error in sending value");
                 });
             }
             return Some(Event::GameStalled);
@@ -511,7 +515,6 @@ impl GameState {
             if self.players[index].lose == false {
                 return Some(index as u32);
             }
-
         }
         None
     }
@@ -539,14 +542,15 @@ impl GameState {
         bid: u128,
     ) -> Result<Event, Error> {
         let i = self.current_player as usize;
-        
+
         // we need to find out how many participants missed their move,
         // if the last move was made in `last_activity_time` and the time to move is `time_to_move`
-        let number_missed_moves = ((exec::block_timestamp() - self.last_activity_time)/self.time_to_move) as usize;
+        let number_missed_moves =
+            ((exec::block_timestamp() - self.last_activity_time) / self.time_to_move) as usize;
 
         let count_of_players = self.players.len();
         for index in 1..=number_missed_moves {
-            self.players[(i + index - 1)%count_of_players].lose = true
+            self.players[(i + index - 1) % count_of_players].lose = true
         }
 
         let count_players_is_live = self.players.iter().filter(|&player| !player.lose).count();
@@ -555,8 +559,7 @@ impl GameState {
             0 => {
                 if bid != 0 {
                     self.players.iter().for_each(|player| {
-                        msg::send_with_gas(player.id, "", 0, bid)
-                            .expect("Error in sending value");
+                        msg::send_with_gas(player.id, "", 0, bid).expect("Error in sending value");
                     })
                 }
                 return Ok(Event::GameStalled);
@@ -568,7 +571,7 @@ impl GameState {
                 }
                 return Ok(Event::GameFinished { winner: player });
             }
-            _ => ()
+            _ => (),
         }
 
         if self.players[(i + number_missed_moves) % self.players.len()].id != player {

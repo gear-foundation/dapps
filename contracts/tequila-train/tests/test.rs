@@ -25,11 +25,7 @@ pub trait TestFunc {
 
 impl TestFunc for Program<'_> {
     fn create_game(&self, from: u64, bid: u128, error: Option<Error>) {
-        let result = self.send_with_value(
-            from,
-            Command::CreateGame {bid},
-            bid,
-        );
+        let result = self.send_with_value(from, Command::CreateGame { bid }, bid);
         assert!(!result.main_failed());
         let reply = if let Some(error) = error {
             Err(error)
@@ -39,28 +35,19 @@ impl TestFunc for Program<'_> {
         assert!(result.contains(&(from, reply.encode())));
     }
     fn register(&self, from: u64, bid: u128, creator: ActorId, error: Option<Error>) {
-        let result = self.send_with_value(
-            from,
-            Command::Register {
-                creator,
-            },
-            bid
-        );
+        let result = self.send_with_value(from, Command::Register { creator }, bid);
         assert!(!result.main_failed());
         let reply = if let Some(error) = error {
             Err(error)
         } else {
-            Ok(Event::Registered { player: from.into() })
+            Ok(Event::Registered {
+                player: from.into(),
+            })
         };
         assert!(result.contains(&(from, reply.encode())));
     }
     fn cancel_register(&self, from: u64, creator: ActorId, error: Option<Error>) {
-        let result = self.send(
-            from,
-            Command::CancelRegistration {
-                creator,
-            },
-        );
+        let result = self.send(from, Command::CancelRegistration { creator });
         assert!(!result.main_failed());
         let reply = if let Some(error) = error {
             Err(error)
@@ -70,12 +57,7 @@ impl TestFunc for Program<'_> {
         assert!(result.contains(&(from, reply.encode())));
     }
     fn delete_player(&self, from: u64, player_id: ActorId, error: Option<Error>) {
-        let result = self.send(
-            from,
-            Command::DeletePlayer {
-                player_id,
-            },
-        );
+        let result = self.send(from, Command::DeletePlayer { player_id });
         assert!(!result.main_failed());
         let reply = if let Some(error) = error {
             Err(error)
@@ -85,10 +67,7 @@ impl TestFunc for Program<'_> {
         assert!(result.contains(&(from, reply.encode())));
     }
     fn cancel_game(&self, from: u64, error: Option<Error>) {
-        let result = self.send(
-            from,
-            Command::CancelGame,
-        );
+        let result = self.send(from, Command::CancelGame);
         let res = &result.decoded_log::<Result<Event, Error>>();
         println!("RES: {:?}", res);
         assert!(!result.main_failed());
@@ -112,7 +91,7 @@ impl TestFunc for Program<'_> {
         assert!(result.contains(&(from, reply.encode())));
     }
     fn skip(&self, from: u64, creator: ActorId, error: Option<Error>) {
-        let result = self.send(from, Command::Skip {creator});
+        let result = self.send(from, Command::Skip { creator });
         assert!(!result.main_failed());
         let res = &result.decoded_log::<Result<Event, Error>>();
         println!("RES: {:?}", res);
@@ -164,7 +143,7 @@ fn success_test() {
 
     let program = Program::current_opt(&system);
 
-    let config = Config{
+    let config = Config {
         time_to_move: 30_000,
     };
 
@@ -173,7 +152,7 @@ fn success_test() {
 
     program.create_game(PLAYERS[0], 0, None);
 
-    program.register(PLAYERS[1], 0,  PLAYERS[0].into(), None);
+    program.register(PLAYERS[1], 0, PLAYERS[0].into(), None);
     program.register(PLAYERS[2], 0, PLAYERS[0].into(), None);
     program.start_game(PLAYERS[0], None);
 
@@ -190,7 +169,11 @@ fn success_test() {
 
     system.spend_blocks(30);
     let current_player = (current_player + 1) as usize % PLAYERS.len();
-    program.skip(PLAYERS[current_player], PLAYERS[0].into(), Some(Error::NotYourTurnOrYouLose));
+    program.skip(
+        PLAYERS[current_player],
+        PLAYERS[0].into(),
+        Some(Error::NotYourTurnOrYouLose),
+    );
 
     // program.place(PLAYERS[0], ADMIN.into(), 27, 0, false, None);
 
@@ -234,7 +217,7 @@ fn cancel_register() {
 
     let program = Program::current_opt(&system);
 
-    let config = Config{
+    let config = Config {
         time_to_move: 30_000,
     };
 
@@ -253,7 +236,6 @@ fn cancel_register() {
     let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
     assert_eq!(state.games[0].1.initial_players.len(), 2);
 
-
     program.cancel_register(PLAYERS[1], PLAYERS[0].into(), None);
     system.claim_value_from_mailbox(PLAYERS[1]);
     let balance = system.balance_of(PLAYERS[1]);
@@ -261,7 +243,6 @@ fn cancel_register() {
 
     let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
     assert_eq!(state.games[0].1.initial_players.len(), 1);
-
 }
 
 #[test]
@@ -272,7 +253,7 @@ fn delete_player() {
 
     let program = Program::current_opt(&system);
 
-    let config = Config{
+    let config = Config {
         time_to_move: 30_000,
     };
 
@@ -291,7 +272,6 @@ fn delete_player() {
     let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
     assert_eq!(state.games[0].1.initial_players.len(), 2);
 
-
     program.delete_player(PLAYERS[0], PLAYERS[1].into(), None);
     system.claim_value_from_mailbox(PLAYERS[1]);
     let balance = system.balance_of(PLAYERS[1]);
@@ -299,7 +279,6 @@ fn delete_player() {
 
     let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
     assert_eq!(state.games[0].1.initial_players.len(), 1);
-
 }
 
 #[test]
@@ -310,7 +289,7 @@ fn cancel_game() {
 
     let program = Program::current_opt(&system);
 
-    let config = Config{
+    let config = Config {
         time_to_move: 30_000,
     };
 
@@ -339,9 +318,7 @@ fn cancel_game() {
 
     let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
     assert!(state.games.is_empty());
-
 }
-
 
 // #[test]
 // fn failures_test() {
