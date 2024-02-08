@@ -32,19 +32,14 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     return { destination, payload, gasLimit };
   };
 
-  const deleteSession = async (sessionKey: string) => {
+  const deleteSession = () => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!metadata) throw new Error('Metadata not found');
 
     const message = getMessage({ DeleteSessionFromAccount: null });
     const extrinsic = api.message.send(message, metadata);
 
-    const vouchersForAccount = await api.voucher.getAllForAccount(sessionKey, programId);
-    const accountVoucherId = Object.keys(vouchersForAccount)[0];
-
-    const voucher = await api.voucher.revoke(sessionKey, accountVoucherId);
-
-    const txs = [extrinsic, voucher];
+    const txs = [extrinsic];
 
     batchSignAndSend(txs, { onError });
   };
@@ -77,10 +72,14 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
       const finilizedBlockHash = await api?.blocks.getFinalizedHead();
       const currentBlockNumber = await api.blocks.getBlockNumber(finilizedBlockHash.toHex());
 
-      if (voucherValue || currentBlockNumber.toNumber() > details.expiry) {
+      const isNeedProlongDuration = currentBlockNumber.toNumber() > details.expiry;
+
+      if (voucherValue || isNeedProlongDuration) {
         const voucherExtrinsic = await api.voucher.update(session.key, accountVoucherId, {
-          balanceTopUp: voucherValue ? Number(getFormattedBalance(balance.toNumber()).value) + voucherValue : 0,
-          prolongDuration: session.duration,
+          balanceTopUp: voucherValue
+            ? Number(getFormattedBalance(balance.toNumber()).value) + Number(getFormattedBalance(voucherValue).value)
+            : undefined,
+          prolongDuration: isNeedProlongDuration ? session.duration : undefined,
         });
 
         return voucherExtrinsic;
