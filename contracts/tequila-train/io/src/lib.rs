@@ -7,7 +7,6 @@ use gstd::{
     exec,
     prelude::*,
     ActorId,
-    debug
 };
 
 pub const EXISTENTIAL_DEPOSIT: u128 = 10_000_000_000_000;
@@ -403,7 +402,6 @@ impl GameState {
             self.players[(i + index - 1)%count_of_players].lose = true
         }
         let count_players_is_live = self.players.iter().filter(|&player| !player.lose).count();
-        let players = self.players.clone();
 
         match count_players_is_live {
             0 => {

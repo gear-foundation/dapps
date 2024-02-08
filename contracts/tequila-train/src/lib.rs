@@ -14,7 +14,6 @@ pub struct GameLauncher {
 static mut GAME_LAUNCHER: Option<GameLauncher> = None;
 
 impl GameLauncher {
-
     pub fn create_game(&mut self, bid: u128) -> Result<Event, Error> {
         let msg_src = msg::source();
 
@@ -67,7 +66,6 @@ impl GameLauncher {
     }
 
     pub fn register(&mut self, creator: ActorId) -> Result<Event, Error> {
-
         let game = self
             .games
             .get_mut(&creator)
@@ -75,15 +73,13 @@ impl GameLauncher {
 
         let msg_src = msg::source();
 
-
         if game.is_started {
             return Err(Error::GameHasAlreadyStarted);
         }
         if game.bid != 0 {
             let bid_value = msg::value();
             if bid_value != game.bid {
-                msg::send_with_gas(msg_src, "", 0, bid_value)
-                    .expect("Error in sending value");
+                msg::send_with_gas(msg_src, "", 0, bid_value).expect("Error in sending value");
                 return Err(Error::WrongBid);
             }
         }
@@ -100,9 +96,7 @@ impl GameLauncher {
 
         game.initial_players.insert(msg_src);
         self.players_to_game_creator.insert(msg_src, creator);
-        Ok(Event::Registered {
-            player: msg_src,
-        })
+        Ok(Event::Registered { player: msg_src })
     }
 
     pub fn cancel_register(&mut self, creator: ActorId) -> Result<Event, Error> {
@@ -116,13 +110,12 @@ impl GameLauncher {
             return Err(Error::GameHasAlreadyStarted);
         }
 
-        if !game.initial_players.contains(&msg_src){
+        if !game.initial_players.contains(&msg_src) {
             return Err(Error::NoSuchPlayer);
         }
 
         if game.bid != 0 {
-            msg::send_with_gas(msg_src, "", 0, game.bid)
-                .expect("Error in sending value");
+            msg::send_with_gas(msg_src, "", 0, game.bid).expect("Error in sending value");
         }
         game.initial_players.remove(&msg_src);
         self.players_to_game_creator.remove(&msg_src);
@@ -142,20 +135,17 @@ impl GameLauncher {
             return Err(Error::GameHasAlreadyStarted);
         }
 
-        if !game.initial_players.contains(&player_id){
+        if !game.initial_players.contains(&player_id) {
             return Err(Error::NoSuchPlayer);
         }
 
         if game.bid != 0 {
-            msg::send_with_gas(player_id, "", 0, game.bid)
-                .expect("Error in sending value");
+            msg::send_with_gas(player_id, "", 0, game.bid).expect("Error in sending value");
         }
         game.initial_players.remove(&player_id);
         self.players_to_game_creator.remove(&msg_src);
 
-        Ok(Event::PlayerDeleted {
-            player_id,
-        })
+        Ok(Event::PlayerDeleted { player_id })
     }
     pub fn cancel_game(&mut self) -> Result<Event, Error> {
         let msg_src = msg::source();
@@ -171,14 +161,12 @@ impl GameLauncher {
 
         if game.bid != 0 {
             game.initial_players.iter().for_each(|id| {
-                msg::send_with_gas(*id, "", 0, game.bid)
-                    .expect("Error in sending value");
+                msg::send_with_gas(*id, "", 0, game.bid).expect("Error in sending value");
                 self.players_to_game_creator.remove(id);
             });
         }
 
         self.games.remove(&msg_src);
-
 
         Ok(Event::GameCanceled)
     }
@@ -211,7 +199,7 @@ fn process_handle() -> Result<Event, Error> {
     let command: Command = msg::load().expect("Unexpected invalid command payload.");
 
     match command {
-        Command::CreateGame { bid} => game_launcher.create_game(bid),
+        Command::CreateGame { bid } => game_launcher.create_game(bid),
         Command::Skip { creator } => {
             let game = game_launcher
                 .games
@@ -224,7 +212,7 @@ fn process_handle() -> Result<Event, Error> {
             }
             let player = msg::source();
             // a non-registered player cannot make a move
-            if !game.initial_players.contains(&player){
+            if !game.initial_players.contains(&player) {
                 return Err(Error::NotRegistered);
             }
             if let Some(game_state) = &mut game.game_state {
@@ -239,7 +227,6 @@ fn process_handle() -> Result<Event, Error> {
             track_id,
             remove_train,
         } => {
-
             let game = game_launcher
                 .games
                 .get_mut(&creator)
@@ -252,11 +239,12 @@ fn process_handle() -> Result<Event, Error> {
 
             let player = msg::source();
             // a non-registered player cannot make a move
-            if !game.initial_players.contains(&player){
+            if !game.initial_players.contains(&player) {
                 return Err(Error::NotRegistered);
             }
             if let Some(game_state) = &mut game.game_state {
-                let result = game_state.make_turn(player, tile_id, track_id, remove_train, game.bid);
+                let result =
+                    game_state.make_turn(player, tile_id, track_id, remove_train, game.bid);
                 match result {
                     Ok(Event::GameFinished { winner }) => {
                         game.state = State::Winner(winner);
@@ -270,7 +258,7 @@ fn process_handle() -> Result<Event, Error> {
                             game_launcher.players_to_game_creator.remove(id);
                         })
                     }
-                    _ => ()
+                    _ => (),
                 }
 
                 result
@@ -278,7 +266,7 @@ fn process_handle() -> Result<Event, Error> {
                 Err(Error::GameHasNotStartedYet)
             }
         }
-        Command::Register { creator} => game_launcher.register(creator),
+        Command::Register { creator } => game_launcher.register(creator),
         Command::CancelRegistration { creator } => game_launcher.cancel_register(creator),
         Command::DeletePlayer { player_id } => game_launcher.delete_player(player_id),
         Command::StartGame => game_launcher.start(),
@@ -296,19 +284,16 @@ extern fn state() {
     let query: StateQuery = msg::load().expect("Unable to load the state query");
     let reply = match query {
         StateQuery::All => StateReply::All(game_launcher.into()),
-        
+
         StateQuery::GetGameId(player_id) => {
             if let Some(game_id) = game_launcher.players_to_game_creator.get(&player_id) {
                 StateReply::GameId(Some(*game_id))
             } else {
                 StateReply::GameId(None)
             }
-            
         }
-
     };
-    msg::reply(reply, 0)
-        .expect("Failed to encode or reply with the game state");
+    msg::reply(reply, 0).expect("Failed to encode or reply with the game state");
 }
 
 impl From<GameLauncher> for GameLauncherState {
@@ -316,7 +301,7 @@ impl From<GameLauncher> for GameLauncherState {
         GameLauncher {
             games,
             config,
-            players_to_game_creator
+            players_to_game_creator,
         }: GameLauncher,
     ) -> Self {
         let games = games.into_iter().collect();
@@ -324,7 +309,7 @@ impl From<GameLauncher> for GameLauncherState {
         Self {
             games,
             config,
-            players_to_game_creator
+            players_to_game_creator,
         }
     }
 }

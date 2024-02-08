@@ -403,4 +403,13 @@ fn cancel_game() {
 //     program.place(0, 1, 0, false, Some(Error::InvalidTile));
 // }
 
-
+fn get_all_state(program: &Program<'_>) -> Option<GameLauncherState> {
+    let reply = program
+        .read_state(StateQuery::All)
+        .expect("Unexpected invalid state.");
+    if let StateReply::All(state) = reply {
+        Some(state)
+    } else {
+        None
+    }
+}
