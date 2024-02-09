@@ -110,7 +110,15 @@ impl<'a> GalEx<'a> {
         )
     }
 
-    pub fn state(&self) -> State {
-        self.0.read_state(0).unwrap()
+    pub fn state(&self) -> Option<State> {
+        let reply = self
+            .0
+            .read_state(StateQuery::All)
+            .expect("Unexpected invalid state.");
+        if let StateReply::All(state) = reply {
+            Some(state)
+        } else {
+            None
+        }
     }
 }

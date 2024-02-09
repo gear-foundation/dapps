@@ -27,7 +27,7 @@ fn test() {
                     .succeed((player_id, player), 0);
             }
 
-            let state = rockets.state();
+            let state = rockets.state().expect("Unexpected invalid state.");
 
             if let StageState::Registration(participants) = &state.games[i].1.stage {
                 assert_eq!(participants.len(), 3);
@@ -37,7 +37,7 @@ fn test() {
                 .start_game(admin_id, player)
                 .succeed(PLAYERS.into_iter().chain(iter::once(admin_id)).collect(), 3); // 3 since three players win and msg::send_with_gas is sent to them
 
-            let state = rockets.state();
+            let state = rockets.state().expect("Unexpected invalid state.");
 
             if let StageState::Results(results) = &state.games[i].1.stage {
                 assert_eq!(results.rankings.len(), 4);
