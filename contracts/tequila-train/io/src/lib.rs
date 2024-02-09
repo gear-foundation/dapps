@@ -512,7 +512,7 @@ impl GameState {
     fn next_player(&self, current_player: u32) -> Option<u32> {
         for i in 1..=self.players.len() {
             let index = (current_player as usize + i) % self.players.len();
-            if self.players[index].lose == false {
+            if !self.players[index].lose {
                 return Some(index as u32);
             }
         }
