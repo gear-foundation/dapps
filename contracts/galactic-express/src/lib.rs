@@ -143,6 +143,7 @@ impl Contract {
         };
         game.altitude = random.generate(TURN_ALTITUDE.0, TURN_ALTITUDE.1) * TURNS as u16;
         game.reward = random.generate(REWARD.0, REWARD.1);
+        self.player_to_game_id.insert(msg_src, msg_src);
 
         Ok(Event::NewSession {
             session_id: game.session_id,
@@ -163,6 +164,7 @@ impl Contract {
                 self.player_to_game_id.remove(id);
             });
         }
+        self.player_to_game_id.remove(&msg_src);
         self.games.remove(&msg_src);
         Ok(Event::SessionDeleted)
     }
@@ -234,10 +236,8 @@ impl Contract {
     }
 
     async fn start_game(&mut self, mut participant: Participant) -> Result<Event, Error> {
-        let game = self
-            .games
-            .get_mut(&msg::source())
-            .ok_or(Error::NoSuchGame)?;
+        let msg_source = msg::source();
+        let game = self.games.get_mut(&msg_source).ok_or(Error::NoSuchGame)?;
 
         let participants = game.stage.mut_participants()?;
 
@@ -252,7 +252,7 @@ impl Contract {
 
         for (actor, participant) in participants
             .into_iter()
-            .chain(iter::once((&msg::source(), &mut participant)))
+            .chain(iter::once((&msg_source, &mut participant)))
         {
             let mut actor_turns = Vec::with_capacity(TURNS);
             let mut remaining_fuel = participant.fuel_amount;
@@ -342,6 +342,7 @@ impl Contract {
         participants.into_iter().for_each(|(id, _)| {
             self.player_to_game_id.remove(id);
         });
+        self.player_to_game_id.remove(&msg_source);
         game.stage = Stage::Results(results.clone());
 
         Ok(Event::GameFinished(results))
@@ -452,7 +453,7 @@ extern fn state() {
     let query: StateQuery = msg::load().expect("Unable to load the state query");
     let reply = match query {
         StateQuery::All => StateReply::All(state.into()),
-        StateQuery::GetGame { creator_id } => {
+        StateQuery::GetGameFromCreator { creator_id } => {
             if let Some(game) = state.games.get(&creator_id) {
                 let stage = match &game.stage {
                     Stage::Registration(participants_data) => {
@@ -473,6 +474,31 @@ extern fn state() {
             } else {
                 StateReply::Game(None)
             }
+        }
+        StateQuery::GetGameFromPlayer { player_id } => {
+            let game_state = state
+                .player_to_game_id
+                .get(&player_id)
+                .and_then(|creator_id| state.games.get(creator_id))
+                .map(|game| {
+                    let stage = match &game.stage {
+                        Stage::Registration(participants_data) => StageState::Registration(
+                            participants_data.clone().into_iter().collect(),
+                        ),
+                        Stage::Results(results) => StageState::Results(results.clone()),
+                    };
+
+                    GameState {
+                        admin: game.admin,
+                        session_id: game.session_id,
+                        altitude: game.altitude,
+                        weather: game.weather,
+                        reward: game.reward,
+                        stage,
+                    }
+                });
+
+            StateReply::Game(game_state)
         }
         StateQuery::GetGameId { player_id } => {
             StateReply::GameId(state.player_to_game_id.get(&player_id).copied())

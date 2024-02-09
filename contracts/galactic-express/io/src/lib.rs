@@ -35,7 +35,8 @@ pub const MAX_PAYLOAD: u8 = 100;
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateQuery {
     All,
-    GetGame { creator_id: ActorId },
+    GetGameFromCreator { creator_id: ActorId },
+    GetGameFromPlayer { player_id: ActorId },
     GetGameId { player_id: ActorId },
 }
 
