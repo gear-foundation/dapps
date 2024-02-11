@@ -11,3 +11,7 @@ w3bstreaming-io.workspace = true
 [build-dependencies]
 w3bstreaming-io.workspace = true
 gear-wasm-builder.workspace = true
+
+[dev-dependencies]
+gstd = { workspace = true, features = ["debug"] }
+gtest.workspace = true
