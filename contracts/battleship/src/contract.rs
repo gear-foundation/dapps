@@ -1,4 +1,5 @@
 use battleship_io::*;
+
 use gstd::{
     collections::{BTreeMap, HashMap},
     exec, msg,
@@ -7,8 +8,6 @@ use gstd::{
 };
 
 static mut BATTLESHIP: Option<Battleship> = None;
-pub const GAS_FOR_START: u64 = 100_000_000_000;
-pub const GAS_FOR_MOVE: u64 = 100_000_000_000;
 
 #[derive(Debug, Default)]
 struct Battleship {
@@ -16,15 +15,94 @@ struct Battleship {
     pub msg_id_to_game_id: BTreeMap<MessageId, ActorId>,
     pub bot_address: ActorId,
     pub admin: ActorId,
+    pub sessions: HashMap<ActorId, Session>,
+    pub config: Config,
 }
 
 impl Battleship {
-    fn start_game(&mut self, mut ships: Ships) {
-        let msg_source = msg::source();
+    fn create_session(
+        &mut self,
+        key: &ActorId,
+        duration: u64,
+        allowed_actions: Vec<ActionsForSession>,
+    ) {
+        assert!(
+            duration >= MINIMUM_SESSION_SURATION_MS,
+            "Duration is too small"
+        );
 
-        if let Some(game) = self.games.get(&msg_source) {
+        let msg_source = msg::source();
+        let block_timestamp = exec::block_timestamp();
+        if let Some(Session {
+            key: _,
+            expires,
+            allowed_actions: _,
+        }) = self.sessions.get(&msg_source)
+        {
+            if *expires > block_timestamp {
+                panic!("You already have an active session. If you want to create a new one, please delete this one.")
+            }
+        }
+
+        let expires = block_timestamp + duration;
+
+        let number_of_blocks = u32::try_from(duration.div_ceil(self.config.block_duration_ms))
+            .expect("Duration is too large");
+
+        assert!(
+            !allowed_actions.is_empty(),
+            "No messages for approval were passed."
+        );
+
+        self.sessions.entry(msg_source).insert(Session {
+            key: *key,
+            expires,
+            allowed_actions,
+        });
+
+        msg::send_with_gas_delayed(
+            exec::program_id(),
+            BattleshipAction::DeleteSessionFromProgram {
+                account: msg::source(),
+            },
+            self.config.gas_to_delete_session,
+            0,
+            number_of_blocks,
+        )
+        .expect("Error in sending a delayed msg");
+
+        msg::reply(BattleshipReply::SessionCreated, 0).expect("Error in sending a reply");
+    }
+
+    fn delete_session_from_program(&mut self, session_for_account: &ActorId) {
+        assert_eq!(
+            exec::program_id(),
+            msg::source(),
+            "The msg source must be the program"
+        );
+
+        if let Some(session) = self.sessions.remove(session_for_account) {
+            assert!(
+                session.expires <= exec::block_timestamp(),
+                "Too early to delete session"
+            );
+        }
+
+        msg::reply(BattleshipReply::SessionDeleted, 0).expect("Error in sending a reply");
+    }
+
+    fn delete_session_from_account(&mut self) {
+        assert!(self.sessions.remove(&msg::source()).is_some(), "No session");
+
+        msg::reply(BattleshipReply::SessionDeleted, 0).expect("Error in sending a reply");
+    }
+
+    fn start_game(&mut self, mut ships: Ships, session_for_account: Option<ActorId>) {
+        let player = self.get_player(&session_for_account, ActionsForSession::StartGame);
+        if let Some(game) = self.games.get(&player) {
             assert!(game.game_over, "Please finish the previous game");
         }
+
         assert!(
             ships.check_correct_location(),
             "Incorrect location of ships"
@@ -42,27 +120,27 @@ impl Battleship {
             total_shots: 0,
             ..Default::default()
         };
-        self.games.insert(msg_source, game_instance);
+        self.games.insert(player, game_instance);
 
         let msg_id = msg::send_with_gas(
             self.bot_address,
             BotBattleshipAction::Start,
-            GAS_FOR_START,
+            self.config.gas_for_start,
             0,
         )
         .expect("Error in sending a message");
 
-        self.msg_id_to_game_id.insert(msg_id, msg_source);
+        self.msg_id_to_game_id.insert(msg_id, player);
         msg::reply(BattleshipReply::MessageSentToBot, 0).expect("Error in sending a reply");
     }
 
-    fn player_move(&mut self, step: u8) {
-        let msg_source = msg::source();
+    fn player_move(&mut self, step: u8, session_for_account: Option<ActorId>) {
+        let player = self.get_player(&session_for_account, ActionsForSession::Turn);
         assert!(step < 25, "Step must be less than 24");
 
         let game = self
             .games
-            .get_mut(&msg_source)
+            .get_mut(&player)
             .expect("The player has no game, please start the game");
 
         assert!(!game.game_over, "Game is already over");
@@ -102,12 +180,12 @@ impl Battleship {
         let msg_id = msg::send_with_gas(
             self.bot_address,
             BotBattleshipAction::Turn(board),
-            GAS_FOR_MOVE,
+            self.config.gas_for_move,
             0,
         )
         .expect("Error in sending a message");
 
-        self.msg_id_to_game_id.insert(msg_id, msg_source);
+        self.msg_id_to_game_id.insert(msg_id, player);
         msg::reply(BattleshipReply::MessageSentToBot, 0).expect("Error in sending a reply");
     }
 
@@ -139,14 +217,80 @@ impl Battleship {
         );
         self.games.remove(&player_address);
     }
+
+    fn get_player(
+        &self,
+        session_for_account: &Option<ActorId>,
+        actions_for_session: ActionsForSession,
+    ) -> ActorId {
+        let msg_source = msg::source();
+        let player = match session_for_account {
+            Some(account) => {
+                let session = self
+                    .sessions
+                    .get(account)
+                    .expect("This account has no valid session");
+                assert!(
+                    session.expires > exec::block_timestamp(),
+                    "The session has already expired"
+                );
+                assert!(
+                    session.allowed_actions.contains(&actions_for_session),
+                    "This message is not allowed"
+                );
+                assert_eq!(
+                    session.key, msg_source,
+                    "The account is not approved for this session"
+                );
+                *account
+            }
+            None => msg_source,
+        };
+        player
+    }
+
+    fn update_config(
+        &mut self,
+        gas_for_start: Option<u64>,
+        gas_for_move: Option<u64>,
+        gas_to_delete_session: Option<u64>,
+        block_duration_ms: Option<u64>,
+    ) {
+        assert_eq!(
+            msg::source(),
+            self.admin,
+            "Only admin can change configurable parameters"
+        );
+        if let Some(gas_for_start) = gas_for_start {
+            self.config.gas_for_start = gas_for_start;
+        }
+
+        if let Some(gas_for_move) = gas_for_move {
+            self.config.gas_for_move = gas_for_move;
+        }
+
+        if let Some(gas_to_delete_session) = gas_to_delete_session {
+            self.config.gas_to_delete_session = gas_to_delete_session;
+        }
+
+        if let Some(block_duration_ms) = block_duration_ms {
+            self.config.block_duration_ms = block_duration_ms;
+        }
+
+        msg::reply(BattleshipReply::ConfigUpdated, 0).expect("Error in sending a reply");
+    }
 }
 
 #[no_mangle]
 extern fn init() {
-    let BattleshipInit { bot_address } = msg::load().expect("Unable to decode BattleshipInit");
+    let BattleshipInit {
+        bot_address,
+        config,
+    } = msg::load().expect("Unable to decode BattleshipInit");
     unsafe {
         BATTLESHIP = Some(Battleship {
             bot_address,
+            config,
             admin: msg::source(),
             ..Default::default()
         });
@@ -163,13 +307,39 @@ extern fn handle() {
     let action: BattleshipAction =
         msg::load().expect("Failed to decode `BattleshipAction` message.");
     match action {
-        BattleshipAction::StartGame { ships } => battleship.start_game(ships),
-        BattleshipAction::Turn { step } => battleship.player_move(step),
+        BattleshipAction::StartGame {
+            ships,
+            session_for_account,
+        } => battleship.start_game(ships, session_for_account),
+        BattleshipAction::Turn {
+            step,
+            session_for_account,
+        } => battleship.player_move(step, session_for_account),
         BattleshipAction::ChangeBot { bot } => battleship.change_bot(bot),
         BattleshipAction::ClearState { leave_active_games } => {
             battleship.clear_state(leave_active_games)
         }
         BattleshipAction::DeleteGame { player_address } => battleship.delete_game(player_address),
+        BattleshipAction::CreateSession {
+            key,
+            duration,
+            allowed_actions,
+        } => battleship.create_session(&key, duration, allowed_actions),
+        BattleshipAction::DeleteSessionFromProgram { account } => {
+            battleship.delete_session_from_program(&account)
+        }
+        BattleshipAction::DeleteSessionFromAccount => battleship.delete_session_from_account(),
+        BattleshipAction::UpdateConfig {
+            gas_for_start,
+            gas_for_move,
+            gas_to_delete_session,
+            block_duration_ms,
+        } => battleship.update_config(
+            gas_for_start,
+            gas_for_move,
+            gas_to_delete_session,
+            block_duration_ms,
+        ),
     }
 }
 
@@ -190,8 +360,14 @@ extern fn handle_reply() {
     let action: BattleshipAction =
         msg::load().expect("Failed to decode `BattleshipAction` message.");
     match action {
-        BattleshipAction::StartGame { ships } => game.start_bot(ships),
-        BattleshipAction::Turn { step } => {
+        BattleshipAction::StartGame {
+            ships,
+            session_for_account: _,
+        } => game.start_bot(ships),
+        BattleshipAction::Turn {
+            step,
+            session_for_account: _,
+        } => {
             game.turn(step);
             game.turn = Some(BattleshipParticipants::Player);
             if game.player_ships.check_end_game() {
@@ -237,6 +413,13 @@ extern fn state() {
         StateQuery::BotContractId => {
             msg::reply(StateReply::BotContractId(battleship.bot_address), 0)
                 .expect("Unable to share the state");
+        }
+        StateQuery::SessionForTheAccount(account) => {
+            msg::reply(
+                StateReply::SessionForTheAccount(battleship.sessions.get(&account).cloned()),
+                0,
+            )
+            .expect("Unable to share the state");
         }
     }
 }
