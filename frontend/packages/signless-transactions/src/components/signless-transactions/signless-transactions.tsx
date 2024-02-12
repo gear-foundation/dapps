@@ -15,7 +15,6 @@ import { AccountPair } from '../account-pair';
 function SignlessTransactions() {
   const { account } = useAccount();
   const { pair, session, isSessionReady, voucherBalance, storagePair, deleteSession } = useSignlessTransactions();
-
   const [modal, setModal] = useState('');
   const openCreateModal = () => setModal('create');
   const openEnableModal = () => setModal('enable');

@@ -8,16 +8,16 @@ import { Map } from '../';
 import styles from './ShipArrangement.module.scss';
 import { useGameMessage, usePending } from '../../hooks';
 import { generateShipsField } from './shipGenerator';
-import { convertShipsToField, useFetchVoucher } from '../../utils';
+import { convertShipsToField } from '../../utils';
 import { useCheckBalance } from '@dapps-frontend/hooks';
-import { ADDRESS } from '../../consts';
+import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
 
 export default function ShipArrangement() {
-  const { voucherId, isLoading } = useFetchVoucher();
-  const { pair } = useSignlessTransactions();
+  const { voucherId, isLoadingVoucher } = useGaslessTransactions();
+  const { pairVoucherId } = useSignlessTransactions();
   const message = useGameMessage();
   const { setPending } = usePending();
-  const { checkBalance } = useCheckBalance({ signlessPair: pair, gaslessVoucherId: voucherId });
+  const { checkBalance } = useCheckBalance({ signlessPairVoucherId: pairVoucherId, gaslessVoucherId: voucherId });
 
   const [shipLayout, setShipLayout] = useState<string[]>([]);
   const [shipsField, setShipsField] = useState<number[][]>([]);
@@ -38,7 +38,7 @@ export default function ShipArrangement() {
   const onGameStart = async () => {
     const gasLimit = 120000000000;
 
-    if (!isLoading) {
+    if (!isLoadingVoucher) {
       setPending(true);
 
       checkBalance(gasLimit, () =>
@@ -70,7 +70,7 @@ export default function ShipArrangement() {
       </div>
       <div className={styles.buttons}>
         <Button color="dark" text="Generate" onClick={onGenerateRandomLayout} disabled={isLoadingGenerate} />
-        <Button text="Continue" onClick={onGameStart} disabled={!shipLayout.length || isLoading} />
+        <Button text="Continue" onClick={onGameStart} disabled={!shipLayout.length || isLoadingVoucher} />
       </div>
     </div>
   );
