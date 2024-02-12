@@ -1,18 +1,16 @@
 import { useAccount, useAlert, useApi, useBalance, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
-import { decodeAddress } from '@gear-js/api';
 import { stringShorten } from '@polkadot/util';
-import { KeyringPair } from '@polkadot/keyring/types';
 
 type Props = {
   gaslessVoucherId?: `0x${string}`;
-  signlessPair?: KeyringPair;
+  signlessPairVoucherId?: string;
 };
 
 function useCheckBalance(args?: Props) {
-  const { signlessPair, gaslessVoucherId } = args || {};
+  const { signlessPairVoucherId, gaslessVoucherId } = args || {};
   const { api } = useApi();
   const { account } = useAccount();
-  const voucherAddress = signlessPair ? decodeAddress(signlessPair.address) : account?.decodedAddress;
+  const voucherAddress = signlessPairVoucherId || account?.decodedAddress;
 
   const { balance } = useBalance(gaslessVoucherId || voucherAddress);
   const { getFormattedBalanceValue, getFormattedGasValue } = useBalanceFormat();

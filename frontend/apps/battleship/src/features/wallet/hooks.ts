@@ -1,25 +1,9 @@
-import { CreateType, decodeAddress } from '@gear-js/api';
-import {
-  useAccount,
-  useAlert,
-  useApi,
-  useBalance,
-  useBalanceFormat,
-  // useVoucherBalance,
-  withoutCommas,
-} from '@gear-js/react-hooks';
-import { formatBalance, stringShorten } from '@polkadot/util';
+import { CreateType } from '@gear-js/api';
+import { useAccount, useApi, useBalance } from '@gear-js/react-hooks';
+import { formatBalance } from '@polkadot/util';
 import { useEffect, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { useSignlessTransactions } from '@dapps-frontend/signless-transactions';
-import { ADDRESS } from '@/app/consts';
-import {
-  AVAILABLE_BALANCE,
-  IS_AVAILABLE_BALANCE_READY,
-  VOUCHER_MIN_LIMIT,
-  WALLET,
-  WALLET_ID_LOCAL_STORAGE_KEY,
-} from './consts';
+import { AVAILABLE_BALANCE, IS_AVAILABLE_BALANCE_READY, WALLET, WALLET_ID_LOCAL_STORAGE_KEY } from './consts';
 import { SystemAccount, WalletId } from './types';
 
 function useWalletSync() {

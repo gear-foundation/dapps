@@ -26,13 +26,13 @@ function useSignlessSendMessage(
   options?: UseSendMessageOptions,
 ) {
   const { account } = useAccount();
-  const { pair } = useSignlessTransactions();
+  const { pair, pairVoucherId } = useSignlessTransactions();
   const sendMessage = useSendMessage(destination, metadata, { ...options, pair });
 
   const sendSignlessMessage = (args: SendSignlessMessageOptions) => {
     const sessionForAccount = pair ? account?.decodedAddress : null;
     const payload = getSinglessPayload(args.payload, sessionForAccount);
-    const voucherId = pair ? (pair?.address as `0x${string}`) : args.voucherId; // to not overrider gasless transactions
+    const voucherId = pairVoucherId ? pairVoucherId : args.voucherId; // to not overrider gasless transactions
 
     sendMessage({ ...args, payload, voucherId });
   };
