@@ -7,8 +7,8 @@ import { cn, gasLimitToNumber, toNumber } from 'app/utils';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
 import { useCheckBalance } from '@dapps-frontend/hooks';
-import { useFetchVoucher } from 'features/battle/utils/init-gasless-transactions';
 import { BATTLE_ADDRESS } from 'features/battle/consts';
+import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
 
 export const BattleRoundPlayers = () => {
   const { account } = useAccount();
@@ -16,7 +16,7 @@ export const BattleRoundPlayers = () => {
   const { rivals, currentPlayer, currentPairIdx, roundDamage, battle, isPending, setIsPending, isAdmin } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
-  const { voucherId, isLoading } = useFetchVoucher();
+  const { voucherId, isLoadingVoucher } = useGaslessTransactions();
   const { checkBalance } = useCheckBalance({ gaslessVoucherId: voucherId });
 
   useEffect(() => {
@@ -126,7 +126,7 @@ export const BattleRoundPlayers = () => {
                     buttonStyles.button,
                   )}
                   onClick={onNewRound}
-                  disabled={isPending || isLoading}>
+                  disabled={isPending || isLoadingVoucher}>
                   Start New Round
                 </button>
               )}
@@ -138,13 +138,13 @@ export const BattleRoundPlayers = () => {
                       buttonStyles.button,
                     )}
                     onClick={onAttack}
-                    disabled={isPending || !isAllowed || isLoading}>
+                    disabled={isPending || !isAllowed || isLoadingVoucher}>
                     <SpriteIcon name="swords" className="w-5 h-5" /> Attack
                   </button>
                   <button
                     className={cn('btn items-center gap-2 w-full', buttonStyles.secondary, buttonStyles.button)}
                     onClick={onDefence}
-                    disabled={isPending || !isAllowed || isLoading}>
+                    disabled={isPending || !isAllowed || isLoadingVoucher}>
                     <SpriteIcon name="armor" className="w-5 h-5" /> Defence
                   </button>
                 </>

@@ -5,12 +5,13 @@ import { GameEndModal, Map } from '@/features/game';
 import styles from './GameProcess.module.scss';
 import { MapEnemy } from '../map';
 import { useGame, useGameMessage, usePending } from '../../hooks';
-import { getFormattedTime, useFetchVoucher } from '../../utils';
+import { getFormattedTime } from '../../utils';
 import { Loader } from '@/components';
 import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
 
 export default function GameProcess() {
-  const { voucherId, isLoading } = useFetchVoucher();
+  const { voucherId, isLoadingVoucher } = useGaslessTransactions();
   const { pairVoucherId } = useSignlessTransactions();
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
@@ -71,7 +72,7 @@ export default function GameProcess() {
   const onClickCell = async (indexCell: number) => {
     const gasLimit = 120000000000;
 
-    if (!isLoading) {
+    if (!isLoadingVoucher) {
       setDisabledCell(true);
 
       checkBalance(gasLimit, () =>
@@ -159,7 +160,7 @@ export default function GameProcess() {
           sizeBlock={68}
           onClickCell={onClickCell}
           shipStatusArray={enemiesShips}
-          isDisabledCell={isDisabledCell || isLoading}
+          isDisabledCell={isDisabledCell || isLoadingVoucher}
         />
       </div>
 
