@@ -98,23 +98,14 @@ pub struct Game {
 }
 
 impl Contract {
-    fn create_new_session(&mut self, bid: u128) -> Result<Event, Error> {
+    fn create_new_session(&mut self) -> Result<Event, Error> {
         let msg_src = msg::source();
         let msg_value = msg::value();
-
-        if msg_value != bid {
-            send_value(msg_src, msg_value);
-            return Err(Error::WrongBid);
-        }
-        if bid < EXISTENTIAL_DEPOSIT && bid != 0 {
-            send_value(msg_src, msg_value);
-            return Err(Error::LessThanExistentialDeposit);
-        }
 
         if !self.games.contains_key(&msg_src) {
             let game = Game {
                 admin: msg_src,
-                bid,
+                bid: msg_value,
                 ..Default::default()
             };
             self.games.insert(msg_src, game);
@@ -150,7 +141,7 @@ impl Contract {
             altitude: game.altitude,
             weather: game.weather,
             reward: game.reward,
-            bid,
+            bid: msg_value,
         })
     }
 
@@ -163,7 +154,7 @@ impl Contract {
                 send_value(*id, game.bid);
                 self.player_to_game_id.remove(id);
             });
-        }
+        } 
         self.player_to_game_id.remove(&msg_src);
         self.games.remove(&msg_src);
         Ok(Event::SessionDeleted)
@@ -183,9 +174,6 @@ impl Contract {
         if let Some(game) = self.games.get_mut(&creator) {
             if msg_value != game.bid {
                 return Err(Error::WrongBid);
-            }
-            if msg_source == game.admin {
-                return Err(Error::AccessDenied);
             }
             if let Stage::Results(_) = game.stage {
                 return Err(Error::SessionEnded);
@@ -428,7 +416,7 @@ async fn process_main() -> Result<Event, Error> {
     let (contract, _tx_manager) = state_mut()?;
 
     match action {
-        Action::CreateNewSession { bid } => contract.create_new_session(bid),
+        Action::CreateNewSession => contract.create_new_session(),
         Action::Register {
             creator,
             participant,

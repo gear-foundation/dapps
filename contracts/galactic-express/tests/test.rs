@@ -60,7 +60,7 @@ fn errors() {
 
     rockets
         .register(ADMINS[0], ADMINS[0].into(), Default::default(), 0)
-        .failed(Error::AccessDenied, 0);
+        .failed(Error::SeveralRegistrations, 0);
 
     rockets
         .start_game(PLAYERS[0], Default::default())

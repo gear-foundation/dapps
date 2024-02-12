@@ -36,7 +36,7 @@ impl<'a> GalEx<'a> {
     pub fn create_new_session(&mut self, from: u64, bid: u128) -> GalExResult<u128, u128> {
         RunResult::new(
             self.0
-                .send_with_value(from, Action::CreateNewSession { bid }, bid),
+                .send_with_value(from, Action::CreateNewSession, bid),
             |event, id| {
                 if let Event::NewSession {
                     session_id,

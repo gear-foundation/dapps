@@ -4,7 +4,6 @@ use gear_lib::tx_manager::TransactionManagerError;
 use gmeta::{InOut, Metadata, Out};
 use gstd::{errors::Error as GstdError, prelude::*, ActorId};
 
-pub const EXISTENTIAL_DEPOSIT: u128 = 10_000_000_000_000;
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
@@ -77,9 +76,7 @@ pub struct Results {
 
 #[derive(Encode, Decode, TypeInfo)]
 pub enum Action {
-    CreateNewSession {
-        bid: u128,
-    },
+    CreateNewSession,
     Register {
         creator: ActorId,
         participant: Participant,
@@ -154,7 +151,6 @@ pub enum Weather {
 pub enum Error {
     StateUninitaliazed,
     GstdError(String),
-    AccessDenied,
     SessionEnded,
     FuelOrPayloadOverload,
     SessionFull,
@@ -163,7 +159,6 @@ pub enum Error {
     NoSuchGame,
     WrongBid,
     NoSuchPlayer,
-    LessThanExistentialDeposit,
     AlreadyRegistered,
     SeveralRegistrations,
 }
