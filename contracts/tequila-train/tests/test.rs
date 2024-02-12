@@ -21,11 +21,12 @@ pub trait TestFunc {
         remove_train: bool,
         error: Option<Error>,
     );
+    fn get_all_state(&self) -> Option<GameLauncherState>;
 }
 
 impl TestFunc for Program<'_> {
     fn create_game(&self, from: u64, bid: u128, error: Option<Error>) {
-        let result = self.send_with_value(from, Command::CreateGame { bid }, bid);
+        let result = self.send_with_value(from, Command::CreateGame, bid);
         assert!(!result.main_failed());
         let reply = if let Some(error) = error {
             Err(error)
@@ -58,6 +59,8 @@ impl TestFunc for Program<'_> {
     }
     fn delete_player(&self, from: u64, player_id: ActorId, error: Option<Error>) {
         let result = self.send(from, Command::DeletePlayer { player_id });
+        let res = &result.decoded_log::<Result<Event, Error>>();
+        println!("RES: {:?}", res);
         assert!(!result.main_failed());
         let reply = if let Some(error) = error {
             Err(error)
@@ -134,6 +137,16 @@ impl TestFunc for Program<'_> {
         };
         assert!(result.contains(&(from, reply.encode())));
     }
+    fn get_all_state(&self) -> Option<GameLauncherState> {
+        let reply = self
+            .read_state(StateQuery::All)
+            .expect("Unexpected invalid state.");
+        if let StateReply::All(state) = reply {
+            Some(state)
+        } else {
+            None
+        }
+    }
 }
 #[test]
 fn success_test() {
@@ -156,7 +169,9 @@ fn success_test() {
     program.register(PLAYERS[2], 0, PLAYERS[0].into(), None);
     program.start_game(PLAYERS[0], None);
 
-    let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
+    let state: GameLauncherState = program
+        .get_all_state()
+        .expect("Unexpected invalid game state.");
     println!("STATE: {:?}", state);
 
     let game = state.games[0].1.game_state.clone().unwrap();
@@ -233,7 +248,9 @@ fn cancel_register() {
     let balance = system.balance_of(PLAYERS[1]);
     assert_eq!(balance, 0);
 
-    let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
+    let state: GameLauncherState = program
+        .get_all_state()
+        .expect("Unexpected invalid game state.");
     assert_eq!(state.games[0].1.initial_players.len(), 2);
 
     program.cancel_register(PLAYERS[1], PLAYERS[0].into(), None);
@@ -241,8 +258,11 @@ fn cancel_register() {
     let balance = system.balance_of(PLAYERS[1]);
     assert_eq!(balance, bid);
 
-    let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
+    let state: GameLauncherState = program
+        .get_all_state()
+        .expect("Unexpected invalid game state.");
     assert_eq!(state.games[0].1.initial_players.len(), 1);
+    assert_eq!(state.players_to_game_creator.len(), 1);
 }
 
 #[test]
@@ -269,7 +289,9 @@ fn delete_player() {
     let balance = system.balance_of(PLAYERS[1]);
     assert_eq!(balance, 0);
 
-    let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
+    let state: GameLauncherState = program
+        .get_all_state()
+        .expect("Unexpected invalid game state.");
     assert_eq!(state.games[0].1.initial_players.len(), 2);
 
     program.delete_player(PLAYERS[0], PLAYERS[1].into(), None);
@@ -277,8 +299,11 @@ fn delete_player() {
     let balance = system.balance_of(PLAYERS[1]);
     assert_eq!(balance, bid);
 
-    let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
+    let state: GameLauncherState = program
+        .get_all_state()
+        .expect("Unexpected invalid game state.");
     assert_eq!(state.games[0].1.initial_players.len(), 1);
+    assert_eq!(state.players_to_game_creator.len(), 1);
 }
 
 #[test]
@@ -305,7 +330,9 @@ fn cancel_game() {
     let balance = system.balance_of(PLAYERS[1]);
     assert_eq!(balance, 0);
 
-    let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
+    let state: GameLauncherState = program
+        .get_all_state()
+        .expect("Unexpected invalid game state.");
     assert!(!state.games.is_empty());
 
     program.cancel_game(PLAYERS[0], None);
@@ -316,77 +343,97 @@ fn cancel_game() {
     let balance = system.balance_of(PLAYERS[0]);
     assert_eq!(balance, bid);
 
-    let state: GameLauncherState = get_all_state(&program).expect("Unexpected invalid game state.");
+    let state: GameLauncherState = program
+        .get_all_state()
+        .expect("Unexpected invalid game state.");
     assert!(state.games.is_empty());
+    assert!(state.players_to_game_creator.is_empty());
 }
 
-// #[test]
-// fn failures_test() {
-//     let system = System::new();
+#[test]
+fn failures_test() {
+    let system = System::new();
 
-//     system.init_logger();
+    system.init_logger();
 
-//     let program = Program::current_opt(&system);
+    let program = Program::current_opt(&system);
 
-//     let result = program.send(2, Some(2_u64));
-//     assert!(!result.main_failed());
+    let config = Config {
+        time_to_move: 30_000,
+    };
 
-//     program.start_game(2, Some(Error::WrongPlayersCount));
-//     program.restart_game(2, Some(Error::GameHasNotStartedYet));
-//     program.register(2, 0.into(), "A".to_owned(), None);
-//     program.register(
-//         2,
-//         1.into(),
-//         "A".to_owned(),
-//         Some(Error::NameAlreadyExistsOrYouRegistered),
-//     );
-//     program.register(
-//         2,
-//         0.into(),
-//         "B".to_owned(),
-//         Some(Error::NameAlreadyExistsOrYouRegistered),
-//     );
-//     program.register(2, 1.into(), "B".to_owned(), None);
-//     program.register(
-//         2,
-//         3.into(),
-//         "C".to_owned(),
-//         Some(Error::LimitHasBeenReached),
-//     );
+    let result = program.send(2, config);
+    assert!(!result.main_failed());
 
-//     program.start_game(2, None);
-//     program.register(
-//         2,
-//         3.into(),
-//         "C".to_owned(),
-//         Some(Error::GameHasAlreadyStarted),
-//     );
-//     program.start_game(2, Some(Error::GameHasAlreadyStarted));
+    // After each error, a balance check will be made to verify the balance return
 
-//     let state: GameLauncherState = program
-//         .read_state(0)
-//         .expect("Unexpected invalid game state.");
-//     assert_eq!(
-//         state
-//             .game_state
-//             .expect("Invalid game state. Game is not initialized.")
-//             .players,
-//         vec![(0.into(), "A".to_owned()), (1.into(), "B".to_owned())]
-//     );
+    // Сan't create multiple games
+    let bid = 11_000_000_000_000;
+    system.mint_to(PLAYERS[0], 2 * bid);
+    program.create_game(PLAYERS[0], bid, None);
+    program.create_game(PLAYERS[0], bid, Some(Error::SeveralGames));
+    system.claim_value_from_mailbox(PLAYERS[0]);
+    assert_eq!(system.balance_of(PLAYERS[0]), bid);
 
-//     program.place(3, 0, 0, false, Some(Error::NotYourTurn));
-//     program.place(0, 3, 0, false, Some(Error::InvalidTileId));
-//     program.place(0, 1, 1, false, Some(Error::InvalidTrack));
-//     program.place(0, 1, 0, false, Some(Error::InvalidTile));
-// }
+    // You can't play one game and be an admin in another game
+    system.mint_to(PLAYERS[1], 2 * bid);
+    program.register(PLAYERS[1], bid, PLAYERS[0].into(), None);
+    program.create_game(PLAYERS[1], bid, Some(Error::SeveralGames));
+    system.claim_value_from_mailbox(PLAYERS[1]);
+    assert_eq!(system.balance_of(PLAYERS[1]), bid);
 
-fn get_all_state(program: &Program<'_>) -> Option<GameLauncherState> {
-    let reply = program
-        .read_state(StateQuery::All)
-        .expect("Unexpected invalid state.");
-    if let StateReply::All(state) = reply {
-        Some(state)
-    } else {
-        None
-    }
+    // A non-existent game id has been entered
+    system.mint_to(PLAYERS[2], 2 * bid);
+    program.register(
+        PLAYERS[2],
+        bid,
+        PLAYERS[1].into(),
+        Some(Error::GameDoesNotExist),
+    );
+    system.claim_value_from_mailbox(PLAYERS[2]);
+    assert_eq!(system.balance_of(PLAYERS[2]), 2 * bid);
+
+    // Wrong bid
+    program.register(
+        PLAYERS[2],
+        bid - 1,
+        PLAYERS[0].into(),
+        Some(Error::WrongBid),
+    );
+    system.claim_value_from_mailbox(PLAYERS[2]);
+    assert_eq!(system.balance_of(PLAYERS[2]), 2 * bid);
+
+    // Already registered
+    program.register(
+        PLAYERS[1],
+        bid,
+        PLAYERS[0].into(),
+        Some(Error::YouAlreadyRegistered),
+    );
+    system.claim_value_from_mailbox(PLAYERS[1]);
+    assert_eq!(system.balance_of(PLAYERS[1]), bid);
+
+    // Registered In Another Game
+    program.create_game(PLAYERS[2], bid, None);
+    program.register(
+        PLAYERS[1],
+        bid,
+        PLAYERS[2].into(),
+        Some(Error::RegisteredInAnotherGame),
+    );
+    system.claim_value_from_mailbox(PLAYERS[1]);
+    assert_eq!(system.balance_of(PLAYERS[1]), bid);
+
+    // Admin try cancel register
+    program.cancel_register(PLAYERS[0], PLAYERS[0].into(), Some(Error::YouAreAdmin));
+
+    // No Such Player in registration list
+    program.cancel_register(PLAYERS[2], PLAYERS[0].into(), Some(Error::NoSuchPlayer));
+
+    // players less than 2
+    program.start_game(PLAYERS[2], Some(Error::NotEnoughPlayers));
+
+    // the game has already started
+    program.start_game(PLAYERS[0], None);
+    program.start_game(PLAYERS[0], Some(Error::GameHasAlreadyStarted));
 }

@@ -8,8 +8,6 @@ use gstd::{
     ActorId,
 };
 
-pub const EXISTENTIAL_DEPOSIT: u128 = 10_000_000_000_000;
-
 pub struct ContractMetadata;
 
 impl Metadata for ContractMetadata {
@@ -31,14 +29,12 @@ pub struct GameLauncherState {
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateQuery {
     All,
-    GetGame { creator: ActorId },
-    GetGameId { player_id: ActorId },
+    GetGame { player_id: ActorId },
 }
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateReply {
     All(GameLauncherState),
     Game(Option<Game>),
-    GameId(Option<ActorId>),
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
@@ -120,9 +116,7 @@ pub struct Players {
 
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
 pub enum Command {
-    CreateGame {
-        bid: u128,
-    },
+    CreateGame,
     Skip {
         creator: ActorId,
     },
@@ -165,7 +159,6 @@ pub enum Event {
         player_id: ActorId,
     },
     GameStarted,
-    GameRestarted,
     GameStalled,
     AdminAdded(ActorId),
     AdminDeleted(ActorId),
@@ -192,8 +185,10 @@ pub enum Error {
     YouLose,
     WrongBid,
     NoSuchPlayer,
-    LessThanExistentialDeposit,
     StateIsNotPlaying,
+    SeveralGames,
+    YouAreAdmin,
+    NotEnoughPlayers,
 }
 
 #[derive(Debug, TypeInfo, Encode, Decode, Clone, Default)]
@@ -204,6 +199,7 @@ pub struct TrackData {
 
 #[derive(Debug, TypeInfo, Encode, Decode, Clone, Default)]
 pub struct Game {
+    pub admin: ActorId,
     pub game_state: Option<GameState>,
     pub initial_players: BTreeSet<ActorId>,
     pub state: State,
@@ -325,7 +321,6 @@ fn give_tiles_until_double(
 impl GameState {
     // TODO: cover it with tests
     pub fn new(initial_data: &Players, time_to_move: u64) -> Option<GameState> {
-        // Check that players amount is allowed
         let players_amount = initial_data.players.len();
 
         let mut tile_to_player: BTreeMap<u32, u32> = Default::default();
@@ -411,16 +406,13 @@ impl GameState {
             0 => {
                 if bid != 0 {
                     self.players.iter().for_each(|player| {
-                        msg::send_with_gas(player.id, "", 0, bid).expect("Error in sending value");
+                        send_value(player.id, bid);
                     });
                 }
                 return Ok(Event::GameStalled);
             }
             1 => {
-                if bid != 0 {
-                    msg::send_with_gas(player, "", 0, bid * self.players.len() as u128)
-                        .expect("Error in sending value");
-                }
+                send_value(player, bid * self.players.len() as u128);
                 return Ok(Event::GameFinished { winner: player });
             }
             _ => (),
@@ -448,10 +440,7 @@ impl GameState {
             .count();
         if remaining_tiles == 0 {
             let player = self.players[self.current_player as usize].clone();
-            if bid != 0 {
-                msg::send_with_gas(player.id, "", 0, bid * self.players.len() as u128)
-                    .expect("Error in sending value");
-            }
+            send_value(player.id, bid * self.players.len() as u128);
             return Some(Event::GameFinished { winner: player.id });
         }
 
@@ -501,7 +490,7 @@ impl GameState {
             // no one can make turn. Game is over
             if bid != 0 {
                 self.players.iter().for_each(|player| {
-                    msg::send_with_gas(player.id, "", 0, bid).expect("Error in sending value");
+                    send_value(player.id, bid);
                 });
             }
             return Some(Event::GameStalled);
@@ -559,16 +548,13 @@ impl GameState {
             0 => {
                 if bid != 0 {
                     self.players.iter().for_each(|player| {
-                        msg::send_with_gas(player.id, "", 0, bid).expect("Error in sending value");
+                        send_value(player.id, bid);
                     })
                 }
                 return Ok(Event::GameStalled);
             }
             1 => {
-                if bid != 0 {
-                    msg::send_with_gas(player, "", 0, bid * self.players.len() as u128)
-                        .expect("Error in sending value");
-                }
+                send_value(player, bid * self.players.len() as u128);
                 return Ok(Event::GameFinished { winner: player });
             }
             _ => (),
@@ -641,6 +627,12 @@ impl GameState {
         }
 
         None
+    }
+}
+
+pub fn send_value(destination: ActorId, value: u128) {
+    if value != 0 {
+        msg::send_with_gas(destination, "", 0, value).expect("Error in sending value");
     }
 }
 

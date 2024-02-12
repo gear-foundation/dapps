@@ -14,34 +14,19 @@ pub struct GameLauncher {
 static mut GAME_LAUNCHER: Option<GameLauncher> = None;
 
 impl GameLauncher {
-    pub fn create_game(
-        &mut self,
-        msg_source: ActorId,
-        msg_value: u128,
-        bid: u128,
-    ) -> Result<Event, Error> {
-        if bid < EXISTENTIAL_DEPOSIT && bid != 0 {
-            return Err(Error::LessThanExistentialDeposit);
-        }
-
-        if bid != msg_value {
-            return Err(Error::WrongBid);
-        }
-
-        if let Some(game) = self.games.get(&msg_source) {
-            if matches!(game.state, State::Registration | State::Playing) {
-                return Err(Error::AlreadyExists);
-            }
+    pub fn create_game(&mut self, msg_source: ActorId, msg_value: u128) -> Result<Event, Error> {
+        if self.players_to_game_creator.contains_key(&msg_source) {
+            return Err(Error::SeveralGames);
         }
 
         let mut game = Game {
-            bid,
+            admin: msg_source,
+            bid: msg_value,
             ..Default::default()
         };
         game.initial_players.insert(msg_source);
-
         self.games.insert(msg_source, game);
-
+        self.players_to_game_creator.insert(msg_source, msg_source);
         Ok(Event::GameCreated)
     }
 
@@ -54,6 +39,9 @@ impl GameLauncher {
 
         if game.is_started {
             return Err(Error::GameHasAlreadyStarted);
+        }
+        if game.initial_players.len() < 2 {
+            return Err(Error::NotEnoughPlayers);
         }
 
         game.is_started = true;
@@ -109,6 +97,10 @@ impl GameLauncher {
 
         let msg_src = msg::source();
 
+        if msg_src == game.admin {
+            return Err(Error::YouAreAdmin);
+        }
+
         if game.is_started {
             return Err(Error::GameHasAlreadyStarted);
         }
@@ -131,6 +123,10 @@ impl GameLauncher {
             .get_mut(&msg_src)
             .ok_or(Error::GameDoesNotExist)?;
 
+        if msg_src == player_id {
+            return Err(Error::YouAreAdmin);
+        }
+
         if game.is_started {
             return Err(Error::GameHasAlreadyStarted);
         }
@@ -141,7 +137,7 @@ impl GameLauncher {
 
         send_value(player_id, game.bid);
         game.initial_players.remove(&player_id);
-        self.players_to_game_creator.remove(&msg_src);
+        self.players_to_game_creator.remove(&player_id);
 
         Ok(Event::PlayerDeleted { player_id })
     }
@@ -157,22 +153,16 @@ impl GameLauncher {
             return Err(Error::GameFinished);
         }
 
-        if game.bid != 0 {
-            game.initial_players.iter().for_each(|id| {
+        game.initial_players.iter().for_each(|id| {
+            if game.bid != 0 {
                 send_value(*id, game.bid);
-                self.players_to_game_creator.remove(id);
-            });
-        }
+            }
+            self.players_to_game_creator.remove(id);
+        });
 
         self.games.remove(&msg_src);
 
         Ok(Event::GameCanceled)
-    }
-}
-
-fn send_value(destination: ActorId, value: u128) {
-    if value != 0 {
-        msg::send_with_gas(destination, "", 0, value).expect("Error in sending value");
     }
 }
 
@@ -203,10 +193,10 @@ fn process_handle() -> Result<Event, Error> {
     let command: Command = msg::load().expect("Unexpected invalid command payload.");
 
     match command {
-        Command::CreateGame { bid } => {
+        Command::CreateGame => {
             let msg_source = msg::source();
             let msg_value = msg::value();
-            let reply = game_launcher.create_game(msg_source, msg_value, bid);
+            let reply = game_launcher.create_game(msg_source, msg_value);
             if reply.is_err() {
                 send_value(msg_source, msg_value);
             }
@@ -228,7 +218,24 @@ fn process_handle() -> Result<Event, Error> {
                 return Err(Error::NotRegistered);
             }
             if let Some(game_state) = &mut game.game_state {
-                game_state.skip_turn(player, game.bid)
+                let result = game_state.skip_turn(player, game.bid);
+                match result {
+                    Ok(Event::GameFinished { winner }) => {
+                        game.state = State::Winner(winner);
+                        game.initial_players.iter().for_each(|id| {
+                            game_launcher.players_to_game_creator.remove(id);
+                        })
+                    }
+                    Ok(Event::GameStalled) => {
+                        game.state = State::Stalled;
+                        game.initial_players.iter().for_each(|id| {
+                            game_launcher.players_to_game_creator.remove(id);
+                        })
+                    }
+                    _ => (),
+                }
+
+                result
             } else {
                 Err(Error::GameHasNotStartedYet)
             }
@@ -304,15 +311,13 @@ extern fn state() {
     let query: StateQuery = msg::load().expect("Unable to load the state query");
     let reply = match query {
         StateQuery::All => StateReply::All(game_launcher.into()),
-        StateQuery::GetGame { creator } => {
-            StateReply::Game(game_launcher.games.get(&creator).cloned())
-        }
-        StateQuery::GetGameId { player_id } => StateReply::GameId(
-            game_launcher
+        StateQuery::GetGame { player_id } => {
+            let game = game_launcher
                 .players_to_game_creator
                 .get(&player_id)
-                .copied(),
-        ),
+                .and_then(|creator_id| game_launcher.games.get(creator_id).cloned());
+            StateReply::Game(game)
+        }
     };
     msg::reply(reply, 0).expect("Failed to encode or reply with the game state");
 }
