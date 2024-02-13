@@ -33,10 +33,10 @@ impl<'a> GalEx<'a> {
         InitResult::<_, Error>::new(Self(program), result, is_active).succeed()
     }
 
-    pub fn create_new_session(&mut self, from: u64, bid: u128) -> GalExResult<u128, u128> {
+    pub fn create_new_session(&mut self, from: u64, name: String, bid: u128) -> GalExResult<u128, u128> {
         RunResult::new(
             self.0
-                .send_with_value(from, Action::CreateNewSession, bid),
+                .send_with_value(from, Action::CreateNewSession {name}, bid),
             |event, id| {
                 if let Event::NewSession {
                     session_id,
@@ -81,9 +81,9 @@ impl<'a> GalEx<'a> {
         )
     }
 
-    pub fn start_game(&mut self, from: u64, participant: Participant) -> GalExResult<HashSet<u64>> {
+    pub fn start_game(&mut self, from: u64, fuel_amount: u8, payload_amount: u8) -> GalExResult<HashSet<u64>> {
         RunResult::new(
-            self.0.send(from, Action::StartGame(participant)),
+            self.0.send(from, Action::StartGame{fuel_amount, payload_amount}),
             |event, players| {
                 if let Event::GameFinished(results) = event {
                     assert!(results.turns.len() == TURNS);

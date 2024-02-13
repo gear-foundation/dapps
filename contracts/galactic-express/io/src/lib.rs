@@ -60,6 +60,7 @@ pub struct GameState {
     pub weather: Weather,
     pub reward: u128,
     pub stage: StageState,
+    pub bid: u128,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
@@ -76,7 +77,9 @@ pub struct Results {
 
 #[derive(Encode, Decode, TypeInfo)]
 pub enum Action {
-    CreateNewSession,
+    CreateNewSession {
+        name: String,
+    },
     Register {
         creator: ActorId,
         participant: Participant,
@@ -85,7 +88,10 @@ pub enum Action {
         creator: ActorId,
     },
     DeleteSession,
-    StartGame(Participant),
+    StartGame {
+        fuel_amount: u8,
+        payload_amount: u8,
+    },
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
@@ -104,8 +110,9 @@ pub enum Event {
     GameFinished(Results),
 }
 
-#[derive(Encode, Decode, TypeInfo, Clone, Copy, Debug, Default, PartialEq, Eq)]
+#[derive(Encode, Decode, TypeInfo, Clone, Debug, Default, PartialEq, Eq)]
 pub struct Participant {
+    pub name: String,
     pub fuel_amount: u8,
     pub payload_amount: u8,
 }

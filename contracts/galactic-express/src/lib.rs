@@ -89,6 +89,7 @@ struct Contract {
 #[derive(Default)]
 pub struct Game {
     admin: ActorId,
+    admin_name: String,
     bid: u128,
     session_id: u128,
     altitude: u16,
@@ -98,13 +99,14 @@ pub struct Game {
 }
 
 impl Contract {
-    fn create_new_session(&mut self) -> Result<Event, Error> {
+    fn create_new_session(&mut self, name: String) -> Result<Event, Error> {
         let msg_src = msg::source();
         let msg_value = msg::value();
 
         if !self.games.contains_key(&msg_src) {
             let game = Game {
                 admin: msg_src,
+                admin_name: name,
                 bid: msg_value,
                 ..Default::default()
             };
@@ -190,7 +192,7 @@ impl Contract {
             }
 
             participant.check()?;
-            participants.insert(msg_source, participant);
+            participants.insert(msg_source, participant.clone());
             self.player_to_game_id.insert(msg_source, creator);
 
             Ok(Event::Registered(msg_source, participant))
@@ -223,10 +225,15 @@ impl Contract {
         }
     }
 
-    async fn start_game(&mut self, mut participant: Participant) -> Result<Event, Error> {
+    async fn start_game(&mut self, fuel_amount: u8, payload_amount: u8) -> Result<Event, Error> {
         let msg_source = msg::source();
-        let game = self.games.get_mut(&msg_source).ok_or(Error::NoSuchGame)?;
 
+        let game = self.games.get_mut(&msg_source).ok_or(Error::NoSuchGame)?;
+        let mut participant = Participant{
+            name: game.admin_name.clone(),
+            fuel_amount,
+            payload_amount,
+        };
         let participants = game.stage.mut_participants()?;
 
         if participants.is_empty() {
@@ -416,7 +423,7 @@ async fn process_main() -> Result<Event, Error> {
     let (contract, _tx_manager) = state_mut()?;
 
     match action {
-        Action::CreateNewSession => contract.create_new_session(),
+        Action::CreateNewSession {name} => contract.create_new_session(name),
         Action::Register {
             creator,
             participant,
@@ -431,7 +438,7 @@ async fn process_main() -> Result<Event, Error> {
         }
         Action::CancelRegistration { creator } => contract.cancel_register(creator),
         Action::DeleteSession => contract.delete_session(),
-        Action::StartGame(participant) => contract.start_game(participant).await,
+        Action::StartGame {fuel_amount, payload_amount} => contract.start_game(fuel_amount, payload_amount).await,
     }
 }
 
@@ -457,6 +464,7 @@ extern fn state() {
                     weather: game.weather,
                     reward: game.reward,
                     stage,
+                    bid: game.bid
                 };
                 StateReply::Game(Some(game_state))
             } else {
@@ -483,6 +491,7 @@ extern fn state() {
                         weather: game.weather,
                         reward: game.reward,
                         stage,
+                        bid: game.bid
                     }
                 });
 
@@ -519,6 +528,7 @@ impl From<Contract> for State {
                     weather: game.weather,
                     reward: game.reward,
                     stage,
+                    bid: game.bid
                 };
                 (id, game_state)
             })
