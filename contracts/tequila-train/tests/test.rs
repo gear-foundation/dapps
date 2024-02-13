@@ -281,7 +281,7 @@ fn cancel_register() {
         .get_all_state()
         .expect("Unexpected invalid game state.");
     assert_eq!(state.games[0].1.initial_players.len(), 1);
-    assert_eq!(state.players_to_game_creator.len(), 1);
+    assert_eq!(state.players_to_game_status.len(), 1);
 }
 
 #[test]
@@ -323,7 +323,7 @@ fn delete_player() {
         .get_all_state()
         .expect("Unexpected invalid game state.");
     assert_eq!(state.games[0].1.initial_players.len(), 1);
-    assert_eq!(state.players_to_game_creator.len(), 1);
+    assert_eq!(state.players_to_game_status.len(), 1);
 }
 
 #[test]
@@ -368,7 +368,7 @@ fn cancel_game() {
         .get_all_state()
         .expect("Unexpected invalid game state.");
     assert!(state.games.is_empty());
-    assert_eq!(state.players_to_game_creator.len(), 1);
+    assert_eq!(state.players_to_game_status.len(), 1);
 }
 
 #[test]

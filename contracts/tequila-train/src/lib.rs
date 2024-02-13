@@ -6,7 +6,7 @@ use tequila_train_io::*;
 #[derive(Debug, Default)]
 pub struct GameLauncher {
     pub games: HashMap<ActorId, Game>,
-    pub players_to_game_creator: HashMap<ActorId, PlayerStatus>,
+    pub players_to_game_status: HashMap<ActorId, PlayerStatus>,
     pub config: Config,
 }
 
@@ -15,7 +15,7 @@ static mut GAME_LAUNCHER: Option<GameLauncher> = None;
 
 impl GameLauncher {
     pub fn create_game(&mut self, msg_source: ActorId, msg_value: u128) -> Result<Event, Error> {
-        if self.players_to_game_creator.contains_key(&msg_source) {
+        if self.players_to_game_status.contains_key(&msg_source) {
             return Err(Error::SeveralGames);
         }
 
@@ -26,7 +26,7 @@ impl GameLauncher {
         };
         game.initial_players.push(msg_source);
         self.games.insert(msg_source, game);
-        self.players_to_game_creator
+        self.players_to_game_status
             .insert(msg_source, PlayerStatus::Playing(msg_source));
         Ok(Event::GameCreated)
     }
@@ -105,7 +105,7 @@ impl GameLauncher {
                         send_value(player.id, game.bid);
                     }
                     self
-                        .players_to_game_creator
+                        .players_to_game_status
                         .insert(player.id, PlayerStatus::GameStalled(game.admin));
                 });
                 
@@ -139,7 +139,7 @@ impl GameLauncher {
         if game.initial_players.contains(&msg_source) {
             return Err(Error::YouAlreadyRegistered);
         }
-        if self.players_to_game_creator.contains_key(&msg_source) {
+        if self.players_to_game_status.contains_key(&msg_source) {
             return Err(Error::RegisteredInAnotherGame);
         }
         if game.initial_players.len() >= 8 {
@@ -147,7 +147,7 @@ impl GameLauncher {
         }
 
         game.initial_players.push(msg_source);
-        self.players_to_game_creator
+        self.players_to_game_status
             .insert(msg_source, PlayerStatus::Playing(creator));
         Ok(Event::Registered { player: msg_source })
     }
@@ -174,7 +174,7 @@ impl GameLauncher {
         send_value(msg_src, game.bid);
         let index_to_remove = game.initial_players.iter().position(|x| x == &msg_src).expect("Critical Error");
         game.initial_players.remove(index_to_remove);
-        self.players_to_game_creator.remove(&msg_src);
+        self.players_to_game_status.remove(&msg_src);
 
         Ok(Event::RegistrationCanceled)
     }
@@ -182,13 +182,13 @@ impl GameLauncher {
     pub fn leave_game(&mut self) -> Result<Event, Error> {
         let msg_src = msg::source();
         let status = self
-            .players_to_game_creator
+            .players_to_game_status
             .get(&msg_src)
             .ok_or(Error::NoSuchPlayer)?;
         if let PlayerStatus::Playing(_) = &status {
             return Err(Error::GameIsGoing);
         }
-        self.players_to_game_creator.remove(&msg_src);
+        self.players_to_game_status.remove(&msg_src);
         Ok(Event::LeftGame)
     }
 
@@ -215,7 +215,7 @@ impl GameLauncher {
         send_value(player_id, game.bid);
         let index_to_remove = game.initial_players.iter().position(|x| x == &player_id).expect("Critical Error");
         game.initial_players.remove(index_to_remove);
-        self.players_to_game_creator.remove(&player_id);
+        self.players_to_game_status.remove(&player_id);
 
         Ok(Event::PlayerDeleted { player_id })
     }
@@ -235,11 +235,11 @@ impl GameLauncher {
             if game.bid != 0 {
                 send_value(*id, game.bid);
             }
-            self.players_to_game_creator
+            self.players_to_game_status
                 .insert(*id, PlayerStatus::GameCanceled(msg_src));
         });
 
-        self.players_to_game_creator.remove(&msg_src);
+        self.players_to_game_status.remove(&msg_src);
         self.games.remove(&msg_src);
 
         Ok(Event::GameCanceled)
@@ -305,15 +305,15 @@ fn process_handle() -> Result<Event, Error> {
                         let prize = game.initial_players.len() as u128 * game.bid;
                         game.initial_players.iter().for_each(|id| {
                             game_launcher
-                                .players_to_game_creator
-                                .insert(*id, PlayerStatus::GameFinished { winner, prize });
+                                .players_to_game_status
+                                .insert(*id, PlayerStatus::GameFinished { admin: game.admin, winner_index: game_state.current_player, winner, prize });
                         })
                     }
                     Ok(Event::GameStalled) => {
                         game.state = State::Stalled;
                         game.initial_players.iter().for_each(|id| {
                             game_launcher
-                                .players_to_game_creator
+                                .players_to_game_status
                                 .insert(*id, PlayerStatus::GameStalled(game.admin));
                         })
                     }
@@ -369,15 +369,15 @@ fn process_handle() -> Result<Event, Error> {
                         let prize = game.initial_players.len() as u128 * game.bid;
                         game.initial_players.iter().for_each(|id| {
                             game_launcher
-                                .players_to_game_creator
-                                .insert(*id, PlayerStatus::GameFinished { winner, prize });
+                                .players_to_game_status
+                                .insert(*id, PlayerStatus::GameFinished { admin: game.admin, winner_index: game_state.current_player, winner, prize });
                         })
                     }
                     Ok(Event::GameStalled) => {
                         game.state = State::Stalled;
                         game.initial_players.iter().for_each(|id| {
                             game_launcher
-                                .players_to_game_creator
+                                .players_to_game_status
                                 .insert(*id, PlayerStatus::GameStalled(game.admin));
                         })
                     }
@@ -432,7 +432,7 @@ extern fn state() {
         StateQuery::All => StateReply::All(game_launcher.into()),
         StateQuery::GetPlayerInfo { player_id } => StateReply::PlayerInfo(
             game_launcher
-                .players_to_game_creator
+                .players_to_game_status
                 .get(&player_id)
                 .cloned(),
         ),
@@ -458,15 +458,15 @@ impl From<GameLauncher> for GameLauncherState {
         GameLauncher {
             games,
             config,
-            players_to_game_creator,
+            players_to_game_status,
         }: GameLauncher,
     ) -> Self {
         let games = games.into_iter().collect();
-        let players_to_game_creator = players_to_game_creator.into_iter().collect();
+        let players_to_game_status = players_to_game_status.into_iter().collect();
         Self {
             games,
             config,
-            players_to_game_creator,
+            players_to_game_status,
         }
     }
 }

@@ -19,7 +19,7 @@ impl Metadata for ContractMetadata {
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 pub struct GameLauncherState {
     pub games: Vec<(ActorId, Game)>,
-    pub players_to_game_creator: Vec<(ActorId, PlayerStatus)>,
+    pub players_to_game_status: Vec<(ActorId, PlayerStatus)>,
     pub config: Config,
 }
 
@@ -198,7 +198,7 @@ pub enum Error {
 #[derive(Encode, Decode, TypeInfo, Clone, Debug)]
 pub enum PlayerStatus {
     Playing(ActorId),
-    GameFinished { winner: ActorId, prize: u128 },
+    GameFinished { admin: ActorId, winner_index: u32, winner: ActorId, prize: u128 },
     GameCanceled(ActorId),
     GameStalled(ActorId),
 }
