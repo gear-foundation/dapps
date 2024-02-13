@@ -34,28 +34,26 @@ pub const MAX_PAYLOAD: u8 = 100;
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateQuery {
     All,
-    GetGameFromCreator { creator_id: ActorId },
-    GetGameFromPlayer { player_id: ActorId },
-    GetGameId { player_id: ActorId },
+    GetGame { creator_id: ActorId },
+    GetPlayerInfo { player_id: ActorId },
 }
 
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateReply {
     All(State),
     Game(Option<GameState>),
-    GameId(Option<ActorId>),
+    PlayerInfo(Option<PlayerStatus>),
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
 pub struct State {
     pub games: Vec<(ActorId, GameState)>,
-    pub player_to_game_id: Vec<(ActorId, ActorId)>,
+    pub player_to_game_status: Vec<(ActorId, PlayerStatus)>,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
 pub struct GameState {
     pub admin: ActorId,
-    pub session_id: u128,
     pub altitude: u16,
     pub weather: Weather,
     pub reward: u128,
@@ -73,6 +71,12 @@ pub enum StageState {
 pub struct Results {
     pub turns: Vec<Vec<(ActorId, Turn)>>,
     pub rankings: Vec<(ActorId, u128)>,
+    pub winners: Vec<ActorId>,
+    pub prize: u128,
+    pub participants: Vec<Participant>,
+    pub altitude: u16,
+    pub weather: Weather,
+    pub reward: u128,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
@@ -87,7 +91,10 @@ pub enum Action {
     CancelRegistration {
         creator: ActorId,
     },
-    DeleteSession,
+    DeletePlayer {
+        player_id: ActorId,
+    },
+    CancelGame,
     StartGame {
         fuel_amount: u8,
         payload_amount: u8,
@@ -98,7 +105,6 @@ pub enum Action {
 pub enum Event {
     AdminChanged(ActorId, ActorId),
     NewSession {
-        session_id: u128,
         altitude: u16,
         weather: Weather,
         reward: u128,
@@ -106,15 +112,26 @@ pub enum Event {
     },
     Registered(ActorId, Participant),
     CancelRegistration,
-    SessionDeleted,
+    PlayerDeleted {
+        player_id: ActorId,
+    },
+    GameCanceled,
     GameFinished(Results),
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Debug, Default, PartialEq, Eq)]
 pub struct Participant {
+    pub id: ActorId,
     pub name: String,
     pub fuel_amount: u8,
     pub payload_amount: u8,
+}
+
+#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, Clone)]
+pub enum PlayerStatus {
+    Registration(ActorId),
+    GameFinished(Results),
+    Canceled(ActorId),
 }
 
 impl Participant {

@@ -10,7 +10,7 @@ pub mod prelude;
 pub use common::initialize_system;
 
 pub const FOREIGN_USER: u64 = 1029384756123;
-pub const ADMINS: [u64; 2] = [10, 11];
+pub const ADMIN: u64 = 10;
 pub const PLAYERS: [u64; 3] = [12, 13, 14];
 
 type GalExResult<T, C = ()> = RunResult<T, C, Event, Error>;
@@ -33,25 +33,25 @@ impl<'a> GalEx<'a> {
         InitResult::<_, Error>::new(Self(program), result, is_active).succeed()
     }
 
-    pub fn create_new_session(&mut self, from: u64, name: String, bid: u128) -> GalExResult<u128, u128> {
+    pub fn create_new_session(
+        &mut self,
+        from: u64,
+        name: String,
+        bid: u128,
+    ) -> GalExResult<u128, u128> {
         RunResult::new(
             self.0
-                .send_with_value(from, Action::CreateNewSession {name}, bid),
-            |event, id| {
+                .send_with_value(from, Action::CreateNewSession { name }, bid),
+            |event, _id| {
                 if let Event::NewSession {
-                    session_id,
-                    altitude,
-                    reward,
-                    ..
+                    altitude, reward, ..
                 } = event
                 {
-                    assert_eq!(session_id, id);
                     assert!(((TURN_ALTITUDE.0 * (TURNS as u16))
                         ..(TURN_ALTITUDE.1 * (TURNS as u16)))
                         .contains(&altitude));
                     assert!((REWARD.0..REWARD.1).contains(&reward));
-
-                    session_id
+                    reward
                 } else {
                     unreachable!()
                 }
@@ -81,9 +81,42 @@ impl<'a> GalEx<'a> {
         )
     }
 
-    pub fn start_game(&mut self, from: u64, fuel_amount: u8, payload_amount: u8) -> GalExResult<HashSet<u64>> {
+    pub fn cancel_register(
+        &mut self,
+        from: u64,
+        creator: ActorId,
+    ) -> GalExResult<(u64, Participant)> {
         RunResult::new(
-            self.0.send(from, Action::StartGame{fuel_amount, payload_amount}),
+            self.0.send(from, Action::CancelRegistration { creator }),
+            |event, (_actor, _participant)| assert_eq!(Event::CancelRegistration, event),
+        )
+    }
+
+    pub fn delete_player(
+        &mut self,
+        from: u64,
+        player_id: ActorId,
+    ) -> GalExResult<(u64, Participant)> {
+        RunResult::new(
+            self.0.send(from, Action::DeletePlayer { player_id }),
+            |_, _| {},
+        )
+    }
+
+    pub fn start_game(
+        &mut self,
+        from: u64,
+        fuel_amount: u8,
+        payload_amount: u8,
+    ) -> GalExResult<HashSet<u64>> {
+        RunResult::new(
+            self.0.send(
+                from,
+                Action::StartGame {
+                    fuel_amount,
+                    payload_amount,
+                },
+            ),
             |event, players| {
                 if let Event::GameFinished(results) = event {
                     assert!(results.turns.len() == TURNS);
