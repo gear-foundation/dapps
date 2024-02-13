@@ -22,6 +22,7 @@ pub trait TestFunc {
         error: Option<Error>,
     );
     fn get_all_state(&self) -> Option<GameLauncherState>;
+    fn get_game_state(&self, creator_id: ActorId) -> Option<(Game, Option<u64>)>;
 }
 
 impl TestFunc for Program<'_> {
@@ -147,6 +148,16 @@ impl TestFunc for Program<'_> {
             None
         }
     }
+    fn get_game_state(&self, creator_id: ActorId) -> Option<(Game, Option<u64>)> {
+        let reply = self
+            .read_state(StateQuery::GetGame { creator_id })
+            .expect("Unexpected invalid state.");
+        if let StateReply::Game(state) = reply {
+            state
+        } else {
+            None
+        }
+    }
 }
 #[test]
 fn success_test() {
@@ -158,6 +169,7 @@ fn success_test() {
 
     let config = Config {
         time_to_move: 30_000,
+        gas_to_check_game: 200_000_000_000,
     };
 
     let result = program.send(2, config);
@@ -179,10 +191,16 @@ fn success_test() {
 
     program.skip(PLAYERS[current_player as usize], PLAYERS[0].into(), None);
 
+    system.spend_blocks(3);
     let current_player = (current_player + 1) as usize % PLAYERS.len();
     program.skip(PLAYERS[current_player], PLAYERS[0].into(), None);
 
-    system.spend_blocks(30);
+    system.spend_blocks(8);
+    let state = program
+        .get_game_state(PLAYERS[0].into())
+        .expect("Unexpected invalid game state.");
+    println!("STATE: {:?}", state);
+    system.spend_blocks(2);
     let current_player = (current_player + 1) as usize % PLAYERS.len();
     program.skip(
         PLAYERS[current_player],
@@ -234,6 +252,7 @@ fn cancel_register() {
 
     let config = Config {
         time_to_move: 30_000,
+        gas_to_check_game: 200_000_000_000,
     };
 
     let result = program.send(2, config);
@@ -275,6 +294,7 @@ fn delete_player() {
 
     let config = Config {
         time_to_move: 30_000,
+        gas_to_check_game: 200_000_000_000,
     };
 
     let result = program.send(2, config);
@@ -316,6 +336,7 @@ fn cancel_game() {
 
     let config = Config {
         time_to_move: 30_000,
+        gas_to_check_game: 200_000_000_000,
     };
 
     let result = program.send(2, config);
@@ -347,7 +368,7 @@ fn cancel_game() {
         .get_all_state()
         .expect("Unexpected invalid game state.");
     assert!(state.games.is_empty());
-    assert!(state.players_to_game_creator.is_empty());
+    assert_eq!(state.players_to_game_creator.len(), 1);
 }
 
 #[test]
@@ -360,6 +381,7 @@ fn failures_test() {
 
     let config = Config {
         time_to_move: 30_000,
+        gas_to_check_game: 200_000_000_000,
     };
 
     let result = program.send(2, config);

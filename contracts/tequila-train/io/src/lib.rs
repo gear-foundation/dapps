@@ -2,10 +2,7 @@
 
 use gmeta::{In, InOut, Metadata};
 use gstd::{
-    collections::{BTreeMap, BTreeSet},
-    exec, msg,
-    prelude::*,
-    ActorId,
+    collections::{BTreeMap, BTreeSet}, exec, msg, prelude::*, ActorId, debug
 };
 
 pub struct ContractMetadata;
@@ -22,24 +19,27 @@ impl Metadata for ContractMetadata {
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 pub struct GameLauncherState {
     pub games: Vec<(ActorId, Game)>,
-    pub players_to_game_creator: Vec<(ActorId, ActorId)>,
+    pub players_to_game_creator: Vec<(ActorId, PlayerStatus)>,
     pub config: Config,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateQuery {
     All,
-    GetGame { player_id: ActorId },
+    GetPlayerInfo { player_id: ActorId },
+    GetGame { creator_id: ActorId },
 }
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateReply {
     All(GameLauncherState),
-    Game(Option<Game>),
+    PlayerInfo(Option<PlayerStatus>),
+    Game(Option<(Game, Option<u64>)>),
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
 pub struct Config {
-    pub time_to_move: u64,
+    pub time_to_move: u32,
+    pub gas_to_check_game: u64,
 }
 
 #[derive(
@@ -109,11 +109,6 @@ pub fn build_tile_collection() -> Vec<Tile> {
         .collect()
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug)]
-pub struct Players {
-    pub players: BTreeSet<ActorId>,
-}
-
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
 pub enum Command {
     CreateGame,
@@ -135,8 +130,13 @@ pub enum Command {
     DeletePlayer {
         player_id: ActorId,
     },
+    CheckGame {
+        game_id: ActorId,
+        last_activity_time: u64,
+    },
     StartGame,
     CancelGame,
+    LeaveGame,
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Debug)]
@@ -163,6 +163,8 @@ pub enum Event {
     AdminAdded(ActorId),
     AdminDeleted(ActorId),
     GameCanceled,
+    LeftGame,
+    Checked
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
@@ -189,6 +191,16 @@ pub enum Error {
     SeveralGames,
     YouAreAdmin,
     NotEnoughPlayers,
+    GameIsGoing,
+    OnlyProgramCanSend
+}
+
+#[derive(Encode, Decode, TypeInfo, Clone, Debug)]
+pub enum PlayerStatus {
+    Playing(ActorId),
+    GameFinished { winner: ActorId, prize: u128 },
+    GameCanceled(ActorId),
+    GameStalled(ActorId),
 }
 
 #[derive(Debug, TypeInfo, Encode, Decode, Clone, Default)]
@@ -201,7 +213,7 @@ pub struct TrackData {
 pub struct Game {
     pub admin: ActorId,
     pub game_state: Option<GameState>,
-    pub initial_players: BTreeSet<ActorId>,
+    pub initial_players: Vec<ActorId>,
     pub state: State,
     pub is_started: bool,
     pub bid: u128,
@@ -223,7 +235,7 @@ pub struct GameState {
     pub tile_to_player: BTreeMap<u32, u32>,
     pub tiles: Vec<Tile>,
     pub remaining_tiles: BTreeSet<u32>,
-    pub time_to_move: u64,
+    pub time_to_move: u32,
     pub last_activity_time: u64,
 }
 
@@ -320,8 +332,8 @@ fn give_tiles_until_double(
 
 impl GameState {
     // TODO: cover it with tests
-    pub fn new(initial_data: &Players, time_to_move: u64) -> Option<GameState> {
-        let players_amount = initial_data.players.len();
+    pub fn new(initial_players: Vec<ActorId>, time_to_move: u32) -> Option<GameState> {
+        let players_amount = initial_players.len();
 
         let mut tile_to_player: BTreeMap<u32, u32> = Default::default();
 
@@ -334,7 +346,7 @@ impl GameState {
 
         // Spread tiles to players
         let tiles_per_person = tiles_per_person(players_amount);
-        for player_index in 0..initial_data.players.len() {
+        for player_index in 0..initial_players.len() {
             for _ in 1..=tiles_per_person {
                 let tile_id = get_random_from_set(&remaining_tiles);
                 remaining_tiles.remove(&tile_id);
@@ -368,9 +380,7 @@ impl GameState {
         // Remove starting tile from set
         tile_to_player.remove(&start_tile);
 
-        let players = initial_data
-            .players
-            .clone()
+        let players = initial_players
             .into_iter()
             .map(|id| Player { id, lose: false })
             .collect();
@@ -394,36 +404,19 @@ impl GameState {
     pub fn skip_turn(&mut self, player: ActorId, bid: u128) -> Result<Event, Error> {
         let i = self.current_player as usize;
 
-        let number_missed_moves =
-            ((exec::block_timestamp() - self.last_activity_time) / self.time_to_move) as usize;
-        let count_of_players = self.players.len();
-        for index in 1..=number_missed_moves {
-            self.players[(i + index - 1) % count_of_players].lose = true
-        }
-        let count_players_is_live = self.players.iter().filter(|&player| !player.lose).count();
-
-        match count_players_is_live {
-            0 => {
-                if bid != 0 {
-                    self.players.iter().for_each(|player| {
-                        send_value(player.id, bid);
-                    });
-                }
-                return Ok(Event::GameStalled);
-            }
-            1 => {
-                send_value(player, bid * self.players.len() as u128);
-                return Ok(Event::GameFinished { winner: player });
-            }
-            _ => (),
-        }
-
-        if self.players[(i + number_missed_moves) % self.players.len()].id != player {
+        if self.players[i].id != player {
             return Err(Error::NotYourTurnOrYouLose);
+        }
+
+        let count_players_is_live = self.players.iter().filter(|&player| !player.lose).count();
+        if count_players_is_live == 1 {
+            send_value(player, bid * self.players.len() as u128);
+            return Ok(Event::GameFinished { winner: player });
         }
 
         self.tracks[i].has_train = true;
         self.last_activity_time = exec::block_timestamp();
+        debug!("LAST ACTIVITY {:?}", self.last_activity_time);
 
         if let Some(event) = self.post_actions(bid) {
             return Ok(event);
@@ -498,7 +491,7 @@ impl GameState {
         None
     }
 
-    fn next_player(&self, current_player: u32) -> Option<u32> {
+    pub fn next_player(&self, current_player: u32) -> Option<u32> {
         for i in 1..=self.players.len() {
             let index = (current_player as usize + i) % self.players.len();
             if !self.players[index].lose {
@@ -532,36 +525,13 @@ impl GameState {
     ) -> Result<Event, Error> {
         let i = self.current_player as usize;
 
-        // we need to find out how many participants missed their move,
-        // if the last move was made in `last_activity_time` and the time to move is `time_to_move`
-        let number_missed_moves =
-            ((exec::block_timestamp() - self.last_activity_time) / self.time_to_move) as usize;
-
-        let count_of_players = self.players.len();
-        for index in 1..=number_missed_moves {
-            self.players[(i + index - 1) % count_of_players].lose = true
-        }
-
-        let count_players_is_live = self.players.iter().filter(|&player| !player.lose).count();
-
-        match count_players_is_live {
-            0 => {
-                if bid != 0 {
-                    self.players.iter().for_each(|player| {
-                        send_value(player.id, bid);
-                    })
-                }
-                return Ok(Event::GameStalled);
-            }
-            1 => {
-                send_value(player, bid * self.players.len() as u128);
-                return Ok(Event::GameFinished { winner: player });
-            }
-            _ => (),
-        }
-
-        if self.players[(i + number_missed_moves) % self.players.len()].id != player {
+        if self.players[i].id != player {
             return Err(Error::NotYourTurnOrYouLose);
+        }
+        let count_players_is_live = self.players.iter().filter(|&player| !player.lose).count();
+        if count_players_is_live == 1 {
+            send_value(player, bid * self.players.len() as u128);
+            return Ok(Event::GameFinished { winner: player });
         }
 
         // check player owns the tile

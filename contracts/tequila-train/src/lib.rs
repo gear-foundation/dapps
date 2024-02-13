@@ -1,12 +1,12 @@
 #![no_std]
 
-use gstd::{collections::HashMap, msg, prelude::*, ActorId};
+use gstd::{collections::HashMap, msg, prelude::*, ActorId, exec, debug};
 use tequila_train_io::*;
 
 #[derive(Debug, Default)]
 pub struct GameLauncher {
     pub games: HashMap<ActorId, Game>,
-    pub players_to_game_creator: HashMap<ActorId, ActorId>,
+    pub players_to_game_creator: HashMap<ActorId, PlayerStatus>,
     pub config: Config,
 }
 
@@ -24,9 +24,10 @@ impl GameLauncher {
             bid: msg_value,
             ..Default::default()
         };
-        game.initial_players.insert(msg_source);
+        game.initial_players.push(msg_source);
         self.games.insert(msg_source, game);
-        self.players_to_game_creator.insert(msg_source, msg_source);
+        self.players_to_game_creator
+            .insert(msg_source, PlayerStatus::Playing(msg_source));
         Ok(Event::GameCreated)
     }
 
@@ -45,14 +46,75 @@ impl GameLauncher {
         }
 
         game.is_started = true;
-        game.game_state = GameState::new(
-            &Players {
-                players: game.initial_players.clone(),
-            },
-            self.config.time_to_move,
-        );
+        game.game_state = GameState::new(game.initial_players.clone(), self.config.time_to_move);
         game.state = State::Playing;
+
+        msg::send_with_gas_delayed(
+            exec::program_id(),
+            Command::CheckGame {
+                game_id: msg_src,
+                last_activity_time: game.game_state.clone().unwrap().last_activity_time,
+            },
+            self.config.gas_to_check_game,
+            0,
+            self.config.time_to_move/3000,
+        )
+        .expect("Error in sending delayed message");
         Ok(Event::GameStarted)
+    }
+
+    pub fn check_game(
+        &mut self,
+        game_id: ActorId,
+        last_activity_time: u64,
+    ) -> Result<Event, Error> {
+
+        debug!("CHECK GAME");
+        let program_id = exec::program_id();
+        if msg::source() != program_id {
+            return Err(Error::OnlyProgramCanSend)
+        }
+        let game = self
+            .games
+            .get_mut(&game_id)
+            .ok_or(Error::GameDoesNotExist)?;
+
+        let game_state = game.game_state.as_mut().ok_or(Error::GameHasNotStartedYet)?;
+
+        if game_state.last_activity_time == last_activity_time {
+            debug!("CHECK GAME 2 {:?}", last_activity_time);
+            let current_player = game_state.current_player;
+            game_state.players[current_player as usize].lose = true;
+            if let Some(next_player) = game_state.next_player(current_player) {
+                game_state.current_player = next_player;
+                game_state.last_activity_time = exec::block_timestamp();
+                msg::send_delayed(
+                    program_id,
+                    Command::CheckGame {
+                        game_id,
+                        last_activity_time: game_state.last_activity_time
+                    },
+                    0,
+                    self.config.time_to_move/3000,
+                )
+                .expect("Error in sending delayed message");
+            } else {
+
+                game_state.players.iter().for_each(|player| {
+                    if game.bid != 0 {
+                        send_value(player.id, game.bid);
+                    }
+                    self
+                        .players_to_game_creator
+                        .insert(player.id, PlayerStatus::GameStalled(game.admin));
+                });
+                
+                game.state = State::Stalled;
+            }
+
+        }
+        Ok(Event::Checked)
+
     }
 
     pub fn register(
@@ -84,8 +146,9 @@ impl GameLauncher {
             return Err(Error::LimitHasBeenReached);
         }
 
-        game.initial_players.insert(msg_source);
-        self.players_to_game_creator.insert(msg_source, creator);
+        game.initial_players.push(msg_source);
+        self.players_to_game_creator
+            .insert(msg_source, PlayerStatus::Playing(creator));
         Ok(Event::Registered { player: msg_source })
     }
 
@@ -109,10 +172,24 @@ impl GameLauncher {
         }
 
         send_value(msg_src, game.bid);
-        game.initial_players.remove(&msg_src);
+        let index_to_remove = game.initial_players.iter().position(|x| x == &msg_src).expect("Critical Error");
+        game.initial_players.remove(index_to_remove);
         self.players_to_game_creator.remove(&msg_src);
 
         Ok(Event::RegistrationCanceled)
+    }
+
+    pub fn leave_game(&mut self) -> Result<Event, Error> {
+        let msg_src = msg::source();
+        let status = self
+            .players_to_game_creator
+            .get(&msg_src)
+            .ok_or(Error::NoSuchPlayer)?;
+        if let PlayerStatus::Playing(_) = &status {
+            return Err(Error::GameIsGoing);
+        }
+        self.players_to_game_creator.remove(&msg_src);
+        Ok(Event::LeftGame)
     }
 
     pub fn delete_player(&mut self, player_id: ActorId) -> Result<Event, Error> {
@@ -136,7 +213,8 @@ impl GameLauncher {
         }
 
         send_value(player_id, game.bid);
-        game.initial_players.remove(&player_id);
+        let index_to_remove = game.initial_players.iter().position(|x| x == &player_id).expect("Critical Error");
+        game.initial_players.remove(index_to_remove);
         self.players_to_game_creator.remove(&player_id);
 
         Ok(Event::PlayerDeleted { player_id })
@@ -157,9 +235,11 @@ impl GameLauncher {
             if game.bid != 0 {
                 send_value(*id, game.bid);
             }
-            self.players_to_game_creator.remove(id);
+            self.players_to_game_creator
+                .insert(*id, PlayerStatus::GameCanceled(msg_src));
         });
 
+        self.players_to_game_creator.remove(&msg_src);
         self.games.remove(&msg_src);
 
         Ok(Event::GameCanceled)
@@ -210,7 +290,7 @@ fn process_handle() -> Result<Event, Error> {
 
             // a move can only be made with State::Playing
             if game.state != State::Playing {
-                return Err(Error::GameHasNotStartedYet);
+                return Err(Error::StateIsNotPlaying);
             }
             let player = msg::source();
             // a non-registered player cannot make a move
@@ -222,15 +302,34 @@ fn process_handle() -> Result<Event, Error> {
                 match result {
                     Ok(Event::GameFinished { winner }) => {
                         game.state = State::Winner(winner);
+                        let prize = game.initial_players.len() as u128 * game.bid;
                         game.initial_players.iter().for_each(|id| {
-                            game_launcher.players_to_game_creator.remove(id);
+                            game_launcher
+                                .players_to_game_creator
+                                .insert(*id, PlayerStatus::GameFinished { winner, prize });
                         })
                     }
                     Ok(Event::GameStalled) => {
                         game.state = State::Stalled;
                         game.initial_players.iter().for_each(|id| {
-                            game_launcher.players_to_game_creator.remove(id);
+                            game_launcher
+                                .players_to_game_creator
+                                .insert(*id, PlayerStatus::GameStalled(game.admin));
                         })
+                    }
+                    Ok(Event::Skipped) => {
+                        debug!("SEND CHECK GAME");
+                        msg::send_with_gas_delayed(
+                            exec::program_id(),
+                            Command::CheckGame {
+                                game_id: creator,
+                                last_activity_time: game.game_state.clone().unwrap().last_activity_time,
+                            },
+                            game_launcher.config.gas_to_check_game,
+                            0,
+                            game_launcher.config.time_to_move/3000,
+                        )
+                        .expect("Error in sending delayed message");
                     }
                     _ => (),
                 }
@@ -267,15 +366,33 @@ fn process_handle() -> Result<Event, Error> {
                 match result {
                     Ok(Event::GameFinished { winner }) => {
                         game.state = State::Winner(winner);
+                        let prize = game.initial_players.len() as u128 * game.bid;
                         game.initial_players.iter().for_each(|id| {
-                            game_launcher.players_to_game_creator.remove(id);
+                            game_launcher
+                                .players_to_game_creator
+                                .insert(*id, PlayerStatus::GameFinished { winner, prize });
                         })
                     }
                     Ok(Event::GameStalled) => {
                         game.state = State::Stalled;
                         game.initial_players.iter().for_each(|id| {
-                            game_launcher.players_to_game_creator.remove(id);
+                            game_launcher
+                                .players_to_game_creator
+                                .insert(*id, PlayerStatus::GameStalled(game.admin));
                         })
+                    }
+                    Ok(Event::Placed { .. }) => {
+                        msg::send_with_gas_delayed(
+                            exec::program_id(),
+                            Command::CheckGame {
+                                game_id: creator,
+                                last_activity_time: game.game_state.clone().unwrap().last_activity_time,
+                            },
+                            game_launcher.config.gas_to_check_game,
+                            0,
+                            game_launcher.config.time_to_move/3000,
+                        )
+                        .expect("Error in sending delayed message");
                     }
                     _ => (),
                 }
@@ -296,8 +413,10 @@ fn process_handle() -> Result<Event, Error> {
         }
         Command::CancelRegistration { creator } => game_launcher.cancel_register(creator),
         Command::DeletePlayer { player_id } => game_launcher.delete_player(player_id),
+        Command::CheckGame { game_id, last_activity_time } => game_launcher.check_game(game_id, last_activity_time),
         Command::StartGame => game_launcher.start(),
         Command::CancelGame => game_launcher.cancel_game(),
+        Command::LeaveGame => game_launcher.leave_game(),
     }
 }
 
@@ -311,12 +430,24 @@ extern fn state() {
     let query: StateQuery = msg::load().expect("Unable to load the state query");
     let reply = match query {
         StateQuery::All => StateReply::All(game_launcher.into()),
-        StateQuery::GetGame { player_id } => {
-            let game = game_launcher
+        StateQuery::GetPlayerInfo { player_id } => StateReply::PlayerInfo(
+            game_launcher
                 .players_to_game_creator
                 .get(&player_id)
-                .and_then(|creator_id| game_launcher.games.get(creator_id).cloned());
-            StateReply::Game(game)
+                .cloned(),
+        ),
+        StateQuery::GetGame { creator_id } => {
+            let game_reply = game_launcher.games.get(&creator_id)
+                .map(|game| {
+                    let last_activity_time_diff = game.game_state.as_ref().map(|state| game_launcher.config.time_to_move as u64 - (exec::block_timestamp() - state.last_activity_time));
+                    (game.clone(), last_activity_time_diff)
+                })
+                .map(Some)
+                .unwrap_or(None);
+
+
+            StateReply::Game(game_reply)
+
         }
     };
     msg::reply(reply, 0).expect("Failed to encode or reply with the game state");
