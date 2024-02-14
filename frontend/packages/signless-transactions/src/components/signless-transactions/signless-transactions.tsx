@@ -76,7 +76,7 @@ function SignlessTransactions() {
               text="Log Out"
               color="light"
               className={styles.closeButton}
-              onClick={deleteSession}
+              onClick={() => deleteSession(session.key)}
             />
           </div>
         </>

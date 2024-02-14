@@ -32,14 +32,22 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     return { destination, payload, gasLimit };
   };
 
-  const deleteSession = () => {
+  const deleteSession = async (key: HexString) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!metadata) throw new Error('Metadata not found');
 
     const message = getMessage({ DeleteSessionFromAccount: null });
     const extrinsic = api.message.send(message, metadata);
 
-    const txs = [extrinsic];
+    const vouchersForAccount = await api.voucher.getAllForAccount(key, programId);
+
+    const accountVoucherId = Object.keys(vouchersForAccount)[0];
+
+    const declineExtrrinsic = api.voucher.decline(accountVoucherId);
+
+    const revokeExtrrinsic = api.voucher.revoke(key, accountVoucherId);
+
+    const txs = [extrinsic, declineExtrrinsic, revokeExtrrinsic];
 
     batchSignAndSend(txs, { onError });
   };
