@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import { getBgColors } from 'app/utils';
 import { useGame } from '../../../app/context';
 import { useEffect, useState } from 'react';
+import { playerNames } from 'app/consts';
 
 type Props = {
   index: number;
@@ -38,7 +39,7 @@ export const PlayerCardSection = ({ index, active }: Props) => {
         </div>
       )}
       <div className="grow flex rounded-t-2xl bg-[#D6FE51] py-3.5 px-2.5 font-medium text-center">
-        <span className="line-clamp-2 w-full">{game?.gameState?.players[index][1]}</span>
+        <span className="line-clamp-2 w-full">{`Señor ${playerNames[index]}`}</span>
       </div>
       <div
         className={clsx(

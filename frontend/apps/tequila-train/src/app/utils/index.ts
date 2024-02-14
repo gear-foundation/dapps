@@ -6,6 +6,8 @@ import { isHex } from '@polkadot/util';
 import { ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+export const cx = (...styles: string[]) => clsx(...styles);
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -103,3 +105,5 @@ export const findTile = (startTileString: string, tiles: StateDominoTileType[]):
 export const convertFormattedTileToNumbers = (formattedTile: StateDominoTileType) => {
   return convertTileStringToNumbers(formattedTile);
 };
+
+export const shortenString = (str: string, length: number): string => `${str.slice(0, length)}...${str.slice(-length)}`;

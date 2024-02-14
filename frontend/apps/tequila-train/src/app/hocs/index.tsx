@@ -6,7 +6,7 @@ import {
   AccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
-import { Alert, alertStyles } from '@gear-js/ui';
+import { Alert, alertStyles } from 'components/ui/alert';
 import { AppProvider, GameProvider } from 'app/context';
 import { ENV } from 'app/consts';
 
@@ -14,11 +14,13 @@ const ApiProvider = ({ children }: ProviderProps) => (
   <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>
 );
 
-const AlertProvider = ({ children }: ProviderProps) => (
-  <GearAlertProvider template={Alert} containerClassName={alertStyles.root}>
-    {children}
-  </GearAlertProvider>
-);
+function AlertProvider({ children }: ProviderProps) {
+  return (
+    <GearAlertProvider template={Alert} containerClassName={alertStyles.root}>
+      {children}
+    </GearAlertProvider>
+  );
+}
 
 const providers = [BrowserRouter, AlertProvider, ApiProvider, AccountProvider, AppProvider, GameProvider];
 

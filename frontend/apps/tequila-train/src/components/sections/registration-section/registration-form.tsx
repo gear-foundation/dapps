@@ -4,7 +4,6 @@ import { stringRequired } from '../../../app/utils';
 import { useGameMessage } from '../../../app/hooks/use-game';
 import { useAccount } from '@gear-js/react-hooks';
 import { useApp } from '../../../app/context';
-import clsx from 'clsx';
 
 const initialValues = {
   name: '',
@@ -51,15 +50,9 @@ export function RegistrationForm() {
           className="[&_label]:text-sm [&_label]:font-normal"
           autoComplete="name"
           {...getInputProps('name')}
+          required
+
         />
-      </div>
-      <div className="">
-        <button
-          type="submit"
-          className={clsx('btn btn--primary gap-2 tracking-[0.08em]', isPending && 'btn--loading')}
-          disabled={Object.keys(errors).length > 0 || isPending}>
-          Register
-        </button>
       </div>
     </form>
   );

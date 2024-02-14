@@ -3,6 +3,9 @@ import { Dispatch, SetStateAction } from 'react';
 import { useApp, useGame } from '../../../app/context';
 import { PopupContainer } from '../popup-container';
 import { useGameMessage } from 'app/hooks/use-game';
+import { playerNames } from 'app/consts';
+import { Button } from '@gear-js/vara-ui';
+import { PlayersGame } from 'app/types/game';
 
 type Props = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
@@ -10,31 +13,36 @@ type Props = {
 };
 
 export const WinnerPopup = ({ setIsOpen, isOpen }: Props) => {
-  const { game, isAdmin } = useGame();
-  const { setIsPending } = useApp();
+  const { game, isAdmin, setPreviousGame } = useGame();
+  const { setIsPending, setOpenWinnerPopup } = useApp();
   const handleMessage = useGameMessage();
 
   const onSuccess = () => {
     setIsPending(false);
+    setPreviousGame(null)
   };
   const onError = () => {
     setIsPending(false);
   };
 
-  const onRestartGame = () => {
+  const onLeaveGame = () => {
+    setOpenWinnerPopup(false)
+
     handleMessage({
-      payload: { RestartGame: null },
+      payload: isAdmin ? { LeaveGame: null } : { CancelGame: null },
       onSuccess,
       onError,
     });
   }
 
-  const winnerId = game?.gameState?.state?.Winner;
-  const index = game?.players && winnerId ? game.gameState?.players.findIndex((id) => id[0] === winnerId[0]) : -1;
+  const winnerIds = game?.state?.Winners;
+  const players = game?.gameState?.players;
+  const winnerIndexes = winnerIds?.map(winnerId => players?.findIndex((player: PlayersGame) => player.id === winnerId)) || [];
+  const winnerNames = winnerIndexes && winnerIndexes.map(index => playerNames[index || 0]).filter(name => name !== undefined);
 
   return (
-    <PopupContainer isOpen={isOpen} setIsOpen={setIsOpen} overlayCn="bg-black/90 backdrop-blur">
-      <div className="flex items-center pt-40 w-full">
+    <PopupContainer isOpen={isOpen} setIsOpen={setIsOpen}>
+      <div className="flex items-center pt-40 w-[600px]">
         <div className="relative w-full max-w-3xl transform transition-all">
           <img
             src="/images/winner.svg"
@@ -46,36 +54,30 @@ export const WinnerPopup = ({ setIsOpen, isOpen }: Props) => {
             alt="Winner"
             className="absolute bottom-[60%] -z-1 left-1/2 -translate-x-1/2 h-[200%]"
           />
-          <div className="rounded-2xl bg-white px-8 py-12 xxl:pt-12 xxl:pb-19 border-6 border-[#1E942A] shadow-xl">
+          <div className="rounded-2xl bg-white w-full px-6 py-15 xxl:pt-12 xxl:pb-19 shadow-xl">
             <Dialog.Title
               as="h3"
-              className="text-[40px] xxl:text-[48px] leading-18 font-bold text-center text-transparent-primary"
+              className="text-[32px] xxl:text-[32px] font-bold text-black"
               id="modal-headline">
               Congrats!
             </Dialog.Title>
             <div className="mt-2">
               <Dialog.Description
                 as="p"
-                className="text-lg xxl:text-[21px] leading-5 mt-6 text-center text-dark-500 font-extrabold tracking-[0.08em]">
-                <span className="text-[#00D1FF]">{game?.gameState?.players && index > 0 ? game?.gameState?.players[index][1] : 'Señor'}</span>{' '}
+                className="text-[14px] text-dark-500 font-semibold">
+                {winnerNames.map((winnerName, index) => {
+                  return (
+                    <span key={index} className="text-[#00D1FF]">
+                      {`Señor ${winnerName} `}
+                    </span>
+                  )
+                })}
+
                 is a winner! Take your tequila and enjoy!
               </Dialog.Description>
-              <div className="flex gap-6 absolute bottom-0 left-1/2 mt-4 w-[355px] -translate-x-1/2 translate-y-1/2">
-                <button
-                  type="button"
-                  tabIndex={0}
-                  className="btn btn--primary w-full text-base xxl:text-xl text-dark-500 font-semibold"
-                  onClick={() => setIsOpen(false)}>
-                  OK
-                </button>
-                {isAdmin &&
-                  <button
-                    type="button"
-                    tabIndex={0}
-                    className="btn btn--white border-4 border-primary w-full text-base xxl:text-xl text-dark-500 font-semibold"
-                    onClick={onRestartGame}>
-                    Play again
-                  </button>}
+              <div className="flex gap-3 mt-5 w-full">
+                <Button text='Close' color='grey' className="w-full" onClick={onLeaveGame} />
+                {isAdmin && <Button text='Play again' className="w-full" onClick={onLeaveGame} />}
               </div>
             </div>
           </div>
