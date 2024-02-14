@@ -441,7 +441,7 @@ fn failures_test() {
         PLAYERS[1],
         bid,
         PLAYERS[2].into(),
-        Some(Error::RegisteredInAnotherGame),
+        Some(Error::SeveralGames),
     );
     system.claim_value_from_mailbox(PLAYERS[1]);
     assert_eq!(system.balance_of(PLAYERS[1]), bid);

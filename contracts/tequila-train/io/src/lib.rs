@@ -2,7 +2,7 @@
 
 use gmeta::{In, InOut, Metadata};
 use gstd::{
-    collections::{BTreeMap, BTreeSet}, exec, msg, prelude::*, ActorId, debug
+    collections::{BTreeMap, BTreeSet}, exec, msg, prelude::*, ActorId
 };
 
 pub struct ContractMetadata;
@@ -136,7 +136,6 @@ pub enum Command {
     },
     StartGame,
     CancelGame,
-    LeaveGame,
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Debug)]
@@ -160,10 +159,7 @@ pub enum Event {
     },
     GameStarted,
     GameStalled,
-    AdminAdded(ActorId),
-    AdminDeleted(ActorId),
     GameCanceled,
-    LeftGame,
     Checked
 }
 
@@ -172,7 +168,6 @@ pub enum Error {
     GameHasAlreadyStarted,
     GameHasNotStartedYet,
     YouAlreadyRegistered,
-    RegisteredInAnotherGame,
     LimitHasBeenReached,
     GameStalled,
     GameFinished,
@@ -565,7 +560,7 @@ impl GameState {
         }
 
         // remove train if all criterea met
-        if remove_train {
+        if remove_train && track_id == self.current_player{
             self.tracks[i].has_train = false;
             self.shots[i] += 1;
         }

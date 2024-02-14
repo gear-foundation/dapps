@@ -15,8 +15,10 @@ static mut GAME_LAUNCHER: Option<GameLauncher> = None;
 
 impl GameLauncher {
     pub fn create_game(&mut self, msg_source: ActorId, msg_value: u128) -> Result<Event, Error> {
-        if self.players_to_game_status.contains_key(&msg_source) {
-            return Err(Error::SeveralGames);
+        if let Some(status) = self.players_to_game_status.get(&msg_source) {
+            if let PlayerStatus::Playing(_) = status {
+                return Err(Error::SeveralGames);
+            }   
         }
 
         let mut game = Game {
@@ -100,16 +102,19 @@ impl GameLauncher {
                 .expect("Error in sending delayed message");
             } else {
 
+                let winner = game_state.players[current_player as usize].id;
+                let prize = game.bid;
+                if game.bid != 0 {
+                    send_value(winner, prize * game.initial_players.len() as u128);
+                }
+
                 game_state.players.iter().for_each(|player| {
-                    if game.bid != 0 {
-                        send_value(player.id, game.bid);
-                    }
                     self
                         .players_to_game_status
-                        .insert(player.id, PlayerStatus::GameStalled(game.admin));
+                        .insert(player.id, PlayerStatus::GameFinished { admin: game.admin, winner_index: current_player, winner, prize });
                 });
                 
-                game.state = State::Stalled;
+                game.state = State::Winner(winner);
             }
 
         }
@@ -123,6 +128,12 @@ impl GameLauncher {
         msg_value: u128,
         creator: ActorId,
     ) -> Result<Event, Error> {
+
+        if let Some(status) = self.players_to_game_status.get(&msg_source) {
+            if let PlayerStatus::Playing(_) = status {
+                return Err(Error::SeveralGames);
+            }      
+        }
         let game = self
             .games
             .get_mut(&creator)
@@ -139,9 +150,7 @@ impl GameLauncher {
         if game.initial_players.contains(&msg_source) {
             return Err(Error::YouAlreadyRegistered);
         }
-        if self.players_to_game_status.contains_key(&msg_source) {
-            return Err(Error::RegisteredInAnotherGame);
-        }
+
         if game.initial_players.len() >= 8 {
             return Err(Error::LimitHasBeenReached);
         }
@@ -177,19 +186,6 @@ impl GameLauncher {
         self.players_to_game_status.remove(&msg_src);
 
         Ok(Event::RegistrationCanceled)
-    }
-
-    pub fn leave_game(&mut self) -> Result<Event, Error> {
-        let msg_src = msg::source();
-        let status = self
-            .players_to_game_status
-            .get(&msg_src)
-            .ok_or(Error::NoSuchPlayer)?;
-        if let PlayerStatus::Playing(_) = &status {
-            return Err(Error::GameIsGoing);
-        }
-        self.players_to_game_status.remove(&msg_src);
-        Ok(Event::LeftGame)
     }
 
     pub fn delete_player(&mut self, player_id: ActorId) -> Result<Event, Error> {
@@ -416,7 +412,6 @@ fn process_handle() -> Result<Event, Error> {
         Command::CheckGame { game_id, last_activity_time } => game_launcher.check_game(game_id, last_activity_time),
         Command::StartGame => game_launcher.start(),
         Command::CancelGame => game_launcher.cancel_game(),
-        Command::LeaveGame => game_launcher.leave_game(),
     }
 }
 
