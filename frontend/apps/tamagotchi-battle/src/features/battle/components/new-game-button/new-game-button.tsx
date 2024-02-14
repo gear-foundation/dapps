@@ -1,16 +1,16 @@
 import { useBattle } from 'features/battle/context';
-import { useFetchVoucher } from 'features/battle/utils/init-gasless-transactions';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useBattleMessage } from 'features/battle/hooks';
 import { Button } from '@gear-js/ui';
 import { useApi } from '@gear-js/react-hooks';
 import { gasLimitToNumber } from 'app/utils';
 import { BATTLE_ADDRESS } from 'features/battle/consts';
+import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
 
 export const NewGameButton = () => {
   const { api } = useApi();
   const { isPending, setIsPending } = useBattle();
-  const { voucherId, isLoading } = useFetchVoucher();
+  const { voucherId, isLoadingVoucher } = useGaslessTransactions();
   const { checkBalance } = useCheckBalance({ gaslessVoucherId: voucherId });
   const handleMessage = useBattleMessage();
 
@@ -36,5 +36,5 @@ export const NewGameButton = () => {
     );
   };
 
-  return <Button text="Start New Game" color="primary" onClick={handler} disabled={isPending || isLoading} />;
+  return <Button text="Start New Game" color="primary" onClick={handler} disabled={isPending || isLoadingVoucher} />;
 };

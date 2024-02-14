@@ -3,16 +3,15 @@ import { SpriteIcon } from 'components/ui/sprite-icon';
 import { useBattle } from '../../context';
 import { useBattleMessage } from '../../hooks';
 import { cn, gasLimitToNumber } from 'app/utils';
-import { useFetchVoucher } from 'features/battle/utils/init-gasless-transactions';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useApi } from '@gear-js/react-hooks';
-import { BATTLE_ADDRESS } from 'features/battle/consts';
+import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
 
 export const BattleWaitAdmin = () => {
   const { api } = useApi();
   const { players, isPending, setIsPending } = useBattle();
   const handleMessage = useBattleMessage();
-  const { voucherId, isLoading } = useFetchVoucher();
+  const { voucherId, isLoadingVoucher } = useGaslessTransactions();
   const { checkBalance } = useCheckBalance({ gaslessVoucherId: voucherId });
 
   const handler = async () => {
@@ -53,7 +52,7 @@ export const BattleWaitAdmin = () => {
               buttonStyles.button,
             )}
             onClick={handler}
-            disabled={isPending || players.length < 2 || isLoading}>
+            disabled={isPending || players.length < 2 || isLoadingVoucher}>
             <SpriteIcon name="swords" className="w-5 h-5" /> <span>Start Battle</span>
           </button>
         </div>
