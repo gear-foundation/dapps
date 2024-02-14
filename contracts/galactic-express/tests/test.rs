@@ -52,7 +52,7 @@ fn cancel_register_and_delete_player() {
     system.mint_to(ADMIN, bid);
     rockets
         .create_new_session(ADMIN, "admin".to_string(), bid)
-        .succeed(0 as u128, 0);
+        .succeed(0_u128, 0);
 
     for player_id in PLAYERS {
         let player = Participant {
@@ -72,16 +72,16 @@ fn cancel_register_and_delete_player() {
     if let StageState::Registration(participants) = &state.games[0].1.stage {
         assert_eq!(participants.len(), 3);
     }
-    assert_eq!(state.player_to_game_status.len(), 4);
+    assert_eq!(state.player_to_game_id.len(), 4);
 
-    drop(rockets.cancel_register(PLAYERS[0], ADMIN.into()));
+    drop(rockets.cancel_register(PLAYERS[0]));
 
     let state = rockets.state().expect("Unexpected invalid state.");
 
     if let StageState::Registration(participants) = &state.games[0].1.stage {
         assert_eq!(participants.len(), 2);
     }
-    assert_eq!(state.player_to_game_status.len(), 3);
+    assert_eq!(state.player_to_game_id.len(), 3);
 
     drop(rockets.delete_player(ADMIN, PLAYERS[1].into()));
 
@@ -90,7 +90,7 @@ fn cancel_register_and_delete_player() {
     if let StageState::Registration(participants) = &state.games[0].1.stage {
         assert_eq!(participants.len(), 1);
     }
-    assert_eq!(state.player_to_game_status.len(), 2);
+    assert_eq!(state.player_to_game_id.len(), 2);
 }
 
 #[test]

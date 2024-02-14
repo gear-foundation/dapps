@@ -34,21 +34,19 @@ pub const MAX_PAYLOAD: u8 = 100;
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateQuery {
     All,
-    GetGame { creator_id: ActorId },
-    GetPlayerInfo { player_id: ActorId },
+    GetGame { player_id: ActorId },
 }
 
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateReply {
     All(State),
     Game(Option<GameState>),
-    PlayerInfo(Option<PlayerStatus>),
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
 pub struct State {
     pub games: Vec<(ActorId, GameState)>,
-    pub player_to_game_status: Vec<(ActorId, PlayerStatus)>,
+    pub player_to_game_id: Vec<(ActorId, ActorId)>,
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
@@ -71,12 +69,6 @@ pub enum StageState {
 pub struct Results {
     pub turns: Vec<Vec<(ActorId, Turn)>>,
     pub rankings: Vec<(ActorId, u128)>,
-    pub winners: Vec<ActorId>,
-    pub prize: u128,
-    pub participants: Vec<Participant>,
-    pub altitude: u16,
-    pub weather: Weather,
-    pub reward: u128,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
@@ -88,13 +80,12 @@ pub enum Action {
         creator: ActorId,
         participant: Participant,
     },
-    CancelRegistration {
-        creator: ActorId,
-    },
+    CancelRegistration,
     DeletePlayer {
         player_id: ActorId,
     },
     CancelGame,
+    LeaveGame,
     StartGame {
         fuel_amount: u8,
         payload_amount: u8,
@@ -117,6 +108,7 @@ pub enum Event {
     },
     GameCanceled,
     GameFinished(Results),
+    GameLeft,
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Debug, Default, PartialEq, Eq)]
@@ -125,13 +117,6 @@ pub struct Participant {
     pub name: String,
     pub fuel_amount: u8,
     pub payload_amount: u8,
-}
-
-#[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq, Clone)]
-pub enum PlayerStatus {
-    Registration(ActorId),
-    GameFinished(Results),
-    Canceled(ActorId),
 }
 
 impl Participant {
@@ -183,8 +168,10 @@ pub enum Error {
     NoSuchGame,
     WrongBid,
     NoSuchPlayer,
+    Unregistered,
     AlreadyRegistered,
     SeveralRegistrations,
+    NotForAdmin,
 }
 
 impl From<GstdError> for Error {

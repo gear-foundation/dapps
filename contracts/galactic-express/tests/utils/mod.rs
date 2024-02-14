@@ -81,13 +81,9 @@ impl<'a> GalEx<'a> {
         )
     }
 
-    pub fn cancel_register(
-        &mut self,
-        from: u64,
-        creator: ActorId,
-    ) -> GalExResult<(u64, Participant)> {
+    pub fn cancel_register(&mut self, from: u64) -> GalExResult<(u64, Participant)> {
         RunResult::new(
-            self.0.send(from, Action::CancelRegistration { creator }),
+            self.0.send(from, Action::CancelRegistration),
             |event, (_actor, _participant)| assert_eq!(Event::CancelRegistration, event),
         )
     }
