@@ -409,18 +409,20 @@ impl GameState {
         }
 
         let count_players_is_live = self.players.iter().filter(|&player| !player.lose).count();
+        let time = exec::block_timestamp();
         if count_players_is_live == 1 {
+            self.last_activity_time = time;
             send_value(player, bid * self.players.len() as u128);
             return Ok(Event::GameFinished { winner: player });
         }
 
         self.tracks[i].has_train = true;
-        self.last_activity_time = exec::block_timestamp();
-        debug!("LAST ACTIVITY {:?}", self.last_activity_time);
 
         if let Some(event) = self.post_actions(bid) {
+            self.last_activity_time = time;
             return Ok(event);
         }
+        self.last_activity_time = time;
         Ok(Event::Skipped)
     }
 
@@ -529,7 +531,9 @@ impl GameState {
             return Err(Error::NotYourTurnOrYouLose);
         }
         let count_players_is_live = self.players.iter().filter(|&player| !player.lose).count();
+        let time = exec::block_timestamp();
         if count_players_is_live == 1 {
+            self.last_activity_time = time;
             send_value(player, bid * self.players.len() as u128);
             return Ok(Event::GameFinished { winner: player });
         }
@@ -561,7 +565,7 @@ impl GameState {
         }
 
         // remove train if all criterea met
-        if remove_train && track_id == self.current_player {
+        if remove_train {
             self.tracks[i].has_train = false;
             self.shots[i] += 1;
         }
@@ -571,8 +575,10 @@ impl GameState {
         self.last_activity_time = exec::block_timestamp();
 
         if let Some(event) = self.post_actions(bid) {
+            self.last_activity_time = time;
             return Ok(event);
         }
+        self.last_activity_time = time;
         Ok(Event::Placed {
             tile_id,
             track_id,
