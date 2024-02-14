@@ -2,7 +2,6 @@ import { useAtomValue } from 'jotai';
 import { Input, Button } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
 import { Card } from 'components';
-import { CURRENT_CONTRACT_ADDRESS_ATOM } from 'atoms';
 import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
 import { ReactComponent as RocketSVG } from '../../assets/rocket.svg';
 import { INITIAL_VALUES, VALIDATE, WEATHERS } from '../../consts';
@@ -10,6 +9,7 @@ import { useLaunchMessage } from '../../hooks';
 import { Range } from '../range';
 import { Probability } from '../probability';
 import styles from './Form.module.scss';
+import { CURRENT_GAME_ATOM, PLAYER_NAME_ATOM } from 'atoms';
 
 type Props = {
   weather: string;
@@ -21,19 +21,18 @@ type Props = {
 };
 
 function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props) {
-  const currentContractAddress = useAtomValue(CURRENT_CONTRACT_ADDRESS_ATOM);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { values, getInputProps, onSubmit, setFieldValue } = useForm({
-    initialValues: { deposit: defaultDeposit, ...INITIAL_VALUES },
+    initialValues: { ...INITIAL_VALUES },
     validate: VALIDATE,
   });
+  const playerName = useAtomValue(PLAYER_NAME_ATOM);
+  const currentGameAddress = useAtomValue(CURRENT_GAME_ATOM);
 
   const { fuel, payload } = values;
 
-  const { meta, message: sendMessage } = useLaunchMessage(currentContractAddress);
-
-  const isFirstPlayer = defaultDeposit === '0';
-
+  const { meta, message: sendMessage } = useLaunchMessage();
+  console.log(fuel, payload);
   const handleNumberInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const value = +target.value;
     const min = +target.min || -Infinity;
@@ -51,10 +50,17 @@ function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props
   });
 
   const handleSubmit = () => {
+    console.log('lalaal');
     if (!isAdmin && meta) {
+      console.log('not admin');
       setIsLoading(true);
       sendMessage({
-        payload: { Register: { fuel_amount: fuel, payload_amount: payload } },
+        payload: {
+          Register: {
+            creator: currentGameAddress,
+            participant: { fuel_amount: fuel, payload_amount: payload, name: playerName },
+          },
+        },
         onSuccess: () => {
           setRegistrationStatus('success');
           setIsLoading(false);
@@ -66,24 +72,13 @@ function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props
     }
 
     if (isAdmin && meta) {
+      console.log('admin');
       sendMessage({ payload: { StartGame: { fuel_amount: fuel, payload_amount: payload } } });
     }
   };
 
   return (
     <form onSubmit={onSubmit(handleSubmit)}>
-      <Card className={styles.deposit}>
-        <h3 className={styles.heading}>Mission Deposit</h3>
-        <Input
-          type="number"
-          label="Deposit (VARA):"
-          className={styles.input}
-          min={0}
-          readOnly={!isFirstPlayer}
-          {...getNumberInputProps('deposit')}
-        />
-      </Card>
-
       <Card className={styles.calculation}>
         <h3 className={styles.heading}>Calculation Block</h3>
 

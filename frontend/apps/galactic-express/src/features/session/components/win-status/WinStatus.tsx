@@ -1,5 +1,4 @@
 import { useAtomValue } from 'jotai';
-import { CURRENT_CONTRACT_ADDRESS_ATOM } from 'atoms';
 import { cx } from 'utils';
 import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
@@ -15,8 +14,7 @@ type Props = {
 };
 
 function WinStatus({ type, userRank, winners }: Props) {
-  const contractAddress = useAtomValue(CURRENT_CONTRACT_ADDRESS_ATOM);
-  const { meta, message: sendNewSessionMessage } = useNewSessionMessage(contractAddress);
+  const { meta, message: sendNewSessionMessage } = useNewSessionMessage();
   const { account } = useAccount();
 
   const handleCreateNewSession = () => {

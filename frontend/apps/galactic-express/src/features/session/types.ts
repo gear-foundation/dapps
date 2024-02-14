@@ -1,17 +1,23 @@
 import { HexString } from '@polkadot/util/types';
 
 type Strategy = {
-  fuel: string;
-  payload: string;
+  name: string;
+  fuelAmount: string;
+  payloadAmount: string;
 };
-
-type Participant = [HexString, Strategy];
 
 type Session = {
   altitude: string;
   weather: string;
   reward: string;
   sessionId: string;
+};
+
+type Participant = [HexString, Strategy];
+
+type Results = {
+  turns: Turns;
+  rankings: Rank[];
 };
 
 type Event = {
@@ -26,13 +32,19 @@ type Event = {
 type Rank = [HexString, string];
 
 type LaunchState = {
-  admin: HexString;
-  isSessionEnded: boolean;
-  participants: Participant[];
-  turns: Turns;
-  rankings: Rank[];
-  master: string;
-  session: Session;
+  Game: {
+    admin: HexString;
+    stage: {
+      Registration: Participant[];
+      Results: Results;
+    };
+    master: string;
+    altitude: string;
+    weather: string;
+    reward: string;
+    sessionId: string;
+    bid: string;
+  };
 };
 
 type TurnParticipant = [
@@ -49,4 +61,10 @@ type Turn = TurnParticipant[];
 
 type Turns = Turn[];
 
-export type { LaunchState, Session, Event, Participant, Turns, Rank, TurnParticipant };
+type PlayerStatus = 'Finished' | 'Registered' | null;
+
+type PlayerInfo = {
+  PlayerInfo: PlayerStatus;
+};
+
+export type { LaunchState, Event, Participant, Turns, Rank, TurnParticipant, Session, PlayerStatus, PlayerInfo };

@@ -35,6 +35,10 @@
   }
 }
 
+.removeTd {
+  width: 152px;
+}
+
 .yourAddressSpan {
   color: #2bd071;
 }
@@ -49,4 +53,12 @@
   font-weight: 400;
   color: #8c8b90;
   padding-bottom: 8px;
+}
+
+.removeButton {
+  font-family: 'Anuphan';
+  font-size: 12px;
+  font-weight: 400;
+  color: #00FFC4;
+  line-height: 20px;
 }

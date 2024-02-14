@@ -44,7 +44,6 @@ const INITIAL_VALUES = {
 };
 
 const VALIDATE = {
-  deposit: isGreaterThanZero,
   payload: isGreaterThanZero,
   fuel: isGreaterThanZero,
 };
