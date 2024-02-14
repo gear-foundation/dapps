@@ -10,7 +10,7 @@ function Home() {
   const currentGame = useAtomValue(CURRENT_GAME_ATOM);
   const isContractAddressInitialized = useAtomValue(IS_CONTRACT_ADDRESS_INITIALIZED_ATOM);
   const state = useLaunchState();
-  const { admin, stage, sessionId, altitude, weather, reward } = state || {};
+  const { admin, stage, sessionId, altitude, weather, reward, bid } = state || {};
 
   const isSessionEnded = Object.keys(stage || {})[0] === 'Results';
 
@@ -23,19 +23,14 @@ function Home() {
   console.log(state);
   return (
     <>
-      {(!isContractAddressInitialized || (!Number(sessionId) && isSessionEnded)) && (
+      {(!state || (!Number(sessionId) && isSessionEnded)) && (
         <Welcome>
-          <RequestGame
-            participants={participants || []}
-            doesSessionExist={!isSessionEnded}
-            isUserAdmin={isUserAdmin}
-            isStateComing={isStateComing}
-          />
+          <RequestGame />
         </Welcome>
       )}
-      {currentGame && isContractAddressInitialized && (
+      {!!state && (
         <>
-          {sessionId ? (
+          {true ? (
             <>
               {!isSessionEnded && (
                 <Start
@@ -46,7 +41,9 @@ function Home() {
                     reward: reward || '',
                     sessionId: sessionId || '',
                   }}
+                  bid={bid}
                   isUserAdmin={isUserAdmin}
+                  adminAddress={admin}
                   userAddress={account?.address || ''}
                 />
               )}

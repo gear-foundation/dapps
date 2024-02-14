@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
-import { UserMessageSent, encodeAddress } from '@gear-js/api';
+import { HexString, UserMessageSent, encodeAddress } from '@gear-js/api';
 import { Button } from '@gear-js/ui';
 import { useSetAtom } from 'jotai';
 import { CURRENT_GAME_ATOM, IS_CONTRACT_ADDRESS_INITIALIZED_ATOM } from 'atoms';
@@ -26,13 +26,15 @@ type Props = {
   session: Session;
   isUserAdmin: boolean;
   userAddress: string;
+  adminAddress: HexString | undefined;
+  bid: string | undefined;
 };
 
 type DecodedReply = {
   Err: string;
 };
 
-function Start({ participants, session, isUserAdmin, userAddress }: Props) {
+function Start({ participants, session, isUserAdmin, userAddress, adminAddress, bid }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
   const { decodedAddress } = account || {};
@@ -118,24 +120,23 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
         </header>
 
         <Container className={containerClassName}>
-          {isUserAdmin && (
-            <ParticipantsTable
-              data={[
-                {
-                  id: userAddress,
-                  playerAddress: encodeAddress(userAddress),
-                },
-                ...participants
-                  .filter((item) => item[0] !== decodedAddress)
-                  .map((item) => ({
-                    id: item[0],
-                    playerAddress: encodeAddress(item[0]),
-                  })),
-              ]}
-              userAddress={userAddress}
-              isUserAdmin={isUserAdmin}
-            />
-          )}
+          <ParticipantsTable
+            data={[
+              {
+                id: adminAddress || '',
+                playerAddress: encodeAddress(adminAddress || ''),
+              },
+              ...participants
+                .filter((item) => item[0] !== decodedAddress)
+                .map((item) => ({
+                  id: item[0],
+                  playerAddress: encodeAddress(item[0]),
+                })),
+            ]}
+            userAddress={userAddress}
+            isUserAdmin={isUserAdmin}
+          />
+
           <Traits altitude={altitude} weather={weather} reward={reward} />
 
           <footer>
@@ -160,12 +161,7 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
             )}
             {((isUserAdmin && registrationStatus !== 'NotEnoughParticipants') ||
               (!isUserAdmin && !isRegistered && registrationStatus === 'registration')) && (
-              <Form
-                weather={weather}
-                defaultDeposit={withoutCommas('0')}
-                isAdmin={isUserAdmin}
-                setRegistrationStatus={setRegistrationStatus}
-              />
+              <Form weather={weather} bid={bid} isAdmin={isUserAdmin} setRegistrationStatus={setRegistrationStatus} />
             )}
           </footer>
         </Container>

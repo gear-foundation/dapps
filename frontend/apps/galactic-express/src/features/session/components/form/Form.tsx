@@ -1,4 +1,4 @@
-import { useAtomValue } from 'jotai';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { Input, Button } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
 import { Card } from 'components';
@@ -10,18 +10,21 @@ import { Range } from '../range';
 import { Probability } from '../probability';
 import styles from './Form.module.scss';
 import { CURRENT_GAME_ATOM, PLAYER_NAME_ATOM } from 'atoms';
+import { useAccount, withoutCommas } from '@gear-js/react-hooks';
 
 type Props = {
   weather: string;
-  defaultDeposit: string;
+  bid: string | undefined;
   isAdmin: boolean;
   setRegistrationStatus: Dispatch<
     SetStateAction<'registration' | 'success' | 'error' | 'NotEnoughParticipants' | 'MaximumPlayersReached'>
   >;
 };
 
-function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props) {
+function Form({ weather, bid, isAdmin, setRegistrationStatus }: Props) {
+  const { account } = useAccount();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const setCurrentGame = useSetAtom(CURRENT_GAME_ATOM);
   const { values, getInputProps, onSubmit, setFieldValue } = useForm({
     initialValues: { ...INITIAL_VALUES },
     validate: VALIDATE,
@@ -50,19 +53,22 @@ function Form({ weather, defaultDeposit, isAdmin, setRegistrationStatus }: Props
   });
 
   const handleSubmit = () => {
-    console.log('lalaal');
-    if (!isAdmin && meta) {
+    console.log(bid);
+    console.log(Number(withoutCommas(bid || '')));
+    if (!isAdmin && meta && account?.decodedAddress) {
       console.log('not admin');
       setIsLoading(true);
       sendMessage({
         payload: {
           Register: {
             creator: currentGameAddress,
-            participant: { fuel_amount: fuel, payload_amount: payload, name: playerName },
+            participant: { fuel_amount: fuel, payload_amount: payload, name: playerName, id: account.decodedAddress },
           },
         },
+        value: Number(withoutCommas(bid || '')),
         onSuccess: () => {
           setRegistrationStatus('success');
+          setCurrentGame('');
           setIsLoading(false);
         },
         onError: () => {

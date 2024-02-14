@@ -42,7 +42,7 @@ type JoinFormValues = {
   address: HexString | undefined;
 };
 
-function RequestGame({ doesSessionExist, isUserAdmin, isStateComing }: Props) {
+function RequestGame() {
   const { account } = useAccount();
   const balances = useAccountDeriveBalancesAll();
   const { isApiReady } = useApi();
@@ -116,7 +116,6 @@ function RequestGame({ doesSessionExist, isUserAdmin, isStateComing }: Props) {
       payload,
       value: getChainBalanceValue(values.fee).toFixed(),
       onSuccess: () => {
-        setCurrentGame(account?.decodedAddress);
         setIsContractAddressInitialized(true);
         setIsLoading(false);
       },
@@ -132,7 +131,7 @@ function RequestGame({ doesSessionExist, isUserAdmin, isStateComing }: Props) {
       return;
     }
 
-    const payload = { GetGameFromPlayer: { playerId: values.address } };
+    const payload = { GetGame: { playerId: values.address } };
 
     try {
       const res = await api?.programState.read(
@@ -165,6 +164,7 @@ function RequestGame({ doesSessionExist, isUserAdmin, isStateComing }: Props) {
     if (foundGame) {
       console.log('GAME FOUND');
       console.log(foundGame);
+
       setCurrentGame(foundGame);
       setIsContractAddressInitialized(true);
       setPlayerName(values.name);

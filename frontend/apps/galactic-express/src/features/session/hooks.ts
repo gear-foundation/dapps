@@ -15,13 +15,18 @@ function useNewSessionMessage() {
 }
 
 function useLaunchState() {
+  const { account } = useAccount();
   const currentGame = useAtomValue(CURRENT_GAME_ATOM);
   const meta = useProgramMetadata(metaTxt);
 
-  const payload = useMemo(() => ({ GetGame: { playerId: currentGame } }), [currentGame]);
+  const payload = useMemo(
+    () => ({ GetGame: { playerId: currentGame || account?.decodedAddress } }),
+    [currentGame, account?.decodedAddress],
+  );
 
   const { state } = useReadFullState<LaunchState>(ADDRESS.CONTRACT as HexString, meta, payload);
-
+  console.log('STATE0');
+  console.log(state?.Game);
   return state?.Game;
 }
 

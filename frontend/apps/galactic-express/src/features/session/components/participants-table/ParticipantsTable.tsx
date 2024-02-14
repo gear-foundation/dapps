@@ -17,7 +17,7 @@ type Props = {
 
 function ParticipantsTable({ data, userAddress, isUserAdmin }: Props) {
   const isYourAddress = (address: string) => address === userAddress;
-
+  console.log(data);
   const modifiedData: TableData[] = [
     ...data.filter((item) => isYourAddress(item.playerAddress)),
     ...data.filter((item) => !isYourAddress(item.playerAddress)),

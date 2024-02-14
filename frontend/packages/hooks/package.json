@@ -10,7 +10,7 @@
     "preview": "vite preview"
   },
   "peerDependencies": {
-    "@gear-js/api": "0.36.3",
+    "@gear-js/api": "0.36.5",
     "@gear-js/react-hooks": "0.10.2",
     "@polkadot/types": "10.10.1",
     "@polkadot/util": "12.3.2",
