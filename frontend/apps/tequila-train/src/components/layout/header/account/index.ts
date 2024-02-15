@@ -1,1 +1,0 @@
-export { AccountComponent } from './account';

@@ -4,61 +4,88 @@ import { useAccount, useSendMessageHandler } from '@gear-js/react-hooks';
 import { ENV } from 'app/consts';
 import meta from 'assets/meta/tequila_train.meta.txt';
 
-import { IState } from '../types/game';
+import { IGame, IState } from '../types/game';
 import { useProgramMetadata, useReadState } from './use-metadata';
 
 const programIdGame = ENV.game;
 
 function useGameState() {
-  const { account } = useAccount();
+	const { account } = useAccount();
+
+  const payloadAll = useMemo(() => ({ All: null }), []);
+
 
   const payloadGame = useMemo(
-    () =>
-      account?.decodedAddress
-        ? account.decodedAddress
-        : undefined,
-    [account?.decodedAddress],
-  );
+		() =>
+    account?.decodedAddress
+				? {
+					GetGame: { player_id : account?.decodedAddress },
+				}
+				: undefined,
 
-  const { state, error } = useReadState<IState>({
-    programId: programIdGame,
-    meta,
-    payload: payloadGame,
-  });
-  
-  return { state, error };
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[account?.decodedAddress],
+	);
+
+	const { state: game } = useReadState<IGame | null>({
+		programId: programIdGame,
+		meta,
+		payload: payloadGame,
+	});
+
+	const { state } = useReadState<{All: IState}>({
+		programId: programIdGame,
+		meta,
+		payload: payloadAll,
+	});
+
+	return { state, game };
 }
 
 export const useInitGame = () => {
-  const { setIsAllowed, setOpenWinnerPopup } = useApp();
+  const { setIsAllowed } = useApp();
   const { account } = useAccount();
-  const { state } = useGameState();
-  const { setGame, setPlayers, setIsAdmin } = useGame();
+  const { game, state } = useGameState()
+
+  const { setState, setGame, setPlayers, setIsAdmin, setTimer } = useGame();
 
   useEffect(() => {
-    setGame(state);
-    const isAdmin = state?.admins.find((a) => a === account?.decodedAddress)
-
-    if (isAdmin) {
-      setIsAdmin(Boolean(isAdmin))
-    } else {
-      setIsAdmin(false)
+    if (state) {
+      setState(state?.All);
     }
 
-    if (state && account && state.isStarted && state?.gameState) {
-      setPlayers(state.players);
+    if (game && game.Game && game.Game[0]) {
+      const isAdmin = game.Game[0].admin === account?.decodedAddress;
+      setIsAdmin(isAdmin);
 
-      setIsAllowed(account.decodedAddress === state.players[+state.gameState?.currentPlayer][0]);
-      if (state.gameState?.state?.Winner) {
-        setOpenWinnerPopup(true);
+      setGame(game.Game[0]);
+      if (game.Game[0]) {
+        const initialSeconds = game.Game[1] && parseInt(game.Game[1].replace(',', '')) / 1000;
+        setTimer(Number(initialSeconds));
+
+      
+        const gameState = game.Game[0].gameState;
+        
+        if (game.Game[0].isStarted && gameState) {
+          setPlayers(gameState.players);
+          setIsAllowed(account?.decodedAddress === gameState.players[+gameState.currentPlayer].id);
+        } else {
+          setPlayers([]);
+          setIsAllowed(false);
+        }
+      } else {
+        setIsAdmin(false);
+        setPlayers([]);
+        setIsAllowed(false);
       }
     } else {
-      setPlayers([]);
-      setIsAllowed(false);
+      setGame(null);
+      setIsAdmin(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state, account?.address, state?.gameState, account?.decodedAddress]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [game, state, account]);
 };
+
 
 export function useGameMessage() {
   const metadata = useProgramMetadata(meta);

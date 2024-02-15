@@ -2,19 +2,26 @@ import { PlayerTrackSection } from '../player-track-section';
 import { PlayerCardSection } from '../player-card-section';
 import { PlayerConsSection } from '../player-cons-section';
 import { useApp, useGame } from 'app/context';
-import { SelectDominoPopup } from '../../popups/select-domino-popup/select-domino-popup';
 import clsx from 'clsx';
 import { convertFormattedTileToNumbers, findTile, getBgColors } from '../../../app/utils';
 import { Icon } from '../../ui/icon';
 import { DominoItem } from '../../common/domino-item';
-import { WinnerPopup } from '../../popups/winner-popup/winner-popup';
+import { CanceledSection } from './canceled-modal';
+import { FinishedSection } from './finished-modal';
+import { useEffect } from 'react';
 
 export const GameSection = () => {
-  const { isAllowed, openEmptyPopup, setOpenEmptyPopup, setOpenWinnerPopup, openWinnerPopup } = useApp();
-  const { game: state, players } = useGame();
+  const { isAllowed, openWinnerPopup, setOpenWinnerPopup, openEmptyPopup, setOpenEmptyPopup } = useApp();
+  const { game: state, players, previousGame } = useGame();
 
-  const stateStartTile = state?.gameState.startTile
-  const startTile = stateStartTile && findTile(stateStartTile, state?.gameState?.tiles)
+  useEffect(() => {
+    if (state && state.state.Winners) {
+      setOpenWinnerPopup(true)
+    }
+  }, [state, previousGame])
+
+  const stateStartTile = state?.gameState?.startTile
+  const startTile = state && stateStartTile && findTile(stateStartTile, state.gameState.tiles)
 
   return (
     <div className="container-xl flex flex-col grow">
@@ -47,6 +54,7 @@ export const GameSection = () => {
 
             return tileId
           })
+
           return (
             <li key={i}>
               <PlayerTrackSection
@@ -71,8 +79,8 @@ export const GameSection = () => {
         </ul>
       </div>
 
-      <WinnerPopup isOpen={openWinnerPopup} setIsOpen={setOpenWinnerPopup} />
-      <SelectDominoPopup isOpen={openEmptyPopup} setIsOpen={setOpenEmptyPopup} />
+      {openEmptyPopup && <CanceledSection />}
+      {openWinnerPopup && <FinishedSection />}
     </div>
   );
 };

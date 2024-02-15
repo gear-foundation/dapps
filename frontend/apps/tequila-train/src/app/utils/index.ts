@@ -6,6 +6,8 @@ import { isHex } from '@polkadot/util';
 import { ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
+export const cx = (...styles: string[]) => clsx(...styles);
+
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
@@ -70,6 +72,7 @@ export const isPartialSubset = (array1: any[], array2: any[]) => array2.some((el
 export const hexRequired = (value: string) =>
   !value ? 'Field is required' : !isHex(value) ? 'String must be in Hex format' : null;
 export const stringRequired = (value: string) => (!value ? 'Field is required' : null);
+export const numberRequired = (value: number | null | undefined) => (value === null || value === undefined ? 'Field is required' : null);
 
 const stringToNumberMapping: Record<StateDominoNumber, DominoNumber> = {
   'Zero': "0",
@@ -103,3 +106,5 @@ export const findTile = (startTileString: string, tiles: StateDominoTileType[]):
 export const convertFormattedTileToNumbers = (formattedTile: StateDominoTileType) => {
   return convertTileStringToNumbers(formattedTile);
 };
+
+export const shortenString = (str: string, length: number): string => `${str.slice(0, length)}...${str.slice(-length)}`;
