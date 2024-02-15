@@ -201,7 +201,7 @@ pub enum StateQuery {
     GetOwnerId {
         admin_id: AdminId,
         strategy_id: ActorId,
-    }
+    },
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]
@@ -213,7 +213,7 @@ pub enum StateReply {
     PlayerInfo { player_info: Option<PlayerInfo> },
 
     /// Reply on query  `GetOwnerId`
-    OwnerId { owner_id: Option<ActorId> }
+    OwnerId { owner_id: Option<ActorId> },
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
