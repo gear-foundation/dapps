@@ -3,25 +3,28 @@ import { useApp, useGame } from 'app/context';
 import { cn } from 'app/utils';
 import { LoginSection, GameSection, StartSection, RegistrationSection, FinishedSection, CanceledSection } from 'components/sections';
 import { useInitGame } from 'app/hooks/use-game';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 export const Home = () => {
   useInitGame();
 
   const { account } = useAccount();
   const { game, previousGame, setPreviousGame } = useGame();
-  const { setOpenEmptyPopup, openEmptyPopup } = useApp()
+  const { setOpenEmptyPopup, openEmptyPopup, isUserCancelled, setIsUserCancelled } = useApp()
 
   useEffect(() => {
     const isAdmin = previousGame?.admin === account?.decodedAddress;
 
     if (game) {
+      console.log('useEffect game: ', game)
       setPreviousGame(game);
     }
     else if (previousGame) {
-      if (!isAdmin) {
+      if (!isAdmin && !isUserCancelled) {
+        console.log('isUserCancelled', isUserCancelled)
         setOpenEmptyPopup(true)
       }
+      setIsUserCancelled(false)
       setPreviousGame(null)
     }
   }, [game]);

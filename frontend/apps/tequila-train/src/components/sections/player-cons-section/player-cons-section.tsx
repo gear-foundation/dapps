@@ -24,6 +24,10 @@ export const PlayerConsSection = () => {
   }, []);
 
   useEffect(() => {
+    setSelectedDomino(undefined);
+  }, [game]);
+
+  useEffect(() => {
     if (game) {
       const playersTiles = Object.entries(game.gameState.tileToPlayer)
         .filter(([key, value]) => value === game.gameState.currentPlayer)

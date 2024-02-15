@@ -5,17 +5,20 @@ import { Sprite } from 'components/ui/sprite';
 import { useForm } from '@mantine/form';
 import { useApp } from 'app/context';
 import { useGameMessage } from 'app/hooks/use-game';
-import { stringRequired } from 'app/utils';
+import { numberRequired } from 'app/utils';
+import { useApi } from '@gear-js/react-hooks';
 
 const initialValues = {
-	bid: '0',
+	bid: 0,
 };
 
-const validate: Record<string, typeof stringRequired> = {
-	bid: stringRequired,
+const validate: Record<string, typeof numberRequired> = {
+	bid: numberRequired,
 };
 
 export const CreateGame = ({ closeCreateGame }: { closeCreateGame: () => void }) => {
+	const { api } = useApi();
+
 	const { setIsPending, isPending } = useApp();
 	const form = useForm({
 		initialValues,
@@ -34,9 +37,10 @@ export const CreateGame = ({ closeCreateGame }: { closeCreateGame: () => void })
 	};
 
 	const handleSubmit = form.onSubmit((values) => {
+		const [decimals] = api?.registry.chainDecimals ?? [12];
 		setIsPending(true);
 		handleMessage({
-			payload: { CreateGame: null }, value: values.bid,
+			payload: { CreateGame: null }, value: (values.bid * 10 ** decimals).toString() || "0",
 			onSuccess,
 			onError,
 		});
@@ -53,7 +57,8 @@ export const CreateGame = ({ closeCreateGame }: { closeCreateGame: () => void })
 					<form onSubmit={handleSubmit}>
 						<div className="mt-6">
 							<Input
-								type="text"
+								type="number"
+								min={0}
 								label="Entry fee"
 								icon={() => <Sprite name="vara-coin" height={24} width={24} />}
 								{...getInputProps('bid')}

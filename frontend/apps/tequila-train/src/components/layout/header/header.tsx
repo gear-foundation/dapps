@@ -40,7 +40,7 @@ export function Header() {
   return (
     <CommonHeader
       logo={
-        <Logo className={clsx(styles.header__logo, !account && styles['header__logo--center'])} label="Tic-Tac-Toe" />
+        <Logo className={clsx(styles.header__logo, !account && styles['header__logo--center'])} label="Tequila Train" />
       }
       className={{ header: styles.header, content: styles.header__container }}
       menu={

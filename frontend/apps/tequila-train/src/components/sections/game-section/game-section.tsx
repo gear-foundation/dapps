@@ -8,24 +8,15 @@ import { Icon } from '../../ui/icon';
 import { DominoItem } from '../../common/domino-item';
 import { CanceledSection } from './canceled-modal';
 import { FinishedSection } from './finished-modal';
-import { useAccount } from '@gear-js/react-hooks';
 import { useEffect } from 'react';
 
 export const GameSection = () => {
-  const { account } = useAccount()
   const { isAllowed, openWinnerPopup, setOpenWinnerPopup, openEmptyPopup, setOpenEmptyPopup } = useApp();
   const { game: state, players, previousGame } = useGame();
 
-  const isAdmin = previousGame?.admin === account?.decodedAddress;
-
   useEffect(() => {
-    if (previousGame && !state && !isAdmin) {
-      setOpenEmptyPopup(true)
-    }
-
-    if (state?.state?.Winners) {
+    if (state && state.state.Winners) {
       setOpenWinnerPopup(true)
-
     }
   }, [state, previousGame])
 
@@ -87,9 +78,6 @@ export const GameSection = () => {
           ))}
         </ul>
       </div>
-
-      {/* <WinnerPopup isOpen={openWinnerPopup} setIsOpen={setOpenWinnerPopup} />
-      <SelectDominoPopup isOpen={openEmptyPopup} setIsOpen={setOpenEmptyPopup} /> */}
 
       {openEmptyPopup && <CanceledSection />}
       {openWinnerPopup && <FinishedSection />}

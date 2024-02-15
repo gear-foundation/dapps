@@ -1,5 +1,6 @@
 import { Button, Input } from '@gear-js/vara-ui';
 import { useState } from 'react';
+import { useApi } from '@gear-js/react-hooks';
 
 import styles from './start-secrtion.module.scss'
 import { useGame, useApp } from 'app/context';
@@ -19,11 +20,13 @@ const validate: Record<string, typeof stringRequired> = {
 };
 
 export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
+	const { api } = useApi()
 	const [isOpenModal, setOpenModal] = useState(false)
 	const [findGame, setFindGame] = useState<GameType | null>(null)
 	const { state, setPreviousGame } = useGame();
 	const { setIsPending, isPending } = useApp();
 	const handleMessage = useGameMessage();
+	const [isNotFound, setIsNotFound] = useState(false)
 
 	const form = useForm({
 		initialValues,
@@ -40,22 +43,32 @@ export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
 	};
 
 	const handleSubmit = form.onSubmit((values) => {
-		setPreviousGame(null)
-		setIsPending(true);
-		handleMessage({
-			payload: { Register: { creator: values.creator } },
-			onSuccess,
-			onError,
-		});
+		const [decimals] = api?.registry.chainDecimals ?? [12];
+
+		if (findGame) {
+			setIsPending(true);
+			handleMessage({
+				payload: { Register: { creator: values.creator } },
+				value: parseFloat(findGame.bid) * 10 ** decimals,
+				onSuccess,
+				onError,
+			});
+		}
 	});
 
 	const onFindGame = () => {
+		setPreviousGame(null)
 		const findGame = state?.games.find(game => game[0] === form.values.creator)
 		if (findGame) {
 			setFindGame(findGame[1] as GameType)
 			setOpenModal(true)
+		} else {
+			setIsNotFound(true)
 		}
 	}
+
+	const [decimals] = api?.registry.chainDecimals ?? [12];
+	const bid = parseFloat(findGame?.bid.replace(/,/g, '') || "0") / 10 ** decimals
 
 	return (
 		<div className="basis-[540px] grow lg:grow-0">
@@ -86,7 +99,7 @@ export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
 								<p>Entry fee</p>
 								<div className="flex items-center font-semibold">
 									<Icon name='vara-coin' width={24} height={24} className="mr-2" />
-									{findGame?.bid} VARA
+									{bid} VARA
 								</div>
 							</div>
 
@@ -97,16 +110,6 @@ export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
 									<span className="font-semibold">{findGame?.initialPlayers.length} </span>
 									/8</div>
 							</div>
-
-							{/* <div className="flex items-center justify-between pr-[100px]">
-								<p>Your game address
-									<span className="font-bold"> ({account && shortenString(account.address, 4)})</span>
-								</p>
-								<div className="cursor-pointer text-[#0ED3A3] font-semibold" onClick={onCopy}>
-									<Icon name='copy' width={24} height={24} className="mr-2" />
-									Copy
-								</div>
-							</div> */}
 						</div>
 					</div>
 					<form onSubmit={handleSubmit}>
@@ -115,9 +118,15 @@ export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
 							<Button text="Join" color="primary" className="w-full" onClick={onFindGame} type="submit" disabled={isPending} />
 						</div>
 					</form>
-
 				</Modal>
 			}
-		</div>
+
+			{isNotFound &&
+				<Modal heading="Game not found" onClose={() => setIsNotFound(false)}>
+					<p>Please check the entered address. It's possible the game has been canceled or does not exist.</p>
+					<Button text="OK" color="grey" className="w-72 mt-5" onClick={() => setIsNotFound(false)} />
+				</Modal>
+			}
+		</div >
 	);
 };

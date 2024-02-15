@@ -7,6 +7,7 @@ import { playerNames } from 'app/consts';
 import { Button } from '@gear-js/vara-ui';
 import { PlayersGame } from 'app/types/game';
 import { Icon } from 'components/ui/icon';
+import { useApi } from '@gear-js/react-hooks';
 
 type Props = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
@@ -14,23 +15,23 @@ type Props = {
 };
 
 export const WinnerPopup = ({ setIsOpen, isOpen }: Props) => {
-  const { game, isAdmin, setPreviousGame } = useGame();
-  const { setIsPending, setOpenWinnerPopup } = useApp();
+  const { api } = useApi()
+  const { game, isAdmin } = useGame();
+  const { setIsPending, setOpenWinnerPopup, setIsUserCancelled } = useApp();
   const handleMessage = useGameMessage();
 
   const onSuccess = () => {
+    setOpenWinnerPopup(false)
     setIsPending(false);
-    setPreviousGame(null)
   };
   const onError = () => {
     setIsPending(false);
   };
 
   const onLeaveGame = () => {
-    setOpenWinnerPopup(false)
-
+    setIsUserCancelled(true)
     handleMessage({
-      payload: isAdmin ? { LeaveGame: null } : { CancelGame: null },
+      payload: isAdmin ? { CancelGame: null } : { LeaveGame: null },
       onSuccess,
       onError,
     });
@@ -40,6 +41,9 @@ export const WinnerPopup = ({ setIsOpen, isOpen }: Props) => {
   const players = game?.gameState?.players;
   const winnerIndexes = winnerIds?.map(winnerId => players?.findIndex((player: PlayersGame) => player.id === winnerId)) || [];
   const winnerNames = winnerIndexes && winnerIndexes.map(index => playerNames[index || 0]).filter(name => name !== undefined);
+
+  const [decimals] = api?.registry.chainDecimals ?? [12];
+  const bid = parseFloat(game?.bid.replace(/,/g, '') || "0") / 10 ** decimals
 
   return (
     <PopupContainer isOpen={isOpen} setIsOpen={setIsOpen}>
@@ -80,7 +84,7 @@ export const WinnerPopup = ({ setIsOpen, isOpen }: Props) => {
                   <p>Winner's prize:</p>
                   <p className="font-semibold flex items-center gap-2 ">
                     <Icon name="vara-coin" width={24} height={24} />
-                    {game?.bid} VARA
+                    {bid} VARA
                   </p>
 
                 </div>

@@ -1,5 +1,5 @@
 
-import { useAccount, useAlert } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { useGameMessage } from 'app/hooks/use-game';
 import { Button } from '@gear-js/vara-ui';
 
@@ -15,9 +15,10 @@ import { MockGameSection } from '../game-section/mock/mock-game-section';
 import { CanceledSection } from '../game-section/canceled-modal';
 
 export function RegistrationSection() {
+  const { api } = useApi();
   const { account } = useAccount();
   const { game, isAdmin } = useGame();
-  const { setIsPending, openEmptyPopup } = useApp();
+  const { setIsPending, setIsUserCancelled } = useApp();
   const handleMessage = useGameMessage();
   const alert = useAlert();
 
@@ -44,8 +45,9 @@ export function RegistrationSection() {
         onError,
       });
     } else {
+      setIsUserCancelled(true);
       handleMessage({
-        payload: { LeaveGame: null },
+        payload: { CancelRegistration: { creator: game?.admin } },
         onSuccess,
         onError,
       });
@@ -68,6 +70,9 @@ export function RegistrationSection() {
 
   const reversedArrayPlayers = [...(game?.initialPlayers ?? [])];
   const disableButton = !Boolean(game && game.initialPlayers?.length >= 2)
+
+  const [decimals] = api?.registry.chainDecimals ?? [12];
+  const bid = parseFloat(game?.bid.replace(/,/g, '') || "0") / 10 ** decimals
 
   return (
     <div>
@@ -103,7 +108,7 @@ export function RegistrationSection() {
                           <p>Entry fee</p>
                           <div className="font-semibold flex items-center">
                             <Icon name='vara-coin' width={24} height={24} className="mr-2" />
-                            {game?.bid} VARA
+                            {bid} VARA
                           </div>
                         </div>
 
@@ -168,8 +173,6 @@ export function RegistrationSection() {
           </div>
         </div>
       </Modal>
-
-      {openEmptyPopup && <CanceledSection />}
     </div>
   );
 }
