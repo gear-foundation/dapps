@@ -3,6 +3,7 @@ import { useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-h
 import { AnyJson } from '@polkadot/types/types';
 
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
+import { KeyringPair } from '@polkadot/keyring/types';
 
 type Session = {
   key: HexString;
@@ -32,7 +33,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     return { destination, payload, gasLimit };
   };
 
-  const deleteSession = async (key: HexString) => {
+  const deleteSession = async (key: HexString, pair?: KeyringPair) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!metadata) throw new Error('Metadata not found');
 
@@ -45,9 +46,11 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
     const declineExtrrinsic = api.voucher.decline(accountVoucherId);
 
+    await batchSignAndSend([declineExtrrinsic], { onError, pair });
+
     const revokeExtrrinsic = api.voucher.revoke(key, accountVoucherId);
 
-    const txs = [extrinsic, declineExtrrinsic, revokeExtrrinsic];
+    const txs = [extrinsic, revokeExtrrinsic];
 
     batchSignAndSend(txs, { onError });
   };
