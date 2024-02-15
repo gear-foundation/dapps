@@ -6,10 +6,10 @@ import { DominoZone } from '../../common/domino-zone';
 import { DominoTileType } from 'app/types/game';
 import { useEffect, useRef, useState } from 'react';
 import { useApp, useGame } from '../../../app/context';
-import { PlayerTrain } from '../../common/player-train';
-import { useAccount } from '@gear-js/react-hooks';
 import { useRefDimensions } from '../../../app/hooks/use-ref-dimensions';
 import { TooltipWrapper } from '@gear-js/ui';
+import { playerNames } from 'app/consts';
+import Timer from './timer';
 
 type Props = {
   index: number;
@@ -23,7 +23,6 @@ const SPACING = 2;
 const CARD_WIDTH = 72;
 
 export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }: Props) => {
-  const { account } = useAccount();
   const { isAllowed } = useApp();
   const { game, playerChoice } = useGame();
   const [isDisabled, setIsDisabled] = useState(false);
@@ -54,7 +53,6 @@ export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }:
 
     if (game) {
       const lastTile = tiles.length > 0 ? (i > 0 ? tiles[i - 1] : false) : game.gameState.startTile;
-      // console.log({ tile, lastTile });
       return lastTile ? (lastTile[1] === tile[0] ? false : lastTile[1] === tile[1]) : false;
     } else return false;
   };
@@ -101,28 +99,28 @@ export const PlayerTrackSection = ({ index, train, isUserTrain, active, tiles }:
           />
         )}
         {isUserTrain &&
-          (account?.decodedAddress === game?.players[index][0] && !isDisabled && playerChoice?.tile_id !== undefined ? (
-            <PlayerTrain index={index} />
-          ) : (
-            <Icon
-              name="train"
-              width={43}
-              height={35}
-              className={clsx('w-full h-auto', train ? 'text-[#FFCE4A]' : getBgColors(index).train)}
-            />
-          ))}
+          <Icon
+            name="train"
+            width={43}
+            height={35}
+            className={clsx('w-full h-auto', train ? 'text-[#FFCE4A]' : getBgColors(index).train)}
+          />}
         <h3
           className={clsx(
-            'uppercase leading-4 font-semibold tracking-[0.03em] w-min min-w-[60px]',
+            'uppercase leading-4 font-semibold tracking-[0.03em] w-min min-w-[80px]',
             active && !getBgColors(index).isLight && 'text-white',
             !isUserTrain && 'col-span-2',
           )}>
           <TooltipWrapper
-            text={game?.players[index][1] || ''}
+            text={playerNames[index] || ''}
             className="after:text-dark-500 after:!bg-primary after:!transition-none after:!shadow-md">
-            <span className="line-clamp-2">{train ? 'Tequila Train' : `${game?.players[index][1]}`}</span>
+            <span className="line-clamp-2">{train ? 'Tequila Train' : `Señor ${playerNames[index]}`}</span>
           </TooltipWrapper>
+
         </h3>
+        {active &&
+          <Timer />
+        }
       </div>
 
       <div className="relative flex overflow-auto max-w-full" ref={ref}>
