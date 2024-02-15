@@ -5,14 +5,16 @@ edition.workspace = true
 publish.workspace = true
 
 [dependencies]
-gstd.workspace = true
+gstd = { workspace = true, features = ["debug"] }
 syndote-io.workspace = true
 
 [dev-dependencies]
 gtest.workspace = true
+gclient.workspace = true
+tokio.workspace = true
+gear-core.workspace = true
 
 # External binaries
-
 syndote-player.workspace = true
 
 [build-dependencies]

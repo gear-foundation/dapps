@@ -1,39 +1,11 @@
+use crate::game::PENALTY;
 use crate::*;
-impl Game {
-    pub fn check_status(&self, game_status: GameStatus) {
-        assert_eq!(self.game_status, game_status, "Wrong game status");
-    }
 
-    pub fn only_admin(&self) {
-        assert_eq!(msg::source(), self.admin, "Only admin can start the game");
+pub fn check_reservation_validity(valid_until_block: u32) -> Result<(), GameError> {
+    if valid_until_block <= exec::block_height() {
+        return Err(GameError::ReservationNotValid);
     }
-    pub fn only_player(&self) {
-        assert!(
-            self.players.contains_key(&msg::source()),
-            "You are not in the game"
-        );
-    }
-}
-
-pub fn get_player_info<'a>(
-    player: &'a ActorId,
-    players: &'a mut HashMap<ActorId, PlayerInfo>,
-    current_round: u128,
-) -> Result<&'a mut PlayerInfo, GameError> {
-    if &msg::source() != player {
-        //        debug!("PENALTY: WRONG MSG::SOURCE()");
-        players.entry(msg::source()).and_modify(|player_info| {
-            player_info.penalty += 1;
-        });
-        return Err(GameError::StrategicError);
-    }
-    let player_info = players.get_mut(player).expect("Cant be None: Get Player");
-    if player_info.round >= current_round {
-        //   debug!("PENALTY: MOVE ALREADY MADE");
-        player_info.penalty += 1;
-        return Err(GameError::StrategicError);
-    }
-    Ok(player_info)
+    Ok(())
 }
 
 pub fn sell_property(
@@ -46,7 +18,6 @@ pub fn sell_property(
 ) -> Result<(), GameError> {
     for property in properties_for_sale {
         if ownership[*property as usize] != msg::source() {
-            //       debug!("PENALTY: TRY TO SELL NOT OWN PROPERTY");
             player_info.penalty += 1;
             return Err(GameError::StrategicError);
         }
@@ -83,6 +54,7 @@ pub fn bankrupt_and_penalty(
     properties: &[Option<(ActorId, Gears, Price, Rent)>],
     properties_in_bank: &mut HashSet<u8>,
     ownership: &mut [ActorId],
+    current_turn: &mut u8,
 ) {
     for (player, mut player_info) in players.clone() {
         if player_info.debt > 0 {
@@ -114,6 +86,7 @@ pub fn bankrupt_and_penalty(
                 properties_in_bank.insert(*cell);
             }
             players.insert(player, player_info);
+            *current_turn = current_turn.saturating_sub(1);
         }
     }
 }
@@ -208,31 +181,5 @@ pub fn init_properties(
 
     for _i in 0..40 {
         ownership.push(ActorId::zero());
-    }
-}
-
-pub enum GameError {
-    StrategicError,
-}
-
-impl From<Game> for GameState {
-    fn from(game: Game) -> GameState {
-        GameState {
-            admin: game.admin,
-            properties_in_bank: game.properties_in_bank.iter().copied().collect(),
-            round: game.round,
-            players: game
-                .players
-                .iter()
-                .map(|(key, value)| (*key, value.clone()))
-                .collect(),
-            players_queue: game.players_queue,
-            current_player: game.current_player,
-            current_step: game.current_step,
-            properties: game.properties,
-            ownership: game.ownership,
-            game_status: game.game_status,
-            winner: game.winner,
-        }
     }
 }
