@@ -84,14 +84,14 @@ const GameModal = ({ setOpenModal }: Props) => {
   if (isShowChampionModal) {
     const sortedPlayers = allPlayers
       ? allPlayers.slice().sort((playerA, playerB) => {
-          const [_, playerInfoA] = playerA;
-          const [__, playerInfoB] = playerB;
+        const [_, playerInfoA] = playerA;
+        const [__, playerInfoB] = playerB;
 
-          const totalCoinsA = playerInfoA.claimedGoldCoins + playerInfoA.claimedSilverCoins;
-          const totalCoinsB = playerInfoB.claimedGoldCoins + playerInfoB.claimedSilverCoins;
+        const totalCoinsA = playerInfoA.claimedGoldCoins + playerInfoA.claimedSilverCoins;
+        const totalCoinsB = playerInfoB.claimedGoldCoins + playerInfoB.claimedSilverCoins;
 
-          return totalCoinsB - totalCoinsA;
-        })
+        return totalCoinsB - totalCoinsA;
+      })
       : [];
 
     return <ChampionsPopup setIsOpen={setShowChampionModal} isOpen={isShowChampionModal} players={sortedPlayers} />;
@@ -119,21 +119,18 @@ const GameModal = ({ setOpenModal }: Props) => {
                 <span className="font-semibold">
                   {silverCoins} x {perSilverCoin} = {silverTokens}{' '}
                 </span>
-                <span className="font-extralight">{unit}</span>
               </div>
               <div className={style.coins}>
                 <img src={GoldCoinIcon} width={24} alt="" />
                 <span className="font-semibold">
                   {goldCoins} x {perGoldCoin} = {goldTokens}{' '}
                 </span>
-                <span className="font-extralight">{unit}</span>
               </div>
             </div>
             <div className={style.totalTokens}>
               <img src={TotalCoinsIcon} alt="" />
               <div className={style.number}>
                 <span className="font-medium text-[40px]">{allTokens}</span>
-                <span className="font-light italic text-[16px]">{unit}</span>
               </div>
             </div>
             <div className={style.buttons}>
