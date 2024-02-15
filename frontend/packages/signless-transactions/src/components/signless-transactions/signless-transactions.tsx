@@ -14,8 +14,10 @@ import { AccountPair } from '../account-pair';
 
 function SignlessTransactions() {
   const { account } = useAccount();
-  const { pair, session, isSessionReady, voucherBalance, storagePair, deleteSession } = useSignlessTransactions();
+  const { pair, session, isSessionReady, voucherBalance, storagePair, deletePair, deleteSession } =
+    useSignlessTransactions();
   const [modal, setModal] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const openCreateModal = () => setModal('create');
   const openEnableModal = () => setModal('enable');
   const closeModal = () => setModal('');
@@ -24,6 +26,15 @@ function SignlessTransactions() {
 
   const { getFormattedBalance } = useBalanceFormat();
   const sessionBalance = voucherBalance ? getFormattedBalance(voucherBalance) : undefined;
+
+  const handleDeleteSession = async () => {
+    if (session) {
+      setIsLoading(true);
+      await deleteSession(session.key, pair);
+      deletePair();
+      setIsLoading(false);
+    }
+  };
 
   return account && isSessionReady ? (
     <div className={styles.container}>
@@ -76,7 +87,8 @@ function SignlessTransactions() {
               text="Log Out"
               color="light"
               className={styles.closeButton}
-              onClick={() => deleteSession(session.key, pair)}
+              isLoading={isLoading}
+              onClick={handleDeleteSession}
             />
           </div>
         </>

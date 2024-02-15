@@ -68,20 +68,6 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
     const batch = getBatch();
     const statusCallback = (result: ISubmittableResult) => handleStatus(result, options);
 
-    if (options.pair) {
-      try {
-        await batch(txs).signAndSend(options.pair, statusCallback);
-      } catch ({ message }: any) {
-        const { onError = () => {} } = options;
-
-        onError(message);
-      } finally {
-        const { onFinally = () => {} } = options;
-        onFinally();
-      }
-
-      return;
-    }
     await web3FromSource(meta.source)
       .then(({ signer }) => batch(txs).signAndSend(address, { signer }, statusCallback))
       .catch(({ message }: Error) => {

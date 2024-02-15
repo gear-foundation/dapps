@@ -1,9 +1,9 @@
 import { HexString, ProgramMetadata } from '@gear-js/api';
 import { useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
-
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
 import { KeyringPair } from '@polkadot/keyring/types';
+import { sendTransaction } from '@/utils';
 
 type Session = {
   key: HexString;
@@ -44,9 +44,11 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
     const accountVoucherId = Object.keys(vouchersForAccount)[0];
 
-    const declineExtrrinsic = api.voucher.decline(accountVoucherId);
+    const declineExtrrinsic = api.voucher.call(accountVoucherId, { DeclineVoucher: null });
 
-    await batchSignAndSend([declineExtrrinsic], { onError, pair });
+    if (pair) {
+      await sendTransaction(declineExtrrinsic, pair, ['VoucherDeclined']);
+    }
 
     const revokeExtrrinsic = api.voucher.revoke(key, accountVoucherId);
 
