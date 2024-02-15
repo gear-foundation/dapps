@@ -6,6 +6,7 @@ import { useGameMessage } from 'app/hooks/use-game';
 import { playerNames } from 'app/consts';
 import { Button } from '@gear-js/vara-ui';
 import { PlayersGame } from 'app/types/game';
+import { Icon } from 'components/ui/icon';
 
 type Props = {
   setIsOpen: Dispatch<SetStateAction<boolean>>;
@@ -42,12 +43,12 @@ export const WinnerPopup = ({ setIsOpen, isOpen }: Props) => {
 
   return (
     <PopupContainer isOpen={isOpen} setIsOpen={setIsOpen}>
-      <div className="flex items-center pt-40 w-[600px]">
+      <div className="flex items-center pt-96 w-[600px]">
         <div className="relative w-full max-w-3xl transform transition-all">
           <img
             src="/images/winner.svg"
             alt="Winner"
-            className="absolute bottom-[80%] left-1/2 -translate-x-1/2 h-[175%]"
+            className="absolute bottom-[90%] left-1/2 -translate-x-1/2 h-[150%]"
           />
           <img
             src="/images/winner-bg.svg"
@@ -74,6 +75,15 @@ export const WinnerPopup = ({ setIsOpen, isOpen }: Props) => {
                 })}
 
                 is a winner! Take your tequila and enjoy!
+
+                <div className="bg-[#F7F9FA] rounded-2xl flex items-center gap-5 p-5 mt-5 text-black">
+                  <p>Winner's prize:</p>
+                  <p className="font-semibold flex items-center gap-2 ">
+                    <Icon name="vara-coin" width={24} height={24} />
+                    {game?.bid} VARA
+                  </p>
+
+                </div>
               </Dialog.Description>
               <div className="flex gap-3 mt-5 w-full">
                 <Button text='Close' color='grey' className="w-full" onClick={onLeaveGame} />

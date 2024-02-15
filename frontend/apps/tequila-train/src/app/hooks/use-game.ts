@@ -51,10 +51,12 @@ export const useInitGame = () => {
 
   useEffect(() => {
     if (state) {
+      // console.log('state', state)
       setState(state?.All);
     }
 
     if (game && game.Game && game.Game[0]) {
+      // console.log('game', game.Game[0])
       const isAdmin = game.Game[0].admin === account?.decodedAddress;
       setIsAdmin(isAdmin);
 
