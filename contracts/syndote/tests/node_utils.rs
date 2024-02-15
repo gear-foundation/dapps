@@ -158,10 +158,7 @@ pub async fn make_reservation(
     let messages = vec![
         (
             game_id,
-            GameAction::MakeReservation {
-                admin_id
-            }
-            .encode(),
+            GameAction::MakeReservation { admin_id }.encode(),
             730_000_000_000,
             0
         );
@@ -191,10 +188,7 @@ pub async fn upload_syndote(
             0,
         )
         .await?;
-    assert!(listener
-        .message_processed(message_id)
-        .await?
-        .succeed());
+    assert!(listener.message_processed(message_id).await?.succeed());
     Ok(program_id)
 }
 

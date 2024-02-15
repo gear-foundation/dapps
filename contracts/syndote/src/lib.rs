@@ -203,7 +203,10 @@ extern fn state() {
             strategy_id,
         } => {
             let owner_id = if let Some(game_session) = game_manager.game_sessions.get(&admin_id) {
-                game_session.players.get(&strategy_id).map(|player_info| player_info.owner_id)
+                game_session
+                    .players
+                    .get(&strategy_id)
+                    .map(|player_info| player_info.owner_id)
             } else {
                 None
             };
