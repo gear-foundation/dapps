@@ -140,7 +140,7 @@ pub enum GameReply {
     NextRoundFromReservation,
 }
 
-#[derive(Debug, Encode, Decode, TypeInfo)]
+#[derive(Debug, Encode, Decode, TypeInfo, PartialEq, Eq)]
 pub enum GameError {
     /// Error reply on `Register`
     /// In case if this strategy is already registered
@@ -196,6 +196,12 @@ pub enum StateQuery {
         admin_id: AdminId,
         account_id: ActorId,
     },
+
+    /// Query to get the owner address of the indicated strategy
+    GetOwnerId {
+        admin_id: AdminId,
+        strategy_id: ActorId,
+    }
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]
@@ -205,6 +211,9 @@ pub enum StateReply {
 
     /// Reply on query `GetPlayerInfo`
     PlayerInfo { player_info: Option<PlayerInfo> },
+
+    /// Reply on query  `GetOwnerId`
+    OwnerId { owner_id: Option<ActorId> }
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
@@ -282,6 +291,7 @@ pub struct Config {
     pub time_for_step: u32,
     pub min_gas_limit: u64,
     pub gas_refill_timeout: u32,
+    pub gas_for_step: u64,
 }
 
 impl From<Game> for GameState {
@@ -306,7 +316,7 @@ impl From<Game> for GameState {
         }
     }
 }
-#[derive(Clone, Default)]
+#[derive(Clone, Default, Debug)]
 pub struct Game {
     pub admin_id: AdminId,
     pub properties_in_bank: HashSet<u8>,

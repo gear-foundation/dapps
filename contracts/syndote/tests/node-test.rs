@@ -1,160 +1,183 @@
-// use fmt::Debug;
-// use gclient::{EventListener, EventProcessor, GearApi, Result};
-// use gstd::{collections::BTreeMap, prelude::*, ActorId};
-// use syndote::Game;
-// use syndote_io::*;
+use gclient::{EventListener, EventProcessor, GearApi, Result};
+use gstd::{collections::BTreeMap, prelude::*, ActorId};
+use syndote_io::*;
+use tokio::time::{sleep, Duration};
 
-// use gear_core::ids::{MessageId, ProgramId};
+pub mod node_utils;
+use node_utils::{
+    get_game_session, get_owner_id, get_player_info, make_reservation, send_balances, send_message,
+    upload_and_register_players, upload_syndote, ApiUtils,
+};
 
-// const PATHS: [&str; 2] = [
-//     "../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
-//     "../target/wasm32-unknown-unknown/release/syndote.opt.wasm",
-// ];
+#[tokio::test]
+async fn successfull_game() -> Result<()> {
+    let client = GearApi::dev().await?;
+    let mut listener = client.subscribe().await?;
 
-// async fn upload_and_register_player(
-//     client: &GearApi,
-//     listener: &mut EventListener,
-//     game_id: ProgramId,
-// ) -> Result<()> {
-//     let (message_id, program_id, _) = client
-//         .upload_program_by_path(
-//             PATHS[0],
-//             gclient::now_micros().to_le_bytes(),
-//             b"",
-//             1_000_000_000,
-//             0,
-//         )
-//         .await?;
+    let game_id = upload_syndote(
+        &client,
+        &mut listener,
+        Config {
+            reservation_amount: 700_000_000_000,
+            reservation_duration_in_block: 1_000,
+            time_for_step: 10,
+            min_gas_limit: 5_000_000_000,
+            gas_refill_timeout: 30,
+            gas_for_step: 10_000_000_000,
+        },
+    )
+    .await?;
 
-//     assert!(listener
-//         .message_processed(message_id.into())
-//         .await?
-//         .succeed());
+    // create session
+    let admin_id = client.get_actor_id();
+    let exp_reply: Result<GameReply, GameError> = Ok(GameReply::GameSessionCreated { admin_id });
+    assert_eq!(
+        Ok(exp_reply),
+        send_message(
+            &client,
+            &mut listener,
+            game_id.into(),
+            GameAction::CreateGameSession { entry_fee: None },
+            10_000_000_000,
+            false
+        )
+        .await?
+    );
 
-//     let payload = GameAction::Register {
-//         player: <[u8; 32]>::from(program_id).into(),
-//     };
-//     println!("Sending a payload: `{payload:?}`.");
+    let actor_id_to_suri = send_balances(&client).await?;
 
-//     let (message_id, _) = client
-//         .send_message(game_id, payload, 730_000_000_000, 0)
-//         .await?;
+    upload_and_register_players(&client, &mut listener, admin_id, game_id).await?;
 
-//     println!("Sending completed.");
+    make_reservation(&client, &mut listener, game_id, 1, admin_id).await?;
 
-//     let (_, raw_reply, _) = listener.reply_bytes_on(message_id).await?;
+    // start game
+    client
+        .send_message(game_id, GameAction::Play { admin_id }, 730_000_000_000, 0)
+        .await?;
 
-//     match raw_reply {
-//         Ok(raw_reply) => {
-//             let reply = <Result<GameReply, GameError>>::decode(&mut raw_reply.as_slice())?;
-//             println!("Received reply {:?}", reply);
-//         }
-//         Err(error) => {
-//             gstd::panic!("Reply received with error");
-//         }
-//     };
-//     Ok(())
-// }
+    let mut game_session: GameState = get_game_session(&client, game_id, admin_id).await?;
 
-// async fn make_reservation(
-//     client: &GearApi,
-//     listener: &mut EventListener,
-//     game_id: ProgramId,
-// ) -> Result<()> {
-//     let (message_id, _) = client
-//         .send_message(game_id, GameAction::MakeReservation, 740_000_000_000, 0)
-//         .await?;
+    while game_session.game_status != GameStatus::Finished {
+        sleep(Duration::from_secs(10)).await;
+        game_session = get_game_session(&client, game_id, admin_id).await?;
 
-//     let (_, raw_reply, _) = listener.reply_bytes_on(message_id).await?;
+        println!("{:?}", game_session.game_status);
+        println!("{:?}", game_session.round);
+        if let GameStatus::WaitingForGasForStrategy(strategy) = game_session.game_status {
+            let owner_id = get_owner_id(&client, game_id, admin_id, strategy).await?;
+            let suri = actor_id_to_suri
+                .get(&owner_id)
+                .expect("Suri does not exist");
+            let client = client.clone().with(suri)?;
+            // refill gas
+            let exp_reply: Result<GameReply, GameError> = Ok(GameReply::GasForPlayerStrategyAdded);
+            assert_eq!(
+                Ok(exp_reply),
+                send_message(
+                    &client,
+                    &mut listener,
+                    game_id.into(),
+                    GameAction::AddGasToPlayerStrategy { admin_id },
+                    730_000_000_000,
+                    false
+                )
+                .await?
+            );
 
-//     match raw_reply {
-//         Ok(raw_reply) => {
-//             let reply = <Result<GameReply, GameError>>::decode(&mut raw_reply.as_slice())?;
-//             println!("Received reply {:?}", reply);
-//         }
-//         Err(error) => {
-//             gstd::panic!("Reply received with error");
-//         }
-//     };
-//     Ok(())
-// }
-// #[tokio::test]
-// async fn syndote() -> Result<()> {
-//     let client = GearApi::dev().await?;
-//     let mut listener = client.subscribe().await?;
+            // continue game
+            client
+                .send_message(game_id, GameAction::Play { admin_id }, 730_000_000_000, 0)
+                .await?;
+        }
+        if game_session.game_status == GameStatus::WaitingForGasForGameContract {
+            // continue game
+            client
+                .send_message(game_id, GameAction::Play { admin_id }, 730_000_000_000, 0)
+                .await?;
+        }
+        if game_session.game_status == GameStatus::Finished {
+            println!("{:?}", game_session);
+            break;
+        }
+    }
 
-//     let (message_id, program_id, _) = client
-//         .upload_program_by_path(
-//             PATHS[1],
-//             gclient::now_micros().to_le_bytes(),
-//             Config {
-//                 reservation_amount: 700_000_000_000,
-//                 reservation_duration: 1_000,
-//                 time_for_step: 10,
-//                 min_gas_limit: 10_000_000_000,
-//             },
-//             10_000_000_000,
-//             0,
-//         )
-//         .await?;
-//     assert!(listener
-//         .message_processed(message_id.into())
-//         .await?
-//         .succeed());
+    Ok(())
+}
 
-//     // upload players and register them in game
-//     for _i in 0..4 {
-//         upload_and_register_player(&client, &mut listener, program_id).await?;
-//     }
+// the player does not add gas and is removed from the game after a certain number of blocks
+#[tokio::test]
+async fn gasless_player_timeout() -> Result<()> {
+    let client = GearApi::dev().await?;
+    let mut listener = client.subscribe().await?;
 
-//     // make reservations
-//     for _i in 0..6 {
-//         make_reservation(&client, &mut listener, program_id).await?;
-//     }
+    let game_id = upload_syndote(
+        &client,
+        &mut listener,
+        Config {
+            reservation_amount: 700_000_000_000,
+            reservation_duration_in_block: 1_000,
+            time_for_step: 10,
+            min_gas_limit: 5_000_000_000,
+            gas_refill_timeout: 10,
+            gas_for_step: 10_000_000_000,
+        },
+    )
+    .await?;
 
-//     // start game
-//     let (message_id, _) = client
-//         .send_message(program_id, GameAction::Play, 730_000_000_000, 0)
-//         .await?;
+    // create session
+    let admin_id = client.get_actor_id();
+    let exp_reply: Result<GameReply, GameError> = Ok(GameReply::GameSessionCreated { admin_id });
+    assert_eq!(
+        Ok(exp_reply),
+        send_message(
+            &client,
+            &mut listener,
+            game_id.into(),
+            GameAction::CreateGameSession { entry_fee: None },
+            10_000_000_000,
+            false
+        )
+        .await?
+    );
 
-//     let (_, raw_reply, _) = listener.reply_bytes_on(message_id).await?;
+    send_balances(&client).await?;
 
-//     match raw_reply {
-//         Ok(raw_reply) => {
-//             let reply = <Result<GameReply, GameError>>::decode(&mut raw_reply.as_slice())?;
-//             println!("Received reply {:?}", reply);
-//             match reply {
-//                 Ok(reply) => {
-//                     if reply == GameReply::NextRoundFromReservation {
-//                         let state_reply: StateReply = client
-//                             .read_state(program_id, StateQuery::MessageId.encode())
-//                             .await
-//                             .expect("Unable to read state");
-//                         if let StateReply::MessageId(message_id) = state_reply {
-//                             let (_, raw_reply, _) = listener
-//                                 .reply_bytes_on(<[u8; 32]>::from(message_id).into())
-//                                 .await?;
-//                             match raw_reply {
-//                                 Ok(raw_reply) => {
-//                                     let reply = <Result<GameReply, GameError>>::decode(
-//                                         &mut raw_reply.as_slice(),
-//                                     )?;
-//                                     println!("Received reply {:?}", reply);
-//                                 }
-//                                 Err(error) => {
-//                                     gstd::panic!("Reply received with error");
-//                                 }
-//                             };
-//                         }
-//                     }
-//                 }
-//                 Err(_) => {}
-//             }
-//         }
-//         Err(error) => {
-//             gstd::panic!("Reply received with error");
-//         }
-//     };
+    upload_and_register_players(&client, &mut listener, admin_id, game_id).await?;
 
-//     Ok(())
-// }
+    make_reservation(&client, &mut listener, game_id, 1, admin_id).await?;
+
+    // start game
+    client
+        .send_message(game_id, GameAction::Play { admin_id }, 730_000_000_000, 0)
+        .await?;
+
+    let mut game_session: GameState = get_game_session(&client, game_id, admin_id).await?;
+
+    while game_session.game_status != GameStatus::Finished {
+        sleep(Duration::from_secs(10)).await;
+        game_session = get_game_session(&client, game_id, admin_id).await?;
+
+        println!("{:?}", game_session.game_status);
+        println!("{:?}", game_session.round);
+        if let GameStatus::WaitingForGasForStrategy(strategy) = game_session.game_status {
+            // waiting 10 blocks = 30 sec
+            sleep(Duration::from_secs(30)).await;
+
+            // check that player was excluded from the game
+            let owner_id = get_owner_id(&client, game_id, admin_id, strategy).await?;
+            let player_info = get_player_info(&client, game_id, admin_id, owner_id).await?;
+            assert!(player_info.lost);
+        }
+        if game_session.game_status == GameStatus::WaitingForGasForGameContract {
+            // continue game
+            client
+                .send_message(game_id, GameAction::Play { admin_id }, 730_000_000_000, 0)
+                .await?;
+        }
+        if game_session.game_status == GameStatus::Finished {
+            println!("{:?}", game_session);
+        }
+    }
+
+    Ok(())
+}

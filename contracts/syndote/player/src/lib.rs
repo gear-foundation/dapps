@@ -8,6 +8,7 @@ pub const FINE: u32 = 1_000;
 #[no_mangle]
 extern fn handle() {
     debug!("Player");
+    debug!("GAS IN STRATEGY {:?}", exec::gas_available());
     let message: YourTurn = msg::load().expect("Unable to decode struct`YourTurn`");
 
     let (_, player_info) = message

@@ -185,16 +185,29 @@ extern fn state() {
             admin_id,
             account_id,
         } => {
-            if let Some(game_session) = game_manager.game_sessions.get(&admin_id) {
+            let player_info = if let Some(game_session) = game_manager.game_sessions.get(&admin_id)
+            {
                 if let Some(strategy_id) = game_session.owners_to_strategy_ids.get(&account_id) {
                     let player_info = game_session.players.get(strategy_id).cloned();
-                    StateReply::PlayerInfo { player_info }
+                    player_info
                 } else {
-                    StateReply::PlayerInfo { player_info: None }
+                    None
                 }
             } else {
-                StateReply::PlayerInfo { player_info: None }
-            }
+                None
+            };
+            StateReply::PlayerInfo { player_info }
+        }
+        StateQuery::GetOwnerId {
+            admin_id,
+            strategy_id,
+        } => {
+            let owner_id = if let Some(game_session) = game_manager.game_sessions.get(&admin_id) {
+                game_session.players.get(&strategy_id).map(|player_info| player_info.owner_id)
+            } else {
+                None
+            };
+            StateReply::OwnerId { owner_id }
         }
     };
     msg::reply(reply, 0).expect("Failed to share state");
@@ -248,6 +261,7 @@ extern fn handle_reply() {
     };
 
     game.finalize_turn_outcome(
+        game_manager.config.gas_for_step,
         game_manager.config.min_gas_limit,
         game_manager.config.reservation_duration_in_block,
     )

@@ -2,7 +2,7 @@ use crate::{
     bankrupt_and_penalty, check_reservation_validity, get_rolls, init_properties, take_your_turn,
     AdminId, Game, GameAction, GameError, GameInfo, GameReply, GameStatus, PlayerInfo,
 };
-use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId, MessageId, ReservationId};
+use gstd::{collections::HashMap, debug, exec, msg, prelude::*, ActorId, MessageId, ReservationId};
 pub const NUMBER_OF_CELLS: u8 = 40;
 pub const NUMBER_OF_PLAYERS: u8 = 4;
 pub const JAIL_POSITION: u8 = 10;
@@ -41,7 +41,12 @@ pub trait GameSessionActions {
         awaiting_reply_msg_id_to_session_id: &mut HashMap<MessageId, AdminId>,
         gas_refill_timeout: u32,
     ) -> Result<(), GameError>;
-    fn finalize_turn_outcome(&mut self, min_gas_limit: u64, reservation_duration_in_block: u32);
+    fn finalize_turn_outcome(
+        &mut self,
+        gas_for_step: u64,
+        min_gas_limit: u64,
+        reservation_duration_in_block: u32,
+    );
     fn add_gas_to_player_strategy(
         &mut self,
         reservation_amount: u64,
@@ -63,6 +68,7 @@ pub trait GameSessionActions {
         strategy_id: &ActorId,
     ) -> Result<(), GameError>;
     fn check_attached_value(&mut self) -> Result<(), GameError>;
+    fn send_prize_pool_to_winner(&mut self);
 }
 
 impl GameSessionActions for Game {
@@ -175,6 +181,7 @@ impl GameSessionActions for Game {
                 .expect("Error during sending a message");
                 return Ok(GameReply::NextRoundFromReservation);
             } else {
+                self.current_msg_id = MessageId::zero();
                 self.game_status = GameStatus::WaitingForGasForGameContract;
                 return Err(GameError::AddGasToGameContract);
             }
@@ -200,6 +207,9 @@ impl GameSessionActions for Game {
                 // `GameStatus::WaitingForGasForStrategy(_)` means that player didn't manage to reserve a gas
                 // for his strate within the alloted time
                 // The player is removed from the game.
+                debug!("WAIT");
+                debug!("GAS {:?}", exec::gas_available());
+                debug!("CURRENT PLAYER {:?}", self.current_player);
                 self.exclude_player_from_game(self.current_player);
 
                 // If the value of current_turn was 0 (meaning the player who missed their turn and was removed was the last in the array),
@@ -301,7 +311,12 @@ impl GameSessionActions for Game {
         }
     }
 
-    fn finalize_turn_outcome(&mut self, min_gas_limit: u64, reservation_duration_in_block: u32) {
+    fn finalize_turn_outcome(
+        &mut self,
+        gas_for_step: u64,
+        min_gas_limit: u64,
+        reservation_duration_in_block: u32,
+    ) {
         match self.players_queue.len() {
             0 => {
                 // All players have been removed from the game (either penalized or bankrupt)
@@ -310,10 +325,13 @@ impl GameSessionActions for Game {
             1 => {
                 self.winner = self.players_queue[0];
                 self.game_status = GameStatus::Finished;
+                self.send_prize_pool_to_winner();
             }
             _ => {
                 let gas_available = exec::gas_available();
-                let reservation = if gas_available > min_gas_limit {
+                debug!("GAS {:?}", gas_available);
+                debug!("player {:?}", self.current_player);
+                let reservation = if gas_available.saturating_sub(gas_for_step) > min_gas_limit {
                     match ReservationId::reserve(
                         gas_available - min_gas_limit,
                         reservation_duration_in_block,
@@ -392,6 +410,13 @@ impl GameSessionActions for Game {
         });
         self.game_status = GameStatus::Play;
         Ok(())
+    }
+
+    fn send_prize_pool_to_winner(&mut self) {
+        if self.prize_pool > 0 {
+            msg::send_with_gas(self.winner, "", 0, self.prize_pool)
+                .expect("Error in sending prize pool to winner");
+        }
     }
 
     fn check_status(&self, game_status: GameStatus) -> Result<(), GameError> {

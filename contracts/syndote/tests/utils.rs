@@ -155,6 +155,7 @@ pub fn preconfigure(system: &System) -> Program<'_> {
             time_for_step: 10,
             min_gas_limit: 5_000_000_000,
             gas_refill_timeout: 20,
+            gas_for_step: 10_000_000_000,
         },
     );
 
