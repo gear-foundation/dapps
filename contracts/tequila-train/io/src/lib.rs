@@ -2,7 +2,7 @@
 
 use gmeta::{In, InOut, Metadata};
 use gstd::{
-    collections::{BTreeMap, BTreeSet}, exec, msg, prelude::*, ActorId
+    collections::{BTreeMap, BTreeSet, HashMap}, exec, msg, prelude::*, ActorId
 };
 
 pub struct ContractMetadata;
@@ -19,20 +19,18 @@ impl Metadata for ContractMetadata {
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 pub struct GameLauncherState {
     pub games: Vec<(ActorId, Game)>,
-    pub players_to_game_status: Vec<(ActorId, PlayerStatus)>,
+    pub players_to_game_id: Vec<(ActorId, ActorId)>,
     pub config: Config,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateQuery {
     All,
-    GetPlayerInfo { player_id: ActorId },
-    GetGame { creator_id: ActorId },
+    GetGame { player_id: ActorId },
 }
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateReply {
     All(GameLauncherState),
-    PlayerInfo(Option<PlayerStatus>),
     Game(Option<(Game, Option<u64>)>),
 }
 
@@ -136,12 +134,13 @@ pub enum Command {
     },
     StartGame,
     CancelGame,
+    LeaveGame
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Debug)]
 pub enum Event {
     GameFinished {
-        winner: ActorId,
+        winners: Vec<ActorId>,
     },
     GameCreated,
     Skipped,
@@ -158,8 +157,8 @@ pub enum Event {
         player_id: ActorId,
     },
     GameStarted,
-    GameStalled,
     GameCanceled,
+    GameLeft,
     Checked
 }
 
@@ -169,7 +168,6 @@ pub enum Error {
     GameHasNotStartedYet,
     YouAlreadyRegistered,
     LimitHasBeenReached,
-    GameStalled,
     GameFinished,
     NotYourTurnOrYouLose,
     InvalidTile,
@@ -188,14 +186,6 @@ pub enum Error {
     NotEnoughPlayers,
     GameIsGoing,
     OnlyProgramCanSend
-}
-
-#[derive(Encode, Decode, TypeInfo, Clone, Debug)]
-pub enum PlayerStatus {
-    Playing(ActorId),
-    GameFinished { admin: ActorId, winner_index: u32, winner: ActorId, prize: u128 },
-    GameCanceled(ActorId),
-    GameStalled(ActorId),
 }
 
 #[derive(Debug, TypeInfo, Encode, Decode, Clone, Default)]
@@ -237,8 +227,7 @@ pub struct GameState {
 #[derive(Clone, Debug, Encode, Decode, Default, TypeInfo, PartialEq, Eq)]
 pub enum State {
     Playing,
-    Stalled,
-    Winner(ActorId),
+    Winners(Vec<ActorId>),
     #[default]
     Registration,
 }
@@ -408,7 +397,7 @@ impl GameState {
         if count_players_is_live == 1 {
             self.last_activity_time = time;
             send_value(player, bid * self.players.len() as u128);
-            return Ok(Event::GameFinished { winner: player });
+            return Ok(Event::GameFinished { winners: vec![player] });
         }
 
         self.tracks[i].has_train = true;
@@ -431,7 +420,7 @@ impl GameState {
         if remaining_tiles == 0 {
             let player = self.players[self.current_player as usize].clone();
             send_value(player.id, bid * self.players.len() as u128);
-            return Some(Event::GameFinished { winner: player.id });
+            return Some(Event::GameFinished { winners: vec![player.id] });
         }
 
         // check if any next player is able to make a turn
@@ -478,12 +467,20 @@ impl GameState {
 
         if check_result.is_some() {
             // no one can make turn. Game is over
+            let winners_index = least_common_value(&self.tile_to_player).expect("Error: tile_to_player is empty");
+
+            let winners: Vec<ActorId> = winners_index.iter()
+                .filter_map(|&i| if !self.players[i as usize].lose { Some(self.players[i as usize].id) } else { None })
+                .collect();
+
+            let prize = bid * self.players.len() as u128 / winners.len() as u128;
+
             if bid != 0 {
-                self.players.iter().for_each(|player| {
-                    send_value(player.id, bid);
+                winners.iter().for_each(|player| {
+                    send_value(*player, prize);
                 });
             }
-            return Some(Event::GameStalled);
+            return Some(Event::GameFinished { winners });
         }
         None
     }
@@ -530,7 +527,7 @@ impl GameState {
         if count_players_is_live == 1 {
             self.last_activity_time = time;
             send_value(player, bid * self.players.len() as u128);
-            return Ok(Event::GameFinished { winner: player });
+            return Ok(Event::GameFinished { winners: vec![player] });
         }
 
         // check player owns the tile
@@ -604,6 +601,27 @@ impl GameState {
 pub fn send_value(destination: ActorId, value: u128) {
     if value != 0 {
         msg::send_with_gas(destination, "", 0, value).expect("Error in sending value");
+    }
+}
+
+fn least_common_value(tile_to_player: &BTreeMap<u32, u32>) -> Option<Vec<u32>> {
+
+    let mut counts = HashMap::new();
+
+    for &player_id in tile_to_player.values() {
+        *counts.entry(player_id).or_insert(0) += 1;
+    }
+
+    let min_count = counts.values().min().cloned();
+
+    let least_common_values: Vec<_> = counts.into_iter()
+        .filter_map(|(player_id, count)| if Some(count) == min_count { Some(player_id) } else { None })
+        .collect();
+
+    if !least_common_values.is_empty() {
+        Some(least_common_values)
+    } else {
+        None
     }
 }
 

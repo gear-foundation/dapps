@@ -6,7 +6,7 @@ use tequila_train_io::*;
 #[derive(Debug, Default)]
 pub struct GameLauncher {
     pub games: HashMap<ActorId, Game>,
-    pub players_to_game_status: HashMap<ActorId, PlayerStatus>,
+    pub players_to_game_id: HashMap<ActorId, ActorId>,
     pub config: Config,
 }
 
@@ -15,10 +15,8 @@ static mut GAME_LAUNCHER: Option<GameLauncher> = None;
 
 impl GameLauncher {
     pub fn create_game(&mut self, msg_source: ActorId, msg_value: u128) -> Result<Event, Error> {
-        if let Some(status) = self.players_to_game_status.get(&msg_source) {
-            if let PlayerStatus::Playing(_) = status {
-                return Err(Error::SeveralGames);
-            }   
+        if self.players_to_game_id.contains_key(&msg_source) {
+            return Err(Error::SeveralGames);
         }
 
         let mut game = Game {
@@ -28,8 +26,8 @@ impl GameLauncher {
         };
         game.initial_players.push(msg_source);
         self.games.insert(msg_source, game);
-        self.players_to_game_status
-            .insert(msg_source, PlayerStatus::Playing(msg_source));
+        self.players_to_game_id
+            .insert(msg_source, msg_source);
         Ok(Event::GameCreated)
     }
 
@@ -107,14 +105,8 @@ impl GameLauncher {
                 if game.bid != 0 {
                     send_value(winner, prize * game.initial_players.len() as u128);
                 }
-
-                game_state.players.iter().for_each(|player| {
-                    self
-                        .players_to_game_status
-                        .insert(player.id, PlayerStatus::GameFinished { admin: game.admin, winner_index: current_player, winner, prize });
-                });
                 
-                game.state = State::Winner(winner);
+                game.state = State::Winners(vec![winner]);
             }
 
         }
@@ -129,10 +121,8 @@ impl GameLauncher {
         creator: ActorId,
     ) -> Result<Event, Error> {
 
-        if let Some(status) = self.players_to_game_status.get(&msg_source) {
-            if let PlayerStatus::Playing(_) = status {
-                return Err(Error::SeveralGames);
-            }      
+        if self.players_to_game_id.contains_key(&msg_source) {
+            return Err(Error::SeveralGames);  
         }
         let game = self
             .games
@@ -156,8 +146,8 @@ impl GameLauncher {
         }
 
         game.initial_players.push(msg_source);
-        self.players_to_game_status
-            .insert(msg_source, PlayerStatus::Playing(creator));
+        self.players_to_game_id
+            .insert(msg_source, creator);
         Ok(Event::Registered { player: msg_source })
     }
 
@@ -183,7 +173,7 @@ impl GameLauncher {
         send_value(msg_src, game.bid);
         let index_to_remove = game.initial_players.iter().position(|x| x == &msg_src).expect("Critical Error");
         game.initial_players.remove(index_to_remove);
-        self.players_to_game_status.remove(&msg_src);
+        self.players_to_game_id.remove(&msg_src);
 
         Ok(Event::RegistrationCanceled)
     }
@@ -211,7 +201,7 @@ impl GameLauncher {
         send_value(player_id, game.bid);
         let index_to_remove = game.initial_players.iter().position(|x| x == &player_id).expect("Critical Error");
         game.initial_players.remove(index_to_remove);
-        self.players_to_game_status.remove(&player_id);
+        self.players_to_game_id.remove(&player_id);
 
         Ok(Event::PlayerDeleted { player_id })
     }
@@ -223,22 +213,26 @@ impl GameLauncher {
             .get_mut(&msg_src)
             .ok_or(Error::GameDoesNotExist)?;
 
-        if game.state != State::Playing && game.state != State::Registration {
-            return Err(Error::GameFinished);
+        if game.state == State::Playing || game.state == State::Registration {
+            game.initial_players.iter().for_each(|id| {
+                if game.bid != 0 {
+                    send_value(*id, game.bid);
+                }
+                self.players_to_game_id.remove(id);
+            });
+        } else {
+            game.initial_players.iter().for_each(|id| {
+                self.players_to_game_id.remove(id);
+            });
         }
 
-        game.initial_players.iter().for_each(|id| {
-            if game.bid != 0 {
-                send_value(*id, game.bid);
-            }
-            self.players_to_game_status
-                .insert(*id, PlayerStatus::GameCanceled(msg_src));
-        });
-
-        self.players_to_game_status.remove(&msg_src);
         self.games.remove(&msg_src);
 
         Ok(Event::GameCanceled)
+    }
+    pub fn leave_game(&mut self) -> Result<Event, Error> {
+        self.players_to_game_id.remove(&msg::source());
+        Ok(Event::GameLeft)
     }
 }
 
@@ -296,22 +290,8 @@ fn process_handle() -> Result<Event, Error> {
             if let Some(game_state) = &mut game.game_state {
                 let result = game_state.skip_turn(player, game.bid);
                 match result {
-                    Ok(Event::GameFinished { winner }) => {
-                        game.state = State::Winner(winner);
-                        let prize = game.initial_players.len() as u128 * game.bid;
-                        game.initial_players.iter().for_each(|id| {
-                            game_launcher
-                                .players_to_game_status
-                                .insert(*id, PlayerStatus::GameFinished { admin: game.admin, winner_index: game_state.current_player, winner, prize });
-                        })
-                    }
-                    Ok(Event::GameStalled) => {
-                        game.state = State::Stalled;
-                        game.initial_players.iter().for_each(|id| {
-                            game_launcher
-                                .players_to_game_status
-                                .insert(*id, PlayerStatus::GameStalled(game.admin));
-                        })
+                    Ok(Event::GameFinished { ref winners }) => {
+                        game.state = State::Winners(winners.clone());
                     }
                     Ok(Event::Skipped) => {
                         debug!("SEND CHECK GAME");
@@ -360,22 +340,8 @@ fn process_handle() -> Result<Event, Error> {
                 let result =
                     game_state.make_turn(player, tile_id, track_id, remove_train, game.bid);
                 match result {
-                    Ok(Event::GameFinished { winner }) => {
-                        game.state = State::Winner(winner);
-                        let prize = game.initial_players.len() as u128 * game.bid;
-                        game.initial_players.iter().for_each(|id| {
-                            game_launcher
-                                .players_to_game_status
-                                .insert(*id, PlayerStatus::GameFinished { admin: game.admin, winner_index: game_state.current_player, winner, prize });
-                        })
-                    }
-                    Ok(Event::GameStalled) => {
-                        game.state = State::Stalled;
-                        game.initial_players.iter().for_each(|id| {
-                            game_launcher
-                                .players_to_game_status
-                                .insert(*id, PlayerStatus::GameStalled(game.admin));
-                        })
+                    Ok(Event::GameFinished { ref winners }) => {
+                        game.state = State::Winners(winners.clone());
                     }
                     Ok(Event::Placed { .. }) => {
                         msg::send_with_gas_delayed(
@@ -412,6 +378,7 @@ fn process_handle() -> Result<Event, Error> {
         Command::CheckGame { game_id, last_activity_time } => game_launcher.check_game(game_id, last_activity_time),
         Command::StartGame => game_launcher.start(),
         Command::CancelGame => game_launcher.cancel_game(),
+        Command::LeaveGame => game_launcher.leave_game(),
     }
 }
 
@@ -425,23 +392,22 @@ extern fn state() {
     let query: StateQuery = msg::load().expect("Unable to load the state query");
     let reply = match query {
         StateQuery::All => StateReply::All(game_launcher.into()),
-        StateQuery::GetPlayerInfo { player_id } => StateReply::PlayerInfo(
-            game_launcher
-                .players_to_game_status
-                .get(&player_id)
-                .cloned(),
-        ),
-        StateQuery::GetGame { creator_id } => {
-            let game_reply = game_launcher.games.get(&creator_id)
-                .map(|game| {
-                    let last_activity_time_diff = game.game_state.as_ref().map(|state| game_launcher.config.time_to_move as u64 - (exec::block_timestamp() - state.last_activity_time));
-                    (game.clone(), last_activity_time_diff)
-                })
-                .map(Some)
-                .unwrap_or(None);
+        StateQuery::GetGame { player_id } => {
+            if let Some(creator_id) = game_launcher.players_to_game_id.get(&player_id){
+                let game_reply = game_launcher.games.get(creator_id)
+                    .map(|game| {
+                        let last_activity_time_diff = game.game_state.as_ref().map(|state| game_launcher.config.time_to_move as u64 - (exec::block_timestamp() - state.last_activity_time));
+                        (game.clone(), last_activity_time_diff)
+                    })
+                    .map(Some)
+                    .unwrap_or(None);
 
 
-            StateReply::Game(game_reply)
+                StateReply::Game(game_reply)
+            } else {
+                StateReply::Game(None)
+            }
+            
 
         }
     };
@@ -453,15 +419,15 @@ impl From<GameLauncher> for GameLauncherState {
         GameLauncher {
             games,
             config,
-            players_to_game_status,
+            players_to_game_id,
         }: GameLauncher,
     ) -> Self {
         let games = games.into_iter().collect();
-        let players_to_game_status = players_to_game_status.into_iter().collect();
+        let players_to_game_id = players_to_game_id.into_iter().collect();
         Self {
             games,
             config,
-            players_to_game_status,
+            players_to_game_id,
         }
     }
 }

@@ -148,9 +148,9 @@ impl TestFunc for Program<'_> {
             None
         }
     }
-    fn get_game_state(&self, creator_id: ActorId) -> Option<(Game, Option<u64>)> {
+    fn get_game_state(&self, player_id: ActorId) -> Option<(Game, Option<u64>)> {
         let reply = self
-            .read_state(StateQuery::GetGame { creator_id })
+            .read_state(StateQuery::GetGame { player_id })
             .expect("Unexpected invalid state.");
         if let StateReply::Game(state) = reply {
             state
@@ -281,7 +281,7 @@ fn cancel_register() {
         .get_all_state()
         .expect("Unexpected invalid game state.");
     assert_eq!(state.games[0].1.initial_players.len(), 1);
-    assert_eq!(state.players_to_game_status.len(), 1);
+    assert_eq!(state.players_to_game_id.len(), 1);
 }
 
 #[test]
@@ -323,7 +323,7 @@ fn delete_player() {
         .get_all_state()
         .expect("Unexpected invalid game state.");
     assert_eq!(state.games[0].1.initial_players.len(), 1);
-    assert_eq!(state.players_to_game_status.len(), 1);
+    assert_eq!(state.players_to_game_id.len(), 1);
 }
 
 #[test]
@@ -368,7 +368,7 @@ fn cancel_game() {
         .get_all_state()
         .expect("Unexpected invalid game state.");
     assert!(state.games.is_empty());
-    assert_eq!(state.players_to_game_status.len(), 1);
+    assert_eq!(state.players_to_game_id.len(), 0);
 }
 
 #[test]
@@ -414,7 +414,6 @@ fn failures_test() {
     );
     system.claim_value_from_mailbox(PLAYERS[2]);
     assert_eq!(system.balance_of(PLAYERS[2]), 2 * bid);
-
     // Wrong bid
     program.register(
         PLAYERS[2],
@@ -424,17 +423,15 @@ fn failures_test() {
     );
     system.claim_value_from_mailbox(PLAYERS[2]);
     assert_eq!(system.balance_of(PLAYERS[2]), 2 * bid);
-
     // Already registered
     program.register(
         PLAYERS[1],
         bid,
         PLAYERS[0].into(),
-        Some(Error::YouAlreadyRegistered),
+        Some(Error::SeveralGames),
     );
     system.claim_value_from_mailbox(PLAYERS[1]);
     assert_eq!(system.balance_of(PLAYERS[1]), bid);
-
     // Registered In Another Game
     program.create_game(PLAYERS[2], bid, None);
     program.register(
