@@ -11,7 +11,7 @@ const useProgram = () => {
   const [playerTiles, setPlayerTiles] = useState<DominoTileType[]>();
   const [playerChoice, setPlayerChoice] = useState<PlayerChoiceType>();
 
-  const [previousGame, setPreviousGame] = useState<any>(null);
+  const [previousGame, setPreviousGame] = useState<GameType | null>(null);
 
 
   return {

@@ -7,7 +7,6 @@ import { DominoItem } from '../../../common/domino-item';
 import mockData from '../mock/mock-data.json'
 
 export const MockGameSection = () => {
-
 	const gameState = mockData
 
 	const stateStartTile = gameState.startTile || 0
