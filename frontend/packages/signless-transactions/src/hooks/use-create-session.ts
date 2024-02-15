@@ -44,9 +44,15 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
     const accountVoucherId = Object.keys(vouchersForAccount)[0];
 
-    const declineExtrrinsic = api.voucher.call(accountVoucherId, { DeclineVoucher: null });
+    const details = await api?.voucher.getDetails(key, accountVoucherId as `0x${string}`);
+    const finilizedBlockHash = await api?.blocks.getFinalizedHead();
+    const currentBlockNumber = await api.blocks.getBlockNumber(finilizedBlockHash.toHex());
 
-    if (pair) {
+    const isExpired = currentBlockNumber.toNumber() > details.expiry;
+
+    if (!isExpired && pair) {
+      const declineExtrrinsic = api.voucher.call(accountVoucherId, { DeclineVoucher: null });
+
       await sendTransaction(declineExtrrinsic, pair, ['VoucherDeclined']);
     }
 
