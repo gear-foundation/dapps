@@ -1,4 +1,4 @@
-@use 'utils' as *;
+@use "utils" as *;
 
 .root {
   position: fixed;
@@ -7,6 +7,11 @@
   z-index: 20;
   width: calc(100vw - 32px);
   max-width: 480px;
+
+  @include lg {
+    right: 16px;
+    bottom: calc(20px + env(safe-area-inset-bottom));
+  }
 }
 
 .alert {
@@ -29,7 +34,7 @@
   text-transform: capitalize;
 
   &::before {
-    content: '';
+    content: "";
     display: inline-block;
     width: 20px;
     height: 20px;
