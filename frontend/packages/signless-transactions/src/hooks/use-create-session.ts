@@ -1,8 +1,9 @@
 import { HexString, ProgramMetadata } from '@gear-js/api';
 import { useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
-
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
+import { KeyringPair } from '@polkadot/keyring/types';
+import { sendTransaction } from '@/utils';
 
 type Session = {
   key: HexString;
@@ -32,14 +33,32 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     return { destination, payload, gasLimit };
   };
 
-  const deleteSession = () => {
+  const deleteSession = async (key: HexString, pair?: KeyringPair) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!metadata) throw new Error('Metadata not found');
 
     const message = getMessage({ DeleteSessionFromAccount: null });
     const extrinsic = api.message.send(message, metadata);
 
-    const txs = [extrinsic];
+    const vouchersForAccount = await api.voucher.getAllForAccount(key, programId);
+
+    const accountVoucherId = Object.keys(vouchersForAccount)[0];
+
+    const details = await api?.voucher.getDetails(key, accountVoucherId as `0x${string}`);
+    const finilizedBlockHash = await api?.blocks.getFinalizedHead();
+    const currentBlockNumber = await api.blocks.getBlockNumber(finilizedBlockHash.toHex());
+
+    const isExpired = currentBlockNumber.toNumber() > details.expiry;
+
+    if (!isExpired && pair) {
+      const declineExtrrinsic = api.voucher.call(accountVoucherId, { DeclineVoucher: null });
+
+      await sendTransaction(declineExtrrinsic, pair, ['VoucherDeclined']);
+    }
+
+    const revokeExtrrinsic = api.voucher.revoke(key, accountVoucherId);
+
+    const txs = [extrinsic, revokeExtrrinsic];
 
     batchSignAndSend(txs, { onError });
   };
