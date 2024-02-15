@@ -396,7 +396,7 @@ extern fn state() {
             if let Some(creator_id) = game_launcher.players_to_game_id.get(&player_id){
                 let game_reply = game_launcher.games.get(creator_id)
                     .map(|game| {
-                        let last_activity_time_diff = game.game_state.as_ref().map(|state| game_launcher.config.time_to_move as u64 - (exec::block_timestamp() - state.last_activity_time));
+                        let last_activity_time_diff = game.game_state.as_ref().map(|state| (game_launcher.config.time_to_move as u64).checked_sub(exec::block_timestamp() - state.last_activity_time)).flatten();
                         (game.clone(), last_activity_time_diff)
                     })
                     .map(Some)
