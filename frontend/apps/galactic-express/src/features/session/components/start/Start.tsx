@@ -27,6 +27,7 @@ type Props = {
   isUserAdmin: boolean;
   userAddress: string;
   adminAddress: HexString | undefined;
+  adminName: string;
   bid: string | undefined;
 };
 
@@ -34,7 +35,7 @@ type DecodedReply = {
   Err: string;
 };
 
-function Start({ participants, session, isUserAdmin, userAddress, adminAddress, bid }: Props) {
+function Start({ participants, session, isUserAdmin, userAddress, adminAddress, bid, adminName }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
   const { decodedAddress } = account || {};
@@ -123,7 +124,7 @@ function Start({ participants, session, isUserAdmin, userAddress, adminAddress, 
               {
                 id: adminAddress || '',
                 playerAddress: encodeAddress(adminAddress || ''),
-                playerName: 'Admin',
+                playerName: adminName,
               },
               ...participants.map((item) => ({
                 id: item[0],

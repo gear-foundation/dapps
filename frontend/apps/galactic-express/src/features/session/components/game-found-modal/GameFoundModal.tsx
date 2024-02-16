@@ -91,7 +91,13 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
         </div>
         <form className={styles.form} onSubmit={onJoinSubmit(handleJoinSession)}>
           <div className={cx(styles.input)}>
-            <TextField theme="dark" label="Enter your name:" variant="active" {...getJoinInputProps('name')} />
+            <TextField
+              theme="dark"
+              label="Enter your name:"
+              variant="active"
+              maxLength={20}
+              {...getJoinInputProps('name')}
+            />
             <span className={cx(styles['field-error'])}>{joinErrors.name}</span>
           </div>
           <div className={styles.inputs}>

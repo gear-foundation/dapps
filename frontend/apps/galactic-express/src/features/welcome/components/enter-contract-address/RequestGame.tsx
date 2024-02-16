@@ -260,7 +260,7 @@ function RequestGame() {
       {isJoinSessionModalShown && (
         <GameFoundModal
           entryFee={getFormattedBalanceValue(withoutCommas(foundState?.Game.bid || '')).toFixed()}
-          players={(foundState?.Game.stage.Registration.length || 0) + 1}
+          players={(foundState?.Game.stage.Registration?.length || 0) + 1}
           gasAmount={1.121}
           onSubmit={handleJoinSession}
           onClose={handleCloseFoundModal}

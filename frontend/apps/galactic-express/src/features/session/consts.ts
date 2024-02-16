@@ -48,7 +48,7 @@ const VALIDATE = {
   fuel: isGreaterThanZero,
 };
 
-const TABLE_HEADINGS = ['Player', 'Alive', 'Fuel Left', 'Altitude', 'Payload'];
+const TABLE_HEADINGS = ['Player', 'Name', 'Alive', 'Fuel Left', 'Altitude', 'Payload'];
 
 const PLAYER_COLORS = ['#eb5757', '#f2c94c', '#2f80ed', '#9b51e0'];
 

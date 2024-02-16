@@ -6,7 +6,7 @@ import { Container } from 'components';
 import { ReactComponent as LeftDoubleArrowSVG } from '../../assets/left-double-arrow.svg';
 import { ReactComponent as LeftArrowSVG } from '../../assets/left-arrow.svg';
 import { PLAYER_COLORS } from '../../consts';
-import { Event, Rank, Session as SessionType, Turns, Participant, TurnParticipant } from '../../types';
+import { Event, Rank, Session as SessionType, Turns, Participant, TurnParticipant, RankWithName } from '../../types';
 import { Traits } from '../traits';
 import { Radar } from '../radar';
 import { Table } from '../table';
@@ -62,6 +62,7 @@ function Session({ session, turns, rankings, userId, participants, admin }: Prop
 
         return {
           participant: participantInfo[0],
+          name: participants.find((part) => part[0] === participantInfo[0])?.[1].name,
           deadRound: !isAlive,
           firstDeadRound,
           fuelLeft: defineFuelLeftFormat(isAlive, participantInfo[1]?.Alive?.fuelLeft),
@@ -107,7 +108,9 @@ function Session({ session, turns, rankings, userId, participants, admin }: Prop
     const sortedRanks = sortRanks();
     const highestRank = sortedRanks?.[0]?.[1];
 
-    const winners = sortedRanks.filter((item) => item[1] === highestRank);
+    const winners = sortedRanks
+      .filter((item) => item[1] === highestRank)
+      .map((item) => [...item, participants.find((part) => part[0] === item[0])?.[1].name || '']) as RankWithName[];
 
     return {
       isUserWinner: winners.map((item) => item[0]).includes(userId || '0x'),

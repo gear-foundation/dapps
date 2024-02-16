@@ -4,13 +4,13 @@ import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
 import { useLaunchMessage } from 'features/session/hooks';
 import { shortenString } from 'features/session/utils';
-import { Rank } from 'features/session/types';
+import { Rank, RankWithName } from 'features/session/types';
 import styles from './WinStatus.module.scss';
 
 type Props = {
   type: 'win' | 'lose';
   userRank: string;
-  winners: Rank[];
+  winners: RankWithName[];
   admin: string | undefined;
 };
 
@@ -46,7 +46,7 @@ function WinStatus({ type, userRank, winners, admin }: Props) {
           <ul>
             {winners.map((item) => (
               <li className={cx(account?.decodedAddress === item[0] ? styles['user-winner'] : '')}>
-                {shortenString(item[0], 6)}
+                {item[2] || shortenString(item[0], 6)}
               </li>
             ))}
           </ul>

@@ -18,10 +18,12 @@ type Participant = [HexString, Strategy];
 type Results = {
   turns: Turns;
   rankings: Rank[];
+  participants: Participant[];
 };
 
 type Event = {
   participant: HexString;
+  name: string | undefined;
   deadRound: boolean;
   firstDeadRound: number;
   fuelLeft: string;
@@ -30,6 +32,8 @@ type Event = {
 };
 
 type Rank = [HexString, string];
+
+type RankWithName = [`0x${string}`, string, string];
 
 type LaunchState = {
   Game: {
@@ -44,6 +48,7 @@ type LaunchState = {
     reward: string;
     sessionId: string;
     bid: string;
+    adminName: string;
   };
 };
 
@@ -67,4 +72,15 @@ type PlayerInfo = {
   PlayerInfo: PlayerStatus;
 };
 
-export type { LaunchState, Event, Participant, Turns, Rank, TurnParticipant, Session, PlayerStatus, PlayerInfo };
+export type {
+  LaunchState,
+  Event,
+  Participant,
+  Turns,
+  Rank,
+  TurnParticipant,
+  Session,
+  PlayerStatus,
+  PlayerInfo,
+  RankWithName,
+};

@@ -1,7 +1,7 @@
 import { PLAYER_COLORS } from 'features/session/consts';
 import { CSSProperties } from 'react';
 import cropEarthSrc from '../../assets/earth-crop.gif';
-import { Event, Rank } from '../../types';
+import { Event, RankWithName } from '../../types';
 import styles from './Radar.module.scss';
 import { WinStatus } from '../win-status';
 
@@ -11,7 +11,7 @@ type Props = {
   roundsCount: number;
   isWinner: boolean;
   userRank: string;
-  winners: Rank[];
+  winners: RankWithName[];
   admin: string | undefined;
 };
 

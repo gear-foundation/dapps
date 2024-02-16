@@ -1,18 +1,20 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { Start, Session, useLaunchState } from 'features/session';
 import { Welcome } from 'features/welcome/components/welcome';
+import { Button } from '@gear-js/vara-ui';
 import { RequestGame } from 'features/welcome/components/enter-contract-address';
+import { SessionPassedInfo } from 'features/session/components/session-passed-info';
 
 function Home() {
   const { account } = useAccount();
   const state = useLaunchState();
-  const { admin, stage, sessionId, altitude, weather, reward, bid } = state || {};
+  const { admin, stage, sessionId, altitude, weather, reward, bid, adminName } = state || {};
 
   const isSessionEnded = Object.keys(stage || {})[0] === 'Results';
 
   const rankings = stage?.Results?.rankings;
   const turns = stage?.Results?.turns;
-  const participants = stage?.Registration;
+  const participants = stage?.Registration || stage?.Results?.participants;
 
   const isUserAdmin = admin === account?.decodedAddress;
 
@@ -39,6 +41,7 @@ function Home() {
                   bid={bid}
                   isUserAdmin={isUserAdmin}
                   adminAddress={admin}
+                  adminName={adminName || ''}
                   userAddress={account?.address || ''}
                 />
               )}
@@ -59,7 +62,7 @@ function Home() {
                       admin={admin}
                     />
                   ) : (
-                    <div>The session has passed. You are not participating in this one</div>
+                    <SessionPassedInfo />
                   )}
                 </>
               )}
