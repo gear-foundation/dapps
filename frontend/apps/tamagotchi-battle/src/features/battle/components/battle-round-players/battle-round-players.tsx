@@ -7,8 +7,8 @@ import { cn, gasLimitToNumber, toNumber } from 'app/utils';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
 import { useCheckBalance } from '@dapps-frontend/hooks';
-import { BATTLE_ADDRESS } from 'features/battle/consts';
 import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
+import { GAS_LIMIT } from 'app/consts';
 
 export const BattleRoundPlayers = () => {
   const { account } = useAccount();
@@ -41,6 +41,7 @@ export const BattleRoundPlayers = () => {
           onSuccess,
           onError,
           voucherId,
+          gasLimit: GAS_LIMIT,
         });
       },
       onError,
@@ -55,7 +56,7 @@ export const BattleRoundPlayers = () => {
     checkBalance(
       gasLimitToNumber(api?.blockGasLimit),
       () => {
-        handleMessage({ payload, onSuccess, onError });
+        handleMessage({ payload, onSuccess, onError, gasLimit: GAS_LIMIT });
       },
       onError,
     );
@@ -69,7 +70,7 @@ export const BattleRoundPlayers = () => {
     checkBalance(
       gasLimitToNumber(api?.blockGasLimit),
       () => {
-        handleMessage({ payload, onSuccess, onError });
+        handleMessage({ payload, onSuccess, onError, gasLimit: GAS_LIMIT });
       },
       onError,
     );

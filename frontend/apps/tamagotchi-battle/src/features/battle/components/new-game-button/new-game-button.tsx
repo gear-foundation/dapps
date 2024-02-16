@@ -4,8 +4,8 @@ import { useBattleMessage } from 'features/battle/hooks';
 import { Button } from '@gear-js/ui';
 import { useApi } from '@gear-js/react-hooks';
 import { gasLimitToNumber } from 'app/utils';
-import { BATTLE_ADDRESS } from 'features/battle/consts';
 import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
+import { GAS_LIMIT } from 'app/consts';
 
 export const NewGameButton = () => {
   const { api } = useApi();
@@ -30,6 +30,7 @@ export const NewGameButton = () => {
           onSuccess,
           onError,
           voucherId,
+          gasLimit: GAS_LIMIT,
         });
       },
       onError,
