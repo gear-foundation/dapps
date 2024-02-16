@@ -1,6 +1,6 @@
 #![no_std]
 
-use gstd::{collections::HashMap, msg, prelude::*, ActorId, exec, debug};
+use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId};
 use tequila_train_io::*;
 
 #[derive(Debug, Default)]
@@ -10,10 +10,10 @@ pub struct GameLauncher {
     pub config: Config,
 }
 
-/// All game initializing logic is inside `GameState` constructor.
 static mut GAME_LAUNCHER: Option<GameLauncher> = None;
 
 impl GameLauncher {
+    // creating a game session, after this action other users can register to the game using the creator's address.
     pub fn create_game(&mut self, msg_source: ActorId, msg_value: u128) -> Result<Event, Error> {
         if self.players_to_game_id.contains_key(&msg_source) {
             return Err(Error::SeveralGames);
@@ -26,11 +26,11 @@ impl GameLauncher {
         };
         game.initial_players.push(msg_source);
         self.games.insert(msg_source, game);
-        self.players_to_game_id
-            .insert(msg_source, msg_source);
+        self.players_to_game_id.insert(msg_source, msg_source);
         Ok(Event::GameCreated)
     }
 
+    // Start the game and send a delayed message to check the timer
     pub fn start(&mut self) -> Result<Event, Error> {
         let msg_src = msg::source();
         let game = self
@@ -49,6 +49,7 @@ impl GameLauncher {
         game.game_state = GameState::new(game.initial_players.clone(), self.config.time_to_move);
         game.state = State::Playing;
 
+        // send a delayed message to check if the current player has made a move within the `config.time_to_move` limit
         msg::send_with_gas_delayed(
             exec::program_id(),
             Command::CheckGame {
@@ -57,72 +58,90 @@ impl GameLauncher {
             },
             self.config.gas_to_check_game,
             0,
-            self.config.time_to_move/3000,
+            self.config.time_to_move / 3000,
         )
         .expect("Error in sending delayed message");
         Ok(Event::GameStarted)
     }
 
+    // This function can only be called by the program itself
+    // and is used to check if the player has made a move within the time limit.
+    // If the player has not made a move, we mark the player as lost,
+    // change the current player and send the same delayed message to check another player.
+    // If only one player survives, we make that player the winner
     pub fn check_game(
         &mut self,
         game_id: ActorId,
         last_activity_time: u64,
     ) -> Result<Event, Error> {
-
-        debug!("CHECK GAME");
         let program_id = exec::program_id();
         if msg::source() != program_id {
-            return Err(Error::OnlyProgramCanSend)
+            return Err(Error::OnlyProgramCanSend);
         }
         let game = self
             .games
             .get_mut(&game_id)
             .ok_or(Error::GameDoesNotExist)?;
 
-        let game_state = game.game_state.as_mut().ok_or(Error::GameHasNotStartedYet)?;
+        let game_state = game
+            .game_state
+            .as_mut()
+            .ok_or(Error::GameHasNotStartedYet)?;
 
+        // use the `last_activity_time` variable as an identifier of whether a move has been made
         if game_state.last_activity_time == last_activity_time {
-            debug!("CHECK GAME 2 {:?}", last_activity_time);
             let current_player = game_state.current_player;
             game_state.players[current_player as usize].lose = true;
-            if let Some(next_player) = game_state.next_player(current_player) {
-                game_state.current_player = next_player;
+            // count how many players are left in the game
+            let count_players_is_live = game_state
+                .players
+                .iter()
+                .filter(|&player| !player.lose)
+                .count();
+
+            if count_players_is_live > 1 {
+                // change the current player to the next player who has not dropped out of the game
+                game_state.current_player = game_state
+                    .next_player(current_player)
+                    .expect("Live players more than 0");
+                // change the time of last activity
                 game_state.last_activity_time = exec::block_timestamp();
                 msg::send_delayed(
                     program_id,
                     Command::CheckGame {
                         game_id,
-                        last_activity_time: game_state.last_activity_time
+                        last_activity_time: game_state.last_activity_time,
                     },
                     0,
-                    self.config.time_to_move/3000,
+                    self.config.time_to_move / 3000,
                 )
                 .expect("Error in sending delayed message");
             } else {
-
-                let winner = game_state.players[current_player as usize].id;
+                let winner_index = game_state
+                    .next_player(current_player)
+                    .expect("Live players more than 0");
+                let winner = game_state.players[winner_index as usize].id;
                 let prize = game.bid;
                 if game.bid != 0 {
                     send_value(winner, prize * game.initial_players.len() as u128);
                 }
-                
+
                 game.state = State::Winners(vec![winner]);
             }
-
         }
         Ok(Event::Checked)
-
     }
 
+    // Registration for the game with the rate specified by the admin at the create of the game
+    // The address of the game creator is used as a game identifier
     pub fn register(
         &mut self,
         msg_source: ActorId,
         msg_value: u128,
         creator: ActorId,
     ) -> Result<Event, Error> {
-
         if self.players_to_game_id.contains_key(&msg_source) {
-            return Err(Error::SeveralGames);  
+            return Err(Error::SeveralGames);
         }
         let game = self
             .games
@@ -146,11 +165,11 @@ impl GameLauncher {
         }
 
         game.initial_players.push(msg_source);
-        self.players_to_game_id
-            .insert(msg_source, creator);
+        self.players_to_game_id.insert(msg_source, creator);
         Ok(Event::Registered { player: msg_source })
     }
 
+    // A registered player has the opportunity to leave the game and get his bet back
     pub fn cancel_register(&mut self, creator: ActorId) -> Result<Event, Error> {
         let game = self
             .games
@@ -171,13 +190,16 @@ impl GameLauncher {
         }
 
         send_value(msg_src, game.bid);
-        let index_to_remove = game.initial_players.iter().position(|x| x == &msg_src).expect("Critical Error");
-        game.initial_players.remove(index_to_remove);
+
+        if let Some(index_to_remove) = game.initial_players.iter().position(|id| id == &msg_src) {
+            game.initial_players.remove(index_to_remove);
+        }
         self.players_to_game_id.remove(&msg_src);
 
         Ok(Event::RegistrationCanceled)
     }
 
+    // An admin can forcibly remove a player at the moment of registration after which the bet is refunded
     pub fn delete_player(&mut self, player_id: ActorId) -> Result<Event, Error> {
         let msg_src = msg::source();
 
@@ -199,12 +221,17 @@ impl GameLauncher {
         }
 
         send_value(player_id, game.bid);
-        let index_to_remove = game.initial_players.iter().position(|x| x == &player_id).expect("Critical Error");
+        let index_to_remove = game
+            .initial_players
+            .iter()
+            .position(|x| x == &player_id)
+            .expect("Critical Error");
         game.initial_players.remove(index_to_remove);
         self.players_to_game_id.remove(&player_id);
 
         Ok(Event::PlayerDeleted { player_id })
     }
+    // The admin can forcibly end the game with all the players' bets going back
     pub fn cancel_game(&mut self) -> Result<Event, Error> {
         let msg_src = msg::source();
 
@@ -213,23 +240,21 @@ impl GameLauncher {
             .get_mut(&msg_src)
             .ok_or(Error::GameDoesNotExist)?;
 
-        if game.state == State::Playing || game.state == State::Registration {
-            game.initial_players.iter().for_each(|id| {
-                if game.bid != 0 {
-                    send_value(*id, game.bid);
-                }
-                self.players_to_game_id.remove(id);
-            });
-        } else {
-            game.initial_players.iter().for_each(|id| {
-                self.players_to_game_id.remove(id);
-            });
-        }
+        // if the game is at the registration stage or the game is still in progress,
+        // we must refund everyone their bets and and remove them from the list of games
+        game.initial_players.iter().for_each(|id| {
+            if (game.state == State::Playing || game.state == State::Registration) && game.bid != 0
+            {
+                send_value(*id, game.bid);
+            }
+            self.players_to_game_id.remove(id);
+        });
 
         self.games.remove(&msg_src);
 
         Ok(Event::GameCanceled)
     }
+    // leave the game (uses when the game has already passed to remove yourself from the list of `players_to_game_id`)
     pub fn leave_game(&mut self) -> Result<Event, Error> {
         self.players_to_game_id.remove(&msg::source());
         Ok(Event::GameLeft)
@@ -290,20 +315,25 @@ fn process_handle() -> Result<Event, Error> {
             if let Some(game_state) = &mut game.game_state {
                 let result = game_state.skip_turn(player, game.bid);
                 match result {
+                    // if the game is over, we change the game state
                     Ok(Event::GameFinished { ref winners }) => {
                         game.state = State::Winners(winners.clone());
                     }
+                    // if the move is successful, we must send a delayed message to check if the next player has made a move
                     Ok(Event::Skipped) => {
-                        debug!("SEND CHECK GAME");
                         msg::send_with_gas_delayed(
                             exec::program_id(),
                             Command::CheckGame {
                                 game_id: creator,
-                                last_activity_time: game.game_state.clone().unwrap().last_activity_time,
+                                last_activity_time: game
+                                    .game_state
+                                    .clone()
+                                    .unwrap()
+                                    .last_activity_time,
                             },
                             game_launcher.config.gas_to_check_game,
                             0,
-                            game_launcher.config.time_to_move/3000,
+                            game_launcher.config.time_to_move / 3000,
                         )
                         .expect("Error in sending delayed message");
                     }
@@ -340,19 +370,25 @@ fn process_handle() -> Result<Event, Error> {
                 let result =
                     game_state.make_turn(player, tile_id, track_id, remove_train, game.bid);
                 match result {
+                    // if the game is over, we change the game state
                     Ok(Event::GameFinished { ref winners }) => {
                         game.state = State::Winners(winners.clone());
                     }
+                    // if the move is successful, we must send a delayed message to check if the next player has made a move
                     Ok(Event::Placed { .. }) => {
                         msg::send_with_gas_delayed(
                             exec::program_id(),
                             Command::CheckGame {
                                 game_id: creator,
-                                last_activity_time: game.game_state.clone().unwrap().last_activity_time,
+                                last_activity_time: game
+                                    .game_state
+                                    .clone()
+                                    .unwrap()
+                                    .last_activity_time,
                             },
                             game_launcher.config.gas_to_check_game,
                             0,
-                            game_launcher.config.time_to_move/3000,
+                            game_launcher.config.time_to_move / 3000,
                         )
                         .expect("Error in sending delayed message");
                     }
@@ -375,7 +411,10 @@ fn process_handle() -> Result<Event, Error> {
         }
         Command::CancelRegistration { creator } => game_launcher.cancel_register(creator),
         Command::DeletePlayer { player_id } => game_launcher.delete_player(player_id),
-        Command::CheckGame { game_id, last_activity_time } => game_launcher.check_game(game_id, last_activity_time),
+        Command::CheckGame {
+            game_id,
+            last_activity_time,
+        } => game_launcher.check_game(game_id, last_activity_time),
         Command::StartGame => game_launcher.start(),
         Command::CancelGame => game_launcher.cancel_game(),
         Command::LeaveGame => game_launcher.leave_game(),
@@ -393,22 +432,24 @@ extern fn state() {
     let reply = match query {
         StateQuery::All => StateReply::All(game_launcher.into()),
         StateQuery::GetGame { player_id } => {
-            if let Some(creator_id) = game_launcher.players_to_game_id.get(&player_id){
-                let game_reply = game_launcher.games.get(creator_id)
+            if let Some(creator_id) = game_launcher.players_to_game_id.get(&player_id) {
+                let game_reply = game_launcher
+                    .games
+                    .get(creator_id)
                     .map(|game| {
-                        let last_activity_time_diff = game.game_state.as_ref().map(|state| (game_launcher.config.time_to_move as u64).checked_sub(exec::block_timestamp() - state.last_activity_time)).flatten();
+                        let last_activity_time_diff = game.game_state.as_ref().and_then(|state| {
+                            (game_launcher.config.time_to_move as u64)
+                                .checked_sub(exec::block_timestamp() - state.last_activity_time)
+                        });
                         (game.clone(), last_activity_time_diff)
                     })
                     .map(Some)
                     .unwrap_or(None);
 
-
                 StateReply::Game(game_reply)
             } else {
                 StateReply::Game(None)
             }
-            
-
         }
     };
     msg::reply(reply, 0).expect("Failed to encode or reply with the game state");

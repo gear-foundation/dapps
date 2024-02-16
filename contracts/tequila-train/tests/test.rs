@@ -201,46 +201,12 @@ fn success_test() {
         .expect("Unexpected invalid game state.");
     println!("STATE: {:?}", state);
     system.spend_blocks(2);
-    let current_player = (current_player + 1) as usize % PLAYERS.len();
+    let current_player = (current_player + 1) % PLAYERS.len();
     program.skip(
         PLAYERS[current_player],
         PLAYERS[0].into(),
         Some(Error::NotYourTurnOrYouLose),
     );
-
-    // program.place(PLAYERS[0], ADMIN.into(), 27, 0, false, None);
-
-    // assert_eq!(
-    //     state.games[0].1
-    //         .game_state
-    //         .expect("Invalid game state. Game is not initialized.")
-    //         .players,
-    //     vec![(0.into(), "A".to_owned()), (1.into(), "B".to_owned())]
-    // );
-
-    // program.restart_game(2, None);
-    // program.register(2, 2.into(), "C".to_owned(), None);
-    // program.register(2, 3.into(), "D".to_owned(), None);
-    // program.start_game(2, None);
-
-    // let state: GameLauncherState = program
-    //     .read_state(0)
-    //     .expect("Unexpected invalid game state.");
-
-    // assert_eq!(
-    //     state
-    //         .game_state
-    //         .expect("Invalid game state. Game is not initialized.")
-    //         .players,
-    //     vec![(2.into(), "C".to_owned()), (3.into(), "D".to_owned())]
-    // );
-    // program.place(2, 27, 0, false, None);
-    // let state: GameLauncherState = program
-    //     .read_state(0)
-    //     .expect("Unexpected invalid game state.");
-    // assert!(!state.game_state.unwrap().tracks[0].tiles.is_empty());
-    // program.skip(2, None);
-    // program.skip(3, None);
 }
 #[test]
 fn cancel_register() {

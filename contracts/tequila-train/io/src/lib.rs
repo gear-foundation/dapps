@@ -2,7 +2,10 @@
 
 use gmeta::{In, InOut, Metadata};
 use gstd::{
-    collections::{BTreeMap, BTreeSet, HashMap}, exec, msg, prelude::*, ActorId
+    collections::{BTreeMap, BTreeSet},
+    exec, msg,
+    prelude::*,
+    ActorId,
 };
 
 pub struct ContractMetadata;
@@ -134,7 +137,7 @@ pub enum Command {
     },
     StartGame,
     CancelGame,
-    LeaveGame
+    LeaveGame,
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Debug)]
@@ -159,7 +162,7 @@ pub enum Event {
     GameStarted,
     GameCanceled,
     GameLeft,
-    Checked
+    Checked,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
@@ -185,7 +188,7 @@ pub enum Error {
     YouAreAdmin,
     NotEnoughPlayers,
     GameIsGoing,
-    OnlyProgramCanSend
+    OnlyProgramCanSend,
 }
 
 #[derive(Debug, TypeInfo, Encode, Decode, Clone, Default)]
@@ -397,7 +400,9 @@ impl GameState {
         if count_players_is_live == 1 {
             self.last_activity_time = time;
             send_value(player, bid * self.players.len() as u128);
-            return Ok(Event::GameFinished { winners: vec![player] });
+            return Ok(Event::GameFinished {
+                winners: vec![player],
+            });
         }
 
         self.tracks[i].has_train = true;
@@ -420,7 +425,9 @@ impl GameState {
         if remaining_tiles == 0 {
             let player = self.players[self.current_player as usize].clone();
             send_value(player.id, bid * self.players.len() as u128);
-            return Some(Event::GameFinished { winners: vec![player.id] });
+            return Some(Event::GameFinished {
+                winners: vec![player.id],
+            });
         }
 
         // check if any next player is able to make a turn
@@ -448,16 +455,17 @@ impl GameState {
                 self.current_player = next_player;
                 return None;
             }
+            if !self.remaining_tiles.is_empty() {
+                if self.tracks[player_index].has_train {
+                    // give the player randomly chosen tile
+                    let tile_id = get_random_from_set(&self.remaining_tiles);
+                    self.remaining_tiles.remove(&tile_id);
 
-            if self.tracks[player_index].has_train {
-                // give the player randomly chosen tile
-                let tile_id = get_random_from_set(&self.remaining_tiles);
-                self.remaining_tiles.remove(&tile_id);
+                    self.tile_to_player.insert(tile_id, next_player);
+                    self.current_player = next_player;
 
-                self.tile_to_player.insert(tile_id, next_player);
-                self.current_player = next_player;
-
-                return None;
+                    return None;
+                }
             }
 
             self.tracks[player_index].has_train = true;
@@ -465,13 +473,9 @@ impl GameState {
             Some(next_player)
         });
 
-        if check_result.is_some() {
-            // no one can make turn. Game is over
-            let winners_index = least_common_value(&self.tile_to_player).expect("Error: tile_to_player is empty");
-
-            let winners: Vec<ActorId> = winners_index.iter()
-                .filter_map(|&i| if !self.players[i as usize].lose { Some(self.players[i as usize].id) } else { None })
-                .collect();
+        if check_result.is_some() && self.remaining_tiles.is_empty() {
+            // no one can make turn. Point scoring
+            let winners = self.point_scoring();
 
             let prize = bid * self.players.len() as u128 / winners.len() as u128;
 
@@ -527,7 +531,9 @@ impl GameState {
         if count_players_is_live == 1 {
             self.last_activity_time = time;
             send_value(player, bid * self.players.len() as u128);
-            return Ok(Event::GameFinished { winners: vec![player] });
+            return Ok(Event::GameFinished {
+                winners: vec![player],
+            });
         }
 
         // check player owns the tile
@@ -557,7 +563,7 @@ impl GameState {
         }
 
         // remove train if all criterea met
-        if remove_train && track_id == self.current_player{
+        if remove_train && track_id == self.current_player {
             self.tracks[i].has_train = false;
             self.shots[i] += 1;
         }
@@ -596,32 +602,38 @@ impl GameState {
 
         None
     }
+    fn point_scoring(&self) -> Vec<ActorId> {
+        let mut scores: BTreeMap<ActorId, u16> = BTreeMap::new();
+
+        for (tile, player) in &self.tile_to_player {
+            if !self.players[*player as usize].lose {
+                let tile_score =
+                    self.tiles[*tile as usize].left as u8 + self.tiles[*tile as usize].right as u8;
+                scores
+                    .entry(self.players[*player as usize].id)
+                    .and_modify(|scores| *scores += tile_score as u16)
+                    .or_insert(tile_score as u16);
+            }
+        }
+
+        let min_score = scores.values().min().cloned();
+
+        scores
+            .iter()
+            .filter_map(|(actor_id, &score)| {
+                if Some(score) == min_score {
+                    Some(*actor_id)
+                } else {
+                    None
+                }
+            })
+            .collect()
+    }
 }
 
 pub fn send_value(destination: ActorId, value: u128) {
     if value != 0 {
         msg::send_with_gas(destination, "", 0, value).expect("Error in sending value");
-    }
-}
-
-fn least_common_value(tile_to_player: &BTreeMap<u32, u32>) -> Option<Vec<u32>> {
-
-    let mut counts = HashMap::new();
-
-    for &player_id in tile_to_player.values() {
-        *counts.entry(player_id).or_insert(0) += 1;
-    }
-
-    let min_count = counts.values().min().cloned();
-
-    let least_common_values: Vec<_> = counts.into_iter()
-        .filter_map(|(player_id, count)| if Some(count) == min_count { Some(player_id) } else { None })
-        .collect();
-
-    if !least_common_values.is_empty() {
-        Some(least_common_values)
-    } else {
-        None
     }
 }
 
