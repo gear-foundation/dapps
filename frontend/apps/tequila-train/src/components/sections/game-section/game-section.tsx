@@ -11,14 +11,16 @@ import { FinishedSection } from './finished-modal';
 import { useEffect } from 'react';
 
 export const GameSection = () => {
-  const { isAllowed, openWinnerPopup, setOpenWinnerPopup, openEmptyPopup, setOpenEmptyPopup } = useApp();
-  const { game: state, players, previousGame } = useGame();
+  const { isAllowed, openWinnerPopup, setOpenWinnerPopup, openEmptyPopup } = useApp();
+  const { game: state, players } = useGame();
 
   useEffect(() => {
     if (state && state.state.Winners) {
       setOpenWinnerPopup(true)
+    } else {
+      setOpenWinnerPopup(false)
     }
-  }, [state, previousGame])
+  }, [state])
 
   const stateStartTile = state?.gameState?.startTile
   const startTile = state && stateStartTile && findTile(stateStartTile, state.gameState.tiles)
