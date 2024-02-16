@@ -12,9 +12,10 @@ type Props = {
   isWinner: boolean;
   userRank: string;
   winners: Rank[];
+  admin: string | undefined;
 };
 
-function Radar({ currentEvents, currentRound, roundsCount, isWinner, userRank, winners }: Props) {
+function Radar({ currentEvents, currentRound, roundsCount, isWinner, userRank, winners, admin }: Props) {
   const defineHeightIndex = (current: number, firstDead: number) => {
     if (firstDead !== -1) {
       if (current < firstDead) {
@@ -46,9 +47,9 @@ function Radar({ currentEvents, currentRound, roundsCount, isWinner, userRank, w
   return (
     <div className={styles.container}>
       {isWinner ? (
-        <WinStatus type="win" userRank={userRank} winners={winners} />
+        <WinStatus type="win" userRank={userRank} winners={winners} admin={admin} />
       ) : (
-        <WinStatus type="lose" userRank={userRank} winners={winners} />
+        <WinStatus type="lose" userRank={userRank} winners={winners} admin={admin} />
       )}
       <div className={styles.field}>{getPlayers()}</div>
 

@@ -1,14 +1,10 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { CURRENT_GAME_ATOM, IS_CONTRACT_ADDRESS_INITIALIZED_ATOM } from 'atoms';
-import { useAtomValue } from 'jotai';
 import { Start, Session, useLaunchState } from 'features/session';
 import { Welcome } from 'features/welcome/components/welcome';
 import { RequestGame } from 'features/welcome/components/enter-contract-address';
 
 function Home() {
   const { account } = useAccount();
-  const currentGame = useAtomValue(CURRENT_GAME_ATOM);
-  const isContractAddressInitialized = useAtomValue(IS_CONTRACT_ADDRESS_INITIALIZED_ATOM);
   const state = useLaunchState();
   const { admin, stage, sessionId, altitude, weather, reward, bid } = state || {};
 
@@ -19,11 +15,10 @@ function Home() {
   const participants = stage?.Registration;
 
   const isUserAdmin = admin === account?.decodedAddress;
-  const isStateComing = !!state;
-  console.log(state);
+
   return (
     <>
-      {(!state || (!Number(sessionId) && isSessionEnded)) && (
+      {!state && !isSessionEnded && (
         <Welcome>
           <RequestGame />
         </Welcome>
@@ -61,6 +56,7 @@ function Home() {
                       turns={turns || []}
                       rankings={rankings || []}
                       userId={account?.decodedAddress}
+                      admin={admin}
                     />
                   ) : (
                     <div>The session has passed. You are not participating in this one</div>

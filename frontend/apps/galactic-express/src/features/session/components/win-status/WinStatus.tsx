@@ -2,7 +2,7 @@ import { useAtomValue } from 'jotai';
 import { cx } from 'utils';
 import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
-import { useNewSessionMessage } from 'features/session/hooks';
+import { useLaunchMessage } from 'features/session/hooks';
 import { shortenString } from 'features/session/utils';
 import { Rank } from 'features/session/types';
 import styles from './WinStatus.module.scss';
@@ -11,15 +11,24 @@ type Props = {
   type: 'win' | 'lose';
   userRank: string;
   winners: Rank[];
+  admin: string | undefined;
 };
 
-function WinStatus({ type, userRank, winners }: Props) {
-  const { meta, message: sendNewSessionMessage } = useNewSessionMessage();
+function WinStatus({ type, userRank, winners, admin }: Props) {
+  const { meta, message: sendNewSessionMessage } = useLaunchMessage();
   const { account } = useAccount();
 
+  const isAdmin = admin === account?.decodedAddress;
+
   const handleCreateNewSession = () => {
-    if (meta) {
-      sendNewSessionMessage({ payload: { CreateNewSession: null } });
+    if (!meta) {
+      return;
+    }
+
+    if (isAdmin) {
+      sendNewSessionMessage({ payload: { CancelGame: null } });
+    } else {
+      sendNewSessionMessage({ payload: { LeaveGame: null } });
     }
   };
 
@@ -43,7 +52,12 @@ function WinStatus({ type, userRank, winners }: Props) {
           </ul>
         </div>
       )}
-      <Button text="Play again" className={cx(styles.btn)} onClick={handleCreateNewSession} color="lightGreen" />
+      <Button
+        text={isAdmin ? 'Play again' : 'Leave game'}
+        className={cx(styles.btn)}
+        onClick={handleCreateNewSession}
+        color="lightGreen"
+      />
     </div>
   );
 }

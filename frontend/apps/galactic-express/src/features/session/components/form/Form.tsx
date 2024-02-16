@@ -1,4 +1,4 @@
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue, useSetAtom, useAtom } from 'jotai';
 import { Input, Button } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
 import { Card } from 'components';
@@ -9,7 +9,7 @@ import { useLaunchMessage } from '../../hooks';
 import { Range } from '../range';
 import { Probability } from '../probability';
 import styles from './Form.module.scss';
-import { CURRENT_GAME_ATOM, PLAYER_NAME_ATOM } from 'atoms';
+import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
 import { useAccount, withoutCommas } from '@gear-js/react-hooks';
 
 type Props = {
@@ -23,7 +23,7 @@ type Props = {
 
 function Form({ weather, bid, isAdmin, setRegistrationStatus }: Props) {
   const { account } = useAccount();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useAtom(IS_LOADING);
   const setCurrentGame = useSetAtom(CURRENT_GAME_ATOM);
   const { values, getInputProps, onSubmit, setFieldValue } = useForm({
     initialValues: { ...INITIAL_VALUES },
@@ -35,7 +35,7 @@ function Form({ weather, bid, isAdmin, setRegistrationStatus }: Props) {
   const { fuel, payload } = values;
 
   const { meta, message: sendMessage } = useLaunchMessage();
-  console.log(fuel, payload);
+
   const handleNumberInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const value = +target.value;
     const min = +target.min || -Infinity;
@@ -53,10 +53,7 @@ function Form({ weather, bid, isAdmin, setRegistrationStatus }: Props) {
   });
 
   const handleSubmit = () => {
-    console.log(bid);
-    console.log(Number(withoutCommas(bid || '')));
     if (!isAdmin && meta && account?.decodedAddress) {
-      console.log('not admin');
       setIsLoading(true);
       sendMessage({
         payload: {
@@ -78,7 +75,6 @@ function Form({ weather, bid, isAdmin, setRegistrationStatus }: Props) {
     }
 
     if (isAdmin && meta) {
-      console.log('admin');
       sendMessage({ payload: { StartGame: { fuel_amount: fuel, payload_amount: payload } } });
     }
   };

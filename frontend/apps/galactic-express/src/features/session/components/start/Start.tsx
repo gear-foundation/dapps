@@ -3,13 +3,12 @@ import clsx from 'clsx';
 import { HexString, UserMessageSent, encodeAddress } from '@gear-js/api';
 import { Button } from '@gear-js/ui';
 import { useSetAtom } from 'jotai';
-import { CURRENT_GAME_ATOM, IS_CONTRACT_ADDRESS_INITIALIZED_ATOM } from 'atoms';
+import { CURRENT_GAME_ATOM } from 'atoms';
 import { Bytes } from '@polkadot/types';
-import { useAccount, useApi, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount, useApi } from '@gear-js/react-hooks';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import src from 'assets/images/earth.gif';
 import { Container } from 'components';
-
 import { Participant, Session } from '../../types';
 import { Traits } from '../traits';
 import { Form } from '../form';
@@ -20,6 +19,7 @@ import { ParticipantsTable } from '../participants-table';
 import { SuccessfullyRegisteredInfo } from '../successfully-registered-info';
 import { Warning } from '../warning';
 import { ADDRESS } from 'consts';
+import { CancelGameButton } from '../cancel-game-button/CancelGameButton';
 
 type Props = {
   participants: Participant[];
@@ -39,7 +39,6 @@ function Start({ participants, session, isUserAdmin, userAddress, adminAddress, 
   const { account } = useAccount();
   const { decodedAddress } = account || {};
   const setCurrentGame = useSetAtom(CURRENT_GAME_ATOM);
-  const setIsContractAddressInitialized = useSetAtom(IS_CONTRACT_ADDRESS_INITIALIZED_ATOM);
   const { altitude, weather, reward, sessionId } = session;
   const playersCount = participants?.length ? participants.length + 1 : 1;
   const isRegistered = decodedAddress ? !!participants.some((participant) => participant[0] === decodedAddress) : false;
@@ -65,7 +64,6 @@ function Start({ participants, session, isUserAdmin, userAddress, adminAddress, 
 
   const handleGoBack = () => {
     setCurrentGame('');
-    setIsContractAddressInitialized(false);
   };
 
   const handleEvents = ({ data }: UserMessageSent) => {
@@ -125,13 +123,13 @@ function Start({ participants, session, isUserAdmin, userAddress, adminAddress, 
               {
                 id: adminAddress || '',
                 playerAddress: encodeAddress(adminAddress || ''),
+                playerName: 'Admin',
               },
-              ...participants
-                .filter((item) => item[0] !== decodedAddress)
-                .map((item) => ({
-                  id: item[0],
-                  playerAddress: encodeAddress(item[0]),
-                })),
+              ...participants.map((item) => ({
+                id: item[0],
+                playerAddress: encodeAddress(item[0]),
+                playerName: item[1].name,
+              })),
             ]}
             userAddress={userAddress}
             isUserAdmin={isUserAdmin}
@@ -168,6 +166,7 @@ function Start({ participants, session, isUserAdmin, userAddress, adminAddress, 
       </div>
 
       <div className={styles.imageWrapper}>
+        <CancelGameButton isAdmin={isUserAdmin} userAddress={userAddress} participants={participants} />
         <img src={src} alt="" className={styles.image} />
       </div>
     </div>

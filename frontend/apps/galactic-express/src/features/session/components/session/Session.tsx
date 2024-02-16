@@ -18,9 +18,10 @@ type Props = {
   rankings: Rank[];
   userId?: HexString;
   participants: Participant[];
+  admin: string | undefined;
 };
 
-function Session({ session, turns, rankings, userId, participants }: Props) {
+function Session({ session, turns, rankings, userId, participants, admin }: Props) {
   const { altitude, weather, reward, sessionId: id } = session;
   const roundsCount = turns.length;
 
@@ -119,7 +120,7 @@ function Session({ session, turns, rankings, userId, participants }: Props) {
     <div className={styles.container}>
       <Container>
         <header className={styles.header}>
-          <h2 className={styles.heading}>Session #{id}</h2>
+          <h2 className={styles.heading}>Session</h2>
 
           <div className={styles.navigation}>
             <Button icon={LeftDoubleArrowSVG} color="transparent" onClick={firstPage} disabled={isFirstPage} />
@@ -162,6 +163,7 @@ function Session({ session, turns, rankings, userId, participants }: Props) {
         isWinner={defineWinners().isUserWinner}
         winners={defineWinners().winners}
         userRank={defineWinners().userRank}
+        admin={admin}
       />
     </div>
   );

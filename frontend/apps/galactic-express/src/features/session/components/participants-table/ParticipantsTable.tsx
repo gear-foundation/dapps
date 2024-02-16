@@ -3,10 +3,12 @@ import { cx } from 'utils';
 import { shortenString } from 'features/session/utils';
 import styles from './ParticipantsTable.module.scss';
 import { Button } from '@gear-js/vara-ui';
+import { useLaunchMessage } from 'features/session/hooks';
 
 interface TableData {
   id: string;
   playerAddress: string;
+  playerName: string;
 }
 
 type Props = {
@@ -16,12 +18,24 @@ type Props = {
 };
 
 function ParticipantsTable({ data, userAddress, isUserAdmin }: Props) {
+  const { meta: isMeta, message: sendMessage } = useLaunchMessage();
+
   const isYourAddress = (address: string) => address === userAddress;
-  console.log(data);
+
   const modifiedData: TableData[] = [
     ...data.filter((item) => isYourAddress(item.playerAddress)),
     ...data.filter((item) => !isYourAddress(item.playerAddress)),
   ];
+
+  const handleDeletePlayer = (playerId: string) => {
+    sendMessage({
+      payload: {
+        DeletePlayer: {
+          playerId,
+        },
+      },
+    });
+  };
 
   return (
     <table className={cx(styles.table)}>
@@ -29,16 +43,19 @@ function ParticipantsTable({ data, userAddress, isUserAdmin }: Props) {
         <>
           <thead>
             <tr>
-              {modifiedData[0] &&
-                Object.keys(modifiedData[0]).map(
-                  (cellName: string) =>
-                    cellName !== 'id' && (
-                      <Fragment key={modifiedData[0].id}>
-                        <td className={cx(styles.headTd)}>#</td>
-                        <td className={cx(styles.headTd)}>{cellName}</td>
-                      </Fragment>
-                    ),
-                )}
+              {modifiedData[0] && (
+                <>
+                  <td className={cx(styles.headTd)}>#</td>
+                  {Object.keys(modifiedData[0]).map(
+                    (cellName: string) =>
+                      cellName !== 'id' && (
+                        <Fragment key={modifiedData[0].id + cellName}>
+                          <td className={cx(styles.headTd)}>{cellName}</td>
+                        </Fragment>
+                      ),
+                  )}
+                </>
+              )}
             </tr>
           </thead>
           <tbody className={cx(styles.body)}>
@@ -46,11 +63,11 @@ function ParticipantsTable({ data, userAddress, isUserAdmin }: Props) {
               <tr
                 key={row.id}
                 className={cx(styles.bodyTr, isYourAddress(row.playerAddress) ? styles.bodyTrWithYourAddress : '')}>
+                <td className={cx(styles.bodyTd, styles.bodyTdIndex)}>{rowIndex + 1}</td>
                 {Object.keys(row).map(
                   (cellName) =>
                     cellName !== 'id' && (
                       <Fragment key={cellName}>
-                        <td className={cx(styles.bodyTd, styles.bodyTdIndex)}>{rowIndex + 1}</td>
                         <td className={cx(styles.bodyTd, styles[`bodyTd${cellName}`])}>
                           {cellName === 'playerAddress' ? (
                             <>
@@ -63,15 +80,18 @@ function ParticipantsTable({ data, userAddress, isUserAdmin }: Props) {
                             row[cellName as keyof TableData]
                           )}
                         </td>
-                        {isUserAdmin && (
-                          <td className={cx(styles.bodyTd, styles.removeTd)}>
-                            <Button color="transparent" className={styles.removeButton}>
-                              {!isYourAddress(row.playerAddress) && 'Remove Player'}
-                            </Button>
-                          </td>
-                        )}
                       </Fragment>
                     ),
+                )}
+                {isUserAdmin && (
+                  <td className={cx(styles.bodyTd, styles.removeTd)}>
+                    <Button
+                      color="transparent"
+                      className={styles.removeButton}
+                      onClick={() => handleDeletePlayer(row.id)}>
+                      {!isYourAddress(row.playerAddress) && 'Remove Player'}
+                    </Button>
+                  </td>
                 )}
               </tr>
             ))}

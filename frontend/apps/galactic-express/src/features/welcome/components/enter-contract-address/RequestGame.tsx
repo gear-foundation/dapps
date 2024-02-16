@@ -4,9 +4,9 @@ import { Button, Input } from '@gear-js/vara-ui';
 import { cx } from 'utils';
 import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
 import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
-import { useSetAtom } from 'jotai';
-import { CURRENT_GAME_ATOM, IS_CONTRACT_ADDRESS_INITIALIZED_ATOM, PLAYER_NAME_ATOM } from 'atoms';
-import { useLaunchState, useNewSessionMessage } from 'features/session/hooks';
+import { useSetAtom, useAtom } from 'jotai';
+import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
+import { useLaunchMessage } from 'features/session/hooks';
 import styles from './RequestGame.module.scss';
 import metaTxt from 'assets/meta/galactic_express_meta.txt';
 import { GameIntro } from '../game-intro';
@@ -19,6 +19,7 @@ import { ADDRESS } from 'consts';
 import { useProgramMetadata } from 'hooks';
 import { LaunchState, Participant } from 'features/session/types';
 import { JoinModalFormValues } from 'features/session/components/game-found-modal/GameFoundModal';
+import { GameNotFoundModal } from 'features/session/components/game-not-found-modal';
 
 export interface ContractFormValues {
   [key: string]: string;
@@ -51,16 +52,16 @@ function RequestGame() {
   const balance =
     isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
   const [foundState, setFoundState] = useState<LaunchState | null>(null);
-  const { meta: isMeta, message: sendNewSessionMessage } = useNewSessionMessage();
+  const { meta: isMeta, message: sendNewSessionMessage } = useLaunchMessage();
   const meta = useProgramMetadata(metaTxt);
   const setCurrentGame = useSetAtom(CURRENT_GAME_ATOM);
-  const setIsContractAddressInitialized = useSetAtom(IS_CONTRACT_ADDRESS_INITIALIZED_ATOM);
   const setPlayerName = useSetAtom(PLAYER_NAME_ATOM);
   const [status, setStatus] = useState<Status>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useAtom(IS_LOADING);
   const existentialDeposit = Number(getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toFixed());
   const [isJoinSessionModalShown, setIsJoinSessionModalShown] = useState<boolean>(false);
   const [foundGame, setFoundGame] = useState<HexString | undefined>(undefined);
+  const [gameNotFoundModal, setGameNotFoundModal] = useState<boolean>(false);
 
   const createForm = useForm({
     initialValues: {
@@ -116,7 +117,6 @@ function RequestGame() {
       payload,
       value: getChainBalanceValue(values.fee).toFixed(),
       onSuccess: () => {
-        setIsContractAddressInitialized(true);
         setIsLoading(false);
       },
       onError: () => {
@@ -150,25 +150,22 @@ function RequestGame() {
         setIsJoinSessionModalShown(true);
         return;
       }
+      setGameNotFoundModal(true);
     } catch (err: any) {
       console.log(err.message);
-      if (err.message === '8000: Runtime error: "Program not found"') {
-        setJoinFieldError('address', 'Required game not found');
-      } else {
-        setJoinFieldError('address', 'Address is incorrect');
-      }
+      setGameNotFoundModal(true);
     }
   };
 
   const handleJoinSession = (values: JoinModalFormValues) => {
     if (foundGame) {
-      console.log('GAME FOUND');
-      console.log(foundGame);
-
       setCurrentGame(foundGame);
-      setIsContractAddressInitialized(true);
       setPlayerName(values.name);
     }
+  };
+
+  const handleCloseNotFoundModal = () => {
+    setGameNotFoundModal(false);
   };
 
   return (
@@ -269,6 +266,7 @@ function RequestGame() {
           onClose={handleCloseFoundModal}
         />
       )}
+      {gameNotFoundModal && <GameNotFoundModal onClose={handleCloseNotFoundModal} />}
     </div>
   );
 }
