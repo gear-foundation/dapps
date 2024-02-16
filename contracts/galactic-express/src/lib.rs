@@ -165,7 +165,7 @@ impl Contract {
                     self.player_to_game_id.remove(id);
                 });
             }
-        } 
+        }
 
         self.player_to_game_id.remove(&msg_src);
         self.games.remove(&msg_src);
