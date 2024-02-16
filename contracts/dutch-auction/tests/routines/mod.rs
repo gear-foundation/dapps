@@ -25,11 +25,6 @@ pub fn init(sys: &System) -> Program<'_> {
 
     init_nft(sys, owner_user);
     let result = update_auction(&auction_program, owner_user, 2, 1_000_000_000_000_000);
-    println!(
-        "update_auction result = {:?}",
-        result.decoded_log::<Result<Event, Error>>()
-    );
-
     assert!(result.contains(&(
         owner_user,
         Ok::<Event, Error>(Event::AuctionStarted {
@@ -102,7 +97,6 @@ pub fn init_nft(sys: &System, owner: u64) {
         .dest(owner)
         .payload(NFTEvent::Approval(approval));
     assert!(!res.main_failed());
-    println!("approve result = {:?}", res.decoded_log::<NFTEvent>());
     assert!(res.contains(&log));
 }
 

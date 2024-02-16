@@ -32,8 +32,6 @@ pub const MAX_FUEL: u8 = 100;
 pub const MAX_PAYLOAD: u8 = 100;
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct State {
     pub admin: ActorId,
     pub session: Session,
@@ -44,8 +42,6 @@ pub struct State {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Session {
     pub session_id: u128,
     pub altitude: u16,
@@ -54,24 +50,18 @@ pub struct Session {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Stage {
     Registration(Vec<(ActorId, Participant)>),
     Results(Results),
 }
 
 #[derive(Encode, Decode, TypeInfo, Default, Clone, Debug, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Results {
     pub turns: Vec<Vec<(ActorId, Turn)>>,
     pub rankings: Vec<(ActorId, u128)>,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Action {
     ChangeAdmin(ActorId),
     CreateNewSession,
@@ -80,18 +70,14 @@ pub enum Action {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Event {
+    GameFinished(Results),
     AdminChanged(ActorId, ActorId),
     NewSession(Session),
     Registered(ActorId, Participant),
-    GameFinished(Results),
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Copy, Debug, Default, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Participant {
     pub fuel_amount: u8,
     pub payload_amount: u8,
@@ -108,8 +94,6 @@ impl Participant {
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Copy, Debug, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum HaltReason {
     PayloadOverload,
     FuelOverload,
@@ -120,16 +104,12 @@ pub enum HaltReason {
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Copy, Debug, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Turn {
     Alive { fuel_left: u8, payload_amount: u8 },
     Destroyed(HaltReason),
 }
 
 #[derive(Encode, Decode, TypeInfo, Default, Clone, Copy, Debug, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Weather {
     #[default]
     Clear,
@@ -141,8 +121,6 @@ pub enum Weather {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Error {
     StateUninitaliazed,
     GstdError(String),

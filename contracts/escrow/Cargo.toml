@@ -15,7 +15,7 @@ gear-wasm-builder.workspace = true
 
 [dev-dependencies]
 gclient.workspace = true
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 gtest.workspace = true
 tokio.workspace = true
 

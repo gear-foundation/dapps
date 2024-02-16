@@ -484,15 +484,15 @@ impl From<SimpleMtk> for State {
 
         let balances = balances
             .into_iter()
-            .map(|(k, v)| (k, v.into_iter().map(|(a, b)| (a, b)).collect()))
+            .map(|(k, v)| (k, v.into_iter().collect()))
             .collect();
         let approvals = approvals
             .into_iter()
             .map(|(k, v)| (k, v.iter().copied().collect()))
             .collect();
-        let token_metadata = token_metadata.into_iter().map(|(k, v)| (k, v)).collect();
-        let owners = owners.into_iter().map(|(k, v)| (k, v)).collect();
-        let supply = supply.into_iter().map(|(k, v)| (k, v)).collect();
+        let token_metadata = token_metadata.into_iter().collect();
+        let owners = owners.into_iter().collect();
+        let supply = supply.into_iter().collect();
         Self {
             name,
             symbol,

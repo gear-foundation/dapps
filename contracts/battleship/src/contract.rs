@@ -1,8 +1,5 @@
-use battleship_io::{
-    ActionsForSession, BattleshipAction, BattleshipInit, BattleshipParticipants, BattleshipReply,
-    BattleshipState, BotBattleshipAction, Config, Entity, Game, GameState, Session, Ships,
-    StateQuery, StateReply, Step, MINIMUM_SESSION_SURATION_MS,
-};
+use battleship_io::*;
+
 use gstd::{
     collections::{BTreeMap, HashMap},
     exec, msg,

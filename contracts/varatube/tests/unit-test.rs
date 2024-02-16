@@ -27,9 +27,9 @@ fn preconfigure(system: &System) -> (Program<'_>, Program<'_>) {
         },
     );
 
-    ft.approve(USERS[0], varatube.id(), 100_000_000_000);
+    ft.approve(USERS[0], varatube.id().into(), 100_000_000_000);
 
-    varatube.add_token_data(USERS[0], ft.id(), 10_000, None);
+    varatube.add_token_data(USERS[0], ft.id().into(), 10_000, None);
 
     (ft, varatube)
 }
@@ -41,7 +41,7 @@ fn register_subscriber_with_subscription_renewal() {
     let (ft, varatube) = preconfigure(&system);
 
     // Register Subscription
-    varatube.register_subscription(USERS[0], ft.id(), Period::Month, true, None);
+    varatube.register_subscription(USERS[0], ft.id().into(), Period::Month, true, None);
 
     let subscriber_data = varatube
         .get_subscriber_data(USERS[0])
@@ -91,7 +91,7 @@ fn register_subscriber_without_subscription_renewal() {
     let (ft, varatube) = preconfigure(&system);
 
     // Register Subscription
-    varatube.register_subscription(USERS[0], ft.id(), Period::Month, false, None);
+    varatube.register_subscription(USERS[0], ft.id().into(), Period::Month, false, None);
 
     let subscriber_data = varatube
         .get_subscriber_data(USERS[0])
@@ -123,7 +123,7 @@ fn cancelling_subscription() {
     let (ft, varatube) = preconfigure(&system);
 
     // Register Subscription
-    varatube.register_subscription(USERS[0], ft.id(), Period::Month, true, None);
+    varatube.register_subscription(USERS[0], ft.id().into(), Period::Month, true, None);
 
     let subscriber_data = varatube
         .get_subscriber_data(USERS[0])

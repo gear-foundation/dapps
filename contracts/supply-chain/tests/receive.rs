@@ -2,7 +2,7 @@ use utils::{prelude::*, FungibleToken, NonFungibleToken};
 
 pub mod utils;
 
-const DELIVERY_TIME_IN_BLOCKS: u32 = (DELIVERY_TIME / 1000) as _;
+const DELIVERY_TIME_IN_BLOCKS: u32 = (DELIVERY_TIME / 3000) as _;
 
 #[test]
 fn delivery_wo_delay() {

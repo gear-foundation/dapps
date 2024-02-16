@@ -17,6 +17,7 @@ pub const TOKENS_CNT: u128 = 100_000_000_000_000;
 pub const START_PRICE: u128 = 10_000_000_000_000;
 pub const PRICE_INCREASE_STEP: u128 = 100_000_000_000_000;
 pub const TIME_INCREASE_STEP: u128 = 1000;
+pub const TIME_BLOCK: u64 = 3000;
 
 fn init_ico(sys: &System) {
     let ico = Program::current_with_id(sys, ICO_CONTRACT_ID);
@@ -41,7 +42,7 @@ pub fn init(sys: &System) {
 }
 
 pub fn start_sale(ico: &Program<'_>, ico_duration: u64, expected_tx_id: u64) {
-    let duration = Duration::from_secs(ico_duration).as_millis() as u64 * 1000;
+    let duration = Duration::from_secs(ico_duration).as_millis() as u64 * TIME_BLOCK;
     let res = ico.send(
         OWNER_ID,
         IcoAction::StartSale {
@@ -49,7 +50,7 @@ pub fn start_sale(ico: &Program<'_>, ico_duration: u64, expected_tx_id: u64) {
             start_price: START_PRICE,
             tokens_goal: TOKENS_CNT,
             price_increase_step: PRICE_INCREASE_STEP,
-            time_increase_step: TIME_INCREASE_STEP * 1000,
+            time_increase_step: TIME_INCREASE_STEP * TIME_BLOCK as u128,
         },
     );
 
@@ -62,7 +63,7 @@ pub fn start_sale(ico: &Program<'_>, ico_duration: u64, expected_tx_id: u64) {
             start_price: START_PRICE,
             tokens_goal: TOKENS_CNT,
             price_increase_step: PRICE_INCREASE_STEP,
-            time_increase_step: TIME_INCREASE_STEP * 1000,
+            time_increase_step: TIME_INCREASE_STEP * TIME_BLOCK as u128,
         }
         .encode()
     )));
