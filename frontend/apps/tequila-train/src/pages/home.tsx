@@ -19,7 +19,7 @@ export const Home = () => {
       setPreviousGame(game);
     }
     else if (previousGame) {
-      if (!isAdmin && !isUserCancelled) {
+      if (!isAdmin && !isUserCancelled && !previousGame.state.Winners) {
         setOpenEmptyPopup(true)
       }
       setIsUserCancelled(false)
