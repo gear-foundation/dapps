@@ -4,6 +4,7 @@ import { HexString, UserMessageSent, encodeAddress } from '@gear-js/api';
 import { Button } from '@gear-js/ui';
 import { useSetAtom } from 'jotai';
 import { CURRENT_GAME_ATOM } from 'atoms';
+import { ADDRESS } from 'consts';
 import { Bytes } from '@polkadot/types';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { UnsubscribePromise } from '@polkadot/api/types';
@@ -18,7 +19,6 @@ import { ParticipantsTable } from '../participants-table';
 
 import { SuccessfullyRegisteredInfo } from '../successfully-registered-info';
 import { Warning } from '../warning';
-import { ADDRESS } from 'consts';
 import { CancelGameButton } from '../cancel-game-button/CancelGameButton';
 
 type Props = {
