@@ -8,6 +8,7 @@ import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useBattleMessage } from 'features/battle/hooks/use-battle';
 import { useApi } from '@gear-js/react-hooks';
 import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
+import { GAS_LIMIT } from 'app/consts';
 
 const createTamagotchiInitial = {
   programId: '' as HexString,
@@ -51,6 +52,7 @@ export const CreateTamagotchiForm = () => {
           onSuccess,
           onError,
           voucherId,
+          gasLimit: GAS_LIMIT,
         });
       },
       onError,
