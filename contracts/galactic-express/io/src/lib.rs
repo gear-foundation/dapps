@@ -52,6 +52,7 @@ pub struct State {
 #[derive(Encode, Decode, TypeInfo, Debug)]
 pub struct GameState {
     pub admin: ActorId,
+    pub admin_name: String,
     pub altitude: u16,
     pub weather: Weather,
     pub reward: u128,
@@ -69,6 +70,7 @@ pub enum StageState {
 pub struct Results {
     pub turns: Vec<Vec<(ActorId, Turn)>>,
     pub rankings: Vec<(ActorId, u128)>,
+    pub participants: Vec<(ActorId, Participant)>,
 }
 
 #[derive(Encode, Decode, TypeInfo)]

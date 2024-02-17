@@ -365,10 +365,15 @@ impl Contract {
                 send_value(*id, prize);
             });
         }
+        let participants = participants
+            .iter()
+            .map(|(id, participant)| (*id, participant.clone()))
+            .collect();
 
         let results = Results {
             turns: io_turns,
             rankings: scores.clone(),
+            participants,
         };
         game.stage = Stage::Results(results.clone());
 
@@ -500,6 +505,7 @@ extern fn state() {
 
                     GameState {
                         admin: game.admin,
+                        admin_name: game.admin_name.clone(),
                         altitude: game.altitude,
                         weather: game.weather,
                         reward: game.reward,
@@ -533,6 +539,7 @@ impl From<Contract> for State {
 
                 let game_state = GameState {
                     admin: game.admin,
+                    admin_name: game.admin_name.clone(),
                     altitude: game.altitude,
                     weather: game.weather,
                     reward: game.reward,
