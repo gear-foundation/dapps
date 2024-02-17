@@ -33,9 +33,51 @@ export type BattleStateResponse = {
   admins: HexString[];
   completedGames: string;
   currentWinner: HexString;
-  pairs: Record<string, BattleStatePair>;
   players: Record<HexString, BattleStatePlayer>;
   playersIds: HexString[];
   currentPlayers: HexString[];
   state: BattleCurrentStateVariants;
+  pairs: Record<string, BattleStatePair>;
+};
+
+export type BattlePairsResponse = {
+  Pairs: { pairs: Record<string, BattleStatePair> };
+};
+
+export type BattleCompletedGamesResponse = {
+  CompletedGames: { completedGames: string };
+};
+
+export type BattleCurrentWinnerResponse = {
+  Winner: { winner: HexString };
+};
+
+export type BattleAdminsResponse = {
+  Admins: {
+    admins: HexString[];
+  };
+};
+
+export type BattleGameStateResponse = {
+  State: {
+    state: BattleCurrentStateVariants;
+  };
+};
+
+export type BattlePlayersResponse = {
+  Players: {
+    players: Record<HexString, BattleStatePlayer>;
+  };
+};
+
+export type BattlePlayersIdsResponse = {
+  PlayersIds: {
+    playersIds: HexString[];
+  };
+};
+
+export type BattleCurrentPlayersResponse = {
+  CurrentPlayers: {
+    currentPlayers: HexString[];
+  };
 };

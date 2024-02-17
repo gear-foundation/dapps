@@ -22,8 +22,6 @@ impl Metadata for BattleshipMetadata {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StateQuery {
     All,
     Game(ActorId),
@@ -31,9 +29,7 @@ pub enum StateQuery {
     SessionForTheAccount(ActorId),
 }
 
-#[derive(Encode, Decode, TypeInfo, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
+#[derive(Encode, Decode, TypeInfo)]
 pub enum StateReply {
     All(BattleshipState),
     Game(Option<GameState>),
@@ -42,8 +38,6 @@ pub enum StateReply {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct BattleshipState {
     pub games: Vec<(ActorId, GameState)>,
     pub bot_address: ActorId,
@@ -73,8 +67,6 @@ pub enum ActionsForSession {
     Turn,
 }
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Entity {
     Empty,
     Unknown,
@@ -92,8 +84,6 @@ impl Entity {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleshipAction {
     StartGame {
         ships: Ships,
@@ -139,8 +129,6 @@ pub struct Config {
     pub block_duration_ms: u64,
 }
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleshipReply {
     MessageSentToBot,
     EndGame(BattleshipParticipants),
@@ -160,16 +148,12 @@ pub enum Step {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct BattleshipInit {
     pub bot_address: ActorId,
     pub config: Config,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Game {
     pub player_board: Vec<Entity>,
     pub bot_board: Vec<Entity>,
@@ -284,8 +268,6 @@ impl Display for Ships {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Ships {
     pub ship_1: Vec<u8>,
     pub ship_2: Vec<u8>,
@@ -433,24 +415,18 @@ impl Ships {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleshipParticipants {
     Player,
     Bot,
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BotBattleshipAction {
     Start,
     Turn(Vec<Entity>),
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct GameState {
     pub player_board: Vec<Entity>,
     pub bot_board: Vec<Entity>,

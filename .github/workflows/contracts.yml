@@ -32,6 +32,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
       - name: ${{ github.ref_type == 'tag' && 'Build' || 'Build & CI' }}
         run: '[ $GITHUB_REF_TYPE = "tag" ] && cargo b || cargo xtask ci'
 

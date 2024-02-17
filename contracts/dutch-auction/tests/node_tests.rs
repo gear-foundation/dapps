@@ -295,7 +295,7 @@ async fn gclient_create_buy_reward() -> Result<()> {
     std::thread::sleep(std::time::Duration::from_secs(10));
 
     let state: AuctionInfo = api.read_state(auction_program_id, vec![]).await?;
-    dbg!(state);
+    std::dbg!(state);
 
     // Buy
     let buy = Action::Buy;

@@ -19,7 +19,7 @@ export function useWatchMessages<T>(meta: ProgramMetadata) {
 
   const getDecodedPayload = <T>(payload: Bytes) => {
     if (!meta?.types.handle.output) return;
-    return meta.createType(meta.types.handle.output, payload).toHuman() as T;
+    return meta.createType(meta.types.handle.output, payload).toHuman() as { Ok: T };
   };
 
   const onChangeState = ({ data: { message } }: UserMessageSent) => {
@@ -35,7 +35,9 @@ export function useWatchMessages<T>(meta: ProgramMetadata) {
         const reply = getDecodedPayload<T>(payload);
         console.log('inside update: ', { reply });
 
-        setReply(reply);
+        const { Ok } = reply || {};
+
+        setReply(Ok);
       } catch (e) {
         console.log(e);
         alert.error((e as ContractError).message);

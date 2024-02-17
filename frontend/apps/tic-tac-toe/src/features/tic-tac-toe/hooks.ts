@@ -172,7 +172,7 @@ export function useSubscriptionOnGameMessage(meta: ProgramMetadata) {
 
   useEffect(() => {
     if (!isOpened) return;
-    const game = reply?.MoveMade?.game || reply?.GameStarted?.game;
+    const game = reply?.MoveMade?.game || reply?.GameStarted?.game || reply?.GameFinished?.game;
 
     if (game && !isEqual(game.board, gameState?.board)) {
       updateGame(game);

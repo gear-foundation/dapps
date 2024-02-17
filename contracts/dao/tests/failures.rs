@@ -98,14 +98,14 @@ fn submit_vote() {
     // must fail since the voting period has not started
     dao.submit_vote(ADMIN, proposal_id + 1, Vote::Yes, true);
 
-    system.spend_blocks((PERIOD_DURATION / 100) as u32);
+    system.spend_blocks((PERIOD_DURATION / 300) as u32);
 
     dao.submit_vote(ADMIN, proposal_id + 1, Vote::Yes, false);
 
     // must fail since the account has already voted on this proposal
     dao.submit_vote(ADMIN, proposal_id + 1, Vote::Yes, true);
 
-    system.spend_blocks(((VOTING_PERIOD_LENGTH + 1000) / 1000) as u32);
+    system.spend_blocks(((VOTING_PERIOD_LENGTH + 3000) / 3000) as u32);
 
     // must fail since the proposal voting period has expired
     dao.submit_vote(ADMIN, proposal_id + 1, Vote::Yes, true);

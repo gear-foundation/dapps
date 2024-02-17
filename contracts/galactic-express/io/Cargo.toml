@@ -8,3 +8,5 @@ publish.workspace = true
 gmeta.workspace = true
 gstd.workspace = true
 gear-lib.workspace = true
+parity-scale-codec.workspace = true
+scale-info.workspace = true

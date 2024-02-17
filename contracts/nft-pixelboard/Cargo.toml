@@ -12,7 +12,7 @@ sharded-fungible-token-io.workspace = true
 non-fungible-token-io.workspace = true
 
 [dev-dependencies]
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 gtest.workspace = true
 
 # External binaries
