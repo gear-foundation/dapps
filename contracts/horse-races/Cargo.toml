@@ -11,7 +11,7 @@ horse-races-io.workspace = true
 fungible-token-io.workspace = true
 
 [dev-dependencies]
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 gtest.workspace = true
 
 # External binaries

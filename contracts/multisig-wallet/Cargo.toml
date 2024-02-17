@@ -10,7 +10,7 @@ multisig-wallet-io.workspace = true
 primitive-types.workspace = true
 
 [dev-dependencies]
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 gtest.workspace = true
 
 [build-dependencies]

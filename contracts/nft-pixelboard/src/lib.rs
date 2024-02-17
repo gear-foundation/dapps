@@ -18,7 +18,7 @@ fn get_pixel_count<P: Into<usize>>(width: P, height: P) -> Result<usize, NFTPixe
     Ok(pixel_count)
 }
 
-fn check_painting(painting: &Vec<Color>, pixel_count: usize) -> Result<(), NFTPixelboardError> {
+fn check_painting(painting: &[Color], pixel_count: usize) -> Result<(), NFTPixelboardError> {
     if painting.len() != pixel_count {
         return Err(NFTPixelboardError::WrongPaintingLength);
     }
