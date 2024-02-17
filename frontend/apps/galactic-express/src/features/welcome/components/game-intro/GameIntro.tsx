@@ -1,6 +1,6 @@
 import { cx } from 'utils';
-import styles from './GameIntro.module.scss';
 import { useAccount } from '@gear-js/react-hooks';
+import styles from './GameIntro.module.scss';
 
 type Props = {
   status: 'creating' | 'joining' | 'loading' | null;
