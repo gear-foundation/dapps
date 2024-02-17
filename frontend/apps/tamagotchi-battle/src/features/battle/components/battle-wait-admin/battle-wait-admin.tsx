@@ -6,6 +6,7 @@ import { cn, gasLimitToNumber } from 'app/utils';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useApi } from '@gear-js/react-hooks';
 import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
+import { GAS_LIMIT } from 'app/consts';
 
 export const BattleWaitAdmin = () => {
   const { api } = useApi();
@@ -29,6 +30,7 @@ export const BattleWaitAdmin = () => {
           onSuccess,
           onError,
           voucherId,
+          gasLimit: GAS_LIMIT,
         });
       },
       onError,
