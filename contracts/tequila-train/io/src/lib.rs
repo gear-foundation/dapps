@@ -455,17 +455,15 @@ impl GameState {
                 self.current_player = next_player;
                 return None;
             }
-            if !self.remaining_tiles.is_empty() {
-                if self.tracks[player_index].has_train {
-                    // give the player randomly chosen tile
-                    let tile_id = get_random_from_set(&self.remaining_tiles);
-                    self.remaining_tiles.remove(&tile_id);
+            if !self.remaining_tiles.is_empty() && self.tracks[player_index].has_train {
+                // give the player randomly chosen tile
+                let tile_id = get_random_from_set(&self.remaining_tiles);
+                self.remaining_tiles.remove(&tile_id);
 
-                    self.tile_to_player.insert(tile_id, next_player);
-                    self.current_player = next_player;
+                self.tile_to_player.insert(tile_id, next_player);
+                self.current_player = next_player;
 
-                    return None;
-                }
+                return None;
             }
 
             self.tracks[player_index].has_train = true;
