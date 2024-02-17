@@ -7,4 +7,6 @@ publish.workspace = true
 [dependencies]
 gmeta.workspace = true
 gstd.workspace = true
-gear-lib-old.workspace = true
+multi-token-io.workspace = true
+parity-scale-codec.workspace = true
+scale-info.workspace = true

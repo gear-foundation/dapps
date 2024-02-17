@@ -1,18 +1,34 @@
 #![no_std]
 
-use gear_lib_old::multitoken::io::*;
 use gmeta::{In, InOut, Metadata, Out};
-use gstd::{prelude::*, ActorId};
+use gstd::{
+    collections::{HashMap, HashSet},
+    prelude::*,
+    ActorId,
+};
+
+pub type TokenId = u128;
 
 pub struct MultitokenMetadata;
 
 impl Metadata for MultitokenMetadata {
-    type Init = In<InitMTK>;
-    type Handle = InOut<MyMTKAction, ()>;
+    type Init = In<InitMtk>;
+    type Handle = InOut<MtkAction, Result<MtkEvent, MtkError>>;
     type Others = ();
     type Reply = ();
     type Signal = ();
     type State = Out<State>;
+}
+
+#[derive(Debug, Default)]
+pub struct MtkData {
+    pub name: String,
+    pub symbol: String,
+    pub base_uri: String,
+    pub balances: HashMap<TokenId, HashMap<ActorId, u128>>,
+    pub approvals: HashMap<ActorId, HashSet<ActorId>>,
+    pub token_metadata: HashMap<TokenId, TokenMetadata>,
+    pub owners: HashMap<TokenId, ActorId>,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
@@ -23,12 +39,11 @@ pub struct State {
     pub symbol: String,
     pub base_uri: String,
     pub balances: Vec<(TokenId, Vec<(ActorId, u128)>)>,
-    pub approvals: Vec<(ActorId, Vec<(ActorId, bool)>)>,
+    pub approvals: Vec<(ActorId, Vec<ActorId>)>,
     pub token_metadata: Vec<(TokenId, TokenMetadata)>,
     // owner for nft
     pub owners: Vec<(TokenId, ActorId)>,
-    pub token_id: TokenId,
-    pub owner: ActorId,
+    pub creator: ActorId,
     pub supply: Vec<(TokenId, u128)>,
 }
 
@@ -48,15 +63,16 @@ pub struct BurnToNFT {
 #[derive(Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub enum MyMTKAction {
+pub enum MtkAction {
     /// Mints a token.
     ///
     /// # Requirements:
     /// * if minting an NFT `amount` MUST equal to 1.
-    /// * a sender MUST be an owner or an approved account.
     ///
-    /// On success returns `MTKEvent::Transfer`.
+    /// On success returns `MtkEvent::Transfer`.
     Mint {
+        /// Token id
+        id: TokenId,
         /// Token amount.
         amount: u128,
         /// Token metadata, applicable if minting an NFT.
@@ -69,7 +85,7 @@ pub enum MyMTKAction {
     /// * a sender MUST have sufficient amount of token to burn.
     /// * a sender MUST be the owner.
     ///
-    /// On success returns `MTKEvent::Transfer`.
+    /// On success returns `MtkEvent::Transfer`.
     Burn {
         /// Token ID.
         id: TokenId,
@@ -79,7 +95,7 @@ pub enum MyMTKAction {
 
     /// Gets an amount of tokens with `id` a user `account` has.
     ///
-    /// On success returns `MTKEvent::BalanceOf`.
+    /// On success returns `MtkEvent::BalanceOf`.
     BalanceOf {
         /// A user which balance is queried.
         account: ActorId,
@@ -89,7 +105,7 @@ pub enum MyMTKAction {
 
     /// Gets the amounts of multiple tokens for multiple users.
     ///
-    /// On success returns `MTKEvent::BalanceOf`.
+    /// On success returns `MtkEvent::BalanceOf`.
     BalanceOfBatch {
         /// Users which balances are queried.
         accounts: Vec<ActorId>,
@@ -105,7 +121,7 @@ pub enum MyMTKAction {
     /// *`tokens_metadata` size MUST equal to the length of ids.
     /// * a sender MUST be an owner or an approved account.
     ///
-    /// On success returns `MTKEvent::Transfer`
+    /// On success returns `MtkEvent::Transfer`
     MintBatch {
         /// Tokens' IDs to mint.
         ids: Vec<TokenId>,
@@ -122,7 +138,7 @@ pub enum MyMTKAction {
     /// * `from` MUST have sufficient amount of tokens.
     /// * `to` MUST be a non-zero account.
     ///
-    /// On success returns `MTKEvent::Transfer`.
+    /// On success returns `MtkEvent::Transfer`.
     TransferFrom {
         /// From which account to transfer.
         from: ActorId,
@@ -142,7 +158,7 @@ pub enum MyMTKAction {
     /// * `to` MUST be a non-zero account.
     /// * `ids` and `amounts` MUST be the same length.
     ///
-    /// On success returns `MTKEvent::Transfer`.
+    /// On success returns `MtkEvent::Transfer`.
     BatchTransferFrom {
         /// From which account to transfer.
         from: ActorId,
@@ -160,7 +176,7 @@ pub enum MyMTKAction {
     /// * a sender MUST have sufficient amount of tokens to burn,
     /// * a sender MUST be the owner.
     ///
-    /// On success returns `MTKEvent::Transfer
+    /// On success returns `MtkEvent::Transfer
     BurnBatch {
         /// Tokens' IDs to burn.
         ids: Vec<TokenId>,
@@ -170,7 +186,7 @@ pub enum MyMTKAction {
 
     /// Allows a `account` to use tokens.
     ///
-    /// On success returns `MTKEvent::Approval
+    /// On success returns `MtkEvent::Approval
     Approve {
         /// Approved account.
         account: ActorId,
@@ -178,7 +194,7 @@ pub enum MyMTKAction {
 
     /// Disallows a `account` to use tokens.
     ///
-    /// On success returns `MTKEvent::RevokeApproval
+    /// On success returns `MtkEvent::RevokeApproval
     RevokeApproval {
         /// Disapproved account.
         account: ActorId,
@@ -190,7 +206,7 @@ pub enum MyMTKAction {
     /// * a sender MUST have sufficient amount of tokens to burn,
     /// * a sender MUST be the owner.
     ///
-    /// On success returns `MTKEvent::Transfer`.
+    /// On success returns `MtkEvent::Transfer`.
     Transform {
         /// Token's ID to burn.
         id: TokenId,
@@ -201,12 +217,74 @@ pub enum MyMTKAction {
     },
 }
 
+#[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum MtkEvent {
+    Transfer {
+        from: ActorId,
+        to: ActorId,
+        ids: Vec<TokenId>,
+        amounts: Vec<u128>,
+    },
+    BalanceOf(Vec<BalanceReply>),
+    Approval {
+        from: ActorId,
+        to: ActorId,
+    },
+    RevokeApproval {
+        from: ActorId,
+        to: ActorId,
+    },
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum MtkError {
+    ZeroAddress,
+    LengthMismatch,
+    MintMetadataToFungibleToken,
+    NotEnoughBalance,
+    TokenAlreadyExists,
+    IdIsNotUnique,
+    AmountGreaterThanOneForNft,
+    TokenIdDoesNotExist,
+    SenderAndRecipientAddressesAreSame,
+    CallerIsNotOwnerOrApproved,
+    WrongOwnerOrInsufficientBalance,
+    InsufficientBalanceForTransfer,
+    IncorrectData,
+    WrongId,
+    NoApprovals,
+    ThereIsNoThisApproval,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct BalanceReply {
+    pub account: ActorId,
+    pub id: TokenId,
+    pub amount: u128,
+}
+
+#[derive(Debug, Decode, Encode, TypeInfo, Default, Clone, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct TokenMetadata {
+    pub title: Option<String>,
+    pub description: Option<String>,
+    pub media: Option<String>,
+    pub reference: Option<String>,
+}
+
 /// Initializes a Multitoken.
 ///
 #[derive(Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub struct InitMTK {
+pub struct InitMtk {
     /// Multitoken name.
     pub name: String,
     /// Multitoken symbol.

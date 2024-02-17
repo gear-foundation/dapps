@@ -109,17 +109,9 @@ impl Metadata for ProgramMetadata {
 impl From<Contract> for State {
     fn from(contract: Contract) -> Self {
         Self {
-            streams: contract
-                .streams
-                .into_iter()
-                .map(|(stream_id, streams)| (stream_id, streams))
-                .collect(),
+            streams: contract.streams.into_iter().collect(),
 
-            users: contract
-                .users
-                .into_iter()
-                .map(|(id, profile)| (id, profile))
-                .collect(),
+            users: contract.users.into_iter().collect(),
         }
     }
 }

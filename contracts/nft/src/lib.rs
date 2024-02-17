@@ -280,20 +280,11 @@ impl From<Nft> for State {
             config,
         } = value;
 
-        let owner_by_id = owner_by_id
-            .into_iter()
-            .map(|(hash, actor_id)| (hash, actor_id))
-            .collect();
+        let owner_by_id = owner_by_id.into_iter().collect();
 
-        let token_approvals = token_approvals
-            .into_iter()
-            .map(|(key, approvals)| (key, approvals))
-            .collect();
+        let token_approvals = token_approvals.into_iter().collect();
 
-        let token_metadata_by_id = token_metadata_by_id
-            .into_iter()
-            .map(|(id, metadata)| (id, metadata))
-            .collect();
+        let token_metadata_by_id = token_metadata_by_id.into_iter().collect();
 
         let tokens_for_owner = tokens_for_owner
             .into_iter()

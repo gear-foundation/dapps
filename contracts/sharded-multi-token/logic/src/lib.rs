@@ -353,7 +353,7 @@ impl MTLogic {
         transaction_hash: H256,
         token_id: TokenId,
         msg_source: &ActorId,
-        to: &Vec<ActorId>,
+        to: &[ActorId],
         amounts: Vec<u128>,
     ) {
         self.transaction_status
@@ -403,7 +403,7 @@ impl MTLogic {
         transaction_hash: H256,
         token_id: TokenId,
         _msg_source: &ActorId,
-        to: &Vec<ActorId>,
+        to: &[ActorId],
     ) {
         self.transaction_status
             .insert(transaction_hash, TransactionStatus::InProgress);
@@ -446,7 +446,7 @@ impl MTLogic {
         transaction_hash: H256,
         token_id: TokenId,
         msg_source: &ActorId,
-        burn_from: &Vec<ActorId>,
+        burn_from: &[ActorId],
         amounts: Vec<u128>,
     ) {
         self.transaction_status

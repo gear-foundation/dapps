@@ -38,7 +38,7 @@ impl Metadata for ContractMetadata {
     ///
     /// We use the [`GameAction`] type for incoming and [`GameReply`] for outgoing
     /// messages.
-    type Handle = InOut<GameAction, GameReply>;
+    type Handle = InOut<GameAction, Result<GameReply, GameError>>;
     /// Asynchronous handle message type.
     ///
     /// Describes incoming/outgoing types for the `main()` function in case of
@@ -71,8 +71,6 @@ impl Metadata for ContractMetadata {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StateQuery {
     Admins,
     Game { player_id: ActorId },
@@ -82,8 +80,6 @@ pub enum StateQuery {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {
     Admins(Vec<ActorId>),
     Game(Option<GameInstance>),
@@ -94,16 +90,12 @@ pub enum StateReply {
 
 /// Smart-contract input data structure, for example can contain configuration.
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct GameInit {
     pub config: Config,
 }
 
 /// The main type used as an input message.
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum GameAction {
     AddAdmin(ActorId),
     RemoveAdmin(ActorId),
@@ -129,17 +121,31 @@ pub enum GameAction {
 
 /// The main type used as an output message.
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum GameReply {
+    GameFinished { game: GameInstance },
     GameStarted { game: GameInstance },
     MoveMade { game: GameInstance },
+    GameInstanceRemoved,
+    ConfigUpdated,
+    AdminRemoved,
+    AdminAdded,
+    StatusMessagesUpdated,
+}
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub enum GameError {
+    GameIsAlreadyStarted,
+    CellIsAlreadyOccupied,
+    GameIsAlreadyOver,
+    MissedYourTurn,
+    NotMissedTurnMakeMove,
+    GameIsNotStarted,
+    MessageOnlyForProgram,
+    NotAdmin,
+    MessageProcessingSuspended,
 }
 
 /// Represent game instance status.
 #[derive(Debug, Clone, PartialEq, Eq, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum GameResult {
     Player,
     Bot,
@@ -148,8 +154,6 @@ pub enum GameResult {
 
 /// Represent concrete game instance.
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct GameInstance {
     pub board: Vec<Option<Mark>>,
     pub player_mark: Mark,
@@ -161,16 +165,12 @@ pub struct GameInstance {
 
 /// Indicates tic-tac-toe board mark-state.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Mark {
     X,
     O,
 }
 
 #[derive(Debug, Default, Encode, Clone, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Config {
     pub s_per_block: u64,
     pub gas_to_remove_game: u64,

@@ -26,7 +26,7 @@ fn init_staking(sys: &System) {
         InitStaking {
             staking_token_address: PROGRAMS[1].into(),
             reward_token_address: PROGRAMS[2].into(),
-            distribution_time: 10000,
+            distribution_time: 30000,
             reward_total: 1000,
         },
     );
@@ -74,7 +74,7 @@ fn update_staking(staking: &mut Staking, reward: u128, time: u64) {
         panic!("update_staking(): reward is null");
     }
 
-    staking.distribution_time = 10000;
+    staking.distribution_time = 30000;
     update_reward(staking, time);
     staking.all_produced = staking.reward_produced;
     staking.produced_time = time;
@@ -168,7 +168,7 @@ fn update_staking_test() {
         StakingAction::UpdateStaking(InitStaking {
             staking_token_address: PROGRAMS[1].into(),
             reward_token_address: PROGRAMS[2].into(),
-            distribution_time: 10000,
+            distribution_time: 30000,
             reward_total: 1000,
         }),
     );
@@ -220,7 +220,7 @@ fn send_reward() {
         Ok::<StakingEvent, Error>(StakingEvent::StakeAccepted(2000)).encode()
     )));
 
-    update_reward(&mut staking, time + 2000);
+    update_reward(&mut staking, time + 6000);
     staking.stakers.insert(
         6.into(),
         Staker {
@@ -234,7 +234,7 @@ fn send_reward() {
 
     sys.spend_blocks(1);
 
-    update_reward(&mut staking, time + 3000);
+    update_reward(&mut staking, time + 9000);
     let reward = calc_reward(&staking, &5.into());
 
     staking
@@ -243,12 +243,6 @@ fn send_reward() {
         .and_modify(|stake| stake.distributed = stake.distributed.saturating_add(reward));
 
     let res = st.send(5, StakingAction::GetReward);
-    println!(
-        "Reward[4]: {:?} calc: {}, staking: {:?}",
-        res.decoded_log::<StakingEvent>(),
-        reward,
-        staking
-    );
     assert!(res.contains(&(
         5,
         Ok::<StakingEvent, Error>(StakingEvent::Reward(reward)).encode()
@@ -256,7 +250,7 @@ fn send_reward() {
 
     sys.spend_blocks(1);
 
-    update_reward(&mut staking, time + 4000);
+    update_reward(&mut staking, time + 12000);
     let reward = calc_reward(&staking, &6.into());
 
     staking
@@ -265,12 +259,6 @@ fn send_reward() {
         .and_modify(|stake| stake.distributed = stake.distributed.saturating_add(reward));
 
     let res = st.send(6, StakingAction::GetReward);
-    println!(
-        "Reward[5]: {:?} calc: {}, staking: {:?}",
-        res.decoded_log::<StakingEvent>(),
-        reward,
-        staking
-    );
     assert!(res.contains(&(
         6,
         Ok::<StakingEvent, Error>(StakingEvent::Reward(reward)).encode()
@@ -323,7 +311,7 @@ fn withdraw() {
         Ok::<StakingEvent, Error>(StakingEvent::StakeAccepted(2000)).encode()
     )));
 
-    update_reward(&mut staking, time + 2000);
+    update_reward(&mut staking, time + 6000);
     staking.stakers.insert(
         6.into(),
         Staker {
@@ -343,7 +331,7 @@ fn withdraw() {
         Ok::<StakingEvent, Error>(StakingEvent::Withdrawn(500)).encode()
     )));
 
-    update_reward(&mut staking, time + 3000);
+    update_reward(&mut staking, time + 9000);
     let max_reward = get_max_reward(&staking, 500);
     let actor_id: &ActorId = &5.into();
     let opt = staking.stakers.get_mut(actor_id);
@@ -356,7 +344,7 @@ fn withdraw() {
 
     sys.spend_blocks(1);
 
-    update_reward(&mut staking, time + 4000);
+    update_reward(&mut staking, time + 12000);
     let reward = calc_reward(&staking, &5.into());
 
     staking
@@ -369,11 +357,10 @@ fn withdraw() {
         5,
         Ok::<StakingEvent, Error>(StakingEvent::Reward(reward)).encode()
     )));
-    println!("Reward[4]: {:?}", res.decoded_log::<StakingEvent>());
 
     sys.spend_blocks(2);
 
-    update_reward(&mut staking, time + 6000);
+    update_reward(&mut staking, time + 18000);
     let reward = calc_reward(&staking, &6.into());
 
     staking
@@ -386,7 +373,6 @@ fn withdraw() {
         6,
         Ok::<StakingEvent, Error>(StakingEvent::Reward(reward)).encode()
     )));
-    println!("Reward[5]: {:?}", res.decoded_log::<StakingEvent>());
 }
 
 #[test]
@@ -401,7 +387,7 @@ fn meta_tests() {
     let time = sys.block_timestamp();
 
     let mut staking = Staking {
-        distribution_time: 10000,
+        distribution_time: 30000,
         ..Default::default()
     };
 
@@ -426,7 +412,7 @@ fn meta_tests() {
 
     staking.total_staked = 1500;
 
-    sys.spend_blocks(2);
+    sys.spend_blocks(6);
 
     st_token.approve(6, st.id().into_bytes(), 2000);
     let res = st.send(6, StakingAction::Stake(2000));
@@ -435,7 +421,7 @@ fn meta_tests() {
         Ok::<StakingEvent, Error>(StakingEvent::StakeAccepted(2000)).encode()
     )));
 
-    update_reward(&mut staking, time + 2000);
+    update_reward(&mut staking, time + 6000);
     staking.stakers.insert(
         6.into(),
         Staker {
