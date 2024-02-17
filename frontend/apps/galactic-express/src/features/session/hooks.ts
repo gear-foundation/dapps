@@ -1,12 +1,12 @@
-import { useAccount, useApi, useReadFullState, useSendMessageHandler } from '@gear-js/react-hooks';
+import { useMemo } from 'react';
+import { useAccount, useReadFullState, useSendMessageHandler } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
 import metaTxt from 'assets/meta/galactic_express_meta.txt';
 import { useProgramMetadata } from 'hooks';
-import { LaunchState, PlayerInfo } from './types';
 import { ADDRESS } from 'consts';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { CURRENT_GAME_ATOM, PLAYER_INITIAL_STATUS_ATOM } from 'atoms';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useAtomValue } from 'jotai';
+import { CURRENT_GAME_ATOM } from 'atoms';
+import { LaunchState } from './types';
 
 function useLaunchState() {
   const { account } = useAccount();

@@ -1,7 +1,6 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { Start, Session, useLaunchState } from 'features/session';
 import { Welcome } from 'features/welcome/components/welcome';
-import { Button } from '@gear-js/vara-ui';
 import { RequestGame } from 'features/welcome/components/enter-contract-address';
 import { SessionPassedInfo } from 'features/session/components/session-passed-info';
 

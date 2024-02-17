@@ -1,9 +1,9 @@
 import { Fragment } from 'react';
 import { cx } from 'utils';
 import { shortenString } from 'features/session/utils';
-import styles from './ParticipantsTable.module.scss';
 import { Button } from '@gear-js/vara-ui';
 import { useLaunchMessage } from 'features/session/hooks';
+import styles from './ParticipantsTable.module.scss';
 
 interface TableData {
   id: string;

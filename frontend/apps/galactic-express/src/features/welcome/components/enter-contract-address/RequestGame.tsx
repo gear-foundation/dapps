@@ -1,15 +1,13 @@
 import { useState } from 'react';
 import { WalletNew as Wallet } from '@dapps-frontend/ui';
-import { Button, Input } from '@gear-js/vara-ui';
+import { Button } from '@gear-js/vara-ui';
 import { cx } from 'utils';
 import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
 import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
 import { useSetAtom, useAtom } from 'jotai';
 import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
 import { useLaunchMessage } from 'features/session/hooks';
-import styles from './RequestGame.module.scss';
 import metaTxt from 'assets/meta/galactic_express_meta.txt';
-import { GameIntro } from '../game-intro';
 import { useAccount, useAccountDeriveBalancesAll, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
 import { TextField } from 'components/layout/TextField';
 import { isNotEmpty, useForm } from '@mantine/form';
@@ -20,6 +18,8 @@ import { useProgramMetadata } from 'hooks';
 import { LaunchState, Participant } from 'features/session/types';
 import { JoinModalFormValues } from 'features/session/components/game-found-modal/GameFoundModal';
 import { GameNotFoundModal } from 'features/session/components/game-not-found-modal';
+import { GameIntro } from '../game-intro';
+import styles from './RequestGame.module.scss';
 
 export interface ContractFormValues {
   [key: string]: string;
@@ -93,8 +93,8 @@ function RequestGame() {
     setFieldError: setJoinFieldError,
   } = joinForm;
 
-  const handleSetStatus = (status: Status) => {
-    setStatus(status);
+  const handleSetStatus = (newStatus: Status) => {
+    setStatus(newStatus);
   };
 
   const handleCloseFoundModal = () => {

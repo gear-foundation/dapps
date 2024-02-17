@@ -1,5 +1,7 @@
 import { useAtomValue, useSetAtom, useAtom } from 'jotai';
-import { Input, Button } from '@gear-js/ui';
+import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
+import { useAccount, withoutCommas } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
 import { Card } from 'components';
 import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
@@ -9,8 +11,6 @@ import { useLaunchMessage } from '../../hooks';
 import { Range } from '../range';
 import { Probability } from '../probability';
 import styles from './Form.module.scss';
-import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
-import { useAccount, withoutCommas } from '@gear-js/react-hooks';
 
 type Props = {
   weather: string;
