@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import { useAccount, useApi, useBalanceFormat, useDeriveBalancesAll } from '@gear-js/react-hooks';
-import { ReactComponent as VaraSVG } from '../../assets/vara.svg';
+import { ReactComponent as VaraSVG } from '../../assets/vara-coin.svg';
+import { ReactComponent as TVaraSVG } from '../../assets/tvara-coin.svg';
 import styles from './vara-balance.module.css';
 
 type Props = {
@@ -19,7 +20,7 @@ function VaraBalance({ className }: Props) {
 
   return isAccountReady && balance ? (
     <div className={clsx(styles.balance, className)}>
-      <VaraSVG />
+      {balance.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />}
 
       <p className={styles.text}>
         <span className={styles.value}>{balance.value}</span>
