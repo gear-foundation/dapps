@@ -3,7 +3,7 @@ name: Staging - Deploy Galactic Express
 on:
   workflow_dispatch:
   push:
-    branches: ['master', 'main', 'staging']
+    branches: ['master', 'main']
     paths:
       - frontend/apps/galactic-express/**
       - frontend/packages/**
