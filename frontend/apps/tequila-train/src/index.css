@@ -11,9 +11,9 @@
   --color-light: 209 209 209;
 }
 
-#alert-root {
-  color: white;
-}
+/* #alert-root {
+  z-index: ;
+} */
 
 .test::before {
   background: linear-gradient(270.95deg, rgba(255, 255, 255, 0) 85.3%, #ffffff 102.87%);
@@ -21,7 +21,7 @@
 }
 
 body.body {
-  background-color: #ebf1ee;
+  background-color: #f7f9fa;
   color: #4f4f4f;
 }
 
@@ -37,51 +37,19 @@ body.body {
 
 @layer components {
   .typo-h1 {
-    @apply font-kanit text-[72px] leading-[86px] font-medium;
+    @apply text-[72px] leading-[86px] font-medium;
   }
 
   .typo-h2 {
-    @apply font-kanit text-[40px] leading-[48px] font-bold tracking-[0.04em];
+    @apply text-[40px] leading-[48px] font-bold tracking-[0.04em];
   }
 
   .btn {
     @apply inline-flex justify-center items-center text-center py-2.5 px-8 text-[14px] font-semibold leading-5 tracking-[0.08em] rounded-full whitespace-nowrap cursor-pointer select-none;
   }
 
-  .btn--primary {
-    @apply text-white bg-primary enabled:hover:bg-[#57b53f] enabled:active:bg-[#3f9829] transition-colors;
-  }
-
-  .btn--primary-light {
-    @apply text-white bg-primary bg-opacity-50 enabled:hover:bg-[#57b53f] enabled:active:bg-[#3f9829] transition-colors;
-  }
-
-  .btn--primary-outline {
-    @apply text-white bg-primary bg-opacity-10 enabled:hover:bg-opacity-20 enabled:active:bg-opacity-30 border border-primary border-opacity-20 transition-colors;
-  }
-
-  .btn--gray {
-    @apply text-black bg-secondary-500 enabled:hover:bg-secondary-600 enabled:active:bg-secondary-700 transition-colors;
-  }
-
   .btn--ghost {
-    @apply text-white bg-white/10 enabled:hover:bg-white/30 enabled:active:bg-white/50 transition-colors;
-  }
-
-  .btn--white {
-    @apply text-black bg-white enabled:hover:bg-[#DEDEDE] enabled:active:bg-neutral-300 transition-colors;
-  }
-
-  .btn--black {
-    @apply text-white bg-dark-500 enabled:hover:bg-dark-400 enabled:active:bg-opacity-80 transition-colors;
-  }
-
-  .btn--error {
-    @apply text-white bg-red-500 enabled:hover:bg-red-600 enabled:active:bg-red-700 transition-colors;
-  }
-
-  .btn--blue {
-    @apply text-white bg-blue-600 enabled:hover:bg-blue-700 enabled:active:bg-blue-800 transition-colors;
+    @apply text-white bg-white/10 enabled: hover:bg-white/30 enabled:active:bg-white/50 transition-colors;
   }
 
   .btn[disabled] {
@@ -91,6 +59,8 @@ body.body {
   .btn--loading {
     @apply opacity-90 gap-2 before:w-4 before:h-4 before:border-2 before:border-neutral-500 before:rounded-full before:border-l-transparent before:border-t-transparent before:animate-spin;
   }
+
+  
 }
 
 .ellipse {
@@ -107,15 +77,13 @@ body.body {
 }
 
 .text-transparent-primary {
-  background: radial-gradient(
-    136.03% 142.06% at 47.37% 6.07%,
-    #52d88c 0%,
-    #4dc383 7.98%,
-    #42946e 27.89%,
-    #3a725f 45.54%,
-    #355e56 60.07%,
-    #335653 69.7%
-  );
+  background: radial-gradient(136.03% 142.06% at 47.37% 6.07%,
+      #52d88c 0%,
+      #4dc383 7.98%,
+      #42946e 27.89%,
+      #3a725f 45.54%,
+      #355e56 60.07%,
+      #335653 69.7%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

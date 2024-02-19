@@ -30,44 +30,42 @@ export type StatePlayerTrackType = {
 };
 export type PlayerTrackType = {
   hasTrain: boolean;
-  tiles: DominoTileType[];
+  tiles: StateDominoTileType[];
 };
 
-type IPhaseWinner = Record<'winner', IPlayer>;
+type IPhaseWinners = {
+  Winners?: HexString[];
+};
 
-type IPhaseOther = Record<'registration' | 'playing' | 'stalled', null>;
+type IPhaseOther = Record<'Registration' | 'Playing' | 'Stalled', null>;
 
-export type IGamePhase = Partial<IPhaseWinner & IPhaseOther>;
+export type IGamePhase = Partial<IPhaseWinners & IPhaseOther>;
+
+export type IState = {
+  config: {
+    timeToMove: string
+  };
+  games: [HexString, GameType[]];
+  playersToGameCreator: [HexString, HexString][];
+}
+
+export type PlayersGame = {
+  id: HexString;
+  lose: boolean;
+}
 
 export type IGameState = {
-  gameState: {
-    currentPlayer: string;
-    players: HexString[];
-    remainingTiles: string[];
-    shots: string[];
-    startTile: string;
-    state: IGamePhase;
-    tiles: StateDominoTileType[];
-    tileToPlayer: {};
-    tracks: StatePlayerTrackType[];
-    winner: null | HexString;
-  };
-  players: IPlayer[];
-  isStarted: boolean;
-  maybeLimit: string;
-};
-
-export type IPlayer = [HexString, string];
-
-export type GameWasmStateResponse = {
   currentPlayer: string;
-  players: IPlayer[];
-  playersTiles: Array<DominoTileType[]>;
-  shotCounters: string[];
-  startTile: DominoTileType;
+  lastActivityTime: string;
+  players: PlayersGame[];
+  remainingTiles: string[];
+  shots: string[];
+  startTile: string;
   state: IGamePhase;
+  tiles: StateDominoTileType[];
+  tileToPlayer: {};
   tracks: PlayerTrackType[];
-  winner: null | HexString;
+  Winner: null | string[];
 };
 
 export type PlayerChoiceType = {
@@ -76,3 +74,16 @@ export type PlayerChoiceType = {
   track_id?: string;
   remove_train?: boolean;
 };
+
+export type GameType = {
+  admin: HexString;
+  bid: string;
+  gameState: IGameState;
+  initialPlayers: HexString[];
+  isStarted: false;
+  state: IGamePhase;
+};
+
+export type IGame = {
+  Game: [GameType | null, null | string];
+}

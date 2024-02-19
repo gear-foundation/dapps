@@ -1,0 +1,21 @@
+.wallet {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+
+.accountButton {
+  display: block;
+
+  @media screen and (max-width: 767px) {
+    display: none;
+  }
+}
+
+.connectButton.connectButton {
+  font-size: 16px;
+
+  @media screen and (max-width: 767px) {
+    height: 44px;
+  }
+}
