@@ -2,11 +2,6 @@ name: Release - Deploy Varatube
 
 on:
   workflow_dispatch:
-  push:
-    branches: ['master', 'main']
-    paths:
-      - frontend/apps/varatube/**
-      - frontend/packages/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -53,7 +48,7 @@ jobs:
   build-and-push-image:
     needs: [prepair]
     runs-on: ubuntu-latest
-    environment: stg
+    environment: prod
     permissions:
       contents: read
       packages: write
@@ -84,7 +79,7 @@ jobs:
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
     runs-on: ubuntu-latest
-    environment: stg
+    environment: prod
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
