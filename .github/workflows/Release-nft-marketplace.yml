@@ -1,26 +1,21 @@
-name: Build and Deploy Supply Chain
+name: Release - Deploy Marketplace
 
 on:
   workflow_dispatch:
-  push:
-    branches: ['master', 'main', 'staging']
-    paths:
-      - frontend/apps/supply-chain/**
-      - frontend/packages/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
-  ENVIRONMENT: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && 'prod' || 'stg' }}
+  ENVIRONMENT: prod
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
   KUBECTL_VERSION: 'v1.22.17'
   KUBE_NAMESPACE: gear-dapps
-  KUBE_DEPLOYMENT_PREFIX: supply-chain
+  KUBE_DEPLOYMENT_PREFIX: marketplace
   REGISTRY: ghcr.io/${{ github.repository }}
 
 jobs:
@@ -53,7 +48,7 @@ jobs:
   build-and-push-image:
     needs: [prepair]
     runs-on: ubuntu-latest
-    environment: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && 'prod' || 'stg' }}
+    environment: prod
     permissions:
       contents: read
       packages: write
@@ -71,18 +66,21 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          file: frontend/apps/supply-chain/Dockerfile
+          file: frontend/apps/nft-marketplace/Dockerfile
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            REACT_APP_CODE_ADDRESS=${{ secrets.REACT_APP_CODE_ADDRESS_SUPPLY_CHAIN }}
-            REACT_APP_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_SUPPLY_CHAIN }}
+            REACT_APP_IPFS_GATEWAY_ADDRESS=${{ secrets.REACT_APP_IPFS_GATEWAY_ADDRESS }}
+            REACT_APP_IPFS_ADDRESS=${{ secrets.REACT_APP_IPFS_ADDRESS }}
+            REACT_APP_NFT_CONTRACT_ADDRESS=${{ secrets.REACT_APP_NFT_CONTRACT_ADDRESS }}
+            REACT_APP_MARKETPLACE_CONTRACT_ADDRESS=${{ secrets.REACT_APP_MARKETPLACE_CONTRACT_ADDRESS }}
+            REACT_APP_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_NFT_MARKETPLACE }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
     runs-on: ubuntu-latest
-    environment: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && 'prod' || 'stg' }}
+    environment: prod
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

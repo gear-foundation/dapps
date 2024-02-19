@@ -1,11 +1,11 @@
-name: Build and Deploy Varatube
+name: Staging - Deploy Supply Chain
 
 on:
   workflow_dispatch:
   push:
-    branches: ['master', 'main', 'staging']
+    branches: ['master', 'main']
     paths:
-      - frontend/apps/varatube/**
+      - frontend/apps/supply-chain/**
       - frontend/packages/**
 
 concurrency:
@@ -13,14 +13,14 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  ENVIRONMENT: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && 'prod' || 'stg' }}
+  ENVIRONMENT: stg
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
   KUBECTL_VERSION: 'v1.22.17'
   KUBE_NAMESPACE: gear-dapps
-  KUBE_DEPLOYMENT_PREFIX: varatube
+  KUBE_DEPLOYMENT_PREFIX: supply-chain
   REGISTRY: ghcr.io/${{ github.repository }}
 
 jobs:
@@ -53,7 +53,7 @@ jobs:
   build-and-push-image:
     needs: [prepair]
     runs-on: ubuntu-latest
-    environment: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && 'prod' || 'stg' }}
+    environment: stg
     permissions:
       contents: read
       packages: write
@@ -71,20 +71,18 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          file: frontend/apps/varatube/Dockerfile
+          file: frontend/apps/supply-chain/Dockerfile
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            REACT_APP_IPFS_GATEWAY_ADDRESS=${{ secrets.REACT_APP_IPFS_GATEWAY_ADDRESS }}
-            REACT_APP_CONTRACT_ADDRESS=${{ secrets.REACT_APP_CONTRACT_ADDRESS_VARATUBE }}
-            REACT_APP_FT_CONTRACT_ADDRESS=${{ secrets.REACT_APP_FT_CONTRACT_ADDRESS_VARATUBE }}
-            REACT_APP_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_VARATUBE }}
+            REACT_APP_CODE_ADDRESS=${{ secrets.REACT_APP_CODE_ADDRESS_SUPPLY_CHAIN }}
+            REACT_APP_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_SUPPLY_CHAIN }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
     runs-on: ubuntu-latest
-    environment: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && 'prod' || 'stg' }}
+    environment: stg
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

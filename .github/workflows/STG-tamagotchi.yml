@@ -1,11 +1,11 @@
-name: Build and Deploy Galactic Express
+name: Staging - Deploy Tamagotchi
 
 on:
   workflow_dispatch:
   push:
     branches: ['master', 'main', 'staging']
     paths:
-      - frontend/apps/galactic-express/**
+      - frontend/apps/tamagotchi/**
       - frontend/packages/**
 
 concurrency:
@@ -13,14 +13,14 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  ENVIRONMENT: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && 'prod' || 'stg' }}
+  ENVIRONMENT: stg
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
   KUBECTL_VERSION: 'v1.22.17'
   KUBE_NAMESPACE: gear-dapps
-  KUBE_DEPLOYMENT_PREFIX: galactic-express
+  KUBE_DEPLOYMENT_PREFIX: tamagotchi
   REGISTRY: ghcr.io/${{ github.repository }}
 
 jobs:
@@ -53,7 +53,7 @@ jobs:
   build-and-push-image:
     needs: [prepair]
     runs-on: ubuntu-latest
-    environment: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && 'prod' || 'stg' }}
+    environment: stg
     permissions:
       contents: read
       packages: write
@@ -71,17 +71,17 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          file: frontend/apps/galactic-express/Dockerfile
+          file: frontend/apps/tamagotchi/Dockerfile
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
-            REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            REACT_APP_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_GALEX }}
+            VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
+            VITE_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_TAMAGOTCHI }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
     runs-on: ubuntu-latest
-    environment: ${{ (github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main') && 'prod' || 'stg' }}
+    environment: stg
     steps:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
