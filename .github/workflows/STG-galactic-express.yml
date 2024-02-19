@@ -1,4 +1,4 @@
-name: QA Deploy Galactic Express
+name: Q Deploy Galactic Express
 
 on:
   workflow_dispatch:
