@@ -108,7 +108,7 @@ function RequestGame() {
 
     const payload = {
       CreateNewSession: {
-        name: 'Some2',
+        name: values.name,
       },
     };
 
