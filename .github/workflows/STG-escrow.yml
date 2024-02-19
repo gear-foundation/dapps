@@ -1,4 +1,4 @@
-name: QA Deploy Escrow
+name: Staging - Deploy Escrow
 
 on:
   workflow_dispatch:
