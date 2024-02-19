@@ -1,21 +1,20 @@
-import { Link, useLocation } from 'react-router-dom';
-import { Icon } from 'components/ui/icon';
+import { NavLink } from 'react-router-dom';
+import clsx from 'clsx';
+import styles from './logo.module.scss';
+import { ROUTES } from 'app/consts';
+import { TextGradient } from 'components/ui/text-gradient';
+import { Sprite } from 'components/ui/sprite';
+import type { BaseComponentProps } from 'app/types';
 
-export const Logo = () => {
-  const { pathname } = useLocation();
-
-  return (
-    <>
-      {pathname !== '/' ? (
-        <Link to="/" className="inline-flex text-dark-500 transition-colors hover:text-opacity-70">
-          <Icon name="logo-game" width={180} height={44} className="h-10" />
-        </Link>
-      ) : (
-        <span className="inline-flex items-end gap-3">
-          <Icon name="train" width={43} height={35} className="w-auto h-9 text-[#FFCE4A]" />
-          <Icon name="logo-game" width={140} height={21} className="w-auto h-5 mb-1" />
-        </span>
-      )}
-    </>
-  );
+type LogoProps = BaseComponentProps & {
+  label?: string;
 };
+
+export function Logo({ className, label }: LogoProps) {
+  return (
+    <NavLink to={ROUTES.HOME} className={({ isActive }) => clsx(styles.link, isActive && styles.active, className)}>
+      <Sprite name="vara-logo" width={92} height={60} className={styles.logo} />
+      {/* {label && <TextGradient className={styles.title}>{label}</TextGradient>} */}
+    </NavLink>
+  );
+}

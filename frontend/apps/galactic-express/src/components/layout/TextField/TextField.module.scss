@@ -1,0 +1,114 @@
+  .inputContainer {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    border: 1px solid rgba(255, 255, 255, 0.23);
+    border-radius: 4px;
+  }
+  
+  .darkInputContainer {
+    border: 1px solid rgba(0, 0, 0, 0.25);
+  }
+
+  .input {
+    height: 55px;
+    width: 100%;
+    padding-left: 16px;
+    border: none;
+    box-sizing: border-box;
+
+    background: transparent;
+    color: #ffffff;
+
+    &::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  .darkInputColors {
+    color: #000000;
+
+    &::placeholder {
+      color: rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  .label {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 16px;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+  }
+
+  .input, .label .text {
+    font-family: 'Anuphan';
+    font-size: 16px;
+  }
+
+  .input:focus + .label .text {
+    font-size: 12px;
+    transform: translate(0, -50%);
+    // background-color: white;
+    padding-left: 4px;
+    padding-right: 4px;
+    color: #199680;
+    background: #000;
+  }
+
+  .label .text {
+    transition: all 0.15s ease-out;
+  }
+
+  .input:focus {
+    border: none;
+    outline: none;
+  }
+
+  .input:focus + .label .text, :not(.input[value=""]) + .label .text {
+    color: #313635;
+    font-size: 12px;
+    transform: translate(0, -156%);
+    padding-left: 4px;
+    padding-right: 4px;
+
+    background: #000;
+  }
+  
+  .input:focus + .label .text {
+    color: #199680;
+  }
+
+  .darkInputColors:focus + .label .text, :not(.input[value=""]) + .label .text {
+    background: #fff;
+  }
+
+  .activeLabel {
+    height: 22px;
+    font-size: 12px;
+    transform: translate(0, -50%);
+    padding-left: 4px;
+    padding-right: 4px;
+    background: #000;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 16px;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+    color: rgba(255, 255, 255, 0.7);;
+  }
+
+
+  .darkLabel {
+    background: #fff;
+    color: #000;
+  }
+
+  .iconContainer {
+    margin-left: 18px;
+  }

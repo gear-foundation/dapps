@@ -1,0 +1,16 @@
+
+
+.buttonWrapper {
+  position: absolute;
+  top: 0;
+  left: 20px;
+}
+.button.button.button {
+  background: #F24A4A12;
+  color: #EB5757;
+
+  & svg path {
+    fill: #EB5757;
+    stroke: #EB5757;
+  }
+}

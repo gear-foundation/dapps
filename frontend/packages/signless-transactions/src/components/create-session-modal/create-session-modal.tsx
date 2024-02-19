@@ -28,7 +28,7 @@ function CreateSessionModal({ close }: Props) {
   const { register, handleSubmit, formState } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
-  const { savePair, storagePair, voucherBalance, createSession } = useSignlessTransactions();
+  const { savePair, storagePair, voucherBalance, createSession, updateSession } = useSignlessTransactions();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const [pair, setPair] = useState<KeyringPair | KeyringPair$Json | undefined>(storagePair);
 
@@ -71,7 +71,7 @@ function CreateSessionModal({ close }: Props) {
     const key = decodeAddress(pair.address);
     const allowedActions = ACTIONS;
 
-    const onSuccess = () => {
+    const onSuccess = async () => {
       if (storagePair) {
         openEnableModal();
       } else {
@@ -81,6 +81,11 @@ function CreateSessionModal({ close }: Props) {
     };
 
     const onFinally = () => setIsLoading(false);
+
+    if (storagePair) {
+      updateSession({ duration, key, allowedActions }, issueVoucherValue, { onSuccess, onFinally });
+      return;
+    }
 
     createSession({ duration, key, allowedActions }, issueVoucherValue, { onSuccess, onFinally });
   };
