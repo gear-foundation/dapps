@@ -82,6 +82,7 @@
 .imageWrapper {
   @include flexCenter;
   flex: 1;
+  position: relative;
 
   .image {
     max-width: 345px;

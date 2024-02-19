@@ -25,7 +25,9 @@ type Value = {
   isSessionReady: boolean;
   voucherBalance: number;
   createSession: (...args: Parameters<ReturnType<typeof useCreateSession>['createSession']>) => void;
-  deleteSession: () => void;
+  deleteSession: (...args: Parameters<ReturnType<typeof useCreateSession>['deleteSession']>) => void;
+  updateSession: (...args: Parameters<ReturnType<typeof useCreateSession>['updateSession']>) => void;
+  pairVoucherId: `0x${string}` | undefined;
 };
 
 export type { State, Session, Storage, Value };

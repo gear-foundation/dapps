@@ -4,7 +4,6 @@ import { motion } from 'framer-motion';
 import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
 import { useWallet } from '@/features/wallet-new/hooks';
-
 import styles from './mobile-menu.module.css';
 import clsx from 'clsx';
 
@@ -57,23 +56,26 @@ export function MobileMenu({ children, className, onClose, walletModalHandler }:
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: 0.4 }}
-      className={clsx(styles.container, className?.container)}>
-      <div className={styles.changeAccount}>
-        {children}
-        <div>
-          <ul className={styles.list}>{getAccounts()}</ul>
-        </div>
+    <>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.4 }}
+        className={clsx(styles.container, className?.container)}>
+        <div className={styles.changeAccount}>
+          {children}
+          <div>
+            <ul className={styles.list}>{getAccounts()}</ul>
+          </div>
 
-        <div className={clsx(styles.buttons, className?.buttons)}>
-          <Button text="Change account" onClick={handleChangeButtonClick} />
-          <Button text="Disconnect" onClick={handleLogoutButtonClick} />
+          <div className={clsx(styles.buttons, className?.buttons)}>
+            <Button text="Change account" onClick={handleChangeButtonClick} />
+            <Button text="Disconnect" onClick={handleLogoutButtonClick} />
+          </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+      <div style={{ background: 'black' }} />
+    </>
   );
 }

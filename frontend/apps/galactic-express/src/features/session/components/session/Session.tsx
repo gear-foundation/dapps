@@ -6,7 +6,7 @@ import { Container } from 'components';
 import { ReactComponent as LeftDoubleArrowSVG } from '../../assets/left-double-arrow.svg';
 import { ReactComponent as LeftArrowSVG } from '../../assets/left-arrow.svg';
 import { PLAYER_COLORS } from '../../consts';
-import { Event, Rank, Session as SessionType, Turns, Participant, TurnParticipant } from '../../types';
+import { Event, Rank, Session as SessionType, Turns, Participant, TurnParticipant, RankWithName } from '../../types';
 import { Traits } from '../traits';
 import { Radar } from '../radar';
 import { Table } from '../table';
@@ -18,9 +18,10 @@ type Props = {
   rankings: Rank[];
   userId?: HexString;
   participants: Participant[];
+  admin: string | undefined;
 };
 
-function Session({ session, turns, rankings, userId, participants }: Props) {
+function Session({ session, turns, rankings, userId, participants, admin }: Props) {
   const { altitude, weather, reward, sessionId: id } = session;
   const roundsCount = turns.length;
 
@@ -61,6 +62,7 @@ function Session({ session, turns, rankings, userId, participants }: Props) {
 
         return {
           participant: participantInfo[0],
+          name: participants.find((part) => part[0] === participantInfo[0])?.[1].name,
           deadRound: !isAlive,
           firstDeadRound,
           fuelLeft: defineFuelLeftFormat(isAlive, participantInfo[1]?.Alive?.fuelLeft),
@@ -106,7 +108,9 @@ function Session({ session, turns, rankings, userId, participants }: Props) {
     const sortedRanks = sortRanks();
     const highestRank = sortedRanks?.[0]?.[1];
 
-    const winners = sortedRanks.filter((item) => item[1] === highestRank);
+    const winners = sortedRanks
+      .filter((item) => item[1] === highestRank)
+      .map((item) => [...item, participants.find((part) => part[0] === item[0])?.[1].name || '']) as RankWithName[];
 
     return {
       isUserWinner: winners.map((item) => item[0]).includes(userId || '0x'),
@@ -119,7 +123,7 @@ function Session({ session, turns, rankings, userId, participants }: Props) {
     <div className={styles.container}>
       <Container>
         <header className={styles.header}>
-          <h2 className={styles.heading}>Session #{id}</h2>
+          <h2 className={styles.heading}>Session</h2>
 
           <div className={styles.navigation}>
             <Button icon={LeftDoubleArrowSVG} color="transparent" onClick={firstPage} disabled={isFirstPage} />
@@ -162,6 +166,7 @@ function Session({ session, turns, rankings, userId, participants }: Props) {
         isWinner={defineWinners().isUserWinner}
         winners={defineWinners().winners}
         userRank={defineWinners().userRank}
+        admin={admin}
       />
     </div>
   );
