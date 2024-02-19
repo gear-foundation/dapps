@@ -1,15 +1,15 @@
 import { useEffect, useState } from 'react';
 import clsx from 'clsx';
-import { UserMessageSent, encodeAddress } from '@gear-js/api';
+import { HexString, UserMessageSent, encodeAddress } from '@gear-js/api';
 import { Button } from '@gear-js/ui';
-import { useAtomValue, useSetAtom } from 'jotai';
-import { CURRENT_CONTRACT_ADDRESS_ATOM, IS_CONTRACT_ADDRESS_INITIALIZED_ATOM } from 'atoms';
+import { useSetAtom } from 'jotai';
+import { CURRENT_GAME_ATOM } from 'atoms';
+import { ADDRESS } from 'consts';
 import { Bytes } from '@polkadot/types';
-import { useAccount, useApi, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount, useApi } from '@gear-js/react-hooks';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import src from 'assets/images/earth.gif';
 import { Container } from 'components';
-
 import { Participant, Session } from '../../types';
 import { Traits } from '../traits';
 import { Form } from '../form';
@@ -19,25 +19,27 @@ import { ParticipantsTable } from '../participants-table';
 
 import { SuccessfullyRegisteredInfo } from '../successfully-registered-info';
 import { Warning } from '../warning';
+import { CancelGameButton } from '../cancel-game-button/CancelGameButton';
 
 type Props = {
   participants: Participant[];
   session: Session;
   isUserAdmin: boolean;
   userAddress: string;
+  adminAddress: HexString | undefined;
+  adminName: string;
+  bid: string | undefined;
 };
 
 type DecodedReply = {
   Err: string;
 };
 
-function Start({ participants, session, isUserAdmin, userAddress }: Props) {
+function Start({ participants, session, isUserAdmin, userAddress, adminAddress, bid, adminName }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
   const { decodedAddress } = account || {};
-  const currentContractAddress = useAtomValue(CURRENT_CONTRACT_ADDRESS_ATOM);
-  const setCurrentContractAddress = useSetAtom(CURRENT_CONTRACT_ADDRESS_ATOM);
-  const setIsContractAddressInitialized = useSetAtom(IS_CONTRACT_ADDRESS_INITIALIZED_ATOM);
+  const setCurrentGame = useSetAtom(CURRENT_GAME_ATOM);
   const { altitude, weather, reward, sessionId } = session;
   const playersCount = participants?.length ? participants.length + 1 : 1;
   const isRegistered = decodedAddress ? !!participants.some((participant) => participant[0] === decodedAddress) : false;
@@ -62,15 +64,14 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
   };
 
   const handleGoBack = () => {
-    setCurrentContractAddress('');
-    setIsContractAddressInitialized(false);
+    setCurrentGame('');
   };
 
   const handleEvents = ({ data }: UserMessageSent) => {
     const { message } = data;
     const { destination, source, payload } = message;
     const isOwner = destination.toHex() === account?.decodedAddress;
-    const isEscrowProgram = source.toHex() === currentContractAddress;
+    const isEscrowProgram = source.toHex() === ADDRESS.CONTRACT;
 
     if (isOwner && isEscrowProgram) {
       const reply = getDecodedReply(payload);
@@ -118,23 +119,23 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
         </header>
 
         <Container className={containerClassName}>
-          {isUserAdmin && (
-            <ParticipantsTable
-              data={[
-                {
-                  id: userAddress,
-                  playerAddress: encodeAddress(userAddress),
-                },
-                ...participants
-                  .filter((item) => item[0] !== decodedAddress)
-                  .map((item) => ({
-                    id: item[0],
-                    playerAddress: encodeAddress(item[0]),
-                  })),
-              ]}
-              userAddress={userAddress}
-            />
-          )}
+          <ParticipantsTable
+            data={[
+              {
+                id: adminAddress || '',
+                playerAddress: encodeAddress(adminAddress || ''),
+                playerName: adminName,
+              },
+              ...participants.map((item) => ({
+                id: item[0],
+                playerAddress: encodeAddress(item[0]),
+                playerName: item[1].name,
+              })),
+            ]}
+            userAddress={userAddress}
+            isUserAdmin={isUserAdmin}
+          />
+
           <Traits altitude={altitude} weather={weather} reward={reward} />
 
           <footer>
@@ -159,18 +160,14 @@ function Start({ participants, session, isUserAdmin, userAddress }: Props) {
             )}
             {((isUserAdmin && registrationStatus !== 'NotEnoughParticipants') ||
               (!isUserAdmin && !isRegistered && registrationStatus === 'registration')) && (
-              <Form
-                weather={weather}
-                defaultDeposit={withoutCommas('0')}
-                isAdmin={isUserAdmin}
-                setRegistrationStatus={setRegistrationStatus}
-              />
+              <Form weather={weather} bid={bid} isAdmin={isUserAdmin} setRegistrationStatus={setRegistrationStatus} />
             )}
           </footer>
         </Container>
       </div>
 
       <div className={styles.imageWrapper}>
+        <CancelGameButton isAdmin={isUserAdmin} userAddress={userAddress} participants={participants} />
         <img src={src} alt="" className={styles.image} />
       </div>
     </div>

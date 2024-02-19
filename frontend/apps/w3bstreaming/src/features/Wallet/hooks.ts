@@ -4,8 +4,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { CreateType } from '@gear-js/api';
 import { formatBalance } from '@polkadot/util';
 import { useAlert, useAccount, useApi, useBalance } from '@gear-js/react-hooks';
-import { LOCAL_STORAGE } from '@/consts';
-import { AVAILABLE_BALANCE, IS_AVAILABLE_BALANCE_READY, WALLET, WALLET_ID_LOCAL_STORAGE_KEY, WalletId } from './consts';
+import { AVAILABLE_BALANCE, IS_AVAILABLE_BALANCE_READY } from './consts';
 import { SystemAccount } from './types';
 
 function useWasmMetadata(source: RequestInfo | URL) {
@@ -25,37 +24,6 @@ function useWasmMetadata(source: RequestInfo | URL) {
   return { buffer: data };
 }
 
-function useWallet() {
-  const { accounts } = useAccount();
-
-  const [walletId, setWalletId] = useState<WalletId | undefined>(localStorage[LOCAL_STORAGE.WALLET]);
-
-  const resetWalletId = () => setWalletId(undefined);
-
-  const getWalletAccounts = (id: WalletId) => accounts?.filter(({ meta }) => meta.source === id) || [];
-
-  const saveWallet = () => walletId && localStorage.setItem(LOCAL_STORAGE.WALLET, walletId);
-
-  const removeWallet = () => localStorage.removeItem(LOCAL_STORAGE.WALLET);
-
-  const wallet = walletId && WALLET[walletId];
-  const walletAccounts = walletId && getWalletAccounts(walletId);
-
-  return { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts, saveWallet, removeWallet };
-}
-
-function useWalletSync() {
-  const { account, isAccountReady } = useAccount();
-  const { address } = account || {};
-
-  useEffect(() => {
-    if (!isAccountReady) return;
-    if (!account) return localStorage.removeItem(WALLET_ID_LOCAL_STORAGE_KEY);
-
-    localStorage.setItem(WALLET_ID_LOCAL_STORAGE_KEY, account.meta.source);
-  }, [isAccountReady, address, account]);
-}
-
 export function useAccountAvailableBalance() {
   const isAvailableBalanceReady = useAtomValue(IS_AVAILABLE_BALANCE_READY);
   const availableBalance = useAtomValue(AVAILABLE_BALANCE);
@@ -66,7 +34,7 @@ export function useAccountAvailableBalance() {
 export function useAccountAvailableBalanceSync() {
   const { isAccountReady, account } = useAccount();
   const { api, isApiReady } = useApi();
-  const { balance, isBalanceReady } = useBalance(account?.decodedAddress);
+  const { balance } = useBalance(account?.decodedAddress);
 
   const isReady = useAtomValue(IS_AVAILABLE_BALANCE_READY);
   const setIsReady = useSetAtom(IS_AVAILABLE_BALANCE_READY);
@@ -114,7 +82,7 @@ export function useAccountAvailableBalanceSync() {
     } else {
       setIsReady(true);
     }
-  }, [account, api, isAccountReady, isApiReady, isReady, balance, isBalanceReady, setAvailableBalance, setIsReady]);
+  }, [account, api, isAccountReady, isApiReady, isReady, balance]);
 }
 
-export { useWalletSync, useWallet, useWasmMetadata };
+export { useWasmMetadata };

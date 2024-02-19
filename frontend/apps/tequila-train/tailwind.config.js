@@ -35,19 +35,6 @@ module.exports = {
           '100%': { opacity: 1 },
         },
       },
-      colors: {
-        current: 'currentColor',
-        secondary: 'rgb(var(--color-secondary) / <alpha-value>)',
-        primary: 'rgb(var(--color-primary) / <alpha-value>)',
-        error: 'rgb(var(--color-error) / <alpha-value>)',
-        'dark-500': 'rgb(var(--color-dark-500) / <alpha-value>)',
-        'dark-400': 'rgb(var(--color-dark-400) / <alpha-value>)',
-        light: 'rgb(var(--color-light) / <alpha-value>)',
-      },
-      fontFamily: {
-        kanit: ['Kanit', ...defaultTheme.fontFamily.sans],
-        poppins: ['Poppins', ...defaultTheme.fontFamily.sans],
-      },
       fontSize: {
         xxs: ['10px', '18px'],
         xs: ['12px', '16px'],
