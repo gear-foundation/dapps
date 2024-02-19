@@ -1,4 +1,4 @@
-name: Build and Deploy Game Of Chance
+name: Staging - Deploy Game Of Chance
 
 on:
   workflow_dispatch:
