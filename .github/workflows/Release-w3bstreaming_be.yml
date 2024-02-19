@@ -1,12 +1,11 @@
-name: Release - Deploy BattleShips
+name: Release - Deploy W3bstreaming backend
 
 on:
   workflow_dispatch:
   push:
     branches: ['master', 'main']
     paths:
-      - frontend/apps/battleship/**
-      - frontend/packages/**
+      - backend/w3bstreaming/**
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -20,7 +19,7 @@ env:
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
   KUBECTL_VERSION: 'v1.22.17'
   KUBE_NAMESPACE: gear-dapps
-  KUBE_DEPLOYMENT_PREFIX: battleship
+  KUBE_DEPLOYMENT_PREFIX: w3bstreaming-backend
   REGISTRY: ghcr.io/${{ github.repository }}
 
 jobs:
@@ -71,14 +70,14 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          file: frontend/apps/battleship/Dockerfile
+          file: backend/w3bstreaming/Dockerfile
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
-            VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
-            VITE_CONTRACT_ADDRESS=${{ secrets.VITE_CONTRACT_ADDRESS_BATTLE }}
-            VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN_BATTLE }}
-            VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS }}
+            REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
+            WS_ADRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
+            PATH_TO_META=${{ secrets.PATH_TO_META }}
+            PROGRAM_ID=${{ secrets.REACT_APP_CONTRACT_ADDRESS_W3BSTEAMING  }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

@@ -1,11 +1,11 @@
-name: Release - Deploy BattleShips
+name: Release - Deploy Tamagotchi
 
 on:
   workflow_dispatch:
   push:
-    branches: ['master', 'main']
+    branches: ['master', 'main', 'staging']
     paths:
-      - frontend/apps/battleship/**
+      - frontend/apps/tamagotchi/**
       - frontend/packages/**
 
 concurrency:
@@ -20,7 +20,7 @@ env:
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
   KUBECTL_VERSION: 'v1.22.17'
   KUBE_NAMESPACE: gear-dapps
-  KUBE_DEPLOYMENT_PREFIX: battleship
+  KUBE_DEPLOYMENT_PREFIX: tamagotchi
   REGISTRY: ghcr.io/${{ github.repository }}
 
 jobs:
@@ -71,14 +71,12 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          file: frontend/apps/battleship/Dockerfile
+          file: frontend/apps/tamagotchi/Dockerfile
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS }}
-            VITE_CONTRACT_ADDRESS=${{ secrets.VITE_CONTRACT_ADDRESS_BATTLE }}
-            VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN_BATTLE }}
-            VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS }}
+            VITE_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_TAMAGOTCHI }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]
