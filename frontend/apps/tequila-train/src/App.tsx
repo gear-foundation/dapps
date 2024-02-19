@@ -7,6 +7,8 @@ import { withProviders } from 'app/hocs';
 import './index.css';
 import './App.scss';
 
+import '@gear-js/vara-ui/dist/style.css';
+
 const Component = () => {
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();

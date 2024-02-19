@@ -1,3 +1,3 @@
-import { EnterContractAddress } from './EnterContractAddress';
+import { RequestGame } from './RequestGame';
 
-export { EnterContractAddress };
+export { RequestGame };
