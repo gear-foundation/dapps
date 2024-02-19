@@ -1,4 +1,4 @@
-name: Q Deploy Galactic Express
+name: Staging - Deploy Galactic Express
 
 on:
   workflow_dispatch:
