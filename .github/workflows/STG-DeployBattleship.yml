@@ -1,4 +1,4 @@
-name: QA Deploy BattleShips
+name: Staging - Deploy BattleShips
 
 on:
   workflow_dispatch:
