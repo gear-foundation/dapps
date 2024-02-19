@@ -3,7 +3,7 @@ name: Staging - Deploy Escrow
 on:
   workflow_dispatch:
   push:
-    branches: ['master', 'main', 'staging']
+    branches: ['master', 'main']
     paths:
       - frontend/apps/escrow/**
       - frontend/packages/**
