@@ -1,25 +1,9 @@
-import { CreateType, decodeAddress } from '@gear-js/api';
-import {
-  useAccount,
-  useAlert,
-  useApi,
-  useBalance,
-  useBalanceFormat,
-  useVoucherBalance,
-  withoutCommas,
-} from '@gear-js/react-hooks';
-import { formatBalance, stringShorten } from '@polkadot/util';
+import { CreateType } from '@gear-js/api';
+import { useAccount, useApi, useBalance } from '@gear-js/react-hooks';
+import { formatBalance } from '@polkadot/util';
 import { useEffect, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { useSignlessTransactions } from '@dapps-frontend/signless-transactions';
-import { ADDRESS } from '@/app/consts';
-import {
-  AVAILABLE_BALANCE,
-  IS_AVAILABLE_BALANCE_READY,
-  VOUCHER_MIN_LIMIT,
-  WALLET,
-  WALLET_ID_LOCAL_STORAGE_KEY,
-} from './consts';
+import { AVAILABLE_BALANCE, IS_AVAILABLE_BALANCE_READY, WALLET, WALLET_ID_LOCAL_STORAGE_KEY } from './consts';
 import { SystemAccount, WalletId } from './types';
 
 function useWalletSync() {
@@ -118,46 +102,4 @@ function useAccountAvailableBalanceSync() {
   }, [account, api, isAccountReady, isApiReady, isReady, balance]);
 }
 
-function useCheckBalance(isVoucher: boolean) {
-  const { api } = useApi();
-
-  const { account } = useAccount();
-  const { pair } = useSignlessTransactions();
-  const accountAddress = pair ? decodeAddress(pair.address) : account?.decodedAddress;
-  const { voucherBalance } = useVoucherBalance(ADDRESS.GAME, accountAddress);
-
-  const { availableBalance } = useAccountAvailableBalance();
-  const { getChainBalanceValue } = useBalanceFormat();
-  const { getFormattedBalanceValue } = useBalanceFormat();
-  const alert = useAlert();
-
-  const checkBalance = (limit: number, callback: () => void, onError?: () => void) => {
-    const chainBalance = Number(getChainBalanceValue(Number(withoutCommas(availableBalance?.value || ''))).toFixed());
-    const valuePerGas = Number(withoutCommas(api!.valuePerGas!.toHuman()));
-    const chainEDeposit = Number(
-      getChainBalanceValue(Number(withoutCommas(availableBalance?.existentialDeposit || ''))).toFixed(),
-    );
-
-    const chainEDepositWithLimit = chainEDeposit + limit * valuePerGas;
-
-    if (
-      isVoucher && !!voucherBalance
-        ? getFormattedBalanceValue(voucherBalance.toString()).toFixed() < VOUCHER_MIN_LIMIT
-        : !chainBalance || chainBalance < chainEDepositWithLimit
-    ) {
-      alert.error(`Low balance on ${stringShorten(account?.decodedAddress || '', 8)}`);
-
-      if (onError) {
-        onError();
-      }
-
-      return;
-    }
-
-    callback();
-  };
-
-  return { checkBalance };
-}
-
-export { useWalletSync, useWallet, useAccountAvailableBalance, useAccountAvailableBalanceSync, useCheckBalance };
+export { useWalletSync, useWallet, useAccountAvailableBalance, useAccountAvailableBalanceSync };

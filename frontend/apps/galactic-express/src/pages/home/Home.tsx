@@ -1,52 +1,46 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { CURRENT_CONTRACT_ADDRESS_ATOM, IS_CONTRACT_ADDRESS_INITIALIZED_ATOM } from 'atoms';
-import { useAtomValue } from 'jotai';
-import { Wallet } from '@dapps-frontend/ui';
 import { Start, Session, useLaunchState } from 'features/session';
 import { Welcome } from 'features/welcome/components/welcome';
-import { EnterContractAddress } from 'features/welcome/components/enter-contract-address';
+import { RequestGame } from 'features/welcome/components/enter-contract-address';
+import { SessionPassedInfo } from 'features/session/components/session-passed-info';
 
 function Home() {
   const { account } = useAccount();
-  const currentContractAddress = useAtomValue(CURRENT_CONTRACT_ADDRESS_ATOM);
-  const isContractAddressInitialized = useAtomValue(IS_CONTRACT_ADDRESS_INITIALIZED_ATOM);
-  const state = useLaunchState(currentContractAddress);
-  const { admin, session, turns, participants, isSessionEnded, rankings } = state || {};
+  const state = useLaunchState();
+  const { admin, stage, sessionId, altitude, weather, reward, bid, adminName } = state || {};
 
-  const { sessionId, altitude, weather, reward } = session || {};
+  const isSessionEnded = Object.keys(stage || {})[0] === 'Results';
+
+  const rankings = stage?.Results?.rankings;
+  const turns = stage?.Results?.turns;
+  const participants = stage?.Registration || stage?.Results?.participants;
 
   const isUserAdmin = admin === account?.decodedAddress;
-  const isStateComing = !!state;
 
   return (
     <>
-      {(!isContractAddressInitialized || (!Number(sessionId) && isSessionEnded)) && (
+      {!state && !isSessionEnded && (
         <Welcome>
-          {account ? (
-            <EnterContractAddress
-              doesSessionExist={!isSessionEnded}
-              isUserAdmin={isUserAdmin}
-              isStateComing={isStateComing}
-            />
-          ) : (
-            <Wallet />
-          )}
+          <RequestGame />
         </Welcome>
       )}
-      {currentContractAddress && isContractAddressInitialized && (
+      {!!state && (
         <>
-          {participants ? (
+          {true ? (
             <>
               {!isSessionEnded && (
                 <Start
-                  participants={participants}
+                  participants={participants || []}
                   session={{
                     altitude: altitude || '',
                     weather: weather || '',
                     reward: reward || '',
                     sessionId: sessionId || '',
                   }}
+                  bid={bid}
                   isUserAdmin={isUserAdmin}
+                  adminAddress={admin}
+                  adminName={adminName || ''}
                   userAddress={account?.address || ''}
                 />
               )}
@@ -60,13 +54,14 @@ function Home() {
                         reward: reward || '',
                         sessionId: sessionId || '',
                       }}
-                      participants={participants}
+                      participants={participants || []}
                       turns={turns || []}
                       rankings={rankings || []}
                       userId={account?.decodedAddress}
+                      admin={admin}
                     />
                   ) : (
-                    <div>The session has passed. You are not participating in this one</div>
+                    <SessionPassedInfo />
                   )}
                 </>
               )}

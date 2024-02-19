@@ -8,9 +8,12 @@ const DEFAULT_VALUES = {
   unlockPair: () => {},
   session: undefined,
   isSessionReady: false,
+  isVoucherExists: false,
   voucherBalance: 0,
   createSession: () => {},
   deleteSession: () => {},
+  updateSession: () => {},
+  pairVoucherId: undefined,
 };
 
 export { SIGNLESS_STORAGE_KEY, DEFAULT_VALUES };
