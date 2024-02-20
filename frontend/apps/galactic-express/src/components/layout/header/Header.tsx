@@ -3,10 +3,10 @@ import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
 import { ReactComponent as GalexSVG } from 'assets/images/logo.svg';
 import { ReactComponent as VaraSVG } from 'assets/images/logo-vara.svg';
 import { cx } from 'utils';
-import styles from './Header.module.scss';
 import { useLaunchState } from 'features/session';
 import { useAccount } from '@gear-js/react-hooks';
 import { CancelGameButton } from 'features/session/components/cancel-game-button';
+import styles from './Header.module.scss';
 
 function Header() {
   const { account } = useAccount();
