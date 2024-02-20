@@ -1,12 +1,12 @@
 import { ReactComponent as CrossIconSVG } from 'assets/images/icons/cross-icon.svg';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
 import { useLaunchMessage } from 'features/session/hooks';
 import { Participant } from 'features/session/types';
 import { IS_LOADING, REGISTRATION_STATUS } from 'atoms';
-import styles from './CancelGameButton.module.scss';
 import clsx from 'clsx';
+import styles from './CancelGameButton.module.scss';
 
 type Props = {
   isAdmin: boolean;

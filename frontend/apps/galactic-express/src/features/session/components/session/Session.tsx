@@ -1,5 +1,6 @@
 import { Button } from '@gear-js/ui';
 import { CSSProperties, useState } from 'react';
+import clsx from 'clsx';
 import { withoutCommas } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
 import { Container } from 'components';
@@ -11,7 +12,6 @@ import { Traits } from '../traits';
 import { Radar } from '../radar';
 import { Table } from '../table';
 import styles from './Session.module.scss';
-import clsx from 'clsx';
 
 type Props = {
   session: SessionType;
