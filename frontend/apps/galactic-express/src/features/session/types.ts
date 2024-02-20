@@ -35,21 +35,23 @@ type Rank = [HexString, string];
 
 type RankWithName = [`0x${string}`, string, string];
 
-type LaunchState = {
-  Game: {
-    admin: HexString;
-    stage: {
-      Registration: Participant[];
-      Results: Results;
-    };
-    master: string;
-    altitude: string;
-    weather: string;
-    reward: string;
-    sessionId: string;
-    bid: string;
-    adminName: string;
+type State = {
+  admin: HexString;
+  stage: {
+    Registration: Participant[];
+    Results: Results;
   };
+  master: string;
+  altitude: string;
+  weather: string;
+  reward: string;
+  sessionId: string;
+  bid: string;
+  adminName: string;
+};
+
+type LaunchState = {
+  Game: State;
 };
 
 type TurnParticipant = [
@@ -72,8 +74,18 @@ type PlayerInfo = {
   PlayerInfo: PlayerStatus;
 };
 
+type RegistrationStatus =
+  | 'registration'
+  | 'success'
+  | 'error'
+  | 'NotEnoughParticipants'
+  | 'MaximumPlayersReached'
+  | 'PlayerRemoved'
+  | 'GameCanceled';
+
 export type {
   LaunchState,
+  State,
   Event,
   Participant,
   Turns,
@@ -83,4 +95,5 @@ export type {
   PlayerStatus,
   PlayerInfo,
   RankWithName,
+  RegistrationStatus,
 };
