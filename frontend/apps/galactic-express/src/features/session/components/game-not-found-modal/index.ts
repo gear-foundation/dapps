@@ -1,3 +1,3 @@
-import { GameNotFoundModal } from './GameNotFoundModal';
+import { TextModal } from './TextModal';
 
-export { GameNotFoundModal };
+export { TextModal };

@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { HexString, UserMessageSent, encodeAddress } from '@gear-js/api';
 import { Button } from '@gear-js/ui';
-import { useSetAtom } from 'jotai';
-import { CURRENT_GAME_ATOM } from 'atoms';
+import { useAtom, useSetAtom } from 'jotai';
+import { CURRENT_GAME_ATOM, REGISTRATION_STATUS } from 'atoms';
 import { ADDRESS } from 'consts';
 import { Bytes } from '@polkadot/types';
 import { useAccount, useApi } from '@gear-js/react-hooks';
@@ -31,24 +31,26 @@ type Props = {
   bid: string | undefined;
 };
 
+type DecodedReplyOk = {
+  playerId: string;
+};
+
 type DecodedReply = {
   Err: string;
+  Ok: Record<string, DecodedReplyOk> & 'GameCanceled';
 };
 
 function Start({ participants, session, isUserAdmin, userAddress, adminAddress, bid, adminName }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
   const { decodedAddress } = account || {};
+  const [registrationStatus, setRegistrationStatus] = useAtom(REGISTRATION_STATUS);
   const setCurrentGame = useSetAtom(CURRENT_GAME_ATOM);
   const { altitude, weather, reward, sessionId } = session;
   const playersCount = participants?.length ? participants.length + 1 : 1;
   const isRegistered = decodedAddress ? !!participants.some((participant) => participant[0] === decodedAddress) : false;
 
   const containerClassName = clsx(styles.container, decodedAddress ? styles.smallMargin : styles.largeMargin);
-
-  const [registrationStatus, setRegistrationStatus] = useState<
-    'registration' | 'success' | 'error' | 'NotEnoughParticipants' | 'MaximumPlayersReached'
-  >('registration');
 
   const meta = useEscrowMetadata();
   const getDecodedPayload = (payload: Bytes) => {
@@ -75,12 +77,27 @@ function Start({ participants, session, isUserAdmin, userAddress, adminAddress, 
 
     if (isOwner && isEscrowProgram) {
       const reply = getDecodedReply(payload);
-      // console.log(reply);
+
       if (reply?.Err) {
         if (reply.Err === 'NotEnoughParticipants' || reply.Err === 'MaximumPlayersReached') {
           setRegistrationStatus(reply.Err);
-        } else {
-          setRegistrationStatus('error');
+          return;
+        }
+
+        setRegistrationStatus('error');
+      }
+    }
+
+    if (destination.toHex() === adminAddress) {
+      const reply = getDecodedReply(payload);
+
+      if (reply.Ok) {
+        if (reply.Ok.PlayerDeleted?.playerId === account?.decodedAddress) {
+          setRegistrationStatus('PlayerRemoved');
+        }
+
+        if (reply.Ok === 'GameCanceled' && !isUserAdmin) {
+          setRegistrationStatus('GameCanceled');
         }
       }
     }
@@ -110,7 +127,7 @@ function Start({ participants, session, isUserAdmin, userAddress, adminAddress, 
     <div className={styles.mainContainer}>
       <div>
         <header className={styles.header}>
-          <h2 className={styles.heading}>Session #{sessionId}</h2>
+          <h2 className={styles.heading}>Session</h2>
 
           <div>
             <p className={styles.registration}>Registration</p>
@@ -167,8 +184,8 @@ function Start({ participants, session, isUserAdmin, userAddress, adminAddress, 
       </div>
 
       <div className={styles.imageWrapper}>
-        <CancelGameButton isAdmin={isUserAdmin} userAddress={userAddress} participants={participants} />
-        <img src={src} alt="" className={styles.image} />
+        {isRegistered && !isUserAdmin && <CancelGameButton isAdmin={isUserAdmin} participants={participants} />}
+        <img src={src} alt="earth" className={styles.image} />
       </div>
     </div>
   );
