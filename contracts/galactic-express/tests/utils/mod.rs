@@ -43,7 +43,7 @@ impl<'a> GalEx<'a> {
             self.0
                 .send_with_value(from, Action::CreateNewSession { name }, bid),
             |event, _id| {
-                if let Event::NewSession {
+                if let Event::NewSessionCreated {
                     altitude, reward, ..
                 } = event
                 {
@@ -84,7 +84,7 @@ impl<'a> GalEx<'a> {
     pub fn cancel_register(&mut self, from: u64) -> GalExResult<(u64, Participant)> {
         RunResult::new(
             self.0.send(from, Action::CancelRegistration),
-            |event, (_actor, _participant)| assert_eq!(Event::CancelRegistration, event),
+            |event, (_actor, _participant)| assert_eq!(Event::RegistrationCanceled, event),
         )
     }
 
@@ -116,11 +116,11 @@ impl<'a> GalEx<'a> {
             |event, players| {
                 if let Event::GameFinished(results) = event {
                     assert!(results.turns.len() == TURNS);
-                    assert!(results.rankings.len() == PARTICIPANTS);
+                    assert!(results.rankings.len() == MAX_PARTICIPANTS);
                     assert!(results
                         .turns
                         .iter()
-                        .all(|players| players.len() == PARTICIPANTS));
+                        .all(|players| players.len() == MAX_PARTICIPANTS));
 
                     let players: HashSet<ActorId> = players.into_iter().map(|p| p.into()).collect();
 
