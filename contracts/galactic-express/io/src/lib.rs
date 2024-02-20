@@ -15,7 +15,7 @@ impl Metadata for ContractMetadata {
     type State = InOut<StateQuery, StateReply>;
 }
 
-pub const PARTICIPANTS: usize = 4;
+pub const MAX_PARTICIPANTS: usize = 4;
 pub const TURNS: usize = 3;
 
 /// Represents a range of the minimum & the maximum reward for a session.
@@ -97,14 +97,14 @@ pub enum Action {
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
 pub enum Event {
     AdminChanged(ActorId, ActorId),
-    NewSession {
+    NewSessionCreated {
         altitude: u16,
         weather: Weather,
         reward: u128,
         bid: u128,
     },
     Registered(ActorId, Participant),
-    CancelRegistration,
+    RegistrationCanceled,
     PlayerDeleted {
         player_id: ActorId,
     },

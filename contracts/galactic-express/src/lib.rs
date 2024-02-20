@@ -106,16 +106,12 @@ impl Contract {
             return Err(Error::SeveralRegistrations);
         }
 
-        if !self.games.contains_key(&msg_src) {
-            let game = Game {
-                admin: msg_src,
-                admin_name: name,
-                bid: msg_value,
-                ..Default::default()
-            };
-            self.games.insert(msg_src, game);
-        }
-        let game = self.games.get_mut(&msg_src).expect("Critical error");
+        let game = self.games.entry(msg_src).or_insert_with(|| Game {
+            admin: msg_src,
+            admin_name: name,
+            bid: msg_value,
+            ..Default::default()
+        });
 
         let stage = &mut game.stage;
 
@@ -141,7 +137,7 @@ impl Contract {
         game.reward = random.generate(REWARD.0, REWARD.1);
         self.player_to_game_id.insert(msg_src, msg_src);
 
-        Ok(Event::NewSession {
+        Ok(Event::NewSessionCreated {
             altitude: game.altitude,
             weather: game.weather,
             reward: game.reward,
@@ -203,7 +199,7 @@ impl Contract {
                 return Err(Error::AlreadyRegistered);
             }
 
-            if participants.len() >= PARTICIPANTS - 1 {
+            if participants.len() >= MAX_PARTICIPANTS - 1 {
                 return Err(Error::SessionFull);
             }
 
@@ -235,7 +231,7 @@ impl Contract {
             } else {
                 return Err(Error::NoSuchPlayer);
             }
-            Ok(Event::CancelRegistration)
+            Ok(Event::RegistrationCanceled)
         } else {
             Err(Error::NotForAdmin)
         }
@@ -268,13 +264,17 @@ impl Contract {
         let msg_source = msg::source();
 
         let game = self.games.get_mut(&msg_source).ok_or(Error::NoSuchGame)?;
+
+        if fuel_amount > MAX_FUEL || payload_amount > MAX_PAYLOAD {
+            return Err(Error::FuelOrPayloadOverload);
+        }
         let participant = Participant {
             id: msg_source,
             name: game.admin_name.clone(),
             fuel_amount,
             payload_amount,
         };
-        participant.check()?;
+
         let participants = game.stage.mut_participants()?;
 
         if participants.is_empty() {
