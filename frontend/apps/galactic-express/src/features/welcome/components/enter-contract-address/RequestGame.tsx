@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { WalletNew as Wallet } from '@dapps-frontend/ui';
 import { Button } from '@gear-js/vara-ui';
 import { cx } from 'utils';
 import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
 import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
 import { useSetAtom, useAtom } from 'jotai';
-import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
+import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM, REGISTRATION_STATUS } from 'atoms';
 import { useLaunchMessage } from 'features/session/hooks';
 import metaTxt from 'assets/meta/galactic_express_meta.txt';
 import { useAccount, useAccountDeriveBalancesAll, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
@@ -17,20 +17,13 @@ import { ADDRESS } from 'consts';
 import { useProgramMetadata } from 'hooks';
 import { LaunchState, Participant } from 'features/session/types';
 import { JoinModalFormValues } from 'features/session/components/game-found-modal/GameFoundModal';
-import { GameNotFoundModal } from 'features/session/components/game-not-found-modal';
+import { TextModal } from 'features/session/components/game-not-found-modal';
 import { GameIntro } from '../game-intro';
 import styles from './RequestGame.module.scss';
 
 export interface ContractFormValues {
   [key: string]: string;
 }
-
-type Props = {
-  doesSessionExist: boolean;
-  isUserAdmin: boolean;
-  isStateComing: boolean;
-  participants: Participant[];
-};
 
 type Status = 'creating' | 'joining' | null;
 
@@ -56,6 +49,7 @@ function RequestGame() {
   const meta = useProgramMetadata(metaTxt);
   const setCurrentGame = useSetAtom(CURRENT_GAME_ATOM);
   const setPlayerName = useSetAtom(PLAYER_NAME_ATOM);
+  const setRegistrationStatus = useSetAtom(REGISTRATION_STATUS);
   const [status, setStatus] = useState<Status>(null);
   const [isLoading, setIsLoading] = useAtom(IS_LOADING);
   const existentialDeposit = Number(getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toFixed());
@@ -168,6 +162,10 @@ function RequestGame() {
     setGameNotFoundModal(false);
   };
 
+  useEffect(() => {
+    setRegistrationStatus('registration');
+  }, []);
+
   return (
     <div className={cx(styles.container)}>
       <GameIntro status={status} />
@@ -266,7 +264,13 @@ function RequestGame() {
           onClose={handleCloseFoundModal}
         />
       )}
-      {gameNotFoundModal && <GameNotFoundModal onClose={handleCloseNotFoundModal} />}
+      {gameNotFoundModal && (
+        <TextModal
+          heading="Game not found"
+          text="Please check the entered address. It&#39;s possible the game has been canceled or does not exist."
+          onClose={handleCloseNotFoundModal}
+        />
+      )}
     </div>
   );
 }

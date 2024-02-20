@@ -1,20 +1,21 @@
 import { ReactComponent as CrossIconSVG } from 'assets/images/icons/cross-icon.svg';
-import { useAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
 import { useLaunchMessage } from 'features/session/hooks';
 import { Participant } from 'features/session/types';
-import { IS_LOADING } from 'atoms';
+import { IS_LOADING, REGISTRATION_STATUS } from 'atoms';
 import styles from './CancelGameButton.module.scss';
+import clsx from 'clsx';
 
 type Props = {
   isAdmin: boolean;
-  userAddress: string;
   participants: Participant[];
 };
 
-function CancelGameButton({ isAdmin, participants, userAddress }: Props) {
+function CancelGameButton({ isAdmin, participants }: Props) {
   const { meta: isMeta, message: sendMessage } = useLaunchMessage();
+  const setRegistrationStatus = useSetAtom(REGISTRATION_STATUS);
   const [isLoading, setIsLoading] = useAtom(IS_LOADING);
   const { account } = useAccount();
 
@@ -28,6 +29,7 @@ function CancelGameButton({ isAdmin, participants, userAddress }: Props) {
 
   const onInBlock = () => {
     setIsLoading(false);
+    setRegistrationStatus('registration');
   };
 
   const handleClick = () => {
@@ -53,10 +55,10 @@ function CancelGameButton({ isAdmin, participants, userAddress }: Props) {
     }
   };
 
-  return isRegistered || isAdmin ? (
-    <div className={styles.buttonWrapper}>
+  return (
+    <div className={clsx(isAdmin ? styles.buttonWrapperAdmin : styles.buttonWrapper)}>
       <Button
-        text="Cancel"
+        text={isAdmin ? 'Cancel game' : 'Cancel'}
         icon={CrossIconSVG}
         color="light"
         className={styles.button}
@@ -64,7 +66,7 @@ function CancelGameButton({ isAdmin, participants, userAddress }: Props) {
         isLoading={isLoading}
       />
     </div>
-  ) : null;
+  );
 }
 
 export { CancelGameButton };
