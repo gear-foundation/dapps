@@ -1,12 +1,12 @@
 import { useSetAtom } from 'jotai';
 import { cx } from 'utils';
+import { REGISTRATION_STATUS } from 'atoms';
 import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
 import { useLaunchMessage } from 'features/session/hooks';
 import { shortenString } from 'features/session/utils';
 import { RankWithName } from 'features/session/types';
 import styles from './WinStatus.module.scss';
-import { REGISTRATION_STATUS } from 'atoms';
 
 type Props = {
   type: 'win' | 'lose';
