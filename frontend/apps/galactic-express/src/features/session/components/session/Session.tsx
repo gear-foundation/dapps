@@ -11,6 +11,7 @@ import { Traits } from '../traits';
 import { Radar } from '../radar';
 import { Table } from '../table';
 import styles from './Session.module.scss';
+import clsx from 'clsx';
 
 type Props = {
   session: SessionType;
@@ -97,9 +98,11 @@ function Session({ session, turns, rankings, userId, participants, admin }: Prop
     ));
 
   const sortRanks = () => {
-    const sortedRanks = rankings.sort((rankA, rankB) =>
-      Number(withoutCommas(rankA[1])) < Number(withoutCommas(rankB[1])) ? 1 : -1,
-    );
+    const isAllZeros = rankings.every((rank) => rank[1] === '0');
+
+    const sortedRanks = isAllZeros
+      ? []
+      : rankings.sort((rankA, rankB) => (Number(withoutCommas(rankA[1])) < Number(withoutCommas(rankB[1])) ? 1 : -1));
 
     return sortedRanks;
   };
@@ -118,6 +121,8 @@ function Session({ session, turns, rankings, userId, participants, admin }: Prop
       winners,
     };
   };
+
+  const definedWinners = defineWinners();
 
   return (
     <div className={styles.container}>
@@ -163,10 +168,18 @@ function Session({ session, turns, rankings, userId, participants, admin }: Prop
         currentEvents={getEvents()}
         currentRound={roundIndex}
         roundsCount={roundsCount}
-        isWinner={defineWinners().isUserWinner}
-        winners={defineWinners().winners}
-        userRank={defineWinners().userRank}
+        isWinner={definedWinners.isUserWinner}
+        winners={definedWinners.winners}
+        userRank={definedWinners.userRank}
         admin={admin}
+      />
+      <div
+        className={clsx(
+          styles.courtain,
+          definedWinners.winners.map((item) => item[0]).includes(userId || '0x')
+            ? styles.courtainGreen
+            : styles.courtainRed,
+        )}
       />
     </div>
   );

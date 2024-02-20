@@ -5,6 +5,7 @@ import { Button } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
 import { Card } from 'components';
 import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
+import { RegistrationStatus } from 'features/session/types';
 import { ReactComponent as RocketSVG } from '../../assets/rocket.svg';
 import { INITIAL_VALUES, VALIDATE, WEATHERS } from '../../consts';
 import { useLaunchMessage } from '../../hooks';
@@ -16,9 +17,7 @@ type Props = {
   weather: string;
   bid: string | undefined;
   isAdmin: boolean;
-  setRegistrationStatus: Dispatch<
-    SetStateAction<'registration' | 'success' | 'error' | 'NotEnoughParticipants' | 'MaximumPlayersReached'>
-  >;
+  setRegistrationStatus: Dispatch<SetStateAction<RegistrationStatus>>;
 };
 
 function Form({ weather, bid, isAdmin, setRegistrationStatus }: Props) {

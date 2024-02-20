@@ -1,11 +1,12 @@
-import { useAtomValue } from 'jotai';
+import { useSetAtom } from 'jotai';
 import { cx } from 'utils';
 import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
 import { useLaunchMessage } from 'features/session/hooks';
 import { shortenString } from 'features/session/utils';
-import { Rank, RankWithName } from 'features/session/types';
+import { RankWithName } from 'features/session/types';
 import styles from './WinStatus.module.scss';
+import { REGISTRATION_STATUS } from 'atoms';
 
 type Props = {
   type: 'win' | 'lose';
@@ -16,9 +17,14 @@ type Props = {
 
 function WinStatus({ type, userRank, winners, admin }: Props) {
   const { meta, message: sendNewSessionMessage } = useLaunchMessage();
+  const setRegistrationStatus = useSetAtom(REGISTRATION_STATUS);
   const { account } = useAccount();
 
   const isAdmin = admin === account?.decodedAddress;
+
+  const onInBlock = () => {
+    setRegistrationStatus('registration');
+  };
 
   const handleCreateNewSession = () => {
     if (!meta) {
@@ -26,9 +32,9 @@ function WinStatus({ type, userRank, winners, admin }: Props) {
     }
 
     if (isAdmin) {
-      sendNewSessionMessage({ payload: { CancelGame: null } });
+      sendNewSessionMessage({ payload: { CancelGame: null }, onInBlock });
     } else {
-      sendNewSessionMessage({ payload: { LeaveGame: null } });
+      sendNewSessionMessage({ payload: { LeaveGame: null }, onInBlock });
     }
   };
 
