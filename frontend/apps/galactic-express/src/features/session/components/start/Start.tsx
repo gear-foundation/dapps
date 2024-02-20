@@ -121,6 +121,8 @@ function Start({ participants, session, isUserAdmin, userAddress, adminAddress, 
     if (registrationStatus === 'NotEnoughParticipants' && participants.length) {
       setRegistrationStatus('registration');
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [participants, registrationStatus]);
 
   return (
