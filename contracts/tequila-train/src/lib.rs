@@ -127,6 +127,15 @@ impl GameLauncher {
                 }
 
                 game.state = State::Winners(vec![winner]);
+                msg::send(
+                    winner,
+                    Ok::<Event, Error>(Event::GameFinished {
+                        winners: vec![winner],
+                        all_participants: game.initial_players.clone(),
+                    }),
+                    0,
+                )
+                .expect("Error in sending message");
             }
         }
         Ok(Event::Checked)
@@ -316,7 +325,7 @@ fn process_handle() -> Result<Event, Error> {
                 let result = game_state.skip_turn(player, game.bid);
                 match result {
                     // if the game is over, we change the game state
-                    Ok(Event::GameFinished { ref winners }) => {
+                    Ok(Event::GameFinished { ref winners, .. }) => {
                         game.state = State::Winners(winners.clone());
                     }
                     // if the move is successful, we must send a delayed message to check if the next player has made a move
@@ -371,7 +380,7 @@ fn process_handle() -> Result<Event, Error> {
                     game_state.make_turn(player, tile_id, track_id, remove_train, game.bid);
                 match result {
                     // if the game is over, we change the game state
-                    Ok(Event::GameFinished { ref winners }) => {
+                    Ok(Event::GameFinished { ref winners, .. }) => {
                         game.state = State::Winners(winners.clone());
                     }
                     // if the move is successful, we must send a delayed message to check if the next player has made a move

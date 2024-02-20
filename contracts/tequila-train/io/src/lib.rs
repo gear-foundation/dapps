@@ -144,6 +144,7 @@ pub enum Command {
 pub enum Event {
     GameFinished {
         winners: Vec<ActorId>,
+        all_participants: Vec<ActorId>,
     },
     GameCreated,
     Skipped,
@@ -400,8 +401,10 @@ impl GameState {
         if count_players_is_live == 1 {
             self.last_activity_time = time;
             send_value(player, bid * self.players.len() as u128);
+            let all_participants = self.players.iter().map(|player| player.id).collect();
             return Ok(Event::GameFinished {
                 winners: vec![player],
+                all_participants,
             });
         }
 
@@ -425,8 +428,10 @@ impl GameState {
         if remaining_tiles == 0 {
             let player = self.players[self.current_player as usize].clone();
             send_value(player.id, bid * self.players.len() as u128);
+            let all_participants = self.players.iter().map(|player| player.id).collect();
             return Some(Event::GameFinished {
                 winners: vec![player.id],
+                all_participants,
             });
         }
 
@@ -482,7 +487,11 @@ impl GameState {
                     send_value(*player, prize);
                 });
             }
-            return Some(Event::GameFinished { winners });
+            let all_participants = self.players.iter().map(|player| player.id).collect();
+            return Some(Event::GameFinished {
+                winners,
+                all_participants,
+            });
         }
         None
     }
@@ -529,8 +538,10 @@ impl GameState {
         if count_players_is_live == 1 {
             self.last_activity_time = time;
             send_value(player, bid * self.players.len() as u128);
+            let all_participants = self.players.iter().map(|player| player.id).collect();
             return Ok(Event::GameFinished {
                 winners: vec![player],
+                all_participants,
             });
         }
 
