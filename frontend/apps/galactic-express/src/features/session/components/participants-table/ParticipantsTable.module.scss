@@ -26,13 +26,21 @@
   }
 
   &playerAddress {
-    min-width: 345px;
+    min-width: 145px;
+  }
+
+  &playerName {
+    min-width: 200px
   }
 
   &Action {
     min-width: 152px;
     cursor: pointer;
   }
+}
+
+.removeTd {
+  width: 152px;
 }
 
 .yourAddressSpan {
@@ -49,4 +57,12 @@
   font-weight: 400;
   color: #8c8b90;
   padding-bottom: 8px;
+}
+
+.removeButton {
+  font-family: 'Anuphan';
+  font-size: 12px;
+  font-weight: 400;
+  color: #00FFC4;
+  line-height: 20px;
 }

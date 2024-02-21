@@ -7,9 +7,9 @@ function useGetExtrinsicFailedError() {
   const getExtrinsicFailedError = (event: Event) => {
     if (!isApiReady) throw new Error('API is not initialized');
 
-    const { section, method, docs } = api.getExtrinsicFailedError(event);
+    const { name, method, docs } = api.getExtrinsicFailedError(event);
 
-    return `${section}.${method}: ${docs.join(' ')}`;
+    return `${name}.${method}: ${docs}`;
   };
 
   return { getExtrinsicFailedError };

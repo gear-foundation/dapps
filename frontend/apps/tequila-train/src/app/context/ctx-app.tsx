@@ -7,6 +7,7 @@ const useProgram = () => {
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const [openEmptyPopup, setOpenEmptyPopup] = useState<boolean>(false);
   const [openWinnerPopup, setOpenWinnerPopup] = useState<boolean>(false);
+  const [isUserCancelled, setIsUserCancelled] = useState(false);
 
   return {
     isPending,
@@ -17,6 +18,8 @@ const useProgram = () => {
     setOpenEmptyPopup,
     openWinnerPopup,
     setOpenWinnerPopup,
+    isUserCancelled,
+    setIsUserCancelled,
   };
 };
 
