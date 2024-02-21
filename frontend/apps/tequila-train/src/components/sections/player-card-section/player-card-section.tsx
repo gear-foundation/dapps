@@ -2,6 +2,8 @@ import { Icon } from '../../ui/icon';
 import clsx from 'clsx';
 import { getBgColors } from 'app/utils';
 import { useGame } from '../../../app/context';
+import { useEffect, useState } from 'react';
+import { playerNames } from 'app/consts';
 
 type Props = {
   index: number;
@@ -9,7 +11,16 @@ type Props = {
 };
 
 export const PlayerCardSection = ({ index, active }: Props) => {
-  const { gameWasm: wasm } = useGame();
+  const { game } = useGame();
+  const [countHand, setCountHand] = useState(0)
+
+  useEffect(() => {
+    if (game) {
+      const onHandsCount = Object.values(game?.gameState?.tileToPlayer).filter((player) => Number(player) === index).length
+      setCountHand(onHandsCount)
+    }
+  }, [game, index])
+
   return (
     <div className="relative flex flex-col h-full max-w-[160px]">
       {active && (
@@ -28,7 +39,7 @@ export const PlayerCardSection = ({ index, active }: Props) => {
         </div>
       )}
       <div className="grow flex rounded-t-2xl bg-[#D6FE51] py-3.5 px-2.5 font-medium text-center">
-        <span className="line-clamp-2 w-full">{wasm?.players[index][1]}</span>
+        <span className="line-clamp-2 w-full">{`Señor ${playerNames[index]}`}</span>
       </div>
       <div
         className={clsx(
@@ -44,7 +55,7 @@ export const PlayerCardSection = ({ index, active }: Props) => {
             )}>
             <Icon name="on-hands" className="m-auto w-3 h-3" />
           </div>
-          <span className="font-bold text-lg">{wasm?.playersTiles[index].length}</span>
+          <span className="font-bold text-lg">{countHand}</span>
           <span className="basis-full text-center whitespace-nowrap text-[8px] leading-3">On hands</span>
         </div>
         <div className="flex flex-wrap gap-1 items-center justify-center">
@@ -55,7 +66,7 @@ export const PlayerCardSection = ({ index, active }: Props) => {
             )}>
             <Icon name="shots" className="m-auto w-4 h-4" />
           </div>
-          <span className="font-bold text-lg">{wasm?.shotCounters[index]}</span>
+          <span className="font-bold text-lg">{game?.gameState?.shots[index]}</span>
           <span className="basis-full text-center whitespace-nowrap text-[8px] leading-3">Number of shots</span>
         </div>
       </div>

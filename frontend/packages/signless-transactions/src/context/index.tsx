@@ -1,5 +1,5 @@
-import { GearKeyring, HexString, decodeAddress, generateVoucherId } from '@gear-js/api';
-import { useAccount, useBalance } from '@gear-js/react-hooks';
+import { GearKeyring, HexString, decodeAddress } from '@gear-js/api';
+import { useAccount, useBalance, useVouchers } from '@gear-js/react-hooks';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
@@ -20,10 +20,24 @@ type Props = {
 };
 
 function useVoucherBalance(programId: HexString, address: string | undefined) {
-  const voucherId = address ? generateVoucherId(decodeAddress(address), programId) : undefined;
+  const decodedAddress = address ? decodeAddress(address) : '';
+
+  const { vouchers } = useVouchers(decodedAddress, programId);
+
+  const voucherId = Object.keys(vouchers || {})[0];
   const { balance } = useBalance(voucherId);
 
   return balance ? balance.toNumber() : 0;
+}
+
+function useVoucherId(programId: HexString, address: string | undefined) {
+  const decodedAddress = address ? decodeAddress(address) : '';
+
+  const { vouchers } = useVouchers(decodedAddress, programId);
+
+  const voucherId = Object.keys(vouchers || {})[0];
+
+  return voucherId;
 }
 
 function SignlessTransactionsProvider({ metadataSource, programId, children }: Props) {
@@ -37,7 +51,8 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
   const getStorage = () => JSON.parse(localStorage[SIGNLESS_STORAGE_KEY] || '{}') as Storage;
   const storagePair = account ? getStorage()[account.address] : undefined;
 
-  const { createSession, deleteSession } = useCreateSession(programId, metadata);
+  const { createSession, deleteSession, updateSession } = useCreateSession(programId, metadata);
+  const pairVoucherId = useVoucherId(programId, pair?.address) as `0x${string}`;
   const voucherBalance = useVoucherBalance(programId, storagePair?.address);
 
   const unlockPair = (password: string) => {
@@ -85,6 +100,8 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
     voucherBalance,
     createSession,
     deleteSession,
+    updateSession,
+    pairVoucherId,
   };
 
   return <Provider value={value}>{children}</Provider>;

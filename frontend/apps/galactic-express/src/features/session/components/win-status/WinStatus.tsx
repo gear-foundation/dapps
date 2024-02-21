@@ -1,27 +1,40 @@
-import { useAtomValue } from 'jotai';
-import { CURRENT_CONTRACT_ADDRESS_ATOM } from 'atoms';
+import { useSetAtom } from 'jotai';
 import { cx } from 'utils';
+import { REGISTRATION_STATUS } from 'atoms';
 import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
-import { useNewSessionMessage } from 'features/session/hooks';
+import { useLaunchMessage } from 'features/session/hooks';
 import { shortenString } from 'features/session/utils';
-import { Rank } from 'features/session/types';
+import { RankWithName } from 'features/session/types';
 import styles from './WinStatus.module.scss';
 
 type Props = {
   type: 'win' | 'lose';
   userRank: string;
-  winners: Rank[];
+  winners: RankWithName[];
+  admin: string | undefined;
 };
 
-function WinStatus({ type, userRank, winners }: Props) {
-  const contractAddress = useAtomValue(CURRENT_CONTRACT_ADDRESS_ATOM);
-  const { meta, message: sendNewSessionMessage } = useNewSessionMessage(contractAddress);
+function WinStatus({ type, userRank, winners, admin }: Props) {
+  const { meta, message: sendNewSessionMessage } = useLaunchMessage();
+  const setRegistrationStatus = useSetAtom(REGISTRATION_STATUS);
   const { account } = useAccount();
 
+  const isAdmin = admin === account?.decodedAddress;
+
+  const onInBlock = () => {
+    setRegistrationStatus('registration');
+  };
+
   const handleCreateNewSession = () => {
-    if (meta) {
-      sendNewSessionMessage({ payload: { CreateNewSession: null } });
+    if (!meta) {
+      return;
+    }
+
+    if (isAdmin) {
+      sendNewSessionMessage({ payload: { CancelGame: null }, onInBlock });
+    } else {
+      sendNewSessionMessage({ payload: { LeaveGame: null }, onInBlock });
     }
   };
 
@@ -39,13 +52,18 @@ function WinStatus({ type, userRank, winners }: Props) {
           <ul>
             {winners.map((item) => (
               <li className={cx(account?.decodedAddress === item[0] ? styles['user-winner'] : '')}>
-                {shortenString(item[0], 6)}
+                {item[2] || shortenString(item[0], 6)}
               </li>
             ))}
           </ul>
         </div>
       )}
-      <Button text="Play again" className={cx(styles.btn)} onClick={handleCreateNewSession} color="lightGreen" />
+      <Button
+        text={isAdmin ? 'Play again' : 'Leave game'}
+        className={cx(styles.btn)}
+        onClick={handleCreateNewSession}
+        color="lightGreen"
+      />
     </div>
   );
 }

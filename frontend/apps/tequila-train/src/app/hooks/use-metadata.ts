@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import { getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api';
-import { Buffer } from 'buffer';
 import { useAlert, useReadFullState } from '@gear-js/react-hooks';
+import { getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api';
 import { HexString } from '@polkadot/util/types';
+import { AnyJson } from '@polkadot/types/types';
 
 export function useProgramMetadata(source: string) {
   const alert = useAlert();
@@ -12,8 +12,7 @@ export function useProgramMetadata(source: string) {
   useEffect(() => {
     fetch(source)
       .then((response) => response.text())
-      .then((raw) => `0x${raw}` as HexString)
-      .then((metaHex) => ProgramMetadata.from(metaHex))
+      .then((raw) => ProgramMetadata.from(`0x${raw}`))
       .then((result) => setMetadata(result))
       .catch(({ message }: Error) => alert.error(message));
 
@@ -26,29 +25,31 @@ export function useProgramMetadata(source: string) {
 export function useStateMetadata(source: string) {
   const alert = useAlert();
 
-  const [data, setData] = useState<{
-    buffer: Buffer;
-    meta: StateMetadata;
-  }>();
+  const [stateMetadata, setStateMetadata] = useState<StateMetadata>();
 
   useEffect(() => {
     fetch(source)
       .then((response) => response.arrayBuffer())
       .then((arrayBuffer) => Buffer.from(arrayBuffer))
-      .then(async (buffer) => ({
-        buffer,
-        meta: await getStateMetadata(buffer),
-      }))
-      .then((result) => setData(result))
+      .then((buffer) => getStateMetadata(buffer))
+      .then((result) => setStateMetadata(result))
       .catch(({ message }: Error) => alert.error(message));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return data;
+  return stateMetadata;
 }
 
-export function useReadState<T>({ programId, meta }: { programId?: HexString; meta: string }) {
+export function useReadState<T>({
+  programId,
+  meta,
+  payload,
+}: {
+  programId?: HexString;
+  meta: string;
+  payload?: AnyJson;
+}) {
   const metadata = useProgramMetadata(meta);
-  return useReadFullState<T>(programId, metadata, '0x');
+  return useReadFullState<T>(programId, metadata, payload);
 }

@@ -1,27 +1,39 @@
 import { createContext, ReactNode, useState } from 'react';
-import { DominoTileType, GameWasmStateResponse, IGameState, IPlayer, PlayerChoiceType } from '../types/game';
+import { DominoTileType, PlayerChoiceType, GameType, IState, PlayersGame } from '../types/game';
 
 const useProgram = () => {
-  const [game, setGame] = useState<IGameState>();
-  const [gameWasm, setGameWasm] = useState<GameWasmStateResponse>();
-  const [players, setPlayers] = useState<IPlayer[]>([]);
+  const [state, setState] = useState<IState>();
+  const [game, setGame] = useState<GameType | null>(null);
+  const [timer, setTimer] = useState<number>(0);
+  const [players, setPlayers] = useState<PlayersGame[]>([]);
+  const [isAdmin, setIsAdmin] = useState<boolean>(false);
   const [selectedDomino, setSelectedDomino] = useState<[number, DominoTileType]>();
   const [playerTiles, setPlayerTiles] = useState<DominoTileType[]>();
   const [playerChoice, setPlayerChoice] = useState<PlayerChoiceType>();
 
+  const [previousGame, setPreviousGame] = useState<GameType | null>(null);
+
+
   return {
+    state,
+    setState,
     game,
     setGame,
-    gameWasm,
-    setGameWasm,
+    timer,
+    setTimer,
     players,
     setPlayers,
+    isAdmin,
+    setIsAdmin,
     playerTiles,
     setPlayerTiles,
     selectedDomino,
     setSelectedDomino,
     playerChoice,
     setPlayerChoice,
+
+    previousGame,
+    setPreviousGame,
   };
 };
 
