@@ -46,7 +46,11 @@ impl GameLauncher {
         }
 
         game.is_started = true;
-        game.game_state = GameState::new(game.initial_players.clone(), self.config.time_to_move);
+        game.game_state = GameState::new(
+            game.initial_players.clone(),
+            self.config.time_to_move,
+            exec::block_timestamp(),
+        );
         game.state = State::Playing;
 
         // send a delayed message to check if the current player has made a move within the `config.time_to_move` limit

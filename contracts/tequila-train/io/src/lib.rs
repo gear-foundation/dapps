@@ -320,11 +320,14 @@ fn give_tiles_until_double(
 
 impl GameState {
     // TODO: cover it with tests
-    pub fn new(initial_players: Vec<ActorId>, time_to_move: u32) -> Option<GameState> {
+    pub fn new(
+        initial_players: Vec<ActorId>,
+        time_to_move: u32,
+        block_timestamp: u64,
+    ) -> Option<GameState> {
         let players_amount = initial_players.len();
 
         let mut tile_to_player: BTreeMap<u32, u32> = Default::default();
-
         // Build all possible tiles
         let tiles = build_tile_collection();
         let mut remaining_tiles: BTreeSet<u32> = Default::default();
@@ -385,7 +388,7 @@ impl GameState {
             tiles,
             remaining_tiles,
             time_to_move,
-            last_activity_time: exec::block_timestamp(),
+            last_activity_time: block_timestamp,
         })
     }
 
