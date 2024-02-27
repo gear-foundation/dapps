@@ -4,7 +4,7 @@ function debounce(fn: any, ms: number) {
   let timer: number | null | ReturnType<typeof setTimeout>;
   return (_: any) => {
     clearTimeout(timer as number);
-    timer = setTimeout((_) => {
+    timer = setTimeout((_: any) => {
       timer = null;
       // @ts-ignore
       fn.apply(this, arguments);

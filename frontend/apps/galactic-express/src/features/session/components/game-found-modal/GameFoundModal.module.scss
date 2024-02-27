@@ -1,0 +1,52 @@
+.modal {
+  min-width: 670px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.info {
+  width: 100%;
+  padding: 16px;
+  display: grid;
+  grid-template-rows: auto;
+  background: #F7F9FA;
+  gap: 13px;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  
+  .itemName {
+    font-size: 14px;
+    font-weight: 400;
+  }
+
+  .itemValue {
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 23px;
+}
+
+.inputs {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.button {
+  width: 100%;
+}

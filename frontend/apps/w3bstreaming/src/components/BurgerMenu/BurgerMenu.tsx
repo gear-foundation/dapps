@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
 import { cx } from '@/utils';
-import { WalletInfo } from '@/features/Wallet/components';
+// import { WalletInfo } from '@/features/Wallet/components';
 import { routes } from '@/App.routes';
 import { Button } from '@/ui';
 import closeMenuIcon from '@/assets/icons/cross-icon.svg';
@@ -27,7 +27,7 @@ function BurgerMenu({ burgerMenuHandler }: BurgerMenuProps) {
         <div className={cx(styles['burger-menu-close-icon'])}>
           <Button variant="icon" label="" icon={closeMenuIcon} onClick={burgerMenuHandler} />
         </div>
-        <WalletInfo account={account} />
+        {/* <WalletInfo account={account} /> */}
       </div>
       {account && (
         <div className={cx(styles['burger-menu-body'])}>

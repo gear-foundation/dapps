@@ -1,0 +1,25 @@
+
+
+.buttonWrapper {
+  position: absolute;
+  top: 0;
+  left: 20px;
+}
+
+.buttonWrapperAdmin {
+  position: relative;
+  display: flex;
+  justify-content: end;
+  padding-right: 32px;
+  flex: 1;
+}
+
+.button.button.button {
+  background: #F24A4A12;
+  color: #EB5757;
+
+  & svg path {
+    fill: #EB5757;
+    stroke: #EB5757;
+  }
+}

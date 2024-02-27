@@ -1,5 +1,12 @@
 import { HexString } from '@polkadot/util/types';
 
+export const ROUTES = {
+  HOME: '/',
+  LOGIN: '/login',
+  // UNAUTHORIZED: '/not-authorized',
+  NOTFOUND: '*',
+};
+
 export const LOCAL_STORAGE = {
   ACCOUNT: 'account',
 };

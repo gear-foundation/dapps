@@ -1,8 +1,9 @@
-import { useAccount, useAlert, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
 import { Button, checkboxStyles } from '@gear-js/ui';
 import { useState } from 'react';
 import { Heading, Loader, PurchaseSubscriptionModal } from 'components';
-import { useCheckBalance, useHandleCalculateGas, useSubscriptionsMessage } from 'hooks';
+import { useSubscriptionsMessage } from 'hooks';
+import { useHandleCalculateGas, useCheckBalance } from '@dapps-frontend/hooks';
 import varatubeMeta from 'assets/state/varatube_meta.txt';
 import pic from 'assets/images/pic.png';
 import clsx from 'clsx';
@@ -10,13 +11,15 @@ import { ADDRESS, periods } from 'consts';
 import styles from './Subscription.module.scss';
 import { PurchaseSubscriptionApproveModal } from 'components/modals/purchase-subscription-approve-modal';
 import { InitialValues } from 'types';
-import { useFTMessage, useProgramState } from 'hooks/api';
+import { useFTBalance, useFTMessage, useProgramState } from 'hooks/api';
 import { useProgramMetadata } from 'hooks/metadata';
 
 function Subscription() {
   const amount = 10000;
   const { account } = useAccount();
   const alert = useAlert();
+  const { api } = useApi();
+  const tokens = useFTBalance();
   const { decodedAddress } = account || {};
   const [valuesToTransfer, setValuesToTransfer] = useState<InitialValues | null>(null);
   const { subscriptionsState, isSubscriptionsStateRead, updateState } = useProgramState();
@@ -24,6 +27,7 @@ function Subscription() {
   const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, varatubeMetadata);
   const { checkBalance } = useCheckBalance();
   const subscription = subscriptionsState && decodedAddress ? subscriptionsState[decodedAddress] : undefined;
+  const [isSubscribing, setIsSubscribing] = useState<boolean>(false);
 
   const { period, price, willRenew, subscriptionStart, subscriptionEnd } = subscription || {};
   const [startDateTimestamp] = subscriptionStart || [];
@@ -100,6 +104,7 @@ function Subscription() {
                 closeModal();
                 clearValues();
                 updateState();
+                setIsSubscribing(false);
                 alert.success('Subscribed successfully');
               },
             });
@@ -108,6 +113,7 @@ function Subscription() {
         .catch((error) => {
           console.log(error);
           alert.error('Gas calculation error');
+          setIsSubscribing(false);
         });
     }
   };
@@ -118,27 +124,42 @@ function Subscription() {
   };
 
   const handleApproveStuff = async () => {
-    if (!valuesToTransfer) {
+    if (!valuesToTransfer || !api) {
       return;
     }
-    await sendFTMessage({
-      payload: {
-        Approve: {
-          to: ADDRESS.CONTRACT,
-          amount: String(findSelectedPeriodRate(valuesToTransfer.period) * amount),
-        },
-      },
-      onSuccess: () => {
-        closeApproveModal();
 
-        purchaseSubscription();
-      },
-      onError: () => {
-        clearValues();
-        closeApproveModal();
-        closeModal();
-        alert.error('Some error has occured');
-      },
+    if (!tokens || Number(withoutCommas(tokens)) < findSelectedPeriodRate(valuesToTransfer?.period) * amount) {
+      alert.error(`You don't have enough tokens to subscribe`);
+      clearValues();
+      closeApproveModal();
+      closeModal();
+      return;
+    }
+
+    setIsSubscribing(true);
+
+    checkBalance(api?.blockGasLimit.toNumber(), () => {
+      const amountToTransfer = findSelectedPeriodRate(valuesToTransfer.period) * amount;
+      if (amountToTransfer)
+        sendFTMessage({
+          payload: {
+            Approve: {
+              to: ADDRESS.CONTRACT,
+              amount: String(findSelectedPeriodRate(valuesToTransfer.period) * amount),
+            },
+          },
+          onSuccess: () => {
+            closeApproveModal();
+            purchaseSubscription();
+          },
+          onError: () => {
+            clearValues();
+            closeApproveModal();
+            closeModal();
+            setIsSubscribing(false);
+            alert.error('Some error has occured');
+          },
+        });
     });
   };
 
@@ -197,7 +218,7 @@ function Subscription() {
                   <p>Please subscribe to get access to app content.</p>
                 </div>
 
-                <Button text="Subscribe" onClick={openModal} />
+                <Button text="Subscribe" disabled={isSubscribing} onClick={openModal} />
               </>
             )}
           </div>
@@ -206,10 +227,17 @@ function Subscription() {
         <Loader />
       )}
 
-      {isModalOpen && <PurchaseSubscriptionModal close={closeModal} onSubmit={saveSubscriptionValues} />}
+      {isModalOpen && (
+        <PurchaseSubscriptionModal
+          disabledSubmitButton={isSubscribing}
+          close={closeModal}
+          onSubmit={saveSubscriptionValues}
+        />
+      )}
       {isApproveModalOpen && valuesToTransfer && (
         <PurchaseSubscriptionApproveModal
           amount={String(findSelectedPeriodRate(valuesToTransfer.period) * amount)}
+          disabledSubmitButton={isSubscribing}
           close={closeApproveModal}
           onSubmit={handleApproveStuff}
         />
