@@ -1,13 +1,6 @@
 use crate::game::PENALTY;
 use crate::*;
 
-pub fn check_reservation_validity(valid_until_block: u32) -> Result<(), GameError> {
-    if valid_until_block <= exec::block_height() {
-        return Err(GameError::ReservationNotValid);
-    }
-    Ok(())
-}
-
 pub fn sell_property(
     admin: &ActorId,
     ownership: &mut [ActorId],
@@ -15,11 +8,11 @@ pub fn sell_property(
     properties_in_bank: &mut HashSet<u8>,
     properties: &[Option<(ActorId, Gears, u32, u32)>],
     player_info: &mut PlayerInfo,
-) -> Result<(), GameError> {
+) -> Result<(), ()> {
     for property in properties_for_sale {
         if ownership[*property as usize] != msg::source() {
             player_info.penalty += 1;
-            return Err(GameError::StrategicError);
+            return Err(());
         }
     }
 

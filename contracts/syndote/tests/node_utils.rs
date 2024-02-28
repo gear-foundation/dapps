@@ -1,6 +1,6 @@
 use fmt::Debug;
 use gclient::{EventListener, EventProcessor, GearApi, Result};
-use gear_core::ids::{MessageId, ProgramId};
+use gear_core::ids::ProgramId;
 use gstd::{collections::BTreeMap, prelude::*, ActorId};
 use syndote_io::*;
 

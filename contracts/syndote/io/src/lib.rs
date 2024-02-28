@@ -10,7 +10,6 @@ use gstd::{
 pub type Price = u32;
 pub type Rent = u32;
 pub type Gears = Vec<Gear>;
-pub type ValidUntilBlock = u32;
 pub type AdminId = ActorId;
 #[derive(Encode, Decode, TypeInfo)]
 pub struct YourTurn {
@@ -96,47 +95,44 @@ pub enum GameAction {
 
 #[derive(PartialEq, Eq, Debug, Encode, Decode, TypeInfo)]
 pub enum GameReply {
-    // Reply on `CreateGameSession` message
+    /// Reply on `CreateGameSession` message
     GameSessionCreated {
         admin_id: AdminId,
     },
 
-    // Reply on `MakeReservation` message
+    /// Reply on `MakeReservation` message
     ReservationMade,
 
-    // Reply on `Register` message
+    /// Reply on `Register` message
     StrategyRegistered,
 
-    // Reply on `Play` message
-    // in case of successful completion of the game
+    /// Reply on `Play` message
+    /// in case of successful completion of the game
     GameFinished {
         admin_id: AdminId,
         winner: ActorId,
     },
 
-    // Reply on `AddGasToPlayerStrategy`
+    /// Reply on `AddGasToPlayerStrategy`
     GasForPlayerStrategyAdded,
 
-    // Reply on `CancelGame`
+    /// Reply on `CancelGame`
     GameWasCancelled,
 
-    // Reply on `ExitGame`
+    /// Reply on `ExitGame`
     PlayerLeftGame,
 
-    StrategicError,
-    StrategicSuccess,
+    /// Event for the front-end app
     Step {
         players: Vec<(ActorId, PlayerInfo)>,
         properties: Vec<Option<(ActorId, Gears, Price, Rent)>>,
         current_player: ActorId,
         ownership: Vec<ActorId>,
         current_step: u64,
-    },
-    Jail {
-        in_jail: bool,
-        position: u8,
-    },
-    GasReserved,
+    }, 
+
+    /// Reply on `Play`` message, in case when the current gas runs out, 
+    /// the next reservation is taken and the next game cycle is started from the new reservation
     NextRoundFromReservation,
 }
 
@@ -153,15 +149,28 @@ pub enum GameError {
     /// Error reply on `ExitGame`
     /// In case if strategy for this account doesn't exist
     StrategyDoesNotExist,
+
+    /// Error reply during making reservation
     ReservationError,
+
+    /// Error reply in case `msg::source()` is not an admin
     OnlyAdmin,
-    NotInTheGame,
-    StrategicError,
+
+    /// Error reply in case the player does not exist
     PlayerDoesNotExist,
+
     NoGasForPlaying,
+
+    /// Error reply on case the
     WrongGameStatus,
+
+    /// Error reply in case `msg::source()` is neither admin nor the program
     MsgSourceMustBeAdminOrProgram,
+
+    /// Error reply in case game does not exist
     GameDoesNotExist,
+
+    /// Error reply on case the reservation is no more valid
     ReservationNotValid,
 
     /// Error reply in case of insufficient gas
@@ -248,7 +257,7 @@ pub struct PlayerInfo {
     pub cells: BTreeSet<u8>,
     pub penalty: u8,
     pub lost: bool,
-    pub reservation_id: Option<(ReservationId, ValidUntilBlock)>,
+    pub reservation_id: Option<ReservationId>,
 }
 
 #[derive(Debug, PartialEq, Eq, Encode, Decode, Clone, TypeInfo, Copy)]
@@ -335,7 +344,7 @@ pub struct Game {
     pub game_status: GameStatus,
     pub winner: ActorId,
     pub current_msg_id: MessageId,
-    pub reservations: Vec<(ReservationId, ValidUntilBlock)>,
+    pub reservations: Vec<ReservationId>,
     pub entry_fee: Option<u128>,
     pub prize_pool: u128,
 }
@@ -357,7 +366,7 @@ pub struct GameState {
     pub ownership: Vec<ActorId>,
     pub game_status: GameStatus,
     pub winner: ActorId,
-    pub reservations: Vec<(ReservationId, ValidUntilBlock)>,
+    pub reservations: Vec<ReservationId>,
     pub entry_fee: Option<u128>,
     pub prize_pool: u128,
 }

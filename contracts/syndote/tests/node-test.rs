@@ -1,5 +1,5 @@
-use gclient::{EventListener, EventProcessor, GearApi, Result};
-use gstd::{collections::BTreeMap, prelude::*, ActorId};
+use gclient::{GearApi, Result};
+use gstd::prelude::*;
 use syndote_io::*;
 use tokio::time::{sleep, Duration};
 

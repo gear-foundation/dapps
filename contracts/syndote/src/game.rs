@@ -1,8 +1,8 @@
 use crate::{
-    bankrupt_and_penalty, check_reservation_validity, get_rolls, init_properties, take_your_turn,
-    AdminId, Game, GameAction, GameError, GameInfo, GameReply, GameStatus, PlayerInfo,
+    bankrupt_and_penalty, get_rolls, init_properties, msg_to_play_game, take_your_turn, AdminId,
+    Game, GameError, GameInfo, GameReply, GameStatus, PlayerInfo,
 };
-use gstd::{collections::HashMap, debug, exec, msg, prelude::*, ActorId, MessageId, ReservationId};
+use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId, MessageId, ReservationId};
 pub const NUMBER_OF_CELLS: u8 = 40;
 pub const NUMBER_OF_PLAYERS: u8 = 4;
 pub const JAIL_POSITION: u8 = 10;
@@ -81,8 +81,7 @@ impl GameSessionActions for Game {
         reservation_duration_in_block: u32,
     ) -> Result<(), GameError> {
         let reservation_id = make_reservation(reservation_amount, reservation_duration_in_block)?;
-        let valid_until_block = exec::block_height() + reservation_duration_in_block;
-        self.reservations.push((reservation_id, valid_until_block));
+        self.reservations.push(reservation_id);
 
         Ok(())
     }
@@ -99,7 +98,6 @@ impl GameSessionActions for Game {
         self.check_attached_value()?;
 
         let reservation_id = make_reservation(reservation_amount, reservation_duration_in_block)?;
-        let valid_until_block = exec::block_height() + reservation_duration_in_block;
 
         self.owners_to_strategy_ids.insert(owner_id, *strategy_id);
         self.players.insert(
@@ -107,7 +105,7 @@ impl GameSessionActions for Game {
             PlayerInfo {
                 owner_id,
                 balance: INITIAL_BALANCE,
-                reservation_id: Some((reservation_id, valid_until_block)),
+                reservation_id: Some(reservation_id),
                 ..Default::default()
             },
         );
@@ -168,17 +166,8 @@ impl GameSessionActions for Game {
         self.only_admin_or_program(&program_id, &msg_source)?;
 
         if exec::gas_available() < min_gas_limit {
-            if let Some((id, valid_until_block)) = self.reservations.pop() {
-                check_reservation_validity(valid_until_block)?;
-                self.current_msg_id = msg::send_from_reservation(
-                    id,
-                    program_id,
-                    GameAction::Play {
-                        admin_id: self.admin_id,
-                    },
-                    0,
-                )
-                .expect("Error during sending a message");
+            if let Some(id) = self.reservations.pop() {
+                self.current_msg_id = msg_to_play_game(id, &program_id, &self.admin_id)?;
                 return Ok(GameReply::NextRoundFromReservation);
             } else {
                 self.current_msg_id = MessageId::zero();
@@ -207,9 +196,6 @@ impl GameSessionActions for Game {
                 // `GameStatus::WaitingForGasForStrategy(_)` means that player didn't manage to reserve a gas
                 // for his strate within the alloted time
                 // The player is removed from the game.
-                debug!("WAIT");
-                debug!("GAS {:?}", exec::gas_available());
-                debug!("CURRENT PLAYER {:?}", self.current_player);
                 self.exclude_player_from_game(self.current_player);
 
                 // If the value of current_turn was 0 (meaning the player who missed their turn and was removed was the last in the array),
@@ -285,11 +271,9 @@ impl GameSessionActions for Game {
 
                 // If the player's reservation is invalid,
                 // we remove the player from the game.
-                if let Some((id, valid_until_block)) = player_info.reservation_id {
-                    match check_reservation_validity(valid_until_block) {
-                        Ok(_) => {
-                            let awaiting_reply_msg_id =
-                                take_your_turn(id, &current_player, game_info);
+                if let Some(id) = player_info.reservation_id {
+                    match take_your_turn(id, &current_player, game_info) {
+                        Ok(awaiting_reply_msg_id) => {
                             awaiting_reply_msg_id_to_session_id
                                 .insert(awaiting_reply_msg_id, self.admin_id);
                             if self.current_msg_id == MessageId::zero() {
@@ -329,18 +313,13 @@ impl GameSessionActions for Game {
             }
             _ => {
                 let gas_available = exec::gas_available();
-                debug!("GAS {:?}", gas_available);
-                debug!("player {:?}", self.current_player);
-                let reservation = if gas_available.saturating_sub(gas_for_step) > min_gas_limit {
+
+                let reservation_id = if gas_available.saturating_sub(gas_for_step) > min_gas_limit {
                     match ReservationId::reserve(
                         gas_available - min_gas_limit,
                         reservation_duration_in_block,
                     ) {
-                        Ok(id) => {
-                            let valid_until_block =
-                                exec::block_height() + reservation_duration_in_block;
-                            Some((id, valid_until_block))
-                        }
+                        Ok(id) => Some(id),
                         Err(_) => None,
                     }
                 } else {
@@ -348,7 +327,7 @@ impl GameSessionActions for Game {
                 };
                 self.players
                     .entry(self.current_player)
-                    .and_modify(|info| info.reservation_id = reservation);
+                    .and_modify(|info| info.reservation_id = reservation_id);
                 self.game_status = GameStatus::Play;
             }
         }
@@ -404,10 +383,9 @@ impl GameSessionActions for Game {
                 return Err(GameError::WrongGameStatus);
             };
         let reservation_id = make_reservation(reservation_amount, reservation_duration_in_block)?;
-        let valid_until_block = exec::block_height() + reservation_duration_in_block;
-        self.players.entry(strategy_id).and_modify(|player_info| {
-            player_info.reservation_id = Some((reservation_id, valid_until_block))
-        });
+        self.players
+            .entry(strategy_id)
+            .and_modify(|player_info| player_info.reservation_id = Some(reservation_id));
         self.game_status = GameStatus::Play;
         Ok(())
     }
@@ -504,8 +482,6 @@ fn make_reservation(
     reservation_amount: u64,
     reservation_duration_in_block: u32,
 ) -> Result<ReservationId, GameError> {
-    match ReservationId::reserve(reservation_amount, reservation_duration_in_block) {
-        Ok(id) => Ok(id),
-        Err(_) => Err(GameError::ReservationError),
-    }
+    ReservationId::reserve(reservation_amount, reservation_duration_in_block)
+        .map_err(|_| GameError::ReservationError)
 }
