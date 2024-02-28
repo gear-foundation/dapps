@@ -8,11 +8,11 @@ pub fn sell_property(
     properties_in_bank: &mut HashSet<u8>,
     properties: &[Option<(ActorId, Gears, u32, u32)>],
     player_info: &mut PlayerInfo,
-) -> Result<(), ()> {
+) -> Result<(), GameError> {
     for property in properties_for_sale {
         if ownership[*property as usize] != msg::source() {
             player_info.penalty += 1;
-            return Err(());
+            return Err(GameError::StrategicError);
         }
     }
 

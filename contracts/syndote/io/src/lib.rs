@@ -96,9 +96,7 @@ pub enum GameAction {
 #[derive(PartialEq, Eq, Debug, Encode, Decode, TypeInfo)]
 pub enum GameReply {
     /// Reply on `CreateGameSession` message
-    GameSessionCreated {
-        admin_id: AdminId,
-    },
+    GameSessionCreated { admin_id: AdminId },
 
     /// Reply on `MakeReservation` message
     ReservationMade,
@@ -108,10 +106,7 @@ pub enum GameReply {
 
     /// Reply on `Play` message
     /// in case of successful completion of the game
-    GameFinished {
-        admin_id: AdminId,
-        winner: ActorId,
-    },
+    GameFinished { admin_id: AdminId, winner: ActorId },
 
     /// Reply on `AddGasToPlayerStrategy`
     GasForPlayerStrategyAdded,
@@ -129,9 +124,9 @@ pub enum GameReply {
         current_player: ActorId,
         ownership: Vec<ActorId>,
         current_step: u64,
-    }, 
+    },
 
-    /// Reply on `Play`` message, in case when the current gas runs out, 
+    /// Reply on `Play`` message, in case when the current gas runs out,
     /// the next reservation is taken and the next game cycle is started from the new reservation
     NextRoundFromReservation,
 }
@@ -158,8 +153,6 @@ pub enum GameError {
 
     /// Error reply in case the player does not exist
     PlayerDoesNotExist,
-
-    NoGasForPlaying,
 
     /// Error reply on case the
     WrongGameStatus,
@@ -192,6 +185,9 @@ pub enum GameError {
     /// Error reply on `Register`
     /// In case a player didn't attach the required amount of value
     WrongValueAmount,
+
+    /// Error reply on wrong move
+    StrategicError,
 }
 
 /// Type that should be used to query the state of contract.
