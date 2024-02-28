@@ -3,19 +3,18 @@ import { useAccount, useApi, useReadFullState, useSendMessageHandler } from '@ge
 import { HexString } from '@polkadot/util/types';
 import { ADDRESS, fields, INIT_PLAYERS, LocalStorage } from 'consts';
 import { MessagePayload, State, Step } from 'types';
-import meta from 'assets/wasm/syndote_meta.txt';
+import meta from 'assets/meta/syndote_meta.txt';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { Loader } from 'components';
 import { Bytes } from '@polkadot/types';
-import { useProgramMetadata } from 'hooks/metadata';
+import { useProgramMetadata, useReadGameSessionState, useSyndoteMessage } from 'hooks/metadata';
 import { Roll } from './roll';
-import { Connect } from './connect';
-import { Address } from './address';
 import styles from './Home.module.scss';
 import { Players } from './players/Players';
-import { Button } from './button';
+import { Button } from '@gear-js/vara-ui';
 import { Buttons } from './buttons';
 import { Cell } from './cell';
+import { RequestGame } from 'pages/welcome/components/request-game';
 
 function Home() {
   const { account, logout } = useAccount();
@@ -30,17 +29,21 @@ function Home() {
   const { api } = useApi();
 
   const metadata = useProgramMetadata(meta);
-  const { state, isStateRead } = useReadFullState<State>(ADDRESS.CONTRACT, metadata, '0x');
+  const { state, isStateRead } = useReadGameSessionState();
 
-  const sendMessage = useSendMessageHandler(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true });
+  const { isMeta, sendMessage } = useSyndoteMessage();
+
+  /////////////////////////////////////////////////////////////////////////////////////////////////
 
   const register = (player: HexString) =>
     sendMessage({ payload: { Register: { player } }, onSuccess: () => setProgramId(player) });
 
+  /////////////////////////////////////////////////////////////////////////////////////////////////
+
   const startGame = () => sendMessage({ payload: { Play: null } });
 
-  const { admin } = state || {};
-  const isAdmin = account?.decodedAddress === admin;
+  const { adminId } = state || {};
+  const isAdmin = account?.decodedAddress === adminId;
 
   const getDecodedPayload = (payload: Bytes) => {
     if (!metadata) return;
@@ -115,7 +118,6 @@ function Home() {
   const getFields = () =>
     fields.map(({ Image, values, type }, index) => (
       <Cell
-        // eslint-disable-next-line react/no-array-index-key
         key={index}
         index={index}
         players={players}
@@ -139,40 +141,63 @@ function Home() {
 
   return isStateRead ? (
     <>
-      <div className={styles.players}>
-        {isAnyPlayer && <Players list={players} winner={winner} />}
-        <Button text="Exit" onClick={resetProgramId} />
-      </div>
+      {!!state && (
+        <>
+          <div className={styles.players}>
+            {isAnyPlayer && <Players list={players} winner={winner} />}
+            <Button text="Exit" onClick={resetProgramId} />
+          </div>
 
-      <div className={styles.field}>
-        <div className={styles.wrapper}>
-          {getFields()}
-          <div className={styles.controller}>
-            {isGameStarted ? (
-              <Roll
-                color={getColor(roll.currentPlayer)}
-                player={roll.currentPlayer}
-                currentTurn={step + 1}
-                turnsAmount={steps.length}
-                onPrevClick={prevStep}
-                onNextClick={nextStep}
-                onFirstClick={firstStep}
-                onLastClick={lastStep}
-                onMainClick={isAdmin ? startGame : undefined}
-              />
-            ) : (
-              <>
-                <h1 className={styles.heading}>Syndote Game</h1>
-                <p className={styles.subheading}>
-                  {isAdmin ? 'Press play to start' : 'Waiting for admin to start a game'}
-                </p>
-                <Buttons onMainClick={isAdmin ? startGame : undefined} />
-              </>
-            )}
+          <div className={styles.field}>
+            <div className={styles.wrapper}>
+              {getFields()}
+              <div className={styles.controller}>
+                {isGameStarted ? (
+                  <Roll
+                    color={getColor(roll.currentPlayer)}
+                    player={roll.currentPlayer}
+                    currentTurn={step + 1}
+                    turnsAmount={steps.length}
+                    onPrevClick={prevStep}
+                    onNextClick={nextStep}
+                    onFirstClick={firstStep}
+                    onLastClick={lastStep}
+                    onMainClick={isAdmin ? startGame : undefined}
+                  />
+                ) : (
+                  <>
+                    <h1 className={styles.heading}>Syndote Game</h1>
+                    <p className={styles.subheading}>
+                      {isAdmin ? 'Press play to start' : 'Waiting for admin to start a game'}
+                    </p>
+                    <Buttons onMainClick={isAdmin ? startGame : undefined} />
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+      {!state && (
+        <div className={styles.container}>
+          <div className={styles.requestGameContainer}>
+            <RequestGame
+            // onSubmit={register} onBack={logout}
+            />
+          </div>
+          <div className={styles.downloadGameContainer}>
+            <h4 className={styles.donwloadTitle}>Get Started</h4>
+            <p className={styles.donwloadText}>
+              To quickly get started, download the default Wasm program of the game, upload it to the blockchain
+              network, and then copy its address to specify it in the game
+            </p>
+            <div className={styles.donwloadButtons}>
+              <Button color="transparent" text="Download file" />
+              <Button color="transparent" text="How does it work?" />
+            </div>
           </div>
         </div>
-      </div>
-      {account ? !programId && <Address onSubmit={register} onBack={logout} /> : <Connect />}
+      )}
     </>
   ) : (
     <Loader />

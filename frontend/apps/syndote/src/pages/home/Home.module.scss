@@ -2,6 +2,57 @@
 @use 'assets/styles/shared' as *;
 @use '@gear-js/ui/headings' as *;
 
+.requestGameContainer {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 92px 46px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 682px;
+}
+
+.downloadGameContainer {
+  width: 682px;
+  margin-top: 37px;
+  background: #00FFC4;
+  padding: 24px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #000000;
+  text-align: center;
+  border-radius: 15px;
+
+  & .donwloadTitle {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 17px;
+    letter-spacing: 0.02px
+  }
+
+  & .donwloadText {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0.025px;
+    color: #555756;
+  }
+
+  & .donwloadButtons {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+
+    & button {
+      letter-spacing: 0.8px;
+    }
+  }
+}
+
 .heading {
   @include heading(32px, 18px, 700);
   margin-bottom: 43px;

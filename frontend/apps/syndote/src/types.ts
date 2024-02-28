@@ -13,8 +13,14 @@ type PlayerState = {
 
 type Players = [HexString, PlayerState][];
 
+type GameSessionState = {
+  GameSession: {
+    gameSession: State;
+  };
+};
+
 type State = {
-  admin: HexString;
+  adminId: HexString;
   currentTurn: string;
   currentStep: string;
   gameStatus: string;
@@ -26,6 +32,8 @@ type State = {
   propertiesInBank: string;
   round: string;
   winner: HexString;
+
+  entryFee: string | null;
 };
 
 type PlayerType = {
@@ -55,4 +63,4 @@ type CellValues = {
   cell: string;
 };
 
-export type { PlayerState, PlayerType, State, Step, MessagePayload, Players, Properties, CellValues };
+export type { PlayerState, PlayerType, State, Step, MessagePayload, Players, Properties, CellValues, GameSessionState };

@@ -1,0 +1,115 @@
+import { Button } from '@gear-js/vara-ui';
+import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
+import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
+import { useAtom } from 'jotai';
+import { IS_LOADING } from 'atoms';
+import { useAccount, useAccountDeriveBalancesAll, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
+import { TextField } from 'components/layout/text-field';
+import { isNotEmpty, useForm } from '@mantine/form';
+import { useSyndoteMessage } from 'hooks/metadata';
+import styles from './CreateGameForm.module.scss';
+
+export interface ContractFormValues {
+  [key: string]: string;
+}
+
+type CreateFormValues = {
+  fee: number;
+  name: string;
+};
+
+type Props = {
+  onCancel: () => void;
+};
+
+function CreateGameForm({ onCancel }: Props) {
+  const { account } = useAccount();
+  const balances = useAccountDeriveBalancesAll();
+  const { isApiReady } = useApi();
+  const { api } = useApi();
+  const { getFormattedBalance, getFormattedBalanceValue, getChainBalanceValue } = useBalanceFormat();
+  const balance =
+    isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
+  const { isMeta, sendMessage: sendNewSessionMessage } = useSyndoteMessage();
+  const [isLoading, setIsLoading] = useAtom(IS_LOADING);
+  const existentialDeposit = Number(getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toFixed());
+
+  const createForm = useForm({
+    initialValues: {
+      fee: existentialDeposit + 5 || 0,
+      name: '',
+    },
+    validate: {
+      fee: (value) =>
+        Number(value) < existentialDeposit + 5 ? `value must be more than ${existentialDeposit + 5}` : null,
+      name: isNotEmpty(`Name shouldn't be empty`),
+    },
+  });
+
+  const { errors: createErrors, getInputProps: getCreateInputProps, onSubmit: onCreateSubmit } = createForm;
+
+  const handleCreateSession = (values: CreateFormValues) => {
+    if (!account?.decodedAddress) {
+      return;
+    }
+
+    const payload = {
+      CreateNewSession: {
+        name: values.name,
+      },
+    };
+
+    setIsLoading(true);
+    sendNewSessionMessage({
+      payload,
+      value: getChainBalanceValue(values.fee).toFixed(),
+      onSuccess: () => {
+        setIsLoading(false);
+      },
+      onError: () => {
+        console.log('error');
+        setIsLoading(false);
+      },
+    });
+  };
+
+  return (
+    <form className={styles.form} onSubmit={onCreateSubmit(handleCreateSession)}>
+      <div className={styles.input}>
+        <TextField
+          label="Entry fee"
+          variant="active"
+          type="number"
+          icon={balance?.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />}
+          disabled={isLoading}
+          {...getCreateInputProps('fee')}
+        />
+        <span className={styles.fieldError}>{createErrors.fee}</span>
+      </div>
+      <div className={styles.input}>
+        <TextField
+          label="Enter your name"
+          variant="active"
+          placeholder="Your name"
+          maxLength={20}
+          disabled={isLoading}
+          {...getCreateInputProps('name')}
+        />
+        <span className={styles.fieldError}>{createErrors.name}</span>
+      </div>
+      <div className={styles.buttons}>
+        <Button type="submit" text="Continue" disabled={isLoading} className={styles.button} />
+        <Button
+          type="submit"
+          text="Cancel"
+          color="dark"
+          disabled={isLoading}
+          className={styles.button}
+          onClick={onCancel}
+        />
+      </div>
+    </form>
+  );
+}
+
+export { CreateGameForm };
