@@ -7,7 +7,7 @@ import dts from 'vite-plugin-dts';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react(), svgr(), dts()],
-
+  resolve: { alias: { '@': '/src' } },
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.ts'),
@@ -22,7 +22,6 @@ export default defineConfig({
         '@polkadot/extension-dapp',
         '@polkadot/wasm-crypto',
       ],
-      resolve: { alias: { '@': '/src' } },
       output: {
         globals: { react: 'React', 'react-dom': 'ReactDOM' },
         intro: 'import "./style.css";',

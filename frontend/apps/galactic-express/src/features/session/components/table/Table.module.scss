@@ -6,7 +6,7 @@ $borderRadius: 8px;
 
 .table {
   display: grid;
-  grid-template-columns: 1fr repeat(4, max-content);
+  grid-template-columns: 1fr repeat(5, max-content);
   text-align: center;
 
   div {
@@ -25,34 +25,34 @@ $borderRadius: 8px;
   background-color: rgba(255, 255, 255, 0.04);
 
   // first row
-  &:nth-child(n + 5):nth-child(-n + 10) {
+  &:nth-child(n + 6):nth-child(-n + 12) {
     border-top: $tableBorder;
   }
 
   // last row
-  &:nth-last-child(-n + 5) {
+  &:nth-last-child(-n + 6) {
     border-bottom: $tableBorder;
   }
 
   // not last column
-  &:not(:nth-child(5n)) {
+  &:not(:nth-child(6n)) {
     border-right: $cellBorder;
   }
 
   // not last row
-  &:not(:nth-last-child(-n + 5)) {
+  &:not(:nth-last-child(-n + 6)) {
     border-bottom: $cellBorder;
   }
 
-  &:nth-child(6) {
+  &:nth-child(7) {
     border-top-left-radius: $borderRadius;
   }
 
-  &:nth-child(10) {
+  &:nth-child(12) {
     border-top-right-radius: $borderRadius;
   }
 
-  &:nth-last-child(5) {
+  &:nth-last-child(6) {
     border-bottom-left-radius: $borderRadius;
   }
 
