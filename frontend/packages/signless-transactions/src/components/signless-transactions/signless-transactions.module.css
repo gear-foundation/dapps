@@ -54,7 +54,7 @@
 .enableButton {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 10px;
   background: transparent;
   margin: 0;
   padding: 0;
