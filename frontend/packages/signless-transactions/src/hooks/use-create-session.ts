@@ -33,7 +33,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     return { destination, payload, gasLimit };
   };
 
-  const deleteSession = async (key: HexString, pair?: KeyringPair) => {
+  const deleteSession = async (key: HexString, pair?: KeyringPair, _options?: Options) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!metadata) throw new Error('Metadata not found');
 
@@ -60,7 +60,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
     const txs = [extrinsic, revokeExtrrinsic];
 
-    batchSignAndSend(txs, { onError });
+    batchSignAndSend(txs, { ..._options, onError });
   };
 
   const createSession = async (session: Session, voucherValue: number, _options: Options) => {
