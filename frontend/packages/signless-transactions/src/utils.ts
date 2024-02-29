@@ -50,12 +50,15 @@ const getMilliseconds = (minutes: number) => minutes * MULTIPLIER.MS * MULTIPLIE
 
 const getDoubleDigits = (value: number) => (value < 10 ? `0${value}` : value);
 
-const getHMS = (ms: number) => {
+const getDHMS = (ms: number) => {
   const seconds = Math.floor((ms / MULTIPLIER.MS) % MULTIPLIER.SECONDS);
   const minutes = Math.floor((ms / (MULTIPLIER.MS * MULTIPLIER.SECONDS)) % MULTIPLIER.MINUTES);
   const hours = Math.floor((ms / (MULTIPLIER.MS * MULTIPLIER.SECONDS * MULTIPLIER.MINUTES)) % MULTIPLIER.HOURS);
+  const days = Math.floor(ms / (MULTIPLIER.MS * MULTIPLIER.SECONDS * MULTIPLIER.MINUTES * MULTIPLIER.HOURS));
 
-  return `${getDoubleDigits(hours)}:${getDoubleDigits(minutes)}:${getDoubleDigits(seconds)}`;
+  return `${days ? `${days} days, ` : ''}${getDoubleDigits(hours)}:${getDoubleDigits(minutes)}:${getDoubleDigits(
+    seconds,
+  )}`;
 };
 
 const shortenString = (str: string, length: number): string => `${str.slice(0, length)}...${str.slice(-length)}`;
@@ -106,4 +109,4 @@ const copyToClipboard = async ({
   }
 };
 
-export { getMilliseconds, getHMS, getVaraAddress, shortenString, copyToClipboard };
+export { getMilliseconds, getDHMS, getVaraAddress, shortenString, copyToClipboard };
