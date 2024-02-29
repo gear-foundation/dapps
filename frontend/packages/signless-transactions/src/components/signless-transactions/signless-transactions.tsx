@@ -5,7 +5,7 @@ import { useCountdown } from '@dapps-frontend/hooks';
 import { ReactComponent as SignlessSVG } from '../../assets/icons/signless.svg';
 import { ReactComponent as PowerSVG } from '../../assets/icons/power.svg';
 import { useSignlessTransactions } from '../../context';
-import { getHMS } from '../../utils';
+import { getDHMS } from '../../utils';
 import { CreateSessionModal } from '../create-session-modal';
 import { EnableSessionModal } from '../enable-session-modal';
 import styles from './signless-transactions.module.css';
@@ -27,12 +27,18 @@ function SignlessTransactions() {
   const { getFormattedBalance } = useBalanceFormat();
   const sessionBalance = voucherBalance ? getFormattedBalance(voucherBalance) : undefined;
 
+  const onDeleteSessionSuccess = () => {
+    deletePair();
+  };
+
+  const onDeleteSessionFinally = () => {
+    setIsLoading(false);
+  };
+
   const handleDeleteSession = async () => {
     if (session) {
       setIsLoading(true);
-      await deleteSession(session.key, pair);
-      deletePair();
-      setIsLoading(false);
+      await deleteSession(session.key, pair, { onSuccess: onDeleteSessionSuccess, onFinally: onDeleteSessionFinally });
     }
   };
 
@@ -77,7 +83,7 @@ function SignlessTransactions() {
                 },
                 {
                   heading: 'Expires:',
-                  value: countdown ? getHMS(countdown) : '-- : -- : --',
+                  value: countdown ? getDHMS(countdown) : '-- : -- : --',
                 },
               ]}
             />
@@ -88,6 +94,7 @@ function SignlessTransactions() {
               color="light"
               className={styles.closeButton}
               isLoading={isLoading}
+              disabled={!pair}
               onClick={handleDeleteSession}
             />
           </div>
