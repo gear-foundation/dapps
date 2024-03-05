@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@gear-js/vara-ui';
 import { useSetAtom, useAtom } from 'jotai';
-import { CURRENT_GAME_ADMIN_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
+import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
 import metaTxt from 'assets/meta/syndote_meta.txt';
 import { useAccount, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
 import { TextField } from 'components/layout/text-field';
@@ -12,7 +12,7 @@ import { ADDRESS } from 'consts';
 import { useProgramMetadata } from 'hooks/metadata';
 import { TextModal } from 'pages/home/game-not-found-modal';
 import styles from './JoinGameForm.module.scss';
-import { State } from 'types';
+import { GameSessionState, State } from 'types';
 
 export interface ContractFormValues {
   [key: string]: string;
@@ -33,6 +33,7 @@ function JoinGameForm({ onCancel }: Props) {
   const [foundState, setFoundState] = useState<State | null>(null);
   const meta = useProgramMetadata(metaTxt);
   const setCurrentGame = useSetAtom(CURRENT_GAME_ADMIN_ATOM);
+  const setCurrentStrategyId = useSetAtom(CURRENT_STRATEGY_ID_ATOM);
   const setPlayerName = useSetAtom(PLAYER_NAME_ATOM);
   const [isLoading, setIsLoading] = useAtom(IS_LOADING);
   const [isJoinSessionModalShown, setIsJoinSessionModalShown] = useState<boolean>(false);
@@ -64,7 +65,7 @@ function JoinGameForm({ onCancel }: Props) {
       return;
     }
 
-    const payload = { GetGame: { playerId: values.address } };
+    const payload = { GetGameSession: { adminId: values.address?.trim() } };
 
     try {
       const res = await api?.programState.read(
@@ -75,14 +76,17 @@ function JoinGameForm({ onCancel }: Props) {
         meta,
       );
 
-      const state = (await res?.toHuman()) as State;
+      const state = (await res?.toHuman()) as GameSessionState;
+      console.log('STATE');
+      console.log(state.GameSession.gameSession);
 
-      if (state) {
-        setFoundState(state);
+      if (state.GameSession.gameSession) {
+        setFoundState(state.GameSession.gameSession);
         setFoundGame(values.address);
         setIsJoinSessionModalShown(true);
         return;
       }
+
       setGameNotFoundModal(true);
     } catch (err: any) {
       console.log(err.message);
@@ -93,6 +97,7 @@ function JoinGameForm({ onCancel }: Props) {
   const handleJoinSession = (values: JoinModalFormValues) => {
     if (foundGame) {
       setCurrentGame(foundGame);
+      setCurrentStrategyId(values.strategyId);
       setPlayerName(values.name);
     }
   };
@@ -109,6 +114,7 @@ function JoinGameForm({ onCancel }: Props) {
             label="Specify the game admin address:"
             variant="active"
             placeholder="0x25c"
+            disabled={isLoading}
             {...getJoinInputProps('address')}
           />
           <span className={styles.fieldError}>{joinErrors.address}</span>

@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { useAlert, useReadFullState, useSendMessageHandler } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useReadFullState, useSendMessageHandler } from '@gear-js/react-hooks';
 import { getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api';
 import { HexString } from '@polkadot/util/types';
 import meta from 'assets/meta/syndote_meta.txt';
@@ -70,13 +70,14 @@ function useSyndoteMessage() {
 }
 
 function useReadGameSessionState() {
+  const { account } = useAccount();
   const metadata = useProgramMetadata(meta);
   const admin = useAtomValue(CURRENT_GAME_ADMIN_ATOM);
 
   const payload = useMemo(
     () => ({
       GetGameSession: {
-        adminId: admin,
+        adminId: admin || account?.decodedAddress,
       },
     }),
     [admin],

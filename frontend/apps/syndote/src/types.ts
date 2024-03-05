@@ -9,6 +9,7 @@ type PlayerState = {
   cells: [];
   penalty: string;
   lost: boolean;
+  ownerId: HexString;
 };
 
 type Players = [HexString, PlayerState][];

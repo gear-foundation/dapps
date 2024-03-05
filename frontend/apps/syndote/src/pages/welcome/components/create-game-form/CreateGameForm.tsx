@@ -16,6 +16,7 @@ export interface ContractFormValues {
 type CreateFormValues = {
   fee: number;
   name: string;
+  strategyId: string;
 };
 
 type Props = {
@@ -38,11 +39,13 @@ function CreateGameForm({ onCancel }: Props) {
     initialValues: {
       fee: existentialDeposit + 5 || 0,
       name: '',
+      strategyId: '',
     },
     validate: {
       fee: (value) =>
         Number(value) < existentialDeposit + 5 ? `value must be more than ${existentialDeposit + 5}` : null,
       name: isNotEmpty(`Name shouldn't be empty`),
+      strategyId: (val) => !val.trim().startsWith('0x') && 'Incorrect program address',
     },
   });
 
@@ -54,7 +57,7 @@ function CreateGameForm({ onCancel }: Props) {
     }
 
     const payload = {
-      CreateNewSession: {
+      CreateGameSession: {
         name: values.name,
       },
     };
@@ -75,6 +78,17 @@ function CreateGameForm({ onCancel }: Props) {
 
   return (
     <form className={styles.form} onSubmit={onCreateSubmit(handleCreateSession)}>
+      <div className={styles.input}>
+        <TextField
+          theme="dark"
+          label="Enter your program address:"
+          placeholder="0x25c"
+          variant="active"
+          disabled={isLoading}
+          {...getCreateInputProps('strategyId')}
+        />
+        <span className={styles.fieldError}>{createErrors.strategyId}</span>
+      </div>
       <div className={styles.input}>
         <TextField
           label="Entry fee"

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAtomValue } from 'jotai';
 import { useAccount, useApi, useReadFullState, useSendMessageHandler } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { ADDRESS, fields, INIT_PLAYERS, LocalStorage } from 'consts';
@@ -15,35 +16,71 @@ import { Button } from '@gear-js/vara-ui';
 import { Buttons } from './buttons';
 import { Cell } from './cell';
 import { RequestGame } from 'pages/welcome/components/request-game';
+import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM } from 'atoms';
+import { SessionInfo } from './session-info';
+import clsx from 'clsx';
 
 function Home() {
   const { account, logout } = useAccount();
-
-  const [programId, setProgramId] = useState((localStorage[LocalStorage.Player] ?? '') as HexString);
-  const resetProgramId = () => setProgramId('' as HexString);
-
-  useEffect(() => {
-    localStorage.setItem(LocalStorage.Player, programId);
-  }, [programId]);
-
   const { api } = useApi();
-
   const metadata = useProgramMetadata(meta);
   const { state, isStateRead } = useReadGameSessionState();
-
   const { isMeta, sendMessage } = useSyndoteMessage();
 
-  /////////////////////////////////////////////////////////////////////////////////////////////////
+  const strategyId = useAtomValue(CURRENT_STRATEGY_ID_ATOM);
+  const gameAdmin = useAtomValue(CURRENT_GAME_ADMIN_ATOM);
+  const [steps, setSteps] = useState<Step[]>([]);
+  const [step, setStep] = useState(0);
 
-  const register = (player: HexString) =>
-    sendMessage({ payload: { Register: { player } }, onSuccess: () => setProgramId(player) });
-
-  /////////////////////////////////////////////////////////////////////////////////////////////////
-
-  const startGame = () => sendMessage({ payload: { Play: null } });
-
-  const { adminId } = state || {};
+  const { adminId, winner, gameStatus, entryFee } = state || {};
   const isAdmin = account?.decodedAddress === adminId;
+  const isGameStarted = steps.length > 0;
+  console.log(state);
+  const roll = steps[step];
+  const { properties, ownership } = roll || {};
+
+  const playersArray = state?.players || [];
+
+  const getPlayers = () => (isGameStarted ? roll.players : state!.players!);
+
+  const players = playersArray.map(([address], index) => ({
+    ...INIT_PLAYERS[index],
+    address,
+    ...getPlayers().find(([newAddress]) => newAddress === address)![1],
+  }));
+  const isAnyPlayer = players.length > 0;
+
+  const register = () => {
+    const payload = { Register: { adminId, strategyId } };
+
+    sendMessage({
+      payload,
+    });
+  };
+
+  const startGame = () => {
+    const payload = {
+      Play: {
+        adminId,
+      },
+    };
+
+    sendMessage({
+      payload,
+    });
+  };
+
+  const exitGame = () => {
+    const payload = {
+      ExitGame: {
+        adminId,
+      },
+    };
+
+    sendMessage({
+      payload,
+    });
+  };
 
   const getDecodedPayload = (payload: Bytes) => {
     if (!metadata) return;
@@ -56,22 +93,16 @@ function Home() {
     return metadata.createType(output, payload).toHuman();
   };
 
-  const [steps, setSteps] = useState<Step[]>([]);
-  const isGameStarted = steps.length > 0;
-
-  const [step, setStep] = useState(0);
-
   useEffect(() => {
-    if (steps.length > 0) setStep(steps.length - 1);
+    if (steps.length > 0) {
+      setStep(steps.length - 1);
+    }
   }, [steps]);
 
   const prevStep = () => setStep((prevValue) => (prevValue - 1 >= 0 ? prevValue - 1 : prevValue));
   const nextStep = () => setStep((prevValue) => (prevValue + 1 < steps.length ? prevValue + 1 : prevValue));
   const firstStep = () => setStep(0);
   const lastStep = () => setStep(steps.length - 1);
-
-  const roll = steps[step];
-  const { properties, ownership } = roll || {};
 
   useEffect(() => {
     let unsub: UnsubscribePromise | undefined;
@@ -101,18 +132,6 @@ function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [metadata]);
 
-  const getPlayers = () => (isGameStarted ? roll.players : state!.players!);
-
-  const playersArray = state?.players || [];
-
-  const players = playersArray.map(([address], index) => ({
-    ...INIT_PLAYERS[index],
-    address,
-    ...getPlayers().find(([newAddress]) => newAddress === address)![1],
-  }));
-
-  const isAnyPlayer = players.length > 0;
-
   const getColor = (address: HexString) => players?.find((player) => player.address === address)?.color;
 
   const getFields = () =>
@@ -129,8 +148,6 @@ function Home() {
       />
     ));
 
-  const { winner } = state || {};
-
   useEffect(() => {
     if (!winner || winner.startsWith('0x00')) return;
 
@@ -138,15 +155,14 @@ function Home() {
       [...prevSteps].sort(({ currentStep }, { currentStep: anotherStep }) => +currentStep - +anotherStep),
     );
   }, [winner]);
+  console.log(playersArray);
+  console.log(gameStatus);
 
   return isStateRead ? (
     <>
       {!!state && (
         <>
-          <div className={styles.players}>
-            {isAnyPlayer && <Players list={players} winner={winner} />}
-            <Button text="Exit" onClick={resetProgramId} />
-          </div>
+          <div className={styles.players}>{isAnyPlayer && <Players list={players} winner={winner} />}</div>
 
           <div className={styles.field}>
             <div className={styles.wrapper}>
@@ -165,13 +181,36 @@ function Home() {
                     onMainClick={isAdmin ? startGame : undefined}
                   />
                 ) : (
-                  <>
-                    <h1 className={styles.heading}>Syndote Game</h1>
-                    <p className={styles.subheading}>
-                      {isAdmin ? 'Press play to start' : 'Waiting for admin to start a game'}
-                    </p>
-                    <Buttons onMainClick={isAdmin ? startGame : undefined} />
-                  </>
+                  <div className={clsx(styles.syndoteContainer, isAdmin && styles.syndoteContainerAdmin)}>
+                    {state.gameStatus === 'Registration' && (
+                      <>
+                        <div className={clsx(styles.headingWrapper, styles.headingWrapperAdmin)}>
+                          <h1 className={styles.heading}>Registration...</h1>
+                          <p className={styles.subheading}>
+                            {isAdmin
+                              ? 'Copy the program address and send it to the players so they can join you.'
+                              : `Players (${playersArray.length}/4). Waiting for other players... `}
+                          </p>
+                        </div>
+                        {!isAdmin && (
+                          <>
+                            {playersArray.map((item) => item[1].ownerId).includes(account?.decodedAddress || '0x') ? (
+                              <Button text="Cancel" color="grey" onClick={exitGame} />
+                            ) : (
+                              <Button text="Register" onClick={register} />
+                            )}
+                          </>
+                        )}
+                        {isAdmin && (
+                          <>
+                            <SessionInfo entryFee={state.entryFee} players={state.players} adminId={state.adminId} />
+                            <Button text="Start the game" />
+                          </>
+                        )}
+                      </>
+                    )}
+                    {gameStatus === 'Play' && <Buttons onMainClick={isAdmin ? startGame : undefined} />}
+                  </div>
                 )}
               </div>
             </div>

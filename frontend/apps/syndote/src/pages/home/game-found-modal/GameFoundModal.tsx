@@ -8,6 +8,7 @@ import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { ReactComponent as UserSVG } from 'assets/images/icons/ic-user-small-24.svg';
 import styles from './GameFoundModal.module.scss';
+import { GameDetails } from '../../../components/layout/game-details/GameDetails';
 
 type Props = {
   entryFee: number | string;
@@ -19,6 +20,7 @@ type Props = {
 
 export type JoinModalFormValues = {
   name: string;
+  strategyId: string;
 };
 
 function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Props) {
@@ -60,9 +62,11 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
   const joinForm = useForm({
     initialValues: {
       name: '',
+      strategyId: '',
     },
     validate: {
       name: isNotEmpty(`Name shouldn't be empty`),
+      strategyId: (val) => !val.trim().startsWith('0x') && 'Incorrect program address',
     },
   });
 
@@ -80,19 +84,23 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
           need to pay the entry fee and required amount of gas immediately after clicking the “Join” button. After the
           end of the game, any unused gas will be refunded.
         </p>
-        <div className={styles.info}>
-          {items.map((item) => (
-            <div className={styles.item}>
-              <span className={styles.itemName}>{item.name}</span>
-              <span className={styles.itemValue}>{item.value}</span>
-            </div>
-          ))}
-        </div>
+        <GameDetails items={items} />
         <form className={styles.form} onSubmit={onJoinSubmit(handleJoinSession)}>
           <div className={styles.input}>
             <TextField
               theme="dark"
+              label="Enter your program address:"
+              placeholder="0x25c"
+              variant="active"
+              {...getJoinInputProps('strategyId')}
+            />
+            <span className={styles.fieldError}>{joinErrors.strategyId}</span>
+          </div>
+          <div className={styles.input}>
+            <TextField
+              theme="dark"
               label="Enter your name:"
+              placeholder="Username"
               variant="active"
               maxLength={20}
               {...getJoinInputProps('name')}

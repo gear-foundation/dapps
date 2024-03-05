@@ -53,19 +53,35 @@
   }
 }
 
+.syndoteContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  &Admin {
+    height: 100%
+  }
+}
+
 .heading {
   @include heading(32px, 18px, 700);
-  margin-bottom: 43px;
+  margin-bottom: 18px;
   color: #000;
   letter-spacing: 0.08em;
 }
 
+.headingWrapper {
+  &Admin {
+    text-align: start;
+  }
+}
+
 .subheading {
-  @include heading(21px, 18px);
-  margin-bottom: 124px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #00ff38;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.025px;
+  line-height: 24px;
+  color: #555756
 }
 
 .players {
@@ -308,7 +324,8 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  box-shadow: inset 0 0 0 1px #333333, inset 0 0 0 2px #00ff38, inset 0 0 0 10px #fff;
+  padding: 32px;
+  background: #ffffff;
 }
 
 .a0 {
