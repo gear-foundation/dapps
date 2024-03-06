@@ -1,7 +1,9 @@
 import { Button } from '@gear-js/vara-ui';
 import { useAccount, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
 import { useState } from 'react';
+import clsx from 'clsx';
 import { useCountdown } from '@dapps-frontend/hooks';
+import { decodeAddress } from '@gear-js/api';
 import { ReactComponent as SignlessSVG } from '../../assets/icons/signless.svg';
 import { ReactComponent as PowerSVG } from '../../assets/icons/power.svg';
 import { useSignlessTransactions } from '../../context';
@@ -42,9 +44,28 @@ function SignlessTransactions() {
     }
   };
 
+  const handleProlongExpiredSession = () => {
+    if (pair) {
+      openCreateModal();
+    }
+  };
+
+  const handleRevokeVoucherFromStoragePair = async () => {
+    if (pair) {
+      const decodedAddress = decodeAddress(pair.address);
+
+      setIsLoading(true);
+
+      await deleteSession(decodedAddress, pair, {
+        onSuccess: onDeleteSessionSuccess,
+        onFinally: onDeleteSessionFinally,
+      });
+    }
+  };
+
   return account && isSessionReady ? (
     <div className={styles.container}>
-      {session ? (
+      {session && (
         <>
           <div className={styles.buttons}>
             {storagePair ? (
@@ -99,14 +120,52 @@ function SignlessTransactions() {
             />
           </div>
         </>
-      ) : (
-        <Button
-          icon={SignlessSVG}
-          color="transparent"
-          text="Enable signless transactions"
-          className={styles.enableButton}
-          onClick={openCreateModal}
-        />
+      )}
+      {!session && (
+        <>
+          {storagePair ? (
+            <>
+              <div className={clsx(styles.titleWrapper, styles.expiredTitleWrapper)}>
+                <h3 className={styles.title}>Your Signless Session is expired</h3>
+              </div>
+              {pair ? (
+                <div className={styles.expiredButtons}>
+                  <Button
+                    icon={SignlessSVG}
+                    text="Prolong session"
+                    isLoading={isLoading}
+                    size="small"
+                    onClick={handleProlongExpiredSession}
+                  />
+                  <Button
+                    icon={PowerSVG}
+                    text="Disable session"
+                    color="light"
+                    className={styles.closeButton}
+                    isLoading={isLoading}
+                    size="small"
+                    onClick={handleRevokeVoucherFromStoragePair}
+                  />
+                </div>
+              ) : (
+                <button className={styles.enableButton} onClick={openEnableModal}>
+                  <div className={styles.itemIcon}>
+                    <SignlessSVG />
+                  </div>
+                  <span className={styles.itemText}>Unlock signless transactions</span>
+                </button>
+              )}
+            </>
+          ) : (
+            <Button
+              icon={SignlessSVG}
+              color="transparent"
+              text="Enable signless transactions"
+              className={styles.enableButton}
+              onClick={openCreateModal}
+            />
+          )}
+        </>
       )}
 
       {modal === 'enable' && <EnableSessionModal close={closeModal} />}

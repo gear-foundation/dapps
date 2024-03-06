@@ -6,7 +6,6 @@ import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSignlessTransactions } from '../../context';
 import { getMilliseconds } from '../../utils';
-import { EnableSessionModal } from '../enable-session-modal';
 import styles from './create-session-modal.module.css';
 import { SignlessParams } from '../signless-params-list';
 import { AccountPair } from '../account-pair';
@@ -39,9 +38,6 @@ function CreateSessionModal({ close }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
-  const openEnableModal = () => setIsEnableModalOpen(true);
-
   const [isLoading, setIsLoading] = useState(false);
 
   const issueVoucherValue = useMemo(() => {
@@ -72,12 +68,10 @@ function CreateSessionModal({ close }: Props) {
     const allowedActions = ACTIONS;
 
     const onSuccess = async () => {
-      if (storagePair) {
-        openEnableModal();
-      } else {
+      if (!storagePair) {
         savePair(pair as KeyringPair, password);
-        close();
       }
+      close();
     };
 
     const onFinally = () => setIsLoading(false);
@@ -111,26 +105,21 @@ function CreateSessionModal({ close }: Props) {
         />
 
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-          {!storagePair && (
-            <>
-              <Select label="Session duration" options={DURATIONS} onChange={handleSelectChange} />
-              <Input
-                type="password"
-                label="Set password"
-                error={errors.password?.message}
-                {...register('password', {
-                  required: REQUIRED_MESSAGE,
-                  minLength: { value: 6, message: 'Minimum length is 6' },
-                })}
-              />
-            </>
+          <Select label="Session duration" options={DURATIONS} onChange={handleSelectChange} />
+          {(!storagePair || storagePair?.address !== pair?.address) && (
+            <Input
+              type="password"
+              label="Set password"
+              error={errors.password?.message}
+              {...register('password', {
+                required: REQUIRED_MESSAGE,
+                minLength: { value: 6, message: 'Minimum length is 6' },
+              })}
+            />
           )}
-
           <Button type="submit" text="Create Signless session" className={styles.button} isLoading={isLoading} />
         </form>
       </Modal>
-
-      {isEnableModalOpen && <EnableSessionModal close={close} />}
     </>
   );
 }

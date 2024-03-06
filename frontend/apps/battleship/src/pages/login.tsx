@@ -8,8 +8,9 @@ import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
-
 import styles from './login.module.scss';
+
+import { Switcher } from '@dapps-frontend/ui';
 
 export default function Login() {
   const navigation = useNavigate();
@@ -38,12 +39,16 @@ export default function Login() {
             </Text>
           </div>
         </div>
-        <Button className={buttonVariants()} onClick={account ? onClickStartGame : openWallet}>
-          {account ? 'Start the Game' : 'Connect wallet'}
-        </Button>
+        <>
+          <Button className={buttonVariants()} onClick={account ? onClickStartGame : openWallet}>
+            {account ? 'Start the Game' : 'Connect wallet'}
+          </Button>
+          <Switcher size="small" />
+          <Switcher size="small" />
+        </>
 
         <div className={styles.bottom}>
-          <img src={battleshipImage} alt="" width={300} />S
+          <img src={battleshipImage} alt="" width={300} />
         </div>
       </div>
 
