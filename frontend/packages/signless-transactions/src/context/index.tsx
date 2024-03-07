@@ -1,5 +1,5 @@
 import { GearKeyring, HexString, decodeAddress } from '@gear-js/api';
-import { useAccount, useBalance, useVouchers } from '@gear-js/react-hooks';
+import { useAccount, useBalance, useBalanceFormat, useDeriveBalancesAll, useVouchers } from '@gear-js/react-hooks';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
@@ -42,12 +42,13 @@ function useVoucherId(programId: HexString, address: string | undefined) {
 
 function SignlessTransactionsProvider({ metadataSource, programId, children }: Props) {
   const metadata = useProgramMetadata(metadataSource);
-
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isAvailable, setIsAvailable] = useState<boolean>(false);
+  const { getFormattedBalance } = useBalanceFormat();
   const { account } = useAccount();
   const { session, isSessionReady } = useSession(programId, metadata);
-
+  const balances = useDeriveBalancesAll(account?.decodedAddress);
   const [pair, setPair] = useState<KeyringPair | undefined>();
-
   const getStorage = () => JSON.parse(localStorage[SIGNLESS_STORAGE_KEY] || '{}') as Storage;
   const [storagePair, setStoragePair] = useState(account ? getStorage()[account.address] : undefined);
 
@@ -101,6 +102,17 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
     setPair(undefined);
   }, [account]);
 
+  useEffect(() => {
+    if (
+      balances?.freeBalance &&
+      (Number(getFormattedBalance(balances.freeBalance.toNumber()).value) > 42 || voucherBalance > 0)
+    ) {
+      setIsAvailable(true);
+    } else {
+      setIsAvailable(false);
+    }
+  }, [balances?.freeBalance, storagePair, voucherBalance]);
+
   const value = {
     pair,
     storagePair,
@@ -114,6 +126,9 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
     deleteSession,
     updateSession,
     pairVoucherId,
+    isLoading,
+    setIsLoading,
+    isAvailable,
   };
 
   return <Provider value={value}>{children}</Provider>;

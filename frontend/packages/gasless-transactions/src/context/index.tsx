@@ -20,7 +20,9 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   const [voucherId, setVoucherId] = useState(undefined);
   const [isRequestingVoucher, setIsRequestingVoucher] = useState(false);
   const [isUpdatingVoucher, setIsUpdatingVoucher] = useState(false);
-
+  const [isAvailable, setIsAvailable] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isActive, setIsActive] = useState(false);
   const { balance } = useBalance(voucherId || account?.decodedAddress);
 
   const requestVoucher = async () => {
@@ -34,15 +36,27 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
       });
 
       const data = await response.json();
+      setIsLoading(false);
 
       if (data?.error) {
         console.log(`Voucher is not fetched - ${data.error}`);
+        setIsAvailable(false);
+
+        return undefined;
       }
 
+      if (!data.voucherId) {
+        setIsAvailable(false);
+        return undefined;
+      }
+
+      setIsAvailable(true);
       return data.voucherId;
     } catch (error: any) {
       console.log('Error when fetching voucher');
       console.log(error);
+      setIsAvailable(false);
+      setIsLoading(false);
 
       return undefined;
     }
@@ -88,11 +102,13 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
 
   useEffect(() => {
     if (account?.address) {
+      setIsLoading(true);
       fetchVoucherId();
     }
   }, [account?.address]);
 
   useEffect(() => {
+    setIsAvailable(false);
     setVoucherId(undefined);
   }, [account?.address]);
 
@@ -103,8 +119,13 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   }, [updateBalance, voucherId]);
 
   const value = {
-    voucherId,
+    voucherId: isAvailable && isActive ? voucherId : undefined,
     isLoadingVoucher: isRequestingVoucher || isUpdatingVoucher,
+    isAvailable,
+    isLoading,
+    isActive,
+    setIsActive,
+    setIsLoading,
   };
 
   return <Provider value={value}>{children}</Provider>;

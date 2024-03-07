@@ -13,6 +13,7 @@ import { EnableSessionModal } from '../enable-session-modal';
 import styles from './signless-transactions.module.css';
 import { SignlessParams } from '../signless-params-list';
 import { AccountPair } from '../account-pair';
+import { EnableSession } from '../enable-session';
 
 function SignlessTransactions() {
   const { account } = useAccount();
@@ -35,13 +36,6 @@ function SignlessTransactions() {
 
   const onDeleteSessionFinally = () => {
     setIsLoading(false);
-  };
-
-  const handleDeleteSession = async () => {
-    if (session) {
-      setIsLoading(true);
-      await deleteSession(session.key, pair, { onSuccess: onDeleteSessionSuccess, onFinally: onDeleteSessionFinally });
-    }
   };
 
   const handleProlongExpiredSession = () => {
@@ -108,65 +102,45 @@ function SignlessTransactions() {
                 },
               ]}
             />
-
-            <Button
-              icon={PowerSVG}
-              text="Log Out"
-              color="light"
-              className={styles.closeButton}
-              isLoading={isLoading}
-              disabled={!pair}
-              onClick={handleDeleteSession}
-            />
+            <EnableSession type="button" />
           </div>
         </>
       )}
-      {!session && (
+      {!session && storagePair && (
         <>
-          {storagePair ? (
-            <>
-              <div className={clsx(styles.titleWrapper, styles.expiredTitleWrapper)}>
-                <h3 className={styles.title}>Your Signless Session is expired</h3>
-              </div>
-              {pair ? (
-                <div className={styles.expiredButtons}>
-                  <Button
-                    icon={SignlessSVG}
-                    text="Prolong session"
-                    isLoading={isLoading}
-                    size="small"
-                    onClick={handleProlongExpiredSession}
-                  />
-                  <Button
-                    icon={PowerSVG}
-                    text="Disable session"
-                    color="light"
-                    className={styles.closeButton}
-                    isLoading={isLoading}
-                    size="small"
-                    onClick={handleRevokeVoucherFromStoragePair}
-                  />
-                </div>
-              ) : (
-                <button className={styles.enableButton} onClick={openEnableModal}>
-                  <div className={styles.itemIcon}>
-                    <SignlessSVG />
-                  </div>
-                  <span className={styles.itemText}>Unlock signless transactions</span>
-                </button>
-              )}
-            </>
+          <div className={clsx(styles.titleWrapper, styles.expiredTitleWrapper)}>
+            <h3 className={styles.title}>Your Signless Session is expired</h3>
+          </div>
+          {pair ? (
+            <div className={styles.expiredButtons}>
+              <Button
+                icon={SignlessSVG}
+                text="Prolong session"
+                isLoading={isLoading}
+                size="small"
+                onClick={handleProlongExpiredSession}
+              />
+              <Button
+                icon={PowerSVG}
+                text="Disable session"
+                color="light"
+                className={styles.closeButton}
+                isLoading={isLoading}
+                size="small"
+                onClick={handleRevokeVoucherFromStoragePair}
+              />
+            </div>
           ) : (
-            <Button
-              icon={SignlessSVG}
-              color="transparent"
-              text="Enable signless transactions"
-              className={styles.enableButton}
-              onClick={openCreateModal}
-            />
+            <button className={styles.enableButton} onClick={openEnableModal}>
+              <div className={styles.itemIcon}>
+                <SignlessSVG />
+              </div>
+              <span className={styles.itemText}>Unlock signless transactions</span>
+            </button>
           )}
         </>
       )}
+      {!session && !storagePair && <EnableSession type="button" />}
 
       {modal === 'enable' && <EnableSessionModal close={closeModal} />}
       {modal === 'create' && <CreateSessionModal close={closeModal} />}

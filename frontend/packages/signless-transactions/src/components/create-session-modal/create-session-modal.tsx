@@ -24,10 +24,17 @@ function CreateSessionModal({ close }: Props) {
   const { api } = useApi();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
   const [durationMinutes, setDurationMinutes] = useState<number>(DURATIONS[0].value);
-  const { register, handleSubmit, formState } = useForm({ defaultValues: DEFAULT_VALUES });
+  const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
-  const { savePair, storagePair, voucherBalance, createSession, updateSession } = useSignlessTransactions();
+  const {
+    savePair,
+    storagePair,
+    voucherBalance,
+    createSession,
+    updateSession,
+    pair: existingPair,
+  } = useSignlessTransactions();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const [pair, setPair] = useState<KeyringPair | KeyringPair$Json | undefined>(storagePair);
 
@@ -68,10 +75,23 @@ function CreateSessionModal({ close }: Props) {
     const allowedActions = ACTIONS;
 
     const onSuccess = async () => {
-      if (!storagePair) {
+      if (storagePair) {
+        if (!existingPair) {
+          try {
+            const pairFromStorageJSON = GearKeyring.fromJson(storagePair, password);
+            savePair(pairFromStorageJSON as KeyringPair, password);
+            close();
+          } catch (error) {
+            const message = String(error);
+            setError('password', { message });
+          }
+        } else {
+          close();
+        }
+      } else {
         savePair(pair as KeyringPair, password);
+        close();
       }
-      close();
     };
 
     const onFinally = () => setIsLoading(false);
@@ -90,7 +110,7 @@ function CreateSessionModal({ close }: Props) {
 
   return (
     <>
-      <Modal heading="Enable Signless Session" close={close}>
+      <Modal heading={`${storagePair ? 'Resume' : 'Enable'} Signless Session`} close={close}>
         <SignlessParams
           params={[
             {
@@ -106,7 +126,7 @@ function CreateSessionModal({ close }: Props) {
 
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
           <Select label="Session duration" options={DURATIONS} onChange={handleSelectChange} />
-          {(!storagePair || storagePair?.address !== pair?.address) && (
+          {(!storagePair || !existingPair) && (
             <Input
               type="password"
               label="Set password"
