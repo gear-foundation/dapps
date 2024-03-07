@@ -26,13 +26,13 @@
 
 <p align="center">Hit the <a href="https://github.com/gear-foundation/dapps">:star:</a> button to keep up with our daily progress!</p>
 
-:wave: This repository serves as a comprehensive collection of decentralized application (dApp) examples, showcasing various real-world use cases and implementations based on **[Gear Protocol](https://gear-tech.io/)**. Developers can explore and experiment with these examples to gain hands-on experience in building decentralized applications using cutting-edge technologies and industry best practices.
+:wave: This repository serves as a comprehensive collection of decentralized application (dApp) examples, showcasing various real-world use cases and implementations based on **[Gear Protocol](https://gear-tech.io/)**. Developers can explore and experiment with these examples, running them in the **[Vara Network](http://vara.network/)** to gain hands-on experience in building decentralized applications using cutting-edge technologies and industry best practices.
 
 :scroll: A `contracts` folder houses the source codes of the smart contracts on Rust that power the decentralized applications.
 
 :computer: A dedicated `frontend` folder contains examples of React web applications. These applications serve as live demonstrations illustrating how the frontend interacts seamlessly with programs running on the blockchain. 
 
-:point_right: Anyone can build and upload their programs to the Vara Network Testnet via **[Gear Idea](https://idea.gear-tech.io/)** portal. It is recommended for testing and as a preparatory step prior to deploying your application on the Vara Network mainnet.
+:point_right: Anyone can build and upload their programs to the Vara Network Testnet via **[Gear Idea](https://idea.gear-tech.io/programs?node=wss%3A%2F%2Ftestnet.vara.network)** portal. It is recommended for testing and as a preparatory step prior to deploying your application on the Vara Network mainnet.
 
 :globe_with_meridians: Join our [developer community](https://discord.gg/RyYBKXrrPn) and contribute to the evolution of the decentralized application landscape. 
 
