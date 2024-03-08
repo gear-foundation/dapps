@@ -27,7 +27,7 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
 
   const requestVoucher = async () => {
     try {
-      const response = await fetch(`${backendAddress}api/voucher/request`, {
+      const response = await fetch(`${backendAddress}gasless/voucher/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
