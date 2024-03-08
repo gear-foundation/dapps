@@ -40,22 +40,21 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
 
       if (data?.error) {
         console.log(`Voucher is not fetched - ${data.error}`);
-        setIsAvailable(false);
+        setIsActive(false);
 
         return undefined;
       }
 
       if (!data.voucherId) {
-        setIsAvailable(false);
+        setIsActive(false);
         return undefined;
       }
 
-      setIsAvailable(true);
       return data.voucherId;
     } catch (error: any) {
       console.log('Error when fetching voucher');
       console.log(error);
-      setIsAvailable(false);
+      setIsActive(false);
       setIsLoading(false);
 
       return undefined;
@@ -100,17 +99,53 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [balance]);
 
+  const checkProgramStatus = async () => {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch(`${backendAddress}gasless/voucher/${programId}/status`);
+
+      const data = await response.json();
+      setIsLoading(false);
+
+      if (data.enabled) {
+        setIsAvailable(true);
+        return;
+      }
+
+      if (!data.enabled) {
+        setIsAvailable(false);
+        return;
+      }
+
+      console.log(`Backend is not available`);
+      setIsAvailable(false);
+
+      console.log(data);
+    } catch (error: any) {
+      console.log('Error when fetching voucher');
+      console.log(error);
+      setIsAvailable(false);
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    if (account?.address) {
+    if (account?.decodedAddress) {
+      setIsAvailable(false);
+      setIsActive(false);
+      setVoucherId(undefined);
+
+      checkProgramStatus();
+    }
+  }, [account?.decodedAddress]);
+
+  useEffect(() => {
+    if (account?.decodedAddress && isAvailable && isActive && !voucherId) {
       setIsLoading(true);
       fetchVoucherId();
     }
-  }, [account?.address]);
-
-  useEffect(() => {
-    setIsAvailable(false);
-    setVoucherId(undefined);
-  }, [account?.address]);
+  }, [isAvailable, isActive, voucherId, account?.decodedAddress]);
 
   useEffect(() => {
     if (voucherId) {
