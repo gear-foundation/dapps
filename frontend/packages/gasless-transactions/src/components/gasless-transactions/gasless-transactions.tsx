@@ -6,11 +6,11 @@ import { ReactComponent as GaslessSVG } from '../../assets/icons/gas-station-lin
 
 function GaslessTransactions() {
   const { account } = useAccount();
-  const { isActive } = useGaslessTransactions();
+  const { voucherId } = useGaslessTransactions();
 
   return account ? (
     <div className={styles.container}>
-      {isActive && (
+      {voucherId && (
         <>
           <div className={styles.sessionContainer}>
             <div className={styles.titleWrapper}>
@@ -21,7 +21,7 @@ function GaslessTransactions() {
           </div>
         </>
       )}
-      {!isActive && <EnableSession type="button" />}
+      {!voucherId && <EnableSession type="button" />}
     </div>
   ) : null;
 }

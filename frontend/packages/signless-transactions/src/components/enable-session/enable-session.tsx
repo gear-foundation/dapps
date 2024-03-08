@@ -1,5 +1,6 @@
 import { Button, Checkbox } from '@gear-js/vara-ui';
 import { useState } from 'react';
+import { useAccount } from '@gear-js/react-hooks';
 import { ReactComponent as SignlessSVG } from '../../assets/icons/signless.svg';
 import { ReactComponent as PowerSVG } from '../../assets/icons/power.svg';
 import styles from './enable-session.module.css';
@@ -12,6 +13,7 @@ type Props = {
 };
 
 function EnableSession({ type }: Props) {
+  const { account } = useAccount();
   const { isAvailable, pair, session, deletePair, deleteSession } = useSignlessTransactions();
   const [isLoading, setIsLoading] = useState(false);
   const [isCreateSessionModalOpen, setIsCreateSessionModalOpen] = useState(false);
@@ -52,7 +54,7 @@ function EnableSession({ type }: Props) {
     }
   };
 
-  return (
+  return account?.decodedAddress ? (
     <>
       {type === 'button' && (
         <>
@@ -109,7 +111,7 @@ function EnableSession({ type }: Props) {
       {isCreateSessionModalOpen && <CreateSessionModal close={closeCreateModal} />}
       {isEnableSessionModalOpen && <EnableSessionModal close={closeEnableModal} />}
     </>
-  );
+  ) : null;
 }
 
 export { EnableSession };
