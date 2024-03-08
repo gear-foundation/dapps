@@ -14,6 +14,9 @@ const DEFAULT_VALUES = {
   deleteSession: () => {},
   updateSession: () => {},
   pairVoucherId: undefined,
+  isLoading: false,
+  setIsLoading: () => {},
+  isAvailable: false,
 };
 
 export { SIGNLESS_STORAGE_KEY, DEFAULT_VALUES };

@@ -17,6 +17,7 @@ export type Props = {
   customItems?: {
     icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
     option: JSX.Element;
+    key: string;
   }[];
   className?: ClassNameProps;
   onClose?: () => void;
@@ -34,8 +35,8 @@ export function MenuOptions({ customItems, className, onClose }: Props) {
 
   return (
     <div className={clsx(styles.container)}>
-      {customItems?.map(({ icon: Icon, option }) => (
-        <div className={clsx(styles.item)} key={option.key}>
+      {customItems?.map(({ icon: Icon, option, key }) => (
+        <div className={clsx(styles.item)} key={key}>
           {Icon ? <Icon /> : null}
           {option}
         </div>
