@@ -17,6 +17,7 @@ type Props = {
   customItems?: {
     icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
     option: JSX.Element;
+    key: string;
   }[];
   className?: {
     container?: string;
