@@ -6,7 +6,6 @@ import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSignlessTransactions } from '../../context';
 import { getMilliseconds } from '../../utils';
-import { EnableSessionModal } from '../enable-session-modal';
 import styles from './create-session-modal.module.css';
 import { SignlessParams } from '../signless-params-list';
 import { AccountPair } from '../account-pair';
@@ -25,10 +24,17 @@ function CreateSessionModal({ close }: Props) {
   const { api } = useApi();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
   const [durationMinutes, setDurationMinutes] = useState<number>(DURATIONS[0].value);
-  const { register, handleSubmit, formState } = useForm({ defaultValues: DEFAULT_VALUES });
+  const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
-  const { savePair, storagePair, voucherBalance, createSession, updateSession } = useSignlessTransactions();
+  const {
+    savePair,
+    storagePair,
+    voucherBalance,
+    createSession,
+    updateSession,
+    pair: existingPair,
+  } = useSignlessTransactions();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const [pair, setPair] = useState<KeyringPair | KeyringPair$Json | undefined>(storagePair);
 
@@ -38,9 +44,6 @@ function CreateSessionModal({ close }: Props) {
     GearKeyring.create('signlessPair').then((result) => setPair(result.keyring));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
-  const openEnableModal = () => setIsEnableModalOpen(true);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -73,7 +76,18 @@ function CreateSessionModal({ close }: Props) {
 
     const onSuccess = async () => {
       if (storagePair) {
-        openEnableModal();
+        if (!existingPair) {
+          try {
+            const pairFromStorageJSON = GearKeyring.fromJson(storagePair, password);
+            savePair(pairFromStorageJSON as KeyringPair, password);
+            close();
+          } catch (error) {
+            const message = String(error);
+            setError('password', { message });
+          }
+        } else {
+          close();
+        }
       } else {
         savePair(pair as KeyringPair, password);
         close();
@@ -96,7 +110,7 @@ function CreateSessionModal({ close }: Props) {
 
   return (
     <>
-      <Modal heading="Enable Signless Session" close={close}>
+      <Modal heading={`${storagePair ? 'Resume' : 'Enable'} Signless Session`} close={close}>
         <SignlessParams
           params={[
             {
@@ -111,26 +125,21 @@ function CreateSessionModal({ close }: Props) {
         />
 
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-          {!storagePair && (
-            <>
-              <Select label="Session duration" options={DURATIONS} onChange={handleSelectChange} />
-              <Input
-                type="password"
-                label="Set password"
-                error={errors.password?.message}
-                {...register('password', {
-                  required: REQUIRED_MESSAGE,
-                  minLength: { value: 6, message: 'Minimum length is 6' },
-                })}
-              />
-            </>
+          <Select label="Session duration" options={DURATIONS} onChange={handleSelectChange} />
+          {(!storagePair || !existingPair) && (
+            <Input
+              type="password"
+              label="Set password"
+              error={errors.password?.message}
+              {...register('password', {
+                required: REQUIRED_MESSAGE,
+                minLength: { value: 6, message: 'Minimum length is 6' },
+              })}
+            />
           )}
-
           <Button type="submit" text="Create Signless session" className={styles.button} isLoading={isLoading} />
         </form>
       </Modal>
-
-      {isEnableModalOpen && <EnableSessionModal close={close} />}
     </>
   );
 }

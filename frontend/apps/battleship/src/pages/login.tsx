@@ -8,8 +8,10 @@ import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
-
 import styles from './login.module.scss';
+import { EnableSession as EnableSignlessSession } from '@dapps-frontend/signless-transactions';
+import { EnableSession as EnableGaslessSession } from '@dapps-frontend/gasless-transactions';
+import { Checkbox } from '@gear-js/vara-ui';
 
 export default function Login() {
   const navigation = useNavigate();
@@ -38,12 +40,24 @@ export default function Login() {
             </Text>
           </div>
         </div>
-        <Button className={buttonVariants()} onClick={account ? onClickStartGame : openWallet}>
-          {account ? 'Start the Game' : 'Connect wallet'}
-        </Button>
+        <>
+          <div className={styles.controlsWrapper}>
+            <Button
+              className={(buttonVariants(), styles.startGameButton)}
+              onClick={account ? onClickStartGame : openWallet}>
+              {account ? 'Start the Game' : 'Connect wallet'}
+            </Button>
+          </div>
+          <div className={styles.controlsWrapper}>
+            <EnableSignlessSession type="switcher" />
+          </div>
+          <div className={styles.controlsWrapper}>
+            <EnableGaslessSession type="switcher" />
+          </div>
+        </>
 
         <div className={styles.bottom}>
-          <img src={battleshipImage} alt="" width={300} />S
+          <img src={battleshipImage} alt="" width={300} />
         </div>
       </div>
 
