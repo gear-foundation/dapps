@@ -28,6 +28,9 @@ type Value = {
   deleteSession: (...args: Parameters<ReturnType<typeof useCreateSession>['deleteSession']>) => void;
   updateSession: (...args: Parameters<ReturnType<typeof useCreateSession>['updateSession']>) => void;
   pairVoucherId: `0x${string}` | undefined;
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  isAvailable: boolean;
 };
 
 export type { State, Session, Storage, Value };
