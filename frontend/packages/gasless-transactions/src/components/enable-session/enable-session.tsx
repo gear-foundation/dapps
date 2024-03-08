@@ -1,4 +1,5 @@
 import { Button, Checkbox } from '@gear-js/vara-ui';
+import { useAccount } from '@gear-js/react-hooks';
 import styles from './enable-session.module.css';
 import { useGaslessTransactions } from '../..';
 import { ReactComponent as GaslessSVG } from '../../assets/icons/gas-station-line.svg';
@@ -9,8 +10,8 @@ type Props = {
 };
 
 function EnableSession({ type }: Props) {
-  const { isAvailable, isLoading, isActive, setIsActive } = useGaslessTransactions();
-
+  const { isAvailable, isLoading, voucherId, setIsActive } = useGaslessTransactions();
+  const { account } = useAccount();
   const handleSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
       setIsActive(true);
@@ -27,11 +28,11 @@ function EnableSession({ type }: Props) {
     setIsActive(false);
   };
 
-  return (
+  return account?.decodedAddress ? (
     <>
       {type === 'button' && (
         <>
-          {isActive ? (
+          {voucherId ? (
             <Button
               icon={PowerSVG}
               text="Disable"
@@ -58,7 +59,7 @@ function EnableSession({ type }: Props) {
               label=""
               type="switch"
               disabled={!isAvailable || isLoading}
-              checked={isActive}
+              checked={!!voucherId}
               onChange={handleSwitcherChange}
             />
           </div>
@@ -77,7 +78,7 @@ function EnableSession({ type }: Props) {
         </div>
       )}
     </>
-  );
+  ) : null;
 }
 
 export { EnableSession };
