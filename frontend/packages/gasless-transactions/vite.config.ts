@@ -16,6 +16,7 @@ export default defineConfig({
       external: ['react', 'react-dom', '@gear-js/api', '@gear-js/react-hooks', '@dapps-frontend/signless-transactions'],
       output: {
         globals: { react: 'React', 'react-dom': 'ReactDOM' },
+        intro: 'import "./style.css";',
       },
     },
   },
