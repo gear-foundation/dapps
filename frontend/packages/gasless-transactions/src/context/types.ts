@@ -7,4 +7,5 @@ export type Value = {
   isLoading: boolean;
   isActive: boolean;
   setIsActive: React.Dispatch<React.SetStateAction<boolean>>;
+  checkAndFetchVoucher: (account: string) => Promise<string> | Promise<undefined>;
 };

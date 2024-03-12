@@ -11,7 +11,7 @@ import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
 
 export default function GameProcess() {
-  const { voucherId, isLoadingVoucher } = useGaslessTransactions();
+  const { voucherId, isLoadingVoucher, isActive } = useGaslessTransactions();
   const { pairVoucherId } = useSignlessTransactions();
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
@@ -71,7 +71,7 @@ export default function GameProcess() {
 
   const onClickCell = async (indexCell: number) => {
     const gasLimit = 120000000000;
-
+    console.log('lick');
     if (!isLoadingVoucher) {
       setDisabledCell(true);
 

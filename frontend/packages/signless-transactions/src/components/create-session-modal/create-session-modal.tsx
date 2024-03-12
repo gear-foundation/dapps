@@ -97,11 +97,14 @@ function CreateSessionModal({ close }: Props) {
     const onFinally = () => setIsLoading(false);
 
     if (storagePair) {
-      updateSession({ duration, key, allowedActions }, issueVoucherValue, { onSuccess, onFinally });
+      updateSession({ duration, key, allowedActions }, pair as KeyringPair, issueVoucherValue, {
+        onSuccess,
+        onFinally,
+      });
       return;
     }
 
-    createSession({ duration, key, allowedActions }, issueVoucherValue, { onSuccess, onFinally });
+    createSession({ duration, key, allowedActions }, pair as KeyringPair, issueVoucherValue, { onSuccess, onFinally });
   };
 
   const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {

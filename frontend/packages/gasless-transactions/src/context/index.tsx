@@ -25,14 +25,14 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   const [isActive, setIsActive] = useState(false);
   const { balance } = useBalance(voucherId || account?.decodedAddress);
 
-  const requestVoucher = async () => {
+  const requestVoucher = async (account: string) => {
     try {
       const response = await fetch(`${backendAddress}gasless/voucher/request`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ account: account?.address, program: programId }),
+        body: JSON.stringify({ account, program: programId }),
       });
 
       const data = await response.json();
@@ -61,30 +61,38 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
     }
   };
 
-  const fetchVoucherId = async () => {
+  const fetchAccountVoucherId = async (account: string) => {
     try {
       setIsRequestingVoucher(true);
-      const createdVoucherId = await requestVoucher();
+      const createdVoucherId = await requestVoucher(account);
 
       if (createdVoucherId) {
         setVoucherId(createdVoucherId);
+        setIsRequestingVoucher(false);
+        return createdVoucherId;
       }
 
       setIsRequestingVoucher(false);
+      return undefined;
     } catch (error) {
       setIsRequestingVoucher(false);
+      return undefined;
     }
   };
 
   const updateBalance = useCallback(async () => {
+    if (!account?.address || !voucherId) {
+      return;
+    }
+
     const formattedBalance = balance && getFormattedBalanceValue(balance.toString()).toFixed();
     const isBalanceLow = Number(formattedBalance) < voucherLimit;
 
-    if (isBalanceLow && voucherId) {
+    if (isBalanceLow && voucherId && account?.decodedAddress) {
       setIsUpdatingVoucher(true);
 
       try {
-        const createdVoucherId = await requestVoucher();
+        const createdVoucherId = await requestVoucher(account?.address);
 
         if (createdVoucherId) {
           setVoucherId(createdVoucherId);
@@ -140,18 +148,28 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
     }
   }, [account?.decodedAddress]);
 
-  useEffect(() => {
-    if (account?.decodedAddress && isAvailable && isActive && !voucherId) {
-      setIsLoading(true);
-      fetchVoucherId();
+  // useEffect(() => {
+  //   if (account?.address && isAvailable && isActive && !voucherId) {
+  //     setIsLoading(true);
+  //     fetchAccountVoucherId(externalAddress.encoded || account?.address);
+  //   }
+  // }, [isAvailable, isActive, voucherId, account?.address, externalAddress]);
+
+  const checkAndFetchVoucher = async (account: string) => {
+    if (account && isAvailable && isActive) {
+      return await fetchAccountVoucherId(account);
     }
-  }, [isAvailable, isActive, voucherId, account?.decodedAddress]);
+
+    return undefined;
+  };
 
   useEffect(() => {
     if (voucherId) {
       updateBalance();
     }
   }, [updateBalance, voucherId]);
+
+  // const fetchVoucherId = (accountAddress: string) => {};
 
   const value = {
     voucherId: isAvailable && isActive ? voucherId : undefined,
@@ -161,6 +179,7 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
     isActive,
     setIsActive,
     setIsLoading,
+    checkAndFetchVoucher,
   };
 
   return <Provider value={value}>{children}</Provider>;

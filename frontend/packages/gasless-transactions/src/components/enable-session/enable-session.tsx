@@ -10,7 +10,7 @@ type Props = {
 };
 
 function EnableSession({ type }: Props) {
-  const { isAvailable, isLoading, voucherId, setIsActive } = useGaslessTransactions();
+  const { isAvailable, isLoading, voucherId, isActive, setIsActive } = useGaslessTransactions();
   const { account } = useAccount();
   const handleSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
@@ -59,7 +59,7 @@ function EnableSession({ type }: Props) {
               label=""
               type="switch"
               disabled={!isAvailable || isLoading}
-              checked={!!voucherId}
+              checked={isActive}
               onChange={handleSwitcherChange}
             />
           </div>

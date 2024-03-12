@@ -9,21 +9,26 @@ import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
 import styles from './login.module.scss';
-import { EnableSession as EnableSignlessSession } from '@dapps-frontend/signless-transactions';
-import { EnableSession as EnableGaslessSession } from '@dapps-frontend/gasless-transactions';
-import { Checkbox } from '@gear-js/vara-ui';
+import { EnableSession as EnableSignlessSession, useSignlessTransactions } from '@dapps-frontend/signless-transactions';
+import { EnableSession as EnableGaslessSession, useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
 
 export default function Login() {
   const navigation = useNavigate();
   const { account } = useAccount();
-
+  const { session } = useSignlessTransactions();
+  const { checkAndFetchVoucher } = useGaslessTransactions();
   const [isOpen, setIsOpen] = useState(false);
 
   const openWallet = () => setIsOpen(true);
   const closeWallet = () => setIsOpen(false);
 
-  const onClickStartGame = () => {
-    navigation('/game');
+  const onClickStartGame = async () => {
+    if (account?.address) {
+      if (!session) {
+        await checkAndFetchVoucher(account?.address);
+      }
+      navigation('/game');
+    }
   };
 
   return (

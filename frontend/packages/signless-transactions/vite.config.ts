@@ -21,6 +21,7 @@ export default defineConfig({
         '@gear-js/react-hooks',
         '@polkadot/extension-dapp',
         '@polkadot/wasm-crypto',
+        '@dapps-frontend/gasless-transactions',
       ],
       output: {
         globals: { react: 'React', 'react-dom': 'ReactDOM' },

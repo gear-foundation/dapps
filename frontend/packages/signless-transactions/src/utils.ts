@@ -11,10 +11,18 @@ const MULTIPLIER = {
   HOURS: 24,
 };
 
+type Options = Partial<{
+  onSuccess: () => void;
+  onError: (error: string) => void;
+  onFinally: () => void;
+  pair?: KeyringPair;
+}>;
+
 export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVoucherEvent | 'Transfer'>(
   submitted: GearTransaction | SubmittableExtrinsic<'promise'>,
   account: KeyringPair,
   methods: E[],
+  options: Options = {},
 ): Promise<any[]> {
   const result: any = new Array(methods.length);
   return new Promise((resolve, reject) => {
@@ -22,18 +30,23 @@ export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVo
       .signAndSend(account, ({ events, status }) => {
         events.forEach(({ event }) => {
           const { method, data } = event;
-          if (methods.includes(method as E) && status.isInBlock) {
+          if ((methods.includes(method as E) && status.isInBlock) || method === 'ExtrinsicSuccess') {
+            options.onSuccess?.();
             result[methods.indexOf(method as E)] = data;
-          } else if (method === 'ExtrinsicFailed') {
+          }
+          if (method === 'ExtrinsicFailed') {
+            // options.onError?.(data.toString());
             reject(data.toString());
           }
         });
         if (status.isInBlock) {
+          options.onFinally?.();
           resolve([...result, status.asInBlock.toHex()]);
         }
       })
       .catch((err) => {
         console.log(err);
+        // options.onError?.(err);
         reject(err.message);
       });
   });
