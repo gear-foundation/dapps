@@ -22,8 +22,9 @@
 
 .disconnectButton.disconnectButton {
   display: flex;
+  justify-content: flex-start;
   align-items: center;
-  gap: 2px;
+  gap: 12px;
   background: transparent;
   margin: 0;
   padding: 0;

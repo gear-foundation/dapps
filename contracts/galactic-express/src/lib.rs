@@ -5,7 +5,7 @@ use gear_lib::tx_manager::TransactionManager;
 use gstd::{
     collections::HashMap,
     errors::Error as GstdError,
-    exec, iter, msg,
+    exec, msg,
     ops::{Add, Rem, Sub},
     prelude::*,
     ActorId,
@@ -82,8 +82,15 @@ impl Default for Stage {
 
 #[derive(Default)]
 struct Contract {
+    games: HashMap<ActorId, Game>,
+    player_to_game_id: HashMap<ActorId, ActorId>,
+}
+
+#[derive(Default)]
+pub struct Game {
     admin: ActorId,
-    session_id: u128,
+    admin_name: String,
+    bid: u128,
     altitude: u16,
     weather: Weather,
     reward: u128,
@@ -91,16 +98,25 @@ struct Contract {
 }
 
 impl Contract {
-    fn check_admin(&self) -> Result<(), Error> {
-        check_admin(self.admin)
-    }
+    fn create_new_session(&mut self, name: String) -> Result<Event, Error> {
+        let msg_src = msg::source();
+        let msg_value = msg::value();
 
-    fn create_new_session(&mut self) -> Result<Event, Error> {
-        let stage = &mut self.stage;
+        if self.player_to_game_id.contains_key(&msg_src) {
+            return Err(Error::SeveralRegistrations);
+        }
+
+        let game = self.games.entry(msg_src).or_insert_with(|| Game {
+            admin: msg_src,
+            admin_name: name,
+            bid: msg_value,
+            ..Default::default()
+        });
+
+        let stage = &mut game.stage;
 
         match stage {
             Stage::Registration(participants) => {
-                check_admin(self.admin)?;
                 participants.clear();
             }
             Stage::Results { .. } => *stage = Stage::Registration(HashMap::new()),
@@ -108,7 +124,7 @@ impl Contract {
 
         let mut random = Random::new()?;
 
-        self.weather = match random.next() % (Weather::Tornado as u8 + 1) {
+        game.weather = match random.next() % (Weather::Tornado as u8 + 1) {
             0 => Weather::Clear,
             1 => Weather::Cloudy,
             2 => Weather::Rainy,
@@ -117,57 +133,159 @@ impl Contract {
             5 => Weather::Tornado,
             _ => unreachable!(),
         };
-        self.altitude = random.generate(TURN_ALTITUDE.0, TURN_ALTITUDE.1) * TURNS as u16;
-        self.reward = random.generate(REWARD.0, REWARD.1);
+        game.altitude = random.generate(TURN_ALTITUDE.0, TURN_ALTITUDE.1) * TURNS as u16;
+        game.reward = random.generate(REWARD.0, REWARD.1);
+        self.player_to_game_id.insert(msg_src, msg_src);
 
-        Ok(Event::NewSession(Session {
-            session_id: self.session_id,
-            altitude: self.altitude,
-            weather: self.weather,
-            reward: self.reward,
-        }))
+        Ok(Event::NewSessionCreated {
+            altitude: game.altitude,
+            weather: game.weather,
+            reward: game.reward,
+            bid: msg_value,
+        })
     }
 
-    fn register(&mut self, participant: Participant) -> Result<Event, Error> {
+    fn cancel_game(&mut self) -> Result<Event, Error> {
+        let msg_src = msg::source();
+        let game = self.games.get(&msg_src).ok_or(Error::NoSuchGame)?;
+
+        match &game.stage {
+            Stage::Registration(players) => {
+                players.iter().for_each(|(id, _)| {
+                    send_value(*id, game.bid);
+                    self.player_to_game_id.remove(id);
+                });
+            }
+            Stage::Results(results) => {
+                results.rankings.iter().for_each(|(id, _)| {
+                    self.player_to_game_id.remove(id);
+                });
+            }
+        }
+
+        self.player_to_game_id.remove(&msg_src);
+        self.games.remove(&msg_src);
+        Ok(Event::GameCanceled)
+    }
+
+    fn leave_game(&mut self) -> Result<Event, Error> {
+        let msg_src = msg::source();
+        self.player_to_game_id.remove(&msg_src);
+        Ok(Event::GameLeft)
+    }
+
+    fn register(
+        &mut self,
+        creator: ActorId,
+        participant: Participant,
+        msg_source: ActorId,
+        msg_value: u128,
+    ) -> Result<Event, Error> {
+        if self.player_to_game_id.contains_key(&msg_source) {
+            return Err(Error::SeveralRegistrations);
+        }
+
+        if let Some(game) = self.games.get_mut(&creator) {
+            if msg_value != game.bid {
+                return Err(Error::WrongBid);
+            }
+            if let Stage::Results(_) = game.stage {
+                return Err(Error::SessionEnded);
+            }
+
+            let participants = game.stage.mut_participants()?;
+
+            if participants.contains_key(&msg_source) {
+                return Err(Error::AlreadyRegistered);
+            }
+
+            if participants.len() >= MAX_PARTICIPANTS - 1 {
+                return Err(Error::SessionFull);
+            }
+
+            participant.check()?;
+            participants.insert(msg_source, participant.clone());
+            self.player_to_game_id.insert(msg_source, creator);
+
+            Ok(Event::Registered(msg_source, participant))
+        } else {
+            Err(Error::NoSuchGame)
+        }
+    }
+
+    fn cancel_register(&mut self) -> Result<Event, Error> {
         let msg_source = msg::source();
 
-        if msg_source == self.admin {
-            return Err(Error::AccessDenied);
+        let creator = self
+            .player_to_game_id
+            .get(&msg_source)
+            .ok_or(Error::Unregistered)?;
+        let game = self.games.get_mut(creator).ok_or(Error::NoSuchGame)?;
+
+        if msg_source != game.admin {
+            let participants = game.stage.mut_participants()?;
+            if participants.contains_key(&msg_source) {
+                send_value(msg_source, game.bid);
+                participants.remove(&msg_source).expect("Critical error");
+                self.player_to_game_id.remove(&msg_source);
+            } else {
+                return Err(Error::NoSuchPlayer);
+            }
+            Ok(Event::RegistrationCanceled)
+        } else {
+            Err(Error::NotForAdmin)
         }
-        if let Stage::Results(_) = self.stage {
-            return Err(Error::SessionEnded);
+    }
+    fn delete_player(&mut self, player_id: ActorId) -> Result<Event, Error> {
+        let msg_source = msg::source();
+
+        if let Some(game) = self.games.get_mut(&msg_source) {
+            if let Stage::Results(_) = game.stage {
+                return Err(Error::SessionEnded);
+            }
+
+            let participants = game.stage.mut_participants()?;
+
+            if participants.contains_key(&player_id) {
+                send_value(player_id, game.bid);
+                participants.remove(&player_id).expect("Critical error");
+                self.player_to_game_id.remove(&player_id);
+            } else {
+                return Err(Error::NoSuchPlayer);
+            }
+
+            Ok(Event::PlayerDeleted { player_id })
+        } else {
+            Err(Error::NoSuchGame)
         }
-
-        let participants = self.stage.mut_participants()?;
-
-        if participants.len() >= PARTICIPANTS - 1 {
-            return Err(Error::SessionFull);
-        }
-
-        participant.check()?;
-        participants.insert(msg_source, participant);
-
-        Ok(Event::Registered(msg_source, participant))
     }
 
-    async fn start_game(&mut self, mut participant: Participant) -> Result<Event, Error> {
-        self.check_admin()?;
+    async fn start_game(&mut self, fuel_amount: u8, payload_amount: u8) -> Result<Event, Error> {
+        let msg_source = msg::source();
 
-        let participants = self.stage.mut_participants()?;
+        let game = self.games.get_mut(&msg_source).ok_or(Error::NoSuchGame)?;
+
+        if fuel_amount > MAX_FUEL || payload_amount > MAX_PAYLOAD {
+            return Err(Error::FuelOrPayloadOverload);
+        }
+        let participant = Participant {
+            id: msg_source,
+            name: game.admin_name.clone(),
+            fuel_amount,
+            payload_amount,
+        };
+
+        let participants = game.stage.mut_participants()?;
 
         if participants.is_empty() {
             return Err(Error::NotEnoughParticipants);
         }
-
-        participant.check()?;
+        participants.insert(msg_source, participant);
 
         let mut random = Random::new()?;
         let mut turns = HashMap::new();
 
-        for (actor, participant) in participants
-            .into_iter()
-            .chain(iter::once((&msg::source(), &mut participant)))
-        {
+        for (actor, participant) in participants.into_iter() {
             let mut actor_turns = Vec::with_capacity(TURNS);
             let mut remaining_fuel = participant.fuel_amount;
 
@@ -176,7 +294,7 @@ impl Contract {
                     turn_index,
                     remaining_fuel,
                     &mut random,
-                    self.weather,
+                    game.weather,
                     participant.payload_amount,
                 ) {
                     Ok(fuel_left) => {
@@ -209,7 +327,7 @@ impl Contract {
                         Turn::Alive {
                             fuel_left,
                             payload_amount,
-                        } => (*payload_amount as u128 + *fuel_left as u128) * self.altitude as u128,
+                        } => (*payload_amount as u128 + *fuel_left as u128) * game.altitude as u128,
                         Turn::Destroyed(_) => 0,
                     },
                 )
@@ -229,23 +347,37 @@ impl Contract {
             }
         }
 
+        let max_value = scores.iter().map(|(_, value)| value).max().unwrap();
+        let winners: Vec<_> = scores
+            .iter()
+            .filter_map(|(actor_id, value)| {
+                if value == max_value {
+                    Some(*actor_id)
+                } else {
+                    None
+                }
+            })
+            .collect();
+        let prize = game.bid * scores.len() as u128 / winners.len() as u128;
+
+        if game.bid != 0 {
+            winners.iter().for_each(|id| {
+                send_value(*id, prize);
+            });
+        }
+        let participants = participants
+            .iter()
+            .map(|(id, participant)| (*id, participant.clone()))
+            .collect();
+
         let results = Results {
             turns: io_turns,
-            rankings: scores,
+            rankings: scores.clone(),
+            participants,
         };
-
-        self.session_id = self.session_id.wrapping_add(1);
-        self.stage = Stage::Results(results.clone());
+        game.stage = Stage::Results(results.clone());
 
         Ok(Event::GameFinished(results))
-    }
-}
-
-fn check_admin(admin: ActorId) -> Result<(), Error> {
-    if msg::source() != admin {
-        Err(Error::AccessDenied)
-    } else {
-        Ok(())
     }
 }
 
@@ -294,6 +426,12 @@ fn turn(
     Ok(new_remaining_fuel)
 }
 
+fn send_value(destination: ActorId, value: u128) {
+    if value != 0 {
+        msg::send_with_gas(destination, "", 0, value).expect("Error in sending value");
+    }
+}
+
 #[no_mangle]
 extern fn init() {
     msg::reply(process_init(), 0).expect("failed to encode or reply from `main()`");
@@ -303,7 +441,6 @@ fn process_init() -> Result<(), Error> {
     unsafe {
         STATE = Some((
             Contract {
-                admin: msg::source(),
                 ..Default::default()
             },
             TransactionManager::new(),
@@ -323,71 +460,101 @@ async fn process_main() -> Result<Event, Error> {
     let (contract, _tx_manager) = state_mut()?;
 
     match action {
-        Action::ChangeAdmin(actor) => {
-            contract.check_admin()?;
-
-            let old_admin = contract.admin;
-
-            contract.admin = actor;
-
-            Ok(Event::AdminChanged(old_admin, contract.admin))
+        Action::CreateNewSession { name } => contract.create_new_session(name),
+        Action::Register {
+            creator,
+            participant,
+        } => {
+            let msg_source = msg::source();
+            let msg_value = msg::value();
+            let reply = contract.register(creator, participant, msg_source, msg_value);
+            if reply.is_err() {
+                send_value(msg_source, msg_value);
+            }
+            reply
         }
-        Action::CreateNewSession => contract.create_new_session(),
-        Action::Register(participant) => contract.register(participant),
-        Action::StartGame(participant) => contract.start_game(participant).await,
+        Action::CancelRegistration => contract.cancel_register(),
+        Action::DeletePlayer { player_id } => contract.delete_player(player_id),
+        Action::CancelGame => contract.cancel_game(),
+        Action::LeaveGame => contract.leave_game(),
+        Action::StartGame {
+            fuel_amount,
+            payload_amount,
+        } => contract.start_game(fuel_amount, payload_amount).await,
     }
 }
 
 #[no_mangle]
 extern fn state() {
     let (state, _tx_manager) = unsafe { STATE.take().expect("Unexpected error in taking state") };
-    msg::reply::<State>(state.into(), 0)
-        .expect("Failed to encode or reply with `State` from `state()`");
+    let query: StateQuery = msg::load().expect("Unable to load the state query");
+    let reply = match query {
+        StateQuery::All => StateReply::All(state.into()),
+        StateQuery::GetGame { player_id } => {
+            let game_state = state
+                .player_to_game_id
+                .get(&player_id)
+                .and_then(|creator_id| state.games.get(creator_id))
+                .map(|game| {
+                    let stage = match &game.stage {
+                        Stage::Registration(participants_data) => StageState::Registration(
+                            participants_data.clone().into_iter().collect(),
+                        ),
+                        Stage::Results(results) => StageState::Results(results.clone()),
+                    };
+
+                    GameState {
+                        admin: game.admin,
+                        admin_name: game.admin_name.clone(),
+                        altitude: game.altitude,
+                        weather: game.weather,
+                        reward: game.reward,
+                        stage,
+                        bid: game.bid,
+                    }
+                });
+
+            StateReply::Game(game_state)
+        }
+    };
+    msg::reply(reply, 0).expect("Unable to share the state");
 }
 
 impl From<Contract> for State {
     fn from(value: Contract) -> Self {
         let Contract {
-            admin,
-            session_id,
-            altitude,
-            weather,
-            reward,
-            stage,
+            games,
+            player_to_game_id,
         } = value;
 
-        let is_session_ended: bool;
-        let participants: Vec<(ActorId, Participant)>;
-        let turns: Vec<Vec<(ActorId, Turn)>>;
-        let rankings: Vec<(ActorId, u128)>;
+        let games = games
+            .into_iter()
+            .map(|(id, game)| {
+                let stage = match game.stage {
+                    Stage::Registration(participants_data) => {
+                        StageState::Registration(participants_data.into_iter().collect())
+                    }
+                    Stage::Results(results) => StageState::Results(results),
+                };
 
-        match stage {
-            Stage::Registration(participants_data) => {
-                is_session_ended = false;
-                participants = participants_data.into_iter().collect();
-                turns = vec![vec![]];
-                rankings = Vec::new();
-            }
-            Stage::Results(results) => {
-                is_session_ended = true;
-                participants = Vec::new();
-                turns = results.turns;
-                rankings = results.rankings;
-            }
-        };
+                let game_state = GameState {
+                    admin: game.admin,
+                    admin_name: game.admin_name.clone(),
+                    altitude: game.altitude,
+                    weather: game.weather,
+                    reward: game.reward,
+                    stage,
+                    bid: game.bid,
+                };
+                (id, game_state)
+            })
+            .collect();
+
+        let player_to_game_id = player_to_game_id.into_iter().collect();
 
         Self {
-            admin,
-            session: Session {
-                session_id,
-                altitude,
-                weather,
-                reward,
-            },
-            is_session_ended,
-            participants,
-            turns,
-            rankings,
+            games,
+            player_to_game_id,
         }
     }
 }

@@ -1,6 +1,4 @@
-import { useFetchVoucher as useFetchVoucherHook } from './hooks';
-import { InitGasslessTransactions } from './types';
+import { GaslessTransactionsProvider, useGaslessTransactions } from './context';
+import { GaslessTransactions, EnableSession } from './components';
 
-export const initGasslessTransactions = ({ programId, backendAddress, voucherLimit }: InitGasslessTransactions) => ({
-  useFetchVoucher: () => useFetchVoucherHook({ programId, backendAddress, voucherLimit }),
-});
+export { GaslessTransactionsProvider, useGaslessTransactions, GaslessTransactions, EnableSession };

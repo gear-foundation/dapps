@@ -6,6 +6,7 @@ import {
   AccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
+import { AvailableBalanceProvider } from '@dapps-frontend/hooks';
 import { Alert, alertStyles } from '@gear-js/ui';
 import { ADDRESS } from 'consts';
 
@@ -21,7 +22,7 @@ function AlertProvider({ children }: ProviderProps) {
   );
 }
 
-const providers = [BrowserRouter, AlertProvider, ApiProvider, AccountProvider];
+const providers = [BrowserRouter, AlertProvider, ApiProvider, AccountProvider, AvailableBalanceProvider];
 
 function withProviders(Component: ComponentType) {
   return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
