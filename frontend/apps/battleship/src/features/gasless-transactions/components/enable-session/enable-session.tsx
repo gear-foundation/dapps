@@ -4,31 +4,22 @@ import styles from './enable-session.module.css';
 import { useGaslessTransactions } from '../..';
 import { ReactComponent as GaslessSVG } from '../../assets/icons/gas-station-line.svg';
 import { ReactComponent as PowerSVG } from '../../assets/icons/power.svg';
+import { ChangeEvent } from 'react';
 
 type Props = {
   type: 'button' | 'switcher';
 };
 
 function EnableSession({ type }: Props) {
-  const { isAvailable, isLoading, voucherId, setIsActive } = useGaslessTransactions();
   const { account } = useAccount();
-  const handleSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setIsActive(true);
-    } else {
-      setIsActive(false);
-    }
-  };
+  const { isAvailable, isLoading, voucherId, isEnabled, setIsEnabled } = useGaslessTransactions();
 
-  const handleActivateSession = () => {
-    setIsActive(true);
-  };
+  const handleSwitchChange = ({ target }: ChangeEvent<HTMLInputElement>) => setIsEnabled(target.checked);
 
-  const handleDisableSession = () => {
-    setIsActive(false);
-  };
+  const handleEnableButtonClick = () => setIsEnabled(true);
+  const handleDisableButtonClick = () => setIsEnabled(false);
 
-  return account?.decodedAddress ? (
+  return account ? (
     <>
       {type === 'button' && (
         <>
@@ -38,7 +29,7 @@ function EnableSession({ type }: Props) {
               text="Disable"
               color="light"
               className={styles.closeButton}
-              onClick={handleDisableSession}
+              onClick={handleDisableButtonClick}
             />
           ) : (
             <Button
@@ -47,11 +38,12 @@ function EnableSession({ type }: Props) {
               text="Enable gasless transactions"
               disabled={!isAvailable || isLoading}
               className={styles.enableButton}
-              onClick={handleActivateSession}
+              onClick={handleEnableButtonClick}
             />
           )}
         </>
       )}
+
       {type === 'switcher' && (
         <div className={styles.switchContainer}>
           <div className={styles.switcherWrapper}>
@@ -59,8 +51,8 @@ function EnableSession({ type }: Props) {
               label=""
               type="switch"
               disabled={!isAvailable || isLoading}
-              checked={!!voucherId}
-              onChange={handleSwitcherChange}
+              checked={isEnabled}
+              onChange={handleSwitchChange}
             />
           </div>
           <div className={styles.contentWrapper}>
@@ -69,6 +61,7 @@ function EnableSession({ type }: Props) {
               <span className={styles.heading}>Enable gasless</span>
               {isLoading && <span className={styles.loader} />}
             </div>
+
             {!isAvailable && (
               <span className={styles.descr}>
                 <span>Gas-free functionality is disabled at the moment.</span>

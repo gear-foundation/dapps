@@ -1,8 +1,10 @@
-import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
+import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { Value } from './types';
 import { DEFAULT_VALUES } from './consts';
-import { useAccount, useBalance, useBalanceFormat } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useBalance, useBalanceFormat } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
+import { getVoucherId, getVoucherStatus } from './utils';
+import { useLoading } from './hooks';
 
 const GaslessTransactionsContext = createContext<Value>(DEFAULT_VALUES);
 const { Provider } = GaslessTransactionsContext;
@@ -16,152 +18,52 @@ type Props = {
 
 function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, children }: Props) {
   const { account } = useAccount();
-  const { getFormattedBalanceValue } = useBalanceFormat();
-  const [voucherId, setVoucherId] = useState(undefined);
-  const [isRequestingVoucher, setIsRequestingVoucher] = useState(false);
-  const [isUpdatingVoucher, setIsUpdatingVoucher] = useState(false);
+  const { getChainBalanceValue } = useBalanceFormat();
+  const alert = useAlert();
+
+  const [voucherId, setVoucherId] = useState<HexString>();
+  const { balance } = useBalance(voucherId);
+
+  const [isLoading, , withLoading] = useLoading();
   const [isAvailable, setIsAvailable] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isActive, setIsActive] = useState(false);
-  const { balance } = useBalance(voucherId || account?.decodedAddress);
+  const [isEnabled, setIsEnabled] = useState(false);
 
   const requestVoucher = async () => {
-    try {
-      const response = await fetch(`${backendAddress}gasless/voucher/request`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ account: account?.address, program: programId }),
-      });
+    if (!account) throw new Error('Account is not found');
 
-      const data = await response.json();
-      setIsLoading(false);
-
-      if (data?.error) {
-        console.log(`Voucher is not fetched - ${data.error}`);
-        setIsActive(false);
-
-        return undefined;
-      }
-
-      if (!data.voucherId) {
-        setIsActive(false);
-        return undefined;
-      }
-
-      return data.voucherId;
-    } catch (error: any) {
-      console.log('Error when fetching voucher');
-      console.log(error);
-      setIsActive(false);
-      setIsLoading(false);
-
-      return undefined;
-    }
+    withLoading(
+      getVoucherId(backendAddress, account.address, programId)
+        .then((result) => setVoucherId(result))
+        .catch(({ message }: Error) => alert.error(message)),
+    );
   };
 
-  const fetchVoucherId = async () => {
-    try {
-      setIsRequestingVoucher(true);
-      const createdVoucherId = await requestVoucher();
+  useEffect(() => {
+    if (!account) return setIsAvailable(false);
 
-      if (createdVoucherId) {
-        setVoucherId(createdVoucherId);
-      }
+    withLoading(
+      getVoucherStatus(backendAddress, programId)
+        .then((result) => setIsAvailable(result))
+        .catch(({ message }: Error) => alert.error(message)),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account]);
 
-      setIsRequestingVoucher(false);
-    } catch (error) {
-      setIsRequestingVoucher(false);
-    }
-  };
+  useEffect(() => {
+    if (!balance) return;
 
-  const updateBalance = useCallback(async () => {
-    const formattedBalance = balance && getFormattedBalanceValue(balance.toString()).toFixed();
-    const isBalanceLow = Number(formattedBalance) < voucherLimit;
+    const isEnoughBalance = getChainBalanceValue(voucherLimit).isLessThan(balance.toString());
+    if (isEnoughBalance) return;
 
-    if (isBalanceLow && voucherId) {
-      setIsUpdatingVoucher(true);
-
-      try {
-        const createdVoucherId = await requestVoucher();
-
-        if (createdVoucherId) {
-          setVoucherId(createdVoucherId);
-        }
-
-        setIsUpdatingVoucher(false);
-      } catch (error) {
-        console.log('error');
-      }
-    }
-
+    requestVoucher();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [balance]);
 
-  const checkProgramStatus = async () => {
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(`${backendAddress}gasless/voucher/${programId}/status`);
-
-      const data = await response.json();
-      setIsLoading(false);
-
-      if (data.enabled) {
-        setIsAvailable(true);
-        return;
-      }
-
-      if (!data.enabled) {
-        setIsAvailable(false);
-        return;
-      }
-
-      console.log(`Backend is not available`);
-      setIsAvailable(false);
-
-      console.log(data);
-    } catch (error: any) {
-      console.log('Error when fetching voucher');
-      console.log(error);
-      setIsAvailable(false);
-      setIsLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (account?.decodedAddress) {
-      setIsAvailable(false);
-      setIsActive(false);
-      setVoucherId(undefined);
-
-      checkProgramStatus();
-    }
-  }, [account?.decodedAddress]);
-
-  useEffect(() => {
-    if (account?.decodedAddress && isAvailable && isActive && !voucherId) {
-      setIsLoading(true);
-      fetchVoucherId();
-    }
-  }, [isAvailable, isActive, voucherId, account?.decodedAddress]);
-
-  useEffect(() => {
-    if (voucherId) {
-      updateBalance();
-    }
-  }, [updateBalance, voucherId]);
-
-  const value = {
-    voucherId: isAvailable && isActive ? voucherId : undefined,
-    isLoadingVoucher: isRequestingVoucher || isUpdatingVoucher,
-    isAvailable,
-    isLoading,
-    isActive,
-    setIsActive,
-    setIsLoading,
-  };
+  const value = useMemo(
+    () => ({ voucherId, isAvailable, isLoading, isEnabled, requestVoucher, setIsEnabled }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [voucherId, isAvailable, isLoading, isEnabled, account],
+  );
 
   return <Provider value={value}>{children}</Provider>;
 }
