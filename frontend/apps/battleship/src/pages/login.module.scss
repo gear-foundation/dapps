@@ -23,9 +23,14 @@
 }
 
 .controlsWrapper {
+  @include gap(48px);
   width: 80%;
   position: relative;
   z-index: 1;
+
+  > div {
+    @include gap(16px);
+  }
 }
 
 .startGameButton {

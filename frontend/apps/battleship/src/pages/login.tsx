@@ -39,21 +39,18 @@ export default function Login() {
             </Text>
           </div>
         </div>
-        <>
-          <div className={styles.controlsWrapper}>
-            <Button
-              className={(buttonVariants(), styles.startGameButton)}
-              onClick={account ? onClickStartGame : openWallet}>
-              {account ? 'Start the Game' : 'Connect wallet'}
-            </Button>
-          </div>
-          <div className={styles.controlsWrapper}>
+        <div className={styles.controlsWrapper}>
+          <Button
+            className={(buttonVariants(), styles.startGameButton)}
+            onClick={account ? onClickStartGame : openWallet}>
+            {account ? 'Start the Game' : 'Connect wallet'}
+          </Button>
+
+          <div>
+            <EnableGaslessSession type="switcher" />
             <EnableSignlessSession type="switcher" />
           </div>
-          <div className={styles.controlsWrapper}>
-            <EnableGaslessSession type="switcher" />
-          </div>
-        </>
+        </div>
 
         <div className={styles.bottom}>
           <img src={battleshipImage} alt="" width={300} />
