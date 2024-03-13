@@ -9,8 +9,8 @@ import { useWallet } from '../../hooks';
 
 import styles from './WalletChange.module.scss';
 import { MenuOptions } from '@dapps-frontend/ui';
-import { SignlessTransactions } from '@dapps-frontend/signless-transactions';
-import { GaslessTransactions } from '@dapps-frontend/gasless-transactions';
+import { SignlessTransactions } from '@/features/signless-transactions';
+import { GaslessTransactions } from '@/features/gasless-transactions';
 
 type Props = {
   onClose(): void;

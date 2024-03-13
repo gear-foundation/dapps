@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSignlessTransactions } from '@dapps-frontend/signless-transactions';
+import { useSignlessTransactions } from '@/features/signless-transactions';
 import { Text } from '@/components/ui/text';
 import { GameEndModal, Map } from '@/features/game';
 import styles from './GameProcess.module.scss';
@@ -8,7 +8,7 @@ import { useGame, useGameMessage, usePending } from '../../hooks';
 import { getFormattedTime } from '../../utils';
 import { Loader } from '@/components';
 import { useCheckBalance } from '@dapps-frontend/hooks';
-import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
+import { useGaslessTransactions } from '@/features/gasless-transactions';
 
 export default function GameProcess() {
   const { voucherId, isLoadingVoucher } = useGaslessTransactions();

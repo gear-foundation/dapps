@@ -9,9 +9,8 @@ import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
 import styles from './login.module.scss';
-import { EnableSession as EnableSignlessSession } from '@dapps-frontend/signless-transactions';
-import { EnableSession as EnableGaslessSession } from '@dapps-frontend/gasless-transactions';
-import { Checkbox } from '@gear-js/vara-ui';
+import { EnableSession as EnableSignlessSession } from '@/features/signless-transactions';
+import { EnableSession as EnableGaslessSession } from '@/features/gasless-transactions';
 
 export default function Login() {
   const navigation = useNavigate();
