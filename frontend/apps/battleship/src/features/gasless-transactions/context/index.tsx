@@ -31,11 +31,7 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   const requestVoucher = async () => {
     if (!account) throw new Error('Account is not found');
 
-    withLoading(
-      getVoucherId(backendAddress, account.address, programId)
-        .then((result) => setVoucherId(result))
-        .catch(({ message }: Error) => alert.error(message)),
-    );
+    return withLoading(getVoucherId(backendAddress, account.address, programId).then((result) => setVoucherId(result)));
   };
 
   useEffect(() => {
@@ -55,9 +51,15 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
     const isEnoughBalance = getChainBalanceValue(voucherLimit).isLessThan(balance.toString());
     if (isEnoughBalance) return;
 
-    requestVoucher();
+    requestVoucher().catch(({ message }: Error) => alert.error(message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [balance]);
+
+  useEffect(() => {
+    if (isEnabled) return;
+
+    setVoucherId(undefined);
+  }, [isEnabled]);
 
   const value = useMemo(
     () => ({ voucherId, isAvailable, isLoading, isEnabled, requestVoucher, setIsEnabled }),

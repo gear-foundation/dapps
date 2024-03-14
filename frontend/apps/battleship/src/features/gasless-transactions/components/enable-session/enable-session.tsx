@@ -12,7 +12,7 @@ type Props = {
 
 function EnableSession({ type }: Props) {
   const { account } = useAccount();
-  const { isAvailable, isLoading, voucherId, isEnabled, setIsEnabled } = useGaslessTransactions();
+  const { isAvailable, isLoading, isEnabled, setIsEnabled } = useGaslessTransactions();
 
   const handleSwitchChange = ({ target }: ChangeEvent<HTMLInputElement>) => setIsEnabled(target.checked);
 
@@ -23,7 +23,7 @@ function EnableSession({ type }: Props) {
     <>
       {type === 'button' && (
         <>
-          {voucherId ? (
+          {isEnabled ? (
             <Button
               icon={PowerSVG}
               text="Disable"

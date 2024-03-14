@@ -3,6 +3,6 @@ export const DEFAULT_VALUES = {
   isAvailable: false,
   isLoading: false,
   isEnabled: false,
-  requestVoucher: () => {},
+  requestVoucher: async () => {},
   setIsEnabled: () => {},
 };

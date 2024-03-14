@@ -5,6 +5,6 @@ export type Value = {
   isAvailable: boolean;
   isLoading: boolean;
   isEnabled: boolean;
-  requestVoucher: () => void;
+  requestVoucher: () => Promise<void>;
   setIsEnabled: (value: boolean) => void;
 };

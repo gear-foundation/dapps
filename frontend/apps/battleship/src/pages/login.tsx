@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useAlert } from '@gear-js/react-hooks';
 import battleshipImage from '@/assets/images/illustration-battleship.png';
 import { Button, buttonVariants } from '@/components/ui/button/button';
 import { Heading } from '@/components/ui/heading';
@@ -10,19 +10,27 @@ import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
 import styles from './login.module.scss';
 import { EnableSession as EnableSignlessSession } from '@/features/signless-transactions';
-import { EnableSession as EnableGaslessSession } from '@/features/gasless-transactions';
+import { EnableSession as EnableGaslessSession, useGaslessTransactions } from '@/features/gasless-transactions';
 
 export default function Login() {
-  const navigation = useNavigate();
+  const navigate = useNavigate();
   const { account } = useAccount();
+  const alert = useAlert();
+
+  const gasless = useGaslessTransactions();
 
   const [isOpen, setIsOpen] = useState(false);
-
   const openWallet = () => setIsOpen(true);
   const closeWallet = () => setIsOpen(false);
 
   const onClickStartGame = () => {
-    navigation('/game');
+    // withVoucherRequest? to handle condition inside
+    if (!gasless.isEnabled || gasless.voucherId) return navigate('/game');
+
+    gasless
+      .requestVoucher()
+      .then(() => navigate('/game'))
+      .catch(({ message }: Error) => alert.error(message));
   };
 
   return (
