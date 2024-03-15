@@ -1,9 +1,9 @@
-import { GameInit } from '@/components/sections/game/game-init';
+import { Game } from '@/feature/game/';
 
-export default function Home() {
+export default function GamePage() {
   return (
     <>
-      <GameInit />
+      <Game />
     </>
   );
 }

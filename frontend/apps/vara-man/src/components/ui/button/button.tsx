@@ -9,6 +9,7 @@ export const buttonVariants = cva(styles.base, {
       primary: styles.primary,
       white: styles.white,
       black: styles.black,
+      gray: styles.gray,
       outline: styles.outline,
       text: styles.text,
     },
