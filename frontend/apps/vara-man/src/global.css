@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 @font-face {
-  font-family: 'Kanit';
+  font-family: 'Anuphan', sans-serif;
   font-weight: 200;
   src: url('@/assets/fonts/kanit-250.woff2') format('woff2');
   font-display: swap;
@@ -11,11 +11,12 @@
 
 @layer base {
   html {
-    @apply bg-[#1e1e1e] font-kanit selection:bg-primary/20;
+    @apply bg-[#fffff] font-anuphan selection:bg-primary/20;
   }
 
   body {
-    @apply font-kanit !important;
+    @apply font-anuphan !important;
+    background: url("@/assets/images/background.jpg") center ;
   }
 
   .container {
@@ -25,11 +26,11 @@
 
 @layer components {
   .typo-h1 {
-    @apply font-kanit text-[72px] leading-[86px] font-medium;
+    @apply font-anuphan text-[72px] leading-[86px] font-medium;
   }
 
   .typo-h2 {
-    @apply font-kanit text-[40px] leading-[48px] font-bold tracking-[0.04em];
+    @apply font-anuphan text-[40px] leading-[48px] font-bold tracking-[0.04em];
   }
 
   .btn {
