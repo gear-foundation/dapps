@@ -1,34 +1,40 @@
-import { Button, Input, Modal, ModalProps } from '@gear-js/vara-ui';
+import { Button, Input, Modal, ModalProps, Select } from '@gear-js/vara-ui';
 import { useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { GearKeyring, decodeAddress } from '@gear-js/api';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
-import { useEffect, useMemo, useState } from 'react';
+import { ChangeEvent, useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSignlessTransactions } from '../../context';
 import { getMilliseconds } from '../../utils';
-import { EnableSessionModal } from '../enable-session-modal';
 import styles from './create-session-modal.module.css';
 import { SignlessParams } from '../signless-params-list';
 import { AccountPair } from '../account-pair';
+import {
+  ACTIONS,
+  BALANCE_VALUE_TO_ISSUE_VOUCHER,
+  BALANCE_VALUE_TO_START_GAME,
+  DEFAULT_VALUES,
+  DURATIONS,
+  REQUIRED_MESSAGE,
+} from '@/consts';
 
 type Props = Pick<ModalProps, 'close'>;
-
-const DEFAULT_VALUES = { password: '' };
-const REQUIRED_MESSAGE = 'Field is required';
-
-const DURATION_MINUTES = 5;
-const BALANCE_VALUE_TO_START_GAME = 20;
-const BALANCE_VALUE_TO_ISSUE_VOUCHER = 5;
-const ACTIONS = ['StartGame', 'Turn'];
 
 function CreateSessionModal({ close }: Props) {
   const { api } = useApi();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
-
-  const { register, handleSubmit, formState } = useForm({ defaultValues: DEFAULT_VALUES });
+  const [durationMinutes, setDurationMinutes] = useState<number>(DURATIONS[0].value);
+  const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
-  const { savePair, storagePair, voucherBalance, createSession, updateSession } = useSignlessTransactions();
+  const {
+    savePair,
+    storagePair,
+    voucherBalance,
+    createSession,
+    updateSession,
+    pair: existingPair,
+  } = useSignlessTransactions();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const [pair, setPair] = useState<KeyringPair | KeyringPair$Json | undefined>(storagePair);
 
@@ -38,9 +44,6 @@ function CreateSessionModal({ close }: Props) {
     GearKeyring.create('signlessPair').then((result) => setPair(result.keyring));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const [isEnableModalOpen, setIsEnableModalOpen] = useState(false);
-  const openEnableModal = () => setIsEnableModalOpen(true);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -67,13 +70,24 @@ function CreateSessionModal({ close }: Props) {
     setIsLoading(true);
 
     const { password } = values;
-    const duration = getMilliseconds(DURATION_MINUTES);
+    const duration = getMilliseconds(durationMinutes);
     const key = decodeAddress(pair.address);
     const allowedActions = ACTIONS;
 
     const onSuccess = async () => {
       if (storagePair) {
-        openEnableModal();
+        if (!existingPair) {
+          try {
+            const pairFromStorageJSON = GearKeyring.fromJson(storagePair, password);
+            savePair(pairFromStorageJSON as KeyringPair, password);
+            close();
+          } catch (error) {
+            const message = String(error);
+            setError('password', { message });
+          }
+        } else {
+          close();
+        }
       } else {
         savePair(pair as KeyringPair, password);
         close();
@@ -90,9 +104,13 @@ function CreateSessionModal({ close }: Props) {
     createSession({ duration, key, allowedActions }, issueVoucherValue, { onSuccess, onFinally });
   };
 
+  const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    setDurationMinutes(Number(e.target.value));
+  };
+
   return (
     <>
-      <Modal heading="Enable Signless Session" close={close}>
+      <Modal heading={`${storagePair ? 'Resume' : 'Enable'} Signless Session`} close={close}>
         <SignlessParams
           params={[
             {
@@ -103,15 +121,12 @@ function CreateSessionModal({ close }: Props) {
               heading: 'Voucher to issue:',
               value: `${formattedIssueVoucherValue.value} ${formattedIssueVoucherValue.unit}`,
             },
-            {
-              heading: 'Session duration:',
-              value: `${DURATION_MINUTES} min`,
-            },
           ]}
         />
 
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-          {!storagePair && (
+          <Select label="Session duration" options={DURATIONS} onChange={handleSelectChange} />
+          {(!storagePair || !existingPair) && (
             <Input
               type="password"
               label="Set password"
@@ -122,12 +137,9 @@ function CreateSessionModal({ close }: Props) {
               })}
             />
           )}
-
           <Button type="submit" text="Create Signless session" className={styles.button} isLoading={isLoading} />
         </form>
       </Modal>
-
-      {isEnableModalOpen && <EnableSessionModal close={close} />}
     </>
   );
 }
