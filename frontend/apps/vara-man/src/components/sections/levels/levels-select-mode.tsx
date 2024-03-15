@@ -1,71 +1,105 @@
-import { LevelsEasy } from '@/components/sections/levels/levels-easy';
-import { LevelsMedium } from '@/components/sections/levels/levels-medium';
-import { LevelsHard } from '@/components/sections/levels/levels-hard';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useApp } from '@/app/context/ctx-app';
+import { useGameMessage } from '@/app/hooks/use-game';
 import { cn } from '@/app/utils';
+import { Button } from '@/components/ui/button';
 
-import TabActiveImage1 from '@/assets/images/levels/tab-1-active.png';
-import TabActiveImage2 from '@/assets/images/levels/tab-2-active.png';
-import TabActiveImage3 from '@/assets/images/levels/tab-3-active.png';
-import TabImage1 from '@/assets/images/levels/tab-1.png';
-import TabImage2 from '@/assets/images/levels/tab-2.png';
-import TabImage3 from '@/assets/images/levels/tab-3.png';
+import { Icons } from '@/components/ui/icons';
+import { useAccount } from '@gear-js/react-hooks';
+import { useNavigate } from 'react-router-dom';
 
-const nav = [
+const levels = [
   {
     title: 'Easy',
-    card: <LevelsEasy />,
-    tab_img: TabImage1,
-    tab_img_active: TabActiveImage1,
+    enemies: 4,
+    speed: 4,
+    color: "[--stats-theme:#00FFC4]",
   },
   {
     title: 'Medium',
-    card: <LevelsMedium />,
-    tab_img: TabImage2,
-    tab_img_active: TabActiveImage2,
-    disabled: true,
+    enemies: 8,
+    speed: 4,
+    color: "[--stats-theme:#5984BE]",
   },
   {
     title: 'Hard',
-    card: <LevelsHard />,
-    tab_img: TabImage3,
-    tab_img_active: TabActiveImage3,
-    disabled: true,
+    enemies: 8,
+    speed: 8,
+    color: "[--stats-theme:#EB5757]",
   },
-];
+]
 
 type LevelsChooseProps = BaseComponentProps & {};
 
 export function LevelsSelectMode({ children }: LevelsChooseProps) {
+  const { isPending, setIsPending } = useApp()
+  const navigate = useNavigate()
+  const { account } = useAccount()
+  const handleMessage = useGameMessage()
+
+  const onStartGame = (level: string) => {
+    if (account?.decodedAddress && !isPending) {
+      setIsPending(true)
+
+      handleMessage({
+        payload: {
+          StartSingleGame: { level },
+        },
+        onSuccess: () => {
+          navigate('/game')
+          setIsPending(false)
+        },
+        onError: () => setIsPending(false),
+      })
+    }
+  }
+
   return (
-    <Tabs defaultValue={nav[0].title} className="relative grow flex">
-      <div className="relative z-1 basis-[140px] grid">
-        <TabsList className="flex flex-col space-y-5 mlgh:mt-0 xxl:mt-12 items-start">
-          {nav.map((m, i) => (
-            <TabsTrigger value={m.title} key={i + m.title} className={cn('relative w-full p-4 text-center group')}>
-              <img
-                className="absolute inset-0 w-full h-full group-radix-state-active:hidden"
-                src={m.tab_img}
-                alt="Tab"
-              />
-              <img
-                className="absolute inset-0 w-full h-full hidden group-radix-state-active:block"
-                src={m.tab_img_active}
-                alt="Tab"
-              />
-              <div className="relative z-1">
-                <div className="bg-transparent aspect-[1/1]" />
-                <h3 className="mt-2 font-semibold font-kanit tracking-[0.04em]">{m.title}</h3>
+    <div className="flex flex-col justify-center items-center grow h-full">
+      <h2 className="typo-h2">Difficulty levels</h2>
+      <p className="text-[#555756] mt-3">Think carefully and click on any of the difficulty levels.</p>
+
+      <div className="flex gap-7 mt-10 justify-between">
+        {levels.map(item => {
+          return (
+            <div
+              key={item.title}
+              className={cn(
+                "border rounded-2xl text-center cursor-pointer",
+                item.color,
+                "border-[var(--stats-theme)]",
+                isPending && "bg-[#fafafa] cursor-default",
+              )}
+              onClick={() => onStartGame(item.title)}
+            >
+              <h3 className="text-xl font-semibold p-6">{item.title}</h3>
+              <hr className="bg-[var(--stats-theme)] h-[1px] border-none" />
+              <div className='p-10 flex flex-col gap-4'>
+                <div>
+                  {item.enemies} enemies
+
+                  <div className="flex mt-2">
+                    {Array.from({ length: 8 }).map((_, index) => {
+                      return index < item.enemies ? <Icons.skull key={index} /> : <Icons.skullDisable key={index} />;
+                    })}
+                  </div>
+                </div>
+                <div>
+                  Low enemy speed
+                  <div className="flex mt-2">
+                    {Array.from({ length: 8 }).map((_, index) => {
+                      return index < item.speed ? <Icons.speedLevel key={index} /> : <Icons.speedLevelDisable key={index} />;
+                    })}
+                  </div>
+                </div>
               </div>
-            </TabsTrigger>
-          ))}
-        </TabsList>
+            </div>
+          )
+        })}
       </div>
-      {nav.map((m, i) => (
-        <TabsContent value={m.title} key={m.title + i} className="ml-6 grow">
-          <div className="flex h-full"> {m.card}</div>
-        </TabsContent>
-      ))}
-    </Tabs>
+
+      <div className="mt-5">
+        <Button variant="gray" className="w-62" onClick={() => navigate("/")}>Back</Button>
+      </div>
+    </div >
   );
 }
