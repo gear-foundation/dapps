@@ -1,8 +1,12 @@
 import { createContext, ReactNode, useContext, useState } from 'react';
-import { IGame, IGameConfig, IGameInstance, IGameStatus, IPlayer, IPlayerInfo } from '@/app/types/game';
+import { GameState, IGame, IGameConfig, IGameStatus, IPlayer, IPlayerInfo, ISingleGameInstance, ITournamentGameInstance } from '@/app/types/game';
 
 const useGameData = () => {
-  const [game, setGame] = useState<IGameInstance | null>();
+  const [game, setGame] = useState<GameState | undefined>();
+
+  const [singleGame, setSingleGame] = useState<ISingleGameInstance>();
+  const [tournamentGame, setTournamentGame] = useState<ITournamentGameInstance>();
+
   const [allGames, setAllGames] = useState<IGame[]>();
   const [configState, setConfigState] = useState<IGameConfig | null>();
   const [isAdmin, setIsAdmin] = useState<boolean>(false);
@@ -13,6 +17,10 @@ const useGameData = () => {
   return {
     game,
     setGame,
+    singleGame,
+    setSingleGame,
+    tournamentGame,
+    setTournamentGame,
     allGames,
     setAllGames,
     configState,
