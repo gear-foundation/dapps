@@ -43,6 +43,6 @@ export const GameTimer = () => {
 	}, [configState, startTime, currentTime]);
 
 	return (
-		timeLeft
+		<>{timeLeft}</>
 	)
 }
