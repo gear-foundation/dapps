@@ -15,7 +15,12 @@ type Props = {
 
 function EzTransactionsProvider({ children }: Props) {
   const gasless = useGaslessTransactions();
-  const signless = useSignlessTransactions();
+  const signlessContext = useSignlessTransactions();
+
+  const signless = {
+    ...signlessContext,
+    isActive: Boolean(signlessContext.pair), // TODO: move to signless context
+  };
 
   return <Provider value={{ gasless, signless }}>{children}</Provider>;
 }

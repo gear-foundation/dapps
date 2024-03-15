@@ -3,7 +3,9 @@ import { Value as SignlessValue } from '@/features/signless-transactions/context
 
 type Value = {
   gasless: GaslessValue;
-  signless: SignlessValue;
+  signless: SignlessValue & {
+    isActive: boolean;
+  };
 };
 
 export type { Value };

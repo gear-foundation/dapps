@@ -8,9 +8,10 @@ import { ChangeEvent } from 'react';
 
 type Props = {
   type: 'button' | 'switcher';
+  disabled?: boolean; // in case signless was enabled first
 };
 
-function EnableSession({ type }: Props) {
+function EnableSession({ type, disabled }: Props) {
   const { account } = useAccount();
   const { isAvailable, isLoading, isEnabled, setIsEnabled } = useGaslessTransactions();
 
@@ -36,7 +37,7 @@ function EnableSession({ type }: Props) {
               icon={GaslessSVG}
               color="transparent"
               text="Enable gasless transactions"
-              disabled={!isAvailable || isLoading}
+              disabled={disabled || !isAvailable || isLoading}
               className={styles.enableButton}
               onClick={handleEnableButtonClick}
             />
@@ -50,11 +51,12 @@ function EnableSession({ type }: Props) {
             <Checkbox
               label=""
               type="switch"
-              disabled={!isAvailable || isLoading}
+              disabled={disabled || !isAvailable || isLoading}
               checked={isEnabled}
               onChange={handleSwitchChange}
             />
           </div>
+
           <div className={styles.contentWrapper}>
             <div className={styles.headingWrapper}>
               <GaslessSVG />

@@ -3,7 +3,10 @@ import { DEFAULT_VALUES as SIGNLESS_DEFAULT_VALUES } from '@/features/signless-t
 
 const DEFAULT_VALUES = {
   gasless: GASLESS_DEFAULT_VALUES,
-  signless: SIGNLESS_DEFAULT_VALUES,
+  signless: {
+    ...SIGNLESS_DEFAULT_VALUES,
+    isActive: false,
+  },
 };
 
 export { DEFAULT_VALUES };

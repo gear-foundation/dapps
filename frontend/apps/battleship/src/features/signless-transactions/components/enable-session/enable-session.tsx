@@ -80,6 +80,7 @@ function EnableSession({ type }: Props) {
           )}
         </>
       )}
+
       {type === 'switcher' && (
         <div className={styles.switchContainer}>
           <div className={styles.switcherWrapper}>
@@ -91,12 +92,14 @@ function EnableSession({ type }: Props) {
               onChange={handleSwitcherChange}
             />
           </div>
+
           <div className={styles.contentWrapper}>
             <div className={styles.headingWrapper}>
               <SignlessSVG />
               <span className={styles.heading}>Enable signless</span>
               {isLoading && <span className={styles.loader} />}
             </div>
+
             {!isAvailable && (
               <span className={styles.descr}>
                 <span>Not enough balance to enable signless mode.</span>
