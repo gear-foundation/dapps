@@ -2,7 +2,7 @@ import { Button, Input, Modal, ModalProps, Select } from '@gear-js/vara-ui';
 import { useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { GearKeyring, decodeAddress } from '@gear-js/api';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
-import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSignlessTransactions } from '../../context';
 import { getMilliseconds } from '../../utils';
@@ -23,7 +23,6 @@ type Props = Pick<ModalProps, 'close'>;
 function CreateSessionModal({ close }: Props) {
   const { api } = useApi();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
-  const [durationMinutes, setDurationMinutes] = useState<number>(DURATIONS[0].value);
   const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
@@ -69,8 +68,8 @@ function CreateSessionModal({ close }: Props) {
 
     setIsLoading(true);
 
-    const { password } = values;
-    const duration = getMilliseconds(durationMinutes);
+    const { password, durationMinutes } = values;
+    const duration = getMilliseconds(Number(durationMinutes));
     const key = decodeAddress(pair.address);
     const allowedActions = ACTIONS;
 
@@ -104,10 +103,6 @@ function CreateSessionModal({ close }: Props) {
     createSession({ duration, key, allowedActions }, issueVoucherValue, { onSuccess, onFinally });
   };
 
-  const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setDurationMinutes(Number(e.target.value));
-  };
-
   return (
     <>
       <Modal heading={`${storagePair ? 'Resume' : 'Enable'} Signless Session`} close={close}>
@@ -125,7 +120,8 @@ function CreateSessionModal({ close }: Props) {
         />
 
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-          <Select label="Session duration" options={DURATIONS} onChange={handleSelectChange} />
+          <Select label="Session duration" options={DURATIONS} {...register('durationMinutes')} />
+
           {(!storagePair || !existingPair) && (
             <Input
               type="password"
@@ -137,6 +133,7 @@ function CreateSessionModal({ close }: Props) {
               })}
             />
           )}
+
           <Button type="submit" text="Create Signless session" className={styles.button} isLoading={isLoading} />
         </form>
       </Modal>

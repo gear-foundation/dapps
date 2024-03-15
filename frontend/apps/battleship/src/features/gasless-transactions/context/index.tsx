@@ -35,7 +35,11 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   };
 
   useEffect(() => {
-    if (!account) return setIsAvailable(false);
+    if (!account) {
+      setIsAvailable(false);
+      setIsEnabled(false);
+      return;
+    }
 
     withLoading(
       getVoucherStatus(backendAddress, programId)
