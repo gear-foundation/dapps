@@ -19,11 +19,11 @@ import {
 } from '../../consts';
 
 type Props = Pick<ModalProps, 'close'> & {
-  onSessionCreate?: (signlessAccountAddress: string) => void;
+  onSessionCreate?: (signlessAccountAddress: string) => Promise<void>;
   shouldIssueVoucher?: boolean;
 };
 
-function CreateSessionModal({ close, onSessionCreate = () => {}, shouldIssueVoucher = true }: Props) {
+function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIssueVoucher = true }: Props) {
   const { api } = useApi();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
   const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
@@ -67,7 +67,7 @@ function CreateSessionModal({ close, onSessionCreate = () => {}, shouldIssueVouc
 
   const formattedIssueVoucherValue = getFormattedBalance(issueVoucherValue);
 
-  const onSubmit = (values: typeof DEFAULT_VALUES) => {
+  const onSubmit = async (values: typeof DEFAULT_VALUES) => {
     if (!pair) return;
 
     setIsLoading(true);
@@ -77,28 +77,64 @@ function CreateSessionModal({ close, onSessionCreate = () => {}, shouldIssueVouc
     const key = decodeAddress(pair.address);
     const allowedActions = ACTIONS;
 
-    const onSuccess = () => {
-      if (storagePair) {
-        if (!existingPair) {
-          try {
-            const pairFromStorageJSON = GearKeyring.fromJson(storagePair, password);
-            savePair(pairFromStorageJSON as KeyringPair, password);
-            close();
-          } catch (error) {
-            const message = String(error);
-            setError('password', { message });
-          }
-        } else {
-          close();
-        }
-      } else {
-        savePair(pair as KeyringPair, password);
-        close();
-      }
-    };
+    // **ORIGINAL LOGIC**
 
+    // const onSuccess = () => {
+    //   if (storagePair) {
+    //     if (!existingPair) {
+    //       try {
+    //         const pairFromStorageJSON = GearKeyring.fromJson(storagePair, password);
+    //         savePair(pairFromStorageJSON as KeyringPair, password);
+    //         close();
+    //       } catch (error) {
+    //         const message = String(error);
+    //         setError('password', { message });
+    //       }
+    //     } else {
+    //       close();
+    //     }
+    //   } else {
+    //     savePair(pair as KeyringPair, password);
+    //     close();
+    //   }
+    // };
+
+    // const onFinally = () => setIsLoading(false);
+    // onSessionCreate(pair.address);
+
+    // **SHOWCASE LOGIC**
+
+    try {
+      const _pair = storagePair ? GearKeyring.fromJson(storagePair, password) : pair;
+
+      // temporary? solution to demonstrate the ideal forkflow, where user:
+      // checks the gasless -> starts game, or
+      // checks the gasless -> creates signless session -> starts game.
+      // cuz of gasless voucher balance check and update, signlessAccountAddress should be accessed somehow different.
+      // good part about passing it as an argument is that signless pair is set after voucher request,
+      // therefore it's requested voucher is accessible directly from the signless context via on chain call.
+      await onSessionCreate(_pair.address);
+    } catch (error) {
+      const message = String(error);
+      setError('password', { message });
+    }
+
+    if (storagePair) {
+      if (!existingPair) {
+        try {
+          const pairFromStorageJSON = GearKeyring.fromJson(storagePair, password);
+          savePair(pairFromStorageJSON as KeyringPair, password);
+        } catch (error) {
+          const message = String(error);
+          setError('password', { message });
+        }
+      }
+    } else {
+      savePair(pair as KeyringPair, password);
+    }
+
+    const onSuccess = close;
     const onFinally = () => setIsLoading(false);
-    onSessionCreate(pair.address);
 
     if (storagePair) {
       updateSession({ duration, key, allowedActions }, issueVoucherValue, { onSuccess, onFinally });

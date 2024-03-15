@@ -24,7 +24,7 @@ export default function Login() {
   const closeWallet = () => setIsOpen(false);
 
   const onClickStartGame = () => {
-    // withVoucherRequest? to handle condition inside
+    // withVoucherRequest? to handle condition inside of gasless context
     if (!gasless.isEnabled || gasless.voucherId) return navigate('/game');
 
     gasless

@@ -11,7 +11,7 @@ import { EnableSessionModal } from '../enable-session-modal';
 type Props = {
   type: 'button' | 'switcher';
   shouldIssueVoucher?: boolean;
-  onSessionCreate?: (signlessAccountAddress: string) => void;
+  onSessionCreate?: (signlessAccountAddress: string) => Promise<void>;
 };
 
 function EnableSession({ type, onSessionCreate, shouldIssueVoucher }: Props) {

@@ -5,6 +5,6 @@ export type Value = {
   isAvailable: boolean;
   isLoading: boolean;
   isEnabled: boolean;
-  requestVoucher: () => Promise<void>;
+  requestVoucher: (signlessAccountAddress?: string) => Promise<void>;
   setIsEnabled: (value: boolean) => void;
 };

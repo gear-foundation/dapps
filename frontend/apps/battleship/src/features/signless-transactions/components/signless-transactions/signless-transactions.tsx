@@ -16,7 +16,7 @@ import { AccountPair } from '../account-pair';
 import { EnableSession } from '../enable-session';
 
 type Props = {
-  onSessionCreate?: (signlessAccountAddress: string) => void;
+  onSessionCreate?: (signlessAccountAddress: string) => Promise<void>;
   shouldIssueVoucher?: boolean;
 };
 

@@ -28,10 +28,17 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   const [isAvailable, setIsAvailable] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
 
-  const requestVoucher = async () => {
+  // temporary? solution to demonstrate the ideal forkflow, where user:
+  // checks the gasless -> starts game, or
+  // checks the gasless -> creates signless session -> starts game.
+  // cuz of gasless voucher balance check and update, signlessAccountAddress should be accessed somehow different.
+  // good part about passing it as an argument is that signless pair is set after voucher request,
+  // therefore it's requested voucher is accessible directly from the signless context via on chain call.
+  const requestVoucher = async (signlessAccountAddress?: string) => {
     if (!account) throw new Error('Account is not found');
+    const accountAddress = signlessAccountAddress || account.address;
 
-    return withLoading(getVoucherId(backendAddress, account.address, programId).then((result) => setVoucherId(result)));
+    return withLoading(getVoucherId(backendAddress, accountAddress, programId).then((result) => setVoucherId(result)));
   };
 
   useEffect(() => {
