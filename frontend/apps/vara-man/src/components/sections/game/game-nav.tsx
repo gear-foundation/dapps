@@ -51,7 +51,7 @@ export function GameNav({}: GameNavProps) {
   const shortenedStr = account && shortenString(account.decodedAddress, 10);
 
   return (
-    <div className="relative font-kanit">
+    <div className="relative font-anuphan">
       <GameNavBackground />
 
       <div className="flex items-center justify-between py-10 px-7.5">
