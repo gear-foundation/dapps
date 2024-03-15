@@ -9,8 +9,8 @@ import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
 import styles from './login.module.scss';
-import { EnableSession as EnableSignlessSession } from '@/features/signless-transactions';
-import { EnableSession as EnableGaslessSession, useGaslessTransactions } from '@/features/gasless-transactions';
+import { useGaslessTransactions } from '@/features/gasless-transactions';
+import { EzTransactionsSwitch } from '@/features/transactions';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -54,10 +54,7 @@ export default function Login() {
             {account ? 'Start the Game' : 'Connect wallet'}
           </Button>
 
-          <div>
-            <EnableGaslessSession type="switcher" />
-            <EnableSignlessSession type="switcher" />
-          </div>
+          <EzTransactionsSwitch />
         </div>
 
         <div className={styles.bottom}>
