@@ -19,10 +19,11 @@ import {
 } from '../../consts';
 
 type Props = Pick<ModalProps, 'close'> & {
-  onCreate?: (signlessAccountAddress: string) => void;
+  onSessionCreate?: (signlessAccountAddress: string) => void;
+  shouldIssueVoucher?: boolean;
 };
 
-function CreateSessionModal({ close, onCreate = () => {} }: Props) {
+function CreateSessionModal({ close, onSessionCreate = () => {}, shouldIssueVoucher = true }: Props) {
   const { api } = useApi();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
   const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
@@ -50,6 +51,7 @@ function CreateSessionModal({ close, onCreate = () => {} }: Props) {
 
   const issueVoucherValue = useMemo(() => {
     if (!api) throw new Error('API is not initialized');
+    if (!shouldIssueVoucher) return 0;
 
     const minValue = api.existentialDeposit.toNumber();
 
@@ -96,7 +98,7 @@ function CreateSessionModal({ close, onCreate = () => {} }: Props) {
     };
 
     const onFinally = () => setIsLoading(false);
-    onCreate(pair.address);
+    onSessionCreate(pair.address);
 
     if (storagePair) {
       updateSession({ duration, key, allowedActions }, issueVoucherValue, { onSuccess, onFinally });

@@ -69,14 +69,11 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!account) throw new Error('Account not found');
 
     const message = getMessage({ CreateSession: session });
-
     const extrinsic = api.message.send(message, metadata);
 
-    const minDuration = api.voucher.minDuration;
+    const voucher = await api.voucher.issue(session.key, voucherValue, undefined, [programId], true);
 
-    const voucher = await api.voucher.issue(session.key, voucherValue, minDuration, [programId], true);
-
-    const txs = [extrinsic, voucher.extrinsic];
+    const txs = voucherValue ? [extrinsic, voucher.extrinsic] : [extrinsic];
     const options = { ..._options, onError };
 
     batchSignAndSend(txs, options);
