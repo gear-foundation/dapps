@@ -13,13 +13,13 @@ type Props = {
   children: ReactNode;
 };
 
-function TransactionsProvider({ children }: Props) {
+function EzTransactionsProvider({ children }: Props) {
   const gasless = useGaslessTransactions();
   const signless = useSignlessTransactions();
 
   return <Provider value={{ gasless, signless }}>{children}</Provider>;
 }
 
-const useTransactions = () => useContext(TransactionsContext);
+const useEzTransactions = () => useContext(TransactionsContext);
 
-export { TransactionsProvider, useTransactions };
+export { EzTransactionsProvider, useEzTransactions };

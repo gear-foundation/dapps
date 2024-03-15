@@ -10,7 +10,7 @@ import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
 import styles from './login.module.scss';
 import { useGaslessTransactions } from '@/features/gasless-transactions';
-import { EzTransactionsSwitch } from '@/features/transactions';
+import { EzTransactionsSwitch } from '@/features/ez-transactions';
 
 export default function Login() {
   const navigate = useNavigate();

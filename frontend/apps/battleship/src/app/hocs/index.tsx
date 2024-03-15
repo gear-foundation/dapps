@@ -13,7 +13,7 @@ import { GaslessTransactionsProvider as SharedGaslessTransactionsProvider } from
 import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
 import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
-import { TransactionsProvider } from '@/features/transactions';
+import { EzTransactionsProvider } from '@/features/ez-transactions';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
@@ -50,7 +50,7 @@ const providers = [
   AlertProvider,
   GaslessTransactionsProvider,
   SignlessTransactionsProvider,
-  TransactionsProvider,
+  EzTransactionsProvider,
 ];
 
 function withProviders(Component: ComponentType) {
