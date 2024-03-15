@@ -9,8 +9,8 @@ import { useWallet } from '../../hooks';
 
 import styles from './WalletChange.module.scss';
 import { MenuOptions } from '@dapps-frontend/ui';
-import { SignlessTransactions } from '@/features/signless-transactions';
 import { GaslessTransactions } from '@/features/gasless-transactions';
+import { EzSignlessTransactions } from '@/features/ez-transactions';
 
 type Props = {
   onClose(): void;
@@ -55,7 +55,7 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
       <div className={styles.changeAccount}>
         <MenuOptions
           customItems={[
-            { key: 'signless', option: <SignlessTransactions /> },
+            { key: 'signless', option: <EzSignlessTransactions /> },
             { key: 'gasless', option: <GaslessTransactions /> },
           ]}
         />

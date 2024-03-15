@@ -1,4 +1,4 @@
 import { EzTransactionsProvider, useEzTransactions } from './context';
-import { EzTransactionsSwitch } from './components';
+import { EzTransactionsSwitch, EzSignlessTransactions } from './components';
 
-export { EzTransactionsProvider, useEzTransactions, EzTransactionsSwitch };
+export { EzTransactionsProvider, useEzTransactions, EzTransactionsSwitch, EzSignlessTransactions };

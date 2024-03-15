@@ -15,7 +15,11 @@ import { SignlessParams } from '../signless-params-list';
 import { AccountPair } from '../account-pair';
 import { EnableSession } from '../enable-session';
 
-function SignlessTransactions() {
+type Props = {
+  onSessionCreate?: (signlessAccountAddress: string) => void;
+};
+
+function SignlessTransactions({ onSessionCreate }: Props) {
   const { account } = useAccount();
   const { pair, session, isSessionReady, voucherBalance, storagePair, deletePair, deleteSession } =
     useSignlessTransactions();
@@ -102,7 +106,7 @@ function SignlessTransactions() {
                 },
               ]}
             />
-            <EnableSession type="button" />
+            <EnableSession type="button" onSessionCreate={onSessionCreate} />
           </div>
         </>
       )}
@@ -140,10 +144,11 @@ function SignlessTransactions() {
           )}
         </>
       )}
-      {!session && !storagePair && <EnableSession type="button" />}
+
+      {!session && !storagePair && <EnableSession type="button" onSessionCreate={onSessionCreate} />}
 
       {modal === 'enable' && <EnableSessionModal close={closeModal} />}
-      {modal === 'create' && <CreateSessionModal close={closeModal} />}
+      {modal === 'create' && <CreateSessionModal close={closeModal} onCreate={onSessionCreate} />}
     </div>
   ) : null;
 }

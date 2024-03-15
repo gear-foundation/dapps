@@ -18,9 +18,11 @@ import {
   REQUIRED_MESSAGE,
 } from '../../consts';
 
-type Props = Pick<ModalProps, 'close'>;
+type Props = Pick<ModalProps, 'close'> & {
+  onCreate?: (signlessAccountAddress: string) => void;
+};
 
-function CreateSessionModal({ close }: Props) {
+function CreateSessionModal({ close, onCreate = () => {} }: Props) {
   const { api } = useApi();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
   const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
@@ -34,7 +36,7 @@ function CreateSessionModal({ close }: Props) {
     updateSession,
     pair: existingPair,
   } = useSignlessTransactions();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   const [pair, setPair] = useState<KeyringPair | KeyringPair$Json | undefined>(storagePair);
 
   useEffect(() => {
@@ -73,7 +75,7 @@ function CreateSessionModal({ close }: Props) {
     const key = decodeAddress(pair.address);
     const allowedActions = ACTIONS;
 
-    const onSuccess = async () => {
+    const onSuccess = () => {
       if (storagePair) {
         if (!existingPair) {
           try {
@@ -94,6 +96,7 @@ function CreateSessionModal({ close }: Props) {
     };
 
     const onFinally = () => setIsLoading(false);
+    onCreate(pair.address);
 
     if (storagePair) {
       updateSession({ duration, key, allowedActions }, issueVoucherValue, { onSuccess, onFinally });

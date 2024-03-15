@@ -17,9 +17,14 @@ function EzTransactionsProvider({ children }: Props) {
   const gasless = useGaslessTransactions();
   const signlessContext = useSignlessTransactions();
 
+  const onSessionCreate = (signlessAccountAddress: string) => {
+    console.log(signlessAccountAddress);
+  };
+
   const signless = {
     ...signlessContext,
     isActive: Boolean(signlessContext.pair), // TODO: move to signless context
+    onSessionCreate,
   };
 
   return <Provider value={{ gasless, signless }}>{children}</Provider>;

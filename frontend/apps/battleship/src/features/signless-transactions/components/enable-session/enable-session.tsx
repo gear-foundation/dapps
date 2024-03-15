@@ -10,9 +10,10 @@ import { EnableSessionModal } from '../enable-session-modal';
 
 type Props = {
   type: 'button' | 'switcher';
+  onSessionCreate?: (signlessAccountAddress: string) => void;
 };
 
-function EnableSession({ type }: Props) {
+function EnableSession({ type, onSessionCreate }: Props) {
   const { account } = useAccount();
   const { isAvailable, pair, session, deletePair, deleteSession } = useSignlessTransactions();
   const [isLoading, setIsLoading] = useState(false);
@@ -111,7 +112,7 @@ function EnableSession({ type }: Props) {
         </div>
       )}
 
-      {isCreateSessionModalOpen && <CreateSessionModal close={closeCreateModal} />}
+      {isCreateSessionModalOpen && <CreateSessionModal close={closeCreateModal} onCreate={onSessionCreate} />}
       {isEnableSessionModalOpen && <EnableSessionModal close={closeEnableModal} />}
     </>
   ) : null;

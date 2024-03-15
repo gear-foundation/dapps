@@ -5,6 +5,7 @@ type Value = {
   gasless: GaslessValue;
   signless: SignlessValue & {
     isActive: boolean;
+    onSessionCreate: (signlessAccountAddress: string) => void;
   };
 };
 

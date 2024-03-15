@@ -6,6 +6,7 @@ const DEFAULT_VALUES = {
   signless: {
     ...SIGNLESS_DEFAULT_VALUES,
     isActive: false,
+    onSessionCreate: () => {},
   },
 };
 

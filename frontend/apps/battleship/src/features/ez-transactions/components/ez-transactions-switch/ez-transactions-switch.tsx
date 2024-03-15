@@ -10,7 +10,7 @@ function EzTransactionsSwitch() {
   return (
     <div className={styles.container}>
       <GaslessSessionSwitch type="switcher" disabled={signless.isActive} />
-      <SignlessSessionSwitch type="switcher" />
+      <SignlessSessionSwitch type="switcher" onSessionCreate={signless.onSessionCreate} />
     </div>
   );
 }
