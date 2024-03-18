@@ -7,13 +7,15 @@ import {
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
-import { SignlessTransactionsProvider as SharedSignlessTransactionsProvider } from '@/features/signless-transactions';
-import { GaslessTransactionsProvider as SharedGaslessTransactionsProvider } from '@/features/gasless-transactions';
+import {
+  SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
+  GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
+  EzTransactionsProvider,
+} from '@dapps-frontend/ez-transactions';
 
 import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
 import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
-import { EzTransactionsProvider } from '@/features/ez-transactions';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;

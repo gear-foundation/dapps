@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSignlessTransactions } from '@/features/signless-transactions';
+import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { Text } from '@/components/ui/text';
 import { GameEndModal, Map } from '@/features/game';
 import styles from './GameProcess.module.scss';
@@ -8,11 +8,9 @@ import { useGame, useGameMessage, usePending } from '../../hooks';
 import { getFormattedTime } from '../../utils';
 import { Loader } from '@/components';
 import { useCheckBalance } from '@dapps-frontend/hooks';
-import { useGaslessTransactions } from '@/features/gasless-transactions';
 
 export default function GameProcess() {
-  const gasless = useGaslessTransactions();
-  const { pairVoucherId } = useSignlessTransactions();
+  const { signless, gasless } = useEzTransactions();
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
   const [elapsedTime, setElapsedTime] = useState('');
@@ -23,7 +21,7 @@ export default function GameProcess() {
   const { setPending } = usePending();
   const message = useGameMessage();
   const { checkBalance } = useCheckBalance({
-    signlessPairVoucherId: pairVoucherId,
+    signlessPairVoucherId: signless.pairVoucherId,
     gaslessVoucherId: gasless.voucherId,
   });
 

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSignlessTransactions } from '@/features/signless-transactions';
+import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { Button } from '@gear-js/vara-ui';
 import { Heading } from '@/components/ui/heading';
 import { TextGradient } from '@/components/ui/text-gradient';
@@ -10,15 +10,14 @@ import { useGameMessage, usePending } from '../../hooks';
 import { generateShipsField } from './shipGenerator';
 import { convertShipsToField } from '../../utils';
 import { useCheckBalance } from '@dapps-frontend/hooks';
-import { useGaslessTransactions } from '@/features/gasless-transactions';
 
 export default function ShipArrangement() {
-  const gasless = useGaslessTransactions();
-  const { pairVoucherId } = useSignlessTransactions();
+  const { gasless, signless } = useEzTransactions();
+
   const message = useGameMessage();
   const { setPending } = usePending();
   const { checkBalance } = useCheckBalance({
-    signlessPairVoucherId: pairVoucherId,
+    signlessPairVoucherId: signless.pairVoucherId,
     gaslessVoucherId: gasless.voucherId,
   });
 

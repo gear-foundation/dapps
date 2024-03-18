@@ -1,2 +1,2 @@
 export { GaslessTransactions } from './gasless-transactions';
-export { EnableSession } from './enable-session';
+export { EnableGaslessSession } from './enable-gasless-session';

@@ -1,5 +1,5 @@
 import { SignlessTransactions } from './signless-transactions';
 import { SignlessActive } from './signless-active';
-import { EnableSession } from './enable-session/';
+import { EnableSignlessSession } from './enable-signless-session';
 
-export { SignlessTransactions, SignlessActive, EnableSession };
+export { SignlessTransactions, SignlessActive, EnableSignlessSession };
