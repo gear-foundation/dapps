@@ -15,7 +15,7 @@ type State = {
 
 type Storage = Record<string, KeyringPair$Json | undefined>;
 
-type Value = {
+type SignlessContext = {
   pair: KeyringPair | undefined;
   storagePair: KeyringPair$Json | undefined;
   savePair: (pair: KeyringPair, password: string) => void;
@@ -33,4 +33,4 @@ type Value = {
   isAvailable: boolean;
 };
 
-export type { State, Session, Storage, Value };
+export type { State, Session, Storage, SignlessContext };

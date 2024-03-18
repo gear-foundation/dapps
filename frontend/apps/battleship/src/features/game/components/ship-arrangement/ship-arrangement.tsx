@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useSignlessTransactions } from '@dapps-frontend/signless-transactions';
+import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { Button } from '@gear-js/vara-ui';
 import { Heading } from '@/components/ui/heading';
 import { TextGradient } from '@/components/ui/text-gradient';
@@ -10,14 +10,16 @@ import { useGameMessage, usePending } from '../../hooks';
 import { generateShipsField } from './shipGenerator';
 import { convertShipsToField } from '../../utils';
 import { useCheckBalance } from '@dapps-frontend/hooks';
-import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
 
 export default function ShipArrangement() {
-  const { voucherId, isLoadingVoucher } = useGaslessTransactions();
-  const { pairVoucherId } = useSignlessTransactions();
+  const { gasless, signless } = useEzTransactions();
+
   const message = useGameMessage();
   const { setPending } = usePending();
-  const { checkBalance } = useCheckBalance({ signlessPairVoucherId: pairVoucherId, gaslessVoucherId: voucherId });
+  const { checkBalance } = useCheckBalance({
+    signlessPairVoucherId: signless.pairVoucherId,
+    gaslessVoucherId: gasless.voucherId,
+  });
 
   const [shipLayout, setShipLayout] = useState<string[]>([]);
   const [shipsField, setShipsField] = useState<number[][]>([]);
@@ -38,7 +40,7 @@ export default function ShipArrangement() {
   const onGameStart = async () => {
     const gasLimit = 120000000000;
 
-    if (!isLoadingVoucher) {
+    if (!gasless.isLoading) {
       setPending(true);
 
       checkBalance(gasLimit, () =>
@@ -48,7 +50,7 @@ export default function ShipArrangement() {
               ships: shipsField,
             },
           },
-          voucherId,
+          voucherId: gasless.voucherId,
           gasLimit,
         }),
       );
@@ -70,7 +72,7 @@ export default function ShipArrangement() {
       </div>
       <div className={styles.buttons}>
         <Button color="dark" text="Generate" onClick={onGenerateRandomLayout} disabled={isLoadingGenerate} />
-        <Button text="Continue" onClick={onGameStart} disabled={!shipLayout.length || isLoadingVoucher} />
+        <Button text="Continue" onClick={onGameStart} disabled={!shipLayout.length || gasless.isLoading} />
       </div>
     </div>
   );

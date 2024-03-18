@@ -1,74 +1,69 @@
 import { Button, Checkbox } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
-import styles from './enable-session.module.css';
+import styles from './enable-gasless-session.module.css';
 import { useGaslessTransactions } from '../..';
 import { ReactComponent as GaslessSVG } from '../../assets/icons/gas-station-line.svg';
 import { ReactComponent as PowerSVG } from '../../assets/icons/power.svg';
+import { ChangeEvent } from 'react';
 
 type Props = {
   type: 'button' | 'switcher';
+  disabled?: boolean; // in case signless was enabled first
 };
 
-function EnableSession({ type }: Props) {
-  const { isAvailable, isLoading, voucherId, setIsActive } = useGaslessTransactions();
+function EnableGaslessSession({ type, disabled }: Props) {
   const { account } = useAccount();
-  const handleSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.checked) {
-      setIsActive(true);
-    } else {
-      setIsActive(false);
-    }
-  };
+  const { isAvailable, isLoading, isEnabled, setIsEnabled } = useGaslessTransactions();
 
-  const handleActivateSession = () => {
-    setIsActive(true);
-  };
+  const handleSwitchChange = ({ target }: ChangeEvent<HTMLInputElement>) => setIsEnabled(target.checked);
 
-  const handleDisableSession = () => {
-    setIsActive(false);
-  };
+  const handleEnableButtonClick = () => setIsEnabled(true);
+  const handleDisableButtonClick = () => setIsEnabled(false);
 
-  return account?.decodedAddress ? (
+  return account ? (
     <>
       {type === 'button' && (
         <>
-          {voucherId ? (
+          {isEnabled ? (
             <Button
               icon={PowerSVG}
               text="Disable"
               color="light"
               className={styles.closeButton}
-              onClick={handleDisableSession}
+              onClick={handleDisableButtonClick}
             />
           ) : (
             <Button
               icon={GaslessSVG}
               color="transparent"
               text="Enable gasless transactions"
-              disabled={!isAvailable || isLoading}
+              disabled={disabled || !isAvailable || isLoading}
               className={styles.enableButton}
-              onClick={handleActivateSession}
+              onClick={handleEnableButtonClick}
             />
           )}
         </>
       )}
+
       {type === 'switcher' && (
         <div className={styles.switchContainer}>
           <div className={styles.switcherWrapper}>
             <Checkbox
               label=""
               type="switch"
-              disabled={!isAvailable || isLoading}
-              checked={!!voucherId}
-              onChange={handleSwitcherChange}
+              disabled={disabled || !isAvailable || isLoading}
+              checked={isEnabled}
+              onChange={handleSwitchChange}
             />
           </div>
+
           <div className={styles.contentWrapper}>
             <div className={styles.headingWrapper}>
               <GaslessSVG />
               <span className={styles.heading}>Enable gasless</span>
               {isLoading && <span className={styles.loader} />}
             </div>
+
             {!isAvailable && (
               <span className={styles.descr}>
                 <span>Gas-free functionality is disabled at the moment.</span>
@@ -81,4 +76,4 @@ function EnableSession({ type }: Props) {
   ) : null;
 }
 
-export { EnableSession };
+export { EnableGaslessSession };
