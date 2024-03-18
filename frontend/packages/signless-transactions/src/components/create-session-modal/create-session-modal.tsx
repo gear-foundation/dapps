@@ -2,7 +2,7 @@ import { Button, Input, Modal, ModalProps, Select } from '@gear-js/vara-ui';
 import { useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { GearKeyring, decodeAddress } from '@gear-js/api';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
-import { ChangeEvent, useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useSignlessTransactions } from '../../context';
 import { getMilliseconds } from '../../utils';
@@ -16,14 +16,16 @@ import {
   DEFAULT_VALUES,
   DURATIONS,
   REQUIRED_MESSAGE,
-} from '@/consts';
+} from '../../consts';
 
-type Props = Pick<ModalProps, 'close'>;
+type Props = Pick<ModalProps, 'close'> & {
+  onSessionCreate?: (signlessAccountAddress: string) => Promise<void>;
+  shouldIssueVoucher?: boolean;
+};
 
-function CreateSessionModal({ close }: Props) {
+function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIssueVoucher = true }: Props) {
   const { api } = useApi();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
-  const [durationMinutes, setDurationMinutes] = useState<number>(DURATIONS[0].value);
   const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
@@ -35,7 +37,7 @@ function CreateSessionModal({ close }: Props) {
     updateSession,
     pair: existingPair,
   } = useSignlessTransactions();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+
   const [pair, setPair] = useState<KeyringPair | KeyringPair$Json | undefined>(storagePair);
 
   useEffect(() => {
@@ -49,6 +51,7 @@ function CreateSessionModal({ close }: Props) {
 
   const issueVoucherValue = useMemo(() => {
     if (!api) throw new Error('API is not initialized');
+    if (!shouldIssueVoucher) return 0;
 
     const minValue = api.existentialDeposit.toNumber();
 
@@ -64,36 +67,73 @@ function CreateSessionModal({ close }: Props) {
 
   const formattedIssueVoucherValue = getFormattedBalance(issueVoucherValue);
 
-  const onSubmit = (values: typeof DEFAULT_VALUES) => {
+  const onSubmit = async (values: typeof DEFAULT_VALUES) => {
     if (!pair) return;
 
     setIsLoading(true);
 
-    const { password } = values;
-    const duration = getMilliseconds(durationMinutes);
+    const { password, durationMinutes } = values;
+    const duration = getMilliseconds(Number(durationMinutes));
     const key = decodeAddress(pair.address);
     const allowedActions = ACTIONS;
 
-    const onSuccess = async () => {
-      if (storagePair) {
-        if (!existingPair) {
-          try {
-            const pairFromStorageJSON = GearKeyring.fromJson(storagePair, password);
-            savePair(pairFromStorageJSON as KeyringPair, password);
-            close();
-          } catch (error) {
-            const message = String(error);
-            setError('password', { message });
-          }
-        } else {
-          close();
-        }
-      } else {
-        savePair(pair as KeyringPair, password);
-        close();
-      }
-    };
+    // **ORIGINAL LOGIC**
 
+    // const onSuccess = () => {
+    //   if (storagePair) {
+    //     if (!existingPair) {
+    //       try {
+    //         const pairFromStorageJSON = GearKeyring.fromJson(storagePair, password);
+    //         savePair(pairFromStorageJSON as KeyringPair, password);
+    //         close();
+    //       } catch (error) {
+    //         const message = String(error);
+    //         setError('password', { message });
+    //       }
+    //     } else {
+    //       close();
+    //     }
+    //   } else {
+    //     savePair(pair as KeyringPair, password);
+    //     close();
+    //   }
+    // };
+
+    // const onFinally = () => setIsLoading(false);
+    // onSessionCreate(pair.address);
+
+    // **SHOWCASE LOGIC**
+
+    try {
+      const _pair = storagePair ? GearKeyring.fromJson(storagePair, password) : pair;
+
+      // temporary? solution to demonstrate the ideal forkflow, where user:
+      // checks the gasless -> starts game, or
+      // checks the gasless -> creates signless session -> starts game.
+      // cuz of gasless voucher balance check and update, signlessAccountAddress should be accessed somehow different.
+      // good part about passing it as an argument is that signless pair is set after voucher request,
+      // therefore it's requested voucher is accessible directly from the signless context via on chain call.
+      await onSessionCreate(_pair.address);
+    } catch (error) {
+      const message = String(error);
+      setError('password', { message });
+    }
+
+    if (storagePair) {
+      if (!existingPair) {
+        try {
+          const pairFromStorageJSON = GearKeyring.fromJson(storagePair, password);
+          savePair(pairFromStorageJSON as KeyringPair, password);
+        } catch (error) {
+          const message = String(error);
+          setError('password', { message });
+        }
+      }
+    } else {
+      savePair(pair as KeyringPair, password);
+    }
+
+    const onSuccess = close;
     const onFinally = () => setIsLoading(false);
 
     if (storagePair) {
@@ -102,10 +142,6 @@ function CreateSessionModal({ close }: Props) {
     }
 
     createSession({ duration, key, allowedActions }, issueVoucherValue, { onSuccess, onFinally });
-  };
-
-  const handleSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
-    setDurationMinutes(Number(e.target.value));
   };
 
   return (
@@ -125,7 +161,8 @@ function CreateSessionModal({ close }: Props) {
         />
 
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-          <Select label="Session duration" options={DURATIONS} onChange={handleSelectChange} />
+          <Select label="Session duration" options={DURATIONS} {...register('durationMinutes')} />
+
           {(!storagePair || !existingPair) && (
             <Input
               type="password"
@@ -137,6 +174,7 @@ function CreateSessionModal({ close }: Props) {
               })}
             />
           )}
+
           <Button type="submit" text="Create Signless session" className={styles.button} isLoading={isLoading} />
         </form>
       </Modal>

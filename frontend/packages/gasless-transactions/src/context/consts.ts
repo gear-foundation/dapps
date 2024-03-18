@@ -1,8 +1,8 @@
-export const DEFAULT_VALUES = {
+export const DEFAULT_GASLESS_CONTEXT = {
   voucherId: undefined,
-  isLoadingVoucher: false,
   isAvailable: false,
   isLoading: false,
-  isActive: false,
-  setIsActive: () => {},
+  isEnabled: false,
+  requestVoucher: async () => {},
+  setIsEnabled: () => {},
 };

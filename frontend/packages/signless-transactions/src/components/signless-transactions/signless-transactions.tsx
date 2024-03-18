@@ -13,9 +13,14 @@ import { EnableSessionModal } from '../enable-session-modal';
 import styles from './signless-transactions.module.css';
 import { SignlessParams } from '../signless-params-list';
 import { AccountPair } from '../account-pair';
-import { EnableSession } from '../enable-session';
+import { EnableSignlessSession } from '../enable-signless-session';
 
-function SignlessTransactions() {
+type Props = {
+  onSessionCreate?: (signlessAccountAddress: string) => Promise<void>;
+  shouldIssueVoucher?: boolean;
+};
+
+function SignlessTransactions({ onSessionCreate, shouldIssueVoucher }: Props) {
   const { account } = useAccount();
   const { pair, session, isSessionReady, voucherBalance, storagePair, deletePair, deleteSession } =
     useSignlessTransactions();
@@ -102,7 +107,11 @@ function SignlessTransactions() {
                 },
               ]}
             />
-            <EnableSession type="button" />
+            <EnableSignlessSession
+              type="button"
+              onSessionCreate={onSessionCreate}
+              shouldIssueVoucher={shouldIssueVoucher}
+            />
           </div>
         </>
       )}
@@ -140,10 +149,23 @@ function SignlessTransactions() {
           )}
         </>
       )}
-      {!session && !storagePair && <EnableSession type="button" />}
+
+      {!session && !storagePair && (
+        <EnableSignlessSession
+          type="button"
+          onSessionCreate={onSessionCreate}
+          shouldIssueVoucher={shouldIssueVoucher}
+        />
+      )}
 
       {modal === 'enable' && <EnableSessionModal close={closeModal} />}
-      {modal === 'create' && <CreateSessionModal close={closeModal} />}
+      {modal === 'create' && (
+        <CreateSessionModal
+          close={closeModal}
+          onSessionCreate={onSessionCreate}
+          shouldIssueVoucher={shouldIssueVoucher}
+        />
+      )}
     </div>
   ) : null;
 }

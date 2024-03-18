@@ -1,6 +1,6 @@
 const SIGNLESS_STORAGE_KEY = 'signless';
 
-const DEFAULT_VALUES = {
+const DEFAULT_SIGNLESS_CONTEXT = {
   pair: undefined,
   storagePair: undefined,
   savePair: () => {},
@@ -19,4 +19,4 @@ const DEFAULT_VALUES = {
   isAvailable: false,
 };
 
-export { SIGNLESS_STORAGE_KEY, DEFAULT_VALUES };
+export { SIGNLESS_STORAGE_KEY, DEFAULT_SIGNLESS_CONTEXT };
