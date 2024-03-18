@@ -7,17 +7,19 @@ import { COINS, GAME_OVER } from './consts';
 import { useGame } from '@/app/context/ctx-game';
 import { GameTimer } from './components/timer';
 import { calculatePoints } from './utils/calculatePoints';
+import { useSearchParams } from 'react-router-dom';
+import { IGameLevel } from '@/app/types/game';
 
 export const Game = () => {
+	const [searchParams] = useSearchParams()
 	const [, setGameOver] = useAtom(GAME_OVER)
-	const { tournamentGame, configState, singleGame } = useGame()
+	const { configState } = useGame()
 	const [coins] = useAtom(COINS);
 
-	const score = configState && singleGame && calculatePoints(coins, configState, singleGame?.[0].level)
+	const score = configState && calculatePoints(coins, configState, searchParams.get("level") as IGameLevel)
 
 	return (
 		<div>
-			{tournamentGame && <>Tournament</>}
 			<div className="w-full flex flex-col justify-center items-center">
 				<div className="w-[588px] flex justify-between my-3">
 					<div className="flex gap-3 items-center">

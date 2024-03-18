@@ -1,5 +1,4 @@
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAccount, useSendMessageHandler } from '@gear-js/react-hooks';
 
 import { useProgramMetadata } from '@/app/hooks/use-metadata';
@@ -12,13 +11,14 @@ export const useInitGame = () => {
   const { account } = useAccount();
   const { setIsSettled } = useApp();
   const { config, admins, game } = useGameState();
-  const navigate = useNavigate();
 
-  const { setSingleGame, setTournamentGame, setIsAdmin, setConfigState } = useGame();
+  const { setTournamentGame, setIsAdmin, setConfigState } = useGame();
 
   useEffect(() => {
     setConfigState(config?.Config || null);
     setIsSettled(!!config);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [config?.Config]);
 
   useEffect(() => {
@@ -28,20 +28,20 @@ export const useInitGame = () => {
       const isAdmin = admins.Admins.find((address) => address === account.decodedAddress);
       setIsAdmin(!!isAdmin);
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account?.decodedAddress, admins?.Admins]);
 
   useEffect(() => {
     if (game) {
-      if ('SingleGame' in game && game.SingleGame) {
-        setSingleGame(game.SingleGame);
-      } else if ('TournamentGame' in game && game.TournamentGame) {
+      if ('TournamentGame' in game && game.TournamentGame) {
         setTournamentGame(game.TournamentGame);
       } else {
-        setSingleGame(undefined);
         setTournamentGame(undefined)
-        navigate('/')
       }
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game, account?.decodedAddress])
 
 };
