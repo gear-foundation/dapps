@@ -10,8 +10,8 @@ import { GAS_LIMIT } from 'app/consts';
 export const NewGameButton = () => {
   const { api } = useApi();
   const { isPending, setIsPending } = useBattle();
-  const { voucherId, isLoadingVoucher } = useGaslessTransactions();
-  const { checkBalance } = useCheckBalance({ gaslessVoucherId: voucherId });
+  const gasless = useGaslessTransactions();
+  const { checkBalance } = useCheckBalance({ gaslessVoucherId: gasless.voucherId });
   const handleMessage = useBattleMessage();
 
   const onSuccess = () => setIsPending(false);
@@ -29,7 +29,7 @@ export const NewGameButton = () => {
           payload,
           onSuccess,
           onError,
-          voucherId,
+          voucherId: gasless.voucherId,
           gasLimit: GAS_LIMIT,
         });
       },
@@ -37,5 +37,5 @@ export const NewGameButton = () => {
     );
   };
 
-  return <Button text="Start New Game" color="primary" onClick={handler} disabled={isPending || isLoadingVoucher} />;
+  return <Button text="Start New Game" color="primary" onClick={handler} disabled={isPending || gasless.isLoading} />;
 };

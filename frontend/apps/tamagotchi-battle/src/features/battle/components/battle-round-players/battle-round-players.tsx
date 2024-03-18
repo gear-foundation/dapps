@@ -16,8 +16,8 @@ export const BattleRoundPlayers = () => {
   const { rivals, currentPlayer, currentPairIdx, roundDamage, battle, isPending, setIsPending, isAdmin } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
-  const { voucherId, isLoadingVoucher } = useGaslessTransactions();
-  const { checkBalance } = useCheckBalance({ gaslessVoucherId: voucherId });
+  const gasless = useGaslessTransactions();
+  const { checkBalance } = useCheckBalance({ gaslessVoucherId: gasless.voucherId });
 
   useEffect(() => {
     if (battle && account && currentPlayer) {
@@ -40,7 +40,7 @@ export const BattleRoundPlayers = () => {
           payload,
           onSuccess,
           onError,
-          voucherId,
+          voucherId: gasless.voucherId,
           gasLimit: GAS_LIMIT,
         });
       },
@@ -127,7 +127,7 @@ export const BattleRoundPlayers = () => {
                     buttonStyles.button,
                   )}
                   onClick={onNewRound}
-                  disabled={isPending || isLoadingVoucher}>
+                  disabled={isPending || gasless.isLoading}>
                   Start New Round
                 </button>
               )}
@@ -139,13 +139,13 @@ export const BattleRoundPlayers = () => {
                       buttonStyles.button,
                     )}
                     onClick={onAttack}
-                    disabled={isPending || !isAllowed || isLoadingVoucher}>
+                    disabled={isPending || !isAllowed || gasless.isLoading}>
                     <SpriteIcon name="swords" className="w-5 h-5" /> Attack
                   </button>
                   <button
                     className={cn('btn items-center gap-2 w-full', buttonStyles.secondary, buttonStyles.button)}
                     onClick={onDefence}
-                    disabled={isPending || !isAllowed || isLoadingVoucher}>
+                    disabled={isPending || !isAllowed || gasless.isLoading}>
                     <SpriteIcon name="armor" className="w-5 h-5" /> Defence
                   </button>
                 </>

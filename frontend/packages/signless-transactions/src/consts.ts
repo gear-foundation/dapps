@@ -1,54 +1,54 @@
-export const DEFAULT_VALUES = { password: '' };
 export const REQUIRED_MESSAGE = 'Field is required';
 
 export const BALANCE_VALUE_TO_START_GAME = 20;
 export const BALANCE_VALUE_TO_ISSUE_VOUCHER = 5;
 export const ACTIONS = ['StartGame', 'Turn'];
 
-export const DURATIONS: { label: string; value: number; selected?: boolean }[] = [
+export const DURATIONS: { label: string; value: string }[] = [
   {
     label: '5 minutes',
-    value: 5,
-    selected: true,
+    value: '5',
   },
   {
     label: '10 minutes',
-    value: 10,
+    value: '10',
   },
   {
     label: '30 minutes',
-    value: 30,
+    value: '30',
   },
   {
     label: '1 hour',
-    value: 60,
+    value: '60',
   },
   {
     label: '3 hours',
-    value: 180,
+    value: '180',
   },
   {
     label: '6 hours',
-    value: 360,
+    value: '360',
   },
   {
     label: '12 hours',
-    value: 720,
+    value: '720',
   },
   {
     label: '1 day',
-    value: 1440,
+    value: '1440',
   },
   {
     label: '2 days',
-    value: 2880,
+    value: '2880',
   },
   {
     label: '3 days',
-    value: 4320,
+    value: '4320',
   },
   {
     label: '1 week',
-    value: 10080,
+    value: '10080',
   },
 ];
+
+export const DEFAULT_VALUES = { password: '', durationMinutes: DURATIONS[0].value };
