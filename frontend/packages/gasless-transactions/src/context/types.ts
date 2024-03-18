@@ -1,10 +1,10 @@
 import { HexString } from '@gear-js/api';
 
-export type Value = {
+export type GaslessContext = {
   voucherId: HexString | undefined;
-  isLoadingVoucher: boolean;
   isAvailable: boolean;
   isLoading: boolean;
-  isActive: boolean;
-  setIsActive: React.Dispatch<React.SetStateAction<boolean>>;
+  isEnabled: boolean;
+  requestVoucher: (signlessAccountAddress?: string) => Promise<void>;
+  setIsEnabled: (value: boolean) => void;
 };

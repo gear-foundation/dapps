@@ -1,10 +1,12 @@
-import { ReactNode, createContext, useCallback, useContext, useEffect, useState } from 'react';
-import { Value } from './types';
-import { DEFAULT_VALUES } from './consts';
-import { useAccount, useBalance, useBalanceFormat } from '@gear-js/react-hooks';
+import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { GaslessContext } from './types';
+import { DEFAULT_GASLESS_CONTEXT } from './consts';
+import { useAccount, useAlert, useBalance, useBalanceFormat } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
+import { getVoucherId, getVoucherStatus } from './utils';
+import { useLoading } from './hooks';
 
-const GaslessTransactionsContext = createContext<Value>(DEFAULT_VALUES);
+const GaslessTransactionsContext = createContext<GaslessContext>(DEFAULT_GASLESS_CONTEXT);
 const { Provider } = GaslessTransactionsContext;
 
 type Props = {
@@ -16,156 +18,70 @@ type Props = {
 
 function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, children }: Props) {
   const { account } = useAccount();
-  const { getFormattedBalanceValue } = useBalanceFormat();
-  const [voucherId, setVoucherId] = useState(undefined);
-  const [isRequestingVoucher, setIsRequestingVoucher] = useState(false);
-  const [isUpdatingVoucher, setIsUpdatingVoucher] = useState(false);
+  const { getChainBalanceValue } = useBalanceFormat();
+  const alert = useAlert();
+
+  const [voucherId, setVoucherId] = useState<HexString>();
+  const { balance } = useBalance(voucherId);
+
+  const [isLoading, , withLoading] = useLoading();
   const [isAvailable, setIsAvailable] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isActive, setIsActive] = useState(false);
-  const { balance } = useBalance(voucherId || account?.decodedAddress);
+  const [isEnabled, setIsEnabled] = useState(false);
 
-  const requestVoucher = async () => {
-    try {
-      const response = await fetch(`${backendAddress}gasless/voucher/request`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ account: account?.address, program: programId }),
-      });
+  // temporary? solution to demonstrate the ideal forkflow, where user:
+  // checks the gasless -> starts game, or
+  // checks the gasless -> creates signless session -> starts game.
+  // cuz of gasless voucher balance check and update, signlessAccountAddress should be accessed somehow different.
+  // good part about passing it as an argument is that signless pair is set after voucher request,
+  // therefore it's requested voucher is accessible directly from the signless context via on chain call.
+  const requestVoucher = async (signlessAccountAddress?: string) => {
+    if (!account) throw new Error('Account is not found');
+    const accountAddress = signlessAccountAddress || account.address;
 
-      const data = await response.json();
-      setIsLoading(false);
-
-      if (data?.error) {
-        console.log(`Voucher is not fetched - ${data.error}`);
-        setIsActive(false);
-
-        return undefined;
-      }
-
-      if (!data.voucherId) {
-        setIsActive(false);
-        return undefined;
-      }
-
-      return data.voucherId;
-    } catch (error: any) {
-      console.log('Error when fetching voucher');
-      console.log(error);
-      setIsActive(false);
-      setIsLoading(false);
-
-      return undefined;
-    }
+    return withLoading(getVoucherId(backendAddress, accountAddress, programId).then((result) => setVoucherId(result)));
   };
 
-  const fetchVoucherId = async () => {
-    try {
-      setIsRequestingVoucher(true);
-      const createdVoucherId = await requestVoucher();
-
-      if (createdVoucherId) {
-        setVoucherId(createdVoucherId);
-      }
-
-      setIsRequestingVoucher(false);
-    } catch (error) {
-      setIsRequestingVoucher(false);
-    }
-  };
-
-  const updateBalance = useCallback(async () => {
-    const formattedBalance = balance && getFormattedBalanceValue(balance.toString()).toFixed();
-    const isBalanceLow = Number(formattedBalance) < voucherLimit;
-
-    if (isBalanceLow && voucherId) {
-      setIsUpdatingVoucher(true);
-
-      try {
-        const createdVoucherId = await requestVoucher();
-
-        if (createdVoucherId) {
-          setVoucherId(createdVoucherId);
-        }
-
-        setIsUpdatingVoucher(false);
-      } catch (error) {
-        console.log('error');
-      }
+  useEffect(() => {
+    if (!account) {
+      setIsAvailable(false);
+      setIsEnabled(false);
+      return;
     }
 
+    withLoading(
+      getVoucherStatus(backendAddress, programId)
+        .then((result) => setIsAvailable(result))
+        .catch(({ message }: Error) => alert.error(message)),
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account]);
+
+  useEffect(() => {
+    if (!balance) return;
+
+    const isEnoughBalance = getChainBalanceValue(voucherLimit).isLessThan(balance.toString());
+    if (isEnoughBalance) return;
+
+    requestVoucher().catch(({ message }: Error) => alert.error(message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [balance]);
 
-  const checkProgramStatus = async () => {
-    setIsLoading(true);
-
-    try {
-      const response = await fetch(`${backendAddress}gasless/voucher/${programId}/status`);
-
-      const data = await response.json();
-      setIsLoading(false);
-
-      if (data.enabled) {
-        setIsAvailable(true);
-        return;
-      }
-
-      if (!data.enabled) {
-        setIsAvailable(false);
-        return;
-      }
-
-      console.log(`Backend is not available`);
-      setIsAvailable(false);
-
-      console.log(data);
-    } catch (error: any) {
-      console.log('Error when fetching voucher');
-      console.log(error);
-      setIsAvailable(false);
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    if (account?.decodedAddress) {
-      setIsAvailable(false);
-      setIsActive(false);
-      setVoucherId(undefined);
+    if (isEnabled) return;
 
-      checkProgramStatus();
-    }
-  }, [account?.decodedAddress]);
+    setVoucherId(undefined);
+  }, [isEnabled]);
 
-  useEffect(() => {
-    if (account?.decodedAddress && isAvailable && isActive && !voucherId) {
-      setIsLoading(true);
-      fetchVoucherId();
-    }
-  }, [isAvailable, isActive, voucherId, account?.decodedAddress]);
-
-  useEffect(() => {
-    if (voucherId) {
-      updateBalance();
-    }
-  }, [updateBalance, voucherId]);
-
-  const value = {
-    voucherId: isAvailable && isActive ? voucherId : undefined,
-    isLoadingVoucher: isRequestingVoucher || isUpdatingVoucher,
-    isAvailable,
-    isLoading,
-    isActive,
-    setIsActive,
-    setIsLoading,
-  };
+  const value = useMemo(
+    () => ({ voucherId, isAvailable, isLoading, isEnabled, requestVoucher, setIsEnabled }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [voucherId, isAvailable, isLoading, isEnabled, account],
+  );
 
   return <Provider value={value}>{children}</Provider>;
 }
 
 const useGaslessTransactions = () => useContext(GaslessTransactionsContext);
 
-export { GaslessTransactionsProvider, useGaslessTransactions };
+export { DEFAULT_GASLESS_CONTEXT, GaslessTransactionsProvider, useGaslessTransactions };
+export type { GaslessContext };
