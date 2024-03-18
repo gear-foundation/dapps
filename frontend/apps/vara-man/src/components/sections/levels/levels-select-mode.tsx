@@ -1,10 +1,8 @@
 import { useApp } from '@/app/context/ctx-app';
-import { useGameMessage } from '@/app/hooks/use-game';
 import { cn } from '@/app/utils';
 import { Button } from '@/components/ui/button';
 
 import { Icons } from '@/components/ui/icons';
-import { useAccount } from '@gear-js/react-hooks';
 import { useNavigate } from 'react-router-dom';
 
 const levels = [
@@ -28,30 +26,9 @@ const levels = [
   },
 ]
 
-type LevelsChooseProps = BaseComponentProps & {};
-
-export function LevelsSelectMode({ children }: LevelsChooseProps) {
-  const { isPending, setIsPending } = useApp()
+export function LevelsSelectMode() {
+  const { isPending } = useApp()
   const navigate = useNavigate()
-  const { account } = useAccount()
-  const handleMessage = useGameMessage()
-
-  const onStartGame = (level: string) => {
-    if (account?.decodedAddress && !isPending) {
-      setIsPending(true)
-
-      handleMessage({
-        payload: {
-          StartSingleGame: { level },
-        },
-        onSuccess: () => {
-          navigate('/game')
-          setIsPending(false)
-        },
-        onError: () => setIsPending(false),
-      })
-    }
-  }
 
   return (
     <div className="flex flex-col justify-center items-center grow h-full">
@@ -69,7 +46,7 @@ export function LevelsSelectMode({ children }: LevelsChooseProps) {
                 "border-[var(--stats-theme)]",
                 isPending && "bg-[#fafafa] cursor-default",
               )}
-              onClick={() => onStartGame(item.title)}
+              onClick={() => navigate(`/game?level=${item.title}`)}
             >
               <h3 className="text-xl font-semibold p-6">{item.title}</h3>
               <hr className="bg-[var(--stats-theme)] h-[1px] border-none" />

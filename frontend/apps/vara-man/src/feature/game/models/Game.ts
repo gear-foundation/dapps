@@ -14,6 +14,8 @@ import { gameLevels } from '../consts'
 
 export class Game {
 	private context: CanvasRenderingContext2D
+	private fogContext: CanvasRenderingContext2D
+
 	private character: Character | undefined
 	private enemies: EnemyWithVision[] = []
 	private animationFrameId: number | null = null
@@ -25,12 +27,15 @@ export class Game {
 	private isShift = false
 
 	map: TileMap
+	level: IGameLevel
 
 	setGameOver = (gameOver: boolean) => {}
 	gameOver = false
 
 	constructor(
 		private canvas: HTMLCanvasElement,
+		private canvasFog: HTMLCanvasElement,
+
 		level: IGameLevel,
 		incrementCoins: (coin: 'silver' | 'gold') => void,
 		gameOver: boolean,
@@ -42,10 +47,16 @@ export class Game {
 		})
 
 		this.map = map
+		this.level = level
 
 		this.context = canvas.getContext('2d') as CanvasRenderingContext2D
+		this.fogContext = canvasFog.getContext('2d') as CanvasRenderingContext2D
 		this.canvas.width = 588
 		this.canvas.height = 588
+
+		this.canvasFog.width = 588
+		this.canvasFog.height = 588
+
 		this.setGameOver = setGameOver
 		this.gameOver = gameOver
 
@@ -175,6 +186,14 @@ export class Game {
 			CharacterRenderer.render(this.context, this.character)
 
 			this.enemies.forEach((enemy) => EnemyRenderer.render(this.context, enemy))
+
+			if (this.level === 'Hard') {
+				MapRenderer.renderFogOfWar(
+					this.fogContext,
+					this.character.position,
+					150
+				)
+			}
 		}
 	}
 
@@ -189,28 +208,18 @@ export class Game {
 	}
 
 	checkCollisions() {
-		if (!this.character) return
+		if (!this.character) return false
 
-		const characterBounds = {
-			left: this.character.position.x - this.character.torsoWidth / 3,
-			right: this.character.position.x + this.character.torsoWidth / 3,
-			top: this.character.position.y - this.character.torsoHeight / 3,
-			bottom: this.character.position.y + this.character.torsoHeight / 3,
-		}
+		const characterBounds = this.character.getBounds()
 
 		for (const enemy of this.enemies) {
-			const enemyBounds = {
-				left: enemy.position.x - enemy.torsoWidth / 3,
-				right: enemy.position.x + enemy.torsoWidth / 3,
-				top: enemy.position.y - enemy.torsoHeight / 3,
-				bottom: enemy.position.y + enemy.torsoHeight / 3,
-			}
+			const enemyBounds = enemy.getBounds()
 
 			if (
-				characterBounds.left < enemyBounds.right &&
-				characterBounds.right > enemyBounds.left &&
-				characterBounds.top < enemyBounds.bottom &&
-				characterBounds.bottom > enemyBounds.top
+				characterBounds.x < enemyBounds.x + enemyBounds.width &&
+				characterBounds.x + characterBounds.width > enemyBounds.x &&
+				characterBounds.y < enemyBounds.y + enemyBounds.height &&
+				characterBounds.y + characterBounds.height > enemyBounds.y
 			) {
 				return true
 			}

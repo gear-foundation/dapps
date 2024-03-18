@@ -1,4 +1,5 @@
 import { TileMap } from '../../types'
+import { Vec2 } from '../Vec2'
 
 class Tileset {
 	image: HTMLImageElement
@@ -139,5 +140,62 @@ export class MapRenderer {
 				}
 			}
 		}
+	}
+
+	static renderFogOfWar(
+		context: CanvasRenderingContext2D,
+		playerPosition: Vec2,
+		visionRadius: number
+	) {
+		context.fillStyle = 'white'
+
+		context.fillRect(0, 0, context.canvas.width, context.canvas.height)
+
+		const gradient = context.createRadialGradient(
+			playerPosition.x,
+			playerPosition.y,
+			visionRadius * 0.8,
+			playerPosition.x,
+			playerPosition.y,
+			visionRadius * 0.9
+		)
+		gradient.addColorStop(0, 'rgba(255, 255, 255, 0)')
+		gradient.addColorStop(0.8, 'rgba(255, 255, 255, 0.9)')
+		gradient.addColorStop(1, 'rgba(255, 255, 255, 1)')
+
+		context.globalCompositeOperation = 'destination-out'
+		context.beginPath()
+		context.arc(
+			playerPosition.x,
+			playerPosition.y,
+			visionRadius,
+			0,
+			Math.PI * 2,
+			true
+		)
+
+		context.fill()
+
+		context.closePath()
+
+		context.globalCompositeOperation = 'source-over'
+
+		context.fillStyle = gradient
+
+		context.beginPath()
+
+		context.arc(
+			playerPosition.x,
+			playerPosition.y,
+			visionRadius,
+			0,
+			Math.PI * 2,
+			true
+		)
+
+		context.strokeStyle = 'white'
+		context.stroke()
+		context.closePath()
+		context.fill()
 	}
 }

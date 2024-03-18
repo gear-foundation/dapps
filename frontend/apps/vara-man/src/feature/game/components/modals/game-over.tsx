@@ -6,28 +6,30 @@ import { Icons } from '@/components/ui/icons';
 import { useGame } from '@/app/context/ctx-game';
 
 import { COINS, GAME_OVER } from '../../consts';
-import { useGameMessage } from '@/app/hooks/use-game';
 import { useApp } from '@/app/context/ctx-app';
 import { calculatePoints } from '../../utils/calculatePoints';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { IGameLevel } from '@/app/types/game';
 
 export const GameOverModal = ({ restartGame }: any) => {
+	const [searchParams] = useSearchParams()
+	const navigate = useNavigate()
+
 	const [, setGameOver] = useAtom(GAME_OVER)
 	const [, setCoins] = useAtom(COINS)
-	const { isPending, setIsPending } = useApp()
-	const handleMessage = useGameMessage();
+	const { isPending } = useApp()
 
-	const onSuccess = () => {
-		setIsPending(false)
+	const [coins] = useAtom(COINS);
+	const { configState } = useGame()
+	const currentLevel = searchParams.get("level") as IGameLevel
+
+	const score = configState && calculatePoints(coins, configState, currentLevel)
+
+	const onResetGame = () => {
 		setGameOver(false)
 		setCoins({ gold: 0, silver: 0 })
 		restartGame()
-	};
-
-	const [coins] = useAtom(COINS);
-	const { configState, singleGame, tournamentGame } = useGame()
-	const currentLevel = singleGame?.[0].level || tournamentGame?.level;
-
-	const score = configState && singleGame && calculatePoints(coins, configState, singleGame?.[0].level)
+	}
 
 	return (
 		<div>
@@ -47,31 +49,16 @@ export const GameOverModal = ({ restartGame }: any) => {
 					<div className="flex justify-evenly">
 						<Button variant='gray'
 							onClick={() => {
-								setIsPending(true)
-								handleMessage({
-									payload: { LeaveGame: null },
-									onSuccess,
-									onError: onSuccess,
-								})
-							}
-							}
+								onResetGame()
+								navigate("/")
+							}}
 							isLoading={isPending}
 							disabled={isPending}
 						>
 							Close
 						</Button>
 						<Button
-							onClick={() => {
-								setIsPending(true)
-								handleMessage({
-									payload: {
-										StartSingleGame: { level: currentLevel },
-									},
-									onInBlock: () => setIsPending(true),
-									onSuccess,
-								})
-							}
-							}
+							onClick={() => onResetGame()}
 							isLoading={isPending}
 							disabled={isPending}
 						>
