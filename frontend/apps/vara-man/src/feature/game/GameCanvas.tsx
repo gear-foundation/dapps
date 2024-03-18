@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAtom } from 'jotai'
 
 import { Game } from './models/Game';
@@ -13,6 +14,7 @@ import { useGameMessage } from '@/app/hooks/use-game';
 import { useApp } from '@/app/context/ctx-app';
 
 export const GameCanvas = () => {
+	const [searchParams] = useSearchParams()
 	const [coins, setCoins] = useAtom(COINS)
 	const { singleGame } = useGame()
 	const [gameOver, setGameOver] = useAtom(GAME_OVER)
@@ -26,17 +28,26 @@ export const GameCanvas = () => {
 		}))
 	}
 
-	const level: IGameLevel = singleGame?.[0].level as IGameLevel
+	const level = searchParams.get("level") as IGameLevel
+
+	const fogCanvasRef = useRef<HTMLCanvasElement>(null);
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const gameInstanceRef = useRef<Game | null>(null);
 	const mapRef = useRef<TileMap | null>(null);
 
 	useEffect(() => {
-		if (canvasRef.current && level && mapRef.current === null && gameInstanceRef.current === null) {
+
+		if (canvasRef.current && fogCanvasRef.current && level && mapRef.current === null && gameInstanceRef.current === null) {
+			const gameContext = canvasRef.current;
+			const fogContext = fogCanvasRef.current;
+
+			fogCanvasRef.current.width = canvasRef.current.width;
+			fogCanvasRef.current.height = canvasRef.current.height;
+
 			const map = findMapLevel(level);
 			mapRef.current = map;
-			gameInstanceRef.current = new Game(canvasRef.current, level, incrementCoins, gameOver, setGameOver, map);
+			gameInstanceRef.current = new Game(gameContext, fogContext, level, incrementCoins, gameOver, setGameOver, map);
 		}
 
 		return () => {
@@ -75,7 +86,10 @@ export const GameCanvas = () => {
 	return (
 		<div className="ml-auto mr-auto">
 			{gameOver && <GameOverModal restartGame={restartGame} />}
-			<canvas ref={canvasRef} id="game" />
+			<div className="ml-auto mr-auto" style={{ position: 'relative' }}>
+				<canvas ref={fogCanvasRef} style={{ position: 'absolute', left: 0, top: 0 }} />
+				<canvas ref={canvasRef} />
+			</div>
 		</div>
 	)
 };
