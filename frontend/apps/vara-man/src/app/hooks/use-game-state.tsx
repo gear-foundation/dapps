@@ -10,16 +10,6 @@ export const programIdGame = ENV.GAME;
 export function useGameState() {
   const { account } = useAccount();
 
-  const payloadSingleGame = useMemo(
-    () =>
-      account?.decodedAddress
-        ? {
-          GetSingleGame: account.decodedAddress,
-        }
-        : undefined,
-    [account?.decodedAddress],
-  );
-
   const payloadTournamentGame = useMemo(
     () =>
       account?.decodedAddress
@@ -30,29 +20,15 @@ export function useGameState() {
     [account?.decodedAddress],
   );
 
-  const payloadTypeGame = useMemo(
-    () =>
-      account?.decodedAddress
-        ? {
-          GetTypeGame: account.decodedAddress,
-        }
-        : undefined,
-    [account?.decodedAddress],
-  );
 
   const payloadConfig = useMemo(() => ({ Config: null }), []);
   const payloadAdmins = useMemo(() => ({ Admins: null }), []);
 
-  const { state: typeGame } = useReadState<{ TypeGame: string | null }>({
-    programId: programIdGame,
-    meta,
-    payload: payloadTypeGame,
-  });
 
   const { state: game } = useReadState<GameState>({
     programId: programIdGame,
     meta,
-    payload: typeGame?.TypeGame && typeGame?.TypeGame === 'Tournament' ? payloadTournamentGame : payloadSingleGame,
+    payload: payloadTournamentGame,
   });
 
   const { state: config } = useReadState<{ Config: IGameConfig | null }>({

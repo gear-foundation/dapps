@@ -50,7 +50,6 @@ export class Enemy {
 	arms: LimbAnimation[]
 	mapData: TileMap
 
-
 	previousDirections: DirectionHistoryItem[] = []
 	historyTimeThreshold: number = 15000
 
@@ -75,7 +74,6 @@ export class Enemy {
 		this.armWidth = 20 * this.scale
 		this.armHeight = 30 * this.scale
 		this.walkSpeed = speed * this.scale
-
 
 		this.previousDirections = []
 
@@ -112,6 +110,15 @@ export class Enemy {
 				const index = i * mapData.width + j
 				this.mapTiles[i][j] = mapData.layers[0].data[index]
 			}
+		}
+	}
+
+	getBounds() {
+		return {
+			x: this.position.x - this.torsoWidth / 2,
+			y: this.position.y - this.torsoHeight * 2,
+			width: this.torsoWidth,
+			height: this.torsoHeight + this.legHeight,
 		}
 	}
 

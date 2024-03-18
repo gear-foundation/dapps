@@ -81,6 +81,15 @@ export class Character {
 		]
 	}
 
+	getBounds() {
+		return {
+			x: this.position.x - this.torsoWidth / 2,
+			y: this.position.y - this.torsoHeight * 2,
+			width: this.torsoWidth,
+			height: this.torsoHeight + this.legHeight,
+		}
+	}
+
 	legAnimation(isShift: boolean): void {
 		this.legs.forEach((leg) => {
 			const speedModifier = isShift ? this.walkSpeed * 2 : this.walkSpeed
@@ -117,11 +126,11 @@ export class Character {
 		isShift: boolean
 	): void {
 		if (isLeft) {
-			this.rotation -= Math.PI * 0.02
+			this.rotation -= Math.PI * 0.03
 		}
 
 		if (isRight) {
-			this.rotation += Math.PI * 0.02
+			this.rotation += Math.PI * 0.03
 		}
 
 		if (isUp || isDown) {
@@ -136,12 +145,10 @@ export class Character {
 
 			this.legAnimation(isShift)
 			this.armAnimation(isShift)
-
+			this.checkForCoinCollection()
 			if (!isCollision) {
 				this.velocity = nextVelocity
 				this.position.add(this.velocity)
-
-				this.checkForCoinCollection()
 			} else {
 				let horizontalMovement = new Vec2(nextVelocity.x, 0)
 				let verticalMovement = new Vec2(0, nextVelocity.y)
@@ -165,34 +172,39 @@ export class Character {
 	}
 
 	public checkCollision(nextPosition: Vec2): boolean {
-		const left = Math.floor(
-			(nextPosition.x - this.torsoWidth / 3) / this.mapData.tilewidth
-		)
-		const right = Math.floor(
-			(nextPosition.x + this.torsoWidth / 3) / this.mapData.tilewidth
-		)
-		const top = Math.floor(
-			(nextPosition.y - this.torsoHeight / 1) / this.mapData.tileheight
-		)
-		const bottom = Math.floor(
-			(nextPosition.y + this.torsoHeight / 1) / this.mapData.tileheight
-		)
+		const bounds = this.getBounds()
+		bounds.x += nextPosition.x - this.position.x
+		bounds.y += nextPosition.y - this.position.y
+
+		const left = Math.floor(bounds.x / this.mapData.tilewidth)
+		const right =
+			Math.ceil((bounds.x + bounds.width) / this.mapData.tilewidth) - 1
+		const top = Math.floor(bounds.y / this.mapData.tileheight)
+		const bottom =
+			Math.ceil((bounds.y + bounds.height) / this.mapData.tileheight) - 1
 
 		for (let y = top; y <= bottom; y++) {
 			for (let x = left; x <= right; x++) {
-				const tileIndex = y * this.mapData.width + x
-				const tileValue = this.mapData.layers[0].data[tileIndex]
-				if (tileValue === 1) {
-					return true
+				if (
+					x >= 0 &&
+					x < this.mapData.width &&
+					y >= 0 &&
+					y < this.mapData.height
+				) {
+					const tileIndex = y * this.mapData.width + x
+					const tileValue = this.mapData.layers[0].data[tileIndex]
+					if (tileValue === 1) {
+						return true
+					}
 				}
 			}
 		}
 
 		if (
-			nextPosition.x < 0 ||
-			nextPosition.y < 0 ||
-			nextPosition.x > this.mapData.width * this.mapData.tilewidth ||
-			nextPosition.y > this.mapData.height * this.mapData.tileheight
+			bounds.x < 0 ||
+			bounds.y < 0 ||
+			bounds.x + bounds.width > this.mapData.width * this.mapData.tilewidth ||
+			bounds.y + bounds.height > this.mapData.height * this.mapData.tileheight
 		) {
 			return true
 		}
@@ -201,29 +213,35 @@ export class Character {
 	}
 
 	checkForCoinCollection() {
-		const tileSize = this.mapData.tilewidth
-		const mapWidth = Math.sqrt(this.mapData.layers[1].data.length)
-
-		const mapX = Math.floor(this.position.x / tileSize)
-		const mapY = Math.floor(this.position.y / tileSize)
-
-		const coinIndex = mapY * mapWidth + mapX
+		const bounds = this.getBounds()
+		const leftTile = Math.floor(bounds.x / this.mapData.tilewidth)
+		const rightTile =
+			Math.ceil((bounds.x + bounds.width) / this.mapData.tilewidth) - 1
+		const topTile = Math.floor(bounds.y / this.mapData.tileheight)
+		const bottomTile =
+			Math.ceil((bounds.y + bounds.height) / this.mapData.tileheight) - 1
 
 		const goldCoins = [
 			11, 12, 13, 14, 25, 26, 27, 28, 39, 40, 41, 42, 53, 54, 55, 56,
 		]
-		const silverCoins = [22, 23, 36, 37]
+		const silverCoins = [
+			7, 8, 9, 10, 21, 22, 23, 24, 35, 36, 37, 38, 49, 50, 51, 52,
+		]
+		for (let y = topTile; y <= bottomTile; y++) {
+			for (let x = leftTile; x <= rightTile; x++) {
+				const tileIndex = y * this.mapData.width + x
+				const tileValue = this.mapData.layers[1].data[tileIndex]
 
-		const allCoins = [...goldCoins, ...silverCoins]
-
-		const tileValue = this.mapData.layers[1].data[coinIndex]
-
-		if (goldCoins.includes(tileValue)) {
-			this.incrementCoins('gold')
-			this.removeCoinTiles(coinIndex, allCoins)
-		} else if (silverCoins.includes(tileValue)) {
-			this.incrementCoins('silver')
-			this.removeCoinTiles(coinIndex, allCoins)
+				if (goldCoins.includes(tileValue)) {
+					this.incrementCoins('gold')
+					this.removeCoinTiles(tileIndex, [...goldCoins, ...silverCoins])
+					return
+				} else if (silverCoins.includes(tileValue)) {
+					this.incrementCoins('silver')
+					this.removeCoinTiles(tileIndex, [...goldCoins, ...silverCoins])
+					return
+				}
+			}
 		}
 	}
 
