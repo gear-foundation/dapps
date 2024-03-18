@@ -3,16 +3,18 @@ import { useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
 import { ReactComponent as SignlessSVG } from '../../assets/icons/signless.svg';
 import { ReactComponent as PowerSVG } from '../../assets/icons/power.svg';
-import styles from './enable-session.module.css';
+import styles from './enable-signless-session.module.css';
 import { CreateSessionModal } from '../create-session-modal';
-import { useSignlessTransactions } from '@/context';
+import { useSignlessTransactions } from '../../context';
 import { EnableSessionModal } from '../enable-session-modal';
 
 type Props = {
   type: 'button' | 'switcher';
+  shouldIssueVoucher?: boolean;
+  onSessionCreate?: (signlessAccountAddress: string) => Promise<void>;
 };
 
-function EnableSession({ type }: Props) {
+function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher }: Props) {
   const { account } = useAccount();
   const { isAvailable, pair, session, deletePair, deleteSession } = useSignlessTransactions();
   const [isLoading, setIsLoading] = useState(false);
@@ -80,6 +82,7 @@ function EnableSession({ type }: Props) {
           )}
         </>
       )}
+
       {type === 'switcher' && (
         <div className={styles.switchContainer}>
           <div className={styles.switcherWrapper}>
@@ -91,12 +94,14 @@ function EnableSession({ type }: Props) {
               onChange={handleSwitcherChange}
             />
           </div>
+
           <div className={styles.contentWrapper}>
             <div className={styles.headingWrapper}>
               <SignlessSVG />
               <span className={styles.heading}>Enable signless</span>
               {isLoading && <span className={styles.loader} />}
             </div>
+
             {!isAvailable && (
               <span className={styles.descr}>
                 <span>Not enough balance to enable signless mode.</span>
@@ -108,10 +113,16 @@ function EnableSession({ type }: Props) {
         </div>
       )}
 
-      {isCreateSessionModalOpen && <CreateSessionModal close={closeCreateModal} />}
+      {isCreateSessionModalOpen && (
+        <CreateSessionModal
+          close={closeCreateModal}
+          onSessionCreate={onSessionCreate}
+          shouldIssueVoucher={shouldIssueVoucher}
+        />
+      )}
       {isEnableSessionModalOpen && <EnableSessionModal close={closeEnableModal} />}
     </>
   ) : null;
 }
 
-export { EnableSession };
+export { EnableSignlessSession };
