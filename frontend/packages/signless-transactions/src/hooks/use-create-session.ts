@@ -3,7 +3,7 @@ import { useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-h
 import { AnyJson } from '@polkadot/types/types';
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
 import { KeyringPair } from '@polkadot/keyring/types';
-import { sendTransaction } from '@/utils';
+import { sendTransaction } from '../utils';
 
 type Session = {
   key: HexString;
@@ -69,14 +69,11 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!account) throw new Error('Account not found');
 
     const message = getMessage({ CreateSession: session });
-
     const extrinsic = api.message.send(message, metadata);
 
-    const minDuration = api.voucher.minDuration;
+    const voucher = await api.voucher.issue(session.key, voucherValue, undefined, [programId], true);
 
-    const voucher = await api.voucher.issue(session.key, voucherValue, minDuration, [programId], true);
-
-    const txs = [extrinsic, voucher.extrinsic];
+    const txs = voucherValue ? [extrinsic, voucher.extrinsic] : [extrinsic];
     const options = { ..._options, onError };
 
     batchSignAndSend(txs, options);

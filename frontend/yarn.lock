@@ -1930,6 +1930,32 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@dapps-frontend/ez-transactions@workspace:*, @dapps-frontend/ez-transactions@workspace:packages/ez-transactions":
+  version: 0.0.0-use.local
+  resolution: "@dapps-frontend/ez-transactions@workspace:packages/ez-transactions"
+  dependencies:
+    "@dapps-frontend/gasless-transactions": "workspace:*"
+    "@dapps-frontend/signless-transactions": "workspace:*"
+    "@types/node": "npm:18.17.15"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
+    "@typescript-eslint/eslint-plugin": "npm:6.0.0"
+    "@typescript-eslint/parser": "npm:6.0.0"
+    "@vitejs/plugin-react": "npm:4.0.3"
+    eslint: "npm:8.45.0"
+    eslint-plugin-react-hooks: "npm:4.6.0"
+    eslint-plugin-react-refresh: "npm:0.4.3"
+    typescript: "npm:5.0.2"
+    vite: "npm:4.4.5"
+    vite-plugin-dts: "npm:3.5.1"
+  peerDependencies:
+    "@gear-js/api": 0.36.5
+    "@gear-js/react-hooks": 0.10.2
+    react: 18.2.0
+    react-dom: 18.2.0
+  languageName: unknown
+  linkType: soft
+
 "@dapps-frontend/gasless-transactions@workspace:*, @dapps-frontend/gasless-transactions@workspace:packages/gasless-transactions":
   version: 0.0.0-use.local
   resolution: "@dapps-frontend/gasless-transactions@workspace:packages/gasless-transactions"
@@ -9405,9 +9431,8 @@ __metadata:
   resolution: "battleship@workspace:apps/battleship"
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
-    "@dapps-frontend/gasless-transactions": "workspace:*"
+    "@dapps-frontend/ez-transactions": "workspace:*"
     "@dapps-frontend/hooks": "workspace:*"
-    "@dapps-frontend/signless-transactions": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.36.5"
     "@gear-js/react-hooks": "npm:0.10.2"
@@ -9449,7 +9474,7 @@ __metadata:
     tailwindcss: "npm:3.3.2"
     typescript: "npm:4.9.5"
     vite: "npm:4.3.9"
-    vite-plugin-eslint: "npm:1.8.1"
+    vite-plugin-checker: "npm:0.6.4"
     vite-plugin-node-stdlib-browser: "npm:0.2.1"
     vite-plugin-svgr: "npm:3.2.0"
     vite-plugin-top-level-await: "npm:1.3.1"
@@ -23855,6 +23880,56 @@ __metadata:
   dependencies:
     global: "npm:^4.3.1"
   checksum: fd595a96c7bee3cb086f58a750d784a8d52db29b3ddf90a079cd283b097c36f976ac9f3835af53dfe5bdac5c7ccbd03db77abbaa37e38bfb3cbe4843e261e02b
+  languageName: node
+  linkType: hard
+
+"vite-plugin-checker@npm:0.6.4":
+  version: 0.6.4
+  resolution: "vite-plugin-checker@npm:0.6.4"
+  dependencies:
+    "@babel/code-frame": "npm:^7.12.13"
+    ansi-escapes: "npm:^4.3.0"
+    chalk: "npm:^4.1.1"
+    chokidar: "npm:^3.5.1"
+    commander: "npm:^8.0.0"
+    fast-glob: "npm:^3.2.7"
+    fs-extra: "npm:^11.1.0"
+    npm-run-path: "npm:^4.0.1"
+    semver: "npm:^7.5.0"
+    strip-ansi: "npm:^6.0.0"
+    tiny-invariant: "npm:^1.1.0"
+    vscode-languageclient: "npm:^7.0.0"
+    vscode-languageserver: "npm:^7.0.0"
+    vscode-languageserver-textdocument: "npm:^1.0.1"
+    vscode-uri: "npm:^3.0.2"
+  peerDependencies:
+    eslint: ">=7"
+    meow: ^9.0.0
+    optionator: ^0.9.1
+    stylelint: ">=13"
+    typescript: "*"
+    vite: ">=2.0.0"
+    vls: "*"
+    vti: "*"
+    vue-tsc: ">=1.3.9"
+  peerDependenciesMeta:
+    eslint:
+      optional: true
+    meow:
+      optional: true
+    optionator:
+      optional: true
+    stylelint:
+      optional: true
+    typescript:
+      optional: true
+    vls:
+      optional: true
+    vti:
+      optional: true
+    vue-tsc:
+      optional: true
+  checksum: ae61f01b620c458e355ad05ff632e3143312e75c67acdaaa1fe5160d679283364867a4a8d6c6a3f85838f0251033275af96a1aa9b52eed227151cdbca0c996cf
   languageName: node
   linkType: hard
 

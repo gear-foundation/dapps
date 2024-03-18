@@ -12,8 +12,8 @@ export const BattleWaitAdmin = () => {
   const { api } = useApi();
   const { players, isPending, setIsPending } = useBattle();
   const handleMessage = useBattleMessage();
-  const { voucherId, isLoadingVoucher } = useGaslessTransactions();
-  const { checkBalance } = useCheckBalance({ gaslessVoucherId: voucherId });
+  const gasless = useGaslessTransactions();
+  const { checkBalance } = useCheckBalance({ gaslessVoucherId: gasless.voucherId });
 
   const handler = async () => {
     const payload = { StartBattle: null };
@@ -29,7 +29,7 @@ export const BattleWaitAdmin = () => {
           payload,
           onSuccess,
           onError,
-          voucherId,
+          voucherId: gasless.voucherId,
           gasLimit: GAS_LIMIT,
         });
       },
@@ -54,7 +54,7 @@ export const BattleWaitAdmin = () => {
               buttonStyles.button,
             )}
             onClick={handler}
-            disabled={isPending || players.length < 2 || isLoadingVoucher}>
+            disabled={isPending || players.length < 2 || gasless.isLoading}>
             <SpriteIcon name="swords" className="w-5 h-5" /> <span>Start Battle</span>
           </button>
         </div>
