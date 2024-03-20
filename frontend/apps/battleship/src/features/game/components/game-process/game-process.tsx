@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import { useEzTransactions } from '@/features/ez-transactions';
 import { Text } from '@/components/ui/text';
 import { GameEndModal, Map } from '@/features/game';
 import styles from './GameProcess.module.scss';
