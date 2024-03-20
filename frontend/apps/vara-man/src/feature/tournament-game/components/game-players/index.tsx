@@ -53,8 +53,8 @@ export const GamePlayers = () => {
 		return () => clearInterval(timerId);
 	}, [endTime]);
 
-	const minutes = Math.floor(timeLeft / 60000); // 60000 миллисекунд в минуте
-	const seconds = Math.floor((timeLeft % 60000) / 1000); // остаток от деления на 60000, переведенный в секунды
+	const minutes = Math.floor(timeLeft / 60000);
+	const seconds = Math.floor((timeLeft % 60000) / 1000);
 
 	const formattedTimeLeft = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
@@ -65,10 +65,14 @@ export const GamePlayers = () => {
 	}, [])
 
 	useEffect(() => {
-		const sortedParticipants = tournamentGame?.[0].participants
+		if (!tournamentGame?.[0]?.participants) {
+			return;
+		}
+
+		const sortedParticipants = tournamentGame[0].participants
 			.map(participant => {
-				const timeInMs = parseInt(participant[1].time.replace(/,/g, ''), 10); // Преобразование времени из строки в число
-				const points = parseInt(participant[1].points, 10); // Преобразование очков из строки в число
+				const timeInMs = parseInt(participant[1].time.replace(/,/g, ''), 10);
+				const points = parseInt(participant[1].points, 10);
 				return {
 					address: participant[0],
 					name: participant[1].name,
@@ -77,13 +81,12 @@ export const GamePlayers = () => {
 				};
 			})
 			.sort((a, b) => {
-				if (a.timeInMs !== b.timeInMs) return a.timeInMs - b.timeInMs;
-				return a.points - b.points;
+				if (a.points !== b.points) return b.points - a.points;
+				return a.timeInMs - b.timeInMs;
 			});
 
-		setSortedParticipants(sortedParticipants)
-
-	}, [tournamentGame])
+		setSortedParticipants(sortedParticipants);
+	}, [tournamentGame]);
 
 	return (
 		<div className="flex flex-col gap-4 items-center w-3/5">
