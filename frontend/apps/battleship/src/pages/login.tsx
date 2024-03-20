@@ -23,11 +23,12 @@ export default function Login() {
   const closeWallet = () => setIsOpen(false);
 
   const onClickStartGame = () => {
+    if (!account) throw new Error('Account is not found');
     // withVoucherRequest? to handle condition inside of gasless context
     if (!gasless.isEnabled || gasless.voucherId) return navigate('/game');
 
     gasless
-      .requestVoucher()
+      .requestVoucher(account.address)
       .then(() => navigate('/game'))
       .catch(({ message }: Error) => alert.error(message));
   };

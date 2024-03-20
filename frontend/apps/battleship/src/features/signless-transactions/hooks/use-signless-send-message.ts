@@ -32,7 +32,7 @@ function useSignlessSendMessage(
   const sendSignlessMessage = (args: SendSignlessMessageOptions) => {
     const sessionForAccount = pair ? account?.decodedAddress : null;
     const payload = getSinglessPayload(args.payload, sessionForAccount);
-    const voucherId = pairVoucherId ? pairVoucherId : args.voucherId; // to not overrider gasless transactions
+    const voucherId = pairVoucherId;
 
     sendMessage({ ...args, payload, voucherId });
   };
@@ -46,13 +46,13 @@ function useSignlessSendMessageHandler(
   options?: UseSendMessageOptions & { isMaxGasLimit?: boolean },
 ) {
   const { account } = useAccount();
-  const { pair } = useSignlessTransactions();
+  const { pair, pairVoucherId } = useSignlessTransactions();
   const sendMessage = useSendMessageHandler(destination, metadata, { ...options, pair });
 
   const sendSignlessMessage = (args: Omit<SendSignlessMessageOptions, 'gasLimit'>) => {
     const sessionForAccount = pair ? account?.decodedAddress : null;
     const payload = getSinglessPayload(args.payload, sessionForAccount);
-    const voucherId = pair ? (pair?.address as `0x${string}`) : args.voucherId; // to not overrider gasless transactions
+    const voucherId = pairVoucherId;
 
     sendMessage({ ...args, payload, voucherId });
   };
