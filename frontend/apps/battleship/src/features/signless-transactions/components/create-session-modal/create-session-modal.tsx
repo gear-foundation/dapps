@@ -63,6 +63,8 @@ function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIss
 
     let pairToSave: KeyringPair;
 
+    setIsLoading(true);
+
     try {
       pairToSave = storagePair ? getUnlockedPair(storagePair, password) : (pair as KeyringPair);
     } catch (error) {

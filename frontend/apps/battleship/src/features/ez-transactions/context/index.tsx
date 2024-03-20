@@ -1,4 +1,4 @@
-import { ReactNode, createContext, useContext } from 'react';
+import { ReactNode, createContext, useContext, useEffect } from 'react';
 
 import { useGaslessTransactions } from '@/features/gasless-transactions';
 import { useSignlessTransactions } from '@/features/signless-transactions';
@@ -19,11 +19,20 @@ function EzTransactionsProvider({ children }: Props) {
 
   const onSessionCreate = (signlessAccountAddress: string) => gasless.requestVoucher(signlessAccountAddress);
 
+  const isSignlessActive = Boolean(signlessContext.pair); // TODO: move to signless context
+
   const signless = {
     ...signlessContext,
-    isActive: Boolean(signlessContext.pair), // TODO: move to signless context
+    isActive: isSignlessActive,
     onSessionCreate,
   };
+
+  useEffect(() => {
+    if (isSignlessActive) return;
+
+    gasless.setIsEnabled(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isSignlessActive]);
 
   return <Provider value={{ gasless, signless }}>{children}</Provider>;
 }
