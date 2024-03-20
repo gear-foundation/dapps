@@ -35,6 +35,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
   const deleteSession = async (key: HexString, pair?: KeyringPair, _options?: Options) => {
     if (!isApiReady) throw new Error('API is not initialized');
+    if (!account) throw new Error('Account not found');
     if (!metadata) throw new Error('Metadata not found');
 
     const message = getMessage({ DeleteSessionFromAccount: null });
@@ -44,11 +45,11 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
     const accountVoucherId = Object.keys(vouchersForAccount)[0];
 
-    const details = await api?.voucher.getDetails(key, accountVoucherId as `0x${string}`);
-    const finilizedBlockHash = await api?.blocks.getFinalizedHead();
+    const { expiry, owner } = await api.voucher.getDetails(key, accountVoucherId as `0x${string}`);
+    const finilizedBlockHash = await api.blocks.getFinalizedHead();
     const currentBlockNumber = await api.blocks.getBlockNumber(finilizedBlockHash.toHex());
 
-    const isExpired = currentBlockNumber.toNumber() > details.expiry;
+    const isExpired = currentBlockNumber.toNumber() > expiry;
 
     if (!isExpired && pair) {
       const declineExtrrinsic = api.voucher.call(accountVoucherId, { DeclineVoucher: null });
@@ -56,17 +57,17 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
       await sendTransaction(declineExtrrinsic, pair, ['VoucherDeclined']);
     }
 
-    const revokeExtrrinsic = api.voucher.revoke(key, accountVoucherId);
+    const revokeExtrrinsic = owner === account.decodedAddress ? api.voucher.revoke(key, accountVoucherId) : undefined;
 
-    const txs = [extrinsic, revokeExtrrinsic];
+    const txs = revokeExtrrinsic ? [extrinsic, revokeExtrrinsic] : [extrinsic];
 
     batchSignAndSend(txs, { ..._options, onError });
   };
 
   const createSession = async (session: Session, voucherValue: number, _options: Options) => {
     if (!isApiReady) throw new Error('API is not initialized');
-    if (!metadata) throw new Error('Metadata not found');
     if (!account) throw new Error('Account not found');
+    if (!metadata) throw new Error('Metadata not found');
 
     const message = getMessage({ CreateSession: session });
     const extrinsic = api.message.send(message, metadata);
@@ -85,9 +86,9 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!account) throw new Error('Account not found');
 
     const updateVoucher = async (accountVoucherId: string) => {
-      const details = await api?.voucher.getDetails(session.key, accountVoucherId as `0x${string}`);
+      const details = await api.voucher.getDetails(session.key, accountVoucherId as `0x${string}`);
 
-      const finilizedBlockHash = await api?.blocks.getFinalizedHead();
+      const finilizedBlockHash = await api.blocks.getFinalizedHead();
       const currentBlockNumber = await api.blocks.getBlockNumber(finilizedBlockHash.toHex());
 
       const isNeedProlongDuration = currentBlockNumber.toNumber() > details.expiry;
@@ -95,7 +96,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
       if (voucherValue || isNeedProlongDuration) {
         const minDuration = api.voucher.minDuration;
 
-        const voucherExtrinsic = await api.voucher.update(session.key, accountVoucherId, {
+        const voucherExtrinsic = api.voucher.update(session.key, accountVoucherId, {
           balanceTopUp: voucherValue
             ? Number(getFormattedBalance(balance.toNumber()).value) + Number(getFormattedBalance(voucherValue).value)
             : undefined,
@@ -110,7 +111,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
     const message = getMessage({ CreateSession: session });
 
-    const extrinsic = await api.message.send(message, metadata);
+    const extrinsic = api.message.send(message, metadata);
 
     const vouchersForAccount = await api.voucher.getAllForAccount(session.key, programId);
 
