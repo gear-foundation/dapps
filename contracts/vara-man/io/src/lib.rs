@@ -6,14 +6,8 @@ use gmeta::{In, InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 pub use rand::*;
 
-pub const MAP_WIDTH: usize = 17;
-pub const MAP_HEIGHT: usize = 12;
-pub const MAP_CELLS: usize = MAP_WIDTH * MAP_HEIGHT;
-pub const MAX_PERCENTAGE: u128 = 100;
-pub const GAME_TIMEOUT_MS: i64 = 300_000;
+pub const MAX_PARTICIPANTS: u16 = 10;
 
-// pub type GameSeed = u64; // for random generation
-pub type Map = [[Entity; MAP_WIDTH]; MAP_HEIGHT];
 pub struct VaraManMetadata;
 
 impl Metadata for VaraManMetadata {
@@ -30,26 +24,92 @@ pub struct VaraManInit {
     pub config: Config,
 }
 
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub struct TournamentState {
+    pub tournament_name: String,
+    pub admin: ActorId,
+    pub level: Level,
+    pub participants: Vec<(ActorId, Player)>,
+    pub bid: u128,
+    pub stage: Stage,
+    pub duration_ms: u32,
+}
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub struct SingleGame {
+    pub level: Level,
+    pub points: u128,
+    pub start_time: u64,
+    pub game_over: bool,
+}
+
 #[derive(Debug, Encode, Decode, TypeInfo)]
 pub enum VaraManEvent {
     GameFinished {
-        player_address: ActorId,
-        silver_coins: u64,
-        gold_coins: u64,
+        winners: Vec<ActorId>,
+        prize: u128,
+    },
+    NewTournamentCreated {
+        tournament_name: String,
+        name: String,
+        level: Level,
+        bid: u128,
+    },
+    PlayerRegistered {
+        admin_id: ActorId,
+        name: String,
+        bid: u128,
+    },
+    RegisterCanceled,
+    TournamentCanceled {
+        admin_id: ActorId,
+    },
+    PlayerDeleted {
+        player_id: ActorId,
+    },
+    ResultTournamentRecorded {
+        time: u128,
+        points: u128,
     },
     GameStarted,
     AdminAdded(ActorId),
-    PlayerRegistered(ActorId),
     StatusChanged(Status),
     ConfigChanged(Config),
-    Error(String),
+    LeftGame,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 pub enum VaraManAction {
-    StartGame { level: Level },
-    RegisterPlayer { name: String },
-    ClaimReward { silver_coins: u64, gold_coins: u64 },
+    CreateNewTournament {
+        tournament_name: String,
+        name: String,
+        level: Level,
+        duration_ms: u32,
+    },
+    StartTournament,
+    RegisterForTournament {
+        admin_id: ActorId,
+        name: String,
+    },
+    CancelRegister,
+    CancelTournament,
+    DeletePlayer {
+        player_id: ActorId,
+    },
+    RecordTournamentResult {
+        time: u128,
+        gold_coins: u128,
+        silver_coins: u128,
+    },
+    FinishTournament {
+        admin_id: ActorId,
+        time_start: u64,
+    },
+    FinishSingleGame {
+        gold_coins: u128,
+        silver_coins: u128,
+        level: Level,
+    },
+    LeaveGame,
     ChangeStatus(Status),
     ChangeConfig(Config),
     AddAdmin(ActorId),
@@ -59,26 +119,32 @@ pub enum VaraManAction {
 pub enum VaraManError {
     GameIsPaused,
     EmptyName,
-    AlreadyRegistered,
+    AlreadyHaveTournament,
+    NoSuchGame,
+    NoSuchPlayer,
+    WrongBid,
+    SeveralRegistrations,
+    SeveralGames,
     NotRegistered,
     GameDoesNotExist,
-    AlreadyStartGame,
-    LivesEnded,
     AmountGreaterThanAllowed,
     TransferNativeTokenFailed,
     TransferFungibleTokenFailed,
     ThereIsNoSuchGame,
     NotAdmin,
     ConfigIsInvalid,
+    SessionFull,
+    WrongStage,
+    WrongTypeOfGame,
+    AccessDenied,
+    MultipleError,
+    GameOver,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateQuery {
     All,
-    AllGames,
-    AllPlayers,
-    Game { player_address: ActorId },
-    Player { player_address: ActorId },
+    GetTournament { player_id: ActorId },
     Config,
     Admins,
     Status,
@@ -86,20 +152,17 @@ pub enum StateQuery {
 
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateReply {
-    All(VaraMan),
-    AllGames(Vec<(ActorId, GameInstance)>),
-    AllPlayers(Vec<(ActorId, Player)>),
-    Game(Option<GameInstance>),
+    All(VaraManState),
+    Tournament(Option<(TournamentState, Option<u64>)>),
     Config(Config),
     Admins(Vec<ActorId>),
     Status(Status),
-    Player(Option<Player>),
 }
 
 #[derive(Debug, Default, Clone, Encode, Decode, TypeInfo)]
-pub struct VaraMan {
-    pub games: Vec<(ActorId, GameInstance)>,
-    pub players: Vec<(ActorId, Player)>,
+pub struct VaraManState {
+    pub tournaments: Vec<(ActorId, TournamentState)>,
+    pub players_to_game_id: Vec<(ActorId, ActorId)>,
     pub status: Status,
     pub config: Config,
     pub admins: Vec<ActorId>,
@@ -116,38 +179,42 @@ pub enum Status {
     StartedWithNativeToken,
 }
 
+#[derive(Debug, Default, Clone, PartialEq, Eq, Encode, Decode, TypeInfo)]
+pub enum Stage {
+    #[default]
+    Registration,
+    Started(u64),
+    Finished(Vec<ActorId>),
+}
+
 #[derive(Debug, Default, Clone, Copy, Encode, Decode, TypeInfo)]
 pub struct Config {
-    pub one_coin_in_value: u64,
-    pub tokens_per_gold_coin_easy: u64,
-    pub tokens_per_silver_coin_easy: u64,
-    pub tokens_per_gold_coin_medium: u64,
-    pub tokens_per_silver_coin_medium: u64,
-    pub tokens_per_gold_coin_hard: u64,
-    pub tokens_per_silver_coin_hard: u64,
-    pub gold_coins: u64,
-    pub silver_coins: u64,
-    pub number_of_lives: u64,
+    pub one_point_in_value: u128,
+    pub points_per_gold_coin_easy: u128,
+    pub points_per_silver_coin_easy: u128,
+    pub points_per_gold_coin_medium: u128,
+    pub points_per_silver_coin_medium: u128,
+    pub points_per_gold_coin_hard: u128,
+    pub points_per_silver_coin_hard: u128,
+    pub gas_for_finish_tournament: u64,
+    pub gas_for_finish_single_game: u64,
+    pub time_for_single_round: u32,
 }
 
 impl Config {
-    pub fn is_valid(&self) -> bool {
-        self.gold_coins + self.silver_coins <= MAP_CELLS as u64
-    }
-
-    pub fn get_tokens_per_gold_coin_for_level(&self, level: Level) -> (u64, u64) {
+    pub fn get_points_per_gold_coin_for_level(&self, level: Level) -> (u128, u128) {
         match level {
             Level::Easy => (
-                self.tokens_per_gold_coin_easy,
-                self.tokens_per_silver_coin_easy,
+                self.points_per_gold_coin_easy,
+                self.points_per_silver_coin_easy,
             ),
             Level::Medium => (
-                self.tokens_per_gold_coin_medium,
-                self.tokens_per_silver_coin_medium,
+                self.points_per_gold_coin_medium,
+                self.points_per_silver_coin_medium,
             ),
             Level::Hard => (
-                self.tokens_per_gold_coin_hard,
-                self.tokens_per_silver_coin_hard,
+                self.points_per_gold_coin_hard,
+                self.points_per_silver_coin_hard,
             ),
         }
     }
@@ -156,19 +223,13 @@ impl Config {
 #[derive(Debug, Clone, PartialEq, Eq, Encode, Decode, TypeInfo)]
 pub struct Player {
     pub name: String,
-    pub lives: u64,
-    pub claimed_gold_coins: u64,
-    pub claimed_silver_coins: u64,
+    pub time: u128,
+    pub points: u128,
 }
 
-impl Player {
-    pub fn is_have_lives(&self) -> bool {
-        self.lives > 0
-    }
-}
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
 pub enum Level {
+    #[default]
     Easy,
     Medium,
     Hard,
@@ -180,207 +241,3 @@ pub enum Effect {
     Slow,
     Blind,
 }
-
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
-pub enum Entity {
-    /// 25% chance to spawn.
-    Empty,
-    /// 10% chance to spawn.
-    GoldCoin(Option<Effect>),
-    /// 65% chance to spawn.
-    SilverCoin,
-    /// 25% chance to spawn.
-    ZombieCat,
-    /// 25% chance to spawn.
-    BatCat,
-    /// 10% chance to spawn.
-    BullyCat,
-}
-
-#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-pub struct GameInstance {
-    pub level: Level,
-    pub gold_coins: u64,
-    pub silver_coins: u64,
-    // pub map: Map,
-}
-// The following code is for generating the game map
-
-// impl GameInstance {
-//     pub fn new(level: Level, seed: GameSeed) -> GameInstance {
-//         let mut map: Map = [[Entity::Empty; MAP_WIDTH]; MAP_HEIGHT];
-//         let mut rnd = Rand { seed };
-
-//         let mut gold_coins = 0u64;
-//         let mut silver_coins = 0u64;
-//         let mut effects = vec![Effect::Speed, Effect::Slow, Effect::Blind];
-
-//         #[allow(clippy::needless_range_loop)]
-//         for y in 0..MAP_HEIGHT {
-//             for x in 0..MAP_WIDTH {
-//                 let entity = {
-//                     let c: u64 = rnd.range(100);
-
-//                     if c <= 10 {
-//                         if c % 2 == 0 {
-//                             gold_coins += 1;
-//                             Entity::GoldCoin(effects.pop())
-//                         } else {
-//                             Entity::BullyCat
-//                         }
-//                     } else if c <= 25 {
-//                         let p = [Entity::Empty, Entity::ZombieCat, Entity::BatCat];
-//                         p[c as usize % p.len()]
-//                     } else {
-//                         silver_coins += 1;
-//                         Entity::SilverCoin
-//                     }
-//                 };
-
-//                 map[y][x] = entity;
-//             }
-//         }
-
-//         Self {
-//             level,
-//             gold_coins,
-//             silver_coins,
-//             map,
-//             is_claimed: false,
-//         }
-//     }
-
-//     pub fn new_with_coins(
-//         level: Level,
-//         gold_coins: u64,
-//         silver_coins: u64,
-//         seed: GameSeed,
-//     ) -> GameInstance {
-//         let mut map: Map = [[Entity::Empty; MAP_WIDTH]; MAP_HEIGHT];
-//         let mut effects = vec![Effect::Speed, Effect::Slow, Effect::Blind];
-//         let mut rnd = Rand { seed };
-
-//         // 1. Transform game map
-//         let mut cells = Vec::new();
-//         for y in 0..MAP_HEIGHT {
-//             for x in 0..MAP_WIDTH {
-//                 cells.push((Entity::Empty, y, x));
-//             }
-//         }
-
-//         // 2. Pick N random positions for gold coins
-//         for _ in 0..=gold_coins {
-//             let i = rnd.range(cells.len() as u64) as usize;
-//             let (_, y, x) = cells.remove(i);
-
-//             map[y][x] = Entity::GoldCoin(None);
-//         }
-
-//         // 3. Pick N random positions for silver coins
-//         for _ in 0..=silver_coins {
-//             let i = rnd.range(cells.len() as u64) as usize;
-//             let (_, y, x) = cells.remove(i);
-
-//             map[y][x] = Entity::SilverCoin;
-//         }
-
-//         // 4. Fill remaining map with monsters and effects
-//         #[allow(clippy::needless_range_loop)]
-//         for y in 0..MAP_HEIGHT {
-//             for x in 0..MAP_WIDTH {
-//                 let r = rnd.rand();
-//                 let entity = map[y][x];
-
-//                 let new_entity = if entity == Entity::Empty {
-//                     let p = [
-//                         Entity::Empty,
-//                         Entity::ZombieCat,
-//                         Entity::BatCat,
-//                         Entity::BullyCat,
-//                     ];
-//                     p[r as usize % p.len()]
-//                 } else if entity == Entity::GoldCoin(None) {
-//                     if r % 2 == 0 {
-//                         Entity::GoldCoin(effects.pop())
-//                     } else {
-//                         /* let p = [
-//                             Entity::GoldCoin(None),
-//                             Entity::GoldCoin(Some(Effect::Speed)),
-//                             Entity::GoldCoin(Some(Effect::Slow)),
-//                             Entity::GoldCoin(Some(Effect::Blind)),
-//                         ];
-//                         p[r as usize % p.len()] */
-//                         entity
-//                     }
-//                 } else {
-//                     entity
-//                 };
-
-//                 map[y][x] = new_entity;
-//             }
-//         }
-
-//         Self {
-//             level,
-//             gold_coins,
-//             silver_coins,
-//             map,
-//             is_claimed: false,
-//         }
-//     }
-// }
-
-// #[cfg(test)]
-// mod tests {
-//     extern crate std;
-
-//     use super::*;
-
-//     #[test]
-//     fn success_game_instance() {
-//         let game_instance = GameInstance::new(Level::Easy, 0);
-
-//         for y in 0..MAP_HEIGHT {
-//             for x in 0..MAP_WIDTH {
-//                 let e = game_instance.map[y][x];
-//                 let c = match e {
-//                     Entity::Empty => ' ',
-//                     Entity::ZombieCat => '🐱',
-//                     Entity::BatCat => '😼',
-//                     Entity::BullyCat => '😾',
-//                     Entity::GoldCoin(_) => '🥇',
-//                     Entity::SilverCoin => '🪙',
-//                 };
-//                 std::print!("{c}");
-//             }
-//             std::println!();
-//         }
-//     }
-
-//     #[test]
-//     fn success_game_instance_with_coins() {
-//         let game_instance = GameInstance::new_with_coins(Level::Easy, 5, 20, 0);
-
-//         for y in 0..MAP_HEIGHT {
-//             for x in 0..MAP_WIDTH {
-//                 let e = game_instance.map[y][x];
-//                 let c = match e {
-//                     Entity::Empty => ' ',
-//                     Entity::ZombieCat => '🐱',
-//                     Entity::BatCat => '😼',
-//                     Entity::BullyCat => '😾',
-//                     Entity::GoldCoin(_) => '🥇',
-//                     Entity::SilverCoin => '🪙',
-//                 };
-//                 std::print!("{c}");
-//             }
-//             std::println!();
-//         }
-
-//         std::println!(
-//             "gold_coins: {}, silver_coins: {}",
-//             game_instance.gold_coins,
-//             game_instance.silver_coins
-//         );
-//     }
-// }
