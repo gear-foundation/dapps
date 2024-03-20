@@ -12,9 +12,6 @@ const initialValues = {
 	bid: 0,
 };
 
-const validate: Record<string, typeof numberRequired> = {
-	bid: numberRequired,
-};
 
 export const CreateGame = ({ closeCreateGame }: { closeCreateGame: () => void }) => {
 	const { api } = useApi();
@@ -22,7 +19,6 @@ export const CreateGame = ({ closeCreateGame }: { closeCreateGame: () => void })
 	const { setIsPending, isPending } = useApp();
 	const form = useForm({
 		initialValues,
-		validate,
 		validateInputOnChange: true,
 	});
 	const { getInputProps, errors, reset } = form;

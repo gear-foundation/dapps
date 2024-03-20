@@ -3,7 +3,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import { ENV } from '@/app/consts';
 import { useReadState } from './use-metadata';
 import meta from '@/assets/meta/vara_man.meta.txt';
-import { GameState, IGameConfig } from '@/app/types/game';
+import { IGameConfig, ITournamentGameInstance } from '@/app/types/game';
 
 export const programIdGame = ENV.GAME;
 
@@ -21,11 +21,18 @@ export function useGameState() {
   );
 
 
+  const payloadAllState = useMemo(() => ({ All: null }), []);
   const payloadConfig = useMemo(() => ({ Config: null }), []);
   const payloadAdmins = useMemo(() => ({ Admins: null }), []);
 
+  const { state: allState } = useReadState<any>({
+    programId: programIdGame,
+    meta,
+    payload: payloadAllState,
+  });
 
-  const { state: game } = useReadState<GameState>({
+
+  const { state: tournament } = useReadState<{ Tournament: ITournamentGameInstance }>({
     programId: programIdGame,
     meta,
     payload: payloadTournamentGame,
@@ -44,6 +51,5 @@ export function useGameState() {
     payload: payloadAdmins,
   });
 
-
-  return { game, config, admins };
+  return { allState, tournament, config, admins };
 }

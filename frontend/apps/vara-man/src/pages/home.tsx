@@ -1,5 +1,17 @@
+import { useEffect } from 'react';
+
+import { useGame } from '@/app/context/ctx-game';
 import { HomeRegister } from '@/components/sections/home/home-register';
+import Game from './game';
 
 export default function Home() {
-  return <><HomeRegister /></>;
+  const { tournamentGame, previousGame, setPreviousGame } = useGame()
+
+  useEffect(() => {
+    if (tournamentGame) {
+      setPreviousGame(tournamentGame);
+    }
+  }, [tournamentGame]);
+
+  return <>{tournamentGame || previousGame ? <Game /> : <HomeRegister />}</>;
 }
