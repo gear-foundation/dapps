@@ -1,17 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useAtomValue, useSetAtom, useAtom } from 'jotai';
-import {
-  useAccount,
-  useApi,
-  useBalanceFormat,
-  useReadFullState,
-  useSendMessageHandler,
-  withoutCommas,
-} from '@gear-js/react-hooks';
+import { useAccount, useApi, withoutCommas } from '@gear-js/react-hooks';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { HexString } from '@polkadot/util/types';
-import { ADDRESS, fields, INIT_PLAYERS, LocalStorage } from 'consts';
-import { MessageDetails, MessageHandlePayload, MessagePayload, State, Step } from 'types';
+import { ADDRESS, fields, INIT_PLAYERS } from 'consts';
+import { MessageHandlePayload, MessagePayload, PlayersByStrategyAddress, Step } from 'types';
 import meta from 'assets/meta/syndote_meta.txt';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { Loader } from 'components';
@@ -21,22 +14,28 @@ import { Roll } from './roll';
 import styles from './Home.module.scss';
 import { Players } from './players/Players';
 import { Button } from '@gear-js/vara-ui';
-import { Buttons } from './buttons';
 import { Cell } from './cell';
 import { RequestGame } from 'pages/welcome/components/request-game';
 import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING } from 'atoms';
 import { SessionInfo } from './session-info';
 import clsx from 'clsx';
 import { TextModal } from './game-not-found-modal';
+import { ContinueGameModal } from './continue-game-modal';
+import { ReserveModal } from './reserve-modal';
 
 function Home() {
   const { account } = useAccount();
   const { api } = useApi();
   const metadata = useProgramMetadata(meta);
   const [isLoading, setIsLoading] = useAtom(IS_LOADING);
+  const [isContinueGameModalOpen, setIsContinueGameModalOpen] = useState(false);
   const [isPlayerRemovedModalOpen, setIsPlayerRemovedModalOpen] = useState(false);
   const [isGameCancelledModalOpen, setIsGameCancelledModalOpen] = useState(false);
-  const [currentGame, setCurrentGame] = useAtom(CURRENT_GAME_ADMIN_ATOM);
+  const [isReserveModalOpen, setIsReserveModalOpen] = useState(false);
+  const [isReserveInfoModalOpen, setIsReserveInfoModalOpen] = useState(false);
+  const [isContinueGameInfoModalOpen, setIsContinueGameInfoModalOpen] = useState(false);
+  const admin = useRef<null | HexString>(null);
+  const setCurrentGame = useSetAtom(CURRENT_GAME_ADMIN_ATOM);
   const { state, isStateRead } = useReadGameSessionState();
   const { isMeta, sendMessage, sendPlayMessage } = useSyndoteMessage();
   const { checkBalance } = useCheckBalance();
@@ -53,15 +52,22 @@ function Home() {
   const playersArray = state?.players || [];
 
   const getPlayers = () => (isGameStarted ? roll.players : state!.players!);
-
+  console.log('==STATE==');
+  console.log(state);
   const players = playersArray.map(([address], index) => ({
     ...INIT_PLAYERS[index],
     address,
     ...getPlayers().find(([newAddress]) => newAddress === address)![1],
   }));
+  const playersByStrategyAddress = players.reduce((acc, item) => {
+    return {
+      ...acc,
+      [item.address]: item,
+    };
+  }, {}) as PlayersByStrategyAddress;
   const isAnyPlayer = players.length > 0;
   const playerStrategyId = players.find((player) => player.ownerId === account?.decodedAddress)?.address;
-
+  console.log(players);
   const register = () => {
     const payload = { Register: { adminId, strategyId } };
 
@@ -73,7 +79,8 @@ function Home() {
       },
     });
   };
-
+  console.log('isRes');
+  console.log(isReserveModalOpen);
   const startGame = () => {
     const payload = {
       Play: {
@@ -112,6 +119,64 @@ function Home() {
     });
   };
 
+  const addGasToPlayerStrategy = () => {
+    const payload = {
+      AddGasToPlayerStrategy: {
+        adminId,
+      },
+    };
+
+    sendMessage({
+      payload,
+      onInBlock: () => {
+        setIsReserveModalOpen(false);
+      },
+    });
+  };
+
+  const continueGame = () => {
+    setIsContinueGameModalOpen(false);
+    startGame();
+  };
+
+  useEffect(() => {
+    console.log('SET ADMIN');
+    console.log(adminId);
+    if (adminId) {
+      admin.current = adminId;
+    }
+  }, [adminId]);
+
+  useEffect(() => {
+    if (gameStatus !== 'WaitingForGasForGameContract') {
+      setIsContinueGameInfoModalOpen(false);
+      setIsContinueGameModalOpen(false);
+      return;
+    }
+
+    if (isAdmin) {
+      setIsContinueGameModalOpen(true);
+    } else {
+      setIsContinueGameInfoModalOpen(false);
+    }
+  }, [gameStatus, isAdmin]);
+
+  useEffect(() => {
+    if (!gameStatus?.WaitingForGasForStrategy) {
+      setIsReserveModalOpen(false);
+      setIsReserveInfoModalOpen(false);
+      return;
+    }
+
+    if (gameStatus.WaitingForGasForStrategy === playerStrategyId) {
+      setIsReserveModalOpen(true);
+    } else {
+      setIsReserveInfoModalOpen(true);
+    }
+  }, [gameStatus, playerStrategyId]);
+  console.log(api?.blockGasLimit.toNumber());
+  console.log('ADMIN');
+  console.log(admin);
   const getDecodedPayload = (payload: Bytes) => {
     if (!metadata) return;
 
@@ -160,10 +225,9 @@ function Home() {
         console.log(source.toHex());
         console.log(ADDRESS.CONTRACT);
         console.log(destination.toHex());
-        console.log(adminId);
-        console.log(currentGame);
+        console.log(admin);
 
-        if (source.toHex() === ADDRESS.CONTRACT) {
+        if (source.toHex() === ADDRESS.CONTRACT && destination.toHex() === admin.current) {
           console.log('----------MESSAGE RECEIVED-----------');
           const decodedPayload = getDecodedPayload(payload) as MessagePayload;
 
@@ -181,8 +245,19 @@ function Home() {
           console.log('============ DECODED HANDLE PAYLOAD ==============');
           console.log(decodedPayloadHandle);
 
-          if (['GameDeleted', 'GameWasCancelled'].includes(decodedPayloadHandle.Ok)) {
-            setIsGameCancelledModalOpen(true);
+          if (decodedPayloadHandle?.Ok && ['GameDeleted', 'GameWasCancelled'].includes(decodedPayloadHandle.Ok)) {
+            console.log('-----------');
+            console.log(admin.current);
+            console.log(account?.decodedAddress);
+            console.log(admin.current !== account?.decodedAddress);
+            console.log('-----------');
+            if (admin.current !== account?.decodedAddress) {
+              console.log('lalalalalala');
+              setIsGameCancelledModalOpen(true);
+            }
+
+            admin.current = null;
+            setSteps([]);
           }
         }
       });
@@ -221,6 +296,8 @@ function Home() {
   const handleCloseModal = () => {
     setIsPlayerRemovedModalOpen(false);
     setIsGameCancelledModalOpen(false);
+    setIsContinueGameModalOpen(false);
+    setIsReserveModalOpen(false);
   };
 
   return isStateRead ? (
@@ -274,7 +351,6 @@ function Home() {
                     )}
                     {gameStatus === 'Play' && (
                       <>
-                        {/* <Buttons onMainClick={isAdmin ? startGame : undefined} /> */}
                         <div className={clsx(styles.headingWrapper, styles.headingWrapperAdmin)}>
                           <h1 className={styles.heading}>Registration...</h1>
                         </div>
@@ -324,7 +400,23 @@ function Home() {
       {isGameCancelledModalOpen && (
         <TextModal
           heading="The game has been canceled by the administrator"
-          text="Game administrator Samovit has ended the game. All spent VARA tokens for the entry fee will be refunded."
+          text="Game administrator has ended the game. All spent VARA tokens for the entry fee will be refunded."
+          onClose={handleCloseModal}
+        />
+      )}
+      {isContinueGameModalOpen && <ContinueGameModal onReserve={continueGame} onClose={handleCloseModal} />}
+      {isContinueGameInfoModalOpen && (
+        <TextModal
+          heading={`Game administrator reserves extra gas to continue the game`}
+          text="Once he reserves the required amount, the game will continue."
+          onClose={handleCloseModal}
+        />
+      )}
+      {isReserveModalOpen && <ReserveModal onReserve={addGasToPlayerStrategy} onClose={handleCloseModal} />}
+      {isReserveInfoModalOpen && gameStatus?.WaitingForGasForStrategy && (
+        <TextModal
+          heading={`Player ${playersByStrategyAddress[gameStatus.WaitingForGasForStrategy].name} pays extra gas`}
+          text="Once he reserves the required amount, the game will continue. If he fails to do so before the timer expires, he will lose and can only observe the game"
           onClose={handleCloseModal}
         />
       )}
