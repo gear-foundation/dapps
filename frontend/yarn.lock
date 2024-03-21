@@ -16409,11 +16409,6 @@ __metadata:
       optional: true
   checksum: 9f753ab76070d4bd284822f7cbffce4e36632f190be63758c8bca7c69a953d5e2a1d8d7124ab8c11d5745ba639fb0a1a28ec1e565d8e446ff83c81efed5ca39f
   languageName: node
-  linkType: hard
-
-"jotai@npm:^2.2.2, jotai@npm:^2.4.3":
-  version: 2.6.2
-  resolution: "jotai@npm:2.6.2"
   peerDependencies:
     "@types/react": ">=17.0.0"
     react: ">=17.0.0"
@@ -22281,7 +22276,7 @@ __metadata:
     "@gear-js/api": "npm:0.36.5"
     "@gear-js/react-hooks": "npm:0.10.2"
     "@gear-js/ui": "npm:0.5.21"
-    "@mantine/form": "npm:4.2.12"
+    "@mantine/form": "npm:6.0.8"
     "@polkadot/api": "npm:10.11.2"
     "@polkadot/extension-dapp": "npm:0.46.5"
     "@polkadot/react-identicon": "npm:3.1.4"
@@ -22308,6 +22303,7 @@ __metadata:
     eslint-plugin-jsx-a11y: "npm:6.7.1"
     eslint-plugin-react: "npm:7.32.2"
     eslint-plugin-react-hooks: "npm:4.6.0"
+    jotai: "npm:2.7.1"
     react: "npm:18.2.0"
     react-app-rewired: "npm:2.2.1"
     react-dom: "npm:18.2.0"
