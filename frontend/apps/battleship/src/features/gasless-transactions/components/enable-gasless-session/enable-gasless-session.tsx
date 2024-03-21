@@ -8,7 +8,7 @@ import { ChangeEvent } from 'react';
 
 type Props = {
   type: 'button' | 'switcher';
-  disabled?: boolean; // in case signless was enabled first
+  disabled?: boolean;
   message?: string;
 };
 

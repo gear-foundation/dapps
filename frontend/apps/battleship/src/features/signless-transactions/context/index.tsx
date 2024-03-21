@@ -1,7 +1,7 @@
 import { HexString } from '@gear-js/api';
 import { useAccount, useBalanceFormat, useDeriveBalancesAll } from '@gear-js/react-hooks';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
-import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
+import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
 import { useProgramMetadata } from '@dapps-frontend/hooks';
 
@@ -34,19 +34,13 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
   const pairVoucherId = useVoucherId(programId, pair?.address);
   const voucherBalance = useVoucherBalance(programId, pair?.address);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const isAvailable = useMemo(
-    () =>
-      balances ? Number(getFormattedBalance(balances.freeBalance.toNumber()).value) > 42 || voucherBalance > 0 : false,
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [balances, voucherBalance],
-  );
+  const getStorage = () => JSON.parse(localStorage[SIGNLESS_STORAGE_KEY] || '{}') as Storage;
+  const [storagePair, setStoragePair] = useState(account ? getStorage()[account.address] : undefined);
 
+  const [isLoading, setIsLoading] = useState(false);
+  const [isAvailable, setIsAvailable] = useState(false);
   const isActive = Boolean(pair);
   const isSessionActive = Boolean(session);
-
-  const getStorage = () => JSON.parse(localStorage[SIGNLESS_STORAGE_KEY] || '{}') as Storage;
-  const storagePair = account ? getStorage()[account.address] : undefined;
 
   const unlockPair = (password: string) => {
     if (!storagePair) throw new Error('Pair not found');
@@ -56,21 +50,41 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
     setPair(result);
   };
 
-  const setStoragePair = (value: KeyringPair$Json | undefined) => {
+  const setPairToStorage = (value: KeyringPair$Json | undefined) => {
     if (!account) throw new Error('No account address');
 
     const storage = { ...getStorage(), [account.address]: value };
 
     localStorage.setItem(SIGNLESS_STORAGE_KEY, JSON.stringify(storage));
+    setStoragePair(value);
   };
 
+  useEffect(() => {
+    if (!account) return setStoragePair(undefined);
+
+    setStoragePair(getStorage()[account.address]);
+  }, [account]);
+
+  useEffect(() => {
+    if (!balances) return;
+    const { freeBalance } = balances;
+
+    const result = balances
+      ? Number(getFormattedBalance(freeBalance.toNumber()).value) > 42 || voucherBalance > 0
+      : false;
+
+    setIsAvailable(result);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [balances, voucherBalance]);
+
   const savePair = (value: KeyringPair, password: string) => {
-    setStoragePair(value.toJson(password));
+    setPairToStorage(value.toJson(password));
     setPair(value);
   };
 
   const deletePair = () => {
-    setStoragePair(undefined);
+    setPairToStorage(undefined);
     setPair(undefined);
   };
 
