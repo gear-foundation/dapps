@@ -104,8 +104,8 @@ export class CharacterRenderer {
 		context.restore()
 
 		// Drawing a border for debug
-		const bounds = character.getBounds()
-		context.strokeStyle = 'rgba(255, 0, 0, 0.5)'
-		context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height)
+		// const bounds = character.getBounds()
+		// context.strokeStyle = 'rgba(255, 0, 0, 0.5)'
+		// context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height)
 	}
 }
