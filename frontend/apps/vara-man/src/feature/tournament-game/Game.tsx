@@ -25,7 +25,6 @@ export const Game = () => {
 
 	const { tournamentGame, previousGame, setPreviousGame } = useGame()
 
-
 	const [gameOver, setGameOver] = useAtom(GAME_OVER)
 	const { configState } = useGame()
 	const [coins] = useAtom(COINS);
@@ -58,26 +57,26 @@ export const Game = () => {
 			{isCanceledModal && <GameCanceledModal />}
 
 			<div className="w-full flex flex-col justify-center items-center">
-				<div className="w-[588px] flex justify-between my-3">
-					<div className="flex gap-3 items-center">
-						<div className="flex gap-3 items-center font-semibold">
-							<Icons.statsTimer />
+				{isStarted &&
+					<div className="w-[588px] flex justify-between my-3">
+						<div className="flex gap-3 items-center">
+							<div className="flex gap-3 items-center font-semibold">
+								<Icons.statsTimer />
 
-							<GameTimer isPause={isRegistration || isFinished || gameOver} />
+								<GameTimer isPause={isRegistration || isFinished || gameOver} />
+							</div>
+
+							<div className="flex gap-3 items-center font-semibold">
+								<Icons.statsCoins />
+								{score}
+							</div>
+
 						</div>
-
-						<div className="flex gap-3 items-center font-semibold">
-							<Icons.statsCoins />
-							{score}
+						<div className="flex gap-3 items-center font-semibold cursor-pointer" onClick={() => setGameOver(true)}>
+							<Icons.exit />
+							Exit
 						</div>
-
-					</div>
-					<div className="flex gap-3 items-center font-semibold cursor-pointer" onClick={() => setGameOver(true)}>
-						<Icons.exit />
-						Exit
-					</div>
-
-				</div>
+					</div>}
 
 				<GameCanvas isPause={isRegistration || isFinished || !isStarted} />
 
