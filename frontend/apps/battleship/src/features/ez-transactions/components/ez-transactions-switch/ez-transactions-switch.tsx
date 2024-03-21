@@ -19,6 +19,8 @@ function EzTransactionsSwitch() {
         type="switcher"
         onSessionCreate={signless.onSessionCreate}
         shouldIssueVoucher={!gasless.isEnabled}
+        disabled={!signless.isSessionActive && gasless.isActive}
+        message={!signless.isSessionActive && gasless.isActive ? 'Gasless Session is Active' : ''}
       />
     </div>
   );

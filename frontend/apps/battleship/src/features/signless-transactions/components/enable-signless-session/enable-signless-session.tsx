@@ -11,10 +11,12 @@ import { EnableSessionModal } from '../enable-session-modal';
 type Props = {
   type: 'button' | 'switcher';
   shouldIssueVoucher?: boolean;
+  message?: string;
+  disabled?: boolean;
   onSessionCreate?: (signlessAccountAddress: string) => Promise<void>;
 };
 
-function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher }: Props) {
+function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher, disabled, message }: Props) {
   const { account } = useAccount();
   const { isAvailable, pair, session, deletePair, deleteSession } = useSignlessTransactions();
   const [isLoading, setIsLoading] = useState(false);
@@ -75,7 +77,7 @@ function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher }: Pr
               icon={SignlessSVG}
               color="transparent"
               text="Enable signless transactions"
-              disabled={isLoading || !isAvailable}
+              disabled={isLoading || !isAvailable || disabled}
               className={styles.enableButton}
               onClick={openCreateModal}
             />
@@ -89,7 +91,7 @@ function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher }: Pr
             <Checkbox
               label=""
               type="switch"
-              disabled={isLoading || !isAvailable}
+              disabled={isLoading || !isAvailable || disabled}
               checked={isSession && !!pair}
               onChange={handleSwitcherChange}
             />
@@ -102,11 +104,17 @@ function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher }: Pr
               {isLoading && <span className={styles.loader} />}
             </div>
 
-            {!isAvailable && (
+            {(!isAvailable || message) && (
               <span className={styles.descr}>
-                <span>Not enough balance to enable signless mode.</span>
-                <br />
-                <span>Min required: 42 VARA</span>
+                {!isAvailable ? (
+                  <>
+                    <span>Not enough balance to enable signless mode.</span>
+                    <br />
+                    <span>Min required: 42 VARA</span>
+                  </>
+                ) : (
+                  message && <span>{message}</span>
+                )}
               </span>
             )}
           </div>
