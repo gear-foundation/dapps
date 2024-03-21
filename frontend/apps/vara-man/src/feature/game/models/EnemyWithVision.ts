@@ -16,14 +16,16 @@ export class EnemyWithVision extends Enemy {
 		this.playerPosition = params.playerPosition
 		this.mapData = params.mapData
 
-		let proposedPosition = new Vec2(this.position.x, this.position.y)
-
-		if (this.isPlayerInVision() && !this.checkCollision(proposedPosition)) {
+		if (this.isPlayerInVision()) {
+			this.slideAlongWall(this.playerPosition)
 			this.moveTowardsPlayer()
-		}
 
-		this.updateDirection()
-		super.performMovement(this.isPlayerInVision())
+			this.legAnimation()
+			this.armAnimation()
+		} else {
+			this.updateDirection()
+			super.performMovement(this.isPlayerInVision())
+		}
 	}
 
 	isPlayerInVision(): boolean {
