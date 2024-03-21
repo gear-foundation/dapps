@@ -43,8 +43,7 @@ export function LevelsSelectMode() {
               className={cn(
                 "border rounded-2xl text-center cursor-pointer",
                 item.color,
-                "border-[var(--stats-theme)]",
-                isPending && "bg-[#fafafa] cursor-default",
+                "border-[var(--stats-theme)]"
               )}
               onClick={() => navigate(`/game?level=${item.title}`)}
             >

@@ -1,9 +1,5 @@
 import { ReactNode, useEffect, useRef, MouseEvent } from 'react';
-import { ReactComponent as CrossSVG } from 'assets/images/icons/cross.svg';
-// import { useResizeEffect } from 'hooks';
 import styles from './Modal.module.scss';
-// import { Button } from '../ui/button';
-// import { Sprite } from '../ui/sprite';
 
 type Props = {
   heading?: string;
