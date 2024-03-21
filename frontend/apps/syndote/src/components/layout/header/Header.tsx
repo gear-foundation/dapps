@@ -12,9 +12,8 @@ function Header() {
   const { state, isStateRead } = useReadGameSessionState();
   const { isMeta, sendMessage } = useSyndoteMessage();
   const { account } = useAccount();
-  const { adminId, gameStatus, winner, players } = state || {};
+  const { adminId, gameStatus } = state || {};
   const isAdmin = account?.decodedAddress === adminId;
-  const playerStrategyId = players?.find((player) => player[1].ownerId === account?.decodedAddress)?.[0];
 
   const handleCancelGame = () => {
     if (!isMeta || !account?.decodedAddress || !isStateRead) {
@@ -65,7 +64,7 @@ function Header() {
       }
       menu={
         <div className={styles.headerContent}>
-          {adminId === account?.decodedAddress && gameStatus !== 'Finished' && (
+          {account?.decodedAddress && adminId === account?.decodedAddress && gameStatus !== 'Finished' && (
             <Button
               color="light"
               text="Cancel game"
@@ -74,7 +73,7 @@ function Header() {
               onClick={handleCancelGame}
             />
           )}
-          {gameStatus === 'Finished' && (
+          {account?.decodedAddress && gameStatus === 'Finished' && (
             <>
               {isAdmin ? (
                 <Button text="Remove game" onClick={deleteGame} />
