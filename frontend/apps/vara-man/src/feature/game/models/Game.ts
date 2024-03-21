@@ -31,6 +31,7 @@ export class Game {
 
 	setGameOver = (gameOver: boolean) => {}
 	gameOver = false
+	pause?: boolean
 
 	constructor(
 		private canvas: HTMLCanvasElement,
@@ -40,7 +41,8 @@ export class Game {
 		incrementCoins: (coin: 'silver' | 'gold') => void,
 		gameOver: boolean,
 		setGameOver: (gameOver: boolean) => void,
-		map: TileMap
+		map: TileMap,
+		pause?: boolean
 	) {
 		const levelData = gameLevels.find((l) => {
 			return l.level === level
@@ -59,6 +61,7 @@ export class Game {
 
 		this.setGameOver = setGameOver
 		this.gameOver = gameOver
+		this.pause = pause
 
 		MapRenderer.initTilesets(this.map).then(() => {
 			const startPosition = findCharacterStartPosition(this.map)
@@ -151,28 +154,30 @@ export class Game {
 		}
 
 		if (this.animationFrameId !== null) {
-			if (this.character) {
-				this.character.updateMovement(
-					this.isLeft,
-					this.isRight,
-					this.isUp,
-					this.isDown,
-					this.isShift
-				)
-			}
-
-			this.enemies.forEach((enemy) => {
+			if (!this.pause) {
 				if (this.character) {
-					enemy.update({
-						mapData: this.map,
-						playerPosition: this.character.position,
-					})
+					this.character.updateMovement(
+						this.isLeft,
+						this.isRight,
+						this.isUp,
+						this.isDown,
+						this.isShift
+					)
 				}
-			})
 
-			if (this.checkCollisions()) {
-				this.setGameOver(true)
-				return
+				this.enemies.forEach((enemy) => {
+					if (this.character) {
+						enemy.update({
+							mapData: this.map,
+							playerPosition: this.character.position,
+						})
+					}
+				})
+
+				if (this.checkCollisions()) {
+					this.setGameOver(true)
+					return
+				}
 			}
 		}
 
@@ -233,5 +238,9 @@ export class Game {
 		if (gameOver) {
 			this.cleanup()
 		}
+	}
+
+	public updatePause = () => {
+		this.pause = false
 	}
 }

@@ -18,15 +18,17 @@ const selectMode = [
     title: "Find a private game",
     description: "To find the game, you need to enter the administrator's address.",
     icon: <Icons.search />,
-    onClick: () => { },
-    disabled: true
+    onClick: (navigate: NavigateFunction): void => {
+      navigate('/tournament/find')
+    }
   },
   {
     title: "Create a game in administrator mode",
     description: "Create a game and specify your participation rules.",
     icon: <Icons.admin />,
-    onClick: () => { },
-    disabled: true
+    onClick: (navigate: NavigateFunction): void => {
+      navigate('/tournament/create')
+    }
   }
 ]
 
@@ -48,7 +50,6 @@ export function HomeRegister() {
                   <button
                     key={item.title}
                     className="flex justify-between items-center p-4 border rounded-2xl gap-5 hover:border-[#00FFC4] disabled:opacity-50 hover:disabled:border-[#f2f2f2]"
-                    disabled={item.disabled}
                     onClick={() => item.onClick(navigate)}
                   >
                     <div className="flex flex-col items-start">
