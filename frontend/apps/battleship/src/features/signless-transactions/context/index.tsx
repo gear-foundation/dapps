@@ -43,6 +43,7 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
   );
 
   const isActive = Boolean(pair);
+  const isSessionActive = Boolean(session);
 
   const getStorage = () => JSON.parse(localStorage[SIGNLESS_STORAGE_KEY] || '{}') as Storage;
   const storagePair = account ? getStorage()[account.address] : undefined;
@@ -100,6 +101,7 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
     setIsLoading,
     isAvailable,
     isActive,
+    isSessionActive,
   };
 
   return <Provider value={value}>{children}</Provider>;

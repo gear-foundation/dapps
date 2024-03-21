@@ -18,6 +18,7 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   setIsLoading: () => {},
   isAvailable: false,
   isActive: false,
+  isSessionActive: false,
 };
 
 export { SIGNLESS_STORAGE_KEY, DEFAULT_SIGNLESS_CONTEXT };

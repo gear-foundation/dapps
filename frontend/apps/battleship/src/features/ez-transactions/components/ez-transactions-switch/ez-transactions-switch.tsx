@@ -9,7 +9,11 @@ function EzTransactionsSwitch() {
 
   return (
     <div className={styles.container}>
-      <EnableGaslessSession type="switcher" disabled={signless.isActive} />
+      <EnableGaslessSession
+        type="switcher"
+        disabled={signless.isSessionActive}
+        message={signless.isSessionActive ? 'Signless Session is Active' : ''}
+      />
 
       <EnableSignlessSession
         type="switcher"
