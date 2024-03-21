@@ -82,11 +82,12 @@ export class Character {
 	}
 
 	getBounds() {
+		const padding = 4; // Величина, на которую уменьшается хитбокс
 		return {
-			x: this.position.x - this.torsoWidth / 2,
-			y: this.position.y - this.torsoHeight * 2,
-			width: this.torsoWidth,
-			height: this.torsoHeight + this.legHeight,
+			x: this.position.x - (this.torsoWidth / 2) + padding,
+			y: this.position.y - (this.torsoHeight * 2) + padding,
+			width: this.torsoWidth - (padding * 2),
+			height: (this.torsoHeight + this.legHeight) - (padding * 2),
 		}
 	}
 
@@ -126,11 +127,11 @@ export class Character {
 		isShift: boolean
 	): void {
 		if (isLeft) {
-			this.rotation -= Math.PI * 0.03
+			this.rotation -= Math.PI * 0.015
 		}
 
 		if (isRight) {
-			this.rotation += Math.PI * 0.03
+			this.rotation += Math.PI * 0.015
 		}
 
 		if (isUp || isDown) {
