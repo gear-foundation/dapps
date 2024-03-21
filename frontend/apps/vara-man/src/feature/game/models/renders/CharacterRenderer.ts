@@ -38,6 +38,22 @@ export class CharacterRenderer {
 
 		const radius = 5
 
+		// Hands
+		arms.forEach((arm: { limb: string; height: number }) => {
+			context.strokeStyle = '#00E3AE'
+			context.fillStyle = '#00E3AE'
+			context.beginPath()
+			context.roundRect(
+				arm.limb === 'left' ? -torsoWidth / 2 : torsoWidth / 2 - armWidth,
+				-torsoHeight / 4,
+				armWidth,
+				arm.height,
+				5
+			)
+			context.stroke()
+			context.fill()
+		})
+
 		// Torso
 		context.beginPath()
 		context.fillStyle = '#00FFC4'
@@ -73,22 +89,6 @@ export class CharacterRenderer {
 		context.closePath()
 		context.fill()
 
-		// Hands
-		arms.forEach((arm: { limb: string; height: number }) => {
-			context.strokeStyle = '#00E3AE'
-			context.fillStyle = '#00E3AE'
-			context.beginPath()
-			context.roundRect(
-				arm.limb === 'left' ? -torsoWidth / 2 : torsoWidth / 2 - armWidth,
-				-torsoHeight / 4,
-				armWidth,
-				arm.height,
-				5
-			)
-			context.stroke()
-			context.fill()
-		})
-
 		// Head
 		context.beginPath()
 		context.fillStyle = '#000000'
@@ -104,8 +104,8 @@ export class CharacterRenderer {
 		context.restore()
 
 		// Drawing a border for debug
-		// const bounds = enemy.getBounds()
-		// context.strokeStyle = 'rgba(255, 0, 0, 0.5)'
-		// context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height)
+		const bounds = character.getBounds()
+		context.strokeStyle = 'rgba(255, 0, 0, 0.5)'
+		context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height)
 	}
 }
