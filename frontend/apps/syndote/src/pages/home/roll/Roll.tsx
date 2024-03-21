@@ -14,17 +14,7 @@ type Props = {
   onLastClick?: () => void;
 };
 
-function Roll({
-  color,
-  player,
-  currentTurn,
-  turnsAmount,
-  onFirstClick,
-  onPrevClick,
-  onMainClick,
-  onNextClick,
-  onLastClick,
-}: Props) {
+function Roll({ color, player, currentTurn, turnsAmount, onFirstClick, onPrevClick, onNextClick, onLastClick }: Props) {
   return (
     <>
       <p className={clsx(styles.turnPlayer, color && styles[color])}>
@@ -38,7 +28,6 @@ function Roll({
         <Buttons
           onFirstClick={onFirstClick}
           onPrevClick={onPrevClick}
-          onMainClick={onMainClick}
           onNextClick={onNextClick}
           onLastClick={onLastClick}
         />

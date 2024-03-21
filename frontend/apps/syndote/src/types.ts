@@ -9,12 +9,19 @@ type PlayerState = {
   cells: [];
   penalty: string;
   lost: boolean;
+  ownerId: HexString;
 };
 
 type Players = [HexString, PlayerState][];
 
+type GameSessionState = {
+  GameSession: {
+    gameSession: State;
+  };
+};
+
 type State = {
-  admin: HexString;
+  adminId: HexString;
   currentTurn: string;
   currentStep: string;
   gameStatus: string;
@@ -26,6 +33,8 @@ type State = {
   propertiesInBank: string;
   round: string;
   winner: HexString;
+
+  entryFee: string | null;
 };
 
 type PlayerType = {
@@ -44,7 +53,11 @@ type Step = {
   ownership: HexString[];
 };
 
-type MessagePayload = { GameFinished: { winner: HexString } } | { Step: Step } | string;
+type MessagePayload = ({ GameFinished: { winner: HexString } } & { Step: Step }) | string;
+type MessageHandlePayload = { Ok: 'GameDeleted' | 'GameWasCancelled' } & { Err: any };
+type MessageDetails = {
+  to: HexString;
+};
 
 type CellValues = {
   heading: string;
@@ -55,4 +68,16 @@ type CellValues = {
   cell: string;
 };
 
-export type { PlayerState, PlayerType, State, Step, MessagePayload, Players, Properties, CellValues };
+export type {
+  PlayerState,
+  PlayerType,
+  State,
+  Step,
+  MessagePayload,
+  MessageHandlePayload,
+  MessageDetails,
+  Players,
+  Properties,
+  CellValues,
+  GameSessionState,
+};
