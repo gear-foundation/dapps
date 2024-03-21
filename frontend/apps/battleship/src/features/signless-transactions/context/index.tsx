@@ -1,7 +1,7 @@
 import { HexString } from '@gear-js/api';
 import { useAccount, useBalanceFormat, useDeriveBalancesAll } from '@gear-js/react-hooks';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
-import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
+import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
 
 import { useProgramMetadata } from '@dapps-frontend/hooks';
 
@@ -30,16 +30,22 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
   const { session, isSessionReady } = useSession(programId, metadata);
   const { createSession, deleteSession, updateSession } = useCreateSession(programId, metadata);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isAvailable, setIsAvailable] = useState<boolean>(false);
-
   const [pair, setPair] = useState<KeyringPair>();
+  const pairVoucherId = useVoucherId(programId, pair?.address);
+  const voucherBalance = useVoucherBalance(programId, pair?.address);
+
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const isAvailable = useMemo(
+    () =>
+      balances ? Number(getFormattedBalance(balances.freeBalance.toNumber()).value) > 42 || voucherBalance > 0 : false,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [balances, voucherBalance],
+  );
+
+  const isActive = Boolean(pair);
 
   const getStorage = () => JSON.parse(localStorage[SIGNLESS_STORAGE_KEY] || '{}') as Storage;
   const storagePair = account ? getStorage()[account.address] : undefined;
-
-  const pairVoucherId = useVoucherId(programId, pair?.address);
-  const voucherBalance = useVoucherBalance(programId, pair?.address);
 
   const unlockPair = (password: string) => {
     if (!storagePair) throw new Error('Pair not found');
@@ -77,16 +83,6 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
     setPair(undefined);
   }, [account]);
 
-  useEffect(() => {
-    const result = balances
-      ? Number(getFormattedBalance(balances.freeBalance.toNumber()).value) > 42 || voucherBalance > 0
-      : false;
-
-    setIsAvailable(result);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [balances, storagePair, voucherBalance]);
-
   const value = {
     pair,
     storagePair,
@@ -103,6 +99,7 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
     isLoading,
     setIsLoading,
     isAvailable,
+    isActive,
   };
 
   return <Provider value={value}>{children}</Provider>;

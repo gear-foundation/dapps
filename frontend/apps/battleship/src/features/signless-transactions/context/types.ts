@@ -31,6 +31,7 @@ type SignlessContext = {
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
   isAvailable: boolean;
+  isActive: boolean;
 };
 
 export type { State, Session, Storage, SignlessContext };

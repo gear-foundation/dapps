@@ -27,6 +27,7 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   const [isLoading, , withLoading] = useLoading();
   const [isAvailable, setIsAvailable] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
+  const isActive = Boolean(accountAddress && voucherId);
 
   const requestVoucher = async (_accountAddress: string) =>
     withLoading(
@@ -63,9 +64,9 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   }, [isEnabled]);
 
   const value = useMemo(
-    () => ({ voucherId, isAvailable, isLoading, isEnabled, requestVoucher, setIsEnabled }),
+    () => ({ voucherId, isAvailable, isLoading, isEnabled, isActive, requestVoucher, setIsEnabled }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [voucherId, isAvailable, isLoading, isEnabled],
+    [voucherId, isAvailable, isLoading, isEnabled, isActive],
   );
 
   return <Provider value={value}>{children}</Provider>;

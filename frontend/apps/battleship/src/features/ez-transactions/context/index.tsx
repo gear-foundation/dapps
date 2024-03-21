@@ -19,20 +19,17 @@ function EzTransactionsProvider({ children }: Props) {
 
   const onSessionCreate = (signlessAccountAddress: string) => gasless.requestVoucher(signlessAccountAddress);
 
-  const isSignlessActive = Boolean(signlessContext.pair); // TODO: move to signless context
-
   const signless = {
     ...signlessContext,
-    isActive: isSignlessActive,
     onSessionCreate,
   };
 
   useEffect(() => {
-    if (isSignlessActive) return;
+    if (signlessContext.isActive) return;
 
     gasless.setIsEnabled(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSignlessActive]);
+  }, [signlessContext.isActive]);
 
   return <Provider value={{ gasless, signless }}>{children}</Provider>;
 }

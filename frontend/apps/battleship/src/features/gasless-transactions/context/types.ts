@@ -5,6 +5,7 @@ export type GaslessContext = {
   isAvailable: boolean;
   isLoading: boolean;
   isEnabled: boolean;
+  isActive: boolean;
   requestVoucher: (accountAddress: string) => Promise<void>;
   setIsEnabled: (value: boolean) => void;
 };
