@@ -5,11 +5,12 @@ import { Button, Modal } from '@/components'
 import { Icons } from '@/components/ui/icons';
 import { useGame } from '@/app/context/ctx-game';
 
-import { COINS, GAME_OVER } from '../../consts';
 import { useApp } from '@/app/context/ctx-app';
-import { calculatePoints } from '../../utils/calculatePoints';
+
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { IGameLevel } from '@/app/types/game';
+import { GAME_OVER, COINS } from '@/feature/game/consts';
+import { calculatePoints } from '@/feature/game/utils/calculatePoints';
 
 export const GameOverModal = ({ restartGame }: any) => {
 	const [searchParams] = useSearchParams()

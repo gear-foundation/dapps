@@ -8,6 +8,8 @@ const routes = [
   { path: '/levels', Page: lazy(() => import('./levels')) },
   { path: '/rules', Page: lazy(() => import('./rules')) },
   { path: '/game', Page: lazy(() => import('./game')) },
+  { path: '/tournament/create', Page: lazy(() => import('./tournament/create')) },
+  { path: '/tournament/find', Page: lazy(() => import('./tournament/find')) },
 ];
 
 export const Routing = () => {
