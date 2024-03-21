@@ -10,9 +10,14 @@ type PlayerState = {
   penalty: string;
   lost: boolean;
   ownerId: HexString;
+  name: string;
 };
 
 type Players = [HexString, PlayerState][];
+
+type PlayersByStrategyAddress = {
+  [key: HexString]: PlayerState;
+};
 
 type GameSessionState = {
   GameSession: {
@@ -24,7 +29,7 @@ type State = {
   adminId: HexString;
   currentTurn: string;
   currentStep: string;
-  gameStatus: string;
+  gameStatus: string & { WaitingForGasForStrategy: HexString };
   numberOfPlayers: string;
   ownership: {};
   players: Players;
@@ -80,4 +85,5 @@ export type {
   Properties,
   CellValues,
   GameSessionState,
+  PlayersByStrategyAddress,
 };
