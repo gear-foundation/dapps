@@ -53,7 +53,11 @@ type Step = {
   ownership: HexString[];
 };
 
-type MessagePayload = { GameFinished: { winner: HexString } } | { Step: Step } | string;
+type MessagePayload = ({ GameFinished: { winner: HexString } } & { Step: Step }) | string;
+type MessageHandlePayload = { Ok: 'GameDeleted' | 'GameWasCancelled' } & { Err: any };
+type MessageDetails = {
+  to: HexString;
+};
 
 type CellValues = {
   heading: string;
@@ -64,4 +68,16 @@ type CellValues = {
   cell: string;
 };
 
-export type { PlayerState, PlayerType, State, Step, MessagePayload, Players, Properties, CellValues, GameSessionState };
+export type {
+  PlayerState,
+  PlayerType,
+  State,
+  Step,
+  MessagePayload,
+  MessageHandlePayload,
+  MessageDetails,
+  Players,
+  Properties,
+  CellValues,
+  GameSessionState,
+};

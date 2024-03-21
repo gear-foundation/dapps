@@ -43,7 +43,9 @@ function CreateGameForm({ onCancel }: Props) {
     },
     validate: {
       fee: (value) =>
-        Number(value) < existentialDeposit + 5 ? `value must be more than ${existentialDeposit + 5}` : null,
+        Number(value) < existentialDeposit + 5 && Number(value) > 0
+          ? `value must be more than ${existentialDeposit + 5} or 0`
+          : null,
       name: isNotEmpty(`Name shouldn't be empty`),
       strategyId: (val) => !val.trim().startsWith('0x') && 'Incorrect program address',
     },
@@ -55,17 +57,19 @@ function CreateGameForm({ onCancel }: Props) {
     if (!account?.decodedAddress) {
       return;
     }
-
+    console.log(values);
     const payload = {
       CreateGameSession: {
         name: values.name,
+        strategyId: values.strategyId,
+        entryFee: Number(values.fee) ? values.fee * Math.pow(10, 12) : null,
       },
     };
-
+    console.log(payload);
     setIsLoading(true);
     sendNewSessionMessage({
       payload,
-      value: getChainBalanceValue(values.fee).toFixed(),
+      value: Number(values.fee) ? getChainBalanceValue(values.fee).toFixed() : undefined,
       onSuccess: () => {
         setIsLoading(false);
       },

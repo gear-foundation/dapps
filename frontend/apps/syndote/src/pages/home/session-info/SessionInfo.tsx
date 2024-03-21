@@ -1,7 +1,7 @@
 import { useAccount, useAccountDeriveBalancesAll, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { Players } from 'types';
-import { useReadGameSessionState } from 'hooks/metadata';
+import { useReadGameSessionState, useSyndoteMessage } from 'hooks/metadata';
 import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
 import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
 import { ReactComponent as UserSVG } from 'assets/images/icons/ic-user-small-24.svg';
@@ -11,6 +11,7 @@ import styles from './SessionInfo.module.scss';
 import { stringShorten } from '@polkadot/util';
 import { GameDetails } from 'components/layout/game-details';
 import clsx from 'clsx';
+import { HexString } from '@gear-js/api';
 
 type Props = {
   entryFee: string | null;
@@ -22,6 +23,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
   const { isApiReady } = useApi();
   const { account } = useAccount();
   const { state } = useReadGameSessionState();
+  const { isMeta, sendMessage } = useSyndoteMessage();
   const { getFormattedBalance } = useBalanceFormat();
   const balances = useAccountDeriveBalancesAll();
   const balance =
@@ -54,6 +56,22 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
   ];
   const isAdmin = adminId === account?.decodedAddress;
 
+  const removePlayer = (playerId: HexString) => {
+    if (!isMeta) {
+      return;
+    }
+
+    const payload = {
+      DeletePlayer: {
+        playerId,
+      },
+    };
+
+    sendMessage({
+      payload,
+    });
+  };
+  console.log(players);
   return (
     <>
       <GameDetails items={items} className={{ item: styles.gameDetailsItem }} />
@@ -71,7 +89,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
               {player[1].ownerId === account?.decodedAddress ? <span className={styles.playerLabel}>(you)</span> : ''}
             </span>
             {isAdmin && player[1].ownerId !== account?.decodedAddress && (
-              <Button color="transparent" icon={RemovePlayerSVG} />
+              <Button color="transparent" icon={RemovePlayerSVG} onClick={() => removePlayer(player[1].ownerId)} />
             )}
           </li>
         ))}

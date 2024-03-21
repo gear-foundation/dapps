@@ -65,7 +65,7 @@ function JoinGameForm({ onCancel }: Props) {
       return;
     }
 
-    const payload = { GetGameSession: { adminId: values.address?.trim() } };
+    const payload = { GetGameSession: { accountId: values.address?.trim() } };
 
     try {
       const res = await api?.programState.read(

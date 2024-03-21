@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { useAccount, useAlert, useReadFullState, useSendMessageHandler } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useReadFullState, useSendMessage, useSendMessageHandler } from '@gear-js/react-hooks';
 import { getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api';
 import { HexString } from '@polkadot/util/types';
 import meta from 'assets/meta/syndote_meta.txt';
@@ -66,7 +66,11 @@ function useStateMetadata(wasm: Buffer | undefined) {
 function useSyndoteMessage() {
   const metadata = useProgramMetadata(meta);
 
-  return { isMeta: !!meta, sendMessage: useSendMessageHandler(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true }) };
+  return {
+    isMeta: !!meta,
+    sendMessage: useSendMessageHandler(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true }),
+    sendPlayMessage: useSendMessage(ADDRESS.CONTRACT, metadata),
+  };
 }
 
 function useReadGameSessionState() {
@@ -77,10 +81,10 @@ function useReadGameSessionState() {
   const payload = useMemo(
     () => ({
       GetGameSession: {
-        adminId: admin || account?.decodedAddress,
+        accountId: admin || account?.decodedAddress,
       },
     }),
-    [admin],
+    [admin, account?.decodedAddress],
   );
 
   const { state, isStateRead } = useReadFullState<GameSessionState>(ADDRESS.CONTRACT, metadata, payload);

@@ -31,3 +31,20 @@
 .vara-logo {
   margin-right: 22px;
 }
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+
+.cancelGameButton {
+  background: #F24A4A12;
+  color: #F24A4A;
+  border-radius: 0;
+
+  svg path {
+    fill: #F24A4A;
+    stroke: #F24A4A;
+  }
+}
