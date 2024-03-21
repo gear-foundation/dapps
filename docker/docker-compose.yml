@@ -1,0 +1,8 @@
+version: '3.7'
+services:
+  contracts:
+    image: "ghcr.io/dapps/rust:stable"
+    volumes:
+      - "/contracts:/contracts"
+      - "/output:/contracts/target/wasm32-unknown-unknown"
+    command: ["cargo","build"]

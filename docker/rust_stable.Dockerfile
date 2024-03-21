@@ -22,7 +22,6 @@ RUN curl -L https://github.com/WebAssembly/binaryen/releases/download/version_11
     rm -rf binaryen-version_117
 
 WORKDIR /contracts
-COPY . /contracts
 
 # Use the shell script as the default command
 CMD ["cargo","build"]
