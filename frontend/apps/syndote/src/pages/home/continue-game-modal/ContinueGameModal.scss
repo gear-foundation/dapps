@@ -1,0 +1,21 @@
+.modal {
+  min-width: 670px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.text {
+  font-size: 14px;
+}
+
+.button {
+  width: 45%;
+}
+
+.modalHeader {
+  margin-bottom: 10px;
+}
