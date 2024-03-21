@@ -1,7 +1,7 @@
 import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { GaslessContext } from './types';
 import { DEFAULT_GASLESS_CONTEXT } from './consts';
-import { useAlert, useBalance, useBalanceFormat } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useBalance, useBalanceFormat } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
 import { getVoucherId, getVoucherStatus } from './utils';
 import { useLoading } from './hooks';
@@ -17,6 +17,7 @@ type Props = {
 };
 
 function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, children }: Props) {
+  const { account } = useAccount();
   const { getChainBalanceValue } = useBalanceFormat();
   const alert = useAlert();
 
@@ -62,6 +63,10 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
     setAccountAddress(undefined);
     setVoucherId(undefined);
   }, [isEnabled]);
+
+  useEffect(() => {
+    setIsEnabled(false);
+  }, [account]);
 
   const value = useMemo(
     () => ({ voucherId, isAvailable, isLoading, isEnabled, isActive, requestVoucher, setIsEnabled }),
