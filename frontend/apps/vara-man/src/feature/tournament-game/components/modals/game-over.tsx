@@ -100,10 +100,8 @@ export const GameOverModal = ({ tournamentGame }: Props) => {
 								<p className="text-[#555756] mt-2">{winners?.[0][1].name} wins!</p>
 							</div>
 							<div className="flex">
-
-
 								<div className="bg-[#F7F9FA] w-full p-5 font-medium flex gap-5 justify-center items-center" >
-									Your score:
+									Score:
 									<span className="flex items-center gap-2 font-semibold">
 										<Icons.statsCoins />
 										{winners?.[0][1].points}

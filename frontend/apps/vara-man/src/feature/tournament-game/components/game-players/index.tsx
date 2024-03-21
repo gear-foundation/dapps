@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import { useAtom } from 'jotai'
 import { useAccount, useApi } from '@gear-js/react-hooks'
 import { Button } from '@gear-js/vara-ui'
 
@@ -8,16 +9,17 @@ import { SpriteIcon } from '@/components/ui/sprite-icon'
 import { useApp } from '@/app/context/ctx-app'
 import { useGameMessage } from '@/app/hooks/use-game'
 import { PRIZE_POOL } from '@/feature/game/consts'
-import { useAtom } from 'jotai'
+import { ConfirmCancelModal } from '../modals/confirm-cancel'
 
 export const GamePlayers = () => {
 	const { api } = useApi();
 	const { account } = useAccount()
 	const { tournamentGame } = useGame()
 	const { isPending, setIsPending } = useApp()
-	const [, setPrizePool] = useAtom(PRIZE_POOL)
+	const [prizePool, setPrizePool] = useAtom(PRIZE_POOL)
 	const handleMessage = useGameMessage();
 	const [sortedParticipants, setSortedParticipants] = useState<any>([])
+	const [isOpenCancelModal, setIsOpenCancelModal] = useState(false)
 
 	const startTime = parseInt(tournamentGame?.[0].stage.Started.replace(/,/g, '') || "0", 10);
 	const durationMs = parseInt(tournamentGame?.[0].durationMs.replace(/,/g, '') || "0", 10);
@@ -59,9 +61,11 @@ export const GamePlayers = () => {
 	const formattedTimeLeft = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
 
 	useEffect(() => {
-		const pool = bid * tournamentGame![0].participants.length
+		if (tournamentGame) {
+			const pool = bid * tournamentGame?.[0].participants.length
 
-		setPrizePool(pool)
+			setPrizePool(pool)
+		}
 	}, [])
 
 	useEffect(() => {
@@ -72,7 +76,7 @@ export const GamePlayers = () => {
 		const sortedParticipants = tournamentGame[0].participants
 			.map(participant => {
 				const timeInMs = parseInt(participant[1].time.replace(/,/g, ''), 10);
-				const points = parseInt(participant[1].points, 10);
+				const points = parseInt(participant[1].points.replace(/,/g, ''), 10);
 				return {
 					address: participant[0],
 					name: participant[1].name,
@@ -85,18 +89,21 @@ export const GamePlayers = () => {
 				return a.timeInMs - b.timeInMs;
 			});
 
+
 		setSortedParticipants(sortedParticipants);
 	}, [tournamentGame]);
 
 	return (
 		<div className="flex flex-col gap-4 items-center w-3/5">
+			{isOpenCancelModal && <ConfirmCancelModal setIsOpenCancelModal={setIsOpenCancelModal} onCancelGame={onCancelGame} />}
+
 			<h3 className="text-2xl font-bold">{tournamentGame?.[0].tournamentName}</h3>
 			<div className="flex gap-10 justify-between">
 				<div className="flex gap-3">
 					<p className="text-[#555756]">Prize pool:</p>
 					<div className="flex gap-3 font-semibold">
 						<SpriteIcon name="vara-coin" height={24} width={24} />
-						{bid * tournamentGame![0].participants.length}
+						{prizePool}
 					</div>
 				</div>
 
@@ -109,7 +116,7 @@ export const GamePlayers = () => {
 			</div>
 
 			<div className="flex flex-col gap-3 w-full">
-				{sortedParticipants?.map((participant: { address: React.Key | null | undefined; timeInMs: number; name: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined; points: string | number | boolean | React.ReactElement<any, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | null | undefined }, index: any) => {
+				{sortedParticipants?.map((participant: { address: React.Key | null | undefined; timeInMs: number; name: string; points: number }, index: number) => {
 					const isActivePlayer = account?.decodedAddress === participant.address;
 					const minutes = Math.floor(participant.timeInMs / 60000);
 					const seconds = Math.floor((participant.timeInMs % 60000) / 1000);
@@ -120,13 +127,27 @@ export const GamePlayers = () => {
 							"flex items-center justify-between p-2 bg-white border border-[#EDEDED] rounded-lg",
 							isActivePlayer && "bg-[#00FFC4] border-[#00EDB6]"
 						)}>
+							<div className={
+								cn(
+									"py-2 px-3 rounded mr-3 flex justify-center gap-2 font-semibold",
+									isActivePlayer ? "bg-[#00F5BC]" : "bg-[#F5F5F5]",
+									index === 0 && "bg-[#F9DC93]",
+									index > 2 && "px-7"
+								)}
+							>
+								{index + 1}
+								{index === 0 && <SpriteIcon name="medal-fill" height={24} width={24} />}
+								{(index === 1 || index === 2) && <SpriteIcon name="medal-line" height={24} width={24} />}
+							</div>
 							<div className="flex items-center gap-3">
 								<p className="font-semibold">{participant.name}</p>
 							</div>
 							<div className="flex items-center justify-end gap-1 w-full mr-20">
+								<SpriteIcon name="game-time" height={16} width={16} />
 								<p className="font-semibold">{timeFormatted}</p>
 							</div>
 							<div className="flex items-center gap-3">
+								<SpriteIcon name="game-trophy" height={24} width={24} />
 								<p className="font-semibold">{participant.points}</p>
 							</div>
 						</div>
@@ -134,7 +155,12 @@ export const GamePlayers = () => {
 				})}
 			</div>
 			<div className="flex gap-3 justify-between w-full">
-				{isAdmin && <Button className="!bg-[#EB5757] !text-white !text-[14px] w-full" text="Cancel tournament" onClick={onCancelGame} isLoading={isPending} />}
+				{isAdmin &&
+					<Button
+						className="!bg-[#EB5757] !text-white !text-[14px] w-full"
+						text="Cancel tournament"
+						onClick={() => setIsOpenCancelModal(true)}
+						isLoading={isPending} />}
 			</div>
 		</div>
 	)
