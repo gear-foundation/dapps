@@ -2,21 +2,19 @@ import { useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAtom } from 'jotai'
 
-import { Game } from './models/Game';
-import { IGameLevel } from '@/app/types/game'
-	;
-import { COINS, GAME_OVER } from './consts';
-import { useGame } from '@/app/context/ctx-game';
+import { IGameLevel, TileMap } from '@/app/types/game';
+
 import { GameOverModal } from './components/modals/game-over';
-import { findMapLevel } from './utils/findMapLevel';
-import { TileMap } from './types';
 import { useGameMessage } from '@/app/hooks/use-game';
 import { useApp } from '@/app/context/ctx-app';
+
+import { findMapLevel } from '../game/utils/findMapLevel';
+import { Game } from '../game/models/Game';
+import { COINS, GAME_OVER } from '../game/consts';
 
 export const GameCanvas = () => {
 	const [searchParams] = useSearchParams()
 	const [coins, setCoins] = useAtom(COINS)
-	const { singleGame } = useGame()
 	const [gameOver, setGameOver] = useAtom(GAME_OVER)
 	const { setIsPending } = useApp()
 	const handleMessage = useGameMessage();
@@ -56,7 +54,7 @@ export const GameCanvas = () => {
 		};
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [gameOver, level, singleGame]);
+	}, [gameOver, level]);
 
 	useEffect(() => {
 		gameInstanceRef.current?.updateGameOver(gameOver);

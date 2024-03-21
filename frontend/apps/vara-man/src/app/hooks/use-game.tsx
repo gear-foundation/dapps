@@ -6,13 +6,15 @@ import meta from '@/assets/meta/vara_man.meta.txt';
 import { useGame } from '@/app/context/ctx-game';
 import { useApp } from '../context/ctx-app';
 import { programIdGame, useGameState } from './use-game-state';
+import { useNavigate } from 'react-router-dom';
 
 export const useInitGame = () => {
+  const navigate = useNavigate()
   const { account } = useAccount();
   const { setIsSettled } = useApp();
-  const { config, admins, game } = useGameState();
+  const { allState, config, admins, tournament } = useGameState();
 
-  const { setTournamentGame, setIsAdmin, setConfigState } = useGame();
+  const { setTournamentGame, setIsAdmin, setConfigState, setAllGames, setPreviousGame } = useGame();
 
   useEffect(() => {
     setConfigState(config?.Config || null);
@@ -33,16 +35,24 @@ export const useInitGame = () => {
   }, [account?.decodedAddress, admins?.Admins]);
 
   useEffect(() => {
-    if (game) {
-      if ('TournamentGame' in game && game.TournamentGame) {
-        setTournamentGame(game.TournamentGame);
-      } else {
-        setTournamentGame(undefined)
-      }
+    if (tournament?.Tournament) {
+      navigate("/")
+      setTournamentGame(tournament.Tournament);
+      setPreviousGame(tournament.Tournament)
+    } else {
+      setTournamentGame(undefined)
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [game, account?.decodedAddress])
+  }, [tournament?.Tournament, account?.decodedAddress])
+
+  useEffect(() => {
+    if (allState) {
+      setAllGames(allState.All.tournaments)
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allState, account?.decodedAddress])
 
 };
 

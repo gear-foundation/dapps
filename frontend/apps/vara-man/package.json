@@ -5,7 +5,7 @@
 	"version": "1.0.2",
 	"type": "module",
 	"scripts": {
-		"start": "yarn build:packages && vite --open",
+		"start": "yarn build:packages && vite --open --host",
 		"build": "yarn build:packages && tsc && vite build",
 		"preview": "vite preview",
 		"deploy": "tsc && vite build && npx thirdweb@latest upload dist"

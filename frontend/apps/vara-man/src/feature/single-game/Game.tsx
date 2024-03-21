@@ -1,14 +1,15 @@
+import { useSearchParams } from 'react-router-dom';
 import { useAtom } from 'jotai'
 import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
 
 import { GameCanvas } from './GameCanvas'
-import { Icons } from '@/components/ui/icons'
-import { COINS, GAME_OVER } from './consts';
 import { useGame } from '@/app/context/ctx-game';
+import { Icons } from '@/components/ui/icons'
 import { GameTimer } from './components/timer';
-import { calculatePoints } from './utils/calculatePoints';
-import { useSearchParams } from 'react-router-dom';
+
 import { IGameLevel } from '@/app/types/game';
+import { calculatePoints } from '../game/utils/calculatePoints';
+import { COINS, GAME_OVER } from '../game/consts';
 
 export const Game = () => {
 	const [searchParams] = useSearchParams()
