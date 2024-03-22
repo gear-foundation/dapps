@@ -4,7 +4,7 @@ import MediumMap from '../assets/map/map-medium.json'
 import HardMap from '../assets/map/map-hard.json'
 import { TileMap } from '../types'
 
-const maps: Record<string, TileMap> = {
+const maps = {
 	Easy: EasyMap,
 	Medium: MediumMap,
 	Hard: HardMap,
