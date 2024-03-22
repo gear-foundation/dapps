@@ -40,10 +40,11 @@ function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher, disa
   };
 
   const handleDeleteSession = async () => {
-    if (session) {
-      setIsLoading(true);
-      await deleteSession(session.key, pair, { onSuccess: onDeleteSessionSuccess, onFinally: onDeleteSessionFinally });
-    }
+    if (!session) throw new Error('Signless session not found');
+    if (!pair) throw new Error('Signless pair not found');
+
+    setIsLoading(true);
+    deleteSession(session.key, pair, { onSuccess: onDeleteSessionSuccess, onFinally: onDeleteSessionFinally });
   };
 
   const handleSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {

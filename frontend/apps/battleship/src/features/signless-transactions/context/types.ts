@@ -27,7 +27,6 @@ type SignlessContext = {
   voucherBalance: number;
   createSession: (...args: Parameters<ReturnType<typeof useCreateSession>['createSession']>) => void;
   deleteSession: (...args: Parameters<ReturnType<typeof useCreateSession>['deleteSession']>) => void;
-  updateSession: (...args: Parameters<ReturnType<typeof useCreateSession>['updateSession']>) => void;
   voucher: (IVoucherDetails & { id: HexString }) | undefined;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;

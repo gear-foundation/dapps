@@ -51,16 +51,16 @@ function SignlessTransactions({ onSessionCreate, shouldIssueVoucher, disabled }:
   };
 
   const handleRevokeVoucherFromStoragePair = async () => {
-    if (pair) {
-      const decodedAddress = decodeAddress(pair.address);
+    if (!pair) throw new Error('Signless pair not found');
 
-      setIsLoading(true);
+    const decodedAddress = decodeAddress(pair.address);
 
-      await deleteSession(decodedAddress, pair, {
-        onSuccess: onDeleteSessionSuccess,
-        onFinally: onDeleteSessionFinally,
-      });
-    }
+    setIsLoading(true);
+
+    deleteSession(decodedAddress, pair, {
+      onSuccess: onDeleteSessionSuccess,
+      onFinally: onDeleteSessionFinally,
+    });
   };
 
   return account && isSessionReady ? (

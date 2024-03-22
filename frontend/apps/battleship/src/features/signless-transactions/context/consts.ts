@@ -12,7 +12,6 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   voucherBalance: 0,
   createSession: () => {},
   deleteSession: () => {},
-  updateSession: () => {},
   voucher: undefined,
   isLoading: false,
   setIsLoading: () => {},

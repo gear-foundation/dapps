@@ -30,7 +30,7 @@ function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIss
   const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
-  const { savePair, storagePair, voucherBalance, createSession, updateSession } = useSignlessTransactions();
+  const { savePair, storagePair, voucherBalance, createSession } = useSignlessTransactions();
   const pair = useMemo(() => storagePair || getRandomPair(), [storagePair]);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -57,8 +57,6 @@ function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIss
     const duration = getMilliseconds(Number(durationMinutes));
     const key = decodeAddress(pair.address);
     const allowedActions = ACTIONS;
-
-    const callSession = storagePair ? updateSession : createSession;
     const onFinally = () => setIsLoading(false);
 
     let pairToSave: KeyringPair;
@@ -81,7 +79,7 @@ function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIss
 
     if (!shouldIssueVoucher) await onSessionCreate(pairToSave.address);
 
-    callSession({ duration, key, allowedActions }, issueVoucherValue, { onSuccess, onFinally });
+    createSession({ duration, key, allowedActions }, issueVoucherValue, { onSuccess, onFinally, shouldIssueVoucher });
   };
 
   return (

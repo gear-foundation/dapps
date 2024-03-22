@@ -28,7 +28,7 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
 
   const metadata = useProgramMetadata(metadataSource);
   const { session, isSessionReady } = useSession(programId, metadata);
-  const { createSession, deleteSession, updateSession } = useCreateSession(programId, metadata);
+  const { createSession, deleteSession } = useCreateSession(programId, metadata);
 
   const [pair, setPair] = useState<KeyringPair>();
 
@@ -111,7 +111,6 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
     voucherBalance,
     createSession,
     deleteSession,
-    updateSession,
     voucher,
     isLoading,
     setIsLoading,
