@@ -13,7 +13,7 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   createSession: () => {},
   deleteSession: () => {},
   updateSession: () => {},
-  pairVoucherId: undefined,
+  voucher: undefined,
   isLoading: false,
   setIsLoading: () => {},
   isAvailable: false,

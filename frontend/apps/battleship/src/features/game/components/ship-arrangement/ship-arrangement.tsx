@@ -17,7 +17,7 @@ export default function ShipArrangement() {
   const message = useGameMessage();
   const { setPending } = usePending();
   const { checkBalance } = useCheckBalance({
-    signlessPairVoucherId: signless.pairVoucherId,
+    signlessPairVoucherId: signless.voucher?.id,
     gaslessVoucherId: gasless.voucherId,
   });
 
