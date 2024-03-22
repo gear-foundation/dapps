@@ -299,9 +299,7 @@ export class Character {
 
 	// TODO: Change the method of removing the entire coin
 	removeCoinTiles(coinIndex: number, allCoins: number[]) {
-		console.log('this.totalCoins', this.collectedCoins)
 		if (this.collectedCoins === this.totalCoins) {
-			console.log('collectedCoins', this.collectedCoins)
 			this.setGameOver(true)
 		}
 

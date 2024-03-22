@@ -214,7 +214,6 @@ export class MapRenderer {
 
 		if (imageLayer.image) {
 			if (!this.loadedImages[imageLayer.image]) {
-				console.log('first', this.loadedImages[imageLayer.image])
 				const image = new Image()
 				image.src = imageLayer.image
 				image.onload = () => {
