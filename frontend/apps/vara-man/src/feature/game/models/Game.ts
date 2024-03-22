@@ -73,12 +73,13 @@ export class Game {
 					startPosition.y,
 					true,
 					this.map,
-					incrementCoins
+					incrementCoins,
+					() => this.setGameOver(true)
 				)
 
 				this.initEventListeners()
 			} else {
-				console.error('Начальная позиция персонажа не найдена.')
+				console.error('The character starting position was not found.')
 			}
 
 			enemyStartPositions.forEach(({ position, zone }) => {
@@ -98,7 +99,15 @@ export class Game {
 				}
 			})
 
-			this.update()
+			CharacterRenderer.loadCloakImage('./public/cloak.svg')
+				.then((img) => {
+					CharacterRenderer.cloakImage = img
+					this.update()
+				})
+				.catch((error) => {
+					console.error(error)
+					this.update()
+				})
 		})
 	}
 

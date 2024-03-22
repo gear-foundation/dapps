@@ -13,6 +13,7 @@ export type TileMap = {
 		width: number
 		x: number
 		y: number
+		image?: string
 	}>
 	nextlayerid: number
 	nextobjectid: number
