@@ -99,7 +99,7 @@ export class Game {
 				}
 			})
 
-			CharacterRenderer.loadCloakImage('./public/cloak.svg')
+			CharacterRenderer.loadCloakImage('./cloak.svg')
 				.then((img) => {
 					CharacterRenderer.cloakImage = img
 					this.update()
