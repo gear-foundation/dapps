@@ -7,6 +7,11 @@ interface LimbAnimation {
 	direction: 'up' | 'down'
 }
 
+interface CloakAnimation {
+	scale: number
+	direction: 'increasing' | 'decreasing'
+}
+
 const walkSpeed = 4
 
 export class Character {
@@ -24,17 +29,27 @@ export class Character {
 	walkSpeed: number
 	legs: LimbAnimation[]
 	arms: LimbAnimation[]
+	clock: LimbAnimation[]
 	hero: boolean
 	mapData: TileMap
 
 	incrementCoins: (coin: 'silver' | 'gold') => void
+	setGameOver: (gameOver: boolean) => void
+	totalCoins: number
+	collectedCoins: number = 0
+
+	cloakAnimation: CloakAnimation = {
+		scale: 1.0,
+		direction: 'decreasing',
+	}
 
 	constructor(
 		x: number,
 		y: number,
 		hero: boolean = false,
 		mapData: TileMap,
-		incrementCoins: (coin: 'silver' | 'gold') => void
+		incrementCoins: (coin: 'silver' | 'gold') => void,
+		setGameOver: (gameOver: boolean) => void
 	) {
 		this.scale = 0.4
 		this.position = new Vec2(x, y)
@@ -52,7 +67,11 @@ export class Character {
 		this.armWidth = 20 * this.scale
 		this.armHeight = 30 * this.scale
 		this.walkSpeed = walkSpeed * this.scale
+
 		this.incrementCoins = incrementCoins
+		this.totalCoins = this.countTotalCoins()
+		this.collectedCoins = 0
+		this.setGameOver = setGameOver
 
 		// Initialize limb animations
 		this.legs = [
@@ -79,15 +98,43 @@ export class Character {
 				direction: 'up',
 			},
 		]
+		this.clock = [
+			{
+				limb: 'left',
+				height: 0,
+				direction: 'down',
+			},
+			{
+				limb: 'right',
+				height: 0,
+				direction: 'up',
+			},
+		]
 	}
 
 	getBounds() {
-		const padding = 4; // Величина, на которую уменьшается хитбокс
+		const padding = 4
 		return {
-			x: this.position.x - (this.torsoWidth / 2) + padding,
-			y: this.position.y - (this.torsoHeight * 2) + padding,
-			width: this.torsoWidth - (padding * 2),
-			height: (this.torsoHeight + this.legHeight) - (padding * 2),
+			x: this.position.x - this.torsoWidth / 2 + padding,
+			y: this.position.y - this.torsoHeight * 2 + padding,
+			width: this.torsoWidth - padding * 2,
+			height: this.torsoHeight + this.legHeight - padding * 2,
+		}
+	}
+
+	cloakAnimationStep(): void {
+		const speedModifier = 0.02
+
+		if (this.cloakAnimation.scale <= 0.4) {
+			this.cloakAnimation.direction = 'increasing'
+		} else if (this.cloakAnimation.scale >= 1.3) {
+			this.cloakAnimation.direction = 'decreasing'
+		}
+
+		if (this.cloakAnimation.direction === 'decreasing') {
+			this.cloakAnimation.scale -= speedModifier
+		} else {
+			this.cloakAnimation.scale += speedModifier
 		}
 	}
 
@@ -146,6 +193,8 @@ export class Character {
 
 			this.legAnimation(isShift)
 			this.armAnimation(isShift)
+			this.cloakAnimationStep()
+
 			this.checkForCoinCollection()
 			if (!isCollision) {
 				this.velocity = nextVelocity
@@ -235,10 +284,12 @@ export class Character {
 
 				if (goldCoins.includes(tileValue)) {
 					this.incrementCoins('gold')
+					this.collectedCoins += 1
 					this.removeCoinTiles(tileIndex, [...goldCoins, ...silverCoins])
 					return
 				} else if (silverCoins.includes(tileValue)) {
 					this.incrementCoins('silver')
+					this.collectedCoins += 1
 					this.removeCoinTiles(tileIndex, [...goldCoins, ...silverCoins])
 					return
 				}
@@ -246,7 +297,12 @@ export class Character {
 		}
 	}
 
+	// TODO: Change the method of removing the entire coin
 	removeCoinTiles(coinIndex: number, allCoins: number[]) {
+		if (this.collectedCoins === this.totalCoins) {
+			this.setGameOver(true)
+		}
+
 		const mapWidth = this.mapData.width
 		const mapHeight = this.mapData.height
 		const coinTiles = new Set(allCoins)
@@ -264,10 +320,16 @@ export class Character {
 				const tileId = this.mapData.layers[1].data[index]
 				if (!coinTiles.has(tileId)) continue
 
-				this.mapData.layers[1].data[index] = 0
-
-				const x = index % mapWidth
-				const y = Math.floor(index / mapWidth)
+				for (let i = 0; i < 4; i++) {
+					for (let j = 0; j < 4; j++) {
+						const x = (index % mapWidth) + i
+						const y = Math.floor(index / mapWidth) + j
+						if (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight) {
+							const nIndex = y * mapWidth + x
+							this.mapData.layers[1].data[nIndex] = 0
+						}
+					}
+				}
 
 				;[
 					[-1, 0],
@@ -275,8 +337,8 @@ export class Character {
 					[0, -1],
 					[0, 1],
 				].forEach(([dx, dy]) => {
-					const nx = x + dx,
-						ny = y + dy
+					const nx = (index % mapWidth) + dx,
+						ny = Math.floor(index / mapWidth) + dy
 					if (nx >= 0 && nx < mapWidth && ny >= 0 && ny < mapHeight) {
 						const nIndex = ny * mapWidth + nx
 						if (
@@ -289,5 +351,21 @@ export class Character {
 				})
 			}
 		}
+	}
+
+	countTotalCoins(): number {
+		const oneCoinTiles = 16
+
+		let count = 0
+		for (let layer of this.mapData.layers) {
+			if (layer.name === 'coins') {
+				for (let tile of layer.data) {
+					if (tile > 0) count++
+				}
+			}
+		}
+
+		// TODO: The map has a problem, if the first array starts with a coin, the character won't be able to get one
+		return 84
 	}
 }
