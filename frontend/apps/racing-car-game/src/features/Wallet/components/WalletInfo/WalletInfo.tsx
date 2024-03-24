@@ -1,27 +1,18 @@
 import { useState } from 'react';
 import Identicon from '@polkadot/react-identicon';
-import { useAccount, useApi, useAccountDeriveBalancesAll, useBalanceFormat } from '@gear-js/react-hooks';
 import { VaraBalanceNew as VaraBalance } from '@dapps-frontend/ui';
 import { useAtom } from 'jotai';
 import { cx } from '@/utils';
 import { ADDRESS } from '@/consts';
 import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
-import varaCoin from '@/assets/icons/vara-coin.svg';
-import tVaraCoin from '@/assets/icons/tvara-coin.svg';
 import { WalletInfoProps } from './WalletInfo.interfaces';
 import { Button } from '@/ui';
 import { WalletModal } from '../WalletModal';
 import styles from './WalletInfo.module.scss';
 
 function WalletInfo({ account, withoutBalance, buttonClassName }: WalletInfoProps) {
-  const { isApiReady } = useApi();
   const address = useAtom(CONTRACT_ADDRESS_ATOM);
-  const balances = useAccountDeriveBalancesAll();
-  const { getFormattedBalance } = useBalanceFormat();
   const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
-
-  const balance =
-    isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
 
   const handleCloseWalletModal = () => {
     setIsWalletModalOpen(false);
