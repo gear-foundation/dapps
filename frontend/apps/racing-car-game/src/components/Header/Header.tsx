@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useAccount, useApi, useAccountDeriveBalancesAll, useBalanceFormat } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 import { VaraBalanceNew as VaraBalance } from '@dapps-frontend/ui';
 import { cx } from '@/utils';
 import { Link } from '@/ui';
@@ -13,14 +13,9 @@ import { MobileMenu } from '../MobileMenu';
 
 function Header({ menu }: HeaderProps) {
   const location = useLocation();
-  const { isApiReady } = useApi();
   const { account } = useAccount();
   const isMobile = useMediaQuery(768);
-  const balances = useAccountDeriveBalancesAll();
-  const { getFormattedBalance } = useBalanceFormat();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-  const balance =
-    isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
 
   const burgerMenuHandler = () => {
     setIsMobileMenuOpen(false);
