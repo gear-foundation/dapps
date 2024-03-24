@@ -1,3 +1,3 @@
-import { Wallet } from './components';
+import { Wallet, VaraBalance } from './components';
 
-export { Wallet };
+export { Wallet, VaraBalance };
