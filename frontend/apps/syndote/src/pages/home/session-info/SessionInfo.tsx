@@ -1,4 +1,11 @@
-import { useAccount, useAccountDeriveBalancesAll, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import {
+  useAccount,
+  useAccountDeriveBalancesAll,
+  useAlert,
+  useApi,
+  useBalanceFormat,
+  withoutCommas,
+} from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { Players } from 'types';
 import { useSyndoteMessage } from 'hooks/metadata';
@@ -25,7 +32,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
   const { account } = useAccount();
   const alert = useAlert();
   const { isMeta, sendMessage } = useSyndoteMessage();
-  const { getFormattedBalance } = useBalanceFormat();
+  const { getFormattedBalance, getFormattedBalanceValue } = useBalanceFormat();
   const balances = useAccountDeriveBalancesAll();
   const balance =
     isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
@@ -41,7 +48,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
       name: 'Entry fee',
       value: (
         <>
-          {VaraSvg} {entryFee || 0} VARA
+          {VaraSvg} {entryFee ? getFormattedBalanceValue(Number(withoutCommas(entryFee))).toFixed() : 0} VARA
         </>
       ),
     },
