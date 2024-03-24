@@ -1,7 +1,7 @@
-import { useAccount, useAccountDeriveBalancesAll, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { useAccount, useAccountDeriveBalancesAll, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { Players } from 'types';
-import { useReadGameSessionState, useSyndoteMessage } from 'hooks/metadata';
+import { useSyndoteMessage } from 'hooks/metadata';
 import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
 import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
 import { ReactComponent as UserSVG } from 'assets/images/icons/ic-user-small-24.svg';
@@ -12,6 +12,7 @@ import { stringShorten } from '@polkadot/util';
 import { GameDetails } from 'components/layout/game-details';
 import clsx from 'clsx';
 import { HexString } from '@gear-js/api';
+import { copyToClipboard } from 'utils';
 
 type Props = {
   entryFee: string | null;
@@ -22,13 +23,19 @@ type Props = {
 function SessionInfo({ entryFee, players, adminId }: Props) {
   const { isApiReady } = useApi();
   const { account } = useAccount();
-  const { state } = useReadGameSessionState();
+  const alert = useAlert();
   const { isMeta, sendMessage } = useSyndoteMessage();
   const { getFormattedBalance } = useBalanceFormat();
   const balances = useAccountDeriveBalancesAll();
   const balance =
     isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
   const VaraSvg = balance?.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />;
+  const userStrategy = players.find((item) => item[1].ownerId === account?.decodedAddress)?.[0] || '';
+
+  const handleCopy = (value: string) => {
+    copyToClipboard({ alert, value });
+  };
+
   const items = [
     {
       name: 'Entry fee',
@@ -47,11 +54,16 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
       ),
     },
     {
-      name: `Program address (${stringShorten(
-        players.find((item) => item[1].ownerId === account?.decodedAddress)?.[0] || '',
-        4,
-      )})`,
-      value: <Button color="transparent" icon={CopySVG} text="Copy" className={styles.copyButton} />,
+      name: `Program address (${stringShorten(userStrategy, 4)})`,
+      value: (
+        <Button
+          color="transparent"
+          icon={CopySVG}
+          text="Copy"
+          className={styles.copyButton}
+          onClick={() => handleCopy(userStrategy)}
+        />
+      ),
     },
   ];
   const isAdmin = adminId === account?.decodedAddress;
@@ -71,7 +83,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
       payload,
     });
   };
-  console.log(players);
+
   return (
     <>
       <GameDetails items={items} className={{ item: styles.gameDetailsItem }} />
