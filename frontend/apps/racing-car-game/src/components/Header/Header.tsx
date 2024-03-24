@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useApi, useAccountDeriveBalancesAll, useBalanceFormat } from '@gear-js/react-hooks';
+import { VaraBalanceNew as VaraBalance } from '@dapps-frontend/ui';
 import { cx } from '@/utils';
 import { Link } from '@/ui';
 import styles from './Header.module.scss';
@@ -8,17 +9,18 @@ import logo from '@/assets/icons/logo-vara-black.svg';
 import { HeaderProps } from './Header.interfaces';
 import { useMediaQuery } from '@/hooks';
 import { WalletInfo } from '@/features/Wallet/components/WalletInfo';
-import { useAccountAvailableBalance } from '@/features/Wallet/hooks';
-import varaCoin from '@/assets/icons/vara-coin.svg';
-import tVaraCoin from '@/assets/icons/tvara-coin.svg';
 import { MobileMenu } from '../MobileMenu';
 
 function Header({ menu }: HeaderProps) {
   const location = useLocation();
+  const { isApiReady } = useApi();
   const { account } = useAccount();
   const isMobile = useMediaQuery(768);
-  const { availableBalance: balance, isAvailableBalanceReady } = useAccountAvailableBalance();
+  const balances = useAccountDeriveBalancesAll();
+  const { getFormattedBalance } = useBalanceFormat();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
+  const balance =
+    isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
 
   const burgerMenuHandler = () => {
     setIsMobileMenuOpen(false);
@@ -29,10 +31,6 @@ function Header({ menu }: HeaderProps) {
       burgerMenuHandler();
     }
   }, [isMobile, isMobileMenuOpen]);
-
-  const balanceValue = (balance?.value || '0').split('.');
-  const balanceAmount = balanceValue[0].replaceAll(/,|\s/g, '&thinsp;');
-  const balanceDecimals = balanceValue[1];
 
   return (
     <>
@@ -69,18 +67,9 @@ function Header({ menu }: HeaderProps) {
             </>
           )}
           {!isMobile && <WalletInfo account={account} buttonClassName={cx(styles['wallet-info-connect-btn'])} />}
-          {account && isMobile && isAvailableBalanceReady && (
+          {account && isMobile && (
             <div className={cx(styles['menu-wrapper'])}>
-              <div className={cx(styles.balance)}>
-                <img
-                  src={balance?.unit?.toLowerCase() === 'vara' ? varaCoin : tVaraCoin}
-                  alt="vara coin"
-                  className={cx(styles['balance-coin-image'])}
-                />
-                <div className={cx(styles['balance-value'])}>{balanceAmount}</div>
-                {balanceDecimals && <div className={cx(styles['balance-decimals'])}>{`.${balanceDecimals}`}</div>}
-                <div className={cx(styles['balance-currency-name'])}>{balance?.unit}</div>
-              </div>
+              <VaraBalance />
               {!!account && <MobileMenu />}
             </div>
           )}

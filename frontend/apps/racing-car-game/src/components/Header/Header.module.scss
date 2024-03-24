@@ -112,59 +112,23 @@
     margin-right: 10px;
   }
 
-  &-value {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -2%;
-  }
+  .text {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
 
-  &-decimals {
-    margin: 10px 0 0 1px;
-    font-size: 10px;
-    font-weight: 500;
-    line-height: 1.4;
-    color: theme-var($text-primary);
-    text-transform: uppercase;
-    opacity: 60%;
-  }
+    .value {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 22px;
+      letter-spacing: -0.02em;
+    }
 
-  &-currency-name {
-    margin: 8px 0 0 4px;
-    font-size: 10px;
-    font-weight: 400;
-    color: theme-var($text-primary);
-    opacity: 0.6;
-    text-transform: uppercase;
-  }
-}
-
-.description {
-  height: 50px;
-  min-width: 128px;
-  max-width: 200px;
-  padding: 0 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-transform: capitalize;
-  border: none;
-  outline: none;
-  background: theme-var($background-tertiary);
-  cursor: pointer;
-
-  &-icon {
-    min-width: 16px;
-    min-height: 16px;
-    margin-right: 10px;
-    background: wheat;
-    border-radius: 50px;
-  }
-
-  &-name {
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 3%;
-    color: theme-var($text-secondary);
+    .unit {
+      font-size: 10px;
+      font-weight: 400;
+      line-height: 14px;
+    }
   }
 }
 
@@ -187,4 +151,5 @@
 .menu-wrapper {
   display: flex;
   align-items: center;
+  gap: 20px;
 }
