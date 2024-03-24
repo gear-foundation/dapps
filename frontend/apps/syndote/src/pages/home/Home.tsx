@@ -357,7 +357,9 @@ function Home() {
                         {isAdmin && (
                           <>
                             <SessionInfo entryFee={state.entryFee} players={state.players} adminId={state.adminId} />
-                            <Button text="Start the game" onClick={startGame} />
+                            <div className={styles.mainButtons}>
+                              <Button text="Start the game" onClick={startGame} className={styles.startGameButton} />
+                            </div>
                           </>
                         )}
                         {!isAdmin && <span className={styles.subheading}>Waiting for admin to start the game...</span>}
