@@ -4,6 +4,7 @@
 .wallet-info {
   display: flex;
   align-items: center;
+  gap: 50px;
 }
 
 .balance {
@@ -19,30 +20,23 @@
     height: 24px;
   }
 
-  &-value {
-    font-size: 20px;
-    font-weight: 700;
-    letter-spacing: -2%;
-  }
+  .text {
+    display: flex;
+    align-items: flex-end;
+    gap: 4px;
 
-  &-decimals {
-    margin-left: 1px;
-    font-size: 10px;
-    font-weight: 500;
-    line-height: 1.4;
-    color: theme-var($text-primary);
-    text-transform: uppercase;
-    opacity: 60%;
-  }
+    .value {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 22px;
+      letter-spacing: -0.02em;
+    }
 
-  &-currency-name {
-    margin-left: 4px;
-    font-size: 10px;
-    font-weight: 500;
-    line-height: 1.4;
-    color: theme-var($text-primary);
-    text-transform: uppercase;
-    opacity: 60%;
+    .unit {
+      font-size: 10px;
+      font-weight: 400;
+      line-height: 14px;
+    }
   }
 }
 
