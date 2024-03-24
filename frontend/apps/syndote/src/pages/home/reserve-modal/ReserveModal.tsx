@@ -27,6 +27,7 @@ function ReserveModal({ onReserve, onClose }: Props) {
           {VaraSvg} {getFormattedGasValue(api?.blockGasLimit.toNumber() || 0).toFixed()} VARA
         </>
       ),
+      key: '1',
     },
   ];
 

@@ -18,7 +18,7 @@ import styles from './SessionInfo.module.scss';
 import { stringShorten } from '@polkadot/util';
 import { GameDetails } from 'components/layout/game-details';
 import clsx from 'clsx';
-import { HexString } from '@gear-js/api';
+import { HexString, encodeAddress } from '@gear-js/api';
 import { copyToClipboard } from 'utils';
 
 type Props = {
@@ -48,29 +48,38 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
       name: 'Entry fee',
       value: (
         <>
-          {VaraSvg} {entryFee ? getFormattedBalanceValue(Number(withoutCommas(entryFee))).toFixed() : 0} VARA
+          {VaraSvg} {entryFee ? getFormattedBalanceValue(Number(withoutCommas(entryFee))).toFormat(2) : 0} VARA
         </>
       ),
+      key: '1',
     },
     {
       name: 'Players already joined the game',
       value: (
         <>
-          <UserSVG /> {players.length} / 4
+          <UserSVG /> {players.length}
+          <span className={styles.fromAllPlayers}>/4</span>
         </>
       ),
+      key: '2',
     },
     {
-      name: `Program address (${stringShorten(userStrategy, 4)})`,
+      name: (
+        <span>
+          Program address (<span className={styles.markedAddress}>{stringShorten(encodeAddress(userStrategy), 4)}</span>
+          )
+        </span>
+      ),
       value: (
         <Button
           color="transparent"
           icon={CopySVG}
           text="Copy"
           className={styles.copyButton}
-          onClick={() => handleCopy(userStrategy)}
+          onClick={() => handleCopy(encodeAddress(userStrategy))}
         />
       ),
+      key: '3',
     },
   ];
   const isAdmin = adminId === account?.decodedAddress;
@@ -104,7 +113,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
               isAdmin && player[1].ownerId !== account?.decodedAddress && styles.playerItemForAdmin,
             )}>
             <span>
-              {stringShorten(player[1].ownerId, 4)}{' '}
+              {stringShorten(encodeAddress(player[1].ownerId), 4)}{' '}
               {player[1].ownerId === account?.decodedAddress ? <span className={styles.playerLabel}>(you)</span> : ''}
             </span>
             {isAdmin && player[1].ownerId !== account?.decodedAddress && (
