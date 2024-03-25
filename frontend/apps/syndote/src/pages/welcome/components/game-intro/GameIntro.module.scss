@@ -1,0 +1,41 @@
+@use 'styles' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: 16px;
+  padding-bottom: 30px;
+}
+
+.name {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+
+  &-black {
+    color: #000000;
+  }
+
+  &-white {
+    color: #ffffff;
+  }
+}
+
+.description {
+  width: 574px;
+  font-size: 14px;
+  font-weight: 400;
+  color: #ffffff;
+  letter-spacing: 0.025em;
+  line-height: 20px;
+  opacity: 0.7;
+
+  &-black {
+    color: #000000;
+  }
+
+  &-white {
+    color: #ffffff;
+  }
+}

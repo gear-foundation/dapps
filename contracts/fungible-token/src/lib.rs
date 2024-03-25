@@ -121,7 +121,7 @@ impl FungibleToken {
 
     fn can_transfer(&mut self, from: &ActorId, amount: u128) -> bool {
         let source = msg::source();
-        if from == &source || self.balances.get(&source).unwrap_or(&0) >= &amount {
+        if from == &source && self.balances.get(&source).unwrap_or(&0) >= &amount {
             return true;
         }
         if let Some(allowed_amount) = self.allowances.get(from).and_then(|m| m.get(&source)) {

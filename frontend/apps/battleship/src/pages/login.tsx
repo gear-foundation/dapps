@@ -1,27 +1,35 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useAlert } from '@gear-js/react-hooks';
 import battleshipImage from '@/assets/images/illustration-battleship.png';
 import { Button, buttonVariants } from '@/components/ui/button/button';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
-
 import styles from './login.module.scss';
+import { useGaslessTransactions, EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
 
 export default function Login() {
-  const navigation = useNavigate();
+  const navigate = useNavigate();
   const { account } = useAccount();
+  const alert = useAlert();
+
+  const gasless = useGaslessTransactions();
 
   const [isOpen, setIsOpen] = useState(false);
-
   const openWallet = () => setIsOpen(true);
   const closeWallet = () => setIsOpen(false);
 
   const onClickStartGame = () => {
-    navigation('/game');
+    // withVoucherRequest? to handle condition inside of gasless context
+    if (!gasless.isEnabled || gasless.voucherId) return navigate('/game');
+
+    gasless
+      .requestVoucher()
+      .then(() => navigate('/game'))
+      .catch(({ message }: Error) => alert.error(message));
   };
 
   return (
@@ -38,12 +46,18 @@ export default function Login() {
             </Text>
           </div>
         </div>
-        <Button className={buttonVariants()} onClick={account ? onClickStartGame : openWallet}>
-          {account ? 'Start the Game' : 'Connect wallet'}
-        </Button>
+        <div className={styles.controlsWrapper}>
+          <Button
+            className={(buttonVariants(), styles.startGameButton)}
+            onClick={account ? onClickStartGame : openWallet}>
+            {account ? 'Start the Game' : 'Connect wallet'}
+          </Button>
+
+          <EzTransactionsSwitch />
+        </div>
 
         <div className={styles.bottom}>
-          <img src={battleshipImage} alt="" width={300} />S
+          <img src={battleshipImage} alt="" width={300} />
         </div>
       </div>
 

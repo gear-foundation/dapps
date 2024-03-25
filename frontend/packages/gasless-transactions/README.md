@@ -10,33 +10,35 @@ yarn add @dapps-frontend/gasless-transactions
 
 ## Use
 
-Import initGaslessTransactions function from @dapps-frontend/gasless-transactions in your utils and execute it to get requred tools for using gasless transactions. You should pass required arguments in it:
+Import GaslessTransactionsProvider from @dapps-frontend/gasless-transactions in your index.tsx and wrap your application. You should pass required arguments in it:
 
 ```jsx
-import { initGasslessTransactions } from '@dapps-frontend/gasless-transactions';
+import { GaslessTransactionsProvider } from '@dapps-frontend/gasless-transactions';
 
-export const gaslessTransactions = initGasslessTransactions({
-  programId: // Contract address
-  backendAddress: // Address of the backend managing gasless transactions handling
-  voucherLimit?: // OPTIONAL. A limit when voucher balance needs to be replenished. voucherLimit is 18 by default
-});
+<GaslessTransactionsProvider
+  programId={ADDRESS.GAME} //Program address
+  backendAddress={ADDRESS.GASLESS_BACKEND}  //Address of a gasless backend
+  voucherLimit={18} //A limit when voucher balance needs to be replenished.
+>
+  <App>
+</GaslessTransactionsProvider>
 
 ```
 
-An object returned from `initGasslessTransactions` contains a set of tools for handling gasless transactrions.
+The package provides `useGaslessTransactions` hook which returns a context with all required properties.
 
-### useFetchVoucher
+### useGaslessTransactions
 
-This hook creates a voucher for current account and automaticly updates its balance when it becomes lower than `voucherLimit`.
+This hook currently returns two properties:
 
 ```jsx
-const { useFetchVoucher } = gaslessTransactions;
+import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
 
-const { isVoucher, isLoading, updateBalance } = useFetchVoucher();
+const { voucherId, isLoadingVoucher } = useGaslessTransactions();
 ```
 
-`isVoucher` is the boolean variable which shows if a voucher does exist for this account or not
+`voucherId` - id of a created voucher for current account
 
-`isLoading` is true if a voucher is creating or updating the balance in this moment
+`isLoadingVoucher` - a boolean value indicating whether the voucher is being created/updated at the moment
 
-`updateBalance` allows to manually update voucher balance if needed
+You can use voucher id to get all required details via methods provided with @gear-js/api

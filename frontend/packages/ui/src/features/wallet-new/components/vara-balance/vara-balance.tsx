@@ -1,19 +1,26 @@
-import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
-import { ReactComponent as VaraSVG } from '../../assets/vara.svg';
-import { useFreeAccountBalance } from '../../hooks';
+import clsx from 'clsx';
+import { useAccount, useApi, useBalanceFormat, useDeriveBalancesAll } from '@gear-js/react-hooks';
+import { ReactComponent as VaraSVG } from '../../assets/vara-coin.svg';
+import { ReactComponent as TVaraSVG } from '../../assets/tvara-coin.svg';
 import styles from './vara-balance.module.css';
 
-function VaraBalance() {
+type Props = {
+  className?: string;
+};
+
+function VaraBalance({ className }: Props) {
+  const { account } = useAccount();
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
 
   const { getFormattedBalance } = useBalanceFormat();
-  const { freeAccountBalance } = useFreeAccountBalance();
-  const balance = isApiReady && freeAccountBalance ? getFormattedBalance(freeAccountBalance) : undefined;
+  const balances = useDeriveBalancesAll(account?.decodedAddress);
+  const balance =
+    isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
 
   return isAccountReady && balance ? (
-    <div className={styles.balance}>
-      <VaraSVG />
+    <div className={clsx(styles.balance, className)}>
+      {balance.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />}
 
       <p className={styles.text}>
         <span className={styles.value}>{balance.value}</span>

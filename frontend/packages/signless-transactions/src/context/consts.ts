@@ -1,6 +1,6 @@
 const SIGNLESS_STORAGE_KEY = 'signless';
 
-const DEFAULT_VALUES = {
+const DEFAULT_SIGNLESS_CONTEXT = {
   pair: undefined,
   storagePair: undefined,
   savePair: () => {},
@@ -8,9 +8,15 @@ const DEFAULT_VALUES = {
   unlockPair: () => {},
   session: undefined,
   isSessionReady: false,
+  isVoucherExists: false,
   voucherBalance: 0,
   createSession: () => {},
   deleteSession: () => {},
+  updateSession: () => {},
+  pairVoucherId: undefined,
+  isLoading: false,
+  setIsLoading: () => {},
+  isAvailable: false,
 };
 
-export { SIGNLESS_STORAGE_KEY, DEFAULT_VALUES };
+export { SIGNLESS_STORAGE_KEY, DEFAULT_SIGNLESS_CONTEXT };
