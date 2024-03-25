@@ -1,5 +1,5 @@
 import { GearKeyring, HexString, decodeAddress } from '@gear-js/api';
-import { useAccount, useBalance, useBalanceFormat, useDeriveBalancesAll, useVouchers } from '@gear-js/react-hooks';
+import { useAccount, useBalance, useVouchers } from '@gear-js/react-hooks';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
@@ -42,15 +42,15 @@ function useVoucherId(programId: HexString, address: string | undefined) {
 
 function SignlessTransactionsProvider({ metadataSource, programId, children }: Props) {
   const { account } = useAccount();
-  const balances = useDeriveBalancesAll(account?.address);
+  // const balances = useDeriveBalancesAll(account?.address);
 
-  const { getFormattedBalance } = useBalanceFormat();
+  // const { getFormattedBalance } = useBalanceFormat();
 
   const metadata = useProgramMetadata(metadataSource);
   const { session, isSessionReady } = useSession(programId, metadata);
 
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isAvailable, setIsAvailable] = useState<boolean>(false);
+  const [isAvailable] = useState<boolean>(true);
 
   const [pair, setPair] = useState<KeyringPair | undefined>();
   const getStorage = () => JSON.parse(localStorage[SIGNLESS_STORAGE_KEY] || '{}') as Storage;
@@ -106,16 +106,16 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
     setPair(undefined);
   }, [account]);
 
-  useEffect(() => {
-    if (
-      balances?.freeBalance &&
-      (Number(getFormattedBalance(balances.freeBalance.toNumber()).value) > 42 || voucherBalance > 0)
-    ) {
-      setIsAvailable(true);
-    } else {
-      setIsAvailable(false);
-    }
-  }, [balances?.freeBalance, storagePair, voucherBalance]);
+  // useEffect(() => {
+  //   if (
+  //     balances?.freeBalance &&
+  //     (Number(getFormattedBalance(balances.freeBalance.toNumber()).value) > 42 || voucherBalance > 0)
+  //   ) {
+  //     setIsAvailable(true);
+  //   } else {
+  //     setIsAvailable(false);
+  //   }
+  // }, [balances?.freeBalance, storagePair, voucherBalance]);
 
   const value = {
     pair,
