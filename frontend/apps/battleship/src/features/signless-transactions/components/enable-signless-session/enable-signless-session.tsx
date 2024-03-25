@@ -7,6 +7,7 @@ import styles from './enable-signless-session.module.css';
 import { CreateSessionModal } from '../create-session-modal';
 import { useSignlessTransactions } from '../../context';
 import { EnableSessionModal } from '../enable-session-modal';
+import { useIsAvailable } from '../../hooks';
 
 type Props = {
   type: 'button' | 'switcher';
@@ -14,12 +15,18 @@ type Props = {
   message?: string;
   disabled?: boolean;
   onSessionCreate?: (signlessAccountAddress: string) => Promise<void>;
+  requiredBalance: number | undefined;
 };
 
-function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher, disabled, message }: Props) {
+function EnableSignlessSession(props: Props) {
+  const { type, onSessionCreate, shouldIssueVoucher, disabled, message, requiredBalance = 42 } = props;
+
   const { account } = useAccount();
-  const { isAvailable, pair, session, deletePair, deleteSession } = useSignlessTransactions();
+  const { pair, session, deletePair, deleteSession } = useSignlessTransactions();
+
+  const isAvailable = useIsAvailable(requiredBalance);
   const [isLoading, setIsLoading] = useState(false);
+
   const [isCreateSessionModalOpen, setIsCreateSessionModalOpen] = useState(false);
   const [isEnableSessionModalOpen, setIsEnableSessionModalOpen] = useState(false);
 
@@ -111,7 +118,7 @@ function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher, disa
                   <>
                     <span>Not enough balance to enable signless mode.</span>
                     <br />
-                    <span>Min required: 42 VARA</span>
+                    <span>Min required: {requiredBalance} VARA</span>
                   </>
                 ) : (
                   message && <span>{message}</span>

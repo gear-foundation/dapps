@@ -1,5 +1,5 @@
 import { HexString } from '@gear-js/api';
-import { useAccount, useBalance, useBalanceFormat, useDeriveBalancesAll } from '@gear-js/react-hooks';
+import { useAccount, useBalance } from '@gear-js/react-hooks';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
@@ -23,9 +23,6 @@ type Props = {
 
 function SignlessTransactionsProvider({ metadataSource, programId, children }: Props) {
   const { account } = useAccount();
-  const balances = useDeriveBalancesAll(account?.address);
-
-  const { getFormattedBalance } = useBalanceFormat();
 
   const metadata = useProgramMetadata(metadataSource);
   const { session, isSessionReady } = useSession(programId, metadata);
@@ -43,7 +40,6 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
   const storageVoucherBalance = _storageVoucherBalance ? _storageVoucherBalance.toNumber() : 0;
 
   const [isLoading, setIsLoading] = useState(false);
-  const [isAvailable, setIsAvailable] = useState(false);
   const isActive = Boolean(pair);
   const isSessionActive = Boolean(session);
 
@@ -69,19 +65,6 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
 
     setStoragePair(getStorage()[account.address]);
   }, [account]);
-
-  useEffect(() => {
-    if (!balances) return;
-    const { freeBalance } = balances;
-
-    const result = balances
-      ? Number(getFormattedBalance(freeBalance.toNumber()).value) > 42 || voucherBalance > 0
-      : false;
-
-    setIsAvailable(result);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [balances, voucherBalance]);
 
   const savePair = (value: KeyringPair, password: string) => {
     setPairToStorage(value.toJson(password));
@@ -117,7 +100,6 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
     voucher,
     isLoading,
     setIsLoading,
-    isAvailable,
     isActive,
     isSessionActive,
     storageVoucher,

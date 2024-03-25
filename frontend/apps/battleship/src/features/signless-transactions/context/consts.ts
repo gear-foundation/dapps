@@ -17,7 +17,6 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   storageVoucherBalance: 0,
   isLoading: false,
   setIsLoading: () => {},
-  isAvailable: false,
   isActive: false,
   isSessionActive: false,
 };

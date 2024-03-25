@@ -30,7 +30,6 @@ type SignlessContext = {
   voucher: (IVoucherDetails & { id: HexString }) | undefined;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
-  isAvailable: boolean;
   isActive: boolean;
   isSessionActive: boolean;
   storageVoucher: (IVoucherDetails & { id: HexString }) | undefined;
