@@ -1,5 +1,5 @@
 import { Button, Input, Modal, ModalProps, Select } from '@gear-js/vara-ui';
-import { useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { useApi, useBalanceFormat, useAccount } from '@gear-js/react-hooks';
 import { decodeAddress } from '@gear-js/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { useMemo, useState } from 'react';
@@ -20,22 +20,24 @@ import {
 
 type Props = Pick<ModalProps, 'close'> & {
   onSessionCreate?: (signlessAccountAddress: string) => Promise<void>;
-  shouldIssueVoucher?: boolean;
+  shouldIssueVoucher?: boolean; // no need to pass boolean, we can just conditionally pass onSessionCreate?
 };
 
 function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIssueVoucher = true }: Props) {
   const { api } = useApi();
+  const { account } = useAccount();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
 
   const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
-  const { savePair, storagePair, voucherBalance, createSession } = useSignlessTransactions();
+  const { savePair, storagePair, storageVoucher, storageVoucherBalance, createSession } = useSignlessTransactions();
   const pair = useMemo(() => storagePair || getRandomPair(), [storagePair]);
 
   const [isLoading, setIsLoading] = useState(false);
 
   const issueVoucherValue = useMemo(() => {
+    if (!account) throw new Error('Account is not initialized');
     if (!api) throw new Error('API is not initialized');
     if (!shouldIssueVoucher) return 0;
 
@@ -45,11 +47,15 @@ function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIss
     const valueToIssueVoucher = getChainBalanceValue(BALANCE_VALUE_TO_ISSUE_VOUCHER).toNumber();
 
     const totalValueToStart = minValue + valueToStart;
+
+    const isOwner = storageVoucher?.owner === account.decodedAddress;
+    if (!isOwner) return totalValueToStart;
+
     const totalValueToIssueVoucher = minValue + valueToIssueVoucher;
 
-    return voucherBalance < totalValueToIssueVoucher ? totalValueToStart - voucherBalance : 0;
+    return storageVoucherBalance < totalValueToIssueVoucher ? totalValueToStart - storageVoucherBalance : 0;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [api, voucherBalance]);
+  }, [api, storageVoucherBalance, shouldIssueVoucher]);
 
   const formattedIssueVoucherValue = getFormattedBalance(issueVoucherValue);
 
@@ -79,7 +85,7 @@ function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIss
 
     if (!shouldIssueVoucher) await onSessionCreate(pairToSave.address);
 
-    createSession({ duration, key, allowedActions }, issueVoucherValue, { onSuccess, onFinally, shouldIssueVoucher });
+    createSession({ duration, key, allowedActions }, issueVoucherValue, { shouldIssueVoucher, onSuccess, onFinally });
   };
 
   return (

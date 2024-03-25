@@ -32,6 +32,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     return currentBlockNumber > expiry;
   };
 
+  // TODO: reuse voucher from context
   const getLatestVoucher = async (address: string) => {
     if (!isApiReady) throw new Error('API is not initialized');
 
@@ -69,9 +70,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
       return extrinsic;
     }
 
-    const isExpired = await isVoucherExpired(voucher);
-
-    const prolongDuration = isExpired ? api.voucher.minDuration : undefined;
+    const prolongDuration = api.voucher.minDuration; // TODO: need to consider session duration
     const balanceTopUp = voucherValue;
 
     return api.voucher.update(session.key, voucher.id, { prolongDuration, balanceTopUp });

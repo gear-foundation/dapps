@@ -33,6 +33,8 @@ type SignlessContext = {
   isAvailable: boolean;
   isActive: boolean;
   isSessionActive: boolean;
+  storageVoucher: (IVoucherDetails & { id: HexString }) | undefined;
+  storageVoucherBalance: number;
 };
 
 export type { State, Session, Storage, SignlessContext };
