@@ -83,3 +83,13 @@ fn success_play_tournament() {
         Stage::Finished(vec![PLAYERS[1].into(), PLAYERS[0].into()])
     );
 }
+
+
+#[test]
+fn check() {
+    let input = "0102";
+    let decoded = hex::decode(input).expect("Decoding failed");
+    let mut res: &[u8] = &decoded;
+    let result = Result::<VaraManEvent, VaraManError>::decode(&mut res).ok();
+    println!("RES: {:?}", result);
+}
