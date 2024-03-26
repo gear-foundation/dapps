@@ -1,7 +1,8 @@
-import { decodeAddress } from '@gear-js/api';
+import { decodeAddress, GearTransaction, IGearEvent, IGearVoucherEvent } from '@gear-js/api';
 import { AlertContainerFactory } from '@gear-js/react-hooks';
+import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { encodeAddress, Keyring } from '@polkadot/keyring';
-import { KeyringPair$Json } from '@polkadot/keyring/types';
+import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
 import { mnemonicGenerate } from '@polkadot/util-crypto';
 
 const MULTIPLIER = {
@@ -10,6 +11,34 @@ const MULTIPLIER = {
   MINUTES: 60,
   HOURS: 24,
 };
+
+export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVoucherEvent | 'Transfer'>(
+  submitted: GearTransaction | SubmittableExtrinsic<'promise'>,
+  account: KeyringPair,
+  methods: E[],
+): Promise<any[]> {
+  const result: any = new Array(methods.length);
+  return new Promise((resolve, reject) => {
+    submitted
+      .signAndSend(account, ({ events, status }) => {
+        events.forEach(({ event }) => {
+          const { method, data } = event;
+          if (methods.includes(method as E) && status.isInBlock) {
+            result[methods.indexOf(method as E)] = data;
+          } else if (method === 'ExtrinsicFailed') {
+            reject(data.toString());
+          }
+        });
+        if (status.isInBlock) {
+          resolve([...result, status.asInBlock.toHex()]);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+        reject(err.message);
+      });
+  });
+}
 
 const getVaraAddress = (value: string) => {
   const VARA_SS58_FORMAT = 137;

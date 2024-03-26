@@ -19,12 +19,10 @@ function GaslessTransactions({ disabled }: Props) {
           <div className={styles.titleWrapper}>
             <GaslessSVG />
 
-            <h3 className={styles.title}>
-              {isActive ? 'Gasless Session is active' : 'Gasless Session will start with the first game'}
-            </h3>
+            <h3 className={styles.title}>{isActive ? 'Gasless Session is active' : 'Gasless Session is enabled'}</h3>
           </div>
 
-          <EnableGaslessSession type="button" />
+          <EnableGaslessSession type="button" disabled={disabled} />
         </div>
       )}
 

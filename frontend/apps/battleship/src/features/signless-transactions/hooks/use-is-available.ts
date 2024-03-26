@@ -1,7 +1,7 @@
 import { useAccount, useBalanceFormat, useDeriveBalancesAll } from '@gear-js/react-hooks';
 import { useState, useEffect } from 'react';
 
-function useIsAvailable(requiredBalance: number) {
+function useIsAvailable(requiredBalance: number, isSessionActive: boolean) {
   const { account } = useAccount();
   const balances = useDeriveBalancesAll(account?.address);
   const { getChainBalanceValue } = useBalanceFormat();
@@ -9,6 +9,7 @@ function useIsAvailable(requiredBalance: number) {
   const [isAvailable, setIsAvailable] = useState(false);
 
   useEffect(() => {
+    if (isSessionActive) return setIsAvailable(true);
     if (!balances) return setIsAvailable(false);
 
     const freeBalance = balances.freeBalance.toString();
@@ -16,7 +17,7 @@ function useIsAvailable(requiredBalance: number) {
 
     setIsAvailable(result);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [balances, requiredBalance]);
+  }, [balances, requiredBalance, isSessionActive]);
 
   return isAvailable;
 }

@@ -32,7 +32,7 @@ function useSignlessSendMessage(
   const sendSignlessMessage = (args: SendSignlessMessageOptions) => {
     const sessionForAccount = pair ? account?.decodedAddress : null;
     const payload = getSinglessPayload(args.payload, sessionForAccount);
-    const voucherId = voucher?.id;
+    const voucherId = voucher?.id || args.voucherId;
 
     sendMessage({ ...args, payload, voucherId });
   };
@@ -52,7 +52,7 @@ function useSignlessSendMessageHandler(
   const sendSignlessMessage = (args: Omit<SendSignlessMessageOptions, 'gasLimit'>) => {
     const sessionForAccount = pair ? account?.decodedAddress : null;
     const payload = getSinglessPayload(args.payload, sessionForAccount);
-    const voucherId = voucher?.id;
+    const voucherId = voucher?.id || args.voucherId;
 
     sendMessage({ ...args, payload, voucherId });
   };

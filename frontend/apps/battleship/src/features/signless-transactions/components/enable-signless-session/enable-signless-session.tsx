@@ -22,15 +22,13 @@ function EnableSignlessSession(props: Props) {
   const { type, onSessionCreate, shouldIssueVoucher, disabled, message, requiredBalance = 42 } = props;
 
   const { account } = useAccount();
-  const { pair, session, deletePair, deleteSession } = useSignlessTransactions();
+  const { pair, session, deletePair, deleteSession, isSessionActive } = useSignlessTransactions();
 
-  const isAvailable = useIsAvailable(requiredBalance);
+  const isAvailable = useIsAvailable(requiredBalance, isSessionActive);
   const [isLoading, setIsLoading] = useState(false);
 
   const [isCreateSessionModalOpen, setIsCreateSessionModalOpen] = useState(false);
   const [isEnableSessionModalOpen, setIsEnableSessionModalOpen] = useState(false);
-
-  const isSession = !!session;
 
   const openCreateModal = () => setIsCreateSessionModalOpen(true);
   const closeCreateModal = () => setIsCreateSessionModalOpen(false);
@@ -56,7 +54,7 @@ function EnableSignlessSession(props: Props) {
 
   const handleSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      if (isSession) {
+      if (isSessionActive) {
         openEnableModal();
         return;
       }
@@ -70,7 +68,7 @@ function EnableSignlessSession(props: Props) {
     <>
       {type === 'button' && (
         <>
-          {isSession ? (
+          {isSessionActive ? (
             <Button
               icon={PowerSVG}
               text="Disable"
@@ -100,7 +98,7 @@ function EnableSignlessSession(props: Props) {
               label=""
               type="switch"
               disabled={isLoading || !isAvailable || disabled}
-              checked={isSession && !!pair}
+              checked={isSessionActive && !!pair}
               onChange={handleSwitcherChange}
             />
           </div>

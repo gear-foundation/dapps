@@ -32,6 +32,7 @@ function EnableGaslessSession({ type, disabled, message }: Props) {
               color="light"
               className={styles.closeButton}
               onClick={handleDisableButtonClick}
+              disabled={disabled}
             />
           ) : (
             <Button
@@ -65,7 +66,7 @@ function EnableGaslessSession({ type, disabled, message }: Props) {
               {isLoading && <span className={styles.loader} />}
             </div>
 
-            {(!isAvailable || message) && (
+            {!isLoading && (!isAvailable || message) && (
               <span className={styles.descr}>
                 <span>{!isAvailable ? 'Gas-free functionality is disabled at the moment.' : message}</span>
               </span>

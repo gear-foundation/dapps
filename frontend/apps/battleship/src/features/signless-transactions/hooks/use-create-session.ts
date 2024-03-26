@@ -3,6 +3,7 @@ import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
 import { KeyringPair } from '@polkadot/keyring/types';
+import { sendTransaction } from '../utils';
 
 type Session = {
   key: HexString;
@@ -109,8 +110,9 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     const isExpired = await isVoucherExpired(voucher);
 
     if (!isExpired) {
-      const declineExtrrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
-      await batchSignAndSend([declineExtrrinsic], { pair });
+      const declineExtrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
+
+      await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined']);
     }
 
     if (isOwner) {
