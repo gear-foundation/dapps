@@ -4,6 +4,7 @@ import {
   useSignlessSendMessageHandler,
   SendSignlessMessageOptions,
 } from './use-signless-send-message';
+import { useIsAvailable } from './use-is-available';
 
-export { useCreateSession, useSignlessSendMessage, useSignlessSendMessageHandler };
+export { useCreateSession, useSignlessSendMessage, useSignlessSendMessageHandler, useIsAvailable };
 export type { SendSignlessMessageOptions };
