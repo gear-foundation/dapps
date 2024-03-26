@@ -1,12 +1,6 @@
 @use '@gear-js/ui/variables' as *;
 
 .header {
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    gap: 30px;
-    z-index: 9;
-
     @media screen and (max-width: 767px) {
       background: #1A1A1F;
       position: relative;
@@ -14,13 +8,6 @@
 }
 
 .content {
-  margin: auto;
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  
   @media screen and (max-width: 767px) {
     padding: 0 26px;
   }
@@ -57,5 +44,16 @@
     & path {
       fill: #fff;
     }
+  }
+}
+
+.balance {
+  color: #fff;
+}
+
+.menuIcon {
+  svg path {
+    fill: #fff;
+    stroke: #fff;
   }
 }

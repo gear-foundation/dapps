@@ -15,7 +15,7 @@ type State = {
 
 type Storage = Record<string, KeyringPair$Json | undefined>;
 
-type Value = {
+type SignlessContext = {
   pair: KeyringPair | undefined;
   storagePair: KeyringPair$Json | undefined;
   savePair: (pair: KeyringPair, password: string) => void;
@@ -25,7 +25,12 @@ type Value = {
   isSessionReady: boolean;
   voucherBalance: number;
   createSession: (...args: Parameters<ReturnType<typeof useCreateSession>['createSession']>) => void;
-  deleteSession: () => void;
+  deleteSession: (...args: Parameters<ReturnType<typeof useCreateSession>['deleteSession']>) => void;
+  updateSession: (...args: Parameters<ReturnType<typeof useCreateSession>['updateSession']>) => void;
+  pairVoucherId: `0x${string}` | undefined;
+  isLoading: boolean;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  isAvailable: boolean;
 };
 
-export type { State, Session, Storage, Value };
+export type { State, Session, Storage, SignlessContext };

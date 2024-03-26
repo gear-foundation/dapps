@@ -7,12 +7,14 @@ publish.workspace = true
 [dependencies]
 varatube-io.workspace = true
 fungible-token-io.workspace = true
-gstd.workspace = true
+gstd = { workspace = true, features = ["debug"] }
 
 [dev-dependencies]
 varatube-io.workspace = true
 fungible-token-io.workspace = true
 gtest.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+gear-core.workspace = true
 
 # External binaries
 

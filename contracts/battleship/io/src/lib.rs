@@ -7,6 +7,9 @@ use gstd::{
     ActorId,
 };
 
+// Minimum duration of session: 3 mins = 180_000 ms = 60 blocks
+pub const MINIMUM_SESSION_SURATION_MS: u64 = 180_000;
+
 pub struct BattleshipMetadata;
 
 impl Metadata for BattleshipMetadata {
@@ -19,35 +22,51 @@ impl Metadata for BattleshipMetadata {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StateQuery {
     All,
     Game(ActorId),
     BotContractId,
+    SessionForTheAccount(ActorId),
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {
     All(BattleshipState),
     Game(Option<GameState>),
     BotContractId(ActorId),
+    SessionForTheAccount(Option<Session>),
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct BattleshipState {
     pub games: Vec<(ActorId, GameState)>,
     pub bot_address: ActorId,
     pub admin: ActorId,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
+// This structure is for creating a gaming session, which allows players to predefine certain actions for an account that will play the game on their behalf for a certain period of time.
+// Sessions can be used to send transactions from a dApp on behalf of a user without requiring their confirmation with a wallet.
+// The user is guaranteed that the dApp can only execute transactions that comply with the allowed_actions of the session until the session expires.
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
+pub struct Session {
+    // the address of the player who will play on behalf of the user
+    pub key: ActorId,
+    // until what time the session is valid
+    pub expires: u64,
+    // what messages are allowed to be sent by the account (key)
+    pub allowed_actions: Vec<ActionsForSession>,
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum ActionsForSession {
+    StartGame,
+    Turn,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
 pub enum Entity {
     Empty,
     Unknown,
@@ -65,23 +84,58 @@ impl Entity {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleshipAction {
-    StartGame { ships: Ships },
-    Turn { step: u8 },
-    ChangeBot { bot: ActorId },
-    ClearState { leave_active_games: bool },
-    DeleteGame { player_address: ActorId },
+    StartGame {
+        ships: Ships,
+        session_for_account: Option<ActorId>,
+    },
+    Turn {
+        step: u8,
+        session_for_account: Option<ActorId>,
+    },
+    ChangeBot {
+        bot: ActorId,
+    },
+    ClearState {
+        leave_active_games: bool,
+    },
+    DeleteGame {
+        player_address: ActorId,
+    },
+    CreateSession {
+        key: ActorId,
+        duration: u64,
+        allowed_actions: Vec<ActionsForSession>,
+    },
+    DeleteSessionFromProgram {
+        account: ActorId,
+    },
+    DeleteSessionFromAccount,
+    UpdateConfig {
+        gas_for_start: Option<u64>,
+        gas_for_move: Option<u64>,
+        gas_to_delete_session: Option<u64>,
+        block_duration_ms: Option<u64>,
+    },
 }
 
-#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+#[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
+pub struct Config {
+    pub gas_for_start: u64,
+    pub gas_for_move: u64,
+    pub gas_to_delete_session: u64,
+    pub block_duration_ms: u64,
+}
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 pub enum BattleshipReply {
     MessageSentToBot,
     EndGame(BattleshipParticipants),
     BotChanged(ActorId),
+    SessionCreated,
+    SessionDeleted,
+    ConfigUpdated,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
@@ -94,15 +148,12 @@ pub enum Step {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct BattleshipInit {
     pub bot_address: ActorId,
+    pub config: Config,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Game {
     pub player_board: Vec<Entity>,
     pub bot_board: Vec<Entity>,
@@ -217,8 +268,6 @@ impl Display for Ships {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Ships {
     pub ship_1: Vec<u8>,
     pub ship_2: Vec<u8>,
@@ -366,24 +415,18 @@ impl Ships {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleshipParticipants {
     Player,
     Bot,
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BotBattleshipAction {
     Start,
     Turn(Vec<Entity>),
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct GameState {
     pub player_board: Vec<Entity>,
     pub bot_board: Vec<Entity>,

@@ -1,6 +1,6 @@
-use gear_lib_old::multitoken::io::*;
+use concert_io::*;
 use gstd::{prelude::*, ActorId, String};
-
+use multi_token_io::TokenMetadata;
 mod utils;
 use utils::*;
 
@@ -52,13 +52,7 @@ fn buy_tickets() {
         reference: Some(String::from("UNKNOWN")),
     })];
 
-    buy(
-        &concert_program,
-        CONCERT_ID,
-        AMOUNT,
-        metadata.clone(),
-        false,
-    );
+    buy(&concert_program, CONCERT_ID, AMOUNT, metadata.clone(), None);
     check_buyers(&concert_program, vec![ActorId::from(USER)]);
     check_user_tickets(&concert_program, ActorId::from(USER), metadata);
 }
@@ -77,8 +71,27 @@ fn buy_tickets_failures() {
         CONCERT_ID,
     );
 
+    // MUST FAIL since Zero address
+    let res = concert_program.send(
+        0,
+        ConcertAction::BuyTickets {
+            amount: 0,
+            metadata: vec![None],
+        },
+    );
+    assert!(res.contains(&(
+        0,
+        Err::<ConcertEvent, ConcertError>(ConcertError::ZeroAddress).encode()
+    )));
+
     // MUST FAIL since we're buying < 1 ticket
-    buy(&concert_program, CONCERT_ID, 0, vec![None], true);
+    buy(
+        &concert_program,
+        CONCERT_ID,
+        0,
+        vec![None],
+        Some(ConcertError::LessThanOneTicket),
+    );
 
     // MUST FAIL since we're buying more tickets than there are
     buy(
@@ -86,7 +99,7 @@ fn buy_tickets_failures() {
         CONCERT_ID,
         NUMBER_OF_TICKETS + 1,
         vec![None; (NUMBER_OF_TICKETS + 1) as usize],
-        true,
+        Some(ConcertError::NotEnoughTickets),
     );
 
     // MUST FAIL since metadata is not provided for all tickets
@@ -95,7 +108,7 @@ fn buy_tickets_failures() {
         CONCERT_ID,
         AMOUNT + 3,
         vec![None; (AMOUNT + 1) as usize],
-        true,
+        Some(ConcertError::NotEnoughMetadata),
     );
 }
 
@@ -123,7 +136,13 @@ fn hold_concert() {
         reference: Some(String::from("UNKNOWN")),
     })];
 
-    buy(&concert_program, CONCERT_ID, AMOUNT, metadata, false);
+    buy(&concert_program, CONCERT_ID, AMOUNT, metadata, None);
+
+    let res = concert_program.send(USER + 1, ConcertAction::Hold);
+    assert!(res.contains(&(
+        USER + 1,
+        Err::<ConcertEvent, ConcertError>(ConcertError::NotCreator).encode()
+    )));
 
     hold(&concert_program, CONCERT_ID);
 }

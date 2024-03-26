@@ -38,16 +38,19 @@ impl<Check, CheckResult, Event: Decode + Debug, Error: Decode + Debug + PartialE
     }
 
     #[track_caller]
-    pub fn failed(self, error: Error) {
+    pub fn failed(self, error: Error, index: usize) {
         assert_eq!(
-            decode::<Result<Event, Error>>(&self.result).unwrap_err(),
+            decode::<Result<Event, Error>>(&self.result, index).unwrap_err(),
             error
         );
     }
 
     #[track_caller]
-    pub fn succeed(self, value: Check) -> CheckResult {
-        (self.check)(decode::<Result<Event, Error>>(&self.result).unwrap(), value)
+    pub fn succeed(self, value: Check, index: usize) -> CheckResult {
+        (self.check)(
+            decode::<Result<Event, Error>>(&self.result, index).unwrap(),
+            value,
+        )
     }
 }
 
@@ -87,8 +90,8 @@ fn assert_contains(result: &InnerRunResult, payload: impl Encode) {
     assert!(result.contains(&Log::builder().payload(payload)));
 }
 
-fn decode<T: Decode>(result: &InnerRunResult) -> T {
-    match T::decode(&mut result.log()[0].payload()) {
+fn decode<T: Decode>(result: &InnerRunResult, index: usize) -> T {
+    match T::decode(&mut result.log()[index].payload()) {
         Ok(ok) => ok,
         Err(_) => std::panic!("{}", String::from_utf8_lossy(result.log()[0].payload())),
     }

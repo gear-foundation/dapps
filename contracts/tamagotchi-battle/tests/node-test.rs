@@ -125,8 +125,7 @@ async fn gclient_battle() -> Result<()> {
                     .get_specific_actor_id(player)
                     .encode()
                     .as_slice()
-                    .try_into()
-                    .expect("Unexpected invalid `ProgramId`."),
+                    .into(),
                 amount,
             )
             .await?;

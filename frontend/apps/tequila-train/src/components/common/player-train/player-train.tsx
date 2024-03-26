@@ -2,28 +2,11 @@ import { Popover } from '@headlessui/react';
 import { Icon } from '../../ui/icon';
 import clsx from 'clsx';
 import { getBgColors } from 'app/utils';
-import { useApp, useGame } from 'app/context';
 
 type Props = {
   index: number;
 };
 export const PlayerTrain = ({ index }: Props) => {
-  const { setOpenEmptyPopup } = useApp();
-  const { playerChoice, setPlayerChoice } = useGame();
-
-  const onClick = () => {
-    if (playerChoice && playerChoice.tile_id !== undefined && playerChoice.track_id !== undefined) {
-      const { track_id, tile_id } = playerChoice;
-
-      if (+track_id >= 0 && +tile_id >= 0) {
-        setPlayerChoice((prev) => ({ ...prev, remove_train: true }));
-      }
-    } else {
-      setOpenEmptyPopup(true);
-      setPlayerChoice((prev) => ({ ...prev, remove_train: false }));
-    }
-  };
-
   return (
     <Popover className="relative">
       <Popover.Button>
@@ -38,7 +21,7 @@ export const PlayerTrain = ({ index }: Props) => {
           </p>
 
           <div className="grid grid-cols-2 items-center gap-2 mt-2">
-            <Popover.Button className="btn btn--primary py-1.5 grow" onClick={onClick}>
+            <Popover.Button className="btn btn--primary py-1.5 grow">
               Drink!
             </Popover.Button>
             <Popover.Button className="btn btn--black py-1.5 grow">No, thanks</Popover.Button>

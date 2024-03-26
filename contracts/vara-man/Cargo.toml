@@ -10,7 +10,7 @@ vara-man-io.workspace = true
 fungible-token-io.workspace = true
 
 [dev-dependencies]
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 gtest.workspace = true
 gclient.workspace = true
 tokio.workspace = true

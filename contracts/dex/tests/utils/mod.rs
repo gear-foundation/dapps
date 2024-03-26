@@ -325,6 +325,6 @@ pub fn calculate_cp(reserve: (u128, u128)) -> U256 {
     let U256PairTuple(reserve) = reserve.into();
 
     ((reserve.1 << U256::from(128u64)) / reserve.0)
-        .overflowing_mul((SPENT_BLOCKS * 1000).into())
+        .overflowing_mul((SPENT_BLOCKS * 3000).into())
         .0
 }

@@ -11,12 +11,16 @@
   border: 1px solid #00FFC4;
   border-radius: 4px;
 
-  .titleWrapper {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
+}
 
+.titleWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.expiredTitleWrapper {
+  margin-bottom: 10px;
 }
 
 .title {
@@ -54,7 +58,7 @@
 .enableButton {
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 10px;
   background: transparent;
   margin: 0;
   padding: 0;
@@ -62,4 +66,10 @@
   font-size: 16px;
   font-weight: 400;
   line-height: 19.2px;
+}
+
+.expiredButtons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
