@@ -9,7 +9,7 @@ const PATHS: [&str; 2] = [
     "../target/wasm32-unknown-unknown/release/syndote.opt.wasm",
 ];
 
-const PLAYERS: [&str; 4] = ["//John", "//Mike", "//Dan", "//Bot"];
+pub const PLAYERS: [&str; 4] = ["//John", "//Mike", "//Dan", "//Alice"];
 
 pub trait ApiUtils {
     fn get_actor_id(&self) -> ActorId;
@@ -88,10 +88,9 @@ pub async fn upload_and_register_players(
     admin_id: ActorId,
     game_id: ProgramId,
 ) -> Result<()> {
-    // upload 4 strategies
+    // upload 3 strategies
     let strategy_code = gclient::code_from_os(PATHS[0])?;
     let codes = [
-        strategy_code.clone(),
         strategy_code.clone(),
         strategy_code.clone(),
         strategy_code.clone(),
@@ -100,7 +99,7 @@ pub async fn upload_and_register_players(
 
     // Sending batch.
     let mut args = Vec::new();
-    for i in 0..4 {
+    for i in 0..3 {
         let mut salt = gclient::now_micros().to_le_bytes();
         salt[0] = i;
         args.push((strategy_code.clone(), salt, "", 5_000_000_000, 0))
@@ -124,10 +123,10 @@ pub async fn upload_and_register_players(
         listener.message_processed_batch(mids).await?.len(),
     );
 
-    for (i, player) in PLAYERS.iter().enumerate() {
+    for i in 0..3 {
         let exp_reply: Result<GameReply, GameError> = Ok(GameReply::StrategyRegistered);
         let pid: [u8; 32] = pids[i].into();
-        let client = client.clone().with(player)?;
+        let client = client.clone().with(PLAYERS[i])?;
         assert_eq!(
             Ok(exp_reply),
             send_message(
@@ -136,6 +135,7 @@ pub async fn upload_and_register_players(
                 game_id.into(),
                 GameAction::Register {
                     admin_id,
+                    name: "Alice".to_string(),
                     strategy_id: pid.into(),
                 },
                 730_000_000_000,
@@ -192,13 +192,32 @@ pub async fn upload_syndote(
     Ok(program_id)
 }
 
+pub async fn upload_strategy(client: &GearApi, listener: &mut EventListener) -> Result<ProgramId> {
+    let (message_id, program_id, _) = client
+        .upload_program_by_path(
+            PATHS[0],
+            gclient::now_micros().to_le_bytes(),
+            "",
+            1_000_000_000,
+            0,
+        )
+        .await?;
+    assert!(listener.message_processed(message_id).await?.succeed());
+    Ok(program_id)
+}
 pub async fn get_game_session(
     client: &GearApi,
     game_id: ProgramId,
     admin_id: ActorId,
 ) -> Result<GameState> {
     let reply: StateReply = client
-        .read_state(game_id, StateQuery::GetGameSession { admin_id }.encode())
+        .read_state(
+            game_id,
+            StateQuery::GetGameSession {
+                account_id: admin_id,
+            }
+            .encode(),
+        )
         .await?;
     if let StateReply::GameSession {
         game_session: Some(game_session),
@@ -239,18 +258,10 @@ pub async fn get_owner_id(
 pub async fn get_player_info(
     client: &GearApi,
     game_id: ProgramId,
-    admin_id: ActorId,
     account_id: ActorId,
 ) -> Result<PlayerInfo> {
     let reply: StateReply = client
-        .read_state(
-            game_id,
-            StateQuery::GetPlayerInfo {
-                admin_id,
-                account_id,
-            }
-            .encode(),
-        )
+        .read_state(game_id, StateQuery::GetPlayerInfo { account_id }.encode())
         .await?;
     if let StateReply::PlayerInfo {
         player_info: Some(player_info),

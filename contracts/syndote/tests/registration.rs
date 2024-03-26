@@ -12,7 +12,14 @@ fn successful_registration_fee_required() {
 
     // fee for the game: 50 VARA
     let fee = 50_000_000_000_000;
-    game.create_game_session(ADMIN_ID, Some(fee), None);
+    let strategy = upload_strategy(&system);
+    game.create_game_session(
+        ADMIN_ID,
+        strategy.id().into(),
+        "Alice".to_string(),
+        Some(fee),
+        None,
+    );
 
     let strategy = upload_strategy(&system);
 
@@ -27,7 +34,7 @@ fn successful_registration_fee_required() {
     assert_eq!(program_balance, fee);
 
     let player_info = game
-        .get_player_info(ADMIN_ID, PLAYERS[0])
+        .get_player_info(ADMIN_ID)
         .expect("Player does not exist");
     assert_eq!(player_info.owner_id, PLAYERS[0].into());
     assert_eq!(player_info.balance, INITIAL_BALANCE);
@@ -44,15 +51,21 @@ fn successful_registration_fee_required() {
 fn successful_registration_no_fee_required() {
     let system = System::new();
     let game = preconfigure(&system);
-
-    game.create_game_session(ADMIN_ID, None, None);
+    let strategy = upload_strategy(&system);
+    game.create_game_session(
+        ADMIN_ID,
+        strategy.id().into(),
+        "Alice".to_string(),
+        None,
+        None,
+    );
 
     let strategy = upload_strategy(&system);
 
     game.register(PLAYERS[0], ADMIN_ID, strategy.id().into(), None, None);
 
     let player_info = game
-        .get_player_info(ADMIN_ID, PLAYERS[0])
+        .get_player_info(ADMIN_ID)
         .expect("Player does not exist");
     assert_eq!(player_info.owner_id, PLAYERS[0].into());
     assert_eq!(player_info.balance, INITIAL_BALANCE);
@@ -66,7 +79,15 @@ fn registration_failed_cases() {
 
     // fee for the game: 50 VARA
     let fee = 50_000_000_000_000;
-    game.create_game_session(ADMIN_ID, Some(fee), None);
+    let strategy = upload_strategy(&system);
+
+    game.create_game_session(
+        ADMIN_ID,
+        strategy.id().into(),
+        "Alice".to_string(),
+        Some(fee),
+        None,
+    );
 
     let strategy = upload_strategy(&system);
 
@@ -118,7 +139,14 @@ fn exit_game() {
 
     // fee for the game: 50 VARA
     let fee = 50_000_000_000_000;
-    game.create_game_session(ADMIN_ID, Some(fee), None);
+    let strategy = upload_strategy(&system);
+    game.create_game_session(
+        ADMIN_ID,
+        strategy.id().into(),
+        "Alice".to_string(),
+        Some(fee),
+        None,
+    );
 
     let strategy = upload_strategy(&system);
 
@@ -131,7 +159,7 @@ fn exit_game() {
     system.claim_value_from_mailbox(PLAYERS[0]);
     assert_eq!(system.balance_of(PLAYERS[0]), fee);
 
-    let player_info = game.get_player_info(ADMIN_ID, PLAYERS[0]);
+    let player_info = game.get_player_info(ADMIN_ID);
     assert!(player_info.is_none());
 
     let game_session = game
@@ -149,7 +177,15 @@ fn cancel_game_session() {
 
     // fee for the game: 50 VARA
     let fee = 50_000_000_000_000;
-    game.create_game_session(ADMIN_ID, Some(fee), None);
+    let strategy = upload_strategy(&system);
+    system.mint_to(ADMIN_ID, fee);
+    game.create_game_session(
+        ADMIN_ID,
+        strategy.id().into(),
+        "Alice".to_string(),
+        Some(fee),
+        None,
+    );
 
     for player in PLAYERS.iter().take(3) {
         system.mint_to(*player, fee);
@@ -165,4 +201,19 @@ fn cancel_game_session() {
     }
     let game_session = game.get_game_session(ADMIN_ID);
     assert!(game_session.is_none());
+
+    let game_session = game.get_game_session(PLAYERS[0]);
+    println!("{:?}", game_session);
+
+    system.mint_to(ADMIN_ID, fee);
+    game.create_game_session(
+        ADMIN_ID,
+        strategy.id().into(),
+        "Alice".to_string(),
+        Some(fee),
+        None,
+    );
+
+    let game_session = game.get_game_session(PLAYERS[1]);
+    println!("{:?}", game_session);
 }

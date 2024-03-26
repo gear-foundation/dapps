@@ -22,12 +22,15 @@ pub trait GameSessionActions {
     ) -> Result<(), GameError>;
     fn register(
         &mut self,
+        player_id: &ActorId,
         strategy_id: &ActorId,
+        name: &str,
         reservation_amount: u64,
         reservation_duration_in_block: u32,
     ) -> Result<(), GameError>;
     fn cancel_game_session(&mut self) -> Result<(), GameError>;
     fn exit_game(&mut self) -> Result<(), GameError>;
+    fn delete_player(&mut self, player_id: &ActorId) -> Result<(), GameError>;
     fn play(
         &mut self,
         min_gas_limit: u64,
@@ -88,22 +91,24 @@ impl GameSessionActions for Game {
 
     fn register(
         &mut self,
+        player_id: &ActorId,
         strategy_id: &ActorId,
+        name: &str,
         reservation_amount: u64,
         reservation_duration_in_block: u32,
     ) -> Result<(), GameError> {
-        let owner_id = msg::source();
         self.check_status(GameStatus::Registration)?;
-        self.player_already_registered(&owner_id, strategy_id)?;
+        self.player_already_registered(player_id, strategy_id)?;
         self.check_attached_value()?;
 
         let reservation_id = make_reservation(reservation_amount, reservation_duration_in_block)?;
 
-        self.owners_to_strategy_ids.insert(owner_id, *strategy_id);
+        self.owners_to_strategy_ids.insert(*player_id, *strategy_id);
         self.players.insert(
             *strategy_id,
             PlayerInfo {
-                owner_id,
+                owner_id: *player_id,
+                name: name.to_string(),
                 balance: INITIAL_BALANCE,
                 reservation_id: Some(reservation_id),
                 ..Default::default()
@@ -117,7 +122,6 @@ impl GameSessionActions for Game {
         Ok(())
     }
     fn cancel_game_session(&mut self) -> Result<(), GameError> {
-        self.check_status(GameStatus::Registration)?;
         self.only_admin()?;
 
         if let Some(fee) = self.entry_fee {
@@ -129,6 +133,30 @@ impl GameSessionActions for Game {
         Ok(())
     }
 
+    fn delete_player(&mut self, player_id: &ActorId) -> Result<(), GameError> {
+        let strategy_id = self
+            .owners_to_strategy_ids
+            .remove(player_id)
+            .ok_or(GameError::StrategyDoesNotExist)?;
+
+        match self.game_status {
+            GameStatus::WaitingForGasForGameContract | GameStatus::WaitingForGasForStrategy(_) => {
+                self.exclude_player_from_game(strategy_id);
+                self.current_turn = self.current_turn.saturating_sub(1);
+            }
+            GameStatus::Registration => {
+                self.players.remove(&strategy_id);
+                self.players_queue.retain(|&p| p != strategy_id);
+            }
+            _ => return Err(GameError::WrongGameStatus),
+        }
+        if let Some(fee) = self.entry_fee {
+            msg::send_with_gas(*player_id, "", 0, fee).expect("Error in sending a message");
+            self.prize_pool -= fee;
+        }
+
+        Ok(())
+    }
     fn exit_game(&mut self) -> Result<(), GameError> {
         let owner_id = msg::source();
         let strategy_id = self
@@ -143,6 +171,7 @@ impl GameSessionActions for Game {
             }
             GameStatus::Registration => {
                 self.players.remove(&strategy_id);
+                self.players_queue.retain(|&p| p != strategy_id);
             }
             _ => return Err(GameError::WrongGameStatus),
         }
