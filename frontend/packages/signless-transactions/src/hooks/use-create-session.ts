@@ -1,5 +1,5 @@
-import { HexString, ProgramMetadata } from '@gear-js/api';
-import { useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { HexString, IVoucherDetails, ProgramMetadata } from '@gear-js/api';
+import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
 import { KeyringPair } from '@polkadot/keyring/types';
@@ -21,112 +21,109 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
   const alert = useAlert();
   const { account } = useAccount();
   const { batchSignAndSend } = useBatchSignAndSend('all');
-  const { getFormattedBalance } = useBalanceFormat();
 
   const onError = (message: string) => alert.error(message);
 
-  const getMessage = (payload: AnyJson) => {
-    const destination = programId;
-    // TODO: replace with calculation after release fix
-    const gasLimit = 250000000000;
+  const isVoucherExpired = async ({ expiry }: IVoucherDetails) => {
+    if (!isApiReady) throw new Error('API is not initialized');
 
-    return { destination, payload, gasLimit };
+    const { block } = await api.rpc.chain.getBlock();
+    const currentBlockNumber = block.header.number.toNumber();
+
+    return currentBlockNumber > expiry;
   };
 
-  const deleteSession = async (key: HexString, pair?: KeyringPair, _options?: Options) => {
+  // TODO: reuse voucher from context
+  const getLatestVoucher = async (address: string) => {
+    if (!isApiReady) throw new Error('API is not initialized');
+
+    const vouchers = await api.voucher.getAllForAccount(address, programId);
+
+    const [entry] = Object.entries(vouchers).sort(
+      ([, voucher], [, nextVoucher]) => nextVoucher.expiry - voucher.expiry,
+    );
+
+    if (!entry) return;
+    const [id, voucher] = entry;
+
+    return { ...voucher, id };
+  };
+
+  const getMessageExtrinsic = (payload: AnyJson) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!metadata) throw new Error('Metadata not found');
 
-    const message = getMessage({ DeleteSessionFromAccount: null });
-    const extrinsic = api.message.send(message, metadata);
+    const destination = programId;
+    const gasLimit = 250000000000; // TODO: replace with calculation after release fix
 
-    const vouchersForAccount = await api.voucher.getAllForAccount(key, programId);
+    return api.message.send({ destination, payload, gasLimit }, metadata);
+  };
 
-    const accountVoucherId = Object.keys(vouchersForAccount)[0];
+  const getVoucherExtrinsic = async (session: Session, voucherValue: number) => {
+    if (!isApiReady) throw new Error('API is not initialized');
+    if (!metadata) throw new Error('Metadata not found');
+    if (!account) throw new Error('Account not found');
 
-    const details = await api?.voucher.getDetails(key, accountVoucherId as `0x${string}`);
-    const finilizedBlockHash = await api?.blocks.getFinalizedHead();
-    const currentBlockNumber = await api.blocks.getBlockNumber(finilizedBlockHash.toHex());
+    const voucher = await getLatestVoucher(session.key);
 
-    const isExpired = currentBlockNumber.toNumber() > details.expiry;
-
-    if (!isExpired && pair) {
-      const declineExtrrinsic = api.voucher.call(accountVoucherId, { DeclineVoucher: null });
-
-      await sendTransaction(declineExtrrinsic, pair, ['VoucherDeclined']);
+    if (!voucher || account.decodedAddress !== voucher.owner) {
+      const { extrinsic } = await api.voucher.issue(session.key, voucherValue, undefined, [programId]);
+      return extrinsic;
     }
 
-    const revokeExtrrinsic = api.voucher.revoke(key, accountVoucherId);
+    const prolongDuration = api.voucher.minDuration; // TODO: need to consider session duration
+    const balanceTopUp = voucherValue;
 
-    const txs = [extrinsic, revokeExtrrinsic];
-
-    batchSignAndSend(txs, { ..._options, onError });
+    return api.voucher.update(session.key, voucher.id, { prolongDuration, balanceTopUp });
   };
 
-  const createSession = async (session: Session, voucherValue: number, _options: Options) => {
+  const createSession = async (
+    session: Session,
+    voucherValue: number,
+    { shouldIssueVoucher, ...options }: Options & { shouldIssueVoucher: boolean },
+  ) => {
     if (!isApiReady) throw new Error('API is not initialized');
-    if (!metadata) throw new Error('Metadata not found');
     if (!account) throw new Error('Account not found');
+    if (!metadata) throw new Error('Metadata not found');
 
-    const message = getMessage({ CreateSession: session });
-    const extrinsic = api.message.send(message, metadata);
+    const messageExtrinsic = getMessageExtrinsic({ CreateSession: session });
 
-    const voucher = await api.voucher.issue(session.key, voucherValue, undefined, [programId], true);
+    const txs = shouldIssueVoucher
+      ? [messageExtrinsic, await getVoucherExtrinsic(session, voucherValue)]
+      : [messageExtrinsic];
 
-    const txs = voucherValue ? [extrinsic, voucher.extrinsic] : [extrinsic];
-    const options = { ..._options, onError };
-
-    batchSignAndSend(txs, options);
+    batchSignAndSend(txs, { ...options, onError });
   };
 
-  const updateSession = async (session: Session, voucherValue: number, _options: Options) => {
+  const deleteSession = async (key: HexString, pair: KeyringPair, options: Options) => {
     if (!isApiReady) throw new Error('API is not initialized');
-    if (!metadata) throw new Error('Metadata not found');
     if (!account) throw new Error('Account not found');
+    if (!metadata) throw new Error('Metadata not found');
 
-    const updateVoucher = async (accountVoucherId: string) => {
-      const details = await api?.voucher.getDetails(session.key, accountVoucherId as `0x${string}`);
+    const messageExtrinsic = getMessageExtrinsic({ DeleteSessionFromAccount: null });
+    const txs = [messageExtrinsic];
 
-      const finilizedBlockHash = await api?.blocks.getFinalizedHead();
-      const currentBlockNumber = await api.blocks.getBlockNumber(finilizedBlockHash.toHex());
+    const voucher = await getLatestVoucher(key);
+    if (!voucher) return batchSignAndSend(txs, { ...options, onError });
 
-      const isNeedProlongDuration = currentBlockNumber.toNumber() > details.expiry;
+    const isOwner = account.decodedAddress === voucher.owner;
+    const isExpired = await isVoucherExpired(voucher);
 
-      if (voucherValue || isNeedProlongDuration) {
-        const minDuration = api.voucher.minDuration;
+    if (!isExpired) {
+      const declineExtrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
 
-        const voucherExtrinsic = await api.voucher.update(session.key, accountVoucherId, {
-          balanceTopUp: voucherValue
-            ? Number(getFormattedBalance(balance.toNumber()).value) + Number(getFormattedBalance(voucherValue).value)
-            : undefined,
-          prolongDuration: isNeedProlongDuration ? minDuration : undefined,
-        });
+      await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined']);
+    }
 
-        return voucherExtrinsic;
-      }
+    if (isOwner) {
+      const revokeExtrinsic = api.voucher.revoke(key, voucher.id);
+      txs.push(revokeExtrinsic);
+    }
 
-      return null;
-    };
-
-    const message = getMessage({ CreateSession: session });
-
-    const extrinsic = await api.message.send(message, metadata);
-
-    const vouchersForAccount = await api.voucher.getAllForAccount(session.key, programId);
-
-    const accountVoucherId = Object.keys(vouchersForAccount)[0];
-
-    const balance = await api.balance.findOut(accountVoucherId);
-
-    const updatedVoucherExtrinsic = await updateVoucher(accountVoucherId);
-
-    const txs = updatedVoucherExtrinsic ? [extrinsic, updatedVoucherExtrinsic] : [extrinsic];
-    const options = { ..._options, onError };
-
-    batchSignAndSend(txs, options);
+    batchSignAndSend(txs, { ...options, onError });
   };
 
-  return { createSession, updateSession, deleteSession };
+  return { createSession, deleteSession };
 }
 
 export { useCreateSession };
