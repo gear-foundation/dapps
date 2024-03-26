@@ -316,7 +316,7 @@ impl AutoChangedNft {
         }
     }
     fn reserve_gas(&self) {
-        let reservations = unsafe { &mut RESERVATION };
+        let reservations: &mut Vec<ReservationId> = unsafe { RESERVATION.as_mut() };
         let reservation_id =
             ReservationId::reserve(RESERVATION_AMOUNT, 600).expect("reservation across executions");
         reservations.push(reservation_id);

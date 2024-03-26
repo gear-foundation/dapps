@@ -70,7 +70,6 @@ impl VaraMan for Program<'_> {
                 points_per_silver_coin_medium: 2,
                 points_per_gold_coin_hard: 10,
                 points_per_silver_coin_hard: 3,
-                gas_for_finish_single_game: 10_000_000_000,
                 gas_for_finish_tournament: 10_000_000_000,
                 time_for_single_round: 180_000,
             },

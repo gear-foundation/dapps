@@ -197,7 +197,6 @@ pub struct Config {
     pub points_per_gold_coin_hard: u128,
     pub points_per_silver_coin_hard: u128,
     pub gas_for_finish_tournament: u64,
-    pub gas_for_finish_single_game: u64,
     pub time_for_single_round: u32,
 }
 
