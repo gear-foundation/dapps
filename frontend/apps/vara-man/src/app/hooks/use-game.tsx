@@ -60,6 +60,5 @@ export function useGameMessage() {
   const metadata = useProgramMetadata(meta);
   return useSendMessageHandler(programIdGame, metadata, {
     disableAlerts: true,
-    isMaxGasLimit: true,
   });
 }
