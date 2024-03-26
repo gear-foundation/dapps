@@ -60,7 +60,7 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
 
   const batchSignAndSend = async (
     txs: SubmittableExtrinsic<'promise', ISubmittableResult>[],
-    options: Options = {},
+    { pair, ...options }: Options = {},
   ) => {
     if (!account) throw new Error('No account address');
 
@@ -68,14 +68,16 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
     const batch = getBatch();
     const statusCallback = (result: ISubmittableResult) => handleStatus(result, options);
 
-    await web3FromSource(meta.source)
-      .then(({ signer }) => batch(txs).signAndSend(address, { signer }, statusCallback))
-      .catch(({ message }: Error) => {
-        const { onError = () => {}, onFinally = () => {} } = options;
+    const signAndSend = pair
+      ? batch(txs).signAndSend(pair, statusCallback)
+      : web3FromSource(meta.source).then(({ signer }) => batch(txs).signAndSend(address, { signer }, statusCallback));
 
-        onError(message);
-        onFinally();
-      });
+    signAndSend.catch(({ message }: Error) => {
+      const { onError = () => {}, onFinally = () => {} } = options;
+
+      onError(message);
+      onFinally();
+    });
   };
 
   return { batchSignAndSend };

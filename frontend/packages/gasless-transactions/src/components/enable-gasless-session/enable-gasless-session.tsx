@@ -8,10 +8,11 @@ import { ChangeEvent } from 'react';
 
 type Props = {
   type: 'button' | 'switcher';
-  disabled?: boolean; // in case signless was enabled first
+  disabled?: boolean;
+  message?: string;
 };
 
-function EnableGaslessSession({ type, disabled }: Props) {
+function EnableGaslessSession({ type, disabled, message }: Props) {
   const { account } = useAccount();
   const { isAvailable, isLoading, isEnabled, setIsEnabled } = useGaslessTransactions();
 
@@ -31,6 +32,7 @@ function EnableGaslessSession({ type, disabled }: Props) {
               color="light"
               className={styles.closeButton}
               onClick={handleDisableButtonClick}
+              disabled={disabled}
             />
           ) : (
             <Button
@@ -64,9 +66,9 @@ function EnableGaslessSession({ type, disabled }: Props) {
               {isLoading && <span className={styles.loader} />}
             </div>
 
-            {!isAvailable && (
+            {!isLoading && (!isAvailable || message) && (
               <span className={styles.descr}>
-                <span>Gas-free functionality is disabled at the moment.</span>
+                <span>{!isAvailable ? 'Gas-free functionality is disabled at the moment.' : message}</span>
               </span>
             )}
           </div>

@@ -9,12 +9,19 @@ function EzTransactionsSwitch() {
 
   return (
     <div className={styles.container}>
-      <EnableGaslessSession type="switcher" disabled={signless.isActive} />
+      <EnableGaslessSession
+        type="switcher"
+        disabled={signless.isSessionActive}
+        message={signless.isSessionActive ? 'Signless Session is Active' : ''}
+      />
 
       <EnableSignlessSession
         type="switcher"
         onSessionCreate={signless.onSessionCreate}
         shouldIssueVoucher={!gasless.isEnabled}
+        disabled={!signless.isSessionActive && gasless.isActive}
+        message={!signless.isSessionActive && gasless.isActive ? 'Gasless Session is Active' : ''}
+        requiredBalance={gasless.isEnabled ? 11 : undefined}
       />
     </div>
   );

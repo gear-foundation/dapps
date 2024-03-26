@@ -21,7 +21,7 @@ export default function GameProcess() {
   const { setPending } = usePending();
   const message = useGameMessage();
   const { checkBalance } = useCheckBalance({
-    signlessPairVoucherId: signless.pairVoucherId,
+    signlessPairVoucherId: signless.voucher?.id,
     gaslessVoucherId: gasless.voucherId,
   });
 
