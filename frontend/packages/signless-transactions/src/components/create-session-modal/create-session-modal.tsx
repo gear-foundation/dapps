@@ -4,8 +4,9 @@ import { decodeAddress } from '@gear-js/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { useRandomPairOr } from '@/hooks';
 import { useSignlessTransactions } from '../../context';
-import { getMilliseconds, getRandomPair, getUnlockedPair } from '../../utils';
+import { getMilliseconds, getUnlockedPair } from '../../utils';
 import styles from './create-session-modal.module.css';
 import { SignlessParams } from '../signless-params-list';
 import { AccountPair } from '../account-pair';
@@ -32,7 +33,7 @@ function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIss
   const { errors } = formState;
 
   const { savePair, storagePair, storageVoucher, storageVoucherBalance, createSession } = useSignlessTransactions();
-  const pair = useMemo(() => storagePair || getRandomPair(), [storagePair]);
+  const pair = useRandomPairOr(storagePair);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -60,6 +61,8 @@ function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIss
   const formattedIssueVoucherValue = getFormattedBalance(issueVoucherValue);
 
   const onSubmit = async ({ password, durationMinutes }: typeof DEFAULT_VALUES) => {
+    if (!pair) throw new Error('Signless pair is not initialized');
+
     const duration = getMilliseconds(Number(durationMinutes));
     const key = decodeAddress(pair.address);
     const allowedActions = ACTIONS;
