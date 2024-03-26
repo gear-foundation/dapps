@@ -9,7 +9,7 @@ import { useWallet } from '../../hooks';
 
 import styles from './WalletChange.module.scss';
 import { MenuOptions } from '@dapps-frontend/ui';
-import { EzSignlessTransactions, EzGaslessTransactions } from '@/features/ez-transactions';
+import { EzSignlessTransactions, EzGaslessTransactions } from '@dapps-frontend/ez-transactions';
 
 type Props = {
   onClose(): void;

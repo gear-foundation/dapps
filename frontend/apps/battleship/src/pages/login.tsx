@@ -9,7 +9,7 @@ import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
 import styles from './login.module.scss';
-import { useGaslessTransactions, EzTransactionsSwitch, useSignlessTransactions } from '@/features/ez-transactions';
+import { useGaslessTransactions, EzTransactionsSwitch, useSignlessTransactions } from '@dapps-frontend/ez-transactions';
 
 export default function Login() {
   const navigate = useNavigate();
