@@ -1,5 +1,5 @@
 import { Footer, Header, Container, StartDisclaimer, MenuOptions, MobileMenu, MenuHandler } from './components';
-import { WalletNew, Wallet } from './features';
+import { WalletNew, VaraBalanceNew, Wallet } from './features';
 
 import { Switcher } from './components/switcher';
 
@@ -10,6 +10,7 @@ export {
   StartDisclaimer,
   MenuOptions,
   WalletNew,
+  VaraBalanceNew,
   Wallet,
   MobileMenu,
   MenuHandler,

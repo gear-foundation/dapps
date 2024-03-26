@@ -1,8 +1,8 @@
-import { GearTransaction, IGearEvent, IGearVoucherEvent, decodeAddress } from '@gear-js/api';
+import { decodeAddress, GearKeyring, GearTransaction, IGearEvent, IGearVoucherEvent } from '@gear-js/api';
 import { AlertContainerFactory } from '@gear-js/react-hooks';
-import { encodeAddress } from '@polkadot/keyring';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
-import { KeyringPair } from '@polkadot/keyring/types';
+import { encodeAddress } from '@polkadot/keyring';
+import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
 
 const MULTIPLIER = {
   MS: 1000,
@@ -109,4 +109,6 @@ const copyToClipboard = async ({
   }
 };
 
-export { getMilliseconds, getDHMS, getVaraAddress, shortenString, copyToClipboard };
+const getUnlockedPair = (pair: KeyringPair$Json, password: string) => GearKeyring.fromJson(pair, password);
+
+export { getMilliseconds, getDHMS, getVaraAddress, shortenString, copyToClipboard, getUnlockedPair };

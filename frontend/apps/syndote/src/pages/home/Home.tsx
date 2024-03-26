@@ -357,7 +357,9 @@ function Home() {
                         {isAdmin && (
                           <>
                             <SessionInfo entryFee={state.entryFee} players={state.players} adminId={state.adminId} />
-                            <Button text="Start the game" onClick={startGame} />
+                            <div className={styles.mainButtons}>
+                              <Button text="Start the game" onClick={startGame} className={styles.startGameButton} />
+                            </div>
                           </>
                         )}
                         {!isAdmin && <span className={styles.subheading}>Waiting for admin to start the game...</span>}
@@ -391,8 +393,14 @@ function Home() {
               network, and then copy its address to specify it in the game
             </p>
             <div className={styles.donwloadButtons}>
-              <Button color="transparent" text="Download file" />
-              <Button color="transparent" text="How does it work?" />
+              <a href="https://github.com/gear-foundation/dapps/releases/download/nightly/syndote_player.opt.wasm">
+                <Button color="transparent" text="Download file" />
+              </a>
+              <a
+                target="_blank"
+                href="https://wiki.gear-tech.io/docs/examples/Gaming/monopoly/#%EF%B8%8F-build-master-and-player-programs">
+                <Button color="transparent" text="How does it work?" />
+              </a>
             </div>
           </div>
         </div>

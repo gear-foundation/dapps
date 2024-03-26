@@ -40,6 +40,7 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
           {VaraSvg} {entryFee} VARA
         </>
       ),
+      key: '1',
     },
     {
       name: 'Players already joined the game',
@@ -48,6 +49,7 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
           <UserSVG /> {players} / 4
         </>
       ),
+      key: '2',
     },
     {
       name: 'Required gas amount ',
@@ -56,6 +58,7 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
           {VaraSvg} {gasAmount} VARA
         </>
       ),
+      key: '3',
     },
   ];
 

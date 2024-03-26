@@ -1,7 +1,14 @@
-import { useAccount, useAccountDeriveBalancesAll, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import {
+  useAccount,
+  useAccountDeriveBalancesAll,
+  useAlert,
+  useApi,
+  useBalanceFormat,
+  withoutCommas,
+} from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { Players } from 'types';
-import { useReadGameSessionState, useSyndoteMessage } from 'hooks/metadata';
+import { useSyndoteMessage } from 'hooks/metadata';
 import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
 import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
 import { ReactComponent as UserSVG } from 'assets/images/icons/ic-user-small-24.svg';
@@ -11,7 +18,8 @@ import styles from './SessionInfo.module.scss';
 import { stringShorten } from '@polkadot/util';
 import { GameDetails } from 'components/layout/game-details';
 import clsx from 'clsx';
-import { HexString } from '@gear-js/api';
+import { HexString, encodeAddress } from '@gear-js/api';
+import { copyToClipboard } from 'utils';
 
 type Props = {
   entryFee: string | null;
@@ -22,36 +30,56 @@ type Props = {
 function SessionInfo({ entryFee, players, adminId }: Props) {
   const { isApiReady } = useApi();
   const { account } = useAccount();
-  const { state } = useReadGameSessionState();
+  const alert = useAlert();
   const { isMeta, sendMessage } = useSyndoteMessage();
-  const { getFormattedBalance } = useBalanceFormat();
+  const { getFormattedBalance, getFormattedBalanceValue } = useBalanceFormat();
   const balances = useAccountDeriveBalancesAll();
   const balance =
     isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
   const VaraSvg = balance?.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />;
+  const userStrategy = players.find((item) => item[1].ownerId === account?.decodedAddress)?.[0] || '';
+
+  const handleCopy = (value: string) => {
+    copyToClipboard({ alert, value });
+  };
+
   const items = [
     {
       name: 'Entry fee',
       value: (
         <>
-          {VaraSvg} {entryFee || 0} VARA
+          {VaraSvg} {entryFee ? getFormattedBalanceValue(Number(withoutCommas(entryFee))).toFormat(2) : 0} VARA
         </>
       ),
+      key: '1',
     },
     {
       name: 'Players already joined the game',
       value: (
         <>
-          <UserSVG /> {players.length} / 4
+          <UserSVG /> {players.length}
+          <span className={styles.fromAllPlayers}>/4</span>
         </>
       ),
+      key: '2',
     },
     {
-      name: `Program address (${stringShorten(
-        players.find((item) => item[1].ownerId === account?.decodedAddress)?.[0] || '',
-        4,
-      )})`,
-      value: <Button color="transparent" icon={CopySVG} text="Copy" className={styles.copyButton} />,
+      name: (
+        <span>
+          Program address (<span className={styles.markedAddress}>{stringShorten(encodeAddress(userStrategy), 4)}</span>
+          )
+        </span>
+      ),
+      value: (
+        <Button
+          color="transparent"
+          icon={CopySVG}
+          text="Copy"
+          className={styles.copyButton}
+          onClick={() => handleCopy(encodeAddress(userStrategy))}
+        />
+      ),
+      key: '3',
     },
   ];
   const isAdmin = adminId === account?.decodedAddress;
@@ -71,7 +99,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
       payload,
     });
   };
-  console.log(players);
+
   return (
     <>
       <GameDetails items={items} className={{ item: styles.gameDetailsItem }} />
@@ -85,7 +113,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
               isAdmin && player[1].ownerId !== account?.decodedAddress && styles.playerItemForAdmin,
             )}>
             <span>
-              {stringShorten(player[1].ownerId, 4)}{' '}
+              {stringShorten(encodeAddress(player[1].ownerId), 4)}{' '}
               {player[1].ownerId === account?.decodedAddress ? <span className={styles.playerLabel}>(you)</span> : ''}
             </span>
             {isAdmin && player[1].ownerId !== account?.decodedAddress && (
