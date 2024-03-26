@@ -1,9 +1,9 @@
 mod utils;
 use crate::utils::*;
+use gstd::Decode;
 use gtest::{Program, System};
 use utils::VaraMan;
-use vara_man_io::{Level, Stage, Status, VaraManEvent, VaraManError};
-use gstd::Decode;
+use vara_man_io::{Level, Stage, Status, VaraManError, VaraManEvent};
 
 #[test]
 fn success_play_single_game() {
@@ -83,7 +83,6 @@ fn success_play_tournament() {
         Stage::Finished(vec![PLAYERS[1].into(), PLAYERS[0].into()])
     );
 }
-
 
 #[test]
 fn check() {

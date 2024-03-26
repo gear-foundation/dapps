@@ -126,8 +126,7 @@ async fn process_handle(
 
             game.participants.iter().for_each(|(id, _)| {
                 if !matches!(game.stage, Stage::Finished(_)) && game.bid != 0 {
-                    msg::send_with_gas(*id, "", 0, game.bid)
-                        .expect("Error in sending the value");
+                    msg::send_with_gas(*id, "", 0, game.bid).expect("Error in sending the value");
                 }
                 vara_man.players_to_game_id.remove(id);
             });
@@ -151,13 +150,18 @@ async fn process_handle(
                 return Err(VaraManError::WrongStage);
             }
 
-            game.participants.remove(&player_id).ok_or(VaraManError::NoSuchPlayer)?;
-            vara_man.players_to_game_id.remove(&player_id).ok_or(VaraManError::NoSuchPlayer)?;
+            game.participants
+                .remove(&player_id)
+                .ok_or(VaraManError::NoSuchPlayer)?;
+            vara_man
+                .players_to_game_id
+                .remove(&player_id)
+                .ok_or(VaraManError::NoSuchPlayer)?;
             if game.bid != 0 {
                 msg::send_with_gas(player_id, "", 0, game.bid).expect("Error in sending value");
             }
 
-            Ok(VaraManEvent::PlayerDeleted { player_id})
+            Ok(VaraManEvent::PlayerDeleted { player_id })
         }
         VaraManAction::FinishSingleGame {
             gold_coins,
@@ -257,7 +261,6 @@ async fn process_handle(
                         winners.push(*actor_id);
                     }
                 }
-                
             }
 
             let prize = game.bid * game.participants.len() as u128 / winners.len() as u128;
@@ -461,9 +464,7 @@ impl From<VaraMan> for VaraManState {
             })
             .collect();
 
-        let players_to_game_id = players_to_game_id
-            .into_iter()
-            .collect();
+        let players_to_game_id = players_to_game_id.into_iter().collect();
 
         Self {
             tournaments,

@@ -23,6 +23,7 @@ pub trait VaraMan {
         error: Option<VaraManError>,
     );
     fn leave_game(&self, from: u64, error: Option<VaraManError>);
+    #[allow(clippy::too_many_arguments)]
     fn create_tournament(
         &self,
         from: u64,
