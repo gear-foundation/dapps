@@ -480,6 +480,7 @@ dependencies = [
  "gstd",
  "gtest",
  "hex",
+ "schnorrkel 0.10.2",
  "tokio",
 ]
 

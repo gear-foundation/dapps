@@ -57,6 +57,8 @@ pub struct Session {
     pub expires: u64,
     // what messages are allowed to be sent by the account (key)
     pub allowed_actions: Vec<ActionsForSession>,
+
+    pub expires_at_block: u32,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
@@ -106,6 +108,7 @@ pub enum BattleshipAction {
         key: ActorId,
         duration: u64,
         allowed_actions: Vec<ActionsForSession>,
+        signature: Option<Vec<u8>>,
     },
     DeleteSessionFromProgram {
         account: ActorId,
