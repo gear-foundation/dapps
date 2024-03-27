@@ -7,6 +7,7 @@ import { useGameMessage } from '@/app/hooks/use-game';
 import { useGame } from '@/app/context/ctx-game';
 import { GameFindModal } from '@/feature/tournament-game/components/modals/game-find';
 import { GameNotFoundModal } from '@/feature/tournament-game/components/modals/game-not-found';
+import { decodeAddress, encodeAddress } from '@gear-js/api';
 
 type findGame = {
 	admin: string,
@@ -35,11 +36,13 @@ export const TournamentFind = () => {
 
 	const onSearchGame = () => {
 		if (findAddress) {
-			const findGame = allGames?.find(game => game[0] === findAddress)
+			const findGame = allGames?.find(game => {
+				return game[0] === findAddress || encodeAddress(game[0]) === findAddress
+			})
 			if (findGame) {
 				setIsOpenFindModal(true)
 				setFindGame({
-					admin: findAddress,
+					admin: decodeAddress(findAddress),
 					bid: findGame?.[1].bid,
 					participants: findGame[1].participants.length
 				})
