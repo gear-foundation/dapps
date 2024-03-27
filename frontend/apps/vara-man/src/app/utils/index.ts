@@ -101,3 +101,7 @@ export const stringRequired: Validator = (value) => {
 	}
 	return null
 }
+
+export const prettifyText = (text: string) => {
+	return text.slice(0, 6) + '...' + text.slice(-4)
+}
