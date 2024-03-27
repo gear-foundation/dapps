@@ -1,8 +1,8 @@
 import React from 'react'
 import { useGame } from '@/app/context/ctx-game'
-import { cn } from '@/app/utils'
+import { cn, copyToClipboard, prettifyText } from '@/app/utils'
 import { SpriteIcon } from '@/components/ui/sprite-icon'
-import { useAccount, useApi } from '@gear-js/react-hooks'
+import { useAccount, useAlert, useApi } from '@gear-js/react-hooks'
 import { Button } from '@gear-js/vara-ui'
 import { useGameMessage } from '@/app/hooks/use-game'
 import { useApp } from '@/app/context/ctx-app'
@@ -13,6 +13,7 @@ type Props = {
 }
 
 export const Registration = ({ tournamentGame }: Props) => {
+	const alert = useAlert();
 	const { api } = useApi();
 	const { account } = useAccount()
 	const { setPreviousGame, setTournamentGame } = useGame()
@@ -69,8 +70,17 @@ export const Registration = ({ tournamentGame }: Props) => {
 	return (
 		<div className="flex flex-col gap-4 items-center w-3/5">
 			<h3 className="text-2xl font-bold">{tournamentGame?.[0].stage}</h3>
-			<p>Players ({tournamentGame?.[0].participants.length}/10). Waiting for other players... </p>
+			<p className="text-[#555756]">Players ({tournamentGame?.[0].participants.length}/10). Waiting for other players... </p>
+			{isAdmin &&
+				<div className="flex gap-2 font-medium">
+					Share the game's address:
+					<span className="font-bold">
+						({prettifyText(account.address)})
+					</span>
 
+					<span className="font-semibold text-[#0ED3A3] cursor-pointer" onClick={() => copyToClipboard({ key: account.address, alert })}>Copy</span>
+				</div>
+			}
 			<div className="flex flex-col gap-3 w-full">
 				{tournamentGame?.[0].participants.map((player, index) => {
 					const isActivePlayer = account?.decodedAddress === player[0]
@@ -90,7 +100,7 @@ export const Registration = ({ tournamentGame }: Props) => {
 								}
 
 								{isAdmin && isActivePlayer &&
-									<div className="py-2 px-5"></div>
+									<div className="py-2 px-3"></div>
 								}
 
 								{!isAdmin &&

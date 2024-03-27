@@ -72,7 +72,10 @@ export function HomeRegister() {
             <p className="text-[#555756] mt-3">In this game, you can test your strength in the quest for treasures.
               The game offers various difficulty levels and game modes. Connect your wallet.
             </p>
-            <WalletNew />
+
+            <div className='mt-3'>
+              <WalletNew />
+            </div>
           </div>
         }
         <div>

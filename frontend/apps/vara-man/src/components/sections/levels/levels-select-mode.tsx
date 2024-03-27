@@ -1,4 +1,3 @@
-import { useApp } from '@/app/context/ctx-app';
 import { cn } from '@/app/utils';
 import { Button } from '@/components/ui/button';
 
@@ -10,24 +9,26 @@ const levels = [
     title: 'Easy',
     enemies: 4,
     speed: 4,
+    descriptionSpeed: 'Low enemy speed',
     color: "[--stats-theme:#00FFC4]",
   },
   {
     title: 'Medium',
     enemies: 8,
     speed: 4,
+    descriptionSpeed: 'Low enemy speed',
     color: "[--stats-theme:#5984BE]",
   },
   {
     title: 'Hard',
     enemies: 8,
     speed: 8,
+    descriptionSpeed: 'High enemy speed',
     color: "[--stats-theme:#EB5757]",
   },
 ]
 
 export function LevelsSelectMode() {
-  const { isPending } = useApp()
   const navigate = useNavigate()
 
   return (
@@ -60,7 +61,7 @@ export function LevelsSelectMode() {
                   </div>
                 </div>
                 <div>
-                  Low enemy speed
+                  {item.descriptionSpeed}
                   <div className="flex mt-2">
                     {Array.from({ length: 8 }).map((_, index) => {
                       return index < item.speed ? <Icons.speedLevel key={index} /> : <Icons.speedLevelDisable key={index} />;
