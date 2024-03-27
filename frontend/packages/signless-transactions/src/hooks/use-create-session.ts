@@ -21,6 +21,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
   const alert = useAlert();
   const { account } = useAccount();
   const { batchSignAndSend } = useBatchSignAndSend('all');
+  const { getFormattedBalance } = useBalanceFormat();
 
   const onError = (message: string) => alert.error(message);
 
@@ -85,6 +86,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!isApiReady) throw new Error('API is not initialized');
     if (!account) throw new Error('Account not found');
     if (!metadata) throw new Error('Metadata not found');
+    if (!account) throw new Error('Account not found');
 
     const messageExtrinsic = getMessageExtrinsic({ CreateSession: session });
 
@@ -123,7 +125,54 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     batchSignAndSend(txs, { ...options, onError });
   };
 
-  return { createSession, deleteSession };
+  const updateSession = async (session: Session, voucherValue: number, _options: Options) => {
+    if (!isApiReady) throw new Error('API is not initialized');
+    if (!metadata) throw new Error('Metadata not found');
+    if (!account) throw new Error('Account not found');
+
+    const updateVoucher = async (accountVoucherId: string) => {
+      const details = await api?.voucher.getDetails(session.key, accountVoucherId as `0x${string}`);
+
+      const finilizedBlockHash = await api?.blocks.getFinalizedHead();
+      const currentBlockNumber = await api.blocks.getBlockNumber(finilizedBlockHash.toHex());
+
+      const isNeedProlongDuration = currentBlockNumber.toNumber() > details.expiry;
+
+      if (voucherValue || isNeedProlongDuration) {
+        const minDuration = api.voucher.minDuration;
+
+        const voucherExtrinsic = await api.voucher.update(session.key, accountVoucherId, {
+          balanceTopUp: voucherValue
+            ? Number(getFormattedBalance(balance.toNumber()).value) + Number(getFormattedBalance(voucherValue).value)
+            : undefined,
+          prolongDuration: isNeedProlongDuration ? minDuration : undefined,
+        });
+
+        return voucherExtrinsic;
+      }
+
+      return null;
+    };
+
+    const message = getMessage({ CreateSession: session });
+
+    const extrinsic = await api.message.send(message, metadata);
+
+    const vouchersForAccount = await api.voucher.getAllForAccount(session.key, programId);
+
+    const accountVoucherId = Object.keys(vouchersForAccount)[0];
+
+    const balance = await api.balance.findOut(accountVoucherId);
+
+    const updatedVoucherExtrinsic = await updateVoucher(accountVoucherId);
+
+    const txs = updatedVoucherExtrinsic ? [extrinsic, updatedVoucherExtrinsic] : [extrinsic];
+    const options = { ..._options, onError };
+
+    batchSignAndSend(txs, options);
+  };
+
+  return { createSession, updateSession, deleteSession };
 }
 
 export { useCreateSession };

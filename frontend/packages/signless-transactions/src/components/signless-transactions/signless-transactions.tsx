@@ -109,7 +109,6 @@ function SignlessTransactions({ onSessionCreate, shouldIssueVoucher, disabled, r
                 },
               ]}
             />
-
             <EnableSignlessSession
               type="button"
               onSessionCreate={onSessionCreate}
@@ -119,7 +118,6 @@ function SignlessTransactions({ onSessionCreate, shouldIssueVoucher, disabled, r
           </div>
         </>
       )}
-
       {!session && storagePair && (
         <>
           <div className={clsx(styles.titleWrapper, styles.expiredTitleWrapper)}>
@@ -135,7 +133,6 @@ function SignlessTransactions({ onSessionCreate, shouldIssueVoucher, disabled, r
                 size="small"
                 onClick={handleProlongExpiredSession}
               />
-
               <Button
                 icon={PowerSVG}
                 text="Disable session"

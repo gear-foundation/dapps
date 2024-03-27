@@ -86,6 +86,17 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
     setPair(undefined);
   }, [account]);
 
+  useEffect(() => {
+    if (
+      balances?.freeBalance &&
+      (Number(getFormattedBalance(balances.freeBalance.toNumber()).value) > 42 || voucherBalance > 0)
+    ) {
+      setIsAvailable(true);
+    } else {
+      setIsAvailable(false);
+    }
+  }, [balances?.freeBalance, storagePair, voucherBalance]);
+
   const value = {
     pair,
     storagePair,
