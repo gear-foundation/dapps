@@ -12,11 +12,13 @@ const DEFAULT_SIGNLESS_CONTEXT = {
   voucherBalance: 0,
   createSession: () => {},
   deleteSession: () => {},
-  updateSession: () => {},
-  pairVoucherId: undefined,
+  voucher: undefined,
+  storageVoucher: undefined,
+  storageVoucherBalance: 0,
   isLoading: false,
   setIsLoading: () => {},
-  isAvailable: false,
+  isActive: false,
+  isSessionActive: false,
 };
 
 export { SIGNLESS_STORAGE_KEY, DEFAULT_SIGNLESS_CONTEXT };

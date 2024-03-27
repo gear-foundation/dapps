@@ -1,5 +1,5 @@
-import { GearKeyring, HexString, decodeAddress } from '@gear-js/api';
-import { useAccount, useBalance, useBalanceFormat, useDeriveBalancesAll, useVouchers } from '@gear-js/react-hooks';
+import { HexString } from '@gear-js/api';
+import { useAccount, useBalance } from '@gear-js/react-hooks';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
@@ -7,8 +7,10 @@ import { useProgramMetadata } from '@dapps-frontend/hooks';
 
 import { useCreateSession } from '../hooks';
 import { DEFAULT_SIGNLESS_CONTEXT, SIGNLESS_STORAGE_KEY } from './consts';
-import { Storage, SignlessContext } from './types';
-import { useSession } from './hooks';
+import { SignlessContext } from './types';
+import { useSession, useLatestVoucher } from './hooks';
+import { getUnlockedPair } from '../utils';
+import { getStorage } from './utils';
 
 const SignlessTransactionsContext = createContext<SignlessContext>(DEFAULT_SIGNLESS_CONTEXT);
 const { Provider } = SignlessTransactionsContext;
@@ -19,51 +21,32 @@ type Props = {
   children: ReactNode;
 };
 
-function useVoucherBalance(programId: HexString, address: string | undefined) {
-  const decodedAddress = address ? decodeAddress(address) : '';
-
-  const { vouchers } = useVouchers(decodedAddress, programId);
-
-  const voucherId = Object.keys(vouchers || {})[0];
-  const { balance } = useBalance(voucherId);
-
-  return balance ? balance.toNumber() : 0;
-}
-
-function useVoucherId(programId: HexString, address: string | undefined) {
-  const decodedAddress = address ? decodeAddress(address) : '';
-
-  const { vouchers } = useVouchers(decodedAddress, programId);
-
-  const voucherId = Object.keys(vouchers || {})[0];
-
-  return voucherId;
-}
-
 function SignlessTransactionsProvider({ metadataSource, programId, children }: Props) {
   const { account } = useAccount();
-  const balances = useDeriveBalancesAll(account?.address);
-
-  const { getFormattedBalance } = useBalanceFormat();
 
   const metadata = useProgramMetadata(metadataSource);
   const { session, isSessionReady } = useSession(programId, metadata);
+  const { createSession, deleteSession } = useCreateSession(programId, metadata);
 
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const [isAvailable, setIsAvailable] = useState<boolean>(false);
+  const [pair, setPair] = useState<KeyringPair>();
+  const voucher = useLatestVoucher(programId, pair?.address);
+  const { balance } = useBalance(voucher?.id);
+  const voucherBalance = balance ? balance.toNumber() : 0;
 
-  const [pair, setPair] = useState<KeyringPair | undefined>();
-  const getStorage = () => JSON.parse(localStorage[SIGNLESS_STORAGE_KEY] || '{}') as Storage;
+  // there's probably a better way to handle storage voucher, since we may not need it in a context
   const [storagePair, setStoragePair] = useState(account ? getStorage()[account.address] : undefined);
+  const storageVoucher = useLatestVoucher(programId, storagePair?.address);
+  const { balance: _storageVoucherBalance } = useBalance(storageVoucher?.id);
+  const storageVoucherBalance = _storageVoucherBalance ? _storageVoucherBalance.toNumber() : 0;
 
-  const { createSession, deleteSession, updateSession } = useCreateSession(programId, metadata);
-  const pairVoucherId = useVoucherId(programId, pair?.address) as `0x${string}`;
-  const voucherBalance = useVoucherBalance(programId, storagePair?.address);
+  const [isLoading, setIsLoading] = useState(false);
+  const isActive = Boolean(pair);
+  const isSessionActive = Boolean(session);
 
   const unlockPair = (password: string) => {
     if (!storagePair) throw new Error('Pair not found');
 
-    const result = GearKeyring.fromJson(storagePair, password);
+    const result = getUnlockedPair(storagePair, password);
 
     setPair(result);
   };
@@ -74,9 +57,14 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
     const storage = { ...getStorage(), [account.address]: value };
 
     localStorage.setItem(SIGNLESS_STORAGE_KEY, JSON.stringify(storage));
-
     setStoragePair(value);
   };
+
+  useEffect(() => {
+    if (!account) return setStoragePair(undefined);
+
+    setStoragePair(getStorage()[account.address]);
+  }, [account]);
 
   const savePair = (value: KeyringPair, password: string) => {
     setPairToStorage(value.toJson(password));
@@ -89,33 +77,14 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
   };
 
   useEffect(() => {
-    if (account) {
-      setStoragePair(getStorage()[account.address]);
+    if (session) return;
 
-      return;
-    }
-
-    setStoragePair(undefined);
-  }, [account?.address]);
-
-  useEffect(() => {
-    if (!session) setPair(undefined);
+    setPair(undefined);
   }, [session]);
 
   useEffect(() => {
     setPair(undefined);
   }, [account]);
-
-  useEffect(() => {
-    if (
-      balances?.freeBalance &&
-      (Number(getFormattedBalance(balances.freeBalance.toNumber()).value) > 42 || voucherBalance > 0)
-    ) {
-      setIsAvailable(true);
-    } else {
-      setIsAvailable(false);
-    }
-  }, [balances?.freeBalance, storagePair, voucherBalance]);
 
   const value = {
     pair,
@@ -128,11 +97,13 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
     voucherBalance,
     createSession,
     deleteSession,
-    updateSession,
-    pairVoucherId,
+    voucher,
     isLoading,
     setIsLoading,
-    isAvailable,
+    isActive,
+    isSessionActive,
+    storageVoucher,
+    storageVoucherBalance,
   };
 
   return <Provider value={value}>{children}</Provider>;

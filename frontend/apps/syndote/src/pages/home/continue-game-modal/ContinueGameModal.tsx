@@ -23,6 +23,7 @@ function ContinueGameModal({ onReserve, onClose }: Props) {
     {
       name: 'Required amount of gas  required for the game',
       value: <>{VaraSvg} 18 VARA</>,
+      key: '1',
     },
   ];
 
