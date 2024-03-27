@@ -233,7 +233,7 @@ extern fn handle() {
                 rest_updates_count: updates_count,
                 token_ids: token_ids.clone(),
             };
-            send_delayed(exec::program_id(), &payload, 0, update_period)
+            send_delayed(exec::program_id(), payload, 0, update_period)
                 .expect("Can't send delayed");
             nft.reserve_gas();
         }

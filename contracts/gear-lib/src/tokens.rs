@@ -13,7 +13,7 @@ mod test_helper {
     use std::thread_local;
 
     thread_local! {
-        static SOURCE: Cell<ActorId> = Cell::new(ActorId::zero());
+        static SOURCE: Cell<ActorId> = const { Cell::new(ActorId::zero()) };
     }
 
     pub mod msg {
