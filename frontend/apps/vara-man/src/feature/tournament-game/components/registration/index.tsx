@@ -1,6 +1,6 @@
 import React from 'react'
 import { useGame } from '@/app/context/ctx-game'
-import { cn, copyToClipboard, prettyAddress } from '@/app/utils'
+import { cn, copyToClipboard, prettifyText } from '@/app/utils'
 import { SpriteIcon } from '@/components/ui/sprite-icon'
 import { useAccount, useAlert, useApi } from '@gear-js/react-hooks'
 import { Button } from '@gear-js/vara-ui'
@@ -75,7 +75,7 @@ export const Registration = ({ tournamentGame }: Props) => {
 				<div className="flex gap-2 font-medium">
 					Share the game's address:
 					<span className="font-bold">
-						({prettyAddress(account.address)})
+						({prettifyText(account.address)})
 					</span>
 
 					<span className="font-semibold text-[#0ED3A3] cursor-pointer" onClick={() => copyToClipboard({ key: account.address, alert })}>Copy</span>
