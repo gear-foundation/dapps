@@ -101,3 +101,7 @@ export const stringRequired: Validator = (value) => {
 	}
 	return null
 }
+
+export const prettyAddress = (address: string) => {
+	return address.slice(0, 6) + '...' + address.slice(-4)
+}
