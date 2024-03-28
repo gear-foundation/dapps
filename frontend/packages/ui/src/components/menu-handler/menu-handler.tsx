@@ -11,18 +11,22 @@ import { MobileMenuClassNameProps } from '../mobile-menu';
 import { useClickOutside } from '@/utils';
 import clsx from 'clsx';
 import { useAccount } from '@gear-js/react-hooks';
+import { WalletClassNameProps } from '@/features/wallet-new/components/wallet';
 
 type Props = {
   customItems?: {
     icon?: React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
     option: JSX.Element;
+    key: string;
   }[];
   className?: {
     container?: string;
     dropdown?: string;
     mobileMenuWrapper?: string;
+    icon?: string;
     menuOptions?: MenuOptionsClassNameProps;
     mobileMenu?: MobileMenuClassNameProps;
+    wallet?: WalletClassNameProps;
   };
 };
 
@@ -42,8 +46,13 @@ export function MenuHandler({ customItems, className }: Props) {
   return (
     <div className={clsx(styles.container, className?.container)} ref={menuRef}>
       <div>
-        <Wallet isWalletModalOpen={isWalletModalOpen} walletModalHandler={setIsWalletModalOpen} />
+        <Wallet
+          isWalletModalOpen={isWalletModalOpen}
+          walletModalHandler={setIsWalletModalOpen}
+          className={className?.wallet}
+        />
       </div>
+
       {account && (
         <>
           <div className={styles.contextMenuWrapper}>
@@ -54,6 +63,7 @@ export function MenuHandler({ customItems, className }: Props) {
                   ? () => <CrossSVG className={styles.burger} />
                   : () => <BurgerMenuSVG className={styles.burger} />
               }
+              className={clsx(className?.icon)}
               onClick={isMenuOpen ? closeMenu : openMenu}
             />
             {isMenuOpen && (

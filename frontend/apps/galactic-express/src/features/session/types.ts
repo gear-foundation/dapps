@@ -1,11 +1,10 @@
 import { HexString } from '@polkadot/util/types';
 
 type Strategy = {
-  fuel: string;
-  payload: string;
+  name: string;
+  fuelAmount: string;
+  payloadAmount: string;
 };
-
-type Participant = [HexString, Strategy];
 
 type Session = {
   altitude: string;
@@ -14,8 +13,17 @@ type Session = {
   sessionId: string;
 };
 
+type Participant = [HexString, Strategy];
+
+type Results = {
+  turns: Turns;
+  rankings: Rank[];
+  participants: Participant[];
+};
+
 type Event = {
   participant: HexString;
+  name: string | undefined;
   deadRound: boolean;
   firstDeadRound: number;
   fuelLeft: string;
@@ -25,14 +33,25 @@ type Event = {
 
 type Rank = [HexString, string];
 
-type LaunchState = {
+type RankWithName = [`0x${string}`, string, string];
+
+type State = {
   admin: HexString;
-  isSessionEnded: boolean;
-  participants: Participant[];
-  turns: Turns;
-  rankings: Rank[];
+  stage: {
+    Registration: Participant[];
+    Results: Results;
+  };
   master: string;
-  session: Session;
+  altitude: string;
+  weather: string;
+  reward: string;
+  sessionId: string;
+  bid: string;
+  adminName: string;
+};
+
+type LaunchState = {
+  Game: State;
 };
 
 type TurnParticipant = [
@@ -49,4 +68,32 @@ type Turn = TurnParticipant[];
 
 type Turns = Turn[];
 
-export type { LaunchState, Session, Event, Participant, Turns, Rank, TurnParticipant };
+type PlayerStatus = 'Finished' | 'Registered' | null;
+
+type PlayerInfo = {
+  PlayerInfo: PlayerStatus;
+};
+
+type RegistrationStatus =
+  | 'registration'
+  | 'success'
+  | 'error'
+  | 'NotEnoughParticipants'
+  | 'MaximumPlayersReached'
+  | 'PlayerRemoved'
+  | 'GameCanceled';
+
+export type {
+  LaunchState,
+  State,
+  Event,
+  Participant,
+  Turns,
+  Rank,
+  TurnParticipant,
+  Session,
+  PlayerStatus,
+  PlayerInfo,
+  RankWithName,
+  RegistrationStatus,
+};

@@ -2,6 +2,7 @@ import Identicon from '@polkadot/react-identicon';
 import clsx from 'clsx';
 import { PlayerType } from 'types';
 import styles from './Player.module.scss';
+import { stringShorten } from '@polkadot/util';
 
 type Props = PlayerType & {
   isActive?: boolean;
@@ -17,8 +18,10 @@ function Player({ color, address, balance, isActive, isWinner, isLoser }: Props)
     <div className={className}>
       <Identicon value={address} size={34} theme="polkadot" className={styles.icon} />
       <div className={styles.summary}>
-        <p className={styles.address}>{address}</p>
-        <p className={styles.balance}>{balance}</p>
+        <p className={styles.address}>{stringShorten(address, 5)}</p>
+        <p className={styles.balance}>
+          {balance} <span className={styles.balanceValue}>MNPL</span>
+        </p>
         {(isWinner || isLoser) && (
           <div className={totalClassName}>
             {isWinner && 'Winner'}

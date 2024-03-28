@@ -22,6 +22,17 @@
   @include gap(48px);
 }
 
+.controlsWrapper {
+  @include gap(48px);
+  width: 80%;
+  position: relative;
+  z-index: 1;
+}
+
+.startGameButton {
+  width: 100%;
+}
+
 .bottom {
   position: absolute;
   bottom: 0;

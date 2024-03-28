@@ -4,10 +4,11 @@ import { gasLimitToNumber, hexRequired } from 'app/utils';
 import { useBattle } from '../../context';
 import { useNavigate } from 'react-router-dom';
 import { HexString } from '@polkadot/util/types';
-import { useFetchVoucher } from 'features/battle/utils/init-gasless-transactions';
-import { useCheckBalance } from 'features/wallet/hooks';
+import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useBattleMessage } from 'features/battle/hooks/use-battle';
 import { useApi } from '@gear-js/react-hooks';
+import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
+import { GAS_LIMIT } from 'app/consts';
 
 const createTamagotchiInitial = {
   programId: '' as HexString,
@@ -22,9 +23,9 @@ const validate: Record<string, typeof hexRequired> = {
 export const CreateTamagotchiForm = () => {
   const { battle, isPending } = useBattle();
   const handleMessage = useBattleMessage();
-  const { isVoucher, isLoading } = useFetchVoucher();
+  const gasless = useGaslessTransactions();
   const { api } = useApi();
-  const { checkBalance } = useCheckBalance(isVoucher);
+  const { checkBalance } = useCheckBalance({ gaslessVoucherId: gasless.voucherId });
   const navigate = useNavigate();
   const form = useForm({
     initialValues: createTamagotchiInitial,
@@ -46,7 +47,13 @@ export const CreateTamagotchiForm = () => {
     checkBalance(
       gasLimitToNumber(api?.blockGasLimit),
       () => {
-        handleMessage({ payload, onSuccess, onError, withVoucher: isVoucher });
+        handleMessage({
+          payload,
+          onSuccess,
+          onError,
+          voucherId: gasless.voucherId,
+          gasLimit: GAS_LIMIT,
+        });
       },
       onError,
     );
@@ -62,7 +69,9 @@ export const CreateTamagotchiForm = () => {
             text="Create Tamagotchi"
             color="primary"
             type="submit"
-            disabled={Object.keys(errors).length > 0 || isPending || battle?.state !== 'Registration' || isLoading}
+            disabled={
+              Object.keys(errors).length > 0 || isPending || battle?.state !== 'Registration' || gasless.isLoading
+            }
           />
         </div>
       </form>

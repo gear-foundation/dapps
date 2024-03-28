@@ -1,9 +1,13 @@
-import { GameInit } from '@/components/sections/game/game-init';
+import { Game as TournamentGame } from '@/feature/tournament-game';
+import { Game as SingleGame } from '@/feature/single-game'
+import { useGame } from '@/app/context/ctx-game';
 
-export default function Home() {
+export default function GamePage() {
+  const { tournamentGame, previousGame } = useGame()
+
   return (
     <>
-      <GameInit />
+      {tournamentGame || previousGame ? <TournamentGame /> : <SingleGame />}
     </>
   );
 }

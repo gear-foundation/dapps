@@ -25,19 +25,6 @@ export function Balance({ icon, value, decimal, unit, className }: Props) {
   );
 }
 
-export function VaraBalance({ value, unit, className }: HOCProps) {
-  const v = value.split('.');
-  return (
-    <Balance
-      icon={unit?.toLowerCase() === 'vara' ? 'vara-coin' : 'tvara-coin'}
-      value={v[0].replaceAll(/,|\s/g, '&thinsp;')}
-      decimal={v[1]}
-      unit={unit}
-      className={className}
-    />
-  );
-}
-
 export function PointsBalance({ value, unit = 'PPV', className }: HOCProps) {
   return <Balance icon={'points-coin'} value={value} unit={unit} className={className} />;
 }

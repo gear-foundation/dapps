@@ -1,20 +1,28 @@
-import { HexString } from '@polkadot/util/types';
+import { HexString } from '@polkadot/util/types'
 
 export const LOCAL_STORAGE = {
-  ACCOUNT: 'account',
-  WALLET: 'wallet',
-};
+	ACCOUNT: 'account',
+	WALLET: 'wallet',
+}
 
 export const ENV = {
-  NODE: import.meta.env.VITE_NODE_ADDRESS,
-  GAME: import.meta.env.VITE_CONTRACT_ADDRESS,
-};
+	NODE: import.meta.env.VITE_NODE_ADDRESS,
+	GAME: import.meta.env.VITE_CONTRACT_ADDRESS,
+}
 
 export type IRegisterForm = {
-  wallet: HexString | '';
-  nickname: string;
-};
+	wallet: HexString | ''
+	nickname: string
+}
 export const initialRegister: IRegisterForm = {
-  wallet: '',
-  nickname: '',
-};
+	wallet: '',
+	nickname: '',
+}
+
+export const initialCreateTournament = {
+	bid: 0,
+	DifficultyLevel: '',
+	TournamentName: '',
+	YourName: '',
+	TournamentDuration: '',
+}

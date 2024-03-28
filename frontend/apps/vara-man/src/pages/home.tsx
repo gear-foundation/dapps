@@ -1,9 +1,17 @@
-import { HomeRegister } from '@/components/sections/home/home-register';
-import { HomeNotActive } from '@/components/sections/home/home-not-active';
+import { useEffect } from 'react';
+
 import { useGame } from '@/app/context/ctx-game';
+import { HomeRegister } from '@/components/sections/home/home-register';
+import Game from './game';
 
 export default function Home() {
-  const { status } = useGame();
+  const { tournamentGame, previousGame, setPreviousGame } = useGame()
 
-  return <>{status === 'Started' ? <HomeRegister /> : <HomeNotActive />}</>;
+  useEffect(() => {
+    if (tournamentGame) {
+      setPreviousGame(tournamentGame);
+    }
+  }, [tournamentGame]);
+
+  return <>{tournamentGame || previousGame ? <Game /> : <HomeRegister />}</>;
 }

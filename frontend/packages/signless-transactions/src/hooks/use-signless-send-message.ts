@@ -26,15 +26,15 @@ function useSignlessSendMessage(
   options?: UseSendMessageOptions,
 ) {
   const { account } = useAccount();
-  const { pair } = useSignlessTransactions();
+  const { pair, voucher } = useSignlessTransactions();
   const sendMessage = useSendMessage(destination, metadata, { ...options, pair });
 
   const sendSignlessMessage = (args: SendSignlessMessageOptions) => {
     const sessionForAccount = pair ? account?.decodedAddress : null;
     const payload = getSinglessPayload(args.payload, sessionForAccount);
-    const withVoucher = !!pair || args.withVoucher; // to not overrider gasless transactions
+    const voucherId = voucher?.id || args.voucherId;
 
-    sendMessage({ ...args, payload, withVoucher });
+    sendMessage({ ...args, payload, voucherId });
   };
 
   return sendSignlessMessage;
@@ -46,15 +46,15 @@ function useSignlessSendMessageHandler(
   options?: UseSendMessageOptions & { isMaxGasLimit?: boolean },
 ) {
   const { account } = useAccount();
-  const { pair } = useSignlessTransactions();
+  const { pair, voucher } = useSignlessTransactions();
   const sendMessage = useSendMessageHandler(destination, metadata, { ...options, pair });
 
   const sendSignlessMessage = (args: Omit<SendSignlessMessageOptions, 'gasLimit'>) => {
     const sessionForAccount = pair ? account?.decodedAddress : null;
     const payload = getSinglessPayload(args.payload, sessionForAccount);
-    const withVoucher = !!pair || args.withVoucher; // to not overrider gasless transactions
+    const voucherId = voucher?.id || args.voucherId;
 
-    sendMessage({ ...args, payload, withVoucher });
+    sendMessage({ ...args, payload, voucherId });
   };
 
   return sendSignlessMessage;

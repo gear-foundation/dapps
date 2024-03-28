@@ -5,123 +5,138 @@ mod utils;
 #[test]
 fn test() {
     let system = utils::initialize_system();
+    let mut rockets = GalEx::initialize(&system, ADMIN);
 
-    for admin_id in ADMINS {
-        let mut rockets = GalEx::initialize(&system, admin_id);
-        if let State {
-            admin,
-            session: Session { session_id: 0, .. },
-            is_session_ended: true,
-            participants,
-            turns,
-            rankings,
-        } = rockets.state()
-        {
-            assert_eq!(admin, admin_id.into());
-            assert_eq!((participants, turns, rankings), (vec![], vec![], vec![]));
-        } else {
-            unreachable!()
-        }
+    let bid = 11_000_000_000_000;
+    system.mint_to(ADMIN, bid);
+    rockets
+        .create_new_session(ADMIN, "admin".to_string(), bid)
+        .succeed(0, 0);
 
-        for (session_id, starter) in [admin_id, PLAYERS[0]].into_iter().enumerate() {
-            rockets
-                .create_new_session(starter)
-                .succeed(session_id as u128);
-
-            let player = Participant {
-                fuel_amount: 42,
-                payload_amount: 20,
-            };
-
-            for player_id in PLAYERS {
-                rockets
-                    .register(player_id, player)
-                    .succeed((player_id, player));
-            }
-            #[allow(irrefutable_let_patterns)]
-            if let State { participants, .. } = rockets.state() {
-                assert_eq!(
-                    HashMap::from_iter(
-                        PLAYERS
-                            .into_iter()
-                            .map(|player_id| (player_id.into(), player))
-                    ),
-                    participants.into_iter().collect::<HashMap<_, _>>(),
-                );
-            } else {
-                unreachable!()
-            }
-
-            rockets
-                .start_game(admin_id, player)
-                .succeed(PLAYERS.into_iter().chain(iter::once(admin_id)).collect());
-        }
+    for player_id in PLAYERS {
+        let player = Participant {
+            id: player_id.into(),
+            name: "player".to_string(),
+            fuel_amount: 42,
+            payload_amount: 20,
+        };
+        system.mint_to(player_id, bid);
+        rockets
+            .register(player_id, ADMIN.into(), player.clone(), bid)
+            .succeed((player_id, player), 0);
     }
+
+    let state = rockets.state().expect("Unexpected invalid state.");
+
+    if let StageState::Registration(participants) = &state.games[0].1.stage {
+        assert_eq!(participants.len(), 3);
+    }
+
+    rockets
+        .start_game(ADMIN, 42, 20)
+        .succeed(PLAYERS.into_iter().chain(iter::once(ADMIN)).collect(), 3); // 3 since three players win and msg::send_with_gas is sent to them
+
+    let state = rockets.state().expect("Unexpected invalid state.");
+
+    if let StageState::Results(results) = &state.games[0].1.stage {
+        assert_eq!(results.rankings.len(), 4);
+    }
+}
+
+#[test]
+fn cancel_register_and_delete_player() {
+    let system = utils::initialize_system();
+    let mut rockets = GalEx::initialize(&system, ADMIN);
+
+    let bid = 11_000_000_000_000;
+    system.mint_to(ADMIN, bid);
+    rockets
+        .create_new_session(ADMIN, "admin".to_string(), bid)
+        .succeed(0_u128, 0);
+
+    for player_id in PLAYERS {
+        let player = Participant {
+            id: player_id.into(),
+            name: "player".to_string(),
+            fuel_amount: 42,
+            payload_amount: 20,
+        };
+        system.mint_to(player_id, bid);
+        rockets
+            .register(player_id, ADMIN.into(), player.clone(), bid)
+            .succeed((player_id, player), 0);
+    }
+
+    let state = rockets.state().expect("Unexpected invalid state.");
+
+    if let StageState::Registration(participants) = &state.games[0].1.stage {
+        assert_eq!(participants.len(), 3);
+    }
+    assert_eq!(state.player_to_game_id.len(), 4);
+
+    drop(rockets.cancel_register(PLAYERS[0]));
+
+    let state = rockets.state().expect("Unexpected invalid state.");
+
+    if let StageState::Registration(participants) = &state.games[0].1.stage {
+        assert_eq!(participants.len(), 2);
+    }
+    assert_eq!(state.player_to_game_id.len(), 3);
+
+    drop(rockets.delete_player(ADMIN, PLAYERS[1].into()));
+
+    let state = rockets.state().expect("Unexpected invalid state.");
+
+    if let StageState::Registration(participants) = &state.games[0].1.stage {
+        assert_eq!(participants.len(), 1);
+    }
+    assert_eq!(state.player_to_game_id.len(), 2);
 }
 
 #[test]
 fn errors() {
     let system = utils::initialize_system();
 
-    let mut rockets = GalEx::initialize(&system, ADMINS[0]);
+    let mut rockets = GalEx::initialize(&system, ADMIN);
 
     rockets
-        .change_admin(PLAYERS[0], PLAYERS[0])
-        .failed(Error::AccessDenied);
-    rockets
-        .change_admin(ADMINS[0], ADMINS[1])
-        .succeed((ADMINS[0], ADMINS[1]));
+        .register(PLAYERS[0], ADMIN.into(), Default::default(), 0)
+        .failed(Error::NoSuchGame, 0);
 
     rockets
-        .register(PLAYERS[0], Default::default())
-        .failed(Error::SessionEnded);
-    rockets
-        .start_game(PLAYERS[0], Default::default())
-        .failed(Error::AccessDenied);
-
-    rockets.create_new_session(ADMINS[1]).succeed(0);
+        .create_new_session(ADMIN, "admin".to_string(), 0)
+        .succeed(0, 0);
 
     rockets
-        .start_game(ADMINS[1], Default::default())
-        .failed(Error::NotEnoughParticipants);
+        .register(ADMIN, ADMIN.into(), Default::default(), 0)
+        .failed(Error::SeveralRegistrations, 0);
+
+    rockets
+        .start_game(PLAYERS[0], 42, 20)
+        .failed(Error::NoSuchGame, 0);
+
+    rockets
+        .start_game(ADMIN, 42, 20)
+        .failed(Error::NotEnoughParticipants, 0);
 
     for player in PLAYERS {
         rockets
-            .register(player, Default::default())
-            .succeed((player, Default::default()));
+            .register(player, ADMIN.into(), Default::default(), 0)
+            .succeed((player, Default::default()), 0);
     }
 
     rockets
-        .start_game(
-            ADMINS[1],
-            Participant {
-                fuel_amount: 101,
-                payload_amount: 100,
-            },
-        )
-        .failed(Error::FuelOrPayloadOverload);
+        .start_game(ADMIN, 101, 100)
+        .failed(Error::FuelOrPayloadOverload, 0);
+
     rockets
-        .start_game(
-            ADMINS[1],
-            Participant {
-                fuel_amount: 100,
-                payload_amount: 101,
-            },
-        )
-        .failed(Error::FuelOrPayloadOverload);
+        .start_game(ADMIN, 100, 101)
+        .failed(Error::FuelOrPayloadOverload, 0);
     rockets
-        .start_game(
-            ADMINS[1],
-            Participant {
-                fuel_amount: 101,
-                payload_amount: 101,
-            },
-        )
-        .failed(Error::FuelOrPayloadOverload);
+        .start_game(ADMIN, 101, 101)
+        .failed(Error::FuelOrPayloadOverload, 0);
+
     rockets
-        .register(ADMINS[1], Default::default())
-        .failed(Error::AccessDenied);
-    rockets
-        .register(FOREIGN_USER, Default::default())
-        .failed(Error::SessionFull);
+        .register(FOREIGN_USER, ADMIN.into(), Default::default(), 0)
+        .failed(Error::SessionFull, 0);
 }

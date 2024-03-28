@@ -1,0 +1,34 @@
+@use 'styles' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button.button {
+  width: 180px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 26px;
+  letter-spacing: 0.03rem;
+
+  &:last-child {
+    color: #ffffff;
+    background: #1a1a1d;
+  }
+
+  span {
+    @include textOverflow;
+  }
+}
+
+.controls {
+  display: flex;
+  align-items: flex-end;
+  margin: 0px auto;
+  gap: 16px;
+}
+
