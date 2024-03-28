@@ -327,11 +327,17 @@ function Home() {
                       <>
                         <div className={clsx(styles.headingWrapper, styles.headingWrapperAdmin)}>
                           <h1 className={styles.heading}>Registration...</h1>
-                          <p className={styles.subheading}>
-                            {isAdmin
-                              ? 'Copy the program address and send it to the players so they can join you.'
-                              : `Players (${playersArray.length}/4). Waiting for other players... `}
-                          </p>
+                          {players.length < 4 ? (
+                            <p className={styles.subheading}>
+                              {isAdmin
+                                ? 'Copy the program address and send it to the players so they can join you.'
+                                : `Players (${playersArray.length}/4). Waiting for other players... `}
+                            </p>
+                          ) : (
+                            <p className={styles.subheading}>
+                              {!isAdmin && `Players ${playersArray.length}/4. Waiting for admin to start game...`}
+                            </p>
+                          )}
                         </div>
                         {!isAdmin && (
                           <>
@@ -345,6 +351,11 @@ function Home() {
                         {isAdmin && (
                           <>
                             <SessionInfo entryFee={state.entryFee} players={state.players} adminId={state.adminId} />
+                            {players.length === 4 && (
+                              <div className={styles.mainButtons}>
+                                <Button text="Start the game" onClick={startGame} className={styles.startGameButton} />
+                              </div>
+                            )}
                           </>
                         )}
                       </>
