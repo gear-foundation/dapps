@@ -23,8 +23,8 @@ const selectMode = [
     }
   },
   {
-    title: "Create a game in administrator mode",
-    description: "Create a game and specify your participation rules.",
+    title: "Create your private game",
+    description: "Create your own game tournament and compete with friends.",
     icon: <Icons.admin />,
     onClick: (navigate: NavigateFunction): void => {
       navigate('/tournament/create')
