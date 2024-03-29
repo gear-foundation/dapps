@@ -12,6 +12,9 @@ import { IGameLevel } from '@/app/types/game'
 import { TileMap } from '../types'
 import { gameLevels } from '../consts'
 
+const WIDTH_CANVAS = 588
+const HEIGHT_CANVAS = 588
+
 export class Game {
 	private context: CanvasRenderingContext2D
 	private fogContext: CanvasRenderingContext2D
@@ -53,15 +56,30 @@ export class Game {
 
 		this.context = canvas.getContext('2d') as CanvasRenderingContext2D
 		this.fogContext = canvasFog.getContext('2d') as CanvasRenderingContext2D
-		this.canvas.width = 588
-		this.canvas.height = 588
+		this.canvas.width = WIDTH_CANVAS
+		this.canvas.height = HEIGHT_CANVAS
 
-		this.canvasFog.width = 588
-		this.canvasFog.height = 588
+		this.canvasFog.width = WIDTH_CANVAS
+		this.canvasFog.height = HEIGHT_CANVAS
 
 		this.setGameOver = setGameOver
 		this.gameOver = gameOver
 		this.pause = pause
+
+		// Get the DPR and size of the canvas
+		const dpr = window.devicePixelRatio
+		const rect = canvas.getBoundingClientRect()
+
+		// Set the "actual" size of the canvas
+		canvas.width = rect.width * dpr
+		canvas.height = rect.height * dpr
+
+		// Scale the context to ensure correct drawing operations
+		this.context.scale(dpr, dpr)
+
+		// Set the "drawn" size of the canvas
+		canvas.style.width = `${rect.width}px`
+		canvas.style.height = `${rect.height}px`
 
 		MapRenderer.initTilesets(this.map).then(() => {
 			const startPosition = findCharacterStartPosition(this.map)
@@ -117,6 +135,7 @@ export class Game {
 	}
 
 	private handleKeyDown = (event: KeyboardEvent) => {
+		event.preventDefault()
 		switch (event.keyCode) {
 			case 38:
 				this.isUp = true
@@ -137,6 +156,7 @@ export class Game {
 	}
 
 	private handleKeyUp = (event: KeyboardEvent) => {
+		event.preventDefault()
 		switch (event.keyCode) {
 			case 38:
 				this.isUp = false
@@ -187,6 +207,7 @@ export class Game {
 					this.setGameOver(true)
 					return
 				}
+				this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
 			}
 		}
 
