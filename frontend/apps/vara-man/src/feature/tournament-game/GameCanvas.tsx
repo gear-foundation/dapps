@@ -107,7 +107,11 @@ export const GameCanvas = ({ isPause }: Props) => {
 			{isOpenPlayAgain && <GamePlayAgainModal setIsOpenPlayAgain={setIsOpenPlayAgain} restartGame={restartGame} />}
 			<div className="ml-auto mr-auto" style={{ position: 'relative' }}>
 				<canvas ref={fogCanvasRef} style={{ position: 'absolute', left: 0, top: 0 }} />
-				<canvas ref={canvasRef} />
+				<canvas ref={canvasRef}
+					style={{
+						backgroundColor: "#000000ad",
+					}}
+				/>
 			</div>
 		</div>
 	)
