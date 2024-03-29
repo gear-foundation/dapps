@@ -80,7 +80,7 @@ export const TournamentCreate = () => {
 	return (
 		<div className="flex flex-col justify-center items-center grow h-full">
 			<h2 className="typo-h2">Create a private game</h2>
-			<p>To find the game, you need to enter the administrator's address.</p>
+			<p>Create your own game tournament, invite your friends, and compete for the ultimate reward.</p>
 
 			<form onSubmit={handleSubmit} className="grid gap-4 w-full max-w-[600px] mx-auto mt-5">
 				<div className="flex flex-col gap-5">
