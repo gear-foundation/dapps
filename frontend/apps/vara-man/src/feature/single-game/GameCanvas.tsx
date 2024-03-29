@@ -88,7 +88,7 @@ export const GameCanvas = () => {
 				<canvas ref={fogCanvasRef} style={{ position: 'absolute', left: 0, top: 0 }} />
 				<canvas ref={canvasRef}
 					style={{
-						backgroundColor: "gray",
+						backgroundColor: "#000000ad",
 					}}
 				/>
 			</div>
