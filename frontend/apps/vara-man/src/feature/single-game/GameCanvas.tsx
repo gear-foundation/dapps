@@ -86,7 +86,11 @@ export const GameCanvas = () => {
 			{gameOver && <GameOverModal restartGame={restartGame} />}
 			<div className="ml-auto mr-auto" style={{ position: 'relative' }}>
 				<canvas ref={fogCanvasRef} style={{ position: 'absolute', left: 0, top: 0 }} />
-				<canvas ref={canvasRef} />
+				<canvas ref={canvasRef}
+					style={{
+						backgroundColor: "gray",
+					}}
+				/>
 			</div>
 		</div>
 	)
