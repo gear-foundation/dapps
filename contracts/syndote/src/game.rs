@@ -44,6 +44,7 @@ pub trait GameSessionActions {
         awaiting_reply_msg_id_to_session_id: &mut HashMap<MessageId, AdminId>,
         gas_refill_timeout: u32,
     ) -> Result<(), GameError>;
+    fn check_amount_of_players(&mut self);
     fn finalize_turn_outcome(
         &mut self,
         gas_for_step: u64,
@@ -115,9 +116,6 @@ impl GameSessionActions for Game {
             },
         );
         self.players_queue.push(*strategy_id);
-        if self.players_queue.len() == NUMBER_OF_PLAYERS as usize {
-            self.game_status = GameStatus::Play;
-        }
 
         Ok(())
     }
@@ -136,20 +134,26 @@ impl GameSessionActions for Game {
     fn delete_player(&mut self, player_id: &ActorId) -> Result<(), GameError> {
         let strategy_id = self
             .owners_to_strategy_ids
-            .remove(player_id)
+            .get(player_id)
             .ok_or(GameError::StrategyDoesNotExist)?;
 
         match self.game_status {
             GameStatus::WaitingForGasForGameContract | GameStatus::WaitingForGasForStrategy(_) => {
-                self.exclude_player_from_game(strategy_id);
+                self.exclude_player_from_game(*strategy_id);
                 self.current_turn = self.current_turn.saturating_sub(1);
             }
             GameStatus::Registration => {
-                self.players.remove(&strategy_id);
-                self.players_queue.retain(|&p| p != strategy_id);
+                self.players.remove(strategy_id);
+                self.players_queue.retain(|&p| p != *strategy_id);
+            }
+            GameStatus::Finished => {
+                self.owners_to_strategy_ids.remove(player_id);
+                return Ok(());
             }
             _ => return Err(GameError::WrongGameStatus),
         }
+        self.owners_to_strategy_ids.remove(player_id);
+        self.check_amount_of_players();
         if let Some(fee) = self.entry_fee {
             msg::send_with_gas(*player_id, "", 0, fee).expect("Error in sending a message");
             self.prize_pool -= fee;
@@ -161,20 +165,28 @@ impl GameSessionActions for Game {
         let owner_id = msg::source();
         let strategy_id = self
             .owners_to_strategy_ids
-            .remove(&owner_id)
+            .get(&owner_id)
             .ok_or(GameError::StrategyDoesNotExist)?;
 
         match self.game_status {
             GameStatus::WaitingForGasForGameContract | GameStatus::WaitingForGasForStrategy(_) => {
-                self.exclude_player_from_game(strategy_id);
+                self.exclude_player_from_game(*strategy_id);
                 self.current_turn = self.current_turn.saturating_sub(1);
             }
             GameStatus::Registration => {
-                self.players.remove(&strategy_id);
-                self.players_queue.retain(|&p| p != strategy_id);
+                self.players.remove(strategy_id);
+                self.players_queue.retain(|&p| p != *strategy_id);
+            }
+            GameStatus::Finished => {
+                self.owners_to_strategy_ids.remove(&owner_id);
+                return Ok(());
             }
             _ => return Err(GameError::WrongGameStatus),
         }
+        self
+            .owners_to_strategy_ids
+            .remove(&owner_id);
+        self.check_amount_of_players();
         if let Some(fee) = self.entry_fee {
             msg::send_with_gas(owner_id, "", 0, fee).expect("Error in sending a message");
             self.prize_pool -= fee;
@@ -204,6 +216,11 @@ impl GameSessionActions for Game {
                 return Err(GameError::AddGasToGameContract);
             }
         }
+
+        if self.players_queue.len() == NUMBER_OF_PLAYERS as usize  && self.game_status == GameStatus::Registration {
+            self.game_status = GameStatus::Play;
+        }
+
         match self.game_status {
             GameStatus::Play | GameStatus::WaitingForGasForGameContract => {
                 while self.game_status != GameStatus::Finished {
@@ -231,7 +248,7 @@ impl GameSessionActions for Game {
                 // then this value remains the same.
                 // If the value was 1, 2, or 3, then it is properly decreased by one.
                 self.current_turn = self.current_turn.saturating_sub(1);
-
+                self.check_amount_of_players();
                 while self.game_status != GameStatus::Finished {
                     self.make_step(
                         time_for_step,
@@ -313,6 +330,8 @@ impl GameSessionActions for Game {
                         }
                         Err(_) => {
                             self.exclude_player_from_game(current_player);
+                            self.current_turn = self.current_turn.saturating_sub(1);
+                            self.check_amount_of_players();
                             Ok(())
                         }
                     }
@@ -321,6 +340,17 @@ impl GameSessionActions for Game {
                     exec::wait_for(gas_refill_timeout);
                 }
             }
+        }
+    }
+    
+    fn check_amount_of_players(&mut self)  {
+        if self.players_queue.len() == 0 {
+            self.game_status = GameStatus::Finished;
+        }
+        if self.players_queue.len() == 1 {
+            self.winner = self.players_queue[0];
+                self.game_status = GameStatus::Finished;
+                self.send_prize_pool_to_winner();
         }
     }
 

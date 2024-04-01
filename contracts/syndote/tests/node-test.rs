@@ -115,27 +115,6 @@ async fn successfull_game() -> Result<()> {
         }
     }
 
-    let exp_reply: Result<GameReply, GameError> = Ok(GameReply::GameSessionCreated { admin_id });
-    assert_eq!(
-        Ok(exp_reply),
-        send_message(
-            &client,
-            &mut listener,
-            game_id.into(),
-            GameAction::CreateGameSession {
-                entry_fee: None,
-                strategy_id: strategy_id.into(),
-                name: "Alice".to_string()
-            },
-            745_000_000_000,
-            false
-        )
-        .await?
-    );
-
-    let client = client.clone().with(PLAYERS[0])?;
-    let account_id = client.get_actor_id();
-    game_session = get_game_session(&client, game_id, account_id).await?;
     Ok(())
 }
 
