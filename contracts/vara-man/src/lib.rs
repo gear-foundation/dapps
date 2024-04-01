@@ -194,6 +194,7 @@ async fn process_handle(
             }
             Ok(VaraManEvent::GameFinished {
                 winners: vec![msg_src],
+                participants: vec![msg_src],
                 prize,
             })
         }
@@ -268,8 +269,9 @@ async fn process_handle(
                 msg::send_with_gas(*id, "", 0, prize).expect("Error in sending value");
             });
             game.stage = Stage::Finished(winners.clone());
+            let participants = game.participants.keys().cloned().collect();
 
-            Ok(VaraManEvent::GameFinished { winners, prize })
+            Ok(VaraManEvent::GameFinished { winners, participants, prize })
         }
 
         VaraManAction::RecordTournamentResult {

@@ -46,6 +46,7 @@ pub struct SingleGame {
 pub enum VaraManEvent {
     GameFinished {
         winners: Vec<ActorId>,
+        participants: Vec<ActorId>,
         prize: u128,
     },
     NewTournamentCreated {
