@@ -2440,16 +2440,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "fungible-token-state"
-version = "1.1.0"
-dependencies = [
- "fungible-token-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
-]
-
-[[package]]
 name = "funty"
 version = "2.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
