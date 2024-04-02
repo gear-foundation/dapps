@@ -35,6 +35,8 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
       getVoucherId(backendAddress, _accountAddress, programId).then((result) => {
         setAccountAddress(_accountAddress);
         setVoucherId(result);
+
+        return result;
       }),
     );
 

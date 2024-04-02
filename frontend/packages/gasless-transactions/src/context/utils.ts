@@ -12,7 +12,7 @@ async function guardedFetch<T extends object>(...args: Parameters<typeof fetch>)
   return result;
 }
 
-async function getVoucherId(backend: string, account: string, program: HexString) {
+async function getVoucherId(backend: string, account: string, program: HexString): Promise<`0x${string}` | undefined> {
   const url = `${backend}gasless/voucher/request`;
   const method = 'POST';
   const headers = { 'Content-Type': 'application/json' };

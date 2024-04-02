@@ -21,7 +21,7 @@ function useLatestVoucher(programId: HexString, address: string | undefined) {
   const { vouchers } = useVouchers(decodedAddress, programId);
 
   const latestVoucher = useMemo(() => {
-    if (!vouchers) return undefined;
+    if (!vouchers || !getTypedEntries(vouchers)?.length) return undefined;
 
     const [[id, voucher]] = getTypedEntries(vouchers).sort(
       ([, voucher], [, nextVoucher]) => nextVoucher.expiry - voucher.expiry,

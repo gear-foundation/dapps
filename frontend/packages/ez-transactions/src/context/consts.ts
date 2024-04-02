@@ -5,7 +5,7 @@ const DEFAULT_VALUES = {
   gasless: DEFAULT_GASLESS_CONTEXT,
   signless: {
     ...DEFAULT_SIGNLESS_CONTEXT,
-    onSessionCreate: async () => {},
+    onSessionCreate: async () => undefined,
   },
 };
 

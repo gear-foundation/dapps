@@ -22,7 +22,11 @@ function EzTransactionsProvider({ children }: Props) {
 
   const signlessContext = useSignlessTransactions();
 
-  const onSessionCreate = (signlessAccountAddress: string) => gasless.requestVoucher(signlessAccountAddress);
+  const onSessionCreate = async (signlessAccountAddress: string) => {
+    const voucher = await gasless.requestVoucher(signlessAccountAddress);
+
+    return voucher;
+  };
 
   const signless = {
     ...signlessContext,
