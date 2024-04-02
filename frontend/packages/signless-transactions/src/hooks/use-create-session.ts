@@ -1,9 +1,14 @@
-import { HexString, IVoucherDetails, ProgramMetadata } from '@gear-js/api';
+import { HexString, IVoucherDetails, ProgramMetadata, decodeAddress } from '@gear-js/api';
 import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
+import { web3FromSource } from '@polkadot/extension-dapp';
 import { KeyringPair } from '@polkadot/keyring/types';
+// import { stringify, u8aToHex, stringToU8a } from '@polkadot/util';
+import { ISubmittableResult } from '@polkadot/types/types';
 import { sendTransaction } from '../utils';
+// import { Buffer } from 'buffer';
+import { useGetExtrinsicFailedError } from './use-get-extrinsic-failed-error';
 
 type Session = {
   key: HexString;
@@ -11,17 +16,17 @@ type Session = {
   allowedActions: string[];
 };
 
-type Options = {
-  onSuccess: () => void;
-  onFinally: () => void;
-};
+// type Options = {
+//   onSuccess: () => void;
+//   onFinally: () => void;
+// };
 
 function useCreateSession(programId: HexString, metadata: ProgramMetadata | undefined) {
   const { api, isApiReady } = useApi();
   const alert = useAlert();
   const { account } = useAccount();
   const { batchSignAndSend } = useBatchSignAndSend('all');
-
+  const { getExtrinsicFailedError } = useGetExtrinsicFailedError();
   const onError = (message: string) => alert.error(message);
 
   const isVoucherExpired = async ({ expiry }: IVoucherDetails) => {
@@ -54,6 +59,8 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!metadata) throw new Error('Metadata not found');
 
     const destination = programId;
+    console.log('destination');
+    console.log(destination);
     const gasLimit = 250000000000; // TODO: replace with calculation after release fix
 
     return api.message.send({ destination, payload, gasLimit }, metadata);
@@ -76,15 +83,113 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
     return api.voucher.update(session.key, voucher.id, { prolongDuration, balanceTopUp });
   };
+  type Options = Partial<{
+    onSuccess: () => void;
+    onError: (error: string) => void;
+    onFinally: () => void;
+    pair?: KeyringPair;
+  }>;
+  const handleStatus = (
+    { status, events }: ISubmittableResult,
+    { onSuccess = () => {}, onError = () => {}, onFinally = () => {} }: Options = {},
+  ) => {
+    if (!isApiReady) throw new Error('API is not initialized');
+
+    console.log('STATUS');
+    console.log(status.toHuman());
+
+    events
+      .filter(({ event }) => event.section === 'system')
+      .forEach(({ event }) => {
+        const { method } = event;
+
+        if (method === 'ExtrinsicSuccess' || method === 'ExtrinsicFailed') {
+          onFinally();
+        }
+
+        if (method === 'ExtrinsicSuccess') {
+          return onSuccess();
+        }
+
+        if (method === 'ExtrinsicFailed') {
+          const message = getExtrinsicFailedError(event);
+
+          onError(message);
+          console.error(message);
+        }
+      });
+  };
 
   const createSession = async (
     session: Session,
     voucherValue: number,
-    { shouldIssueVoucher, ...options }: Options & { shouldIssueVoucher: boolean },
+    pairToSave: KeyringPair | null,
+    { shouldIssueVoucher, ...options }: Options & { shouldIssueVoucher: boolean } & { vId: string | undefined },
   ) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!account) throw new Error('Account not found');
     if (!metadata) throw new Error('Metadata not found');
+    const statusCallback = (result: ISubmittableResult) => handleStatus(result, { ...options, onError });
+    if (!shouldIssueVoucher) {
+      if (!pairToSave) {
+        throw new Error('signRaw is not a function');
+      }
+      const { signer } = await web3FromSource(account.meta.source);
+      const { signRaw } = signer;
+
+      if (!signRaw) {
+        throw new Error('signRaw is not a function');
+      }
+
+      // const key = pairToSave?.address ? decodeAddress(pairToSave.address) : pairToSave?.address;
+      const key = '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d';
+      const duration = 3000000000;
+      const allowedActions = ['StartGame'];
+
+      const payloadToSign = [key, duration, allowedActions];
+
+      if (!metadata?.types?.others?.output) {
+        console.log('no output');
+        return;
+      }
+
+      const hexToSign = metadata.createType(metadata.types.others.output, payloadToSign).toHex();
+
+      // const buffered = Buffer.from(stringify(payloadToSign));
+      // const serialized = stringify(payloadToSign);
+      // const hexToSign = stringToHex(stringify(payloadToSign));
+
+      // const hexToSign = u8aToHex(stringToU8a(stringify(payloadToSign)));
+
+      // const hexToSign = u8aToHex(pairToSave.sign(stringify(payloadToSign)));
+
+      if (!pairToSave?.address) {
+        return;
+      }
+
+      // const res = await api.sign(account.address, { data: hexToSign, type: 'bytes' }, { signer });
+
+      // console.log('signature 1');
+      // console.log(res);
+      const { signature } = await signRaw({ address: account.address, data: hexToSign, type: 'bytes' });
+
+      console.log('signature');
+      console.log(signature);
+      const messageExtrinsic = getMessageExtrinsic({
+        CreateSession: { key: session.key, duration, allowedActions, signature },
+      });
+
+      if (options.vId && pairToSave) {
+        const voucherExtrinsic = api.voucher.call(options.vId, { SendMessage: messageExtrinsic });
+
+        try {
+          voucherExtrinsic.signAndSend(pairToSave, statusCallback);
+        } catch (err) {
+          console.log(err);
+        }
+      }
+      return;
+    }
 
     const messageExtrinsic = getMessageExtrinsic({ CreateSession: session });
 

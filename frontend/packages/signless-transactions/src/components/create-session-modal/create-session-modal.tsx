@@ -1,6 +1,6 @@
 import { Button, Input, Modal, ModalProps, Select } from '@gear-js/vara-ui';
 import { useApi, useBalanceFormat, useAccount } from '@gear-js/react-hooks';
-import { decodeAddress } from '@gear-js/api';
+// import { decodeAddress } from '@gear-js/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -20,7 +20,7 @@ import {
 } from '../../consts';
 
 type Props = Pick<ModalProps, 'close'> & {
-  onSessionCreate?: (signlessAccountAddress: string) => Promise<void>;
+  onSessionCreate?: (signlessAccountAddress: string) => Promise<void | string>;
   shouldIssueVoucher?: boolean; // no need to pass boolean, we can just conditionally pass onSessionCreate?
 };
 
@@ -64,7 +64,8 @@ function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIss
     if (!pair) throw new Error('Signless pair is not initialized');
 
     const duration = getMilliseconds(Number(durationMinutes));
-    const key = decodeAddress(pair.address);
+    // const key = decodeAddress(pair.address);
+    const key = account!.decodedAddress;
     const allowedActions = ACTIONS;
     const onFinally = () => setIsLoading(false);
 
@@ -86,9 +87,24 @@ function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIss
       close();
     };
 
-    if (!shouldIssueVoucher) await onSessionCreate(pairToSave.address);
+    if (!shouldIssueVoucher) {
+      const vId = await onSessionCreate(pairToSave.address);
 
-    createSession({ duration, key, allowedActions }, issueVoucherValue, { shouldIssueVoucher, onSuccess, onFinally });
+      createSession({ duration, key, allowedActions }, issueVoucherValue, pairToSave, {
+        shouldIssueVoucher,
+        vId: vId || undefined,
+        onSuccess,
+        onFinally,
+      });
+      return;
+    }
+
+    createSession({ duration, key, allowedActions }, issueVoucherValue, null, {
+      shouldIssueVoucher,
+      vId: undefined,
+      onSuccess,
+      onFinally,
+    });
   };
 
   return (
