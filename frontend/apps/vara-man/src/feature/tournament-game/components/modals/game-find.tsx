@@ -6,7 +6,7 @@ import { Modal } from '@/components';
 import { SpriteIcon } from '@/components/ui/sprite-icon';
 import { useApi } from '@gear-js/react-hooks';
 import { Input, Button } from '@gear-js/vara-ui';
-import { useState } from 'react';
+import { hasLength, useForm } from '@mantine/form';
 
 type GameFindModalProps = {
 	findGame: {
@@ -17,8 +17,21 @@ type GameFindModalProps = {
 	setIsOpenFindModal: (_: boolean) => void
 }
 
+const initialValues = {
+	username: "",
+};
+
+const validate = {
+	username: hasLength({ min: 2, max: 25 }, 'Username must be 2-25 characters long'),
+};
+
 export const GameFindModal = ({ findGame, setIsOpenFindModal }: GameFindModalProps) => {
-	const [username, setUsername] = useState("")
+	const form = useForm({
+		initialValues,
+		validate,
+		validateInputOnChange: true,
+	});
+	const { getInputProps, errors, reset } = form;
 
 	const { api } = useApi();
 	const { isPending, setIsPending } = useApp();
@@ -34,22 +47,20 @@ export const GameFindModal = ({ findGame, setIsOpenFindModal }: GameFindModalPro
 	const [decimals] = api?.registry.chainDecimals ?? [12];
 	const bid = parseFloat(String(findGame?.bid).replace(/,/g, '') || "0") / 10 ** decimals
 
-	const onJoinGame = () => {
-		if (username) {
-			setIsPending(true);
-			handleMessage({
-				payload: {
-					RegisterForTournament: {
-						admin_id: findGame.admin,
-						name: username
-					}
-				},
-				value: (bid * 10 ** decimals).toString() || "0",
-				onSuccess,
-				onError,
-			});
-		}
-	}
+	const handleSubmit = form.onSubmit((values) => {
+		setIsPending(true);
+		handleMessage({
+			payload: {
+				RegisterForTournament: {
+					admin_id: findGame.admin,
+					name: values.username
+				}
+			},
+			value: (bid * 10 ** decimals).toString() || "0",
+			onSuccess,
+			onError,
+		});
+	});
 
 	return (
 		<Modal onClose={() => null}>
@@ -83,19 +94,21 @@ export const GameFindModal = ({ findGame, setIsOpenFindModal }: GameFindModalPro
 					</div>
 				</div>
 
-				<Input
-					type="text"
-					label='Enter your name:'
-					placeholder='Username'
-					required
-					className="w-full"
-					onChange={(e) => setUsername(e.target.value)}
-				/>
+				<form onSubmit={handleSubmit}>
+					<Input
+						type="text"
+						label='Enter your name:'
+						placeholder='Username'
+						required
+						className="w-full"
+						{...getInputProps('username')}
+					/>
 
-				<div className="flex gap-10">
-					<Button color='grey' text="Cancel" className="w-full" onClick={() => setIsOpenFindModal(false)} />
-					<Button text="Join" className="w-full" onClick={onJoinGame} isLoading={isPending} />
-				</div>
+					<div className="flex gap-10 mt-5">
+						<Button color='grey' text="Cancel" className="w-full" onClick={() => setIsOpenFindModal(false)} />
+						<Button type='submit' text="Join" className="w-full" isLoading={isPending} />
+					</div>
+				</form>
 			</div>
 		</Modal>
 	)
