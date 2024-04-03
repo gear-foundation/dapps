@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
-import { useForm } from '@mantine/form';
+import { hasLength, useForm } from '@mantine/form';
 import { useApi } from '@gear-js/react-hooks';
 import { Input, Select, Button } from '@gear-js/vara-ui';
 
@@ -8,7 +8,6 @@ import { useApp } from '@/app/context/ctx-app';
 import { useGameMessage } from '@/app/hooks/use-game';
 
 import { SpriteIcon } from '@/components/ui/sprite-icon';
-import { Validator, numberRequired, stringRequired } from '@/app/utils';
 
 const initialValues = {
 	bid: 0,
@@ -18,9 +17,9 @@ const initialValues = {
 	duration: 10
 };
 
-const validate: Record<string, Validator> = {
-	username: stringRequired,
-	tournamentName: stringRequired,
+const validate = {
+	username: hasLength({ min: 2, max: 25 }, 'Username must be 2-25 characters long'),
+	tournamentName: hasLength({ min: 2, max: 25 }, 'Tournament name must be 2-25 characters long'),
 };
 
 const optionsLevel = [
