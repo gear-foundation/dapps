@@ -27,7 +27,7 @@ const validate = {
 
 export const GameFindModal = ({ findGame, setIsOpenFindModal }: GameFindModalProps) => {
 	const form = useForm({
-		initialValues: initialValues,
+		initialValues,
 		validate,
 		validateInputOnChange: true,
 	});
