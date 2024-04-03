@@ -1,10 +1,10 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{
     fmt::{self, Display},
     prelude::*,
-    ActorId,
+    ActorId, 
 };
 
 // Minimum duration of session: 3 mins = 180_000 ms = 60 blocks
@@ -15,7 +15,7 @@ pub struct BattleshipMetadata;
 impl Metadata for BattleshipMetadata {
     type Init = In<BattleshipInit>;
     type Handle = InOut<BattleshipAction, BattleshipReply>;
-    type Others = ();
+    type Others = Out<SignatureData>;
     type Reply = ();
     type Signal = ();
     type State = InOut<StateQuery, StateReply>;
@@ -27,6 +27,13 @@ pub enum StateQuery {
     Game(ActorId),
     BotContractId,
     SessionForTheAccount(ActorId),
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+pub struct SignatureData {
+    pub key: ActorId,
+    pub duration: u64,
+    pub allowed_actions: Vec<ActionsForSession>,
 }
 
 #[derive(Encode, Decode, TypeInfo)]

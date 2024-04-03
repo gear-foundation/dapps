@@ -16,7 +16,8 @@ gear-core.workspace = true
 gclient.workspace = true
 tokio.workspace = true
 hex.workspace = true
-
+rand.workspace = true
+sp-core = "31.0.0"
 # External binaries
 
 battleship-bot.workspace = true

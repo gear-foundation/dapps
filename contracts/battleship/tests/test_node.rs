@@ -1,10 +1,14 @@
 use battleship_io::{
-    BattleshipAction, BattleshipInit, BattleshipState, Config, Entity, Ships, StateQuery,
-    StateReply,
+    ActionsForSession, BattleshipAction, BattleshipInit, BattleshipState, Config, Entity, Session,
+    Ships, SignatureData, StateQuery, StateReply,
 };
+use rand::{rngs::OsRng, Rng};
+use schnorrkel::{signing_context, Keypair, PublicKey, Signature};
+
 use gclient::{EventListener, EventProcessor, GearApi, Result};
 use gear_core::ids::ProgramId;
-use gstd::Encode;
+use gstd::{ActorId, Decode, Encode};
+use sp_core::{ed25519, sr25519, Pair};
 
 async fn upload_program(
     client: &GearApi,
@@ -43,6 +47,113 @@ async fn common_upload_program(
         .await?;
 
     Ok((message_id.into(), program_id.into()))
+}
+
+#[tokio::test]
+async fn signature_test() -> Result<()> {
+    // let api = GearApi::dev_from_path("../target/tmp/gear").await?;
+
+    let context = signing_context(b"substrate");
+    let public_key: &str = "045ebfe70de9c959477953ea086087e7abcaee5729a6d0ce696f45c056cd711a";
+    let public_key_bytes = hex::decode(public_key).unwrap();
+    let main_account = ActorId::decode(&mut public_key_bytes.as_slice()).unwrap();
+    let public_key: PublicKey = PublicKey::from_bytes(&public_key_bytes).unwrap();
+    let mnemonic_phrase = "normal jacket detail turn around boat energy hair lesson night fun rail";
+    let pair = sp_core::sr25519::Pair::from_string_with_seed(mnemonic_phrase, None)
+        .expect("Invalid mnemonic phrase");
+    println!("{:?}", pair.0.public());
+
+
+    let key: &str = "d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d";
+    let key_bytes = hex::decode(key).unwrap();
+    let key = ActorId::decode(&mut key_bytes.as_slice()).unwrap();
+    let message = SignatureData {
+        key,
+        duration: 3_000_000_000,
+        allowed_actions: vec![ActionsForSession::StartGame],
+    }
+    .encode();
+    println!("payload {:?}", hex::encode(message.clone()));
+
+    let signature = pair.0.sign(&message);
+    println!("signature {:?}", signature);
+    let signature_bytes = signature.0;
+    let signature: Signature = Signature::from_bytes(&signature.0).unwrap();
+    println!(
+        "verify {:?}",
+        public_key.verify(context.bytes(&message), &signature)
+    );
+    assert!(public_key
+        .verify(context.bytes(&message), &signature)
+        .is_ok());
+
+    let api = GearApi::dev().await?;
+    let mut listener = api.subscribe().await?;
+    // Subscribing for events.
+    // Checking that blocks still running.
+    assert!(listener.blocks_running().await?);
+
+    let bot_actor_id = upload_program(
+        &api,
+        &mut listener,
+        "../target/wasm32-unknown-unknown/release/battleship_bot.opt.wasm",
+        0,
+    )
+    .await?;
+
+    let init_battleship = BattleshipInit {
+        bot_address: bot_actor_id.into(),
+        config: Config {
+            gas_for_move: 5_000_000_000,
+            gas_for_start: 5_000_000_000,
+            gas_to_delete_session: 5_000_000_000,
+            block_duration_ms: 3_000,
+        },
+    }
+    .encode();
+
+    let path = "../target/wasm32-unknown-unknown/release/battleship.opt.wasm";
+
+    let gas_info = api
+        .calculate_upload_gas(
+            None,
+            gclient::code_from_os(path)?,
+            init_battleship.clone(),
+            0,
+            true,
+        )
+        .await?;
+
+    let (message_id, program_id, _hash) = api
+        .upload_program_bytes(
+            gclient::code_from_os(path)?,
+            gclient::now_micros().to_le_bytes(),
+            init_battleship,
+            gas_info.min_limit,
+            0,
+        )
+        .await?;
+
+    assert!(listener.message_processed(message_id).await?.succeed());
+
+    let signature_bytes = hex::decode("7819c0f7d24dd5ef8a7c43f234d14567a55a31b276e9196a20705677ca9f541715dbe0889831282618e41b520b1f18faa076e2a64062e6a26e2456fb8acad18c").unwrap();
+    let payload = BattleshipAction::CreateSession {
+        key: main_account,
+        duration: 3_000_000_000,
+        allowed_actions: vec![ActionsForSession::StartGame],
+        signature: Some(signature_bytes.to_vec()),
+    };
+    let gas_info = api
+        .calculate_handle_gas(None, program_id, payload.encode(), 0, true)
+        .await?;
+    let (message_id, _) = api
+        .send_message(program_id, payload, gas_info.min_limit, 0)
+        .await?;
+    assert!(listener.message_processed(message_id).await?.succeed());
+
+    // assert!(listener.blocks_running().await?);
+
+    Ok(())
 }
 
 #[tokio::test]

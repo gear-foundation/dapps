@@ -4,7 +4,7 @@ use gstd::{
     collections::{BTreeMap, HashMap},
     exec, msg,
     prelude::*,
-    ActorId, MessageId,
+    ActorId, MessageId, debug,
 };
 
 static mut BATTLESHIP: Option<Battleship> = None;
@@ -46,22 +46,27 @@ impl Battleship {
             "No messages for approval were passed."
         );
 
-
         match signature {
             Some(sig_bytes) => {
                 self.check_if_session_exists(key);
                 let pub_key: [u8; 32] = (*key).into();
-                let message = (*key, duration, allowed_actions.clone());
+                let message = SignatureData {
+                    key: msg_source,
+                    duration,
+                    allowed_actions: allowed_actions.clone(),
+                };
+                debug!("Before sig");
                 if crate::sr25519::verify(&sig_bytes, message.encode(), pub_key).is_err() {
                     panic!("Failed sign verification");
                 }
+                debug!("Verification is ok");
                 self.sessions.entry(*key).insert(Session {
                     key: msg_source,
                     expires,
                     allowed_actions,
                     expires_at_block: block_height + number_of_blocks,
                 });
-            },
+            }
             None => {
                 self.check_if_session_exists(&msg_source);
 
@@ -73,7 +78,6 @@ impl Battleship {
                 });
             }
         }
-       
 
         msg::send_with_gas_delayed(
             exec::program_id(),
