@@ -192,9 +192,7 @@ async fn process_handle(
                 .await
                 .expect("Error in transfer Fungible Token");
             }
-            Ok(VaraManEvent::GameFinished {
-                winners: vec![msg_src],
-                participants: vec![msg_src],
+            Ok(VaraManEvent::SingleGameFinished {
                 prize,
             })
         }
@@ -269,9 +267,24 @@ async fn process_handle(
                 msg::send_with_gas(*id, "", 0, prize).expect("Error in sending value");
             });
             game.stage = Stage::Finished(winners.clone());
-            let participants = game.participants.keys().cloned().collect();
+            let participants: Vec<_> = game.participants.keys().cloned().collect();
 
-            Ok(VaraManEvent::GameFinished { winners, participants, prize })
+            msg::send(
+                game.admin,
+                Ok::<VaraManEvent, VaraManError>(VaraManEvent::GameFinished {
+                    winners: winners.clone(),
+                    participants: participants.clone(),
+                    prize,
+                }),
+                0,
+            )
+            .expect("Error in sending message");
+
+            Ok(VaraManEvent::GameFinished {
+                winners,
+                participants,
+                prize,
+            })
         }
 
         VaraManAction::RecordTournamentResult {

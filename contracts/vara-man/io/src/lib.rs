@@ -49,6 +49,9 @@ pub enum VaraManEvent {
         participants: Vec<ActorId>,
         prize: u128,
     },
+    SingleGameFinished {
+        prize: u128,
+    },
     NewTournamentCreated {
         tournament_name: String,
         name: String,

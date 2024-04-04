@@ -1,9 +1,8 @@
 mod utils;
 use crate::utils::*;
-use gstd::Decode;
 use gtest::{Program, System};
 use utils::VaraMan;
-use vara_man_io::{Level, Stage, Status, VaraManError, VaraManEvent};
+use vara_man_io::{Level, Stage, Status};
 
 #[test]
 fn success_play_single_game() {
@@ -84,11 +83,3 @@ fn success_play_tournament() {
     );
 }
 
-#[test]
-fn check() {
-    let input = "0102";
-    let decoded = hex::decode(input).expect("Decoding failed");
-    let mut res: &[u8] = &decoded;
-    let result = Result::<VaraManEvent, VaraManError>::decode(&mut res).ok();
-    println!("RES: {:?}", result);
-}
