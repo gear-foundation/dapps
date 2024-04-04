@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{InOut, Metadata};
 use gstd::{prelude::*, ActorId};
 
 pub type TxId = u64;
@@ -8,7 +8,7 @@ pub type ValidUntil = u64;
 pub struct FungibleTokenMetadata;
 
 impl Metadata for FungibleTokenMetadata {
-    type Init = In<InitConfig>;
+    type Init = InOut<InitConfig, FTReply>;
     type Handle = InOut<FTAction, Result<FTReply, FTError>>;
     type Others = ();
     type Reply = ();
@@ -63,6 +63,7 @@ pub enum FTAction {
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum FTReply {
+    Initialized,
     Transferred {
         from: ActorId,
         to: ActorId,
@@ -114,7 +115,7 @@ pub enum Query {
     },
     GetTxIdsForAccount {
         account: ActorId,
-    }
+    },
 }
 
 #[derive(Encode, Decode, TypeInfo)]
@@ -129,7 +130,5 @@ pub enum QueryReply {
     AllowanceOfAccount(u128),
     Admins(Vec<ActorId>),
     TxValidityTime(ValidUntil),
-    TxIdsForAccount {
-        tx_ids: Vec<TxId>,
-    }
+    TxIdsForAccount { tx_ids: Vec<TxId> },
 }

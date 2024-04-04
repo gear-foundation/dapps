@@ -241,6 +241,7 @@ extern fn init() {
         ..Default::default()
     };
     unsafe { FUNGIBLE_TOKEN = Some(ft) };
+    msg::reply(FTReply::Initialized, 0).expect("Error in sending a reply");
 }
 
 #[no_mangle]
@@ -252,15 +253,9 @@ extern fn state() {
     };
     let query: Query = msg::load().expect("Unable to decode the query");
     let reply = match query {
-        Query::Name => {
-            QueryReply::Name(token.name)
-        }
-        Query::Symbol => {
-            QueryReply::Symbol(token.symbol)
-        }
-        Query::Decimals => {
-            QueryReply::Decimals(token.decimals)
-        }
+        Query::Name => QueryReply::Name(token.name),
+        Query::Symbol => QueryReply::Symbol(token.symbol),
+        Query::Decimals => QueryReply::Decimals(token.decimals),
         Query::BalanceOf(account) => {
             let balance = if let Some(balance) = token.balances.get(&account) {
                 *balance
@@ -284,19 +279,18 @@ extern fn state() {
             };
             QueryReply::AllowanceOfAccount(allowance)
         }
-        Query::Admins => {
-            QueryReply::Admins(token.admins)
-        }
+        Query::Admins => QueryReply::Admins(token.admins),
         Query::GetTxValidityTime { account, tx_id } => {
             let valid_until = token.tx_ids.get(&(account, tx_id)).unwrap_or(&0);
             QueryReply::TxValidityTime(*valid_until)
         }
         Query::GetTxIdsForAccount { account } => {
-            let tx_ids: Vec<TxId> = if let Some(tx_ids) =  token.account_to_tx_ids.get(&account).cloned() {
-                tx_ids.into_iter().collect()
-            } else {
-                Vec::new()
-            };
+            let tx_ids: Vec<TxId> =
+                if let Some(tx_ids) = token.account_to_tx_ids.get(&account).cloned() {
+                    tx_ids.into_iter().collect()
+                } else {
+                    Vec::new()
+                };
             QueryReply::TxIdsForAccount { tx_ids }
         }
     };
