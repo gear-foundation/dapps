@@ -1,6 +1,5 @@
 import { Button, Input, Modal, ModalProps, Select } from '@gear-js/vara-ui';
 import { useApi, useBalanceFormat, useAccount } from '@gear-js/react-hooks';
-import { decodeAddress } from '@gear-js/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -18,13 +17,14 @@ import {
   DURATIONS,
   REQUIRED_MESSAGE,
 } from '../../consts';
+import { decodeAddress } from '@gear-js/api';
 
 type Props = Pick<ModalProps, 'close'> & {
-  onSessionCreate?: (signlessAccountAddress: string) => Promise<void>;
+  onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   shouldIssueVoucher?: boolean; // no need to pass boolean, we can just conditionally pass onSessionCreate?
 };
 
-function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIssueVoucher = true }: Props) {
+function CreateSessionModal({ close, onSessionCreate = async () => '0x', shouldIssueVoucher = true }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
@@ -62,9 +62,11 @@ function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIss
 
   const onSubmit = async ({ password, durationMinutes }: typeof DEFAULT_VALUES) => {
     if (!pair) throw new Error('Signless pair is not initialized');
+    if (!account) throw new Error('Account not found');
 
     const duration = getMilliseconds(Number(durationMinutes));
-    const key = decodeAddress(pair.address);
+
+    const key = shouldIssueVoucher ? decodeAddress(pair.address) : account!.decodedAddress;
     const allowedActions = ACTIONS;
     const onFinally = () => setIsLoading(false);
 
@@ -86,9 +88,25 @@ function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIss
       close();
     };
 
-    if (!shouldIssueVoucher) await onSessionCreate(pairToSave.address);
+    if (!shouldIssueVoucher) {
+      const voucherId = await onSessionCreate(pairToSave.address);
 
-    createSession({ duration, key, allowedActions }, issueVoucherValue, { shouldIssueVoucher, onSuccess, onFinally });
+      createSession({ duration, key, allowedActions }, issueVoucherValue, {
+        shouldIssueVoucher,
+        voucherId,
+        onSuccess,
+        onFinally,
+        pair: pairToSave,
+      });
+
+      return;
+    }
+
+    createSession({ duration, key, allowedActions }, issueVoucherValue, {
+      shouldIssueVoucher,
+      onSuccess,
+      onFinally,
+    });
   };
 
   return (
