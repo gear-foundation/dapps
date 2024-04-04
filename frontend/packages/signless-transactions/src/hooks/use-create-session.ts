@@ -1,5 +1,5 @@
 import { HexString, IVoucherDetails, ProgramMetadata, decodeAddress } from '@gear-js/api';
-import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
+import { Account, useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
 import { web3FromSource } from '@polkadot/extension-dapp';
@@ -82,6 +82,23 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     shouldIssueVoucher: boolean;
   };
 
+  const getAccountSignature = async (metadata: ProgramMetadata, account: Account, payloadToSign: Session) => {
+    const { signer } = await web3FromSource(account.meta.source);
+    const { signRaw } = signer;
+
+    if (!signRaw) {
+      throw new Error('signRaw is not a function');
+    }
+
+    if (!metadata.types?.others?.output) {
+      throw new Error(`Metadata type doesn't exist`);
+    }
+
+    const hexToSign = metadata.createType(metadata.types.others.output, payloadToSign).toHex();
+
+    return signRaw({ address: account.address, data: hexToSign, type: 'bytes' });
+  };
+
   const createSession = async (
     session: Session,
     voucherValue: number,
@@ -92,22 +109,10 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!metadata) throw new Error('Metadata not found');
 
     if (voucherId && pair) {
-      const { signer } = await web3FromSource(account.meta.source);
-      const { signRaw } = signer;
-
-      if (!signRaw) {
-        throw new Error('signRaw is not a function');
-      }
-
-      if (!metadata.types?.others?.output) {
-        throw new Error(`Metadata type doesn't exist`);
-      }
-
-      const hexToSign = metadata
-        .createType(metadata.types.others.output, { ...session, key: decodeAddress(pair.address) })
-        .toHex();
-
-      const { signature } = await signRaw({ address: account.address, data: hexToSign, type: 'bytes' });
+      const { signature } = await getAccountSignature(metadata, account, {
+        ...session,
+        key: decodeAddress(pair.address),
+      });
 
       const messageExtrinsic = getMessageExtrinsic({
         CreateSession: { ...session, signature },
