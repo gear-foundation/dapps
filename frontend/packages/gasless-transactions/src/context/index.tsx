@@ -22,7 +22,7 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   const alert = useAlert();
 
   const [accountAddress, setAccountAddress] = useState<string>();
-  const [voucherId, setVoucherId] = useState<HexString>();
+  const [voucherId, setVoucherId] = useState<HexString | undefined>();
   const { balance } = useBalance(voucherId);
 
   const [isLoading, , withLoading] = useLoading();
@@ -35,6 +35,8 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
       getVoucherId(backendAddress, _accountAddress, programId).then((result) => {
         setAccountAddress(_accountAddress);
         setVoucherId(result);
+
+        return result;
       }),
     );
 
