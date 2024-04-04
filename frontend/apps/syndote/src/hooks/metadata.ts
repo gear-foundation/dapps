@@ -78,6 +78,7 @@ function useReadGameSessionState() {
   const metadata = useProgramMetadata(meta);
   const admin = useAtomValue(CURRENT_GAME_ADMIN_ATOM);
 
+  console.log('getting state by', admin || account?.decodedAddress);
   const payload = useMemo(
     () => ({
       GetGameSession: {
