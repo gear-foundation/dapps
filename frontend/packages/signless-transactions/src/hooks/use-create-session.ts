@@ -4,11 +4,7 @@ import { AnyJson } from '@polkadot/types/types';
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import { KeyringPair } from '@polkadot/keyring/types';
-// import { stringify, u8aToHex, stringToU8a } from '@polkadot/util';
-import { ISubmittableResult } from '@polkadot/types/types';
 import { sendTransaction } from '../utils';
-// import { Buffer } from 'buffer';
-import { useGetExtrinsicFailedError } from './use-get-extrinsic-failed-error';
 
 type Session = {
   key: HexString;
@@ -16,17 +12,11 @@ type Session = {
   allowedActions: string[];
 };
 
-// type Options = {
-//   onSuccess: () => void;
-//   onFinally: () => void;
-// };
-
 function useCreateSession(programId: HexString, metadata: ProgramMetadata | undefined) {
   const { api, isApiReady } = useApi();
   const alert = useAlert();
   const { account } = useAccount();
   const { batchSignAndSend } = useBatchSignAndSend('all');
-  const { getExtrinsicFailedError } = useGetExtrinsicFailedError();
   const onError = (message: string) => alert.error(message);
 
   const isVoucherExpired = async ({ expiry }: IVoucherDetails) => {
@@ -59,8 +49,6 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!metadata) throw new Error('Metadata not found');
 
     const destination = programId;
-    console.log('destination');
-    console.log(destination);
     const gasLimit = 250000000000; // TODO: replace with calculation after release fix
 
     return api.message.send({ destination, payload, gasLimit }, metadata);
@@ -89,36 +77,6 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     onFinally: () => void;
     pair?: KeyringPair;
   }>;
-  const handleStatus = (
-    { status, events }: ISubmittableResult,
-    { onSuccess = () => {}, onError = () => {}, onFinally = () => {} }: Options = {},
-  ) => {
-    if (!isApiReady) throw new Error('API is not initialized');
-
-    console.log('STATUS');
-    console.log(status.toHuman());
-
-    events
-      .filter(({ event }) => event.section === 'system')
-      .forEach(({ event }) => {
-        const { method } = event;
-
-        if (method === 'ExtrinsicSuccess' || method === 'ExtrinsicFailed') {
-          onFinally();
-        }
-
-        if (method === 'ExtrinsicSuccess') {
-          return onSuccess();
-        }
-
-        if (method === 'ExtrinsicFailed') {
-          const message = getExtrinsicFailedError(event);
-
-          onError(message);
-          console.error(message);
-        }
-      });
-  };
 
   const createSession = async (
     session: Session,
@@ -129,8 +87,6 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!isApiReady) throw new Error('API is not initialized');
     if (!account) throw new Error('Account not found');
     if (!metadata) throw new Error('Metadata not found');
-
-    const statusCallback = (result: ISubmittableResult) => handleStatus(result, { ...options, onError });
 
     if (vId && pairToSave) {
       const { signer } = await web3FromSource(account.meta.source);
@@ -162,11 +118,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
       const voucherExtrinsic = api.voucher.call(vId, { SendMessage: messageExtrinsic });
 
-      try {
-        voucherExtrinsic.signAndSend(pairToSave, statusCallback);
-      } catch (err) {
-        console.log(err);
-      }
+      await sendTransaction(voucherExtrinsic, pairToSave, ['UserMessageSent'], { ...options, onError });
 
       return;
     }
@@ -200,7 +152,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!isExpired) {
       const declineExtrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
 
-      await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined']);
+      await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined'], { ...options, onError });
     }
 
     if (isOwner) {
