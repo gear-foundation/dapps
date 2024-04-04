@@ -1,6 +1,5 @@
 import { Button, Input, Modal, ModalProps, Select } from '@gear-js/vara-ui';
 import { useApi, useBalanceFormat, useAccount } from '@gear-js/react-hooks';
-// import { decodeAddress } from '@gear-js/api';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -18,13 +17,14 @@ import {
   DURATIONS,
   REQUIRED_MESSAGE,
 } from '../../consts';
+import { decodeAddress } from '@gear-js/api';
 
 type Props = Pick<ModalProps, 'close'> & {
-  onSessionCreate?: (signlessAccountAddress: string) => Promise<void | string>;
+  onSessionCreate?: (signlessAccountAddress: string) => Promise<undefined | string>;
   shouldIssueVoucher?: boolean; // no need to pass boolean, we can just conditionally pass onSessionCreate?
 };
 
-function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIssueVoucher = true }: Props) {
+function CreateSessionModal({ close, onSessionCreate = async () => undefined, shouldIssueVoucher = true }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
@@ -64,8 +64,8 @@ function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIss
     if (!pair) throw new Error('Signless pair is not initialized');
 
     const duration = getMilliseconds(Number(durationMinutes));
-    // const key = decodeAddress(pair.address);
-    const key = account!.decodedAddress;
+
+    const key = shouldIssueVoucher ? decodeAddress(pair.address) : account!.decodedAddress;
     const allowedActions = ACTIONS;
     const onFinally = () => setIsLoading(false);
 
@@ -92,10 +92,11 @@ function CreateSessionModal({ close, onSessionCreate = async () => {}, shouldIss
 
       createSession({ duration, key, allowedActions }, issueVoucherValue, pairToSave, {
         shouldIssueVoucher,
-        vId: vId || undefined,
+        vId,
         onSuccess,
         onFinally,
       });
+
       return;
     }
 

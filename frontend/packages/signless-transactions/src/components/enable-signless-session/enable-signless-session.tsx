@@ -49,7 +49,10 @@ function EnableSignlessSession(props: Props) {
     if (!pair) throw new Error('Signless pair not found');
 
     setIsLoading(true);
-    deleteSession(session.key, pair, { onSuccess: onDeleteSessionSuccess, onFinally: onDeleteSessionFinally });
+    deleteSession(session.key, pair, {
+      onSuccess: onDeleteSessionSuccess,
+      onFinally: onDeleteSessionFinally,
+    });
   };
 
   const handleSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {

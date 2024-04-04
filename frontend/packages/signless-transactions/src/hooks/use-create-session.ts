@@ -124,16 +124,15 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     session: Session,
     voucherValue: number,
     pairToSave: KeyringPair | null,
-    { shouldIssueVoucher, ...options }: Options & { shouldIssueVoucher: boolean } & { vId: string | undefined },
+    { shouldIssueVoucher, vId, ...options }: Options & { shouldIssueVoucher: boolean } & { vId: string | void },
   ) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!account) throw new Error('Account not found');
     if (!metadata) throw new Error('Metadata not found');
+
     const statusCallback = (result: ISubmittableResult) => handleStatus(result, { ...options, onError });
-    if (!shouldIssueVoucher) {
-      if (!pairToSave) {
-        throw new Error('signRaw is not a function');
-      }
+
+    if (vId && pairToSave) {
       const { signer } = await web3FromSource(account.meta.source);
       const { signRaw } = signer;
 
@@ -141,53 +140,34 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
         throw new Error('signRaw is not a function');
       }
 
-      // const key = pairToSave?.address ? decodeAddress(pairToSave.address) : pairToSave?.address;
-      const key = '0xd43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d';
-      const duration = 3000000000;
-      const allowedActions = ['StartGame'];
+      const key = decodeAddress(pairToSave.address);
+      const duration = session.duration;
+      const allowedActions = session.allowedActions;
 
-      const payloadToSign = [key, duration, allowedActions];
+      const payloadToSign = { key, duration, allowedActions };
 
-      if (!metadata?.types?.others?.output) {
+      if (!metadata.types?.others?.output) {
         console.log('no output');
+
         return;
       }
 
       const hexToSign = metadata.createType(metadata.types.others.output, payloadToSign).toHex();
 
-      // const buffered = Buffer.from(stringify(payloadToSign));
-      // const serialized = stringify(payloadToSign);
-      // const hexToSign = stringToHex(stringify(payloadToSign));
-
-      // const hexToSign = u8aToHex(stringToU8a(stringify(payloadToSign)));
-
-      // const hexToSign = u8aToHex(pairToSave.sign(stringify(payloadToSign)));
-
-      if (!pairToSave?.address) {
-        return;
-      }
-
-      // const res = await api.sign(account.address, { data: hexToSign, type: 'bytes' }, { signer });
-
-      // console.log('signature 1');
-      // console.log(res);
       const { signature } = await signRaw({ address: account.address, data: hexToSign, type: 'bytes' });
 
-      console.log('signature');
-      console.log(signature);
       const messageExtrinsic = getMessageExtrinsic({
         CreateSession: { key: session.key, duration, allowedActions, signature },
       });
 
-      if (options.vId && pairToSave) {
-        const voucherExtrinsic = api.voucher.call(options.vId, { SendMessage: messageExtrinsic });
+      const voucherExtrinsic = api.voucher.call(vId, { SendMessage: messageExtrinsic });
 
-        try {
-          voucherExtrinsic.signAndSend(pairToSave, statusCallback);
-        } catch (err) {
-          console.log(err);
-        }
+      try {
+        voucherExtrinsic.signAndSend(pairToSave, statusCallback);
+      } catch (err) {
+        console.log(err);
       }
+
       return;
     }
 
@@ -205,10 +185,13 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!account) throw new Error('Account not found');
     if (!metadata) throw new Error('Metadata not found');
 
-    const messageExtrinsic = getMessageExtrinsic({ DeleteSessionFromAccount: null });
+    const messageExtrinsic = getMessageExtrinsic({
+      DeleteSessionFromAccount: null,
+    });
+
     const txs = [messageExtrinsic];
 
-    const voucher = await getLatestVoucher(key);
+    const voucher = await getLatestVoucher(key); //if account has voucher
     if (!voucher) return batchSignAndSend(txs, { ...options, onError });
 
     const isOwner = account.decodedAddress === voucher.owner;
