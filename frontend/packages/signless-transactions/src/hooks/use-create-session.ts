@@ -71,24 +71,27 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
     return api.voucher.update(session.key, voucher.id, { prolongDuration, balanceTopUp });
   };
-  type Options = Partial<{
+  type Options = {
     onSuccess: () => void;
-    onError: (error: string) => void;
     onFinally: () => void;
+  };
+
+  type CreeateSessionOptions = {
     pair?: KeyringPair;
-  }>;
+    voucherId?: `0x${string}`;
+    shouldIssueVoucher: boolean;
+  };
 
   const createSession = async (
     session: Session,
     voucherValue: number,
-    pairToSave: KeyringPair | null,
-    { shouldIssueVoucher, vId, ...options }: Options & { shouldIssueVoucher: boolean } & { vId: string | void },
+    { shouldIssueVoucher, voucherId, pair, ...options }: Options & CreeateSessionOptions,
   ) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!account) throw new Error('Account not found');
     if (!metadata) throw new Error('Metadata not found');
 
-    if (vId && pairToSave) {
+    if (voucherId && pair) {
       const { signer } = await web3FromSource(account.meta.source);
       const { signRaw } = signer;
 
@@ -96,29 +99,23 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
         throw new Error('signRaw is not a function');
       }
 
-      const key = decodeAddress(pairToSave.address);
-      const duration = session.duration;
-      const allowedActions = session.allowedActions;
-
-      const payloadToSign = { key, duration, allowedActions };
-
       if (!metadata.types?.others?.output) {
-        console.log('no output');
-
-        return;
+        throw new Error(`Metadata type doesn't exist`);
       }
 
-      const hexToSign = metadata.createType(metadata.types.others.output, payloadToSign).toHex();
+      const hexToSign = metadata
+        .createType(metadata.types.others.output, { ...session, key: decodeAddress(pair.address) })
+        .toHex();
 
       const { signature } = await signRaw({ address: account.address, data: hexToSign, type: 'bytes' });
 
       const messageExtrinsic = getMessageExtrinsic({
-        CreateSession: { key: session.key, duration, allowedActions, signature },
+        CreateSession: { ...session, signature },
       });
 
-      const voucherExtrinsic = api.voucher.call(vId, { SendMessage: messageExtrinsic });
+      const voucherExtrinsic = api.voucher.call(voucherId, { SendMessage: messageExtrinsic });
 
-      await sendTransaction(voucherExtrinsic, pairToSave, ['UserMessageSent'], { ...options, onError });
+      await sendTransaction(voucherExtrinsic, pair, ['UserMessageSent'], { ...options, onError });
 
       return;
     }
@@ -143,7 +140,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
     const txs = [messageExtrinsic];
 
-    const voucher = await getLatestVoucher(key); //if account has voucher
+    const voucher = await getLatestVoucher(key);
     if (!voucher) return batchSignAndSend(txs, { ...options, onError });
 
     const isOwner = account.decodedAddress === voucher.owner;

@@ -4,6 +4,6 @@ export const DEFAULT_GASLESS_CONTEXT = {
   isLoading: false,
   isEnabled: false,
   isActive: false,
-  requestVoucher: async () => undefined,
+  requestVoucher: async (): Promise<`0x${string}`> => '0x',
   setIsEnabled: () => {},
 };

@@ -12,15 +12,19 @@ async function guardedFetch<T extends object>(...args: Parameters<typeof fetch>)
   return result;
 }
 
-async function getVoucherId(backend: string, account: string, program: HexString): Promise<`0x${string}` | undefined> {
+async function getVoucherId(backend: string, account: string, program: HexString): Promise<`0x${string}`> {
   const url = `${backend}gasless/voucher/request`;
   const method = 'POST';
   const headers = { 'Content-Type': 'application/json' };
   const body = JSON.stringify({ account, program });
 
-  const { voucherId } = await guardedFetch<{ voucherId: HexString }>(url, { method, headers, body });
+  try {
+    const { voucherId } = await guardedFetch<{ voucherId: HexString }>(url, { method, headers, body });
 
-  return voucherId;
+    return voucherId;
+  } catch {
+    throw new Error(`Voucher couldn't be fetched`);
+  }
 }
 
 async function getVoucherStatus(backend: string, program: HexString) {

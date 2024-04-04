@@ -16,7 +16,7 @@ import { AccountPair } from '../account-pair';
 import { EnableSignlessSession } from '../enable-signless-session';
 
 type Props = {
-  onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}` | undefined>;
+  onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   shouldIssueVoucher?: boolean;
   disabled?: boolean;
   requiredBalance?: number;

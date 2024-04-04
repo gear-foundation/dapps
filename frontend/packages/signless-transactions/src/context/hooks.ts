@@ -20,12 +20,12 @@ function useLatestVoucher(programId: HexString, address: string | undefined) {
   const decodedAddress = address ? decodeAddress(address) : '';
   const { vouchers } = useVouchers(decodedAddress, programId);
 
-  const latestVoucher = useMemo(() => {
-    if (!vouchers || !getTypedEntries(vouchers)?.length) return undefined;
+  const typedEntries = getTypedEntries(vouchers || {});
 
-    const [[id, voucher]] = getTypedEntries(vouchers).sort(
-      ([, voucher], [, nextVoucher]) => nextVoucher.expiry - voucher.expiry,
-    );
+  const latestVoucher = useMemo(() => {
+    if (!vouchers || !typedEntries?.length) return undefined;
+
+    const [[id, voucher]] = typedEntries.sort(([, voucher], [, nextVoucher]) => nextVoucher.expiry - voucher.expiry);
 
     return { ...voucher, id };
   }, [vouchers]);

@@ -14,7 +14,7 @@ type Props = {
   shouldIssueVoucher?: boolean;
   message?: string;
   disabled?: boolean;
-  onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}` | undefined>;
+  onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   requiredBalance: number | undefined;
 };
 
