@@ -51,7 +51,7 @@ function Home() {
 
   const playersArray = state?.players || [];
 
-  const getPlayers = () => (isGameStarted ? roll?.players || [] : state!.players!);
+  const getPlayers = () => (isGameStarted ? roll?.players || [] : state?.players || []);
   console.log('==STATE==');
   console.log(state);
   const players = playersArray.map(([address], index) => ({
