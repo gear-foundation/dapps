@@ -18,13 +18,9 @@ async function getVoucherId(backend: string, account: string, program: HexString
   const headers = { 'Content-Type': 'application/json' };
   const body = JSON.stringify({ account, program });
 
-  try {
-    const { voucherId } = await guardedFetch<{ voucherId: HexString }>(url, { method, headers, body });
+  const { voucherId } = await guardedFetch<{ voucherId: HexString }>(url, { method, headers, body });
 
-    return voucherId;
-  } catch {
-    throw new Error(`Voucher couldn't be fetched`);
-  }
+  return voucherId;
 }
 
 async function getVoucherStatus(backend: string, program: HexString) {
