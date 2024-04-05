@@ -56,7 +56,7 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
         <MenuOptions
           customItems={[
             { key: 'signless', option: <EzSignlessTransactions /> },
-            { key: 'gasless', option: <EzGaslessTransactions disabledTurnOn={isGamePage} /> },
+            { key: 'gasless', option: <EzGaslessTransactions /> },
           ]}
         />
         <div>
