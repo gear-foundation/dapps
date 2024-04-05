@@ -60,15 +60,15 @@ export default function ShipArrangement() {
   return (
     <div className={styles.content}>
       <div className={styles.header}>
-        <Heading>
-          <TextGradient>Your ships</TextGradient>
-        </Heading>
-        <div>
+        <Heading>Your ships</Heading>
+        <div className={styles.textWrapper}>
           <Text size="lg">Choose a ship placement scheme, and to see a new arrangement, click "Generate"</Text>
         </div>
       </div>
       <div style={{ width: '100%' }}>
-        <Map sizeBlock={64} shipStatusArray={shipLayout} />
+        <div>
+          <Map sizeBlock={72} shipStatusArray={shipLayout} />
+        </div>
       </div>
       <div className={styles.buttons}>
         <Button color="dark" text="Generate" onClick={onGenerateRandomLayout} disabled={isLoadingGenerate} />
