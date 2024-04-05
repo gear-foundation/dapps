@@ -1,5 +1,4 @@
 .header {
-  background: #ffffff;
   position: absolute;
   top: 0;
   left: 0;
@@ -10,6 +9,12 @@
   flex-direction: column;
   gap: 30px;
   z-index: 9;
+
+  &Dark {
+    background: rgb(0,0,0);
+    background: linear-gradient(90deg, rgba(0,0,0,1) 10%, rgba(0,51,39,1) 50%, rgba(0,0,0,1) 90%); 
+    color: #ffffff;
+  }
 }
 
 .header__container {
@@ -44,4 +49,13 @@
 
 .noScroll {
   overflow: hidden;
+}
+
+.accountInfo {
+  span {
+    color: #ffffff;
+  }
+  svg:last-child path {
+    stroke: #ffffff; 
+  }
 }

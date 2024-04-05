@@ -35,4 +35,10 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
+
+  & button {
+    width: 100%;
+    padding: 16px 10px;
+  }
 }
