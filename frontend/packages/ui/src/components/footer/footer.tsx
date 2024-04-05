@@ -7,9 +7,10 @@ import styles from './footer.module.css';
 
 type Props = {
   vara?: boolean;
+  isAlwaysMobile?: boolean;
 };
 
-function Footer({ vara }: Props) {
+function Footer({ vara, isAlwaysMobile }: Props) {
   const { account } = useAccount();
   const year = new Date().getFullYear();
 
@@ -23,9 +24,9 @@ function Footer({ vara }: Props) {
     ));
 
   return (
-    <footer className={cx(styles.footer, vara && styles.vara)}>
+    <footer className={cx(styles.footer, vara && styles.vara, isAlwaysMobile && styles.mobileFlexColumn)}>
       {/* TODO: should be wrapped in a container? */}
-      <div className={styles.column}>
+      <div className={cx(styles.column, isAlwaysMobile && styles.mobileFlexColumn)}>
         <ul className={styles.socials}>{getSocials()}</ul>
 
         <small className={cx(styles.copyright, vara && styles.vara)}>

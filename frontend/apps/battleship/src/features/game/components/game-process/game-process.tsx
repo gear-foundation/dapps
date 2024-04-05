@@ -89,6 +89,9 @@ export default function GameProcess() {
           onSuccess: () => {
             setPending(false);
           },
+          onError: () => {
+            setDisabledCell(false);
+          },
         }),
       );
     }
@@ -131,7 +134,7 @@ export default function GameProcess() {
       </div>
       <div className={styles.enemyShips}>
         <Text size="sm" weight="normal" className={styles.text}>
-          Enemy Ships: {totalShips}
+          Enemy Ships: {totalShips} / 4
         </Text>
 
         <div className={styles.listShips}>
@@ -158,7 +161,7 @@ export default function GameProcess() {
 
       <div>
         <MapEnemy
-          sizeBlock={68}
+          sizeBlock={86}
           onClickCell={onClickCell}
           shipStatusArray={enemiesShips}
           isDisabledCell={isDisabledCell || gasless.isLoading}

@@ -37,13 +37,17 @@ export default function Login() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
+        <div className={styles.top}>
+          <img src={battleshipImage} alt="battleship" width={300} />
+        </div>
         <div className={styles.header}>
-          <Heading>
-            <TextGradient>Battleship game</TextGradient>
+          <Heading size="md" className={styles.mainHeading}>
+            <TextGradient>Battleship Game</TextGradient>
           </Heading>
           <div>
-            <Text size="lg">
-              Welcome to the classic Battleship game, where you will compete against a smart contract.
+            <Text size="lg" className={styles.mainText}>
+              Welcome to the classic Battleship game, where you will compete against a smart contract. To start the
+              game, connect your wallet.
               {!account && ' To start the game, connect your wallet.'}
             </Text>
           </div>
@@ -56,10 +60,6 @@ export default function Login() {
           </Button>
 
           <EzTransactionsSwitch />
-        </div>
-
-        <div className={styles.bottom}>
-          <img src={battleshipImage} alt="" width={300} />
         </div>
       </div>
 
