@@ -76,23 +76,26 @@ export default function GameProcess() {
     if (!gasless.isLoading) {
       setDisabledCell(true);
 
-      checkBalance(gasLimit, () =>
-        message({
-          payload: { Turn: { step: indexCell } },
-          onInBlock: (messageId) => {
-            if (messageId) {
+      checkBalance(
+        gasLimit,
+        () =>
+          message({
+            payload: { Turn: { step: indexCell } },
+            onInBlock: (messageId) => {
+              if (messageId) {
+                setDisabledCell(false);
+              }
+            },
+            gasLimit,
+            voucherId: gasless.voucherId,
+            onSuccess: () => {
+              setPending(false);
+            },
+            onError: () => {
               setDisabledCell(false);
-            }
-          },
-          gasLimit,
-          voucherId: gasless.voucherId,
-          onSuccess: () => {
-            setPending(false);
-          },
-          onError: () => {
-            setDisabledCell(false);
-          },
-        }),
+            },
+          }),
+        () => setDisabledCell(false),
       );
     }
   };
@@ -164,7 +167,7 @@ export default function GameProcess() {
           sizeBlock={86}
           onClickCell={onClickCell}
           shipStatusArray={enemiesShips}
-          isDisabledCell={isDisabledCell || gasless.isLoading}
+          isDisabledCell={isDisabledCell || gasless.isLoading || gameState.gameOver}
         />
       </div>
 
