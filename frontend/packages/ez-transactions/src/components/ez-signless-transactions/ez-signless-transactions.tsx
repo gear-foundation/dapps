@@ -10,7 +10,7 @@ function EzSignlessTransactions() {
       onSessionCreate={signless.onSessionCreate}
       shouldIssueVoucher={!gasless.isEnabled}
       disabled={!signless.isSessionActive && gasless.isActive}
-      requiredBalance={gasless.isEnabled ? 11 : undefined}
+      requiredBalance={gasless.isEnabled ? 0 : undefined}
     />
   );
 }

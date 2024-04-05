@@ -1,10 +1,11 @@
 import { HexString, IVoucherDetails, ProgramMetadata, decodeAddress } from '@gear-js/api';
-import { Account, useAccount, useAlert, useApi } from '@gear-js/react-hooks';
+import { Account, useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { sendTransaction } from '../utils';
+import { useIsAvailable } from '.';
 
 type Session = {
   key: HexString;
@@ -16,6 +17,10 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
   const { api, isApiReady } = useApi();
   const alert = useAlert();
   const { account } = useAccount();
+  const { getFormattedBalanceValue } = useBalanceFormat();
+  const minRequiredBalanceToDeleteSession =
+    getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toNumber() + 5;
+  const isDeleteSessionAvailable = useIsAvailable(minRequiredBalanceToDeleteSession, false);
   const { batchSignAndSend } = useBatchSignAndSend('all');
   const onError = (message: string) => alert.error(message);
 
@@ -138,6 +143,12 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!isApiReady) throw new Error('API is not initialized');
     if (!account) throw new Error('Account not found');
     if (!metadata) throw new Error('Metadata not found');
+
+    if (!isDeleteSessionAvailable) {
+      alert.error('Low balance on account to disable session');
+      options.onFinally();
+      throw new Error('Low balance on account to disable session');
+    }
 
     const messageExtrinsic = getMessageExtrinsic({
       DeleteSessionFromAccount: null,

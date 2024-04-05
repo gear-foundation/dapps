@@ -1,5 +1,5 @@
 import { Button, Input, Modal, ModalProps, Select } from '@gear-js/vara-ui';
-import { useApi, useBalanceFormat, useAccount } from '@gear-js/react-hooks';
+import { useApi, useBalanceFormat, useAccount, useAlert } from '@gear-js/react-hooks';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
@@ -27,6 +27,7 @@ type Props = Pick<ModalProps, 'close'> & {
 function CreateSessionModal({ close, onSessionCreate = async () => '0x', shouldIssueVoucher = true }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
+  const alert = useAlert();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
 
   const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
@@ -89,15 +90,20 @@ function CreateSessionModal({ close, onSessionCreate = async () => '0x', shouldI
     };
 
     if (!shouldIssueVoucher) {
-      const voucherId = await onSessionCreate(pairToSave.address);
+      try {
+        const voucherId = await onSessionCreate(pairToSave.address);
 
-      createSession({ duration, key, allowedActions }, issueVoucherValue, {
-        shouldIssueVoucher,
-        voucherId,
-        onSuccess,
-        onFinally,
-        pair: pairToSave,
-      });
+        createSession({ duration, key, allowedActions }, issueVoucherValue, {
+          shouldIssueVoucher,
+          voucherId,
+          onSuccess,
+          onFinally,
+          pair: pairToSave,
+        });
+      } catch (err) {
+        alert.error('Error when fetching gasless voucher');
+        onFinally();
+      }
 
       return;
     }
