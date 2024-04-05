@@ -7,6 +7,7 @@ import { Header } from '@/components/layout';
 import { withProviders } from '@/app/hocs';
 
 import { useAccountAvailableBalanceSync, useWalletSync } from '@/features/wallet/hooks';
+import { Container, Footer } from '@dapps-frontend/ui';
 
 function Component() {
   const { isApiReady } = useApi();
@@ -23,6 +24,9 @@ function Component() {
         <>
           <Header />
           <Routing />
+          <Container>
+            <Footer vara isAlwaysMobile />
+          </Container>
         </>
       ) : (
         <ApiLoader />
