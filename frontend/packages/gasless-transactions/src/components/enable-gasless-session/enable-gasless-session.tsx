@@ -9,10 +9,11 @@ import { ChangeEvent } from 'react';
 type Props = {
   type: 'button' | 'switcher';
   disabled?: boolean;
+  disabledTurnOn?: boolean;
   message?: string;
 };
 
-function EnableGaslessSession({ type, disabled, message }: Props) {
+function EnableGaslessSession({ type, disabled, disabledTurnOn, message }: Props) {
   const { account } = useAccount();
   const { isAvailable, isLoading, isEnabled, setIsEnabled } = useGaslessTransactions();
 
@@ -20,7 +21,7 @@ function EnableGaslessSession({ type, disabled, message }: Props) {
 
   const handleEnableButtonClick = () => setIsEnabled(true);
   const handleDisableButtonClick = () => setIsEnabled(false);
-
+  console.log('disabledTurnOn', disabledTurnOn);
   return account ? (
     <>
       {type === 'button' && (
@@ -39,7 +40,7 @@ function EnableGaslessSession({ type, disabled, message }: Props) {
               icon={GaslessSVG}
               color="transparent"
               text="Enable gasless transactions"
-              disabled={disabled || !isAvailable || isLoading}
+              disabled={disabled || !isAvailable || isLoading || disabledTurnOn}
               className={styles.enableButton}
               onClick={handleEnableButtonClick}
             />
@@ -53,7 +54,7 @@ function EnableGaslessSession({ type, disabled, message }: Props) {
             <Checkbox
               label=""
               type="switch"
-              disabled={disabled || !isAvailable || isLoading}
+              disabled={disabled || !isAvailable || isLoading || disabledTurnOn}
               checked={isEnabled}
               onChange={handleSwitchChange}
             />
