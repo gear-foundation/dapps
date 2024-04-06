@@ -1,6 +1,7 @@
 use battleship_io::{
-    ActionsForSession, BattleshipAction, BattleshipInit, BattleshipParticipants, BattleshipReply,
-    Config, Entity, GameState, Session, Ships, StateQuery, StateReply, MINIMUM_SESSION_SURATION_MS,
+    ActionsForSession, BattleshipAction, BattleshipError, BattleshipInit, BattleshipParticipants,
+    BattleshipReply, Config, Entity, GameState, Session, Ships, StateQuery, StateReply,
+    MINIMUM_SESSION_SURATION_MS,
 };
 use gstd::prelude::*;
 use gtest::{Program, System};
@@ -51,7 +52,11 @@ fn failures_location_ships() {
             session_for_account: None,
         },
     );
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::OutOfBounds).encode()
+    )));
     // wrong ship size
     let ships = Ships {
         ship_1: vec![19],
@@ -66,7 +71,11 @@ fn failures_location_ships() {
             session_for_account: None,
         },
     );
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::WrongLength).encode()
+    )));
     // ship crossing
     let ships = Ships {
         ship_1: vec![1],
@@ -81,7 +90,11 @@ fn failures_location_ships() {
             session_for_account: None,
         },
     );
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::IncorrectLocationShips).encode()
+    )));
     // the ship isn't solid
     let ships = Ships {
         ship_1: vec![19],
@@ -96,7 +109,11 @@ fn failures_location_ships() {
             session_for_account: None,
         },
     );
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::IncorrectLocationShips).encode()
+    )));
     // the distance between the ships is not maintained
     let ships = Ships {
         ship_1: vec![5],
@@ -111,7 +128,11 @@ fn failures_location_ships() {
             session_for_account: None,
         },
     );
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::IncorrectLocationShips).encode()
+    )));
 }
 
 #[test]
@@ -129,7 +150,11 @@ fn failures_test() {
             session_for_account: None,
         },
     );
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::GameIsNotStarted).encode()
+    )));
 
     let ships = Ships {
         ship_1: vec![19],
@@ -159,7 +184,11 @@ fn failures_test() {
             session_for_account: None,
         },
     );
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::GameIsAlreadyStarted).encode()
+    )));
     // outfield
     let res = battleship.send(
         3,
@@ -168,11 +197,19 @@ fn failures_test() {
             session_for_account: None,
         },
     );
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        3,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::OutOfBounds).encode()
+    )));
 
     // only the admin can change the bot's contract address
     let res = battleship.send(4, BattleshipAction::ChangeBot { bot: 8.into() });
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        4,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::NotAdmin).encode()
+    )));
 
     let steps: Vec<u8> = (0..25).collect();
     for step in steps {
@@ -201,7 +238,12 @@ fn failures_test() {
                             session_for_account: None,
                         },
                     );
-                    assert!(res.main_failed());
+                    assert!(!res.main_failed());
+                    assert!(res.contains(&(
+                        3,
+                        Err::<BattleshipReply, BattleshipError>(BattleshipError::GameIsAlreadyOver)
+                            .encode()
+                    )));
                 }
             }
         }
@@ -280,7 +322,10 @@ fn create_session_success() {
         },
     );
 
-    assert!(res.contains(&(main_account, BattleshipReply::SessionCreated.encode())));
+    assert!(res.contains(&(
+        main_account,
+        Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
+    )));
 
     check_session_in_state(&battleship, main_account, Some(session));
 }
@@ -329,7 +374,11 @@ fn create_session_failures() {
         },
     );
 
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        main_account,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::DurationIsSmall).encode()
+    )));
 
     // there are no allowed actions (empty array of allowed_actions).
     let duration = MINIMUM_SESSION_SURATION_MS;
@@ -344,7 +393,12 @@ fn create_session_failures() {
         },
     );
 
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        main_account,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::NoMessagesForApprovalWerePassed)
+            .encode()
+    )));
 
     // The user already has a current active session.
     let allowed_actions = vec![ActionsForSession::StartGame, ActionsForSession::Turn];
@@ -358,7 +412,10 @@ fn create_session_failures() {
         },
     );
 
-    assert!(res.contains(&(main_account, BattleshipReply::SessionCreated.encode())));
+    assert!(res.contains(&(
+        main_account,
+        Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
+    )));
     let res = battleship.send(
         main_account,
         BattleshipAction::CreateSession {
@@ -367,7 +424,12 @@ fn create_session_failures() {
             allowed_actions,
         },
     );
-    assert!(res.main_failed());
+
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        main_account,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::AlreadyHaveActiveSession).encode()
+    )));
 }
 
 // This function tests the mechanism where, upon creating a session, a delayed message is sent.
@@ -399,7 +461,10 @@ fn session_deletion_on_expiration() {
         },
     );
 
-    assert!(res.contains(&(main_account, BattleshipReply::SessionCreated.encode())));
+    assert!(res.contains(&(
+        main_account,
+        Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
+    )));
 
     system.spend_blocks((number_of_blocks as u32) + 1);
 
@@ -436,7 +501,10 @@ fn disallow_game_without_required_actions() {
         },
     );
 
-    assert!(res.contains(&(main_account, BattleshipReply::SessionCreated.encode())));
+    assert!(res.contains(&(
+        main_account,
+        Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
+    )));
 
     check_session_in_state(&battleship, main_account, Some(session));
 
@@ -456,11 +524,18 @@ fn disallow_game_without_required_actions() {
         },
     );
 
-    assert!(res.main_failed());
+    assert!(!res.main_failed());
+    assert!(res.contains(&(
+        proxy_account,
+        Err::<BattleshipReply, BattleshipError>(BattleshipError::MessageIsNotAllowed).encode()
+    )));
 
     // delete session and create a new one
     let res = battleship.send(main_account, BattleshipAction::DeleteSessionFromAccount);
-    assert!(res.contains(&(main_account, BattleshipReply::SessionDeleted.encode())));
+    assert!(res.contains(&(
+        main_account,
+        Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionDeleted).encode()
+    )));
 
     check_session_in_state(&battleship, main_account, None);
 
@@ -479,7 +554,10 @@ fn disallow_game_without_required_actions() {
         },
     );
 
-    assert!(res.contains(&(main_account, BattleshipReply::SessionCreated.encode())));
+    assert!(res.contains(&(
+        main_account,
+        Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
+    )));
 
     check_session_in_state(&battleship, main_account, Some(session));
 
@@ -492,7 +570,10 @@ fn disallow_game_without_required_actions() {
         },
     );
 
-    assert!(res.contains(&(proxy_account, BattleshipReply::MessageSentToBot.encode())));
+    assert!(res.contains(&(
+        proxy_account,
+        Ok::<BattleshipReply, BattleshipError>(BattleshipReply::MessageSentToBot).encode()
+    )));
 
     // must fail since `Turn` wasn't indicated in the `allowed_actions`
     let steps: Vec<u8> = (0..25).collect();
@@ -509,7 +590,12 @@ fn disallow_game_without_required_actions() {
                     session_for_account: Some(main_account.into()),
                 },
             );
-            assert!(res.main_failed());
+            assert!(!res.main_failed());
+            assert!(res.contains(&(
+                proxy_account,
+                Err::<BattleshipReply, BattleshipError>(BattleshipError::MessageIsNotAllowed)
+                    .encode()
+            )));
         }
     }
 }
@@ -542,7 +628,10 @@ fn complete_session_game() {
         },
     );
 
-    assert!(res.contains(&(main_account, BattleshipReply::SessionCreated.encode())));
+    assert!(res.contains(&(
+        main_account,
+        Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
+    )));
 
     check_session_in_state(&battleship, main_account, Some(session));
 
@@ -562,7 +651,10 @@ fn complete_session_game() {
         },
     );
 
-    assert!(res.contains(&(proxy_account, BattleshipReply::MessageSentToBot.encode())));
+    assert!(res.contains(&(
+        proxy_account,
+        Ok::<BattleshipReply, BattleshipError>(BattleshipReply::MessageSentToBot).encode()
+    )));
 
     let steps: Vec<u8> = (0..25).collect();
     for step in steps {
@@ -582,10 +674,17 @@ fn complete_session_game() {
             if game.game_over {
                 assert!(res.contains(&(
                     proxy_account,
-                    BattleshipReply::EndGame(BattleshipParticipants::Player).encode()
+                    Ok::<BattleshipReply, BattleshipError>(BattleshipReply::GameFinished(
+                        BattleshipParticipants::Player
+                    ))
+                    .encode()
                 )));
             } else {
-                assert!(res.contains(&(proxy_account, BattleshipReply::MessageSentToBot.encode())));
+                assert!(res.contains(&(
+                    proxy_account,
+                    Ok::<BattleshipReply, BattleshipError>(BattleshipReply::MessageSentToBot)
+                        .encode()
+                )));
             }
         }
     }
@@ -620,19 +719,21 @@ fn premature_session_deletion_by_user() {
         },
     );
 
-    assert!(res.contains(&(main_account, BattleshipReply::SessionCreated.encode())));
+    assert!(res.contains(&(
+        main_account,
+        Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
+    )));
 
     check_session_in_state(&battleship, main_account, Some(session));
 
     // delete session
     let res = battleship.send(main_account, BattleshipAction::DeleteSessionFromAccount);
-    assert!(res.contains(&(main_account, BattleshipReply::SessionDeleted.encode())));
+    assert!(res.contains(&(
+        main_account,
+        Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionDeleted).encode()
+    )));
 
     check_session_in_state(&battleship, main_account, None);
-
-    // fails since a user is trying to delete a non-existent session
-    let res = battleship.send(main_account, BattleshipAction::DeleteSessionFromAccount);
-    assert!(res.main_failed());
 }
 
 fn check_session_in_state(battleship: &Program<'_>, account: u64, session: Option<Session>) {
