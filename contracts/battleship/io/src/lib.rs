@@ -382,7 +382,7 @@ impl Ships {
             return Err(BattleshipError::WrongLength);
         }
         let mut field = self.get_field()?;
-        let mut ships = vec![
+        let mut ships = [
             self.ship_1.clone(),
             self.ship_2.clone(),
             self.ship_3.clone(),
