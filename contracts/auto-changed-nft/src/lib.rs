@@ -211,7 +211,7 @@ unsafe extern fn handle() {
             let gas_available = exec::gas_available();
             gstd::debug!("Update. gas_available: {}", gas_available);
             if gas_available <= GAS_FOR_UPDATE {
-                let reservations = unsafe { &mut RESERVATION };
+                let reservations: &mut Vec<ReservationId> = unsafe { RESERVATION.as_mut() };
                 let reservation_id = reservations.pop().expect("Need more gas");
                 send_delayed_from_reservation(
                     reservation_id,
@@ -337,7 +337,7 @@ impl AutoChangedNft {
         }
     }
     fn reserve_gas(&self) {
-        let reservations = unsafe { &mut RESERVATION };
+        let reservations: &mut Vec<ReservationId> = unsafe { RESERVATION.as_mut() };
         let reservation_id =
             ReservationId::reserve(RESERVATION_AMOUNT, 600).expect("reservation across executions");
         reservations.push(reservation_id);
