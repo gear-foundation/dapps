@@ -21,34 +21,40 @@ pub struct Contract {
 }
 
 impl Contract {
-    fn add_strategy_ids(&mut self, car_ids: Vec<ActorId>) {
-        assert!(self.admins.contains(&msg::source()), "You are not admin");
-
-        assert!(car_ids.len() == 2, "There must be 2 strategies of cars");
+    fn add_strategy_ids(
+        &mut self,
+        msg_src: &ActorId,
+        car_ids: Vec<ActorId>,
+    ) -> Result<GameReply, GameError> {
+        if !self.admins.contains(msg_src) {
+            return Err(GameError::NotAdmin);
+        }
+        if car_ids.len() != 2 {
+            return Err(GameError::MustBeTwoStrategies);
+        }
         self.strategy_ids = car_ids;
+        Ok(GameReply::StrategyAdded)
     }
 
-    fn start_game(&mut self) {
-        let player = msg::source();
-
+    fn start_game(&mut self, msg_src: &ActorId) -> Result<GameReply, GameError> {
         let last_time_step = exec::block_timestamp();
 
-        let game = if let Some(game) = self.games.get_mut(&player) {
+        let game = if let Some(game) = self.games.get_mut(msg_src) {
             if game.state != GameState::Finished {
-                panic!("Please complete the game");
+                return Err(GameError::GameAlreadyStarted);
             }
             game.current_round = 0;
             game.result = None;
             game.last_time_step = last_time_step;
             game
         } else {
-            self.games.entry(player).or_insert_with(|| Game {
+            self.games.entry(*msg_src).or_insert_with(|| Game {
                 last_time_step,
                 ..Default::default()
             })
         };
 
-        game.car_ids = vec![player, self.strategy_ids[0], self.strategy_ids[1]];
+        game.car_ids = vec![*msg_src, self.strategy_ids[0], self.strategy_ids[1]];
         let initial_state = Car {
             position: 0,
             speed: self.config.initial_speed,
@@ -56,24 +62,25 @@ impl Contract {
             round_result: None,
         };
 
-        game.cars.insert(player, initial_state.clone());
+        game.cars.insert(*msg_src, initial_state.clone());
         game.cars
             .insert(self.strategy_ids[0], initial_state.clone());
         game.cars.insert(self.strategy_ids[1], initial_state);
 
         game.state = GameState::PlayerAction;
-        msg::reply(GameReply::GameStarted, 0).expect("Error during reply");
+        Ok(GameReply::GameStarted)
     }
 
-    fn player_move(&mut self, strategy_move: StrategyAction) {
-        let player = msg::source();
-        let game = self.get_game(&player);
+    fn player_move(
+        &mut self,
+        msg_src: &ActorId,
+        strategy_move: StrategyAction,
+    ) -> Result<GameReply, GameError> {
+        let game = self.get_game(msg_src);
 
-        assert_eq!(
-            game.state,
-            GameState::PlayerAction,
-            "Not time for the player"
-        );
+        if game.state != GameState::PlayerAction {
+            return Err(GameError::NotPlayerTurn);
+        }
         match strategy_move {
             StrategyAction::BuyAcceleration => {
                 game.buy_acceleration();
@@ -100,15 +107,14 @@ impl Contract {
         )
         .expect("Error in sending a message");
 
-        self.msg_id_to_game_id.insert(msg_id, player);
+        self.msg_id_to_game_id.insert(msg_id, *msg_src);
+        Ok(GameReply::MoveMade)
     }
 
-    fn play(&mut self, account: &ActorId) {
-        assert_eq!(
-            msg::source(),
-            exec::program_id(),
-            "Only program can send this message"
-        );
+    fn play(&mut self, msg_src: &ActorId, account: &ActorId) -> Result<GameReply, GameError> {
+        if *msg_src != exec::program_id() {
+            return Err(GameError::NotProgram);
+        }
 
         let game = self.get_game(account);
 
@@ -118,7 +124,7 @@ impl Contract {
             let car_ids = game.car_ids.clone();
             self.send_messages(account);
             send_message_round_info(&car_ids[0], &cars, &result);
-            return;
+            return Ok(GameReply::GameFinished);
         }
         if game.current_turn == 0 {
             game.state = GameState::PlayerAction;
@@ -126,7 +132,7 @@ impl Contract {
             let cars = game.cars.clone();
             let car_ids = game.car_ids.clone();
             send_message_round_info(&car_ids[0], &cars, &result);
-            return;
+            return Ok(GameReply::MoveMade);
         }
 
         let car_id = game.get_current_car_id();
@@ -135,6 +141,7 @@ impl Contract {
             .expect("Error in sending a message");
 
         self.msg_id_to_game_id.insert(msg_id, *account);
+        Ok(GameReply::MoveMade)
     }
 
     fn get_game(&mut self, account: &ActorId) -> &mut Game {
@@ -154,12 +161,14 @@ impl Contract {
         .expect("Error in sending message");
     }
 
-    fn remove_game_instance(&mut self, account: &ActorId) {
-        assert_eq!(
-            msg::source(),
-            exec::program_id(),
-            "This message can be sent only by the program"
-        );
+    fn remove_game_instance(
+        &mut self,
+        msg_src: &ActorId,
+        account: &ActorId,
+    ) -> Result<GameReply, GameError> {
+        if *msg_src != exec::program_id() {
+            return Err(GameError::NotProgram);
+        }
         let game = self
             .games
             .get(account)
@@ -168,13 +177,17 @@ impl Contract {
         if game.state == GameState::Finished {
             self.games.remove(account);
         }
+        Ok(GameReply::GameInstanceRemoved)
     }
 
-    fn remove_instances(&mut self, player_ids: Option<Vec<ActorId>>) {
-        assert!(
-            self.admins.contains(&msg::source()),
-            "Only admin can send this message"
-        );
+    fn remove_instances(
+        &mut self,
+        msg_src: &ActorId,
+        player_ids: Option<Vec<ActorId>>,
+    ) -> Result<GameReply, GameError> {
+        if !self.admins.contains(msg_src) {
+            return Err(GameError::NotAdmin);
+        }
         match player_ids {
             Some(player_ids) => {
                 for player_id in player_ids {
@@ -188,6 +201,88 @@ impl Contract {
                 });
             }
         }
+        Ok(GameReply::InstancesRemoved)
+    }
+    fn add_admin(&mut self, msg_src: &ActorId, admin: ActorId) -> Result<GameReply, GameError> {
+        if !self.admins.contains(msg_src) {
+            return Err(GameError::NotAdmin);
+        }
+        self.admins.push(admin);
+        Ok(GameReply::AdminAdded)
+    }
+    fn remove_admin(&mut self, msg_src: &ActorId, admin: ActorId) -> Result<GameReply, GameError> {
+        if !self.admins.contains(msg_src) {
+            return Err(GameError::NotAdmin);
+        }
+        self.admins.retain(|id| *id != admin);
+        Ok(GameReply::AdminRemoved)
+    }
+    #[allow(clippy::too_many_arguments)]
+    fn update_config(
+        &mut self,
+        msg_src: &ActorId,
+        gas_to_remove_game: Option<u64>,
+        initial_speed: Option<u32>,
+        min_speed: Option<u32>,
+        max_speed: Option<u32>,
+        gas_for_round: Option<u64>,
+        time_interval: Option<u32>,
+        max_distance: Option<u32>,
+        time: Option<u32>,
+        time_for_game_storage: Option<u64>,
+    ) -> Result<GameReply, GameError> {
+        if !self.admins.contains(msg_src) {
+            return Err(GameError::NotAdmin);
+        }
+
+        if let Some(gas_to_remove_game) = gas_to_remove_game {
+            self.config.gas_to_remove_game = gas_to_remove_game;
+        }
+        if let Some(initial_speed) = initial_speed {
+            self.config.initial_speed = initial_speed;
+        }
+
+        if let Some(min_speed) = min_speed {
+            self.config.min_speed = min_speed;
+        }
+
+        if let Some(max_speed) = max_speed {
+            self.config.max_speed = max_speed;
+        }
+
+        if let Some(gas_for_round) = gas_for_round {
+            self.config.gas_for_round = gas_for_round;
+        }
+        if let Some(time_interval) = time_interval {
+            self.config.time_interval = time_interval;
+        }
+
+        if let Some(max_distance) = max_distance {
+            self.config.max_distance = max_distance;
+        }
+
+        if let Some(max_speed) = max_speed {
+            self.config.max_speed = max_speed;
+        }
+
+        if let Some(time) = time {
+            self.config.time = time;
+        }
+        if let Some(time_for_game_storage) = time_for_game_storage {
+            self.config.time_for_game_storage = time_for_game_storage;
+        }
+        Ok(GameReply::ConfigUpdated)
+    }
+    fn allow_messages(
+        &mut self,
+        msg_src: &ActorId,
+        messages_allowed: bool,
+    ) -> Result<GameReply, GameError> {
+        if !self.admins.contains(msg_src) {
+            return Err(GameError::NotAdmin);
+        }
+        self.messages_allowed = messages_allowed;
+        Ok(GameReply::StatusMessagesUpdated)
     }
 }
 
@@ -195,43 +290,32 @@ impl Contract {
 extern fn handle() {
     let action: GameAction = msg::load().expect("Unable to decode the message");
     let contract = unsafe { CONTRACT.as_mut().expect("The game is not initialized") };
+    let msg_src = msg::source();
 
-    if let GameAction::AllowMessages(messages_allowed) = action {
-        assert!(
-            contract.admins.contains(&msg::source()),
-            "Only an admin can send this message"
-        );
-        contract.messages_allowed = messages_allowed;
+    if !contract.messages_allowed && !contract.admins.contains(&msg_src) {
+        msg::reply(
+            Err::<GameReply, GameError>(GameError::MessageProcessingSuspended),
+            0,
+        )
+        .expect("Failed to encode or reply with `Result<GameReply, GameError>`.");
         return;
     }
 
-    assert!(
-        contract.messages_allowed,
-        "Message processing has been suspended for some time"
-    );
-
-    match action {
-        GameAction::AddStrategyIds { car_ids } => contract.add_strategy_ids(car_ids),
-        GameAction::StartGame => contract.start_game(),
-        GameAction::Play { account } => contract.play(&account),
-        GameAction::PlayerMove { strategy_action } => contract.player_move(strategy_action),
-        GameAction::RemoveGameInstance { account_id } => contract.remove_game_instance(&account_id),
-        GameAction::RemoveGameInstances { players_ids } => contract.remove_instances(players_ids),
-        GameAction::AddAdmin(admin) => {
-            assert!(
-                contract.admins.contains(&msg::source()),
-                "You are not admin"
-            );
-            contract.admins.push(admin);
+    let reply = match action {
+        GameAction::AddStrategyIds { car_ids } => contract.add_strategy_ids(&msg_src, car_ids),
+        GameAction::StartGame => contract.start_game(&msg_src),
+        GameAction::Play { account } => contract.play(&msg_src, &account),
+        GameAction::PlayerMove { strategy_action } => {
+            contract.player_move(&msg_src, strategy_action)
         }
-        GameAction::RemoveAdmin(admin) => {
-            assert!(
-                contract.admins.contains(&msg::source()),
-                "You are not admin"
-            );
-
-            contract.admins.retain(|id| *id != admin);
+        GameAction::RemoveGameInstance { account_id } => {
+            contract.remove_game_instance(&msg_src, &account_id)
         }
+        GameAction::RemoveGameInstances { players_ids } => {
+            contract.remove_instances(&msg_src, players_ids)
+        }
+        GameAction::AddAdmin(admin) => contract.add_admin(&msg_src, admin),
+        GameAction::RemoveAdmin(admin) => contract.remove_admin(&msg_src, admin),
         GameAction::UpdateConfig {
             gas_to_remove_game,
             initial_speed,
@@ -242,51 +326,23 @@ extern fn handle() {
             max_distance,
             time,
             time_for_game_storage,
-        } => {
-            assert!(
-                contract.admins.contains(&msg::source()),
-                "You are not admin"
-            );
-
-            if let Some(gas_to_remove_game) = gas_to_remove_game {
-                contract.config.gas_to_remove_game = gas_to_remove_game;
-            }
-            if let Some(initial_speed) = initial_speed {
-                contract.config.initial_speed = initial_speed;
-            }
-
-            if let Some(min_speed) = min_speed {
-                contract.config.min_speed = min_speed;
-            }
-
-            if let Some(max_speed) = max_speed {
-                contract.config.max_speed = max_speed;
-            }
-
-            if let Some(gas_for_round) = gas_for_round {
-                contract.config.gas_for_round = gas_for_round;
-            }
-            if let Some(time_interval) = time_interval {
-                contract.config.time_interval = time_interval;
-            }
-
-            if let Some(max_distance) = max_distance {
-                contract.config.max_distance = max_distance;
-            }
-
-            if let Some(max_speed) = max_speed {
-                contract.config.max_speed = max_speed;
-            }
-
-            if let Some(time) = time {
-                contract.config.time = time;
-            }
-            if let Some(time_for_game_storage) = time_for_game_storage {
-                contract.config.time_for_game_storage = time_for_game_storage;
-            }
+        } => contract.update_config(
+            &msg_src,
+            gas_to_remove_game,
+            initial_speed,
+            min_speed,
+            max_speed,
+            gas_for_round,
+            time_interval,
+            max_distance,
+            time,
+            time_for_game_storage,
+        ),
+        GameAction::AllowMessages(messages_allowed) => {
+            contract.allow_messages(&msg_src, messages_allowed)
         }
-        _ => {}
-    }
+    };
+    msg::reply(reply, 0).expect("Failed to encode or reply with `Result<GameReply, GameError>`.");
 }
 
 #[no_mangle]

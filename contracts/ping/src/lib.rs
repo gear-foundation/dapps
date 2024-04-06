@@ -14,12 +14,6 @@ extern fn handle() {
 
     unsafe {
         MESSAGE_LOG.push(new_msg);
-
-        debug!("{:?} total message(s) stored: ", MESSAGE_LOG.len());
-
-        for log in &MESSAGE_LOG {
-            debug!("{log:?}");
-        }
     }
 }
 

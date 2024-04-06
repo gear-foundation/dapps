@@ -1,9 +1,11 @@
-import { HexString, IVoucherDetails, ProgramMetadata } from '@gear-js/api';
-import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
+import { HexString, IVoucherDetails, ProgramMetadata, decodeAddress } from '@gear-js/api';
+import { Account, useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
+import { web3FromSource } from '@polkadot/extension-dapp';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { sendTransaction } from '../utils';
+import { useIsAvailable } from '.';
 
 type Session = {
   key: HexString;
@@ -11,17 +13,15 @@ type Session = {
   allowedActions: string[];
 };
 
-type Options = {
-  onSuccess: () => void;
-  onFinally: () => void;
-};
-
 function useCreateSession(programId: HexString, metadata: ProgramMetadata | undefined) {
   const { api, isApiReady } = useApi();
   const alert = useAlert();
   const { account } = useAccount();
+  const { getFormattedBalanceValue } = useBalanceFormat();
+  const minRequiredBalanceToDeleteSession =
+    getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toNumber() + 5;
+  const isDeleteSessionAvailable = useIsAvailable(minRequiredBalanceToDeleteSession, false);
   const { batchSignAndSend } = useBatchSignAndSend('all');
-
   const onError = (message: string) => alert.error(message);
 
   const isVoucherExpired = async ({ expiry }: IVoucherDetails) => {
@@ -76,15 +76,59 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
     return api.voucher.update(session.key, voucher.id, { prolongDuration, balanceTopUp });
   };
+  type Options = {
+    onSuccess: () => void;
+    onFinally: () => void;
+  };
+
+  type CreeateSessionOptions = {
+    pair?: KeyringPair;
+    voucherId?: `0x${string}`;
+    shouldIssueVoucher: boolean;
+  };
+
+  const getAccountSignature = async (metadata: ProgramMetadata, account: Account, payloadToSign: Session) => {
+    const { signer } = await web3FromSource(account.meta.source);
+    const { signRaw } = signer;
+
+    if (!signRaw) {
+      throw new Error('signRaw is not a function');
+    }
+
+    if (!metadata.types?.others?.output) {
+      throw new Error(`Metadata type doesn't exist`);
+    }
+
+    const hexToSign = metadata.createType(metadata.types.others.output, payloadToSign).toHex();
+
+    return signRaw({ address: account.address, data: hexToSign, type: 'bytes' });
+  };
 
   const createSession = async (
     session: Session,
     voucherValue: number,
-    { shouldIssueVoucher, ...options }: Options & { shouldIssueVoucher: boolean },
+    { shouldIssueVoucher, voucherId, pair, ...options }: Options & CreeateSessionOptions,
   ) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!account) throw new Error('Account not found');
     if (!metadata) throw new Error('Metadata not found');
+
+    if (voucherId && pair) {
+      const { signature } = await getAccountSignature(metadata, account, {
+        ...session,
+        key: decodeAddress(pair.address),
+      });
+
+      const messageExtrinsic = getMessageExtrinsic({
+        CreateSession: { ...session, signature },
+      });
+
+      const voucherExtrinsic = api.voucher.call(voucherId, { SendMessage: messageExtrinsic });
+
+      await sendTransaction(voucherExtrinsic, pair, ['UserMessageSent'], { ...options, onError });
+
+      return;
+    }
 
     const messageExtrinsic = getMessageExtrinsic({ CreateSession: session });
 
@@ -100,7 +144,16 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!account) throw new Error('Account not found');
     if (!metadata) throw new Error('Metadata not found');
 
-    const messageExtrinsic = getMessageExtrinsic({ DeleteSessionFromAccount: null });
+    if (!isDeleteSessionAvailable) {
+      alert.error('Low balance on account to disable session');
+      options.onFinally();
+      throw new Error('Low balance on account to disable session');
+    }
+
+    const messageExtrinsic = getMessageExtrinsic({
+      DeleteSessionFromAccount: null,
+    });
+
     const txs = [messageExtrinsic];
 
     const voucher = await getLatestVoucher(key);
@@ -112,7 +165,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!isExpired) {
       const declineExtrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
 
-      await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined']);
+      await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined'], { ...options, onError });
     }
 
     if (isOwner) {
