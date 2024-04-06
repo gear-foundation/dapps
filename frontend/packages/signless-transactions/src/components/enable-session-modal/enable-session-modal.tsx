@@ -21,6 +21,7 @@ function EnableSessionModal({ close }: Props) {
 
     try {
       unlockPair(password);
+      setIsLoading(false);
       close();
     } catch (error) {
       const message = String(error);

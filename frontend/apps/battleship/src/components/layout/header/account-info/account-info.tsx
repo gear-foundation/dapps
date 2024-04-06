@@ -11,10 +11,11 @@ import { useAccountAvailableBalance } from '@/features/wallet/hooks';
 
 type AccountInfoProps = BaseComponentProps & {
   openWallet: () => void;
+  openConnectWallet: () => void;
   isOpen: boolean;
 };
 
-export function AccountInfo({ className, openWallet, isOpen }: AccountInfoProps) {
+export function AccountInfo({ className, openWallet, openConnectWallet, isOpen }: AccountInfoProps) {
   const { isApiReady } = useApi();
   const { account } = useAccount();
   const { availableBalance: balance } = useAccountAvailableBalance();
@@ -39,6 +40,11 @@ export function AccountInfo({ className, openWallet, isOpen }: AccountInfoProps)
               )}
             </Button>
           </>
+        )}
+        {!account && (
+          <Button size="small" className={styles.connectWallet} onClick={openConnectWallet}>
+            Connect wallet
+          </Button>
         )}
       </div>
     </>

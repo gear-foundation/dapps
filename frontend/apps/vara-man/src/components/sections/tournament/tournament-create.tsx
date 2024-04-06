@@ -1,6 +1,6 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom';
-import { useForm } from '@mantine/form';
+import { hasLength, useForm } from '@mantine/form';
 import { useApi } from '@gear-js/react-hooks';
 import { Input, Select, Button } from '@gear-js/vara-ui';
 
@@ -8,7 +8,6 @@ import { useApp } from '@/app/context/ctx-app';
 import { useGameMessage } from '@/app/hooks/use-game';
 
 import { SpriteIcon } from '@/components/ui/sprite-icon';
-import { Validator, numberRequired, stringRequired } from '@/app/utils';
 
 const initialValues = {
 	bid: 0,
@@ -18,9 +17,9 @@ const initialValues = {
 	duration: 10
 };
 
-const validate: Record<string, Validator> = {
-	username: stringRequired,
-	tournamentName: stringRequired,
+const validate = {
+	username: hasLength({ min: 2, max: 25 }, 'Username must be 2-25 characters long'),
+	tournamentName: hasLength({ min: 2, max: 25 }, 'Tournament name must be 2-25 characters long'),
 };
 
 const optionsLevel = [
@@ -80,7 +79,7 @@ export const TournamentCreate = () => {
 	return (
 		<div className="flex flex-col justify-center items-center grow h-full">
 			<h2 className="typo-h2">Create a private game</h2>
-			<p>To find the game, you need to enter the administrator's address.</p>
+			<p>Create your own game tournament, invite your friends, and compete for the ultimate reward.</p>
 
 			<form onSubmit={handleSubmit} className="grid gap-4 w-full max-w-[600px] mx-auto mt-5">
 				<div className="flex flex-col gap-5">

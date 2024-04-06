@@ -4,7 +4,7 @@ import { useAccount, useApi, withoutCommas } from '@gear-js/react-hooks';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { HexString } from '@polkadot/util/types';
 import { ADDRESS, fields, INIT_PLAYERS } from 'consts';
-import { MessageHandlePayload, MessagePayload, PlayersByStrategyAddress, Step } from 'types';
+import { MessageHandlePayload, MessagePayload, PlayerState, PlayersByStrategyAddress, Step } from 'types';
 import meta from 'assets/meta/syndote_meta.txt';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { Loader } from 'components';
@@ -51,13 +51,19 @@ function Home() {
 
   const playersArray = state?.players || [];
 
-  const getPlayers = () => (isGameStarted ? roll.players : state!.players!);
+  const getPlayers = () => (isGameStarted ? roll?.players || [] : state?.players || []);
+
+  const findPlayer = (address: string) => {
+    console.log(getPlayers().find(([newAddress]) => newAddress === address));
+    return getPlayers().find(([newAddress]) => newAddress === address)?.[1];
+  };
   console.log('==STATE==');
   console.log(state);
+
   const players = playersArray.map(([address], index) => ({
     ...INIT_PLAYERS[index],
     address,
-    ...getPlayers().find(([newAddress]) => newAddress === address)![1],
+    ...(findPlayer(address) as PlayerState),
   }));
   const playersByStrategyAddress = players.reduce((acc, item) => {
     return {
@@ -116,6 +122,9 @@ function Home() {
 
     sendMessage({
       payload,
+      onInBlock: () => {
+        admin.current = null;
+      },
     });
   };
 
@@ -327,11 +336,17 @@ function Home() {
                       <>
                         <div className={clsx(styles.headingWrapper, styles.headingWrapperAdmin)}>
                           <h1 className={styles.heading}>Registration...</h1>
-                          <p className={styles.subheading}>
-                            {isAdmin
-                              ? 'Copy the program address and send it to the players so they can join you.'
-                              : `Players (${playersArray.length}/4). Waiting for other players... `}
-                          </p>
+                          {players.length < 4 ? (
+                            <p className={styles.subheading}>
+                              {isAdmin
+                                ? 'Copy the program address and send it to the players so they can join you.'
+                                : `Players (${playersArray.length}/4). Waiting for other players... `}
+                            </p>
+                          ) : (
+                            <p className={styles.subheading}>
+                              {!isAdmin && `Players ${playersArray.length}/4. Waiting for admin to start game...`}
+                            </p>
+                          )}
                         </div>
                         {!isAdmin && (
                           <>
@@ -345,6 +360,11 @@ function Home() {
                         {isAdmin && (
                           <>
                             <SessionInfo entryFee={state.entryFee} players={state.players} adminId={state.adminId} />
+                            {players.length === 4 && (
+                              <div className={styles.mainButtons}>
+                                <Button text="Start the game" onClick={startGame} className={styles.startGameButton} />
+                              </div>
+                            )}
                           </>
                         )}
                       </>

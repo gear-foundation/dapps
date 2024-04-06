@@ -23,8 +23,8 @@ const selectMode = [
     }
   },
   {
-    title: "Create a game in administrator mode",
-    description: "Create a game and specify your participation rules.",
+    title: "Create your private game",
+    description: "Create your own game tournament and compete with friends.",
     icon: <Icons.admin />,
     onClick: (navigate: NavigateFunction): void => {
       navigate('/tournament/create')
@@ -72,7 +72,10 @@ export function HomeRegister() {
             <p className="text-[#555756] mt-3">In this game, you can test your strength in the quest for treasures.
               The game offers various difficulty levels and game modes. Connect your wallet.
             </p>
-            <WalletNew />
+
+            <div className='mt-3'>
+              <WalletNew />
+            </div>
           </div>
         }
         <div>

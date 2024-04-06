@@ -1,9 +1,15 @@
-import { decodeAddress, GearTransaction, IGearEvent, IGearVoucherEvent } from '@gear-js/api';
+import { decodeAddress, GearKeyring, GearTransaction, IGearEvent, IGearVoucherEvent } from '@gear-js/api';
 import { AlertContainerFactory } from '@gear-js/react-hooks';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
-import { encodeAddress, Keyring } from '@polkadot/keyring';
+import { encodeAddress } from '@polkadot/keyring';
 import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
-import { mnemonicGenerate } from '@polkadot/util-crypto';
+
+type Options = Partial<{
+  onSuccess: () => void;
+  onError: (error: string) => void;
+  onFinally: () => void;
+  pair?: KeyringPair;
+}>;
 
 const MULTIPLIER = {
   MS: 1000,
@@ -16,6 +22,7 @@ export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVo
   submitted: GearTransaction | SubmittableExtrinsic<'promise'>,
   account: KeyringPair,
   methods: E[],
+  { onSuccess = () => {}, onError = () => {}, onFinally = () => {} }: Options = {},
 ): Promise<any[]> {
   const result: any = new Array(methods.length);
   return new Promise((resolve, reject) => {
@@ -26,15 +33,20 @@ export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVo
           if (methods.includes(method as E) && status.isInBlock) {
             result[methods.indexOf(method as E)] = data;
           } else if (method === 'ExtrinsicFailed') {
+            onError('ExtrinsicFailed');
+            onFinally();
             reject(data.toString());
           }
         });
         if (status.isInBlock) {
+          onSuccess();
           resolve([...result, status.asInBlock.toHex()]);
         }
       })
       .catch((err) => {
         console.log(err);
+        onError(err);
+        onFinally();
         reject(err.message);
       });
   });
@@ -110,21 +122,6 @@ const copyToClipboard = async ({
   }
 };
 
-const getRandomPair = () => {
-  const seed = mnemonicGenerate();
+const getUnlockedPair = (pair: KeyringPair$Json, password: string) => GearKeyring.fromJson(pair, password);
 
-  const keyring = new Keyring({ type: 'sr25519' });
-  const pair = keyring.addFromMnemonic(seed);
-
-  return pair;
-};
-
-const getUnlockedPair = (pair: KeyringPair$Json, password: string) => {
-  const keyring = new Keyring({ type: 'sr25519' });
-  const result = keyring.addFromJson(pair);
-
-  result.unlock(password);
-  return result;
-};
-
-export { getMilliseconds, getDHMS, getVaraAddress, shortenString, copyToClipboard, getRandomPair, getUnlockedPair };
+export { getMilliseconds, getDHMS, getVaraAddress, shortenString, copyToClipboard, getUnlockedPair };
