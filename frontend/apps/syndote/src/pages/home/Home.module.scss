@@ -2,19 +2,95 @@
 @use 'assets/styles/shared' as *;
 @use '@gear-js/ui/headings' as *;
 
+.requestGameContainer {
+  background: #ffffff;
+  border-radius: 15px;
+  padding: 92px 46px;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 682px;
+}
+
+.downloadGameContainer {
+  width: 682px;
+  margin-top: 37px;
+  background: #00FFC4;
+  padding: 24px 40px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  color: #000000;
+  text-align: center;
+  border-radius: 15px;
+
+  & .donwloadTitle {
+    font-size: 17px;
+    font-weight: 700;
+    line-height: 17px;
+    letter-spacing: 0.02px
+  }
+
+  & .donwloadText {
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 24px;
+    letter-spacing: 0.025px;
+    color: #555756;
+  }
+
+  & .donwloadButtons {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+
+    & button {
+      letter-spacing: 0.8px;
+    }
+  }
+}
+
+.syndoteContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+
+  &Admin {
+    height: 100%;
+    width: 100%;
+  }
+}
+
 .heading {
-  @include heading(32px, 18px, 700);
-  margin-bottom: 43px;
+  margin-bottom: 8px;
   color: #000;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.02em;
+  font-weight: 700;
+}
+
+.headingWrapper {
+  &Admin {
+    text-align: start;
+  }
+}
+
+.headingBankrupt {
+  color: #F24A4A;
+}
+
+.headingWinner {
+  color: #00FFC4;
 }
 
 .subheading {
-  @include heading(21px, 18px);
-  margin-bottom: 124px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: #00ff38;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.025px;
+  line-height: 24px;
+  color: #555756
 }
 
 .players {
@@ -35,6 +111,11 @@
   > *:not(:last-child) {
     margin-bottom: 50px;
   }
+}
+
+.mainButtons {
+  display: flex;
+  gap: 16px
 }
 
 .field {
@@ -251,13 +332,26 @@
 }
 
 .controller {
+  position: relative;
   grid-area: b;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
-  box-shadow: inset 0 0 0 1px #333333, inset 0 0 0 2px #00ff38, inset 0 0 0 10px #fff;
+  padding: 32px;
+  background: #ffffff;
+  box-shadow: 0px 0px 0px 6px rgba(255,255,255,1);
+    overflow: hidden;
+    border-radius: 10px;
+}
+
+.startGameButton.startGameButton {
+  width: 170px;
+  font-size: 16px;
+  font-weight: 700;
+  padding: 16px 24px;
+  border-radius: 4px;
 }
 
 .a0 {

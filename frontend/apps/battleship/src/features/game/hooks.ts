@@ -1,15 +1,16 @@
 import { useEffect, useMemo } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-
+import { useLocation } from 'react-router-dom';
 import { useProgramMetadata } from '@dapps-frontend/hooks';
-import { useSignlessSendMessage } from '@dapps-frontend/signless-transactions';
+import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
 
 import meta from './assets/meta/battleship.meta.txt';
 import { IGameInstance } from './types';
 import { gameAtom, isActiveGameAtom, pendingAtom } from './store';
 import { ADDRESS } from './consts';
 import { useReadState } from '@/app/hooks/api';
+import { ROUTES } from '@/app/consts';
 
 export function useGame() {
   const gameState = useAtomValue(gameAtom);
@@ -70,4 +71,10 @@ export function usePending() {
   const [pending, setPending] = useAtom(pendingAtom);
 
   return { pending, setPending };
+}
+
+export function useIsLocationGamePage() {
+  const { pathname } = useLocation();
+
+  return pathname === ROUTES.GAME;
 }

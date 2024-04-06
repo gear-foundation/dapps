@@ -1,0 +1,47 @@
+@use 'utils' as *;
+
+.button {
+  width: 180px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 26px;
+
+  &:last-child {
+    color: #ffffff;
+    background: #1a1a1d;
+  }
+
+  span {
+    @include textOverflow;
+  }
+}
+
+.form {
+  margin-bottom: 80px;
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.input label {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  opacity: 0.6;
+}
+
+.createForm {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+.input {
+  position: relative;
+  margin-bottom: 10px 
+}
+
+.field-error {
+  color: red;
+  font-size: 14px;
+}

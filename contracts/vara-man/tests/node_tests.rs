@@ -122,11 +122,8 @@ async fn gclient_success_claim_reward() -> gclient::Result<()> {
     let vara_man_id = utils_gclient::common::init(&api).await?;
     utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
     let balance = api.total_balance(api.account_id()).await?;
-    api.transfer(
-        vara_man_id.encode().as_slice().try_into().unwrap(),
-        balance / 10,
-    )
-    .await?;
+    api.transfer(vara_man_id.encode().as_slice().into(), balance / 10)
+        .await?;
 
     {
         let api = api.with("//Peter")?;
@@ -193,11 +190,8 @@ async fn gclient_failures_claim_reward() -> gclient::Result<()> {
         .await?;
 
         let balance = api.total_balance(api.account_id()).await?;
-        api.transfer(
-            vara_man_id.encode().as_slice().try_into().unwrap(),
-            balance / 10,
-        )
-        .await?;
+        api.transfer(vara_man_id.encode().as_slice().into(), balance / 10)
+            .await?;
 
         utils_gclient::vara_man::claim_reward(&player_api, &vara_man_id, 10, 1, None).await?;
         utils_gclient::vara_man::claim_reward(

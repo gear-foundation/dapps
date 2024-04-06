@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
+import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { Text } from '@/components/ui/text';
 import { GameEndModal, Map } from '@/features/game';
 import styles from './GameProcess.module.scss';
 import { MapEnemy } from '../map';
 import { useGame, useGameMessage, usePending } from '../../hooks';
-import { getFormattedTime, useFetchVoucher } from '../../utils';
+import { getFormattedTime } from '../../utils';
 import { Loader } from '@/components';
-import { useCheckBalance } from '@/features/wallet/hooks';
+import { useCheckBalance } from '@dapps-frontend/hooks';
 
 export default function GameProcess() {
-  const { isVoucher, isLoading } = useFetchVoucher();
-
+  const { signless, gasless } = useEzTransactions();
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
   const [elapsedTime, setElapsedTime] = useState('');
@@ -20,13 +20,16 @@ export default function GameProcess() {
   const { gameState } = useGame();
   const { setPending } = usePending();
   const message = useGameMessage();
-  const { checkBalance } = useCheckBalance(isVoucher);
+  const { checkBalance } = useCheckBalance({
+    signlessPairVoucherId: signless.voucher?.id,
+    gaslessVoucherId: gasless.voucherId,
+  });
 
   const [isOpenEndModal, setIsOpenEndModal] = useState(false);
   const openEndModal = () => setIsOpenEndModal(true);
   const closeEndModal = () => setIsOpenEndModal(false);
 
-  const totalShips = gameState?.botShips.reduce((total, [shipType, shipCount]) => {
+  const totalShips = gameState?.botShips.reduce((total, [, shipCount]) => {
     return total + parseInt(shipCount, 10);
   }, 0);
   const totalShoots = gameState ? parseInt(gameState.totalShots) : 0;
@@ -70,7 +73,7 @@ export default function GameProcess() {
   const onClickCell = async (indexCell: number) => {
     const gasLimit = 120000000000;
 
-    if (!isLoading) {
+    if (!gasless.isLoading) {
       setDisabledCell(true);
 
       checkBalance(gasLimit, () =>
@@ -82,9 +85,12 @@ export default function GameProcess() {
             }
           },
           gasLimit,
-          withVoucher: isVoucher,
+          voucherId: gasless.voucherId,
           onSuccess: () => {
             setPending(false);
+          },
+          onError: () => {
+            setDisabledCell(false);
           },
         }),
       );
@@ -128,7 +134,7 @@ export default function GameProcess() {
       </div>
       <div className={styles.enemyShips}>
         <Text size="sm" weight="normal" className={styles.text}>
-          Enemy Ships: {totalShips}
+          Enemy Ships: {totalShips} / 4
         </Text>
 
         <div className={styles.listShips}>
@@ -155,10 +161,10 @@ export default function GameProcess() {
 
       <div>
         <MapEnemy
-          sizeBlock={68}
+          sizeBlock={86}
           onClickCell={onClickCell}
           shipStatusArray={enemiesShips}
-          isDisabledCell={isDisabledCell || isLoading}
+          isDisabledCell={isDisabledCell || gasless.isLoading}
         />
       </div>
 

@@ -7,11 +7,14 @@ use gstd::{
     ActorId,
 };
 
+// Minimum duration of session: 3 mins = 180_000 ms = 60 blocks
+pub const MINIMUM_SESSION_SURATION_MS: u64 = 180_000;
+
 pub struct BattleshipMetadata;
 
 impl Metadata for BattleshipMetadata {
     type Init = In<BattleshipInit>;
-    type Handle = InOut<BattleshipAction, BattleshipReply>;
+    type Handle = InOut<BattleshipAction, Result<BattleshipReply, BattleshipError>>;
     type Others = ();
     type Reply = ();
     type Signal = ();
@@ -19,35 +22,51 @@ impl Metadata for BattleshipMetadata {
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StateQuery {
     All,
     Game(ActorId),
     BotContractId,
+    SessionForTheAccount(ActorId),
 }
 
 #[derive(Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum StateReply {
     All(BattleshipState),
     Game(Option<GameState>),
     BotContractId(ActorId),
+    SessionForTheAccount(Option<Session>),
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct BattleshipState {
     pub games: Vec<(ActorId, GameState)>,
     pub bot_address: ActorId,
     pub admin: ActorId,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
+// This structure is for creating a gaming session, which allows players to predefine certain actions for an account that will play the game on their behalf for a certain period of time.
+// Sessions can be used to send transactions from a dApp on behalf of a user without requiring their confirmation with a wallet.
+// The user is guaranteed that the dApp can only execute transactions that comply with the allowed_actions of the session until the session expires.
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
+pub struct Session {
+    // the address of the player who will play on behalf of the user
+    pub key: ActorId,
+    // until what time the session is valid
+    pub expires: u64,
+    // what messages are allowed to be sent by the account (key)
+    pub allowed_actions: Vec<ActionsForSession>,
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum ActionsForSession {
+    StartGame,
+    Turn,
+}
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Encode, Decode, TypeInfo)]
 pub enum Entity {
     Empty,
     Unknown,
@@ -65,23 +84,82 @@ impl Entity {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub enum BattleshipAction {
+    StartGame {
+        ships: Ships,
+        session_for_account: Option<ActorId>,
+    },
+    Turn {
+        step: u8,
+        session_for_account: Option<ActorId>,
+    },
+    ChangeBot {
+        bot: ActorId,
+    },
+    ClearState {
+        leave_active_games: bool,
+    },
+    DeleteGame {
+        player_address: ActorId,
+    },
+    CreateSession {
+        key: ActorId,
+        duration: u64,
+        allowed_actions: Vec<ActionsForSession>,
+    },
+    DeleteSessionFromProgram {
+        account: ActorId,
+    },
+    DeleteSessionFromAccount,
+    UpdateConfig {
+        gas_for_start: Option<u64>,
+        gas_for_move: Option<u64>,
+        gas_to_delete_session: Option<u64>,
+        block_duration_ms: Option<u64>,
+    },
+}
+
+#[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
-pub enum BattleshipAction {
-    StartGame { ships: Ships },
-    Turn { step: u8 },
-    ChangeBot { bot: ActorId },
-    ClearState { leave_active_games: bool },
-    DeleteGame { player_address: ActorId },
+pub struct Config {
+    pub gas_for_start: u64,
+    pub gas_for_move: u64,
+    pub gas_to_delete_session: u64,
+    pub block_duration_ms: u64,
+}
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub enum BattleshipReply {
+    GameFinished(BattleshipParticipants),
+    MessageSentToBot,
+    BotChanged(ActorId),
+    SessionCreated,
+    SessionDeleted,
+    ConfigUpdated,
+    StateCleared,
+    GameDeleted,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub enum BattleshipReply {
-    MessageSentToBot,
-    EndGame(BattleshipParticipants),
-    BotChanged(ActorId),
+pub enum BattleshipError {
+    GameIsAlreadyStarted,
+    GameIsNotStarted,
+    IncorrectLocationShips,
+    OutOfBounds,
+    GameIsAlreadyOver,
+    ThisCellAlreadyKnown,
+    BotDidNotInitializeBoard,
+    NotYourTurn,
+    NotAdmin,
+    WrongLength,
+    AccessDenied,
+    AlreadyHaveActiveSession,
+    NoMessagesForApprovalWerePassed,
+    DurationIsSmall,
+    HasNotValidSession,
+    SessionHasAlreadyExpired,
+    MessageIsNotAllowed,
+    NotApproved,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
@@ -94,15 +172,12 @@ pub enum Step {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct BattleshipInit {
     pub bot_address: ActorId,
+    pub config: Config,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Game {
     pub player_board: Vec<Entity>,
     pub bot_board: Vec<Entity>,
@@ -118,7 +193,7 @@ pub struct Game {
 
 impl Game {
     pub fn start_bot(&mut self, mut ships: Ships) {
-        let bot_board = ships.get_field();
+        let bot_board = ships.get_field().unwrap();
         self.bot_board = bot_board;
         ships.sort_by_length();
         self.bot_ships = ships;
@@ -217,8 +292,6 @@ impl Display for Ships {
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Ships {
     pub ship_1: Vec<u8>,
     pub ship_2: Vec<u8>,
@@ -283,20 +356,19 @@ impl Ships {
         let has_non_empty = !vectors.iter().any(|vector: &&Vec<u8>| !vector.is_empty());
         has_non_empty
     }
-    pub fn get_field(&self) -> Vec<Entity> {
+    pub fn get_field(&self) -> Result<Vec<Entity>, BattleshipError> {
         let mut board = vec![Entity::Empty; 25];
         for position in self.iter() {
-            assert!(
-                board[*position as usize] != Entity::Ship,
-                "Incorrect location of ships"
-            );
+            if board[*position as usize] == Entity::Ship {
+                return Err(BattleshipError::IncorrectLocationShips);
+            }
             board[*position as usize] = Entity::Ship;
         }
-        board
+        Ok(board)
     }
-    pub fn check_correct_location(&self) -> bool {
+    pub fn check_correct_location(&self) -> Result<(), BattleshipError> {
         if self.iter().any(|&position| position > 24) {
-            return false;
+            return Err(BattleshipError::OutOfBounds);
         }
         // ship size check
         let mut vec_len = vec![
@@ -307,10 +379,10 @@ impl Ships {
         ];
         vec_len.sort();
         if vec_len != vec![1, 2, 2, 3] {
-            return false;
+            return Err(BattleshipError::WrongLength);
         }
-        let mut field = self.get_field();
-        let mut ships = vec![
+        let mut field = self.get_field()?;
+        let mut ships = [
             self.ship_1.clone(),
             self.ship_2.clone(),
             self.ship_3.clone(),
@@ -323,13 +395,13 @@ impl Ships {
             match (ship.len(), distance) {
                 (1, 0) | (2, 1) | (2, 5) => (),
                 (3, 2) | (3, 10) if (ship[2] + ship[0]) % ship[1] == 0 => (),
-                _ => return false,
+                _ => return Err(BattleshipError::IncorrectLocationShips),
             }
             // checking the distance between ships
             let mut occupy_cells = vec![];
             for position in ship {
                 if field[*position as usize] == Entity::Occupied {
-                    return false;
+                    return Err(BattleshipError::IncorrectLocationShips);
                 }
                 let cells = match *position {
                     0 => vec![1, 5, 6],
@@ -354,7 +426,7 @@ impl Ships {
             }
         }
 
-        true
+        Ok(())
     }
 
     pub fn count_alive_ships(&self) -> Vec<(u8, u8)> {
@@ -366,24 +438,18 @@ impl Ships {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleshipParticipants {
     Player,
     Bot,
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BotBattleshipAction {
     Start,
     Turn(Vec<Entity>),
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, Default)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct GameState {
     pub player_board: Vec<Entity>,
     pub bot_board: Vec<Entity>,

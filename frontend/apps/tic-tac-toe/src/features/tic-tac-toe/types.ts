@@ -35,6 +35,9 @@ export type IDecodedReplyGame = {
   MoveMade?: {
     game?: IGameInstance;
   };
+  GameFinished?: {
+    game?: IGameInstance;
+  };
 };
 
 export type IGameCountdown = { isActive: boolean; value: string } | undefined;

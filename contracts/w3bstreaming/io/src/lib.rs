@@ -96,17 +96,8 @@ impl Metadata for ProgramMetadata {
 impl From<Program> for State {
     fn from(program: Program) -> Self {
         Self {
-            streams: program
-                .streams
-                .into_iter()
-                .map(|(stream_id, streams)| (stream_id, streams))
-                .collect(),
-
-            users: program
-                .users
-                .into_iter()
-                .map(|(id, profile)| (id, profile))
-                .collect(),
+            streams: program.streams.into_iter().collect(),
+            users: program.users.into_iter().collect(),
         }
     }
 }

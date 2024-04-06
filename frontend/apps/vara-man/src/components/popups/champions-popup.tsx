@@ -29,13 +29,13 @@ export function ChampionsPopup({ isOpen, setIsOpen, players, overlayCn, classNam
       title="Champions"
       footer={
         <div className="pr-4 pl-8 pt-5 pb-8">
-          <button className={cn('btn font-kanit w-full space-x-2', buttonStyles.light)} onClick={onClose}>
+          <button className={cn('btn font-anuphan w-full space-x-2', buttonStyles.light)} onClick={onClose}>
             <XIcon className="w-5 h-5 text-white/80" />
             <span className="leading-4">Close</span>
           </button>
         </div>
       }>
-      <div className="font-kanit">
+      <div className="font-anuphan">
         <div className="flex justify-between px-4 leading-6 text-xs tracking-[0.08em] uppercase text-white/60 bg-white/5 rounded-[20px]">
           <span>Player</span>
           <span>Coins</span>

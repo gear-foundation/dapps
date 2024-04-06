@@ -7,6 +7,13 @@
   justify-content: center;
 }
 
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
 .row {
   display: flex;
   justify-content: center;
@@ -18,12 +25,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
   background: #ffffff;
-  border: 1px solid #cfcfcf;
+  border: 0.48px solid #CFCFCF;
   cursor: pointer;
+  z-index: 1;
 
-  opacity: 0.5;
+  &Enemy {
+    position: relative;
+    background: transparent;
+    border: 1px solid #00FFC4;
+  }
+}
+
+.cellFire {
+  width: 68px;
+  height: 68px;
+  z-index: 1;
+  transform: translateY(-20px);
 }
 
 .buttons {
@@ -38,14 +56,33 @@
   }
 }
 
+.sea {
+  position: absolute;
+  width: 100%;
+}
+
 .shipBlock {
-  background: url('../../assets/images/ship.svg'), rgba(0, 255, 196, 0.7);
+  background: url('../../assets/images/ship.svg'), #00FFC4;
 }
 
 .hitShip {
-  background: rgba(217, 217, 217);
+  background: transparent;
+  border: 1px solid #00000033
+}
+
+.hitEmpty {
+  width: 4px;
+  height: 4px;
+  border-radius: 50px;
+  background: #00000066;
+}
+
+.hitCell {
+  background: transparent;
+  border: 1px solid #00000033;
 }
 
 .deadShip {
-  background: rgba(255, 222, 222);
+  background: transparent;
+  border: 1px solid #00000033
 }

@@ -10,8 +10,8 @@ pub mod prelude;
 pub use common::initialize_system;
 
 pub const FOREIGN_USER: u64 = 1029384756123;
-pub const ADMINS: [u64; 2] = [123, 321];
-pub const PLAYERS: [u64; 3] = [1234, 4321, 2332];
+pub const ADMIN: u64 = 10;
+pub const PLAYERS: [u64; 3] = [12, 13, 14];
 
 type GalExResult<T, C = ()> = RunResult<T, C, Event, Error>;
 
@@ -33,29 +33,25 @@ impl<'a> GalEx<'a> {
         InitResult::<_, Error>::new(Self(program), result, is_active).succeed()
     }
 
-    pub fn change_admin(
+    pub fn create_new_session(
         &mut self,
         from: u64,
-        actor: impl Into<ActorId>,
-    ) -> GalExResult<(u64, u64)> {
+        name: String,
+        bid: u128,
+    ) -> GalExResult<u128, u128> {
         RunResult::new(
-            self.0.send(from, Action::ChangeAdmin(actor.into())),
-            |event, (old, new)| assert_eq!(Event::AdminChanged(old.into(), new.into()), event),
-        )
-    }
-
-    pub fn create_new_session(&mut self, from: u64) -> GalExResult<u128, Session> {
-        RunResult::new(
-            self.0.send(from, Action::CreateNewSession),
-            |event, session_id| {
-                if let Event::NewSession(session) = event {
-                    assert_eq!(session.session_id, session_id);
+            self.0
+                .send_with_value(from, Action::CreateNewSession { name }, bid),
+            |event, _id| {
+                if let Event::NewSessionCreated {
+                    altitude, reward, ..
+                } = event
+                {
                     assert!(((TURN_ALTITUDE.0 * (TURNS as u16))
                         ..(TURN_ALTITUDE.1 * (TURNS as u16)))
-                        .contains(&session.altitude));
-                    assert!((REWARD.0..REWARD.1).contains(&session.reward));
-
-                    session
+                        .contains(&altitude));
+                    assert!((REWARD.0..REWARD.1).contains(&reward));
+                    reward
                 } else {
                     unreachable!()
                 }
@@ -66,27 +62,65 @@ impl<'a> GalEx<'a> {
     pub fn register(
         &mut self,
         from: u64,
+        creator: ActorId,
         participant: Participant,
+        bid: u128,
     ) -> GalExResult<(u64, Participant)> {
         RunResult::new(
-            self.0.send(from, Action::Register(participant)),
+            self.0.send_with_value(
+                from,
+                Action::Register {
+                    creator,
+                    participant,
+                },
+                bid,
+            ),
             |event, (actor, participant)| {
                 assert_eq!(Event::Registered(actor.into(), participant), event)
             },
         )
     }
 
-    pub fn start_game(&mut self, from: u64, participant: Participant) -> GalExResult<HashSet<u64>> {
+    pub fn cancel_register(&mut self, from: u64) -> GalExResult<(u64, Participant)> {
         RunResult::new(
-            self.0.send(from, Action::StartGame(participant)),
+            self.0.send(from, Action::CancelRegistration),
+            |event, (_actor, _participant)| assert_eq!(Event::RegistrationCanceled, event),
+        )
+    }
+
+    pub fn delete_player(
+        &mut self,
+        from: u64,
+        player_id: ActorId,
+    ) -> GalExResult<(u64, Participant)> {
+        RunResult::new(
+            self.0.send(from, Action::DeletePlayer { player_id }),
+            |_, _| {},
+        )
+    }
+
+    pub fn start_game(
+        &mut self,
+        from: u64,
+        fuel_amount: u8,
+        payload_amount: u8,
+    ) -> GalExResult<HashSet<u64>> {
+        RunResult::new(
+            self.0.send(
+                from,
+                Action::StartGame {
+                    fuel_amount,
+                    payload_amount,
+                },
+            ),
             |event, players| {
                 if let Event::GameFinished(results) = event {
                     assert!(results.turns.len() == TURNS);
-                    assert!(results.rankings.len() == PARTICIPANTS);
+                    assert!(results.rankings.len() == MAX_PARTICIPANTS);
                     assert!(results
                         .turns
                         .iter()
-                        .all(|players| players.len() == PARTICIPANTS));
+                        .all(|players| players.len() == MAX_PARTICIPANTS));
 
                     let players: HashSet<ActorId> = players.into_iter().map(|p| p.into()).collect();
 
@@ -105,7 +139,15 @@ impl<'a> GalEx<'a> {
         )
     }
 
-    pub fn state(&self) -> State {
-        self.0.read_state(0).unwrap()
+    pub fn state(&self) -> Option<State> {
+        let reply = self
+            .0
+            .read_state(StateQuery::All)
+            .expect("Unexpected invalid state.");
+        if let StateReply::All(state) = reply {
+            Some(state)
+        } else {
+            None
+        }
     }
 }

@@ -53,27 +53,25 @@ fn buy_later_with_lower_price() {
 
     let auction = init(&sys);
     sys.spend_blocks(100_000);
-    println!("BALANCE: {:?}", sys.balance_of(USERS[1]));
-    let result = auction.send_with_value(USERS[1], Action::Buy, 999_999_900_000_000);
+    let result = auction.send_with_value(USERS[1], Action::Buy, 999_999_700_000_000);
 
     assert!(result.contains(&(
         USERS[1],
         Ok::<Event, Error>(Event::Bought {
-            price: 999_999_900_000_000,
+            price: 999_999_700_000_000,
         })
         .encode()
     )));
 
     sys.claim_value_from_mailbox(USERS[0]);
-    println!("BALANCE: {:?}", sys.balance_of(USERS[1]));
     auction.send_with_value(USERS[0], Action::Reward, 0);
     sys.claim_value_from_mailbox(USERS[0]);
 
     let buyer_balance = sys.balance_of(USERS[1]);
     let seller_balance = sys.balance_of(USERS[0]);
 
-    assert_eq!(buyer_balance, 9_000_000_100_000_000);
-    assert_eq!(seller_balance, 10_999_999_900_000_000);
+    assert_eq!(buyer_balance, 9_000_000_300_000_000);
+    assert_eq!(seller_balance, 10_999_999_700_000_000);
 }
 
 #[test]

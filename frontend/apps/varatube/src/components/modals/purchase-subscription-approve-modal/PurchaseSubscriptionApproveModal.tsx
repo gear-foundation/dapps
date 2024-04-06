@@ -1,14 +1,14 @@
 import { Button, Modal } from '@gear-js/ui';
 import styles from './PurchaseSubscriptionApproveModal.module.scss';
 
-type Props = { amount: string; close: () => void; onSubmit: () => void };
+type Props = { disabledSubmitButton: boolean; amount: string; close: () => void; onSubmit: () => void };
 
-function PurchaseSubscriptionApproveModal({ amount, close, onSubmit }: Props) {
+function PurchaseSubscriptionApproveModal({ disabledSubmitButton, amount, close, onSubmit }: Props) {
   return (
     <Modal heading="Purchase subscription" close={close}>
       <div className={styles.container}>
         You're going to transfer {amount} Tokens
-        <Button text="Approve" onClick={onSubmit} />
+        <Button text="Approve" onClick={onSubmit} disabled={disabledSubmitButton} />
       </div>
     </Modal>
   );

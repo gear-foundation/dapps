@@ -2,8 +2,8 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react-swc';
 import path from 'path';
 import nodePolyfills from 'vite-plugin-node-stdlib-browser';
-import eslint from 'vite-plugin-eslint';
 import svgr from 'vite-plugin-svgr';
+import { checker } from 'vite-plugin-checker';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -20,7 +20,15 @@ export default defineConfig({
     port: 3000,
     host: true,
   },
-  plugins: [svgr(), react(), nodePolyfills(), eslint()],
+  plugins: [
+    svgr(),
+    react(),
+    nodePolyfills(),
+    checker({
+      typescript: true,
+      eslint: { lintCommand: 'eslint "./src/**/*.{ts,tsx}"', dev: { logLevel: ['error'] } },
+    }),
+  ],
   assetsInclude: ['**/*.wasm?inline', '**/*.txt?inline'],
   build: { outDir: 'build' },
 });

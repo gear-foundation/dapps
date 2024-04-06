@@ -167,7 +167,10 @@ async fn start_game_from_account(game_pid: ProgramId, accounts: &[String]) -> Re
             ship_4: vec![16, 21],
         };
 
-        let start_payload = BattleshipAction::StartGame { ships };
+        let start_payload = BattleshipAction::StartGame {
+            ships,
+            session_for_account: None,
+        };
         let gas_info = api
             .calculate_handle_gas(None, game_pid, start_payload.encode(), 0, true)
             .await?;

@@ -212,19 +212,11 @@ extern fn state() {
     let reply = match query {
         StateQuery::All => StateReply::All(contract.into()),
         StateQuery::AllGames => {
-            let games = contract
-                .games
-                .into_iter()
-                .map(|(id, game)| (id, game))
-                .collect();
+            let games = contract.games.into_iter().collect();
             StateReply::AllGames(games)
         }
         StateQuery::AllPlayers => {
-            let players = contract
-                .players
-                .into_iter()
-                .map(|(id, player)| (id, player))
-                .collect();
+            let players = contract.players.into_iter().collect();
             StateReply::AllPlayers(players)
         }
         StateQuery::Game { player_address } => {
@@ -252,12 +244,9 @@ impl From<VaraMan> for VaraManState {
             admins,
         } = value;
 
-        let games = games.into_iter().map(|(id, game)| (id, game)).collect();
+        let games = games.into_iter().collect();
 
-        let players = players
-            .into_iter()
-            .map(|(actor_id, player)| (actor_id, player))
-            .collect();
+        let players = players.into_iter().collect();
 
         Self {
             games,

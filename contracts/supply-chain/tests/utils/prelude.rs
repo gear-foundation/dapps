@@ -4,4 +4,4 @@ pub use supply_chain_io::*;
 
 pub const CONSUMER: u64 = 11;
 pub const ITEM_PRICE: u128 = 4321166243;
-pub const DELIVERY_TIME: u64 = 604800000;
+pub const DELIVERY_TIME: u64 = 1814400000;

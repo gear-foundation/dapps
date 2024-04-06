@@ -6,13 +6,7 @@ function Start() {
     <>
       <h1 className={styles.heading}>Syndote Game</h1>
       <p className={styles.subheading}>Press play to start</p>
-      <Buttons
-        onFirstClick={() => {}}
-        onPrevClick={() => {}}
-        onMainClick={() => {}}
-        onNextClick={() => {}}
-        onLastClick={() => {}}
-      />
+      <Buttons onFirstClick={() => {}} onPrevClick={() => {}} onNextClick={() => {}} onLastClick={() => {}} />
     </>
   );
 }

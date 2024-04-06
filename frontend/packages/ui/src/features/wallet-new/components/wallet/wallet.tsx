@@ -6,12 +6,16 @@ import { WalletModal } from '../wallet-modal';
 import styles from './wallet.module.css';
 import { VaraBalance } from '../vara-balance';
 
+export type ClassNameProps = {
+  balance?: string;
+};
 type Props = {
   isWalletModalOpen?: boolean;
   walletModalHandler?: (bool: boolean) => void;
+  className?: ClassNameProps;
 };
 
-function Wallet({ isWalletModalOpen, walletModalHandler }: Props) {
+function Wallet({ isWalletModalOpen, walletModalHandler, className }: Props) {
   const { account, isAccountReady } = useAccount();
 
   const [isModalOpen, setIsModalOpen] = useState(isWalletModalOpen || false);
@@ -27,7 +31,7 @@ function Wallet({ isWalletModalOpen, walletModalHandler }: Props) {
   return isAccountReady ? (
     <>
       <div className={styles.wallet}>
-        <VaraBalance />
+        <VaraBalance className={className?.balance} />
 
         {account ? (
           <div className={styles.accountButton}>

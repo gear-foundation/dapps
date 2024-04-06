@@ -1,0 +1,19 @@
+.header {
+  width: 100%;
+  display: flex;
+  gap: 30px;
+}
+
+.content {
+  height: 100%;
+  width: 100%;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: auto;
+
+  @media screen and (max-width: 767px) {
+    padding: 0 26px;
+  }
+}
