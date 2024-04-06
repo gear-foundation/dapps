@@ -1,17 +1,16 @@
 import { Suspense } from 'react';
 import Identicon from '@polkadot/react-identicon';
-
+import { motion } from 'framer-motion';
 import { Text } from '@/components/ui/text';
 import { Button } from '@/components/ui/button';
 
-import { useAuth } from '@/features/auth';
-import { useAccount, useApi } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 import { useWallet } from '../../hooks';
 
-import { AvaVaraBlack } from '@/assets/images';
-import { ADDRESS } from '@/app/consts';
-
 import styles from './WalletChange.module.scss';
+import { MenuOptions } from '@dapps-frontend/ui';
+import { EzSignlessTransactions, EzGaslessTransactions } from '@dapps-frontend/ez-transactions';
+import { useIsLocationGamePage } from '@/features/game/hooks';
 
 type Props = {
   onClose(): void;
@@ -19,10 +18,8 @@ type Props = {
 };
 
 export function WalletChange({ onClose, openConnectWallet }: Props) {
-  const { api } = useApi();
-  const { account } = useAccount();
-  const { signOut } = useAuth();
-
+  const { account, logout } = useAccount();
+  const isGamePage = useIsLocationGamePage();
   const { walletAccounts } = useWallet();
 
   const getAccounts = () =>
@@ -49,27 +46,19 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
   };
 
   const handleLogoutButtonClick = () => {
-    signOut();
+    logout();
     onClose();
   };
 
   return (
-    <div>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
       <div className={styles.changeAccount}>
-        <div className={styles.network}>
-          <AvaVaraBlack width={32} height={32} />
-          <div>
-            <Text weight="semibold" size="md">
-              {api?.runtimeVersion.specName.toHuman()}
-            </Text>
-            <Text size="sm" className={styles.address}>
-              {ADDRESS.NODE}
-            </Text>
-          </div>
-        </div>
-
-        <hr />
-
+        <MenuOptions
+          customItems={[
+            { key: 'signless', option: <EzSignlessTransactions /> },
+            { key: 'gasless', option: <EzGaslessTransactions /> },
+          ]}
+        />
         <div>
           <ul className={styles.list}>{getAccounts()}</ul>
         </div>
@@ -81,6 +70,6 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
           </Button>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

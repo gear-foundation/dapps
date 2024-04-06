@@ -1,0 +1,17 @@
+.button {
+  /* identicon override */
+  & > div {
+    cursor: pointer;
+  }
+
+  & span {
+    margin-right: 0;
+    font-size: 16px;
+  }
+
+  display: block;
+  flex-direction: row-reverse;
+  gap: 10px;
+  border-radius: 2px;
+  
+}

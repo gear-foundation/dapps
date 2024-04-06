@@ -3,32 +3,39 @@ import { useAccount } from '@gear-js/react-hooks';
 import { ENV } from '@/app/consts';
 import { useReadState } from './use-metadata';
 import meta from '@/assets/meta/vara_man.meta.txt';
-import { IGameConfig, IGameInstance, IGameStatus, IPlayer } from '@/app/types/game';
+import { IGameConfig, ITournamentGameInstance } from '@/app/types/game';
 
 export const programIdGame = ENV.GAME;
 
 export function useGameState() {
   const { account } = useAccount();
 
-  const payloadGame = useMemo(
+  const payloadTournamentGame = useMemo(
     () =>
       account?.decodedAddress
         ? {
-            Game: { player_address: account.decodedAddress },
-          }
+          GetTournament: account.decodedAddress,
+        }
         : undefined,
     [account?.decodedAddress],
   );
 
+
+  const payloadAllState = useMemo(() => ({ All: null }), []);
   const payloadConfig = useMemo(() => ({ Config: null }), []);
   const payloadAdmins = useMemo(() => ({ Admins: null }), []);
-  const payloadPlayers = useMemo(() => ({ AllPlayers: null }), []);
-  const payloadStatus = useMemo(() => ({ Status: null }), []);
 
-  const { state: game, error } = useReadState<{ Game: IGameInstance }>({
+  const { state: allState } = useReadState<any>({
     programId: programIdGame,
     meta,
-    payload: payloadGame,
+    payload: payloadAllState,
+  });
+
+
+  const { state: tournament } = useReadState<{ Tournament: ITournamentGameInstance }>({
+    programId: programIdGame,
+    meta,
+    payload: payloadTournamentGame,
   });
 
   const { state: config } = useReadState<{ Config: IGameConfig | null }>({
@@ -37,11 +44,6 @@ export function useGameState() {
     payload: payloadConfig,
   });
 
-  const { state: players } = useReadState<{ AllPlayers: IPlayer[] }>({
-    programId: programIdGame,
-    meta,
-    payload: payloadPlayers,
-  });
 
   const { state: admins } = useReadState<{ Admins: string[] }>({
     programId: programIdGame,
@@ -49,11 +51,5 @@ export function useGameState() {
     payload: payloadAdmins,
   });
 
-  const { state: status } = useReadState<{ Status: IGameStatus }>({
-    programId: programIdGame,
-    meta,
-    payload: payloadStatus,
-  });
-
-  return { game, config, players, admins, error, status };
+  return { allState, tournament, config, admins };
 }

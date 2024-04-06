@@ -86,7 +86,7 @@ impl ChannelHandler for Channel {
 
         msg::reply(ChannelOutput::SubscriberAdded(msg::source()), 0)
             .expect("Error in reply to message  ChannelAction::Subscribe");
-        debug!("CHANNEL {:?}: Subscriber added", self.name)
+        debug!("CHANNEL {:?}: Subscriber added", self.name);
     }
 
     async fn remove_subscriber(&mut self) {
@@ -103,7 +103,7 @@ impl ChannelHandler for Channel {
         msg::reply(ChannelOutput::SubscriberRemoved(msg::source()), 0)
             .expect("Error in reply to message  ChannelAction::Unsubscribe");
 
-        debug!("CHANNEL {:?}: Subscriber removed", self.name)
+        debug!("CHANNEL {:?}: Subscriber removed", self.name);
     }
 
     fn add_message(&mut self, message: Message) {

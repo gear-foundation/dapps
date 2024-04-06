@@ -1,8 +1,7 @@
-use concert::WASM_BINARY_OPT;
 use concert_io::*;
 use gclient::{code_from_os, EventProcessor, GearApi, Result};
-use gear_lib_old::multitoken::io::InitConfig;
 use gstd::Encode;
+use multi_token_io::InitMtk;
 
 pub const USER: u64 = 193;
 pub const MTK_ID: u64 = 2;
@@ -14,11 +13,13 @@ async fn gclient_init() -> Result<()> {
         code_from_os("../target/wasm32-unknown-unknown/debug/multi_token.opt.wasm")?;
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
+    let path = "../target/wasm32-unknown-unknown/debug/concert.opt.wasm";
+
     // Checking that blocks still running.
     assert!(listener.blocks_running().await?);
 
     // Init Multitoken
-    let init_multitoken = InitConfig {
+    let init_multitoken = InitMtk {
         name: String::from("Multitoken for a concert"),
         symbol: String::from("MTC"),
         base_uri: String::from(""),
@@ -58,7 +59,7 @@ async fn gclient_init() -> Result<()> {
     let gas_info = api
         .calculate_upload_gas(
             None,
-            WASM_BINARY_OPT.to_vec(),
+            gclient::code_from_os(path)?,
             init_concert_payload.clone(),
             0,
             true,
@@ -67,7 +68,7 @@ async fn gclient_init() -> Result<()> {
 
     let (message_id, _program_id, _hash) = api
         .upload_program_bytes(
-            WASM_BINARY_OPT.to_vec(),
+            gclient::code_from_os(path)?,
             gclient::now_micros().to_le_bytes(),
             init_concert_payload,
             gas_info.burned * 2,

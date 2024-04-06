@@ -3,15 +3,21 @@ import { buttonStyles } from '@gear-js/ui';
 import { SpriteIcon } from 'components/ui/sprite-icon';
 import { useBattleMessage } from '../../hooks';
 import { useEffect, useState } from 'react';
-import { cn, toNumber } from 'app/utils';
-import { useAccount } from '@gear-js/react-hooks';
+import { cn, gasLimitToNumber, toNumber } from 'app/utils';
+import { useAccount, useApi } from '@gear-js/react-hooks';
 import { TamagotchiAvatar } from '../tamagotchi-avatar';
+import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
+import { GAS_LIMIT } from 'app/consts';
 
 export const BattleRoundPlayers = () => {
   const { account } = useAccount();
+  const { api } = useApi();
   const { rivals, currentPlayer, currentPairIdx, roundDamage, battle, isPending, setIsPending, isAdmin } = useBattle();
   const [isAllowed, setIsAllowed] = useState<boolean>(false);
   const handleMessage = useBattleMessage();
+  const gasless = useGaslessTransactions();
+  const { checkBalance } = useCheckBalance({ gaslessVoucherId: gasless.voucherId });
 
   useEffect(() => {
     if (battle && account && currentPlayer) {
@@ -22,25 +28,52 @@ export const BattleRoundPlayers = () => {
   const onSuccess = () => setIsPending(false);
   const onError = () => setIsPending(false);
 
-  const onNewRound = () => {
+  const onNewRound = async () => {
     const payload = { StartBattle: null };
 
     setIsPending(true);
-    handleMessage({ payload, onSuccess, onError });
+
+    checkBalance(
+      gasLimitToNumber(api?.blockGasLimit),
+      () => {
+        handleMessage({
+          payload,
+          onSuccess,
+          onError,
+          voucherId: gasless.voucherId,
+          gasLimit: GAS_LIMIT,
+        });
+      },
+      onError,
+    );
   };
 
-  const onAttack = () => {
+  const onAttack = async () => {
     const payload = { MakeMove: { pair_id: currentPairIdx, tmg_move: { Attack: null } } };
 
     setIsPending(true);
-    handleMessage({ payload, onSuccess, onError });
+
+    checkBalance(
+      gasLimitToNumber(api?.blockGasLimit),
+      () => {
+        handleMessage({ payload, onSuccess, onError, gasLimit: GAS_LIMIT });
+      },
+      onError,
+    );
   };
 
-  const onDefence = () => {
+  const onDefence = async () => {
     const payload = { MakeMove: { pair_id: currentPairIdx, tmg_move: { Defence: null } } };
 
     setIsPending(true);
-    handleMessage({ payload, onSuccess, onError });
+
+    checkBalance(
+      gasLimitToNumber(api?.blockGasLimit),
+      () => {
+        handleMessage({ payload, onSuccess, onError, gasLimit: GAS_LIMIT });
+      },
+      onError,
+    );
   };
 
   const cnWrapper = 'relative flex flex-col';
@@ -94,7 +127,7 @@ export const BattleRoundPlayers = () => {
                     buttonStyles.button,
                   )}
                   onClick={onNewRound}
-                  disabled={isPending}>
+                  disabled={isPending || gasless.isLoading}>
                   Start New Round
                 </button>
               )}
@@ -106,13 +139,13 @@ export const BattleRoundPlayers = () => {
                       buttonStyles.button,
                     )}
                     onClick={onAttack}
-                    disabled={isPending || !isAllowed}>
+                    disabled={isPending || !isAllowed || gasless.isLoading}>
                     <SpriteIcon name="swords" className="w-5 h-5" /> Attack
                   </button>
                   <button
                     className={cn('btn items-center gap-2 w-full', buttonStyles.secondary, buttonStyles.button)}
                     onClick={onDefence}
-                    disabled={isPending || !isAllowed}>
+                    disabled={isPending || !isAllowed || gasless.isLoading}>
                     <SpriteIcon name="armor" className="w-5 h-5" /> Defence
                   </button>
                 </>

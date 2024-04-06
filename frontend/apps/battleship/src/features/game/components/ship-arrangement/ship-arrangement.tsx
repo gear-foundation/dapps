@@ -1,24 +1,25 @@
 import { useState } from 'react';
+import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { Button } from '@gear-js/vara-ui';
 import { Heading } from '@/components/ui/heading';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { Text } from '@/components/ui/text';
 import { Map } from '../';
-
 import styles from './ShipArrangement.module.scss';
 import { useGameMessage, usePending } from '../../hooks';
 import { generateShipsField } from './shipGenerator';
 import { convertShipsToField } from '../../utils';
-import { useAccount } from '@gear-js/react-hooks';
-import { useFetchVoucher } from '@/app/hooks/useFetchVoucher';
-import { useCheckBalance } from '@/features/wallet/hooks';
+import { useCheckBalance } from '@dapps-frontend/hooks';
 
 export default function ShipArrangement() {
-  const { account } = useAccount();
-  const { isVoucher, isLoading, updateBalance } = useFetchVoucher(account?.address);
+  const { gasless, signless } = useEzTransactions();
+
   const message = useGameMessage();
   const { setPending } = usePending();
-  const { checkBalance } = useCheckBalance(isVoucher);
+  const { checkBalance } = useCheckBalance({
+    signlessPairVoucherId: signless.voucher?.id,
+    gaslessVoucherId: gasless.voucherId,
+  });
 
   const [shipLayout, setShipLayout] = useState<string[]>([]);
   const [shipsField, setShipsField] = useState<number[][]>([]);
@@ -37,11 +38,9 @@ export default function ShipArrangement() {
   };
 
   const onGameStart = async () => {
-    const gasLimit = 100000000000;
+    const gasLimit = 120000000000;
 
-    await updateBalance();
-
-    if (!isLoading) {
+    if (!gasless.isLoading) {
       setPending(true);
 
       checkBalance(gasLimit, () =>
@@ -51,7 +50,7 @@ export default function ShipArrangement() {
               ships: shipsField,
             },
           },
-          withVoucher: isVoucher,
+          voucherId: gasless.voucherId,
           gasLimit,
         }),
       );
@@ -61,19 +60,19 @@ export default function ShipArrangement() {
   return (
     <div className={styles.content}>
       <div className={styles.header}>
-        <Heading>
-          <TextGradient>Your ships</TextGradient>
-        </Heading>
-        <div>
+        <Heading>Your ships</Heading>
+        <div className={styles.textWrapper}>
           <Text size="lg">Choose a ship placement scheme, and to see a new arrangement, click "Generate"</Text>
         </div>
       </div>
       <div style={{ width: '100%' }}>
-        <Map sizeBlock={64} shipStatusArray={shipLayout} />
+        <div>
+          <Map sizeBlock={72} shipStatusArray={shipLayout} />
+        </div>
       </div>
       <div className={styles.buttons}>
         <Button color="dark" text="Generate" onClick={onGenerateRandomLayout} disabled={isLoadingGenerate} />
-        <Button text="Continue" onClick={onGameStart} disabled={!shipLayout.length || isLoading} />
+        <Button text="Continue" onClick={onGameStart} disabled={!shipLayout.length || gasless.isLoading} />
       </div>
     </div>
   );

@@ -16,7 +16,7 @@ sharded-multi-token-io.workspace = true
 gear-wasm-builder.workspace = true
 
 [dev-dependencies]
-gstd = { workspace = true, features = ["debug"] }
+gstd.workspace = true
 gtest.workspace = true
 gclient.workspace = true
 blake2-rfc.workspace = true

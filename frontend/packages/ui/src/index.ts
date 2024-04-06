@@ -1,4 +1,18 @@
-import { Footer, Container, StartDisclaimer } from './components';
-import { Wallet } from './features';
+import { Footer, Header, Container, StartDisclaimer, MenuOptions, MobileMenu, MenuHandler } from './components';
+import { WalletNew, VaraBalanceNew, Wallet } from './features';
 
-export { Footer, Container, StartDisclaimer, Wallet };
+import { Switcher } from './components/switcher';
+
+export {
+  Footer,
+  Header,
+  Container,
+  StartDisclaimer,
+  MenuOptions,
+  WalletNew,
+  VaraBalanceNew,
+  Wallet,
+  MobileMenu,
+  MenuHandler,
+  Switcher,
+};

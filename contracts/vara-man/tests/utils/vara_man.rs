@@ -6,13 +6,19 @@ use vara_man_io::{VaraMan as VaraManState, *};
 pub trait VaraMan {
     fn vara_man(system: &System) -> Program<'_>;
     fn vara_man_with_config(system: &System, config: Config) -> Program<'_>;
-    fn register_player(&self, from: u64, name: &str, error: bool);
-    fn start_game(&self, from: u64, level: Level, error: bool);
-    fn claim_reward(&self, from: u64, silver_coins: u64, gold_coins: u64, error: bool);
+    fn register_player(&self, from: u64, name: &str, error: Option<VaraManError>);
+    fn start_game(&self, from: u64, level: Level, error: Option<VaraManError>);
+    fn claim_reward(
+        &self,
+        from: u64,
+        silver_coins: u64,
+        gold_coins: u64,
+        error: Option<VaraManError>,
+    );
     fn change_status(&self, from: u64, status: Status);
     fn change_config(&self, from: u64, config: Config);
     fn add_admin(&self, from: u64, admin: ActorId);
-    fn send_tx(&self, from: u64, action: VaraManAction, error: bool);
+    fn send_tx(&self, from: u64, action: VaraManAction, error: Option<VaraManError>);
     fn get_state(&self) -> Option<VaraManState>;
 }
 
@@ -36,7 +42,7 @@ impl VaraMan for Program<'_> {
         vara_man
     }
 
-    fn register_player(&self, from: u64, name: &str, error: bool) {
+    fn register_player(&self, from: u64, name: &str, error: Option<VaraManError>) {
         self.send_tx(
             from,
             VaraManAction::RegisterPlayer {
@@ -46,11 +52,17 @@ impl VaraMan for Program<'_> {
         );
     }
 
-    fn start_game(&self, from: u64, level: Level, error: bool) {
+    fn start_game(&self, from: u64, level: Level, error: Option<VaraManError>) {
         self.send_tx(from, VaraManAction::StartGame { level }, error);
     }
 
-    fn claim_reward(&self, from: u64, silver_coins: u64, gold_coins: u64, error: bool) {
+    fn claim_reward(
+        &self,
+        from: u64,
+        silver_coins: u64,
+        gold_coins: u64,
+        error: Option<VaraManError>,
+    ) {
         self.send_tx(
             from,
             VaraManAction::ClaimReward {
@@ -62,31 +74,24 @@ impl VaraMan for Program<'_> {
     }
 
     fn change_status(&self, from: u64, status: Status) {
-        self.send_tx(from, VaraManAction::ChangeStatus(status), false);
+        self.send_tx(from, VaraManAction::ChangeStatus(status), None);
     }
 
     fn change_config(&self, from: u64, config: Config) {
-        self.send_tx(from, VaraManAction::ChangeConfig(config), false);
+        self.send_tx(from, VaraManAction::ChangeConfig(config), None);
     }
 
     fn add_admin(&self, from: u64, admin: ActorId) {
-        self.send_tx(from, VaraManAction::AddAdmin(admin), false);
+        self.send_tx(from, VaraManAction::AddAdmin(admin), None);
     }
 
-    fn send_tx(&self, from: u64, action: VaraManAction, error: bool) {
+    fn send_tx(&self, from: u64, action: VaraManAction, error: Option<VaraManError>) {
         let result = self.send(from, action);
         assert!(!result.main_failed());
 
-        let maybe_error = result.log().iter().find_map(|log| {
-            let mut payload = log.payload();
-            if let Ok(VaraManEvent::Error(error)) = VaraManEvent::decode(&mut payload) {
-                Some(error)
-            } else {
-                None
-            }
-        });
-
-        assert_eq!(maybe_error.is_some(), error, "Error: {:#?}", maybe_error);
+        if let Some(error) = error {
+            assert!(result.contains(&(from, Err::<VaraManEvent, VaraManError>(error).encode())));
+        }
     }
 
     fn get_state(&self) -> Option<VaraManState> {
