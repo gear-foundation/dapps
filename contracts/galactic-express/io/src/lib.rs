@@ -96,6 +96,7 @@ pub enum Action {
 
 #[derive(Encode, Decode, TypeInfo, Debug, PartialEq, Eq)]
 pub enum Event {
+    GameFinished(Results),
     AdminChanged(ActorId, ActorId),
     NewSessionCreated {
         altitude: u16,
@@ -109,7 +110,6 @@ pub enum Event {
         player_id: ActorId,
     },
     GameCanceled,
-    GameFinished(Results),
     GameLeft,
 }
 

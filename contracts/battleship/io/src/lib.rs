@@ -14,7 +14,7 @@ pub struct BattleshipMetadata;
 
 impl Metadata for BattleshipMetadata {
     type Init = In<BattleshipInit>;
-    type Handle = InOut<BattleshipAction, BattleshipReply>;
+    type Handle = InOut<BattleshipAction, Result<BattleshipReply, BattleshipError>>;
     type Others = ();
     type Reply = ();
     type Signal = ();
@@ -130,12 +130,36 @@ pub struct Config {
 }
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 pub enum BattleshipReply {
+    GameFinished(BattleshipParticipants),
     MessageSentToBot,
-    EndGame(BattleshipParticipants),
     BotChanged(ActorId),
     SessionCreated,
     SessionDeleted,
     ConfigUpdated,
+    StateCleared,
+    GameDeleted,
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo)]
+pub enum BattleshipError {
+    GameIsAlreadyStarted,
+    GameIsNotStarted,
+    IncorrectLocationShips,
+    OutOfBounds,
+    GameIsAlreadyOver,
+    ThisCellAlreadyKnown,
+    BotDidNotInitializeBoard,
+    NotYourTurn,
+    NotAdmin,
+    WrongLength,
+    AccessDenied,
+    AlreadyHaveActiveSession,
+    NoMessagesForApprovalWerePassed,
+    DurationIsSmall,
+    HasNotValidSession,
+    SessionHasAlreadyExpired,
+    MessageIsNotAllowed,
+    NotApproved,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
@@ -169,7 +193,7 @@ pub struct Game {
 
 impl Game {
     pub fn start_bot(&mut self, mut ships: Ships) {
-        let bot_board = ships.get_field();
+        let bot_board = ships.get_field().unwrap();
         self.bot_board = bot_board;
         ships.sort_by_length();
         self.bot_ships = ships;
@@ -332,20 +356,19 @@ impl Ships {
         let has_non_empty = !vectors.iter().any(|vector: &&Vec<u8>| !vector.is_empty());
         has_non_empty
     }
-    pub fn get_field(&self) -> Vec<Entity> {
+    pub fn get_field(&self) -> Result<Vec<Entity>, BattleshipError> {
         let mut board = vec![Entity::Empty; 25];
         for position in self.iter() {
-            assert!(
-                board[*position as usize] != Entity::Ship,
-                "Incorrect location of ships"
-            );
+            if board[*position as usize] == Entity::Ship {
+                return Err(BattleshipError::IncorrectLocationShips);
+            }
             board[*position as usize] = Entity::Ship;
         }
-        board
+        Ok(board)
     }
-    pub fn check_correct_location(&self) -> bool {
+    pub fn check_correct_location(&self) -> Result<(), BattleshipError> {
         if self.iter().any(|&position| position > 24) {
-            return false;
+            return Err(BattleshipError::OutOfBounds);
         }
         // ship size check
         let mut vec_len = vec![
@@ -356,10 +379,10 @@ impl Ships {
         ];
         vec_len.sort();
         if vec_len != vec![1, 2, 2, 3] {
-            return false;
+            return Err(BattleshipError::WrongLength);
         }
-        let mut field = self.get_field();
-        let mut ships = vec![
+        let mut field = self.get_field()?;
+        let mut ships = [
             self.ship_1.clone(),
             self.ship_2.clone(),
             self.ship_3.clone(),
@@ -372,13 +395,13 @@ impl Ships {
             match (ship.len(), distance) {
                 (1, 0) | (2, 1) | (2, 5) => (),
                 (3, 2) | (3, 10) if (ship[2] + ship[0]) % ship[1] == 0 => (),
-                _ => return false,
+                _ => return Err(BattleshipError::IncorrectLocationShips),
             }
             // checking the distance between ships
             let mut occupy_cells = vec![];
             for position in ship {
                 if field[*position as usize] == Entity::Occupied {
-                    return false;
+                    return Err(BattleshipError::IncorrectLocationShips);
                 }
                 let cells = match *position {
                     0 => vec![1, 5, 6],
@@ -403,7 +426,7 @@ impl Ships {
             }
         }
 
-        true
+        Ok(())
     }
 
     pub fn count_alive_ships(&self) -> Vec<(u8, u8)> {

@@ -25,11 +25,10 @@ impl Battleship {
         key: &ActorId,
         duration: u64,
         allowed_actions: Vec<ActionsForSession>,
-    ) {
-        assert!(
-            duration >= MINIMUM_SESSION_SURATION_MS,
-            "Duration is too small"
-        );
+    ) -> Result<BattleshipReply, BattleshipError> {
+        if duration < MINIMUM_SESSION_SURATION_MS {
+            return Err(BattleshipError::DurationIsSmall);
+        }
 
         let msg_source = msg::source();
         let block_timestamp = exec::block_timestamp();
@@ -40,7 +39,7 @@ impl Battleship {
         }) = self.sessions.get(&msg_source)
         {
             if *expires > block_timestamp {
-                panic!("You already have an active session. If you want to create a new one, please delete this one.")
+                return Err(BattleshipError::AlreadyHaveActiveSession);
             }
         }
 
@@ -49,10 +48,9 @@ impl Battleship {
         let number_of_blocks = u32::try_from(duration.div_ceil(self.config.block_duration_ms))
             .expect("Duration is too large");
 
-        assert!(
-            !allowed_actions.is_empty(),
-            "No messages for approval were passed."
-        );
+        if allowed_actions.is_empty() {
+            return Err(BattleshipError::NoMessagesForApprovalWerePassed);
+        }
 
         self.sessions.entry(msg_source).insert(Session {
             key: *key,
@@ -71,44 +69,46 @@ impl Battleship {
         )
         .expect("Error in sending a delayed msg");
 
-        msg::reply(BattleshipReply::SessionCreated, 0).expect("Error in sending a reply");
+        Ok(BattleshipReply::SessionCreated)
     }
 
-    fn delete_session_from_program(&mut self, session_for_account: &ActorId) {
-        assert_eq!(
-            exec::program_id(),
-            msg::source(),
-            "The msg source must be the program"
-        );
+    fn delete_session_from_program(
+        &mut self,
+        session_for_account: &ActorId,
+    ) -> Result<BattleshipReply, BattleshipError> {
+        if exec::program_id() != msg::source() {
+            return Err(BattleshipError::AccessDenied);
+        }
 
         if let Some(session) = self.sessions.remove(session_for_account) {
-            assert!(
-                session.expires <= exec::block_timestamp(),
-                "Too early to delete session"
-            );
+            if session.expires > exec::block_timestamp() {
+                return Err(BattleshipError::AccessDenied);
+            }
         }
-
-        msg::reply(BattleshipReply::SessionDeleted, 0).expect("Error in sending a reply");
+        Ok(BattleshipReply::SessionDeleted)
     }
 
-    fn delete_session_from_account(&mut self) {
-        assert!(self.sessions.remove(&msg::source()).is_some(), "No session");
-
-        msg::reply(BattleshipReply::SessionDeleted, 0).expect("Error in sending a reply");
+    fn delete_session_from_account(&mut self) -> Result<BattleshipReply, BattleshipError> {
+        self.sessions.remove(&msg::source());
+        Ok(BattleshipReply::SessionDeleted)
     }
 
-    fn start_game(&mut self, mut ships: Ships, session_for_account: Option<ActorId>) {
-        let player = self.get_player(&session_for_account, ActionsForSession::StartGame);
+    fn start_game(
+        &mut self,
+        mut ships: Ships,
+        session_for_account: Option<ActorId>,
+    ) -> Result<BattleshipReply, BattleshipError> {
+        let player = self.get_player(&session_for_account, ActionsForSession::StartGame)?;
+
         if let Some(game) = self.games.get(&player) {
-            assert!(game.game_over, "Please finish the previous game");
+            if !game.game_over {
+                return Err(BattleshipError::GameIsAlreadyStarted);
+            }
         }
 
-        assert!(
-            ships.check_correct_location(),
-            "Incorrect location of ships"
-        );
+        ships.check_correct_location()?;
+        let player_board = ships.get_field()?;
 
-        let player_board = ships.get_field();
         ships.sort_by_length();
         let game_instance = Game {
             player_board,
@@ -131,32 +131,38 @@ impl Battleship {
         .expect("Error in sending a message");
 
         self.msg_id_to_game_id.insert(msg_id, player);
-        msg::reply(BattleshipReply::MessageSentToBot, 0).expect("Error in sending a reply");
+        Ok(BattleshipReply::MessageSentToBot)
     }
 
-    fn player_move(&mut self, step: u8, session_for_account: Option<ActorId>) {
-        let player = self.get_player(&session_for_account, ActionsForSession::Turn);
-        assert!(step < 25, "Step must be less than 24");
+    fn player_move(
+        &mut self,
+        step: u8,
+        session_for_account: Option<ActorId>,
+    ) -> Result<BattleshipReply, BattleshipError> {
+        let player = self.get_player(&session_for_account, ActionsForSession::Turn)?;
+        if step > 24 {
+            return Err(BattleshipError::OutOfBounds);
+        }
 
-        let game = self
-            .games
-            .get_mut(&player)
-            .expect("The player has no game, please start the game");
-
-        assert!(!game.game_over, "Game is already over");
+        let Some(game) = self.games.get_mut(&player) else {
+            return Err(BattleshipError::GameIsNotStarted);
+        };
+        if game.game_over {
+            return Err(BattleshipError::GameIsAlreadyOver);
+        }
 
         if game.bot_board.is_empty() {
-            panic!("The bot did not initialize the board");
+            return Err(BattleshipError::BotDidNotInitializeBoard);
         }
 
         if game.turn != Some(BattleshipParticipants::Player) {
-            panic!("Please wait your turn");
+            return Err(BattleshipError::NotYourTurn);
         }
 
         if game.bot_board[step as usize] != Entity::Empty
             && game.bot_board[step as usize] != Entity::Ship
         {
-            panic!("The value of this cell is already known");
+            return Err(BattleshipError::ThisCellAlreadyKnown);
         }
 
         let res = game.bot_ships.bang(step);
@@ -166,13 +172,14 @@ impl Battleship {
             Step::Killed => game.dead_ship(step, 1),
         }
         game.total_shots += 1;
+
         if game.bot_ships.check_end_game() {
             game.game_over = true;
             game.game_result = Some(BattleshipParticipants::Player);
             game.end_time = exec::block_timestamp();
-            msg::reply(BattleshipReply::EndGame(BattleshipParticipants::Player), 0)
-                .expect("Error in sending a reply");
-            return;
+            return Ok(BattleshipReply::GameFinished(
+                BattleshipParticipants::Player,
+            ));
         }
         game.turn = Some(BattleshipParticipants::Bot);
 
@@ -186,67 +193,70 @@ impl Battleship {
         .expect("Error in sending a message");
 
         self.msg_id_to_game_id.insert(msg_id, player);
-        msg::reply(BattleshipReply::MessageSentToBot, 0).expect("Error in sending a reply");
+        Ok(BattleshipReply::MessageSentToBot)
     }
 
-    fn change_bot(&mut self, bot: ActorId) {
-        assert!(
-            msg::source() == self.admin,
-            "Only the admin can change the bot's contract address"
-        );
+    fn change_bot(&mut self, bot: ActorId) -> Result<BattleshipReply, BattleshipError> {
+        if msg::source() != self.admin {
+            return Err(BattleshipError::NotAdmin);
+        }
         self.bot_address = bot;
-        msg::reply(BattleshipReply::BotChanged(bot), 0).expect("Error in sending a reply");
+        Ok(BattleshipReply::BotChanged(bot))
     }
 
-    fn clear_state(&mut self, leave_active_games: bool) {
-        assert!(
-            msg::source() == self.admin,
-            "Only the admin can change the contract state"
-        );
+    fn clear_state(
+        &mut self,
+        leave_active_games: bool,
+    ) -> Result<BattleshipReply, BattleshipError> {
+        if msg::source() != self.admin {
+            return Err(BattleshipError::NotAdmin);
+        }
         if leave_active_games {
             self.games.retain(|_actor_id, game| !game.game_over);
         } else {
             self.games.clear();
         }
+        Ok(BattleshipReply::StateCleared)
     }
 
-    fn delete_game(&mut self, player_address: ActorId) {
-        assert!(
-            msg::source() == self.admin,
-            "Only the admin can change the contract state"
-        );
+    fn delete_game(&mut self, player_address: ActorId) -> Result<BattleshipReply, BattleshipError> {
+        if msg::source() != self.admin {
+            return Err(BattleshipError::NotAdmin);
+        }
         self.games.remove(&player_address);
+        Ok(BattleshipReply::GameDeleted)
     }
 
     fn get_player(
         &self,
         session_for_account: &Option<ActorId>,
         actions_for_session: ActionsForSession,
-    ) -> ActorId {
+    ) -> Result<ActorId, BattleshipError> {
         let msg_source = msg::source();
         let player = match session_for_account {
             Some(account) => {
                 let session = self
                     .sessions
                     .get(account)
-                    .expect("This account has no valid session");
-                assert!(
-                    session.expires > exec::block_timestamp(),
-                    "The session has already expired"
-                );
-                assert!(
-                    session.allowed_actions.contains(&actions_for_session),
-                    "This message is not allowed"
-                );
-                assert_eq!(
-                    session.key, msg_source,
-                    "The account is not approved for this session"
-                );
+                    .ok_or(BattleshipError::HasNotValidSession)?;
+
+                if session.expires <= exec::block_timestamp() {
+                    return Err(BattleshipError::SessionHasAlreadyExpired);
+                }
+                if !session.allowed_actions.contains(&actions_for_session) {
+                    return Err(BattleshipError::MessageIsNotAllowed);
+                }
+                if session.expires <= exec::block_timestamp() {
+                    return Err(BattleshipError::SessionHasAlreadyExpired);
+                }
+                if session.key != msg_source {
+                    return Err(BattleshipError::NotApproved);
+                }
                 *account
             }
             None => msg_source,
         };
-        player
+        Ok(player)
     }
 
     fn update_config(
@@ -255,12 +265,10 @@ impl Battleship {
         gas_for_move: Option<u64>,
         gas_to_delete_session: Option<u64>,
         block_duration_ms: Option<u64>,
-    ) {
-        assert_eq!(
-            msg::source(),
-            self.admin,
-            "Only admin can change configurable parameters"
-        );
+    ) -> Result<BattleshipReply, BattleshipError> {
+        if msg::source() != self.admin {
+            return Err(BattleshipError::NotAdmin);
+        }
         if let Some(gas_for_start) = gas_for_start {
             self.config.gas_for_start = gas_for_start;
         }
@@ -276,8 +284,7 @@ impl Battleship {
         if let Some(block_duration_ms) = block_duration_ms {
             self.config.block_duration_ms = block_duration_ms;
         }
-
-        msg::reply(BattleshipReply::ConfigUpdated, 0).expect("Error in sending a reply");
+        Ok(BattleshipReply::ConfigUpdated)
     }
 }
 
@@ -306,7 +313,7 @@ extern fn handle() {
     };
     let action: BattleshipAction =
         msg::load().expect("Failed to decode `BattleshipAction` message.");
-    match action {
+    let reply = match action {
         BattleshipAction::StartGame {
             ships,
             session_for_account,
@@ -340,7 +347,9 @@ extern fn handle() {
             gas_to_delete_session,
             block_duration_ms,
         ),
-    }
+    };
+    msg::reply(reply, 0)
+        .expect("Failed to encode or reply with `Result<BattleshipReply, BattleshipError>`.");
 }
 
 #[no_mangle]
@@ -376,7 +385,7 @@ extern fn handle_reply() {
                 game.end_time = exec::block_timestamp();
                 msg::send(
                     game_id,
-                    BattleshipReply::EndGame(BattleshipParticipants::Bot),
+                    BattleshipReply::GameFinished(BattleshipParticipants::Bot),
                     0,
                 )
                 .expect("Unable to send the message about game over");
