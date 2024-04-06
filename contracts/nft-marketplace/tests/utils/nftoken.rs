@@ -92,6 +92,7 @@ impl<'a> NonFungibleToken<'a> {
     }
 }
 
+#[allow(dead_code)]
 pub struct NonFungibleTokenMetaState<'a>(&'a InnerProgram<'a>);
 
 impl NonFungibleTokenMetaState<'_> {
