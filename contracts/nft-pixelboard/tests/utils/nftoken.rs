@@ -5,7 +5,7 @@ use gtest::{Program as InnerProgram, System};
 use non_fungible_token_io::{Collection, Config, InitNFT};
 use std::fs;
 
-pub struct NonFungibleToken<'a>(InnerProgram<'a>, u64);
+pub struct NonFungibleToken<'a>(InnerProgram<'a>);
 
 impl Program for NonFungibleToken<'_> {
     fn inner_program(&self) -> &InnerProgram<'_> {
@@ -31,7 +31,7 @@ impl<'a> NonFungibleToken<'a> {
             )
             .main_failed());
 
-        Self(program, 0)
+        Self(program)
     }
 
     pub fn meta_state(&self) -> NonFungibleTokenMetaState<'_> {
