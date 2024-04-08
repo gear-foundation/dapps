@@ -3,13 +3,12 @@ import { useEzTransactions } from '../../context';
 
 type Props = {
   disabled?: boolean;
-  disabledTurnOn?: boolean;
 };
 
-function EzGaslessTransactions({ disabled, disabledTurnOn }: Props) {
+function EzGaslessTransactions({ disabled }: Props) {
   const { signless } = useEzTransactions();
 
-  return <GaslessTransactions disabled={signless.isSessionActive || disabled} disabledTurnOn={disabledTurnOn} />;
+  return <GaslessTransactions disabled={signless.isSessionActive || disabled} />;
 }
 
 export { EzGaslessTransactions };
