@@ -240,7 +240,7 @@ impl Contract {
 #[no_mangle]
 extern fn state() {
     let contract = unsafe { CONTRACT.take().expect("Unexpected error in taking state") };
-    msg::reply::<State>(contract.into(), 0)
+    msg::reply::<IoNft>(contract.into(), 0)
         .expect("Failed to encode or reply with `IoNft` from `state()`");
 }
 
@@ -257,7 +257,8 @@ impl From<Contract> for IoNft {
             token_id,
             owner,
             transactions,
-            ..
+            collection,
+            config,
         } = value;
 
         let transactions = transactions
@@ -269,6 +270,8 @@ impl From<Contract> for IoNft {
             token_id,
             owner,
             transactions,
+            collection,
+            config,
         }
     }
 }

@@ -45,7 +45,7 @@ impl Metadata for NFTMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = Out<State>;
+    type State = Out<IoNft>;
 }
 
 #[derive(Debug, Encode, Decode, PartialEq, Eq, PartialOrd, Ord, Clone, TypeInfo, Hash)]
@@ -145,6 +145,8 @@ pub struct IoNft {
     pub token_id: TokenId,
     pub owner: ActorId,
     pub transactions: Vec<(H256, NFTEvent)>,
+    pub collection: Collection,
+    pub config: Config,
 }
 
 impl From<&NFTState> for IoNFTState {
