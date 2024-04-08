@@ -1,10 +1,7 @@
 use battleship_io::*;
 
 use gstd::{
-    collections::{BTreeMap, HashMap},
-    exec, msg,
-    prelude::*,
-    ActorId, MessageId, debug,
+   collections::{BTreeMap, HashMap}, debug, exec, msg, prelude::*, ActorId, MessageId
 };
 
 static mut BATTLESHIP: Option<Battleship> = None;
@@ -46,17 +43,21 @@ impl Battleship {
             "No messages for approval were passed."
         );
 
-        match signature {
+        let account = match signature {
             Some(sig_bytes) => {
                 self.check_if_session_exists(key);
                 let pub_key: [u8; 32] = (*key).into();
-                let message = SignatureData {
+                let mut prefix = b"<Bytes>".to_vec();
+                let mut message = SignatureData {
                     key: msg_source,
                     duration,
                     allowed_actions: allowed_actions.clone(),
-                };
-                debug!("Before sig");
-                if crate::sr25519::verify(&sig_bytes, message.encode(), pub_key).is_err() {
+                }.encode();
+                let mut postfix = b"</Bytes>".to_vec();
+                prefix.append(&mut message);
+                prefix.append(&mut postfix);
+
+                if crate::sr25519::verify(&sig_bytes, prefix, pub_key).is_err() {
                     panic!("Failed sign verification");
                 }
                 debug!("Verification is ok");
@@ -66,6 +67,7 @@ impl Battleship {
                     allowed_actions,
                     expires_at_block: block_height + number_of_blocks,
                 });
+                *key
             }
             None => {
                 self.check_if_session_exists(&msg_source);
@@ -76,13 +78,14 @@ impl Battleship {
                     allowed_actions,
                     expires_at_block: block_height + number_of_blocks,
                 });
+                msg_source
             }
-        }
+        };
 
         msg::send_with_gas_delayed(
             exec::program_id(),
             BattleshipAction::DeleteSessionFromProgram {
-                account: msg::source(),
+                account,
             },
             self.config.gas_to_delete_session,
             0,

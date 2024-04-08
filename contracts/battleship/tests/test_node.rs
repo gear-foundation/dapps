@@ -67,24 +67,31 @@ async fn signature_test() -> Result<()> {
     let key: &str = "d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d";
     let key_bytes = hex::decode(key).unwrap();
     let key = ActorId::decode(&mut key_bytes.as_slice()).unwrap();
-    let message = SignatureData {
+    let mut message = SignatureData {
         key,
         duration: 3_000_000_000,
         allowed_actions: vec![ActionsForSession::StartGame],
     }
     .encode();
-    println!("payload {:?}", hex::encode(message.clone()));
+
+    let mut prefix = b"<Bytes>".to_vec();
+    let mut postfix = b"</Bytes>".to_vec();
+    prefix.append(&mut message);
+    prefix.append(&mut postfix);
+
 
     let signature = pair.0.sign(&message);
     println!("signature {:?}", signature);
-    let signature_bytes = signature.0;
-    let signature: Signature = Signature::from_bytes(&signature.0).unwrap();
+   // let signature_bytes = signature.0;
+   let signature_bytes: Vec<u8> = hex::decode("4ce8e4f5dff06820b4312e7caa72ec31fb2c3f9d879d90e7a2918fc178da866c1e121da7af6b5176f1a6c75b81bf859b9b1be87880f9eef4476ca4b7cb71fb83").unwrap();
+
+    let signature: Signature = Signature::from_bytes(&signature_bytes).unwrap();
     println!(
         "verify {:?}",
-        public_key.verify(context.bytes(&message), &signature)
+        public_key.verify(context.bytes(&prefix), &signature)
     );
     assert!(public_key
-        .verify(context.bytes(&message), &signature)
+        .verify(context.bytes(&prefix), &signature)
         .is_ok());
 
     let api = GearApi::dev().await?;
@@ -136,7 +143,7 @@ async fn signature_test() -> Result<()> {
 
     assert!(listener.message_processed(message_id).await?.succeed());
 
-    let signature_bytes = hex::decode("7819c0f7d24dd5ef8a7c43f234d14567a55a31b276e9196a20705677ca9f541715dbe0889831282618e41b520b1f18faa076e2a64062e6a26e2456fb8acad18c").unwrap();
+    let signature_bytes: Vec<u8> = hex::decode("4ce8e4f5dff06820b4312e7caa72ec31fb2c3f9d879d90e7a2918fc178da866c1e121da7af6b5176f1a6c75b81bf859b9b1be87880f9eef4476ca4b7cb71fb83").unwrap();
     let payload = BattleshipAction::CreateSession {
         key: main_account,
         duration: 3_000_000_000,

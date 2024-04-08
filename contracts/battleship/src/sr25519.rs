@@ -1,5 +1,4 @@
 use schnorrkel::PublicKey;
-use gstd::debug;
 // check sp-core/sr25519.rs for details
 const SIGNING_CONTEXT: &[u8] = b"substrate";
 
@@ -14,12 +13,9 @@ pub fn verify<P: AsRef<[u8]>, M: AsRef<[u8]>>(
     message: M,
     pubkey: P,
 ) -> Result<(), Error> {
-    debug!("signaature");
     let signature =
         schnorrkel::Signature::from_bytes(signature).map_err(|_| Error::BadSignature)?;
-    debug!("signaature");
     let pub_key = PublicKey::from_bytes(pubkey.as_ref()).map_err(|_| Error::BadPublicKey)?;
-    debug!("signaature");
     pub_key
         .verify_simple(SIGNING_CONTEXT, message.as_ref(), &signature)
         .map(|_| ())
