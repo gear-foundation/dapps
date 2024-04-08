@@ -70,6 +70,10 @@ export default function GameProcess() {
     }
   }, [gameState]);
 
+  const onClickCellFinally = () => {
+    setDisabledCell(false);
+  };
+
   const onClickCell = async (indexCell: number) => {
     const gasLimit = 120000000000;
 
@@ -83,7 +87,7 @@ export default function GameProcess() {
             payload: { Turn: { step: indexCell } },
             onInBlock: (messageId) => {
               if (messageId) {
-                setDisabledCell(false);
+                onClickCellFinally();
               }
             },
             gasLimit,
@@ -91,11 +95,9 @@ export default function GameProcess() {
             onSuccess: () => {
               setPending(false);
             },
-            onError: () => {
-              setDisabledCell(false);
-            },
+            onError: onClickCellFinally,
           }),
-        () => setDisabledCell(false),
+        onClickCellFinally,
       );
     }
   };
