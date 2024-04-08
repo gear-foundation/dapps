@@ -165,7 +165,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     if (!isExpired) {
       const declineExtrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
 
-      await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined'], { ...options, onError });
+      await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined']);
     }
 
     if (isOwner) {

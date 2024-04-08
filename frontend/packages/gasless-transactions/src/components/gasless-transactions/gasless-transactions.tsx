@@ -6,10 +6,9 @@ import { ReactComponent as GaslessSVG } from '../../assets/icons/gas-station-lin
 
 type Props = {
   disabled?: boolean;
-  disabledTurnOn?: boolean;
 };
 
-function GaslessTransactions({ disabled, disabledTurnOn }: Props) {
+function GaslessTransactions({ disabled }: Props) {
   const { account } = useAccount();
   const { isEnabled, isActive } = useGaslessTransactions();
 
@@ -27,7 +26,7 @@ function GaslessTransactions({ disabled, disabledTurnOn }: Props) {
         </div>
       )}
 
-      {!isEnabled && <EnableGaslessSession type="button" disabled={disabled} disabledTurnOn={disabledTurnOn} />}
+      {!isEnabled && <EnableGaslessSession type="button" disabled={disabled} />}
     </div>
   ) : null;
 }
