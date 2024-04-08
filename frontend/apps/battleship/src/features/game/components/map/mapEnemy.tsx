@@ -39,7 +39,7 @@ export default function MapEnemy({ sizeBlock = 64, shipStatusArray, onClickCell,
   };
 
   const handleCellClick = (cellIndex: number) => {
-    if (!isDisabledCell) {
+    if (!isDisabledCell && !['Boom', 'BoomShip', 'DeadShip'].includes(shipStatusArray[cellIndex])) {
       onClickCell(cellIndex);
     }
   };
