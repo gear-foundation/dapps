@@ -82,4 +82,3 @@ fn success_play_tournament() {
         Stage::Finished(vec![PLAYERS[1].into(), PLAYERS[0].into()])
     );
 }
-

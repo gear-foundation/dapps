@@ -192,9 +192,7 @@ async fn process_handle(
                 .await
                 .expect("Error in transfer Fungible Token");
             }
-            Ok(VaraManEvent::SingleGameFinished {
-                prize,
-            })
+            Ok(VaraManEvent::SingleGameFinished { prize })
         }
         VaraManAction::StartTournament => {
             let msg_src = msg::source();
