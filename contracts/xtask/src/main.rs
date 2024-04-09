@@ -71,7 +71,18 @@ fn main() -> Result<()> {
             )
             .run()?;
             node()?;
-            xshell::cmd!(sh, "cargo t").run()?;
+            let output = xshell::cmd!(sh, "git diff --name-only master...HEAD").read()?;
+            for line in output.lines() {
+                let parts: Vec<&str> = line.split('/').collect();
+                if let Some(idx) = parts.iter().position(|&x| x == "contracts") {
+                    if let Some(directory) = parts.get(idx + 1) {
+                        if !directory.contains('.') {
+                            xshell::cmd!(sh, "cargo test --manifest-path {directory}/Cargo.toml")
+                                .run()?;
+                        }
+                    }
+                }
+            }
             docs()?;
         }
         "docs" => docs()?,
