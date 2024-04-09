@@ -37,12 +37,6 @@ jobs:
         with:
           targets: wasm32-unknown-unknown
 
-      - name: Daily Check
-        if: github.ref == 'refs/heads/master'
-        run: cargo xtask daily-ci
-        schedule:
-          - cron: '0 1 * * *'
-
       - name: ${{ github.ref_type == 'tag' && 'Build' || 'Build & CI' }}
         run: '[ $GITHUB_REF_TYPE = "tag" ] && cargo b || cargo xtask ci'
 

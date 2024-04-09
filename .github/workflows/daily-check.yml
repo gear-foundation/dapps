@@ -1,0 +1,21 @@
+name: Daily Check
+
+on:
+  schedule:
+    - cron: '0 1 * * *'
+
+jobs:
+  daily-check:
+    name: Daily Check
+    runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Run daily CI
+        run: cargo xtask daily-ci
