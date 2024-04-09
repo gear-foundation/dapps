@@ -71,7 +71,7 @@ fn main() -> Result<()> {
             )
             .run()?;
             node()?;
-            let output = xshell::cmd!(sh, "git diff --name-only master...HEAD").read()?;
+            let output = xshell::cmd!(sh, "git diff --name-only master HEAD").read()?;
             for line in output.lines() {
                 let parts: Vec<&str> = line.split('/').collect();
                 if let Some(idx) = parts.iter().position(|&x| x == "contracts") {
