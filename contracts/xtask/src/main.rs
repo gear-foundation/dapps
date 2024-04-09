@@ -85,6 +85,17 @@ fn main() -> Result<()> {
             }
             docs()?;
         }
+        "daily-ci" => {
+            xshell::cmd!(sh, "cargo fmt --all --check").run()?;
+            xshell::cmd!(
+                sh,
+                "cargo clippy --all-targets --no-deps -- -D warnings -A unused-imports"
+            )
+            .run()?;
+            node()?;
+            xshell::cmd!(sh, "cargo t").run()?;
+            docs()?;
+        }
         "docs" => docs()?,
         _ => return Err(anyhow!("unknown command")),
     }
