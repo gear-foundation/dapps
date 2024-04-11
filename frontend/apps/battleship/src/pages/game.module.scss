@@ -1,3 +1,11 @@
 .gameContainer {
   flex: 1;
 }
+
+.gameDarkHeading {
+  width: 100%;
+  height: 119px;
+  background: linear-gradient(90deg, rgb(0, 0, 0) 10%, rgb(0, 51, 39) 50%, rgb(0, 0, 0) 90%);
+  position: absolute;
+  top: 0;
+}
