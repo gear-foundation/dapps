@@ -3,6 +3,8 @@ import seaPng from '@/assets/images/sea.png';
 import styles from './map.module.scss';
 import clsx from 'clsx';
 import { useEffect, useState } from 'react';
+import { ReactComponent as CellCrossSVG } from '@/assets/images/icons/cross.svg';
+import smokeSVG from '@/assets/images/smoke.gif';
 import shipX1SVG from '@/assets/images/icons/ship-x1.svg';
 import shipX2SVG from '@/assets/images/icons/ship-x2.svg';
 import shipX3SVG from '@/assets/images/icons/ship-x3.svg';
@@ -121,11 +123,11 @@ export default function MapEnemy({ sizeBlock = 64, shipStatusArray, onClickCell,
     }
 
     if (isDeadShips) {
-      cellClassName += ` ${styles.deadShip}`;
+      cellClassName += ` ${styles.deadShip} ${styles.deadShipEnemy}`;
     }
 
     if (isHitShips) {
-      cellClassName += ` ${styles.hitShip}`;
+      cellClassName += ` ${styles.hitShip} ${styles.hitShipEnemy}`;
     }
 
     const cellStyle = {
@@ -141,7 +143,13 @@ export default function MapEnemy({ sizeBlock = 64, shipStatusArray, onClickCell,
         onClick={() => handleCellClick(cellIndex)}>
         {isHit && !isDeadShips && !isHitShips && <div className={styles.hitEmpty} />}
         {isDeadShips && !!deadShips[cellIndex] && handleRenderDeadShip(deadShips[cellIndex])}
-        {(isDeadShips || isHitShips) && <img src={fireGif} alt="fire" className={styles.cellFire} />}
+        {(isDeadShips || isHitShips) && (
+          <>
+            <CellCrossSVG className={clsx(styles.cellCross, styles.cellCrossEnemy)} />
+            <img src={fireGif} alt="fire" className={styles.cellFire} />
+            {Math.random() >= 0.5 && <img src={smokeSVG} alt="fire" className={styles.cellSmoke} />}
+          </>
+        )}
       </div>
     );
   };
