@@ -44,6 +44,30 @@
   transform: translateY(-20px);
 }
 
+.cellCross {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+  
+  & path {
+    fill: #808080;
+  }
+
+  &Enemy {
+    & path {
+      fill: #8A0000;
+    }
+  }
+}
+
+.cellSmoke {
+  z-index: 1;
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  top: -16px;
+}
+
 .buttons {
   width: 100%;
   display: flex;
@@ -66,8 +90,12 @@
 }
 
 .hitShip {
-  background: transparent;
-  border: 1px solid #00000033
+  border: 1px solid #00000033;
+  background: #CDCDCD;
+
+  &Enemy {
+    background: transparent;
+  }
 }
 
 .hitEmpty {
@@ -78,11 +106,14 @@
 }
 
 .hitCell {
-  background: transparent;
   border: 1px solid #00000033;
 }
 
 .deadShip {
-  background: transparent;
-  border: 1px solid #00000033
+  border: 1px solid #00000033;
+  background: #ffe8e8;
+
+  &Enemy {
+    background: transparent;
+  }
 }
