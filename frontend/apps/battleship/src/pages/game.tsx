@@ -6,5 +6,10 @@ export default function GamePage() {
   useInitGame();
   const { isActiveGame } = useGame();
 
-  return <div className={styles.gameContainer}>{isActiveGame ? <GameProcess /> : <ShipArrangement />}</div>;
+  return (
+    <>
+      <div className={styles.gameDarkHeading} />
+      <div className={styles.gameContainer}>{isActiveGame ? <GameProcess /> : <ShipArrangement />}</div>
+    </>
+  );
 }
