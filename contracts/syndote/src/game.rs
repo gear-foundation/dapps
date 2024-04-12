@@ -231,8 +231,7 @@ impl GameSessionActions for Game {
         gas_refill_timeout: u32,
     ) -> Result<(), GameError> {
         let current_player: ActorId = self.players_queue[self.current_turn as usize];
-        self.current_player = current_player;
-        self.current_step += 1;
+        self.current_player = current_player;        
         let mut player_info = self.get_player_info()?;
         let position = if player_info.in_jail {
             player_info.position
@@ -367,7 +366,7 @@ impl GameSessionActions for Game {
             0,
         )
         .expect("Error in sending a message `GameEvent::Step`");
-
+        self.current_step += 1;
         exec::wake(self.current_msg_id).expect("Unable to wake the msg");
     }
 
