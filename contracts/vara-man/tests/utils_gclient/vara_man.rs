@@ -9,16 +9,15 @@ pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     init_with_config(
         api,
         Config {
-            one_coin_in_value: 1_000_000_000_000,
-            tokens_per_gold_coin_easy: 5,
-            tokens_per_silver_coin_easy: 1,
-            tokens_per_gold_coin_medium: 8,
-            tokens_per_silver_coin_medium: 2,
-            tokens_per_gold_coin_hard: 10,
-            tokens_per_silver_coin_hard: 3,
-            gold_coins: 5,
-            silver_coins: 20,
-            number_of_lives: 3,
+            one_point_in_value: 10_000_000_000_000,
+            points_per_gold_coin_easy: 5,
+            points_per_silver_coin_easy: 1,
+            points_per_gold_coin_medium: 8,
+            points_per_silver_coin_medium: 2,
+            points_per_gold_coin_hard: 10,
+            points_per_silver_coin_hard: 3,
+            gas_for_finish_tournament: 10_000_000_000,
+            time_for_single_round: 15_000,
         },
     )
     .await
@@ -59,40 +58,27 @@ pub async fn init_with_config(api: &GearApi, config: Config) -> gclient::Result<
     Ok(program_id.into())
 }
 
-pub async fn register_player(
+pub async fn create_tournament(
     api: &GearApi,
     program_id: &ActorId,
-    name: &str,
-    error: Option<VaraManError>,
-) -> gclient::Result<()> {
-    let result = send_message(
-        api,
-        program_id,
-        VaraManAction::RegisterPlayer {
-            name: name.to_owned(),
-        },
-        0,
-    )
-    .await?;
-
-    let event: Result<VaraManEvent, VaraManError> =
-        Result::<VaraManEvent, VaraManError>::decode(&mut result.as_ref())
-            .expect("Unexpected invalid result payload.");
-
-    if let Some(error) = error {
-        assert_eq!(event.unwrap_err(), error);
-    }
-
-    Ok(())
-}
-
-pub async fn start_game(
-    api: &GearApi,
-    program_id: &ActorId,
+    tournament_name: String,
+    name: String,
     level: Level,
+    duration_ms: u32,
     error: Option<VaraManError>,
 ) -> gclient::Result<()> {
-    let result = send_message(api, program_id, VaraManAction::StartGame { level }, 0).await?;
+    let result = send_message(
+        api,
+        program_id,
+        VaraManAction::CreateNewTournament {
+            tournament_name,
+            name,
+            level,
+            duration_ms,
+        },
+        10_000_000_000_000,
+    )
+    .await?;
 
     let event: Result<VaraManEvent, VaraManError> =
         Result::<VaraManEvent, VaraManError>::decode(&mut result.as_ref())
@@ -104,20 +90,95 @@ pub async fn start_game(
 
     Ok(())
 }
-
-pub async fn claim_reward(
+pub async fn register_for_tournament(
     api: &GearApi,
     program_id: &ActorId,
-    silver_coins: u64,
-    gold_coins: u64,
+    admin_id: ActorId,
+    name: String,
+    value: u128,
     error: Option<VaraManError>,
 ) -> gclient::Result<()> {
     let result = send_message(
         api,
         program_id,
-        VaraManAction::ClaimReward {
-            silver_coins,
+        VaraManAction::RegisterForTournament { admin_id, name },
+        value,
+    )
+    .await?;
+
+    let event: Result<VaraManEvent, VaraManError> =
+        Result::<VaraManEvent, VaraManError>::decode(&mut result.as_ref())
+            .expect("Unexpected invalid result payload.");
+
+    if let Some(error) = error {
+        assert_eq!(event.unwrap_err(), error);
+    }
+
+    Ok(())
+}
+pub async fn start_tournament(
+    api: &GearApi,
+    program_id: &ActorId,
+    error: Option<VaraManError>,
+) -> gclient::Result<()> {
+    let result = send_message(api, program_id, VaraManAction::StartTournament, 0).await?;
+
+    let event: Result<VaraManEvent, VaraManError> =
+        Result::<VaraManEvent, VaraManError>::decode(&mut result.as_ref())
+            .expect("Unexpected invalid result payload.");
+
+    if let Some(error) = error {
+        assert_eq!(event.unwrap_err(), error);
+    }
+
+    Ok(())
+}
+pub async fn record_tournament_result(
+    api: &GearApi,
+    program_id: &ActorId,
+    time: u128,
+    gold_coins: u128,
+    silver_coins: u128,
+    error: Option<VaraManError>,
+) -> gclient::Result<()> {
+    let result = send_message(
+        api,
+        program_id,
+        VaraManAction::RecordTournamentResult {
+            time,
             gold_coins,
+            silver_coins,
+        },
+        0,
+    )
+    .await?;
+
+    let event: Result<VaraManEvent, VaraManError> =
+        Result::<VaraManEvent, VaraManError>::decode(&mut result.as_ref())
+            .expect("Unexpected invalid result payload.");
+
+    println!("EVENT: {:?}", event);
+
+    if let Some(error) = error {
+        assert_eq!(event.unwrap_err(), error);
+    }
+
+    Ok(())
+}
+pub async fn finish_single_game(
+    api: &GearApi,
+    program_id: &ActorId,
+    gold_coins: u128,
+    silver_coins: u128,
+    error: Option<VaraManError>,
+) -> gclient::Result<()> {
+    let result = send_message(
+        api,
+        program_id,
+        VaraManAction::FinishSingleGame {
+            gold_coins,
+            silver_coins,
+            level: Level::Easy,
         },
         0,
     )
@@ -133,7 +194,23 @@ pub async fn claim_reward(
 
     Ok(())
 }
+pub async fn leave_game(
+    api: &GearApi,
+    program_id: &ActorId,
+    error: Option<VaraManError>,
+) -> gclient::Result<()> {
+    let result = send_message(api, program_id, VaraManAction::LeaveGame, 0).await?;
 
+    let event: Result<VaraManEvent, VaraManError> =
+        Result::<VaraManEvent, VaraManError>::decode(&mut result.as_ref())
+            .expect("Unexpected invalid result payload.");
+
+    if let Some(error) = error {
+        assert_eq!(event.unwrap_err(), error);
+    }
+
+    Ok(())
+}
 pub async fn change_status(
     api: &GearApi,
     program_id: &ActorId,
@@ -172,7 +249,7 @@ pub async fn change_config(
     Ok(())
 }
 
-pub async fn get_state(api: &GearApi, program_id: &ActorId) -> Option<VaraMan> {
+pub async fn get_state(api: &GearApi, program_id: &ActorId) -> Option<VaraManState> {
     let program_id = program_id.encode().as_slice().into();
     let reply = api
         .read_state(program_id, StateQuery::All.encode())
@@ -203,7 +280,7 @@ async fn send_message(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.burned * 2, value)
+        .send_message(program_id.into(), payload, gas_info.min_limit, value)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;
