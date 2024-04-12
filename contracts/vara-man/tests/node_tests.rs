@@ -1,207 +1,78 @@
 mod utils_gclient;
-
 use gclient::GearApi;
 use gstd::prelude::*;
-use vara_man_io::{Level, Status, VaraManError};
+use utils_gclient::{common::*, vara_man::*};
+use vara_man_io::{Level, Stage, Status};
 
 #[tokio::test]
-async fn gclient_success_register_player() -> gclient::Result<()> {
+async fn gclient_success_play_tournament() -> gclient::Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
+    // let api = GearApi::dev().await?;
     let vara_man_id = utils_gclient::common::init(&api).await?;
-    utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
+    change_status(&api, &vara_man_id, Status::StartedWithNativeToken, None).await?;
 
     {
         let api = api.with("//Peter")?;
-        utils_gclient::vara_man::register_player(&api, &vara_man_id, "Peter", None).await?;
-
-        let state = utils_gclient::vara_man::get_state(&api, &vara_man_id)
+        create_tournament(
+            &api,
+            &vara_man_id,
+            "tournament_name".to_string(),
+            "tournament admin".to_string(),
+            Level::Easy,
+            30_000,
+            None,
+        )
+        .await?;
+        let state = get_state(&api, &vara_man_id)
             .await
             .expect("Unexpected invalid state.");
-        assert!(!state.players.is_empty());
-        assert!(state.games.is_empty());
-        assert_eq!(state.players[0].1.name, "Peter".to_owned());
-    }
+        assert_eq!(state.tournaments.len(), 1);
+        assert_eq!(state.players_to_game_id.len(), 1);
 
-    Ok(())
-}
-
-#[tokio::test]
-async fn gclient_failures_register_player() -> gclient::Result<()> {
-    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
-    let vara_man_id = utils_gclient::common::init(&api).await?;
-
-    {
-        let player_api = api.clone().with("//Peter")?;
-        utils_gclient::vara_man::register_player(
-            &player_api,
+        let api_alex = api.clone().with("//Alex")?;
+        let admin_id = get_user_to_actor_id("//Peter").await?;
+        register_for_tournament(
+            &api_alex,
             &vara_man_id,
-            "Peter",
-            Some(VaraManError::WrongStatus),
+            admin_id,
+            "player #1".to_string(),
+            10_000_000_000_000,
+            None,
         )
         .await?;
-        utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
-        utils_gclient::vara_man::register_player(
-            &player_api,
-            &vara_man_id,
-            "",
-            Some(VaraManError::EmptyName),
-        )
-        .await?;
-        utils_gclient::vara_man::register_player(&player_api, &vara_man_id, "Peter", None).await?;
-        utils_gclient::vara_man::register_player(
-            &player_api,
-            &vara_man_id,
-            "Peter",
-            Some(VaraManError::AlreadyRegistered),
-        )
-        .await?;
-    }
 
-    Ok(())
-}
-
-#[tokio::test]
-async fn gclient_success_start_game() -> gclient::Result<()> {
-    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
-    let vara_man_id = utils_gclient::common::init(&api).await?;
-    utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
-
-    {
-        let api = api.with("//Peter")?;
-        utils_gclient::vara_man::register_player(&api, &vara_man_id, "Peter", None).await?;
-        utils_gclient::vara_man::start_game(&api, &vara_man_id, Level::Easy, None).await?;
-
-        let state = utils_gclient::vara_man::get_state(&api, &vara_man_id)
+        let state = get_state(&api, &vara_man_id)
             .await
             .expect("Unexpected invalid state.");
-        assert_eq!(state.games.len(), 1);
-    }
+        assert_eq!(state.players_to_game_id.len(), 2);
 
-    Ok(())
-}
+        start_tournament(&api, &vara_man_id, None).await?;
 
-#[tokio::test]
-async fn gclient_failures_start_game() -> gclient::Result<()> {
-    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
-    let vara_man_id = utils_gclient::common::init(&api).await?;
+        record_tournament_result(&api_alex, &vara_man_id, 1_000, 1, 5, None).await?;
+        record_tournament_result(&api, &vara_man_id, 1_000, 1, 5, None).await?;
 
-    {
-        let player_api = api.clone().with("//Peter")?;
-        utils_gclient::vara_man::start_game(
-            &player_api,
-            &vara_man_id,
-            Level::Easy,
-            Some(VaraManError::WrongStatus),
-        )
-        .await?;
-        utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
-        utils_gclient::vara_man::start_game(
-            &player_api,
-            &vara_man_id,
-            Level::Easy,
-            Some(VaraManError::NotRegistered),
-        )
-        .await?;
-        utils_gclient::vara_man::register_player(&player_api, &vara_man_id, "Peter", None).await?;
-        utils_gclient::vara_man::start_game(&player_api, &vara_man_id, Level::Easy, None).await?;
-        utils_gclient::vara_man::start_game(
-            &player_api,
-            &vara_man_id,
-            Level::Easy,
-            Some(VaraManError::AlreadyStartGame),
-        )
-        .await?;
-    }
-
-    Ok(())
-}
-
-#[tokio::test]
-async fn gclient_success_claim_reward() -> gclient::Result<()> {
-    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
-    let vara_man_id = utils_gclient::common::init(&api).await?;
-    utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
-    let balance = api.total_balance(api.account_id()).await?;
-    api.transfer(vara_man_id.encode().as_slice().into(), balance / 10)
-        .await?;
-
-    {
-        let api = api.with("//Peter")?;
-        utils_gclient::vara_man::register_player(&api, &vara_man_id, "Peter", None).await?;
-        utils_gclient::vara_man::start_game(&api, &vara_man_id, Level::Easy, None).await?;
-        utils_gclient::vara_man::claim_reward(&api, &vara_man_id, 10, 1, None).await?;
-
-        let state = utils_gclient::vara_man::get_state(&api, &vara_man_id)
+        let state = get_state(&api, &vara_man_id)
             .await
             .expect("Unexpected invalid state.");
+        println!("State: {:?}", state);
+        assert_eq!(state.tournaments[0].1.participants[0].1.points, 10);
 
-        assert_eq!(state.players[0].1.claimed_gold_coins, 1);
-        assert_eq!(state.players[0].1.claimed_silver_coins, 10);
-        assert_eq!(state.players[0].1.lives, 2);
-    }
+        let old_balance = api.total_balance(api_alex.account_id()).await?;
 
-    Ok(())
-}
+        std::thread::sleep(std::time::Duration::from_secs(15));
 
-#[tokio::test]
-async fn gclient_failures_claim_reward() -> gclient::Result<()> {
-    let api = GearApi::dev_from_path("../target/tmp/gear").await?;
-    let vara_man_id = utils_gclient::common::init(&api).await?;
-    utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
+        let state = get_state(&api, &vara_man_id)
+            .await
+            .expect("Unexpected invalid state.");
+        let alex_id = get_user_to_actor_id("//Alex").await?;
+        assert_eq!(
+            state.tournaments[0].1.stage,
+            Stage::Finished(vec![alex_id, admin_id])
+        );
 
-    {
-        let player_api = api.clone().with("//Peter")?;
-        utils_gclient::vara_man::claim_reward(
-            &player_api,
-            &vara_man_id,
-            10,
-            1,
-            Some(VaraManError::GameDoesNotExist),
-        )
-        .await?;
-        utils_gclient::vara_man::register_player(&player_api, &vara_man_id, "Peter", None).await?;
-        utils_gclient::vara_man::start_game(&player_api, &vara_man_id, Level::Easy, None).await?;
-        utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Paused, None).await?;
-        utils_gclient::vara_man::claim_reward(
-            &player_api,
-            &vara_man_id,
-            10,
-            1,
-            Some(VaraManError::WrongStatus),
-        )
-        .await?;
-        utils_gclient::vara_man::change_status(&api, &vara_man_id, Status::Started, None).await?;
+        let new_balance = api.total_balance(api_alex.account_id()).await?;
 
-        utils_gclient::vara_man::claim_reward(
-            &player_api,
-            &vara_man_id,
-            10,
-            10,
-            Some(VaraManError::AmountGreaterThanAllowed),
-        )
-        .await?;
-        utils_gclient::vara_man::claim_reward(
-            &player_api,
-            &vara_man_id,
-            10,
-            1,
-            Some(VaraManError::TransferFailed),
-        )
-        .await?;
-
-        let balance = api.total_balance(api.account_id()).await?;
-        api.transfer(vara_man_id.encode().as_slice().into(), balance / 10)
-            .await?;
-
-        utils_gclient::vara_man::claim_reward(&player_api, &vara_man_id, 10, 1, None).await?;
-        utils_gclient::vara_man::claim_reward(
-            &player_api,
-            &vara_man_id,
-            10,
-            1,
-            Some(VaraManError::GameDoesNotExist),
-        )
-        .await?;
+        assert_eq!(new_balance - old_balance, 10_000_000_000_000);
     }
 
     Ok(())

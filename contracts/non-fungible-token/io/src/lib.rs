@@ -145,6 +145,8 @@ pub struct IoNft {
     pub token_id: TokenId,
     pub owner: ActorId,
     pub transactions: Vec<(H256, NFTEvent)>,
+    pub collection: Collection,
+    pub config: Config,
 }
 
 impl From<&NFTState> for IoNFTState {

@@ -1,6 +1,6 @@
 #![no_std]
 
-use gstd::{debug, msg, prelude::*};
+use gstd::{msg, prelude::*};
 
 static mut MESSAGE_LOG: Vec<String> = vec![];
 

@@ -56,10 +56,9 @@ unsafe extern fn init() {
 }
 
 #[no_mangle]
-unsafe extern fn handle() {
+extern fn handle() {
     let action: NFTAction = msg::load().expect("Could not load NFTAction");
-    let nft = CONTRACT.get_or_insert(Default::default());
-    gstd::debug!("NFTAction: {:?}", &action);
+    let nft = unsafe { CONTRACT.get_or_insert(Default::default()) };
     match action {
         NFTAction::Mint {
             transaction_id,
@@ -194,11 +193,6 @@ unsafe extern fn handle() {
             rest_updates_count,
             token_ids,
         } => {
-            gstd::debug!(
-                "Update rest_updates_count: {}, token_ids: {:?}",
-                rest_updates_count,
-                token_ids
-            );
             nft.rest_updates_count = rest_updates_count - 1;
             nft.update_media(&token_ids);
             if nft.rest_updates_count == 0 {
@@ -209,7 +203,6 @@ unsafe extern fn handle() {
                 token_ids,
             };
             let gas_available = exec::gas_available();
-            gstd::debug!("Update. gas_available: {}", gas_available);
             if gas_available <= GAS_FOR_UPDATE {
                 let reservations: &mut Vec<ReservationId> = unsafe { RESERVATION.as_mut() };
                 let reservation_id = reservations.pop().expect("Need more gas");
@@ -240,16 +233,9 @@ unsafe extern fn handle() {
                 rest_updates_count: updates_count,
                 token_ids: token_ids.clone(),
             };
-            let message_id = send_delayed(exec::program_id(), &payload, 0, update_period)
+            send_delayed(exec::program_id(), payload, 0, update_period)
                 .expect("Can't send delayed");
             nft.reserve_gas();
-            gstd::debug!(
-                "send_delayed payload: message_id: {:?}, {:?}, update_period: {} token_ids: {:?}",
-                message_id,
-                payload,
-                update_period,
-                token_ids
-            );
         }
     };
 }
@@ -325,13 +311,6 @@ impl AutoChangedNft {
                 let urls_for_token = &self.urls[token_id];
                 let index = self.rest_updates_count as usize % urls_for_token.len();
                 let media = urls_for_token[index].clone();
-                gstd::debug!(
-                    "update_media(): urls.len(): {}, token_id: {}, index: {}, media: {}",
-                    urls_for_token.len(),
-                    token_id,
-                    index,
-                    media
-                );
                 meta.media = media
             }
         }
