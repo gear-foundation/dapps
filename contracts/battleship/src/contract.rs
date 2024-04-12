@@ -25,6 +25,7 @@ impl Battleship {
         key: &ActorId,
         duration: u64,
         allowed_actions: Vec<ActionsForSession>,
+        signature: Option<Vec<u8>>,
     ) -> Result<BattleshipReply, BattleshipError> {
         if duration < MINIMUM_SESSION_SURATION_MS {
             return Err(BattleshipError::DurationIsSmall);
@@ -32,16 +33,7 @@ impl Battleship {
 
         let msg_source = msg::source();
         let block_timestamp = exec::block_timestamp();
-        if let Some(Session {
-            key: _,
-            expires,
-            allowed_actions: _,
-        }) = self.sessions.get(&msg_source)
-        {
-            if *expires > block_timestamp {
-                return Err(BattleshipError::AlreadyHaveActiveSession);
-            }
-        }
+        let block_height = exec::block_height();
 
         let expires = block_timestamp + duration;
 
@@ -51,17 +43,48 @@ impl Battleship {
         if allowed_actions.is_empty() {
             return Err(BattleshipError::NoMessagesForApprovalWerePassed);
         }
+        let account = match signature {
+            Some(sig_bytes) => {
+                self.check_if_session_exists(key)?;
+                let pub_key: [u8; 32] = (*key).into();
+                let mut prefix = b"<Bytes>".to_vec();
+                let mut message = SignatureData {
+                    key: msg_source,
+                    duration,
+                    allowed_actions: allowed_actions.clone(),
+                }.encode();
+                let mut postfix = b"</Bytes>".to_vec();
+                prefix.append(&mut message);
+                prefix.append(&mut postfix);
 
-        self.sessions.entry(msg_source).insert(Session {
-            key: *key,
-            expires,
-            allowed_actions,
-        });
+                if crate::sr25519::verify(&sig_bytes, prefix, pub_key).is_err() {
+                    panic!("Failed sign verification");
+                }
+                self.sessions.entry(*key).insert(Session {
+                    key: msg_source,
+                    expires,
+                    allowed_actions,
+                    expires_at_block: block_height + number_of_blocks,
+                });
+                *key
+            }
+            None => {
+                self.check_if_session_exists(&msg_source)?;
+
+                self.sessions.entry(msg_source).insert(Session {
+                    key: *key,
+                    expires,
+                    allowed_actions,
+                    expires_at_block: block_height + number_of_blocks,
+                });
+                msg_source
+            }
+        };
 
         msg::send_with_gas_delayed(
             exec::program_id(),
             BattleshipAction::DeleteSessionFromProgram {
-                account: msg::source(),
+                account,
             },
             self.config.gas_to_delete_session,
             0,
@@ -70,6 +93,21 @@ impl Battleship {
         .expect("Error in sending a delayed msg");
 
         Ok(BattleshipReply::SessionCreated)
+    }
+
+    fn check_if_session_exists(&self, account: &ActorId) -> Result<(), BattleshipError> {
+        if let Some(Session {
+            key: _,
+            expires: _,
+            allowed_actions: _,
+            expires_at_block,
+        }) = self.sessions.get(account)
+        {
+            if *expires_at_block > exec::block_height() {
+                return Err(BattleshipError::AlreadyHaveActiveSession)
+            };
+        }
+        Ok(())
     }
 
     fn delete_session_from_program(
@@ -81,7 +119,7 @@ impl Battleship {
         }
 
         if let Some(session) = self.sessions.remove(session_for_account) {
-            if session.expires > exec::block_timestamp() {
+            if session.expires_at_block > exec::block_height() {
                 return Err(BattleshipError::AccessDenied);
             }
         }
@@ -331,7 +369,8 @@ extern fn handle() {
             key,
             duration,
             allowed_actions,
-        } => battleship.create_session(&key, duration, allowed_actions),
+            signature
+        } => battleship.create_session(&key, duration, allowed_actions, signature),
         BattleshipAction::DeleteSessionFromProgram { account } => {
             battleship.delete_session_from_program(&account)
         }
@@ -383,9 +422,10 @@ extern fn handle_reply() {
                 game.game_over = true;
                 game.game_result = Some(BattleshipParticipants::Bot);
                 game.end_time = exec::block_timestamp();
+                let payload: Result<BattleshipReply, BattleshipError> = Ok(BattleshipReply::GameFinished(BattleshipParticipants::Bot));
                 msg::send(
                     game_id,
-                    BattleshipReply::GameFinished(BattleshipParticipants::Bot),
+                    payload,
                     0,
                 )
                 .expect("Unable to send the message about game over");
