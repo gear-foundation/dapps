@@ -6,7 +6,7 @@ use tokio::time::{sleep, Duration};
 pub mod node_utils;
 use node_utils::{
     get_game_session, get_owner_id, get_player_info, make_reservation, send_balances, send_message,
-    upload_and_register_players, upload_syndote, ApiUtils,
+    upload_and_register_players, upload_strategy, upload_syndote, ApiUtils, PLAYERS,
 };
 
 #[tokio::test]
@@ -30,6 +30,8 @@ async fn successfull_game() -> Result<()> {
 
     // create session
     let admin_id = client.get_actor_id();
+    let strategy_id: [u8; 32] = upload_strategy(&client, &mut listener).await?.into();
+
     let exp_reply: Result<GameReply, GameError> = Ok(GameReply::GameSessionCreated { admin_id });
     assert_eq!(
         Ok(exp_reply),
@@ -37,8 +39,12 @@ async fn successfull_game() -> Result<()> {
             &client,
             &mut listener,
             game_id.into(),
-            GameAction::CreateGameSession { entry_fee: None },
-            10_000_000_000,
+            GameAction::CreateGameSession {
+                entry_fee: None,
+                strategy_id: strategy_id.into(),
+                name: "Alice".to_string()
+            },
+            745_000_000_000,
             false
         )
         .await?
@@ -97,6 +103,14 @@ async fn successfull_game() -> Result<()> {
         }
         if game_session.game_status == GameStatus::Finished {
             println!("{:?}", game_session);
+            client
+                .send_message(
+                    game_id,
+                    GameAction::DeleteGame { admin_id },
+                    730_000_000_000,
+                    0,
+                )
+                .await?;
             break;
         }
     }
@@ -124,6 +138,7 @@ async fn gasless_player_timeout() -> Result<()> {
     )
     .await?;
 
+    let strategy_id: [u8; 32] = upload_strategy(&client, &mut listener).await?.into();
     // create session
     let admin_id = client.get_actor_id();
     let exp_reply: Result<GameReply, GameError> = Ok(GameReply::GameSessionCreated { admin_id });
@@ -133,7 +148,11 @@ async fn gasless_player_timeout() -> Result<()> {
             &client,
             &mut listener,
             game_id.into(),
-            GameAction::CreateGameSession { entry_fee: None },
+            GameAction::CreateGameSession {
+                entry_fee: None,
+                strategy_id: strategy_id.into(),
+                name: "Alice".to_string()
+            },
             10_000_000_000,
             false
         )
@@ -165,7 +184,7 @@ async fn gasless_player_timeout() -> Result<()> {
 
             // check that player was excluded from the game
             let owner_id = get_owner_id(&client, game_id, admin_id, strategy).await?;
-            let player_info = get_player_info(&client, game_id, admin_id, owner_id).await?;
+            let player_info = get_player_info(&client, game_id, owner_id).await?;
             assert!(player_info.lost);
         }
         if game_session.game_status == GameStatus::WaitingForGasForGameContract {

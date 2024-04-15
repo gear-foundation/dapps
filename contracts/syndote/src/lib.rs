@@ -25,12 +25,18 @@ pub struct GameManager {
     game_sessions: HashMap<AdminId, Game>,
     config: Config,
     awaiting_reply_msg_id_to_session_id: HashMap<MessageId, AdminId>,
+    players_to_sessions: HashMap<ActorId, AdminId>,
 }
 
 static mut GAME_MANAGER: Option<GameManager> = None;
 
 impl GameManager {
-    fn create_game_session(&mut self, entry_fee: Option<u128>) -> Result<GameReply, GameError> {
+    fn create_game_session(
+        &mut self,
+        entry_fee: Option<u128>,
+        strategy_id: &ActorId,
+        name: &str,
+    ) -> Result<GameReply, GameError> {
         if let Some(fee) = entry_fee {
             if fee < EXISTENTIAL_DEPOSIT {
                 return Err(GameError::FeeIsLessThanED);
@@ -48,7 +54,15 @@ impl GameManager {
             ..Default::default()
         };
         game.init_properties();
+        game.register(
+            &admin_id,
+            strategy_id,
+            name,
+            self.config.reservation_amount,
+            self.config.reservation_duration_in_block,
+        )?;
         self.game_sessions.insert(admin_id, game);
+        self.players_to_sessions.insert(admin_id, admin_id);
         Ok(GameReply::GameSessionCreated { admin_id })
     }
 
@@ -68,17 +82,29 @@ impl GameManager {
         &mut self,
         admin_id: &AdminId,
         strategy_id: &ActorId,
+        name: &str,
     ) -> Result<GameReply, GameError> {
+        let player_id = msg::source();
+
+        if self.game_sessions.contains_key(&player_id)
+            || self.players_to_sessions.contains_key(&player_id)
+        {
+            return Err(GameError::AccountAlreadyRegistered);
+        }
+
         let game = self
             .game_sessions
             .get_mut(admin_id)
             .ok_or(GameError::GameDoesNotExist)?;
 
         game.register(
+            &player_id,
             strategy_id,
+            name,
             self.config.reservation_amount,
             self.config.reservation_duration_in_block,
         )?;
+        self.players_to_sessions.insert(player_id, *admin_id);
         Ok(GameReply::StrategyRegistered)
     }
 
@@ -95,12 +121,37 @@ impl GameManager {
         )
     }
 
+    fn delete_player(&mut self, player_id: &ActorId) -> Result<GameReply, GameError> {
+        let admin_id = self
+            .players_to_sessions
+            .get(player_id)
+            .ok_or(GameError::AccountAlreadyRegistered)?;
+
+        if *admin_id != msg::source() {
+            return Err(GameError::OnlyAdmin);
+        }
+
+        let game = self
+            .game_sessions
+            .get_mut(admin_id)
+            .ok_or(GameError::GameDoesNotExist)?;
+
+        game.delete_player(player_id)?;
+
+        self.players_to_sessions.remove(player_id);
+
+        Ok(GameReply::PlayerDeleted)
+    }
+
     fn cancel_game_session(&mut self, admin_id: &AdminId) -> Result<GameReply, GameError> {
         let game = self
             .game_sessions
             .get_mut(admin_id)
             .ok_or(GameError::GameDoesNotExist)?;
         game.cancel_game_session()?;
+        for player_id in game.owners_to_strategy_ids.keys() {
+            self.players_to_sessions.remove(player_id);
+        }
         self.game_sessions.remove(admin_id);
         Ok(GameReply::GameWasCancelled)
     }
@@ -111,7 +162,21 @@ impl GameManager {
             .get_mut(admin_id)
             .ok_or(GameError::GameDoesNotExist)?;
         game.exit_game()?;
+        self.players_to_sessions.remove(&msg::source());
         Ok(GameReply::PlayerLeftGame)
+    }
+
+    fn delete_game(&mut self, admin_id: &AdminId) -> Result<GameReply, GameError> {
+        let game = self
+            .game_sessions
+            .get(admin_id)
+            .ok_or(GameError::GameDoesNotExist)?;
+        game.check_status(GameStatus::Finished)?;
+        for player_id in game.owners_to_strategy_ids.keys() {
+            self.players_to_sessions.remove(player_id);
+        }
+        self.game_sessions.remove(admin_id);
+        Ok(GameReply::GameDeleted)
     }
 
     fn add_gas_to_player_strategy(&mut self, admin_id: &AdminId) -> Result<GameReply, GameError> {
@@ -138,18 +203,25 @@ extern fn handle() {
             .expect("Unexpected: Contract is not initialized")
     };
     let reply = match action {
-        GameAction::CreateGameSession { entry_fee } => game_manager.create_game_session(entry_fee),
+        GameAction::CreateGameSession {
+            entry_fee,
+            strategy_id,
+            name,
+        } => game_manager.create_game_session(entry_fee, &strategy_id, &name),
         GameAction::MakeReservation { admin_id } => game_manager.make_reservation(&admin_id),
         GameAction::Register {
             admin_id,
             strategy_id,
-        } => game_manager.register(&admin_id, &strategy_id),
+            name,
+        } => game_manager.register(&admin_id, &strategy_id, &name),
         GameAction::Play { admin_id } => game_manager.play(&admin_id),
         GameAction::AddGasToPlayerStrategy { admin_id } => {
             game_manager.add_gas_to_player_strategy(&admin_id)
         }
         GameAction::CancelGameSession { admin_id } => game_manager.cancel_game_session(&admin_id),
         GameAction::ExitGame { admin_id } => game_manager.exit_game(&admin_id),
+        GameAction::DeleteGame { admin_id } => game_manager.delete_game(&admin_id),
+        GameAction::DeletePlayer { player_id } => game_manager.delete_player(&player_id),
     };
     let value = if reply.is_err() { msg::value() } else { 0 };
     msg::reply(reply, value).expect("Error during sending a reply");
@@ -171,31 +243,39 @@ extern fn state() {
     let query: StateQuery = msg::load().expect("Unable to load query");
 
     let reply = match query {
-        StateQuery::GetGameSession { admin_id } => {
-            if let Some(game_session) = game_manager.game_sessions.get(&admin_id) {
-                let game_session: GameState = game_session.clone().into();
-                StateReply::GameSession {
-                    game_session: Some(game_session),
-                }
-            } else {
-                StateReply::GameSession { game_session: None }
-            }
+        StateQuery::GetGameSession { account_id } => {
+            let game_session =
+                if let Some(admin_id) = game_manager.players_to_sessions.get(&account_id) {
+                    if let Some(game_session) = game_manager.game_sessions.get(admin_id) {
+                        let game_session: GameState = game_session.clone().into();
+                        Some(game_session)
+                    } else {
+                        None
+                    }
+                } else {
+                    None
+                };
+            StateReply::GameSession { game_session }
         }
-        StateQuery::GetPlayerInfo {
-            admin_id,
-            account_id,
-        } => {
-            let player_info = if let Some(game_session) = game_manager.game_sessions.get(&admin_id)
+        StateQuery::GetPlayerInfo { account_id } => {
+            let player_info = if let Some(admin_id) =
+                game_manager.players_to_sessions.get(&account_id)
             {
-                if let Some(strategy_id) = game_session.owners_to_strategy_ids.get(&account_id) {
-                    let player_info = game_session.players.get(strategy_id).cloned();
-                    player_info
+                if let Some(game_session) = game_manager.game_sessions.get(admin_id) {
+                    if let Some(strategy_id) = game_session.owners_to_strategy_ids.get(&account_id)
+                    {
+                        let player_info = game_session.players.get(strategy_id).cloned();
+                        player_info
+                    } else {
+                        None
+                    }
                 } else {
                     None
                 }
             } else {
                 None
             };
+
             StateReply::PlayerInfo { player_info }
         }
         StateQuery::GetOwnerId {
@@ -212,6 +292,16 @@ extern fn state() {
             };
             StateReply::OwnerId { owner_id }
         }
+
+        StateQuery::GetConfig => StateReply::Config(game_manager.config),
+
+        StateQuery::GetPlayersToSessions => StateReply::PlayersToSessions(
+            game_manager
+                .players_to_sessions
+                .clone()
+                .into_iter()
+                .collect(),
+        ),
     };
     msg::reply(reply, 0).expect("Failed to share state");
 }

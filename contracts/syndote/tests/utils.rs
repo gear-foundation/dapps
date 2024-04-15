@@ -5,7 +5,14 @@ pub const ADMIN_ID: u64 = 10;
 pub const PLAYERS: [u64; 4] = [11, 12, 13, 14];
 pub trait SyndoteTestFunctions {
     fn game(system: &System, from: u64, config: Config) -> Program<'_>;
-    fn create_game_session(&self, from: u64, entry_fee: Option<u128>, error: Option<GameError>);
+    fn create_game_session(
+        &self,
+        from: u64,
+        strategy_id: [u8; 32],
+        name: String,
+        entry_fee: Option<u128>,
+        error: Option<GameError>,
+    );
     fn make_reservation(&self, from: u64, admin_id: u64, error: Option<GameError>);
     fn register(
         &self,
@@ -19,7 +26,7 @@ pub trait SyndoteTestFunctions {
     fn cancel_game_session(&self, from: u64, admin_id: u64, error: Option<GameError>);
     fn exit_game(&self, from: u64, admin_id: u64, error: Option<GameError>);
     fn get_game_session(&self, admin_id: u64) -> Option<GameState>;
-    fn get_player_info(&self, admin_id: u64, account_id: u64) -> Option<PlayerInfo>;
+    fn get_player_info(&self, admin_id: u64) -> Option<PlayerInfo>;
 }
 
 impl SyndoteTestFunctions for Program<'_> {
@@ -30,8 +37,34 @@ impl SyndoteTestFunctions for Program<'_> {
         game
     }
 
-    fn create_game_session(&self, from: u64, entry_fee: Option<u128>, error: Option<GameError>) {
-        let result = self.send(from, GameAction::CreateGameSession { entry_fee });
+    fn create_game_session(
+        &self,
+        from: u64,
+        strategy_id: [u8; 32],
+        name: String,
+        entry_fee: Option<u128>,
+        error: Option<GameError>,
+    ) {
+        let result = if let Some(fee) = entry_fee {
+            self.send_with_value(
+                from,
+                GameAction::CreateGameSession {
+                    entry_fee,
+                    strategy_id: strategy_id.into(),
+                    name,
+                },
+                fee,
+            )
+        } else {
+            self.send(
+                from,
+                GameAction::CreateGameSession {
+                    entry_fee,
+                    strategy_id: strategy_id.into(),
+                    name,
+                },
+            )
+        };
         check_reply(
             &result,
             from,
@@ -63,6 +96,7 @@ impl SyndoteTestFunctions for Program<'_> {
                 from,
                 GameAction::Register {
                     admin_id: admin_id.into(),
+                    name: "Alice".to_string(),
                     strategy_id: strategy_id.into(),
                 },
                 fee,
@@ -72,6 +106,7 @@ impl SyndoteTestFunctions for Program<'_> {
                 from,
                 GameAction::Register {
                     admin_id: admin_id.into(),
+                    name: "Alice".to_string(),
                     strategy_id: strategy_id.into(),
                 },
             )
@@ -110,7 +145,7 @@ impl SyndoteTestFunctions for Program<'_> {
     fn get_game_session(&self, admin_id: u64) -> Option<GameState> {
         let reply: StateReply = self
             .read_state(StateQuery::GetGameSession {
-                admin_id: admin_id.into(),
+                account_id: admin_id.into(),
             })
             .expect("Unable to read varatube state");
         if let StateReply::GameSession { game_session } = reply {
@@ -120,11 +155,10 @@ impl SyndoteTestFunctions for Program<'_> {
         }
     }
 
-    fn get_player_info(&self, admin_id: u64, account_id: u64) -> Option<PlayerInfo> {
+    fn get_player_info(&self, admin_id: u64) -> Option<PlayerInfo> {
         let reply: StateReply = self
             .read_state(StateQuery::GetPlayerInfo {
-                admin_id: admin_id.into(),
-                account_id: account_id.into(),
+                account_id: admin_id.into(),
             })
             .expect("Unable to read varatube state");
         if let StateReply::PlayerInfo { player_info } = reply {
@@ -142,6 +176,7 @@ fn check_reply(result: &RunResult, from: u64, expected_reply: GameReply, error: 
     } else {
         reply = Ok(expected_reply);
     }
+    println!("{:?}", result.decoded_log::<Result<GameReply, GameError>>());
     assert!(result.contains(&(from, reply.encode())));
 }
 

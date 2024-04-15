@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{
     collections::{BTreeSet, HashMap, HashSet},
     prelude::*,
@@ -22,7 +22,7 @@ impl Metadata for SynMetadata {
     type Init = In<Config>;
     type Handle = InOut<GameAction, Result<GameReply, GameError>>;
     type Reply = ();
-    type Others = ();
+    type Others = Out<GameReply>;
     type Signal = ();
     type State = InOut<StateQuery, StateReply>;
 }
@@ -45,10 +45,17 @@ pub enum GameAction {
     /// Following this, a Game structure is created,
     /// where the account that sent the message becomes the admin of the game.
     /// An ID is assigned to the Game structure to uniquely identify the session.
-    /// The game's IS is the admin's address.
+    /// The game's ID is the admin's address.
+    /// The admin also becomes the game participant
     ///
     /// - `entry_fee`: participation fee for the game
-    CreateGameSession { entry_fee: Option<u128> },
+    /// - `strategy_id`: the address of the player strategy.
+    /// - `name`: the admin's name.
+    CreateGameSession {
+        entry_fee: Option<u128>,
+        name: String,
+        strategy_id: ActorId,
+    },
 
     /// Message to reserve gas for a specific game session.
     /// During the game, which takes place entirely on-chain, the contract sends messages to game strategies in sequence,
@@ -64,9 +71,11 @@ pub enum GameAction {
     ///
     /// - `admin_id`: the admin of the game.
     /// - `strategy_id`: the address of the player strategy.
+    /// - `name`: the player's name
     Register {
         admin_id: AdminId,
         strategy_id: ActorId,
+        name: String,
     },
 
     /// Message to start the game.
@@ -91,6 +100,18 @@ pub enum GameAction {
     ///
     /// - `admin_id`: the admin of the game.
     ExitGame { admin_id: AdminId },
+
+    /// Message to delete game
+    /// Is called when the game is finished
+    ///
+    /// - `admin_id`: the admin of the game.
+    DeleteGame { admin_id: AdminId },
+
+    /// Message to exclude the player from the game.
+    /// Is called by admin and when the game is in regastration stage
+    ///
+    /// - `player_id`: player's address.
+    DeletePlayer { player_id: ActorId },
 }
 
 #[derive(PartialEq, Eq, Debug, Encode, Decode, TypeInfo)]
@@ -129,6 +150,12 @@ pub enum GameReply {
     /// Reply on `Play`` message, in case when the current gas runs out,
     /// the next reservation is taken and the next game cycle is started from the new reservation
     NextRoundFromReservation,
+
+    /// Reply on `DeleteGame` message
+    GameDeleted,
+
+    /// Reply on `DeletePlayer` message
+    PlayerDeleted,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo, PartialEq, Eq)]
@@ -194,19 +221,20 @@ pub enum GameError {
 #[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]
 pub enum StateQuery {
     /// Query to get the game session
-    GetGameSession { admin_id: AdminId },
+    GetGameSession { account_id: ActorId },
 
     /// Query to get the player info from the game session
-    GetPlayerInfo {
-        admin_id: AdminId,
-        account_id: ActorId,
-    },
+    GetPlayerInfo { account_id: ActorId },
 
     /// Query to get the owner address of the indicated strategy
     GetOwnerId {
         admin_id: AdminId,
         strategy_id: ActorId,
     },
+
+    GetConfig,
+
+    GetPlayersToSessions,
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]
@@ -219,6 +247,10 @@ pub enum StateReply {
 
     /// Reply on query  `GetOwnerId`
     OwnerId { owner_id: Option<ActorId> },
+
+    Config(Config),
+
+    PlayersToSessions(Vec<(ActorId, ActorId)>)
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo)]
@@ -245,6 +277,7 @@ pub enum StrategicAction {
 #[derive(PartialEq, Eq, Debug, Clone, Encode, Decode, TypeInfo, Default)]
 pub struct PlayerInfo {
     pub owner_id: ActorId,
+    pub name: String,
     pub position: u8,
     pub balance: u32,
     pub debt: u32,
@@ -289,7 +322,7 @@ impl Default for GameStatus {
     }
 }
 
-#[derive(Default, Clone, Encode, Decode, TypeInfo)]
+#[derive(Default, Clone, Encode, Decode, TypeInfo, PartialEq, Eq, Debug)]
 pub struct Config {
     pub reservation_amount: u64,
     pub reservation_duration_in_block: u32,

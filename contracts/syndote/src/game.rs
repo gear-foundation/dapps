@@ -22,12 +22,15 @@ pub trait GameSessionActions {
     ) -> Result<(), GameError>;
     fn register(
         &mut self,
+        player_id: &ActorId,
         strategy_id: &ActorId,
+        name: &str,
         reservation_amount: u64,
         reservation_duration_in_block: u32,
     ) -> Result<(), GameError>;
     fn cancel_game_session(&mut self) -> Result<(), GameError>;
     fn exit_game(&mut self) -> Result<(), GameError>;
+    fn delete_player(&mut self, player_id: &ActorId) -> Result<(), GameError>;
     fn play(
         &mut self,
         min_gas_limit: u64,
@@ -41,6 +44,7 @@ pub trait GameSessionActions {
         awaiting_reply_msg_id_to_session_id: &mut HashMap<MessageId, AdminId>,
         gas_refill_timeout: u32,
     ) -> Result<(), GameError>;
+    fn check_amount_of_players(&mut self);
     fn finalize_turn_outcome(
         &mut self,
         gas_for_step: u64,
@@ -88,36 +92,34 @@ impl GameSessionActions for Game {
 
     fn register(
         &mut self,
+        player_id: &ActorId,
         strategy_id: &ActorId,
+        name: &str,
         reservation_amount: u64,
         reservation_duration_in_block: u32,
     ) -> Result<(), GameError> {
-        let owner_id = msg::source();
         self.check_status(GameStatus::Registration)?;
-        self.player_already_registered(&owner_id, strategy_id)?;
+        self.player_already_registered(player_id, strategy_id)?;
         self.check_attached_value()?;
 
         let reservation_id = make_reservation(reservation_amount, reservation_duration_in_block)?;
 
-        self.owners_to_strategy_ids.insert(owner_id, *strategy_id);
+        self.owners_to_strategy_ids.insert(*player_id, *strategy_id);
         self.players.insert(
             *strategy_id,
             PlayerInfo {
-                owner_id,
+                owner_id: *player_id,
+                name: name.to_string(),
                 balance: INITIAL_BALANCE,
                 reservation_id: Some(reservation_id),
                 ..Default::default()
             },
         );
         self.players_queue.push(*strategy_id);
-        if self.players_queue.len() == NUMBER_OF_PLAYERS as usize {
-            self.game_status = GameStatus::Play;
-        }
 
         Ok(())
     }
     fn cancel_game_session(&mut self) -> Result<(), GameError> {
-        self.check_status(GameStatus::Registration)?;
         self.only_admin()?;
 
         if let Some(fee) = self.entry_fee {
@@ -129,23 +131,62 @@ impl GameSessionActions for Game {
         Ok(())
     }
 
-    fn exit_game(&mut self) -> Result<(), GameError> {
-        let owner_id = msg::source();
+    fn delete_player(&mut self, player_id: &ActorId) -> Result<(), GameError> {
         let strategy_id = self
             .owners_to_strategy_ids
-            .remove(&owner_id)
+            .get(player_id)
             .ok_or(GameError::StrategyDoesNotExist)?;
 
         match self.game_status {
             GameStatus::WaitingForGasForGameContract | GameStatus::WaitingForGasForStrategy(_) => {
-                self.exclude_player_from_game(strategy_id);
+                self.exclude_player_from_game(*strategy_id);
                 self.current_turn = self.current_turn.saturating_sub(1);
             }
             GameStatus::Registration => {
-                self.players.remove(&strategy_id);
+                self.players.remove(strategy_id);
+                self.players_queue.retain(|&p| p != *strategy_id);
+            }
+            GameStatus::Finished => {
+                self.owners_to_strategy_ids.remove(player_id);
+                return Ok(());
             }
             _ => return Err(GameError::WrongGameStatus),
         }
+        self.owners_to_strategy_ids.remove(player_id);
+        self.check_amount_of_players();
+        if let Some(fee) = self.entry_fee {
+            msg::send_with_gas(*player_id, "", 0, fee).expect("Error in sending a message");
+            self.prize_pool -= fee;
+        }
+
+        Ok(())
+    }
+    fn exit_game(&mut self) -> Result<(), GameError> {
+        let owner_id = msg::source();
+        let strategy_id = self
+            .owners_to_strategy_ids
+            .get(&owner_id)
+            .ok_or(GameError::StrategyDoesNotExist)?;
+
+        match self.game_status {
+            GameStatus::WaitingForGasForGameContract | GameStatus::WaitingForGasForStrategy(_) => {
+                self.exclude_player_from_game(*strategy_id);
+                self.current_turn = self.current_turn.saturating_sub(1);
+            }
+            GameStatus::Registration => {
+                self.players.remove(strategy_id);
+                self.players_queue.retain(|&p| p != *strategy_id);
+            }
+            GameStatus::Finished => {
+                self.owners_to_strategy_ids.remove(&owner_id);
+                return Ok(());
+            }
+            _ => return Err(GameError::WrongGameStatus),
+        }
+        self
+            .owners_to_strategy_ids
+            .remove(&owner_id);
+        self.check_amount_of_players();
         if let Some(fee) = self.entry_fee {
             msg::send_with_gas(owner_id, "", 0, fee).expect("Error in sending a message");
             self.prize_pool -= fee;
@@ -175,6 +216,11 @@ impl GameSessionActions for Game {
                 return Err(GameError::AddGasToGameContract);
             }
         }
+
+        if self.players_queue.len() == NUMBER_OF_PLAYERS as usize  && self.game_status == GameStatus::Registration {
+            self.game_status = GameStatus::Play;
+        }
+
         match self.game_status {
             GameStatus::Play | GameStatus::WaitingForGasForGameContract => {
                 while self.game_status != GameStatus::Finished {
@@ -202,7 +248,7 @@ impl GameSessionActions for Game {
                 // then this value remains the same.
                 // If the value was 1, 2, or 3, then it is properly decreased by one.
                 self.current_turn = self.current_turn.saturating_sub(1);
-
+                self.check_amount_of_players();
                 while self.game_status != GameStatus::Finished {
                     self.make_step(
                         time_for_step,
@@ -231,7 +277,7 @@ impl GameSessionActions for Game {
         gas_refill_timeout: u32,
     ) -> Result<(), GameError> {
         let current_player: ActorId = self.players_queue[self.current_turn as usize];
-        self.current_player = current_player;        
+        self.current_player = current_player;
         let mut player_info = self.get_player_info()?;
         let position = if player_info.in_jail {
             player_info.position
@@ -283,6 +329,8 @@ impl GameSessionActions for Game {
                         }
                         Err(_) => {
                             self.exclude_player_from_game(current_player);
+                            self.current_turn = self.current_turn.saturating_sub(1);
+                            self.check_amount_of_players();
                             Ok(())
                         }
                     }
@@ -293,6 +341,17 @@ impl GameSessionActions for Game {
             }
         }
     }
+    
+    fn check_amount_of_players(&mut self)  {
+        if self.players_queue.len() == 0 {
+            self.game_status = GameStatus::Finished;
+        }
+        if self.players_queue.len() == 1 {
+            self.winner = self.players_queue[0];
+                self.game_status = GameStatus::Finished;
+                self.send_prize_pool_to_winner();
+        }
+    }
 
     fn finalize_turn_outcome(
         &mut self,
@@ -300,6 +359,7 @@ impl GameSessionActions for Game {
         min_gas_limit: u64,
         reservation_duration_in_block: u32,
     ) {
+        
         match self.players_queue.len() {
             0 => {
                 // All players have been removed from the game (either penalized or bankrupt)
@@ -330,7 +390,7 @@ impl GameSessionActions for Game {
                 self.game_status = GameStatus::Play;
             }
         }
-
+        self.current_step += 1;
         if self.current_step % self.players_queue.len() as u64 == 0 {
             self.round += 1;
             // check penalty and debt of the players for the previous round
@@ -366,7 +426,7 @@ impl GameSessionActions for Game {
             0,
         )
         .expect("Error in sending a message `GameEvent::Step`");
-        self.current_step += 1;
+        
         exec::wake(self.current_msg_id).expect("Unable to wake the msg");
     }
 

@@ -2,7 +2,7 @@ use gtest::System;
 use syndote_io::*;
 pub mod utils;
 use syndote::game::GameSessionActions;
-use utils::{preconfigure, SyndoteTestFunctions, ADMIN_ID};
+use utils::{preconfigure, upload_strategy, SyndoteTestFunctions, ADMIN_ID};
 
 // Test for successful creation of a game session with a game fee.
 #[test]
@@ -12,7 +12,14 @@ fn create_game_session_with_fee() {
 
     // fee for the game: 50 VARA
     let fee = 50_000_000_000_000;
-    game.create_game_session(ADMIN_ID, Some(fee), None);
+    let strategy = upload_strategy(&system);
+    game.create_game_session(
+        ADMIN_ID,
+        strategy.id().into(),
+        "Alice".to_string(),
+        Some(fee),
+        None,
+    );
 
     let game_session = game
         .get_game_session(ADMIN_ID)
@@ -31,8 +38,14 @@ fn create_game_session_with_fee() {
 fn create_game_session_without_fee() {
     let system = System::new();
     let game = preconfigure(&system);
-
-    game.create_game_session(ADMIN_ID, None, None);
+    let strategy = upload_strategy(&system);
+    game.create_game_session(
+        ADMIN_ID,
+        strategy.id().into(),
+        "Alice".to_string(),
+        None,
+        None,
+    );
 
     let game_session = game
         .get_game_session(ADMIN_ID)
@@ -55,11 +68,30 @@ fn create_game_session_failed_cases() {
 
     // fee for the game: 9 VARA (Less than ED)
     let fee = 9_000_000_000_000;
-    game.create_game_session(ADMIN_ID, Some(fee), Some(GameError::FeeIsLessThanED));
+    let strategy = upload_strategy(&system);
+    game.create_game_session(
+        ADMIN_ID,
+        strategy.id().into(),
+        "Alice".to_string(),
+        Some(fee),
+        Some(GameError::FeeIsLessThanED),
+    );
 
     // successfull game session creation
-    game.create_game_session(ADMIN_ID, None, None);
+    game.create_game_session(
+        ADMIN_ID,
+        strategy.id().into(),
+        "Alice".to_string(),
+        None,
+        None,
+    );
 
     //The admin tries to create a game session specifying an entry fee that is less than ED.
-    game.create_game_session(ADMIN_ID, None, Some(GameError::GameSessionAlreadyExists));
+    game.create_game_session(
+        ADMIN_ID,
+        strategy.id().into(),
+        "Alice".to_string(),
+        None,
+        Some(GameError::GameSessionAlreadyExists),
+    );
 }
