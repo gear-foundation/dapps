@@ -37,7 +37,8 @@ static mut BATTLE: Option<Battle> = None;
 
 impl Battle {
     fn start_registration(&mut self) -> Result<BattleReply, BattleError> {
-        self.check_state(BattleState::GameIsOver)?;
+        //self.check_state(BattleState::GameIsOver)?;
+        self.check_admin(&msg::source())?;
         self.state = BattleState::Registration;
         self.current_winner = ActorId::zero();
         self.players_ids = Vec::new();
