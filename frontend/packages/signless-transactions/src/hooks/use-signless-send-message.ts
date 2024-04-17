@@ -5,7 +5,7 @@ import {
   UseSendMessageOptions,
   useAccount,
   useSendMessage,
-  useSendMessageHandler,
+  useSendMessageWithGas,
 } from '@gear-js/react-hooks';
 
 import { useSignlessTransactions } from '../context';
@@ -47,7 +47,7 @@ function useSignlessSendMessageHandler(
 ) {
   const { account } = useAccount();
   const { pair, voucher } = useSignlessTransactions();
-  const sendMessage = useSendMessageHandler(destination, metadata, { ...options, pair });
+  const sendMessage = useSendMessageWithGas(destination, metadata, { ...options, pair });
 
   const sendSignlessMessage = (args: Omit<SendSignlessMessageOptions, 'gasLimit'>) => {
     const sessionForAccount = pair ? account?.decodedAddress : null;
