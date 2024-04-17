@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useAccount, useReadFullState, useSendMessageHandler } from '@gear-js/react-hooks';
+import { useAccount, useReadFullState, useSendMessageWithGas } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
 import metaTxt from 'assets/meta/galactic_express_meta.txt';
 import { useProgramMetadata } from 'hooks';
@@ -26,7 +26,7 @@ function useLaunchState() {
 function useLaunchMessage() {
   const meta = useProgramMetadata(metaTxt);
 
-  return { meta: !!meta, message: useSendMessageHandler(ADDRESS.CONTRACT as HexString, meta, { isMaxGasLimit: true }) };
+  return { meta: !!meta, message: useSendMessageWithGas(ADDRESS.CONTRACT as HexString, meta, { isMaxGasLimit: true }) };
 }
 
 export { useLaunchState, useLaunchMessage };
