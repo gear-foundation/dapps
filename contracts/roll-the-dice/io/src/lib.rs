@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Out, Metadata};
+use gmeta::{In, InOut, Metadata, Out};
 use gstd::{collections::BTreeMap, prelude::*, ActorId};
 
 pub struct ContractMetadata;
