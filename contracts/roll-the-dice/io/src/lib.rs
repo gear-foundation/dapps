@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut, Out, Metadata};
 use gstd::{collections::BTreeMap, prelude::*, ActorId};
 
 pub struct ContractMetadata;
@@ -11,7 +11,7 @@ impl Metadata for ContractMetadata {
     type Reply = ();
     type Others = ();
     type Signal = ();
-    type State = InOut<StateQuery, StateResponse>;
+    type State = Out<State>;
 }
 
 #[derive(Debug, Default, Decode, Encode, TypeInfo)]
