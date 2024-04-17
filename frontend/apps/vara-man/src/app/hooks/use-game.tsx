@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useAccount, useSendMessageHandler } from '@gear-js/react-hooks';
+import { useAccount, useSendMessageWithGas } from '@gear-js/react-hooks';
 
 import { useProgramMetadata } from '@/app/hooks/use-metadata';
 import meta from '@/assets/meta/vara_man.meta.txt';
@@ -58,7 +58,7 @@ export const useInitGame = () => {
 
 export function useGameMessage() {
   const metadata = useProgramMetadata(meta);
-  return useSendMessageHandler(programIdGame, metadata, {
+  return useSendMessageWithGas(programIdGame, metadata, {
     disableAlerts: true,
   });
 }

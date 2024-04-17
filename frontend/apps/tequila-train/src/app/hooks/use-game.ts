@@ -1,6 +1,6 @@
 import { useApp, useGame } from 'app/context';
 import { useEffect, useMemo } from 'react';
-import { useAccount, useSendMessageHandler } from '@gear-js/react-hooks';
+import { useAccount, useSendMessageWithGas } from '@gear-js/react-hooks';
 import { ENV } from 'app/consts';
 import meta from 'assets/meta/tequila_train.meta.txt';
 
@@ -89,7 +89,7 @@ export const useInitGame = () => {
 
 export function useGameMessage() {
   const metadata = useProgramMetadata(meta);
-  return useSendMessageHandler(programIdGame, metadata, {
+  return useSendMessageWithGas(programIdGame, metadata, {
     disableAlerts: true,
     isMaxGasLimit: true,
   });
