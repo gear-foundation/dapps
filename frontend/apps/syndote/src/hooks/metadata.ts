@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useAtomValue } from 'jotai';
-import { useAccount, useAlert, useReadFullState, useSendMessage, useSendMessageHandler } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useReadFullState, useSendMessage, useSendMessageWithGas } from '@gear-js/react-hooks';
 import { getStateMetadata, ProgramMetadata, StateMetadata } from '@gear-js/api';
 import { HexString } from '@polkadot/util/types';
 import meta from 'assets/meta/syndote_meta.txt';
@@ -68,7 +68,7 @@ function useSyndoteMessage() {
 
   return {
     isMeta: !!meta,
-    sendMessage: useSendMessageHandler(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true }),
+    sendMessage: useSendMessageWithGas(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true }),
     sendPlayMessage: useSendMessage(ADDRESS.CONTRACT, metadata),
   };
 }
