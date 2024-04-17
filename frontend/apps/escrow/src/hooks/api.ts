@@ -1,4 +1,4 @@
-import { useSendMessageHandler, useReadWasmState } from '@gear-js/react-hooks';
+import { useSendMessageWithGas, useReadWasmState } from '@gear-js/react-hooks';
 import { Escrow, Wallet } from 'types';
 import stateMetaWasm from 'assets/wasm/state.meta.wasm';
 import metaTxt from 'assets/meta/meta.txt';
@@ -42,7 +42,7 @@ function useWallets(walletId: string | undefined) {
 
 function useEscrowMessage() {
   const meta = useEscrowMetadata();
-  return useSendMessageHandler(getProgramId(), meta);
+  return useSendMessageWithGas(getProgramId(), meta);
 }
 
 export { useEscrow, useWallets, useEscrowMessage, useEscrowMetadata };

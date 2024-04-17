@@ -1,4 +1,4 @@
-import { useReadWasmState, useSendMessageHandler } from '@gear-js/react-hooks';
+import { useReadWasmState, useSendMessageWithGas } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 import { useMemo } from 'react';
 import { ADDRESS } from 'consts';
@@ -47,7 +47,7 @@ function useMarketNft(tokenId: string) {
 function useMarketplaceMessage() {
   const metadata = useMarketplaceMeta();
 
-  return useSendMessageHandler(ADDRESS.MARKETPLACE_CONTRACT, metadata);
+  return useSendMessageWithGas(ADDRESS.MARKETPLACE_CONTRACT, metadata);
 }
 
 function useMarketplaceActions(token_id: string, price: MarketNFT['price'] | undefined) {
