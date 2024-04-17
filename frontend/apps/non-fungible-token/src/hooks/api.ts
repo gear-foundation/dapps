@@ -1,4 +1,4 @@
-import { useAccount, useReadWasmState, useSendMessageHandler } from '@gear-js/react-hooks';
+import { useAccount, useReadWasmState, useSendMessageWithGas } from '@gear-js/react-hooks';
 import { ADDRESS } from 'consts';
 import { Params, Token } from 'types';
 import { useParams } from 'react-router-dom';
@@ -57,7 +57,7 @@ function useApprovedNFTs() {
 
 function useSendNFTMessage() {
   const meta = useNFTMetadata();
-  return useSendMessageHandler(ADDRESS.CONTRACT_ADDRESS, meta);
+  return useSendMessageWithGas(ADDRESS.CONTRACT_ADDRESS, meta);
 }
 
 export { useNFT, useNFTs, useOwnerNFTs, useApprovedNFTs, useSendNFTMessage };

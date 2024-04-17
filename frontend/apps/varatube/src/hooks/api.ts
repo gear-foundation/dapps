@@ -1,5 +1,5 @@
 import { useAtom } from 'jotai';
-import { useAccount, useApi, useReadFullState, useSendMessage, useSendMessageHandler } from '@gear-js/react-hooks';
+import { useAccount, useApi, useReadFullState, useSendMessage, useSendMessageWithGas } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import varatubeMeta from 'assets/state/varatube_meta.txt';
 import ftMeta from 'assets/state/ft_meta.txt';
@@ -26,7 +26,7 @@ function useSubscriptionsMessage() {
 function useFTMessage() {
   const metadata = useFTMeta();
 
-  return useSendMessageHandler(ADDRESS.FT_CONTRACT, metadata, { isMaxGasLimit: true });
+  return useSendMessageWithGas(ADDRESS.FT_CONTRACT, metadata, { isMaxGasLimit: true });
 }
 
 type FTState = { balances: [[HexString, string]] };
