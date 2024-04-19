@@ -168,14 +168,17 @@ async fn process_handle(
             silver_coins,
             level,
         } => {
-            if gold_coins > vara_man.config.max_number_gold_coins || silver_coins > vara_man.config.max_number_silver_coins {
+            if gold_coins > vara_man.config.max_number_gold_coins
+                || silver_coins > vara_man.config.max_number_silver_coins
+            {
                 return Err(VaraManError::ExceededLimit);
             }
 
             let msg_src = msg::source();
             let (points_for_gold, points_for_silver) =
                 vara_man.config.get_points_per_gold_coin_for_level(level);
-            let points = points_for_gold * gold_coins as u128 + points_for_silver * silver_coins as u128;
+            let points =
+                points_for_gold * gold_coins as u128 + points_for_silver * silver_coins as u128;
             let prize = vara_man.config.one_point_in_value * points;
 
             if vara_man.status == Status::StartedWithNativeToken {
@@ -268,7 +271,8 @@ async fn process_handle(
                 msg::send_with_gas(*id, "", 0, prize).expect("Error in sending value");
             });
             game.stage = Stage::Finished(winners.clone());
-            let participants: Vec<(ActorId, Player)> = game.participants.clone().into_iter().collect();
+            let participants: Vec<(ActorId, Player)> =
+                game.participants.clone().into_iter().collect();
 
             msg::send(
                 game.admin,
@@ -293,7 +297,9 @@ async fn process_handle(
             gold_coins,
             silver_coins,
         } => {
-            if gold_coins > vara_man.config.max_number_gold_coins || silver_coins > vara_man.config.max_number_silver_coins {
+            if gold_coins > vara_man.config.max_number_gold_coins
+                || silver_coins > vara_man.config.max_number_silver_coins
+            {
                 return Err(VaraManError::ExceededLimit);
             }
             let msg_src = msg::source();
@@ -318,7 +324,8 @@ async fn process_handle(
             let (points_for_gold, points_for_silver) = vara_man
                 .config
                 .get_points_per_gold_coin_for_level(game.level);
-            let points = points_for_gold * gold_coins as u128 + points_for_silver * silver_coins as u128;
+            let points =
+                points_for_gold * gold_coins as u128 + points_for_silver * silver_coins as u128;
             player.time += time;
             player.points += points;
 

@@ -46,7 +46,7 @@ pub struct SingleGame {
 pub enum VaraManEvent {
     GameFinished {
         winners: Vec<ActorId>,
-        participants:  Vec<(ActorId, Player)>,
+        participants: Vec<(ActorId, Player)>,
         prize: u128,
     },
     SingleGameFinished {
@@ -144,7 +144,7 @@ pub enum VaraManError {
     AccessDenied,
     MultipleError,
     GameOver,
-    ExceededLimit
+    ExceededLimit,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
