@@ -11,15 +11,15 @@ pub trait VaraMan {
         &self,
         from: u64,
         time: u128,
-        gold_coins: u128,
-        silver_coins: u128,
+        gold_coins: u16,
+        silver_coins: u16,
         error: Option<VaraManError>,
     );
     fn finish_single_game(
         &self,
         from: u64,
-        gold_coins: u128,
-        silver_coins: u128,
+        gold_coins: u16,
+        silver_coins: u16,
         error: Option<VaraManError>,
     );
     fn leave_game(&self, from: u64, error: Option<VaraManError>);
@@ -64,6 +64,8 @@ impl VaraMan for Program<'_> {
             system,
             Config {
                 one_point_in_value: 10_000_000_000_000,
+                max_number_gold_coins: 2,
+                max_number_silver_coins: 82,
                 points_per_gold_coin_easy: 5,
                 points_per_silver_coin_easy: 1,
                 points_per_gold_coin_medium: 8,
@@ -85,8 +87,8 @@ impl VaraMan for Program<'_> {
     fn finish_single_game(
         &self,
         from: u64,
-        gold_coins: u128,
-        silver_coins: u128,
+        gold_coins: u16,
+        silver_coins: u16,
         error: Option<VaraManError>,
     ) {
         self.send_tx(
@@ -103,8 +105,8 @@ impl VaraMan for Program<'_> {
         &self,
         from: u64,
         time: u128,
-        gold_coins: u128,
-        silver_coins: u128,
+        gold_coins: u16,
+        silver_coins: u16,
         error: Option<VaraManError>,
     ) {
         self.send_tx(
