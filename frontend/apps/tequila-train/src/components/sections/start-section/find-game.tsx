@@ -1,6 +1,7 @@
 import { Button, Input } from '@gear-js/vara-ui';
 import { useState } from 'react';
 import { useApi } from '@gear-js/react-hooks';
+import { decodeAddress } from '@gear-js/api';
 
 import styles from './start-secrtion.module.scss'
 import { useGame, useApp } from 'app/context';
@@ -48,7 +49,7 @@ export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
 		if (findGame) {
 			setIsPending(true);
 			handleMessage({
-				payload: { Register: { creator: values.creator } },
+				payload: { Register: { creator: decodeAddress(values.creator) } },
 				value: parseFloat(findGame.bid) * 10 ** decimals,
 				onSuccess,
 				onError,
@@ -58,7 +59,7 @@ export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
 
 	const onFindGame = () => {
 		setPreviousGame(null)
-		const findGame = state?.games.find(game => game[0] === form.values.creator)
+		const findGame = state?.games.find(game => game[0] === form.values.creator || game[0] === decodeAddress(form.values.creator))
 		if (findGame) {
 			setFindGame(findGame[1] as GameType)
 			setOpenModal(true)
@@ -80,7 +81,7 @@ export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
 				<Input
 					type="text"
 					label="Specify the game admin address:"
-					placeholder="0x25c..."
+					placeholder="kG…"
 					{...getInputProps('creator')}
 				/>
 			</div>
