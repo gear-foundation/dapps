@@ -2640,6 +2640,27 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gear-js/react-hooks@npm:0.10.6":
+  version: 0.10.6
+  resolution: "@gear-js/react-hooks@npm:0.10.6"
+  dependencies:
+    "@polkadot/api-derive": "npm:10.11.2"
+    "@polkadot/extension-inject": "npm:0.46.5"
+    "@polkadot/util": "npm:12.6.2"
+    "@substrate/connect": "npm:0.7.33"
+    bignumber.js: "npm:9.1.2"
+    nanoid: "npm:5.0.1"
+    react-transition-group: "npm:4.4.5"
+  peerDependencies:
+    "@gear-js/api": 0.36.3
+    "@polkadot/api": 10.11.2
+    "@polkadot/extension-dapp": 0.46.5
+    react: 18.2.0
+    react-dom: 18.2.0
+  checksum: 86273982bce762b4d51f5c7857a89eb3fd292945d437ac556218f8dbd656eb8718674c81ff9d9ccba79e5eabb15ec89c35fd8332574919fc98654208959f8cab
+  languageName: node
+  linkType: hard
+
 "@gear-js/ui@npm:0.4.0":
   version: 0.4.0
   resolution: "@gear-js/ui@npm:0.4.0"
@@ -23226,7 +23247,7 @@ __metadata:
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.36.5"
-    "@gear-js/react-hooks": "npm:0.10.5"
+    "@gear-js/react-hooks": "npm:0.10.6"
     "@gear-js/ui": "npm:0.5.21"
     "@headlessui/react": "npm:1.7.13"
     "@mantine/form": "npm:6.0.19"
@@ -24246,7 +24267,7 @@ __metadata:
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.36.5"
-    "@gear-js/react-hooks": "npm:0.10.5"
+    "@gear-js/react-hooks": "npm:0.10.6"
     "@gear-js/ui": "npm:0.5.21"
     "@headlessui/react": "npm:1.7.13"
     "@mantine/form": "npm:6.0.19"
