@@ -251,9 +251,9 @@ export class Game {
 			const enemyBounds = enemy.getBounds()
 
 			if (
-				characterBounds.x < enemyBounds.x + enemyBounds.width / 4 &&
+				characterBounds.x < enemyBounds.x + enemyBounds.width &&
 				characterBounds.x + characterBounds.width > enemyBounds.x &&
-				characterBounds.y < enemyBounds.y + enemyBounds.height / 4 &&
+				characterBounds.y < enemyBounds.y + enemyBounds.height &&
 				characterBounds.y + characterBounds.height > enemyBounds.y
 			) {
 				return true
