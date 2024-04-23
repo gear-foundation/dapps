@@ -107,7 +107,7 @@ export class EnemyRenderer {
 
 		// Drawing a border for debug
 		// const bounds = enemy.getBounds()
-		// context.strokeStyle = 'rgba(255, 0, 0, 0.5)'
+		// context.strokeStyle = 'rgba(255, 0, 0, 1)'
 		// context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height)
 	}
 }

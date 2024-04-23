@@ -1,18 +1,17 @@
 
-import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
+import { getVaraAddress, useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { useGameMessage } from 'app/hooks/use-game';
 import { Button } from '@gear-js/vara-ui';
 
 import { cn, copyToClipboard, shortenString } from 'app/utils';
 
 import { useApp, useGame } from 'app/context';
-import { HexString, encodeAddress } from '@gear-js/api';
+import { HexString } from '@gear-js/api';
 
 import { Icon } from 'components/ui/icon';
 import { Modal } from './modal';
 
 import { MockGameSection } from '../game-section/mock/mock-game-section';
-import { CanceledSection } from '../game-section/canceled-modal';
 
 export function RegistrationSection() {
   const { api } = useApi();
@@ -64,7 +63,7 @@ export function RegistrationSection() {
 
   const onCopy = () => {
     if (account) {
-      copyToClipboard(account.decodedAddress, alert);
+      copyToClipboard(account.address, alert);
     }
   };
 
@@ -141,7 +140,7 @@ export function RegistrationSection() {
                               i === 0 ? "border-[#00FFC4]" : "border-[#EDEDED]"
                             )}>
                             <p className="font-semibold">
-                              {account && shortenString(encodeAddress(player), 4)}
+                              {account && shortenString(getVaraAddress(player), 4)}
                               {i === 0 && <span className="text-[#00FFC4]"> (you)</span>}
                             </p>
 
