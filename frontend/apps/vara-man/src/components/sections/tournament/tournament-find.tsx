@@ -37,7 +37,7 @@ export const TournamentFind = () => {
 	const onSearchGame = () => {
 		if (findAddress) {
 			const findGame = allGames?.find(game => {
-				return game[0] === findAddress || encodeAddress(game[0]) === findAddress
+				return game[0] === decodeAddress(findAddress) || encodeAddress(game[0]) === findAddress
 			})
 			if (findGame) {
 				setIsOpenFindModal(true)
@@ -79,7 +79,7 @@ export const TournamentFind = () => {
 					<Input
 						type="text"
 						label='Specify the game admin address:'
-						placeholder='0x25c...'
+						placeholder='kG…'
 						required
 						className="w-full"
 						onChange={(e) => setFindAddress(e.target.value)}
