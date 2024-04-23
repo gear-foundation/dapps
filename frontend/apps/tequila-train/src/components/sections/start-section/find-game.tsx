@@ -59,7 +59,7 @@ export const FindGame = ({ closeFindGame }: { closeFindGame: () => void }) => {
 
 	const onFindGame = () => {
 		setPreviousGame(null)
-		const findGame = state?.games.find(game => game[0] === form.values.creator || game[0] === decodeAddress(form.values.creator))
+		const findGame = state?.games.find(game => game[0] === decodeAddress(form.values.creator))
 		if (findGame) {
 			setFindGame(findGame[1] as GameType)
 			setOpenModal(true)

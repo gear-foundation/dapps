@@ -37,7 +37,7 @@ export const TournamentFind = () => {
 	const onSearchGame = () => {
 		if (findAddress) {
 			const findGame = allGames?.find(game => {
-				return game[0] === decodeAddress(findAddress) || encodeAddress(game[0]) === findAddress
+				return game[0] === decodeAddress(findAddress)
 			})
 			if (findGame) {
 				setIsOpenFindModal(true)
