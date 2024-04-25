@@ -179,6 +179,9 @@ async fn process_handle(
                 vara_man.config.get_points_per_gold_coin_for_level(level);
             let points =
                 points_for_gold * gold_coins as u128 + points_for_silver * silver_coins as u128;
+            let maximum_possible_points = points_for_gold
+                * vara_man.config.max_number_gold_coins as u128
+                + points_for_silver * vara_man.config.max_number_silver_coins as u128;
             let prize = vara_man.config.one_point_in_value * points;
 
             if vara_man.status == Status::StartedWithNativeToken {
@@ -198,7 +201,15 @@ async fn process_handle(
                 .await
                 .expect("Error in transfer Fungible Token");
             }
-            Ok(VaraManEvent::SingleGameFinished { prize, points })
+            Ok(VaraManEvent::SingleGameFinished {
+                gold_coins,
+                silver_coins,
+                prize,
+                points,
+                maximum_possible_points,
+                maximum_number_gold_coins: vara_man.config.max_number_gold_coins,
+                maximum_number_silver_coins: vara_man.config.max_number_silver_coins,
+            })
         }
         VaraManAction::StartTournament => {
             let msg_src = msg::source();
@@ -326,12 +337,20 @@ async fn process_handle(
                 .get_points_per_gold_coin_for_level(game.level);
             let points =
                 points_for_gold * gold_coins as u128 + points_for_silver * silver_coins as u128;
+            let maximum_possible_points = points_for_gold
+                * vara_man.config.max_number_gold_coins as u128
+                + points_for_silver * vara_man.config.max_number_silver_coins as u128;
             player.time += time;
             player.points += points;
 
             Ok(VaraManEvent::ResultTournamentRecorded {
+                gold_coins,
+                silver_coins,
                 time: player.time,
                 points: player.points,
+                maximum_possible_points,
+                maximum_number_gold_coins: vara_man.config.max_number_gold_coins,
+                maximum_number_silver_coins: vara_man.config.max_number_silver_coins,
             })
         }
 

@@ -50,7 +50,12 @@ pub enum VaraManEvent {
         prize: u128,
     },
     SingleGameFinished {
+        gold_coins: u16,
+        silver_coins: u16,
         points: u128,
+        maximum_possible_points: u128,
+        maximum_number_gold_coins: u16,
+        maximum_number_silver_coins: u16,
         prize: u128,
     },
     NewTournamentCreated {
@@ -72,8 +77,13 @@ pub enum VaraManEvent {
         player_id: ActorId,
     },
     ResultTournamentRecorded {
+        gold_coins: u16,
+        silver_coins: u16,
         time: u128,
         points: u128,
+        maximum_possible_points: u128,
+        maximum_number_gold_coins: u16,
+        maximum_number_silver_coins: u16,
     },
     GameStarted,
     AdminAdded(ActorId),
