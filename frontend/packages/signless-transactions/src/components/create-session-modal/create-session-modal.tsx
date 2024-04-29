@@ -10,7 +10,6 @@ import styles from './create-session-modal.module.css';
 import { SignlessParams } from '../signless-params-list';
 import { AccountPair } from '../account-pair';
 import {
-  ACTIONS,
   BALANCE_VALUE_TO_ISSUE_VOUCHER,
   BALANCE_VALUE_TO_START_GAME,
   DEFAULT_VALUES,
@@ -33,7 +32,7 @@ function CreateSessionModal({ close, onSessionCreate = async () => '0x', shouldI
   const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
 
-  const { savePair, storagePair, storageVoucher, storageVoucherBalance, createSession } = useSignlessTransactions();
+  const { savePair, storagePair, storageVoucher, storageVoucherBalance, createSession, allowedActions } = useSignlessTransactions();
   const pair = useRandomPairOr(storagePair);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -68,7 +67,6 @@ function CreateSessionModal({ close, onSessionCreate = async () => '0x', shouldI
     const duration = getMilliseconds(Number(durationMinutes));
 
     const key = shouldIssueVoucher ? decodeAddress(pair.address) : account!.decodedAddress;
-    const allowedActions = ACTIONS;
     const onFinally = () => setIsLoading(false);
 
     let pairToSave: KeyringPair;

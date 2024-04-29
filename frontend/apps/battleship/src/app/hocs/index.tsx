@@ -14,7 +14,7 @@ import {
 } from '@dapps-frontend/ez-transactions';
 
 import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
-import { ADDRESS } from '@/app/consts';
+import { ADDRESS, SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
 
 function ApiProvider({ children }: ProviderProps) {
@@ -39,7 +39,7 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
 
 function SignlessTransactionsProvider({ children }: ProviderProps) {
   return (
-    <SharedSignlessTransactionsProvider programId={ADDRESS.GAME} metadataSource={metaTxt}>
+    <SharedSignlessTransactionsProvider programId={ADDRESS.GAME} metadataSource={metaTxt} allowedActions={SIGNLESS_ALLOWED_ACTIONS}>
       {children}
     </SharedSignlessTransactionsProvider>
   );

@@ -13,3 +13,5 @@ export const ROUTES = {
   GAME: '/game',
   NOTFOUND: '*',
 };
+
+export const SIGNLESS_ALLOWED_ACTIONS = ['StartGame', 'Turn'];

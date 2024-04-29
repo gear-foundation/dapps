@@ -60,6 +60,13 @@
     }
   }
 
+  &__play {
+    button {
+      width: 100%;
+      margin-bottom: 24px;
+    }
+  }
+
   &__countdown {
     grid-column: 1 / -1;
   }

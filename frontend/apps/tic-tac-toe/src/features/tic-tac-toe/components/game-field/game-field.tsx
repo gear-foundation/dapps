@@ -13,7 +13,8 @@ import { useAtom } from 'jotai';
 import { stateChangeLoadingAtom } from '../../store';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { ADDRESS } from '../../consts';
-import { useCheckBalance } from '@/app/hooks';
+import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { withoutCommas } from '@/app/utils';
 import { ProgramMetadata } from '@gear-js/api';
 
@@ -23,6 +24,7 @@ type GameFieldProps = BaseComponentProps & {
 };
 
 export function GameField({ game, meta }: GameFieldProps) {
+  const { signless, gasless } = useEzTransactions();
   const { countdown } = useGame();
   const [isLoading, setIsLoading] = useAtom(stateChangeLoadingAtom);
   const board = game.board;
@@ -30,7 +32,10 @@ export function GameField({ game, meta }: GameFieldProps) {
   const alert = useAlert();
   const calculateGas = useHandleCalculateGas(ADDRESS.GAME, meta);
   const message = useGameMessage(meta);
-  const { checkBalance } = useCheckBalance();
+  const { checkBalance } = useCheckBalance({
+    signlessPairVoucherId: signless.voucher?.id,
+    gaslessVoucherId: gasless.voucherId,
+  });
   const { subscribe, unsubscribe, isOpened } = useSubscriptionOnGameMessage(meta);
 
   const winnerRow = calculateWinner(board);
@@ -58,6 +63,7 @@ export function GameField({ game, meta }: GameFieldProps) {
               message({
                 payload,
                 gasLimit,
+                voucherId: gasless.voucherId,
                 onError: () => {
                   unsubscribe();
                 },
@@ -93,7 +99,7 @@ export function GameField({ game, meta }: GameFieldProps) {
           key={i}
           value={i}
           disabled={Boolean(mark || winnerRow?.length) || !countdown?.isActive || !!game.gameResult}
-          isLoading={isLoading}
+          isLoading={isLoading || gasless.isLoading}
           onSelectCell={onSelectCell}>
           {mark && <GameMark mark={mark} className={clsx(styles.mark, mark === game.playerMark && styles.active)} />}
         </GameCell>

@@ -1,13 +1,8 @@
-import {
-  useAccount,
-  useAlert,
-  useApi,
-  useHandleCalculateGas as useCalculateGasNative,
-  useSendMessage,
-} from '@gear-js/react-hooks';
+import { useAccount, useAlert, useApi, useHandleCalculateGas as useCalculateGasNative } from '@gear-js/react-hooks';
 import { useEffect, useMemo } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import isEqual from 'lodash.isequal';
+import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
 import { IDecodedReplyGame, IGameInstance, IQueryResponseConfig, IQueryResponseGame } from './types';
 import { configAtom, countdownAtom, gameAtom, pendingAtom, stateChangeLoadingAtom } from './store';
 import { ADDRESS } from './consts';
@@ -39,6 +34,7 @@ export function useGame() {
   };
 
   const updateGame = (game: IGameInstance) => {
+    console.log('_+_+_+_+_++_+_+-_++_++_ update game');
     setGameState(game);
     updateCountdown(game);
   };
@@ -157,7 +153,7 @@ export const useInitGameSync = (metadata?: ProgramMetadata) => {
 };
 
 export function useGameMessage(meta: ProgramMetadata) {
-  return useSendMessage(programIdGame, meta, { disableAlerts: true });
+  return useSignlessSendMessage(ADDRESS.GAME, meta, { disableAlerts: true });
 }
 
 export function usePending() {

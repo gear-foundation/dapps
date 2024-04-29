@@ -11,6 +11,7 @@ import { TextGradient } from '@/components/ui/text-gradient';
 import { useGame } from '@/features/tic-tac-toe/hooks';
 import { BaseComponentProps } from '@/app/types';
 import { ProgramMetadata } from '@gear-js/api';
+import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
 
 type GameProps = BaseComponentProps & {
   game: IGameInstance;
@@ -69,7 +70,10 @@ export function Game({ game, meta }: GameProps) {
             )}
           </>
         ) : (
-          <GameStartButton meta={meta}>Play again</GameStartButton>
+          <div className={styles.game__play}>
+            <GameStartButton meta={meta}>Play again</GameStartButton>
+            <EzTransactionsSwitch />
+          </div>
         )}
       </div>
 

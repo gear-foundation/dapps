@@ -4,8 +4,8 @@
   "version": "1.0.2",
   "type": "module",
   "scripts": {
-    "start": "yarn build:packages && vite --open",
-    "build": "yarn build:packages && tsc && vite build",
+    "start": "yarn build:packages && yarn build:ez-transactions && vite --open",
+    "build": "yarn build:packages && yarn build:ez-transactions && tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

@@ -3,6 +3,8 @@ import { useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-h
 import { stringShorten } from '@polkadot/util';
 import { withoutCommas } from '../utils';
 
+// @deprecated ! TODO: it have uniq function: useAccountAvailableBalance
+// ? is it need?
 export function useCheckBalance() {
   const { api } = useApi();
   const { account } = useAccount();
