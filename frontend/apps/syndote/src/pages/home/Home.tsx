@@ -16,7 +16,7 @@ import { Players } from './players/Players';
 import { Button } from '@gear-js/vara-ui';
 import { Cell } from './cell';
 import { RequestGame } from 'pages/welcome/components/request-game';
-import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING } from 'atoms';
+import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
 import { SessionInfo } from './session-info';
 import clsx from 'clsx';
 import { TextModal } from './game-not-found-modal';
@@ -28,6 +28,7 @@ function Home() {
   const { api } = useApi();
   const metadata = useProgramMetadata(meta);
   const [isLoading, setIsLoading] = useAtom(IS_LOADING);
+  const playerName = useAtomValue(PLAYER_NAME_ATOM);
   const [isContinueGameModalOpen, setIsContinueGameModalOpen] = useState(false);
   const [isPlayerRemovedModalOpen, setIsPlayerRemovedModalOpen] = useState(false);
   const [isGameCancelledModalOpen, setIsGameCancelledModalOpen] = useState(false);
@@ -45,8 +46,8 @@ function Home() {
   const { adminId, winner, gameStatus, entryFee } = state || {};
   const isAdmin = account?.decodedAddress === adminId;
   const isGameStarted = steps.length > 0;
-
   const roll = steps[step];
+  const strategyNeedsGas = gameStatus?.WaitingForGasForStrategy;
   const { properties, ownership } = roll || {};
 
   const playersArray = state?.players || [];
@@ -75,14 +76,20 @@ function Home() {
   const playerStrategyId = players.find((player) => player.ownerId === account?.decodedAddress)?.address;
   console.log(players);
   const register = () => {
-    const payload = { Register: { adminId, strategyId } };
+    const payload = { Register: { adminId, strategyId, name: playerName } };
 
+    const onInBlock = () => {
+      setCurrentGame('');
+      setIsLoading(false);
+    };
+    const onError = () => setIsLoading(false);
+
+    setIsLoading(true);
     sendMessage({
       payload,
       value: entryFee ? Number(withoutCommas(entryFee || '')) : undefined,
-      onInBlock: () => {
-        setCurrentGame('');
-      },
+      onInBlock,
+      onError,
     });
   };
   console.log('isRes');
@@ -94,7 +101,7 @@ function Home() {
       },
     };
 
-    const onSuccess = () => setIsLoading(false);
+    const onInBlock = () => setIsLoading(false);
     const onError = () => setIsLoading(false);
 
     setIsLoading(true);
@@ -105,7 +112,7 @@ function Home() {
         sendPlayMessage({
           payload,
           gasLimit: 730000000000,
-          onInBlock: onSuccess,
+          onInBlock,
           onError,
         });
       },
@@ -165,24 +172,26 @@ function Home() {
 
     if (isAdmin) {
       setIsContinueGameModalOpen(true);
-    } else {
-      setIsContinueGameInfoModalOpen(false);
+      return;
     }
+
+    setIsContinueGameInfoModalOpen(false);
   }, [gameStatus, isAdmin]);
 
   useEffect(() => {
-    if (!gameStatus?.WaitingForGasForStrategy) {
+    if (!strategyNeedsGas) {
       setIsReserveModalOpen(false);
       setIsReserveInfoModalOpen(false);
       return;
     }
 
-    if (gameStatus.WaitingForGasForStrategy === playerStrategyId) {
+    if (strategyNeedsGas === playerStrategyId) {
       setIsReserveModalOpen(true);
-    } else {
-      setIsReserveInfoModalOpen(true);
+      return;
     }
-  }, [gameStatus, playerStrategyId]);
+
+    setIsReserveInfoModalOpen(true);
+  }, [strategyNeedsGas, playerStrategyId]);
   console.log(api?.blockGasLimit.toNumber());
   console.log('ADMIN');
   console.log(admin);
@@ -307,6 +316,7 @@ function Home() {
     setIsGameCancelledModalOpen(false);
     setIsContinueGameModalOpen(false);
     setIsReserveModalOpen(false);
+    setIsReserveInfoModalOpen(false);
   };
 
   return isStateRead ? (
@@ -318,7 +328,11 @@ function Home() {
           <div className={styles.field}>
             <div className={styles.wrapper}>
               {getFields()}
-              <div className={styles.controller}>
+              <div
+                className={clsx(
+                  styles.controller,
+                  gameStatus === 'Registration' ? styles.controllerWhite : styles.controllerWithInnerBorder,
+                )}>
                 {isGameStarted && roll ? (
                   <Roll
                     color={getColor(roll.currentPlayer)}
@@ -353,7 +367,7 @@ function Home() {
                             {playersArray.map((item) => item[1].ownerId).includes(account?.decodedAddress || '0x') ? (
                               <Button text="Cancel" color="grey" onClick={exitGame} />
                             ) : (
-                              <Button text="Register" onClick={register} />
+                              <Button text="Register" onClick={register} isLoading={isLoading} />
                             )}
                           </>
                         )}
@@ -362,7 +376,12 @@ function Home() {
                             <SessionInfo entryFee={state.entryFee} players={state.players} adminId={state.adminId} />
                             {players.length === 4 && (
                               <div className={styles.mainButtons}>
-                                <Button text="Start the game" onClick={startGame} className={styles.startGameButton} />
+                                <Button
+                                  text="Start the game"
+                                  onClick={startGame}
+                                  isLoading={isLoading}
+                                  className={styles.startGameButton}
+                                />
                               </div>
                             )}
                           </>
@@ -399,6 +418,22 @@ function Home() {
               </div>
             </div>
           </div>
+          {isContinueGameModalOpen && <ContinueGameModal onReserve={continueGame} onClose={handleCloseModal} />}
+          {isContinueGameInfoModalOpen && (
+            <TextModal
+              heading={`Game administrator reserves extra gas to continue the game`}
+              text="Once he reserves the required amount, the game will continue."
+              onClose={handleCloseModal}
+            />
+          )}
+          {isReserveModalOpen && <ReserveModal onReserve={addGasToPlayerStrategy} onClose={handleCloseModal} />}
+          {isReserveInfoModalOpen && (
+            <TextModal
+              heading={`Player ${playersByStrategyAddress[strategyNeedsGas || '0x']?.name} pays extra gas`}
+              text="Once he reserves the required amount, the game will continue. If he fails to do so before the timer expires, he will lose and can only observe the game"
+              onClose={handleCloseModal}
+            />
+          )}
         </>
       )}
       {!state && (
@@ -429,22 +464,6 @@ function Home() {
         <TextModal
           heading="The game has been canceled by the administrator"
           text="Game administrator has ended the game. All spent VARA tokens for the entry fee will be refunded."
-          onClose={handleCloseModal}
-        />
-      )}
-      {isContinueGameModalOpen && <ContinueGameModal onReserve={continueGame} onClose={handleCloseModal} />}
-      {isContinueGameInfoModalOpen && (
-        <TextModal
-          heading={`Game administrator reserves extra gas to continue the game`}
-          text="Once he reserves the required amount, the game will continue."
-          onClose={handleCloseModal}
-        />
-      )}
-      {isReserveModalOpen && <ReserveModal onReserve={addGasToPlayerStrategy} onClose={handleCloseModal} />}
-      {isReserveInfoModalOpen && gameStatus?.WaitingForGasForStrategy && (
-        <TextModal
-          heading={`Player ${playersByStrategyAddress[gameStatus.WaitingForGasForStrategy].name} pays extra gas`}
-          text="Once he reserves the required amount, the game will continue. If he fails to do so before the timer expires, he will lose and can only observe the game"
           onClose={handleCloseModal}
         />
       )}

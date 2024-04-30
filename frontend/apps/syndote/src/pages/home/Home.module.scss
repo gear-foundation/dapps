@@ -97,6 +97,12 @@
   width: 100%;
   max-width: 220px;
 
+  @media (min-width: 1700px) {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+  }
+
   button {
     display: block;
     width: 90%;
@@ -340,10 +346,17 @@
   align-items: center;
   text-align: center;
   padding: 32px;
-  background: #ffffff;
+  
+  &White {
+    background: #ffffff;
   box-shadow: 0px 0px 0px 6px rgba(255,255,255,1);
     overflow: hidden;
     border-radius: 10px;
+  }
+
+  &WithInnerBorder {
+    border: 10px solid #fff;
+  }
 }
 
 .startGameButton.startGameButton {
