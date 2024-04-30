@@ -5,6 +5,7 @@ import {
   useApi,
   useBalanceFormat,
   withoutCommas,
+  getVaraAddress,
 } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { Players } from 'types';
@@ -18,7 +19,7 @@ import styles from './SessionInfo.module.scss';
 import { stringShorten } from '@polkadot/util';
 import { GameDetails } from 'components/layout/game-details';
 import clsx from 'clsx';
-import { HexString, encodeAddress } from '@gear-js/api';
+import { HexString } from '@gear-js/api';
 import { copyToClipboard } from 'utils';
 
 type Props = {
@@ -66,7 +67,10 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
     {
       name: (
         <span>
-          Program address (<span className={styles.markedAddress}>{stringShorten(encodeAddress(userStrategy), 4)}</span>
+          Program address (
+          <span className={styles.markedAddress}>
+            {userStrategy ? stringShorten(getVaraAddress(userStrategy), 4) : ''}
+          </span>
           )
         </span>
       ),
@@ -76,7 +80,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
           icon={CopySVG}
           text="Copy"
           className={styles.copyButton}
-          onClick={() => handleCopy(encodeAddress(userStrategy))}
+          onClick={() => handleCopy(getVaraAddress(userStrategy))}
         />
       ),
       key: '3',
@@ -113,7 +117,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
               isAdmin && player[1].ownerId !== account?.decodedAddress && styles.playerItemForAdmin,
             )}>
             <span>
-              {stringShorten(encodeAddress(player[1].ownerId), 4)}{' '}
+              {stringShorten(getVaraAddress(player[1].ownerId), 4)}{' '}
               {player[1].ownerId === account?.decodedAddress ? <span className={styles.playerLabel}>(you)</span> : ''}
             </span>
             {isAdmin && player[1].ownerId !== account?.decodedAddress && (

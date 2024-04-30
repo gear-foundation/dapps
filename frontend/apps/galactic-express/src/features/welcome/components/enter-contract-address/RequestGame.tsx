@@ -11,11 +11,11 @@ import metaTxt from 'assets/meta/galactic_express_meta.txt';
 import { useAccount, useAccountDeriveBalancesAll, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
 import { TextField } from 'components/layout/TextField';
 import { isNotEmpty, useForm } from '@mantine/form';
-import { HexString } from '@gear-js/api';
+import { HexString, decodeAddress } from '@gear-js/api';
 import { GameFoundModal } from 'features/session/components/game-found-modal';
 import { ADDRESS } from 'consts';
 import { useProgramMetadata } from 'hooks';
-import { LaunchState, Participant } from 'features/session/types';
+import { LaunchState } from 'features/session/types';
 import { JoinModalFormValues } from 'features/session/components/game-found-modal/GameFoundModal';
 import { TextModal } from 'features/session/components/game-not-found-modal';
 import { GameIntro } from '../game-intro';
@@ -80,12 +80,7 @@ function RequestGame() {
 
   const { errors: createErrors, getInputProps: getCreateInputProps, onSubmit: onCreateSubmit } = createForm;
 
-  const {
-    errors: joinErrors,
-    getInputProps: getJoinInputProps,
-    onSubmit: onJoinSubmit,
-    setFieldError: setJoinFieldError,
-  } = joinForm;
+  const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit } = joinForm;
 
   const handleSetStatus = (newStatus: Status) => {
     setStatus(newStatus);
@@ -125,7 +120,7 @@ function RequestGame() {
       return;
     }
 
-    const payload = { GetGame: { playerId: values.address } };
+    const payload = { GetGame: { playerId: decodeAddress(values.address || '') } };
 
     try {
       const res = await api?.programState.read(
@@ -140,7 +135,7 @@ function RequestGame() {
 
       if (state?.Game) {
         setFoundState(state);
-        setFoundGame(values.address);
+        setFoundGame(decodeAddress(values.address || ''));
         setIsJoinSessionModalShown(true);
         return;
       }
@@ -235,7 +230,7 @@ function RequestGame() {
                 <TextField
                   label="Specify the game admin address:"
                   variant="active"
-                  placeholder="0x25c"
+                  placeholder="kG25c..."
                   {...getJoinInputProps('address')}
                 />
                 <span className={cx(styles['field-error'])}>{joinErrors.address}</span>
