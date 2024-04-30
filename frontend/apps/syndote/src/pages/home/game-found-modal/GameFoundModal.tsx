@@ -69,7 +69,7 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
     },
     validate: {
       name: isNotEmpty(`Name shouldn't be empty`),
-      strategyId: (val) => !val.trim().startsWith('0x') && 'Incorrect program address',
+      strategyId: (val) => !/^0x|^kG/.test(val.trim()) && 'Incorrect program address',
     },
   });
 
