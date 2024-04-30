@@ -1,4 +1,5 @@
 import Identicon from '@polkadot/react-identicon';
+import { getVaraAddress } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 import { PlayerType } from 'types';
 import styles from './Player.module.scss';
@@ -18,7 +19,7 @@ function Player({ color, address, balance, isActive, isWinner, isLoser }: Props)
     <div className={className}>
       <Identicon value={address} size={34} theme="polkadot" className={styles.icon} />
       <div className={styles.summary}>
-        <p className={styles.address}>{stringShorten(address, 5)}</p>
+        <p className={styles.address}>{stringShorten(getVaraAddress(address), 5)}</p>
         <p className={styles.balance}>
           {balance} <span className={styles.balanceValue}>MNPL</span>
         </p>

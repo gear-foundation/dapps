@@ -1,5 +1,4 @@
 import { Suspense, useEffect } from 'react';
-import { decodeAddress } from '@gear-js/api';
 import { useAlert, useAccount } from '@gear-js/react-hooks';
 import Identicon from '@polkadot/react-identicon';
 
@@ -81,8 +80,7 @@ export function WalletConnect({ onClose }: Props) {
       };
 
       const handleCopyClick = () => {
-        const decodedAddress = decodeAddress(address);
-        copyToClipboard({ value: decodedAddress, alert });
+        copyToClipboard({ value: address, alert });
         onClose();
       };
 

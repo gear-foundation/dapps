@@ -1,7 +1,7 @@
 import { Button } from '@gear-js/ui';
 import { CSSProperties, useState } from 'react';
 import clsx from 'clsx';
-import { withoutCommas } from '@gear-js/react-hooks';
+import { getVaraAddress, withoutCommas } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
 import { Container } from 'components';
 import { ReactComponent as LeftDoubleArrowSVG } from '../../assets/left-double-arrow.svg';
@@ -82,7 +82,7 @@ function Session({ session, turns, rankings, userId, participants, admin }: Prop
   const getFeedItems = () =>
     getEvents()?.map(({ participant, payload, lastAltitude, fuelLeft, deadRound }, index) => (
       <li key={participant} className={styles.item} style={{ '--color': PLAYER_COLORS[index] } as CSSProperties}>
-        <h3 className={styles.heading}>{participant}</h3>
+        <h3 className={styles.heading}>{getVaraAddress(participant)}</h3>
         <div className={styles.bodyItem}>
           <p className={styles.text}>Data:</p>
           <p className={styles.text}>Alive:</p>
