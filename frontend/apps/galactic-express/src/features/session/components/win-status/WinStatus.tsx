@@ -1,7 +1,7 @@
 import { useSetAtom } from 'jotai';
 import { cx } from 'utils';
 import { REGISTRATION_STATUS } from 'atoms';
-import { useAccount } from '@gear-js/react-hooks';
+import { getVaraAddress, useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
 import { useLaunchMessage } from 'features/session/hooks';
 import { shortenString } from 'features/session/utils';
@@ -52,7 +52,7 @@ function WinStatus({ type, userRank, winners, admin }: Props) {
           <ul>
             {winners.map((item) => (
               <li className={cx(account?.decodedAddress === item[0] ? styles['user-winner'] : '')}>
-                {item[2] || shortenString(item[0], 6)}
+                {item[2] || shortenString(getVaraAddress(item[0]), 6)}
               </li>
             ))}
           </ul>
