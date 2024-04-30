@@ -1,6 +1,5 @@
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
-import { decodeAddress } from '@gear-js/api';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { Dialog } from '@headlessui/react';
 import { cx, copyToClipboard, isMobileDevice } from '@/utils';
@@ -101,8 +100,7 @@ function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
       };
 
       const handleCopyClick = async () => {
-        const decodedAddress = decodeAddress(address);
-        await copyToClipboard({ value: decodedAddress, alert });
+        await copyToClipboard({ value: address, alert });
         setOpen(false);
         onClose();
       };

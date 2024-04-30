@@ -51,7 +51,7 @@ function Home() {
 
   const playersArray = state?.players || [];
 
-  const getPlayers = () => (isGameStarted ? roll?.players || [] : state?.players || []);
+  const getPlayers = () => state?.players || [];
 
   const findPlayer = (address: string) => {
     console.log(getPlayers().find(([newAddress]) => newAddress === address));
@@ -319,7 +319,7 @@ function Home() {
             <div className={styles.wrapper}>
               {getFields()}
               <div className={styles.controller}>
-                {isGameStarted ? (
+                {isGameStarted && roll ? (
                   <Roll
                     color={getColor(roll.currentPlayer)}
                     player={roll.currentPlayer}

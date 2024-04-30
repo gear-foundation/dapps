@@ -1,6 +1,7 @@
 import { CSSProperties, Fragment } from 'react';
 import { cx } from 'utils';
 import { shortenString } from 'features/session/utils';
+import { getVaraAddress } from '@gear-js/react-hooks';
 import { ReactComponent as CheckSVG } from '../../assets/check.svg';
 import { ReactComponent as CrossSVG } from '../../assets/cross.svg';
 import { PLAYER_COLORS, TABLE_HEADINGS } from '../../consts';
@@ -27,7 +28,7 @@ function Table({ data, userId }: Props) {
           className={cx(styles.bodyCell, styles.firstColumn)}
           style={{ '--color': PLAYER_COLORS[index] } as CSSProperties}>
           <span>
-            {shortenString(participant, 4)}{' '}
+            {shortenString(getVaraAddress(participant), 4)}{' '}
             {userId === participant ? <span className={cx(styles.yourAddressSpan)}> (You)</span> : ''}
           </span>
         </div>
