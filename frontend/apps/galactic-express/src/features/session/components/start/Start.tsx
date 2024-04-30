@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import clsx from 'clsx';
-import { HexString, UserMessageSent, encodeAddress } from '@gear-js/api';
+import { HexString, UserMessageSent } from '@gear-js/api';
 import { Button } from '@gear-js/ui';
 import { useAtom, useSetAtom } from 'jotai';
 import { CURRENT_GAME_ATOM, REGISTRATION_STATUS } from 'atoms';
 import { ADDRESS } from 'consts';
 import { Bytes } from '@polkadot/types';
-import { useAccount, useApi } from '@gear-js/react-hooks';
+import { getVaraAddress, useAccount, useApi } from '@gear-js/react-hooks';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import src from 'assets/images/earth.gif';
 import { Container } from 'components';
@@ -16,7 +16,6 @@ import { Form } from '../form';
 import styles from './Start.module.scss';
 import { useEscrowMetadata } from '../../api';
 import { ParticipantsTable } from '../participants-table';
-
 import { SuccessfullyRegisteredInfo } from '../successfully-registered-info';
 import { Warning } from '../warning';
 import { CancelGameButton } from '../cancel-game-button/CancelGameButton';
@@ -46,7 +45,7 @@ function Start({ participants, session, isUserAdmin, userAddress, adminAddress, 
   const { decodedAddress } = account || {};
   const [registrationStatus, setRegistrationStatus] = useAtom(REGISTRATION_STATUS);
   const setCurrentGame = useSetAtom(CURRENT_GAME_ATOM);
-  const { altitude, weather, reward, sessionId } = session;
+  const { altitude, weather, reward } = session;
   const playersCount = participants?.length ? participants.length + 1 : 1;
   const isRegistered = decodedAddress ? !!participants.some((participant) => participant[0] === decodedAddress) : false;
 
@@ -142,12 +141,12 @@ function Start({ participants, session, isUserAdmin, userAddress, adminAddress, 
             data={[
               {
                 id: adminAddress || '',
-                playerAddress: encodeAddress(adminAddress || ''),
+                playerAddress: getVaraAddress(adminAddress || ''),
                 playerName: adminName,
               },
               ...participants.map((item) => ({
                 id: item[0],
-                playerAddress: encodeAddress(item[0]),
+                playerAddress: getVaraAddress(item[0]),
                 playerName: item[1].name,
               })),
             ]}
