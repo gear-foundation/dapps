@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { getVaraAddress } from '@gear-js/react-hooks';
 import { Buttons } from '../buttons';
 import styles from './Roll.module.scss';
 
@@ -18,7 +19,7 @@ function Roll({ color, player, currentTurn, turnsAmount, onFirstClick, onPrevCli
   return (
     <>
       <p className={clsx(styles.turnPlayer, color && styles[color])}>
-        <span className={styles.player}>{player}</span> Turn
+        <span className={styles.player}>{getVaraAddress(player)}</span> Turn
       </p>
       <div className={styles.disk}>
         <h2 className={styles.heading}>Master Rolls</h2>
