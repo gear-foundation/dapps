@@ -29,13 +29,13 @@ export function useWatchMessages<T>(meta: ProgramMetadata) {
     console.log(message.toHuman());
     const { destination, source, payload } = message;
 
-    const isOwner = destination.toHex() === account?.decodedAddress;
-    const signlessAddres = signless.pair?.address;
-    const isSignlessPair = signlessAddres ? destination.toHex() === decodeAddress(signlessAddres) : false;
+    const signlessPairAddress = signless.pair?.address;
+    const ownerAddress = signlessPairAddress ? decodeAddress(signlessPairAddress) : account?.decodedAddress;
+    const isOwner = destination.toHex() === ownerAddress;
 
     const isGame = source.toHex() === programId;
 
-    if ((isOwner || isSignlessPair) && isGame) {
+    if (isOwner && isGame) {
       try {
         const reply = getDecodedPayload<T>(payload);
         console.log('inside update: ', { reply });

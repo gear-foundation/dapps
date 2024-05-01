@@ -39,6 +39,13 @@ export function MenuHandler({ customItems, className }: Props) {
   const openMenu = () => setIsMenuOpen(true);
   const closeMenu = () => setIsMenuOpen(false);
 
+  /**
+   * Why we need modal root here:
+   * useClickOutside closes the menu when clicked "outside the menu".
+   * The modal is mounted in a portal, so it's "outside the menu", causing the menu to close when modal clicked.
+   * After the menu is closed, the modal disappears as well because the <EzSignlessTransactions /> component,
+   * which encapsulates the portal modal component, is unmounted from the menu.
+   */
   const modalRootRef = useRootModalRef();
 
   useClickOutside(

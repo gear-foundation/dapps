@@ -4,7 +4,11 @@ import { EnableGaslessSession } from '@dapps-frontend/gasless-transactions';
 import { useEzTransactions } from '../../context';
 import styles from './ez-transactions-switch.module.css';
 
-function EzTransactionsSwitch() {
+type Props = {
+  allowedActions: string[];
+};
+
+function EzTransactionsSwitch({ allowedActions }: Props) {
   const { gasless, signless } = useEzTransactions();
 
   return (
@@ -17,6 +21,7 @@ function EzTransactionsSwitch() {
 
       <EnableSignlessSession
         type="switcher"
+        allowedActions={allowedActions}
         onSessionCreate={signless.onSessionCreate}
         shouldIssueVoucher={!gasless.isEnabled}
         disabled={!signless.isSessionActive && gasless.isActive}

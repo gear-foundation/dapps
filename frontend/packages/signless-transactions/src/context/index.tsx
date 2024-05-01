@@ -18,11 +18,10 @@ const { Provider } = SignlessTransactionsContext;
 type Props = {
   programId: HexString;
   metadataSource: string;
-  allowedActions: string[];
   children: ReactNode;
 };
 
-function SignlessTransactionsProvider({ metadataSource, programId, allowedActions, children }: Props) {
+function SignlessTransactionsProvider({ metadataSource, programId, children }: Props) {
   const { account } = useAccount();
 
   const metadata = useProgramMetadata(metadataSource);
@@ -105,7 +104,6 @@ function SignlessTransactionsProvider({ metadataSource, programId, allowedAction
     isSessionActive,
     storageVoucher,
     storageVoucherBalance,
-    allowedActions,
   };
 
   return <Provider value={value}>{children}</Provider>;

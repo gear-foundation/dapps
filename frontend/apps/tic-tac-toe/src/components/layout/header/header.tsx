@@ -4,6 +4,7 @@ import styles from './header.module.scss';
 import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
 import clsx from 'clsx';
 import { useAccount } from '@gear-js/react-hooks';
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 
 export function Header() {
   const { account } = useAccount();
@@ -17,7 +18,7 @@ export function Header() {
       menu={
         <MenuHandler
           customItems={[
-            { key: 'signless', option: <EzSignlessTransactions /> },
+            { key: 'signless', option: <EzSignlessTransactions allowedActions={SIGNLESS_ALLOWED_ACTIONS} /> },
             { key: 'gasless', option: <EzGaslessTransactions /> },
           ]}
         />

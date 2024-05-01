@@ -14,7 +14,7 @@ import {
 } from '@dapps-frontend/ez-transactions';
 
 import metaTxt from '@/features/tic-tac-toe/assets/meta/tic_tac_toe.meta.txt';
-import { ADDRESS, SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
+import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
 
 function ApiProvider({ children }: ProviderProps) {
@@ -31,7 +31,10 @@ function AlertProvider({ children }: ProviderProps) {
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
   return (
-    <SharedGaslessTransactionsProvider programId={ADDRESS.GAME} backendAddress={ADDRESS.BACK} voucherLimit={6}>
+    <SharedGaslessTransactionsProvider
+      programId={ADDRESS.GAME}
+      backendAddress={ADDRESS.GASLESS_BACKEND}
+      voucherLimit={6}>
       {children}
     </SharedGaslessTransactionsProvider>
   );
@@ -39,10 +42,7 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
 
 function SignlessTransactionsProvider({ children }: ProviderProps) {
   return (
-    <SharedSignlessTransactionsProvider
-      programId={ADDRESS.GAME}
-      metadataSource={metaTxt}
-      allowedActions={SIGNLESS_ALLOWED_ACTIONS}>
+    <SharedSignlessTransactionsProvider programId={ADDRESS.GAME} metadataSource={metaTxt}>
       {children}
     </SharedSignlessTransactionsProvider>
   );

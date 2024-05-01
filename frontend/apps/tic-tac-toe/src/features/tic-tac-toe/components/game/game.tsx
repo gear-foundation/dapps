@@ -12,6 +12,7 @@ import { useGame } from '@/features/tic-tac-toe/hooks';
 import { BaseComponentProps } from '@/app/types';
 import { ProgramMetadata } from '@gear-js/api';
 import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 
 type GameProps = BaseComponentProps & {
   game: IGameInstance;
@@ -72,7 +73,7 @@ export function Game({ game, meta }: GameProps) {
         ) : (
           <div className={styles.game__play}>
             <GameStartButton meta={meta}>Play again</GameStartButton>
-            <EzTransactionsSwitch />
+            <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} />
           </div>
         )}
       </div>

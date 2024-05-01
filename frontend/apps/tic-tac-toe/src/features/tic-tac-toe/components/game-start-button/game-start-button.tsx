@@ -49,8 +49,9 @@ export function GameStartButton({ children, meta }: GameStartButtonProps) {
     const payload = { StartGame: {} };
     setIsLoading(true);
 
+    let voucherId = gasless.voucherId;
     if (gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
-      await gasless.requestVoucher(account.address);
+      voucherId = await gasless.requestVoucher(account.address);
     }
 
     calculateGas(payload)
@@ -65,7 +66,7 @@ export function GameStartButton({ children, meta }: GameStartButtonProps) {
           () => {
             message({
               payload,
-              voucherId: gasless.voucherId,
+              voucherId,
               gasLimit,
               onError,
             });

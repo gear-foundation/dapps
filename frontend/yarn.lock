@@ -22104,18 +22104,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socket.io-client@npm:4.7.2":
-  version: 4.7.2
-  resolution: "socket.io-client@npm:4.7.2"
-  dependencies:
-    "@socket.io/component-emitter": "npm:~3.1.0"
-    debug: "npm:~4.3.2"
-    engine.io-client: "npm:~6.5.2"
-    socket.io-parser: "npm:~4.2.4"
-  checksum: 164931221deaa30278185c795772b6065273b751b4951ce16581eff0aed955196ae3e911489d66542409ef3629e4a5dc85908902c6aa9f8f79fee314732e624b
-  languageName: node
-  linkType: hard
-
 "socket.io-client@npm:^4.7.2":
   version: 4.7.5
   resolution: "socket.io-client@npm:4.7.5"
@@ -23413,7 +23401,6 @@ __metadata:
     react-transition-group: "npm:4.4.5"
     rollup-plugin-visualizer: "npm:5.9.2"
     sass: "npm:1.62.0"
-    socket.io-client: "npm:4.7.2"
     tailwindcss: "npm:3.3.3"
     typescript: "npm:4.9.5"
     vite: "npm:4.4.9"
