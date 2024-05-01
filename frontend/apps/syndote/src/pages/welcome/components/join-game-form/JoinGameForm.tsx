@@ -11,7 +11,7 @@ import { HexString } from '@gear-js/api';
 import { GameFoundModal, JoinModalFormValues } from 'pages/home/game-found-modal';
 import { ADDRESS } from 'consts';
 import { useProgramMetadata } from 'hooks/metadata';
-import { TextModal } from 'pages/home/game-not-found-modal';
+import { TextModal } from 'pages/home/text-modal';
 import styles from './JoinGameForm.module.scss';
 import { GameSessionState, State } from 'types';
 
