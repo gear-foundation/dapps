@@ -14,7 +14,7 @@ import {
 } from '@dapps-frontend/ez-transactions';
 
 import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
-import { ADDRESS, SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
+import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
 
 function ApiProvider({ children }: ProviderProps) {
