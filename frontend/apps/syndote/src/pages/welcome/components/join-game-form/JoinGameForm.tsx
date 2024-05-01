@@ -116,7 +116,7 @@ function JoinGameForm({ onCancel }: Props) {
           <TextField
             label="Specify the game admin address:"
             variant="active"
-            placeholder="0x25c"
+            placeholder="kG25c..."
             disabled={isLoading}
             {...getJoinInputProps('address')}
           />
