@@ -34,7 +34,6 @@ export function useGame() {
   };
 
   const updateGame = (game: IGameInstance) => {
-    console.log('_+_+_+_+_++_+_+-_++_++_ update game');
     setGameState(game);
     updateCountdown(game);
   };
