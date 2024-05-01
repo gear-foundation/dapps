@@ -31,7 +31,7 @@ function AlertProvider({ children }: ProviderProps) {
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
   return (
-    <SharedGaslessTransactionsProvider programId={ADDRESS.GAME} backendAddress={ADDRESS.BACK} voucherLimit={18}>
+    <SharedGaslessTransactionsProvider programId={ADDRESS.GAME} backendAddress={ADDRESS.BACK} voucherLimit={6}>
       {children}
     </SharedGaslessTransactionsProvider>
   );
