@@ -7,53 +7,14 @@ import { Button } from '@gear-js/vara-ui';
 import { useReadGameSessionState, useSyndoteMessage } from 'hooks/metadata';
 import { useAccount } from '@gear-js/react-hooks';
 import clsx from 'clsx';
+import { useQuitGame } from 'hooks/useQuitGame';
 
 function Header() {
-  const { state, isStateRead } = useReadGameSessionState();
-  const { isMeta, sendMessage } = useSyndoteMessage();
+  const { state } = useReadGameSessionState();
   const { account } = useAccount();
   const { adminId, gameStatus } = state || {};
   const isAdmin = account?.decodedAddress === adminId;
-
-  const handleCancelGame = () => {
-    if (!isMeta || !account?.decodedAddress || !isStateRead) {
-      return;
-    }
-
-    const payload = {
-      CancelGameSession: {
-        adminId,
-      },
-    };
-
-    sendMessage({
-      payload,
-    });
-  };
-
-  const exitGame = () => {
-    const payload = {
-      ExitGame: {
-        adminId,
-      },
-    };
-
-    sendMessage({
-      payload,
-    });
-  };
-
-  const deleteGame = () => {
-    const payload = {
-      DeleteGame: {
-        adminId,
-      },
-    };
-
-    sendMessage({
-      payload,
-    });
-  };
+  const { cancelGame, deleteGame, exitGame } = useQuitGame();
 
   return (
     <CommonHeader
@@ -70,7 +31,7 @@ function Header() {
               text="Cancel game"
               icon={CrossSVG}
               className={styles.cancelGameButton}
-              onClick={handleCancelGame}
+              onClick={cancelGame}
             />
           )}
           {account?.decodedAddress && gameStatus === 'Finished' && (
