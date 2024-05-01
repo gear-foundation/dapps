@@ -93,7 +93,7 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
             <TextField
               theme="dark"
               label="Enter your program address:"
-              placeholder="0x25c"
+              placeholder="0x25c..."
               variant="active"
               {...getJoinInputProps('strategyId')}
             />
