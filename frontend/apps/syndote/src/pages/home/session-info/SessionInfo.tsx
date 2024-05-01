@@ -38,7 +38,6 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
   const balance =
     isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
   const VaraSvg = balance?.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />;
-  const userStrategy = players.find((item) => item[1].ownerId === account?.decodedAddress)?.[0] || '';
 
   const handleCopy = (value: string) => {
     copyToClipboard({ alert, value });
@@ -67,11 +66,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
     {
       name: (
         <span>
-          Program address (
-          <span className={styles.markedAddress}>
-            {userStrategy ? stringShorten(getVaraAddress(userStrategy), 4) : ''}
-          </span>
-          )
+          Program address (<span className={styles.markedAddress}>{stringShorten(getVaraAddress(adminId), 4)}</span>)
         </span>
       ),
       value: (
@@ -80,7 +75,7 @@ function SessionInfo({ entryFee, players, adminId }: Props) {
           icon={CopySVG}
           text="Copy"
           className={styles.copyButton}
-          onClick={() => handleCopy(getVaraAddress(userStrategy))}
+          onClick={() => handleCopy(getVaraAddress(adminId))}
         />
       ),
       key: '3',
