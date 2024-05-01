@@ -38,7 +38,7 @@ type State = {
   propertiesInBank: string;
   round: string;
   winner: HexString;
-
+  prizePool: string;
   entryFee: string | null;
 };
 
@@ -59,7 +59,7 @@ type Step = {
 };
 
 type MessagePayload = ({ GameFinished: { winner: HexString } } & { Step: Step }) | string;
-type MessageHandlePayload = { Ok: 'GameDeleted' | 'GameWasCancelled' } & { Err: any };
+type MessageHandlePayload = { Ok: 'GameDeleted' | 'GameWasCancelled' | 'gameFinished' } & { Err: any };
 type MessageDetails = {
   to: HexString;
 };
