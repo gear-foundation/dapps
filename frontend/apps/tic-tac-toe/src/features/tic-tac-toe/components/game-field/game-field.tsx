@@ -3,7 +3,7 @@ import styles from './game-field.module.scss';
 import { GameCell } from '../game-cell';
 import type { IGameInstance } from '../../types';
 import { GameMark } from '../game-mark';
-import { useGame, useGameMessage, useHandleCalculateGas, useSubscriptionOnGameMessage } from '../../hooks';
+import { useCheckGaslessVouher, useGame, useGameMessage, useSubscriptionOnGameMessage } from '../../hooks';
 import { calculateWinner } from '../../utils';
 import { motion } from 'framer-motion';
 import { variantsGameMark } from '../../variants';
@@ -11,7 +11,7 @@ import { BaseComponentProps } from '@/app/types';
 import { useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { stateChangeLoadingAtom } from '../../store';
-import { useAccount, useAlert } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
 import { ADDRESS } from '../../consts';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
@@ -88,6 +88,8 @@ export function GameField({ game, meta }: GameFieldProps) {
     setIsLoading(isOpened);
   }, [isOpened]);
 
+  const checkGaslessVoucher = useCheckGaslessVouher<number>(onSelectCell);
+
   return (
     <div
       className={clsx(
@@ -100,7 +102,7 @@ export function GameField({ game, meta }: GameFieldProps) {
           value={i}
           disabled={Boolean(mark || winnerRow?.length) || !countdown?.isActive || !!game.gameResult}
           isLoading={isLoading || gasless.isLoading}
-          onSelectCell={onSelectCell}>
+          onSelectCell={checkGaslessVoucher}>
           {mark && <GameMark mark={mark} className={clsx(styles.mark, mark === game.playerMark && styles.active)} />}
         </GameCell>
       ))}

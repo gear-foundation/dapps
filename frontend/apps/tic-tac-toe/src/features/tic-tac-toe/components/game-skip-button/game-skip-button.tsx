@@ -1,7 +1,11 @@
 import { Button } from '@/components/ui/button';
-import { useGameMessage, useHandleCalculateGas, useSubscriptionOnGameMessage } from '../../hooks';
+import {
+  useCheckGaslessVouher,
+  useGameMessage,
+  useSubscriptionOnGameMessage,
+} from '../../hooks';
 import { useEffect, useState } from 'react';
-import { useAccount, useAlert } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
 import { ADDRESS } from '../../consts';
 import { withoutCommas } from '@/app/utils';
 import { ProgramMetadata } from '@gear-js/api';
@@ -64,6 +68,7 @@ export function GameSkipButton({ meta }: Props) {
             message({
               payload,
               gasLimit,
+              voucherId: gasless.voucherId,
               onError,
               onSuccess,
             });
@@ -78,8 +83,10 @@ export function GameSkipButton({ meta }: Props) {
       });
   };
 
+  const checkGaslessVoucher = useCheckGaslessVouher(onNextTurn);
+
   return (
-    <Button onClick={onNextTurn} isLoading={isLoading} variant="black">
+    <Button onClick={checkGaslessVoucher} isLoading={isLoading} variant="black">
       Skip
     </Button>
   );

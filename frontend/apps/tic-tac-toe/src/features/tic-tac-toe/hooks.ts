@@ -1,17 +1,19 @@
-import { useAccount, useAlert, useApi, useHandleCalculateGas as useCalculateGasNative } from '@gear-js/react-hooks';
-import { useEffect, useMemo } from 'react';
+import { useAccount, useApi, useBalance } from '@gear-js/react-hooks';
+import { useEffect, useMemo, useState } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import isEqual from 'lodash.isequal';
-import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
+import {
+  useGaslessTransactions,
+  useSignlessSendMessage,
+  useSignlessTransactions,
+} from '@dapps-frontend/ez-transactions';
 import { IDecodedReplyGame, IGameInstance, IQueryResponseConfig, IQueryResponseGame } from './types';
 import { configAtom, countdownAtom, gameAtom, pendingAtom, stateChangeLoadingAtom } from './store';
 import { ADDRESS } from './consts';
 import { useOnceReadState } from '@/app/hooks/use-once-read-state';
 import { useWatchMessages } from '@/app/hooks/use-watch-messages';
-import { toNumber, withoutCommas } from '@/app/utils';
-import { HexString, ProgramMetadata } from '@gear-js/api';
-import { AnyJson, AnyNumber } from '@polkadot/types/types';
-import { useAccountAvailableBalance } from '../account-available-balance/hooks';
+import { toNumber } from '@/app/utils';
+import { ProgramMetadata } from '@gear-js/api';
 
 const programIdGame = ADDRESS.GAME;
 
@@ -185,20 +187,32 @@ export function useSubscriptionOnGameMessage(meta: ProgramMetadata) {
   };
 }
 
-export const useHandleCalculateGas = (address: HexString, meta: ProgramMetadata) => {
-  const { availableBalance } = useAccountAvailableBalance();
-  const calculateGasNative = useCalculateGasNative(address, meta);
+export const useCheckGaslessVouher = <T extends unknown>(callback: (params: T) => void) => {
+  const { account } = useAccount();
+  const signless = useSignlessTransactions();
+  const gasless = useGaslessTransactions();
+  const { isBalanceReady } = useBalance(gasless.voucherId);
 
-  const alert = useAlert();
+  const [isNeedExecuteCallback, setIsNeedExecuteCallback] = useState(false);
+  const [savedParams, setSavedParams] = useState<T>();
 
-  return (initPayload: AnyJson, value?: AnyNumber | undefined) => {
-    const balance = Number(withoutCommas(availableBalance?.value || ''));
-    const existentialDeposit = Number(withoutCommas(availableBalance?.existentialDeposit || ''));
-
-    if (!balance || balance < existentialDeposit) {
-      alert.error(`Low balance when calculating gas`);
+  useEffect(() => {
+    if (isNeedExecuteCallback && gasless.isEnabled && gasless.voucherId && isBalanceReady) {
+      setIsNeedExecuteCallback(false);
+      callback(savedParams as T);
+      setSavedParams(undefined);
     }
+  }, [gasless.isEnabled, gasless.voucherId, isBalanceReady, isNeedExecuteCallback, callback, savedParams]);
 
-    return calculateGasNative(initPayload, value);
+  const checkGaslessVoucher = async (params: T) => {
+    if (account && gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
+      await gasless.requestVoucher(account.address);
+      setSavedParams(params);
+      setIsNeedExecuteCallback(true);
+    } else {
+      callback(params);
+    }
   };
+
+  return (params: T) => checkGaslessVoucher(params);
 };
