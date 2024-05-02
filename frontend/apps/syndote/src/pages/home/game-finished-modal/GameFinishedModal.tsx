@@ -1,4 +1,4 @@
-import { useApi, useBalanceFormat, useAccount } from '@gear-js/react-hooks';
+import { useApi, useBalanceFormat, useAccount, withoutCommas } from '@gear-js/react-hooks';
 import { Modal } from 'components/layout/modal';
 import { Button } from '@gear-js/vara-ui';
 import { GameDetails } from 'components/layout/game-details';
@@ -15,9 +15,9 @@ type Props = {
   onClose: () => void;
 };
 
-function GameFinishedModal({ winnerAddress, isAdmin, players, prizePool, onClose }: Props) {
+function GameFinishedModal({ winnerAddress, isAdmin, players, prizePool = '0', onClose }: Props) {
   const { account } = useAccount();
-  const { getFormattedGasValue } = useBalanceFormat();
+  const { getFormattedBalanceValue } = useBalanceFormat();
   const { deleteGame, exitGame } = useQuitGame();
 
   const isWinner = account?.decodedAddress === players[winnerAddress].ownerId;
@@ -28,7 +28,7 @@ function GameFinishedModal({ winnerAddress, isAdmin, players, prizePool, onClose
       name: `Winner's prize:`,
       value: (
         <>
-          <VaraIcon /> {getFormattedGasValue(prizePool || 0).toFixed()} VARA
+          <VaraIcon /> {getFormattedBalanceValue(withoutCommas(prizePool) || 0).toFixed(2)} VARA
         </>
       ),
       key: '1',

@@ -53,7 +53,7 @@ function Home() {
   const { properties, ownership } = roll || {};
   const playersArray = state?.players || [];
 
-  const getPlayers = () => state?.players || [];
+  const getPlayers = () => (isGameStarted && roll ? roll?.players : state?.players || []);
 
   const findPlayer = (address: string) => getPlayers().find(([newAddress]) => newAddress === address)?.[1];
 
