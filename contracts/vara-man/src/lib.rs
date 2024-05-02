@@ -1,8 +1,11 @@
 #![no_std]
-
+mod sr25519;
 use fungible_token_io::{FTAction, FTEvent};
-use gstd::{collections::HashMap, debug, exec, msg, prelude::*, ActorId};
+use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId};
 use vara_man_io::*;
+
+// Minimum duration of session: 3 mins = 180_000 ms = 60 blocks
+pub const MINIMUM_SESSION_SURATION_MS: u64 = 180_000;
 
 #[derive(Debug, Default)]
 struct VaraMan {
@@ -11,6 +14,7 @@ struct VaraMan {
     status: Status,
     config: Config,
     admins: Vec<ActorId>,
+    sessions: HashMap<ActorId, Session>,
 }
 
 #[derive(Default, Debug)]
@@ -32,10 +36,55 @@ async fn main() {
     let vara_man: &mut VaraMan = unsafe { VARA_MAN.get_or_insert(VaraMan::default()) };
 
     let result = process_handle(action, vara_man).await;
-    debug!("RESULT: {:?}", result);
     msg::reply(result, 0).expect("Unexpected invalid reply result.");
 }
 
+impl VaraMan {
+    fn get_player(
+        &self,
+        msg_source: &ActorId,
+        session_for_account: &Option<ActorId>,
+        actions_for_session: ActionsForSession,
+    ) -> ActorId {
+        let player = match session_for_account {
+            Some(account) => {
+                let session = self
+                    .sessions
+                    .get(account)
+                    .expect("This account has no valid session");
+                assert!(
+                    session.expires > exec::block_timestamp(),
+                    "The session has already expired"
+                );
+                assert!(
+                    session.allowed_actions.contains(&actions_for_session),
+                    "This message is not allowed"
+                );
+                assert_eq!(
+                    session.key, *msg_source,
+                    "The account is not approved for this session"
+                );
+                *account
+            }
+            None => *msg_source,
+        };
+        player
+    }
+
+    fn check_if_session_exists(&self, account: &ActorId) {
+        if let Some(Session {
+            key: _,
+            expires: _,
+            allowed_actions: _,
+            expires_at_block,
+        }) = self.sessions.get(account)
+        {
+            if *expires_at_block > exec::block_height() {
+                panic!("You already have an active session. If you want to create a new one, please delete this one.")
+            }
+        }
+    }
+}
 #[allow(clippy::comparison_chain)]
 async fn process_handle(
     action: VaraManAction,
@@ -47,17 +96,23 @@ async fn process_handle(
             name,
             level,
             duration_ms,
+            session_for_account,
         } => {
             let msg_src = msg::source();
             let msg_value = msg::value();
 
-            if vara_man.tournaments.contains_key(&msg_src) {
-                msg::send_with_gas(msg_src, "", 0, msg_value).expect("Error in sending the value");
+            let player = vara_man.get_player(
+                &msg_src,
+                &session_for_account,
+                ActionsForSession::CreateNewTournament,
+            );
+            if vara_man.tournaments.contains_key(&player) {
+                msg::send_with_gas(player, "", 0, msg_value).expect("Error in sending the value");
                 return Err(VaraManError::AlreadyHaveTournament);
             }
             let mut participants = HashMap::new();
             participants.insert(
-                msg_src,
+                player,
                 Player {
                     name: name.clone(),
                     time: 0,
@@ -66,15 +121,15 @@ async fn process_handle(
             );
             let game = Tournament {
                 tournament_name: tournament_name.clone(),
-                admin: msg_src,
+                admin: player,
                 level,
                 participants,
                 bid: msg_value,
                 stage: Stage::Registration,
                 duration_ms,
             };
-            vara_man.tournaments.insert(msg_src, game);
-            vara_man.players_to_game_id.insert(msg_src, msg_src);
+            vara_man.tournaments.insert(player, game);
+            vara_man.players_to_game_id.insert(player, player);
             Ok(VaraManEvent::NewTournamentCreated {
                 tournament_name,
                 name,
@@ -82,20 +137,36 @@ async fn process_handle(
                 bid: msg_value,
             })
         }
-        VaraManAction::RegisterForTournament { admin_id, name } => {
+        VaraManAction::RegisterForTournament {
+            admin_id,
+            name,
+            session_for_account,
+        } => {
             let msg_src = msg::source();
             let msg_value = msg::value();
-            let reply = vara_man.register(msg_src, msg_value, admin_id, name);
+            let player = vara_man.get_player(
+                &msg_src,
+                &session_for_account,
+                ActionsForSession::RegisterForTournament,
+            );
+            let reply = vara_man.register(player, msg_value, admin_id, name);
             if reply.is_err() {
-                msg::send_with_gas(msg_src, "", 0, msg_value).expect("Error in sending the value");
+                msg::send_with_gas(player, "", 0, msg_value).expect("Error in sending the value");
             }
             reply
         }
-        VaraManAction::CancelRegister => {
+        VaraManAction::CancelRegister {
+            session_for_account,
+        } => {
             let msg_src = msg::source();
+            let player = vara_man.get_player(
+                &msg_src,
+                &session_for_account,
+                ActionsForSession::CancelRegister,
+            );
             let admin_id = vara_man
                 .players_to_game_id
-                .get(&msg_src)
+                .get(&player)
                 .ok_or(VaraManError::NoSuchPlayer)?;
 
             let game = vara_man
@@ -103,25 +174,32 @@ async fn process_handle(
                 .get_mut(admin_id)
                 .ok_or(VaraManError::NoSuchGame)?;
 
-            if game.admin == msg_src {
+            if game.admin == player {
                 return Err(VaraManError::AccessDenied);
             }
             if game.stage != Stage::Registration {
                 return Err(VaraManError::WrongStage);
             }
             if game.bid != 0 {
-                msg::send_with_gas(msg_src, "", 0, game.bid).expect("Error in sending the value");
+                msg::send_with_gas(player, "", 0, game.bid).expect("Error in sending the value");
             }
-            game.participants.remove(&msg_src);
-            vara_man.players_to_game_id.remove(&msg_src);
+            game.participants.remove(&player);
+            vara_man.players_to_game_id.remove(&player);
 
             Ok(VaraManEvent::RegisterCanceled)
         }
-        VaraManAction::CancelTournament => {
+        VaraManAction::CancelTournament {
+            session_for_account,
+        } => {
             let msg_src = msg::source();
+            let player = vara_man.get_player(
+                &msg_src,
+                &session_for_account,
+                ActionsForSession::CancelTournament,
+            );
             let game = vara_man
                 .tournaments
-                .get(&msg_src)
+                .get(&player)
                 .ok_or(VaraManError::NoSuchGame)?;
 
             game.participants.iter().for_each(|(id, _)| {
@@ -131,15 +209,23 @@ async fn process_handle(
                 vara_man.players_to_game_id.remove(id);
             });
 
-            vara_man.tournaments.remove(&msg_src);
+            vara_man.tournaments.remove(&player);
 
-            Ok(VaraManEvent::TournamentCanceled { admin_id: msg_src })
+            Ok(VaraManEvent::TournamentCanceled { admin_id: player })
         }
-        VaraManAction::DeletePlayer { player_id } => {
+        VaraManAction::DeletePlayer {
+            player_id,
+            session_for_account,
+        } => {
             let msg_src = msg::source();
+            let player = vara_man.get_player(
+                &msg_src,
+                &session_for_account,
+                ActionsForSession::DeletePlayer,
+            );
             let game = vara_man
                 .tournaments
-                .get_mut(&msg_src)
+                .get_mut(&player)
                 .ok_or(VaraManError::NoSuchGame)?;
 
             if game.admin == player_id {
@@ -167,16 +253,21 @@ async fn process_handle(
             gold_coins,
             silver_coins,
             level,
+            session_for_account,
         } => {
             let msg_src = msg::source();
-
+            let player = vara_man.get_player(
+                &msg_src,
+                &session_for_account,
+                ActionsForSession::FinishSingleGame,
+            );
             let (points_for_gold, points_for_silver) =
                 vara_man.config.get_points_per_gold_coin_for_level(level);
             let points = points_for_gold * gold_coins + points_for_silver * silver_coins;
             let prize = vara_man.config.one_point_in_value * points;
 
             if vara_man.status == Status::StartedWithNativeToken {
-                msg::send_with_gas(msg_src, "", 0, prize).expect("Error in sending value");
+                msg::send_with_gas(player, "", 0, prize).expect("Error in sending value");
             } else if let Status::StartedWithFungibleToken { ft_address } = vara_man.status {
                 let _transfer_response: FTEvent = msg::send_for_reply_as(
                     ft_address,
@@ -194,14 +285,21 @@ async fn process_handle(
             }
             Ok(VaraManEvent::SingleGameFinished { prize })
         }
-        VaraManAction::StartTournament => {
+        VaraManAction::StartTournament {
+            session_for_account,
+        } => {
             let msg_src = msg::source();
+            let player = vara_man.get_player(
+                &msg_src,
+                &session_for_account,
+                ActionsForSession::StartTournament,
+            );
             if vara_man.status == Status::Paused {
                 return Err(VaraManError::GameIsPaused);
             }
             let game = vara_man
                 .tournaments
-                .get_mut(&msg_src)
+                .get_mut(&player)
                 .ok_or(VaraManError::NoSuchGame)?;
 
             if game.stage != Stage::Registration {
@@ -212,7 +310,7 @@ async fn process_handle(
             msg::send_with_gas_delayed(
                 exec::program_id(),
                 VaraManAction::FinishTournament {
-                    admin_id: msg_src,
+                    admin_id: player,
                     time_start,
                 },
                 vara_man.config.gas_for_finish_tournament,
@@ -289,11 +387,19 @@ async fn process_handle(
             time,
             gold_coins,
             silver_coins,
+            session_for_account,
         } => {
+
             let msg_src = msg::source();
+
+            let player = vara_man.get_player(
+                &msg_src,
+                &session_for_account,
+                ActionsForSession::RecordTournamentResult,
+            );
             let admin_id = vara_man
                 .players_to_game_id
-                .get(&msg_src)
+                .get(&player)
                 .ok_or(VaraManError::NoSuchPlayer)?;
             let game = vara_man
                 .tournaments
@@ -306,7 +412,7 @@ async fn process_handle(
 
             let player = game
                 .participants
-                .get_mut(&msg_src)
+                .get_mut(&player)
                 .ok_or(VaraManError::NoSuchPlayer)?;
 
             let (points_for_gold, points_for_silver) = vara_man
@@ -322,8 +428,15 @@ async fn process_handle(
             })
         }
 
-        VaraManAction::LeaveGame => {
-            vara_man.players_to_game_id.remove(&msg::source());
+        VaraManAction::LeaveGame {
+            session_for_account,
+        } => {
+            let player = vara_man.get_player(
+                &msg::source(),
+                &session_for_account,
+                ActionsForSession::LeaveGame,
+            );
+            vara_man.players_to_game_id.remove(&player);
             Ok(VaraManEvent::LeftGame)
         }
         VaraManAction::ChangeStatus(status) => {
@@ -349,6 +462,103 @@ async fn process_handle(
             } else {
                 Err(VaraManError::NotAdmin)
             }
+        }
+        VaraManAction::CreateSession {
+            key,
+            duration,
+            allowed_actions,
+            signature,
+        } => {
+            assert!(
+                duration >= MINIMUM_SESSION_SURATION_MS,
+                "Duration is too small"
+            );
+
+            let msg_source = msg::source();
+            let block_timestamp = exec::block_timestamp();
+            let block_height = exec::block_height();
+
+            let expires = block_timestamp + duration;
+
+            let number_of_blocks = u32::try_from(duration.div_ceil(vara_man.config.block_duration_ms))
+                .expect("Duration is too large");
+
+            assert!(
+                !allowed_actions.is_empty(),
+                "No messages for approval were passed."
+            );
+
+            let account = match signature {
+                Some(sig_bytes) => {
+                    vara_man.check_if_session_exists(&key);
+                    let pub_key: [u8; 32] = key.into();
+                    let mut prefix = b"<Bytes>".to_vec();
+                    let mut message = SignatureData {
+                        key: msg_source,
+                        duration,
+                        allowed_actions: allowed_actions.clone(),
+                    }
+                    .encode();
+                    let mut postfix = b"</Bytes>".to_vec();
+                    prefix.append(&mut message);
+                    prefix.append(&mut postfix);
+
+                    if crate::sr25519::verify(&sig_bytes, prefix, pub_key).is_err() {
+                        panic!("Failed sign verification");
+                    }
+                    vara_man.sessions.entry(key).insert(Session {
+                        key: msg_source,
+                        expires,
+                        allowed_actions,
+                        expires_at_block: block_height + number_of_blocks,
+                    });
+                    key
+                }
+                None => {
+                    vara_man.check_if_session_exists(&msg_source);
+
+                    vara_man.sessions.entry(msg_source).insert(Session {
+                        key,
+                        expires,
+                        allowed_actions,
+                        expires_at_block: block_height + number_of_blocks,
+                    });
+                    msg_source
+                }
+            };
+
+            msg::send_with_gas_delayed(
+                exec::program_id(),
+                VaraManAction::DeleteSessionFromProgram { account },
+                vara_man.config.gas_to_delete_session,
+                0,
+                number_of_blocks,
+            )
+            .expect("Error in sending a delayed msg");
+
+            Ok(VaraManEvent::SessionCreated)
+        }
+        VaraManAction::DeleteSessionFromAccount => {
+            assert!(
+                vara_man.sessions.remove(&msg::source()).is_some(),
+                "No session"
+            );
+            Ok(VaraManEvent::SessionDeleted)
+        }
+        VaraManAction::DeleteSessionFromProgram { account } => {
+            assert_eq!(
+                exec::program_id(),
+                msg::source(),
+                "The msg source must be the program"
+            );
+
+            if let Some(session) = vara_man.sessions.remove(&account) {
+                assert!(
+                    session.expires_at_block <= exec::block_height(),
+                    "Too early to delete session"
+                );
+            }
+            Ok(VaraManEvent::SessionDeleted)
         }
     }
 }
@@ -447,6 +657,9 @@ extern fn state() {
         StateQuery::Config => StateReply::Config(contract.config),
         StateQuery::Admins => StateReply::Admins(contract.admins),
         StateQuery::Status => StateReply::Status(contract.status),
+        StateQuery::SessionForTheAccount(account) => {
+            StateReply::SessionForTheAccount(contract.sessions.get(&account).cloned())
+        }
     };
     msg::reply(reply, 0).expect("Unable to share the state");
 }
@@ -459,6 +672,7 @@ impl From<VaraMan> for VaraManState {
             status,
             config,
             admins,
+            sessions: _,
         } = value;
 
         let tournaments = tournaments
