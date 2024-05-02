@@ -2,7 +2,7 @@
 
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, InOut,Out, Metadata};
 use gstd::{prelude::*, ActorId};
 
 pub type Cell = Option<Mark>;
@@ -46,7 +46,7 @@ impl Metadata for ContractMetadata {
     ///
     /// The unit tuple is used as we don't use asynchronous interaction in this
     /// contract.
-    type Others = ();
+    type Others = Out<SignatureData>;
     /// Reply message type.
     ///
     /// Describes incoming/outgoing types of messages performed using the

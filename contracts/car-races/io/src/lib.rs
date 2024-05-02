@@ -81,6 +81,28 @@ impl Metadata for ContractMetadata {
     type State = InOut<StateQuery, StateReply>;
 }
 
+// This structure is for creating a gaming session, which allows players to predefine certain actions for an account that will play the game on their behalf for a certain period of time.
+// Sessions can be used to send transactions from a dApp on behalf of a user without requiring their confirmation with a wallet.
+// The user is guaranteed that the dApp can only execute transactions that comply with the allowed_actions of the session until the session expires.
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+pub struct Session {
+    // the address of the player who will play on behalf of the user
+    pub key: ActorId,
+    // until what time the session is valid
+    pub expires: u64,
+    // what messages are allowed to be sent by the account (key)
+    pub allowed_actions: Vec<ActionsForSession>,
+
+    pub expires_at_block: u32,
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+pub struct SignatureData {
+    pub key: ActorId,
+    pub duration: u64,
+    pub allowed_actions: Vec<ActionsForSession>,
+}
+
 #[derive(Encode, Decode, TypeInfo)]
 pub enum StateQuery {
     Admins,
@@ -90,6 +112,7 @@ pub enum StateQuery {
     MsgIdToGameId,
     Config,
     MessagesAllowed,
+    SessionForTheAccount(ActorId),
 }
 
 #[derive(Encode, Decode, TypeInfo)]
@@ -102,6 +125,7 @@ pub enum StateReply {
     WaitingMsgs(Vec<(MessageId, MessageId)>),
     Config(Config),
     MessagesAllowed(bool),
+    SessionForTheAccount(Option<Session>),
 }
 
 #[derive(Encode, Decode, TypeInfo, Clone, Debug)]
@@ -152,11 +176,14 @@ pub enum GameAction {
     AddStrategyIds {
         car_ids: Vec<ActorId>,
     },
-    StartGame,
+    StartGame {
+        session_for_account: Option<ActorId>,
+    },
     Play {
         account: ActorId,
     },
     PlayerMove {
+        session_for_account: Option<ActorId>,
         strategy_action: StrategyAction,
     },
     UpdateConfig {
@@ -169,6 +196,8 @@ pub enum GameAction {
         max_distance: Option<u32>,
         time: Option<u32>,
         time_for_game_storage: Option<u64>,
+        block_duration_ms: Option<u64>,
+        gas_to_delete_session: Option<u64>,
     },
     RemoveGameInstance {
         account_id: ActorId,
@@ -177,6 +206,22 @@ pub enum GameAction {
         players_ids: Option<Vec<ActorId>>,
     },
     AllowMessages(bool),
+    CreateSession {
+        key: ActorId,
+        duration: u64,
+        allowed_actions: Vec<ActionsForSession>,
+        signature: Option<Vec<u8>>,
+    },
+    DeleteSessionFromProgram {
+        account: ActorId,
+    },
+    DeleteSessionFromAccount,
+}
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+pub enum ActionsForSession {
+    StartGame,
+    PlayerMove, 
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
@@ -210,6 +255,8 @@ pub enum GameReply {
     AdminRemoved,
     ConfigUpdated,
     StatusMessagesUpdated,
+    SessionCreated,
+    SessionDeleted,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
@@ -345,6 +392,8 @@ pub struct Config {
     pub max_distance: u32,
     pub time: u32,
     pub time_for_game_storage: u64,
+    pub block_duration_ms: u64,
+    pub gas_to_delete_session: u64
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
