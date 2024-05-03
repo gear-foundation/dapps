@@ -186,33 +186,3 @@ export function useSubscriptionOnGameMessage(meta: ProgramMetadata) {
     isOpened,
   };
 }
-
-export const useCheckGaslessVouher = <T extends unknown>(callback: (params: T) => void) => {
-  const { account } = useAccount();
-  const signless = useSignlessTransactions();
-  const gasless = useGaslessTransactions();
-  const { isBalanceReady } = useBalance(gasless.voucherId);
-
-  const [isNeedExecuteCallback, setIsNeedExecuteCallback] = useState(false);
-  const [savedParams, setSavedParams] = useState<T>();
-
-  useEffect(() => {
-    if (isNeedExecuteCallback && gasless.isEnabled && gasless.voucherId && isBalanceReady) {
-      setIsNeedExecuteCallback(false);
-      callback(savedParams as T);
-      setSavedParams(undefined);
-    }
-  }, [gasless.isEnabled, gasless.voucherId, isBalanceReady, isNeedExecuteCallback, callback, savedParams]);
-
-  const checkGaslessVoucher = async (params: T) => {
-    if (account && gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
-      await gasless.requestVoucher(account.address);
-      setSavedParams(params);
-      setIsNeedExecuteCallback(true);
-    } else {
-      callback(params);
-    }
-  };
-
-  return (params: T) => checkGaslessVoucher(params);
-};

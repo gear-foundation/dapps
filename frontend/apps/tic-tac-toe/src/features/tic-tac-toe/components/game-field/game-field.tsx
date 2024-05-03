@@ -3,7 +3,7 @@ import styles from './game-field.module.scss';
 import { GameCell } from '../game-cell';
 import type { IGameInstance } from '../../types';
 import { GameMark } from '../game-mark';
-import { useCheckGaslessVouher, useGame, useGameMessage, useSubscriptionOnGameMessage } from '../../hooks';
+import { useGame, useGameMessage, useSubscriptionOnGameMessage } from '../../hooks';
 import { calculateWinner } from '../../utils';
 import { motion } from 'framer-motion';
 import { variantsGameMark } from '../../variants';
@@ -41,12 +41,21 @@ export function GameField({ game, meta }: GameFieldProps) {
   const winnerRow = calculateWinner(board);
   const winnerColor = winnerRow ? game.playerMark === board[winnerRow[0][0]] : false;
 
+  const onError = () => {
+    unsubscribe();
+  };
+
   const onSelectCell = async (value: number) => {
     if (!meta || !account || !ADDRESS.GAME) {
       return;
     }
 
     const payload = { Turn: { step: value } };
+
+    let voucherId = gasless.voucherId;
+    if (account && gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
+      voucherId = await gasless.requestVoucher(account.address);
+    }
 
     if (!isLoading) {
       calculateGas(payload)
@@ -56,25 +65,12 @@ export function GameField({ game, meta }: GameFieldProps) {
           const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
 
           subscribe();
-
-          checkBalance(
-            gasLimit,
-            () =>
-              message({
-                payload,
-                gasLimit,
-                voucherId: gasless.voucherId,
-                onError: () => {
-                  unsubscribe();
-                },
-                onSuccess: () => {
-                  console.log('success on cell');
-                },
-              }),
-            () => {
-              unsubscribe();
-            },
-          );
+          const sendMessage = () => message({ payload, gasLimit, voucherId, onError });
+          if (voucherId) {
+            sendMessage();
+          } else {
+            checkBalance(gasLimit, sendMessage, onError);
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -88,8 +84,6 @@ export function GameField({ game, meta }: GameFieldProps) {
     setIsLoading(isOpened);
   }, [isOpened]);
 
-  const checkGaslessVoucher = useCheckGaslessVouher<number>(onSelectCell);
-
   return (
     <div
       className={clsx(
@@ -102,7 +96,7 @@ export function GameField({ game, meta }: GameFieldProps) {
           value={i}
           disabled={Boolean(mark || winnerRow?.length) || !countdown?.isActive || !!game.gameResult}
           isLoading={isLoading || gasless.isLoading}
-          onSelectCell={checkGaslessVoucher}>
+          onSelectCell={onSelectCell}>
           {mark && <GameMark mark={mark} className={clsx(styles.mark, mark === game.playerMark && styles.active)} />}
         </GameCell>
       ))}

@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { useCheckGaslessVouher, useGameMessage, useSubscriptionOnGameMessage } from '../../hooks';
+import { useGameMessage, useSubscriptionOnGameMessage } from '../../hooks';
 import { useEffect } from 'react';
 import { BaseComponentProps } from '@/app/types';
 import { useCheckBalance } from '@dapps-frontend/hooks';
@@ -49,6 +49,11 @@ export function GameStartButton({ children, meta }: GameStartButtonProps) {
     const payload = { StartGame: {} };
     setIsLoading(true);
 
+    let voucherId = gasless.voucherId;
+    if (account && gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
+      voucherId = await gasless.requestVoucher(account.address);
+    }
+
     calculateGas(payload)
       .then((res) => res.toHuman())
       .then(({ min_limit }) => {
@@ -56,18 +61,13 @@ export function GameStartButton({ children, meta }: GameStartButtonProps) {
         const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
 
         subscribe();
-        checkBalance(
-          gasLimit,
-          () => {
-            message({
-              payload,
-              voucherId: gasless.voucherId,
-              gasLimit,
-              onError,
-            });
-          },
-          onError,
-        );
+
+        const sendMessage = () => message({ payload, gasLimit, voucherId, onError });
+        if (voucherId) {
+          sendMessage();
+        } else {
+          checkBalance(gasLimit, sendMessage, onError);
+        }
       })
       .catch((error) => {
         onError();
@@ -76,12 +76,8 @@ export function GameStartButton({ children, meta }: GameStartButtonProps) {
       });
   };
 
-  const checkGaslessVoucher = useCheckGaslessVouher(onGameStart);
-
   return (
-    <Button
-      onClick={checkGaslessVoucher}
-      isLoading={isLoading || !meta || !ADDRESS.GAME || !account || gasless.isLoading}>
+    <Button onClick={onGameStart} isLoading={isLoading || !meta || !ADDRESS.GAME || !account || gasless.isLoading}>
       {children}
     </Button>
   );

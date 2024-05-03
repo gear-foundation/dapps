@@ -1,16 +1,11 @@
 import { Button } from '@/components/ui/button';
-import {
-  useCheckGaslessVouher,
-  useGameMessage,
-  useSubscriptionOnGameMessage,
-} from '../../hooks';
+import { useGameMessage, useSubscriptionOnGameMessage } from '../../hooks';
 import { useEffect, useState } from 'react';
 import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
 import { ADDRESS } from '../../consts';
 import { withoutCommas } from '@/app/utils';
 import { ProgramMetadata } from '@gear-js/api';
-import { useSignlessTransactions } from '@dapps-frontend/signless-transactions';
-import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
+import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 
 type Props = {
@@ -23,8 +18,7 @@ export function GameSkipButton({ meta }: Props) {
   const alert = useAlert();
   const { account } = useAccount();
 
-  const signless = useSignlessTransactions();
-  const gasless = useGaslessTransactions();
+  const { signless, gasless } = useEzTransactions();
 
   const { checkBalance } = useCheckBalance({
     signlessPairVoucherId: signless.voucher?.id,
@@ -47,13 +41,18 @@ export function GameSkipButton({ meta }: Props) {
     setIsLoading(false);
   };
 
-  const onNextTurn = () => {
+  const onNextTurn = async () => {
     if (!meta || !account || !ADDRESS.GAME) {
       return;
     }
 
     const payload = { Skip: {} };
     setIsLoading(true);
+
+    let voucherId = gasless.voucherId;
+    if (account && gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
+      voucherId = await gasless.requestVoucher(account.address);
+    }
 
     calculateGas(payload)
       .then((res) => res.toHuman())
@@ -62,19 +61,13 @@ export function GameSkipButton({ meta }: Props) {
         const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
 
         subscribe();
-        checkBalance(
-          gasLimit,
-          () => {
-            message({
-              payload,
-              gasLimit,
-              voucherId: gasless.voucherId,
-              onError,
-              onSuccess,
-            });
-          },
-          onError,
-        );
+
+        const sendMessage = () => message({ payload, gasLimit, voucherId, onError, onSuccess });
+        if (voucherId) {
+          sendMessage();
+        } else {
+          checkBalance(gasLimit, sendMessage, onError);
+        }
       })
       .catch((error) => {
         onError();
@@ -83,10 +76,8 @@ export function GameSkipButton({ meta }: Props) {
       });
   };
 
-  const checkGaslessVoucher = useCheckGaslessVouher(onNextTurn);
-
   return (
-    <Button onClick={checkGaslessVoucher} isLoading={isLoading} variant="black">
+    <Button onClick={onNextTurn} isLoading={isLoading} variant="black">
       Skip
     </Button>
   );
