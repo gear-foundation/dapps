@@ -6,7 +6,7 @@ export const LOCAL_STORAGE = {
 
 export const ENV = {
   NODE: process.env.REACT_APP_NODE_ADDRESS as string,
-  BACK: process.env.REACT_APP_BACKEND_ADDRESS as string,
+  GASLESS_BACKEND: process.env.REACT_APP_BACKEND_ADDRESS as string,
 };
 
 export const ROUTES = {

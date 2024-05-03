@@ -11,6 +11,7 @@ import { useIsAvailable } from '../../hooks';
 
 type Props = {
   type: 'button' | 'switcher';
+  allowedActions: string[];
   shouldIssueVoucher?: boolean;
   message?: string;
   disabled?: boolean;
@@ -19,7 +20,7 @@ type Props = {
 };
 
 function EnableSignlessSession(props: Props) {
-  const { type, onSessionCreate, shouldIssueVoucher, disabled, message, requiredBalance = 42 } = props;
+  const { type, allowedActions, onSessionCreate, shouldIssueVoucher, disabled, message, requiredBalance = 42 } = props;
   const { account } = useAccount();
   const { pair, session, deletePair, deleteSession, isSessionActive } = useSignlessTransactions();
   const isAvailable = useIsAvailable(requiredBalance, isSessionActive);
@@ -131,6 +132,7 @@ function EnableSignlessSession(props: Props) {
 
       {isCreateSessionModalOpen && (
         <CreateSessionModal
+          allowedActions={allowedActions}
           close={closeCreateModal}
           onSessionCreate={onSessionCreate}
           shouldIssueVoucher={shouldIssueVoucher}

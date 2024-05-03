@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { Button } from '@gear-js/vara-ui';
 import { Heading } from '@/components/ui/heading';
-import { TextGradient } from '@/components/ui/text-gradient';
 import { Text } from '@/components/ui/text';
 import { Map } from '../';
 import styles from './ShipArrangement.module.scss';

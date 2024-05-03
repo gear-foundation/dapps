@@ -1,8 +1,6 @@
-import { io } from 'socket.io-client';
 import { Account, AlertContainerFactory } from '@gear-js/react-hooks';
 import { ACCOUNT_ID_LOCAL_STORAGE_KEY } from '@/app/consts';
 import { HexString } from '@polkadot/util/types';
-import { ADDRESS } from './consts';
 
 export function formatDate(input: string | number): string {
   const date = new Date(input);

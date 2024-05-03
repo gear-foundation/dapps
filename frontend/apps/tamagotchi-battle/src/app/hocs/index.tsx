@@ -18,7 +18,7 @@ const ApiProvider = ({ children }: ProviderProps) => (
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
   return (
-    <SharedGaslessTransactionsProvider programId={BATTLE_ADDRESS} backendAddress={ENV.BACK} voucherLimit={18}>
+    <SharedGaslessTransactionsProvider programId={BATTLE_ADDRESS} backendAddress={ENV.GASLESS_BACKEND} voucherLimit={18}>
       {children}
     </SharedGaslessTransactionsProvider>
   );

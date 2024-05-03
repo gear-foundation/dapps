@@ -3,7 +3,7 @@ import styles from './game-field.module.scss';
 import { GameCell } from '../game-cell';
 import type { IGameInstance } from '../../types';
 import { GameMark } from '../game-mark';
-import { useGame, useGameMessage, useHandleCalculateGas, useSubscriptionOnGameMessage } from '../../hooks';
+import { useGame, useGameMessage, useSubscriptionOnGameMessage } from '../../hooks';
 import { calculateWinner } from '../../utils';
 import { motion } from 'framer-motion';
 import { variantsGameMark } from '../../variants';
@@ -11,9 +11,10 @@ import { BaseComponentProps } from '@/app/types';
 import { useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { stateChangeLoadingAtom } from '../../store';
-import { useAccount, useAlert } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
 import { ADDRESS } from '../../consts';
-import { useCheckBalance } from '@/app/hooks';
+import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { withoutCommas } from '@/app/utils';
 import { ProgramMetadata } from '@gear-js/api';
 
@@ -23,6 +24,7 @@ type GameFieldProps = BaseComponentProps & {
 };
 
 export function GameField({ game, meta }: GameFieldProps) {
+  const { signless, gasless } = useEzTransactions();
   const { countdown } = useGame();
   const [isLoading, setIsLoading] = useAtom(stateChangeLoadingAtom);
   const board = game.board;
@@ -30,11 +32,18 @@ export function GameField({ game, meta }: GameFieldProps) {
   const alert = useAlert();
   const calculateGas = useHandleCalculateGas(ADDRESS.GAME, meta);
   const message = useGameMessage(meta);
-  const { checkBalance } = useCheckBalance();
+  const { checkBalance } = useCheckBalance({
+    signlessPairVoucherId: signless.voucher?.id,
+    gaslessVoucherId: gasless.voucherId,
+  });
   const { subscribe, unsubscribe, isOpened } = useSubscriptionOnGameMessage(meta);
 
   const winnerRow = calculateWinner(board);
   const winnerColor = winnerRow ? game.playerMark === board[winnerRow[0][0]] : false;
+
+  const onError = () => {
+    unsubscribe();
+  };
 
   const onSelectCell = async (value: number) => {
     if (!meta || !account || !ADDRESS.GAME) {
@@ -42,6 +51,11 @@ export function GameField({ game, meta }: GameFieldProps) {
     }
 
     const payload = { Turn: { step: value } };
+
+    let voucherId = gasless.voucherId;
+    if (account && gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
+      voucherId = await gasless.requestVoucher(account.address);
+    }
 
     if (!isLoading) {
       calculateGas(payload)
@@ -51,24 +65,12 @@ export function GameField({ game, meta }: GameFieldProps) {
           const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
 
           subscribe();
-
-          checkBalance(
-            gasLimit,
-            () =>
-              message({
-                payload,
-                gasLimit,
-                onError: () => {
-                  unsubscribe();
-                },
-                onSuccess: () => {
-                  console.log('success on cell');
-                },
-              }),
-            () => {
-              unsubscribe();
-            },
-          );
+          const sendMessage = () => message({ payload, gasLimit, voucherId, onError });
+          if (voucherId) {
+            sendMessage();
+          } else {
+            checkBalance(gasLimit, sendMessage, onError);
+          }
         })
         .catch((error) => {
           console.log(error);
@@ -93,7 +95,7 @@ export function GameField({ game, meta }: GameFieldProps) {
           key={i}
           value={i}
           disabled={Boolean(mark || winnerRow?.length) || !countdown?.isActive || !!game.gameResult}
-          isLoading={isLoading}
+          isLoading={isLoading || gasless.isLoading}
           onSelectCell={onSelectCell}>
           {mark && <GameMark mark={mark} className={clsx(styles.mark, mark === game.playerMark && styles.active)} />}
         </GameCell>
