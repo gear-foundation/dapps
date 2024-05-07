@@ -239,6 +239,7 @@ impl Game {
             send_messages(&player, &self.config);
             return Ok(GameReply::GameFinished {
                 game: game_instance.clone(),
+                player_address: player,
             });
         }
 
@@ -261,6 +262,7 @@ impl Game {
             }
             return Ok(GameReply::GameFinished {
                 game: game_instance.clone(),
+                player_address: player,
             });
         } else if !game_instance.board.contains(&None) || bot_step.is_none() {
             game_instance.game_over = true;
@@ -268,6 +270,7 @@ impl Game {
             send_messages(msg_source, &self.config);
             return Ok(GameReply::GameFinished {
                 game: game_instance.clone(),
+                player_address: player,
             });
         }
 
@@ -312,6 +315,7 @@ impl Game {
                     send_messages(&player, &self.config);
                     return Ok(GameReply::GameFinished {
                         game: game_instance.clone(),
+                        player_address: player,
                     });
                 } else if !game_instance.board.contains(&None) {
                     game_instance.game_over = true;
@@ -319,6 +323,7 @@ impl Game {
                     send_messages(&player, &self.config);
                     return Ok(GameReply::GameFinished {
                         game: game_instance.clone(),
+                        player_address: player,
                     });
                 }
             }
@@ -328,6 +333,7 @@ impl Game {
                 send_messages(&player, &self.config);
                 return Ok(GameReply::GameFinished {
                     game: game_instance.clone(),
+                    player_address: player,
                 });
             }
         }

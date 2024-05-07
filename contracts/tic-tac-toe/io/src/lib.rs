@@ -170,7 +170,7 @@ pub enum GameAction {
 /// The main type used as an output message.
 #[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 pub enum GameReply {
-    GameFinished { game: GameInstance },
+    GameFinished { game: GameInstance, player_address: ActorId },
     GameStarted { game: GameInstance },
     MoveMade { game: GameInstance },
     GameInstanceRemoved,

@@ -177,9 +177,10 @@ impl Battleship {
             game.game_over = true;
             game.game_result = Some(BattleshipParticipants::Player);
             game.end_time = exec::block_timestamp();
-            return Ok(BattleshipReply::GameFinished(
-                BattleshipParticipants::Player,
-            ));
+            return Ok(BattleshipReply::GameFinished{
+                winner: BattleshipParticipants::Player,
+                player_address: player,
+            });
         }
         game.turn = Some(BattleshipParticipants::Bot);
 
@@ -385,7 +386,10 @@ extern fn handle_reply() {
                 game.end_time = exec::block_timestamp();
                 msg::send(
                     game_id,
-                    BattleshipReply::GameFinished(BattleshipParticipants::Bot),
+                    BattleshipReply::GameFinished{
+                        winner: BattleshipParticipants::Bot,
+                        player_address: game_id,
+                    },
                     0,
                 )
                 .expect("Unable to send the message about game over");

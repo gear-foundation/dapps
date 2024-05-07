@@ -256,18 +256,22 @@ async fn process_handle(
             session_for_account,
         } => {
             let msg_src = msg::source();
-            let player = vara_man.get_player(
+            let player_address = vara_man.get_player(
                 &msg_src,
                 &session_for_account,
                 ActionsForSession::FinishSingleGame,
             );
             let (points_for_gold, points_for_silver) =
                 vara_man.config.get_points_per_gold_coin_for_level(level);
-            let points = points_for_gold * gold_coins + points_for_silver * silver_coins;
+            let points =
+                points_for_gold * gold_coins as u128 + points_for_silver * silver_coins as u128;
+            let maximum_possible_points = points_for_gold
+                * vara_man.config.max_number_gold_coins as u128
+                + points_for_silver * vara_man.config.max_number_silver_coins as u128;
             let prize = vara_man.config.one_point_in_value * points;
 
             if vara_man.status == Status::StartedWithNativeToken {
-                msg::send_with_gas(player, "", 0, prize).expect("Error in sending value");
+                msg::send_with_gas(player_address, "", 0, prize).expect("Error in sending value");
             } else if let Status::StartedWithFungibleToken { ft_address } = vara_man.status {
                 let _transfer_response: FTEvent = msg::send_for_reply_as(
                     ft_address,
@@ -283,7 +287,16 @@ async fn process_handle(
                 .await
                 .expect("Error in transfer Fungible Token");
             }
-            Ok(VaraManEvent::SingleGameFinished { prize })
+            Ok(VaraManEvent::SingleGameFinished {
+                gold_coins,
+                silver_coins,
+                prize,
+                points,
+                maximum_possible_points,
+                maximum_number_gold_coins: vara_man.config.max_number_gold_coins,
+                maximum_number_silver_coins: vara_man.config.max_number_silver_coins,
+                player_address,
+            })
         }
         VaraManAction::StartTournament {
             session_for_account,
@@ -392,14 +405,14 @@ async fn process_handle(
 
             let msg_src = msg::source();
 
-            let player = vara_man.get_player(
+            let player_address = vara_man.get_player(
                 &msg_src,
                 &session_for_account,
                 ActionsForSession::RecordTournamentResult,
             );
             let admin_id = vara_man
                 .players_to_game_id
-                .get(&player)
+                .get(&player_address)
                 .ok_or(VaraManError::NoSuchPlayer)?;
             let game = vara_man
                 .tournaments
@@ -412,19 +425,30 @@ async fn process_handle(
 
             let player = game
                 .participants
-                .get_mut(&player)
+                .get_mut(&player_address)
                 .ok_or(VaraManError::NoSuchPlayer)?;
 
             let (points_for_gold, points_for_silver) = vara_man
                 .config
                 .get_points_per_gold_coin_for_level(game.level);
-            let points = points_for_gold * gold_coins + points_for_silver * silver_coins;
+            let points =
+                points_for_gold * gold_coins as u128 + points_for_silver * silver_coins as u128;
+            let maximum_possible_points = points_for_gold
+                * vara_man.config.max_number_gold_coins as u128
+                + points_for_silver * vara_man.config.max_number_silver_coins as u128;
             player.time += time;
             player.points += points;
 
+
             Ok(VaraManEvent::ResultTournamentRecorded {
+                gold_coins,
+                silver_coins,
                 time: player.time,
                 points: player.points,
+                maximum_possible_points,
+                maximum_number_gold_coins: vara_man.config.max_number_gold_coins,
+                maximum_number_silver_coins: vara_man.config.max_number_silver_coins,
+                player_address,
             })
         }
 

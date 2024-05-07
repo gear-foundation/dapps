@@ -130,7 +130,10 @@ pub struct Config {
 }
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 pub enum BattleshipReply {
-    GameFinished(BattleshipParticipants),
+    GameFinished {
+        winner: BattleshipParticipants,
+        player_address: ActorId
+    },
     MessageSentToBot,
     BotChanged(ActorId),
     SessionCreated,
