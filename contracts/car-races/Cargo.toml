@@ -9,6 +9,7 @@ license.workspace = true
 gstd = { workspace = true}
 car-races-io = { path = "io" }
 primitive-types.workspace = true
+schnorrkel.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true

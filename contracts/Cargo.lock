@@ -784,6 +784,7 @@ dependencies = [
  "gtest",
  "hex",
  "primitive-types",
+ "schnorrkel 0.10.2",
  "tokio",
 ]
 
@@ -7915,6 +7916,7 @@ dependencies = [
  "gstd",
  "gtest",
  "hex",
+ "schnorrkel 0.10.2",
  "tic-tac-toe-io",
  "tokio",
 ]
@@ -8334,6 +8336,7 @@ dependencies = [
  "gstd",
  "gtest",
  "hex",
+ "schnorrkel 0.10.2",
  "sp-core 22.0.0",
  "tokio",
  "vara-man-io",
