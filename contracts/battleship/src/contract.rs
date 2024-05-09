@@ -52,7 +52,8 @@ impl Battleship {
                     key: msg_source,
                     duration,
                     allowed_actions: allowed_actions.clone(),
-                }.encode();
+                }
+                .encode();
                 let mut postfix = b"</Bytes>".to_vec();
                 prefix.append(&mut message);
                 prefix.append(&mut postfix);
@@ -83,9 +84,7 @@ impl Battleship {
 
         msg::send_with_gas_delayed(
             exec::program_id(),
-            BattleshipAction::DeleteSessionFromProgram {
-                account,
-            },
+            BattleshipAction::DeleteSessionFromProgram { account },
             self.config.gas_to_delete_session,
             0,
             number_of_blocks,
@@ -104,7 +103,7 @@ impl Battleship {
         }) = self.sessions.get(account)
         {
             if *expires_at_block > exec::block_height() {
-                return Err(BattleshipError::AlreadyHaveActiveSession)
+                return Err(BattleshipError::AlreadyHaveActiveSession);
             };
         }
         Ok(())
@@ -215,9 +214,10 @@ impl Battleship {
             game.game_over = true;
             game.game_result = Some(BattleshipParticipants::Player);
             game.end_time = exec::block_timestamp();
-            return Ok(BattleshipReply::GameFinished(
-                BattleshipParticipants::Player,
-            ));
+            return Ok(BattleshipReply::GameFinished {
+                winner: BattleshipParticipants::Player,
+                player_address: player,
+            });
         }
         game.turn = Some(BattleshipParticipants::Bot);
 
@@ -369,7 +369,7 @@ extern fn handle() {
             key,
             duration,
             allowed_actions,
-            signature
+            signature,
         } => battleship.create_session(&key, duration, allowed_actions, signature),
         BattleshipAction::DeleteSessionFromProgram { account } => {
             battleship.delete_session_from_program(&account)
@@ -422,13 +422,13 @@ extern fn handle_reply() {
                 game.game_over = true;
                 game.game_result = Some(BattleshipParticipants::Bot);
                 game.end_time = exec::block_timestamp();
-                let payload: Result<BattleshipReply, BattleshipError> = Ok(BattleshipReply::GameFinished(BattleshipParticipants::Bot));
-                msg::send(
-                    game_id,
-                    payload,
-                    0,
-                )
-                .expect("Unable to send the message about game over");
+
+                let payload: Result<BattleshipReply, BattleshipError> =
+                    Ok(BattleshipReply::GameFinished {
+                        winner: BattleshipParticipants::Bot,
+                        player_address: game_id,
+                    });
+                msg::send(game_id, payload, 0).expect("Unable to send the message about game over");
             }
         }
         _ => (),
