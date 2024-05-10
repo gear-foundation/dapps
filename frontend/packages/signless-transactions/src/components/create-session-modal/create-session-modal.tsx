@@ -10,7 +10,6 @@ import styles from './create-session-modal.module.css';
 import { SignlessParams } from '../signless-params-list';
 import { AccountPair } from '../account-pair';
 import {
-  ACTIONS,
   BALANCE_VALUE_TO_ISSUE_VOUCHER,
   BALANCE_VALUE_TO_START_GAME,
   DEFAULT_VALUES,
@@ -20,11 +19,17 @@ import {
 import { decodeAddress } from '@gear-js/api';
 
 type Props = Pick<ModalProps, 'close'> & {
+  allowedActions: string[];
   onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   shouldIssueVoucher?: boolean; // no need to pass boolean, we can just conditionally pass onSessionCreate?
 };
 
-function CreateSessionModal({ close, onSessionCreate = async () => '0x', shouldIssueVoucher = true }: Props) {
+function CreateSessionModal({
+  allowedActions,
+  close,
+  onSessionCreate = async () => '0x',
+  shouldIssueVoucher = true,
+}: Props) {
   const { api } = useApi();
   const { account } = useAccount();
   const alert = useAlert();
@@ -68,7 +73,6 @@ function CreateSessionModal({ close, onSessionCreate = async () => '0x', shouldI
     const duration = getMilliseconds(Number(durationMinutes));
 
     const key = shouldIssueVoucher ? decodeAddress(pair.address) : account!.decodedAddress;
-    const allowedActions = ACTIONS;
     const onFinally = () => setIsLoading(false);
 
     let pairToSave: KeyringPair;

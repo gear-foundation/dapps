@@ -1,4 +1,3 @@
-import { decodeAddress } from '@gear-js/api';
 import { useAccount } from '@gear-js/react-hooks';
 import { useNavigate } from 'react-router-dom';
 import { copyToClipboard, isMobileDevice } from 'utils';
@@ -95,7 +94,7 @@ export function WalletModal({ onClose }: Props) {
       };
 
       const handleCopyClick = async () => {
-        await copyToClipboard({ value: decodeAddress(address) });
+        await copyToClipboard({ value: address });
         onClose();
       };
 

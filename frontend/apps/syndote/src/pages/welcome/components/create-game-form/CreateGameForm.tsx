@@ -1,4 +1,5 @@
 import { Button } from '@gear-js/vara-ui';
+import { decodeAddress } from '@gear-js/api';
 import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
 import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
 import { useAtom } from 'jotai';
@@ -61,7 +62,7 @@ function CreateGameForm({ onCancel }: Props) {
     const payload = {
       CreateGameSession: {
         name: values.name,
-        strategyId: values.strategyId,
+        strategyId: decodeAddress(values.strategyId),
         entryFee: Number(values.fee) ? values.fee * Math.pow(10, 12) : null,
       },
     };
@@ -86,7 +87,7 @@ function CreateGameForm({ onCancel }: Props) {
         <TextField
           theme="dark"
           label="Enter your program address:"
-          placeholder="0x25c"
+          placeholder="0x25c..."
           variant="active"
           disabled={isLoading}
           {...getCreateInputProps('strategyId')}

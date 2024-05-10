@@ -59,6 +59,11 @@
 }
 
 .content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+
   @media screen and (max-width: 767px) {
     display: flex;
     justify-content: center;

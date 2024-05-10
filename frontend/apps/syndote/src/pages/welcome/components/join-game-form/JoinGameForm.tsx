@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@gear-js/vara-ui';
 import { useSetAtom, useAtom } from 'jotai';
+import { decodeAddress } from '@gear-js/api';
 import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
 import metaTxt from 'assets/meta/syndote_meta.txt';
 import { useAccount, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
@@ -10,7 +11,7 @@ import { HexString } from '@gear-js/api';
 import { GameFoundModal, JoinModalFormValues } from 'pages/home/game-found-modal';
 import { ADDRESS } from 'consts';
 import { useProgramMetadata } from 'hooks/metadata';
-import { TextModal } from 'pages/home/game-not-found-modal';
+import { TextModal } from 'pages/home/text-modal';
 import styles from './JoinGameForm.module.scss';
 import { GameSessionState, State } from 'types';
 
@@ -61,11 +62,13 @@ function JoinGameForm({ onCancel }: Props) {
   };
 
   const handleOpenJoinSessionModal = async (values: JoinFormValues) => {
-    if (!account?.decodedAddress) {
+    if (!account?.decodedAddress || !values.address) {
       return;
     }
 
-    const payload = { GetGameSession: { accountId: values.address?.trim() } };
+    const decodedAdminAddress = decodeAddress(values.address);
+
+    const payload = { GetGameSession: { accountId: decodedAdminAddress.trim() } };
 
     try {
       const res = await api?.programState.read(
@@ -82,7 +85,7 @@ function JoinGameForm({ onCancel }: Props) {
 
       if (state.GameSession.gameSession) {
         setFoundState(state.GameSession.gameSession);
-        setFoundGame(values.address);
+        setFoundGame(decodedAdminAddress);
         setIsJoinSessionModalShown(true);
         return;
       }
@@ -97,7 +100,7 @@ function JoinGameForm({ onCancel }: Props) {
   const handleJoinSession = (values: JoinModalFormValues) => {
     if (foundGame) {
       setCurrentGame(foundGame);
-      setCurrentStrategyId(values.strategyId);
+      setCurrentStrategyId(decodeAddress(values.strategyId));
       setPlayerName(values.name);
     }
   };
@@ -113,7 +116,7 @@ function JoinGameForm({ onCancel }: Props) {
           <TextField
             label="Specify the game admin address:"
             variant="active"
-            placeholder="0x25c"
+            placeholder="kG25c..."
             disabled={isLoading}
             {...getJoinInputProps('address')}
           />

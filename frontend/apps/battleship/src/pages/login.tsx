@@ -10,6 +10,7 @@ import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
 import styles from './login.module.scss';
 import { useGaslessTransactions, EzTransactionsSwitch, useSignlessTransactions } from '@dapps-frontend/ez-transactions';
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -59,7 +60,7 @@ export default function Login() {
             {account ? 'Start the Game' : 'Connect wallet'}
           </Button>
 
-          <EzTransactionsSwitch />
+          <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS}/>
         </div>
       </div>
 

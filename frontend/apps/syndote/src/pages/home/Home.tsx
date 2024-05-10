@@ -16,24 +16,27 @@ import { Players } from './players/Players';
 import { Button } from '@gear-js/vara-ui';
 import { Cell } from './cell';
 import { RequestGame } from 'pages/welcome/components/request-game';
-import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING } from 'atoms';
+import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
 import { SessionInfo } from './session-info';
 import clsx from 'clsx';
-import { TextModal } from './game-not-found-modal';
+import { TextModal } from './text-modal';
 import { ContinueGameModal } from './continue-game-modal';
 import { ReserveModal } from './reserve-modal';
+import { GameFinishedModal } from './game-finished-modal';
+
+type ModalContract = 'contractRequresGas' | 'adminReservesGas' | null;
+type ModalStrategy = 'strategyRequresGas' | 'playerReservesGas' | null;
+type ModalGameStatus = 'gameCancelled' | 'gameFinished' | null;
 
 function Home() {
   const { account } = useAccount();
   const { api } = useApi();
   const metadata = useProgramMetadata(meta);
   const [isLoading, setIsLoading] = useAtom(IS_LOADING);
-  const [isContinueGameModalOpen, setIsContinueGameModalOpen] = useState(false);
-  const [isPlayerRemovedModalOpen, setIsPlayerRemovedModalOpen] = useState(false);
-  const [isGameCancelledModalOpen, setIsGameCancelledModalOpen] = useState(false);
-  const [isReserveModalOpen, setIsReserveModalOpen] = useState(false);
-  const [isReserveInfoModalOpen, setIsReserveInfoModalOpen] = useState(false);
-  const [isContinueGameInfoModalOpen, setIsContinueGameInfoModalOpen] = useState(false);
+  const playerName = useAtomValue(PLAYER_NAME_ATOM);
+  const [modalContract, setModalContract] = useState<ModalContract>(null);
+  const [modalStrategy, setModalStrategy] = useState<ModalStrategy>(null);
+  const [modalGameStatus, setModalGameStatus] = useState<ModalGameStatus>(null);
   const admin = useRef<null | HexString>(null);
   const setCurrentGame = useSetAtom(CURRENT_GAME_ADMIN_ATOM);
   const { state, isStateRead } = useReadGameSessionState();
@@ -42,23 +45,17 @@ function Home() {
   const strategyId = useAtomValue(CURRENT_STRATEGY_ID_ATOM);
   const [steps, setSteps] = useState<Step[]>([]);
   const [step, setStep] = useState(0);
-  const { adminId, winner, gameStatus, entryFee } = state || {};
+  const { adminId, winner, gameStatus, entryFee, prizePool } = state || {};
   const isAdmin = account?.decodedAddress === adminId;
   const isGameStarted = steps.length > 0;
-
   const roll = steps[step];
+  const strategyNeedsGas = gameStatus?.WaitingForGasForStrategy;
   const { properties, ownership } = roll || {};
-
   const playersArray = state?.players || [];
 
-  const getPlayers = () => (isGameStarted ? roll?.players || [] : state?.players || []);
+  const getPlayers = () => (isGameStarted && roll ? roll?.players : state?.players || []);
 
-  const findPlayer = (address: string) => {
-    console.log(getPlayers().find(([newAddress]) => newAddress === address));
-    return getPlayers().find(([newAddress]) => newAddress === address)?.[1];
-  };
-  console.log('==STATE==');
-  console.log(state);
+  const findPlayer = (address: string) => getPlayers().find(([newAddress]) => newAddress === address)?.[1];
 
   const players = playersArray.map(([address], index) => ({
     ...INIT_PLAYERS[index],
@@ -73,20 +70,25 @@ function Home() {
   }, {}) as PlayersByStrategyAddress;
   const isAnyPlayer = players.length > 0;
   const playerStrategyId = players.find((player) => player.ownerId === account?.decodedAddress)?.address;
-  console.log(players);
-  const register = () => {
-    const payload = { Register: { adminId, strategyId } };
 
+  const register = () => {
+    const payload = { Register: { adminId, strategyId, name: playerName } };
+
+    const onInBlock = () => {
+      setCurrentGame('');
+      setIsLoading(false);
+    };
+    const onError = () => setIsLoading(false);
+
+    setIsLoading(true);
     sendMessage({
       payload,
       value: entryFee ? Number(withoutCommas(entryFee || '')) : undefined,
-      onInBlock: () => {
-        setCurrentGame('');
-      },
+      onInBlock,
+      onError,
     });
   };
-  console.log('isRes');
-  console.log(isReserveModalOpen);
+
   const startGame = () => {
     const payload = {
       Play: {
@@ -94,7 +96,7 @@ function Home() {
       },
     };
 
-    const onSuccess = () => setIsLoading(false);
+    const onInBlock = () => setIsLoading(false);
     const onError = () => setIsLoading(false);
 
     setIsLoading(true);
@@ -105,7 +107,7 @@ function Home() {
         sendPlayMessage({
           payload,
           gasLimit: 730000000000,
-          onInBlock: onSuccess,
+          onInBlock,
           onError,
         });
       },
@@ -138,19 +140,17 @@ function Home() {
     sendMessage({
       payload,
       onInBlock: () => {
-        setIsReserveModalOpen(false);
+        setModalStrategy(null);
       },
     });
   };
 
   const continueGame = () => {
-    setIsContinueGameModalOpen(false);
+    setModalContract(null);
     startGame();
   };
 
   useEffect(() => {
-    console.log('SET ADMIN');
-    console.log(adminId);
     if (adminId) {
       admin.current = adminId;
     }
@@ -158,34 +158,38 @@ function Home() {
 
   useEffect(() => {
     if (gameStatus !== 'WaitingForGasForGameContract') {
-      setIsContinueGameInfoModalOpen(false);
-      setIsContinueGameModalOpen(false);
+      setModalContract(null);
       return;
     }
 
     if (isAdmin) {
-      setIsContinueGameModalOpen(true);
-    } else {
-      setIsContinueGameInfoModalOpen(false);
-    }
-  }, [gameStatus, isAdmin]);
-
-  useEffect(() => {
-    if (!gameStatus?.WaitingForGasForStrategy) {
-      setIsReserveModalOpen(false);
-      setIsReserveInfoModalOpen(false);
+      setModalContract('contractRequresGas');
       return;
     }
 
-    if (gameStatus.WaitingForGasForStrategy === playerStrategyId) {
-      setIsReserveModalOpen(true);
-    } else {
-      setIsReserveInfoModalOpen(true);
+    setModalContract('adminReservesGas');
+  }, [gameStatus, isAdmin]);
+
+  useEffect(() => {
+    if (!strategyNeedsGas) {
+      setModalStrategy(null);
+      return;
     }
-  }, [gameStatus, playerStrategyId]);
-  console.log(api?.blockGasLimit.toNumber());
-  console.log('ADMIN');
-  console.log(admin);
+
+    if (strategyNeedsGas === playerStrategyId) {
+      setModalStrategy('strategyRequresGas');
+      return;
+    }
+
+    setModalStrategy('playerReservesGas');
+  }, [strategyNeedsGas, playerStrategyId]);
+
+  useEffect(() => {
+    if (gameStatus === 'Finished') {
+      setModalGameStatus('gameFinished');
+    }
+  }, [gameStatus]);
+
   const getDecodedPayload = (payload: Bytes) => {
     if (!metadata) return;
 
@@ -229,19 +233,8 @@ function Home() {
         const { message } = data;
         const { source, payload, destination } = message;
 
-        console.log(message.toHuman());
-
-        console.log(source.toHex());
-        console.log(ADDRESS.CONTRACT);
-        console.log(destination.toHex());
-        console.log(admin);
-
         if (source.toHex() === ADDRESS.CONTRACT && destination.toHex() === admin.current) {
-          console.log('----------MESSAGE RECEIVED-----------');
           const decodedPayload = getDecodedPayload(payload) as MessagePayload;
-
-          console.log('============ DECODED PAYLOAD ==============');
-          console.log(decodedPayload);
 
           if (typeof decodedPayload === 'object' && decodedPayload !== null) {
             if (decodedPayload.Step) {
@@ -251,18 +244,9 @@ function Home() {
 
           const decodedPayloadHandle = getDecodedPayloadHandle(payload) as MessageHandlePayload;
 
-          console.log('============ DECODED HANDLE PAYLOAD ==============');
-          console.log(decodedPayloadHandle);
-
           if (decodedPayloadHandle?.Ok && ['GameDeleted', 'GameWasCancelled'].includes(decodedPayloadHandle.Ok)) {
-            console.log('-----------');
-            console.log(admin.current);
-            console.log(account?.decodedAddress);
-            console.log(admin.current !== account?.decodedAddress);
-            console.log('-----------');
             if (admin.current !== account?.decodedAddress) {
-              console.log('lalalalalala');
-              setIsGameCancelledModalOpen(true);
+              setModalGameStatus('gameCancelled');
             }
 
             admin.current = null;
@@ -303,10 +287,9 @@ function Home() {
   }, [winner]);
 
   const handleCloseModal = () => {
-    setIsPlayerRemovedModalOpen(false);
-    setIsGameCancelledModalOpen(false);
-    setIsContinueGameModalOpen(false);
-    setIsReserveModalOpen(false);
+    setModalGameStatus(null);
+    setModalContract(null);
+    setModalStrategy(null);
   };
 
   return isStateRead ? (
@@ -318,8 +301,12 @@ function Home() {
           <div className={styles.field}>
             <div className={styles.wrapper}>
               {getFields()}
-              <div className={styles.controller}>
-                {isGameStarted ? (
+              <div
+                className={clsx(
+                  styles.controller,
+                  gameStatus === 'Registration' ? styles.controllerWhite : styles.controllerWithInnerBorder,
+                )}>
+                {isGameStarted && roll ? (
                   <Roll
                     color={getColor(roll.currentPlayer)}
                     player={roll.currentPlayer}
@@ -353,7 +340,7 @@ function Home() {
                             {playersArray.map((item) => item[1].ownerId).includes(account?.decodedAddress || '0x') ? (
                               <Button text="Cancel" color="grey" onClick={exitGame} />
                             ) : (
-                              <Button text="Register" onClick={register} />
+                              <Button text="Register" onClick={register} isLoading={isLoading} />
                             )}
                           </>
                         )}
@@ -362,7 +349,12 @@ function Home() {
                             <SessionInfo entryFee={state.entryFee} players={state.players} adminId={state.adminId} />
                             {players.length === 4 && (
                               <div className={styles.mainButtons}>
-                                <Button text="Start the game" onClick={startGame} className={styles.startGameButton} />
+                                <Button
+                                  text="Start the game"
+                                  onClick={startGame}
+                                  isLoading={isLoading}
+                                  className={styles.startGameButton}
+                                />
                               </div>
                             )}
                           </>
@@ -399,6 +391,35 @@ function Home() {
               </div>
             </div>
           </div>
+          {modalContract === 'contractRequresGas' && (
+            <ContinueGameModal onReserve={continueGame} onClose={handleCloseModal} />
+          )}
+          {modalContract === 'adminReservesGas' && (
+            <TextModal
+              heading={`Game administrator reserves extra gas to continue the game`}
+              text="Once he reserves the required amount, the game will continue."
+              onClose={handleCloseModal}
+            />
+          )}
+          {modalStrategy === 'strategyRequresGas' && (
+            <ReserveModal onReserve={addGasToPlayerStrategy} onClose={handleCloseModal} />
+          )}
+          {modalStrategy === 'playerReservesGas' && (
+            <TextModal
+              heading={`Player ${playersByStrategyAddress[strategyNeedsGas || '0x']?.name} pays extra gas`}
+              text="Once he reserves the required amount, the game will continue. If he fails to do so before the timer expires, he will lose and can only observe the game"
+              onClose={handleCloseModal}
+            />
+          )}
+          {modalGameStatus === 'gameFinished' && winner && (
+            <GameFinishedModal
+              winnerAddress={winner}
+              isAdmin={isAdmin}
+              prizePool={prizePool}
+              players={playersByStrategyAddress}
+              onClose={handleCloseModal}
+            />
+          )}
         </>
       )}
       {!state && (
@@ -425,26 +446,10 @@ function Home() {
           </div>
         </div>
       )}
-      {isGameCancelledModalOpen && (
+      {modalGameStatus === 'gameCancelled' && (
         <TextModal
           heading="The game has been canceled by the administrator"
           text="Game administrator has ended the game. All spent VARA tokens for the entry fee will be refunded."
-          onClose={handleCloseModal}
-        />
-      )}
-      {isContinueGameModalOpen && <ContinueGameModal onReserve={continueGame} onClose={handleCloseModal} />}
-      {isContinueGameInfoModalOpen && (
-        <TextModal
-          heading={`Game administrator reserves extra gas to continue the game`}
-          text="Once he reserves the required amount, the game will continue."
-          onClose={handleCloseModal}
-        />
-      )}
-      {isReserveModalOpen && <ReserveModal onReserve={addGasToPlayerStrategy} onClose={handleCloseModal} />}
-      {isReserveInfoModalOpen && gameStatus?.WaitingForGasForStrategy && (
-        <TextModal
-          heading={`Player ${playersByStrategyAddress[gameStatus.WaitingForGasForStrategy].name} pays extra gas`}
-          text="Once he reserves the required amount, the game will continue. If he fails to do so before the timer expires, he will lose and can only observe the game"
           onClose={handleCloseModal}
         />
       )}
