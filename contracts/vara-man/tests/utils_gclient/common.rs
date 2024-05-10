@@ -19,18 +19,18 @@ pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
         .encode()
         .as_slice()
         .into();
-    api.transfer(destination, api.total_balance(api.account_id()).await? / 5)
+    api.transfer_keep_alive(destination, api.total_balance(api.account_id()).await? / 5)
         .await?;
     let destination = get_user_to_actor_id("//Alex")
         .await?
         .encode()
         .as_slice()
         .into();
-    api.transfer(destination, api.total_balance(api.account_id()).await? / 5)
+    api.transfer_keep_alive(destination, api.total_balance(api.account_id()).await? / 5)
         .await?;
     let program_id_vara_man = vara_man.as_ref();
     let program_id_vara_man: ProgramId = program_id_vara_man.into();
-    api.transfer(
+    api.transfer_keep_alive(
         program_id_vara_man,
         api.total_balance(api.account_id()).await? / 5,
     )

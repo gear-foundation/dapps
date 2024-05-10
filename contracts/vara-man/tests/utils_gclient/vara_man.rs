@@ -10,6 +10,8 @@ pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
         api,
         Config {
             one_point_in_value: 10_000_000_000_000,
+            max_number_gold_coins: 2,
+            max_number_silver_coins: 82,
             points_per_gold_coin_easy: 5,
             points_per_silver_coin_easy: 1,
             points_per_gold_coin_medium: 8,
@@ -137,8 +139,8 @@ pub async fn record_tournament_result(
     api: &GearApi,
     program_id: &ActorId,
     time: u128,
-    gold_coins: u128,
-    silver_coins: u128,
+    gold_coins: u16,
+    silver_coins: u16,
     error: Option<VaraManError>,
 ) -> gclient::Result<()> {
     let result = send_message(
@@ -168,8 +170,8 @@ pub async fn record_tournament_result(
 pub async fn finish_single_game(
     api: &GearApi,
     program_id: &ActorId,
-    gold_coins: u128,
-    silver_coins: u128,
+    gold_coins: u16,
+    silver_coins: u16,
     error: Option<VaraManError>,
 ) -> gclient::Result<()> {
     let result = send_message(

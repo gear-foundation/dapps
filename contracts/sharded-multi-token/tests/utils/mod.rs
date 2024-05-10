@@ -7,6 +7,7 @@ pub const ROOT_ACCOUNT: u64 = 100;
 #[allow(unused)]
 pub const USER_ACCOUNTS: [u64; 3] = [200, 300, 400];
 
+#[allow(dead_code)]
 pub trait MToken {
     fn mtoken(system: &System) -> Program<'_>;
 

@@ -32,9 +32,9 @@ pub async fn setup_gclient() -> gclient::Result<(GearApi, ActorId)> {
 
     let user_fund = api.total_balance(api.account_id()).await? / 3;
 
-    api.transfer(user_account_0.as_ref().into(), user_fund)
+    api.transfer_keep_alive(user_account_0.as_ref().into(), user_fund)
         .await?;
-    api.transfer(user_account_2.as_ref().into(), user_fund)
+    api.transfer_keep_alive(user_account_2.as_ref().into(), user_fund)
         .await?;
 
     let storage_code_hash = upload_with_code_hash(&api, MT_STORAGE_WASM_PATH).await?;

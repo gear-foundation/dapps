@@ -141,7 +141,7 @@ pub async fn gclient_success_request_value() -> gclient::Result<()> {
     let manager_id = ActorId::new((*api.account_id()).clone().into());
 
     let api = api.with(OWNER_GCLIENT)?;
-    api.transfer(
+    api.transfer_keep_alive(
         manager_program_id,
         api.total_balance(api.account_id())
             .await

@@ -46,10 +46,16 @@ pub struct SingleGame {
 pub enum VaraManEvent {
     GameFinished {
         winners: Vec<ActorId>,
-        participants: Vec<ActorId>,
+        participants: Vec<(ActorId, Player)>,
         prize: u128,
     },
     SingleGameFinished {
+        gold_coins: u16,
+        silver_coins: u16,
+        points: u128,
+        maximum_possible_points: u128,
+        maximum_number_gold_coins: u16,
+        maximum_number_silver_coins: u16,
         prize: u128,
     },
     NewTournamentCreated {
@@ -71,8 +77,13 @@ pub enum VaraManEvent {
         player_id: ActorId,
     },
     ResultTournamentRecorded {
+        gold_coins: u16,
+        silver_coins: u16,
         time: u128,
         points: u128,
+        maximum_possible_points: u128,
+        maximum_number_gold_coins: u16,
+        maximum_number_silver_coins: u16,
     },
     GameStarted,
     AdminAdded(ActorId),
@@ -101,16 +112,16 @@ pub enum VaraManAction {
     },
     RecordTournamentResult {
         time: u128,
-        gold_coins: u128,
-        silver_coins: u128,
+        gold_coins: u16,
+        silver_coins: u16,
     },
     FinishTournament {
         admin_id: ActorId,
         time_start: u64,
     },
     FinishSingleGame {
-        gold_coins: u128,
-        silver_coins: u128,
+        gold_coins: u16,
+        silver_coins: u16,
         level: Level,
     },
     LeaveGame,
@@ -143,6 +154,7 @@ pub enum VaraManError {
     AccessDenied,
     MultipleError,
     GameOver,
+    ExceededLimit,
 }
 
 #[derive(Encode, Decode, TypeInfo)]
@@ -194,6 +206,8 @@ pub enum Stage {
 #[derive(Debug, Default, Clone, Copy, Encode, Decode, TypeInfo)]
 pub struct Config {
     pub one_point_in_value: u128,
+    pub max_number_gold_coins: u16,
+    pub max_number_silver_coins: u16,
     pub points_per_gold_coin_easy: u128,
     pub points_per_silver_coin_easy: u128,
     pub points_per_gold_coin_medium: u128,

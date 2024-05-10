@@ -1,4 +1,4 @@
-use common::{InitResult, Program, RunResult};
+use common::{InitResult, RunResult};
 use galactic_express_io::*;
 use gstd::{collections::HashSet, prelude::*, ActorId};
 use gtest::{Program as InnerProgram, System};
@@ -16,12 +16,6 @@ pub const PLAYERS: [u64; 3] = [12, 13, 14];
 type GalExResult<T, C = ()> = RunResult<T, C, Event, Error>;
 
 pub struct GalEx<'a>(InnerProgram<'a>);
-
-impl Program for GalEx<'_> {
-    fn inner_program(&self) -> &InnerProgram<'_> {
-        &self.0
-    }
-}
 
 impl<'a> GalEx<'a> {
     pub fn initialize(system: &'a System, from: u64) -> Self {
