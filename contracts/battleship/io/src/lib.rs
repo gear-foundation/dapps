@@ -325,11 +325,10 @@ impl Ships {
         ];
 
         vectors.sort_by_key(|a| a.len());
-
-        self.ship_1 = vectors[0].clone();
-        self.ship_2 = vectors[1].clone();
-        self.ship_3 = vectors[2].clone();
-        self.ship_4 = vectors[3].clone();
+        self.ship_1.clone_from(&vectors[0]);
+        self.ship_2.clone_from(&vectors[1]);
+        self.ship_3.clone_from(&vectors[2]);
+        self.ship_4.clone_from(&vectors[3]);
     }
     pub fn bang(&mut self, step: u8) -> Step {
         for ship in [

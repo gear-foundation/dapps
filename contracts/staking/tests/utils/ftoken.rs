@@ -1,15 +1,9 @@
-use super::{Program, RunResult, TransactionalProgram, FOREIGN_USER};
+use super::{RunResult, TransactionalProgram, FOREIGN_USER};
 use gstd::{prelude::*, ActorId};
 use gtest::{Log, Program as InnerProgram, RunResult as InnerRunResult, System};
 use sharded_fungible_token_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 
 pub struct FungibleToken<'a>(InnerProgram<'a>, u64);
-
-impl Program for FungibleToken<'_> {
-    fn inner_program(&self) -> &InnerProgram<'_> {
-        &self.0
-    }
-}
 
 impl TransactionalProgram for FungibleToken<'_> {
     fn previous_mut_transaction_id(&mut self) -> &mut u64 {

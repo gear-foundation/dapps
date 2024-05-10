@@ -3,6 +3,7 @@ use gtest::{Log, Program, System};
 use sharded_fungible_token_io::*;
 use sp_core::sr25519::Signature;
 
+#[allow(dead_code)]
 pub trait FToken {
     fn ftoken(system: &System) -> Program<'_>;
     fn mint(&self, transaction_id: u64, from: u64, account: u64, amount: u128, error: bool);

@@ -3,6 +3,7 @@ use gstd::{prelude::*, ActorId};
 use gtest::{Program, System};
 use nft_master_io::*;
 
+#[allow(dead_code)]
 pub trait NFTMasterMock {
     fn nft_master_mock(system: &System) -> Program<'_>;
     fn add_nft_contract(&self, from: u64, nft_contract: &ActorId, meta: &str, error: bool);

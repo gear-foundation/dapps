@@ -57,7 +57,7 @@ impl Program {
     }
 
     fn is_exist_collaborator(&self, actor_id: ActorId) -> bool {
-        if self.collaborator.get(&actor_id).is_some() {
+        if self.collaborator.contains_key(&actor_id) {
             return true;
         }
 

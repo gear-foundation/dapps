@@ -120,7 +120,7 @@ async fn gclient_battle() -> Result<()> {
 
     for player in PLAYERS {
         client
-            .transfer(
+            .transfer_keep_alive(
                 client
                     .get_specific_actor_id(player)
                     .encode()

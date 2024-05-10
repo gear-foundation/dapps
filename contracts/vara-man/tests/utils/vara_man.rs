@@ -22,7 +22,6 @@ pub trait VaraMan {
         silver_coins: u16,
         error: Option<VaraManError>,
     );
-    fn leave_game(&self, from: u64, error: Option<VaraManError>);
     #[allow(clippy::too_many_arguments)]
     fn create_tournament(
         &self,
@@ -44,9 +43,7 @@ pub trait VaraMan {
     );
     fn cancel_register(&self, from: u64, error: Option<VaraManError>);
     fn change_status(&self, from: u64, status: Status);
-    fn change_config(&self, from: u64, config: Config);
     fn start_tournament(&self, from: u64, error: Option<VaraManError>);
-    fn add_admin(&self, from: u64, admin: ActorId);
     fn send_tx(&self, from: u64, action: VaraManAction, error: Option<VaraManError>);
     fn send_tx_with_value(
         &self,
@@ -119,9 +116,6 @@ impl VaraMan for Program<'_> {
             error,
         );
     }
-    fn leave_game(&self, from: u64, error: Option<VaraManError>) {
-        self.send_tx(from, VaraManAction::LeaveGame, error);
-    }
     fn create_tournament(
         &self,
         from: u64,
@@ -167,14 +161,6 @@ impl VaraMan for Program<'_> {
     }
     fn change_status(&self, from: u64, status: Status) {
         self.send_tx(from, VaraManAction::ChangeStatus(status), None);
-    }
-
-    fn change_config(&self, from: u64, config: Config) {
-        self.send_tx(from, VaraManAction::ChangeConfig(config), None);
-    }
-
-    fn add_admin(&self, from: u64, admin: ActorId) {
-        self.send_tx(from, VaraManAction::AddAdmin(admin), None);
     }
 
     fn send_tx(&self, from: u64, action: VaraManAction, error: Option<VaraManError>) {
