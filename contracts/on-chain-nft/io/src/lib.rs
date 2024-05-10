@@ -260,10 +260,10 @@ impl IoNFTState {
             .iter()
             .find(|(id, _)| token_id.eq(id))
         {
-            token.name = metadata.name.clone();
-            token.description = metadata.description.clone();
-            token.media = metadata.media.clone();
-            token.reference = metadata.reference.clone();
+            token.name.clone_from(&metadata.name);
+            token.description.clone_from(&metadata.description);
+            token.media.clone_from(&metadata.media);
+            token.reference.clone_from(&metadata.reference);
         }
         token
     }

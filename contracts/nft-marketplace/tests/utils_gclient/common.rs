@@ -43,24 +43,25 @@ pub async fn get_user_to_actor_id(user: impl AsRef<str>) -> gclient::Result<Acto
 pub async fn init(api: &GearApi) -> gclient::Result<(ActorId, ActorId, ActorId)> {
     for user in &USERS[..4] {
         let user_id = get_user_to_actor_id(user).await?;
-        api.transfer(user_id.as_ref().into(), USERS_FUND).await?;
+        api.transfer_keep_alive(user_id.as_ref().into(), USERS_FUND)
+            .await?;
     }
 
     let seller_id = get_user_to_actor_id(SELLER).await?;
     let buyer_id = get_user_to_actor_id(BUYER).await?;
     let treasury_id = get_user_to_actor_id(TREASURY).await?;
 
-    api.transfer(
+    api.transfer_keep_alive(
         seller_id.as_ref().into(),
         api.total_balance(api.account_id()).await? / 2,
     )
     .await?;
-    api.transfer(
+    api.transfer_keep_alive(
         buyer_id.as_ref().into(),
         api.total_balance(api.account_id()).await? / 2,
     )
     .await?;
-    api.transfer(treasury_id.as_ref().into(), USERS_FUND)
+    api.transfer_keep_alive(treasury_id.as_ref().into(), USERS_FUND)
         .await?;
 
     let ft_contract = super::ft::init(api).await?;

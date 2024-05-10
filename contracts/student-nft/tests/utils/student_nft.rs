@@ -3,6 +3,7 @@ use gstd::prelude::*;
 use gtest::{Program, System};
 use student_nft_io::*;
 
+#[allow(dead_code)]
 pub trait StudentNft {
     fn student_nft(system: &System) -> Program<'_>;
     fn mint(&self, from: u64, error: bool);

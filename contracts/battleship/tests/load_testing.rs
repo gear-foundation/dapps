@@ -91,7 +91,7 @@ async fn transfer_balances_to_account(accounts: &[String], nonce: u32) -> Result
         let rpc_nonce = api.rpc_nonce().await?;
         println!("RPC NONCE {:?}", rpc_nonce);
         api.set_nonce(rpc_nonce + nonce as u64);
-        api.transfer(account, 1_000_000_000_000).await?;
+        api.transfer_keep_alive(account, 1_000_000_000_000).await?;
         println!("Transferred");
         println!("{:?}", api.total_balance(account).await.expect(""));
     }

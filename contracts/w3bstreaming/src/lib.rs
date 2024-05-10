@@ -137,9 +137,9 @@ extern fn handle() {
                 .users
                 .entry(msg::source())
                 .and_modify(|profile| {
-                    profile.name = name.clone();
-                    profile.surname = surname.clone();
-                    profile.img_link = img_link.clone();
+                    profile.name.clone_from(&name);
+                    profile.surname.clone_from(&surname);
+                    profile.img_link.clone_from(&img_link);
                 })
                 .or_insert_with(|| Profile {
                     name,
