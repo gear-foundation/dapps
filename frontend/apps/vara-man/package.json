@@ -5,13 +5,14 @@
 	"version": "1.0.2",
 	"type": "module",
 	"scripts": {
-		"start": "yarn build:packages && vite --open --host",
-		"build": "yarn build:packages && tsc && vite build",
+    "start": "yarn build:packages && yarn build:ez-transactions && vite --open",
+    "build": "yarn build:packages && yarn build:ez-transactions && tsc && vite build",
 		"preview": "vite preview",
 		"deploy": "tsc && vite build && npx thirdweb@latest upload dist"
 	},
 	"dependencies": {
 		"@dapps-frontend/error-tracking": "workspace:*",
+		"@dapps-frontend/ez-transactions": "workspace:*",
 		"@dapps-frontend/hooks": "workspace:*",
 		"@dapps-frontend/ui": "workspace:*",
 		"@gear-js/api": "0.36.5",

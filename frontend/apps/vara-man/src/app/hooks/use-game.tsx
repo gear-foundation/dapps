@@ -7,6 +7,8 @@ import { useGame } from '@/app/context/ctx-game';
 import { useApp } from '../context/ctx-app';
 import { programIdGame, useGameState } from './use-game-state';
 import { useNavigate } from 'react-router-dom';
+import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
+import { ENV } from '../consts';
 
 export const useInitGame = () => {
   const navigate = useNavigate()
@@ -58,7 +60,5 @@ export const useInitGame = () => {
 
 export function useGameMessage() {
   const metadata = useProgramMetadata(meta);
-  return useSendMessageWithGas(programIdGame, metadata, {
-    disableAlerts: true,
-  });
+  return useSignlessSendMessage(ENV.GAME, metadata, { disableAlerts: true });
 }

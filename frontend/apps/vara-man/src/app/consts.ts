@@ -8,6 +8,7 @@ export const LOCAL_STORAGE = {
 export const ENV = {
 	NODE: import.meta.env.VITE_NODE_ADDRESS,
 	GAME: import.meta.env.VITE_CONTRACT_ADDRESS,
+	BACK: import.meta.env.VITE_BACKEND_ADDRESS ,
 }
 
 export type IRegisterForm = {
@@ -26,3 +27,15 @@ export const initialCreateTournament = {
 	YourName: '',
 	TournamentDuration: '',
 }
+
+export const SIGNLESS_ALLOWED_ACTIONS = [
+	'DeletePlayer',
+	'StartTournament',
+	'CancelTournament',
+	'CancelRegister',
+	'LeaveGame',
+	'RegisterForTournament',
+	'RecordTournamentResult',
+	'FinishSingleGame',
+	'CreateNewTournament',
+]
