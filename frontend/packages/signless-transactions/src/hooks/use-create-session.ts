@@ -21,7 +21,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
   const minRequiredBalanceToDeleteSession =
     getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toNumber() + 5;
   const isDeleteSessionAvailable = useIsAvailable(minRequiredBalanceToDeleteSession, false);
-  const { batchSignAndSend } = useBatchSignAndSend('all');
+  const { batchSignAndSend, batchSign, batchSend } = useBatchSignAndSend('all');
   const onError = (message: string) => alert.error(message);
 
   const isVoucherExpired = async ({ expiry }: IVoucherDetails) => {
@@ -162,18 +162,21 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     const isOwner = account.decodedAddress === voucher.owner;
     const isExpired = await isVoucherExpired(voucher);
 
-    if (!isExpired) {
-      const declineExtrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
-
-      await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined']);
-    }
-
     if (isOwner) {
       const revokeExtrinsic = api.voucher.revoke(key, voucher.id);
       txs.push(revokeExtrinsic);
     }
 
-    batchSignAndSend(txs, { ...options, onError });
+    // We need to sign transactions before sending declineExtrinsic;
+    // Otherwise, if the signing is canceled, the voucher will be invalid.
+    const signedTxs = await batchSign(txs);
+
+    if (!isExpired) {
+      const declineExtrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
+      await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined']);
+    }
+
+    batchSend(signedTxs, { ...options, onError });
   };
 
   return { createSession, deleteSession };
