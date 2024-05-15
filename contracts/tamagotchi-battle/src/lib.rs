@@ -128,6 +128,7 @@ impl Battle {
                         if pair.moves.is_empty() {
                             pair.moves.push(None);
                             pair.last_updated = timestamp;
+                            pair.move_deadline = timestamp + time_for_move_ms;
                             number_of_missed_turns += 1;
                         } else {
                             // If the contract observes that both players have missed their turn,
@@ -161,9 +162,14 @@ impl Battle {
         let mut players_len = self.players_ids.len() as u8;
 
         let last_updated = exec::block_timestamp();
-
+        let time_for_move_ms = self.config.block_duration_ms * u64::from(self.config.time_for_move);
         for pair_id in 0..self.players_ids.len() as u8 {
-            self.create_pair(&mut players_len, pair_id, last_updated)?;
+            self.create_pair(
+                &mut players_len,
+                pair_id,
+                last_updated,
+                last_updated + time_for_move_ms,
+            )?;
 
             if players_len == 1 || players_len == 0 {
                 return Ok(());
@@ -261,10 +267,15 @@ impl Battle {
             // usually equivalent to one minute, to check whether the next player has made his move.
             pair.msg_ids_in_waitlist.insert(current_msg_id);
             pair.last_updated = timestamp;
+            let time_for_move_ms =
+                self.config.block_duration_ms * u64::from(self.config.time_for_move);
+            pair.move_deadline = timestamp + time_for_move_ms;
             exec::wait_for(self.config.time_for_move + 1);
         }
 
-        Ok(BattleReply::GameFinished { players: self.active_tmg_owners.clone() })
+        Ok(BattleReply::GameFinished {
+            players: self.active_tmg_owners.clone(),
+        })
     }
 
     fn add_admin(&mut self, new_admin: &ActorId) -> Result<BattleReply, BattleError> {
@@ -341,21 +352,21 @@ extern fn state() {
             let pair = battle.pairs.get(&pair_id).cloned();
             BattleQueryReply::Pair { pair }
         }
-        BattleQuery::Admins => {
-            BattleQueryReply::Admins { admins: battle.admins }
-        }
-        BattleQuery::CurrentPlayers => {
-            BattleQueryReply::CurrentPlayers { current_players: battle.current_players }
-        }
-        BattleQuery::Players => {
-            BattleQueryReply::Players {players: battle.players}
-        }
-        BattleQuery::CompletedGames => {
-            BattleQueryReply::CompletedGames { completed_games: battle.completed_games }
-        }
-        BattleQuery::Winner => {
-            BattleQueryReply::Winner { winner: battle.current_winner }
-        }
+        BattleQuery::Admins => BattleQueryReply::Admins {
+            admins: battle.admins,
+        },
+        BattleQuery::CurrentPlayers => BattleQueryReply::CurrentPlayers {
+            current_players: battle.current_players,
+        },
+        BattleQuery::Players => BattleQueryReply::Players {
+            players: battle.players,
+        },
+        BattleQuery::CompletedGames => BattleQueryReply::CompletedGames {
+            completed_games: battle.completed_games,
+        },
+        BattleQuery::Winner => BattleQueryReply::Winner {
+            winner: battle.current_winner,
+        },
     };
     msg::reply(reply, 0).expect("Failed to share state");
 }

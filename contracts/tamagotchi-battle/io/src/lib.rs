@@ -86,6 +86,7 @@ pub struct Pair {
     pub last_updated: u64,
     pub msg_ids_in_waitlist: BTreeSet<MessageId>,
     pub amount_of_skipped_moves: u8,
+    pub move_deadline: u64,
 }
 
 #[derive(Debug, PartialEq, Eq, Encode, Decode, TypeInfo, Default, Clone)]

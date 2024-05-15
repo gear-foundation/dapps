@@ -53,6 +53,7 @@ pub trait BattleUtils {
         players_len: &mut u8,
         pair_id: PairId,
         last_updated: u64,
+        move_deadline: u64,
     ) -> Result<(), BattleError>;
     fn remove_pair_id_from_player(&mut self, player: ActorId, pair_id: &PairId);
     fn remove_pair(&mut self, pair_id: &PairId, owners: Vec<ActorId>);
@@ -121,6 +122,7 @@ impl BattleUtils for Battle {
         players_len: &mut u8,
         pair_id: PairId,
         last_updated: u64,
+        move_deadline: u64,
     ) -> Result<(), BattleError> {
         let (first_owner_id, first_tmg_id) = self.select_random_player(players_len)?;
         let (second_owner_id, second_tmg_id) = self.select_random_player(players_len)?;
@@ -130,6 +132,7 @@ impl BattleUtils for Battle {
             owner_ids: vec![first_owner_id, second_owner_id],
             tmg_ids: vec![first_tmg_id, second_tmg_id],
             last_updated,
+            move_deadline,
             ..Default::default()
         };
         self.pairs.insert(pair_id, pair);
