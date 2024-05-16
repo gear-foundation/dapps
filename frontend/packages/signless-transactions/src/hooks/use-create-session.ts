@@ -163,6 +163,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     const isExpired = await isVoucherExpired(voucher);
 
     if (isOwner) {
+      // revoke on onSuccess is not called to avoid second signatures popup
       const revokeExtrinsic = api.voucher.revoke(key, voucher.id);
       txs.push(revokeExtrinsic);
     }
