@@ -80,7 +80,33 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
     });
   };
 
-  return { batchSignAndSend };
+  const batchSign = async (txs: SubmittableExtrinsic<'promise', ISubmittableResult>[], pair?: KeyringPair) => {
+    if (!account) throw new Error('No account address');
+
+    const { address, meta } = account;
+    const batch = getBatch();
+
+    return pair
+      ? batch(txs).signAsync(pair)
+      : web3FromSource(meta.source).then(({ signer }) => batch(txs).signAsync(address, { signer }));
+  };
+
+  const batchSend = async (
+    txsBatch: SubmittableExtrinsic<'promise', ISubmittableResult>,
+    { pair, ...options }: Options = {},
+  ) => {
+    const statusCallback = (result: ISubmittableResult) => handleStatus(result, options);
+    const send = txsBatch.send(statusCallback);
+
+    return send.catch(({ message }: Error) => {
+      const { onError = () => {}, onFinally = () => {} } = options;
+
+      onError(message);
+      onFinally();
+    });
+  };
+
+  return { batchSignAndSend, batchSign, batchSend };
 }
 
 export { useBatchSignAndSend };
