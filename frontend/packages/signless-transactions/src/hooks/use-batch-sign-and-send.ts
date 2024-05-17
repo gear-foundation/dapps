@@ -80,15 +80,25 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
     });
   };
 
-  const batchSign = async (txs: SubmittableExtrinsic<'promise', ISubmittableResult>[], pair?: KeyringPair) => {
+  const batchSign = async (
+    txs: SubmittableExtrinsic<'promise', ISubmittableResult>[],
+    { pair, ...options }: Options = {},
+  ) => {
     if (!account) throw new Error('No account address');
 
     const { address, meta } = account;
     const batch = getBatch();
 
-    return pair
+    const signAsinc = pair
       ? batch(txs).signAsync(pair)
       : web3FromSource(meta.source).then(({ signer }) => batch(txs).signAsync(address, { signer }));
+
+    return signAsinc.catch(({ message }: Error) => {
+      const { onError = () => {}, onFinally = () => {} } = options;
+
+      onError(message);
+      onFinally();
+    });
   };
 
   const batchSend = async (

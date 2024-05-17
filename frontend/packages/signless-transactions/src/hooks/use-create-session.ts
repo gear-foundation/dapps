@@ -170,11 +170,15 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
     // We need to sign transactions before sending declineExtrinsic;
     // Otherwise, if the signing is canceled, the voucher will be invalid.
-    const signedTxs = await batchSign(txs);
+    const signedTxs = await batchSign(txs, options);
+
+    if (!signedTxs) {
+      throw new Error('Transaction sign canceled');
+    }
 
     if (!isExpired) {
       const declineExtrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
-      await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined']);
+      await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined'], options);
     }
 
     batchSend(signedTxs, { ...options, onError });
