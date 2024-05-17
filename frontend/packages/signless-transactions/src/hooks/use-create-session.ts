@@ -60,9 +60,9 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
   };
 
   const getDurationBlocks = (durationMS: number) => {
-    const secondsPerBLock = 3;
+    const blockTimeMs = api?.consts.babe.expectedBlockTime.toNumber();
 
-    return Math.round(durationMS / 1000 / secondsPerBLock);
+    return durationMS / blockTimeMs;
   };
 
   const getVoucherExtrinsic = async (session: Session, voucherValue: number) => {
