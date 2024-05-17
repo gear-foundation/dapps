@@ -60,7 +60,11 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
   };
 
   const getDurationBlocks = (durationMS: number) => {
-    const blockTimeMs = api?.consts.babe.expectedBlockTime.toNumber();
+    if (!api) {
+      return;
+    }
+
+    const blockTimeMs = api.consts.babe.expectedBlockTime.toNumber();
 
     return durationMS / blockTimeMs;
   };
