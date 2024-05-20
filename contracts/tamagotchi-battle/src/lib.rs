@@ -4,7 +4,7 @@ use gstd::{
     collections::{BTreeMap, BTreeSet},
     debug, exec, msg,
     prelude::*,
-    ActorId,
+    ActorId, MessageId,
 };
 use tamagotchi_battle_io::*;
 use tamagotchi_io::{Error, TmgAction, TmgReply};
@@ -30,6 +30,7 @@ struct Battle {
     pairs: BTreeMap<PairId, Pair>,
     players_to_pairs: BTreeMap<ActorId, BTreeSet<PairId>>,
     completed_games: u8,
+    waitlist: BTreeSet<MessageId>,
     config: Config,
 }
 
@@ -150,6 +151,9 @@ impl Battle {
                     exec::wait_for(self.config.time_for_move + 1);
                 }
                 if self.pairs.is_empty() {
+                    self.state = BattleState::GameIsOver;
+                    // clear current players
+                    self.current_players = Vec::new();
                     return Ok(BattleReply::BattleWasCancelled);
                 }
             }
@@ -192,7 +196,7 @@ impl Battle {
 
         // Check whether the message is being executed for the first time or was in the waitlist.
         // This is necessary to verify whether a player has missed their turn.
-        if pair.msg_ids_in_waitlist.remove(&current_msg_id) {
+        if pair.msg_id_in_waitlist == current_msg_id {
             let time_for_move_ms =
                 self.config.block_duration_ms * u64::from(self.config.time_for_move);
             if timestamp.saturating_sub(pair.last_updated) >= time_for_move_ms {
@@ -212,12 +216,16 @@ impl Battle {
                         &mut self.current_winner,
                         &self.players_ids,
                     );
+                    self.waitlist.remove(&current_msg_id);
                     return Ok(BattleReply::BattleWasCancelled);
                 }
             } else {
                 return Ok(BattleReply::MoveMade);
             }
         } else {
+            if self.waitlist.remove(&current_msg_id) {
+                return Ok(BattleReply::WaitlistMsgCancelled);
+            }
             // Player's new move.
             // All necessary checks must be performed.
             let current_turn = pair.moves.len();
@@ -262,10 +270,14 @@ impl Battle {
                 &moves,
             );
         }
+        if pair.msg_id_in_waitlist != MessageId::from([0; 32]) {
+            exec::wake(pair.msg_id_in_waitlist).expect("Error during wake");
+        }
+        pair.msg_id_in_waitlist = current_msg_id;
         if !pair.game_is_over {
             // After the move was made, the contract waits for a specific period of time (`time_for_move` from the config),
             // usually equivalent to one minute, to check whether the next player has made his move.
-            pair.msg_ids_in_waitlist.insert(current_msg_id);
+            self.waitlist.insert(current_msg_id);
             pair.last_updated = timestamp;
             let time_for_move_ms =
                 self.config.block_duration_ms * u64::from(self.config.time_for_move);

@@ -84,7 +84,7 @@ pub struct Pair {
     pub game_is_over: bool,
     pub winner: ActorId,
     pub last_updated: u64,
-    pub msg_ids_in_waitlist: BTreeSet<MessageId>,
+    pub msg_id_in_waitlist: MessageId,
     pub amount_of_skipped_moves: u8,
     pub move_deadline: u64,
 }
@@ -129,7 +129,8 @@ pub enum BattleReply {
     BattleWasCancelled,
     GameFinished {
         players: Vec<ActorId>
-    }
+    },
+    WaitlistMsgCancelled,
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq, Eq, Debug)]

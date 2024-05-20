@@ -1,5 +1,6 @@
 use fmt::Debug;
 use gclient::{EventListener, EventProcessor, GearApi, Result};
+use gear_core::program::Program;
 use gstd::{collections::BTreeMap, prelude::*, ActorId};
 use std::env;
 use std::{thread, time};
@@ -133,9 +134,9 @@ async fn transfer_balances(client: &GearApi, account: &str) -> Result<()> {
 async fn upload_tamagotchis<'a>(
     client: &GearApi,
     listener: &mut EventListener,
-) -> Result<(Vec<ActorId>, Vec<ActorId>)> {
+) -> Result<(Vec<ActorId>, BTreeMap<ActorId, String>)> {
     let mut tmg_ids = Vec::new();
-    let mut owners = Vec::new();
+    let mut owners: BTreeMap<ActorId, String> = Default::default();
     for player in PLAYERS.into_iter().copied() {
         let client = client
             .clone()
@@ -148,8 +149,8 @@ async fn upload_tamagotchis<'a>(
         let tmg_id = upload_program(&client, listener, PATHS[0], payload).await?;
         println!("Tamagotchi `{player}` is initialized.");
         let account_id = client.get_actor_id();
-        owners.push(account_id);
         let tmg_id: [u8; 32] = tmg_id.into();
+        owners.insert(account_id, player.to_string()); 
         tmg_ids.push(tmg_id.into());
     }
     Ok((tmg_ids, owners))
@@ -258,9 +259,79 @@ async fn get_pair(client: &GearApi, battle_id: ProgramId, pair_id: PairId) -> Re
     Ok(pair)
 }
 
+// // Both players skip their turn from the very beginning (no player has made a move).
+// #[tokio::test]
+// async fn initial_turns_skipped() -> Result<()> {
+//     let wait = time::Duration::from_secs(120);
+//     thread::sleep(wait);
+
+//     let client = GearApi::dev().await?;
+//     // let client = GearApi::dev_from_path("../target/tmp/gear")
+//     //     .await?
+//     //     .with("//Alice")?;
+//     let mut listener = client.subscribe().await?;
+
+//     let battle_id = upload_program(
+//         &client,
+//         &mut listener,
+//         PATHS[1],
+//         Config {
+//             max_power: 10_000,
+//             min_power: 3_000,
+//             health: 2_500,
+//             max_steps_in_round: 5,
+//             max_participants: 50,
+//             time_for_move: 20,
+//             min_gas_amount: 5_000_000_000,
+//             block_duration_ms: 3_000,
+//         },
+//     )
+//     .await?;
+
+//     // register tamagotchis
+//     register_tamagotchis(&client, &mut listener, battle_id, tmg_ids).await?;
+
+
+//     // start battle
+//     let message_id = start_battle(&client, battle_id).await?;
+
+//     // check battle state
+//     check_battle_state(&client, battle_id, BattleState::GameIsOn).await;
+
+//     // 1st player misses the turn
+//     let wait = time::Duration::from_secs(65);
+//     thread::sleep(wait);
+
+//     let pair = get_pair(&client, battle_id, 0)
+//         .await?
+//         .expect("Pair is None");
+
+//     assert_eq!(pair.moves, vec![None], "Moves do not match");
+
+//     // 2nd player misses the turn
+//     let wait = time::Duration::from_secs(65);
+//     thread::sleep(wait);
+
+//     let pair = get_pair(&client, battle_id, 0).await?;
+
+//     assert!(pair.is_none(), "Pair must be deleted");
+
+//     check_reply(
+//         &mut listener,
+//         message_id,
+//         Ok(BattleReply::BattleWasCancelled),
+//     )
+//     .await?;
+//     Ok(())
+// }
+
+// One player plays, the other skips.
 #[tokio::test]
-async fn ipreconfigure() -> Result<()> {
+async fn one_player_plays_other_skips() -> Result<()> {
     let client = GearApi::dev().await?;
+    // let client = GearApi::dev_from_path("../target/tmp/gear")
+    //     .await?
+    //     .with("//Alice")?;
     let mut listener = client.subscribe().await?;
 
     for player in PLAYERS {
@@ -268,31 +339,12 @@ async fn ipreconfigure() -> Result<()> {
     }
 
     // upload tamagotchis
-    let (tmg_ids, owners) = upload_tamagotchis(&client, &mut listener).await?;
+    let (tmg_ids, player_id_to_suri) = upload_tamagotchis(&client, &mut listener).await?;
 
-    let mut string_tmg_ids = Vec::new();
-
-    for tmg_id in tmg_ids.iter() {
-        let tmg_id_bytes: [u8; 32] = (*tmg_id).into();
-        let tmg_id_string = hex::encode(&tmg_id_bytes);
-        string_tmg_ids.push(tmg_id_string);
-    }
-
-    let serialized = serde_json::to_string(&string_tmg_ids).unwrap();
-    println!("Tamagotchi addresses {:?}", serialized);
-    env::set_var("TMG_ADDRESSES", serialized.clone());
-
-    let mut string_owners = Vec::new();
-
-    for owner_id in owners.into_iter() {
-        let owner_id_bytes: [u8; 32] = owner_id.into();
-        let owner_id_string = hex::encode(&owner_id_bytes);
-        string_owners.push(owner_id_string);
-    }
-
-    let serialized = serde_json::to_string(&string_owners).unwrap();
-    println!("Tamagotchi owners {:?}", serialized);
-    env::set_var("OWNER_ADDRESSES", serialized.clone());
+    let client = client
+        .clone()
+        .with("//Alice")
+        .expect("Unable to change signer.");
 
     // upload battle contract
     let battle_id = upload_program(
@@ -312,167 +364,61 @@ async fn ipreconfigure() -> Result<()> {
     )
     .await?;
 
-    let battle_id_bytes: [u8; 32] = battle_id.into();
-    let battle_id_str = hex::encode(&battle_id_bytes);
-    println!("Battle id {:?}", battle_id_str);
-    env::set_var("BATTLE_ADDRESS", battle_id_str);
-    std::env::var("BATTLE_ADDRESS").expect("The env variable BATTLE_ADDRESS is not set");
     // register tamagotchis
     register_tamagotchis(&client, &mut listener, battle_id, tmg_ids).await?;
 
-    Ok(())
-}
-
-fn get_battle_id() -> Result<ProgramId> {
-    let battle_id =
-        std::env::var("BATTLE_ADDRESS").expect("The env variable BATTLE_ADDRESS is not set");
-    let battle_id_bytes = hex::decode(battle_id).expect("Unable to decode into bytes");
-    let battle_id = ProgramId::decode(&mut battle_id_bytes.as_slice())
-        .expect("Unable to decode into ProgramId");
-    Ok(battle_id)
-}
-// Both players skip their turn from the very beginning (no player has made a move).
-#[tokio::test]
-async fn initial_turns_skipped() -> Result<()> {
-    let wait = time::Duration::from_secs(120);
-    thread::sleep(wait);
-
-    let client = GearApi::dev().await?;
-    // let client = GearApi::dev_from_path("../target/tmp/gear")
-    //     .await?
-    //     .with("//Alice")?;
-    let mut listener = client.subscribe().await?;
-
-    let battle_id = get_battle_id()?;
-
     // start battle
-    let message_id = start_battle(&client, battle_id).await?;
+    start_battle(&client, battle_id).await?;
 
     // check battle state
     check_battle_state(&client, battle_id, BattleState::GameIsOn).await;
 
-    // 1st player misses the turn
-    let wait = time::Duration::from_secs(65);
-    thread::sleep(wait);
+    // read pairs info
+    let pairs = get_pairs(&client, battle_id).await?;
 
-    let pair = get_pair(&client, battle_id, 0)
-        .await?
-        .expect("Pair is None");
+    for (pair_id, pair) in pairs {
+        let zero_msg_id: MessageId = [0; 32].into();
+        let max_rounds = 5;
+        let player_1 = pair.owner_ids[0];
+        let suri = player_id_to_suri
+            .get(&player_1)
+            .expect("Players does not exist");
 
-    assert_eq!(pair.moves, vec![None], "Moves do not match");
+        let mut player_1_msg_id = zero_msg_id;
+        let mut prev_player_1_msg_id = zero_msg_id;
+        for i in 0..max_rounds {
+            let player_1_msg_id =
+                make_move(&client, battle_id, suri, pair_id, Move::Attack).await?;
+            let wait = time::Duration::from_secs(65);
+            thread::sleep(wait);
 
-    // 2nd player misses the turn
-    let wait = time::Duration::from_secs(65);
-    thread::sleep(wait);
+            if prev_player_1_msg_id != zero_msg_id {
+                check_reply(
+                    &mut listener,
+                    prev_player_1_msg_id,
+                    Ok(BattleReply::MoveMade),
+                )
+                .await?;
+            }
 
-    let pair = get_pair(&client, battle_id, 0).await?;
+            prev_player_1_msg_id = player_1_msg_id;
 
-    assert!(pair.is_none(), "Pair must be deleted");
-
-    check_reply(
-        &mut listener,
-        message_id,
-        Ok(BattleReply::BattleWasCancelled),
-    )
-    .await?;
-    Ok(())
-}
-
-// One player plays, the other skips.
-#[tokio::test]
-async fn one_player_plays_other_skips() -> Result<()> {
-    // let client = GearApi::dev().await?;
-    // // let client = GearApi::dev_from_path("../target/tmp/gear")
-    // //     .await?
-    // //     .with("//Alice")?;
-    // let mut listener = client.subscribe().await?;
-
-    // for player in PLAYERS {
-    //     transfer_balances(&client, player).await?;
-    // }
-
-    // // upload tamagotchis
-    // let (tmg_ids, player_id_to_suri) = upload_tamagotchis(&client, &mut listener).await?;
-
-    // let client = client
-    //     .clone()
-    //     .with("//Alice")
-    //     .expect("Unable to change signer.");
-
-    // // upload battle contract
-    // let battle_id = upload_program(
-    //     &client,
-    //     &mut listener,
-    //     PATHS[1],
-    //     Config {
-    //         max_power: 10_000,
-    //         max_range: 10_000,
-    //         min_range: 3_000,
-    //         health: 2_500,
-    //         max_steps_in_round: 5,
-    //         max_participants: 50,
-    //         time_for_move: 20,
-    //         min_gas_amount: 5_000_000_000,
-    //         block_duration_ms: 3_000,
-    //     },
-    // )
-    // .await?;
-
-    // // register tamagotchis
-    // register_tamagotchis(&client, &mut listener, battle_id, tmg_ids).await?;
-
-    // // start battle
-    // start_battle(&client, battle_id).await?;
-
-    // // check battle state
-    // check_battle_state(&client, battle_id, BattleState::GameIsOn).await;
-
-    // // read pairs info
-    // let pairs = get_pairs(&client, battle_id).await?;
-
-    // for (pair_id, pair) in pairs {
-    //     let zero_msg_id: MessageId = [0; 32].into();
-    //     let max_rounds = 5;
-    //     let player_1 = pair.owner_ids[0];
-    //     let suri = player_id_to_suri
-    //         .get(&player_1)
-    //         .expect("Players does not exist");
-
-    //     let mut player_1_msg_id = zero_msg_id;
-    //     let mut prev_player_1_msg_id = zero_msg_id;
-    //     for i in 0..max_rounds {
-    //         let player_1_msg_id =
-    //             make_move(&client, battle_id, suri, pair_id, Move::Attack).await?;
-    //         let wait = time::Duration::from_secs(65);
-    //         thread::sleep(wait);
-
-    //         if prev_player_1_msg_id != zero_msg_id {
-    //             check_reply(
-    //                 &mut listener,
-    //                 prev_player_1_msg_id,
-    //                 Ok(BattleReply::MoveMade),
-    //             )
-    //             .await?;
-    //         }
-
-    //         prev_player_1_msg_id = player_1_msg_id;
-
-    //         let pair = get_pair(&client, battle_id, pair_id)
-    //             .await?
-    //             .expect("Pair is None");
-    //         if pair.game_is_over {
-    //             // check battle state
-    //             check_battle_state(&client, battle_id, BattleState::GameIsOver).await;
-    //             break;
-    //         } else {
-    //             // number of skipped moves must be 1
-    //             assert_eq!(
-    //                 pair.amount_of_skipped_moves, 1,
-    //                 "Number of skipped moves must be 1"
-    //             );
-    //         }
-    //     }
-    // }
+            let pair = get_pair(&client, battle_id, pair_id)
+                .await?
+                .expect("Pair is None");
+            if pair.game_is_over {
+                // check battle state
+                check_battle_state(&client, battle_id, BattleState::GameIsOver).await;
+                break;
+            } else {
+                // number of skipped moves must be 1
+                assert_eq!(
+                    pair.amount_of_skipped_moves, 1,
+                    "Number of skipped moves must be 1"
+                );
+            }
+        }
+    }
 
     Ok(())
 }
@@ -480,185 +426,173 @@ async fn one_player_plays_other_skips() -> Result<()> {
 // Both players play.
 #[tokio::test]
 async fn both_players_play() -> Result<()> {
-    // let client = GearApi::dev().await?;
-    // // let client = GearApi::dev_from_path("../target/tmp/gear")
-    // //     .await?
-    // //     .with("//Alice")?;
-    // let mut listener = client.subscribe().await?;
+    let client = GearApi::dev().await?;
+    // let client = GearApi::dev_from_path("../target/tmp/gear")
+    //     .await?
+    //     .with("//Alice")?;
+    let mut listener = client.subscribe().await?;
 
-    // for player in PLAYERS {
-    //     transfer_balances(&client, player).await?;
-    // }
+    for player in PLAYERS {
+        transfer_balances(&client, player).await?;
+    }
 
-    // // upload tamagotchis
-    // let (tmg_ids, player_id_to_suri) = upload_tamagotchis(&client, &mut listener).await?;
+    // upload tamagotchis
+    let (tmg_ids, player_id_to_suri) = upload_tamagotchis(&client, &mut listener).await?;
 
-    // let client = client
-    //     .clone()
-    //     .with("//Alice")
-    //     .expect("Unable to change signer.");
+    let client = client
+        .clone()
+        .with("//Alice")
+        .expect("Unable to change signer.");
 
-    // // upload battle contract
-    // let battle_id = upload_program(
-    //     &client,
-    //     &mut listener,
-    //     PATHS[1],
-    //     Config {
-    //         max_power: 10_000,
-    //         max_range: 10_000,
-    //         min_range: 3_000,
-    //         health: 2_500,
-    //         max_steps_in_round: 5,
-    //         max_participants: 50,
-    //         time_for_move: 20,
-    //         min_gas_amount: 5_000_000_000,
-    //         block_duration_ms: 3_000,
-    //     },
-    // )
-    // .await?;
+    // upload battle contract
+    let battle_id = upload_program(
+        &client,
+        &mut listener,
+        PATHS[1],
+        Config {
+            max_power: 10_000,
+            min_power: 3_000,
+            health: 2_500,
+            max_steps_in_round: 5,
+            max_participants: 50,
+            time_for_move: 20,
+            min_gas_amount: 5_000_000_000,
+            block_duration_ms: 3_000,
+        },
+    )
+    .await?;
 
-    // // register tamagotchis
-    // register_tamagotchis(&client, &mut listener, battle_id, tmg_ids).await?;
+    // register tamagotchis
+    register_tamagotchis(&client, &mut listener, battle_id, tmg_ids).await?;
 
-    // // start battle
-    // start_battle(&client, battle_id).await?;
+    // start battle
+    start_battle(&client, battle_id).await?;
 
-    // // check battle state
-    // check_battle_state(&client, battle_id, BattleState::GameIsOn).await;
+    // check battle state
+    check_battle_state(&client, battle_id, BattleState::GameIsOn).await;
 
-    // // read pairs info
-    // let pairs = get_pairs(&client, battle_id).await?;
+    // read pairs info
+    let pairs = get_pairs(&client, battle_id).await?;
 
-    // let zero_msg_id: MessageId = [0; 32].into();
-    // for (pair_id, pair) in pairs {
-    //     let max_rounds = 5;
-    //     let mut player_1_msg_id = zero_msg_id;
-    //     let mut player_2_msg_id = zero_msg_id;
-    //     let player_1 = pair.owner_ids[0];
-    //     let suri_1 = player_id_to_suri
-    //         .get(&player_1)
-    //         .expect("Players does not exist");
-    //     let player_2 = pair.owner_ids[1];
-    //     let suri_2 = player_id_to_suri
-    //         .get(&player_2)
-    //         .expect("Players does not exist");
+    let max_rounds = 5;
 
-    //     for i in 0..max_rounds {
-    //         player_1_msg_id = make_move(&client, battle_id, suri_1, pair_id, Move::Attack).await?;
+    for (pair_id, pair) in pairs {
 
-    //         // wait just over 15 blocks before making a move from the second player
-    //         let wait = time::Duration::from_secs(45);
-    //         thread::sleep(wait);
+        let player_1 = pair.owner_ids[0];
+        let suri_1 = player_id_to_suri
+            .get(&player_1)
+            .expect("Players does not exist");
+        let player_2 = pair.owner_ids[1];
+        let suri_2 = player_id_to_suri
+            .get(&player_2)
+            .expect("Players does not exist");
+        
+        make_move(&client, battle_id, suri_1, pair_id, Move::Attack).await?;
 
-    //         if player_2_msg_id != zero_msg_id {
-    //             // wait just over 15 blocks to receive a reply from message
-    //             check_reply(&mut listener, player_2_msg_id, Ok(BattleReply::MoveMade)).await?;
-    //         }
+        make_move(&client, battle_id, suri_2, pair_id, Move::Attack).await?;
 
-    //         player_2_msg_id = make_move(&client, battle_id, suri_2, pair_id, Move::Attack).await?;
+            // wait just over 15 blocks to receive a reply from message
+            let wait = time::Duration::from_secs(45);
+            thread::sleep(wait);
+            let pair = get_pair(&client, battle_id, pair_id)
+                .await?
+                .expect("Pair is None");
 
-    //         // wait just over 15 blocks to receive a reply from message
-    //         let wait = time::Duration::from_secs(45);
-    //         thread::sleep(wait);
-    //         let pair = get_pair(&client, battle_id, pair_id)
-    //             .await?
-    //             .expect("Pair is None");
-
-    //         if pair.game_is_over {
-    //             // check battle state
-    //             check_battle_state(&client, battle_id, BattleState::GameIsOver).await;
-    //             break;
-    //         } else {
-    //             check_reply(&mut listener, player_1_msg_id, Ok(BattleReply::MoveMade)).await?;
-    //         }
-    //     }
-    // }
+            if pair.game_is_over {
+                // check battle state
+                check_battle_state(&client, battle_id, BattleState::GameIsOver).await;
+                break;
+            } else {
+                check_reply(&mut listener, player_1_msg_id, Ok(BattleReply::MoveMade)).await?;
+            
+        }
+    }
 
     Ok(())
 }
 
-// Players have made several moves and then consecutively skipped their turn (the pair should be removed).
-#[tokio::test]
-async fn consecutive_turns_skipped_after_moves() -> Result<()> {
-    // let client = GearApi::dev().await?;
-    // // let client = GearApi::dev_from_path("../target/tmp/gear")
-    // //     .await?
-    // //     .with("//Alice")?;
-    // let mut listener = client.subscribe().await?;
+// // Players have made several moves and then consecutively skipped their turn (the pair should be removed).
+// #[tokio::test]
+// async fn consecutive_turns_skipped_after_moves() -> Result<()> {
+//     let client = GearApi::dev().await?;
+//     // let client = GearApi::dev_from_path("../target/tmp/gear")
+//     //     .await?
+//     //     .with("//Alice")?;
+//     let mut listener = client.subscribe().await?;
 
-    // for player in PLAYERS {
-    //     transfer_balances(&client, player).await?;
-    // }
+//     for player in PLAYERS {
+//         transfer_balances(&client, player).await?;
+//     }
 
-    // // upload tamagotchis
-    // let (tmg_ids, player_id_to_suri) = upload_tamagotchis(&client, &mut listener).await?;
+//     // upload tamagotchis
+//     let (tmg_ids, player_id_to_suri) = upload_tamagotchis(&client, &mut listener).await?;
 
-    // let client = client
-    //     .clone()
-    //     .with("//Alice")
-    //     .expect("Unable to change signer.");
+//     let client = client
+//         .clone()
+//         .with("//Alice")
+//         .expect("Unable to change signer.");
 
-    // // upload battle contract
-    // let battle_id = upload_program(
-    //     &client,
-    //     &mut listener,
-    //     PATHS[1],
-    //     Config {
-    //         max_power: 10_000,
-    //         max_range: 10_000,
-    //         min_range: 3_000,
-    //         health: 2_500,
-    //         max_steps_in_round: 5,
-    //         max_participants: 50,
-    //         time_for_move: 20,
-    //         min_gas_amount: 5_000_000_000,
-    //         block_duration_ms: 3_000,
-    //     },
-    // )
-    // .await?;
+//     // upload battle contract
+//     let battle_id = upload_program(
+//         &client,
+//         &mut listener,
+//         PATHS[1],
+//         Config {
+//             max_power: 10_000,
+//             max_range: 10_000,
+//             min_range: 3_000,
+//             health: 2_500,
+//             max_steps_in_round: 5,
+//             max_participants: 50,
+//             time_for_move: 20,
+//             min_gas_amount: 5_000_000_000,
+//             block_duration_ms: 3_000,
+//         },
+//     )
+//     .await?;
 
-    // // register tamagotchis
-    // register_tamagotchis(&client, &mut listener, battle_id, tmg_ids).await?;
+//     // register tamagotchis
+//     register_tamagotchis(&client, &mut listener, battle_id, tmg_ids).await?;
 
-    // // start battle
-    // start_battle(&client, battle_id).await?;
+//     // start battle
+//     start_battle(&client, battle_id).await?;
 
-    // // check battle state
-    // check_battle_state(&client, battle_id, BattleState::GameIsOn).await;
+//     // check battle state
+//     check_battle_state(&client, battle_id, BattleState::GameIsOn).await;
 
-    // // read pairs info
-    // let pairs = get_pairs(&client, battle_id).await?;
+//     // read pairs info
+//     let pairs = get_pairs(&client, battle_id).await?;
 
-    // for (pair_id, pair) in pairs {
-    //     let player_1 = pair.owner_ids[0];
-    //     let suri = player_id_to_suri
-    //         .get(&player_1)
-    //         .expect("Players does not exist");
+//     for (pair_id, pair) in pairs {
+//         let player_1 = pair.owner_ids[0];
+//         let suri = player_id_to_suri
+//             .get(&player_1)
+//             .expect("Players does not exist");
 
-    //     let msg_id = make_move(&client, battle_id, suri, pair_id, Move::Attack).await?;
+//         let msg_id = make_move(&client, battle_id, suri, pair_id, Move::Attack).await?;
 
-    //     // wait just over 21 blocks to be sure
-    //     let time_for_move = time::Duration::from_secs(65);
+//         // wait just over 21 blocks to be sure
+//         let time_for_move = time::Duration::from_secs(65);
 
-    //     thread::sleep(time_for_move);
+//         thread::sleep(time_for_move);
 
-    //     let pair = get_pair(&client, battle_id, pair_id)
-    //         .await?
-    //         .expect("Pair is None");
+//         let pair = get_pair(&client, battle_id, pair_id)
+//             .await?
+//             .expect("Pair is None");
 
-    //     assert!(pair.moves.is_empty(), "Moves don't match");
+//         assert!(pair.moves.is_empty(), "Moves don't match");
 
-    //     thread::sleep(time_for_move);
+//         thread::sleep(time_for_move);
 
-    //     // battle must be cancelled and pair must be deleted
-    //     check_reply(&mut listener, msg_id, Ok(BattleReply::BattleWasCancelled)).await?;
-    //     let pair = get_pair(&client, battle_id, pair_id).await?;
+//         // battle must be cancelled and pair must be deleted
+//         check_reply(&mut listener, msg_id, Ok(BattleReply::BattleWasCancelled)).await?;
+//         let pair = get_pair(&client, battle_id, pair_id).await?;
 
-    //     assert!(pair.is_none(), "Pair must be deleted");
+//         assert!(pair.is_none(), "Pair must be deleted");
 
-    //     // check battle state
-    //     check_battle_state(&client, battle_id, BattleState::GameIsOver).await;
-    // }
+//         // check battle state
+//         check_battle_state(&client, battle_id, BattleState::GameIsOver).await;
+//     }
 
-    Ok(())
-}
+//     Ok(())
+// }

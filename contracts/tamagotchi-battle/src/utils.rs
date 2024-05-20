@@ -128,6 +128,7 @@ impl BattleUtils for Battle {
         let (second_owner_id, second_tmg_id) = self.select_random_player(players_len)?;
         self.add_pair_id_for_player(first_owner_id, pair_id);
         self.add_pair_id_for_player(second_owner_id, pair_id);
+
         let pair = Pair {
             owner_ids: vec![first_owner_id, second_owner_id],
             tmg_ids: vec![first_tmg_id, second_tmg_id],
