@@ -89,11 +89,11 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
     const { address, meta } = account;
     const batch = getBatch();
 
-    const signAsinc = pair
+    const signAsync = pair
       ? batch(txs).signAsync(pair)
       : web3FromSource(meta.source).then(({ signer }) => batch(txs).signAsync(address, { signer }));
 
-    return signAsinc.catch(({ message }: Error) => {
+    return signAsync.catch(({ message }: Error) => {
       const { onError = () => {}, onFinally = () => {} } = options;
 
       onError(message);
