@@ -21,7 +21,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
   const minRequiredBalanceToDeleteSession =
     getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toNumber() + 5;
   const isDeleteSessionAvailable = useIsAvailable(minRequiredBalanceToDeleteSession, false);
-  const { batchSignAndSend } = useBatchSignAndSend('all');
+  const { batchSignAndSend, batchSign, batchSend } = useBatchSignAndSend('all');
   const onError = (message: string) => alert.error(message);
 
   const isVoucherExpired = async ({ expiry }: IVoucherDetails) => {
@@ -59,19 +59,30 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     return api.message.send({ destination, payload, gasLimit }, metadata);
   };
 
+  const getDurationBlocks = (durationMS: number) => {
+    if (!api) {
+      return;
+    }
+
+    const blockTimeMs = api.consts.babe.expectedBlockTime.toNumber();
+
+    return durationMS / blockTimeMs;
+  };
+
   const getVoucherExtrinsic = async (session: Session, voucherValue: number) => {
     if (!isApiReady) throw new Error('API is not initialized');
     if (!metadata) throw new Error('Metadata not found');
     if (!account) throw new Error('Account not found');
 
     const voucher = await getLatestVoucher(session.key);
+    const durationBlocks = getDurationBlocks(session.duration);
 
     if (!voucher || account.decodedAddress !== voucher.owner) {
-      const { extrinsic } = await api.voucher.issue(session.key, voucherValue, undefined, [programId]);
+      const { extrinsic } = await api.voucher.issue(session.key, voucherValue, durationBlocks, [programId]);
       return extrinsic;
     }
 
-    const prolongDuration = api.voucher.minDuration; // TODO: need to consider session duration
+    const prolongDuration = durationBlocks;
     const balanceTopUp = voucherValue;
 
     return api.voucher.update(session.key, voucher.id, { prolongDuration, balanceTopUp });
@@ -162,18 +173,26 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     const isOwner = account.decodedAddress === voucher.owner;
     const isExpired = await isVoucherExpired(voucher);
 
-    if (!isExpired) {
-      const declineExtrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
-
-      await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined']);
-    }
-
     if (isOwner) {
+      // revoke on onSuccess is not called to avoid second signatures popup
       const revokeExtrinsic = api.voucher.revoke(key, voucher.id);
       txs.push(revokeExtrinsic);
     }
 
-    batchSignAndSend(txs, { ...options, onError });
+    // We need to sign transactions before sending declineExtrinsic;
+    // Otherwise, if the signing is canceled, the voucher will be invalid.
+    const signedTxs = await batchSign(txs, options);
+
+    if (!signedTxs) {
+      throw new Error('Transaction sign canceled');
+    }
+
+    if (!isExpired) {
+      const declineExtrinsic = api.voucher.call(voucher.id, { DeclineVoucher: null });
+      await sendTransaction(declineExtrinsic, pair, ['VoucherDeclined'], options);
+    }
+
+    batchSend(signedTxs, { ...options, onError });
   };
 
   return { createSession, deleteSession };
