@@ -1,4 +1,5 @@
 import { HexString } from '@gear-js/api';
+import { VoucherStatus } from './types';
 
 async function guardedFetch<T extends object>(...args: Parameters<typeof fetch>) {
   const response = await fetch(...args);
@@ -27,11 +28,11 @@ async function getVoucherStatus(backend: string, program: HexString) {
   const url = `${backend}gasless/voucher/${program}/status`;
 
   try {
-    const { enabled } = await guardedFetch<{ enabled: boolean }>(url);
+    const status = await guardedFetch<VoucherStatus>(url);
 
-    return enabled;
+    return status;
   } catch {
-    return false;
+    return null;
   }
 }
 

@@ -27,6 +27,7 @@ function EzTransactionsSwitch({ allowedActions }: Props) {
         disabled={!signless.isSessionActive && gasless.isActive}
         message={!signless.isSessionActive && gasless.isActive ? 'Gasless Session is Active' : ''}
         requiredBalance={gasless.isEnabled ? 0 : undefined}
+        bindedSessionDuration={gasless.isEnabled ? gasless.voucherStatus?.duration : undefined}
       />
     </div>
   );

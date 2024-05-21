@@ -5,23 +5,18 @@ import { useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useRandomPairOr } from '@/hooks';
 import { useSignlessTransactions } from '../../context';
-import { getMilliseconds, getUnlockedPair } from '../../utils';
+import { getMilliseconds, getMinutesFromSeconds, getUnlockedPair } from '../../utils';
 import styles from './create-session-modal.module.css';
 import { SignlessParams } from '../signless-params-list';
 import { AccountPair } from '../account-pair';
-import {
-  BALANCE_VALUE_TO_ISSUE_VOUCHER,
-  BALANCE_VALUE_TO_START_GAME,
-  DEFAULT_VALUES,
-  DURATIONS,
-  REQUIRED_MESSAGE,
-} from '../../consts';
+import { BALANCE_VALUE_TO_ISSUE_VOUCHER, BALANCE_VALUE_TO_START_GAME, DURATIONS, REQUIRED_MESSAGE } from '../../consts';
 import { decodeAddress } from '@gear-js/api';
 
 type Props = Pick<ModalProps, 'close'> & {
   allowedActions: string[];
   onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   shouldIssueVoucher?: boolean; // no need to pass boolean, we can just conditionally pass onSessionCreate?
+  bindedSessionDuration?: number;
 };
 
 function CreateSessionModal({
@@ -29,11 +24,37 @@ function CreateSessionModal({
   close,
   onSessionCreate = async () => '0x',
   shouldIssueVoucher = true,
+  bindedSessionDuration,
 }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
   const alert = useAlert();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
+
+  const gaslessVoucherDurationMinutes = bindedSessionDuration
+    ? getMinutesFromSeconds(bindedSessionDuration)
+    : undefined;
+
+  const DURATION_OPTIONS = useMemo(
+    () =>
+      bindedSessionDuration
+        ? [
+            {
+              label: `${gaslessVoucherDurationMinutes} minutes`,
+              value: gaslessVoucherDurationMinutes,
+            },
+          ]
+        : DURATIONS,
+    [gaslessVoucherDurationMinutes],
+  );
+
+  const DEFAULT_VALUES = useMemo(
+    () => ({
+      password: '',
+      durationMinutes: gaslessVoucherDurationMinutes ? `${gaslessVoucherDurationMinutes}` : DURATIONS[0].value,
+    }),
+    [gaslessVoucherDurationMinutes],
+  );
 
   const { register, handleSubmit, formState, setError } = useForm({ defaultValues: DEFAULT_VALUES });
   const { errors } = formState;
@@ -136,7 +157,12 @@ function CreateSessionModal({
         />
 
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
-          <Select label="Session duration" options={DURATIONS} {...register('durationMinutes')} />
+          <Select
+            label="Session duration"
+            disabled={!!bindedSessionDuration}
+            options={DURATION_OPTIONS}
+            {...register('durationMinutes')}
+          />
 
           <Input
             type="password"
