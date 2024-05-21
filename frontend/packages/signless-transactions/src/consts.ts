@@ -49,5 +49,3 @@ export const DURATIONS: { label: string; value: string }[] = [
     value: '10080',
   },
 ];
-
-export const DEFAULT_VALUES = { password: '', durationMinutes: DURATIONS[0].value };

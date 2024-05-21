@@ -66,7 +66,7 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 
     const blockTimeMs = api.consts.babe.expectedBlockTime.toNumber();
 
-    return durationMS / blockTimeMs;
+    return (durationMS / blockTimeMs) * 1.05; // +5% to cover transaction time
   };
 
   const getVoucherExtrinsic = async (session: Session, voucherValue: number) => {

@@ -14,7 +14,9 @@ type Props = {
 
 function EnableGaslessSession({ type, disabled, message }: Props) {
   const { account } = useAccount();
-  const { isAvailable, isLoading, isEnabled, setIsEnabled } = useGaslessTransactions();
+  const { voucherStatus, isLoading, isEnabled, setIsEnabled } = useGaslessTransactions();
+
+  const isAvailable = voucherStatus?.enabled;
 
   const handleSwitchChange = ({ target }: ChangeEvent<HTMLInputElement>) => setIsEnabled(target.checked);
 

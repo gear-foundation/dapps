@@ -1,5 +1,5 @@
 import { ReactNode, createContext, useContext, useEffect, useMemo, useState } from 'react';
-import { GaslessContext } from './types';
+import { GaslessContext, VoucherStatus } from './types';
 import { DEFAULT_GASLESS_CONTEXT } from './consts';
 import { useAccount, useAlert, useBalance, useBalanceFormat } from '@gear-js/react-hooks';
 import { HexString } from '@gear-js/api';
@@ -26,9 +26,9 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   const { balance } = useBalance(voucherId);
 
   const [isLoading, , withLoading] = useLoading();
-  const [isAvailable, setIsAvailable] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
   const isActive = Boolean(accountAddress && voucherId);
+  const [voucherStatus, setVoucherStatus] = useState<VoucherStatus | null>(null);
 
   const requestVoucher = async (_accountAddress: string) =>
     withLoading(
@@ -43,7 +43,9 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   useEffect(() => {
     withLoading(
       getVoucherStatus(backendAddress, programId)
-        .then((result) => setIsAvailable(result))
+        .then((result) => {
+          setVoucherStatus(result);
+        })
         .catch(({ message }: Error) => alert.error(message)),
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -71,9 +73,9 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   }, [account]);
 
   const value = useMemo(
-    () => ({ voucherId, isAvailable, isLoading, isEnabled, isActive, requestVoucher, setIsEnabled }),
+    () => ({ voucherId, isLoading, isEnabled, isActive, voucherStatus, requestVoucher, setIsEnabled }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [voucherId, isAvailable, isLoading, isEnabled, isActive],
+    [voucherId, isLoading, isEnabled, isActive, voucherStatus?.id],
   );
 
   return <Provider value={value}>{children}</Provider>;
