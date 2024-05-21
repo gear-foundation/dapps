@@ -11,7 +11,7 @@ import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
 import { ENV } from '../consts';
 
 export const useInitGame = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { account } = useAccount();
   const { setIsSettled } = useApp();
   const { allState, config, admins, tournament } = useGameState();
@@ -38,24 +38,23 @@ export const useInitGame = () => {
 
   useEffect(() => {
     if (tournament?.Tournament) {
-      navigate("/")
+      navigate('/');
       setTournamentGame(tournament.Tournament);
-      setPreviousGame(tournament.Tournament)
+      setPreviousGame(tournament.Tournament);
     } else {
-      setTournamentGame(undefined)
+      setTournamentGame(undefined);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tournament?.Tournament, account?.decodedAddress])
+  }, [tournament?.Tournament, account?.decodedAddress]);
 
   useEffect(() => {
     if (allState) {
-      setAllGames(allState.All.tournaments)
+      setAllGames(allState.All.tournaments);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [allState, account?.decodedAddress])
-
+  }, [allState, account?.decodedAddress]);
 };
 
 export function useGameMessage() {
