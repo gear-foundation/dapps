@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useAccount, useSendMessageWithGas } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 
 import { useProgramMetadata } from '@/app/hooks/use-metadata';
 import meta from '@/assets/meta/vara_man.meta.txt';
