@@ -7,18 +7,13 @@ import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui'
 import {
 	EzGaslessTransactions,
 	EzSignlessTransactions,
-	useEzTransactions,
 } from '@dapps-frontend/ez-transactions'
-import { useAccount, useAlert } from '@gear-js/react-hooks'
 
 import styles from './Header.module.scss'
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts'
 
 export const Header = () => {
 	const { isAdmin } = useGame()
-	const { account } = useAccount()
-	const { gasless, signless } = useEzTransactions()
-	const alert = useAlert()
 
 	return (
 		<CommonHeader
@@ -36,7 +31,14 @@ export const Header = () => {
 						icon: styles.menuIcon,
 					}}
 					customItems={[
-						{ key: 'signless', option: <EzSignlessTransactions allowedActions={SIGNLESS_ALLOWED_ACTIONS}/> },
+						{
+							key: 'signless',
+							option: (
+								<EzSignlessTransactions
+									allowedActions={SIGNLESS_ALLOWED_ACTIONS}
+								/>
+							),
+						},
 						{ key: 'gasless', option: <EzGaslessTransactions /> },
 					]}
 				/>
