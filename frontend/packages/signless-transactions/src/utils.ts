@@ -63,6 +63,8 @@ const getMilliseconds = (minutes: number) => minutes * MULTIPLIER.MS * MULTIPLIE
 
 const getDoubleDigits = (value: number) => (value < 10 ? `0${value}` : value);
 
+const getMinutesFromSeconds = (seconds: number) => seconds / MULTIPLIER.SECONDS;
+
 const getDHMS = (ms: number) => {
   const seconds = Math.floor((ms / MULTIPLIER.MS) % MULTIPLIER.SECONDS);
   const minutes = Math.floor((ms / (MULTIPLIER.MS * MULTIPLIER.SECONDS)) % MULTIPLIER.MINUTES);
@@ -124,4 +126,12 @@ const copyToClipboard = async ({
 
 const getUnlockedPair = (pair: KeyringPair$Json, password: string) => GearKeyring.fromJson(pair, password);
 
-export { getMilliseconds, getDHMS, getVaraAddress, shortenString, copyToClipboard, getUnlockedPair };
+export {
+  getMilliseconds,
+  getMinutesFromSeconds,
+  getDHMS,
+  getVaraAddress,
+  shortenString,
+  copyToClipboard,
+  getUnlockedPair,
+};
