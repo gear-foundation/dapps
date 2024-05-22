@@ -17,7 +17,7 @@ type Props = {
   disabled?: boolean;
   onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   requiredBalance: number | undefined;
-  bindedSessionDuration?: number;
+  boundSessionDuration?: number;
 };
 
 function EnableSignlessSession(props: Props) {
@@ -28,7 +28,7 @@ function EnableSignlessSession(props: Props) {
     shouldIssueVoucher,
     disabled,
     message,
-    bindedSessionDuration,
+    boundSessionDuration,
     requiredBalance = 42,
   } = props;
   const { account } = useAccount();
@@ -146,7 +146,7 @@ function EnableSignlessSession(props: Props) {
           close={closeCreateModal}
           onSessionCreate={onSessionCreate}
           shouldIssueVoucher={shouldIssueVoucher}
-          bindedSessionDuration={bindedSessionDuration}
+          boundSessionDuration={boundSessionDuration}
         />
       )}
       {isEnableSessionModalOpen && <EnableSessionModal close={closeEnableModal} />}
