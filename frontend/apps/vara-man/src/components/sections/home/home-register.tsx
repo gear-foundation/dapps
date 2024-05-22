@@ -41,17 +41,13 @@ export function HomeRegister() {
   const { gasless, signless } = useEzTransactions();
   const alert = useAlert();
 
-  const startGame = () => {
+  const startGame = (onClick: void) => {
     if (account) {
-      if (!gasless.isEnabled || gasless.voucherId || signless.isActive || gasless.isLoading) return;
+      if (!gasless.isEnabled || gasless.voucherId || signless.isActive) return onClick;
 
       gasless.requestVoucher(account.address).catch(({ message }: Error) => alert.error(message));
     }
   };
-
-  useEffect(() => {
-    startGame();
-  }, [account, gasless]);
 
   return (
     <>
@@ -67,7 +63,7 @@ export function HomeRegister() {
                   <button
                     key={item.title}
                     className="flex justify-between items-center p-4 border rounded-2xl gap-5 hover:border-[#00FFC4] disabled:opacity-50 hover:disabled:border-[#f2f2f2]"
-                    onClick={() => item.onClick(navigate)}
+                    onClick={() => startGame(item.onClick(navigate))}
                     disabled={gasless.isLoading}>
                     <div className="flex flex-col items-start">
                       <div className="flex gap-2 mb-2">
