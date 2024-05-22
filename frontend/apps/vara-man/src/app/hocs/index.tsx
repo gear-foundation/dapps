@@ -31,7 +31,7 @@ const BrowserRouterProvider = ({ children }: ProviderProps) => <BrowserRouter>{c
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
   return (
-    <SharedGaslessTransactionsProvider programId={ENV.GAME} backendAddress={ENV.BACK} voucherLimit={18}>
+    <SharedGaslessTransactionsProvider programId={ENV.GAME} backendAddress={ENV.GASLESS_BACKEND} voucherLimit={18}>
       {children}
     </SharedGaslessTransactionsProvider>
   );
