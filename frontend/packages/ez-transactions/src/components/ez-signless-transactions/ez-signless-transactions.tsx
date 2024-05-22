@@ -15,7 +15,7 @@ function EzSignlessTransactions({ allowedActions }: Props) {
       shouldIssueVoucher={!gasless.isEnabled}
       disabled={!signless.isSessionActive && gasless.isActive}
       requiredBalance={gasless.isEnabled ? 0 : undefined}
-      bindedSessionDuration={gasless.isEnabled ? gasless.voucherStatus?.duration : undefined}
+      boundSessionDuration={gasless.isEnabled ? gasless.voucherStatus?.duration : undefined}
     />
   );
 }

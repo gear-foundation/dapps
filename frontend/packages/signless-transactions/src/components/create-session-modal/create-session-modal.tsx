@@ -16,7 +16,7 @@ type Props = Pick<ModalProps, 'close'> & {
   allowedActions: string[];
   onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   shouldIssueVoucher?: boolean; // no need to pass boolean, we can just conditionally pass onSessionCreate?
-  bindedSessionDuration?: number;
+  boundSessionDuration?: number;
 };
 
 function CreateSessionModal({
@@ -24,20 +24,18 @@ function CreateSessionModal({
   close,
   onSessionCreate = async () => '0x',
   shouldIssueVoucher = true,
-  bindedSessionDuration,
+  boundSessionDuration,
 }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
   const alert = useAlert();
   const { getChainBalanceValue, getFormattedBalance } = useBalanceFormat();
 
-  const gaslessVoucherDurationMinutes = bindedSessionDuration
-    ? getMinutesFromSeconds(bindedSessionDuration)
-    : undefined;
+  const gaslessVoucherDurationMinutes = boundSessionDuration ? getMinutesFromSeconds(boundSessionDuration) : undefined;
 
   const DURATION_OPTIONS = useMemo(
     () =>
-      bindedSessionDuration
+      boundSessionDuration
         ? [
             {
               label: `${gaslessVoucherDurationMinutes} minutes`,
@@ -159,7 +157,7 @@ function CreateSessionModal({
         <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
           <Select
             label="Session duration"
-            disabled={!!bindedSessionDuration}
+            disabled={!!boundSessionDuration}
             options={DURATION_OPTIONS}
             {...register('durationMinutes')}
           />
