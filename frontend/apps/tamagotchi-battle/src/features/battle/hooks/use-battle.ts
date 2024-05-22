@@ -87,23 +87,24 @@ export function useInitBattleData() {
         } = data;
 
         if (details.isSome && !details.unwrap().to.eq(0)) {
-          // console.log(payload.toHuman());
-          // alert.error(`${payload.toHuman()}`, { title: 'Error during program execution' });
-        } else {
-          if (metadata.types.handle.output) {
-            const decodedPayload = metadata.createType(metadata.types.handle.output, payload).toJSON();
-            if (
-              decodedPayload &&
-              typeof decodedPayload === 'object' &&
-              Object.keys(decodedPayload).includes('roundResult')
-            ) {
-              const notification = Object.values(decodedPayload)[0] as RoundDamageType;
+          return;
+        }
 
-              if (currentPairIdx === +notification[0]) {
-                // console.log({ decodedPayload });
-                setRoundDamage(notification);
-              }
-            }
+        if (!metadata.types.handle.output) {
+          return;
+        }
+
+        const decodedPayload = metadata.createType(metadata.types.handle.output, payload).toJSON();
+
+        if (
+          decodedPayload &&
+          typeof decodedPayload === 'object' &&
+          Object.keys(decodedPayload).includes('roundResult')
+        ) {
+          const notification = Object.values(decodedPayload)[0] as RoundDamageType;
+
+          if (currentPairIdx === +notification[0]) {
+            setRoundDamage(notification);
           }
         }
       });

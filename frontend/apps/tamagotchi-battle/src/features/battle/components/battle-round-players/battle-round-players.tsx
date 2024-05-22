@@ -25,7 +25,7 @@ export const BattleRoundPlayers = () => {
     }
   }, [account, battle, currentPlayer, isAdmin]);
 
-  const onSuccess = () => setIsPending(false);
+  const onInBlock = () => setIsPending(false);
   const onError = () => setIsPending(false);
 
   const onNewRound = async () => {
@@ -38,7 +38,7 @@ export const BattleRoundPlayers = () => {
       () => {
         handleMessage({
           payload,
-          onSuccess,
+          onInBlock,
           onError,
           voucherId: gasless.voucherId,
           gasLimit: GAS_LIMIT,
@@ -56,7 +56,7 @@ export const BattleRoundPlayers = () => {
     checkBalance(
       gasLimitToNumber(api?.blockGasLimit),
       () => {
-        handleMessage({ payload, onSuccess, onError, gasLimit: GAS_LIMIT });
+        handleMessage({ payload, onInBlock, onError, gasLimit: GAS_LIMIT });
       },
       onError,
     );
@@ -70,7 +70,7 @@ export const BattleRoundPlayers = () => {
     checkBalance(
       gasLimitToNumber(api?.blockGasLimit),
       () => {
-        handleMessage({ payload, onSuccess, onError, gasLimit: GAS_LIMIT });
+        handleMessage({ payload, onInBlock, onError, gasLimit: GAS_LIMIT });
       },
       onError,
     );
