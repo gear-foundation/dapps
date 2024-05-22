@@ -1,0 +1,78 @@
+@use '@/assets/styles/utils' as *;
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  padding: 6px 0;
+}
+
+.header {
+  @include gap(24px);
+  // text-align: center;
+}
+
+.content {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 16px;
+}
+
+.gameInfo {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 10px;
+
+  .manageTurn {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  p {
+    display: flex;
+    justify-content: space-between;
+
+    span {
+      font-weight: 600;
+    }
+  }
+}
+
+.enemyShips {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  box-shadow: 0px 1px 0px 0px #00000040 inset;
+  background: #64FFDB;
+  padding: 9px 16px;
+  z-index: 1;
+  
+  .text {
+    color: #000000;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 14px;
+    letter-spacing: 0.1em;
+  }
+
+  .listShips {
+    display: flex;
+
+    .ship {
+      display: flex;
+      gap: 1.5px;
+      margin-left: 5px;
+    }
+
+    .block {
+      background: #00000021;
+      border-radius: 1px;
+      height: 16px;
+      width: 16px;
+      border: 1px solid #000000;
+    }
+  }
+}

@@ -1,0 +1,209 @@
+@use '@gear-js/ui/mixins' as *;
+@use '@/assets/styles/utils' as *;
+
+.base {
+  --btn-text-color: #000;
+
+  font-weight: 700;
+  transition-property: background-color, border-color, color;
+  transition-duration: 300ms;
+  transition-timing-function: ease;
+  white-space: nowrap;
+  user-select: none;
+  touch-action: none;
+
+  &:disabled,
+  &[aria-disabled='true'] {
+    pointer-events: auto;
+    cursor: not-allowed;
+  }
+}
+
+a.base[aria-disabled='true'] {
+  pointer-events: none;
+}
+
+.btn {
+  --btn-bg-color: #64ffdb;
+  --btn-border-color: var(--btn-bg-color);
+
+  @extend .base;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--btn-text-color);
+  border-radius: 2px;
+  border: 2px solid var(--btn-border-color);
+  background-color: var(--btn-bg-color);
+  @include gap(10px, right);
+}
+
+.md {
+  padding: 10px 32px;
+  font-size: 18px;
+  line-height: 26px;
+  letter-spacing: 0.54px;
+}
+
+.sm {
+  padding: 8px 16px;
+  font-size: 16px;
+  line-height: 20px;
+  letter-spacing: 0.48px;
+}
+
+.primary {
+  @extend .btn;
+  --btn-bg-color: #64ffdb;
+  --btn-border-color: var(--btn-bg-color);
+  --btn-text-color: #000;
+  position: relative;
+  z-index: 0;
+  border-color: transparent;
+
+  &::before,
+  &::after {
+    --btn-bg-color: #91fcdd;
+    content: '';
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    right: -2px;
+    bottom: -2px;
+    z-index: -1;
+    border-radius: 2px;
+  }
+
+  &::before {
+    background: linear-gradient(270deg, #64ffdb 0%, #00ffc4 100%);
+    transition: opacity 350ms ease;
+  }
+
+  &::after {
+    opacity: 0;
+    background-color: var(--btn-bg-color);
+    transition: opacity 350ms ease, background-color 350ms ease;
+  }
+
+  &:not([disabled]) {
+    &:hover,
+    &:focus-visible {
+      &::after {
+        --btn-bg-color: #91fcdd;
+        opacity: 1;
+      }
+    }
+
+    &:active {
+      &::after {
+        --btn-bg-color: #0ed3a3;
+        opacity: 1;
+      }
+    }
+  }
+
+  &[aria-disabled='true'],
+  &:disabled {
+    &::before {
+      background: linear-gradient(270deg, rgba(100, 255, 219, 0.07) 0%, rgba(0, 255, 196, 0.07) 100%);
+    }
+  }
+
+  &.loading {
+    --btn-text-color: #474747;
+    opacity: 100%;
+  }
+}
+
+.black {
+  @extend .btn;
+  --btn-bg-color: #000;
+  --btn-text-color: #fff;
+
+  &:not(:disabled):not([aria-disabled='true']) {
+    &:hover,
+    &:focus-visible {
+      --btn-bg-color: #404040;
+    }
+
+    &:active {
+      --btn-bg-color: #262626;
+    }
+  }
+}
+
+.white {
+  @extend .btn;
+  --btn-bg-color: #fff;
+  --btn-text-color: #000;
+
+  &:not(:disabled):not([aria-disabled='true']) {
+    &:hover,
+    &:focus-visible {
+      --btn-bg-color: #d4d4d4;
+    }
+
+    &:active {
+      --btn-bg-color: #d4d4d4;
+    }
+  }
+}
+
+.outline {
+  @extend .btn;
+  --btn-bg-color: transparent;
+  --btn-border-color: #000;
+  --btn-text-color: #000;
+
+  &:not(:disabled):not([aria-disabled='true']) {
+    &:hover,
+    &:focus-visible {
+      --btn-bg-color: #000;
+      --btn-text-color: #fff;
+    }
+
+    &:active {
+      --btn-bg-color: #404040;
+      --btn-text-color: #fff;
+      --btn-border-color: var(--btn-bg-color);
+    }
+  }
+}
+
+.text {
+  @extend .base;
+  padding: 0;
+  background-color: unset;
+  border: unset;
+
+  &.loading {
+    --btn-text-color: #474747;
+    opacity: 100%;
+  }
+}
+
+.loader {
+  animation: spin 1s linear infinite;
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}
+
+.loading {
+  opacity: 70%;
+
+  svg {
+    display: inline-block;
+    margin-right: 8px;
+  }
+}
+
+.block {
+  width: 100%;
+}
