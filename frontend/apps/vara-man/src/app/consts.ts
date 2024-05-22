@@ -8,7 +8,7 @@ export const LOCAL_STORAGE = {
 export const ENV = {
   NODE: import.meta.env.VITE_NODE_ADDRESS,
   GAME: import.meta.env.VITE_CONTRACT_ADDRESS,
-  BACK: import.meta.env.VITE_GASLESS_BACKEND_ADDRESS,
+  GASLESS_BACKEND: import.meta.env.VITE_GASLESS_BACKEND_ADDRESS,
 };
 
 export type IRegisterForm = {
