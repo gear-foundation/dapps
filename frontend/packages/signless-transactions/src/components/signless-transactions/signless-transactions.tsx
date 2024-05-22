@@ -21,7 +21,7 @@ type Props = {
   shouldIssueVoucher?: boolean;
   disabled?: boolean;
   requiredBalance?: number;
-  bindedSessionDuration?: number;
+  boundSessionDuration?: number;
 };
 
 function SignlessTransactions({
@@ -30,7 +30,7 @@ function SignlessTransactions({
   shouldIssueVoucher,
   disabled,
   requiredBalance,
-  bindedSessionDuration,
+  boundSessionDuration,
 }: Props) {
   const { account } = useAccount();
   const { pair, session, isSessionReady, voucherBalance, storagePair, deletePair, deleteSession } =
@@ -125,7 +125,7 @@ function SignlessTransactions({
               onSessionCreate={onSessionCreate}
               shouldIssueVoucher={shouldIssueVoucher}
               requiredBalance={requiredBalance}
-              bindedSessionDuration={bindedSessionDuration}
+              boundSessionDuration={boundSessionDuration}
             />
           </div>
         </>
@@ -169,7 +169,7 @@ function SignlessTransactions({
           shouldIssueVoucher={shouldIssueVoucher}
           disabled={disabled}
           requiredBalance={requiredBalance}
-          bindedSessionDuration={bindedSessionDuration}
+          boundSessionDuration={boundSessionDuration}
         />
       )}
 
@@ -180,7 +180,7 @@ function SignlessTransactions({
           close={closeModal}
           onSessionCreate={onSessionCreate}
           shouldIssueVoucher={shouldIssueVoucher}
-          bindedSessionDuration={bindedSessionDuration}
+          boundSessionDuration={boundSessionDuration}
         />
       )}
     </div>
