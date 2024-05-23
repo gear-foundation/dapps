@@ -1,0 +1,13 @@
+[package]
+name = "zk-battleship-wasm"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+zk-battleship = { path = "../app" }
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+sails-idl-gen = { git = "https://github.com/gear-tech/sails", rev = "51b731ef8f064a23c6c98fa92d06eeafe44d3f9d" }
+zk-battleship = { path = "../app" }

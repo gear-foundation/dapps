@@ -1,0 +1,149 @@
+use gstd::{msg, prelude::*, ActorId};
+
+use core::ops::AddAssign;
+use gbuiltin_bls381::ark_bls12_381::{Bls12_381, Fr, G1Affine, G2Affine};
+use gbuiltin_bls381::ark_ec::{pairing::Pairing, AffineRepr};
+use gbuiltin_bls381::ark_ff::PrimeField;
+use gbuiltin_bls381::ark_scale;
+use gbuiltin_bls381::ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
+use gbuiltin_bls381::{Request, Response};
+
+type ArkScale<T> = ark_scale::ArkScale<T, { ark_scale::HOST_CALL }>;
+
+#[derive(Debug, Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = sails_rtl::scale_codec)]
+#[scale_info(crate = sails_rtl::scale_info)]
+pub struct VerifyingKeyBytes {
+    pub alpha_g1_beta_g2: Vec<u8>,
+    pub gamma_g2_neg_pc: Vec<u8>,
+    pub delta_g2_neg_pc: Vec<u8>,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = sails_rtl::scale_codec)]
+#[scale_info(crate = sails_rtl::scale_info)]
+pub struct ProofBytes {
+    pub a: Vec<u8>,
+    pub b: Vec<u8>,
+    pub c: Vec<u8>,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = sails_rtl::scale_codec)]
+#[scale_info(crate = sails_rtl::scale_info)]
+pub struct PublicInput {
+    pub out: u8,
+    pub hit: u8,
+    pub hash: Vec<u8>,
+}
+
+pub async fn verify(
+    vk: VerifyingKeyBytes,
+    proof: ProofBytes,
+    prepared_inputs_bytes: Vec<u8>,
+    builtin_bls381_address: ActorId,
+) {
+    let alpha_g1_beta_g2 = <ArkScale<<Bls12_381 as Pairing>::TargetField> as Decode>::decode(
+        &mut vk.alpha_g1_beta_g2.as_slice(),
+    )
+    .unwrap();
+
+    let gamma_g2_neg_pc =
+        G2Affine::deserialize_uncompressed_unchecked(&*vk.gamma_g2_neg_pc).unwrap();
+
+    let delta_g2_neg_pc =
+        G2Affine::deserialize_uncompressed_unchecked(&*vk.delta_g2_neg_pc).unwrap();
+
+    let a = G1Affine::deserialize_uncompressed_unchecked(&*proof.a).unwrap();
+
+    let b = G2Affine::deserialize_uncompressed_unchecked(&*proof.b).unwrap();
+
+    let c = G1Affine::deserialize_uncompressed_unchecked(&*proof.c).unwrap();
+
+    let prepared_inputs =
+        G1Affine::deserialize_uncompressed_unchecked(&*prepared_inputs_bytes).unwrap();
+
+    let a: ArkScale<Vec<G1Affine>> = vec![a, prepared_inputs, c].into();
+    let b: ArkScale<Vec<G2Affine>> = vec![b, gamma_g2_neg_pc, delta_g2_neg_pc].into();
+
+    let miller_out =
+        calculate_multi_miller_loop(a.encode(), b.encode(), builtin_bls381_address).await;
+
+    let exp = calculate_exponentiation(miller_out, builtin_bls381_address).await;
+
+    assert_eq!(exp, alpha_g1_beta_g2);
+}
+
+async fn calculate_multi_miller_loop(
+    g1: Vec<u8>,
+    g2: Vec<u8>,
+    builtin_bls381_address: ActorId,
+) -> Vec<u8> {
+    let request = Request::MultiMillerLoop { a: g1, b: g2 }.encode();
+
+    let reply = msg::send_bytes_for_reply(builtin_bls381_address, &request, 0, 0)
+        .expect("Failed to send message")
+        .await
+        .expect("Received error reply");
+
+    let response = Response::decode(&mut reply.as_slice()).unwrap();
+    let miller_out = match response {
+        Response::MultiMillerLoop(v) => v,
+        _ => unreachable!(),
+    };
+    miller_out
+}
+
+async fn calculate_exponentiation(
+    f: Vec<u8>,
+    builtin_bls381_address: ActorId,
+) -> ArkScale<<Bls12_381 as Pairing>::TargetField> {
+    let request = Request::FinalExponentiation { f }.encode();
+
+    let reply = msg::send_bytes_for_reply(builtin_bls381_address, &request, 0, 0)
+        .expect("Failed to send message")
+        .await
+        .expect("Received error reply");
+    let response = Response::decode(&mut reply.as_slice()).unwrap();
+    let exp = match response {
+        Response::FinalExponentiation(v) => {
+            ArkScale::<<Bls12_381 as Pairing>::TargetField>::decode(&mut v.as_slice()).unwrap()
+        }
+        _ => unreachable!(),
+    };
+    exp
+}
+
+pub fn get_prepared_inputs_bytes(public_input: PublicInput, ic: [Vec<u8>; 4]) -> Vec<u8> {
+    let public_inputs: Vec<Fr> = vec![
+        Fr::from(public_input.out),
+        Fr::from(public_input.hit),
+        Fr::deserialize_uncompressed_unchecked(&*public_input.hash).unwrap(),
+    ];
+
+    let gamma_abc_g1: Vec<G1Affine> = vec![
+        G1Affine::deserialize_uncompressed_unchecked(&*ic[0]).unwrap(),
+        G1Affine::deserialize_uncompressed_unchecked(&*ic[1]).unwrap(),
+        G1Affine::deserialize_uncompressed_unchecked(&*ic[2]).unwrap(),
+        G1Affine::deserialize_uncompressed_unchecked(&*ic[3]).unwrap(),
+    ];
+
+    prepare_inputs(&gamma_abc_g1, &public_inputs)
+}
+
+fn prepare_inputs(gamma_abc_g1: &Vec<G1Affine>, public_inputs: &Vec<Fr>) -> Vec<u8> {
+    if (public_inputs.len() + 1) != gamma_abc_g1.len() {
+        panic!("prepare_inputs");
+    }
+
+    let mut g_ic = gamma_abc_g1[0].into_group();
+    for (i, b) in public_inputs.iter().zip(gamma_abc_g1.iter().skip(1)) {
+        g_ic.add_assign(&b.mul_bigint(i.into_bigint()));
+    }
+
+    let mut prepared_inputs_bytes = Vec::new();
+    g_ic.serialize_uncompressed(&mut prepared_inputs_bytes)
+        .unwrap();
+
+    prepared_inputs_bytes
+}
