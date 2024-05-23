@@ -1,6 +1,6 @@
-use zk_battleship::Program;
 use sails_idl_gen::program;
 use std::{env, fs::File, path::PathBuf};
+use zk_battleship::Program;
 
 fn main() {
     gear_wasm_builder::build();

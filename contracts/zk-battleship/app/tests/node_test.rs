@@ -1,6 +1,6 @@
-use zk_battleship::services::single::{Entity, Status};
 use gclient::{EventProcessor, GearApi, Result};
 use gstd::{ActorId, Encode};
+use zk_battleship::services::single::{Entity, Status};
 
 mod utils_gclient;
 use utils_gclient::*;
