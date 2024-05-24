@@ -6,7 +6,7 @@ import { ROUTES } from '@/app/consts';
 import { Loader } from '@/components';
 
 const routes = [
-  { path: ROUTES.HOME, Page: lazy(() => import('./login')) },
+  { path: ROUTES.HOME, Page: lazy(() => import('./home')) },
   { path: ROUTES.GAME, Page: lazy(() => import('./game')), isPrivate: true },
   { path: ROUTES.NOTFOUND, Page: lazy(() => import('./not-found')) },
 ];
