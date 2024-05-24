@@ -10116,6 +10116,62 @@ __metadata:
   languageName: node
   linkType: hard
 
+"battleship-zk@workspace:apps/battleship-zk":
+  version: 0.0.0-use.local
+  resolution: "battleship-zk@workspace:apps/battleship-zk"
+  dependencies:
+    "@dapps-frontend/error-tracking": "workspace:*"
+    "@dapps-frontend/ez-transactions": "workspace:*"
+    "@dapps-frontend/hooks": "workspace:*"
+    "@dapps-frontend/ui": "workspace:*"
+    "@gear-js/api": "npm:0.36.5"
+    "@gear-js/react-hooks": "npm:0.10.6"
+    "@gear-js/ui": "npm:0.5.21"
+    "@gear-js/vara-ui": "npm:0.0.6"
+    "@mantine/form": "npm:6.0.15"
+    "@polkadot/api": "npm:10.11.2"
+    "@polkadot/extension-dapp": "npm:0.46.5"
+    "@polkadot/react-identicon": "npm:3.1.4"
+    "@polkadot/types": "npm:10.11.2"
+    "@polkadot/util": "npm:12.3.2"
+    "@radix-ui/react-dropdown-menu": "npm:2.0.5"
+    "@radix-ui/react-scroll-area": "npm:1.0.4"
+    "@radix-ui/react-select": "npm:1.2.2"
+    "@tanstack/react-table": "npm:8.9.3"
+    "@types/node": "npm:18.16.19"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
+    "@vitejs/plugin-react-swc": "npm:3.3.2"
+    autoprefixer: "npm:10.4.14"
+    buffer: "npm:6.0.3"
+    class-variance-authority: "npm:0.6.1"
+    clsx: "npm:1.2.1"
+    eslint: "npm:8.43.0"
+    eslint-config-react-app: "npm:7.0.1"
+    framer-motion: "npm:10.12.17"
+    jotai: "npm:2.2.1"
+    lucide-react: "npm:0.259.0"
+    node-stdlib-browser: "npm:1.2.0"
+    postcss: "npm:8.4.24"
+    prettier: "npm:2.8.8"
+    react: "npm:18.2.0"
+    react-countdown: "npm:2.3.5"
+    react-dom: "npm:18.2.0"
+    react-hook-form: "npm:7.48.2"
+    react-router-dom: "npm:6.10.0"
+    react-transition-group: "npm:4.4.5"
+    sass: "npm:1.62.0"
+    tailwindcss: "npm:3.3.2"
+    typescript: "npm:4.9.5"
+    vite: "npm:4.3.9"
+    vite-plugin-checker: "npm:0.6.4"
+    vite-plugin-node-stdlib-browser: "npm:0.2.1"
+    vite-plugin-svgr: "npm:3.2.0"
+    vite-plugin-top-level-await: "npm:1.3.1"
+    vite-plugin-wasm: "npm:3.2.2"
+  languageName: unknown
+  linkType: soft
+
 "battleship@workspace:apps/battleship":
   version: 0.0.0-use.local
   resolution: "battleship@workspace:apps/battleship"

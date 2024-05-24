@@ -19,3 +19,5 @@ export interface IGameInstance {
 }
 
 export type IGameResultStatus = 'Player' | 'Bot' | 'Draw';
+
+export type GameMode = 'single' | 'find' | 'create' | null;

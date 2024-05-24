@@ -1,0 +1,52 @@
+@use '@/assets/styles/utils' as *;
+
+
+.button.button {
+  width: 180px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 26px;
+  letter-spacing: 0.03rem;
+
+  &:last-child {
+    color: #ffffff;
+    background: #1a1a1d;
+  }
+
+  span {
+    @include textOverflow;
+  }
+}
+
+.buttons {
+  display: flex;
+  align-items: flex-end;
+  margin: 0px auto;
+  gap: 16px;
+}
+
+.input label {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  width: 100%;
+}
+
+.input {
+  position: relative;
+  margin-bottom: 10px 
+}
+
+.fieldError {
+  color: red;
+  font-size: 14px;
+}
+

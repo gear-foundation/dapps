@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
 import battleshipImage from '@/assets/images/illustration-battleship.png';
-import { Button, buttonVariants } from '@/components/ui/button/button';
+import { Button } from '@gear-js/vara-ui';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
@@ -11,11 +11,13 @@ import { WalletConnect } from '@/features/wallet';
 import styles from './login.module.scss';
 import { useGaslessTransactions, EzTransactionsSwitch, useSignlessTransactions } from '@dapps-frontend/ez-transactions';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
+import { useGameMode } from '@/features/game/hooks';
 
 export default function Login() {
   const navigate = useNavigate();
   const { account } = useAccount();
   const alert = useAlert();
+  const { resetGameMode } = useGameMode();
 
   const signless = useSignlessTransactions();
   const gasless = useGaslessTransactions();
@@ -33,6 +35,10 @@ export default function Login() {
       .requestVoucher(account.address)
       .then(() => navigate('/game'))
       .catch(({ message }: Error) => alert.error(message));
+  };
+
+  const onClickBack = () => {
+    resetGameMode();
   };
 
   return (
@@ -54,13 +60,16 @@ export default function Login() {
           </div>
         </div>
         <div className={styles.controlsWrapper}>
-          <Button
-            className={(buttonVariants(), styles.startGameButton)}
-            onClick={account ? onClickStartGame : openWallet}>
+          <Button className={styles.startGameButton} onClick={account ? onClickStartGame : openWallet}>
             {account ? 'Start the Game' : 'Connect wallet'}
           </Button>
+          {account && (
+            <Button className={styles.startGameButton} color="grey" onClick={onClickBack}>
+              Back
+            </Button>
+          )}
 
-          <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS}/>
+          <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} />
         </div>
       </div>
 
