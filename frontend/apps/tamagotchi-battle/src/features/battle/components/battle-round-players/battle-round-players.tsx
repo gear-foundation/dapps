@@ -79,6 +79,15 @@ export const BattleRoundPlayers = () => {
   const cnWrapper = 'relative flex flex-col';
   const cnT = 'm-auto h-full w-full max-w-full';
 
+  console.log('----------PLAYERS----------');
+  console.log('battle');
+  console.log(battle);
+  console.log('currentPairIdx');
+  console.log(currentPairIdx);
+  console.log('battle?.pairs[currentPairIdx]');
+  console.log(battle?.pairs[currentPairIdx]);
+  console.log('---------------------------');
+
   return (
     <>
       {battle && (
