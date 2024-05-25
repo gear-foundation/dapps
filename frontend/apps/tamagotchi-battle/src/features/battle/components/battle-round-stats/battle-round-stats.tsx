@@ -7,6 +7,15 @@ import { cn } from 'app/utils';
 
 export const BattleRoundStats = () => {
   const { rivals, currentPlayer, battle, currentPairIdx } = useBattle();
+
+  console.log('----------STATS----------');
+  console.log('battle');
+  console.log(battle);
+  console.log('currentPairIdx', currentPairIdx);
+  console.log('battle?.pairs[currentPairIdx]', battle?.pairs[currentPairIdx]);
+  console.log('state ---', battle?.state);
+  console.log('---------------------------');
+
   return (
     <div className="flex gap-10 justify-between items-center">
       {battle && (

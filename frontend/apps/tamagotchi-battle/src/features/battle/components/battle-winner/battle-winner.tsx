@@ -39,6 +39,7 @@ export const BattleWinner = ({ battle }: { battle: BattleStateResponse }) => {
           </div>
         </section>
       )}
+      {!winner && 'No winner'}
     </>
   );
 };
