@@ -17,9 +17,7 @@ export const Battle = () => {
   );
 
   const gameIsOver = battle?.state === 'GameIsOver' && battle?.currentWinner;
-  console.log('BBBB');
-  console.log(battle);
-  console.log(!!gameIsOver);
+
   return (
     <>
       {battle?.state === 'Registration' && (isAdmin ? <BattleWaitAdmin /> : <BattleWaitRegistration />)}
