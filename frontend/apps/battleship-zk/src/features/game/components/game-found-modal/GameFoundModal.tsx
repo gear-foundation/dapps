@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Modal } from '@gear-js/vara-ui';
+// import { Modal } from '@gear-js/vara-ui';
+import { Modal } from '@/components/ui/modal';
 import { ReactComponent as VaraSVG } from '@/assets/images/icons/vara-coin.svg';
 import { ReactComponent as TVaraSVG } from '@/assets/images/icons/tvara-coin.svg';
 import { useAccountDeriveBalancesAll, useApi, useBalanceFormat } from '@gear-js/react-hooks';
@@ -9,6 +10,8 @@ import { isNotEmpty, useForm } from '@mantine/form';
 import { ReactComponent as UserSVG } from '@/assets/images/icons/ic-user-small-24.svg';
 import styles from './GameFoundModal.module.scss';
 import { GameDetails } from '@/components/layout/game-details';
+import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 
 type Props = {
   entryFee: number | string;
@@ -43,15 +46,6 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
       key: '1',
     },
     {
-      name: 'Players already joined the game',
-      value: (
-        <>
-          <UserSVG /> {players} / 4
-        </>
-      ),
-      key: '2',
-    },
-    {
       name: 'Required gas amount ',
       value: (
         <>
@@ -80,25 +74,16 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
   };
 
   return (
-    <Modal heading="The game has been found" close={onClose}>
+    <Modal heading="The game has been found" className={{ wrapper: styles.modalWrapper }} onClose={onClose}>
       <div className={styles.container}>
-        <p>
+        <p className={styles.mainText}>
           To proceed, review the parameters of the gaming session and click the “Join” button. If applicable, you will
           need to pay the entry fee and required amount of gas immediately after clicking the “Join” button. After the
           end of the game, any unused gas will be refunded.
         </p>
         <GameDetails items={items} />
+        <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} />
         <form className={styles.form} onSubmit={onJoinSubmit(handleJoinSession)}>
-          <div className={styles.input}>
-            <TextField
-              theme="dark"
-              label="Enter your program address:"
-              placeholder="0x25c..."
-              variant="active"
-              {...getJoinInputProps('strategyId')}
-            />
-            <span className={styles.fieldError}>{joinErrors.strategyId}</span>
-          </div>
           <div className={styles.input}>
             <TextField
               theme="dark"
@@ -111,8 +96,8 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
             <span className={styles.fieldError}>{joinErrors.name}</span>
           </div>
           <div className={styles.inputs}>
-            <Button text="Cancel" color="dark" disabled={isLoading} className={styles.button} onClick={onClose} />
             <Button type="submit" text="Join" disabled={isLoading} className={styles.button} />
+            <Button text="Cancel" color="grey" disabled={isLoading} className={styles.button} onClick={onClose} />
           </div>
         </form>
       </div>

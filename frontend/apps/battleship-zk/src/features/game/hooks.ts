@@ -1,10 +1,9 @@
 import { useEffect, useMemo } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { useLocation } from 'react-router-dom';
+import { NavigationType, useLocation, useNavigationType } from 'react-router-dom';
 import { useProgramMetadata } from '@dapps-frontend/hooks';
 import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
-
 import meta from './assets/meta/battleship.meta.txt';
 import { IGameInstance } from './types';
 import { gameAtom, gameModeAtom, isActiveGameAtom, pendingAtom } from './store';

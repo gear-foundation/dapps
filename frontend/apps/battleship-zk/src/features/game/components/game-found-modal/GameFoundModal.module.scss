@@ -16,10 +16,18 @@
 
 .inputs {
   display: flex;
-  align-items: flex-end;
-  gap: 16px;
+  flex-direction: column;
+  gap: 24px;
 }
 
 .button {
   width: 100%;
+}
+
+.modalWrapper {
+  background: #fff;
+}
+
+.mainText {
+  opacity: 0.7;
 }
