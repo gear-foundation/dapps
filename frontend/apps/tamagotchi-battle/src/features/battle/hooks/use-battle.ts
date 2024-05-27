@@ -99,7 +99,7 @@ export function useInitBattleData() {
         if (
           decodedPayload &&
           typeof decodedPayload === 'object' &&
-          Object.keys(decodedPayload).includes('roundResult')
+          'roundResult' in decodedPayload
         ) {
           const notification = Object.values(decodedPayload)[0] as RoundDamageType;
 
