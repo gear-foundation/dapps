@@ -1,7 +1,7 @@
 import { Button } from '@gear-js/vara-ui';
 import { decodeAddress } from '@gear-js/api';
-import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
-import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
+import { ReactComponent as VaraSVG } from '@/assets/images/icons/vara-coin.svg';
+import { ReactComponent as TVaraSVG } from '@/assets/images/icons/tvara-coin.svg';
 import { useAtom } from 'jotai';
 import { isLoadingAtom } from '@/features/game/store';
 import { useAccount, useAccountDeriveBalancesAll, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
@@ -9,6 +9,11 @@ import { TextField } from '@/components/layout/text-field';
 import { isNotEmpty, useForm } from '@mantine/form';
 // import { useSyndoteMessage } from 'hooks/metadata';
 import styles from './CreateGameForm.module.scss';
+import { Heading } from '@/components/ui/heading';
+import { Text } from '@/components/ui/text';
+import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
+import { GameDetails } from '@/components/layout/game-details';
 
 export interface ContractFormValues {
   [key: string]: string;
@@ -35,6 +40,7 @@ function CreateGameForm({ onCancel }: Props) {
   // const { isMeta, sendMessage: sendNewSessionMessage } = useSyndoteMessage();
   const [isLoading, setIsLoading] = useAtom(isLoadingAtom);
   const existentialDeposit = Number(getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toFixed());
+  const VaraSvg = balance?.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />;
 
   const createForm = useForm({
     initialValues: {
@@ -48,7 +54,6 @@ function CreateGameForm({ onCancel }: Props) {
           ? `value must be more than ${existentialDeposit + 5} or 0`
           : null,
       name: isNotEmpty(`Name shouldn't be empty`),
-      strategyId: (val) => !val.trim().startsWith('0x') && 'Incorrect program address',
     },
   });
 
@@ -62,7 +67,6 @@ function CreateGameForm({ onCancel }: Props) {
     const payload = {
       CreateGameSession: {
         name: values.name,
-        strategyId: decodeAddress(values.strategyId),
         entryFee: Number(values.fee) ? values.fee * Math.pow(10, 12) : null,
       },
     };
@@ -81,53 +85,66 @@ function CreateGameForm({ onCancel }: Props) {
     // });
   };
 
+  const items = [
+    {
+      name: 'Required gas amount ',
+      value: (
+        <>
+          {VaraSvg} {1.21} VARA
+        </>
+      ),
+      key: '3',
+    },
+  ];
+
   return (
-    <form className={styles.form} onSubmit={onCreateSubmit(handleCreateSession)}>
-      <div className={styles.input}>
-        <TextField
-          theme="dark"
-          label="Enter your program address:"
-          placeholder="0x25c..."
-          variant="active"
-          disabled={isLoading}
-          {...getCreateInputProps('strategyId')}
-        />
-        <span className={styles.fieldError}>{createErrors.strategyId}</span>
+    <div className={styles.formWrapper}>
+      <div className={styles.header}>
+        <Heading className={styles.mainHeading}>Create a private game</Heading>
+        <div>
+          <Text className={styles.mainText}>
+            Set the game parameters and click “Сreate game”. To have players join you, you need to share your address.
+          </Text>
+        </div>
       </div>
-      <div className={styles.input}>
-        <TextField
-          label="Entry fee"
-          variant="active"
-          type="number"
-          icon={balance?.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />}
-          disabled={isLoading}
-          {...getCreateInputProps('fee')}
-        />
-        <span className={styles.fieldError}>{createErrors.fee}</span>
-      </div>
-      <div className={styles.input}>
-        <TextField
-          label="Enter your name"
-          variant="active"
-          placeholder="Your name"
-          maxLength={20}
-          disabled={isLoading}
-          {...getCreateInputProps('name')}
-        />
-        <span className={styles.fieldError}>{createErrors.name}</span>
-      </div>
-      <div className={styles.buttons}>
-        <Button type="submit" text="Continue" disabled={isLoading} className={styles.button} />
-        <Button
-          type="submit"
-          text="Cancel"
-          color="dark"
-          disabled={isLoading}
-          className={styles.button}
-          onClick={onCancel}
-        />
-      </div>
-    </form>
+      <form className={styles.form} onSubmit={onCreateSubmit(handleCreateSession)}>
+        <div className={styles.input}>
+          <TextField
+            label="Entry fee"
+            variant="active"
+            type="number"
+            icon={balance?.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />}
+            disabled={isLoading}
+            {...getCreateInputProps('fee')}
+          />
+          <span className={styles.fieldError}>{createErrors.fee}</span>
+        </div>
+        <div className={styles.input}>
+          <TextField
+            label="Enter your name"
+            variant="active"
+            placeholder="Your name"
+            maxLength={20}
+            disabled={isLoading}
+            {...getCreateInputProps('name')}
+          />
+          <span className={styles.fieldError}>{createErrors.name}</span>
+        </div>
+        <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} />
+        <GameDetails items={items} />
+        <div className={styles.buttons}>
+          <Button type="submit" text="Create game" disabled={isLoading} className={styles.button} />
+          <Button
+            type="submit"
+            text="Cancel"
+            color="grey"
+            disabled={isLoading}
+            className={styles.button}
+            onClick={onCancel}
+          />
+        </div>
+      </form>
+    </div>
   );
 }
 

@@ -5,13 +5,18 @@ import { variantsOverlay, variantsPanel } from '@/components/ui/modal/Modal.vari
 import { Button } from '../button';
 
 import styles from './Modal.module.scss';
+import clsx from 'clsx';
 
 type Props = React.PropsWithChildren & {
   heading: string;
+  className?: {
+    modal?: string;
+    wrapper?: string;
+  };
   onClose: () => void;
 };
 
-export function Modal({ heading, children, onClose }: Props) {
+export function Modal({ heading, children, className, onClose }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
 
   const disableScroll = () => document.body.classList.add('modal-open');
@@ -48,8 +53,13 @@ export function Modal({ heading, children, onClose }: Props) {
       variants={variantsOverlay}
       ref={ref}
       onClick={handleClick}
-      className={styles.modal}>
-      <motion.div initial="enter" animate="center" exit="exit" variants={variantsPanel} className={styles.wrapper}>
+      className={clsx(styles.modal, className?.modal)}>
+      <motion.div
+        initial="enter"
+        animate="center"
+        exit="exit"
+        variants={variantsPanel}
+        className={clsx(styles.wrapper, className?.wrapper)}>
         <div className={styles.header}>
           <h2 className={styles.title}>{heading}</h2>
 

@@ -1,18 +1,18 @@
 @use '@/assets/styles/utils' as *;
 
+.formWrapper {
+  padding: 0 16px;
+  flex: 1;
+}
+
 .button.button {
-  width: 180px;
+  width: 100%;
   padding-top: 12px;
   padding-bottom: 12px;
   font-size: 16px;
   font-weight: 700;
   line-height: 26px;
   letter-spacing: 0.03rem;
-
-  &:last-child {
-    color: #ffffff;
-    background: #1a1a1d;
-  }
 
   span {
     @include textOverflow;
@@ -21,8 +21,7 @@
 
 .buttons {
   display: flex;
-  align-items: flex-end;
-  margin: 0px auto;
+  flex-direction: column;
   gap: 16px;
 }
 
@@ -35,8 +34,9 @@
 .form {
   display: flex;
   flex-direction: column;
-  gap: 26px;
+  gap: 12px;
   width: 100%;
+  margin-top: 32px;
 }
 
 .input {
@@ -49,3 +49,23 @@
   font-size: 14px;
 }
 
+.header {
+  @include gap(16px);
+  text-align: center;
+  padding: 0 16px;
+}
+
+.mainHeading {
+  font-size: 34px;
+  font-weight: 600;
+  line-height: 42px;
+}
+
+.mainText {
+  color: #555756;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0.25px;
+  text-align: center;
+}

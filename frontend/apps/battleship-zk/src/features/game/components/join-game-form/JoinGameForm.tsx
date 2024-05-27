@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@gear-js/vara-ui';
-import { useSetAtom, useAtom } from 'jotai';
+import { useAtom } from 'jotai';
 import { decodeAddress } from '@gear-js/api';
 import { isLoadingAtom } from '@/features/game/store';
 import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
@@ -11,8 +11,10 @@ import { HexString } from '@gear-js/api';
 import { GameFoundModal, JoinModalFormValues } from '../game-found-modal';
 import { ADDRESS } from '@/features/game/consts';
 import { TextModal } from '@/components/layout/text-modal';
+import { Text } from '@/components/ui/text';
 import styles from './JoinGameForm.module.scss';
 import { useProgramMetadata } from '@dapps-frontend/hooks';
+import { Heading } from '@/components/ui/heading';
 
 export interface ContractFormValues {
   [key: string]: string;
@@ -36,7 +38,7 @@ function JoinGameForm({ onCancel }: Props) {
   // const setCurrentStrategyId = useSetAtom(CURRENT_STRATEGY_ID_ATOM);
   // const setPlayerName = useSetAtom(PLAYER_NAME_ATOM);
   const [isLoading, setIsLoading] = useAtom(isLoadingAtom);
-  const [isJoinSessionModalShown, setIsJoinSessionModalShown] = useState<boolean>(false);
+  const [isJoinSessionModalShown, setIsJoinSessionModalShown] = useState<boolean>(true);
   const [foundGame, setFoundGame] = useState<HexString | undefined>(undefined);
   const [gameNotFoundModal, setGameNotFoundModal] = useState<boolean>(false);
 
@@ -109,7 +111,13 @@ function JoinGameForm({ onCancel }: Props) {
   };
 
   return (
-    <>
+    <div className={styles.formWrapper}>
+      <div className={styles.header}>
+        <Heading className={styles.mainHeading}>Find a private game</Heading>
+        <div>
+          <Text className={styles.mainText}>To find the game, you need to enter the administrator's address.</Text>
+        </div>
+      </div>
       <form className={styles.form} onSubmit={onJoinSubmit(handleOpenJoinSessionModal)}>
         <div className={styles.input}>
           <TextField
@@ -122,11 +130,11 @@ function JoinGameForm({ onCancel }: Props) {
           <span className={styles.fieldError}>{joinErrors.address}</span>
         </div>
         <div className={styles.buttons}>
-          <Button type="submit" text="Continue" disabled={isLoading} className={styles.button} />
+          <Button type="submit" text="Find game" disabled={isLoading} className={styles.button} />
           <Button
             type="submit"
-            text="Cancel"
-            color="dark"
+            text="Back"
+            color="grey"
             disabled={isLoading}
             className={styles.button}
             onClick={onCancel}
@@ -150,7 +158,7 @@ function JoinGameForm({ onCancel }: Props) {
           onClose={handleCloseNotFoundModal}
         />
       )}
-    </>
+    </div>
   );
 }
 
