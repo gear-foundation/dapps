@@ -90,17 +90,13 @@ export function useInitBattleData() {
           return;
         }
 
-        if (!metadata.types.handle.output) {
+        if (metadata.types.handle.output === null) {
           return;
         }
 
         const decodedPayload = metadata.createType(metadata.types.handle.output, payload).toJSON();
 
-        if (
-          decodedPayload &&
-          typeof decodedPayload === 'object' &&
-          Object.keys(decodedPayload).includes('roundResult')
-        ) {
+        if (decodedPayload && typeof decodedPayload === 'object' && 'roundResult' in decodedPayload) {
           const notification = Object.values(decodedPayload)[0] as RoundDamageType;
 
           if (currentPairIdx === +notification[0]) {
