@@ -121,6 +121,8 @@ export function useInitBattleData() {
     if (state) {
       if (prevBattleState.current === 'WaitNextRound' && state.state === 'GameIsOn') setCurrentPairIdx(0);
 
+      if (!state.pairs[currentPairIdx]) setCurrentPairIdx(0);
+
       if (prevBattleState.current === 'GameIsOver' && state.state === 'Registration') navigate('/');
 
       if (prevBattleState.current !== state.state) prevBattleState.current = state.state;
