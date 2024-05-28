@@ -1,23 +1,15 @@
 use super::{
-    utils::{Result, *},
+    utils::{Result, Status, *},
     Event,
 };
 use crate::single::{funcs::get_player, ActionsForSession, Entity, SessionMap};
 use gstd::{exec, msg, prelude::*, ActorId};
 
 pub fn create_game(
-    session_map: &mut SessionMap,
     games: &mut MultipleGamesMap,
     game_pair: &mut GamePairsMap,
-    source: ActorId,
-    session_for_account: Option<ActorId>,
+    player: ActorId,
 ) -> Result<ActorId> {
-    let player = get_player(
-        session_map,
-        source,
-        &session_for_account,
-        ActionsForSession::StartMultipleGame,
-    );
     if game_pair.contains_key(&player) {
         return Err(Error::SeveralGames);
     }
@@ -27,7 +19,7 @@ pub fn create_game(
         second_player_board: None,
         participants: (player, ActorId::zero()),
         start_time: None,
-        turn: player,
+        status: Status::Registration,
         end_time: None,
         result: None,
     };
@@ -40,12 +32,11 @@ pub fn cancel_game(
     session_map: &mut SessionMap,
     games: &mut MultipleGamesMap,
     game_pair: &mut GamePairsMap,
-    source: ActorId,
     session_for_account: Option<ActorId>,
 ) -> Result<ActorId> {
     let player = get_player(
         session_map,
-        source,
+        msg::source(),
         &session_for_account,
         ActionsForSession::StartMultipleGame,
     );
@@ -59,19 +50,11 @@ pub fn cancel_game(
 }
 
 pub fn join_game(
-    session_map: &mut SessionMap,
     games: &mut MultipleGamesMap,
     game_pair: &mut GamePairsMap,
-    source: ActorId,
+    player: ActorId,
     game_id: ActorId,
-    session_for_account: Option<ActorId>,
 ) -> Result<ActorId> {
-    let player = get_player(
-        session_map,
-        source,
-        &session_for_account,
-        ActionsForSession::StartMultipleGame,
-    );
     if game_pair.contains_key(&player) {
         return Err(Error::SeveralGames);
     }
@@ -86,21 +69,12 @@ pub fn join_game(
     Ok(player)
 }
 
-pub async fn make_move(
-    session_map: &SessionMap,
+pub fn make_move(
     games: &mut MultipleGamesMap,
-    game_pair: &mut GamePairsMap,
-    source: ActorId,
+    player: ActorId,
     game_id: ActorId,
     step: u8,
-    session_for_account: Option<ActorId>,
 ) -> Result<Event> {
-    let player = get_player(
-        session_map,
-        source,
-        &session_for_account,
-        ActionsForSession::StartSingleGame,
-    );
     if step > 24 {
         return Err(Error::WrongStep);
     }
@@ -109,7 +83,7 @@ pub async fn make_move(
     if game.start_time.is_none() {
         return Err(Error::MissingSecondPlayer);
     }
-    if game.turn != player {
+    if game.status == Status::Turn(player) {
         return Err(Error::AccessDenied);
     }
     if game.result.is_some() {
@@ -117,21 +91,43 @@ pub async fn make_move(
     }
     let opponent = game.get_opponent(&player);
 
-    let reply: Сonfirmation = msg::send_for_reply_as(opponent, Shot { step }, 0, 0)
-        .expect("Unable to send message to `opponent`")
-        .await
-        .expect("Unable to decode reply payload from `opponent`");
+    msg::send(opponent, Event::MoveMade { step }, 0).expect("Error send message");
+    game.status = Status::PendingVerificationOfTheMove((opponent, step));
+    Ok(Event::MoveMade { step })
+}
 
-    game.shot(&opponent, step, &reply.step_result);
+pub fn check_game(games: &MultipleGamesMap, player: ActorId, hit: u8) -> Result<()> {
+    let game = games.get(&player).ok_or(Error::NoSuchGame)?;
 
-    if game.check_end_game(&opponent) {
-        game.result = Some(player);
-        game.end_time = Some(exec::block_timestamp());
-        game_pair.remove(&player);
-        game_pair.remove(&opponent);
-        return Ok(Event::EndGame { winner: player });
+    if game.status != Status::PendingVerificationOfTheMove((player, hit)) {
+        return Err(Error::WrongStatus);
     }
-    Ok(Event::MoveMade {
-        step_result: reply.step_result,
+
+    if game.result.is_some() {
+        return Err(Error::GameIsAlreadyOver);
+    }
+    Ok(())
+}
+
+pub fn verified_move(
+    games: &mut MultipleGamesMap,
+    player: ActorId,
+    res: u8,
+    hit: u8,
+) -> Result<Event> {
+    let game = games.get_mut(&player).ok_or(Error::NoSuchGame)?;
+    game.shot(&player, hit, res);
+
+    if game.check_end_game(&player) {
+        let winner = game.get_opponent(&player);
+        game.result = Some(winner);
+        game.end_time = Some(exec::block_timestamp());
+        return Ok(Event::EndGame { winner });
+    }
+    game.status = Status::Turn(player);
+
+    Ok(Event::MoveVerified {
+        step: hit,
+        result: res,
     })
 }

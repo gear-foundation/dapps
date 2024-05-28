@@ -1,5 +1,3 @@
-use gstd::{msg, prelude::*, ActorId};
-
 use core::ops::AddAssign;
 use gbuiltin_bls381::ark_bls12_381::{Bls12_381, Fr, G1Affine, G2Affine};
 use gbuiltin_bls381::ark_ec::{pairing::Pairing, AffineRepr};
@@ -7,6 +5,7 @@ use gbuiltin_bls381::ark_ff::PrimeField;
 use gbuiltin_bls381::ark_scale;
 use gbuiltin_bls381::ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use gbuiltin_bls381::{Request, Response};
+use gstd::{msg, prelude::*, ActorId, Encode};
 
 type ArkScale<T> = ark_scale::ArkScale<T, { ark_scale::HOST_CALL }>;
 
@@ -17,6 +16,7 @@ pub struct VerifyingKeyBytes {
     pub alpha_g1_beta_g2: Vec<u8>,
     pub gamma_g2_neg_pc: Vec<u8>,
     pub delta_g2_neg_pc: Vec<u8>,
+    pub ic: Vec<Vec<u8>>,
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo, Clone)]
@@ -31,14 +31,21 @@ pub struct ProofBytes {
 #[derive(Debug, Encode, Decode, TypeInfo, Clone)]
 #[codec(crate = sails_rtl::scale_codec)]
 #[scale_info(crate = sails_rtl::scale_info)]
-pub struct PublicInput {
+pub struct PublicMoveInput {
     pub out: u8,
     pub hit: u8,
     pub hash: Vec<u8>,
 }
 
+#[derive(Debug, Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = sails_rtl::scale_codec)]
+#[scale_info(crate = sails_rtl::scale_info)]
+pub struct PublicStartInput {
+    pub hash: Vec<u8>,
+}
+
 pub async fn verify(
-    vk: VerifyingKeyBytes,
+    vk: &VerifyingKeyBytes,
     proof: ProofBytes,
     prepared_inputs_bytes: Vec<u8>,
     builtin_bls381_address: ActorId,
@@ -46,22 +53,22 @@ pub async fn verify(
     let alpha_g1_beta_g2 = <ArkScale<<Bls12_381 as Pairing>::TargetField> as Decode>::decode(
         &mut vk.alpha_g1_beta_g2.as_slice(),
     )
-    .unwrap();
+    .expect("Decode error");
 
-    let gamma_g2_neg_pc =
-        G2Affine::deserialize_uncompressed_unchecked(&*vk.gamma_g2_neg_pc).unwrap();
+    let gamma_g2_neg_pc = G2Affine::deserialize_uncompressed_unchecked(&*vk.gamma_g2_neg_pc)
+        .expect("Deserialize error");
 
-    let delta_g2_neg_pc =
-        G2Affine::deserialize_uncompressed_unchecked(&*vk.delta_g2_neg_pc).unwrap();
+    let delta_g2_neg_pc = G2Affine::deserialize_uncompressed_unchecked(&*vk.delta_g2_neg_pc)
+        .expect("Deserialize error");
 
-    let a = G1Affine::deserialize_uncompressed_unchecked(&*proof.a).unwrap();
+    let a = G1Affine::deserialize_uncompressed_unchecked(&*proof.a).expect("Deserialize error");
 
-    let b = G2Affine::deserialize_uncompressed_unchecked(&*proof.b).unwrap();
+    let b = G2Affine::deserialize_uncompressed_unchecked(&*proof.b).expect("Deserialize error");
 
-    let c = G1Affine::deserialize_uncompressed_unchecked(&*proof.c).unwrap();
+    let c = G1Affine::deserialize_uncompressed_unchecked(&*proof.c).expect("Deserialize error");
 
-    let prepared_inputs =
-        G1Affine::deserialize_uncompressed_unchecked(&*prepared_inputs_bytes).unwrap();
+    let prepared_inputs = G1Affine::deserialize_uncompressed_unchecked(&*prepared_inputs_bytes)
+        .expect("Deserialize error");
 
     let a: ArkScale<Vec<G1Affine>> = vec![a, prepared_inputs, c].into();
     let b: ArkScale<Vec<G2Affine>> = vec![b, gamma_g2_neg_pc, delta_g2_neg_pc].into();
@@ -71,7 +78,7 @@ pub async fn verify(
 
     let exp = calculate_exponentiation(miller_out, builtin_bls381_address).await;
 
-    assert_eq!(exp, alpha_g1_beta_g2);
+    assert_eq!(exp, alpha_g1_beta_g2, "Verification failed");
 }
 
 async fn calculate_multi_miller_loop(
@@ -87,11 +94,10 @@ async fn calculate_multi_miller_loop(
         .expect("Received error reply");
 
     let response = Response::decode(&mut reply.as_slice()).unwrap();
-    let miller_out = match response {
+    match response {
         Response::MultiMillerLoop(v) => v,
         _ => unreachable!(),
-    };
-    miller_out
+    }
 }
 
 async fn calculate_exponentiation(
@@ -114,26 +120,44 @@ async fn calculate_exponentiation(
     exp
 }
 
-pub fn get_prepared_inputs_bytes(public_input: PublicInput, ic: [Vec<u8>; 4]) -> Vec<u8> {
+pub fn get_move_prepared_inputs_bytes(public_input: PublicMoveInput, ic: Vec<Vec<u8>>) -> Vec<u8> {
     let public_inputs: Vec<Fr> = vec![
         Fr::from(public_input.out),
         Fr::from(public_input.hit),
-        Fr::deserialize_uncompressed_unchecked(&*public_input.hash).unwrap(),
+        Fr::deserialize_uncompressed_unchecked(&*public_input.hash).expect("Deserialize error"),
     ];
 
-    let gamma_abc_g1: Vec<G1Affine> = vec![
-        G1Affine::deserialize_uncompressed_unchecked(&*ic[0]).unwrap(),
-        G1Affine::deserialize_uncompressed_unchecked(&*ic[1]).unwrap(),
-        G1Affine::deserialize_uncompressed_unchecked(&*ic[2]).unwrap(),
-        G1Affine::deserialize_uncompressed_unchecked(&*ic[3]).unwrap(),
-    ];
+    let gamma_abc_g1: Vec<G1Affine> = ic
+        .into_iter()
+        .map(|ic_element| {
+            G1Affine::deserialize_uncompressed_unchecked(&*ic_element).expect("Deserialize error")
+        })
+        .collect();
 
     prepare_inputs(&gamma_abc_g1, &public_inputs)
 }
 
-fn prepare_inputs(gamma_abc_g1: &Vec<G1Affine>, public_inputs: &Vec<Fr>) -> Vec<u8> {
+pub fn get_start_prepared_inputs_bytes(
+    public_input: PublicStartInput,
+    ic: Vec<Vec<u8>>,
+) -> Vec<u8> {
+    let public_inputs: Vec<Fr> = vec![
+        Fr::deserialize_uncompressed_unchecked(&*public_input.hash).expect("Deserialize error")
+    ];
+
+    let gamma_abc_g1: Vec<G1Affine> = ic
+        .into_iter()
+        .map(|ic_element| {
+            G1Affine::deserialize_uncompressed_unchecked(&*ic_element).expect("Deserialize error")
+        })
+        .collect();
+
+    prepare_inputs(&gamma_abc_g1, &public_inputs)
+}
+
+fn prepare_inputs(gamma_abc_g1: &[G1Affine], public_inputs: &[Fr]) -> Vec<u8> {
     if (public_inputs.len() + 1) != gamma_abc_g1.len() {
-        panic!("prepare_inputs");
+        panic!("Wrong public inputs or IC length");
     }
 
     let mut g_ic = gamma_abc_g1[0].into_group();
@@ -143,7 +167,7 @@ fn prepare_inputs(gamma_abc_g1: &Vec<G1Affine>, public_inputs: &Vec<Fr>) -> Vec<
 
     let mut prepared_inputs_bytes = Vec::new();
     g_ic.serialize_uncompressed(&mut prepared_inputs_bytes)
-        .unwrap();
+        .expect("Deserialize error");
 
     prepared_inputs_bytes
 }

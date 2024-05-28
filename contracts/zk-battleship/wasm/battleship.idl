@@ -112,6 +112,7 @@ service Multiple {
 
 service Single {
   ChangeAdmin : (new_admin: ActorId) -> null;
+  ChangeBuiltinAddress : (new_builtin_address: ActorId) -> null;
   CreateSession : (key: ActorId, duration: u64, allowed_actions: vec ActionsForSession) -> null;
   DeleteGame : (player_address: ActorId) -> null;
   DeleteSession : () -> null;
@@ -119,8 +120,9 @@ service Single {
   StartSingleGame : (session_for_account: opt ActorId) -> null;
   VerifyMove : (vk: VerifyingKeyBytes, proof: ProofBytes, public_input: PublicInput, ic: [vec u8, 4], session_for_account: opt ActorId) -> null;
   query Admin : () -> ActorId;
+  query Builtin : () -> ActorId;
   query Game : (player_id: ActorId) -> opt SingleGame;
-  query GameResult : (player_id: ActorId) -> opt BattleshipParticipants;
+  query GameResult : (player_id: ActorId) -> opt opt BattleshipParticipants;
   query GameStatus : (player_id: ActorId) -> opt Status;
   query Games : () -> vec struct { ActorId, SingleGameState };
   query StartTime : (player_id: ActorId) -> opt u64;

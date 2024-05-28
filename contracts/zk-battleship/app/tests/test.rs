@@ -1,6 +1,6 @@
+use battleship::services::single::{SingleGame, StepResult};
 use gstd::{prelude::*, ActorId};
 use gtest::{Log, Program, System};
-use zk_battleship::services::single::{SingleGame, StepResult};
 
 const USERS: &[u64] = &[3, 4, 5];
 

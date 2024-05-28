@@ -15,7 +15,7 @@ pub enum Error {
     NoSuchGame,
     GameIsAlreadyOver,
     StatusIsPendingVerification,
-    StatusIsNotPendingVerification,
+    WrongStatusOrHit,
     AllowedActionsIsEmpty,
     ErrorZkVerify,
     InvalidVerificationKey,
@@ -125,6 +125,7 @@ pub enum ActionsForSession {
     StartSingleGame,
     StartMultipleGame,
     Move,
+    VerifyMove,
 }
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rtl::scale_codec)]

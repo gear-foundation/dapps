@@ -7,10 +7,10 @@ use gbuiltin_bls381::ark_bls12_381::{Bls12_381, G1Affine, G2Affine};
 use gbuiltin_bls381::ark_ec::{pairing::Pairing, AffineRepr, CurveGroup};
 use gbuiltin_bls381::ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 
+use battleship::services::single::SingleGameState;
+use battleship::services::verify::VerifyingKeyBytes as InputVerifyingKeyBytes;
+use battleship::services::verify::{ProofBytes, PublicMoveInput, PublicStartInput};
 use hex_literal::hex;
-use zk_battleship::services::single::verify::VerifyingKeyBytes as InputVerifyingKeyBytes;
-use zk_battleship::services::single::verify::{ProofBytes, PublicInput};
-use zk_battleship::services::single::SingleGameState;
 
 const BUILTIN_BLS381: ActorId = ActorId::new(hex!(
     "6b6e292c382945e80bf51af2ba7fe9f458dcff81ae6075c46f9095e1bbecdc37"
@@ -53,9 +53,13 @@ macro_rules! send_request {
     };
 }
 
-pub async fn init(api: &GearApi) -> (MessageId, ProgramId) {
-    let request = ["New".encode(), BUILTIN_BLS381.encode()].concat();
-    let path = "../../target/wasm32-unknown-unknown/release/zk_battleship_wasm.opt.wasm";
+pub async fn init(
+    api: &GearApi,
+    start_vk: InputVerifyingKeyBytes,
+    move_vk: InputVerifyingKeyBytes,
+) -> (MessageId, ProgramId) {
+    let request = ["New".encode(), (BUILTIN_BLS381, start_vk, move_vk).encode()].concat();
+    let path = "../target/wasm32-unknown-unknown/release/battleship_wasm.opt.wasm";
     let gas_info = api
         .calculate_upload_gas(
             None,
@@ -111,12 +115,7 @@ pub async fn get_state_games(
     decoded_reply.2
 }
 
-pub fn get_vk_proof_public_ic() -> (
-    InputVerifyingKeyBytes,
-    ProofBytes,
-    PublicInput,
-    [Vec<u8>; 4],
-) {
+pub fn get_move_vk_proof_public() -> (InputVerifyingKeyBytes, ProofBytes, PublicMoveInput) {
     let vk_bytes = VerifyingKeyBytes {
         vk_alpha_g1: vec![
             21, 238, 187, 56, 128, 239, 100, 193, 139, 134, 182, 106, 16, 77, 185, 90, 237, 174,
@@ -170,7 +169,7 @@ pub fn get_vk_proof_public_ic() -> (
         ],
     };
 
-    let ic: [Vec<u8>; 4] = [
+    let ic = vec![
         vec![
             11, 41, 43, 123, 59, 157, 231, 73, 234, 132, 175, 26, 250, 52, 198, 80, 51, 241, 185,
             24, 105, 63, 56, 141, 88, 124, 127, 54, 152, 211, 83, 163, 244, 11, 95, 169, 8, 239,
@@ -263,9 +262,10 @@ pub fn get_vk_proof_public_ic() -> (
         alpha_g1_beta_g2: alpha_g1_beta_g2_bytes,
         gamma_g2_neg_pc: gamma_g2_neg_pc_bytes,
         delta_g2_neg_pc: delta_g2_neg_pc_bytes,
+        ic,
     };
 
-    let public_input = PublicInput {
+    let public_input = PublicMoveInput {
         out: 1,
         hit: 1,
         hash: vec![
@@ -274,5 +274,147 @@ pub fn get_vk_proof_public_ic() -> (
         ],
     };
 
-    (vk_bytes, proof_bytes, public_input, ic)
+    (vk_bytes, proof_bytes, public_input)
+}
+
+pub fn get_start_vk_proof_public() -> (InputVerifyingKeyBytes, ProofBytes, PublicStartInput) {
+    let vk_bytes = VerifyingKeyBytes {
+        vk_alpha_g1: vec![
+            25, 27, 128, 228, 86, 62, 84, 152, 210, 79, 254, 225, 31, 19, 47, 56, 239, 21, 65, 140,
+            73, 226, 247, 193, 220, 104, 215, 226, 35, 58, 65, 107, 132, 136, 101, 161, 3, 135, 0,
+            177, 43, 21, 1, 171, 189, 126, 96, 47, 6, 215, 168, 192, 172, 86, 185, 216, 170, 122,
+            135, 229, 3, 210, 239, 240, 143, 122, 206, 42, 193, 141, 2, 156, 137, 150, 151, 46, 35,
+            173, 153, 224, 226, 115, 197, 171, 53, 54, 155, 128, 200, 237, 149, 193, 216, 31, 31,
+            244,
+        ],
+
+        vk_beta_g2: vec![
+            17, 50, 242, 249, 243, 68, 236, 251, 130, 211, 121, 71, 5, 224, 108, 37, 174, 200, 24,
+            75, 124, 76, 212, 153, 200, 173, 0, 160, 29, 87, 34, 98, 207, 27, 214, 125, 120, 103,
+            99, 237, 4, 17, 244, 243, 163, 29, 51, 185, 14, 29, 134, 181, 91, 54, 108, 57, 184,
+            223, 6, 208, 31, 206, 117, 244, 235, 109, 143, 29, 235, 210, 126, 171, 120, 103, 220,
+            13, 108, 143, 127, 249, 81, 196, 93, 15, 221, 194, 218, 225, 195, 39, 126, 78, 118,
+            222, 217, 134, 2, 19, 239, 145, 251, 230, 167, 143, 27, 234, 61, 185, 188, 235, 156,
+            58, 202, 236, 106, 96, 48, 245, 127, 227, 132, 170, 138, 55, 80, 31, 47, 127, 239, 18,
+            16, 38, 181, 0, 26, 204, 88, 13, 194, 45, 18, 18, 7, 1, 24, 70, 179, 130, 30, 200, 80,
+            213, 0, 158, 146, 184, 156, 160, 243, 39, 255, 144, 115, 127, 186, 249, 122, 52, 137,
+            215, 216, 159, 65, 56, 0, 27, 49, 155, 162, 235, 176, 85, 247, 235, 86, 55, 103, 145,
+            188, 134, 198, 237,
+        ],
+
+        vk_gamma_g2: vec![
+            19, 224, 43, 96, 82, 113, 159, 96, 125, 172, 211, 160, 136, 39, 79, 101, 89, 107, 208,
+            208, 153, 32, 182, 26, 181, 218, 97, 187, 220, 127, 80, 73, 51, 76, 241, 18, 19, 148,
+            93, 87, 229, 172, 125, 5, 93, 4, 43, 126, 2, 74, 162, 178, 240, 143, 10, 145, 38, 8, 5,
+            39, 45, 197, 16, 81, 198, 228, 122, 212, 250, 64, 59, 2, 180, 81, 11, 100, 122, 227,
+            209, 119, 11, 172, 3, 38, 168, 5, 187, 239, 212, 128, 86, 200, 193, 33, 189, 184, 6, 6,
+            196, 160, 46, 167, 52, 204, 50, 172, 210, 176, 43, 194, 139, 153, 203, 62, 40, 126,
+            133, 167, 99, 175, 38, 116, 146, 171, 87, 46, 153, 171, 63, 55, 13, 39, 92, 236, 29,
+            161, 170, 169, 7, 95, 240, 95, 121, 190, 12, 229, 213, 39, 114, 125, 110, 17, 140, 201,
+            205, 198, 218, 46, 53, 26, 173, 253, 155, 170, 140, 189, 211, 167, 109, 66, 154, 105,
+            81, 96, 209, 44, 146, 58, 201, 204, 59, 172, 162, 137, 225, 147, 84, 134, 8, 184, 40,
+            1,
+        ],
+
+        vk_delta_g2: vec![
+            18, 61, 64, 37, 225, 154, 120, 31, 38, 164, 246, 197, 231, 46, 183, 47, 56, 72, 248,
+            33, 87, 163, 181, 199, 95, 111, 229, 217, 172, 75, 154, 130, 6, 228, 216, 38, 159, 112,
+            215, 180, 87, 241, 4, 32, 208, 36, 248, 175, 21, 224, 184, 102, 7, 233, 16, 91, 52,
+            224, 116, 122, 125, 128, 155, 209, 81, 90, 52, 228, 107, 247, 134, 175, 37, 113, 13,
+            224, 164, 28, 173, 236, 192, 210, 106, 166, 197, 63, 137, 254, 82, 225, 213, 41, 213,
+            212, 92, 7, 4, 208, 236, 121, 54, 15, 50, 5, 144, 226, 232, 99, 145, 166, 222, 74, 78,
+            230, 33, 13, 38, 107, 127, 107, 176, 63, 240, 28, 166, 231, 101, 213, 133, 128, 37,
+            181, 2, 135, 205, 50, 223, 83, 210, 22, 53, 215, 112, 194, 23, 15, 208, 133, 98, 216,
+            82, 22, 216, 114, 106, 162, 163, 228, 91, 204, 194, 235, 2, 81, 231, 255, 254, 31, 172,
+            182, 182, 184, 216, 202, 173, 248, 244, 224, 181, 109, 112, 65, 19, 29, 87, 37, 104,
+            181, 68, 185, 45, 72,
+        ],
+    };
+
+    let ic = vec![
+        vec![
+            10, 44, 27, 93, 157, 157, 41, 205, 215, 154, 51, 251, 179, 241, 105, 220, 190, 59, 6,
+            130, 155, 205, 146, 71, 82, 215, 125, 114, 29, 31, 52, 150, 242, 4, 16, 223, 197, 147,
+            19, 31, 123, 218, 154, 97, 228, 85, 20, 206, 8, 71, 147, 234, 28, 46, 223, 29, 27, 83,
+            60, 17, 17, 75, 15, 25, 56, 133, 242, 17, 216, 54, 169, 164, 117, 220, 150, 48, 252,
+            100, 117, 213, 5, 45, 137, 84, 231, 190, 188, 188, 6, 202, 219, 238, 32, 59, 19, 85,
+        ],
+        vec![
+            7, 56, 196, 104, 229, 198, 223, 8, 201, 170, 153, 184, 153, 170, 174, 209, 173, 39, 54,
+            140, 217, 163, 246, 73, 54, 218, 166, 37, 193, 68, 211, 235, 47, 244, 163, 130, 99,
+            132, 180, 111, 235, 152, 191, 139, 166, 116, 168, 228, 15, 59, 182, 222, 185, 121, 57,
+            238, 98, 150, 90, 108, 143, 173, 90, 126, 169, 160, 225, 135, 71, 7, 236, 195, 251, 15,
+            0, 64, 84, 179, 140, 141, 48, 67, 199, 97, 101, 112, 53, 228, 187, 40, 39, 1, 130, 5,
+            121, 193,
+        ],
+    ];
+
+    let alpha_g1 = G1Affine::deserialize_uncompressed_unchecked(&*vk_bytes.vk_alpha_g1).unwrap();
+    let beta_g2 = G2Affine::deserialize_uncompressed_unchecked(&*vk_bytes.vk_beta_g2).unwrap();
+    let gamma_g2 = G2Affine::deserialize_uncompressed_unchecked(&*vk_bytes.vk_gamma_g2).unwrap();
+    let delta_g2 = G2Affine::deserialize_uncompressed_unchecked(&*vk_bytes.vk_delta_g2).unwrap();
+
+    let alpha_g1_beta_g2 = Bls12_381::pairing(alpha_g1, beta_g2).0;
+    let gamma_g2_neg_pc: G2Affine = gamma_g2.into_group().neg().into_affine().into();
+    let delta_g2_neg_pc: G2Affine = delta_g2.into_group().neg().into_affine().into();
+
+    let proof_bytes = ProofBytes {
+        a: vec![
+            15, 111, 194, 110, 167, 20, 233, 209, 28, 162, 2, 108, 110, 83, 34, 145, 153, 82, 124,
+            58, 130, 6, 97, 37, 91, 248, 207, 116, 215, 90, 255, 137, 134, 241, 98, 80, 231, 202,
+            67, 50, 27, 92, 225, 106, 16, 105, 184, 88, 14, 196, 110, 50, 33, 176, 50, 140, 6, 185,
+            101, 29, 48, 187, 118, 217, 225, 48, 102, 174, 60, 253, 48, 49, 214, 89, 42, 116, 217,
+            224, 228, 118, 208, 157, 210, 186, 156, 53, 210, 62, 243, 17, 15, 253, 159, 26, 21, 52,
+        ],
+        b: vec![
+            15, 248, 131, 136, 91, 213, 216, 17, 67, 222, 103, 20, 1, 36, 48, 234, 184, 151, 76,
+            25, 181, 240, 160, 105, 43, 215, 20, 108, 197, 234, 87, 173, 249, 102, 157, 22, 157,
+            106, 119, 163, 28, 46, 194, 229, 172, 231, 91, 73, 16, 113, 144, 191, 72, 213, 95, 120,
+            104, 143, 111, 250, 219, 180, 37, 63, 128, 171, 99, 82, 98, 21, 101, 126, 225, 102, 64,
+            148, 161, 125, 98, 156, 238, 88, 204, 138, 107, 77, 143, 179, 7, 100, 24, 65, 26, 223,
+            20, 90, 0, 63, 144, 80, 190, 139, 165, 128, 8, 231, 240, 46, 146, 17, 254, 120, 127,
+            46, 46, 113, 208, 12, 22, 162, 98, 208, 253, 49, 53, 138, 55, 222, 35, 49, 107, 224, 5,
+            230, 254, 51, 136, 131, 89, 162, 166, 177, 177, 250, 13, 80, 181, 191, 219, 80, 124,
+            37, 132, 116, 172, 190, 67, 244, 126, 104, 254, 86, 67, 32, 2, 25, 29, 96, 235, 118,
+            144, 209, 215, 93, 221, 72, 186, 214, 177, 19, 132, 101, 122, 131, 132, 16, 86, 94, 87,
+            49, 59, 3,
+        ],
+        c: vec![
+            6, 205, 235, 22, 219, 249, 160, 246, 210, 224, 98, 42, 106, 181, 56, 8, 43, 237, 16,
+            43, 215, 35, 65, 0, 145, 26, 11, 81, 0, 197, 112, 5, 77, 207, 67, 41, 194, 239, 239,
+            27, 90, 8, 105, 126, 144, 76, 57, 236, 2, 52, 115, 196, 143, 172, 2, 181, 6, 114, 133,
+            245, 79, 138, 11, 86, 78, 95, 110, 114, 78, 247, 33, 196, 236, 151, 39, 156, 194, 143,
+            48, 93, 80, 80, 179, 122, 212, 232, 150, 112, 118, 5, 232, 206, 212, 194, 82, 80,
+        ],
+    };
+    let mut alpha_g1_beta_g2_bytes = Vec::new();
+    alpha_g1_beta_g2
+        .serialize_uncompressed(&mut alpha_g1_beta_g2_bytes)
+        .unwrap();
+
+    let mut gamma_g2_neg_pc_bytes = Vec::new();
+    gamma_g2_neg_pc
+        .serialize_uncompressed(&mut gamma_g2_neg_pc_bytes)
+        .unwrap();
+
+    let mut delta_g2_neg_pc_bytes = Vec::new();
+    delta_g2_neg_pc
+        .serialize_uncompressed(&mut delta_g2_neg_pc_bytes)
+        .unwrap();
+
+    let vk_bytes = InputVerifyingKeyBytes {
+        alpha_g1_beta_g2: alpha_g1_beta_g2_bytes,
+        gamma_g2_neg_pc: gamma_g2_neg_pc_bytes,
+        delta_g2_neg_pc: delta_g2_neg_pc_bytes,
+        ic,
+    };
+
+    let public_input = PublicStartInput {
+        hash: vec![
+            51, 217, 233, 61, 233, 121, 204, 172, 68, 169, 118, 202, 251, 95, 229, 50, 34, 187, 67,
+            43, 194, 51, 134, 75, 59, 97, 49, 24, 246, 190, 33, 18,
+        ],
+    };
+
+    (vk_bytes, proof_bytes, public_input)
 }

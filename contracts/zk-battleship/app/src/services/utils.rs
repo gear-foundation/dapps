@@ -1,5 +1,5 @@
 use core::fmt::Debug;
-use gstd::{exec, ext, format, Encode};
+use gstd::{exec, ext, format, prelude::*, Encode};
 use sails_rtl::gstd::events::{EventTrigger, GStdEventTrigger};
 use sails_rtl::scale_info::StaticTypeInfo;
 
@@ -82,6 +82,24 @@ macro_rules! declare_storage {
                     }
                 }
             }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! generate_getter_game {
+    ($field_name:ident, $player_id:expr) => {
+        if let Some(game) = SingleGamesStorage::as_ref().get(&$player_id) {
+            Some(game.$field_name.clone())
+        } else {
+            None
+        }
+    };
+    ($player_id:expr) => {
+        if let Some(game) = SingleGamesStorage::as_ref().get(&$player_id) {
+            Some(game.clone())
+        } else {
+            None
         }
     };
 }

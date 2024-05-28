@@ -1,10 +1,8 @@
 use super::{
     utils::{Result, *},
-    verify::verify,
     Event,
 };
-use crate::single::verify::{ProofBytes, VerifyingKeyBytes};
-use gstd::{debug, exec, prelude::*, ActorId};
+use gstd::{exec, prelude::*, ActorId};
 
 static mut SEED: u8 = 0;
 
@@ -44,25 +42,13 @@ pub fn delete_session(session_map: &mut SessionMap, source: ActorId) -> Result<(
     Ok(())
 }
 
-pub fn start_single_game(
-    session_map: &SessionMap,
-    games: &mut SingleGamesMap,
-    source: ActorId,
-    session_for_account: Option<ActorId>,
-) -> Result<()> {
-    let player = get_player(
-        session_map,
-        source,
-        &session_for_account,
-        ActionsForSession::StartSingleGame,
-    );
-    debug!("efvkle");
+pub fn start_single_game(games: &mut SingleGamesMap, player: ActorId) -> Result<()> {
     if let Some(game) = games.get(&player) {
         if game.result.is_none() {
             return Err(Error::SeveralGames);
         }
     }
-    debug!("efvkle");
+
     let bot_ships = generate_field();
 
     let game_instance = SingleGame {
@@ -75,24 +61,10 @@ pub fn start_single_game(
         total_shots: 0,
     };
     games.insert(player, game_instance);
-    debug!("START OK");
     Ok(())
 }
 
-pub fn make_move(
-    session_map: &SessionMap,
-    games: &mut SingleGamesMap,
-    source: ActorId,
-    step: u8,
-    session_for_account: Option<ActorId>,
-) -> Result<Event> {
-    let player = get_player(
-        session_map,
-        source,
-        &session_for_account,
-        ActionsForSession::StartSingleGame,
-    );
-
+pub fn make_move(games: &mut SingleGamesMap, player: ActorId, step: u8) -> Result<Event> {
     let game = games.get_mut(&player).ok_or(Error::NoSuchGame)?;
 
     if matches!(game.status, Status::PendingVerificationOfTheMove(_)) {
@@ -108,7 +80,6 @@ pub fn make_move(
     }
 
     let step_result = game.bot_ships.bang(step);
-
     game.total_shots += 1;
 
     if game.bot_ships.check_end_game() {
@@ -125,36 +96,27 @@ pub fn make_move(
     })
 }
 
-pub async fn verify_move(
-    vk: VerifyingKeyBytes,
-    proof: ProofBytes,
-    prepared_inputs_bytes: Vec<u8>,
-    session_map: &SessionMap,
-    games: &mut SingleGamesMap,
-    builtin_bls381: ActorId,
-    source: ActorId,
-    res: u8,
-    hit: u8,
-    session_for_account: Option<ActorId>,
-) -> Result<Event> {
-    debug!("START VERIFY");
-    verify(vk, proof, prepared_inputs_bytes, builtin_bls381).await;
-    debug!("VERIFY OK");
-    let player = get_player(
-        session_map,
-        source,
-        &session_for_account,
-        ActionsForSession::StartSingleGame,
-    );
-    let game = games.get_mut(&player).ok_or(Error::NoSuchGame)?;
+pub fn check_game(games: &SingleGamesMap, player: ActorId, hit: u8) -> Result<()> {
+    let game = games.get(&player).ok_or(Error::NoSuchGame)?;
 
-    if !matches!(game.status, Status::PendingVerificationOfTheMove(_)) {
-        return Err(Error::StatusIsNotPendingVerification);
+    if game.status != Status::PendingVerificationOfTheMove(hit) {
+        // TODO: UNCOMMENT AFTER TESTING!!!!!
+        // return Err(Error::WrongStatusOrHit);
     }
 
     if game.result.is_some() {
         return Err(Error::GameIsAlreadyOver);
     }
+    Ok(())
+}
+
+pub fn verified_move(
+    games: &mut SingleGamesMap,
+    player: ActorId,
+    res: u8,
+    hit: u8,
+) -> Result<Event> {
+    let game = games.get_mut(&player).ok_or(Error::NoSuchGame)?;
 
     match res {
         0 => game.player_board[hit as usize] = Entity::Boom,
@@ -169,7 +131,10 @@ pub async fn verify_move(
     }
     game.status = Status::PendingMove;
 
-    Ok(Event::MoveVerified)
+    Ok(Event::MoveVerified {
+        step: hit,
+        result: res,
+    })
 }
 
 pub fn get_player(
@@ -358,11 +323,11 @@ fn check_cells(board: &[Entity], position: isize) -> bool {
     true
 }
 
-fn move_analysis(board: &Vec<Entity>) -> u8 {
+fn move_analysis(board: &[Entity]) -> u8 {
     // Firstly, if we hit a ship, we have to finish it off and kill it
     for (index, status) in board.iter().enumerate() {
         if *status == Entity::BoomShip {
-            return bang(&board, index as u8);
+            return bang(board, index as u8);
         }
     }
     // If there are no wounded ships, randomly select a free cell

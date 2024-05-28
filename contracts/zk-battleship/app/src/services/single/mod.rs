@@ -1,11 +1,10 @@
 use self::storage::{
-    admin::AdminStorage, builtin_bls381::BuiltinStorage, SessionsStorage, SingleGamesStorage,
+    admin::AdminStorage, builtin_bls381::BuiltinStorage, verification_key::VerificationKeyStorage,
+    SessionsStorage, SingleGamesStorage,
 };
 use crate::services;
-use crate::single::verify::get_prepared_inputs_bytes;
-use crate::single::verify::PublicInput;
 use core::{fmt::Debug, marker::PhantomData};
-use gstd::{debug, exec, msg, ActorId, Decode, Encode, String, TypeInfo, Vec};
+use gstd::{exec, msg, ActorId, Decode, Encode, String, TypeInfo, Vec};
 use sails_rtl::gstd::{
     events::{EventTrigger, GStdEventTrigger},
     gservice,
@@ -16,7 +15,6 @@ pub use utils::*;
 pub mod funcs;
 pub mod storage;
 pub(crate) mod utils;
-pub mod verify;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rtl::scale_codec)]
@@ -30,7 +28,10 @@ pub enum Event {
         step_result: StepResult,
         bot_step: u8,
     },
-    MoveVerified,
+    MoveVerified {
+        step: u8,
+        result: u8,
+    },
 }
 
 pub type GstdDrivenService = Service<GStdEventTrigger<Event>>;
@@ -39,8 +40,11 @@ pub type GstdDrivenService = Service<GStdEventTrigger<Event>>;
 pub struct Service<X>(PhantomData<X>);
 
 impl<X> Service<X> {
-    pub fn seed(builtin_bls381: ActorId) -> Self {
-        debug!("efvkle");
+    pub fn seed(
+        builtin_bls381: ActorId,
+        verification_key_for_start: services::verify::VerifyingKeyBytes,
+        verification_key_for_move: services::verify::VerifyingKeyBytes,
+    ) -> Self {
         let _res = SingleGamesStorage::default();
         debug_assert!(_res.is_ok());
         let _res = SessionsStorage::default();
@@ -49,6 +53,9 @@ impl<X> Service<X> {
         let _res = AdminStorage::set(source);
         debug_assert!(_res.is_ok());
         let _res = BuiltinStorage::set(builtin_bls381);
+        debug_assert!(_res.is_ok());
+        let _res =
+            VerificationKeyStorage::set(verification_key_for_start, verification_key_for_move);
         debug_assert!(_res.is_ok());
 
         Self(PhantomData)
@@ -68,14 +75,12 @@ where
         key: ActorId,
         duration: u64,
         allowed_actions: Vec<ActionsForSession>,
-    ) -> () {
-        let msg_source = msg::source();
-        let block_timestamp = exec::block_timestamp();
+    ) {
         services::utils::panicking(move || {
             funcs::create_session(
                 SessionsStorage::as_mut(),
-                msg_source,
-                block_timestamp,
+                msg::source(),
+                exec::block_timestamp(),
                 key,
                 duration,
                 allowed_actions,
@@ -84,37 +89,58 @@ where
         services::utils::deposit_event(Event::SessionCreated);
     }
 
-    pub fn delete_session(&mut self) -> () {
-        let msg_source = msg::source();
+    pub fn delete_session(&mut self) {
         services::utils::panicking(move || {
-            funcs::delete_session(SessionsStorage::as_mut(), msg_source)
+            funcs::delete_session(SessionsStorage::as_mut(), msg::source())
         });
         services::utils::deposit_event(Event::SessionDeleted);
     }
 
-    pub fn start_single_game(&mut self, session_for_account: Option<ActorId>) -> () {
-        let msg_source = msg::source();
+    pub async fn start_single_game(
+        &mut self,
+        proof: services::verify::ProofBytes,
+        public_input: services::verify::PublicStartInput,
+        session_for_account: Option<ActorId>,
+    ) {
+        // get player
+        let player = services::single::funcs::get_player(
+            SessionsStorage::as_ref(),
+            msg::source(),
+            &session_for_account,
+            ActionsForSession::StartSingleGame,
+        );
+
+        // get prepared inputs bytes
+        let prepared_inputs_bytes = services::verify::get_start_prepared_inputs_bytes(
+            public_input.clone(),
+            VerificationKeyStorage::get_vk_for_start().ic.clone(),
+        );
+
+        // verify
+        services::verify::verify(
+            VerificationKeyStorage::get_vk_for_start(),
+            proof,
+            prepared_inputs_bytes,
+            BuiltinStorage::get(),
+        )
+        .await;
+
+        // start single game
         services::utils::panicking(move || {
-            funcs::start_single_game(
-                SessionsStorage::as_ref(),
-                SingleGamesStorage::as_mut(),
-                msg_source,
-                session_for_account,
-            )
+            funcs::start_single_game(SingleGamesStorage::as_mut(), player)
         });
         services::utils::deposit_event(Event::SingleGameStarted);
     }
 
-    pub fn make_move(&mut self, step: u8, session_for_account: Option<ActorId>) -> () {
-        let msg_source = msg::source();
+    pub fn make_move(&mut self, step: u8, session_for_account: Option<ActorId>) {
+        let player = services::single::funcs::get_player(
+            SessionsStorage::as_ref(),
+            msg::source(),
+            &session_for_account,
+            ActionsForSession::Move,
+        );
         let event = services::utils::panicking(move || {
-            funcs::make_move(
-                SessionsStorage::as_ref(),
-                SingleGamesStorage::as_mut(),
-                msg_source,
-                step,
-                session_for_account,
-            )
+            funcs::make_move(SingleGamesStorage::as_mut(), player, step)
         });
 
         services::utils::deposit_event(event);
@@ -122,88 +148,105 @@ where
 
     pub async fn verify_move(
         &mut self,
-        vk: verify::VerifyingKeyBytes,
-        proof: verify::ProofBytes,
-        public_input: PublicInput,
-        ic: [Vec<u8>; 4],
+        proof: services::verify::ProofBytes,
+        public_input: services::verify::PublicMoveInput,
         session_for_account: Option<ActorId>,
-    ) -> () {
-        let msg_source = msg::source();
+    ) {
+        // get player
+        let player = services::single::funcs::get_player(
+            SessionsStorage::as_ref(),
+            msg::source(),
+            &session_for_account,
+            ActionsForSession::VerifyMove,
+        );
 
-        let prepared_inputs_bytes = get_prepared_inputs_bytes(public_input.clone(), ic);
+        // check game state
+        services::utils::panicking(move || {
+            funcs::check_game(SingleGamesStorage::as_ref(), player, public_input.hit)
+        });
 
-        let res = funcs::verify_move(
-            vk,
+        // get prepared inputs bytes
+        let prepared_inputs_bytes = services::verify::get_move_prepared_inputs_bytes(
+            public_input.clone(),
+            VerificationKeyStorage::get_vk_for_move().ic.clone(),
+        );
+
+        // check proof
+        services::verify::verify(
+            VerificationKeyStorage::get_vk_for_move(),
             proof,
             prepared_inputs_bytes,
-            SessionsStorage::as_ref(),
-            SingleGamesStorage::as_mut(),
             BuiltinStorage::get(),
-            msg_source,
-            public_input.out,
-            public_input.hit,
-            session_for_account,
         )
         .await;
 
-        match res {
-            Ok(event) => services::utils::deposit_event(event),
-            Err(error) => services::utils::panic(error),
-        };
+        let event = services::utils::panicking(move || {
+            funcs::verified_move(
+                SingleGamesStorage::as_mut(),
+                player,
+                public_input.out,
+                public_input.hit,
+            )
+        });
+        services::utils::deposit_event(event);
     }
 
-    pub fn delete_game(&mut self, player_address: ActorId) -> () {
+    pub fn delete_game(&mut self, player_address: ActorId) {
         assert!(
             msg::source() == AdminStorage::get(),
             "Only the admin can change the program state"
         );
         SingleGamesStorage::as_mut().remove(&player_address);
     }
-    pub fn change_admin(&mut self, new_admin: ActorId) -> () {
+    pub fn change_admin(&mut self, new_admin: ActorId) {
         assert!(
             msg::source() == AdminStorage::get(),
-            "Only the admin can change the program state"
+            "Only the administrator can change the configuration"
         );
         let admin = AdminStorage::get_mut();
         *admin = new_admin;
     }
+    pub fn change_builtin_address(&mut self, new_builtin_address: ActorId) {
+        assert!(
+            msg::source() == AdminStorage::get(),
+            "Only the administrator can change the configuration"
+        );
+        let builtin = BuiltinStorage::get_mut();
+        *builtin = new_builtin_address;
+    }
+    pub fn change_verification_key(
+        &mut self,
+        new_vk_for_start: Option<services::verify::VerifyingKeyBytes>,
+        new_vk_for_move: Option<services::verify::VerifyingKeyBytes>,
+    ) {
+        assert!(
+            msg::source() == AdminStorage::get(),
+            "Only the administrator can change the configuration"
+        );
+        if let Some(new_vk) = new_vk_for_start {
+            let vk_for_start = VerificationKeyStorage::get_mut_vk_for_start();
+            *vk_for_start = new_vk;
+        }
+        if let Some(new_vk) = new_vk_for_move {
+            let vk_for_move = VerificationKeyStorage::get_mut_vk_for_move();
+            *vk_for_move = new_vk;
+        }
+    }
 
     pub fn start_time(&self, player_id: ActorId) -> Option<u64> {
-        if let Some(game) = SingleGamesStorage::as_ref().get(&player_id) {
-            Some(game.start_time)
-        } else {
-            None
-        }
+        crate::generate_getter_game!(start_time, player_id)
     }
-
     pub fn total_shots(&self, player_id: ActorId) -> Option<u64> {
-        if let Some(game) = SingleGamesStorage::as_ref().get(&player_id) {
-            Some(game.total_shots)
-        } else {
-            None
-        }
+        crate::generate_getter_game!(total_shots, player_id)
     }
-
-    pub fn game_result(&self, player_id: ActorId) -> Option<BattleshipParticipants> {
-        if let Some(game) = SingleGamesStorage::as_ref().get(&player_id) {
-            game.result.clone()
-        } else {
-            None
-        }
+    pub fn game_result(&self, player_id: ActorId) -> Option<Option<BattleshipParticipants>> {
+        crate::generate_getter_game!(result, player_id)
     }
     pub fn game_status(&self, player_id: ActorId) -> Option<Status> {
-        if let Some(game) = SingleGamesStorage::as_ref().get(&player_id) {
-            Some(game.status.clone())
-        } else {
-            None
-        }
+        crate::generate_getter_game!(status, player_id)
     }
     pub fn game(&self, player_id: ActorId) -> Option<SingleGame> {
-        if let Some(game) = SingleGamesStorage::as_ref().get(&player_id) {
-            Some(game.clone())
-        } else {
-            None
-        }
+        crate::generate_getter_game!(player_id)
     }
 
     pub fn games(&self) -> Vec<(ActorId, SingleGameState)> {
@@ -225,5 +268,8 @@ where
 
     pub fn admin(&self) -> ActorId {
         AdminStorage::get()
+    }
+    pub fn builtin(&self) -> ActorId {
+        BuiltinStorage::get()
     }
 }
