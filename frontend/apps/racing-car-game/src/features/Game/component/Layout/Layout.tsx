@@ -77,64 +77,74 @@ function LayoutComponent() {
     }
   };
 
-  const decodePair = useCallback(() => {
-    logger('triggers SentMessageId Effect');
-    if (currentSentMessageId) {
-      logger(`SentMessageId exists: ${currentSentMessageId}`);
-      logger(repliesQueue.current);
-      const foundRepliesPair = repliesQueue.current.find(
-        (item) => (item.auto?.toHuman().details as MessageDetails).to === currentSentMessageId,
-      );
+  const decodePair = useCallback(
+    (i: number) => {
+      logger('triggers SentMessageId Effect');
 
-      logger(`Reply Pair found:`);
-      logger({ auto: foundRepliesPair?.auto?.toHuman(), manual: foundRepliesPair?.manual?.toHuman() });
-      logger(`Reply found: ${foundRepliesPair?.manual}`);
+      if (i > 2) {
+        setIsStateRead(false);
+        setIsLoading(false);
+      }
 
-      if (foundRepliesPair?.auto?.toHuman() && foundRepliesPair.manual?.toHuman()) {
-        const { manual } = foundRepliesPair;
+      if (currentSentMessageId) {
+        logger(`SentMessageId exists: ${currentSentMessageId}`);
+        logger(repliesQueue.current);
+        const foundRepliesPair = repliesQueue.current.find(
+          (item) => (item.auto?.toHuman().details as MessageDetails).to === currentSentMessageId,
+        );
 
-        logger('trying to decode....:');
-        try {
-          const reply = getDecodedReply(manual.payload);
-          logger('DECODED message successfully');
-          logger('new reply HAS COME:');
-          logger(reply);
+        logger(`Reply Pair found:`);
+        logger({ auto: foundRepliesPair?.auto?.toHuman(), manual: foundRepliesPair?.manual?.toHuman() });
+        logger(`Reply found: ${foundRepliesPair?.manual}`);
 
-          if (reply && reply.cars.length && !isEqual(reply?.cars, replyData?.cars)) {
-            logger('prev reply state:');
-            logger(replyData);
-            logger('new reply UPDATED and going to state:');
+        if (foundRepliesPair?.auto?.toHuman() && foundRepliesPair.manual?.toHuman()) {
+          const { manual } = foundRepliesPair;
+
+          logger('trying to decode....:');
+          try {
+            const reply = getDecodedReply(manual.payload);
+            logger('DECODED message successfully');
+            logger('new reply HAS COME:');
             logger(reply);
-            setReplyData(reply);
-            setCurrentSentMessageId(null);
-            handleUnsubscribeFromEvent();
+
+            if (reply && reply.cars.length && !isEqual(reply?.cars, replyData?.cars)) {
+              logger('prev reply state:');
+              logger(replyData);
+              logger('new reply UPDATED and going to state:');
+              logger(reply);
+              setReplyData(reply);
+              setCurrentSentMessageId(null);
+              handleUnsubscribeFromEvent();
+            }
+          } catch (e) {
+            logger(e);
+            alert.error((e as ContractError).message);
           }
-        } catch (e) {
-          logger(e);
-          alert.error((e as ContractError).message);
+        }
+
+        if (foundRepliesPair && foundRepliesPair.auto?.toHuman() && !foundRepliesPair.manual?.toHuman()) {
+          setCurrentSentMessageId(null);
+          setIsPlayerAction(true);
+          handleUnsubscribeFromEvent();
+
+          if (isLoading) {
+            setIsStateRead(false);
+            setIsLoading(false);
+          }
+        }
+
+        if (!foundRepliesPair?.auto?.toHuman()) {
+          console.log(`reply not found, retrying(${i + 1})`);
+          setTimeout(() => decodePair(i + 1), 2000);
         }
       }
-
-      if (foundRepliesPair && foundRepliesPair.auto?.toHuman() && !foundRepliesPair.manual?.toHuman()) {
-        setCurrentSentMessageId(null);
-        setIsPlayerAction(true);
-        handleUnsubscribeFromEvent();
-
-        if (isLoading) {
-          setIsStateRead(false);
-          setIsLoading(false);
-        }
-      }
-
-      if (!foundRepliesPair?.auto?.toHuman()) {
-        setTimeout(decodePair, 1500);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSentMessageId]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    },
+    [currentSentMessageId],
+  );
 
   useEffect(() => {
-    decodePair();
+    decodePair(0);
   }, [decodePair]);
 
   const handleChangeState = ({ data: _data }: UserMessageSent) => {
