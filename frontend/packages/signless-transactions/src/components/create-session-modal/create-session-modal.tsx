@@ -112,9 +112,18 @@ function CreateSessionModal({
       close();
     };
 
+    console.log('SUBMITTING');
+    console.log(shouldIssueVoucher);
+    console.log('shouldIssueVoucher');
+
     if (!shouldIssueVoucher) {
       try {
         const voucherId = await onSessionCreate(pairToSave.address);
+
+        console.log('voucherId', voucherId);
+        console.log('issueVoucherValue', issueVoucherValue);
+        console.log('pairToSave');
+        console.log(pairToSave);
 
         createSession({ duration, key, allowedActions }, issueVoucherValue, {
           shouldIssueVoucher,
