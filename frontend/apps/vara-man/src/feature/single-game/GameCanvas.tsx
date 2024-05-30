@@ -1,13 +1,10 @@
-import { useRef, useEffect, useMemo, useState } from 'react';
+import { useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAtom } from 'jotai';
-
 import { IGameLevel, TileMap } from '@/app/types/game';
-
 import { GameOverModal } from './components/modals/game-over';
 import { useGameMessage } from '@/app/hooks/use-game';
 import { useApp } from '@/app/context/ctx-app';
-
 import { findMapLevel } from '../game/utils/findMapLevel';
 import { Game } from '../game/models/Game';
 import { COINS, GAME_OVER } from '../game/consts';
@@ -15,7 +12,11 @@ import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import useOnScreen from '@/hooks/use-on-screen';
 
-export const GameCanvas = () => {
+type Props = {
+  onRestart: () => void;
+};
+
+export const GameCanvas = ({ onRestart }: Props) => {
   const [searchParams] = useSearchParams();
   const [coins, setCoins] = useAtom(COINS);
   const [gameOver, setGameOver] = useAtom(GAME_OVER);
@@ -103,6 +104,7 @@ export const GameCanvas = () => {
 
   const restartGame = () => {
     gameInstanceRef.current = null;
+    onRestart(); // Notify the parent component
   };
 
   return (
