@@ -56,7 +56,7 @@ pub fn check_game(games: &SingleGamesMap, player: ActorId, hit: u8) -> Result<()
     let game = games.get(&player).ok_or(Error::NoSuchGame)?;
 
     if game.status != Status::PendingVerificationOfTheMove(hit) {
-        // TODO: UNCOMMENT AFTER TESTING!!!!!
+        // TODO: uncomment after testing node_test
         // return Err(Error::WrongStatusOrHit);
     }
     if matches!(game.status, Status::GameOver(_)) {

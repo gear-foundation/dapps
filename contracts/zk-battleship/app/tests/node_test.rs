@@ -1,4 +1,4 @@
-use battleship::services::single::{Entity, Status};
+use zk_battleship::services::single::{Entity, Status};
 use gclient::{EventProcessor, GearApi, Result};
 use gstd::{ActorId, Encode};
 

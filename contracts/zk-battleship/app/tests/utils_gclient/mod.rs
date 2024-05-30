@@ -7,9 +7,9 @@ use gbuiltin_bls381::ark_bls12_381::{Bls12_381, G1Affine, G2Affine};
 use gbuiltin_bls381::ark_ec::{pairing::Pairing, AffineRepr, CurveGroup};
 use gbuiltin_bls381::ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 
-use battleship::services::single::SingleGameState;
-use battleship::services::verify::VerifyingKeyBytes as InputVerifyingKeyBytes;
-use battleship::services::verify::{ProofBytes, PublicMoveInput, PublicStartInput};
+use zk_battleship::services::single::SingleGameState;
+use zk_battleship::services::verify::VerifyingKeyBytes as InputVerifyingKeyBytes;
+use zk_battleship::services::verify::{ProofBytes, PublicMoveInput, PublicStartInput};
 use hex_literal::hex;
 
 const BUILTIN_BLS381: ActorId = ActorId::new(hex!(

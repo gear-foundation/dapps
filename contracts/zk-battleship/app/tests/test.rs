@@ -1,4 +1,4 @@
-use battleship::services::single::{SingleGame, StepResult};
+use zk_battleship::services::single::{SingleGame, StepResult};
 use gstd::{prelude::*, ActorId};
 use gtest::{Log, Program, System};
 
