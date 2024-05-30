@@ -6,49 +6,7 @@ use gstd::{exec, prelude::*, ActorId};
 
 static mut SEED: u8 = 0;
 
-pub fn create_session(
-    session_map: &mut SessionMap,
-    source: ActorId,
-    block_timestamp: u64,
-    key: ActorId,
-    duration: u64,
-    allowed_actions: Vec<ActionsForSession>,
-) -> Result<bool> {
-    if allowed_actions.is_empty() {
-        return Err(Error::AllowedActionsIsEmpty);
-    }
-    if let Some(Session {
-        key: _,
-        expires,
-        allowed_actions: _,
-    }) = session_map.get(&source)
-    {
-        if *expires > block_timestamp {
-            return Err(Error::AlreadyHaveActiveSession);
-        }
-    }
-    session_map.entry(source).or_insert_with(|| Session {
-        key,
-        expires: block_timestamp + duration,
-        allowed_actions,
-    });
-    Ok(true)
-}
-
-pub fn delete_session(session_map: &mut SessionMap, source: ActorId) -> Result<()> {
-    if session_map.remove(&source).is_none() {
-        return Err(Error::NoActiveSession);
-    }
-    Ok(())
-}
-
 pub fn start_single_game(games: &mut SingleGamesMap, player: ActorId) -> Result<()> {
-    if let Some(game) = games.get(&player) {
-        if game.result.is_none() {
-            return Err(Error::SeveralGames);
-        }
-    }
-
     let bot_ships = generate_field();
 
     let game_instance = SingleGame {
@@ -57,7 +15,6 @@ pub fn start_single_game(games: &mut SingleGamesMap, player: ActorId) -> Result<
         status: Status::PendingMove,
         start_time: exec::block_timestamp(),
         end_time: None,
-        result: None,
         total_shots: 0,
     };
     games.insert(player, game_instance);
@@ -70,8 +27,7 @@ pub fn make_move(games: &mut SingleGamesMap, player: ActorId, step: u8) -> Resul
     if matches!(game.status, Status::PendingVerificationOfTheMove(_)) {
         return Err(Error::StatusIsPendingVerification);
     }
-
-    if game.result.is_some() {
+    if matches!(game.status, Status::GameOver(_)) {
         return Err(Error::GameIsAlreadyOver);
     }
 
@@ -83,7 +39,7 @@ pub fn make_move(games: &mut SingleGamesMap, player: ActorId, step: u8) -> Resul
     game.total_shots += 1;
 
     if game.bot_ships.check_end_game() {
-        game.result = Some(BattleshipParticipants::Player);
+        game.status = Status::GameOver(BattleshipParticipants::Player);
         game.end_time = Some(exec::block_timestamp());
         return Ok(Event::EndGame(BattleshipParticipants::Player));
     }
@@ -103,8 +59,7 @@ pub fn check_game(games: &SingleGamesMap, player: ActorId, hit: u8) -> Result<()
         // TODO: UNCOMMENT AFTER TESTING!!!!!
         // return Err(Error::WrongStatusOrHit);
     }
-
-    if game.result.is_some() {
+    if matches!(game.status, Status::GameOver(_)) {
         return Err(Error::GameIsAlreadyOver);
     }
     Ok(())
@@ -125,7 +80,7 @@ pub fn verified_move(
     }
 
     if game.check_end_game() {
-        game.result = Some(BattleshipParticipants::Bot);
+        game.status = Status::GameOver(BattleshipParticipants::Bot);
         game.end_time = Some(exec::block_timestamp());
         return Ok(Event::EndGame(BattleshipParticipants::Bot));
     }
@@ -135,36 +90,6 @@ pub fn verified_move(
         step: hit,
         result: res,
     })
-}
-
-pub fn get_player(
-    session_map: &SessionMap,
-    source: ActorId,
-    session_for_account: &Option<ActorId>,
-    actions_for_session: ActionsForSession,
-) -> ActorId {
-    let player = match session_for_account {
-        Some(account) => {
-            let session = session_map
-                .get(account)
-                .expect("This account has no valid session");
-            assert!(
-                session.expires > exec::block_timestamp(),
-                "The session has already expired"
-            );
-            assert!(
-                session.allowed_actions.contains(&actions_for_session),
-                "This message is not allowed"
-            );
-            assert_eq!(
-                session.key, source,
-                "The account is not approved for this session"
-            );
-            *account
-        }
-        None => source,
-    };
-    player
 }
 
 fn generate_field() -> Ships {
@@ -397,119 +322,4 @@ fn check_bang(position: u8, direction: i8) -> bool {
         _ => (),
     }
     true
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::single::funcs;
-    use crate::single::utils::Session;
-    use utils::*;
-    #[test]
-    fn create_session() {
-        // Initializing thread logger.
-        let _ = env_logger::try_init();
-
-        // Creating empty sessions map.
-        let mut sessions_map = sessions_map([]);
-        assert!(sessions_map.is_empty());
-
-        let source = alice();
-        let key: ActorId = 1.into();
-        let duration = 100;
-        let allowed_actions = vec![ActionsForSession::StartSingleGame];
-
-        // # Test case #1.
-        // Ok: Create session
-        {
-            funcs::create_session(
-                &mut sessions_map,
-                source,
-                0,
-                key,
-                duration,
-                allowed_actions.clone(),
-            )
-            .unwrap();
-            assert_eq!(
-                *sessions_map.get(&source).unwrap(),
-                Session {
-                    key,
-                    expires: duration,
-                    allowed_actions: allowed_actions.clone()
-                }
-            );
-        }
-        // # Test case #2.
-        // Error: Allowed actions is empty
-        {
-            let res = funcs::create_session(&mut sessions_map, source, 0, key, duration, vec![]);
-            assert_eq!(
-                res.is_err_and(|err| err == Error::AllowedActionsIsEmpty),
-                true
-            );
-        }
-
-        // # Test case #3.
-        // Error: Already have active session
-        {
-            let res = funcs::create_session(
-                &mut sessions_map,
-                source,
-                0,
-                key,
-                duration,
-                allowed_actions.clone(),
-            );
-            assert_eq!(
-                res.is_err_and(|err| err == Error::AlreadyHaveActiveSession),
-                true
-            );
-        }
-    }
-
-    #[test]
-    fn delete_session() {
-        // Initializing thread logger.
-        let _ = env_logger::try_init();
-
-        // Creating session map.
-        let source = alice();
-        let session = Session {
-            key: 1.into(),
-            expires: 100,
-            allowed_actions: vec![ActionsForSession::StartSingleGame],
-        };
-        let mut sessions_map = sessions_map([(source, session)]);
-        assert!(!sessions_map.is_empty());
-
-        // # Test case #1.
-        // Ok: delete session
-        {
-            funcs::delete_session(&mut sessions_map, source).unwrap();
-            assert!(sessions_map.is_empty())
-        }
-        // # Test case #2.
-        // Error: No active session
-        {
-            let res = funcs::delete_session(&mut sessions_map, source);
-            assert_eq!(res.is_err_and(|err| err == Error::NoActiveSession), true);
-        }
-    }
-
-    mod utils {
-        use super::{Session, SessionMap};
-        use gstd::ActorId;
-
-        pub fn sessions_map<const N: usize>(content: [(ActorId, Session); N]) -> SessionMap {
-            content
-                .into_iter()
-                .map(|(id, session)| (id, session))
-                .collect()
-        }
-
-        pub fn alice() -> ActorId {
-            1u64.into()
-        }
-    }
 }

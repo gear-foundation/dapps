@@ -1,24 +1,17 @@
 use gstd::{collections::HashMap, prelude::*, ActorId, Decode, Encode, TypeInfo};
 
 pub type SingleGamesMap = HashMap<ActorId, SingleGame>;
-pub type SessionMap = HashMap<ActorId, Session>;
 pub(crate) type Result<T, E = Error> = core::result::Result<T, E>;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rtl::scale_codec)]
 #[scale_info(crate = sails_rtl::scale_info)]
 pub enum Error {
-    AlreadyHaveActiveSession,
-    NoActiveSession,
-    SeveralGames,
     WrongStep,
     NoSuchGame,
     GameIsAlreadyOver,
     StatusIsPendingVerification,
     WrongStatusOrHit,
-    AllowedActionsIsEmpty,
-    ErrorZkVerify,
-    InvalidVerificationKey,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
@@ -28,10 +21,9 @@ pub struct SingleGame {
     pub player_board: Vec<Entity>,
     pub bot_ships: Ships,
     pub start_time: u64,
-    pub status: Status,
     pub end_time: Option<u64>,
+    pub status: Status,
     pub total_shots: u64,
-    pub result: Option<BattleshipParticipants>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
@@ -43,7 +35,6 @@ pub struct SingleGameState {
     pub status: Status,
     pub end_time: Option<u64>,
     pub total_shots: u64,
-    pub result: Option<BattleshipParticipants>,
 }
 
 impl SingleGame {
@@ -107,32 +98,14 @@ impl SingleGame {
         }
     }
 }
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rtl::scale_codec)]
-#[scale_info(crate = sails_rtl::scale_info)]
-pub struct Session {
-    // the address of the player who will play on behalf of the user
-    pub key: ActorId,
-    // until what time the session is valid
-    pub expires: u64,
-    // what messages are allowed to be sent by the account (key)
-    pub allowed_actions: Vec<ActionsForSession>,
-}
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rtl::scale_codec)]
-#[scale_info(crate = sails_rtl::scale_info)]
-pub enum ActionsForSession {
-    StartSingleGame,
-    StartMultipleGame,
-    Move,
-    VerifyMove,
-}
+
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rtl::scale_codec)]
 #[scale_info(crate = sails_rtl::scale_info)]
 pub enum Status {
     PendingVerificationOfTheMove(u8),
     PendingMove,
+    GameOver(BattleshipParticipants),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]

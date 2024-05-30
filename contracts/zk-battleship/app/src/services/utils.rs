@@ -1,5 +1,5 @@
 use core::fmt::Debug;
-use gstd::{exec, ext, format, prelude::*, Encode};
+use gstd::{ext, format, prelude::*, Encode};
 use sails_rtl::gstd::events::{EventTrigger, GStdEventTrigger};
 use sails_rtl::scale_info::StaticTypeInfo;
 
@@ -14,12 +14,10 @@ pub fn panic(err: impl Debug) -> ! {
     ext::panic(&format!("{err:?}"))
 }
 
-pub fn deposit_event<E: Encode + StaticTypeInfo>(event: E) -> ! {
+pub fn deposit_event<E: Encode + StaticTypeInfo>(event: E) {
     if GStdEventTrigger::<E>::new().trigger(event).is_err() {
         panic("Failed to deposit event");
     }
-
-    exec::leave()
 }
 
 #[macro_export]
@@ -30,8 +28,6 @@ macro_rules! declare_storage {
 
     (module: $module: ident, name: $name: ident, ty: $ty: ty $(,)?) => {
         pub struct $name(());
-
-        pub use $module::*;
 
         mod $module {
             use super::*;

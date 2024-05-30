@@ -210,8 +210,8 @@ pub fn get_move_vk_proof_public() -> (InputVerifyingKeyBytes, ProofBytes, Public
     let delta_g2 = G2Affine::deserialize_uncompressed_unchecked(&*vk_bytes.vk_delta_g2).unwrap();
 
     let alpha_g1_beta_g2 = Bls12_381::pairing(alpha_g1, beta_g2).0;
-    let gamma_g2_neg_pc: G2Affine = gamma_g2.into_group().neg().into_affine().into();
-    let delta_g2_neg_pc: G2Affine = delta_g2.into_group().neg().into_affine().into();
+    let gamma_g2_neg_pc: G2Affine = gamma_g2.into_group().neg().into_affine();
+    let delta_g2_neg_pc: G2Affine = delta_g2.into_group().neg().into_affine();
 
     let proof_bytes = ProofBytes {
         a: vec![
@@ -355,8 +355,8 @@ pub fn get_start_vk_proof_public() -> (InputVerifyingKeyBytes, ProofBytes, Publi
     let delta_g2 = G2Affine::deserialize_uncompressed_unchecked(&*vk_bytes.vk_delta_g2).unwrap();
 
     let alpha_g1_beta_g2 = Bls12_381::pairing(alpha_g1, beta_g2).0;
-    let gamma_g2_neg_pc: G2Affine = gamma_g2.into_group().neg().into_affine().into();
-    let delta_g2_neg_pc: G2Affine = delta_g2.into_group().neg().into_affine().into();
+    let gamma_g2_neg_pc: G2Affine = gamma_g2.into_group().neg().into_affine();
+    let delta_g2_neg_pc: G2Affine = delta_g2.into_group().neg().into_affine();
 
     let proof_bytes = ProofBytes {
         a: vec![

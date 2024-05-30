@@ -11,12 +11,11 @@ pub(crate) type Result<T, E = Error> = core::result::Result<T, E>;
 pub enum Error {
     SeveralGames,
     NoSuchGame,
-    GameAlreadyStarted,
     WrongStep,
     AccessDenied,
-    MissingSecondPlayer,
-    GameIsAlreadyOver,
     WrongStatus,
+    NotPlayer,
+    AlreadyVerified,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
@@ -27,9 +26,8 @@ pub struct MultipleGame {
     pub second_player_board: Option<(ActorId, Vec<Entity>)>,
     pub participants: (ActorId, ActorId),
     pub start_time: Option<u64>,
-    pub status: Status,
     pub end_time: Option<u64>,
-    pub result: Option<ActorId>,
+    pub status: Status,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
@@ -37,8 +35,10 @@ pub struct MultipleGame {
 #[scale_info(crate = sails_rtl::scale_info)]
 pub enum Status {
     Registration,
+    VerificationPlacement(Option<ActorId>),
     PendingVerificationOfTheMove((ActorId, u8)),
     Turn(ActorId),
+    GameOver(ActorId),
 }
 
 impl MultipleGame {
