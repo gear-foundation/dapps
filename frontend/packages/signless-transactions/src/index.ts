@@ -4,6 +4,7 @@ import {
   useSignlessTransactions,
   DEFAULT_SIGNLESS_CONTEXT,
   SignlessContext,
+  SignlessTransactionsProviderProps,
 } from './context';
 import { useSignlessSendMessage, useSignlessSendMessageHandler, SendSignlessMessageOptions } from './hooks';
 
@@ -18,4 +19,4 @@ export {
   DEFAULT_SIGNLESS_CONTEXT,
 };
 
-export type { SendSignlessMessageOptions, SignlessContext };
+export type { SendSignlessMessageOptions, SignlessContext, SignlessTransactionsProviderProps };

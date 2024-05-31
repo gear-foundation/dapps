@@ -1,0 +1,18 @@
+@use '~styles/mixins' as *;
+
+.post-logo {
+  position: relative;
+  top: -5px;
+  font-size: 20px;
+  font-weight: 400;
+  background: linear-gradient(90deg, #2b2b2b 33.39%, #0ed3a3 77.42%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  align-self: start;
+  margin-bottom: 10px;
+
+  @include md {
+    display: none;
+  }
+}

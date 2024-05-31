@@ -2,11 +2,13 @@ import { memo, useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAtom, useAtomValue } from 'jotai';
 import isEqual from 'lodash.isequal';
-import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useApi, useHandleCalculateGas } from '@gear-js/react-hooks';
 import { Bytes } from '@polkadot/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
-import { UserMessageSent } from '@gear-js/api';
+import { UserMessageSent, decodeAddress } from '@gear-js/api';
 import { Container, Footer } from '@dapps-frontend/ui';
+import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import styles from './Layout.module.scss';
 import { cx, logger, withoutCommas } from '@/utils';
 import { Heading } from '../Heading';
@@ -22,7 +24,6 @@ import { MessageDetails, RepliesQueue, UserMessage, WinStatus } from './Layout.i
 import { PLAY } from '@/App.routes';
 import { ContractError, DecodedReply, DecodedReplyItem, GameState } from '@/types';
 import { ADDRESS } from '@/consts';
-import { useCheckBalance, useHandleCalculateGas } from '@/hooks';
 import { useAccountAvailableBalance } from '@/features/Wallet/hooks';
 import {
   CURRENT_SENT_MESSAGE_ID_ATOM,
@@ -32,6 +33,7 @@ import {
 } from '../../atoms';
 
 function LayoutComponent() {
+  const { signless, gasless } = useEzTransactions();
   const [currentGame, setCurrentGame] = useAtom(CURRENT_GAME);
   const isCurrentGameRead = useAtomValue(IS_CURRENT_GAME_READ_ATOM);
   const [isPlayerAction, setIsPlayerAction] = useState<boolean>(true);
@@ -40,7 +42,10 @@ function LayoutComponent() {
   const { isAvailableBalanceReady } = useAccountAvailableBalance();
   const { account } = useAccount();
   const alert = useAlert();
-  const { checkBalance } = useCheckBalance();
+  const { checkBalance } = useCheckBalance({
+    signlessPairVoucherId: signless.voucher?.id,
+    gaslessVoucherId: gasless.voucherId,
+  });
   const navigate = useNavigate();
   const sendPlayerMoveMessage = usePlayerMoveMessage();
   const { meta, message: startGameMessage } = useStartGameMessage();
@@ -56,14 +61,14 @@ function LayoutComponent() {
 
   const getDecodedPayload = (payload: Bytes) => {
     if (meta?.types.others.output) {
-      return meta.createType(meta?.types.others.output, payload).toHuman();
+      return meta.createType(meta?.types.others.output, [null, payload]).toHuman();
     }
   };
 
   const getDecodedReply = (payload: Bytes): DecodedReply => {
-    const decodedPayload = getDecodedPayload(payload);
+    const decodedPayload = getDecodedPayload(payload) as [null, DecodedReply];
 
-    return decodedPayload as DecodedReply;
+    return decodedPayload[1] as DecodedReply;
   };
 
   const handleUnsubscribeFromEvent = (onSuccess?: () => void) => {
@@ -152,7 +157,8 @@ function LayoutComponent() {
 
     const { destination, source, details: messageDetails, id } = message as UserMessage;
 
-    const isOwner = destination.toHex() === account?.decodedAddress;
+    const signlessPairAddress = signless.pair && decodeAddress(signless.pair.address);
+    const isOwner = destination.toHex() === account?.decodedAddress || destination.toHex() === signlessPairAddress;
     const isCurrentProgram = source.toHex() === ADDRESS.CONTRACT;
 
     const details = messageDetails.toHuman() as MessageDetails;
@@ -182,7 +188,7 @@ function LayoutComponent() {
       logger('Subscribed on reply');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [api, isSubscribed, meta]);
+  }, [api, isSubscribed, meta, signless.pair?.address]);
 
   const defineStrategyAction = (type: 'accelerate' | 'shoot') => {
     if (type === 'accelerate') {
@@ -194,7 +200,7 @@ function LayoutComponent() {
     }
   };
 
-  const handleActionChoose = (type: 'accelerate' | 'shoot') => {
+  const handleActionChoose = async (type: 'accelerate' | 'shoot') => {
     setIsPlayerAction(false);
     logger(`CLICK ACTION ${type}`);
     logger(`Disabling actions`);
@@ -205,6 +211,17 @@ function LayoutComponent() {
     };
 
     handleSubscribeToEvent();
+
+    let { voucherId } = gasless;
+    if (account && gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
+      voucherId = await gasless.requestVoucher(account.address);
+    }
+
+    const getOnError = (error: string) => () => {
+      setIsPlayerAction(true);
+      handleUnsubscribeFromEvent();
+      logger(error);
+    };
 
     calculateGas(payload)
       .then((res) => res.toHuman())
@@ -218,32 +235,27 @@ function LayoutComponent() {
         logger(`Sending message`);
         console.log(`START TURN ${Number(currentGame?.currentRound) + 1}`);
 
-        checkBalance(
-          gasLimit,
-          () =>
-            sendPlayerMoveMessage({
-              payload,
-              gasLimit,
-              onError: () => {
-                setIsPlayerAction(true);
-                handleUnsubscribeFromEvent();
-                logger(`Errror send message`);
-              },
-              onSuccess: (messageId) => {
-                logger(`sucess on ID: ${messageId}`);
-              },
-              onInBlock: (messageId) => {
-                logger('messageInBlock');
-                logger(`messageID: ${messageId}`);
-                setCurrentSentMessageId(messageId);
-              },
-            }),
-          () => {
-            setIsPlayerAction(true);
-            handleUnsubscribeFromEvent();
-            logger(`Errror check balance`);
-          },
-        );
+        const sendMessage = () =>
+          sendPlayerMoveMessage({
+            payload,
+            gasLimit,
+            voucherId,
+            onError: getOnError(`Errror send message`),
+            onSuccess: (messageId) => {
+              logger(`sucess on ID: ${messageId}`);
+            },
+            onInBlock: (messageId) => {
+              logger('messageInBlock');
+              logger(`messageID: ${messageId}`);
+              setCurrentSentMessageId(messageId);
+            },
+          });
+
+        if (voucherId) {
+          sendMessage();
+        } else {
+          checkBalance(gasLimit, sendMessage, getOnError(`Errror check balance`));
+        }
       })
       .catch((error) => {
         logger(error);
@@ -262,13 +274,26 @@ function LayoutComponent() {
   };
 
   const handleStartNewGame = useCallback(
-    (startManually?: boolean) => {
+    async (startManually?: boolean) => {
       if (meta && isCurrentGameRead && (!currentGame || startManually)) {
         const payload = {
-          StartGame: null,
+          StartGame: {},
         };
 
         handleSubscribeToEvent();
+
+        let { voucherId } = gasless;
+        if (account && gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
+          voucherId = await gasless.requestVoucher(account.address);
+        }
+
+        const onError = (error?: unknown) => {
+          handleUnsubscribeFromEvent();
+          setIsStateRead(true);
+          setIsLoading(false);
+          logger(error || 'error');
+          navigate(PLAY, { replace: true });
+        };
 
         setIsPlayerAction(false);
         setIsLoading(true);
@@ -280,47 +305,34 @@ function LayoutComponent() {
             const minLimit = withoutCommas(min_limit as string);
             const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
 
-            checkBalance(
-              gasLimit,
-              () => {
-                startGameMessage({
-                  payload,
-                  gasLimit,
-                  onInBlock: (messageId) => {
-                    logger('Start Game messageInBlock');
-                    logger(`messageID: ${messageId}`);
-                    setCurrentSentMessageId(messageId);
-                  },
-                  onError: () => {
-                    handleUnsubscribeFromEvent();
-                    setIsStateRead(true);
-                    setIsLoading(false);
-                    logger('error');
-                    navigate(PLAY, { replace: true });
-                  },
-                });
-              },
-              () => {
-                handleUnsubscribeFromEvent();
-                setIsStateRead(true);
-                setIsLoading(false);
-                logger('error');
-                navigate(PLAY, { replace: true });
-              },
-            );
+            const sendMessage = () => {
+              startGameMessage({
+                payload,
+                gasLimit,
+                voucherId,
+                onInBlock: (messageId) => {
+                  logger('Start Game messageInBlock');
+                  logger(`messageID: ${messageId}`);
+                  setCurrentSentMessageId(messageId);
+                },
+                onError,
+              });
+            };
+
+            if (voucherId) {
+              sendMessage();
+            } else {
+              checkBalance(gasLimit, sendMessage, onError);
+            }
           })
           .catch((error) => {
-            logger(error);
-            handleUnsubscribeFromEvent();
-            setIsStateRead(true);
-            setIsLoading(false);
             alert.error('Gas calculation error');
-            navigate(PLAY, { replace: true });
+            onError(error);
           });
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [meta, currentGame],
+    [meta, currentGame, account, gasless, signless, handleSubscribeToEvent],
   );
 
   useEffect(() => {
@@ -421,6 +433,7 @@ function LayoutComponent() {
                     variant="primary"
                     label="Play again"
                     size="large"
+                    isLoading={gasless.isLoading}
                     className={cx(styles.btn)}
                     onClick={() => handleStartNewGame(true)}
                   />

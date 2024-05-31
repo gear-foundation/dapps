@@ -5,7 +5,9 @@ import { useAccount, useApi } from '@gear-js/react-hooks';
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
 import { Container, Footer } from '@dapps-frontend/ui';
 import { GamePage, MainPage } from '@/pages';
+// ! TODO: compare headers
 import { Header } from '@/components';
+// import { Header } from '@/components/layout/header';
 import { withProviders } from '@/hocs';
 import { ScrollToTop, cx } from '@/utils';
 import { LOGIN, PLAY, START } from '@/App.routes';
@@ -19,6 +21,7 @@ import { LoginPage } from './pages/LoginPage';
 import { ApiLoader } from './components/ApiLoader';
 import { useGameState } from './features/Game/hooks';
 import { useAuth, useAuthSync } from './features/Auth/hooks';
+import '@gear-js/vara-ui/dist/style.css';
 
 function AppComponent() {
   const { isApiReady } = useApi();

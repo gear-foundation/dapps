@@ -13,7 +13,11 @@ type Session = {
   allowedActions: string[];
 };
 
-function useCreateSession(programId: HexString, metadata: ProgramMetadata | undefined) {
+function useCreateSession(
+  programId: HexString,
+  metadata: ProgramMetadata | undefined,
+  createSignatureType?: (metadata: ProgramMetadata, payloadToSig: Session) => `0x${string}`,
+) {
   const { api, isApiReady } = useApi();
   const alert = useAlert();
   const { account } = useAccount();
@@ -127,7 +131,9 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     console.log('metadata.types?.others?.output');
     console.log(metadata.types?.others?.output);
 
-    const hexToSign = metadata.createType(metadata.types.others.output, payloadToSign).toHex();
+    const hexToSign = createSignatureType
+      ? createSignatureType(metadata, payloadToSign)
+      : metadata.createType(metadata.types.others.output, payloadToSign).toHex();
 
     console.log('HEXtoSIGN: ', hexToSign);
     return signRaw({ address: account.address, data: hexToSign, type: 'bytes' });
@@ -217,3 +223,5 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 }
 
 export { useCreateSession };
+
+export type { Session };

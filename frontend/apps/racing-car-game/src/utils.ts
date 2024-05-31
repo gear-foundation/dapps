@@ -1,4 +1,6 @@
+import { SignlessTransactionsProviderProps } from '@dapps-frontend/signless-transactions';
 import { AlertContainerFactory } from '@gear-js/react-hooks/dist/esm/types';
+import { Codec } from '@polkadot/types/types';
 import clsx from 'clsx';
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
@@ -94,4 +96,19 @@ export const logger = (message: unknown | unknown[]) => {
   const time = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}.${milliseconds}`;
 
   console.log(time, message);
+};
+
+/**
+ * Get first element of tuple type
+ *  */
+export const createSignatureType: SignlessTransactionsProviderProps['createSignatureType'] = (
+  metadata,
+  payloadToSign,
+) => {
+  if (!metadata.types?.others?.output) {
+    throw new Error(`Metadata type doesn't exist`);
+  }
+
+  const data = metadata.createType(metadata.types.others.output, [payloadToSign]) as unknown as Codec[];
+  return data[0].toHex();
 };
