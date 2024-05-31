@@ -15,14 +15,8 @@ export const Game = () => {
   const [, setGameOver] = useAtom(GAME_OVER);
   const { configState } = useGame();
   const [coins] = useAtom(COINS);
-  const [gameRestarted, setGameRestarted] = useState(false);
 
   const score = configState && calculatePoints(coins, configState, searchParams.get('level') as IGameLevel);
-
-  const handleGameRestart = () => {
-    setGameRestarted((prev) => !prev); 
-    setGameOver(false); 
-  };
 
   return (
     <div>
@@ -31,7 +25,7 @@ export const Game = () => {
           <div className="flex gap-3 items-center">
             <div className="flex gap-3 items-center font-semibold">
               <Icons.statsTimer />
-              <GameTimer gameRestarted={gameRestarted} />
+              <GameTimer />
             </div>
             <div className="flex gap-3 items-center font-semibold">
               <Icons.statsCoins />
@@ -43,7 +37,7 @@ export const Game = () => {
             Exit
           </div>
         </div>
-        <GameCanvas onRestart={handleGameRestart} />
+        <GameCanvas />
         <div className="flex gap-5 my-3">
           <div className="flex gap-3 items-center">
             <div className="bg-[#DFDFDF] rounded-sm p-1">
