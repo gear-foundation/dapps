@@ -5,9 +5,7 @@ import { useAccount, useApi } from '@gear-js/react-hooks';
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
 import { Container, Footer } from '@dapps-frontend/ui';
 import { GamePage, MainPage } from '@/pages';
-// ! TODO: compare headers
 import { Header } from '@/components';
-// import { Header } from '@/components/layout/header';
 import { withProviders } from '@/hocs';
 import { ScrollToTop, cx } from '@/utils';
 import { LOGIN, PLAY, START } from '@/App.routes';
