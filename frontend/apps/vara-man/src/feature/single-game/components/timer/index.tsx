@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
 import { GAME_OVER } from '@/feature/game/consts';
 
-const totalTimeGame = 10 * 10 * 1000;
+const totalTimeGame = 10 * 60 * 1000;
 
 export const GameTimer = () => {
   const [gameOver, setGameOver] = useAtom(GAME_OVER);
