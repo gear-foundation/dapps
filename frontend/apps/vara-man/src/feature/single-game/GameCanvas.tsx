@@ -12,11 +12,7 @@ import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import useOnScreen from '@/hooks/use-on-screen';
 
-type Props = {
-  onRestart: () => void;
-};
-
-export const GameCanvas = ({ onRestart }: Props) => {
+export const GameCanvas = () => {
   const [searchParams] = useSearchParams();
   const [coins, setCoins] = useAtom(COINS);
   const [gameOver, setGameOver] = useAtom(GAME_OVER);
@@ -104,7 +100,6 @@ export const GameCanvas = ({ onRestart }: Props) => {
 
   const restartGame = () => {
     gameInstanceRef.current = null;
-    onRestart(); // Notify the parent component
   };
 
   return (
