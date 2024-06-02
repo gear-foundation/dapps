@@ -1,6 +1,7 @@
 name: Contracts CI
 
 on:
+  workflow_dispatch:
   pull_request:
     paths-ignore: frontend/**
   push:
