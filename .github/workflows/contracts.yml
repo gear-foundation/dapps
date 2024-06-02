@@ -41,6 +41,7 @@ jobs:
       - name: Set up Rust
         uses: dtolnay/rust-toolchain@stable
         with:
+          toolchain: nightly
           targets: wasm32-unknown-unknown
 
       # mandatory tasks
@@ -48,13 +49,14 @@ jobs:
         run: 'cargo +nightly fmt --all -- --config imports_granularity=Crate,edition=2021'
       - name: Clippy
         run: 'cargo +nightly clippy --release --workspace --all-targets --all-features — -D warnings'
-        
+
       # Only on push to master
       - name: On Push to master
         if: github.ref != 'refs/heads/master'
         run: |
           cargo test --release --workspace
           cargo test --workspace
+
       # Only on push to PR
       - name: On Push to Pull Request
         if: github.ref != 'refs/heads/master'
