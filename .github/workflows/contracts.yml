@@ -49,7 +49,7 @@ jobs:
       - name: Fmt
         run: 'cargo +nightly fmt --all -- --config imports_granularity=Crate,edition=2021'
       - name: Clippy
-        run: 'cargo +nightly clippy --release --workspace --all-targets --all-features — -D warnings'
+        run: 'cargo +nightly clippy --release --workspace --all-targets --all-features -- -D warnings'
 
       # Only on push to master
       - name: On Push to master
