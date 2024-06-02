@@ -1,0 +1,8 @@
+version: '3.7'
+services:
+  contracts:
+    image: "ghcr.io/gear-foundation/dapps/ci-rust:1.78.0"
+    volumes:
+      - "./dapps/contracts:/contracts"
+      - "/output:/contracts/target"
+    command: ["cargo","build"]
