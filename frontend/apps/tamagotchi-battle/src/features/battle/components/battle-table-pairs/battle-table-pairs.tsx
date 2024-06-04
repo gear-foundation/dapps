@@ -145,9 +145,9 @@ const BattleTableList = () => {
   return (
     <ScrollArea className="max-h-80 pr-3 -mr-3">
       <ul className="leading-4 space-y-1.5">
-        {pairs.map((pair, i) => (
+        {pairs.map((pair) => (
           <li key={pair.id}>
-            <BattleTablePairsRow data={pair} isActive={i === currentPairIdx} />
+            <BattleTablePairsRow data={pair} isActive={pair.idx === currentPairIdx} />
           </li>
         ))}
       </ul>
