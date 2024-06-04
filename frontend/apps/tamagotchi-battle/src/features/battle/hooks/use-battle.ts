@@ -115,9 +115,11 @@ export function useInitBattleData() {
   // track state updates
   useEffect(() => {
     if (state) {
-      if (prevBattleState.current === 'WaitNextRound' && state.state === 'GameIsOn') setCurrentPairIdx(0);
+      if ((prevBattleState.current === 'WaitNextRound' && state.state === 'GameIsOn') || !state.pairs[currentPairIdx]) {
+        const firstAvailableIdx = Number(Object.keys(state.pairs)[0]) || 0;
 
-      if (!state.pairs[currentPairIdx]) setCurrentPairIdx(0);
+        setCurrentPairIdx(firstAvailableIdx);
+      }
 
       if (prevBattleState.current === 'GameIsOver' && state.state === 'Registration') navigate('/');
 
