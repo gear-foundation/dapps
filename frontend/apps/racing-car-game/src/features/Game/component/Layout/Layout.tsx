@@ -275,17 +275,12 @@ function LayoutComponent() {
 
   const handleStartNewGame = useCallback(
     async (startManually?: boolean) => {
-      if (meta && isCurrentGameRead && (!currentGame || startManually)) {
+      if (meta && isCurrentGameRead && !isLoading && (!currentGame || startManually)) {
         const payload = {
           StartGame: {},
         };
 
         handleSubscribeToEvent();
-
-        let { voucherId } = gasless;
-        if (account && gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
-          voucherId = await gasless.requestVoucher(account.address);
-        }
 
         const onError = (error?: unknown) => {
           handleUnsubscribeFromEvent();
@@ -298,6 +293,11 @@ function LayoutComponent() {
         setIsPlayerAction(false);
         setIsLoading(true);
         setIsStateRead(false);
+
+        let { voucherId } = gasless;
+        if (account && gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
+          voucherId = await gasless.requestVoucher(account.address);
+        }
 
         calculateGas(payload)
           .then((res) => res.toHuman())
@@ -332,7 +332,7 @@ function LayoutComponent() {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [meta, currentGame, account, gasless, signless, handleSubscribeToEvent],
+    [meta, currentGame, isCurrentGameRead, account, gasless, signless, handleSubscribeToEvent],
   );
 
   useEffect(() => {
@@ -344,7 +344,7 @@ function LayoutComponent() {
   useEffect(() => {
     handleStartNewGame();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [handleStartNewGame]);
+  }, [meta, isCurrentGameRead]);
 
   useEffect(() => {
     if (replyData && currentGame) {
