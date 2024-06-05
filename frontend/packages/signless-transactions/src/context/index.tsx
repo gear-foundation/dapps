@@ -19,6 +19,9 @@ type SignlessTransactionsProviderProps = {
   programId: HexString;
   metadataSource: string;
   children: ReactNode;
+  /**
+   * createSignatureType param is used when metadata.types.others.output has multiple types (e.g. tuple) to get the actual type for SignatureData
+   */
   createSignatureType?: (metadata: ProgramMetadata, payloadToSig: Session) => `0x${string}`;
 };
 

@@ -2,16 +2,15 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { UserMessageSent } from '@gear-js/api';
 import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
-import { Bytes } from '@polkadot/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import isEqual from 'lodash.isequal';
 import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
 import { ADDRESS } from '@/consts';
 import { useProgramMetadata } from '@/hooks';
 import metaTxt from '@/assets/meta/meta.txt';
-import { ContractError, DecodedReply, GameState } from '@/types';
+import { ContractError, GameState } from '@/types';
 import { CURRENT_SENT_MESSAGE_ID_ATOM, IS_STATE_READ_ATOM, REPLY_DATA_ATOM } from './atoms';
-import { logger } from '@/utils';
+import { getDecodedReply, logger } from '@/utils';
 import { IS_SUBSCRIBED_ATOM } from '@/atoms';
 
 function usePlayerMoveMessage() {
@@ -48,18 +47,6 @@ function useSubscribeSentMessage() {
     }
   };
 
-  const getDecodedPayload = (payload: Bytes) => {
-    if (meta?.types.others.output) {
-      return meta.createType(meta?.types.others.output, [null, payload]).toHuman();
-    }
-  };
-
-  const getDecodedReply = (payload: Bytes): DecodedReply => {
-    const decodedPayload = getDecodedPayload(payload) as [null, DecodedReply];
-
-    return decodedPayload[1] as DecodedReply;
-  };
-
   const clearReplyData = () => {
     setReplyData(null);
   };
@@ -77,7 +64,7 @@ function useSubscribeSentMessage() {
         logger(message.toHuman());
         logger('trying to decode....:');
         try {
-          const reply = getDecodedReply(payload);
+          const reply = getDecodedReply(payload, meta);
           logger('DECODED message successfully');
           logger('new reply HAS COME:');
           logger(reply);

@@ -3,14 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useAtom, useAtomValue } from 'jotai';
 import isEqual from 'lodash.isequal';
 import { useAccount, useAlert, useApi, useHandleCalculateGas } from '@gear-js/react-hooks';
-import { Bytes } from '@polkadot/types';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { UserMessageSent, decodeAddress } from '@gear-js/api';
 import { Container, Footer } from '@dapps-frontend/ui';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import styles from './Layout.module.scss';
-import { cx, logger, withoutCommas } from '@/utils';
+import { cx, getDecodedReply, logger, withoutCommas } from '@/utils';
 import { Heading } from '../Heading';
 import { Road } from '../Road';
 import { Button } from '@/ui';
@@ -22,7 +21,7 @@ import { usePlayerMoveMessage, useStartGameMessage } from '../../hooks';
 import { Loader } from '@/components';
 import { MessageDetails, RepliesQueue, UserMessage, WinStatus } from './Layout.interface';
 import { PLAY } from '@/App.routes';
-import { ContractError, DecodedReply, DecodedReplyItem, GameState } from '@/types';
+import { ContractError, DecodedReplyItem, GameState } from '@/types';
 import { ADDRESS } from '@/consts';
 import { useAccountAvailableBalance } from '@/features/Wallet/hooks';
 import {
@@ -58,18 +57,6 @@ function LayoutComponent() {
   const [replyData, setReplyData] = useAtom(REPLY_DATA_ATOM);
   const [currentSentMessageId, setCurrentSentMessageId] = useAtom(CURRENT_SENT_MESSAGE_ID_ATOM);
   const [isSubscribed, setIsSubscribed] = useAtom(IS_SUBSCRIBED_ATOM);
-
-  const getDecodedPayload = (payload: Bytes) => {
-    if (meta?.types.others.output) {
-      return meta.createType(meta?.types.others.output, [null, payload]).toHuman();
-    }
-  };
-
-  const getDecodedReply = (payload: Bytes): DecodedReply => {
-    const decodedPayload = getDecodedPayload(payload) as [null, DecodedReply];
-
-    return decodedPayload[1] as DecodedReply;
-  };
 
   const handleUnsubscribeFromEvent = (onSuccess?: () => void) => {
     if (messageSubscription.current) {
@@ -107,7 +94,7 @@ function LayoutComponent() {
 
           logger('trying to decode....:');
           try {
-            const reply = getDecodedReply(manual.payload);
+            const reply = getDecodedReply(manual.payload, meta);
             logger('DECODED message successfully');
             logger('new reply HAS COME:');
             logger(reply);
