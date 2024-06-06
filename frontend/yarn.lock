@@ -12044,30 +12044,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"engine.io-client@npm:~6.5.2":
-  version: 6.5.3
-  resolution: "engine.io-client@npm:6.5.3"
-  dependencies:
-    "@socket.io/component-emitter": "npm:~3.1.0"
-    debug: "npm:~4.3.1"
-    engine.io-parser: "npm:~5.2.1"
-    ws: "npm:~8.11.0"
-    xmlhttprequest-ssl: "npm:~2.0.0"
-  checksum: 15d2136655972984012fe5c92446ff9939c08d872262bbb23cd54be1b66a00d489da93321cd01a8ad72eaf4022cfd73bdc8bccf32fa51c097a96c0b4c679cd7b
-  languageName: node
-  linkType: hard
-
 "engine.io-parser@npm:~5.0.3":
   version: 5.0.7
   resolution: "engine.io-parser@npm:5.0.7"
   checksum: 5fa2c900f4c20c938698d72edde3596562365cb19db4b63a9888f884fdc571b67c04b8d6351bbcb031b4d02b44a4353be13d40a35b1a9050cc12ae75e95ae542
-  languageName: node
-  linkType: hard
-
-"engine.io-parser@npm:~5.2.1":
-  version: 5.2.2
-  resolution: "engine.io-parser@npm:5.2.2"
-  checksum: 38e71a92ed75e2873d4d9cfab7f889e4a3cfc939b689abd1045e1b2ef9f1a50d0350a2bef69f33d313c1aa626232702da5a9043a1038d76f5ecc0be440c648ab
   languageName: node
   linkType: hard
 
@@ -20385,7 +20365,6 @@ __metadata:
     react-scripts: "npm:5.0.1"
     react-transition-group: "npm:^4.4.5"
     sass: "npm:1.62.0"
-    socket.io-client: "npm:^4.7.2"
     types: "npm:*"
     typescript: "npm:4.9.5"
   languageName: unknown
@@ -22104,19 +22083,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"socket.io-client@npm:^4.7.2":
-  version: 4.7.5
-  resolution: "socket.io-client@npm:4.7.5"
-  dependencies:
-    "@socket.io/component-emitter": "npm:~3.1.0"
-    debug: "npm:~4.3.2"
-    engine.io-client: "npm:~6.5.2"
-    socket.io-parser: "npm:~4.2.4"
-  checksum: d5dc90ee63755fbbb0a1cb3faf575c9ce20d98e809a43a4c9c3ce03a56b8810335ae38e678ceb0650ac434d55e72ea6449c2e5d6db8bc7258f7c529148fac99d
-  languageName: node
-  linkType: hard
-
-"socket.io-parser@npm:~4.2.1, socket.io-parser@npm:~4.2.4":
+"socket.io-parser@npm:~4.2.1":
   version: 4.2.4
   resolution: "socket.io-parser@npm:4.2.4"
   dependencies:

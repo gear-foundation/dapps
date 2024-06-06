@@ -1,76 +1,23 @@
-import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
-import { useAccount } from '@gear-js/react-hooks';
-import { VaraBalanceNew as VaraBalance } from '@dapps-frontend/ui';
-import { cx } from '@/utils';
-import { Link } from '@/ui';
+import { EzGaslessTransactions, EzSignlessTransactions } from '@dapps-frontend/ez-transactions';
+import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/consts';
 import styles from './Header.module.scss';
-import logo from '@/assets/icons/logo-vara-black.svg';
-import { HeaderProps } from './Header.interfaces';
-import { useMediaQuery } from '@/hooks';
-import { WalletInfo } from '@/features/Wallet/components/WalletInfo';
-import { MobileMenu } from '../MobileMenu';
+import { Logo } from './logo';
 
-function Header({ menu }: HeaderProps) {
-  const location = useLocation();
-  const { account } = useAccount();
-  const isMobile = useMediaQuery(768);
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
-
-  const burgerMenuHandler = () => {
-    setIsMobileMenuOpen(false);
-  };
-
-  useEffect(() => {
-    if (isMobileMenuOpen && !isMobile) {
-      burgerMenuHandler();
-    }
-  }, [isMobile, isMobileMenuOpen]);
-
+function Header() {
   return (
-    <>
-      <header className={cx(styles.header)}>
-        <div className={cx(styles.container)}>
-          <Link to="/" className={cx(styles['logo-link'], !account ? styles['logo-link-centered'] : '')}>
-            <img src={logo} alt="" />
-            <span className={cx(styles['post-logo'])}>Racing Car</span>
-          </Link>
-          {account && (
-            <>
-              {!isMobile && (
-                <>
-                  <nav className={cx(styles.menu)}>
-                    {menu &&
-                      Object.keys(menu).map((item) => {
-                        const { url } = menu[item];
-
-                        return (
-                          <Link to={url} key={item}>
-                            <p
-                              className={cx(
-                                styles['menu-item'],
-                                location.pathname === `/${url}` ? styles['menu-item--active'] : '',
-                              )}>
-                              {item}
-                            </p>
-                          </Link>
-                        );
-                      })}
-                  </nav>
-                </>
-              )}
-            </>
-          )}
-          {!isMobile && <WalletInfo account={account} buttonClassName={cx(styles['wallet-info-connect-btn'])} />}
-          {account && isMobile && (
-            <div className={cx(styles['menu-wrapper'])}>
-              <VaraBalance />
-              {!!account && <MobileMenu />}
-            </div>
-          )}
-        </div>
-      </header>
-    </>
+    <CommonHeader
+      logo={<Logo label="Racing Car" />}
+      className={{ header: styles.header, content: styles.header__container }}
+      menu={
+        <MenuHandler
+          customItems={[
+            { key: 'signless', option: <EzSignlessTransactions allowedActions={SIGNLESS_ALLOWED_ACTIONS} /> },
+            { key: 'gasless', option: <EzGaslessTransactions /> },
+          ]}
+        />
+      }
+    />
   );
 }
 

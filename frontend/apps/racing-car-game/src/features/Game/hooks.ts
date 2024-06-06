@@ -1,32 +1,28 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
 import { UserMessageSent } from '@gear-js/api';
-import { useAccount, useAlert, useApi, useSendMessage } from '@gear-js/react-hooks';
-import { Bytes } from '@polkadot/types';
+import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import isEqual from 'lodash.isequal';
+import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
 import { ADDRESS } from '@/consts';
 import { useProgramMetadata } from '@/hooks';
 import metaTxt from '@/assets/meta/meta.txt';
-import { ContractError, DecodedReply, GameState } from '@/types';
+import { ContractError, GameState } from '@/types';
 import { CURRENT_SENT_MESSAGE_ID_ATOM, IS_STATE_READ_ATOM, REPLY_DATA_ATOM } from './atoms';
-import { logger } from '@/utils';
+import { getDecodedReply, logger } from '@/utils';
 import { IS_SUBSCRIBED_ATOM } from '@/atoms';
 
 function usePlayerMoveMessage() {
   const meta = useProgramMetadata(metaTxt);
 
-  return useSendMessage(ADDRESS.CONTRACT, meta, {
-    disableAlerts: true,
-  });
+  return useSignlessSendMessage(ADDRESS.CONTRACT, meta, { disableAlerts: true });
 }
 
 function useStartGameMessage() {
   const meta = useProgramMetadata(metaTxt);
 
-  const message = useSendMessage(ADDRESS.CONTRACT, meta, {
-    disableAlerts: true,
-  });
+  const message = useSignlessSendMessage(ADDRESS.CONTRACT, meta, { disableAlerts: true });
 
   return { meta, message };
 }
@@ -51,18 +47,6 @@ function useSubscribeSentMessage() {
     }
   };
 
-  const getDecodedPayload = (payload: Bytes) => {
-    if (meta?.types.others.output) {
-      return meta.createType(meta?.types.others.output, payload).toHuman();
-    }
-  };
-
-  const getDecodedReply = (payload: Bytes): DecodedReply => {
-    const decodedPayload = getDecodedPayload(payload);
-
-    return decodedPayload as DecodedReply;
-  };
-
   const clearReplyData = () => {
     setReplyData(null);
   };
@@ -80,7 +64,7 @@ function useSubscribeSentMessage() {
         logger(message.toHuman());
         logger('trying to decode....:');
         try {
-          const reply = getDecodedReply(payload);
+          const reply = getDecodedReply(payload, meta);
           logger('DECODED message successfully');
           logger('new reply HAS COME:');
           logger(reply);
