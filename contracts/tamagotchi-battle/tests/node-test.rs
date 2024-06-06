@@ -150,7 +150,7 @@ async fn upload_tamagotchis<'a>(
         println!("Tamagotchi `{player}` is initialized.");
         let account_id = client.get_actor_id();
         let tmg_id: [u8; 32] = tmg_id.into();
-        owners.insert(account_id, player.to_string()); 
+        owners.insert(account_id, player.to_string());
         tmg_ids.push(tmg_id.into());
     }
     Ok((tmg_ids, owners))
@@ -290,7 +290,6 @@ async fn get_pair(client: &GearApi, battle_id: ProgramId, pair_id: PairId) -> Re
 
 //     // register tamagotchis
 //     register_tamagotchis(&client, &mut listener, battle_id, tmg_ids).await?;
-
 
 //     // start battle
 //     let message_id = start_battle(&client, battle_id).await?;
@@ -477,7 +476,6 @@ async fn both_players_play() -> Result<()> {
     let max_rounds = 5;
 
     for (pair_id, pair) in pairs {
-
         let player_1 = pair.owner_ids[0];
         let suri_1 = player_id_to_suri
             .get(&player_1)
@@ -486,25 +484,24 @@ async fn both_players_play() -> Result<()> {
         let suri_2 = player_id_to_suri
             .get(&player_2)
             .expect("Players does not exist");
-        
+
         make_move(&client, battle_id, suri_1, pair_id, Move::Attack).await?;
 
         make_move(&client, battle_id, suri_2, pair_id, Move::Attack).await?;
 
-            // wait just over 15 blocks to receive a reply from message
-            let wait = time::Duration::from_secs(45);
-            thread::sleep(wait);
-            let pair = get_pair(&client, battle_id, pair_id)
-                .await?
-                .expect("Pair is None");
+        // wait just over 15 blocks to receive a reply from message
+        let wait = time::Duration::from_secs(45);
+        thread::sleep(wait);
+        let pair = get_pair(&client, battle_id, pair_id)
+            .await?
+            .expect("Pair is None");
 
-            if pair.game_is_over {
-                // check battle state
-                check_battle_state(&client, battle_id, BattleState::GameIsOver).await;
-                break;
-            } else {
-                check_reply(&mut listener, player_1_msg_id, Ok(BattleReply::MoveMade)).await?;
-            
+        if pair.game_is_over {
+            // check battle state
+            check_battle_state(&client, battle_id, BattleState::GameIsOver).await;
+            break;
+        } else {
+            check_reply(&mut listener, player_1_msg_id, Ok(BattleReply::MoveMade)).await?;
         }
     }
 

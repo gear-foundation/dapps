@@ -7350,6 +7350,7 @@ dependencies = [
  "gstd",
  "gtest",
  "hex",
+ "schnorrkel 0.10.2",
  "serde",
  "serde_json",
  "tamagotchi",
@@ -7364,6 +7365,8 @@ version = "1.0.2"
 dependencies = [
  "gmeta",
  "gstd",
+ "parity-scale-codec",
+ "scale-info",
 ]
 
 [[package]]

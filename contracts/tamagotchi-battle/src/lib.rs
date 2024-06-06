@@ -1,11 +1,7 @@
 #![no_std]
 
-use gstd::{
-    collections::{BTreeMap, BTreeSet},
-    debug, exec, msg,
-    prelude::*,
-    ActorId, MessageId,
-};
+use collections::HashSet;
+use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId, MessageId};
 use tamagotchi_battle_io::*;
 use tamagotchi_io::{Error, TmgAction, TmgReply};
 mod pair;
@@ -13,30 +9,146 @@ use pair::*;
 mod utils;
 use utils::{generate_power, get_random_value, BattleUtils};
 mod player;
-
+mod sr25519;
 const COLORS: [&str; 6] = ["Green", "Red", "Blue", "Purple", "Orange", "Yellow"];
+// Minimum duration of session: 1 min = 60_000 ms = 20 blocks
+pub const MINIMUM_SESSION_SURATION_MS: u64 = 60_000;
 
-#[derive(Default, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
+#[derive(Default)]
 struct Battle {
     admins: Vec<ActorId>,
-    players: BTreeMap<ActorId, Player>,
+    players: HashMap<ActorId, Player>,
     players_ids: Vec<ActorId>,
     current_players: Vec<ActorId>,
     active_tmg_owners: Vec<ActorId>,
     state: BattleState,
     current_winner: ActorId,
-    pairs: BTreeMap<PairId, Pair>,
-    players_to_pairs: BTreeMap<ActorId, BTreeSet<PairId>>,
+    pairs: HashMap<PairId, Pair>,
+    players_to_pairs: HashMap<ActorId, HashSet<PairId>>,
     completed_games: u8,
-    waitlist: BTreeSet<MessageId>,
+    waitlist: HashSet<MessageId>,
     config: Config,
+    sessions: HashMap<ActorId, Session>,
 }
 
 static mut BATTLE: Option<Battle> = None;
 
 impl Battle {
+    fn create_session(
+        &mut self,
+        key: &ActorId,
+        duration: u64,
+        allowed_actions: Vec<ActionsForSession>,
+        signature: Option<Vec<u8>>,
+    ) -> Result<BattleReply, BattleError> {
+        assert!(
+            duration >= MINIMUM_SESSION_SURATION_MS,
+            "Duration is too small"
+        );
+
+        let msg_source = msg::source();
+        let block_timestamp = exec::block_timestamp();
+        let block_height = exec::block_height();
+
+        let expires = block_timestamp + duration;
+
+        let number_of_blocks = u32::try_from(duration.div_ceil(self.config.block_duration_ms))
+            .expect("Duration is too large");
+
+        assert!(
+            !allowed_actions.is_empty(),
+            "No messages for approval were passed."
+        );
+
+        let account = match signature {
+            Some(sig_bytes) => {
+                self.check_if_session_exists(key);
+                let pub_key: [u8; 32] = (*key).into();
+                let mut prefix = b"<Bytes>".to_vec();
+                let mut message = SignatureData {
+                    key: msg_source,
+                    duration,
+                    allowed_actions: allowed_actions.clone(),
+                }
+                .encode();
+                let mut postfix = b"</Bytes>".to_vec();
+                prefix.append(&mut message);
+                prefix.append(&mut postfix);
+
+                if crate::sr25519::verify(&sig_bytes, prefix, pub_key).is_err() {
+                    panic!("Failed sign verification");
+                }
+                self.sessions.entry(*key).insert(Session {
+                    key: msg_source,
+                    expires,
+                    allowed_actions,
+                    expires_at_block: block_height + number_of_blocks,
+                });
+                *key
+            }
+            None => {
+                self.check_if_session_exists(&msg_source);
+
+                self.sessions.entry(msg_source).insert(Session {
+                    key: *key,
+                    expires,
+                    allowed_actions,
+                    expires_at_block: block_height + number_of_blocks,
+                });
+                msg_source
+            }
+        };
+
+        msg::send_with_gas_delayed(
+            exec::program_id(),
+            BattleAction::DeleteSessionFromProgram { account },
+            self.config.gas_to_delete_session,
+            0,
+            number_of_blocks,
+        )
+        .expect("Error in sending a delayed msg");
+
+        Ok(BattleReply::SessionCreated)
+    }
+
+    fn check_if_session_exists(&self, account: &ActorId) {
+        if let Some(Session {
+            key: _,
+            expires: _,
+            allowed_actions: _,
+            expires_at_block,
+        }) = self.sessions.get(account)
+        {
+            if *expires_at_block > exec::block_height() {
+                panic!("You already have an active session. If you want to create a new one, please delete this one.")
+            }
+        }
+    }
+
+    fn delete_session_from_program(
+        &mut self,
+        session_for_account: &ActorId,
+    ) -> Result<BattleReply, BattleError> {
+        assert_eq!(
+            exec::program_id(),
+            msg::source(),
+            "The msg source must be the program"
+        );
+
+        if let Some(session) = self.sessions.remove(session_for_account) {
+            assert!(
+                session.expires_at_block <= exec::block_height(),
+                "Too early to delete session"
+            );
+        }
+        Ok(BattleReply::SessionDeleted)
+    }
+
+    fn delete_session_from_account(&mut self) -> Result<BattleReply, BattleError> {
+        assert!(self.sessions.remove(&msg::source()).is_some(), "No session");
+        Ok(BattleReply::SessionDeleted)
+    }
+
     fn start_registration(&mut self) -> Result<BattleReply, BattleError> {
         //self.check_state(BattleState::GameIsOver)?;
         self.check_admin(&msg::source())?;
@@ -44,14 +156,24 @@ impl Battle {
         self.current_winner = ActorId::zero();
         self.players_ids = Vec::new();
         self.completed_games = 0;
-        self.players_to_pairs = BTreeMap::new();
+        self.players_to_pairs = HashMap::new();
         self.current_players = Vec::new();
         self.active_tmg_owners = Vec::new();
-        self.pairs = BTreeMap::new();
+        self.pairs = HashMap::new();
         Ok(BattleReply::RegistrationStarted)
     }
 
-    async fn register(&mut self, tmg_id: &TamagotchiId) -> Result<BattleReply, BattleError> {
+    async fn register(
+        &mut self,
+        tmg_id: &TamagotchiId,
+        session_for_account: Option<ActorId>,
+    ) -> Result<BattleReply, BattleError> {
+        let player = self.get_player(
+            &msg::source(),
+            &session_for_account,
+            ActionsForSession::Register,
+        );
+
         self.check_state(BattleState::Registration)?;
 
         self.check_max_participants()?;
@@ -60,7 +182,7 @@ impl Battle {
 
         let (owner, name, date_of_birth) = get_tmg_info(tmg_id).await?;
 
-        check_tmg_owner(owner, msg::source())?;
+        check_tmg_owner(owner, player)?;
 
         if !self.players.contains_key(tmg_id) {
             let power = generate_power(self.config.min_power, self.config.max_power, *tmg_id);
@@ -95,15 +217,17 @@ impl Battle {
     /// This message must be sent after the registration end (the contract is in the `BattleState::Registration` state)
     /// It must also be sent when the game is on but a round is ended (the contract is in the `BattleState::WaitNextRound` state)
     /// BattleState::WaitNextRound` state means the the battles in pairs are over and winners are expecting to play in the next round
-    fn start_battle(&mut self) -> Result<BattleReply, BattleError> {
+    fn start_battle(
+        &mut self
+    ) -> Result<BattleReply, BattleError> {
         match self.state {
             BattleState::Registration | BattleState::WaitNextRound => {
                 self.check_min_player_amount()?;
                 self.check_admin(&msg::source())?;
 
                 // Clear the state if the state is `BattleState::WaitNextRound`
-                self.pairs = BTreeMap::new();
-                self.players_to_pairs = BTreeMap::new();
+                self.pairs = HashMap::new();
+                self.players_to_pairs = HashMap::new();
                 self.completed_games = 0;
 
                 self.split_into_pairs()?;
@@ -144,7 +268,15 @@ impl Battle {
                 }
 
                 for (id, owner_0, owner_1) in pair_ids_to_remove.into_iter() {
+                    let pairs_len = self.pairs.len() - 1;
                     self.remove_pair(&id, vec![owner_0, owner_1]);
+                    check_all_games_completion(
+                        self.completed_games,
+                        pairs_len as u8,
+                        &mut self.state,
+                        &mut self.current_winner,
+                        &self.players_ids,
+                    );
                 }
 
                 if number_of_missed_turns > 0 {
@@ -182,9 +314,20 @@ impl Battle {
         Ok(())
     }
 
-    fn make_move(&mut self, pair_id: PairId, tmg_move: Move) -> Result<BattleReply, BattleError> {
+    fn make_move(
+        &mut self,
+        pair_id: PairId,
+        tmg_move: Move,
+        session_for_account: Option<ActorId>,
+    ) -> Result<BattleReply, BattleError> {
         self.check_state(BattleState::GameIsOn)?;
         let pairs_len = self.pairs.len() as u8;
+
+        let player = self.get_player(
+            &msg::source(),
+            &session_for_account,
+            ActionsForSession::MakeMove,
+        );
 
         let pair = get_mut_pair(&mut self.pairs, pair_id)?;
 
@@ -230,9 +373,9 @@ impl Battle {
             // All necessary checks must be performed.
             let current_turn = pair.moves.len();
             let tmg_owner = pair.owner_ids[current_turn];
-            let msg_source = msg::source();
-            check_tmg_owner(tmg_owner, msg_source)?;
-            is_pair_id_in_player_pair_ids(&self.players_to_pairs, &msg_source, pair_id)?;
+            
+            check_tmg_owner(tmg_owner, player)?;
+            is_pair_id_in_player_pair_ids(&self.players_to_pairs, &player, pair_id)?;
             pair.moves.push(Some(tmg_move));
             pair.amount_of_skipped_moves = 0;
         }
@@ -297,6 +440,37 @@ impl Battle {
         self.admins.push(*new_admin);
         Ok(BattleReply::AdminAdded)
     }
+
+    fn get_player(
+        &self,
+        msg_source: &ActorId,
+        session_for_account: &Option<ActorId>,
+        actions_for_session: ActionsForSession,
+    ) -> ActorId {
+        let player = match session_for_account {
+            Some(account) => {
+                let session = self
+                    .sessions
+                    .get(account)
+                    .expect("This account has no valid session");
+                assert!(
+                    session.expires > exec::block_timestamp(),
+                    "The session has already expired"
+                );
+                assert!(
+                    session.allowed_actions.contains(&actions_for_session),
+                    "This message is not allowed"
+                );
+                assert_eq!(
+                    session.key, *msg_source,
+                    "The account is not approved for this session"
+                );
+                *account
+            }
+            None => *msg_source,
+        };
+        player
+    }
 }
 
 #[gstd::async_main]
@@ -305,12 +479,28 @@ async fn main() {
     let battle = unsafe { BATTLE.get_or_insert(Default::default()) };
     let reply = match action {
         BattleAction::StartRegistration => battle.start_registration(),
-        BattleAction::Register { tmg_id } => battle.register(&tmg_id).await,
-        BattleAction::MakeMove { pair_id, tmg_move } => battle.make_move(pair_id, tmg_move),
+        BattleAction::Register {
+            tmg_id,
+            session_for_account,
+        } => battle.register(&tmg_id, session_for_account).await,
+        BattleAction::MakeMove {
+            pair_id,
+            tmg_move,
+            session_for_account,
+        } => battle.make_move(pair_id, tmg_move, session_for_account),
         BattleAction::StartBattle => battle.start_battle(),
         BattleAction::AddAdmin(new_admin) => battle.add_admin(&new_admin),
+        BattleAction::CreateSession {
+            key,
+            duration,
+            allowed_actions,
+            signature,
+        } => battle.create_session(&key, duration, allowed_actions, signature),
+        BattleAction::DeleteSessionFromAccount => battle.delete_session_from_account(),
+        BattleAction::DeleteSessionFromProgram { account } => {
+            battle.delete_session_from_program(&account)
+        }
     };
-    debug!("reply {:?}", reply);
     msg::reply(reply, 0).expect("Error in sending a reply");
 }
 
@@ -358,7 +548,7 @@ extern fn state() {
             state: battle.state,
         },
         BattleQuery::GetPairs => BattleQueryReply::Pairs {
-            pairs: battle.pairs,
+            pairs: battle.pairs.into_iter().collect(),
         },
         BattleQuery::GetPair { pair_id } => {
             let pair = battle.pairs.get(&pair_id).cloned();
@@ -371,7 +561,7 @@ extern fn state() {
             current_players: battle.current_players,
         },
         BattleQuery::Players => BattleQueryReply::Players {
-            players: battle.players,
+            players: battle.players.into_iter().collect(),
         },
         BattleQuery::CompletedGames => BattleQueryReply::CompletedGames {
             completed_games: battle.completed_games,
@@ -379,6 +569,9 @@ extern fn state() {
         BattleQuery::Winner => BattleQueryReply::Winner {
             winner: battle.current_winner,
         },
+        BattleQuery::SessionForTheAccount(account) => {
+            BattleQueryReply::SessionForTheAccount(battle.sessions.get(&account).cloned())
+        }
     };
     msg::reply(reply, 0).expect("Failed to share state");
 }
@@ -399,7 +592,7 @@ fn send_round_result(admin: &ActorId, pair_id: PairId, losses: &[u16], moves: &[
 }
 
 fn get_mut_pair(
-    pairs: &mut BTreeMap<PairId, Pair>,
+    pairs: &mut HashMap<PairId, Pair>,
     pair_id: PairId,
 ) -> Result<&mut Pair, BattleError> {
     if let Some(pair) = pairs.get_mut(&pair_id) {
@@ -409,10 +602,7 @@ fn get_mut_pair(
     }
 }
 
-fn get_player(
-    players: &BTreeMap<ActorId, Player>,
-    tmg_id: &ActorId,
-) -> Result<Player, BattleError> {
+fn get_player(players: &HashMap<ActorId, Player>, tmg_id: &ActorId) -> Result<Player, BattleError> {
     if let Some(player) = players.get(tmg_id) {
         Ok(player.clone())
     } else {
@@ -451,7 +641,7 @@ fn check_tmg_owner(tmg_owner: ActorId, account: ActorId) -> Result<(), BattleErr
 }
 
 fn is_pair_id_in_player_pair_ids(
-    players_to_pairs: &BTreeMap<ActorId, BTreeSet<u8>>,
+    players_to_pairs: &HashMap<ActorId, HashSet<u8>>,
     player: &ActorId,
     pair_id: u8,
 ) -> Result<(), BattleError> {

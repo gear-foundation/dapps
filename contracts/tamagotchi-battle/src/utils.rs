@@ -1,6 +1,7 @@
 use crate::player::PlayerFunc;
 use crate::Battle;
-use gstd::{collections::BTreeSet, exec, prelude::*, ActorId};
+use collections::HashSet;
+use gstd::{exec, prelude::*, ActorId};
 use tamagotchi_battle_io::{BattleError, BattleState, Pair, PairId, TamagotchiId};
 static mut SEED: u8 = 0;
 
@@ -98,7 +99,7 @@ impl BattleUtils for Battle {
             .and_modify(|pair_ids| {
                 pair_ids.insert(pair_id);
             })
-            .or_insert_with(|| BTreeSet::from([pair_id]));
+            .or_insert_with(|| HashSet::from([pair_id]));
     }
 
     fn select_random_player(

@@ -1,6 +1,6 @@
 #![no_std]
 
-use gmeta::{In, InOut, Metadata};
+use gmeta::{In, Out, InOut, Metadata};
 use gstd::{
     collections::{BTreeMap, BTreeSet},
     prelude::*,
@@ -14,15 +14,13 @@ pub struct BattleMetadata;
 impl Metadata for BattleMetadata {
     type Init = In<Config>;
     type Handle = InOut<BattleAction, Result<BattleReply, BattleError>>;
-    type Others = ();
+    type Others = Out<SignatureData>;
     type Reply = ();
     type Signal = ();
     type State = InOut<BattleQuery, BattleQueryReply>;
 }
 
 #[derive(Default, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Battle {
     pub admins: Vec<ActorId>,
     pub players: BTreeMap<ActorId, Player>,
@@ -37,8 +35,6 @@ pub struct Battle {
     pub config: Config,
 }
 #[derive(Default, Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Player {
     pub owner: ActorId,
     pub name: String,
@@ -51,9 +47,36 @@ pub struct Player {
     pub victories: u32,
 }
 
+#[derive(Encode, Decode, TypeInfo)]
+pub struct SignatureData {
+    pub key: ActorId,
+    pub duration: u64,
+    pub allowed_actions: Vec<ActionsForSession>,
+}
+
+// This structure is for creating a gaming session, which allows players to predefine certain actions for an account that will play the game on their behalf for a certain period of time.
+// Sessions can be used to send transactions from a dApp on behalf of a user without requiring their confirmation with a wallet.
+// The user is guaranteed that the dApp can only execute transactions that comply with the allowed_actions of the session until the session expires.
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+pub struct Session {
+    // the address of the player who will play on behalf of the user
+    pub key: ActorId,
+    // until what time the session is valid
+    pub expires: u64,
+    // what messages are allowed to be sent by the account (key)
+    pub allowed_actions: Vec<ActionsForSession>,
+
+    pub expires_at_block: u32,
+}
+
+
+#[derive(Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+pub enum ActionsForSession {
+    Register, 
+    MakeMove,
+}
+
 #[derive(Default, Debug, Clone, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Config {
     pub max_power: u16,
     pub min_power: u16,
@@ -63,19 +86,16 @@ pub struct Config {
     pub time_for_move: u32,
     pub min_gas_amount: u64,
     pub block_duration_ms: u64,
+    pub gas_to_delete_session: u64,
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq, Eq, Debug, Clone)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum Move {
     Attack,
     Defence,
 }
 
 #[derive(Default, Debug, Encode, Decode, TypeInfo, Clone, PartialEq, Eq)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub struct Pair {
     pub owner_ids: Vec<ActorId>,
     pub tmg_ids: Vec<ActorId>,
@@ -90,8 +110,6 @@ pub struct Pair {
 }
 
 #[derive(Debug, PartialEq, Eq, Encode, Decode, TypeInfo, Default, Clone)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleState {
     #[default]
     Registration,
@@ -101,19 +119,25 @@ pub enum BattleState {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleAction {
     StartRegistration,
-    Register { tmg_id: TamagotchiId },
-    MakeMove { pair_id: PairId, tmg_move: Move },
+    Register { tmg_id: TamagotchiId,  session_for_account: Option<ActorId> },
+    MakeMove { pair_id: PairId, tmg_move: Move,  session_for_account: Option<ActorId> },
     StartBattle,
     AddAdmin(ActorId),
+    CreateSession {
+        key: ActorId,
+        duration: u64,
+        allowed_actions: Vec<ActionsForSession>,
+        signature: Option<Vec<u8>>,
+    },
+    DeleteSessionFromProgram {
+        account: ActorId,
+    },
+    DeleteSessionFromAccount,
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq, Eq, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleReply {
     RegistrationStarted,
     Registered { tmg_id: TamagotchiId },
@@ -131,11 +155,11 @@ pub enum BattleReply {
         players: Vec<ActorId>
     },
     WaitlistMsgCancelled,
+    SessionCreated,
+    SessionDeleted,
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq, Eq, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleError {
     WrongState,
     NotEnoughPlayers,
@@ -152,8 +176,6 @@ pub enum BattleError {
 }
 
 #[derive(Encode, Decode, TypeInfo, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleQuery {
     GetPlayer { tmg_id: ActorId },
     Players,
@@ -165,11 +187,10 @@ pub enum BattleQuery {
     CurrentPlayers,
     CompletedGames,
     Winner,
+    SessionForTheAccount(ActorId),
 }
 
 #[derive(Encode, Decode, TypeInfo, PartialEq, Eq, Debug)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
 pub enum BattleQueryReply {
     Player { player: Option<Player> },
     Players { players: BTreeMap<ActorId, Player>},
@@ -181,4 +202,5 @@ pub enum BattleQueryReply {
     CurrentPlayers { current_players: Vec<ActorId>},
     CompletedGames {completed_games: u8},
     Winner { winner: ActorId},
+    SessionForTheAccount(Option<Session>),
 }

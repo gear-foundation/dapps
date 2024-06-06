@@ -8,6 +8,7 @@ publish.workspace = true
 gstd = { workspace = true, features = ["debug"] }
 tamagotchi-battle-io.workspace = true
 tamagotchi-io.workspace = true
+schnorrkel.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
