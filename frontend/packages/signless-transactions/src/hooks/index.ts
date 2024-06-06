@@ -1,4 +1,4 @@
-import { useCreateSession } from './use-create-session';
+import { useCreateSession, Session } from './use-create-session';
 import {
   useSignlessSendMessage,
   useSignlessSendMessageHandler,
@@ -8,4 +8,4 @@ import { useIsAvailable } from './use-is-available';
 import { useRandomPairOr } from './use-random-pair-or';
 
 export { useCreateSession, useSignlessSendMessage, useSignlessSendMessageHandler, useIsAvailable, useRandomPairOr };
-export type { SendSignlessMessageOptions };
+export type { SendSignlessMessageOptions, Session };

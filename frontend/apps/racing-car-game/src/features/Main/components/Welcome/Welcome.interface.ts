@@ -1,3 +1,3 @@
 export interface WelcomeProps {
-  children: JSX.Element;
+  children: React.ReactNode;
 }

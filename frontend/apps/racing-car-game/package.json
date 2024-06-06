@@ -3,8 +3,8 @@
   "version": "1.0.2",
   "private": true,
   "scripts": {
-    "start": "yarn build:packages && react-app-rewired start",
-    "build": "yarn build:packages && react-app-rewired build"
+    "start": "yarn build:packages && yarn build:ez-transactions && yarn react-app-rewired start",
+    "build": "yarn build:packages && yarn build:ez-transactions && yarn react-app-rewired build"
   },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
@@ -34,8 +34,7 @@
     "react-router-dom": "6.10.0",
     "react-scripts": "5.0.1",
     "react-transition-group": "^4.4.5",
-    "sass": "1.62.0",
-    "socket.io-client": "^4.7.2"
+    "sass": "1.62.0"
   },
   "devDependencies": {
     "@craco/craco": "7.1.0",

@@ -1,6 +1,7 @@
 import { useAtomValue } from 'jotai';
 import { useNavigate } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
+import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
 import { Button } from '@/ui';
 import { CURRENT_GAME } from '@/atoms';
 import { START } from '@/App.routes';
@@ -11,6 +12,7 @@ import metaTxt from '@/assets/meta/meta.txt';
 import { useProgramMetadata } from '@/hooks';
 import { useAccountAvailableBalance } from '@/features/Wallet/hooks';
 import { IS_STATE_READ_ATOM } from '@/features/Game/atoms';
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/consts';
 
 function Layout() {
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ function Layout() {
   const meta = useProgramMetadata(metaTxt);
   const { isAvailableBalanceReady, availableBalance } = useAccountAvailableBalance();
 
-  const handleGoToPlay = () => {
+  const handleGoToPlay = async () => {
     if (isAvailableBalanceReady && account?.decodedAddress && meta) {
       navigate(START, { replace: true });
     }
@@ -36,6 +38,7 @@ function Layout() {
         className={cx(styles['game-button'])}
         isLoading={!meta || !availableBalance?.value || !account?.decodedAddress || !isStateRead}
       />
+      <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} />
     </Welcome>
   );
 }
