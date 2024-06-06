@@ -34,7 +34,7 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
     <SharedGaslessTransactionsProvider
       programId={ADDRESS.CONTRACT}
       backendAddress={ADDRESS.GASLESS_BACKEND}
-      voucherLimit={18}>
+      voucherLimit={6}>
       {children}
     </SharedGaslessTransactionsProvider>
   );
