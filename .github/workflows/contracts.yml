@@ -14,6 +14,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  GEAR_VERSION: 1.4.1
 
 defaults:
   run:
@@ -45,11 +46,16 @@ jobs:
           targets: wasm32-unknown-unknown
           components: clippy, rustfmt
 
+      - name: Prepare Gear Binary
+        run: |
+          mkdir -p target/tmp
+          wget -qO- https://get.gear.rs/gear-v${{ env.GEAR_VERSION }}-x86_64-unknown-linux-gnu.tar.xz| tar xvz - -C target/tmp
+          
       # mandatory tasks
       - name: Fmt
         run: 'cargo +nightly fmt --all -- --config imports_granularity=Crate,edition=2021'
       - name: Clippy
-        run: 'cargo +nightly clippy --release --workspace --all-targets --all-features -- -D warnings'
+        run: 'cargo clippy --release --workspace --all-targets --all-features -- -D warnings'
 
       # Only on push to master
       - name: On Push to master
