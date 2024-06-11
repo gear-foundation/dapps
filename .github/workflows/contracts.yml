@@ -49,8 +49,8 @@ jobs:
       - name: Prepare Gear Binary
         run: |
           mkdir -p target/tmp
-          wget -qO- https://get.gear.rs/gear-v${{ env.GEAR_VERSION }}-x86_64-unknown-linux-gnu.tar.xz| tar xvz - -C target/tmp
-          
+          wget -qO- https://get.gear.rs/gear-v${{ env.GEAR_VERSION }}-x86_64-unknown-linux-gnu.tar.xz| tar xJ -C target/tmp"
+
       # mandatory tasks
       - name: Fmt
         run: 'cargo +nightly fmt --all -- --config imports_granularity=Crate,edition=2021'
