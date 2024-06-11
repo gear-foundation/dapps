@@ -28,3 +28,7 @@ export const gameLevels = [
 		visionEnemy: 50,
 	},
 ]
+
+export const MS_TIME_GAME_OVER = atom(0)
+
+export const PRIZE_POOL = atom(0)

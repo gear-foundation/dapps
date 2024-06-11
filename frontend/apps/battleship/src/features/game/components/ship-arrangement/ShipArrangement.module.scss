@@ -12,6 +12,12 @@
 .header {
   @include gap(24px);
   text-align: center;
+  color: #ffffff;
+  background: black;
+  z-index: 1;
+
+  background: rgb(0,0,0);
+    background: linear-gradient(90deg, rgba(0,0,0,1) 10%, rgba(0,51,39,1) 50%, rgba(0,0,0,1) 90%); 
 }
 
 .content {
@@ -43,15 +49,29 @@
 }
 
 .buttons {
-  // background: linear-gradient(180deg, #b6b6b6 0%, rgba(182, 182, 182, 0) 100%);
   width: 100%;
   display: flex;
   justify-content: space-between;
   gap: 15px;
-  // padding: 16px;
+  padding: 0 16px;
 
   button,
   button span {
     width: 100%;
+  }
+}
+
+.textWrapper {
+  position: relative;
+
+  &::after {
+    position: absolute;
+    z-index: 0;
+    top: 100%; left: 0;
+    width: 100%;
+    height: 140px;
+    background: rgb(0,0,0);
+    background: linear-gradient(90deg, rgba(0,0,0,1) 10%, rgba(0,51,39,1) 50%, rgba(0,0,0,1) 90%); 
+    content: '';
   }
 }

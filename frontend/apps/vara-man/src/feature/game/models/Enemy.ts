@@ -249,8 +249,6 @@ export class Enemy {
 		if (!this.checkCollision(proposedPosition)) {
 			this.position = proposedPosition
 			this.rotateEnemy()
-		} else if (isPlayerInVision && this.checkCollision(proposedPosition)) {
-			this.slideAlongWall()
 		} else {
 			this.chooseNewDirection()
 		}
@@ -259,73 +257,69 @@ export class Enemy {
 		this.armAnimation()
 	}
 
-	slideAlongWall() {
-		let horizontalMovement = new Vec2(this.speed, 0)
-		let verticalMovement = new Vec2(0, this.speed)
+	slideAlongWall(playerPosition: Vec2) {
+		const directionToPlayer = Vec2.subtract(
+			playerPosition,
+			this.position
+		).norm()
+		const possibleDirections = [
+			new Vec2(1, 0),
+			new Vec2(-1, 0),
+			new Vec2(0, 1),
+			new Vec2(0, -1),
+		]
 
-		if (
-			this.direction === Direction.left ||
-			this.direction === Direction.right
-		) {
-			horizontalMovement.x *= this.direction === Direction.left ? -1 : 1
-			if (!this.checkCollision(Vec2.add(this.position, horizontalMovement))) {
-				this.position.add(horizontalMovement)
-			} else {
-				verticalMovement.y = this.checkCollision(
-					Vec2.add(this.position, new Vec2(0, this.speed))
-				)
-					? -this.speed
-					: this.speed
-				if (!this.checkCollision(Vec2.add(this.position, verticalMovement))) {
-					this.position.add(verticalMovement)
-				}
-			}
-		} else {
-			verticalMovement.y *= this.direction === Direction.up ? -1 : 1
-			if (!this.checkCollision(Vec2.add(this.position, verticalMovement))) {
-				this.position.add(verticalMovement)
-			} else {
-				horizontalMovement.x = this.checkCollision(
-					Vec2.add(this.position, new Vec2(this.speed, 0))
-				)
-					? -this.speed
-					: this.speed
-				if (!this.checkCollision(Vec2.add(this.position, horizontalMovement))) {
-					this.position.add(horizontalMovement)
-				}
+		possibleDirections.sort((a, b) => {
+			const dotA = Vec2.dot(a, directionToPlayer)
+			const dotB = Vec2.dot(b, directionToPlayer)
+			return dotB - dotA
+		})
+
+		for (const dir of possibleDirections) {
+			const newPos = Vec2.add(this.position, dir.scale(this.speed))
+			if (!this.checkCollision(newPos)) {
+				this.position = newPos
+				return
 			}
 		}
+
+		this.velocity = new Vec2(0, 0)
 	}
 
 	checkCollision(nextPosition: Vec2) {
-		const left = Math.floor(
-			(nextPosition.x - this.torsoWidth / 2) / this.mapData.tilewidth
-		)
-		const right = Math.floor(
-			(nextPosition.x + this.torsoWidth / 2) / this.mapData.tilewidth
-		)
-		const top = Math.floor(
-			(nextPosition.y - this.torsoHeight / 1) / this.mapData.tileheight
-		)
-		const bottom = Math.floor(
-			(nextPosition.y + this.torsoHeight / 1) / this.mapData.tileheight
-		)
+		const bounds = this.getBounds()
+		bounds.x += nextPosition.x - this.position.x
+		bounds.y += nextPosition.y - this.position.y
+
+		const left = Math.floor(bounds.x / this.mapData.tilewidth)
+		const right =
+			Math.ceil((bounds.x + bounds.width) / this.mapData.tilewidth) - 1
+		const top = Math.floor(bounds.y / this.mapData.tileheight)
+		const bottom =
+			Math.ceil((bounds.y + bounds.height) / this.mapData.tileheight) - 1
 
 		for (let y = top; y <= bottom; y++) {
 			for (let x = left; x <= right; x++) {
-				const tileIndex = y * this.mapData.width + x
-				const tileValue = this.mapData.layers[0].data[tileIndex]
-				if (tileValue === 1 || tileValue !== this.zone) {
-					return true
+				if (
+					x >= 0 &&
+					x < this.mapData.width &&
+					y >= 0 &&
+					y < this.mapData.height
+				) {
+					const tileIndex = y * this.mapData.width + x
+					const tileValue = this.mapData.layers[0].data[tileIndex]
+					if (tileValue === 1 || tileValue !== this.zone) {
+						return true
+					}
 				}
 			}
 		}
 
 		if (
-			nextPosition.x < 0 ||
-			nextPosition.y < 0 ||
-			nextPosition.x > this.mapData.width * this.mapData.tilewidth ||
-			nextPosition.y > this.mapData.height * this.mapData.tileheight
+			bounds.x < 0 ||
+			bounds.y < 0 ||
+			bounds.x + bounds.width > this.mapData.width * this.mapData.tilewidth ||
+			bounds.y + bounds.height > this.mapData.height * this.mapData.tileheight
 		) {
 			return true
 		}
@@ -360,8 +354,6 @@ export class Enemy {
 					Math.floor(Math.random() * filteredDirections.length)
 				]
 			this.updateDirectionHistory(newDirection)
-		} else {
-			this.slideAlongWall()
 		}
 	}
 

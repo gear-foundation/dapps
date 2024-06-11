@@ -208,7 +208,7 @@ impl Assets {
     /// * `asset_id`: ID of the asset that we are equipping into
     /// * `slot_part_id`:  ID of the slot part that we are using to equip
     /// * `child_asset_id`: ID of the asset that we are equipping
-    #[cfg_attr(feature = "cargo-clippy", allow(clippy::too_many_arguments))]
+    #[allow(clippy::too_many_arguments)]
     pub fn equip(
         &mut self,
         tx_manager: &mut TxManager,

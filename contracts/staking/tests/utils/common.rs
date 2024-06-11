@@ -3,16 +3,6 @@ use gstd::{prelude::*, ActorId};
 use gtest::{Log, Program as InnerProgram, RunResult as InnerRunResult};
 use marker::PhantomData;
 
-pub trait Program {
-    fn inner_program(&self) -> &InnerProgram<'_>;
-
-    fn actor_id(&self) -> ActorId {
-        let bytes: [u8; 32] = self.inner_program().id().into();
-
-        bytes.into()
-    }
-}
-
 pub trait TransactionalProgram {
     fn previous_mut_transaction_id(&mut self) -> &mut u64;
 

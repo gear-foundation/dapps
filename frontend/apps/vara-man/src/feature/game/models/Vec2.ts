@@ -80,4 +80,8 @@ export class Vec2 {
 	static subtract(v1: Vec2, v2: Vec2): Vec2 {
 		return new Vec2(v1.x - v2.x, v1.y - v2.y)
 	}
+
+	static dot(a: Vec2, b: Vec2) {
+		return a.x * b.x + a.y * b.y
+	}
 }

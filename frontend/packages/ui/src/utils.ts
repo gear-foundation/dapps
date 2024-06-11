@@ -1,5 +1,5 @@
 import { AlertContainerFactory } from '@gear-js/react-hooks';
-import { MutableRefObject, RefObject, useEffect } from 'react';
+import { MutableRefObject, RefObject, useEffect, useState } from 'react';
 
 export const copyToClipboard = async ({
   alert,
@@ -68,6 +68,28 @@ export function useClickOutside(
       document.removeEventListener('mousedown', listener);
     };
   }, [refs, handler]);
+}
+
+export function useRootModalRef() {
+  const [modalRootRef, setModalRootRef] = useState<React.MutableRefObject<HTMLElement | null>>({ current: null });
+
+  useEffect(() => {
+    const onBodyChildChange = () => {
+      const modalRoot = document.getElementById('modal-root');
+      if (modalRoot && modalRoot !== modalRootRef.current) {
+        setModalRootRef({ current: modalRoot });
+      } else {
+        setModalRootRef({ current: null });
+      }
+    };
+
+    const mutationObserver = new MutationObserver(onBodyChildChange);
+    mutationObserver.observe(document.body, { childList: true });
+
+    return () => mutationObserver?.disconnect();
+  }, [modalRootRef]);
+
+  return modalRootRef;
 }
 
 export const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(

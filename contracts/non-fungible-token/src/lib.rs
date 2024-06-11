@@ -257,7 +257,8 @@ impl From<Contract> for IoNft {
             token_id,
             owner,
             transactions,
-            ..
+            collection,
+            config,
         } = value;
 
         let transactions = transactions
@@ -269,6 +270,8 @@ impl From<Contract> for IoNft {
             token_id,
             owner,
             transactions,
+            collection,
+            config,
         }
     }
 }

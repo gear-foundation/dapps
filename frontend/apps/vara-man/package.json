@@ -5,17 +5,18 @@
 	"version": "1.0.2",
 	"type": "module",
 	"scripts": {
-		"start": "yarn build:packages && vite --open",
-		"build": "yarn build:packages && tsc && vite build",
+		"start": "yarn build:packages && yarn build:ez-transactions && vite --open",
+		"build": "yarn build:packages && yarn build:ez-transactions && tsc && vite build",
 		"preview": "vite preview",
 		"deploy": "tsc && vite build && npx thirdweb@latest upload dist"
 	},
 	"dependencies": {
 		"@dapps-frontend/error-tracking": "workspace:*",
+		"@dapps-frontend/ez-transactions": "workspace:*",
 		"@dapps-frontend/hooks": "workspace:*",
 		"@dapps-frontend/ui": "workspace:*",
 		"@gear-js/api": "0.36.5",
-		"@gear-js/react-hooks": "0.10.2",
+		"@gear-js/react-hooks": "0.10.6",
 		"@gear-js/ui": "0.5.21",
 		"@headlessui/react": "1.7.13",
 		"@mantine/form": "6.0.19",

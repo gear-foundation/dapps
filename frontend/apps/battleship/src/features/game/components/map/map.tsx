@@ -37,7 +37,8 @@ export default function Map({ sizeBlock = 64, shipStatusArray }: Props) {
 
     return (
       <div key={`block-${row}-${col}`} className={cellClassName} style={cellStyle}>
-        {(isHitShips || isHit || isDeadShips) && <CrossIcon />}
+        {isHit && !isHitShips && !isDeadShips && <div className={styles.hitEmpty} />}
+        {(isHitShips || isDeadShips) && <CrossIcon className={styles.cellCross} />}
       </div>
     );
   };

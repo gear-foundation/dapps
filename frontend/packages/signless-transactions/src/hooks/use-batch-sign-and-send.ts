@@ -60,7 +60,7 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
 
   const batchSignAndSend = async (
     txs: SubmittableExtrinsic<'promise', ISubmittableResult>[],
-    options: Options = {},
+    { pair, ...options }: Options = {},
   ) => {
     if (!account) throw new Error('No account address');
 
@@ -68,17 +68,55 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
     const batch = getBatch();
     const statusCallback = (result: ISubmittableResult) => handleStatus(result, options);
 
-    await web3FromSource(meta.source)
-      .then(({ signer }) => batch(txs).signAndSend(address, { signer }, statusCallback))
-      .catch(({ message }: Error) => {
-        const { onError = () => {}, onFinally = () => {} } = options;
+    const signAndSend = pair
+      ? batch(txs).signAndSend(pair, statusCallback)
+      : web3FromSource(meta.source).then(({ signer }) => batch(txs).signAndSend(address, { signer }, statusCallback));
 
-        onError(message);
-        onFinally();
-      });
+    signAndSend.catch(({ message }: Error) => {
+      const { onError = () => {}, onFinally = () => {} } = options;
+
+      onError(message);
+      onFinally();
+    });
   };
 
-  return { batchSignAndSend };
+  const batchSign = async (
+    txs: SubmittableExtrinsic<'promise', ISubmittableResult>[],
+    { pair, ...options }: Options = {},
+  ) => {
+    if (!account) throw new Error('No account address');
+
+    const { address, meta } = account;
+    const batch = getBatch();
+
+    const signAsync = pair
+      ? batch(txs).signAsync(pair)
+      : web3FromSource(meta.source).then(({ signer }) => batch(txs).signAsync(address, { signer }));
+
+    return signAsync.catch(({ message }: Error) => {
+      const { onError = () => {}, onFinally = () => {} } = options;
+
+      onError(message);
+      onFinally();
+    });
+  };
+
+  const batchSend = async (
+    txsBatch: SubmittableExtrinsic<'promise', ISubmittableResult>,
+    { pair, ...options }: Options = {},
+  ) => {
+    const statusCallback = (result: ISubmittableResult) => handleStatus(result, options);
+    const send = txsBatch.send(statusCallback);
+
+    return send.catch(({ message }: Error) => {
+      const { onError = () => {}, onFinally = () => {} } = options;
+
+      onError(message);
+      onFinally();
+    });
+  };
+
+  return { batchSignAndSend, batchSign, batchSend };
 }
 
 export { useBatchSignAndSend };

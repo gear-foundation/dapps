@@ -9,7 +9,9 @@ import { useWallet } from '../../hooks';
 
 import styles from './WalletChange.module.scss';
 import { MenuOptions } from '@dapps-frontend/ui';
-import { GaslessTransactions, EzSignlessTransactions } from '@dapps-frontend/ez-transactions';
+import { EzSignlessTransactions, EzGaslessTransactions } from '@dapps-frontend/ez-transactions';
+import { useIsLocationGamePage } from '@/features/game/hooks';
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 
 type Props = {
   onClose(): void;
@@ -18,7 +20,7 @@ type Props = {
 
 export function WalletChange({ onClose, openConnectWallet }: Props) {
   const { account, logout } = useAccount();
-
+  const isGamePage = useIsLocationGamePage();
   const { walletAccounts } = useWallet();
 
   const getAccounts = () =>
@@ -54,8 +56,8 @@ export function WalletChange({ onClose, openConnectWallet }: Props) {
       <div className={styles.changeAccount}>
         <MenuOptions
           customItems={[
-            { key: 'signless', option: <EzSignlessTransactions /> },
-            { key: 'gasless', option: <GaslessTransactions /> },
+            { key: 'signless', option: <EzSignlessTransactions allowedActions={SIGNLESS_ALLOWED_ACTIONS} /> },
+            { key: 'gasless', option: <EzGaslessTransactions /> },
           ]}
         />
         <div>

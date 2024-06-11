@@ -1,8 +1,15 @@
-import { GearTransaction, IGearEvent, IGearVoucherEvent, decodeAddress } from '@gear-js/api';
+import { decodeAddress, GearKeyring, GearTransaction, IGearEvent, IGearVoucherEvent } from '@gear-js/api';
 import { AlertContainerFactory } from '@gear-js/react-hooks';
-import { encodeAddress } from '@polkadot/keyring';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
-import { KeyringPair } from '@polkadot/keyring/types';
+import { encodeAddress } from '@polkadot/keyring';
+import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
+
+type Options = Partial<{
+  onSuccess: () => void;
+  onError: (error: string) => void;
+  onFinally: () => void;
+  pair?: KeyringPair;
+}>;
 
 const MULTIPLIER = {
   MS: 1000,
@@ -15,6 +22,7 @@ export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVo
   submitted: GearTransaction | SubmittableExtrinsic<'promise'>,
   account: KeyringPair,
   methods: E[],
+  { onSuccess = () => {}, onError = () => {}, onFinally = () => {} }: Options = {},
 ): Promise<any[]> {
   const result: any = new Array(methods.length);
   return new Promise((resolve, reject) => {
@@ -25,15 +33,20 @@ export async function sendTransaction<E extends keyof IGearEvent | keyof IGearVo
           if (methods.includes(method as E) && status.isInBlock) {
             result[methods.indexOf(method as E)] = data;
           } else if (method === 'ExtrinsicFailed') {
+            onError('ExtrinsicFailed');
+            onFinally();
             reject(data.toString());
           }
         });
         if (status.isInBlock) {
+          onSuccess();
           resolve([...result, status.asInBlock.toHex()]);
         }
       })
       .catch((err) => {
         console.log(err);
+        onError(err);
+        onFinally();
         reject(err.message);
       });
   });
@@ -49,6 +62,8 @@ const getVaraAddress = (value: string) => {
 const getMilliseconds = (minutes: number) => minutes * MULTIPLIER.MS * MULTIPLIER.SECONDS;
 
 const getDoubleDigits = (value: number) => (value < 10 ? `0${value}` : value);
+
+const getMinutesFromSeconds = (seconds: number) => seconds / MULTIPLIER.SECONDS;
 
 const getDHMS = (ms: number) => {
   const seconds = Math.floor((ms / MULTIPLIER.MS) % MULTIPLIER.SECONDS);
@@ -109,4 +124,14 @@ const copyToClipboard = async ({
   }
 };
 
-export { getMilliseconds, getDHMS, getVaraAddress, shortenString, copyToClipboard };
+const getUnlockedPair = (pair: KeyringPair$Json, password: string) => GearKeyring.fromJson(pair, password);
+
+export {
+  getMilliseconds,
+  getMinutesFromSeconds,
+  getDHMS,
+  getVaraAddress,
+  shortenString,
+  copyToClipboard,
+  getUnlockedPair,
+};

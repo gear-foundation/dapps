@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { Button } from '@gear-js/vara-ui';
 import { Heading } from '@/components/ui/heading';
-import { TextGradient } from '@/components/ui/text-gradient';
 import { Text } from '@/components/ui/text';
 import { Map } from '../';
 import styles from './ShipArrangement.module.scss';
@@ -17,7 +16,7 @@ export default function ShipArrangement() {
   const message = useGameMessage();
   const { setPending } = usePending();
   const { checkBalance } = useCheckBalance({
-    signlessPairVoucherId: signless.pairVoucherId,
+    signlessPairVoucherId: signless.voucher?.id,
     gaslessVoucherId: gasless.voucherId,
   });
 
@@ -60,15 +59,15 @@ export default function ShipArrangement() {
   return (
     <div className={styles.content}>
       <div className={styles.header}>
-        <Heading>
-          <TextGradient>Your ships</TextGradient>
-        </Heading>
-        <div>
+        <Heading>Your ships</Heading>
+        <div className={styles.textWrapper}>
           <Text size="lg">Choose a ship placement scheme, and to see a new arrangement, click "Generate"</Text>
         </div>
       </div>
       <div style={{ width: '100%' }}>
-        <Map sizeBlock={64} shipStatusArray={shipLayout} />
+        <div>
+          <Map sizeBlock={72} shipStatusArray={shipLayout} />
+        </div>
       </div>
       <div className={styles.buttons}>
         <Button color="dark" text="Generate" onClick={onGenerateRandomLayout} disabled={isLoadingGenerate} />

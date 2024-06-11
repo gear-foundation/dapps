@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useAccount, useReadFullState, useSendMessageHandler, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount, useReadFullState, useSendMessageWithGas, withoutCommas } from '@gear-js/react-hooks';
 import { useLessons, useTamagotchi } from '@/app/context';
 import type { HexString } from '@polkadot/util/types';
 import type { TamagotchiState } from '@/app/types/lessons';
@@ -51,7 +51,7 @@ export function useTamagotchiInit() {
 export function useTamagotchiMessage() {
   const { lesson, lessonMeta } = useLessons();
 
-  const sendMessage = useSendMessageHandler(lesson?.programId as HexString, lessonMeta);
+  const sendMessage = useSendMessageWithGas(lesson?.programId as HexString, lessonMeta);
 
   return (payload: AnyJson, { onSuccess, onError }: { onSuccess?: () => void; onError?: () => void }) =>
     sendMessage({ payload, onError, onSuccess });

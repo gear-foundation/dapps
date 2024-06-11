@@ -2,9 +2,10 @@ import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { MutableRefObject, useRef, useState } from 'react';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { Bytes } from '@polkadot/types';
-import { ProgramMetadata, UserMessageSent } from '@gear-js/api';
+import { ProgramMetadata, UserMessageSent, decodeAddress } from '@gear-js/api';
 import { ADDRESS } from '@/features/tic-tac-toe/consts';
 import { ContractError } from '../types';
+import { useSignlessTransactions } from '@dapps-frontend/ez-transactions';
 
 const programId = ADDRESS.GAME;
 
@@ -12,6 +13,7 @@ export function useWatchMessages<T>(meta: ProgramMetadata) {
   const { api } = useApi();
   const { account } = useAccount();
   const alert = useAlert();
+  const signless = useSignlessTransactions();
 
   const messageSub: MutableRefObject<UnsubscribePromise | null> = useRef(null);
   const [reply, setReply] = useState<T | undefined>();
@@ -27,7 +29,10 @@ export function useWatchMessages<T>(meta: ProgramMetadata) {
     console.log(message.toHuman());
     const { destination, source, payload } = message;
 
-    const isOwner = destination.toHex() === account?.decodedAddress;
+    const signlessPairAddress = signless.pair?.address;
+    const ownerAddress = signlessPairAddress ? decodeAddress(signlessPairAddress) : account?.decodedAddress;
+    const isOwner = destination.toHex() === ownerAddress;
+
     const isGame = source.toHex() === programId;
 
     if (isOwner && isGame) {

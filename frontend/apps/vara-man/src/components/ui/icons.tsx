@@ -791,7 +791,7 @@ export const Icons = {
     </svg>
   ),
   statsCoins: ({ ...props }: LucideProps) => (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg" {...props}>
       <g clipPath="url(#clip0_422_477543)">
         <path d="M27.0741 27.0247C33.1629 20.9359 33.1629 11.0641 27.0741 4.9753C20.9853 -1.11347 11.1135 -1.11347 5.0247 4.9753C-1.06408 11.0641 -1.06408 20.9359 5.0247 27.0247C11.1135 33.1135 20.9853 33.1135 27.0741 27.0247Z" fill="#2F2F2F" />
         <path d="M16 29C23.1797 29 29 23.1797 29 16C29 8.8203 23.1797 3 16 3C8.8203 3 3 8.8203 3 16C3 23.1797 8.8203 29 16 29Z" fill="white" />

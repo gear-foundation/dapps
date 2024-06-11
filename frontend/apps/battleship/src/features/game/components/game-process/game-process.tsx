@@ -21,7 +21,7 @@ export default function GameProcess() {
   const { setPending } = usePending();
   const message = useGameMessage();
   const { checkBalance } = useCheckBalance({
-    signlessPairVoucherId: signless.pairVoucherId,
+    signlessPairVoucherId: signless.voucher?.id,
     gaslessVoucherId: gasless.voucherId,
   });
 
@@ -70,26 +70,34 @@ export default function GameProcess() {
     }
   }, [gameState]);
 
+  const onClickCellFinally = () => {
+    setDisabledCell(false);
+  };
+
   const onClickCell = async (indexCell: number) => {
     const gasLimit = 120000000000;
 
     if (!gasless.isLoading) {
       setDisabledCell(true);
 
-      checkBalance(gasLimit, () =>
-        message({
-          payload: { Turn: { step: indexCell } },
-          onInBlock: (messageId) => {
-            if (messageId) {
-              setDisabledCell(false);
-            }
-          },
-          gasLimit,
-          voucherId: gasless.voucherId,
-          onSuccess: () => {
-            setPending(false);
-          },
-        }),
+      checkBalance(
+        gasLimit,
+        () =>
+          message({
+            payload: { Turn: { step: indexCell } },
+            onInBlock: (messageId) => {
+              if (messageId) {
+                onClickCellFinally();
+              }
+            },
+            gasLimit,
+            voucherId: gasless.voucherId,
+            onSuccess: () => {
+              setPending(false);
+            },
+            onError: onClickCellFinally,
+          }),
+        onClickCellFinally,
       );
     }
   };
@@ -131,7 +139,7 @@ export default function GameProcess() {
       </div>
       <div className={styles.enemyShips}>
         <Text size="sm" weight="normal" className={styles.text}>
-          Enemy Ships: {totalShips}
+          Enemy Ships: {totalShips} / 4
         </Text>
 
         <div className={styles.listShips}>
@@ -158,10 +166,10 @@ export default function GameProcess() {
 
       <div>
         <MapEnemy
-          sizeBlock={68}
+          sizeBlock={86}
           onClickCell={onClickCell}
           shipStatusArray={enemiesShips}
-          isDisabledCell={isDisabledCell || gasless.isLoading}
+          isDisabledCell={isDisabledCell || gasless.isLoading || gameState.gameOver}
         />
       </div>
 

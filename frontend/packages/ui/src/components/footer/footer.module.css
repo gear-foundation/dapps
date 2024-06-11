@@ -24,6 +24,10 @@
   }
 }
 
+.mobileFlexColumn {
+  flex-direction: column;
+}
+
 .footer,
 .socials,
 .column {

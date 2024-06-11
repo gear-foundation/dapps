@@ -1,7 +1,7 @@
 import { SpriteIcon } from 'components/ui/sprite-icon';
 import { useBattle } from '../../context';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { BattleStatePair, BattleStatePlayer } from '../../types/battles';
+import type { BattleStatePair, BattleStatePlayer, BattleStateResponse } from '../../types/battles';
 import { useAnimation, motion } from 'framer-motion';
 import { useRefDimensions } from '../../hooks';
 import { nanoid } from 'nanoid';
@@ -114,22 +114,29 @@ const BattleTableList = () => {
   const { battle, currentPairIdx } = useBattle();
   const [pairs, setPairs] = useState<PairData[]>([]);
 
+  const getPair = (battle: BattleStateResponse, i: number) =>
+    battle.pairs[i].tmgIds.reduce(
+      (acc: BattleStatePlayer[], player) => (battle.players[player] ? [...acc, battle.players[player]] : acc),
+      [],
+    );
+
   useEffect(() => {
     if (battle) {
-      const _pairs = Object.values(battle.pairs);
-      const final: PairData[] = [];
+      const pairEntries = Object.entries(battle.pairs);
 
-      _pairs.forEach((pair, i) => {
-        const getPair = (i: number) => {
-          const result: BattleStatePlayer[] = [];
-          _pairs[i].tmgIds.forEach((player) => {
-            if (battle.players[player]) result.push(battle.players[player]);
-          });
-          return result;
-        };
+      const final = pairEntries.reduce((acc: PairData[], pair) => {
+        const [pairIdx, pairValue] = pair;
 
-        final.push({ players: getPair(i), pair: pair, id: nanoid(6), idx: i });
-      });
+        return [
+          ...acc,
+          {
+            players: getPair(battle, Number(pairIdx)),
+            pair: pairValue,
+            id: nanoid(6),
+            idx: Number(pairIdx),
+          },
+        ];
+      }, []);
 
       setPairs(final);
     }
@@ -138,9 +145,9 @@ const BattleTableList = () => {
   return (
     <ScrollArea className="max-h-80 pr-3 -mr-3">
       <ul className="leading-4 space-y-1.5">
-        {pairs.map((pair, i) => (
+        {pairs.map((pair) => (
           <li key={pair.id}>
-            <BattleTablePairsRow data={pair} isActive={i === currentPairIdx} />
+            <BattleTablePairsRow data={pair} isActive={pair.idx === currentPairIdx} />
           </li>
         ))}
       </ul>

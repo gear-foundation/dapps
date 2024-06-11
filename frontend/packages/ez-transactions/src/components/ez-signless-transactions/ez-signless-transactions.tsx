@@ -1,11 +1,23 @@
 import { SignlessTransactions } from '@dapps-frontend/signless-transactions';
-
 import { useEzTransactions } from '../../context';
 
-function EzSignlessTransactions() {
+type Props = {
+  allowedActions: string[];
+};
+
+function EzSignlessTransactions({ allowedActions }: Props) {
   const { gasless, signless } = useEzTransactions();
 
-  return <SignlessTransactions onSessionCreate={signless.onSessionCreate} shouldIssueVoucher={!gasless.isEnabled} />;
+  return (
+    <SignlessTransactions
+      allowedActions={allowedActions}
+      onSessionCreate={signless.onSessionCreate}
+      shouldIssueVoucher={!gasless.isEnabled}
+      disabled={!signless.isSessionActive && gasless.isActive}
+      requiredBalance={gasless.isEnabled ? 0 : undefined}
+      boundSessionDuration={gasless.isEnabled ? gasless.voucherStatus?.duration : undefined}
+    />
+  );
 }
 
 export { EzSignlessTransactions };

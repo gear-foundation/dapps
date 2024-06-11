@@ -4,8 +4,7 @@ import { SignlessContext } from '@dapps-frontend/signless-transactions';
 type Value = {
   gasless: GaslessContext;
   signless: SignlessContext & {
-    isActive: boolean;
-    onSessionCreate: (signlessAccountAddress: string) => Promise<void>;
+    onSessionCreate: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   };
 };
 

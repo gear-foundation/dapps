@@ -4,6 +4,7 @@ import { Modal, Button } from '@gear-js/ui';
 import styles from './TransactionModal.module.scss';
 import { TransactionModalProps } from './TransactionModal.interface';
 
+// @deprecated
 function TransactionModal({ fee, name, addressTo, addressFrom, onClose, onAbort, onConfirm }: TransactionModalProps) {
   const handleClose = () => {
     if (onAbort) {

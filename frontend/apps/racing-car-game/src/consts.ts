@@ -13,6 +13,7 @@ export const LOCAL_STORAGE = {
 export const ADDRESS = {
   NODE: process.env.REACT_APP_NODE_ADDRESS,
   CONTRACT: process.env.REACT_APP_CONTRACT_ADDRESS as HexString,
+  GASLESS_BACKEND: process.env.REACT_APP_GASLESS_BACKEND_ADDRESS as string,
   BASE_NODES: process.env.REACT_APP_DEFAULT_NODES_URL as string,
   STAGING_NODES: process.env.REACT_APP_STAGING_NODES_URL as string,
   SENTRY_DSN: process.env.REACT_APP_SENTRY_DSN_CARS as string,
@@ -21,3 +22,5 @@ export const ADDRESS = {
 export const SEARCH_PARAMS = {
   MASTER_CONTRACT_ID: 'master',
 };
+
+export const SIGNLESS_ALLOWED_ACTIONS = ['StartGame', 'PlayerMove'];

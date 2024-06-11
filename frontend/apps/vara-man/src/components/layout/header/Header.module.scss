@@ -1,0 +1,48 @@
+.header {
+  height: 100px;
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+}
+
+.container {
+  height: 100%;
+  padding: 20px 0;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: auto;
+}
+
+.walletBalance {
+  color: #000000;
+}
+
+.menuIcon {
+  & svg path {
+    fill: #000000;
+    stroke: #000000;
+  }
+}
+
+.vara-logo {
+  margin-right: 22px;
+}
+
+.headerContent {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+}
+
+.cancelGameButton {
+  background: #F24A4A12;
+  color: #F24A4A;
+  border-radius: 0;
+
+  svg path {
+    fill: #F24A4A;
+    stroke: #F24A4A;
+  }
+}

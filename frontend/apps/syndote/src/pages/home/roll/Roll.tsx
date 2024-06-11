@@ -1,4 +1,5 @@
 import clsx from 'clsx';
+import { getVaraAddress } from '@gear-js/react-hooks';
 import { Buttons } from '../buttons';
 import styles from './Roll.module.scss';
 
@@ -14,21 +15,11 @@ type Props = {
   onLastClick?: () => void;
 };
 
-function Roll({
-  color,
-  player,
-  currentTurn,
-  turnsAmount,
-  onFirstClick,
-  onPrevClick,
-  onMainClick,
-  onNextClick,
-  onLastClick,
-}: Props) {
+function Roll({ color, player, currentTurn, turnsAmount, onFirstClick, onPrevClick, onNextClick, onLastClick }: Props) {
   return (
     <>
       <p className={clsx(styles.turnPlayer, color && styles[color])}>
-        <span className={styles.player}>{player}</span> Turn
+        <span className={styles.player}>{getVaraAddress(player)}</span> Turn
       </p>
       <div className={styles.disk}>
         <h2 className={styles.heading}>Master Rolls</h2>
@@ -38,7 +29,6 @@ function Roll({
         <Buttons
           onFirstClick={onFirstClick}
           onPrevClick={onPrevClick}
-          onMainClick={onMainClick}
           onNextClick={onNextClick}
           onLastClick={onLastClick}
         />

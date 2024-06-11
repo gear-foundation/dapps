@@ -1,6 +1,17 @@
 import { Character } from '../Character'
 
 export class CharacterRenderer {
+	static cloakImage: HTMLImageElement | null = null
+
+	static loadCloakImage(src: string): Promise<HTMLImageElement> {
+		return new Promise((resolve, reject) => {
+			const img = new Image()
+			img.onload = () => resolve(img)
+			img.onerror = reject
+			img.src = src
+		})
+	}
+
 	static render(context: CanvasRenderingContext2D, character: Character): void {
 		const {
 			position,
@@ -36,7 +47,28 @@ export class CharacterRenderer {
 			context.fill()
 		})
 
+
+		if (this.cloakImage) {
+			this.renderCloak(context, character)
+		}
+
 		const radius = 5
+
+		// Hands
+		arms.forEach((arm: { limb: string; height: number }) => {
+			context.strokeStyle = '#00E3AE'
+			context.fillStyle = '#00E3AE'
+			context.beginPath()
+			context.roundRect(
+				arm.limb === 'left' ? -torsoWidth / 2 : torsoWidth / 2 - armWidth,
+				-torsoHeight / 4,
+				armWidth,
+				arm.height,
+				5
+			)
+			context.stroke()
+			context.fill()
+		})
 
 		// Torso
 		context.beginPath()
@@ -73,22 +105,6 @@ export class CharacterRenderer {
 		context.closePath()
 		context.fill()
 
-		// Hands
-		arms.forEach((arm: { limb: string; height: number }) => {
-			context.strokeStyle = '#00E3AE'
-			context.fillStyle = '#00E3AE'
-			context.beginPath()
-			context.roundRect(
-				arm.limb === 'left' ? -torsoWidth / 2 : torsoWidth / 2 - armWidth,
-				-torsoHeight / 4,
-				armWidth,
-				arm.height,
-				5
-			)
-			context.stroke()
-			context.fill()
-		})
-
 		// Head
 		context.beginPath()
 		context.fillStyle = '#000000'
@@ -104,8 +120,31 @@ export class CharacterRenderer {
 		context.restore()
 
 		// Drawing a border for debug
-		// const bounds = enemy.getBounds()
-		// context.strokeStyle = 'rgba(255, 0, 0, 0.5)'
+		// const bounds = character.getBounds()
+		// context.strokeStyle = 'rgba(255, 0, 0, 1)'
 		// context.strokeRect(bounds.x, bounds.y, bounds.width, bounds.height)
+	}
+
+	static renderCloak(
+		context: CanvasRenderingContext2D,
+		character: Character
+	): void {
+		if (this.cloakImage && this.cloakImage.complete) {
+			const { cloakAnimation } = character
+
+			context.save()
+
+			context.translate(0, 10)
+
+			context.rotate(-Math.PI / 2)
+
+			context.scale(cloakAnimation.scale, 1)
+			context.drawImage(
+				this.cloakImage,
+				-this.cloakImage.naturalWidth / 2,
+				-this.cloakImage.naturalHeight / 2
+			)
+			context.restore()
+		}
 	}
 }

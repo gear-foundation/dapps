@@ -16,11 +16,22 @@ import { AccountPair } from '../account-pair';
 import { EnableSignlessSession } from '../enable-signless-session';
 
 type Props = {
-  onSessionCreate?: (signlessAccountAddress: string) => Promise<void>;
+  allowedActions: string[];
+  onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
   shouldIssueVoucher?: boolean;
+  disabled?: boolean;
+  requiredBalance?: number;
+  boundSessionDuration?: number;
 };
 
-function SignlessTransactions({ onSessionCreate, shouldIssueVoucher }: Props) {
+function SignlessTransactions({
+  allowedActions,
+  onSessionCreate,
+  shouldIssueVoucher,
+  disabled,
+  requiredBalance,
+  boundSessionDuration,
+}: Props) {
   const { account } = useAccount();
   const { pair, session, isSessionReady, voucherBalance, storagePair, deletePair, deleteSession } =
     useSignlessTransactions();
@@ -50,16 +61,16 @@ function SignlessTransactions({ onSessionCreate, shouldIssueVoucher }: Props) {
   };
 
   const handleRevokeVoucherFromStoragePair = async () => {
-    if (pair) {
-      const decodedAddress = decodeAddress(pair.address);
+    if (!pair) throw new Error('Signless pair not found');
 
-      setIsLoading(true);
+    const decodedAddress = decodeAddress(pair.address);
 
-      await deleteSession(decodedAddress, pair, {
-        onSuccess: onDeleteSessionSuccess,
-        onFinally: onDeleteSessionFinally,
-      });
-    }
+    setIsLoading(true);
+
+    deleteSession(decodedAddress, pair, {
+      onSuccess: onDeleteSessionSuccess,
+      onFinally: onDeleteSessionFinally,
+    });
   };
 
   return account && isSessionReady ? (
@@ -107,20 +118,26 @@ function SignlessTransactions({ onSessionCreate, shouldIssueVoucher }: Props) {
                 },
               ]}
             />
+
             <EnableSignlessSession
               type="button"
+              allowedActions={allowedActions}
               onSessionCreate={onSessionCreate}
               shouldIssueVoucher={shouldIssueVoucher}
+              requiredBalance={requiredBalance}
+              boundSessionDuration={boundSessionDuration}
             />
           </div>
         </>
       )}
+
       {!session && storagePair && (
         <>
           <div className={clsx(styles.titleWrapper, styles.expiredTitleWrapper)}>
             <h3 className={styles.title}>Your Signless Session is expired</h3>
           </div>
-          {pair ? (
+
+          {pair && (
             <div className={styles.expiredButtons}>
               <Button
                 icon={SignlessSVG}
@@ -129,6 +146,7 @@ function SignlessTransactions({ onSessionCreate, shouldIssueVoucher }: Props) {
                 size="small"
                 onClick={handleProlongExpiredSession}
               />
+
               <Button
                 icon={PowerSVG}
                 text="Disable session"
@@ -139,31 +157,30 @@ function SignlessTransactions({ onSessionCreate, shouldIssueVoucher }: Props) {
                 onClick={handleRevokeVoucherFromStoragePair}
               />
             </div>
-          ) : (
-            <button className={styles.enableButton} onClick={openEnableModal}>
-              <div className={styles.itemIcon}>
-                <SignlessSVG />
-              </div>
-              <span className={styles.itemText}>Unlock signless transactions</span>
-            </button>
           )}
         </>
       )}
 
-      {!session && !storagePair && (
+      {!session && (
         <EnableSignlessSession
           type="button"
+          allowedActions={allowedActions}
           onSessionCreate={onSessionCreate}
           shouldIssueVoucher={shouldIssueVoucher}
+          disabled={disabled}
+          requiredBalance={requiredBalance}
+          boundSessionDuration={boundSessionDuration}
         />
       )}
 
       {modal === 'enable' && <EnableSessionModal close={closeModal} />}
       {modal === 'create' && (
         <CreateSessionModal
+          allowedActions={allowedActions}
           close={closeModal}
           onSessionCreate={onSessionCreate}
           shouldIssueVoucher={shouldIssueVoucher}
+          boundSessionDuration={boundSessionDuration}
         />
       )}
     </div>

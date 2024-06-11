@@ -1,0 +1,53 @@
+.copyButton {
+  color: #0ED3A3;
+}
+
+.gameDetailsItem {
+  grid-template-columns: auto 130px;
+
+  &:nth-child(2) > span:last-child {
+    position: relative;
+    left: -3px;
+  }
+}
+
+.playersContainer {
+  & .playerItem {
+    margin-bottom: 4px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid #00000012;
+    color: #000000;
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    padding: 0 24px;
+
+    &Admin {
+      border-color: #00FFC4;
+    }
+
+    &ForAdmin {
+      justify-content: space-between;
+    }
+
+    & > span {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 16.8px;
+    }
+
+    & .playerLabel {
+      color: #00FFC4;
+    }
+  } 
+}
+
+.fromAllPlayers {
+  color: #555756;
+  font-weight: 500;
+}
+
+.markedAddress {
+  font-weight: 700;
+}

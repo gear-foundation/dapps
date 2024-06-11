@@ -1,18 +1,27 @@
 #![no_std]
 
-use gstd::{collections::HashMap, msg, prelude::*, ActorId};
-use vara_man_io::{
-    Config, GameInstance, Player, StateQuery, StateReply, Status, VaraMan as VaraManState,
-    VaraManAction, VaraManError, VaraManEvent, VaraManInit,
-};
+use fungible_token_io::{FTAction, FTEvent};
+use gstd::{collections::HashMap, debug, exec, msg, prelude::*, ActorId};
+use vara_man_io::*;
 
 #[derive(Debug, Default)]
 struct VaraMan {
-    games: HashMap<ActorId, GameInstance>,
-    players: HashMap<ActorId, Player>,
+    tournaments: HashMap<ActorId, Tournament>,
+    players_to_game_id: HashMap<ActorId, ActorId>,
     status: Status,
     config: Config,
     admins: Vec<ActorId>,
+}
+
+#[derive(Default, Debug)]
+pub struct Tournament {
+    tournament_name: String,
+    admin: ActorId,
+    level: Level,
+    participants: HashMap<ActorId, Player>,
+    bid: u128,
+    stage: Stage,
+    duration_ms: u32,
 }
 
 static mut VARA_MAN: Option<VaraMan> = None;
@@ -23,143 +32,331 @@ async fn main() {
     let vara_man: &mut VaraMan = unsafe { VARA_MAN.get_or_insert(VaraMan::default()) };
 
     let result = process_handle(action, vara_man).await;
-
+    debug!("RESULT: {:?}", result);
     msg::reply(result, 0).expect("Unexpected invalid reply result.");
 }
 
+#[allow(clippy::comparison_chain)]
 async fn process_handle(
     action: VaraManAction,
     vara_man: &mut VaraMan,
 ) -> Result<VaraManEvent, VaraManError> {
     match action {
-        VaraManAction::RegisterPlayer { name } => {
-            let actor_id = msg::source();
+        VaraManAction::CreateNewTournament {
+            tournament_name,
+            name,
+            level,
+            duration_ms,
+        } => {
+            let msg_src = msg::source();
+            let msg_value = msg::value();
 
-            if vara_man.status == Status::Paused {
-                return Err(VaraManError::WrongStatus);
+            if vara_man.tournaments.contains_key(&msg_src) {
+                msg::send_with_gas(msg_src, "", 0, msg_value).expect("Error in sending the value");
+                return Err(VaraManError::AlreadyHaveTournament);
             }
-
-            if name.is_empty() {
-                return Err(VaraManError::EmptyName);
-            }
-
-            if vara_man.players.contains_key(&actor_id) {
-                Err(VaraManError::AlreadyRegistered)
-            } else {
-                vara_man.players.insert(
-                    actor_id,
-                    Player {
-                        name,
-                        lives: vara_man.config.number_of_lives,
-                        claimed_gold_coins: 0,
-                        claimed_silver_coins: 0,
-                    },
-                );
-
-                Ok(VaraManEvent::PlayerRegistered(actor_id))
-            }
-        }
-        VaraManAction::StartGame { level } => {
-            let player_address = msg::source();
-
-            if vara_man.status == Status::Paused {
-                return Err(VaraManError::WrongStatus);
-            }
-
-            let Some(player) = vara_man.players.get_mut(&player_address) else {
-                return Err(VaraManError::NotRegistered);
-            };
-
-            if vara_man.games.get(&player_address).is_some() {
-                return Err(VaraManError::AlreadyStartGame);
-            };
-
-            if !player.is_have_lives() && !vara_man.admins.contains(&player_address) {
-                return Err(VaraManError::LivesEnded);
-            }
-
-            vara_man.games.insert(
-                player_address,
-                GameInstance {
-                    level,
-                    gold_coins: vara_man.config.gold_coins,
-                    silver_coins: vara_man.config.silver_coins,
+            let mut participants = HashMap::new();
+            participants.insert(
+                msg_src,
+                Player {
+                    name: name.clone(),
+                    time: 0,
+                    points: 0,
                 },
             );
+            let game = Tournament {
+                tournament_name: tournament_name.clone(),
+                admin: msg_src,
+                level,
+                participants,
+                bid: msg_value,
+                stage: Stage::Registration,
+                duration_ms,
+            };
+            vara_man.tournaments.insert(msg_src, game);
+            vara_man.players_to_game_id.insert(msg_src, msg_src);
+            Ok(VaraManEvent::NewTournamentCreated {
+                tournament_name,
+                name,
+                level,
+                bid: msg_value,
+            })
+        }
+        VaraManAction::RegisterForTournament { admin_id, name } => {
+            let msg_src = msg::source();
+            let msg_value = msg::value();
+            let reply = vara_man.register(msg_src, msg_value, admin_id, name);
+            if reply.is_err() {
+                msg::send_with_gas(msg_src, "", 0, msg_value).expect("Error in sending the value");
+            }
+            reply
+        }
+        VaraManAction::CancelRegister => {
+            let msg_src = msg::source();
+            let admin_id = vara_man
+                .players_to_game_id
+                .get(&msg_src)
+                .ok_or(VaraManError::NoSuchPlayer)?;
 
+            let game = vara_man
+                .tournaments
+                .get_mut(admin_id)
+                .ok_or(VaraManError::NoSuchGame)?;
+
+            if game.admin == msg_src {
+                return Err(VaraManError::AccessDenied);
+            }
+            if game.stage != Stage::Registration {
+                return Err(VaraManError::WrongStage);
+            }
+            if game.bid != 0 {
+                msg::send_with_gas(msg_src, "", 0, game.bid).expect("Error in sending the value");
+            }
+            game.participants.remove(&msg_src);
+            vara_man.players_to_game_id.remove(&msg_src);
+
+            Ok(VaraManEvent::RegisterCanceled)
+        }
+        VaraManAction::CancelTournament => {
+            let msg_src = msg::source();
+            let game = vara_man
+                .tournaments
+                .get(&msg_src)
+                .ok_or(VaraManError::NoSuchGame)?;
+
+            game.participants.iter().for_each(|(id, _)| {
+                if !matches!(game.stage, Stage::Finished(_)) && game.bid != 0 {
+                    msg::send_with_gas(*id, "", 0, game.bid).expect("Error in sending the value");
+                }
+                vara_man.players_to_game_id.remove(id);
+            });
+
+            vara_man.tournaments.remove(&msg_src);
+
+            Ok(VaraManEvent::TournamentCanceled { admin_id: msg_src })
+        }
+        VaraManAction::DeletePlayer { player_id } => {
+            let msg_src = msg::source();
+            let game = vara_man
+                .tournaments
+                .get_mut(&msg_src)
+                .ok_or(VaraManError::NoSuchGame)?;
+
+            if game.admin == player_id {
+                return Err(VaraManError::AccessDenied);
+            }
+
+            if game.stage != Stage::Registration {
+                return Err(VaraManError::WrongStage);
+            }
+
+            game.participants
+                .remove(&player_id)
+                .ok_or(VaraManError::NoSuchPlayer)?;
+            vara_man
+                .players_to_game_id
+                .remove(&player_id)
+                .ok_or(VaraManError::NoSuchPlayer)?;
+            if game.bid != 0 {
+                msg::send_with_gas(player_id, "", 0, game.bid).expect("Error in sending value");
+            }
+
+            Ok(VaraManEvent::PlayerDeleted { player_id })
+        }
+        VaraManAction::FinishSingleGame {
+            gold_coins,
+            silver_coins,
+            level,
+        } => {
+            if gold_coins > vara_man.config.max_number_gold_coins
+                || silver_coins > vara_man.config.max_number_silver_coins
+            {
+                return Err(VaraManError::ExceededLimit);
+            }
+
+            let msg_src = msg::source();
+            let (points_for_gold, points_for_silver) =
+                vara_man.config.get_points_per_gold_coin_for_level(level);
+            let points =
+                points_for_gold * gold_coins as u128 + points_for_silver * silver_coins as u128;
+            let maximum_possible_points = points_for_gold
+                * vara_man.config.max_number_gold_coins as u128
+                + points_for_silver * vara_man.config.max_number_silver_coins as u128;
+            let prize = vara_man.config.one_point_in_value * points;
+
+            if vara_man.status == Status::StartedWithNativeToken {
+                msg::send_with_gas(msg_src, "", 0, prize).expect("Error in sending value");
+            } else if let Status::StartedWithFungibleToken { ft_address } = vara_man.status {
+                let _transfer_response: FTEvent = msg::send_for_reply_as(
+                    ft_address,
+                    FTAction::Transfer {
+                        from: exec::program_id(),
+                        to: msg_src,
+                        amount: prize,
+                    },
+                    0,
+                    0,
+                )
+                .expect("Error in sending a message")
+                .await
+                .expect("Error in transfer Fungible Token");
+            }
+            Ok(VaraManEvent::SingleGameFinished {
+                gold_coins,
+                silver_coins,
+                prize,
+                points,
+                maximum_possible_points,
+                maximum_number_gold_coins: vara_man.config.max_number_gold_coins,
+                maximum_number_silver_coins: vara_man.config.max_number_silver_coins,
+            })
+        }
+        VaraManAction::StartTournament => {
+            let msg_src = msg::source();
+            if vara_man.status == Status::Paused {
+                return Err(VaraManError::GameIsPaused);
+            }
+            let game = vara_man
+                .tournaments
+                .get_mut(&msg_src)
+                .ok_or(VaraManError::NoSuchGame)?;
+
+            if game.stage != Stage::Registration {
+                return Err(VaraManError::WrongStage);
+            }
+            let time_start = exec::block_timestamp();
+            game.stage = Stage::Started(time_start);
+            msg::send_with_gas_delayed(
+                exec::program_id(),
+                VaraManAction::FinishTournament {
+                    admin_id: msg_src,
+                    time_start,
+                },
+                vara_man.config.gas_for_finish_tournament,
+                0,
+                game.duration_ms / 3_000 + 1,
+            )
+            .expect("Error in sending delayed message");
             Ok(VaraManEvent::GameStarted)
         }
-        VaraManAction::ClaimReward {
-            silver_coins,
-            gold_coins,
+
+        VaraManAction::FinishTournament {
+            admin_id,
+            time_start,
         } => {
-            let player_address = msg::source();
-
-            if let Some(game) = vara_man.games.get(&player_address) {
-                // Check that game is not paused
-                if vara_man.status == Status::Paused {
-                    return Err(VaraManError::WrongStatus);
-                }
-
-                // Check that player is registered
-                let Some(player) = vara_man.players.get_mut(&player_address) else {
-                    return Err(VaraManError::NotRegistered);
-                };
-
-                // Check passed coins range
-                if silver_coins > game.silver_coins || gold_coins > game.gold_coins {
-                    return Err(VaraManError::AmountGreaterThanAllowed);
-                }
-
-                let (tokens_per_gold_coin, tokens_per_silver_coin) = vara_man
-                    .config
-                    .get_tokens_per_gold_coin_for_level(game.level);
-
-                let tokens_amount = vara_man
-                    .config
-                    .one_coin_in_value
-                    .checked_mul(tokens_per_gold_coin)
-                    .expect("Math overflow!")
-                    .checked_mul(gold_coins)
-                    .expect("Math overflow!")
-                    .checked_add(
-                        vara_man
-                            .config
-                            .one_coin_in_value
-                            .checked_mul(tokens_per_silver_coin)
-                            .expect("Math overflow!")
-                            .checked_mul(silver_coins)
-                            .expect("Math overflow!"),
-                    )
-                    .expect("Math overflow!");
-
-                if msg::send(player_address, 0u8, tokens_amount as u128).is_err() {
-                    return Err(VaraManError::TransferFailed);
-                }
-
-                player.claimed_gold_coins = player
-                    .claimed_gold_coins
-                    .checked_add(gold_coins)
-                    .expect("Math overflow!");
-                player.claimed_silver_coins = player
-                    .claimed_silver_coins
-                    .checked_add(silver_coins)
-                    .expect("Math overflow!");
-
-                vara_man.games.remove(&player_address);
-
-                if !vara_man.admins.contains(&player_address) {
-                    player.lives -= 1;
-                }
-
-                Ok(VaraManEvent::GameFinished {
-                    player_address,
-                    silver_coins,
-                    gold_coins,
-                })
-            } else {
-                Err(VaraManError::GameDoesNotExist)
+            if msg::source() != exec::program_id() {
+                return Err(VaraManError::AccessDenied);
             }
+            let game = vara_man
+                .tournaments
+                .get_mut(&admin_id)
+                .ok_or(VaraManError::NoSuchGame)?;
+
+            if game.stage != Stage::Started(time_start) {
+                return Err(VaraManError::WrongStage);
+            }
+
+            let mut winners = Vec::new();
+            let mut max_points = 0;
+            let mut min_time = u128::MAX;
+
+            for (actor_id, player) in game.participants.iter() {
+                if player.points > max_points {
+                    max_points = player.points;
+                    min_time = player.time;
+                    winners.clear();
+                    winners.push(*actor_id);
+                } else if player.points == max_points {
+                    if player.time < min_time {
+                        min_time = player.time;
+                        winners.clear();
+                        winners.push(*actor_id);
+                    } else if player.time == min_time {
+                        winners.push(*actor_id);
+                    }
+                }
+            }
+
+            let prize = game.bid * game.participants.len() as u128 / winners.len() as u128;
+            winners.iter().for_each(|id| {
+                msg::send_with_gas(*id, "", 0, prize).expect("Error in sending value");
+            });
+            game.stage = Stage::Finished(winners.clone());
+            let participants: Vec<(ActorId, Player)> =
+                game.participants.clone().into_iter().collect();
+
+            msg::send(
+                game.admin,
+                Ok::<VaraManEvent, VaraManError>(VaraManEvent::GameFinished {
+                    winners: winners.clone(),
+                    participants: participants.clone(),
+                    prize,
+                }),
+                0,
+            )
+            .expect("Error in sending message");
+
+            Ok(VaraManEvent::GameFinished {
+                winners,
+                participants,
+                prize,
+            })
+        }
+
+        VaraManAction::RecordTournamentResult {
+            time,
+            gold_coins,
+            silver_coins,
+        } => {
+            if gold_coins > vara_man.config.max_number_gold_coins
+                || silver_coins > vara_man.config.max_number_silver_coins
+            {
+                return Err(VaraManError::ExceededLimit);
+            }
+            let msg_src = msg::source();
+            let admin_id = vara_man
+                .players_to_game_id
+                .get(&msg_src)
+                .ok_or(VaraManError::NoSuchPlayer)?;
+            let game = vara_man
+                .tournaments
+                .get_mut(admin_id)
+                .ok_or(VaraManError::NoSuchGame)?;
+
+            if !matches!(game.stage, Stage::Started(_)) {
+                return Err(VaraManError::WrongStage);
+            }
+
+            let player = game
+                .participants
+                .get_mut(&msg_src)
+                .ok_or(VaraManError::NoSuchPlayer)?;
+
+            let (points_for_gold, points_for_silver) = vara_man
+                .config
+                .get_points_per_gold_coin_for_level(game.level);
+            let points =
+                points_for_gold * gold_coins as u128 + points_for_silver * silver_coins as u128;
+            let maximum_possible_points = points_for_gold
+                * vara_man.config.max_number_gold_coins as u128
+                + points_for_silver * vara_man.config.max_number_silver_coins as u128;
+            player.time += time;
+            player.points += points;
+
+            Ok(VaraManEvent::ResultTournamentRecorded {
+                gold_coins,
+                silver_coins,
+                time: player.time,
+                points: player.points,
+                maximum_possible_points,
+                maximum_number_gold_coins: vara_man.config.max_number_gold_coins,
+                maximum_number_silver_coins: vara_man.config.max_number_silver_coins,
+            })
+        }
+
+        VaraManAction::LeaveGame => {
+            vara_man.players_to_game_id.remove(&msg::source());
+            Ok(VaraManEvent::LeftGame)
         }
         VaraManAction::ChangeStatus(status) => {
             if vara_man.admins.contains(&msg::source()) {
@@ -172,8 +369,6 @@ async fn process_handle(
         VaraManAction::ChangeConfig(config) => {
             if !vara_man.admins.contains(&msg::source()) {
                 Err(VaraManError::NotAdmin)
-            } else if !config.is_valid() {
-                return Err(VaraManError::ConfigIsInvalid);
             } else {
                 vara_man.config = config;
                 Ok(VaraManEvent::ConfigChanged(config))
@@ -190,10 +385,56 @@ async fn process_handle(
     }
 }
 
+impl VaraMan {
+    fn register(
+        &mut self,
+        msg_src: ActorId,
+        msg_value: u128,
+        admin_id: ActorId,
+        name: String,
+    ) -> Result<VaraManEvent, VaraManError> {
+        if self.status == Status::Paused {
+            return Err(VaraManError::GameIsPaused);
+        }
+
+        if self.players_to_game_id.contains_key(&msg_src) {
+            return Err(VaraManError::SeveralRegistrations);
+        }
+        let game = self
+            .tournaments
+            .get_mut(&admin_id)
+            .ok_or(VaraManError::NoSuchGame)?;
+
+        if game.stage != Stage::Registration {
+            return Err(VaraManError::WrongStage);
+        }
+        if game.participants.len() >= MAX_PARTICIPANTS.into() {
+            return Err(VaraManError::SessionFull);
+        }
+        if game.bid != msg_value {
+            return Err(VaraManError::WrongBid);
+        }
+
+        game.participants.insert(
+            msg_src,
+            Player {
+                name: name.clone(),
+                time: 0,
+                points: 0,
+            },
+        );
+        self.players_to_game_id.insert(msg_src, admin_id);
+        Ok(VaraManEvent::PlayerRegistered {
+            admin_id,
+            name,
+            bid: msg_value,
+        })
+    }
+}
+
 #[no_mangle]
 extern fn init() {
     let init: VaraManInit = msg::load().expect("Unexpected invalid init payload.");
-    assert!(init.config.is_valid());
     unsafe {
         VARA_MAN = Some(VaraMan {
             config: init.config,
@@ -211,21 +452,29 @@ extern fn state() {
 
     let reply = match query {
         StateQuery::All => StateReply::All(contract.into()),
-        StateQuery::AllGames => {
-            let games = contract.games.into_iter().collect();
-            StateReply::AllGames(games)
-        }
-        StateQuery::AllPlayers => {
-            let players = contract.players.into_iter().collect();
-            StateReply::AllPlayers(players)
-        }
-        StateQuery::Game { player_address } => {
-            let game: Option<GameInstance> = contract.games.get(&player_address).cloned();
-            StateReply::Game(game)
-        }
-        StateQuery::Player { player_address } => {
-            let player: Option<Player> = contract.players.get(&player_address).cloned();
-            StateReply::Player(player)
+        StateQuery::GetTournament { player_id } => {
+            if let Some(admin_id) = contract.players_to_game_id.get(&player_id) {
+                if let Some(tournament) = contract.tournaments.get(admin_id) {
+                    let tournament_state = TournamentState {
+                        tournament_name: tournament.tournament_name.clone(),
+                        admin: tournament.admin,
+                        level: tournament.level,
+                        participants: tournament.participants.clone().into_iter().collect(),
+                        bid: tournament.bid,
+                        stage: tournament.stage.clone(),
+                        duration_ms: tournament.duration_ms,
+                    };
+                    let time = match tournament.stage {
+                        Stage::Started(start_time) => Some(exec::block_timestamp() - start_time),
+                        _ => None,
+                    };
+                    StateReply::Tournament(Some((tournament_state, time)))
+                } else {
+                    StateReply::Tournament(None)
+                }
+            } else {
+                StateReply::Tournament(None)
+            }
         }
         StateQuery::Config => StateReply::Config(contract.config),
         StateQuery::Admins => StateReply::Admins(contract.admins),
@@ -237,20 +486,34 @@ extern fn state() {
 impl From<VaraMan> for VaraManState {
     fn from(value: VaraMan) -> Self {
         let VaraMan {
-            games,
-            players,
+            tournaments,
+            players_to_game_id,
             status,
             config,
             admins,
         } = value;
 
-        let games = games.into_iter().collect();
+        let tournaments = tournaments
+            .into_iter()
+            .map(|(id, tournament)| {
+                let tournament_state = TournamentState {
+                    tournament_name: tournament.tournament_name,
+                    admin: tournament.admin,
+                    level: tournament.level,
+                    participants: tournament.participants.into_iter().collect(),
+                    bid: tournament.bid,
+                    stage: tournament.stage,
+                    duration_ms: tournament.duration_ms,
+                };
+                (id, tournament_state)
+            })
+            .collect();
 
-        let players = players.into_iter().collect();
+        let players_to_game_id = players_to_game_id.into_iter().collect();
 
         Self {
-            games,
-            players,
+            tournaments,
+            players_to_game_id,
             status,
             config,
             admins,

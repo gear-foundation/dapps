@@ -5,7 +5,7 @@ import {
   UseSendMessageOptions,
   useAccount,
   useSendMessage,
-  useSendMessageHandler,
+  useSendMessageWithGas,
 } from '@gear-js/react-hooks';
 
 import { useSignlessTransactions } from '../context';
@@ -26,13 +26,13 @@ function useSignlessSendMessage(
   options?: UseSendMessageOptions,
 ) {
   const { account } = useAccount();
-  const { pair, pairVoucherId } = useSignlessTransactions();
+  const { pair, voucher } = useSignlessTransactions();
   const sendMessage = useSendMessage(destination, metadata, { ...options, pair });
 
   const sendSignlessMessage = (args: SendSignlessMessageOptions) => {
     const sessionForAccount = pair ? account?.decodedAddress : null;
     const payload = getSinglessPayload(args.payload, sessionForAccount);
-    const voucherId = pairVoucherId ? pairVoucherId : args.voucherId; // to not overrider gasless transactions
+    const voucherId = voucher?.id || args.voucherId;
 
     sendMessage({ ...args, payload, voucherId });
   };
@@ -46,13 +46,13 @@ function useSignlessSendMessageHandler(
   options?: UseSendMessageOptions & { isMaxGasLimit?: boolean },
 ) {
   const { account } = useAccount();
-  const { pair } = useSignlessTransactions();
-  const sendMessage = useSendMessageHandler(destination, metadata, { ...options, pair });
+  const { pair, voucher } = useSignlessTransactions();
+  const sendMessage = useSendMessageWithGas(destination, metadata, { ...options, pair });
 
   const sendSignlessMessage = (args: Omit<SendSignlessMessageOptions, 'gasLimit'>) => {
     const sessionForAccount = pair ? account?.decodedAddress : null;
     const payload = getSinglessPayload(args.payload, sessionForAccount);
-    const voucherId = pair ? (pair?.address as `0x${string}`) : args.voucherId; // to not overrider gasless transactions
+    const voucherId = voucher?.id || args.voucherId;
 
     sendMessage({ ...args, payload, voucherId });
   };

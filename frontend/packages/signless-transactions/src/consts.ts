@@ -2,7 +2,6 @@ export const REQUIRED_MESSAGE = 'Field is required';
 
 export const BALANCE_VALUE_TO_START_GAME = 20;
 export const BALANCE_VALUE_TO_ISSUE_VOUCHER = 5;
-export const ACTIONS = ['StartGame', 'Turn'];
 
 export const DURATIONS: { label: string; value: string }[] = [
   {
@@ -50,5 +49,3 @@ export const DURATIONS: { label: string; value: string }[] = [
     value: '10080',
   },
 ];
-
-export const DEFAULT_VALUES = { password: '', durationMinutes: DURATIONS[0].value };

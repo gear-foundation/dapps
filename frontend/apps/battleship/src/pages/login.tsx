@@ -9,13 +9,15 @@ import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
 import styles from './login.module.scss';
-import { useGaslessTransactions, EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
+import { useGaslessTransactions, EzTransactionsSwitch, useSignlessTransactions } from '@dapps-frontend/ez-transactions';
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 
 export default function Login() {
   const navigate = useNavigate();
   const { account } = useAccount();
   const alert = useAlert();
 
+  const signless = useSignlessTransactions();
   const gasless = useGaslessTransactions();
 
   const [isOpen, setIsOpen] = useState(false);
@@ -23,11 +25,12 @@ export default function Login() {
   const closeWallet = () => setIsOpen(false);
 
   const onClickStartGame = () => {
+    if (!account) throw new Error('Account is not found');
     // withVoucherRequest? to handle condition inside of gasless context
-    if (!gasless.isEnabled || gasless.voucherId) return navigate('/game');
+    if (!gasless.isEnabled || gasless.voucherId || signless.isActive) return navigate('/game');
 
     gasless
-      .requestVoucher()
+      .requestVoucher(account.address)
       .then(() => navigate('/game'))
       .catch(({ message }: Error) => alert.error(message));
   };
@@ -35,13 +38,17 @@ export default function Login() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
+        <div className={styles.top}>
+          <img src={battleshipImage} alt="battleship" width={300} />
+        </div>
         <div className={styles.header}>
-          <Heading>
-            <TextGradient>Battleship game</TextGradient>
+          <Heading size="md" className={styles.mainHeading}>
+            <TextGradient>Battleship Game</TextGradient>
           </Heading>
           <div>
-            <Text size="lg">
-              Welcome to the classic Battleship game, where you will compete against a smart contract.
+            <Text size="lg" className={styles.mainText}>
+              Welcome to the classic Battleship game, where you will compete against a smart contract. To start the
+              game, connect your wallet.
               {!account && ' To start the game, connect your wallet.'}
             </Text>
           </div>
@@ -53,11 +60,7 @@ export default function Login() {
             {account ? 'Start the Game' : 'Connect wallet'}
           </Button>
 
-          <EzTransactionsSwitch />
-        </div>
-
-        <div className={styles.bottom}>
-          <img src={battleshipImage} alt="" width={300} />
+          <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS}/>
         </div>
       </div>
 

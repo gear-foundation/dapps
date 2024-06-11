@@ -32,6 +32,7 @@ class Tileset {
 
 export class MapRenderer {
 	private static tilesets: Tileset[] = []
+	private static loadedImages: { [key: string]: HTMLImageElement } = {}
 
 	public static async initTilesets(mapData: TileMap) {
 		this.tilesets = mapData.tilesets.map(
@@ -96,7 +97,7 @@ export class MapRenderer {
 				}
 			}
 		}
-
+		this.renderImageLayer(context, mapData)
 		this.renderCoins(context, mapData)
 	}
 
@@ -197,5 +198,33 @@ export class MapRenderer {
 		context.stroke()
 		context.closePath()
 		context.fill()
+	}
+
+	public static renderImageLayer(
+		context: CanvasRenderingContext2D,
+		mapData: TileMap
+	) {
+		const imageLayer = mapData.layers.find(
+			(layer) => layer.type === 'imagelayer'
+		)
+
+		if (!imageLayer || !imageLayer.visible) {
+			return
+		}
+
+		if (imageLayer.image) {
+			if (!this.loadedImages[imageLayer.image]) {
+				const image = new Image()
+				image.src = imageLayer.image
+				image.onload = () => {
+					context.drawImage(image, 0, 0)
+					if (imageLayer.image) {
+						this.loadedImages[imageLayer.image] = image
+					}
+				}
+			} else {
+				context.drawImage(this.loadedImages[imageLayer.image], 0, 0)
+			}
+		}
 	}
 }

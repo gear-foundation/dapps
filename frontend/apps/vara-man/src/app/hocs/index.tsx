@@ -6,10 +6,16 @@ import {
   AccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
+import {
+  SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
+  GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
+  EzTransactionsProvider,
+} from '@dapps-frontend/ez-transactions';
 import { ENV } from '@/app/consts';
 import { AppProvider } from '@/app/context/ctx-app';
 import { GameProvider } from '@/app/context/ctx-game';
 import { Alert, alertStyles } from '@/components/ui/alert';
+import metaTxt from '@/assets/meta/vara_man.meta.txt';
 
 const ApiProvider = ({ children }: ProviderProps) => (
   <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>
@@ -23,7 +29,33 @@ const AlertProvider = ({ children }: ProviderProps) => (
 
 const BrowserRouterProvider = ({ children }: ProviderProps) => <BrowserRouter>{children}</BrowserRouter>;
 
-const providers = [BrowserRouterProvider, AlertProvider, ApiProvider, AccountProvider, AppProvider, GameProvider];
+function GaslessTransactionsProvider({ children }: ProviderProps) {
+  return (
+    <SharedGaslessTransactionsProvider programId={ENV.GAME} backendAddress={ENV.GASLESS_BACKEND} voucherLimit={18}>
+      {children}
+    </SharedGaslessTransactionsProvider>
+  );
+}
+
+function SignlessTransactionsProvider({ children }: ProviderProps) {
+  return (
+    <SharedSignlessTransactionsProvider programId={ENV.GAME} metadataSource={metaTxt}>
+      {children}
+    </SharedSignlessTransactionsProvider>
+  );
+}
+
+const providers = [
+  BrowserRouterProvider,
+  AlertProvider,
+  ApiProvider,
+  AccountProvider,
+  AppProvider,
+  GameProvider,
+  GaslessTransactionsProvider,
+  SignlessTransactionsProvider,
+  EzTransactionsProvider,
+];
 
 export const withProviders = (Component: ComponentType) => () =>
   providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);

@@ -12,6 +12,9 @@ import { IGameLevel } from '@/app/types/game'
 import { TileMap } from '../types'
 import { gameLevels } from '../consts'
 
+const WIDTH_CANVAS = 588
+const HEIGHT_CANVAS = 588
+
 export class Game {
 	private context: CanvasRenderingContext2D
 	private fogContext: CanvasRenderingContext2D
@@ -31,6 +34,7 @@ export class Game {
 
 	setGameOver = (gameOver: boolean) => {}
 	gameOver = false
+	pause?: boolean
 
 	constructor(
 		private canvas: HTMLCanvasElement,
@@ -40,7 +44,8 @@ export class Game {
 		incrementCoins: (coin: 'silver' | 'gold') => void,
 		gameOver: boolean,
 		setGameOver: (gameOver: boolean) => void,
-		map: TileMap
+		map: TileMap,
+		pause?: boolean
 	) {
 		const levelData = gameLevels.find((l) => {
 			return l.level === level
@@ -51,14 +56,30 @@ export class Game {
 
 		this.context = canvas.getContext('2d') as CanvasRenderingContext2D
 		this.fogContext = canvasFog.getContext('2d') as CanvasRenderingContext2D
-		this.canvas.width = 588
-		this.canvas.height = 588
+		this.canvas.width = WIDTH_CANVAS
+		this.canvas.height = HEIGHT_CANVAS
 
-		this.canvasFog.width = 588
-		this.canvasFog.height = 588
+		this.canvasFog.width = WIDTH_CANVAS
+		this.canvasFog.height = HEIGHT_CANVAS
 
 		this.setGameOver = setGameOver
 		this.gameOver = gameOver
+		this.pause = pause
+
+		// Get the DPR and size of the canvas
+		const dpr = window.devicePixelRatio
+		const rect = canvas.getBoundingClientRect()
+
+		// Set the "actual" size of the canvas
+		canvas.width = rect.width * dpr
+		canvas.height = rect.height * dpr
+
+		// Scale the context to ensure correct drawing operations
+		this.context.scale(dpr, dpr)
+
+		// Set the "drawn" size of the canvas
+		canvas.style.width = `${rect.width}px`
+		canvas.style.height = `${rect.height}px`
 
 		MapRenderer.initTilesets(this.map).then(() => {
 			const startPosition = findCharacterStartPosition(this.map)
@@ -70,12 +91,13 @@ export class Game {
 					startPosition.y,
 					true,
 					this.map,
-					incrementCoins
+					incrementCoins,
+					() => this.setGameOver(true)
 				)
 
 				this.initEventListeners()
 			} else {
-				console.error('Начальная позиция персонажа не найдена.')
+				console.error('The character starting position was not found.')
 			}
 
 			enemyStartPositions.forEach(({ position, zone }) => {
@@ -95,7 +117,15 @@ export class Game {
 				}
 			})
 
-			this.update()
+			CharacterRenderer.loadCloakImage('./cloak.svg')
+				.then((img) => {
+					CharacterRenderer.cloakImage = img
+					this.update()
+				})
+				.catch((error) => {
+					console.error(error)
+					this.update()
+				})
 		})
 	}
 
@@ -105,6 +135,7 @@ export class Game {
 	}
 
 	private handleKeyDown = (event: KeyboardEvent) => {
+		event.preventDefault()
 		switch (event.keyCode) {
 			case 38:
 				this.isUp = true
@@ -125,6 +156,7 @@ export class Game {
 	}
 
 	private handleKeyUp = (event: KeyboardEvent) => {
+		event.preventDefault()
 		switch (event.keyCode) {
 			case 38:
 				this.isUp = false
@@ -151,28 +183,31 @@ export class Game {
 		}
 
 		if (this.animationFrameId !== null) {
-			if (this.character) {
-				this.character.updateMovement(
-					this.isLeft,
-					this.isRight,
-					this.isUp,
-					this.isDown,
-					this.isShift
-				)
-			}
-
-			this.enemies.forEach((enemy) => {
+			if (!this.pause) {
 				if (this.character) {
-					enemy.update({
-						mapData: this.map,
-						playerPosition: this.character.position,
-					})
+					this.character.updateMovement(
+						this.isLeft,
+						this.isRight,
+						this.isUp,
+						this.isDown,
+						this.isShift
+					)
 				}
-			})
 
-			if (this.checkCollisions()) {
-				this.setGameOver(true)
-				return
+				this.enemies.forEach((enemy) => {
+					if (this.character) {
+						enemy.update({
+							mapData: this.map,
+							playerPosition: this.character.position,
+						})
+					}
+				})
+
+				if (this.checkCollisions()) {
+					this.setGameOver(true)
+					return
+				}
+				this.context.clearRect(0, 0, this.canvas.width, this.canvas.height)
 			}
 		}
 
@@ -233,5 +268,9 @@ export class Game {
 		if (gameOver) {
 			this.cleanup()
 		}
+	}
+
+	public updatePause = () => {
+		this.pause = false
 	}
 }

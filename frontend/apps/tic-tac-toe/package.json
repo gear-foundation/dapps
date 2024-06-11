@@ -4,15 +4,15 @@
   "version": "1.0.2",
   "type": "module",
   "scripts": {
-    "start": "yarn build:packages && vite --open",
-    "build": "yarn build:packages && tsc && vite build",
+    "start": "yarn build:packages && yarn build:ez-transactions && vite --open",
+    "build": "yarn build:packages && yarn build:ez-transactions && tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.36.5",
-    "@gear-js/react-hooks": "0.10.2",
+    "@gear-js/react-hooks": "0.10.6",
     "@headlessui/react": "1.7.17",
     "@polkadot/api": "10.11.2",
     "@polkadot/extension-dapp": "0.46.5",
@@ -35,8 +35,7 @@
     "react-dom": "18.2.0",
     "react-router-dom": "6.10.0",
     "react-transition-group": "4.4.5",
-    "sass": "1.62.0",
-    "socket.io-client": "4.7.2"
+    "sass": "1.62.0"
   },
   "devDependencies": {
     "@types/lodash.isequal": "4.5.6",

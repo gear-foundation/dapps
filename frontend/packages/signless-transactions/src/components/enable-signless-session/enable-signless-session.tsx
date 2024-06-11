@@ -7,21 +7,37 @@ import styles from './enable-signless-session.module.css';
 import { CreateSessionModal } from '../create-session-modal';
 import { useSignlessTransactions } from '../../context';
 import { EnableSessionModal } from '../enable-session-modal';
+import { useIsAvailable } from '../../hooks';
 
 type Props = {
   type: 'button' | 'switcher';
+  allowedActions: string[];
   shouldIssueVoucher?: boolean;
-  onSessionCreate?: (signlessAccountAddress: string) => Promise<void>;
+  message?: string;
+  disabled?: boolean;
+  onSessionCreate?: (signlessAccountAddress: string) => Promise<`0x${string}`>;
+  requiredBalance: number | undefined;
+  boundSessionDuration?: number;
 };
 
-function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher }: Props) {
+function EnableSignlessSession(props: Props) {
+  const {
+    type,
+    allowedActions,
+    onSessionCreate,
+    shouldIssueVoucher,
+    disabled,
+    message,
+    boundSessionDuration,
+    requiredBalance = 42,
+  } = props;
   const { account } = useAccount();
-  const { isAvailable, pair, session, deletePair, deleteSession } = useSignlessTransactions();
+  const { pair, session, deletePair, deleteSession, isSessionActive } = useSignlessTransactions();
+  const isAvailable = useIsAvailable(requiredBalance, isSessionActive);
   const [isLoading, setIsLoading] = useState(false);
+
   const [isCreateSessionModalOpen, setIsCreateSessionModalOpen] = useState(false);
   const [isEnableSessionModalOpen, setIsEnableSessionModalOpen] = useState(false);
-
-  const isSession = !!session;
 
   const openCreateModal = () => setIsCreateSessionModalOpen(true);
   const closeCreateModal = () => setIsCreateSessionModalOpen(false);
@@ -38,15 +54,20 @@ function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher }: Pr
   };
 
   const handleDeleteSession = async () => {
-    if (session) {
-      setIsLoading(true);
-      await deleteSession(session.key, pair, { onSuccess: onDeleteSessionSuccess, onFinally: onDeleteSessionFinally });
-    }
+    if (!session) throw new Error('Signless session not found');
+    if (!pair) throw new Error('Signless pair not found');
+
+    setIsLoading(true);
+
+    deleteSession(session.key, pair, {
+      onSuccess: onDeleteSessionSuccess,
+      onFinally: onDeleteSessionFinally,
+    });
   };
 
   const handleSwitcherChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
-      if (isSession) {
+      if (isSessionActive) {
         openEnableModal();
         return;
       }
@@ -60,7 +81,7 @@ function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher }: Pr
     <>
       {type === 'button' && (
         <>
-          {isSession ? (
+          {isSessionActive ? (
             <Button
               icon={PowerSVG}
               text="Disable"
@@ -75,7 +96,7 @@ function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher }: Pr
               icon={SignlessSVG}
               color="transparent"
               text="Enable signless transactions"
-              disabled={isLoading || !isAvailable}
+              disabled={isLoading || !isAvailable || disabled}
               className={styles.enableButton}
               onClick={openCreateModal}
             />
@@ -89,8 +110,8 @@ function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher }: Pr
             <Checkbox
               label=""
               type="switch"
-              disabled={isLoading || !isAvailable}
-              checked={isSession && !!pair}
+              disabled={isLoading || !isAvailable || disabled}
+              checked={isSessionActive && !!pair}
               onChange={handleSwitcherChange}
             />
           </div>
@@ -102,11 +123,17 @@ function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher }: Pr
               {isLoading && <span className={styles.loader} />}
             </div>
 
-            {!isAvailable && (
+            {(!isAvailable || message) && (
               <span className={styles.descr}>
-                <span>Not enough balance to enable signless mode.</span>
-                <br />
-                <span>Min required: 42 VARA</span>
+                {!isAvailable ? (
+                  <>
+                    <span>Not enough balance to enable signless mode.</span>
+                    <br />
+                    <span>Min required: {requiredBalance} VARA</span>
+                  </>
+                ) : (
+                  message && <span>{message}</span>
+                )}
               </span>
             )}
           </div>
@@ -115,9 +142,11 @@ function EnableSignlessSession({ type, onSessionCreate, shouldIssueVoucher }: Pr
 
       {isCreateSessionModalOpen && (
         <CreateSessionModal
+          allowedActions={allowedActions}
           close={closeCreateModal}
           onSessionCreate={onSessionCreate}
           shouldIssueVoucher={shouldIssueVoucher}
+          boundSessionDuration={boundSessionDuration}
         />
       )}
       {isEnableSessionModalOpen && <EnableSessionModal close={closeEnableModal} />}
