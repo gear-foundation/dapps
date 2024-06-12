@@ -243,7 +243,7 @@ impl SimpleMtk {
     /// * `to` must be a non-zero account
     /// * `ids` element must be the ID of the existing token
     /// * `amounts` element must not exceed from's balance
-    /// Arguments:
+    ///   Arguments:
     /// * `from`: An account from which token will be transferred
     /// * `to`: An account to which token will be transferred
     /// * `ids`: The vector of IDs of transferred token
@@ -306,7 +306,7 @@ impl SimpleMtk {
     /// Requirements:
     /// * Only the token owner can call that action
     /// * `to` must be a non-zero account
-    /// Arguments:
+    ///   Arguments:
     /// * `to`: An account that will be approved to manage the tokens
     fn approve(&mut self, to: &ActorId) -> Result<MtkEvent, MtkError> {
         if to == &ActorId::zero() {
@@ -331,7 +331,7 @@ impl SimpleMtk {
     /// Requirements:
     /// * Only the token owner can call that action
     /// * `to` must be a non-zero account
-    /// Arguments:
+    ///   Arguments:
     /// * `to`: An account that won't be able to manage the tokens
     fn revoke_approval(&mut self, to: &ActorId) -> Result<MtkEvent, MtkError> {
         let msg_src = &msg::source();

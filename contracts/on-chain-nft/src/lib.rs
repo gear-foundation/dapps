@@ -162,8 +162,7 @@ impl OnChainNFTCore for OnChainNFT {
                 .layers
                 .get(&(layer_id as u128))
                 .expect("No such layer")
-                .iter()
-                .nth(*layer_item_id as usize)
+                .get(*layer_item_id as usize)
                 .expect("No such layer item");
             content.push(layer_content.clone());
         }
