@@ -83,7 +83,7 @@ async fn transfer_balances_to_account(accounts: &[String], nonce: u32) -> Result
     // let mut api = GearApi::dev().await?;
     let mut api = GearApi::init(WSAddress::new("wss://testnet.vara.rs", 443)).await?;
     let accounts = accounts.to_vec();
-    for (_, account) in accounts.iter().enumerate() {
+    for account in accounts.iter() {
         let account = api.get_specific_actor_id(account);
 
         let account: [u8; 32] = account.into();

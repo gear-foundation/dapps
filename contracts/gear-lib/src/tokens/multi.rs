@@ -86,7 +86,7 @@ impl MTState {
     /// # Errors
     /// - [`MTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
     /// - [`MTError::InsufficientAmount`] if given `amount` with the total
-    /// supply of all the tokens overflows the [`Amount`] type.
+    ///   supply of all the tokens overflows the [`Amount`] type.
     pub fn mint(&mut self, to: ActorId, id: Id, amount: Amount) -> Result<MTTransfer, MTError> {
         self.mint_batch(to, vec![(id.clone(), amount)])?;
 
@@ -141,7 +141,7 @@ impl MTState {
     /// # Errors
     /// - [`MTError::ZeroSenderAddress`] if `from` is [`ActorId::zero()`].
     /// - [`MTError::InsufficientAmount`] if `from` doesn't have given `amount`
-    /// of the tokens.
+    ///   of the tokens.
     pub fn burn(&mut self, from: Owner, id: Id, amount: Amount) -> Result<MTTransfer, MTError> {
         self.burn_batch(from, vec![(id.clone(), amount)])?;
 
@@ -228,9 +228,9 @@ impl MTState {
     ///
     /// # Errors
     /// - [`MTError::ZeroRecipientAddress`] if `operator` is
-    /// [`ActorId::zero()`].
+    ///   [`ActorId::zero()`].
     /// - [`MTError::InsufficientAmount`] if [`msg::source()`] doesn't have any
-    /// tokens or there are no tokens with given `id`.
+    ///   tokens or there are no tokens with given `id`.
     pub fn approve(
         &mut self,
         operator: Operator,
@@ -276,9 +276,9 @@ impl MTState {
     /// Returns an allowance of `owner`'s tokens for `operator`.
     ///
     /// - If `id` is [`Some`], returns an approved amount of the tokens with
-    /// this `id`.
+    ///   this `id`.
     /// - If `id` is [`None`], returns [`Amount::MAX`] if `operator` is approved
-    /// for all `owner`s tokens, otherwise returns 0.
+    ///   for all `owner`s tokens, otherwise returns 0.
     pub fn allowance(&self, owner: Owner, operator: Operator, id: Option<&Id>) -> Amount {
         id.map_or_else(
             || {
@@ -307,7 +307,7 @@ impl MTState {
     /// # Errors
     /// - [`MTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
     /// - [`MTError::InsufficientAmount`] if [`msg::source()`] doesn't have
-    /// given `amount` of the tokens.
+    ///   given `amount` of the tokens.
     pub fn transfer(&mut self, to: ActorId, id: Id, amount: Amount) -> Result<MTTransfer, MTError> {
         self.transfer_batch(to, vec![(id.clone(), amount)])?;
 
@@ -325,7 +325,7 @@ impl MTState {
     /// # Errors
     /// - [`MTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
     /// - [`MTError::InsufficientAmount`] if [`msg::source()`] doesn't have
-    /// given amount of one of given tokens.
+    ///   given amount of one of given tokens.
     pub fn transfer_batch(
         &mut self,
         to: ActorId,
@@ -401,9 +401,9 @@ impl MTState {
     /// - [`MTError::ZeroSenderAddress`] if `from` is [`ActorId::zero()`].
     /// - [`MTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
     /// - [`MTError::NotApproved`] if [`msg::source()`] doesn't have any
-    /// allowance for given `amount` of the tokens.
+    ///   allowance for given `amount` of the tokens.
     /// - [`MTError::InsufficientAmount`] if `from` doesn't have given `amount`
-    /// of the tokens.
+    ///   of the tokens.
     pub fn transfer_from(
         &mut self,
         from: Owner,
@@ -437,9 +437,9 @@ impl MTState {
     /// - [`MTError::ZeroSenderAddress`] if `from` is [`ActorId::zero()`].
     /// - [`MTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
     /// - [`MTError::NotApproved`] if [`msg::source()`] doesn't have any
-    /// allowance for given amounts of tokens.
+    ///   allowance for given amounts of tokens.
     /// - [`MTError::InsufficientAmount`] if `from` doesn't have given amount of
-    /// one of given tokens.
+    ///   one of given tokens.
     pub fn transfer_from_batch(
         &mut self,
         from: Owner,
@@ -548,7 +548,7 @@ impl MTState {
     ///
     /// # Errors
     /// - [`MTError::InsufficientAmount`] if there are no tokens with given
-    /// `id`.
+    ///   `id`.
     pub fn get_attribute(&self, id: &Id, key: &Vec<u8>) -> Result<Option<&Vec<u8>>, MTError> {
         self.tokens
             .get(id)
@@ -569,7 +569,7 @@ impl MTState {
     ///
     /// # Errors
     /// - [`MTError::InsufficientAmount`] if there are no tokens with given
-    /// `id`.
+    ///   `id`.
     pub fn set_attribute(
         &mut self,
         id: &Id,

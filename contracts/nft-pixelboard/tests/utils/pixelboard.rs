@@ -121,21 +121,6 @@ impl<'a> NFTPixelboard<'a> {
     }
 }
 
-pub struct NFTPixelboardInit<'a>(InnerProgram<'a>, bool);
-
-impl<'a> NFTPixelboardInit<'a> {
-    #[track_caller]
-    pub fn failed(self) {
-        assert!(self.1)
-    }
-
-    #[track_caller]
-    pub fn succeed(self) -> NFTPixelboard<'a> {
-        assert!(!self.1);
-        NFTPixelboard(self.0)
-    }
-}
-
 // # TODO: uncomment when new meta will be ready for gtest
 
 // pub fn meta_state(&self) -> NFTPixelboardMetaState {

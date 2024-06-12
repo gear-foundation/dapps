@@ -62,15 +62,11 @@ impl FTokenTestFuncs for Program<'_> {
 
     fn check_balance(&self, account: u64, expected_amount: u128) {
         let state: IoFungibleToken = self.read_state(false).expect("Unable to read token state");
-        let balance = if let Some((_, balance)) = state
+        let (_, balance) = state
             .balances
             .into_iter()
             .find(|(id, _balance)| *id == account.into())
-        {
-            balance
-        } else {
-            0
-        };
+            .unwrap_or_default();
 
         assert_eq!(balance, expected_amount, "Error in balances");
     }

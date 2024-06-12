@@ -157,12 +157,12 @@ pub struct TokenInfo {
 /// * `block_side_length` must be more than 0.
 /// * `pixel_price` mustn't be more than [`MAX_PIXEL_PRICE`].
 /// * A [width](`Resolution#structfield.width`) &
-/// [height](`Resolution#structfield.height`) (`resolution`) of a canvas must be
-/// more than 0.
+///   [height](`Resolution#structfield.height`) (`resolution`) of a canvas must be
+///   more than 0.
 /// * Each side of `resolution` must be a multiple of `block_side_length`.
 /// * `painting` length must equal a pixel count in a canvas (which can be
-/// calculated by multiplying a [width](`Resolution#structfield.width`) &
-/// [height](`Resolution#structfield.height`) from `resolution`).
+///   calculated by multiplying a [width](`Resolution#structfield.width`) &
+///   [height](`Resolution#structfield.height`) from `resolution`).
 /// * `commission_percentage` mustn't be more than 100.
 /// * `ft_program` address mustn't be [`ActorId::zero()`].
 /// * `nft_program` address mustn't be [`ActorId::zero()`].
@@ -208,22 +208,22 @@ pub enum NFTPixelboardAction {
     /// # Requirements
     /// * `rectangle` coordinates mustn't be out of a canvas.
     /// * `rectangle` coordinates mustn't be mixed up or belong to wrong
-    /// corners.
+    ///   corners.
     /// * `rectangle` coordinates must observe a block layout. In other words,
-    /// each `rectangle` coordinate must be a multiple of a block side length in
-    /// the canvas. The block side length can be obtained by
-    /// [`block_side_length()`](../nft_pixelboard_state/metafns/fn.block_side_length.html).
+    ///   each `rectangle` coordinate must be a multiple of a block side length in
+    ///   the canvas. The block side length can be obtained by
+    ///   [`block_side_length()`](../nft_pixelboard_state/metafns/fn.block_side_length.html).
     /// * NFT `rectangle` mustn't collide with already minted one.
     /// * `painting` length must equal a pixel count in an NFT
-    /// (which can be calculated by multiplying a [width](`Rectangle::width`) &
-    /// [height](`Rectangle::height`) from `rectangle`).
+    ///   (which can be calculated by multiplying a [width](`Rectangle::width`) &
+    ///   [height](`Rectangle::height`) from `rectangle`).
     /// * [`msg::source()`] must have enough fungible tokens to buy all free
-    /// pixels that `rectangle` will occupy. An enough number of tokens can be
-    /// calculated by multiplying a `rectangle` area and the price of a free
-    /// pixel. The area can be calculated by multiplying a
-    /// [width](`Rectangle::width`) & [height](`Rectangle::height`) from
-    /// `rectangle`. The price of a free pixel can be obtained by
-    /// [`pixel_price()`](../nft_pixelboard_state/metafns/fn.pixel_price.html).
+    ///   pixels that `rectangle` will occupy. An enough number of tokens can be
+    ///   calculated by multiplying a `rectangle` area and the price of a free
+    ///   pixel. The area can be calculated by multiplying a
+    ///   [width](`Rectangle::width`) & [height](`Rectangle::height`) from
+    ///   `rectangle`. The price of a free pixel can be obtained by
+    ///   [`pixel_price()`](../nft_pixelboard_state/metafns/fn.pixel_price.html).
     ///
     /// On success, returns [`NFTPixelboardEvent::Minted`].
     ///
@@ -248,12 +248,12 @@ pub enum NFTPixelboardAction {
     /// # Requirements
     /// * An NFT must be minted on a pixelboard.
     /// * An NFT must be for sale. This can be found out by
-    /// [`token_info()`]. See also the documentation of
-    /// [`TokenInfo#structfield.pixel_price`].
+    ///   [`token_info()`]. See also the documentation of
+    ///   [`TokenInfo#structfield.pixel_price`].
     /// * [`msg::source()`] must have enough fungible tokens to buy all pixels
-    /// that an NFT occupies. This can be found out by
-    /// [`token_info()`]. See also the documentation of
-    /// [`TokenInfo#structfield.pixel_price`].
+    ///   that an NFT occupies. This can be found out by
+    ///   [`token_info()`]. See also the documentation of
+    ///   [`TokenInfo#structfield.pixel_price`].
     ///
     /// On success, returns [`NFTPixelboardEvent::Bought`].
     ///
@@ -265,14 +265,14 @@ pub enum NFTPixelboardAction {
     ///
     /// There are 3 options of a sale state change:
     /// * Putting up for sale\
-    /// If an NFT is **not** for sale, then assigning `pixel_price` to [`Some`]
-    /// price will transfer it to a pixelboard program & put it up for sale.
+    ///   If an NFT is **not** for sale, then assigning `pixel_price` to [`Some`]
+    ///   price will transfer it to a pixelboard program & put it up for sale.
     /// * Updating a pixel price\
-    /// If an NFT is for sale, then assigning `pixel_price` to [`Some`] price
-    /// will update its pixel price.
+    ///   If an NFT is for sale, then assigning `pixel_price` to [`Some`] price
+    ///   will update its pixel price.
     /// * Removing from sale\
-    /// Assigning the `pixel_price` to [`None`] will transfer an NFT back to its
-    /// owner & remove an NFT from sale.
+    ///   Assigning the `pixel_price` to [`None`] will transfer an NFT back to its
+    ///   owner & remove an NFT from sale.
     ///
     /// **Note:** A commission is included in each NFT resale, so a seller
     /// will receive not all fungible tokens but tokens with a commission
@@ -299,9 +299,9 @@ pub enum NFTPixelboardAction {
     /// * An NFT must be minted on a pixelboard.
     /// * [`msg::source()`](gstd::msg::source) must be the owner of an NFT.
     /// * `painting` length must equal a pixel count in an NFT. The count can be
-    /// calculated by multiplying a [width](`Rectangle::width`) &
-    /// [height](`Rectangle::height`) from a rectangle of the NFT. The NFT
-    /// rectangle can be obtained by [`token_info()`](../nft_pixelboard_state/metafns/fn.token_info.html).
+    ///   calculated by multiplying a [width](`Rectangle::width`) &
+    ///   [height](`Rectangle::height`) from a rectangle of the NFT. The NFT
+    ///   rectangle can be obtained by [`token_info()`](../nft_pixelboard_state/metafns/fn.token_info.html).
     ///
     /// On success, returns [`NFTPixelboardEvent::Painted`].
     Paint {

@@ -96,7 +96,7 @@ pub type ItemId = TokenId;
 ///
 /// # Requirements
 /// - Each [`ActorId`] of `producers`, `distributors`, and `retailers` mustn't
-/// equal [`ActorId::zero()`].
+///   equal [`ActorId::zero()`].
 #[derive(Encode, Decode, Hash, TypeInfo, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Clone)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
@@ -163,17 +163,17 @@ pub enum InnerAction {
 ///
 /// Important notes:
 /// - Only the last sent asynchronous action for
-/// [`msg::source()`](gstd::msg::source) is cached.
+///   [`msg::source()`](gstd::msg::source) is cached.
 /// - Non-asynchronous actions are never cached.
 /// - There's no guarantee every underprocessed asynchronous action will be
-/// cached. Use
-/// [`is_action_cached()`](../supply_chain_state/metafns/fn.is_action_cached.html)
-/// to check if some action is cached for some [`ActorId`].
+///   cached. Use
+///   [`is_action_cached()`](../supply_chain_state/metafns/fn.is_action_cached.html)
+///   to check if some action is cached for some [`ActorId`].
 /// - It's possible to send a retry action with a different payload, and it'll
-/// continue with it because, for some action, not all payload is saved in the
-/// cache (see [`CachedAction`]).
+///   continue with it because, for some action, not all payload is saved in the
+///   cache (see [`CachedAction`]).
 /// - The cache memory has a limit, so when it's reached every oldest cached
-/// action is replaced with a new one.
+///   action is replaced with a new one.
 #[derive(
     Default, Encode, Decode, TypeInfo, Debug, PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash,
 )]
@@ -216,7 +216,7 @@ pub enum ProducerAction {
     /// - The item must exist in a supply chain.
     /// - [`msg::source()`](gstd::msg::source) must be the producer of the item.
     /// - Item's [`ItemState`] must contain [`ItemEventState::Produced`] &
-    /// [`Role::Producer`].
+    ///   [`Role::Producer`].
     ///
     /// On success, replies with [`Event`] where [`ItemState`] contains
     /// [`ItemEventState::ForSale`] & [`Role::Producer`].
@@ -238,7 +238,7 @@ pub enum ProducerAction {
     /// - The item must exist in a supply chain.
     /// - [`msg::source()`](gstd::msg::source) must be the producer of the item.
     /// - Item's [`ItemState`] must contain [`ItemEventState::Produced`] &
-    /// [`Role::Distributor`].
+    ///   [`Role::Distributor`].
     ///
     /// On success, replies with [`Event`] where [`ItemState`] contains
     /// [`ItemEventState::Approved`]/[`ItemEventState::ForSale`] &
@@ -259,7 +259,7 @@ pub enum ProducerAction {
     /// - The item must exist in a supply chain.
     /// - [`msg::source()`](gstd::msg::source) must be the producer of the item.
     /// - Item's [`ItemState`] must contain [`ItemEventState::Approved`] &
-    /// [`Role::Producer`].
+    ///   [`Role::Producer`].
     ///
     /// On success, replies with [`Event`] where [`ItemState`] contains
     /// [`ItemEventState::Shipped`] & [`Role::Producer`].
@@ -286,7 +286,7 @@ pub enum DistributorAction {
     /// - The item must exist in a supply chain.
     /// - [`msg::source()`](gstd::msg::source) must be a distributor.
     /// - Item's [`ItemState`] must contain [`ItemEventState::ForSale`] &
-    /// [`Role::Producer`].
+    ///   [`Role::Producer`].
     ///
     /// On success, replies with [`Event`] where [`ItemState`] contains
     /// [`ItemEventState::Purchased`] & [`Role::Distributor`].
@@ -311,7 +311,7 @@ pub enum DistributorAction {
     /// - The item must exist in a supply chain.
     /// - [`msg::source()`] must be the distributor of the item.
     /// - Item's [`ItemState`] must contain [`ItemEventState::Shipped`] &
-    /// [`Role::Producer`].
+    ///   [`Role::Producer`].
     ///
     /// On success, replies with [`Event`] where [`ItemState`] contains
     /// [`ItemEventState::Received`] & [`Role::Distributor`].
@@ -324,9 +324,9 @@ pub enum DistributorAction {
     /// # Requirements
     /// - The item must exist in a supply chain.
     /// - [`msg::source()`](gstd::msg::source) must be the distributor of the
-    /// item.
+    ///   item.
     /// - Item's [`ItemState`] must contain [`ItemEventState::Received`] &
-    /// [`Role::Distributor`].
+    ///   [`Role::Distributor`].
     ///
     /// On success, replies with [`Event`] where [`ItemState`] contains
     /// [`ItemEventState::Processed`] & [`Role::Distributor`].
@@ -337,9 +337,9 @@ pub enum DistributorAction {
     /// # Requirements
     /// - The item must exist in a supply chain.
     /// - [`msg::source()`](gstd::msg::source) must be the distributor of the
-    /// item.
+    ///   item.
     /// - Item's [`ItemState`] must contain [`ItemEventState::Processed`] &
-    /// [`Role::Distributor`].
+    ///   [`Role::Distributor`].
     ///
     /// On success, replies with [`Event`] where [`ItemState`] contains
     /// [`ItemEventState::Packaged`] & [`Role::Distributor`].
@@ -354,9 +354,9 @@ pub enum DistributorAction {
     /// # Requirements
     /// - The item must exist in a supply chain.
     /// - [`msg::source()`](gstd::msg::source) must be the distributor of the
-    /// item.
+    ///   item.
     /// - Item's [`ItemState`] must contain [`ItemEventState::Packaged`] &
-    /// [`Role::Distributor`].
+    ///   [`Role::Distributor`].
     ///
     /// On success, replies with [`Event`] where [`ItemState`] contains
     /// [`ItemEventState::ForSale`] & [`Role::Distributor`].
@@ -377,9 +377,9 @@ pub enum DistributorAction {
     /// # Requirements
     /// - The item must exist in a supply chain.
     /// - [`msg::source()`](gstd::msg::source) must be the distributor of the
-    /// item.
+    ///   item.
     /// - Item's [`ItemState`] must contain [`ItemEventState::Purchased`] &
-    /// [`Role::Retailer`].
+    ///   [`Role::Retailer`].
     ///
     /// On success, replies with [`Event`] where [`ItemState`] contains
     /// [`ItemEventState::Approved`]/[`ItemEventState::ForSale`] &
@@ -399,9 +399,9 @@ pub enum DistributorAction {
     /// # Requirements
     /// - The item must exist in a supply chain.
     /// - [`msg::source()`](gstd::msg::source) must be the distributor of the
-    /// item.
+    ///   item.
     /// - Item's [`ItemState`] must contain [`ItemEventState::Approved`] &
-    /// [`Role::Distributor`].
+    ///   [`Role::Distributor`].
     ///
     /// On success, replies with [`Event`] where [`ItemState`] contains
     /// [`ItemEventState::Shipped`] & [`Role::Distributor`].
@@ -428,7 +428,7 @@ pub enum RetailerAction {
     /// - The item must exist in a supply chain.
     /// - [`msg::source()`](gstd::msg::source) must be a retailer.
     /// - Item's [`ItemState`] must contain [`ItemEventState::ForSale`] &
-    /// [`Role::Distributor`].
+    ///   [`Role::Distributor`].
     ///
     /// On success, replies with [`Event`] where [`ItemState`] contains
     /// [`ItemEventState::Purchased`] & [`Role::Retailer`].
@@ -454,7 +454,7 @@ pub enum RetailerAction {
     /// - The item must exist in a supply chain.
     /// - [`msg::source()`] must be the retailer of the item.
     /// - Item's [`ItemState`] must contain [`ItemEventState::Shipped`] &
-    /// [`Role::Distributor`].
+    ///   [`Role::Distributor`].
     ///
     /// On success, replies with [`Event`] where [`ItemState`] contains
     /// [`ItemEventState::Received`] & [`Role::Retailer`].
@@ -472,7 +472,7 @@ pub enum RetailerAction {
     /// - The item must exist in a supply chain.
     /// - [`msg::source()`](gstd::msg::source) must be the retailer of the item.
     /// - Item's [`ItemState`] must contain [`ItemEventState::Received`] &
-    /// [`Role::Retailer`].
+    ///   [`Role::Retailer`].
     ///
     /// On success, replies with [`Event`] where [`ItemState`] contains
     /// [`ItemEventState::ForSale`] & [`Role::Retailer`].
@@ -496,7 +496,7 @@ pub enum ConsumerAction {
     /// # Requirements
     /// - The item must exist in a supply chain.
     /// - Item's [`ItemState`] must contain [`ItemEventState::ForSale`] &
-    /// [`Role::Retailer`].
+    ///   [`Role::Retailer`].
     ///
     /// On success, replies with [`Event`] where [`ItemState`] contains
     /// [`ItemEventState::Purchased`] & [`Role::Consumer`].

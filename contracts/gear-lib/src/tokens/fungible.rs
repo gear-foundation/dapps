@@ -38,7 +38,7 @@ impl FTState {
     ///
     /// # Errors
     /// - [`FTError::ZeroRecipientAddress`] if `operator` is
-    /// [`ActorId::zero()`].
+    ///   [`ActorId::zero()`].
     pub fn approve(&mut self, operator: Operator, amount: Amount) -> Result<FTApproval, FTError> {
         self.internal_approve(msg::source(), operator, amount)
     }
@@ -96,7 +96,7 @@ impl FTState {
     /// # Errors
     /// - [`FTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
     /// - [`FTError::InsufficientAmount`] if [`msg::source()`] doesn't have
-    /// given `amount` of tokens.
+    ///   given `amount` of tokens.
     pub fn transfer(&mut self, to: ActorId, amount: Amount) -> Result<FTTransfer, FTError> {
         self.internal_transfer(msg::source(), to, amount)
     }
@@ -146,9 +146,9 @@ impl FTState {
     /// - [`FTError::ZeroSenderAddress`] if `from` is [`ActorId::zero()`].
     /// - [`FTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
     /// - [`FTError::InsufficientAllowance`] if [`msg::source()`] doesn't have
-    /// an allowance for given `amount` of tokens.
+    ///   an allowance for given `amount` of tokens.
     /// - [`FTError::InsufficientAmount`] if `from` doesn't have given `amount`
-    /// of tokens.
+    ///   of tokens.
     pub fn transfer_from(
         &mut self,
         from: Owner,
@@ -186,7 +186,7 @@ impl FTState {
     ///
     /// # Errors
     /// - [`FTError::InsufficientAllowance`] if given `delta_amount` with the
-    /// current allowance overflows the [`Amount`] type.
+    ///   current allowance overflows the [`Amount`] type.
     pub fn increase_allowance(
         &mut self,
         operator: Operator,
@@ -204,7 +204,7 @@ impl FTState {
     ///
     /// # Errors
     /// - [`FTError::InsufficientAllowance`] if `operator` doesn't have given
-    /// `delta_amount` of an allowance.
+    ///   `delta_amount` of an allowance.
     pub fn decrease_allowance(
         &mut self,
         operator: Operator,
@@ -222,7 +222,7 @@ impl FTState {
     /// # Errors
     /// - [`FTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
     /// - [`FTError::InsufficientAmount`] if given `amount` with the current
-    /// total token supply overflows the [`Amount`] type.
+    ///   total token supply overflows the [`Amount`] type.
     pub fn mint(&mut self, to: ActorId, amount: Amount) -> Result<FTTransfer, FTError> {
         if to.is_zero() {
             return Err(FTError::ZeroRecipientAddress);
@@ -248,7 +248,7 @@ impl FTState {
     /// # Errors
     /// - [`FTError::ZeroSenderAddress`] if `from` is [`ActorId::zero()`].
     /// - [`FTError::InsufficientAmount`] if `from` doesn't have given `amount`
-    /// of tokens.
+    ///   of tokens.
     pub fn burn(&mut self, from: Owner, amount: Amount) -> Result<FTTransfer, FTError> {
         if from.is_zero() {
             return Err(FTError::ZeroSenderAddress);

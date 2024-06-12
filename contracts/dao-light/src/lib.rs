@@ -89,7 +89,7 @@ impl Dao {
     /// * The proposal can be submitted only by the existing members or their delegate addresses
     /// * The applicant ID can't be the zero
     /// * The DAO must have enough funds to finance the proposal
-    /// Arguments:
+    ///   Arguments:
     /// * `applicant`: an actor that will be funded
     /// * `amount`: the number of fungible tokens that will be sent to the applicant
     /// * `quorum`: a certain threshold of YES votes in order for the proposal to pass
@@ -155,7 +155,7 @@ impl Dao {
     /// * The proposal can be submitted only by the existing members or their delegate addresses
     /// * The member can vote on the proposal only once
     /// * Proposal must exist, the voting period must has started and not expired
-    /// Arguments:
+    ///   Arguments:
     /// * `proposal_id`: the proposal ID
     /// * `vote`: the member  a member vote (YES or NO)
     fn submit_vote(&mut self, proposal_id: u128, vote: Vote) {
@@ -216,7 +216,7 @@ impl Dao {
     /// * The previous proposal must be processed
     /// * The proposal must exist and be ready for processing
     /// * The proposal must not be already be processed
-    /// Arguments:
+    ///   Arguments:
     /// * `proposal_id`: the proposal ID
     async fn process_proposal(&mut self, proposal_id: u128) {
         if proposal_id > 0 && !self.proposals.get(&(&proposal_id - 1)).unwrap().processed {
@@ -277,7 +277,7 @@ impl Dao {
     /// * `msg::source()` must be DAO member
     /// * The member must have sufficient amount of shares
     /// * The latest proposal the member voted YES must be processed
-    /// Arguments:
+    ///   Arguments:
     /// * `amount`: The amount of shares the member would like to withdraw
     async fn ragequit(&mut self, amount: u128) {
         if !self.members.contains_key(&msg::source()) {
