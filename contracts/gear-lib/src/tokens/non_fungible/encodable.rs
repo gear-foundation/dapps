@@ -42,10 +42,10 @@ impl NFTState {
     /// tokens or the token with given `id`.
     ///
     /// - If `id` is [`Some`], firstly checks if `operator` is allowed for all
-    /// `owner`'s tokens, and if not, whether `operator` is allowed for the
-    /// token with given `id`.
+    ///   `owner`'s tokens, and if not, whether `operator` is allowed for the
+    ///   token with given `id`.
     /// - If `id` is [`None`], only checks if `operator` is allowed for all
-    /// `owner`'s tokens.
+    ///   `owner`'s tokens.
     pub fn allowance(&self, owner: Owner, operator: Operator, id: Option<&Id>) -> bool {
         self.owners
             .iter()

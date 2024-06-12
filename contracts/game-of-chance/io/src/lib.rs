@@ -95,10 +95,10 @@ pub enum Action {
     /// - The players entry stage mustn't be over.
     /// - [`msg::source()`] mustn't already participate.
     /// - [`msg::source()`] must have enough currency to pay a participation
-    /// cost.
+    ///   cost.
     /// - If the current game round currency is the native value
-    /// (`fungible_token` is [`None`]), [`msg::source()`] must send this action
-    /// with the amount of the value exactly equal to a participation cost.
+    ///   (`fungible_token` is [`None`]), [`msg::source()`] must send this action
+    ///   with the amount of the value exactly equal to a participation cost.
     ///
     /// On success, replies with [`Event::PlayerAdded`].
     ///

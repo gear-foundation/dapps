@@ -1,5 +1,5 @@
-use gstd::{fmt::Debug, marker::PhantomData, prelude::*, ActorId};
-use gtest::{Log, Program as InnerProgram, RunResult as InnerRunResult, System};
+use gstd::{fmt::Debug, marker::PhantomData, prelude::*};
+use gtest::{Log, RunResult as InnerRunResult, System};
 
 pub fn initialize_system() -> System {
     let system = System::new();
