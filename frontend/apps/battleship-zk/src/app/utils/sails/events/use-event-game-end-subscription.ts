@@ -1,16 +1,16 @@
-import { useEffect, useState } from 'react';
-import { sails } from '../sails';
-
-type BattleshipParticipants = 'Player' | 'Bot';
+import { useEffect, useRef, useState } from 'react';
+import { program } from '../sails';
+import { BattleshipParticipants } from '@/features/game/assets/lib/lib';
 
 type GameEndEvent = {
   winner: BattleshipParticipants;
-  time: number;
+  time: string | number;
   total_shots: number;
   succesfull_shots: number;
 };
 
 export function useEventGameEndSubscription() {
+  const event = useRef<Promise<() => void> | null>(null);
   const [result, setResult] = useState<GameEndEvent | null>(null);
 
   const gameEndCallback = (ev: GameEndEvent) => {
@@ -19,8 +19,26 @@ export function useEventGameEndSubscription() {
     }
   };
 
+  const unsubscribeFromEvent = () => {
+    if (event.current) {
+      event.current?.then((unsubCallback) => {
+        unsubCallback();
+      });
+    }
+  };
+
+  const subscribeToEvent = () => {
+    if (!event.current) {
+      event.current = program.single.subscribeToEndGameEvent((ev) => gameEndCallback(ev));
+    }
+  };
+
   useEffect(() => {
-    sails.services.Single.events.EndGame.subscribe((ev: GameEndEvent) => gameEndCallback(ev));
+    subscribeToEvent();
+
+    return () => {
+      unsubscribeFromEvent();
+    };
   }, []);
 
   return { result };

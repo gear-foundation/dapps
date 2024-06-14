@@ -1,19 +1,14 @@
-import { Sails, getServiceNamePrefix } from 'sails-js';
 import { GearApi } from '@gear-js/api';
 import { ADDRESS } from '@/app/consts';
-import idl from '../../../features/game/assets/idl/battleship.idl?raw';
+import { Program } from '@/features/game/assets/lib/lib';
 
 const initSails = async () => {
   const api = await GearApi.create({ providerAddress: ADDRESS.NODE });
-  const sails = await Sails.new();
+  const program = new Program(api, ADDRESS.GAME);
 
-  sails.parseIdl(idl.trim());
-  sails.setApi(api);
-  sails.setProgramId(ADDRESS.GAME);
-
-  return sails;
+  return program;
 };
 
-const sails = await initSails();
+const program = await initSails();
 
-export { sails, getServiceNamePrefix };
+export { program };

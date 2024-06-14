@@ -11,11 +11,7 @@ import { generateShipsField } from './shipGenerator';
 import { convertShipsToField } from '../../utils';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useShips } from '@/features/zk/hooks/use-ships';
-// import { buildPoseidonOpt } from 'circomlibjs';
-// @ts-ignore
-import { buildPoseidon } from '@/features/zk/utils/poseidon';
-import { sails } from '@/app/utils/sails';
-import { ADDRESS } from '@/app/consts';
+import { program } from '@/app/utils/sails';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import { useProofShipArrangement } from '@/features/zk/hooks/use-proof-ship-arrangement';
 
@@ -63,9 +59,13 @@ export default function ShipArrangement() {
 
       const injector = await web3FromSource(account.meta.source);
 
-      const startSingleGame = sails.services.Single.functions.StartSingleGame(proofContent, {
-        hash: publicContent.publicHash,
-      });
+      const startSingleGame = program.single.startSingleGame(
+        proofContent,
+        {
+          hash: publicContent.publicHash,
+        },
+        null,
+      );
 
       const transaction = await startSingleGame
         .withAccount(account.address, { signer: injector.signer })

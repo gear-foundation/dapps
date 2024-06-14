@@ -49,7 +49,7 @@ export default function SelectGameMode() {
         </div>
         <div className={styles.controlsWrapper}>
           {gameMods.map(({ icon, heading, description, onClick }) => (
-            <Button variant="outline" className={styles.buttonOption} onClick={onClick}>
+            <Button key={heading} variant="outline" className={styles.buttonOption} onClick={onClick}>
               <span className={styles.buttonOptionContent}>
                 <span className={styles.buttonOptionHeading}>
                   {icon}

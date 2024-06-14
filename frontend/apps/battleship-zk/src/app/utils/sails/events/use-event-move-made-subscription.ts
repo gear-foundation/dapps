@@ -1,15 +1,15 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
-import { sails } from '../sails';
+import { program } from '../sails';
 import { useGame } from '@/features/game/hooks';
 import { useShips } from '@/features/zk/hooks/use-ships';
-
-type UserStepResult = 'Missed' | 'Killed' | 'Injured';
+import { StepResult } from '@/features/game/assets/lib/lib';
+import { UnsubscribePromise } from '@polkadot/api/types';
 
 type MoveMadeEvent = {
   bot_step: number;
   step: number;
-  step_result: UserStepResult;
+  step_result: StepResult;
 };
 
 type MarkedShips = {
@@ -84,6 +84,7 @@ const defineDeadShip = (i: number, board: string[]) => {
 };
 
 export function useEventMoveMadeSubscription() {
+  const event = useRef<Promise<() => void> | null>(null);
   const { game, triggerGame } = useGame();
   const { getPlayerShips, getBoard, setBoard } = useShips();
   const { requestProofHit, saveProofData, clearProofData } = useProofShipHit();
@@ -106,7 +107,7 @@ export function useEventMoveMadeSubscription() {
     setBoard('player', board);
   };
 
-  const updateEnemyBoard = (step_result: UserStepResult, player_step: number) => {
+  const updateEnemyBoard = (step_result: StepResult, player_step: number) => {
     const board = getBoard('enemy');
 
     if (!board) {
@@ -152,8 +153,26 @@ export function useEventMoveMadeSubscription() {
     triggerGame();
   };
 
+  const unsubscribeFromEvent = () => {
+    if (event.current) {
+      event.current?.then((unsubCallback) => {
+        unsubCallback();
+      });
+    }
+  };
+
+  const subscribeToEvent = () => {
+    if (!event.current) {
+      event.current = program.single.subscribeToMoveMadeEvent((ev: MoveMadeEvent) => moveMadeCallback(ev));
+    }
+  };
+
   useEffect(() => {
-    sails.services.Single.events.MoveMade.subscribe((ev: MoveMadeEvent) => moveMadeCallback(ev));
+    subscribeToEvent();
+
+    return () => {
+      unsubscribeFromEvent();
+    };
   }, []);
 
   useEffect(() => {
