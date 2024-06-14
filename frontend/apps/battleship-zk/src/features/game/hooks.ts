@@ -5,11 +5,10 @@ import { useLocation } from 'react-router-dom';
 import { useProgramMetadata } from '@dapps-frontend/hooks';
 import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
 import meta from './assets/meta/battleship.meta.txt';
-import { IGameInstance } from './types';
 import { gameAtom, gameModeAtom, isActiveGameAtom, isGameReadyAtom, pendingAtom } from './store';
 import { ADDRESS } from './consts';
 import { ROUTES } from '@/app/consts';
-import { sails } from '@/app/utils/sails';
+import { program } from '@/app/utils/sails';
 
 export function useGame() {
   const { account } = useAccount();
@@ -24,20 +23,15 @@ export function useGame() {
     }
 
     try {
-      const res = await sails.services.Single.queries.Game<IGameInstance>(
-        account.address,
-        undefined,
-        undefined,
-        account.decodedAddress,
-      );
+      const res = await program.single.game(account.decodedAddress, account.decodedAddress);
 
       setGame(res);
-
       if (!!res) {
         setIsActiveGame(true);
       }
       setIsGameReady(true);
     } catch (err) {
+      console.log('ERrOR');
       setError(err);
     }
   };

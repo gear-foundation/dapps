@@ -1,21 +1,23 @@
 import { useEffect, useMemo, useState } from 'react';
+import { Button } from '@gear-js/vara-ui';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { Text } from '@/components/ui/text';
 import { GameEndModal, Map } from '@/features/game';
 import styles from './GameProcess.module.scss';
 import { MapEnemy } from '../map';
-import { useGame, useGameMessage, usePending } from '../../hooks';
+import { useGame, usePending } from '../../hooks';
 import { Loader } from '@/components';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { Account, useAccount, useApi } from '@gear-js/react-hooks';
 import { web3FromSource } from '@polkadot/extension-dapp';
-import { sails } from '@/app/utils/sails';
+import { program } from '@/app/utils/sails';
 import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
 import { useShips } from '@/features/zk/hooks/use-ships';
 import { useEventGameEndSubscription } from '@/app/utils/sails/events/use-event-game-end-subscription';
 import { getFormattedTime } from '../../utils';
 import { SHIP_LENGTHS } from '../../consts';
 import { RenderShips } from '../../types';
+import { useNavigate } from 'react-router-dom';
 
 type Props = {
   isMultiplayer?: boolean;
@@ -30,7 +32,7 @@ export default function GameProcess({ isMultiplayer = false }: Props) {
   const [isDisabledCell, setDisabledCell] = useState(false);
   const { game, triggerGame } = useGame();
   const { setPending } = usePending();
-  const message = useGameMessage();
+  const navigate = useNavigate();
   const { checkBalance } = useCheckBalance({
     signlessPairVoucherId: signless.voucher?.id,
     gaslessVoucherId: gasless.voucherId,
@@ -49,15 +51,15 @@ export default function GameProcess({ isMultiplayer = false }: Props) {
   const totalShips = Object.entries(game?.bot_ships || {}).reduce((total, [, shipCount]) => {
     return shipCount !== '0x' ? total + 1 : total;
   }, 0);
-  const totalShoots = game ? parseInt(game.total_shots) : result?.total_shots || 0;
-  const successfulShoots = game ? game.succesfull_shots : result?.succesfull_shots || 0;
+  const totalShoots = useMemo(() => (game ? game.total_shots : result?.total_shots || 0), [game]);
+  const successfulShoots = useMemo(() => (game ? game.succesfull_shots : result?.succesfull_shots || 0), [game]);
   const efficiency = totalShoots !== 0 ? ((successfulShoots / totalShoots) * 100).toFixed(2) : 0;
 
   useEffect(() => {
     if (game) {
       const updateTimer = () => {
         const currentTime = new Date().getTime();
-        const startTime = game.start_time;
+        const startTime = Number(game.start_time);
         const elapsedTimeMilliseconds = currentTime - startTime;
 
         const formattedTime = getFormattedTime(elapsedTimeMilliseconds);
@@ -86,11 +88,15 @@ export default function GameProcess({ isMultiplayer = false }: Props) {
 
     const injector = await web3FromSource(account.meta.source);
 
-    const verifyMove = sails.services.Single.functions.VerifyMove(proofContent, {
-      hash: publicContent.publicHash,
-      out: publicContent.results[0][0],
-      hit: publicContent.results[1][0],
-    });
+    const verifyMove = program.single.verifyMove(
+      proofContent,
+      {
+        hash: publicContent.publicHash,
+        out: publicContent.results[0][0],
+        hit: publicContent.results[1][0],
+      },
+      null,
+    );
 
     const transaction = await verifyMove.withAccount(account.address, { signer: injector.signer }).withGas(gasLimit);
 
@@ -100,7 +106,7 @@ export default function GameProcess({ isMultiplayer = false }: Props) {
   const getHitTransaction = async (account: Account, indexCell: number, gasLimit: bigint) => {
     const injector = await web3FromSource(account.meta.source);
 
-    const makeMove = sails.services.Single.functions.MakeMove(indexCell);
+    const makeMove = program.single.makeMove(indexCell, null);
 
     const transaction = await makeMove.withAccount(account.address, { signer: injector.signer }).withGas(gasLimit);
 
@@ -213,6 +219,10 @@ export default function GameProcess({ isMultiplayer = false }: Props) {
     });
   };
 
+  const handleDeleteGame = () => {
+    navigate('/');
+  };
+
   if (game === undefined) {
     return <Loader />;
   }
@@ -225,7 +235,7 @@ export default function GameProcess({ isMultiplayer = false }: Props) {
         </div>
         <div className={styles.gameInfo}>
           <Text size="sm" weight="normal">
-            Time: <span>{result?.time || elapsedTime}</span>
+            Time: <span>{result?.time ? getFormattedTime(Number(result.time)) : elapsedTime}</span>
           </Text>
           <Text size="sm" weight="normal">
             Total shots: <span>{totalShoots}</span>
@@ -255,11 +265,15 @@ export default function GameProcess({ isMultiplayer = false }: Props) {
           onDefineDeadShip={handleDefineDeadShips}
         />
       </div>
-
+      <div className={styles.exitButtonWrapper}>
+        <Button className={styles.exitButton} color="grey" onClick={handleDeleteGame}>
+          Exit
+        </Button>
+      </div>
       {isOpenEndModal && result && (
         <GameEndModal
           onClose={closeEndModal}
-          time={getFormattedTime(result.time)}
+          time={getFormattedTime(Number(result.time))}
           totalShoots={result.total_shots}
           successfulShoots={result.succesfull_shots}
           efficiency={efficiency}

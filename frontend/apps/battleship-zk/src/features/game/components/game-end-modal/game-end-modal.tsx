@@ -7,8 +7,7 @@ import { useGame } from '../../hooks';
 import { useNavigate } from 'react-router-dom';
 import { clearZkData } from '@/features/zk/utils';
 import { useAccount } from '@gear-js/react-hooks';
-
-type BattleshipParticipants = 'Player' | 'Bot';
+import { BattleshipParticipants } from '../../assets/lib/lib';
 
 type Props = {
   onClose: () => void;
