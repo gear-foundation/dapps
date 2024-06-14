@@ -11,8 +11,8 @@
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
-    "@gear-js/api": "0.36.5",
-    "@gear-js/react-hooks": "0.10.6",
+    "@gear-js/api": "0.38.1",
+    "@gear-js/react-hooks": "0.10.7",
     "@headlessui/react": "1.7.17",
     "@polkadot/api": "10.11.2",
     "@polkadot/extension-dapp": "0.46.5",
