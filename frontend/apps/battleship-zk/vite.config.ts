@@ -29,6 +29,6 @@ export default defineConfig({
       eslint: { lintCommand: 'eslint "./src/**/*.{ts,tsx}"', dev: { logLevel: ['error'] } },
     }),
   ],
-  assetsInclude: ['**/*.wasm?inline', '**/*.txt?inline'],
+  assetsInclude: ['**/*.wasm?inline', '**/*.txt?inline', '**/*.idl?raw'],
   build: { outDir: 'build' },
 });

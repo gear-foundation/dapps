@@ -63,14 +63,14 @@ function CreateGameForm({ onCancel }: Props) {
     if (!account?.decodedAddress) {
       return;
     }
-    console.log(values);
+
     const payload = {
       CreateGameSession: {
         name: values.name,
         entryFee: Number(values.fee) ? values.fee * Math.pow(10, 12) : null,
       },
     };
-    console.log(payload);
+
     setIsLoading(true);
     // sendNewSessionMessage({
     //   payload,

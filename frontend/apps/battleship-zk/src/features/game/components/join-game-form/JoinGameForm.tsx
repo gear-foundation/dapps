@@ -81,8 +81,6 @@ function JoinGameForm({ onCancel }: Props) {
       );
 
       const state = (await res?.toHuman()) as any;
-      console.log('STATE');
-      console.log(state.GameSession.gameSession);
 
       if (state.GameSession.gameSession) {
         setFoundState(state.GameSession.gameSession);

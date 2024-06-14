@@ -9,27 +9,27 @@ import shipX1SVG from '@/assets/images/icons/ship-x1.svg';
 import shipX2SVG from '@/assets/images/icons/ship-x2.svg';
 import shipX3SVG from '@/assets/images/icons/ship-x3.svg';
 import shipX4SVG from '@/assets/images/icons/ship-x4.svg';
+import { RenderShips, RenderedShip } from '../../types';
 
 type Props = {
   sizeBlock: number;
   shipStatusArray: string[];
   onClickCell: (_: number) => void;
   isDisabledCell: boolean;
+  onDefineDeadShip: (deadShips: RenderShips) => void;
 };
 
-type RenderedShip = {
-  length: number;
-  degrees: number;
-};
-
-type RenderShips = {
-  [key: string]: RenderedShip;
-};
 type MarkedShips = {
   [key: string]: 1 | 0;
 };
 
-export default function MapEnemy({ sizeBlock = 64, shipStatusArray, onClickCell, isDisabledCell }: Props) {
+export default function MapEnemy({
+  sizeBlock = 64,
+  shipStatusArray,
+  onClickCell,
+  isDisabledCell,
+  onDefineDeadShip,
+}: Props) {
   const numRows = 5;
   const numCols = 5;
   const [deadShips, setDeadShips] = useState<RenderShips>({});
@@ -107,6 +107,12 @@ export default function MapEnemy({ sizeBlock = 64, shipStatusArray, onClickCell,
   useEffect(() => {
     definedDeadShips(shipStatusArray);
   }, [shipStatusArray]);
+
+  useEffect(() => {
+    if (Object.keys(deadShips).length) {
+      onDefineDeadShip(deadShips);
+    }
+  }, [deadShips]);
 
   const renderCell = (row: number, col: number) => {
     const cellIndex = row * numCols + col;

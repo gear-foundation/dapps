@@ -1,4 +1,6 @@
-type ShipLayout = ('Empty' | 'Ship')[];
+type ShipCell = 'Empty' | 'Unknown' | 'Ship';
+
+type ShipLayout = ShipCell[];
 
 export const getShipLayout = (shipStatusArray: string[]): number[][] => {
   const shipLayout: number[][] = [];
@@ -20,8 +22,13 @@ export const getShipLayout = (shipStatusArray: string[]): number[][] => {
   return shipLayout;
 };
 
-export function convertShipsToField(shipPositions: number[][], rows: number, cols: number): ShipLayout {
-  const field: ShipLayout = Array.from({ length: rows * cols }, () => 'Empty');
+export function convertShipsToField(
+  shipPositions: number[][],
+  rows: number,
+  cols: number,
+  emptyCellName?: ShipCell,
+): ShipLayout {
+  const field: ShipLayout = Array.from({ length: rows * cols }, () => emptyCellName || 'Empty');
 
   shipPositions.forEach((ship) => {
     ship.forEach((position) => {

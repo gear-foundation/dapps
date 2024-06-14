@@ -1,3 +1,5 @@
+import { SHIP_LENGTHS } from '../../consts';
+
 type Entity = 'Empty' | 'Ship';
 
 function checkEmptyField(board: Entity[], size: number, row: number, col: number, isVertical: boolean): boolean {
@@ -59,12 +61,11 @@ function occupyCells(board: Entity[], row: number, col: number): void {
 
 function generateShipsField(rows: number, cols: number): number[][] {
   const board: Entity[] = Array.from({ length: rows * cols }, () => 'Empty');
-  const shipLengths = [3, 2, 2, 1];
   const ships: number[][] = [];
 
   const availableIndices = Array.from({ length: rows * cols }, (_, index) => index);
 
-  for (const size of shipLengths) {
+  for (const size of SHIP_LENGTHS) {
     let shipPlaced = false;
 
     for (let attempts = 0; attempts < 100; attempts++) {

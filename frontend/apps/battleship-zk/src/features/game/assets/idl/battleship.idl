@@ -1,0 +1,206 @@
+type ActorId = struct {
+  [u8, 32],
+};
+
+type VerifyingKeyBytes = struct {
+  alpha_g1_beta_g2: vec u8,
+  gamma_g2_neg_pc: vec u8,
+  delta_g2_neg_pc: vec u8,
+  ic: vec vec u8,
+};
+
+type Configuration = struct {
+  gas_for_delete_single_game: u64,
+  gas_for_delete_multiple_game: u64,
+  gas_for_check_time: u64,
+  delay_for_delete_single_game: u32,
+  delay_for_delete_multiple_game: u32,
+  delay_for_check_time: u32,
+};
+
+type ProofBytes = struct {
+  a: vec u8,
+  b: vec u8,
+  c: vec u8,
+};
+
+type PublicMoveInput = struct {
+  out: u8,
+  hit: u8,
+  hash: vec u8,
+};
+
+type PublicStartInput = struct {
+  hash: vec u8,
+};
+
+type MultipleGameState = struct {
+  participants_data: vec struct { ActorId, ParticipantInfo },
+  create_time: u64,
+  start_time: opt u64,
+  last_move_time: u64,
+  status: MultipleUtilsStatus,
+  bid: u128,
+};
+
+type ParticipantInfo = struct {
+  board: vec Entity,
+  ship_hash: vec u8,
+  total_shots: u8,
+  succesfull_shots: u8,
+};
+
+type Entity = enum {
+  Empty,
+  Unknown,
+  Occupied,
+  Ship,
+  Boom,
+  BoomShip,
+  DeadShip,
+};
+
+type MultipleUtilsStatus = enum {
+  Registration,
+  VerificationPlacement: opt ActorId,
+  PendingVerificationOfTheMove: struct { ActorId, u8 },
+  Turn: ActorId,
+};
+
+type ActionsForSession = enum {
+  PlaySingleGame,
+  PlayMultipleGame,
+};
+
+type Session = struct {
+  key: ActorId,
+  expires: u64,
+  allowed_actions: vec ActionsForSession,
+};
+
+type SingleGame = struct {
+  player_board: vec Entity,
+  ship_hash: vec u8,
+  bot_ships: Ships,
+  start_time: u64,
+  status: SingleUtilsStatus,
+  total_shots: u8,
+  succesfull_shots: u8,
+};
+
+type Ships = struct {
+  ship_1: vec u8,
+  ship_2: vec u8,
+  ship_3: vec u8,
+  ship_4: vec u8,
+};
+
+type SingleUtilsStatus = enum {
+  PendingVerificationOfTheMove: u8,
+  PendingMove,
+};
+
+type SingleGameState = struct {
+  player_board: vec Entity,
+  start_time: u64,
+  status: SingleUtilsStatus,
+  total_shots: u8,
+};
+
+type BattleshipParticipants = enum {
+  Player,
+  Bot,
+};
+
+type StepResult = enum {
+  Missed,
+  Injured,
+  Killed,
+};
+
+constructor {
+  New : (builtin_bls381: ActorId, verification_key_for_start: VerifyingKeyBytes, verification_key_for_move: VerifyingKeyBytes, config: Configuration);
+};
+
+service Admin {
+  ChangeAdmin : (new_admin: ActorId) -> null;
+  ChangeBuiltinAddress : (new_builtin_address: ActorId) -> null;
+  ChangeVerificationKey : (new_vk_for_start: opt VerifyingKeyBytes, new_vk_for_move: opt VerifyingKeyBytes) -> null;
+  DeleteMultipleGame : (game_id: ActorId) -> null;
+  DeleteMultipleGamesByTime : (time: u64) -> null;
+  DeleteMultipleGamesInBatches : (divider: u64) -> null;
+  DeleteSingleGame : (player_address: ActorId) -> null;
+  DeleteSingleGames : (time: u64) -> null;
+  Kill : (inheritor: ActorId) -> null;
+  query Admin : () -> ActorId;
+  query Builtin : () -> ActorId;
+  query VerificationKey : () -> struct { VerifyingKeyBytes, VerifyingKeyBytes };
+
+  events {
+    GameDeleted;
+    GamesDeleted;
+    AdminChanged;
+    BuiltinAddressChanged;
+    VerificationKeyChanged;
+    Killed: struct { inheritor: ActorId };
+  }
+};
+
+service Multiple {
+  CancelGame : (session_for_account: opt ActorId) -> null;
+  CheckOutTiming : (game_id: ActorId, check_time: u64, repeated_pass: bool) -> null;
+  CreateGame : (session_for_account: opt ActorId) -> null;
+  DeleteGame : (game_id: ActorId, create_time: u64) -> null;
+  JoinGame : (game_id: ActorId, session_for_account: opt ActorId) -> null;
+  LeaveGame : (session_for_account: opt ActorId) -> null;
+  MakeMove : (game_id: ActorId, step: u8, session_for_account: opt ActorId) -> null;
+  VerifyMove : (proof: ProofBytes, public_input: PublicMoveInput, session_for_account: opt ActorId, game_id: ActorId) -> null;
+  VerifyPlacement : (proof: ProofBytes, public_input: PublicStartInput, session_for_account: opt ActorId, game_id: ActorId) -> null;
+  query Game : (player_id: ActorId) -> opt MultipleGameState;
+  query Games : () -> vec struct { ActorId, MultipleGameState };
+  query GamesPairs : () -> vec struct { ActorId, ActorId };
+
+  events {
+    GameCreated: struct { player_id: ActorId };
+    JoinedTheGame: struct { player_id: ActorId, game_id: ActorId };
+    PlacementVerified;
+    GameCanceled: struct { game_id: ActorId };
+    GameLeft: struct { game_id: ActorId };
+    MoveMade: struct { step: u8 };
+    MoveVerified: struct { step: u8, result_: u8 };
+    EndGame: struct { winner: ActorId, total_time: u64, participants_info: vec struct { ActorId, ParticipantInfo } };
+    GameDeleted: struct { game_id: ActorId };
+  }
+};
+
+service Session {
+  CreateSession : (key: ActorId, duration: u64, allowed_actions: vec ActionsForSession) -> null;
+  DeleteSession : () -> null;
+  query Sessions : () -> vec struct { ActorId, Session };
+
+  events {
+    SessionCreated;
+    SessionDeleted;
+  }
+};
+
+service Single {
+  DeleteGame : (player: ActorId, start_time: u64) -> null;
+  MakeMove : (step: u8, session_for_account: opt ActorId) -> null;
+  StartSingleGame : (proof: ProofBytes, public_input: PublicStartInput, session_for_account: opt ActorId) -> null;
+  VerifyMove : (proof: ProofBytes, public_input: PublicMoveInput, session_for_account: opt ActorId) -> null;
+  query Game : (player_id: ActorId) -> opt SingleGame;
+  query GameStatus : (player_id: ActorId) -> opt SingleUtilsStatus;
+  query Games : () -> vec struct { ActorId, SingleGameState };
+  query StartTime : (player_id: ActorId) -> opt u64;
+  query TotalShots : (player_id: ActorId) -> opt u8;
+
+  events {
+    SessionCreated;
+    SingleGameStarted;
+    EndGame: struct { winner: BattleshipParticipants, time: u64, total_shots: u8, succesfull_shots: u8 };
+    MoveMade: struct { step: u8, step_result: StepResult, bot_step: u8 };
+    MoveVerified: struct { step: u8, result_: u8 };
+  }
+};
+
