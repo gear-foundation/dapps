@@ -1,64 +1,67 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
-import { useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { NavigationType, useLocation, useNavigationType } from 'react-router-dom';
+import { useAtom } from 'jotai';
+import { useLocation } from 'react-router-dom';
 import { useProgramMetadata } from '@dapps-frontend/hooks';
 import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
 import meta from './assets/meta/battleship.meta.txt';
 import { IGameInstance } from './types';
-import { gameAtom, gameModeAtom, isActiveGameAtom, pendingAtom } from './store';
+import { gameAtom, gameModeAtom, isActiveGameAtom, isGameReadyAtom, pendingAtom } from './store';
 import { ADDRESS } from './consts';
-import { useReadState } from '@/app/hooks/api';
 import { ROUTES } from '@/app/consts';
+import { sails } from '@/app/utils/sails';
 
 export function useGame() {
-  const gameState = useAtomValue(gameAtom);
-  const isActiveGame = useAtomValue(isActiveGameAtom);
+  const { account } = useAccount();
+  const [game, setGame] = useAtom(gameAtom);
+  const [isGameReady, setIsGameReady] = useAtom(isGameReadyAtom);
+  const [isActiveGame, setIsActiveGame] = useAtom(isActiveGameAtom);
+  const [error, setError] = useState<unknown | null>(null);
 
-  const setGameState = useSetAtom(gameAtom);
-  const setActiveGame = useSetAtom(isActiveGameAtom);
+  const triggerGame = async () => {
+    if (!account?.address) {
+      return;
+    }
+
+    try {
+      const res = await sails.services.Single.queries.Game<IGameInstance>(
+        account.address,
+        undefined,
+        undefined,
+        account.decodedAddress,
+      );
+
+      setGame(res);
+
+      if (!!res) {
+        setIsActiveGame(true);
+      }
+      setIsGameReady(true);
+    } catch (err) {
+      setError(err);
+    }
+  };
 
   const resetGameState = () => {
-    setGameState(undefined);
-    setActiveGame(false);
+    setGame(undefined);
+    setIsGameReady(false);
+    setIsActiveGame(false);
   };
 
-  return { gameState, isActiveGame, resetGameState, setGameState, setActiveGame };
+  return { game, isActiveGame, error, isGameReady, triggerGame, resetGameState };
 }
 
-function useGameState() {
+export function useInitGame() {
   const { account } = useAccount();
-  const { decodedAddress } = account || {};
-
-  const programId = ADDRESS.GAME;
-  const payload = useMemo(() => (decodedAddress ? { Game: decodedAddress } : undefined), [decodedAddress]);
-
-  const { state: game, error } = useReadState<{ Game: IGameInstance | null }>({ programId, meta, payload });
-
-  return { game, error };
-}
-
-export const useInitGame = () => {
-  const { account } = useAccount();
-  const { game, error } = useGameState();
-
-  const { setGameState, resetGameState, setActiveGame } = useGame();
+  const { triggerGame, resetGameState } = useGame();
 
   useEffect(() => {
-    if (!ADDRESS.GAME || !account?.decodedAddress) return;
-    if (!game?.Game) return resetGameState();
-
-    setGameState(game?.Game);
-    setActiveGame(true);
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account?.decodedAddress, game?.Game]);
-
-  return {
-    isGameReady: ADDRESS.GAME ? Boolean(game) : true,
-    errorGame: error,
-  };
-};
+    if (account?.decodedAddress) {
+      resetGameState();
+      triggerGame();
+    }
+  }, [account?.decodedAddress]);
+}
 
 export function useGameMessage() {
   const metadata = useProgramMetadata(meta);

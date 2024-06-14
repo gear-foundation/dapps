@@ -6,6 +6,7 @@ export const ADDRESS = {
   NODE: import.meta.env.VITE_NODE_ADDRESS,
   GASLESS_BACKEND: import.meta.env.VITE_GASLESS_BACKEND_ADDRESS,
   GAME: import.meta.env.VITE_CONTRACT_ADDRESS as HexString,
+  ZK_PROOF_BACKEND: import.meta.env.VITE_ZK_PROOF_BACKEND_ADDRESS as HexString,
 };
 
 export const ROUTES = {

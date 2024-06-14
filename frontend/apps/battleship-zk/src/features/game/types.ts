@@ -5,19 +5,26 @@ export interface IGameState {
   games: Array<[HexString, IGameInstance]>;
 }
 
+type Status = 'pendingVerificationOfTheMove';
 export interface IGameInstance {
-  botBoard: string[];
-  botShips: string[];
-  playerBoard: string[];
-  playerShips: string[];
-  gameOver: boolean;
-  gameResult: null | IGameResultStatus;
-  turn: 'Player' | 'Bot';
-  startTime: string;
-  endTime: string;
-  totalShots: string;
+  bot_ships: Record<string, string>;
+  player_board: string[];
+  start_time: number;
+  end_time: string | null;
+  total_shots: string;
+  succesfull_shots: number;
+  status: Record<Status, number>;
 }
 
 export type IGameResultStatus = 'Player' | 'Bot' | 'Draw';
 
 export type GameMode = 'single' | 'find' | 'create' | null;
+
+export type RenderedShip = {
+  length: number;
+  degrees: number;
+};
+
+export type RenderShips = {
+  [key: string]: RenderedShip;
+};
