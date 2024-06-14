@@ -24,7 +24,7 @@ ENV VITE_NODE_ADDRESS=${VITE_NODE_ADDRESS} \
     VITE_SENTRY_DSN=${VITE_SENTRY_DSN} \
     VITE_GASLESS_BACKEND_ADDRESS=${VITE_GASLESS_BACKEND_ADDRESS}
 
-WORKDIR /frontend/apps/battleship
+WORKDIR /frontend/apps/battleship-zk
 
 RUN yarn install
 
