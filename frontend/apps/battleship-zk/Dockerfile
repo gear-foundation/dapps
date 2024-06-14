@@ -32,4 +32,4 @@ RUN yarn build
 
 RUN npm install --global serve
 
-CMD ["serve", "-s", "/frontend/apps/battleship/build"]
+CMD ["serve", "-s", "/frontend/apps/battleship-zk/build"]
