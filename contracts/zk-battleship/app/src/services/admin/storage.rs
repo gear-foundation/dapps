@@ -187,3 +187,59 @@ pub mod admin {
         }
     }
 }
+
+pub mod configuration {
+    use gstd::{Decode, Encode, TypeInfo};
+    pub struct ConfigurationStorage(());
+
+    #[derive(Clone, Copy, Default, Encode, Decode, TypeInfo)]
+    #[codec(crate = sails_rtl::scale_codec)]
+    #[scale_info(crate = sails_rtl::scale_info)]
+    pub struct Configuration {
+        pub gas_for_delete_single_game: u64,
+        pub gas_for_delete_multiple_game: u64,
+        pub gas_for_check_time: u64,
+        pub delay_for_delete_single_game: u32,
+        pub delay_for_delete_multiple_game: u32,
+        pub delay_for_check_time: u32,
+    }
+
+    static mut INSTANCE: Option<Configuration> = None;
+
+    impl ConfigurationStorage {
+        pub fn is_set() -> bool {
+            unsafe { INSTANCE.is_some() }
+        }
+
+        pub fn set(value: Configuration) -> Result<(), Configuration> {
+            if Self::is_set() {
+                Err(value)
+            } else {
+                unsafe { INSTANCE = Some(value) }
+                Ok(())
+            }
+        }
+
+        pub fn default() -> Result<(), Configuration> {
+            Self::set(Configuration::default())
+        }
+
+        pub fn get() -> Configuration {
+            if !Self::is_set() {
+                let _res = Self::default();
+                debug_assert!(_res.is_ok());
+            }
+
+            unsafe { *INSTANCE.as_ref().expect("Infallible b/c set above") }
+        }
+
+        pub fn get_mut() -> &'static mut Configuration {
+            if !Self::is_set() {
+                let _res = Self::default();
+                debug_assert!(_res.is_ok());
+            }
+
+            unsafe { INSTANCE.as_mut().expect("Infallible b/c set above") }
+        }
+    }
+}

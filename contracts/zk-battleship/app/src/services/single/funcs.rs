@@ -2,33 +2,79 @@ use super::{
     utils::{Result, *},
     Event,
 };
-use gstd::{exec, prelude::*, ActorId};
+use crate::services::verify::PublicMoveInput;
+use gstd::{exec, msg, prelude::*, ActorId};
 
 static mut SEED: u8 = 0;
 
-pub fn start_single_game(games: &mut SingleGamesMap, player: ActorId) -> Result<()> {
+/// Function for saving the state of the beginning of a single-player game.
+///
+/// # Arguments
+///
+/// * `games` - A mutable reference to the map that stores single-player game instances.
+/// * `player` - The `ActorId` representing the player starting the game.
+/// * `hash` - A vector of bytes representing the hash of the player's ships' positions.
+/// * `gas_limit` - The gas limit for the delayed delete game message.
+/// * `delay` - The delay time in blocks for the delete game message.
+///
+/// # Returns
+///
+/// * `Result<()>` - Returns `Ok(())` if the game is successfully started and saved, otherwise returns an error.
+///
+/// This function generates the positions of the bot's ships, creates a new game instance with the provided player,
+/// if the game exists it replaces it with a new one
+/// hash, gas limit, and delay, and then inserts the game instance into the provided games map.
+/// It also schedules a delayed message to delete the game after a specified delay.
+pub fn start_single_game(
+    games: &mut SingleGamesMap,
+    player: ActorId,
+    hash: Vec<u8>,
+    gas_limit: u64,
+    delay: u32,
+) -> Result<()> {
     let bot_ships = generate_field();
-
+    let block_timestamp = exec::block_timestamp();
     let game_instance = SingleGame {
         player_board: vec![Entity::Unknown; 25],
+        ship_hash: hash,
         bot_ships,
         status: Status::PendingMove,
-        start_time: exec::block_timestamp(),
-        end_time: None,
+        start_time: block_timestamp,
         total_shots: 0,
+        succesfull_shots: 0,
     };
     games.insert(player, game_instance);
+    send_delete_game_delayed_message(player, block_timestamp, gas_limit, delay);
     Ok(())
 }
 
+/// Function for making a move in the single-player game.
+///
+/// # Arguments
+///
+/// * `games` - A mutable reference to the map that stores single-player game instances.
+/// * `player` - The `ActorId` representing the player making the move.
+/// * `step` - An 8-bit unsigned integer representing the player's move (position on the board).
+///
+/// # Returns
+///
+/// * `Result<Event>` - Returns an `Event` indicating the result of the move or an error if the move is invalid.
+///
+/// # Errors
+///
+/// * `Error::NoSuchGame` - Returned if there is no game associated with the given player.
+/// * `Error::StatusIsPendingVerification` - Returned if the game's status is currently pending verification of a move.
+/// * `Error::WrongStep` - Returned if the provided step is out of the valid range (0-24).
+///
+/// This function retrieves the game instance for the specified player, checks if the move is valid,
+/// updates the game state based on the move, and checks if the game has ended. If the game ends,
+/// it returns an `EndGame` event with the game statistics. If the game continues, it updates the game
+/// status to await verification of the bot's move and returns a `MoveMade` event with the results of the move.
 pub fn make_move(games: &mut SingleGamesMap, player: ActorId, step: u8) -> Result<Event> {
     let game = games.get_mut(&player).ok_or(Error::NoSuchGame)?;
 
     if matches!(game.status, Status::PendingVerificationOfTheMove(_)) {
         return Err(Error::StatusIsPendingVerification);
-    }
-    if matches!(game.status, Status::GameOver(_)) {
-        return Err(Error::GameIsAlreadyOver);
     }
 
     if step > 24 {
@@ -37,34 +83,81 @@ pub fn make_move(games: &mut SingleGamesMap, player: ActorId, step: u8) -> Resul
 
     let step_result = game.bot_ships.bang(step);
     game.total_shots += 1;
+    if step_result != StepResult::Missed {
+        game.succesfull_shots += 1;
+    }
 
     if game.bot_ships.check_end_game() {
-        game.status = Status::GameOver(BattleshipParticipants::Player);
-        game.end_time = Some(exec::block_timestamp());
-        return Ok(Event::EndGame(BattleshipParticipants::Player));
+        let time = exec::block_timestamp() - game.start_time;
+        let total_shots = game.total_shots;
+        let succesfull_shots = game.succesfull_shots;
+        games.remove(&player);
+        return Ok(Event::EndGame {
+            winner: BattleshipParticipants::Player,
+            time,
+            total_shots,
+            succesfull_shots,
+        });
     }
     let bot_step = move_analysis(&game.player_board);
     game.status = Status::PendingVerificationOfTheMove(bot_step);
 
     Ok(Event::MoveMade {
+        step,
         step_result,
         bot_step,
     })
 }
 
-pub fn check_game(games: &SingleGamesMap, player: ActorId, hit: u8) -> Result<()> {
+/// This function verifies that the game's current state matches the expected values based on the provided public input.
+/// It checks the status of the game, the hash of the player's ships, and the validity of the 'out' value.
+///
+/// # Errors
+///
+/// * `Error::NoSuchGame` - Returned if there is no game associated with the given player.
+/// * `Error::WrongStatusOrHit` - Returned if the game's status or hit does not match the expected values based on the input.
+/// * `Error::WrongShipHash` - Returned if the game's ship hash does not match the expected hash based on the input.
+/// * `Error::WrongOut` - Returned if the public input's 'out' value is not valid (neither 0 nor 1).
+pub fn check_game(
+    games: &SingleGamesMap,
+    player: ActorId,
+    public_input: PublicMoveInput,
+) -> Result<()> {
     let game = games.get(&player).ok_or(Error::NoSuchGame)?;
 
-    if game.status != Status::PendingVerificationOfTheMove(hit) {
-        // TODO: uncomment after testing node_test
-        // return Err(Error::WrongStatusOrHit);
+    // TODO: UNCOMMENT AFTER TESTING!!!!!
+    if game.status != Status::PendingVerificationOfTheMove(public_input.hit) {
+        return Err(Error::WrongStatusOrHit);
     }
-    if matches!(game.status, Status::GameOver(_)) {
-        return Err(Error::GameIsAlreadyOver);
+    if game.ship_hash != public_input.hash {
+        return Err(Error::WrongShipHash);
     }
-    Ok(())
+    match public_input.out {
+        0 | 1 => Ok(()),
+        _ => Err(Error::WrongOut),
+    }
 }
-
+/// Function for verifying the result of the bot's move in the single-player game.
+///
+/// # Arguments
+///
+/// * `games` - A mutable reference to the map that stores single-player game instances.
+/// * `player` - The `ActorId` representing the player whose game is being updated.
+/// * `res` - An 8-bit unsigned integer representing the result of the bot's move verification. `0` for a miss, `1` for a hit.
+/// * `hit` - An 8-bit unsigned integer representing the position on the player's board that was targeted by the bot.
+///
+/// # Returns
+///
+/// * `Result<Event>` - Returns an `Event` indicating the result of the verified move or an error if the verification fails.
+///
+/// # Errors
+///
+/// * `Error::NoSuchGame` - Returned if there is no game associated with the given player.
+///
+/// This function updates the player's board based on the result of the bot's move,
+/// checks if the game has ended, and updates the game state accordingly. If the game ends,
+/// it returns an `EndGame` event with the game statistics. If the game continues, it updates
+/// the game status to await the player's next move and returns a `MoveVerified` event with the results.
 pub fn verified_move(
     games: &mut SingleGamesMap,
     player: ActorId,
@@ -80,9 +173,16 @@ pub fn verified_move(
     }
 
     if game.check_end_game() {
-        game.status = Status::GameOver(BattleshipParticipants::Bot);
-        game.end_time = Some(exec::block_timestamp());
-        return Ok(Event::EndGame(BattleshipParticipants::Bot));
+        let time = exec::block_timestamp() - game.start_time;
+        let total_shots = game.total_shots;
+        let succesfull_shots = game.succesfull_shots;
+        games.remove(&player);
+        return Ok(Event::EndGame {
+            winner: BattleshipParticipants::Bot,
+            time,
+            total_shots,
+            succesfull_shots,
+        });
     }
     game.status = Status::PendingMove;
 
@@ -92,6 +192,36 @@ pub fn verified_move(
     })
 }
 
+/// This function checks if a game with the specified player and start time exists in the map.
+/// If found, it removes the game from the map. If not found, it returns an error indicating
+/// that no such game exists.
+pub fn delete_game(games: &mut SingleGamesMap, player: ActorId, start_time: u64) -> Result<()> {
+    let game = games.get_mut(&player).ok_or(Error::NoSuchGame)?;
+
+    if game.start_time == start_time {
+        games.remove(&player);
+    }
+
+    Ok(())
+}
+
+/// This function constructs a request message to delete a single-player game instance
+/// and sends it with a specified gas limit and delay using a delayed message mechanism.
+/// It expects successful message sending; otherwise, it panics with an error message.
+fn send_delete_game_delayed_message(player: ActorId, start_time: u64, gas_limit: u64, delay: u32) {
+    let request = [
+        "Single".encode(),
+        "DeleteGame".to_string().encode(),
+        (player, start_time).encode(),
+    ]
+    .concat();
+
+    msg::send_bytes_with_gas_delayed(exec::program_id(), request, gas_limit, 0, delay)
+        .expect("Error in sending message");
+}
+
+/// This function is responsible for randomly or strategically placing ships on the game field,
+/// ensuring that the positions are valid according to the game's rules.
 fn generate_field() -> Ships {
     // let board = vec![Entity::Empty; 25];
     let mut ships = vec![];
@@ -252,7 +382,11 @@ fn move_analysis(board: &[Entity]) -> u8 {
     // Firstly, if we hit a ship, we have to finish it off and kill it
     for (index, status) in board.iter().enumerate() {
         if *status == Entity::BoomShip {
-            return bang(board, index as u8);
+            let possible_bang = possible_bang(board, index as u8);
+            if !possible_bang.is_empty() {
+                let random_index = get_random_value(possible_bang.len() as u8);
+                return possible_bang[random_index as usize];
+            }
         }
     }
     // If there are no wounded ships, randomly select a free cell
@@ -266,7 +400,7 @@ fn move_analysis(board: &[Entity]) -> u8 {
     possible_bang[random_index as usize]
 }
 
-fn bang(board: &[Entity], position: u8) -> u8 {
+fn possible_bang(board: &[Entity], position: u8) -> Vec<u8> {
     let directions: Vec<i8> = match position {
         0 => vec![1, 5],
         4 => vec![-1, 5],
@@ -278,12 +412,14 @@ fn bang(board: &[Entity], position: u8) -> u8 {
     };
 
     let mut possible_bang: Vec<u8> = vec![];
+    let mut single_boom_ship = true;
     for &direction in &directions {
         let current_position = position as i8 + direction;
         if !(0..=24).contains(&current_position) {
             continue;
         }
         if board[current_position as usize] == Entity::BoomShip {
+            single_boom_ship = false;
             if check_bang(current_position as u8, direction)
                 && board[(current_position + direction) as usize] == Entity::Unknown
             {
@@ -296,7 +432,7 @@ fn bang(board: &[Entity], position: u8) -> u8 {
             }
         }
     }
-    if possible_bang.is_empty() {
+    if possible_bang.is_empty() && single_boom_ship {
         for &direction in &directions {
             let current_position = position as i8 + direction;
             if !(0..=24).contains(&current_position) {
@@ -307,8 +443,7 @@ fn bang(board: &[Entity], position: u8) -> u8 {
             }
         }
     }
-    let random_index = get_random_value(possible_bang.len() as u8);
-    possible_bang[random_index as usize]
+    possible_bang
 }
 
 fn check_bang(position: u8, direction: i8) -> bool {

@@ -12,6 +12,8 @@ pub enum Error {
     GameIsAlreadyOver,
     StatusIsPendingVerification,
     WrongStatusOrHit,
+    WrongShipHash,
+    WrongOut,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
@@ -19,11 +21,12 @@ pub enum Error {
 #[scale_info(crate = sails_rtl::scale_info)]
 pub struct SingleGame {
     pub player_board: Vec<Entity>,
+    pub ship_hash: Vec<u8>,
     pub bot_ships: Ships,
     pub start_time: u64,
-    pub end_time: Option<u64>,
     pub status: Status,
-    pub total_shots: u64,
+    pub total_shots: u8,
+    pub succesfull_shots: u8,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
@@ -31,71 +34,21 @@ pub struct SingleGame {
 #[scale_info(crate = sails_rtl::scale_info)]
 pub struct SingleGameState {
     pub player_board: Vec<Entity>,
+    pub ship_hash: Vec<u8>,
     pub start_time: u64,
     pub status: Status,
-    pub end_time: Option<u64>,
-    pub total_shots: u64,
+    pub total_shots: u8,
+    pub succesfull_shots: u8,
 }
 
 impl SingleGame {
     pub fn check_end_game(&self) -> bool {
-        let count_dead_ships = self
+        let count_boom_ships = self
             .player_board
             .iter()
-            .filter(|&entity| *entity == Entity::DeadShip)
+            .filter(|&entity| *entity == Entity::BoomShip)
             .count();
-        count_dead_ships == 8
-    }
-    pub fn dead_ship(&mut self, step: u8) {
-        self.player_board[step as usize] = Entity::DeadShip;
-        Self::auto_boom(self.player_board.as_mut(), step);
-        let mut current_step = step as i8;
-        'stop: loop {
-            let directions: Vec<i8> = match current_step {
-                0 => vec![5, 1],
-                4 => vec![5, -1],
-                20 => vec![1, -5],
-                24 => vec![-1, -5],
-                p if p % 5 == 0 => vec![-5, 1, 5],
-                p if (p + 1) % 5 == 0 => vec![-5, -1, 5],
-                _ => vec![-5, -1, 1, 5],
-            };
-            for direction in directions {
-                let position = current_step + direction;
-                if !(0..=24).contains(&position) {
-                    continue;
-                }
-                if self.player_board[position as usize] == Entity::BoomShip {
-                    self.player_board[position as usize] = Entity::DeadShip;
-                    Self::auto_boom(self.player_board.as_mut(), position as u8);
-                    current_step += direction;
-                    continue 'stop;
-                }
-            }
-            break;
-        }
-    }
-
-    fn auto_boom(board: &mut [Entity], position: u8) {
-        let cells = match position {
-            0 => vec![1, 5, 6],
-            4 => vec![-1, 4, 5],
-            20 => vec![1, -4, -5],
-            24 => vec![-1, -5, -6],
-            p if p % 5 == 0 => vec![-4, -5, 1, 5, 6],
-            p if (p + 1) % 5 == 0 => vec![-1, -5, -6, 4, 5],
-            _ => vec![-1, -4, -5, -6, 1, 4, 5, 6],
-        };
-
-        for cell in &cells {
-            let current_position = position as i8 + *cell;
-            if !(0..=24).contains(&current_position) {
-                continue;
-            }
-            if board[current_position as usize] == Entity::Empty {
-                board[current_position as usize] = Entity::Boom;
-            }
-        }
+        count_boom_ships == 8
     }
 }
 
@@ -105,7 +58,6 @@ impl SingleGame {
 pub enum Status {
     PendingVerificationOfTheMove(u8),
     PendingMove,
-    GameOver(BattleshipParticipants),
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]

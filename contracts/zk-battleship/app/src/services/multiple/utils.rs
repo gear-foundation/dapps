@@ -14,20 +14,31 @@ pub enum Error {
     WrongStep,
     AccessDenied,
     WrongStatus,
+    WrongShipsHash,
     NotPlayer,
     AlreadyVerified,
+    WrongBid,
+}
+
+pub struct MultipleGame {
+    pub participants_data: HashMap<ActorId, ParticipantInfo>,
+    pub create_time: u64,
+    pub start_time: Option<u64>,
+    pub last_move_time: u64,
+    pub status: Status,
+    pub bid: u128,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rtl::scale_codec)]
 #[scale_info(crate = sails_rtl::scale_info)]
-pub struct MultipleGame {
-    pub first_player_board: (ActorId, Vec<Entity>),
-    pub second_player_board: Option<(ActorId, Vec<Entity>)>,
-    pub participants: (ActorId, ActorId),
+pub struct MultipleGameState {
+    pub participants_data: Vec<(ActorId, ParticipantInfo)>,
+    pub create_time: u64,
     pub start_time: Option<u64>,
-    pub end_time: Option<u64>,
+    pub last_move_time: u64,
     pub status: Status,
+    pub bid: u128,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
@@ -38,36 +49,52 @@ pub enum Status {
     VerificationPlacement(Option<ActorId>),
     PendingVerificationOfTheMove((ActorId, u8)),
     Turn(ActorId),
-    GameOver(ActorId),
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rtl::scale_codec)]
+#[scale_info(crate = sails_rtl::scale_info)]
+pub struct ParticipantInfo {
+    pub board: Vec<Entity>,
+    pub ship_hash: Vec<u8>,
+    pub total_shots: u8,
+    pub succesfull_shots: u8,
 }
 
 impl MultipleGame {
     pub fn get_opponent(&self, player: &ActorId) -> ActorId {
-        match player {
-            p if *p == self.participants.0 => self.participants.1,
-            _ => self.participants.0,
-        }
+        let (id, _) = self
+            .participants_data
+            .iter()
+            .find(|(&id, _)| id != *player)
+            .expect("The opponent must exist");
+        *id
     }
 
     pub fn shot(&mut self, player: &ActorId, step: u8, res: u8) {
-        let board: &mut Vec<Entity> = match player {
-            p if *p == self.first_player_board.0 => self.first_player_board.1.as_mut(),
-            _ => self.second_player_board.as_mut().unwrap().1.as_mut(),
-        };
+        let data = self
+            .participants_data
+            .get_mut(player)
+            .expect("The player must exist");
+
         match res {
-            0 => board[step as usize] = Entity::Boom,
-            1 => board[step as usize] = Entity::BoomShip,
+            0 => data.board[step as usize] = Entity::Boom,
+            1 => {
+                data.board[step as usize] = Entity::BoomShip;
+                data.succesfull_shots += 1;
+            }
             _ => unimplemented!(),
         }
     }
     pub fn check_end_game(&self, player: &ActorId) -> bool {
-        let board: &Vec<Entity> = match player {
-            p if *p == self.first_player_board.0 => self.first_player_board.1.as_ref(),
-            _ => self.second_player_board.as_ref().unwrap().1.as_ref(),
-        };
-        let count_dead_ships = board
+        let data = self
+            .participants_data
+            .get(player)
+            .expect("The player must exist");
+        let count_dead_ships = data
+            .board
             .iter()
-            .filter(|&entity| *entity == Entity::DeadShip)
+            .filter(|&entity| *entity == Entity::BoomShip)
             .count();
         count_dead_ships == 8
     }

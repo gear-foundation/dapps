@@ -5,7 +5,7 @@ use gbuiltin_bls381::ark_ff::PrimeField;
 use gbuiltin_bls381::ark_scale;
 use gbuiltin_bls381::ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 use gbuiltin_bls381::{Request, Response};
-use gstd::{msg, prelude::*, ActorId, Encode};
+use gstd::{ext, msg, prelude::*, ActorId, Encode};
 
 type ArkScale<T> = ark_scale::ArkScale<T, { ark_scale::HOST_CALL }>;
 
@@ -54,19 +54,15 @@ pub async fn verify(
         &mut vk.alpha_g1_beta_g2.as_slice(),
     )
     .expect("Decode error");
-
     let gamma_g2_neg_pc = G2Affine::deserialize_uncompressed_unchecked(&*vk.gamma_g2_neg_pc)
         .expect("Deserialize error");
-
     let delta_g2_neg_pc = G2Affine::deserialize_uncompressed_unchecked(&*vk.delta_g2_neg_pc)
         .expect("Deserialize error");
-
     let a = G1Affine::deserialize_uncompressed_unchecked(&*proof.a).expect("Deserialize error");
 
     let b = G2Affine::deserialize_uncompressed_unchecked(&*proof.b).expect("Deserialize error");
 
     let c = G1Affine::deserialize_uncompressed_unchecked(&*proof.c).expect("Deserialize error");
-
     let prepared_inputs = G1Affine::deserialize_uncompressed_unchecked(&*prepared_inputs_bytes)
         .expect("Deserialize error");
 
@@ -78,7 +74,9 @@ pub async fn verify(
 
     let exp = calculate_exponentiation(miller_out, builtin_bls381_address).await;
 
-    assert_eq!(exp, alpha_g1_beta_g2, "Verification failed");
+    if exp != alpha_g1_beta_g2 {
+        ext::panic("Verification failed");
+    }
 }
 
 async fn calculate_multi_miller_loop(
@@ -87,13 +85,11 @@ async fn calculate_multi_miller_loop(
     builtin_bls381_address: ActorId,
 ) -> Vec<u8> {
     let request = Request::MultiMillerLoop { a: g1, b: g2 }.encode();
-
     let reply = msg::send_bytes_for_reply(builtin_bls381_address, &request, 0, 0)
         .expect("Failed to send message")
         .await
         .expect("Received error reply");
-
-    let response = Response::decode(&mut reply.as_slice()).unwrap();
+    let response = Response::decode(&mut reply.as_slice()).expect("Error: decode response");
     match response {
         Response::MultiMillerLoop(v) => v,
         _ => unreachable!(),
@@ -110,10 +106,11 @@ async fn calculate_exponentiation(
         .expect("Failed to send message")
         .await
         .expect("Received error reply");
-    let response = Response::decode(&mut reply.as_slice()).unwrap();
+    let response = Response::decode(&mut reply.as_slice()).expect("Error: decode response");
     let exp = match response {
         Response::FinalExponentiation(v) => {
-            ArkScale::<<Bls12_381 as Pairing>::TargetField>::decode(&mut v.as_slice()).unwrap()
+            ArkScale::<<Bls12_381 as Pairing>::TargetField>::decode(&mut v.as_slice())
+                .expect("Error: decode ArkScale")
         }
         _ => unreachable!(),
     };

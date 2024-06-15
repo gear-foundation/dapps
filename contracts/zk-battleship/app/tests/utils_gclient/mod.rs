@@ -7,14 +7,42 @@ use gbuiltin_bls381::ark_bls12_381::{Bls12_381, G1Affine, G2Affine};
 use gbuiltin_bls381::ark_ec::{pairing::Pairing, AffineRepr, CurveGroup};
 use gbuiltin_bls381::ark_serialize::{CanonicalDeserialize, CanonicalSerialize};
 
+use battleship::services::admin::storage::configuration::Configuration;
+use battleship::services::multiple::{MultipleGame, MultipleGameState};
+use battleship::services::single::SingleGameState;
+use battleship::services::verify::VerifyingKeyBytes as InputVerifyingKeyBytes;
+use battleship::services::verify::{ProofBytes, PublicMoveInput, PublicStartInput};
 use hex_literal::hex;
-use zk_battleship::services::single::SingleGameState;
-use zk_battleship::services::verify::VerifyingKeyBytes as InputVerifyingKeyBytes;
-use zk_battleship::services::verify::{ProofBytes, PublicMoveInput, PublicStartInput};
+
+pub const USERS_STR: &[&str] = &["//John", "//Mike", "//Dan"];
 
 const BUILTIN_BLS381: ActorId = ActorId::new(hex!(
     "6b6e292c382945e80bf51af2ba7fe9f458dcff81ae6075c46f9095e1bbecdc37"
 ));
+
+pub trait ApiUtils {
+    fn get_actor_id(&self) -> ActorId;
+    fn get_specific_actor_id(&self, value: impl AsRef<str>) -> ActorId;
+}
+
+impl ApiUtils for GearApi {
+    fn get_actor_id(&self) -> ActorId {
+        ActorId::new(
+            self.account_id()
+                .encode()
+                .try_into()
+                .expect("Unexpected invalid account id length."),
+        )
+    }
+
+    fn get_specific_actor_id(&self, value: impl AsRef<str>) -> ActorId {
+        let api_temp = self
+            .clone()
+            .with(value)
+            .expect("Unable to build `GearApi` instance with provided signer.");
+        api_temp.get_actor_id()
+    }
+}
 
 fn decode<T: Decode>(payload: Vec<u8>) -> Result<T> {
     Ok(T::decode(&mut payload.as_slice())?)
@@ -30,26 +58,28 @@ pub struct VerifyingKeyBytes {
 
 #[macro_export]
 macro_rules! send_request {
-    (api: $api: expr, program_id: $program_id: expr, service_name: $name: literal, action: $action: literal, payload: ($($val: expr),*)) => {
+    (api: $api:expr, program_id: $program_id:expr, service_name: $name:literal, action: $action:literal, payload: ($($val:expr),*)) => {
+        $crate::send_request!(api: $api, program_id: $program_id, service_name: $name, action: $action, payload: ($($val),*), value: 0)
+    };
+
+    (api: $api:expr, program_id: $program_id:expr, service_name: $name:literal, action: $action:literal, payload: ($($val:expr),*), value: $value:expr) => {
         {
             let request = [
                 $name.encode(),
                 $action.to_string().encode(),
-                ( $( $val, )*).encode(),
-            ]
-            .concat();
+                ($($val),*).encode(),
+            ].concat();
 
             let gas_info = $api
-                .calculate_handle_gas(None, $program_id, request.clone(), 0, true)
+                .calculate_handle_gas(None, $program_id, request.clone(), $value, true)
                 .await?;
 
             let (message_id, _) = $api
-                .send_message_bytes($program_id, request.clone(), gas_info.min_limit*2, 0)
+                .send_message_bytes($program_id, request.clone(), gas_info.min_limit, $value)
                 .await?;
 
             message_id
         }
-
     };
 }
 
@@ -58,7 +88,19 @@ pub async fn init(
     start_vk: InputVerifyingKeyBytes,
     move_vk: InputVerifyingKeyBytes,
 ) -> (MessageId, ProgramId) {
-    let request = ["New".encode(), (BUILTIN_BLS381, start_vk, move_vk).encode()].concat();
+    let config = Configuration {
+        gas_for_check_time: 5_000_000_000,
+        gas_for_delete_multiple_game: 5_000_000_000,
+        gas_for_delete_single_game: 10_000_000_000,
+        delay_for_check_time: 20,             // 1 min
+        delay_for_delete_multiple_game: 2400, // 2 hour
+        delay_for_delete_single_game: 400,    // 20 min
+    };
+    let request = [
+        "New".encode(),
+        (BUILTIN_BLS381, start_vk, move_vk, config).encode(),
+    ]
+    .concat();
     let path = "../target/wasm32-unknown-unknown/release/battleship_wasm.opt.wasm";
     let gas_info = api
         .calculate_upload_gas(
@@ -85,7 +127,7 @@ pub async fn init(
     (message_id, program_id)
 }
 
-pub async fn get_state_games(
+pub async fn get_state_single_games(
     api: &GearApi,
     program_id: ProgramId,
     listener: &mut gclient::EventListener,
@@ -108,6 +150,36 @@ pub async fn get_state_games(
         .expect("Error listen reply");
 
     let decoded_reply: (String, String, Vec<(ActorId, SingleGameState)>) = match raw_reply {
+        Ok(raw_reply) => decode(raw_reply).expect("Erroe decode reply"),
+        Err(_error) => gstd::panic!("Error in getting reply"),
+    };
+    // println!("decoded_reply {:?}", decoded_reply);
+    decoded_reply.2
+}
+
+pub async fn get_state_multiple_games(
+    api: &GearApi,
+    program_id: ProgramId,
+    listener: &mut gclient::EventListener,
+) -> Vec<(ActorId, MultipleGameState)> {
+    let request = ["Multiple".encode(), "Games".to_string().encode()].concat();
+
+    let gas_info = api
+        .calculate_handle_gas(None, program_id, request.clone(), 0, true)
+        .await
+        .expect("Error calculate handle gas");
+
+    let (message_id, _) = api
+        .send_message_bytes(program_id, request.clone(), gas_info.min_limit * 2, 0)
+        .await
+        .expect("Error send message bytes");
+
+    let (_, raw_reply, _) = listener
+        .reply_bytes_on(message_id)
+        .await
+        .expect("Error listen reply");
+
+    let decoded_reply: (String, String, Vec<(ActorId, MultipleGameState)>) = match raw_reply {
         Ok(raw_reply) => decode(raw_reply).expect("Erroe decode reply"),
         Err(_error) => gstd::panic!("Error in getting reply"),
     };
@@ -413,6 +485,178 @@ pub fn get_start_vk_proof_public() -> (InputVerifyingKeyBytes, ProofBytes, Publi
         hash: vec![
             51, 217, 233, 61, 233, 121, 204, 172, 68, 169, 118, 202, 251, 95, 229, 50, 34, 187, 67,
             43, 194, 51, 134, 75, 59, 97, 49, 24, 246, 190, 33, 18,
+        ],
+    };
+
+    (vk_bytes, proof_bytes, public_input)
+}
+
+pub async fn get_new_client(api: &GearApi, name: &str) -> GearApi {
+    let alice_balance = api
+        .total_balance(api.account_id())
+        .await
+        .expect("Error total balance");
+    let amount = alice_balance / 5;
+    api.transfer_keep_alive(
+        api.get_specific_actor_id(name)
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
+        amount,
+    )
+    .await
+    .expect("Error transfer");
+
+    api.clone().with(name).expect("Unable to change signer.")
+}
+
+pub fn get_test_move_vk_proof_public() -> (InputVerifyingKeyBytes, ProofBytes, PublicMoveInput) {
+    let vk_bytes = VerifyingKeyBytes {
+        vk_alpha_g1: vec![
+            17, 184, 55, 149, 60, 168, 194, 140, 24, 237, 214, 133, 147, 62, 147, 129, 29, 88, 11,
+            70, 41, 15, 233, 99, 176, 114, 143, 165, 36, 113, 89, 112, 183, 180, 245, 195, 162, 6,
+            80, 78, 50, 131, 71, 181, 123, 12, 160, 116, 16, 17, 177, 154, 168, 97, 67, 255, 207,
+            80, 18, 138, 31, 149, 217, 26, 110, 16, 237, 231, 213, 145, 201, 130, 2, 147, 149, 30,
+            156, 42, 204, 105, 85, 87, 113, 164, 251, 42, 43, 202, 221, 182, 102, 69, 192, 133,
+            140, 22,
+        ],
+
+        vk_beta_g2: vec![
+            18, 42, 148, 107, 54, 164, 254, 231, 177, 122, 162, 149, 27, 134, 219, 190, 107, 189,
+            0, 74, 43, 45, 37, 209, 181, 23, 184, 13, 243, 170, 248, 86, 87, 187, 5, 153, 168, 141,
+            185, 3, 240, 201, 106, 5, 152, 122, 182, 146, 11, 220, 112, 131, 61, 51, 77, 250, 113,
+            43, 246, 212, 31, 197, 86, 146, 187, 162, 125, 237, 22, 88, 151, 178, 203, 59, 126,
+            226, 86, 223, 200, 66, 251, 88, 101, 133, 124, 190, 78, 221, 33, 6, 233, 35, 217, 254,
+            48, 87, 17, 79, 146, 176, 110, 170, 0, 183, 0, 235, 109, 146, 194, 246, 122, 17, 41, 1,
+            146, 67, 95, 129, 176, 189, 76, 139, 82, 127, 171, 47, 60, 184, 47, 219, 155, 191, 204,
+            167, 214, 214, 69, 79, 44, 168, 189, 242, 127, 24, 8, 182, 213, 77, 50, 156, 253, 162,
+            95, 154, 15, 188, 124, 0, 165, 38, 191, 68, 205, 134, 216, 224, 68, 155, 102, 191, 130,
+            198, 105, 225, 2, 106, 242, 3, 50, 76, 57, 167, 195, 19, 146, 216, 212, 73, 180, 213,
+            227, 217,
+        ],
+
+        vk_gamma_g2: vec![
+            19, 224, 43, 96, 82, 113, 159, 96, 125, 172, 211, 160, 136, 39, 79, 101, 89, 107, 208,
+            208, 153, 32, 182, 26, 181, 218, 97, 187, 220, 127, 80, 73, 51, 76, 241, 18, 19, 148,
+            93, 87, 229, 172, 125, 5, 93, 4, 43, 126, 2, 74, 162, 178, 240, 143, 10, 145, 38, 8, 5,
+            39, 45, 197, 16, 81, 198, 228, 122, 212, 250, 64, 59, 2, 180, 81, 11, 100, 122, 227,
+            209, 119, 11, 172, 3, 38, 168, 5, 187, 239, 212, 128, 86, 200, 193, 33, 189, 184, 6, 6,
+            196, 160, 46, 167, 52, 204, 50, 172, 210, 176, 43, 194, 139, 153, 203, 62, 40, 126,
+            133, 167, 99, 175, 38, 116, 146, 171, 87, 46, 153, 171, 63, 55, 13, 39, 92, 236, 29,
+            161, 170, 169, 7, 95, 240, 95, 121, 190, 12, 229, 213, 39, 114, 125, 110, 17, 140, 201,
+            205, 198, 218, 46, 53, 26, 173, 253, 155, 170, 140, 189, 211, 167, 109, 66, 154, 105,
+            81, 96, 209, 44, 146, 58, 201, 204, 59, 172, 162, 137, 225, 147, 84, 134, 8, 184, 40,
+            1,
+        ],
+
+        vk_delta_g2: vec![
+            2, 232, 212, 135, 176, 161, 49, 112, 69, 251, 124, 114, 89, 51, 90, 69, 43, 10, 35, 60,
+            51, 81, 193, 0, 245, 163, 83, 131, 110, 164, 1, 80, 65, 250, 183, 32, 72, 135, 24, 7,
+            172, 11, 47, 73, 46, 185, 10, 93, 5, 69, 93, 31, 11, 191, 118, 239, 192, 181, 112, 126,
+            101, 200, 64, 205, 239, 173, 20, 64, 170, 78, 118, 253, 27, 72, 106, 40, 161, 8, 115,
+            118, 188, 8, 1, 0, 171, 74, 207, 223, 17, 211, 15, 77, 152, 30, 201, 234, 11, 164, 54,
+            94, 132, 173, 37, 160, 129, 238, 7, 80, 239, 138, 227, 185, 24, 106, 94, 7, 2, 146, 46,
+            85, 206, 202, 205, 104, 153, 137, 28, 83, 62, 250, 10, 22, 172, 90, 136, 197, 78, 143,
+            20, 172, 72, 152, 245, 174, 18, 182, 205, 154, 184, 51, 87, 198, 198, 241, 254, 8, 164,
+            56, 3, 185, 157, 26, 111, 35, 220, 98, 32, 33, 232, 57, 99, 69, 219, 1, 138, 58, 235,
+            63, 212, 99, 7, 57, 202, 85, 210, 201, 90, 203, 207, 153, 20, 139,
+        ],
+    };
+
+    let ic = vec![
+        vec![
+            25, 201, 181, 56, 109, 217, 247, 208, 229, 102, 200, 85, 65, 15, 6, 5, 202, 210, 106,
+            253, 15, 160, 199, 177, 15, 13, 93, 243, 231, 103, 76, 169, 242, 47, 222, 158, 143, 73,
+            107, 13, 14, 75, 70, 126, 95, 66, 27, 3, 13, 186, 179, 216, 102, 124, 144, 23, 74, 218,
+            126, 49, 9, 225, 181, 19, 224, 215, 58, 138, 62, 169, 91, 59, 221, 126, 96, 196, 55,
+            136, 206, 166, 27, 31, 245, 39, 131, 29, 69, 51, 116, 152, 89, 188, 82, 209, 180, 55,
+        ],
+        vec![
+            4, 40, 219, 168, 16, 194, 150, 242, 26, 151, 39, 249, 1, 81, 108, 0, 16, 105, 45, 222,
+            204, 50, 135, 189, 45, 19, 6, 11, 14, 229, 155, 165, 63, 67, 145, 2, 248, 17, 142, 35,
+            201, 193, 117, 199, 85, 106, 233, 123, 20, 101, 13, 69, 140, 115, 206, 27, 140, 155,
+            106, 12, 103, 95, 5, 232, 10, 142, 120, 62, 111, 213, 134, 105, 60, 71, 238, 102, 148,
+            212, 81, 113, 207, 220, 102, 72, 185, 237, 240, 202, 78, 26, 185, 43, 240, 44, 189,
+            116,
+        ],
+        // vec![
+        // 	21,78,183,127,26,178,12,103,171,73,105,140,209,174,90,18,214,248,208,196,205,146,69,216,42,140,152,167,135,130,56,70,65,77,20,103,180,97,199,10,231,118,227,254,180,23,193,148,
+        // 	14,134,195,185,141,194,93,47,169,167,62,193,165,203,235,101,166,35,9,204,234,197,78,50,172,186,107,22,181,255,238,203,49,199,48,18,15,176,246,242,79,150,112,8,54,185,202,33,
+        // ],
+        // vec![
+        // 	5,176,25,239,192,152,102,14,106,150,46,203,46,14,43,154,234,241,70,163,239,2,37,148,6,246,10,2,159,226,39,108,62,48,99,97,177,6,209,156,99,145,39,45,231,80,166,3,
+        // 	13,149,35,247,116,126,137,169,191,121,100,240,132,12,114,172,37,207,220,72,51,40,186,130,134,8,169,170,56,200,249,21,151,47,128,214,111,33,132,89,199,178,192,205,149,167,164,87,
+        // ],
+    ];
+
+    let alpha_g1 = G1Affine::deserialize_uncompressed_unchecked(&*vk_bytes.vk_alpha_g1).unwrap();
+    let beta_g2 = G2Affine::deserialize_uncompressed_unchecked(&*vk_bytes.vk_beta_g2).unwrap();
+    let gamma_g2 = G2Affine::deserialize_uncompressed_unchecked(&*vk_bytes.vk_gamma_g2).unwrap();
+    let delta_g2 = G2Affine::deserialize_uncompressed_unchecked(&*vk_bytes.vk_delta_g2).unwrap();
+
+    let alpha_g1_beta_g2 = Bls12_381::pairing(alpha_g1, beta_g2).0;
+    let gamma_g2_neg_pc: G2Affine = gamma_g2.into_group().neg().into_affine();
+    let delta_g2_neg_pc: G2Affine = delta_g2.into_group().neg().into_affine();
+
+    let proof_bytes = ProofBytes {
+        a: vec![
+            18, 62, 3, 152, 234, 187, 254, 129, 21, 92, 184, 108, 46, 89, 48, 7, 21, 244, 60, 191,
+            255, 9, 46, 53, 70, 63, 111, 225, 112, 102, 107, 11, 165, 40, 77, 36, 234, 164, 51,
+            106, 214, 100, 142, 137, 7, 100, 194, 145, 1, 207, 206, 207, 218, 246, 7, 64, 30, 135,
+            3, 242, 113, 1, 68, 143, 242, 111, 135, 249, 251, 242, 80, 178, 194, 152, 238, 47, 59,
+            203, 88, 150, 220, 89, 227, 239, 186, 18, 121, 85, 102, 231, 188, 152, 122, 36, 46, 97,
+        ],
+        b: vec![
+            2, 30, 144, 113, 111, 53, 17, 37, 77, 98, 10, 185, 212, 0, 75, 5, 3, 238, 118, 104, 96,
+            150, 196, 240, 253, 134, 59, 8, 101, 207, 194, 203, 28, 237, 189, 32, 203, 68, 71, 27,
+            255, 143, 99, 136, 112, 129, 70, 32, 24, 243, 37, 244, 66, 45, 55, 38, 62, 40, 76, 115,
+            28, 98, 66, 105, 131, 148, 197, 93, 62, 187, 127, 10, 41, 171, 71, 46, 78, 144, 21,
+            255, 5, 118, 24, 204, 185, 15, 105, 199, 179, 18, 70, 80, 156, 36, 110, 150, 20, 208,
+            231, 64, 220, 234, 214, 173, 182, 48, 187, 248, 176, 125, 32, 60, 7, 48, 143, 147, 127,
+            12, 245, 250, 221, 116, 230, 42, 140, 163, 227, 156, 222, 170, 178, 65, 222, 85, 112,
+            113, 78, 63, 224, 151, 116, 161, 171, 43, 10, 183, 12, 245, 120, 81, 202, 19, 54, 1,
+            125, 208, 56, 88, 182, 52, 98, 94, 63, 120, 72, 43, 100, 151, 111, 176, 94, 195, 90,
+            241, 235, 238, 190, 193, 205, 203, 134, 177, 147, 149, 190, 170, 219, 110, 160, 216,
+            233, 166,
+        ],
+        c: vec![
+            25, 190, 139, 182, 33, 11, 9, 222, 208, 216, 48, 3, 213, 17, 166, 171, 30, 132, 85,
+            200, 122, 167, 207, 185, 142, 53, 176, 243, 163, 211, 160, 231, 225, 57, 40, 29, 195,
+            226, 73, 147, 214, 78, 159, 115, 96, 108, 37, 77, 25, 253, 189, 230, 100, 166, 241,
+            127, 45, 172, 211, 67, 235, 150, 49, 152, 236, 221, 227, 50, 106, 1, 20, 11, 107, 233,
+            163, 196, 176, 69, 50, 126, 83, 96, 168, 90, 117, 211, 13, 13, 184, 48, 50, 138, 191,
+            173, 128, 218,
+        ],
+    };
+    let mut alpha_g1_beta_g2_bytes = Vec::new();
+    alpha_g1_beta_g2
+        .serialize_uncompressed(&mut alpha_g1_beta_g2_bytes)
+        .unwrap();
+
+    let mut gamma_g2_neg_pc_bytes = Vec::new();
+    gamma_g2_neg_pc
+        .serialize_uncompressed(&mut gamma_g2_neg_pc_bytes)
+        .unwrap();
+
+    let mut delta_g2_neg_pc_bytes = Vec::new();
+    delta_g2_neg_pc
+        .serialize_uncompressed(&mut delta_g2_neg_pc_bytes)
+        .unwrap();
+
+    let vk_bytes = InputVerifyingKeyBytes {
+        alpha_g1_beta_g2: alpha_g1_beta_g2_bytes,
+        gamma_g2_neg_pc: gamma_g2_neg_pc_bytes,
+        delta_g2_neg_pc: delta_g2_neg_pc_bytes,
+        ic,
+    };
+
+    let public_input = PublicMoveInput {
+        out: 1,
+        hit: 1,
+        hash: vec![
+            40, 108, 212, 155, 236, 63, 122, 81, 224, 152, 86, 162, 255, 254, 40, 4, 190, 34, 217,
+            215, 45, 69, 119, 135, 71, 38, 210, 217, 196, 31, 1, 76,
         ],
     };
 

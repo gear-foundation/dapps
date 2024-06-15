@@ -15,6 +15,8 @@ pub use utils::*;
 
 use self::storage::{GamePairsStorage, MultipleGamesStorage};
 
+use super::admin::storage::configuration::ConfigurationStorage;
+
 pub mod funcs;
 pub mod storage;
 pub(crate) mod utils;
@@ -46,6 +48,11 @@ pub enum Event {
     },
     EndGame {
         winner: ActorId,
+        total_time: u64,
+        participants_info: Vec<(ActorId, ParticipantInfo)>,
+    },
+    GameDeleted {
+        game_id: ActorId,
     },
 }
 
@@ -56,6 +63,10 @@ pub struct Service<X>(PhantomData<X>);
 
 impl<X> Service<X> {
     pub fn seed() -> Self {
+        let _res = MultipleGamesStorage::default();
+        debug_assert!(_res.is_ok());
+        let _res = GamePairsStorage::default();
+        debug_assert!(_res.is_ok());
         Self(PhantomData)
     }
 }
@@ -68,7 +79,11 @@ where
     pub fn new() -> Self {
         Self(PhantomData)
     }
-
+    /// Creates a new game instance for a player and stores it in the game storage.
+    ///
+    /// # Arguments
+    ///
+    /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
     pub fn create_game(&mut self, session_for_account: Option<ActorId>) {
         let player = get_player(
             SessionsStorage::as_ref(),
@@ -76,17 +91,27 @@ where
             &session_for_account,
             ActionsForSession::PlayMultipleGame,
         );
+        let bid = msg::value();
         let player_id = services::utils::panicking(move || {
             funcs::create_game(
                 MultipleGamesStorage::as_mut(),
                 GamePairsStorage::as_mut(),
+                ConfigurationStorage::get(),
                 player,
+                bid,
             )
         });
 
         services::utils::deposit_event(Event::GameCreated { player_id });
     }
+    /// Joins an existing game with the specified game ID for a player and updates the game storage.
+    ///
+    /// # Arguments
+    ///
+    /// * `game_id` - The `ActorId` representing the ID of the game to join.
+    /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
     pub fn join_game(&mut self, game_id: ActorId, session_for_account: Option<ActorId>) {
+        let value = msg::value();
         let player = get_player(
             SessionsStorage::as_ref(),
             msg::source(),
@@ -99,11 +124,17 @@ where
                 GamePairsStorage::as_mut(),
                 player,
                 game_id,
+                value,
             )
         });
 
         services::utils::deposit_event(Event::JoinedTheGame { player_id, game_id });
     }
+    /// Allows a player to leave a game and updates the game storage accordingly.
+    ///
+    /// # Arguments
+    ///
+    /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
     pub fn leave_game(&mut self, session_for_account: Option<ActorId>) {
         let player = get_player(
             SessionsStorage::as_ref(),
@@ -121,6 +152,11 @@ where
 
         services::utils::deposit_event(event);
     }
+    /// Cancels an existing game for a player and updates the game storage accordingly.
+    ///
+    /// # Arguments
+    ///
+    /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
     pub fn cancel_game(&mut self, session_for_account: Option<ActorId>) {
         let player = get_player(
             SessionsStorage::as_ref(),
@@ -138,6 +174,15 @@ where
 
         services::utils::deposit_event(Event::GameCanceled { game_id });
     }
+
+    /// Verifies the placement of ships in a multiplayer game using zero-knowledge proofs.
+    ///
+    /// # Arguments
+    ///
+    /// * `proof` - A zero-knowledge proof in the form of `ProofBytes`.
+    /// * `public_input` - Public input data required for the verification process.
+    /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
+    /// * `game_id` - The `ActorId` representing the ID of the game to verify.
     pub async fn verify_placement(
         &mut self,
         proof: services::verify::ProofBytes,
@@ -177,14 +222,23 @@ where
         let event = services::utils::panicking(move || {
             funcs::set_verify_placement(
                 MultipleGamesStorage::as_mut(),
+                ConfigurationStorage::get(),
                 player,
                 game_id,
+                public_input.hash,
                 exec::block_timestamp(),
             )
         });
         services::utils::deposit_event(event);
     }
 
+    /// Makes a move in a multiplayer game and updates the game state accordingly.
+    ///
+    /// # Arguments
+    ///
+    /// * `game_id` - The `ActorId` representing the ID of the game where the move is made.
+    /// * `step` - An unsigned 8-bit integer representing the move to be made.
+    /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
     pub fn make_move(&mut self, game_id: ActorId, step: u8, session_for_account: Option<ActorId>) {
         let player = get_player(
             SessionsStorage::as_ref(),
@@ -194,11 +248,27 @@ where
         );
 
         let event = services::utils::panicking(move || {
-            funcs::make_move(MultipleGamesStorage::as_mut(), player, game_id, step)
+            funcs::make_move(
+                MultipleGamesStorage::as_mut(),
+                ConfigurationStorage::get(),
+                player,
+                game_id,
+                step,
+                exec::block_timestamp(),
+            )
         });
 
         services::utils::deposit_event(event);
     }
+
+    /// Verifies a move in a multiplayer game using zero-knowledge proofs.
+    ///
+    /// # Arguments
+    ///
+    /// * `proof` - A zero-knowledge proof in the form of `ProofBytes`.
+    /// * `public_input` - Public input data required for the move verification.
+    /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
+    /// * `game_id` - The `ActorId` representing the ID of the game to verify.
     pub async fn verify_move(
         &mut self,
         proof: services::verify::ProofBytes,
@@ -214,6 +284,12 @@ where
             services::session::ActionsForSession::PlayMultipleGame,
         );
 
+        // get prepared inputs bytes
+        let prepared_inputs_bytes = services::verify::get_move_prepared_inputs_bytes(
+            public_input.clone(),
+            VerificationKeyStorage::get_vk_for_move().ic.clone(),
+        );
+
         // check game state
         services::utils::panicking(move || {
             funcs::check_game_for_verify_move(
@@ -221,14 +297,9 @@ where
                 game_id,
                 player,
                 public_input.hit,
+                public_input.hash,
             )
         });
-
-        // get prepared inputs bytes
-        let prepared_inputs_bytes = services::verify::get_move_prepared_inputs_bytes(
-            public_input.clone(),
-            VerificationKeyStorage::get_vk_for_move().ic.clone(),
-        );
 
         // check proof
         services::verify::verify(
@@ -244,6 +315,7 @@ where
             funcs::verified_move(
                 MultipleGamesStorage::as_mut(),
                 GamePairsStorage::as_mut(),
+                game_id,
                 player,
                 public_input.out,
                 public_input.hit,
@@ -251,10 +323,72 @@ where
         });
         services::utils::deposit_event(event);
     }
-    pub fn games(&self) -> Vec<(ActorId, MultipleGame)> {
+
+    /// Deletes an existing game from the storage based on the game ID and creation time.
+    ///
+    /// # Arguments
+    ///
+    /// * `game_id` - The `ActorId` representing the ID of the game to delete.
+    /// * `create_time` - A 64-bit unsigned integer representing the creation time of the game.
+    ///
+    /// # Note
+    /// The source of the message can only be the program itself.
+    pub fn delete_game(&mut self, game_id: ActorId, create_time: u64) {
+        if msg::source() != exec::program_id() {
+            services::utils::panic("This message can be sent only by the program")
+        }
+        let event = services::utils::panicking(move || {
+            funcs::delete_game(
+                MultipleGamesStorage::as_mut(),
+                GamePairsStorage::as_mut(),
+                game_id,
+                create_time,
+            )
+        });
+
+        services::utils::deposit_event(event);
+    }
+
+    /// Checks the timing of a game and updates the game state accordingly.
+    ///
+    /// # Arguments
+    ///
+    /// * `game_id` - The `ActorId` representing the ID of the game to check.
+    /// * `check_time` - A 64-bit unsigned integer representing the time to check against.
+    /// * `repeated_pass` - A boolean indicating whether this is a repeated timing check.
+    ///     
+    /// # Note
+    /// The source of the message can only be the program itself.
+    pub fn check_out_timing(&mut self, game_id: ActorId, check_time: u64, repeated_pass: bool) {
+        if msg::source() != exec::program_id() {
+            services::utils::panic("This message can be sent only by the program")
+        }
+        services::utils::panicking(move || {
+            funcs::check_out_timing(
+                MultipleGamesStorage::as_mut(),
+                GamePairsStorage::as_mut(),
+                ConfigurationStorage::get(),
+                game_id,
+                check_time,
+                repeated_pass,
+            )
+        });
+    }
+
+    pub fn games(&self) -> Vec<(ActorId, MultipleGameState)> {
         MultipleGamesStorage::as_ref()
             .iter()
-            .map(|(actor_id, game)| (*actor_id, game.clone()))
+            .map(|(actor_id, game)| {
+                let game = MultipleGameState {
+                    participants_data: game.participants_data.clone().into_iter().collect(),
+                    create_time: game.create_time,
+                    start_time: game.start_time,
+                    last_move_time: game.last_move_time,
+                    status: game.status.clone(),
+                    bid: game.bid,
+                };
+                (*actor_id, game)
+            })
             .collect()
     }
     pub fn games_pairs(&self) -> Vec<(ActorId, ActorId)> {
@@ -263,12 +397,17 @@ where
             .map(|(player_1, player_2)| (*player_1, *player_2))
             .collect()
     }
-    pub fn game(&self, player_id: ActorId) -> Option<MultipleGame> {
-        let pairs = GamePairsStorage::as_ref();
-        if let Some(game_id) = pairs.get(&player_id) {
-            MultipleGamesStorage::as_ref().get(game_id).cloned()
-        } else {
-            None
-        }
+    pub fn game(&self, player_id: ActorId) -> Option<MultipleGameState> {
+        GamePairsStorage::as_ref()
+            .get(&player_id)
+            .and_then(|game_id| MultipleGamesStorage::as_ref().get(game_id))
+            .map(|game| MultipleGameState {
+                participants_data: game.participants_data.clone().into_iter().collect(),
+                create_time: game.create_time,
+                start_time: game.start_time,
+                last_move_time: game.last_move_time,
+                status: game.status.clone(),
+                bid: game.bid,
+            })
     }
 }

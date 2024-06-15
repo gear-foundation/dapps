@@ -48,12 +48,8 @@ macro_rules! declare_storage {
                     }
                 }
 
-                pub fn with_capacity(capacity: usize) -> Result<(), $ty> {
-                    Self::set(<$ty>::with_capacity(capacity))
-                }
-
                 pub fn default() -> Result<(), $ty> {
-                    Self::with_capacity(u16::MAX as usize)
+                    Self::set(<$ty>::new())
                 }
 
                 pub fn as_ref() -> &'static $ty {
