@@ -77,7 +77,7 @@ pub enum InnerAction {
     /// # Requirements
     /// - `amount_a_desired` & `amount_b_desired` mustn't equal to 0.
     /// - On the first addition (first mint), a resulted amount of pool tokens
-    /// must be more than [`MINIMUM_LIQUIDITY`].
+    ///   must be more than [`MINIMUM_LIQUIDITY`].
     ///
     /// On success, replies with [`Event::AddedLiquidity`].
     AddLiquidity {
@@ -105,7 +105,7 @@ pub enum InnerAction {
     ///
     /// # Requirements
     /// - [`msg::source()`] must have the same or a greater amount of liquidity
-    /// tokens than a given one.
+    ///   tokens than a given one.
     ///
     /// On success, replies with [`Event::RemovedLiquidity`].
     ///
@@ -184,7 +184,7 @@ pub enum InnerAction {
     ///
     /// # Requirements
     /// - [`msg::source()`] must have the same or a greater amount of liquidity
-    /// tokens than a given one.
+    ///   tokens than a given one.
     ///
     /// On success, replies with [`Event::Transfer`].
     ///

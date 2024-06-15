@@ -7,12 +7,9 @@ import {
   useReadFullState,
   withoutCommas,
   useHandleCalculateGas as useCalculateGasNative,
-  useApi,
-  useBalanceFormat,
 } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { AnyJson, AnyNumber } from '@polkadot/types/types';
-import { stringShorten } from '@polkadot/util';
 import { useAtom } from 'jotai';
 import metaTxt from '@/assets/meta/meta.txt';
 import { ACCOUNT_ID_LOCAL_STORAGE_KEY, ADDRESS, LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
@@ -61,53 +58,7 @@ export function useContractAddressSetup() {
   }, [address, searchParams, setSearchParams]);
 }
 
-export function useCheckBalance() {
-  const { api } = useApi();
-  const { account } = useAccount();
-  const { availableBalance } = useAccountAvailableBalance();
-  const { getChainBalanceValue } = useBalanceFormat();
-  const alert = useAlert();
-
-  const checkBalance = (limit: number, callback: () => void, onError?: () => void) => {
-    const chainBalance = Number(getChainBalanceValue(Number(withoutCommas(availableBalance?.value || ''))).toFixed());
-    const valuePerGas = Number(withoutCommas(api!.valuePerGas!.toHuman()));
-    const chainEDeposit = Number(
-      getChainBalanceValue(Number(withoutCommas(availableBalance?.existentialDeposit || ''))).toFixed(),
-    );
-
-    const chainEDepositWithLimit = chainEDeposit + limit * valuePerGas;
-    console.log('LIMIT:');
-    console.log(limit);
-    console.log(limit * valuePerGas);
-    console.log('existentialDeposit:');
-    console.log(Number(withoutCommas(availableBalance?.existentialDeposit || '')));
-    console.log('eDeposit');
-    console.log(chainEDeposit);
-    console.log('eDeposit + Limit:');
-    console.log(chainEDepositWithLimit);
-    console.log('balance:');
-    console.log(Number(withoutCommas(availableBalance!.value)));
-    console.log('chain balance:');
-    console.log(getChainBalanceValue(Number(withoutCommas(availableBalance?.value || ''))).toFixed());
-    console.log('low balance: ');
-    console.log(chainBalance < chainEDepositWithLimit);
-
-    if (!chainBalance || chainBalance < chainEDepositWithLimit) {
-      alert.error(`Low balance on ${stringShorten(account?.decodedAddress || '', 8)}`);
-
-      if (onError) {
-        onError();
-      }
-
-      return;
-    }
-
-    callback();
-  };
-
-  return { checkBalance };
-}
-
+// @deprecated
 export function useClickOutside(
   handler: Handler,
   ...refs: (RefObject<HTMLElement> | MutableRefObject<HTMLElement>)[]

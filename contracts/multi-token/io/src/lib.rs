@@ -117,8 +117,8 @@ pub enum MtkAction {
     ///
     /// # Requirements:
     /// * if minting an NFT with a specific TokenId at index `idx`
-    /// `amounts[idx]` MUST be equal to 1,
-    /// *`tokens_metadata` size MUST equal to the length of ids.
+    ///   `amounts[idx]` MUST be equal to 1,
+    ///   *`tokens_metadata` size MUST equal to the length of ids.
     /// * a sender MUST be an owner or an approved account.
     ///
     /// On success returns `MtkEvent::Transfer`

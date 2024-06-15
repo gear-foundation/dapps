@@ -1,11 +1,11 @@
-import { HexString } from '@gear-js/api';
+import { HexString, ProgramMetadata } from '@gear-js/api';
 import { useAccount, useBalance } from '@gear-js/react-hooks';
 import { KeyringPair, KeyringPair$Json } from '@polkadot/keyring/types';
 import { ReactNode, createContext, useContext, useEffect, useState } from 'react';
 
 import { useProgramMetadata } from '@dapps-frontend/hooks';
 
-import { useCreateSession } from '../hooks';
+import { Session, useCreateSession } from '../hooks';
 import { DEFAULT_SIGNLESS_CONTEXT, SIGNLESS_STORAGE_KEY } from './consts';
 import { SignlessContext } from './types';
 import { useSession, useLatestVoucher } from './hooks';
@@ -15,18 +15,27 @@ import { getStorage } from './utils';
 const SignlessTransactionsContext = createContext<SignlessContext>(DEFAULT_SIGNLESS_CONTEXT);
 const { Provider } = SignlessTransactionsContext;
 
-type Props = {
+type SignlessTransactionsProviderProps = {
   programId: HexString;
   metadataSource: string;
   children: ReactNode;
+  /**
+   * createSignatureType param is used when metadata.types.others.output has multiple types (e.g. tuple) to get the actual type for SignatureData
+   */
+  createSignatureType?: (metadata: ProgramMetadata, payloadToSig: Session) => `0x${string}`;
 };
 
-function SignlessTransactionsProvider({ metadataSource, programId, children }: Props) {
+function SignlessTransactionsProvider({
+  metadataSource,
+  programId,
+  children,
+  createSignatureType,
+}: SignlessTransactionsProviderProps) {
   const { account } = useAccount();
 
   const metadata = useProgramMetadata(metadataSource);
   const { session, isSessionReady } = useSession(programId, metadata);
-  const { createSession, deleteSession } = useCreateSession(programId, metadata);
+  const { createSession, deleteSession } = useCreateSession(programId, metadata, createSignatureType);
 
   const [pair, setPair] = useState<KeyringPair>();
   const voucher = useLatestVoucher(programId, pair?.address);
@@ -112,4 +121,4 @@ function SignlessTransactionsProvider({ metadataSource, programId, children }: P
 const useSignlessTransactions = () => useContext(SignlessTransactionsContext);
 
 export { SignlessTransactionsProvider, useSignlessTransactions, DEFAULT_SIGNLESS_CONTEXT };
-export type { SignlessContext };
+export type { SignlessContext, SignlessTransactionsProviderProps };

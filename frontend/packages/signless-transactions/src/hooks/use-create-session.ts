@@ -13,7 +13,11 @@ type Session = {
   allowedActions: string[];
 };
 
-function useCreateSession(programId: HexString, metadata: ProgramMetadata | undefined) {
+function useCreateSession(
+  programId: HexString,
+  metadata: ProgramMetadata | undefined,
+  createSignatureType?: (metadata: ProgramMetadata, payloadToSig: Session) => `0x${string}`,
+) {
   const { api, isApiReady } = useApi();
   const alert = useAlert();
   const { account } = useAccount();
@@ -102,16 +106,36 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
     const { signer } = await web3FromSource(account.meta.source);
     const { signRaw } = signer;
 
+    console.log('SIGNATURE:');
+    console.log('METADATA');
+    console.log(metadata);
+    console.log('ACCOUNT');
+    console.log(account);
+    console.log('PAYLOAD_TO_SIGN');
+    console.log(payloadToSign);
+    console.log('web3FromSource');
+    console.log(web3FromSource);
+    console.log('SIGNER');
+    console.log(signer);
+    console.log('signRaw');
+    console.log(signRaw);
+
     if (!signRaw) {
       throw new Error('signRaw is not a function');
     }
 
-    if (!metadata.types?.others?.output) {
+    if (metadata.types?.others?.output === null) {
       throw new Error(`Metadata type doesn't exist`);
     }
 
-    const hexToSign = metadata.createType(metadata.types.others.output, payloadToSign).toHex();
+    console.log('metadata.types?.others?.output');
+    console.log(metadata.types?.others?.output);
 
+    const hexToSign = createSignatureType
+      ? createSignatureType(metadata, payloadToSign)
+      : metadata.createType(metadata.types.others.output, payloadToSign).toHex();
+
+    console.log('HEXtoSIGN: ', hexToSign);
     return signRaw({ address: account.address, data: hexToSign, type: 'bytes' });
   };
 
@@ -199,3 +223,5 @@ function useCreateSession(programId: HexString, metadata: ProgramMetadata | unde
 }
 
 export { useCreateSession };
+
+export type { Session };

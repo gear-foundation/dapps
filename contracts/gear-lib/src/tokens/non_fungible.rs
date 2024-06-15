@@ -69,10 +69,10 @@ impl NFTState {
     /// tokens or the token with given `id`.
     ///
     /// - If `id` is [`Some`], firstly checks if `operator` is allowed for all
-    /// `owner`'s tokens, and if not, whether `operator` is allowed for the
-    /// token with this `id`.
+    ///   `owner`'s tokens, and if not, whether `operator` is allowed for the
+    ///   token with this `id`.
     /// - If `id` is [`None`], only checks if `operator` is allowed for all
-    /// `owner`'s tokens.
+    ///   `owner`'s tokens.
     pub fn allowance(&self, owner: Owner, operator: Operator, id: Option<&Id>) -> bool {
         Self::inner_allowance(
             &self.owners,
@@ -109,7 +109,7 @@ impl NFTState {
     /// - [`NFTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
     /// - [`NFTError::TokenNotExists`] if the token doesn't exist.
     /// - [`NFTError::NotApproved`] if [`msg::source()`] isn't the owner of the
-    /// token and doesn't have any allowance for its transfer.
+    ///   token and doesn't have any allowance for its transfer.
     pub fn transfer(&mut self, to: ActorId, id: Id) -> Result<NFTTransfer, NFTError> {
         if to.is_zero() {
             return Err(NFTError::ZeroRecipientAddress);
@@ -141,19 +141,19 @@ impl NFTState {
     /// tokens or only the one with given `id`.
     ///
     /// - If `id` is [`Some`], sets an approval only for the token with this
-    /// `id`.
+    ///   `id`.
     /// - If `id` is [`None`], sets an approval for all [`msg::source()`]'s
-    /// tokens.
+    ///   tokens.
     ///
     /// If [`msg::source()`] is an operator of all tokens of the owner of the
     /// token with given `id`, [`msg::source()`] can also set approval for them.
     ///
     /// # Errors
     /// - [`NFTError::ZeroRecipientAddress`] if `operator` is
-    /// [`ActorId::zero()`].
+    ///   [`ActorId::zero()`].
     /// - [`NFTError::TokenNotExists`] if the token doesn't exist.
     /// - [`NFTError::NotApproved`] if [`msg::source()`] isn't the owner of the
-    /// token and operator of token's owner's tokens.
+    ///   token and operator of token's owner's tokens.
     pub fn approve(
         &mut self,
         operator: Operator,
@@ -214,7 +214,7 @@ impl NFTState {
     /// # Errors
     /// - [`NFTError::ZeroRecipientAddress`] if `to` is [`ActorId::zero()`].
     /// - [`NFTError::TokenNotExists`] if the total supply of tokens reached the
-    /// maximum limit of the [`Amount`] type.
+    ///   maximum limit of the [`Amount`] type.
     /// - [`NFTError::TokenExists`] if the token with given `id` already exists.
     pub fn mint(&mut self, to: ActorId, id: Id) -> Result<NFTTransfer, NFTError> {
         if to.is_zero() {

@@ -19,6 +19,7 @@ import { LoginPage } from './pages/LoginPage';
 import { ApiLoader } from './components/ApiLoader';
 import { useGameState } from './features/Game/hooks';
 import { useAuth, useAuthSync } from './features/Auth/hooks';
+import '@gear-js/vara-ui/dist/style.css';
 
 function AppComponent() {
   const { isApiReady } = useApi();

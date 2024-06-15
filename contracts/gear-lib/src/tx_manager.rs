@@ -109,14 +109,14 @@ impl<T> TransactionManager<T> {
     ///
     /// Important notes:
     /// - Only one transaction for each `msg_source` is cached. Hence an attempt
-    /// to save a [new](TransactionKind::New) transaction over a failed one will
-    /// delete the failed one, so it'll be **impossible** to
-    /// [retry](TransactionKind::Retry) the latter.
+    ///   to save a [new](TransactionKind::New) transaction over a failed one will
+    ///   delete the failed one, so it'll be **impossible** to
+    ///   [retry](TransactionKind::Retry) the latter.
     /// - There's no guarantee every underprocessed asynchronous action will
-    /// result in a cached transaction. Usually caching occurs after the first
-    /// blocking `.await` during action processing.
+    ///   result in a cached transaction. Usually caching occurs after the first
+    ///   blocking `.await` during action processing.
     /// - The cache memory has a limit, so when it's reached every oldest cached
-    /// transaction is replaced with a new one. See also [`DEFAULT_TX_LIMIT`].
+    ///   transaction is replaced with a new one. See also [`DEFAULT_TX_LIMIT`].
     ///
     /// # Errors
     /// [`TransactionManagerError::TransactionNotFound`] if `kind` is

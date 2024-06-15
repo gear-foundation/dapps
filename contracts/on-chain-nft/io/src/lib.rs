@@ -53,7 +53,7 @@ pub enum OnChainNFTAction {
     /// Arguments:
     /// * `token_metadata` - is a default token metadata from gear-lib.
     /// * `description` - is the vector of layer's item id, where
-    /// the index i is the layer id.
+    ///   the index i is the layer id.
     ///
     /// On success, returns NFTEvent::Mint from gear-lib.
     Mint {
@@ -66,7 +66,7 @@ pub enum OnChainNFTAction {
     ///
     /// Requirements:
     /// * `token_id` MUST exist
-    /// Arguments:
+    ///   Arguments:
     ///
     /// * `token_id` - is the id of the burnt token
     ///

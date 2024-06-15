@@ -292,11 +292,9 @@ impl Game {
             return;
         }
 
-        let rent = if let Some((_, _, _, rent)) = self.properties[position as usize] {
-            rent
-        } else {
-            0
-        };
+        let (_, _, _, rent) = self.properties[position as usize]
+            .clone()
+            .unwrap_or_default();
         if rent == 0 {
             //    debug!("PENALTY: CELL WITH NO PROPERTIES");
             player_info.penalty += 1;

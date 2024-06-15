@@ -1,6 +1,6 @@
 use convert::identity;
-use gstd::{prelude::*, ActorId};
-use gtest::{Log, Program as InnerProgram, RunResult as InnerRunResult};
+use gstd::prelude::*;
+use gtest::{Log, RunResult as InnerRunResult};
 use marker::PhantomData;
 
 pub trait TransactionalProgram {

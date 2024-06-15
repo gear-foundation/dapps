@@ -32,8 +32,8 @@ pub trait FTCore: FTStateKeeper {
     ///
     /// Requirements:
     /// * `msg::source()` MUST have enough tokens on his balance
-    /// Arguments:
-    /// `amount`: The amount of token to be burnt
+    ///   Arguments:
+    ///   `amount`: The amount of token to be burnt
     fn burn(&mut self, amount: u128) {
         if self
             .get()

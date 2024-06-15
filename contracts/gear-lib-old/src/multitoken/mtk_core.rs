@@ -48,7 +48,7 @@ pub trait MTKCore: StateKeeper + MTKTokenState {
     /// Requirements:
     /// * `ids` element must a unique value
     /// * `account` must be a non-zero account
-    /// Arguments:
+    ///   Arguments:
     /// * `account`: An account to which minted token will be assigned
     /// * `ids`: The vector of IDs of minted tokens
     /// * `amounts`: The vector of amounts of tokens to mint (1 in case of an NFT)
@@ -100,7 +100,7 @@ pub trait MTKCore: StateKeeper + MTKTokenState {
     /// * Only token owner can perform this action
     /// * `ids` element must be the ID of the existing token
     /// * `amounts` element must not exceed user's token balance
-    /// Arguments:
+    ///   Arguments:
     /// * `ids`: The vector of ids of the token to be burnt
     /// * `amounts`: The vector of amounts of token to be burnt
     fn burn(&mut self, ids: Vec<TokenId>, amounts: Vec<u128>) {
@@ -147,7 +147,7 @@ pub trait MTKCore: StateKeeper + MTKTokenState {
     /// * `to` must be a non-zero account
     /// * `ids` element must be the ID of the existing token
     /// * `amounts` element must not exceed from's balance
-    /// Arguments:
+    ///   Arguments:
     /// * `from`: An account from which token will be transferred
     /// * `to`: An account to which token will be transferred
     /// * `ids`: The vector of IDs of transferred token
@@ -200,7 +200,7 @@ pub trait MTKCore: StateKeeper + MTKTokenState {
     /// Requirements:
     /// * Only the token owner can call that action
     /// * `to` must be a non-zero account
-    /// Arguments:
+    ///   Arguments:
     /// * `to`: An account that will be approved to manage the tokens
     fn approve(&mut self, to: &ActorId) {
         if to == &ZERO_ID {
@@ -225,7 +225,7 @@ pub trait MTKCore: StateKeeper + MTKTokenState {
     /// Requirements:
     /// * Only the token owner can call that action
     /// * `to` must be a non-zero account
-    /// Arguments:
+    ///   Arguments:
     /// * `to`: An account that won't be able to manage the tokens
     fn revoke_approval(&mut self, to: &ActorId) {
         self.get_mut()

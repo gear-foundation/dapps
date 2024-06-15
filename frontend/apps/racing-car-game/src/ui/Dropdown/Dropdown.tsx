@@ -5,6 +5,7 @@ import { DropdownMenuItem, DropdownProps } from './Dropdown.interfaces';
 import selectArrow from '@/assets/icons/select-arrow.svg';
 import { useClickOutside } from '@/hooks';
 
+// @deprecated
 function Dropdown({
   label,
   menu,

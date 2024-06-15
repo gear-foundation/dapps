@@ -81,7 +81,7 @@ pub enum Action {
     ///
     /// # Requirements:
     /// - [`msg::source`](gstd::msg::source) must have the right to set the fee
-    /// receiver (must be equal to `fee_to_setter`).
+    ///   receiver (must be equal to `fee_to_setter`).
     ///
     /// On success, replies with [`Event::FeeToSet`].
     FeeTo(ActorId),
@@ -91,7 +91,7 @@ pub enum Action {
     ///
     /// # Requirements:
     /// - [`msg::source`](gstd::msg::source) must be equal to current
-    /// `fee_to_setter`.
+    ///   `fee_to_setter`.
     ///
     /// On success, replies with [`Event::FeeToSetterSet`].
     FeeToSetter(ActorId),

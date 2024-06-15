@@ -8,6 +8,7 @@ import { Button } from '@/ui';
 import { WalletModal } from '@/features/Wallet/components';
 import { WalletInfo } from '@/features/Wallet/components/WalletInfo';
 
+// @deprecated
 function BurgerMenu({ burgerMenuHandler }: BurgerMenuProps) {
   const { account } = useAccount();
   const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);

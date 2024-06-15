@@ -39,6 +39,11 @@ export const BattleWinner = ({ battle }: { battle: BattleStateResponse }) => {
           </div>
         </section>
       )}
+      {!winner && (
+        <section className="container justify-center items-center flex flex-col grow text-2xl">
+          This battle has no winner!
+        </section>
+      )}
     </>
   );
 };
