@@ -3,7 +3,7 @@
 #![allow(clippy::new_without_default)]
 #![allow(clippy::result_unit_err)]
 #![allow(clippy::should_implement_trait)]
-use gstd::{debug, msg, ActorId};
+use gstd::{msg, ActorId};
 use sails_rtl::gstd::gprogram;
 use services::{admin, multiple, session, single, verify::VerifyingKeyBytes};
 pub mod services;
@@ -18,7 +18,6 @@ impl Program {
         verification_key_for_move: VerifyingKeyBytes,
         config: admin::storage::configuration::Configuration,
     ) -> Self {
-        debug!("INIT");
         admin::GstdDrivenService::seed(
             msg::source(),
             builtin_bls381,
