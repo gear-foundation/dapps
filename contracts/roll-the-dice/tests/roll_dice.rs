@@ -16,7 +16,7 @@ fn success_roll() {
     let oracle_program = Program::from_file_with_id(
         &sys,
         ORACLE_ID,
-        "../target/wasm32-unknown-unknown/debug/oracle.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/oracle.opt.wasm",
     );
     let roll_dice_program = Program::current_with_id(&sys, ROLL_DICE_ID);
 
@@ -55,7 +55,7 @@ fn success_roll_finished() {
     let oracle_program = Program::from_file_with_id(
         &sys,
         ORACLE_ID,
-        "../target/wasm32-unknown-unknown/debug/oracle.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/oracle.opt.wasm",
     );
     let roll_dice_program = Program::current_with_id(&sys, ROLL_DICE_ID);
 

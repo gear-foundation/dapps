@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p tamagotchi -p "tamagotchi-[!b]*"
+cargo b -r -p tamagotchi -p "tamagotchi-[!b]*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p tamagotchi -p "tamagotchi-[!b]*"
+cargo t -r -p tamagotchi -p "tamagotchi-[!b]*"
 ```

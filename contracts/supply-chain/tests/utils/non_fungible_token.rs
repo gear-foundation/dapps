@@ -98,7 +98,7 @@ impl NonFungibleTokenState<'_> {
                     0,
                     "token",
                     gclient::code_from_os(
-                        "../target/wasm32-unknown-unknown/debug/non_fungible_token_state.meta.wasm",
+                        "../target/wasm32-unknown-unknown/release/non_fungible_token_state.meta.wasm",
                     )
                     .unwrap(),
                     Some(TokenId::from(token_id)),

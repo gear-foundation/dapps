@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "ddns*"
+cargo b -r -p "ddns*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "ddns*"
+cargo t -r -p "ddns*"
 ```

@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "roll-the-dice*"
+cargo b -r -p "roll-the-dice*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "roll-the-dice*"
+cargo t -r -p "roll-the-dice*"
 ```

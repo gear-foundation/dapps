@@ -9,7 +9,7 @@ pub fn init_fungible_token(sys: &System) {
     sys.init_logger();
     let ft = Program::from_file(
         sys,
-        "../target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/fungible_token.opt.wasm",
     );
 
     let res = ft.send(

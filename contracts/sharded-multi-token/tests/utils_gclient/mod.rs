@@ -6,11 +6,11 @@ use gstd::{prelude::*, ActorId};
 use sharded_multi_token_io::*;
 
 const MT_LOGIC_WASM_PATH: &str =
-    "../target/wasm32-unknown-unknown/debug/sharded_multi_token_logic.opt.wasm";
+    "../target/wasm32-unknown-unknown/release/sharded_multi_token_logic.opt.wasm";
 const MT_STORAGE_WASM_PATH: &str =
-    "../target/wasm32-unknown-unknown/debug/sharded_multi_token_storage.opt.wasm";
+    "../target/wasm32-unknown-unknown/release/sharded_multi_token_storage.opt.wasm";
 const MT_MAIN_WASM_PATH: &str =
-    "../target/wasm32-unknown-unknown/debug/sharded_multi_token.opt.wasm";
+    "../target/wasm32-unknown-unknown/release/sharded_multi_token.opt.wasm";
 const HASH_LENGTH: usize = 32;
 type Hash = [u8; HASH_LENGTH];
 pub const USER_ACCOUNTS: [&str; 3] = ["//Bob", "//Alice", "//Amy"];

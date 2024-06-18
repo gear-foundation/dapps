@@ -30,7 +30,7 @@ pub async fn init(api: &GearApi) -> Result<(MessageId, ProgramId, H256)> {
     }
     .encode();
 
-    let path = "../target/wasm32-unknown-unknown/debug/nft.opt.wasm";
+    let path = "../target/wasm32-unknown-unknown/release/nft.opt.wasm";
     let gas_info = api
         .calculate_upload_gas(
             None,

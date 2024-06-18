@@ -6,19 +6,19 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "tamagotchi-battle*"
+cargo b -r -p "tamagotchi-battle*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "tamagotchi-battle*" -- --skip gclient
+cargo t -r -p "tamagotchi-battle*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "tamagotchi-battle*"
+cargo t -r -p "tamagotchi-battle*"
 ```

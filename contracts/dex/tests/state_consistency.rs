@@ -13,13 +13,13 @@ const ALICE: [u8; 32] = [
     212, 53, 147, 199, 21, 253, 211, 28, 97, 20, 26, 189, 4, 169, 159, 214, 130, 44, 133, 88, 133,
     76, 205, 227, 154, 86, 132, 231, 165, 109, 162, 125,
 ];
-const DEX: &str = "../target/wasm32-unknown-unknown/debug/dex.opt.wasm";
-const DEX_FACTORY: &str = "../target/wasm32-unknown-unknown/debug/dex_factory.opt.wasm";
-const FT_MAIN: &str = "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm";
+const DEX: &str = "../target/wasm32-unknown-unknown/release/dex.opt.wasm";
+const DEX_FACTORY: &str = "../target/wasm32-unknown-unknown/release/dex_factory.opt.wasm";
+const FT_MAIN: &str = "../target/wasm32-unknown-unknown/release/sharded_fungible_token.opt.wasm";
 const FT_STORAGE: &str =
-    "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm";
+    "../target/wasm32-unknown-unknown/release/sharded_fungible_token_storage.opt.wasm";
 const FT_LOGIC: &str =
-    "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm";
+    "../target/wasm32-unknown-unknown/release/sharded_fungible_token_logic.opt.wasm";
 
 fn decode<T: Decode>(payload: Vec<u8>) -> Result<T> {
     Ok(T::decode(&mut payload.as_slice())?)
