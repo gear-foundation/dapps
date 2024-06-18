@@ -237,7 +237,7 @@ async fn gclient_state_consistency() -> Result<()> {
             &mut listener,
             goc_actor_id,
             Action::Start {
-                duration: 30_000,
+                duration: 375_000,
                 participation_cost: 10000,
                 fungible_token: Some(ft_actor_id.into())
             }
