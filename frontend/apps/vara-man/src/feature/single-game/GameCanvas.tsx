@@ -77,9 +77,8 @@ export const GameCanvas = () => {
     gameInstanceRef.current?.updateGameOver(gameOver);
 
     if (gameOver && (coins.gold > 0 || coins.silver > 0) && !gasless.isLoading) {
-      setIsPending(true);
-
-      checkBalance(gasLimit, () =>
+      checkBalance(gasLimit, () => {
+        setIsPending(true);
         handleMessage({
           payload: {
             FinishSingleGame: {
@@ -89,10 +88,11 @@ export const GameCanvas = () => {
           },
           voucherId: gasless.voucherId,
           gasLimit,
+          onInBlock: () => setIsPending(true),
           onSuccess: () => setIsPending(false),
           onError: () => setIsPending(false),
-        }),
-      );
+        });
+      });
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
