@@ -143,7 +143,6 @@ export const GameOverModal = ({ tournamentGame }: Props) => {
                 onResetGame();
                 onCancelGame();
               }}
-              isLoading={isPending}
               disabled={isPending}
               className="w-full">
               Close
