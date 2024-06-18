@@ -27,10 +27,6 @@ export const Game = () => {
     }
   }, [level]);
 
-  if (!currentLevel) {
-    return;
-  }
-
   return (
     <div>
       <div className="w-full flex flex-col justify-center items-center">
