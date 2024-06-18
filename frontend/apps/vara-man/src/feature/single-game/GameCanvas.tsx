@@ -88,7 +88,6 @@ export const GameCanvas = () => {
           },
           voucherId: gasless.voucherId,
           gasLimit,
-          onInBlock: () => setIsPending(true),
           onSuccess: () => setIsPending(false),
           onError: () => setIsPending(false),
         });
