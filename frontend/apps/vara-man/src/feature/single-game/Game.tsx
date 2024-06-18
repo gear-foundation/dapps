@@ -1,6 +1,6 @@
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAtom } from 'jotai';
-import { useState } from 'react';
+import { useEffect } from 'react';
 import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
 import { GameCanvas } from './GameCanvas';
 import { useGame } from '@/app/context/ctx-game';
@@ -8,15 +8,28 @@ import { Icons } from '@/components/ui/icons';
 import { GameTimer } from './components/timer';
 import { IGameLevel } from '@/app/types/game';
 import { calculatePoints } from '../game/utils/calculatePoints';
-import { COINS, GAME_OVER } from '../game/consts';
+import { COINS, GAME_OVER, gameLevels } from '../game/consts';
 
 export const Game = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [, setGameOver] = useAtom(GAME_OVER);
   const { configState } = useGame();
   const [coins] = useAtom(COINS);
+  const level = searchParams.get('level') as IGameLevel;
+  const currentLevel = level || gameLevels.find((l) => l.level === level) !== undefined;
 
-  const score = configState && calculatePoints(coins, configState, searchParams.get('level') as IGameLevel);
+  const score = configState && calculatePoints(coins, configState, level);
+
+  useEffect(() => {
+    if (!currentLevel) {
+      navigate('/');
+    }
+  }, [level]);
+
+  if (!currentLevel) {
+    return;
+  }
 
   return (
     <div>
