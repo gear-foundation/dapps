@@ -1,6 +1,7 @@
 import { useApp } from '@/app/context/ctx-app';
 import { useGameMessage } from '@/app/hooks/use-game';
-import { Modal } from '@/components';
+import { Modal } from '@/components/ui/modal/modal2';
+
 import { SpriteIcon } from '@/components/ui/sprite-icon';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { useCheckBalance } from '@dapps-frontend/hooks';
@@ -76,52 +77,54 @@ export const GameFindModal = ({ findGame, setIsOpenFindModal }: GameFindModalPro
   });
 
   return (
-    <Modal onClose={() => null}>
-      <h2 className="typo-h2"> The game has been found</h2>
-      <div className="flex flex-col gap-5 mt-5">
-        <p className="text-[#555756]">
-          To proceed, review the parameters of the gaming session and click the “Join” button. If applicable, you will
-          need to pay the entry fee and required amount of gas immediately after clicking the “Join” button. After the
-          end of the game, any unused gas will be refunded.
-        </p>
+    <Modal open>
+      <Modal.Content classNameContent="max-w-[650px]">
+        <h2 className="typo-h2"> The game has been found</h2>
+        <div className="flex flex-col gap-5 mt-5">
+          <p className="text-[#555756]">
+            To proceed, review the parameters of the gaming session and click the “Join” button. If applicable, you will
+            need to pay the entry fee and required amount of gas immediately after clicking the “Join” button. After the
+            end of the game, any unused gas will be refunded.
+          </p>
 
-        <div className="bg-[#f0f2f3] rounded-2xl text-black p-4">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between pr-[100px]">
-              <p>Entry fee</p>
-              <div className="font-semibold flex items-center">
-                <SpriteIcon name="vara-coin" width={24} height={24} className="mr-2" />
-                {bid} VARA
+          <div className="bg-[#f0f2f3] rounded-2xl text-black p-4">
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center justify-between pr-[100px]">
+                <p>Entry fee</p>
+                <div className="font-semibold flex items-center">
+                  <SpriteIcon name="vara-coin" width={24} height={24} className="mr-2" />
+                  {bid} VARA
+                </div>
               </div>
-            </div>
 
-            <div className="flex items-center justify-between pr-[100px]">
-              <p>Players already joined the game</p>
-              <div className="font-semibold flex items-center">
-                <SpriteIcon name="user" width={24} height={24} className="mr-2" />
-                <span className="font-semibold">{findGame.participants} </span>
-                /10
+              <div className="flex items-center justify-between pr-[100px]">
+                <p>Players already joined the game</p>
+                <div className="font-semibold flex items-center">
+                  <SpriteIcon name="user" width={24} height={24} className="mr-2" />
+                  <span className="font-semibold">{findGame.participants} </span>
+                  /10
+                </div>
               </div>
             </div>
           </div>
+
+          <form onSubmit={handleSubmit}>
+            <Input
+              type="text"
+              label="Enter your name:"
+              placeholder="Username"
+              required
+              className="w-full"
+              {...getInputProps('username')}
+            />
+
+            <div className="flex gap-10 mt-5">
+              <Button color="grey" text="Cancel" className="w-full" onClick={() => setIsOpenFindModal(false)} />
+              <Button type="submit" text="Join" className="w-full" isLoading={isPending} />
+            </div>
+          </form>
         </div>
-
-        <form onSubmit={handleSubmit}>
-          <Input
-            type="text"
-            label="Enter your name:"
-            placeholder="Username"
-            required
-            className="w-full"
-            {...getInputProps('username')}
-          />
-
-          <div className="flex gap-10 mt-5">
-            <Button color="grey" text="Cancel" className="w-full" onClick={() => setIsOpenFindModal(false)} />
-            <Button type="submit" text="Join" className="w-full" isLoading={isPending} />
-          </div>
-        </form>
-      </div>
+      </Modal.Content>
     </Modal>
   );
 };

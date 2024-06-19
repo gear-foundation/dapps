@@ -12,7 +12,7 @@ export const GamePlayAgainModal = ({ setIsOpenPlayAgain, restartGame }: GamePlay
   const setCoins = useSetAtom(COINS);
 
   return (
-    <Modal open={true}>
+    <Modal open>
       <Modal.Content>
         <div className="flex flex-col items-center">
           <h2 className="typo-h2">Game over</h2>
