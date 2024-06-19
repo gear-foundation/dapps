@@ -21,6 +21,7 @@ pub enum Error {
 }
 
 pub struct MultipleGame {
+    pub admin: ActorId,
     pub participants_data: HashMap<ActorId, ParticipantInfo>,
     pub create_time: u64,
     pub start_time: Option<u64>,
@@ -33,6 +34,7 @@ pub struct MultipleGame {
 #[codec(crate = sails_rtl::scale_codec)]
 #[scale_info(crate = sails_rtl::scale_info)]
 pub struct MultipleGameState {
+    pub admin: ActorId,
     pub participants_data: Vec<(ActorId, ParticipantInfo)>,
     pub create_time: u64,
     pub start_time: Option<u64>,
@@ -55,6 +57,7 @@ pub enum Status {
 #[codec(crate = sails_rtl::scale_codec)]
 #[scale_info(crate = sails_rtl::scale_info)]
 pub struct ParticipantInfo {
+    pub name: String,
     pub board: Vec<Entity>,
     pub ship_hash: Vec<u8>,
     pub total_shots: u8,

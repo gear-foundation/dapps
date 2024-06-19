@@ -28,6 +28,7 @@ pub fn create_game(
     game_pair: &mut GamePairsMap,
     config: Configuration,
     player: ActorId,
+    name: String,
     bid: u128,
 ) -> Result<ActorId> {
     if game_pair.contains_key(&player) {
@@ -38,6 +39,7 @@ pub fn create_game(
     participants_data.insert(
         player,
         ParticipantInfo {
+            name,
             board: vec![Entity::Unknown; 25],
             ship_hash: Vec::new(),
             total_shots: 0,
@@ -45,6 +47,7 @@ pub fn create_game(
         },
     );
     let game_instance = MultipleGame {
+        admin: player,
         participants_data,
         create_time,
         start_time: None,
@@ -128,6 +131,7 @@ pub fn join_game(
     games: &mut MultipleGamesMap,
     game_pair: &mut GamePairsMap,
     player: ActorId,
+    name: String,
     game_id: ActorId,
     value: u128,
 ) -> Result<ActorId> {
@@ -147,6 +151,7 @@ pub fn join_game(
     game.participants_data.insert(
         player,
         ParticipantInfo {
+            name,
             board: vec![Entity::Unknown; 25],
             ship_hash: Vec::new(),
             total_shots: 0,

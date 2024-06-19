@@ -84,7 +84,7 @@ where
     /// # Arguments
     ///
     /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
-    pub fn create_game(&mut self, session_for_account: Option<ActorId>) {
+    pub fn create_game(&mut self, name: String, session_for_account: Option<ActorId>) {
         let player = get_player(
             SessionsStorage::as_ref(),
             msg::source(),
@@ -98,6 +98,7 @@ where
                 GamePairsStorage::as_mut(),
                 ConfigurationStorage::get(),
                 player,
+                name,
                 bid,
             )
         });
@@ -110,7 +111,12 @@ where
     ///
     /// * `game_id` - The `ActorId` representing the ID of the game to join.
     /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
-    pub fn join_game(&mut self, game_id: ActorId, session_for_account: Option<ActorId>) {
+    pub fn join_game(
+        &mut self,
+        game_id: ActorId,
+        name: String,
+        session_for_account: Option<ActorId>,
+    ) {
         let value = msg::value();
         let player = get_player(
             SessionsStorage::as_ref(),
@@ -123,6 +129,7 @@ where
                 MultipleGamesStorage::as_mut(),
                 GamePairsStorage::as_mut(),
                 player,
+                name,
                 game_id,
                 value,
             )
@@ -380,6 +387,7 @@ where
             .iter()
             .map(|(actor_id, game)| {
                 let game = MultipleGameState {
+                    admin: game.admin,
                     participants_data: game.participants_data.clone().into_iter().collect(),
                     create_time: game.create_time,
                     start_time: game.start_time,
@@ -402,6 +410,7 @@ where
             .get(&player_id)
             .and_then(|game_id| MultipleGamesStorage::as_ref().get(game_id))
             .map(|game| MultipleGameState {
+                admin: game.admin,
                 participants_data: game.participants_data.clone().into_iter().collect(),
                 create_time: game.create_time,
                 start_time: game.start_time,
