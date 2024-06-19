@@ -1,6 +1,6 @@
+import { cn } from '@/app/utils';
 import * as Dialog from '@radix-ui/react-dialog';
 import { ReactNode } from 'react';
-// import { CrossIcon } from '@/assets/images';
 
 export function Modal({
   open,
@@ -18,11 +18,15 @@ export function Modal({
   );
 }
 
-function ModalContent({ children }: { children: ReactNode }) {
+function ModalContent({ children, classNameContent }: { children: ReactNode; classNameContent?: string }) {
   return (
     <Dialog.Portal>
       <Dialog.Overlay className="fixed inset-0 bg-black/50 data-[state=closed]:animate-[dialog-overlay-hide_200ms] data-[state=open]:animate-[dialog-overlay-show_200ms] backdrop-blur-lg" />
-      <Dialog.Content className="fixed left-1/2 top-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-md bg-white p-8 text-gray-900 shadow data-[state=closed]:animate-[dialog-content-hide_200ms] data-[state=open]:animate-[dialog-content-show_200ms]">
+      <Dialog.Content
+        className={cn(
+          'fixed left-1/2 top-1/2 w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-md bg-white p-8 text-gray-900 shadow data-[state=closed]:animate-[dialog-content-hide_200ms] data-[state=open]:animate-[dialog-content-show_200ms]',
+          classNameContent,
+        )}>
         {children}
       </Dialog.Content>
     </Dialog.Portal>
