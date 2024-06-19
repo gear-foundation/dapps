@@ -1,7 +1,7 @@
 import { Modal } from '@/components/ui/modal/modal2';
 import { COINS } from '@/feature/game/consts';
 import { Button } from '@gear-js/vara-ui';
-import { useAtom } from 'jotai';
+import { useSetAtom } from 'jotai';
 
 type GamePlayAgainModalProps = {
   setIsOpenPlayAgain: (_: boolean) => void;
@@ -9,7 +9,7 @@ type GamePlayAgainModalProps = {
 };
 
 export const GamePlayAgainModal = ({ setIsOpenPlayAgain, restartGame }: GamePlayAgainModalProps) => {
-  const [, setCoins] = useAtom(COINS);
+  const setCoins = useSetAtom(COINS);
 
   return (
     <Modal open={true}>

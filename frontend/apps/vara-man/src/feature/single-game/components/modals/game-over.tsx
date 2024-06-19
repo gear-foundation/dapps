@@ -17,10 +17,9 @@ export const GameOverModal = ({ restartGame }: any) => {
   const navigate = useNavigate();
 
   const [, setGameOver] = useAtom(GAME_OVER);
-  const [, setCoins] = useAtom(COINS);
   const { isPending } = useApp();
 
-  const [coins] = useAtom(COINS);
+  const [coins, setCoins] = useAtom(COINS);
   const { configState } = useGame();
   const currentLevel = searchParams.get('level') as IGameLevel;
 
