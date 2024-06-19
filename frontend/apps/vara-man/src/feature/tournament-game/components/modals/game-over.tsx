@@ -1,5 +1,5 @@
 import { Key } from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { useAccount } from '@gear-js/react-hooks';
 
 import { Button, Modal } from '@/components';
@@ -29,7 +29,7 @@ export const GameOverModal = ({ tournamentGame }: Props) => {
 
   const { account } = useAccount();
   const [, setGameOver] = useAtom(GAME_OVER);
-  const [, setCoins] = useAtom(COINS);
+  const setCoins = useSetAtom(COINS);
   const [prizePool] = useAtom(PRIZE_POOL);
   const { isPending, setIsPending } = useApp();
   const { setPreviousGame } = useGame();
