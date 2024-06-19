@@ -33,7 +33,7 @@ export const GameOverModal = ({ restartGame }: any) => {
 
   return (
     <div>
-      <Modal open={true}>
+      <Modal open>
         <Modal.Content>
           <div className="flex flex-col justify-center gap-5 text-center">
             <div>
