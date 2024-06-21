@@ -6,8 +6,6 @@ export interface IGameState {
   games: Array<[HexString, SingleGame]>;
 }
 
-type Status = 'pendingVerificationOfTheMove';
-
 export type IGameResultStatus = 'Player' | 'Bot' | 'Draw';
 
 export type GameMode = 'single' | 'find' | 'create' | null;
@@ -20,3 +18,5 @@ export type RenderedShip = {
 export type RenderShips = {
   [key: string]: RenderedShip;
 };
+
+export type GameType = 'single' | 'multi';

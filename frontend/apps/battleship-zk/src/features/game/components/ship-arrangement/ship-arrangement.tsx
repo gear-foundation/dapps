@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
@@ -6,25 +6,30 @@ import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { Map } from '../';
 import styles from './ShipArrangement.module.scss';
-import { useGame, useGameMessage, usePending } from '../../hooks';
+import { usePending } from '../../hooks';
 import { generateShipsField } from './shipGenerator';
 import { convertShipsToField } from '../../utils';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useShips } from '@/features/zk/hooks/use-ships';
-import { program } from '@/app/utils/sails';
-import { web3FromSource } from '@polkadot/extension-dapp';
 import { useProofShipArrangement } from '@/features/zk/hooks/use-proof-ship-arrangement';
+import { ZkProofData } from '@/features/zk/types';
+import { TransactionBuilder } from 'sails-js';
+import { useNavigate } from 'react-router-dom';
+import { useSingleplayerGame } from '@/features/singleplayer/hooks/use-singleplayer-game';
 
-interface ReducedShips {
-  [key: string]: number[];
+type GameType = 'single' | 'multi';
+interface Props {
+  gameType: GameType;
+  savedBoard?: string[] | null;
+  makeStartGameTransaction: (zkProofData: ZkProofData) => Promise<TransactionBuilder<null>>;
 }
 
-export default function ShipArrangement() {
+export default function ShipArrangement({ gameType, savedBoard, makeStartGameTransaction }: Props) {
   const { account } = useAccount();
+  const navigate = useNavigate();
   const { gasless, signless } = useEzTransactions();
   const { setPlayerShips, setBoard } = useShips();
-  const { triggerGame } = useGame();
-  const message = useGameMessage();
+  const { triggerGame } = useSingleplayerGame();
   const { pending, setPending } = usePending();
   const { checkBalance } = useCheckBalance({
     signlessPairVoucherId: signless.voucher?.id,
@@ -47,6 +52,16 @@ export default function ShipArrangement() {
     }
   };
 
+  useEffect(() => {
+    if (savedBoard) {
+      setShipsBoard(savedBoard);
+    }
+  }, [savedBoard]);
+
+  const handleGoBack = () => {
+    navigate('/');
+  };
+
   const onGameStart = async () => {
     if (!account?.address) {
       return;
@@ -55,27 +70,15 @@ export default function ShipArrangement() {
     setPending(true);
 
     try {
-      const { proofContent, publicContent } = await requestZKProof(shipsField);
+      const zkProofData = await requestZKProof(shipsField);
 
-      const injector = await web3FromSource(account.meta.source);
-
-      const startSingleGame = program.single.startSingleGame(
-        proofContent,
-        {
-          hash: publicContent.publicHash,
-        },
-        null,
-      );
-
-      const transaction = await startSingleGame
-        .withAccount(account.address, { signer: injector.signer })
-        .withGas(250_000_000_000n);
+      const transaction = await makeStartGameTransaction(zkProofData);
 
       await transaction.signAndSend();
 
-      setPlayerShips(shipsField);
-      setBoard('player', shipsBoard);
-      setBoard('enemy', convertShipsToField([], 5, 5, 'Unknown'));
+      setPlayerShips(gameType, shipsField);
+      setBoard(gameType, 'player', shipsBoard);
+      setBoard(gameType, 'enemy', convertShipsToField([], 5, 5, 'Unknown'));
 
       await triggerGame();
     } catch (error) {
@@ -99,7 +102,10 @@ export default function ShipArrangement() {
         </div>
       </div>
       <div className={styles.buttons}>
-        <Button color="dark" text="Generate" onClick={onGenerateRandomLayout} disabled={isLoadingGenerate} />
+        <Button color="grey" onClick={handleGoBack} disabled={pending}>
+          Back
+        </Button>
+        <Button color="dark" text="Generate" onClick={onGenerateRandomLayout} disabled={isLoadingGenerate || pending} />
         <Button
           text="Continue"
           onClick={onGameStart}

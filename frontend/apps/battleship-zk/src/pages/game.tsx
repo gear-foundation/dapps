@@ -1,18 +1,16 @@
-import { GameProcess, ShipArrangement } from '@/features/game';
-import { useGame, useInitGame } from '@/features/game/hooks';
-import { useEventMoveMadeSubscription } from '@/app/utils/sails/events/use-event-move-made-subscription';
+import { useInitMultiplayerGame } from '@/features/multiplayer/hooks';
+import { Singleplayer } from '@/features/singleplayer/components/singleplayer';
+import { Multiplayer } from '@/features/multiplayer/components/multiplayer';
 import styles from './game.module.scss';
 
 export default function GamePage() {
-  useInitGame();
-  useEventMoveMadeSubscription();
-
-  const { isActiveGame } = useGame();
+  const { isActiveGame: isActiveMultiplayer } = useInitMultiplayerGame();
 
   return (
     <>
       <div className={styles.gameDarkHeading} />
-      <div className={styles.gameContainer}>{isActiveGame ? <GameProcess /> : <ShipArrangement />}</div>
+
+      <div className={styles.gameContainer}>{isActiveMultiplayer ? <Multiplayer /> : <Singleplayer />}</div>
     </>
   );
 }

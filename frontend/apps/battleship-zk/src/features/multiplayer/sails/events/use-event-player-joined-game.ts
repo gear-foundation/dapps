@@ -1,0 +1,44 @@
+import { useEffect, useRef, useState } from 'react';
+
+import { program } from '@/app/utils/sails';
+import { useMultiplayerGame } from '../../hooks/use-multiplayer-game';
+
+type PlayerJoinedEvent = {
+  player_id: string;
+  game_id: string;
+};
+
+export function useEventPlayerJoinedGame() {
+  const { game, triggerGame } = useMultiplayerGame();
+  const event = useRef<Promise<() => void> | null>(null);
+
+  const playerJoinedEventCallback = ({ game_id }: PlayerJoinedEvent) => {
+    console.log('new player');
+    console.log(game_id);
+    if (game?.admin === game_id) {
+      triggerGame();
+    }
+  };
+
+  const unsubscribeFromEvent = () => {
+    if (event.current) {
+      event.current?.then((unsubCallback) => {
+        unsubCallback();
+      });
+    }
+  };
+
+  const subscribeToEvent = () => {
+    if (!event.current) {
+      event.current = program.multiple.subscribeToJoinedTheGameEvent(playerJoinedEventCallback);
+    }
+  };
+
+  useEffect(() => {
+    subscribeToEvent();
+    console.log('EventPlayerJoinedGame subscribe');
+    return () => {
+      unsubscribeFromEvent();
+    };
+  }, []);
+}

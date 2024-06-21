@@ -14,9 +14,10 @@ type Props = React.PropsWithChildren & {
     wrapper?: string;
   };
   onClose: () => void;
+  closeOnMissclick?: boolean;
 };
 
-export function Modal({ heading, children, className, onClose }: Props) {
+export function Modal({ heading, children, className, onClose, closeOnMissclick = true }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
 
   const disableScroll = () => document.body.classList.add('modal-open');
@@ -40,9 +41,11 @@ export function Modal({ heading, children, className, onClose }: Props) {
   }, []);
 
   const handleClick = ({ target }: MouseEvent) => {
-    const isBackdropClick = target === ref.current;
+    if (closeOnMissclick) {
+      const isBackdropClick = target === ref.current;
 
-    if (isBackdropClick) onClose();
+      if (isBackdropClick) onClose();
+    }
   };
 
   return (

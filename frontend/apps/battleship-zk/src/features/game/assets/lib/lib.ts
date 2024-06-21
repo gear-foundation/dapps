@@ -37,6 +37,7 @@ export interface PublicStartInput {
 }
 
 export interface MultipleGameState {
+  admin: ActorId;
   participants_data: Array<[ActorId, ParticipantInfo]>;
   create_time: number | string;
   start_time: number | string | null;
@@ -46,6 +47,7 @@ export interface MultipleGameState {
 }
 
 export interface ParticipantInfo {
+  name: string;
   board: Array<Entity>;
   ship_hash: Array<number>;
   total_shots: number;
@@ -54,11 +56,9 @@ export interface ParticipantInfo {
 
 export type Entity = 'empty' | 'unknown' | 'occupied' | 'ship' | 'boom' | 'boomShip' | 'deadShip';
 
-export type MultipleUtilsStatus =
-  | { registration: null }
-  | { verificationPlacement: ActorId | null }
-  | { pendingVerificationOfTheMove: [ActorId, number] }
-  | { turn: ActorId };
+export type MultipleUtilsStatus = { registration: null } & { verificationPlacement: ActorId | null } & {
+  pendingVerificationOfTheMove: [ActorId, number];
+} & { turn: ActorId };
 
 export type ActionsForSession = 'playSingleGame' | 'playMultipleGame';
 
@@ -89,9 +89,11 @@ export type SingleUtilsStatus = { pendingVerificationOfTheMove: number } | { pen
 
 export interface SingleGameState {
   player_board: Array<Entity>;
+  ship_hash: Array<number>;
   start_time: number | string;
   status: SingleUtilsStatus;
   total_shots: number;
+  succesfull_shots: number;
 }
 
 export type BattleshipParticipants = 'Player' | 'Bot';
@@ -126,6 +128,7 @@ export class Program {
       PublicMoveInput: { out: 'u8', hit: 'u8', hash: 'Vec<u8>' },
       PublicStartInput: { hash: 'Vec<u8>' },
       MultipleGameState: {
+        admin: 'ActorId',
         participants_data: 'Vec<(ActorId, ParticipantInfo)>',
         create_time: 'u64',
         start_time: 'Option<u64>',
@@ -133,7 +136,13 @@ export class Program {
         status: 'MultipleUtilsStatus',
         bid: 'u128',
       },
-      ParticipantInfo: { board: 'Vec<Entity>', ship_hash: 'Vec<u8>', total_shots: 'u8', succesfull_shots: 'u8' },
+      ParticipantInfo: {
+        name: 'String',
+        board: 'Vec<Entity>',
+        ship_hash: 'Vec<u8>',
+        total_shots: 'u8',
+        succesfull_shots: 'u8',
+      },
       Entity: { _enum: ['Empty', 'Unknown', 'Occupied', 'Ship', 'Boom', 'BoomShip', 'DeadShip'] },
       MultipleUtilsStatus: {
         _enum: {
@@ -158,9 +167,11 @@ export class Program {
       SingleUtilsStatus: { _enum: { PendingVerificationOfTheMove: 'u8', PendingMove: 'Null' } },
       SingleGameState: {
         player_board: 'Vec<Entity>',
+        ship_hash: 'Vec<u8>',
         start_time: 'u64',
         status: 'SingleUtilsStatus',
         total_shots: 'u8',
+        succesfull_shots: 'u8',
       },
       BattleshipParticipants: { _enum: ['Player', 'Bot'] },
       StepResult: { _enum: ['Missed', 'Injured', 'Killed'] },
@@ -521,14 +532,14 @@ export class Multiple {
     );
   }
 
-  public createGame(session_for_account: ActorId | null): TransactionBuilder<null> {
+  public createGame(name: string, session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Multiple', 'CreateGame', session_for_account],
-      '(String, String, Option<ActorId>)',
+      ['Multiple', 'CreateGame', name, session_for_account],
+      '(String, String, String, Option<ActorId>)',
       'Null',
       this._program.programId,
     );
@@ -547,14 +558,27 @@ export class Multiple {
     );
   }
 
-  public joinGame(game_id: ActorId, session_for_account: ActorId | null): TransactionBuilder<null> {
+  public deletePlayer(removable_player: ActorId, session_for_account: ActorId | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Multiple', 'JoinGame', game_id, session_for_account],
+      ['Multiple', 'DeletePlayer', removable_player, session_for_account],
       '(String, String, ActorId, Option<ActorId>)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public joinGame(game_id: ActorId, name: string, session_for_account: ActorId | null): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Multiple', 'JoinGame', game_id, name, session_for_account],
+      '(String, String, ActorId, String, Option<ActorId>)',
       'Null',
       this._program.programId,
     );
@@ -775,7 +799,9 @@ export class Multiple {
     });
   }
 
-  public subscribeToMoveMadeEvent(callback: (data: { step: number }) => void | Promise<void>): Promise<() => void> {
+  public subscribeToMoveMadeEvent(
+    callback: (data: { game_id: ActorId; step: number; target_address: ActorId }) => void | Promise<void>,
+  ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
@@ -784,9 +810,12 @@ export class Multiple {
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Multiple' && getFnNamePrefix(payload) === 'MoveMade') {
         callback(
-          this._program.registry.createType('(String, String, {"step":"u8"})', message.payload)[2].toJSON() as {
-            step: number;
-          },
+          this._program.registry
+            .createType(
+              '(String, String, {"game_id":"ActorId","step":"u8","target_address":"ActorId"})',
+              message.payload,
+            )[2]
+            .toJSON() as { game_id: ActorId; step: number; target_address: ActorId },
         );
       }
     });
@@ -855,6 +884,25 @@ export class Multiple {
           this._program.registry.createType('(String, String, {"game_id":"ActorId"})', message.payload)[2].toJSON() as {
             game_id: ActorId;
           },
+        );
+      }
+    });
+  }
+
+  public subscribeToPlayerDeletedEvent(
+    callback: (data: { game_id: ActorId; removable_player: ActorId }) => void | Promise<void>,
+  ): Promise<() => void> {
+    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
+      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
+        return;
+      }
+
+      const payload = message.payload.toHex();
+      if (getServiceNamePrefix(payload) === 'Multiple' && getFnNamePrefix(payload) === 'PlayerDeleted') {
+        callback(
+          this._program.registry
+            .createType('(String, String, {"game_id":"ActorId","removable_player":"ActorId"})', message.payload)[2]
+            .toJSON() as { game_id: ActorId; removable_player: ActorId },
         );
       }
     });

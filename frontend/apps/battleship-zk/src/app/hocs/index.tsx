@@ -13,7 +13,7 @@ import {
   EzTransactionsProvider,
 } from '@dapps-frontend/ez-transactions';
 
-import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
+// import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
 import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
 
@@ -40,13 +40,13 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
   );
 }
 
-function SignlessTransactionsProvider({ children }: ProviderProps) {
-  return (
-    <SharedSignlessTransactionsProvider programId={ADDRESS.GAME} metadataSource={metaTxt}>
-      {children}
-    </SharedSignlessTransactionsProvider>
-  );
-}
+// function SignlessTransactionsProvider({ children }: ProviderProps) {
+//   return (
+//     <SharedSignlessTransactionsProvider programId={ADDRESS.GAME} metadataSource={metaTxt}>
+//       {children}
+//     </SharedSignlessTransactionsProvider>
+//   );
+// }
 
 const providers = [
   BrowserRouter,
@@ -54,7 +54,7 @@ const providers = [
   AccountProvider,
   AlertProvider,
   GaslessTransactionsProvider,
-  SignlessTransactionsProvider,
+  // SignlessTransactionsProvider,
   EzTransactionsProvider,
 ];
 

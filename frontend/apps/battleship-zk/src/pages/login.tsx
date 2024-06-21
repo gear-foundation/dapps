@@ -8,10 +8,10 @@ import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
-import styles from './login.module.scss';
 import { useGaslessTransactions, EzTransactionsSwitch, useSignlessTransactions } from '@dapps-frontend/ez-transactions';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { useGameMode } from '@/features/game/hooks';
+import styles from './login.module.scss';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -69,7 +69,7 @@ export default function Login() {
             </Button>
           )}
 
-          <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} />
+          {/* <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} /> */}
         </div>
       </div>
 
