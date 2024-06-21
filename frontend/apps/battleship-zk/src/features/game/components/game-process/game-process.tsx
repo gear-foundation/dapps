@@ -1,172 +1,85 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@gear-js/vara-ui';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { Text } from '@/components/ui/text';
 import { GameEndModal, Map } from '@/features/game';
 import styles from './GameProcess.module.scss';
 import { MapEnemy } from '../map';
-import { useGame, usePending } from '../../hooks';
-import { Loader } from '@/components';
+import { usePending } from '../../hooks';
 import { useCheckBalance } from '@dapps-frontend/hooks';
-import { Account, useAccount, useApi } from '@gear-js/react-hooks';
-import { web3FromSource } from '@polkadot/extension-dapp';
-import { program } from '@/app/utils/sails';
-import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
 import { useShips } from '@/features/zk/hooks/use-ships';
-import { useEventGameEndSubscription } from '@/app/utils/sails/events/use-event-game-end-subscription';
 import { getFormattedTime } from '../../utils';
 import { SHIP_LENGTHS } from '../../consts';
-import { RenderShips } from '../../types';
-import { useNavigate } from 'react-router-dom';
+import { GameType, RenderShips } from '../../types';
+import { Timer } from '../timer';
+import { useAccount } from '@gear-js/react-hooks';
 
-type Props = {
-  isMultiplayer?: boolean;
+type GameUpdatedEvent = {
+  turn: string;
+  pendingVerification: string;
 };
 
-export default function GameProcess({ isMultiplayer = false }: Props) {
+type GameResults = {
+  totalTime: string | number | undefined;
+  winner: string;
+};
+
+type Props = {
+  gameType: GameType;
+  totalShoots: number;
+  successfulShoots: number;
+  gameResults: GameResults | null;
+  gameUpdatedEvent: GameUpdatedEvent;
+  gameStartTime: string | number | undefined;
+  onClickCell: (handleClickCell: number) => void;
+  onExitGame: () => Promise<void>;
+};
+
+export default function GameProcess({
+  gameType,
+  totalShoots,
+  successfulShoots,
+  gameUpdatedEvent,
+  gameResults,
+  gameStartTime,
+  onClickCell,
+  onExitGame,
+}: Props) {
+  const { account } = useAccount();
   const { signless, gasless } = useEzTransactions();
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
   const [enemiesDeadShips, setEnemiesDeadShips] = useState<number[]>([]);
-  const [elapsedTime, setElapsedTime] = useState('');
   const [isDisabledCell, setDisabledCell] = useState(false);
-  const { game, triggerGame } = useGame();
   const { setPending } = usePending();
-  const navigate = useNavigate();
   const { checkBalance } = useCheckBalance({
     signlessPairVoucherId: signless.voucher?.id,
     gaslessVoucherId: gasless.voucherId,
   });
-  const { account } = useAccount();
-  const { api } = useApi();
-  const { getProofData, clearProofData } = useProofShipHit();
   const { getBoard } = useShips();
-
-  const { result } = useEventGameEndSubscription();
+  const isYourTurn =
+    gameType === 'single' ||
+    gameUpdatedEvent.turn === account?.decodedAddress ||
+    gameUpdatedEvent.pendingVerification === account?.decodedAddress;
 
   const [isOpenEndModal, setIsOpenEndModal] = useState(false);
   const openEndModal = () => setIsOpenEndModal(true);
   const closeEndModal = () => setIsOpenEndModal(false);
 
-  const totalShips = Object.entries(game?.bot_ships || {}).reduce((total, [, shipCount]) => {
-    return shipCount !== '0x' ? total + 1 : total;
-  }, 0);
-  const totalShoots = useMemo(() => (game ? game.total_shots : result?.total_shots || 0), [game]);
-  const successfulShoots = useMemo(() => (game ? game.succesfull_shots : result?.succesfull_shots || 0), [game]);
   const efficiency = totalShoots !== 0 ? ((successfulShoots / totalShoots) * 100).toFixed(2) : 0;
-
-  useEffect(() => {
-    if (game) {
-      const updateTimer = () => {
-        const currentTime = new Date().getTime();
-        const startTime = Number(game.start_time);
-        const elapsedTimeMilliseconds = currentTime - startTime;
-
-        const formattedTime = getFormattedTime(elapsedTimeMilliseconds);
-
-        game && !result && setElapsedTime(formattedTime);
-      };
-
-      const timerInterval = setInterval(updateTimer, 1000);
-
-      return () => {
-        clearInterval(timerInterval);
-      };
-    }
-  }, [game]);
 
   const onClickCellFinally = () => {
     setDisabledCell(false);
   };
 
-  const getVerifyTransaction = async (account: Account, proofDataHit: any, gasLimit: bigint) => {
-    if (!proofDataHit) {
-      return null;
-    }
-
-    const { proofContent, publicContent } = proofDataHit;
-
-    const injector = await web3FromSource(account.meta.source);
-
-    const verifyMove = program.single.verifyMove(
-      proofContent,
-      {
-        hash: publicContent.publicHash,
-        out: publicContent.results[0][0],
-        hit: publicContent.results[1][0],
-      },
-      null,
-    );
-
-    const transaction = await verifyMove.withAccount(account.address, { signer: injector.signer }).withGas(gasLimit);
-
-    return transaction;
-  };
-
-  const getHitTransaction = async (account: Account, indexCell: number, gasLimit: bigint) => {
-    const injector = await web3FromSource(account.meta.source);
-
-    const makeMove = program.single.makeMove(indexCell, null);
-
-    const transaction = await makeMove.withAccount(account.address, { signer: injector.signer }).withGas(gasLimit);
-
-    return transaction;
-  };
-
-  const onClickCell = async (indexCell: number) => {
-    if (!account?.address || !api) {
-      return;
-    }
-
-    const gasLimit = 120_000_000_000n;
-
+  const handleClickCell = async (indexCell: number) => {
     if (!gasless.isLoading) {
       setDisabledCell(true);
-      const proofDataHit = getProofData();
 
-      try {
-        const hitTransaction = await getHitTransaction(account, indexCell, gasLimit);
-        const verifyTransaction = await getVerifyTransaction(account, proofDataHit, gasLimit);
+      await onClickCell(indexCell);
 
-        if (verifyTransaction) {
-          const { response } = await verifyTransaction.signAndSend();
-
-          clearProofData();
-
-          await response();
-        }
-
-        const { response } = await hitTransaction.signAndSend();
-
-        await response();
-        await triggerGame();
-
-        onClickCellFinally();
-        setPending(false);
-      } catch (error) {
-        console.log(error);
-        onClickCellFinally();
-      }
-
-      // checkBalance(
-      //   gasLimit,
-      //   () =>
-      //     message({
-      //       payload: { Turn: { step: indexCell } },
-      //       onInBlock: (messageId) => {
-      //         if (messageId) {
-      //           onClickCellFinally();
-      //         }
-      //       },
-      //       gasLimit,
-      //       voucherId: gasless.voucherId,
-      //       onSuccess: () => {
-      //         setPending(false);
-      //       },
-      //       onError: onClickCellFinally,
-      //     }),
-      //   onClickCellFinally,
-      // );
+      onClickCellFinally();
+      setPending(false);
     }
   };
 
@@ -175,29 +88,29 @@ export default function GameProcess({ isMultiplayer = false }: Props) {
   };
 
   useEffect(() => {
-    const boardPlayer = getBoard('player');
+    const boardPlayer = getBoard(gameType, 'player');
 
     if (boardPlayer) {
       setPlayerShips(boardPlayer);
     }
 
-    const boardEnemy = getBoard('enemy');
+    const boardEnemy = getBoard(gameType, 'enemy');
 
     if (boardEnemy) {
       setEnemiesShips(boardEnemy);
     }
-  }, [game]);
+  }, [gameUpdatedEvent]);
 
   useEffect(() => {
-    if (result) {
+    if (gameResults) {
       openEndModal();
     }
-  }, [result]);
+  }, [gameResults]);
 
   const generateShipBlocks = () => {
     const deadShips = [...enemiesDeadShips];
 
-    return SHIP_LENGTHS.reverse().map((numberOfBlocks, index) => {
+    return SHIP_LENGTHS.map((numberOfBlocks, index) => {
       if (deadShips.includes(numberOfBlocks)) {
         const blocksToRemoveIndex = deadShips.findIndex((item) => item === numberOfBlocks);
 
@@ -219,38 +132,45 @@ export default function GameProcess({ isMultiplayer = false }: Props) {
     });
   };
 
-  const handleDeleteGame = () => {
-    navigate('/');
-  };
-
-  if (game === undefined) {
-    return <Loader />;
-  }
-
   return (
     <div className={styles.container}>
       <div className={styles.content}>
         <div>
           <Map sizeBlock={32} shipStatusArray={playerShips} />
         </div>
-        <div className={styles.gameInfo}>
-          <Text size="sm" weight="normal">
-            Time: <span>{result?.time ? getFormattedTime(Number(result.time)) : elapsedTime}</span>
-          </Text>
-          <Text size="sm" weight="normal">
-            Total shots: <span>{totalShoots}</span>
-          </Text>
-          <Text size="sm" weight="normal">
-            Successful hits: <span>{successfulShoots}</span>
-          </Text>
-          <Text size="sm" weight="normal">
-            Efficiency: <span>{efficiency}%</span>
-          </Text>
+        <div className={styles.gameInfoWrapper}>
+          <div className={styles.gameInfoTurn}>
+            <Text size="sm" weight="medium">
+              {gameType === 'multi' ? 'Multiplayer' : 'Singleplayer'}{' '}
+              {gameType === 'multi' && <span>{isYourTurn ? 'Your turn' : `Enemy's turn`}</span>}
+            </Text>
+          </div>
+          <div className={styles.gameInfo}>
+            <Text size="sm" weight="normal">
+              Time:{' '}
+              <span>
+                {gameResults?.totalTime ? (
+                  getFormattedTime(Number(gameResults.totalTime))
+                ) : (
+                  <Timer start_time={gameStartTime} shouldGoOn={!!gameStartTime && !gameResults} />
+                )}
+              </span>
+            </Text>
+            <Text size="sm" weight="normal">
+              Total shots: <span>{totalShoots}</span>
+            </Text>
+            <Text size="sm" weight="normal">
+              Successful hits: <span>{successfulShoots}</span>
+            </Text>
+            <Text size="sm" weight="normal">
+              Efficiency: <span>{efficiency}%</span>
+            </Text>
+          </div>
         </div>
       </div>
       <div className={styles.enemyShips}>
         <Text size="sm" weight="normal" className={styles.text}>
-          Enemy Ships: {totalShips} / 4
+          Enemy Ships: {SHIP_LENGTHS.length - enemiesDeadShips.length} / {SHIP_LENGTHS.length}
         </Text>
 
         <div className={styles.listShips}>{generateShipBlocks()}</div>
@@ -259,25 +179,26 @@ export default function GameProcess({ isMultiplayer = false }: Props) {
       <div>
         <MapEnemy
           sizeBlock={86}
-          onClickCell={onClickCell}
+          onClickCell={handleClickCell}
           shipStatusArray={enemiesShips}
-          isDisabledCell={isDisabledCell || gasless.isLoading || !game}
+          isDisabledCell={isDisabledCell || gasless.isLoading || !isYourTurn}
           onDefineDeadShip={handleDefineDeadShips}
         />
       </div>
       <div className={styles.exitButtonWrapper}>
-        <Button className={styles.exitButton} color="grey" onClick={handleDeleteGame}>
+        <Button className={styles.exitButton} color="grey" onClick={onExitGame}>
           Exit
         </Button>
       </div>
-      {isOpenEndModal && result && (
+      {isOpenEndModal && gameResults && (
         <GameEndModal
           onClose={closeEndModal}
-          time={getFormattedTime(Number(result.time))}
-          totalShoots={result.total_shots}
-          successfulShoots={result.succesfull_shots}
+          time={getFormattedTime(Number(gameResults.totalTime))}
+          totalShoots={totalShoots}
+          successfulShoots={successfulShoots}
           efficiency={efficiency}
-          gameResult={result.winner}
+          winner={gameResults.winner}
+          gameType={gameType}
         />
       )}
     </div>

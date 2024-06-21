@@ -1,12 +1,13 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { getParsedZkData, setZkData } from '../utils';
 
-type Player = 'player' | 'enemy';
+type PlayerType = 'player' | 'enemy';
+type GameType = 'single' | 'multi';
 
 export function useShips() {
   const { account } = useAccount();
 
-  const setPlayerShips = (ships: number[][]) => {
+  const setPlayerShips = (gameType: GameType, ships: number[][]) => {
     if (!account?.address) {
       return;
     }
@@ -14,9 +15,9 @@ export function useShips() {
     const zkData = getParsedZkData(account);
 
     const newZkData = zkData
-      ? { ...zkData, single: { ...zkData.single, [`ships-player`]: ships } }
+      ? { ...zkData, [gameType]: { ...zkData[gameType], [`ships-player`]: ships } }
       : {
-          single: {
+          [gameType]: {
             [`ships-player`]: ships,
           },
         };
@@ -24,15 +25,15 @@ export function useShips() {
     setZkData(account, newZkData);
   };
 
-  const getPlayerShips = () => {
+  const getPlayerShips = (gameType: GameType) => {
     if (!account?.address) {
       return;
     }
 
-    return getParsedZkData(account)?.single?.[`ships-player`] || null;
+    return getParsedZkData(account)?.[gameType]?.[`ships-player`] || null;
   };
 
-  const setBoard = (type: Player, board: string[]) => {
+  const setBoard = (gameType: GameType, playerType: PlayerType, board: string[]) => {
     if (!account?.address) {
       return;
     }
@@ -40,22 +41,22 @@ export function useShips() {
     const zkData = getParsedZkData(account);
 
     const newZkData = zkData
-      ? { ...zkData, single: { ...zkData.single, [`board-${type}`]: board } }
+      ? { ...zkData, [gameType]: { ...zkData[gameType], [`board-${playerType}`]: board } }
       : {
-          single: {
-            [`board-${type}`]: board,
+          [gameType]: {
+            [`board-${playerType}`]: board,
           },
         };
 
     setZkData(account, newZkData);
   };
 
-  const getBoard = (type: Player) => {
+  const getBoard = (gameType: GameType, playerType: PlayerType) => {
     if (!account?.address) {
       return;
     }
 
-    return getParsedZkData(account)?.single?.[`board-${type}`] || null;
+    return getParsedZkData(account)?.[gameType]?.[`board-${playerType}`] || null;
   };
 
   return { setPlayerShips, getPlayerShips, setBoard, getBoard };

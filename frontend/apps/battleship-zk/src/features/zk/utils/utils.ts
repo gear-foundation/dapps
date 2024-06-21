@@ -1,6 +1,6 @@
 import { buildPoseidon } from '@/features/zk/utils/poseidon';
 import { Account } from '@gear-js/react-hooks';
-import { ZkData } from '../types';
+import { GameType, ZkData } from '../types';
 
 export const getHash = async (data: number[] | string[]) => {
   const poseidon = await buildPoseidon();
@@ -26,6 +26,14 @@ export const setZkData = (account: Account, newZkData: ZkData) => {
   localStorage.setItem(`zk-data-${account.address}`, JSON.stringify(newZkData));
 };
 
-export const clearZkData = (account: Account) => {
+export const clearZkData = (gameType: GameType, account: Account) => {
+  const zkData = getParsedZkData(account);
+
+  if (!zkData) {
+    return;
+  }
+
+  delete zkData[gameType];
+
   localStorage.removeItem(`zk-data-${account.address}`);
 };

@@ -1,27 +1,28 @@
 import { getHash, getHitShips, getParsedZkData, setZkData } from '@/features/zk/utils';
 import { useAccount } from '@gear-js/react-hooks';
-import { ZkProofData } from '../types';
+import { ADDRESS } from '@/app/consts';
+import { GameType, ZkProofData } from '../types';
 
 export const useProofShipHit = () => {
   const { account } = useAccount();
 
-  const clearProofData = () => {
+  const clearProofData = (gameType: GameType) => {
     if (!account?.address) {
       return;
     }
 
     const zkData = getParsedZkData(account);
 
-    if (!zkData?.single['proof-data']) {
+    if (!zkData?.[gameType]?.['proof-data']) {
       return;
     }
 
-    delete zkData.single['proof-data'];
+    delete zkData[gameType]?.['proof-data'];
 
     setZkData(account, zkData);
   };
 
-  const saveProofData = (proofData: ZkProofData) => {
+  const saveProofData = (gameType: GameType, proofData: ZkProofData) => {
     if (!account?.address) {
       return;
     }
@@ -29,9 +30,9 @@ export const useProofShipHit = () => {
     const zkData = getParsedZkData(account);
 
     const newZkData = zkData
-      ? { ...zkData, single: { ...zkData.single, [`proof-data`]: proofData } }
+      ? { ...zkData, [gameType]: { ...zkData[gameType], [`proof-data`]: proofData } }
       : {
-          single: {
+          [gameType]: {
             [`proof-data`]: proofData,
           },
         };
@@ -39,12 +40,12 @@ export const useProofShipHit = () => {
     setZkData(account, newZkData);
   };
 
-  const getProofData = () => {
+  const getProofData = (gameType: GameType) => {
     if (!account?.address) {
       return;
     }
 
-    return getParsedZkData(account)?.single?.['proof-data'] || null;
+    return getParsedZkData(account)?.[gameType]?.['proof-data'] || null;
   };
 
   const requestProofHit = async (shipsField: number[][], hit: string) => {
@@ -52,7 +53,7 @@ export const useProofShipHit = () => {
     const hash = await getHash(shipsField.flat());
     const payload = { ships, hash, hit };
 
-    const res = await fetch('https://stg-zk-proof.vara.network/api/proof/hit', {
+    const res = await fetch(`${ADDRESS.ZK_PROOF_BACKEND}/api/proof/hit`, {
       method: 'POST',
       body: JSON.stringify(payload),
       headers: {
