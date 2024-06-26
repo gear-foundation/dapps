@@ -93,16 +93,19 @@ pub fn make_move(games: &mut SingleGamesMap, player: ActorId, step: u8) -> Resul
         let succesfull_shots = game.succesfull_shots;
         games.remove(&player);
         return Ok(Event::EndGame {
+            player,
             winner: BattleshipParticipants::Player,
             time,
             total_shots,
             succesfull_shots,
+            last_hit: step,
         });
     }
     let bot_step = move_analysis(&game.player_board);
     game.status = Status::PendingVerificationOfTheMove(bot_step);
 
     Ok(Event::MoveMade {
+        player,
         step,
         step_result,
         bot_step,
@@ -125,7 +128,6 @@ pub fn check_game(
 ) -> Result<()> {
     let game = games.get(&player).ok_or(Error::NoSuchGame)?;
 
-    // TODO: UNCOMMENT AFTER TESTING!!!!!
     if game.status != Status::PendingVerificationOfTheMove(public_input.hit) {
         return Err(Error::WrongStatusOrHit);
     }
@@ -133,7 +135,7 @@ pub fn check_game(
         return Err(Error::WrongShipHash);
     }
     match public_input.out {
-        0 | 1 => Ok(()),
+        0..=2 => Ok(()),
         _ => Err(Error::WrongOut),
     }
 }
@@ -169,7 +171,8 @@ pub fn verified_move(
     match res {
         0 => game.player_board[hit as usize] = Entity::Boom,
         1 => game.player_board[hit as usize] = Entity::BoomShip,
-        _ => unimplemented!(),
+        2 => game.dead_ship(hit),
+        _ => return Err(Error::WrongOut),
     }
 
     if game.check_end_game() {
@@ -178,10 +181,12 @@ pub fn verified_move(
         let succesfull_shots = game.succesfull_shots;
         games.remove(&player);
         return Ok(Event::EndGame {
+            player,
             winner: BattleshipParticipants::Bot,
             time,
             total_shots,
             succesfull_shots,
+            last_hit: hit,
         });
     }
     game.status = Status::PendingMove;

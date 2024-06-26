@@ -210,12 +210,15 @@ pub fn leave_game(
             }
             let total_time = exec::block_timestamp() - game.start_time.unwrap();
             let participants_info = game.participants_data.clone().into_iter().collect();
+            let admin = game.admin;
             game_pair.remove(&winner);
             games.remove(&winner);
             Event::EndGame {
+                admin,
                 winner,
                 total_time,
                 participants_info,
+                last_hit: None,
             }
         }
         Status::Registration => {
@@ -227,6 +230,43 @@ pub fn leave_game(
     game_pair.remove(&player);
 
     Ok(event)
+}
+
+pub fn delete_player(
+    games: &mut MultipleGamesMap,
+    game_pair: &mut GamePairsMap,
+    player: ActorId,
+    removable_player: ActorId,
+) -> Result<Event> {
+    let game_id = game_pair.get(&player).ok_or(Error::NoSuchGame)?;
+
+    if *game_id != player {
+        return Err(Error::AccessDenied);
+    }
+
+    let game = games.get_mut(game_id).ok_or(Error::NoSuchGame)?;
+
+    match game.status {
+        Status::VerificationPlacement(_) | Status::Registration => {
+            if game.bid != 0 {
+                msg::send_with_gas(removable_player, "", 0, game.bid)
+                    .expect("Error in sending value");
+            }
+            game.participants_data.remove(&removable_player);
+            game.status = Status::Registration;
+        }
+        _ => {
+            return Err(Error::WrongStatus);
+        }
+    };
+    let game_id = *game_id;
+    // delete player from game pair
+    game_pair.remove(&removable_player);
+
+    Ok(Event::PlayerDeleted {
+        game_id,
+        removable_player,
+    })
 }
 
 /// Sets the verification of ship placement for a player in a multiplayer game.
@@ -267,7 +307,7 @@ pub fn set_verify_placement(
                 .get_mut(&player)
                 .expect("At this status must be determined");
             data.ship_hash = hash;
-            Ok(Event::PlacementVerified)
+            Ok(Event::PlacementVerified { admin: game.admin })
         }
         Status::VerificationPlacement(Some(verified_player)) if verified_player != &player => {
             game.status = Status::Turn(*verified_player);
@@ -282,12 +322,11 @@ pub fn set_verify_placement(
             send_check_time_delayed_message(
                 game_id,
                 block_timestamp,
-                false,
                 config.gas_for_check_time,
                 config.delay_for_check_time,
             );
 
-            Ok(Event::PlacementVerified)
+            Ok(Event::PlacementVerified { admin: game.admin })
         }
         Status::VerificationPlacement(Some(_)) => Err(Error::AlreadyVerified),
         _ => Err(Error::WrongStatus),
@@ -338,18 +377,30 @@ pub fn make_move(
         .ok_or(Error::NotPlayer)?;
     data.total_shots += 1;
     let opponent = game.get_opponent(&player);
-    msg::send(opponent, Event::MoveMade { step }, 0).expect("Error send message");
+    msg::send(
+        opponent,
+        Event::MoveMade {
+            game_id,
+            step,
+            target_address: opponent,
+        },
+        0,
+    )
+    .expect("Error send message");
     game.status = Status::PendingVerificationOfTheMove((opponent, step));
     game.last_move_time = block_timestamp;
     send_check_time_delayed_message(
         game_id,
         block_timestamp,
-        false,
-        config.gas_for_check_time * 2,
+        config.gas_for_check_time,
         config.delay_for_check_time,
     );
 
-    Ok(Event::MoveMade { step })
+    Ok(Event::MoveMade {
+        game_id,
+        step,
+        target_address: opponent,
+    })
 }
 
 // Checks if a player is participating in a game and if the game is in the correct state for verifying ship placement.
@@ -397,62 +448,46 @@ pub fn check_game_for_verify_move(
     Ok(())
 }
 
-/// Checks the timing of game moves and handles game state transitions based on the provided parameters.
+/// Checks if the timing for a game has exceeded the allowed time limit and handles the outcome.
 ///
 /// # Arguments
 ///
-/// * `games` - Mutable reference to the map storing multiple games.
-/// * `game_pair` - Mutable reference to the map storing game pairs.
-/// * `config` - Configuration settings for gas and delay parameters.
-/// * `game_id` - The `ActorId` representing the ID of the game to be checked.
-/// * `check_time` - The timestamp to check against the last move time in the game.
-/// * `repeated_pass` - Boolean indicating if the check is a repeated pass.
+/// * `games` - A mutable reference to the map containing all active games.
+/// * `game_pair` - A mutable reference to the map linking players to their game IDs.
+/// * `game_id` - The unique identifier of the game to be checked.
+/// * `check_time` - The timestamp when the last move was made.
 ///
 /// # Returns
 ///
-/// * `Result<()>` - Returns `Ok` if the timing check is successful and game state transitions are handled accordingly.
+/// * `Result<()>` - Returns an empty Ok result if the function executes successfully, otherwise an error.
 ///
-/// # Errors
+/// # Details
 ///
-/// * `Error::NoSuchGame` - If the game associated with `game_id` does not exist.
-///
-/// This function checks the timing of game moves and transitions game states based on the provided parameters. If the `check_time`
-/// matches the last move time in the game, it either transitions to the next turn or ends the game, depending on whether `repeated_pass`
-/// is `false` or `true`, respectively. It also manages participant data and game removal from storage when necessary.
+/// This function checks if the last move in the specified game was made at `check_time`. If the last move time matches `check_time`,
+/// it assumes that the game has exceeded the allowed time limit for a move and proceeds to end the game. It refunds the bid to each
+/// participant and sends an `EndGame` event to all participants. Finally, it removes all participants from the `game_pair` map and deletes the game from the `games` map.
 pub fn check_out_timing(
     games: &mut MultipleGamesMap,
     game_pair: &mut GamePairsMap,
-    config: Configuration,
     game_id: ActorId,
     check_time: u64,
-    repeated_pass: bool,
 ) -> Result<()> {
     let game = games.get_mut(&game_id).ok_or(Error::NoSuchGame)?;
     if game.last_move_time == check_time {
-        if !repeated_pass {
-            let player = match game.status {
-                Status::Turn(id) => id,
-                Status::PendingVerificationOfTheMove((id, _)) => id,
-                _ => unimplemented!(),
-            };
-            let following_player = game.get_opponent(&player);
-            game.status = Status::Turn(following_player);
-            let block_timestamp = exec::block_timestamp();
-            game.last_move_time = block_timestamp;
-            send_check_time_delayed_message(
-                game_id,
-                block_timestamp,
-                true,
-                config.gas_for_check_time,
-                config.delay_for_check_time,
-            )
-        } else {
-            return_bid_to_participants(game);
-            game.participants_data.iter().for_each(|(id, _info)| {
-                game_pair.remove(id);
-            });
-            games.remove(&game_id);
-        }
+        let total_time = exec::block_timestamp() - game.start_time.unwrap();
+        let participants_info = game.participants_data.clone().into_iter().collect();
+        let payload = Event::EndGame {
+            admin: game.admin,
+            winner: ActorId::zero(),
+            total_time,
+            participants_info,
+            last_hit: None,
+        };
+        game.participants_data.iter().for_each(|(id, _info)| {
+            game_pair.remove(id);
+            msg::send(*id, payload.clone(), game.bid).expect("Error send message");
+        });
+        games.remove(&game_id);
     }
 
     Ok(())
@@ -491,24 +526,29 @@ pub fn verified_move(
     let game = games.get_mut(&game_id).ok_or(Error::NoSuchGame)?;
     game.shot(&player, hit, res);
 
+    let opponent = game.get_opponent(&player);
     if game.check_end_game(&player) {
-        let winner = game.get_opponent(&player);
-        msg::send_with_gas(winner, "", 0, 2 * game.bid).expect("Error in sending value");
+        msg::send_with_gas(opponent, "", 0, 2 * game.bid).expect("Error in sending value");
         let total_time = exec::block_timestamp() - game.start_time.unwrap();
-        let participants_info = game.participants_data.clone().into_iter().collect();
+        let participants_info: Vec<_> = game.participants_data.clone().into_iter().collect();
+        let admin = game.admin;
         game.participants_data.iter().for_each(|(id, _info)| {
             game_pair.remove(id);
         });
         games.remove(&game_id);
         return Ok(Event::EndGame {
-            winner,
+            admin,
+            winner: opponent,
             total_time,
             participants_info,
+            last_hit: Some(hit),
         });
     }
     game.status = Status::Turn(player);
 
     Ok(Event::MoveVerified {
+        admin: game.admin,
+        opponent,
         step: hit,
         result: res,
     })
@@ -548,8 +588,8 @@ pub fn delete_game(
         game.participants_data.iter().for_each(|(id, _info)| {
             game_pair.remove(id);
         });
+        games.remove(&game_id);
     }
-    games.remove(&game_id);
     Ok(Event::GameDeleted { game_id })
 }
 
@@ -575,7 +615,6 @@ fn return_bid_to_participants(game: &MultipleGame) {
 ///
 /// * `game_id` - The `ActorId` representing the ID of the game to check timing for.
 /// * `block_timestamp` - The current block timestamp.
-/// * `repeated_pass` - Boolean indicating whether it's a repeated pass for checking time.
 /// * `gas_limit` - Gas limit for sending the message.
 /// * `delay` - Delay in seconds for sending the message.
 ///
@@ -584,14 +623,13 @@ fn return_bid_to_participants(game: &MultipleGame) {
 fn send_check_time_delayed_message(
     game_id: ActorId,
     block_timestamp: u64,
-    repeated_pass: bool,
     gas_limit: u64,
     delay: u32,
 ) {
     let request = [
         "Multiple".encode(),
         "CheckOutTiming".to_string().encode(),
-        (game_id, block_timestamp, repeated_pass).encode(),
+        (game_id, block_timestamp).encode(),
     ]
     .concat();
     msg::send_bytes_with_gas_delayed(exec::program_id(), request, gas_limit, 0, delay)

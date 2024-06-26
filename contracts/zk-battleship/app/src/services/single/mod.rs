@@ -25,12 +25,15 @@ pub enum Event {
     SessionCreated,
     SingleGameStarted,
     EndGame {
+        player: ActorId,
         winner: BattleshipParticipants,
         time: u64,
         total_shots: u8,
         succesfull_shots: u8,
+        last_hit: u8,
     },
     MoveMade {
+        player: ActorId,
         step: u8,
         step_result: StepResult,
         bot_step: u8,

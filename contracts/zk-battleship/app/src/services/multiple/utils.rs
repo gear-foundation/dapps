@@ -18,6 +18,7 @@ pub enum Error {
     NotPlayer,
     AlreadyVerified,
     WrongBid,
+    WrongOut,
 }
 
 pub struct MultipleGame {
@@ -86,6 +87,7 @@ impl MultipleGame {
                 data.board[step as usize] = Entity::BoomShip;
                 data.succesfull_shots += 1;
             }
+            2 => Self::dead_ship(step, &mut data.board),
             _ => unimplemented!(),
         }
     }
@@ -97,60 +99,60 @@ impl MultipleGame {
         let count_dead_ships = data
             .board
             .iter()
-            .filter(|&entity| *entity == Entity::BoomShip)
+            .filter(|&entity| *entity == Entity::DeadShip)
             .count();
         count_dead_ships == 8
     }
 
-    // fn dead_ship(step: u8, player_board: &mut Vec<Entity>) {
-    //     player_board[step as usize] = Entity::DeadShip;
-    //     Self::auto_boom(player_board.as_mut(), step);
-    //     let mut current_step = step as i8;
-    //     'stop: loop {
-    //         let directions: Vec<i8> = match current_step {
-    //             0 => vec![5, 1],
-    //             4 => vec![5, -1],
-    //             20 => vec![1, -5],
-    //             24 => vec![-1, -5],
-    //             p if p % 5 == 0 => vec![-5, 1, 5],
-    //             p if (p + 1) % 5 == 0 => vec![-5, -1, 5],
-    //             _ => vec![-5, -1, 1, 5],
-    //         };
-    //         for direction in directions {
-    //             let position = current_step + direction;
-    //             if !(0..=24).contains(&position) {
-    //                 continue;
-    //             }
-    //             if player_board[position as usize] == Entity::BoomShip {
-    //                 player_board[position as usize] = Entity::DeadShip;
-    //                 Self::auto_boom(player_board.as_mut(), position as u8);
-    //                 current_step += direction;
-    //                 continue 'stop;
-    //             }
-    //         }
-    //         break;
-    //     }
-    // }
+    fn dead_ship(step: u8, player_board: &mut Vec<Entity>) {
+        player_board[step as usize] = Entity::DeadShip;
+        Self::auto_boom(player_board.as_mut(), step);
+        let mut current_step = step as i8;
+        'stop: loop {
+            let directions: Vec<i8> = match current_step {
+                0 => vec![5, 1],
+                4 => vec![5, -1],
+                20 => vec![1, -5],
+                24 => vec![-1, -5],
+                p if p % 5 == 0 => vec![-5, 1, 5],
+                p if (p + 1) % 5 == 0 => vec![-5, -1, 5],
+                _ => vec![-5, -1, 1, 5],
+            };
+            for direction in directions {
+                let position = current_step + direction;
+                if !(0..=24).contains(&position) {
+                    continue;
+                }
+                if player_board[position as usize] == Entity::BoomShip {
+                    player_board[position as usize] = Entity::DeadShip;
+                    Self::auto_boom(player_board.as_mut(), position as u8);
+                    current_step += direction;
+                    continue 'stop;
+                }
+            }
+            break;
+        }
+    }
 
-    // fn auto_boom(board: &mut [Entity], position: u8) {
-    //     let cells = match position {
-    //         0 => vec![1, 5, 6],
-    //         4 => vec![-1, 4, 5],
-    //         20 => vec![1, -4, -5],
-    //         24 => vec![-1, -5, -6],
-    //         p if p % 5 == 0 => vec![-4, -5, 1, 5, 6],
-    //         p if (p + 1) % 5 == 0 => vec![-1, -5, -6, 4, 5],
-    //         _ => vec![-1, -4, -5, -6, 1, 4, 5, 6],
-    //     };
+    fn auto_boom(board: &mut [Entity], position: u8) {
+        let cells = match position {
+            0 => vec![1, 5, 6],
+            4 => vec![-1, 4, 5],
+            20 => vec![1, -4, -5],
+            24 => vec![-1, -5, -6],
+            p if p % 5 == 0 => vec![-4, -5, 1, 5, 6],
+            p if (p + 1) % 5 == 0 => vec![-1, -5, -6, 4, 5],
+            _ => vec![-1, -4, -5, -6, 1, 4, 5, 6],
+        };
 
-    //     for cell in &cells {
-    //         let current_position = position as i8 + *cell;
-    //         if !(0..=24).contains(&current_position) {
-    //             continue;
-    //         }
-    //         if board[current_position as usize] == Entity::Empty {
-    //             board[current_position as usize] = Entity::Boom;
-    //         }
-    //     }
-    // }
+        for cell in &cells {
+            let current_position = position as i8 + *cell;
+            if !(0..=24).contains(&current_position) {
+                continue;
+            }
+            if board[current_position as usize] == Entity::Unknown {
+                board[current_position as usize] = Entity::Boom;
+            }
+        }
+    }
 }

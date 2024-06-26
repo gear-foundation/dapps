@@ -32,7 +32,9 @@ pub enum Event {
         player_id: ActorId,
         game_id: ActorId,
     },
-    PlacementVerified,
+    PlacementVerified {
+        admin: ActorId,
+    },
     GameCanceled {
         game_id: ActorId,
     },
@@ -40,19 +42,29 @@ pub enum Event {
         game_id: ActorId,
     },
     MoveMade {
+        game_id: ActorId,
         step: u8,
+        target_address: ActorId,
     },
     MoveVerified {
+        admin: ActorId,
+        opponent: ActorId,
         step: u8,
         result: u8,
     },
     EndGame {
+        admin: ActorId,
         winner: ActorId,
         total_time: u64,
         participants_info: Vec<(ActorId, ParticipantInfo)>,
+        last_hit: Option<u8>,
     },
     GameDeleted {
         game_id: ActorId,
+    },
+    PlayerDeleted {
+        game_id: ActorId,
+        removable_player: ActorId,
     },
 }
 
@@ -362,11 +374,10 @@ where
     ///
     /// * `game_id` - The `ActorId` representing the ID of the game to check.
     /// * `check_time` - A 64-bit unsigned integer representing the time to check against.
-    /// * `repeated_pass` - A boolean indicating whether this is a repeated timing check.
     ///     
     /// # Note
     /// The source of the message can only be the program itself.
-    pub fn check_out_timing(&mut self, game_id: ActorId, check_time: u64, repeated_pass: bool) {
+    pub fn check_out_timing(&mut self, game_id: ActorId, check_time: u64) {
         if msg::source() != exec::program_id() {
             services::utils::panic("This message can be sent only by the program")
         }
@@ -374,12 +385,34 @@ where
             funcs::check_out_timing(
                 MultipleGamesStorage::as_mut(),
                 GamePairsStorage::as_mut(),
-                ConfigurationStorage::get(),
                 game_id,
                 check_time,
-                repeated_pass,
             )
         });
+    }
+
+    pub fn delete_player(
+        &mut self,
+        removable_player: ActorId,
+        session_for_account: Option<ActorId>,
+    ) {
+        // get player
+        let player = get_player(
+            SessionsStorage::as_ref(),
+            msg::source(),
+            &session_for_account,
+            services::session::ActionsForSession::PlayMultipleGame,
+        );
+        let event = services::utils::panicking(move || {
+            funcs::delete_player(
+                MultipleGamesStorage::as_mut(),
+                GamePairsStorage::as_mut(),
+                player,
+                removable_player,
+            )
+        });
+
+        services::utils::deposit_event(event);
     }
 
     pub fn games(&self) -> Vec<(ActorId, MultipleGameState)> {
@@ -418,5 +451,13 @@ where
                 status: game.status.clone(),
                 bid: game.bid,
             })
+    }
+    pub fn get_remaining_time(&self, player_id: ActorId) -> Option<u64> {
+        let current_time = exec::block_timestamp();
+        let time_to_move = ConfigurationStorage::get().delay_for_check_time as u64 * 3_000;
+        GamePairsStorage::as_ref()
+            .get(&player_id)
+            .and_then(|game_id| MultipleGamesStorage::as_ref().get(game_id))
+            .and_then(|game| time_to_move.checked_sub(current_time - game.last_move_time))
     }
 }

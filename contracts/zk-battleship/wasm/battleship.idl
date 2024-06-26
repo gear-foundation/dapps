@@ -35,6 +35,7 @@ type PublicStartInput = struct {
 };
 
 type MultipleGameState = struct {
+  admin: ActorId,
   participants_data: vec struct { ActorId, ParticipantInfo },
   create_time: u64,
   start_time: opt u64,
@@ -44,6 +45,7 @@ type MultipleGameState = struct {
 };
 
 type ParticipantInfo = struct {
+  name: str,
   board: vec Entity,
   ship_hash: vec u8,
   total_shots: u8,
@@ -150,10 +152,11 @@ service Admin {
 
 service Multiple {
   CancelGame : (session_for_account: opt ActorId) -> null;
-  CheckOutTiming : (game_id: ActorId, check_time: u64, repeated_pass: bool) -> null;
-  CreateGame : (session_for_account: opt ActorId) -> null;
+  CheckOutTiming : (game_id: ActorId, check_time: u64) -> null;
+  CreateGame : (name: str, session_for_account: opt ActorId) -> null;
   DeleteGame : (game_id: ActorId, create_time: u64) -> null;
-  JoinGame : (game_id: ActorId, session_for_account: opt ActorId) -> null;
+  DeletePlayer : (removable_player: ActorId, session_for_account: opt ActorId) -> null;
+  JoinGame : (game_id: ActorId, name: str, session_for_account: opt ActorId) -> null;
   LeaveGame : (session_for_account: opt ActorId) -> null;
   MakeMove : (game_id: ActorId, step: u8, session_for_account: opt ActorId) -> null;
   VerifyMove : (proof: ProofBytes, public_input: PublicMoveInput, session_for_account: opt ActorId, game_id: ActorId) -> null;
@@ -161,17 +164,19 @@ service Multiple {
   query Game : (player_id: ActorId) -> opt MultipleGameState;
   query Games : () -> vec struct { ActorId, MultipleGameState };
   query GamesPairs : () -> vec struct { ActorId, ActorId };
+  query GetRemainingTime : (player_id: ActorId) -> opt u64;
 
   events {
     GameCreated: struct { player_id: ActorId };
     JoinedTheGame: struct { player_id: ActorId, game_id: ActorId };
-    PlacementVerified;
+    PlacementVerified: struct { admin: ActorId };
     GameCanceled: struct { game_id: ActorId };
     GameLeft: struct { game_id: ActorId };
-    MoveMade: struct { step: u8 };
-    MoveVerified: struct { step: u8, result: u8 };
-    EndGame: struct { winner: ActorId, total_time: u64, participants_info: vec struct { ActorId, ParticipantInfo } };
+    MoveMade: struct { game_id: ActorId, step: u8, target_address: ActorId };
+    MoveVerified: struct { admin: ActorId, opponent: ActorId, step: u8, result: u8 };
+    EndGame: struct { admin: ActorId, winner: ActorId, total_time: u64, participants_info: vec struct { ActorId, ParticipantInfo }, last_hit: opt u8 };
     GameDeleted: struct { game_id: ActorId };
+    PlayerDeleted: struct { game_id: ActorId, removable_player: ActorId };
   }
 };
 
@@ -200,8 +205,8 @@ service Single {
   events {
     SessionCreated;
     SingleGameStarted;
-    EndGame: struct { winner: BattleshipParticipants, time: u64, total_shots: u8, succesfull_shots: u8 };
-    MoveMade: struct { step: u8, step_result: StepResult, bot_step: u8 };
+    EndGame: struct { player: ActorId, winner: BattleshipParticipants, time: u64, total_shots: u8, succesfull_shots: u8, last_hit: u8 };
+    MoveMade: struct { player: ActorId, step: u8, step_result: StepResult, bot_step: u8 };
     MoveVerified: struct { step: u8, result: u8 };
   }
 };
