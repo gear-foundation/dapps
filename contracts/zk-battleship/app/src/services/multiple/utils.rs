@@ -85,11 +85,22 @@ impl MultipleGame {
             0 => data.board[step as usize] = Entity::Boom,
             1 => {
                 data.board[step as usize] = Entity::BoomShip;
-                data.succesfull_shots += 1;
+                let opponent = self.get_opponent(player);
+                let opponent_data = self
+                    .participants_data
+                    .get_mut(&opponent)
+                    .expect("The player must exist");
+
+                opponent_data.succesfull_shots += 1;
             }
             2 => {
                 Self::dead_ship(step, &mut data.board);
-                data.succesfull_shots += 1;
+                let opponent = self.get_opponent(player);
+                let opponent_data = self
+                    .participants_data
+                    .get_mut(&opponent)
+                    .expect("The player must exist");
+                opponent_data.succesfull_shots += 1;
             }
             _ => unimplemented!(),
         }
