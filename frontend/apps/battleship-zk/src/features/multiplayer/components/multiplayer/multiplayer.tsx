@@ -7,7 +7,12 @@ import { Button } from '@gear-js/vara-ui';
 import { useShips } from '@/features/zk/hooks/use-ships';
 import { decodeAddress } from '@gear-js/api';
 import { usePending } from '@/features/game/hooks';
-import { useEventPlacementVerified, useEventGameCancelled } from '../../sails/events';
+import {
+  useEventPlacementVerified,
+  useEventGameCancelled,
+  useEventMoveMadeSubscription,
+  useEventMoveVerifiedSubscription,
+} from '../../sails/events';
 import { useMultiplayerGame, useProcessWithMultiplayer, useArrangementWithMultiplayer } from '../../hooks';
 import styles from './Multiplayer.module.scss';
 
@@ -17,13 +22,15 @@ export function Multiplayer() {
   const { gameType, makeStartGameTransaction } = useArrangementWithMultiplayer();
   const { totalShoots, successfulShoots, gameEndResult, gameStartTime, gameUpdatedEvent, handleClickCell, exitGame } =
     useProcessWithMultiplayer();
-  const { game } = useMultiplayerGame();
+  const { game, triggerGame } = useMultiplayerGame();
   const { getBoard } = useShips();
   const { pending } = usePending();
   const [savedPlayerBoard, setSavedPlayerBoard] = useState<string[] | null | undefined>();
 
   useEventPlacementVerified();
   useEventGameCancelled();
+  useEventMoveMadeSubscription();
+  useEventMoveVerifiedSubscription();
 
   const playerInfo = game?.participants_data.find((item) => decodeAddress(item[0]) === account?.decodedAddress)?.[1];
   const isPlacementStatus = Object.keys(game?.status || {})[0] === 'verificationPlacement';
@@ -46,6 +53,7 @@ export function Multiplayer() {
         gameType={gameType}
         savedBoard={savedPlayerBoard}
         makeStartGameTransaction={makeStartGameTransaction}
+        triggerGame={triggerGame}
       />
       {playerInfo?.ship_hash && playerInfo.ship_hash.toString() !== '0x' && (
         <Modal heading="Please Wait" onClose={handleCloseModal} closeOnMissclick={false}>
@@ -66,6 +74,7 @@ export function Multiplayer() {
       gameResults={gameEndResult ? { totalTime: gameEndResult.total_time, winner: gameEndResult.winner } : null}
       gameStartTime={gameStartTime}
       gameUpdatedEvent={gameUpdatedEvent}
+      admin={game?.admin}
       onClickCell={handleClickCell}
       onExitGame={exitGame}
     />

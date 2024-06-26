@@ -6,6 +6,7 @@ import { Button } from '@gear-js/vara-ui';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { VaraIcon } from '@/components/layout/vara-svg';
+import { usePending } from '@/features/game/hooks';
 import { getVaraAddress, useAccount, useAlert, useBalanceFormat } from '@gear-js/react-hooks';
 import { decodeAddress } from '@gear-js/api';
 import { stringShorten } from '@polkadot/util';
@@ -15,6 +16,7 @@ import { useEventGameCancelled, useEventPlayerJoinedGame } from '../../sails/eve
 import { useCancelGameMessage } from '../../sails/messages';
 import { useMultiplayerGame } from '../../hooks';
 import styles from './Registration.module.scss';
+import { useDeleteGameMessage } from '../../sails/messages/use-delete-player-message';
 
 type UserProps = {
   name: string;
@@ -27,13 +29,14 @@ type UserProps = {
 
 function User({ name, fee, address, isPlayer, isPlayerAdmin, onRemovePlayer }: UserProps) {
   const { getFormattedBalanceValue } = useBalanceFormat();
+  const { pending } = usePending();
 
   return (
     <div className={clsx(styles.user, isPlayer && styles.userPlayer)}>
       <div className={styles.left}>
         <div className={styles.crossWrapper}>
           {isPlayerAdmin && !isPlayer && (
-            <Button color="transparent" onClick={() => onRemovePlayer(address)}>
+            <Button color="transparent" onClick={() => onRemovePlayer(address)} disabled={pending}>
               {<FilledCrossSVG />}
             </Button>
           )}
@@ -51,8 +54,10 @@ export function Registration() {
   const navigate = useNavigate();
   const alert = useAlert();
   const { cancelGameMessage } = useCancelGameMessage();
+  const { deletePlayerMessage } = useDeleteGameMessage();
   const { account } = useAccount();
-  const { game } = useMultiplayerGame();
+  const { game, triggerGame } = useMultiplayerGame();
+  const { pending, setPending } = usePending();
 
   useEventPlayerJoinedGame();
   useEventGameCancelled();
@@ -66,15 +71,35 @@ export function Registration() {
       return;
     }
 
-    const transaction = await cancelGameMessage();
-    const { response } = await transaction.signAndSend();
+    setPending(true);
 
-    await response();
+    try {
+      const transaction = await cancelGameMessage();
+      const { response } = await transaction.signAndSend();
+
+      await response();
+      await triggerGame();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setPending(false);
+    }
   };
 
-  const handleRemovePlayer = (address: string) => {
-    console.log(address);
-    // TODO remove players
+  const handleRemovePlayer = async (address: string) => {
+    setPending(true);
+
+    try {
+      const transaction = await deletePlayerMessage(address);
+      const { response } = await transaction.signAndSend();
+
+      await response();
+      await triggerGame();
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setPending(false);
+    }
   };
 
   const handleCopyAddress = (value: string) => {
@@ -133,11 +158,11 @@ export function Registration() {
           </div>
           <div className={styles.buttons}>
             {game.admin === account?.decodedAddress && (
-              <Button className={styles.cancelGameButton} onClick={cancelGame}>
+              <Button className={styles.cancelGameButton} onClick={cancelGame} disabled={pending}>
                 Cancel game
               </Button>
             )}
-            <Button disabled={game.participants_data.length < 2} onClick={startGame}>
+            <Button disabled={game.participants_data.length < 2} onClick={startGame} isLoading={pending}>
               Start game
             </Button>
           </div>

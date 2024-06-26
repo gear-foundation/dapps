@@ -65,11 +65,8 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
   const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit } = joinForm;
 
   const handleJoinSession = async (values: JoinModalFormValues) => {
-    console.log('lala');
     await onSubmit(values);
   };
-
-  console.log(joinForm.values);
 
   return (
     <Modal heading="The game has been found" className={{ wrapper: styles.modalWrapper }} onClose={onClose}>

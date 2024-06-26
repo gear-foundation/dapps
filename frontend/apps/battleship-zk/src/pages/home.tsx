@@ -4,18 +4,27 @@ import SelectGameMode from '@/features/game/components/select-game-mode/select-g
 import { useGameMode } from '@/features/game/hooks';
 import { JoinGameForm } from '@/features/multiplayer/components/join-game-form';
 import { CreateGameForm } from '@/features/multiplayer/components/create-game-form';
-import { useInitMultiplayerGame } from '@/features/multiplayer/hooks';
+import { useInitMultiplayerGame, useMultiplayerGame } from '@/features/multiplayer/hooks';
 import { Loader } from 'lucide-react';
 import { Registration } from '@/features/multiplayer/components/registration';
+import { useEffect } from 'react';
+import { clearZkData } from '@/features/zk/utils';
 
 export default function Home() {
   const { account } = useAccount();
   const { gameMode, resetGameMode } = useGameMode();
   const { isLoading, isActiveGame } = useInitMultiplayerGame();
+  const { game } = useMultiplayerGame();
 
   const handleCancel = () => {
     resetGameMode();
   };
+
+  useEffect(() => {
+    if (game === null && account?.address) {
+      clearZkData('multi', account);
+    }
+  }, [isActiveGame, account]);
 
   return (
     <>

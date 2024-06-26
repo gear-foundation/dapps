@@ -13,38 +13,26 @@ type MoveMadeEvent = {
 };
 
 export function useEventMoveMadeSubscription() {
+  const gameType = 'multi';
   const event = useRef<Promise<() => void> | null>(null);
   const { account } = useAccount();
   const { game, triggerGame } = useMultiplayerGame();
-  const { getPlayerShips, getBoard, setBoard } = useShips();
+  const { getPlayerShips, getPlayerHits, updatePlayerHits, updatePlayerBoard } = useShips();
   const { requestProofHit, saveProofData, clearProofData } = useProofShipHit();
 
-  const updatePlayerBoard = (bot_step: number) => {
-    const board = getBoard('multi', 'player');
-
-    if (!board) {
-      return;
-    }
-
-    if (board[bot_step] === 'Empty') {
-      board[bot_step] = 'Boom';
-    }
-
-    if (board[bot_step] === 'Ship') {
-      board[bot_step] = 'BoomShip';
-    }
-
-    setBoard('multi', 'player', board);
-  };
-
   const generateProofHit = async (ev: MoveMadeEvent) => {
-    const ships = getPlayerShips('multi');
+    const ships = getPlayerShips(gameType);
+    const hits = getPlayerHits(gameType);
 
-    if (!ships) {
+    if (!ships || !hits) {
       return;
     }
 
-    const proofData = await requestProofHit(ships, ev.step.toString());
+    const proofData = await requestProofHit(
+      ships,
+      ev.step.toString(),
+      hits.map((item) => item.toString()),
+    );
 
     return proofData;
   };
@@ -58,10 +46,12 @@ export function useEventMoveMadeSubscription() {
 
     const proofData = await generateProofHit(ev);
 
-    updatePlayerBoard(step);
-    saveProofData('multi', proofData);
+    updatePlayerBoard(gameType, step);
+    updatePlayerHits(gameType, step);
 
-    triggerGame();
+    saveProofData(gameType, proofData);
+
+    await triggerGame();
   };
 
   const unsubscribeFromEvent = () => {
@@ -88,7 +78,7 @@ export function useEventMoveMadeSubscription() {
 
   useEffect(() => {
     if (game === null) {
-      clearProofData('multi');
+      clearProofData(gameType);
     }
   }, [game]);
 }

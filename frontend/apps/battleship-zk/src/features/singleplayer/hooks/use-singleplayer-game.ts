@@ -19,7 +19,6 @@ export function useSingleplayerGame() {
 
     try {
       const res = await gameQuery(account.decodedAddress);
-
       setGame(res);
       if (!!res) {
         setIsActiveGame(true);

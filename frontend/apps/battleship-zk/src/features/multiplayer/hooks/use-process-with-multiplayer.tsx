@@ -1,36 +1,29 @@
 import { useAccount, useApi } from '@gear-js/react-hooks';
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
 import { useShips } from '@/features/zk/hooks/use-ships';
 import { ZkProofData } from '@/features/zk/types';
 import { usePending } from '@/features/game/hooks';
 import { useMultiplayerGame } from './use-multiplayer-game';
 import { useEventGameEndSubscription } from '../sails/events';
-import { useLeaveGameMessage, useMakeMoveMessage, useVerifyMoveMessage } from '../sails/messages';
+import { useCancelGameMessage, useLeaveGameMessage, useMakeMoveMessage, useVerifyMoveMessage } from '../sails/messages';
 
 export const useProcessWithMultiplayer = () => {
   const { game, triggerGame } = useMultiplayerGame();
   const { leaveGameMessage } = useLeaveGameMessage();
+  const { cancelGameMessage } = useCancelGameMessage();
   const { verifyMove } = useVerifyMoveMessage();
   const { makeMoveMessage } = useMakeMoveMessage();
   const { account } = useAccount();
   const { api } = useApi();
-  const { getBoard } = useShips();
   const { getProofData, clearProofData } = useProofShipHit();
   const { gameEndResult } = useEventGameEndSubscription();
   const { setPending } = usePending();
 
-  const enemyBoard = getBoard('multi', 'enemy');
+  const participant = game?.participants_data.find((item) => item[0] === account?.decodedAddress)?.[1];
 
-  const totalShoots = useMemo(
-    () => (enemyBoard ? enemyBoard.reduce((acc, item) => (item !== 'Unknown' ? acc + 1 : acc), 0) : 0),
-    [game],
-  );
-  const successfulShoots = useMemo(
-    () =>
-      enemyBoard ? enemyBoard.reduce((acc, item) => (['DeadShip', 'BoomShip'].includes(item) ? acc + 1 : acc), 0) : 0,
-    [game],
-  );
+  const totalShoots = useMemo(() => (participant ? participant?.total_shots : 0), [game]);
+  const successfulShoots = useMemo(() => (participant ? participant?.succesfull_shots : 0), [game]);
 
   const gameUpdatedEvent = useMemo(
     () => ({
@@ -41,7 +34,19 @@ export const useProcessWithMultiplayer = () => {
   );
 
   const exitGame = async () => {
-    if (!account?.address) {
+    if (game?.admin === account?.decodedAddress) {
+      try {
+        const transaction = await cancelGameMessage();
+        const { response } = await transaction.signAndSend();
+
+        await response();
+      } catch (err) {
+      } finally {
+        await triggerGame();
+
+        setPending(false);
+      }
+
       return;
     }
 
@@ -101,7 +106,6 @@ export const useProcessWithMultiplayer = () => {
     const proofDataHit = getProofData('multi');
 
     try {
-      const hitTransaction = await getHitTransaction(indexCell);
       const verifyTransaction = await getVerifyTransaction(proofDataHit);
 
       if (verifyTransaction) {
@@ -110,6 +114,8 @@ export const useProcessWithMultiplayer = () => {
 
         clearProofData('multi');
       }
+
+      const hitTransaction = await getHitTransaction(indexCell);
 
       const { response } = await hitTransaction.signAndSend();
       await response();

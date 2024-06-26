@@ -1,4 +1,4 @@
-import { getHash, getHitShips, getParsedZkData, setZkData } from '@/features/zk/utils';
+import { getArrangementShips, getHash, getParsedZkData, setZkData } from '@/features/zk/utils';
 import { useAccount } from '@gear-js/react-hooks';
 import { ADDRESS } from '@/app/consts';
 import { GameType, ZkProofData } from '../types';
@@ -48,21 +48,26 @@ export const useProofShipHit = () => {
     return getParsedZkData(account)?.[gameType]?.['proof-data'] || null;
   };
 
-  const requestProofHit = async (shipsField: number[][], hit: string) => {
-    const ships = getHitShips(shipsField);
+  const requestProofHit = async (shipsField: number[][], hit: string, hits: string[]) => {
+    const ships = getArrangementShips(shipsField);
+
     const hash = await getHash(shipsField.flat());
-    const payload = { ships, hash, hit };
+    const payload = { ...ships, hash, hit, hits };
 
-    const res = await fetch(`${ADDRESS.ZK_PROOF_BACKEND}/api/proof/hit`, {
-      method: 'POST',
-      body: JSON.stringify(payload),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-    const proofData = await res.json();
+    try {
+      const res = await fetch(`${ADDRESS.ZK_PROOF_BACKEND}/api/proof/hit`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      const proofData = await res.json();
 
-    return proofData;
+      return proofData;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   };
 
   return { requestProofHit, getProofData, saveProofData, clearProofData };

@@ -9,7 +9,7 @@ export function Singleplayer() {
   const { makeStartGameTransaction } = useArrangementWithSingleplayer();
   const { totalShoots, successfulShoots, gameEndResult, gameStartTime, gameUpdatedEvent, handleClickCell, exitGame } =
     useProcessWithSingleplayer();
-  const { isActiveGame } = useSingleplayerGame();
+  const { isActiveGame, triggerGame } = useSingleplayerGame();
 
   useInitSingleGame();
   useEventMoveMadeSubscription();
@@ -22,10 +22,15 @@ export function Singleplayer() {
       gameResults={gameEndResult ? { totalTime: gameEndResult.time, winner: gameEndResult.winner } : null}
       gameStartTime={gameStartTime}
       gameUpdatedEvent={gameUpdatedEvent}
+      admin={undefined}
       onClickCell={handleClickCell}
       onExitGame={exitGame}
     />
   ) : (
-    <ShipArrangement gameType={gameType} makeStartGameTransaction={makeStartGameTransaction} />
+    <ShipArrangement
+      gameType={gameType}
+      makeStartGameTransaction={makeStartGameTransaction}
+      triggerGame={triggerGame}
+    />
   );
 }

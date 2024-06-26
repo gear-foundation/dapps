@@ -1,19 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
 import { BattleshipParticipants } from '@/features/game/assets/lib/lib';
 import { program } from '@/app/utils/sails';
+import { useAccount } from '@gear-js/react-hooks';
 
 export type GameEndEvent = {
   winner: BattleshipParticipants;
   time: string | number;
   total_shots: number;
   succesfull_shots: number;
+  player: string;
 };
 
 export function useEventGameEndSubscription() {
+  const { account } = useAccount();
   const event = useRef<Promise<() => void> | null>(null);
   const [result, setResult] = useState<GameEndEvent | null>(null);
 
   const gameEndCallback = (ev: GameEndEvent) => {
+    if (account?.decodedAddress !== ev.player) {
+      return;
+    }
+
     if (ev.winner) {
       setResult(ev);
     }

@@ -22,14 +22,14 @@ interface Props {
   gameType: GameType;
   savedBoard?: string[] | null;
   makeStartGameTransaction: (zkProofData: ZkProofData) => Promise<TransactionBuilder<null>>;
+  triggerGame: () => void;
 }
 
-export default function ShipArrangement({ gameType, savedBoard, makeStartGameTransaction }: Props) {
+export default function ShipArrangement({ gameType, savedBoard, makeStartGameTransaction, triggerGame }: Props) {
   const { account } = useAccount();
   const navigate = useNavigate();
   const { gasless, signless } = useEzTransactions();
-  const { setPlayerShips, setBoard } = useShips();
-  const { triggerGame } = useSingleplayerGame();
+  const { setPlayerShips, setBoard, createPlayerHits } = useShips();
   const { pending, setPending } = usePending();
   const { checkBalance } = useCheckBalance({
     signlessPairVoucherId: signless.voucher?.id,
@@ -47,7 +47,7 @@ export default function ShipArrangement({ gameType, savedBoard, makeStartGameTra
 
     if (newLayout !== null) {
       setShipsBoard(playerShipsLayout);
-      setShipsField(newLayout);
+      setShipsField(newLayout.reverse());
       setLoadingGenerate(false);
     }
   };
@@ -74,9 +74,12 @@ export default function ShipArrangement({ gameType, savedBoard, makeStartGameTra
 
       const transaction = await makeStartGameTransaction(zkProofData);
 
-      await transaction.signAndSend();
+      const { response } = await transaction.signAndSend();
+
+      await response();
 
       setPlayerShips(gameType, shipsField);
+      createPlayerHits(gameType);
       setBoard(gameType, 'player', shipsBoard);
       setBoard(gameType, 'enemy', convertShipsToField([], 5, 5, 'Unknown'));
 

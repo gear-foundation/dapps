@@ -121,12 +121,12 @@ function CreateGameForm({ onCancel }: Props) {
         {/* <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} /> */}
         <GameDetails items={items} />
         <div className={styles.buttons}>
-          <Button type="submit" text="Create game" disabled={pending} className={styles.button} />
+          <Button type="submit" text="Create game" isLoading={pending} className={styles.button} />
           <Button
             type="submit"
             text="Cancel"
             color="grey"
-            disabled={pending}
+            isLoading={pending}
             className={styles.button}
             onClick={onCancel}
           />
