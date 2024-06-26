@@ -87,7 +87,10 @@ impl MultipleGame {
                 data.board[step as usize] = Entity::BoomShip;
                 data.succesfull_shots += 1;
             }
-            2 => Self::dead_ship(step, &mut data.board),
+            2 => {
+                Self::dead_ship(step, &mut data.board);
+                data.succesfull_shots += 1;
+            }
             _ => unimplemented!(),
         }
     }
