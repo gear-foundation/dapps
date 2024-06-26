@@ -10,7 +10,7 @@ import { TextModal } from '@/components/layout/text-modal';
 import { Text } from '@/components/ui/text';
 import { Heading } from '@/components/ui/heading';
 import { usePending } from '@/features/game/hooks';
-import { MultipleGameState } from '@/features/game/assets/lib/lib';
+import { MultipleGameState } from '@/app/utils/sails/lib/lib';
 import { useMultiplayerGame } from '../../hooks/use-multiplayer-game';
 import { useJoinGameMessage } from '../../sails/messages';
 import { useMultiGameQuery } from '../../sails/queries';

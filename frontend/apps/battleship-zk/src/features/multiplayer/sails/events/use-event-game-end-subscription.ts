@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { ParticipantInfo } from '@/features/game/assets/lib/lib';
+import { ParticipantInfo } from '@/app/utils/sails/lib/lib';
 import { program } from '@/app/utils/sails';
 import { useMultiplayerGame } from '../../hooks';
 import { useAccount } from '@gear-js/react-hooks';

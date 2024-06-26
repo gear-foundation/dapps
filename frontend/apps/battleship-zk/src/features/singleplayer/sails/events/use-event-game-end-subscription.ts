@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { BattleshipParticipants } from '@/features/game/assets/lib/lib';
+import { BattleshipParticipants } from '@/app/utils/sails/lib/lib';
 import { program } from '@/app/utils/sails';
 import { useAccount } from '@gear-js/react-hooks';
 
