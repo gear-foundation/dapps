@@ -1,6 +1,6 @@
 import { GearApi } from '@gear-js/api';
 import { ADDRESS } from '@/app/consts';
-import { Program } from '@/features/game/assets/lib/lib';
+import { Program } from '@/app/utils/sails/lib/lib';
 
 const initSails = async () => {
   const api = await GearApi.create({ providerAddress: ADDRESS.NODE });

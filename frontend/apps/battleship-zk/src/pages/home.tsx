@@ -5,7 +5,7 @@ import { useGameMode } from '@/features/game/hooks';
 import { JoinGameForm } from '@/features/multiplayer/components/join-game-form';
 import { CreateGameForm } from '@/features/multiplayer/components/create-game-form';
 import { useInitMultiplayerGame, useMultiplayerGame } from '@/features/multiplayer/hooks';
-import { Loader } from 'lucide-react';
+import { Loader } from '@/components';
 import { Registration } from '@/features/multiplayer/components/registration';
 import { useEffect } from 'react';
 import { clearZkData } from '@/features/zk/utils';

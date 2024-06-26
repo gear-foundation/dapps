@@ -1,7 +1,7 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { getParsedZkData, setZkData } from '../utils';
 import { defineDeadShip } from '@/features/game/utils';
-import { StepResult } from '@/features/game/assets/lib/lib';
+import { StepResult } from '@/app/utils/sails/lib/lib';
 
 type PlayerType = 'player' | 'enemy';
 type GameType = 'single' | 'multi';

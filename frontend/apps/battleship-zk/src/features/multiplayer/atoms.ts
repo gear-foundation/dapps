@@ -1,5 +1,5 @@
 import { atom } from 'jotai';
-import { MultipleGameState } from '@/features/game/assets/lib/lib';
+import { MultipleGameState } from '@/app/utils/sails/lib/lib';
 
 export const multiplayerGameAtom = atom<MultipleGameState | undefined | null>(undefined);
 export const isGameReadyAtom = atom<boolean>(false);

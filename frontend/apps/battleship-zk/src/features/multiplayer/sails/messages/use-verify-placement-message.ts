@@ -1,6 +1,6 @@
 import { program } from '@/app/utils/sails';
 import { useMakeTransaction } from '@/app/utils/use-make-transaction';
-import { ProofBytes, PublicStartInput } from '@/features/game/assets/lib/lib';
+import { ProofBytes, PublicStartInput } from '@/app/utils/sails/lib/lib';
 
 export const useVerifyPlacementMessage = () => {
   const gasLimit = 250_000_000_000n;

@@ -1,5 +1,5 @@
 import { HexString } from '@polkadot/util/types';
-import { SingleGame } from './assets/lib/lib';
+import { SingleGame } from '../../app/utils/sails/lib/lib';
 
 export interface IGameState {
   botAddress: string;

@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
 import { useShips } from '@/features/zk/hooks/use-ships';
-import { StepResult } from '@/features/game/assets/lib/lib';
+import { StepResult } from '@/app/utils/sails/lib/lib';
 import { useSingleplayerGame } from '@/features/singleplayer/hooks/use-singleplayer-game';
 import { program } from '@/app/utils/sails';
 import { useAccount } from '@gear-js/react-hooks';
