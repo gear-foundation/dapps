@@ -2,6 +2,10 @@ type ShipCell = 'Empty' | 'Unknown' | 'Ship';
 
 type ShipLayout = ShipCell[];
 
+type MarkedShips = {
+  [key: string]: 1 | 0;
+};
+
 export const getShipLayout = (shipStatusArray: string[]): number[][] => {
   const shipLayout: number[][] = [];
 
@@ -46,4 +50,65 @@ export const getFormattedTime = (time: number) => {
   const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 
   return formattedTime;
+};
+
+export const defineDeadShip = (i: number, board: string[]) => {
+  const numCols = 5;
+  const markedShips: MarkedShips = {};
+
+  const defineDeadShip = (i: number, board: string[]): string[] => {
+    markedShips[i] = 1;
+
+    if (board[i + 1] === 'BoomShip' && !markedShips[i + 1] && (i + 1) % numCols !== 0) {
+      defineDeadShip(i + 1, board);
+    }
+
+    if (board[i - 1] === 'BoomShip' && !markedShips[i - 1] && (i % numCols !== 0 || i === 0)) {
+      defineDeadShip(i - 1, board);
+    }
+
+    if (board[i + numCols] === 'BoomShip' && !markedShips[i + numCols]) {
+      defineDeadShip(i + numCols, board);
+    }
+
+    if (board[i - numCols] === 'BoomShip' && !markedShips[i - numCols]) {
+      defineDeadShip(i - numCols, board);
+    }
+
+    board[i] = 'DeadShip';
+
+    //borders
+    if (board[i + 1] === 'Unknown' && (i + 1) % numCols !== 0) {
+      board[i + 1] = 'Boom';
+    }
+    if (board[i - 1] === 'Unknown' && i % numCols !== 0 && i > 0) {
+      board[i - 1] = 'Boom';
+    }
+    if (board[i + numCols] === 'Unknown') {
+      board[i + numCols] = 'Boom';
+    }
+    if (board[i - numCols] === 'Unknown') {
+      board[i - numCols] = 'Boom';
+    }
+
+    //corners
+    if (board[i + 1 + numCols] === 'Unknown' && (i + 1) % numCols !== 0 && (i + 1 + numCols) % numCols !== 0) {
+      board[i + 1 + numCols] = 'Boom';
+    }
+    if (board[i + 1 - numCols] === 'Unknown' && (i + 1) % numCols !== 0 && (i + 1 - numCols) % numCols !== 0) {
+      board[i + 1 - numCols] = 'Boom';
+    }
+    if (board[i - 1 + numCols] === 'Unknown' && i % numCols !== 0 && (i + numCols) % numCols !== 0 && i > 0) {
+      board[i - 1 + numCols] = 'Boom';
+    }
+    if (board[i - 1 - numCols] === 'Unknown' && i % numCols !== 0 && (i - numCols) % numCols !== 0 && i > 0) {
+      board[i - 1 - numCols] = 'Boom';
+    }
+
+    return board;
+  };
+
+  defineDeadShip(i, board);
+
+  return board;
 };

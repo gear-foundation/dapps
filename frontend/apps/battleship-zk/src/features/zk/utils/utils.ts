@@ -10,9 +10,7 @@ export const getHash = async (data: number[] | string[]) => {
 };
 
 export const getArrangementShips = (shipsField: number[][]) =>
-  shipsField
-    .sort((a, b) => (a.length > b.length ? 1 : -1))
-    .reduce((acc, item, i) => ({ ...acc, [`ship_${i + 1}`]: item.map((i) => i.toString()) }), {});
+  shipsField.reduce((acc, item, i) => ({ ...acc, [`ship_${i + 1}`]: item.map((i) => i.toString()) }), {});
 
 export const getHitShips = (shipsField: number[][]) => shipsField.flat().map((item) => item.toString());
 

@@ -2,11 +2,19 @@ import { useEffect, useRef } from 'react';
 import { program } from '@/app/utils/sails';
 import { useMultiplayerGame } from '../../hooks/use-multiplayer-game';
 
+type PlacementVerifiedEvent = {
+  admin: string;
+};
+
 export function useEventPlacementVerified() {
-  const { triggerGame } = useMultiplayerGame();
+  const { game, triggerGame } = useMultiplayerGame();
   const event = useRef<Promise<() => void> | null>(null);
 
-  const placementVerifiedEventCallback = () => {
+  const placementVerifiedEventCallback = ({ admin }: PlacementVerifiedEvent) => {
+    if (admin !== game?.admin) {
+      return;
+    }
+
     triggerGame();
   };
 

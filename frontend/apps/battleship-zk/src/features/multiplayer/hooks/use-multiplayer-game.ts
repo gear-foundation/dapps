@@ -2,7 +2,6 @@ import { useAccount } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import { isActiveGameAtom, isGameReadyAtom, multiplayerGameAtom } from '../atoms';
-import { pendingAtom } from '../../game/store';
 import { useMultiGameQuery } from '../sails/queries';
 
 export function useMultiplayerGame() {
@@ -22,12 +21,10 @@ export function useMultiplayerGame() {
       const res = await gameQuery(account.decodedAddress);
 
       setGame(res);
-      if (!!res) {
-        setIsActiveGame(true);
-      }
+      setIsActiveGame(!!res);
       setIsGameReady(true);
     } catch (err) {
-      console.log('ERrOR');
+      console.log(err);
       setError(err);
     }
   };
@@ -44,7 +41,7 @@ export function useMultiplayerGame() {
 export function useInitMultiplayerGame() {
   const { account } = useAccount();
   const { isActiveGame, triggerGame, resetGameState } = useMultiplayerGame();
-  const [isLoading, setIsLoading] = useAtom(pendingAtom);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const initGame = async () => {
     setIsLoading(true);

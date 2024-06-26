@@ -5,15 +5,19 @@ import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { useNavigate } from 'react-router-dom';
 import { clearZkData } from '@/features/zk/utils';
 
+type GameCancelledEvent = {
+  game_id: string;
+};
+
 export function useEventGameCancelled() {
   const { account } = useAccount();
   const alert = useAlert();
   const navigate = useNavigate();
-  const { triggerGame } = useMultiplayerGame();
+  const { game, triggerGame } = useMultiplayerGame();
   const event = useRef<Promise<() => void> | null>(null);
 
-  const gameCancelledEventCallback = async () => {
-    if (!account) {
+  const gameCancelledEventCallback = async ({ game_id }: GameCancelledEvent) => {
+    if (!account || game?.admin !== game_id) {
       return;
     }
 

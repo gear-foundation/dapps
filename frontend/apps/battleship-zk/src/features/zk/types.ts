@@ -9,12 +9,14 @@ export type ZkProofData = {
 export type ZkData = Partial<{
   single: Partial<{
     'ships-player': number[][];
+    'hits-player': number[];
     'board-player': string[];
     'board-enemy': string[];
     'proof-data': ZkProofData;
   }>;
   multi: Partial<{
     'ships-player': number[][];
+    'hits-player': number[];
     'board-player': string[];
     'board-enemy': string[];
     'proof-data': ZkProofData;

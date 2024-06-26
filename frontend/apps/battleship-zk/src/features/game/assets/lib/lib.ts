@@ -515,18 +515,14 @@ export class Multiple {
     );
   }
 
-  public checkOutTiming(
-    game_id: ActorId,
-    check_time: number | string,
-    repeated_pass: boolean,
-  ): TransactionBuilder<null> {
+  public checkOutTiming(game_id: ActorId, check_time: number | string): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Multiple', 'CheckOutTiming', game_id, check_time, repeated_pass],
-      '(String, String, ActorId, u64, bool)',
+      ['Multiple', 'CheckOutTiming', game_id, check_time],
+      '(String, String, ActorId, u64)',
       'Null',
       this._program.programId,
     );
@@ -712,6 +708,29 @@ export class Multiple {
     return result[2].toJSON() as unknown as Array<[ActorId, ActorId]>;
   }
 
+  public async getRemainingTime(
+    player_id: ActorId,
+    originAddress: string,
+    value?: number | string | bigint,
+    atBlock?: `0x${string}`,
+  ): Promise<number | string | null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+
+    const payload = this._program.registry
+      .createType('(String, String, ActorId)', ['Multiple', 'GetRemainingTime', player_id])
+      .toHex();
+    const reply = await this._program.api.message.calculateReply({
+      destination: this._program.programId,
+      origin: decodeAddress(originAddress),
+      payload,
+      value: value || 0,
+      gasLimit: this._program.api.blockGasLimit.toBigInt(),
+      at: atBlock,
+    });
+    const result = this._program.registry.createType('(String, String, Option<u64>)', reply.payload);
+    return result[2].toJSON() as unknown as number | string | null;
+  }
+
   public subscribeToGameCreatedEvent(
     callback: (data: { player_id: ActorId }) => void | Promise<void>,
   ): Promise<() => void> {
@@ -750,7 +769,9 @@ export class Multiple {
     });
   }
 
-  public subscribeToPlacementVerifiedEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
+  public subscribeToPlacementVerifiedEvent(
+    callback: (data: { admin: ActorId }) => void | Promise<void>,
+  ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
@@ -758,7 +779,11 @@ export class Multiple {
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Multiple' && getFnNamePrefix(payload) === 'PlacementVerified') {
-        callback(null);
+        callback(
+          this._program.registry.createType('(String, String, {"admin":"ActorId"})', message.payload)[2].toJSON() as {
+            admin: ActorId;
+          },
+        );
       }
     });
   }
@@ -822,7 +847,7 @@ export class Multiple {
   }
 
   public subscribeToMoveVerifiedEvent(
-    callback: (data: { step: number; result_: number }) => void | Promise<void>,
+    callback: (data: { admin: ActorId; opponent: ActorId; step: number; result_: number }) => void | Promise<void>,
   ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
@@ -833,8 +858,11 @@ export class Multiple {
       if (getServiceNamePrefix(payload) === 'Multiple' && getFnNamePrefix(payload) === 'MoveVerified') {
         callback(
           this._program.registry
-            .createType('(String, String, {"step":"u8","result_":"u8"})', message.payload)[2]
-            .toJSON() as { step: number; result_: number },
+            .createType(
+              '(String, String, {"admin":"ActorId","opponent":"ActorId","step":"u8","result_":"u8"})',
+              message.payload,
+            )[2]
+            .toJSON() as { admin: ActorId; opponent: ActorId; step: number; result_: number },
         );
       }
     });
@@ -842,9 +870,11 @@ export class Multiple {
 
   public subscribeToEndGameEvent(
     callback: (data: {
+      admin: ActorId;
       winner: ActorId;
       total_time: number | string;
       participants_info: Array<[ActorId, ParticipantInfo]>;
+      last_hit: number | null;
     }) => void | Promise<void>,
   ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
@@ -857,13 +887,15 @@ export class Multiple {
         callback(
           this._program.registry
             .createType(
-              '(String, String, {"winner":"ActorId","total_time":"u64","participants_info":"Vec<(ActorId, ParticipantInfo)>"})',
+              '(String, String, {"admin":"ActorId","winner":"ActorId","total_time":"u64","participants_info":"Vec<(ActorId, ParticipantInfo)>","last_hit":"Option<u8>"})',
               message.payload,
             )[2]
             .toJSON() as {
+            admin: ActorId;
             winner: ActorId;
             total_time: number | string;
             participants_info: Array<[ActorId, ParticipantInfo]>;
+            last_hit: number | null;
           },
         );
       }
@@ -1195,10 +1227,12 @@ export class Single {
 
   public subscribeToEndGameEvent(
     callback: (data: {
+      player: ActorId;
       winner: BattleshipParticipants;
       time: number | string;
       total_shots: number;
       succesfull_shots: number;
+      last_hit: number;
     }) => void | Promise<void>,
   ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
@@ -1211,14 +1245,16 @@ export class Single {
         callback(
           this._program.registry
             .createType(
-              '(String, String, {"winner":"BattleshipParticipants","time":"u64","total_shots":"u8","succesfull_shots":"u8"})',
+              '(String, String, {"player":"ActorId","winner":"BattleshipParticipants","time":"u64","total_shots":"u8","succesfull_shots":"u8","last_hit":"u8"})',
               message.payload,
             )[2]
             .toJSON() as {
+            player: ActorId;
             winner: BattleshipParticipants;
             time: number | string;
             total_shots: number;
             succesfull_shots: number;
+            last_hit: number;
           },
         );
       }
@@ -1226,7 +1262,12 @@ export class Single {
   }
 
   public subscribeToMoveMadeEvent(
-    callback: (data: { step: number; step_result: StepResult; bot_step: number }) => void | Promise<void>,
+    callback: (data: {
+      player: ActorId;
+      step: number;
+      step_result: StepResult;
+      bot_step: number;
+    }) => void | Promise<void>,
   ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
@@ -1238,10 +1279,10 @@ export class Single {
         callback(
           this._program.registry
             .createType(
-              '(String, String, {"step":"u8","step_result":"StepResult","bot_step":"u8"})',
+              '(String, String, {"player":"ActorId","step":"u8","step_result":"StepResult","bot_step":"u8"})',
               message.payload,
             )[2]
-            .toJSON() as { step: number; step_result: StepResult; bot_step: number },
+            .toJSON() as { player: ActorId; step: number; step_result: StepResult; bot_step: number },
         );
       }
     });

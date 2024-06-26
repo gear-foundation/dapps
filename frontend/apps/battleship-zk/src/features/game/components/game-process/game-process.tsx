@@ -31,6 +31,7 @@ type Props = {
   gameResults: GameResults | null;
   gameUpdatedEvent: GameUpdatedEvent;
   gameStartTime: string | number | undefined;
+  admin: string | undefined;
   onClickCell: (handleClickCell: number) => void;
   onExitGame: () => Promise<void>;
 };
@@ -42,6 +43,7 @@ export default function GameProcess({
   gameUpdatedEvent,
   gameResults,
   gameStartTime,
+  admin,
   onClickCell,
   onExitGame,
 }: Props) {
@@ -57,14 +59,14 @@ export default function GameProcess({
     gaslessVoucherId: gasless.voucherId,
   });
   const { getBoard } = useShips();
+  const [isOpenEndModal, setIsOpenEndModal] = useState(false);
+  const openEndModal = () => setIsOpenEndModal(true);
+  const closeEndModal = () => setIsOpenEndModal(false);
+
   const isYourTurn =
     gameType === 'single' ||
     gameUpdatedEvent.turn === account?.decodedAddress ||
     gameUpdatedEvent.pendingVerification === account?.decodedAddress;
-
-  const [isOpenEndModal, setIsOpenEndModal] = useState(false);
-  const openEndModal = () => setIsOpenEndModal(true);
-  const closeEndModal = () => setIsOpenEndModal(false);
 
   const efficiency = totalShoots !== 0 ? ((successfulShoots / totalShoots) * 100).toFixed(2) : 0;
 
@@ -181,14 +183,20 @@ export default function GameProcess({
           sizeBlock={86}
           onClickCell={handleClickCell}
           shipStatusArray={enemiesShips}
-          isDisabledCell={isDisabledCell || gasless.isLoading || !isYourTurn}
+          isDisabledCell={isDisabledCell || gasless.isLoading || !isYourTurn || !!gameResults}
           onDefineDeadShip={handleDefineDeadShips}
         />
       </div>
       <div className={styles.exitButtonWrapper}>
-        <Button className={styles.exitButton} color="grey" onClick={onExitGame}>
-          Exit
-        </Button>
+        {admin === account?.decodedAddress ? (
+          <Button className={styles.cancelGameButton} color="grey" onClick={onExitGame}>
+            Cancel game
+          </Button>
+        ) : (
+          <Button className={styles.exitButton} color="grey" onClick={onExitGame}>
+            Exit
+          </Button>
+        )}
       </div>
       {isOpenEndModal && gameResults && (
         <GameEndModal

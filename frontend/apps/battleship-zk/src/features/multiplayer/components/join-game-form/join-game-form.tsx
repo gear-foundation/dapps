@@ -60,9 +60,9 @@ function JoinGameForm({ onCancel }: Props) {
       return;
     }
 
-    const decodedAdminAddress = decodeAddress(values.address);
-
     try {
+      const decodedAdminAddress = decodeAddress(values.address);
+
       const state = await gameQuery(decodedAdminAddress.trim());
 
       if (state?.status && Object.keys(state.status)[0] === 'registration') {
@@ -74,7 +74,6 @@ function JoinGameForm({ onCancel }: Props) {
 
       setGameNotFoundModal(true);
     } catch (err: any) {
-      console.log(err.message);
       setGameNotFoundModal(true);
     }
   };
