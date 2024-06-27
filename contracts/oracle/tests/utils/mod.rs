@@ -25,6 +25,6 @@ pub fn load_randomness_program(sys: &System) -> Program<'_> {
 
     Program::from_file(
         sys,
-        "../target/wasm32-unknown-unknown/debug/oracle_randomness.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/oracle_randomness.opt.wasm",
     )
 }

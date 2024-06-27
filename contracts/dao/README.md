@@ -6,19 +6,19 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p dao -p "dao-[!l]*"
+cargo b -r -p dao -p "dao-[!l]*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p dao -p "dao-[!l]*" -- --skip gclient
+cargo t -r -p dao -p "dao-[!l]*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p dao -p "dao-[!l]*"
+cargo t -r -p dao -p "dao-[!l]*"
 ```

@@ -243,7 +243,7 @@ pub fn query_state(id_program: &Program<'_>, query: IdentityStateQuery) -> Ident
         .read_state_using_wasm(
             0,
             "query",
-            std::fs::read("../target/wasm32-unknown-unknown/debug/identity_state.meta.wasm")
+            std::fs::read("../target/wasm32-unknown-unknown/release/identity_state.meta.wasm")
                 .unwrap(),
             Some(query),
         )

@@ -6,19 +6,19 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "rock-paper-scissors*"
+cargo b -r -p "rock-paper-scissors*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "rock-paper-scissors*" -- --skip gclient
+cargo t -r -p "rock-paper-scissors*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "rock-paper-scissors*"
+cargo t -r -p "rock-paper-scissors*"
 ```

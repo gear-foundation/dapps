@@ -8,11 +8,11 @@ An example of the identity storage.
 ### 🏗️ Building
 
 ```sh
-cargo b -p "identity*"
+cargo b -r -p "identity*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "identity*"
+cargo t -r -p "identity*"
 ```

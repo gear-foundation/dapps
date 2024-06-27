@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "staking*"
+cargo b -r -p "staking*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "staking*"
+cargo t -r -p "staking*"
 ```

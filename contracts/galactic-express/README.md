@@ -10,13 +10,13 @@ Deliver the cargo 📦 to the orbit 🌌 using fuel ⛽️ efficiently.
 ### 🏗️ Building
 
 ```sh
-cargo b -p "galactic-express*"
+cargo b -r -p "galactic-express*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "galactic-express*"
+cargo t -r -p "galactic-express*"
 ```
 
 ## Stages
@@ -37,7 +37,7 @@ Contract executes a session within 1 transaction and creates random events durin
 
 ### 3. The end game
 
-The main goal is to deliver a cargo to the orbit without the fuel surplus/shortage and with the bypass of fatal events. If a player has lots of remaining fuel, a delivery reward increases.
+The main goal is to deliver a cargo t -ro the orbit without the fuel surplus/shortage and with the bypass of fatal events. If a player has lots of remaining fuel, a delivery reward increases.
 
 ## Math
 

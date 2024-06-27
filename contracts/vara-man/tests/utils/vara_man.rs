@@ -201,7 +201,7 @@ pub fn init_mint_transfer_fungible_token(sys: &System, from: u64, to: u64) -> Pr
     sys.init_logger();
     let ft = Program::from_file(
         sys,
-        "../target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/fungible_token.opt.wasm",
     );
 
     let res = ft.send(

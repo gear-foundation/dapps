@@ -28,7 +28,7 @@ impl FTokenTestFuncs for Program<'_> {
     ) -> Program<'_> {
         let ftoken = Program::from_file(
             system,
-            "../target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm",
+            "../target/wasm32-unknown-unknown/release/fungible_token.opt.wasm",
         );
 
         let res = ftoken.send(

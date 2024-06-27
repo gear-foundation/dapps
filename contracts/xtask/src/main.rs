@@ -71,7 +71,7 @@ fn main() -> Result<()> {
             )
             .run()?;
             node()?;
-            xshell::cmd!(sh, "cargo t").run()?;
+            xshell::cmd!(sh, "cargo t -r").run()?;
             docs()?;
         }
         "docs" => docs()?,

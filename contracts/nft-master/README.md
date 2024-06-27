@@ -10,19 +10,19 @@ In general, this smart contract allows for the modification of an entire gNFT co
 ### 🏗️ Building
 
 ```sh
-cargo b -p "nft-master*"
+cargo b -r -p "nft-master*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "nft-master*" -- --skip gclient
+cargo t -r -p "nft-master*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "nft-master*"
+cargo t -r -p "nft-master*"
 ```

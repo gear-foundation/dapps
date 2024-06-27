@@ -30,19 +30,19 @@ fn success_run_game() {
     assert!(!game_init_result.main_failed());
     let car_1 = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/car_1.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/car_1.opt.wasm",
     );
     let car_init_result = car_1.send_bytes(ADMIN, []);
     assert!(!car_init_result.main_failed());
     let car_2 = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/car_3.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/car_3.opt.wasm",
     );
     let car_init_result = car_2.send_bytes(ADMIN, []);
     assert!(!car_init_result.main_failed());
     let car_3 = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/car_3.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/car_3.opt.wasm",
     );
     let car_init_result = car_3.send_bytes(ADMIN, []);
     assert!(!car_init_result.main_failed());
@@ -166,19 +166,19 @@ fn failures_test() {
 
     let car_1 = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/car_1.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/car_1.opt.wasm",
     );
     let car_init_result = car_1.send_bytes(ADMIN, []);
     assert!(!car_init_result.main_failed());
     let car_2 = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/car_3.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/car_3.opt.wasm",
     );
     let car_init_result = car_2.send_bytes(ADMIN, []);
     assert!(!car_init_result.main_failed());
     let car_3 = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/car_3.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/car_3.opt.wasm",
     );
     let car_init_result = car_3.send_bytes(ADMIN, []);
     assert!(!car_init_result.main_failed());

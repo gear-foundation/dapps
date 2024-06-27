@@ -10,7 +10,7 @@ fn test() {
 
     let battleship = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/battleship_bot.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/battleship_bot.opt.wasm",
     );
 
     let res = battleship.send(2, 0);

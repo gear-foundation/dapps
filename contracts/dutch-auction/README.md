@@ -6,19 +6,19 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "dutch-auction*"
+cargo b -r -p "dutch-auction*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "dutch-auction*" -- --skip gclient
+cargo t -r -p "dutch-auction*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "dutch-auction*"
+cargo t -r -p "dutch-auction*"
 ```
