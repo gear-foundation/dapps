@@ -3,13 +3,12 @@ import { MutableRefObject, useRef, useState } from 'react';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { Bytes } from '@polkadot/types';
 import { ProgramMetadata, UserMessageSent, decodeAddress } from '@gear-js/api';
-import { ADDRESS } from '@/features/tic-tac-toe/consts';
 import { ContractError } from '../types';
 import { useSignlessTransactions } from '@dapps-frontend/ez-transactions';
-
-const programId = ADDRESS.GAME;
+import { useDnsProgramId } from '@dapps-frontend/hooks';
 
 export function useWatchMessages<T>(meta: ProgramMetadata) {
+  const programId = useDnsProgramId();
   const { api } = useApi();
   const { account } = useAccount();
   const alert = useAlert();
