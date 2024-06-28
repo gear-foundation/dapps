@@ -1,4 +1,4 @@
-import { useCountdown, useProgramMetadata, useHandleCalculateGas, useCheckBalance, useDnsProgramId } from './hooks';
+import { useCountdown, useProgramMetadata, useHandleCalculateGas, useCheckBalance, useDnsProgramIds } from './hooks';
 import { AvailableBalanceProvider, DnsProvider } from './providers';
 
 export {
@@ -8,5 +8,5 @@ export {
   useCheckBalance,
   AvailableBalanceProvider,
   DnsProvider,
-  useDnsProgramId,
+  useDnsProgramIds,
 };

@@ -7,7 +7,7 @@ import {
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
-import { DnsProvider as SharedDnsProvider, useDnsProgramId } from '@dapps-frontend/hooks';
+import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import {
   SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
@@ -32,14 +32,14 @@ function AlertProvider({ children }: ProviderProps) {
 
 function DnsProvider({ children }: ProviderProps) {
   return (
-    <SharedDnsProvider name={ADDRESS.DNS_NAME} dnsApiUrl={ADDRESS.DNS_API_URL}>
+    <SharedDnsProvider names={{ programId: ADDRESS.DNS_NAME }} dnsApiUrl={ADDRESS.DNS_API_URL}>
       {children}
     </SharedDnsProvider>
   );
 }
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
-  const programId = useDnsProgramId();
+  const { programId } = useDnsProgramIds();
   return (
     <SharedGaslessTransactionsProvider programId={programId} backendAddress={ADDRESS.GASLESS_BACKEND} voucherLimit={6}>
       {children}
@@ -48,7 +48,7 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
 }
 
 function SignlessTransactionsProvider({ children }: ProviderProps) {
-  const programId = useDnsProgramId();
+  const { programId } = useDnsProgramIds();
   return (
     <SharedSignlessTransactionsProvider programId={programId} metadataSource={metaTxt}>
       {children}

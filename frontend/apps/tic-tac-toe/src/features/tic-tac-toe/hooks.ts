@@ -2,7 +2,7 @@ import { useAccount, useApi } from '@gear-js/react-hooks';
 import { useEffect, useMemo } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import isEqual from 'lodash.isequal';
-import { useDnsProgramId } from '@dapps-frontend/hooks';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
 import { IDecodedReplyGame, IGameInstance, IQueryResponseConfig, IQueryResponseGame } from './types';
 import { configAtom, countdownAtom, gameAtom, pendingAtom, stateChangeLoadingAtom } from './store';
@@ -60,7 +60,7 @@ export function useGame() {
 
 export function useOnceGameState(metadata?: ProgramMetadata) {
   const { account } = useAccount();
-  const programId = useDnsProgramId();
+  const { programId } = useDnsProgramIds();
 
   const payloadGame = useMemo(
     () => (account?.decodedAddress ? { Game: { player_id: account.decodedAddress } } : undefined),
@@ -149,7 +149,7 @@ export const useInitGameSync = (metadata?: ProgramMetadata) => {
 };
 
 export function useGameMessage(meta: ProgramMetadata) {
-  const programId = useDnsProgramId();
+  const { programId } = useDnsProgramIds();
   return useSignlessSendMessage(programId, meta, { disableAlerts: true });
 }
 

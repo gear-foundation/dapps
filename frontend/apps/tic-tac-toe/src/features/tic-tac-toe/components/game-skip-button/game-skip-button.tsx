@@ -5,14 +5,14 @@ import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hook
 import { withoutCommas } from '@/app/utils';
 import { ProgramMetadata } from '@gear-js/api';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
-import { useCheckBalance, useDnsProgramId } from '@dapps-frontend/hooks';
+import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
 
 type Props = {
   meta: ProgramMetadata;
 };
 
 export function GameSkipButton({ meta }: Props) {
-  const programId = useDnsProgramId();
+  const { programId } = useDnsProgramIds();
   const calculateGas = useHandleCalculateGas(programId, meta);
   const message = useGameMessage(meta);
   const alert = useAlert();

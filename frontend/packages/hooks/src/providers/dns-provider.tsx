@@ -1,14 +1,13 @@
+import { createContext, useEffect, useState, ReactNode, PropsWithChildren } from 'react';
 import { useAlert } from '@gear-js/react-hooks';
-import { PropsWithChildren, createContext, useEffect, useState, ReactNode } from 'react';
+import { HexString } from '@gear-js/api';
 
-type HexString = `0x${string}`;
+export type DnsContextValue = Record<string, HexString>;
 
-export type DnsContextProps = {
-  programId: HexString;
-};
+export type DefaultDnsValueName = 'programId';
 
-export type DnsProviderProps = {
-  name: string;
+export type DnsProviderProps<T extends string = DefaultDnsValueName> = {
+  names: Record<T, string>;
   dnsApiUrl: string;
   fallback?: ReactNode;
 };
@@ -22,22 +21,33 @@ export type DnsResponse = {
   updatedAt: string;
 };
 
-export const DnsContext = createContext<Partial<DnsContextProps>>({});
+const DnsContext = createContext<DnsContextValue>({});
 
-export function DnsProvider({ children, name, dnsApiUrl, fallback }: PropsWithChildren<DnsProviderProps>) {
-  const [programId, setProgramId] = useState<HexString>();
+function DnsProvider<T extends string = DefaultDnsValueName>({
+  children,
+  names,
+  dnsApiUrl,
+  fallback,
+}: PropsWithChildren<DnsProviderProps<T>>) {
+  const [programIds, setProgramIds] = useState<DnsContextValue>({});
   const alert = useAlert();
 
   useEffect(() => {
     const init = async () => {
-      if (!dnsApiUrl || !name) {
-        throw new Error('dnsApiUrl or name is undefined');
+      if (!dnsApiUrl || !names) {
+        throw new Error('dnsApiUrl or names is undefined');
       }
       try {
-        const response = await fetch(`${dnsApiUrl}/dns/by_name/${name}`);
-        const dns: DnsResponse = await response.json();
+        const promises = Object.entries(names).map(async ([key, name]) => {
+          const response = await fetch(`${dnsApiUrl}/dns/by_name/${name}`);
+          const dns: DnsResponse = await response.json();
+          return { [key]: dns.address };
+        });
 
-        setProgramId(dns.address);
+        const results = await Promise.all(promises);
+        const addresses = results.reduce((acc, current) => ({ ...acc, ...current }), {});
+
+        setProgramIds(addresses);
       } catch (error) {
         const { message } = error as Error;
         alert.error(message);
@@ -46,7 +56,11 @@ export function DnsProvider({ children, name, dnsApiUrl, fallback }: PropsWithCh
     };
 
     init();
-  }, [name, dnsApiUrl]);
+  }, [names, dnsApiUrl]);
 
-  return <DnsContext.Provider value={{ programId }}>{programId ? children : fallback}</DnsContext.Provider>;
+  return (
+    <DnsContext.Provider value={programIds}>{Object.keys(programIds).length ? children : fallback}</DnsContext.Provider>
+  );
 }
+
+export { DnsContext, DnsProvider };

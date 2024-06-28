@@ -12,7 +12,7 @@ import { useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { stateChangeLoadingAtom } from '../../store';
 import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
-import { useCheckBalance, useDnsProgramId } from '@dapps-frontend/hooks';
+import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { withoutCommas } from '@/app/utils';
 import { ProgramMetadata } from '@gear-js/api';
@@ -23,7 +23,7 @@ type GameFieldProps = BaseComponentProps & {
 };
 
 export function GameField({ game, meta }: GameFieldProps) {
-  const programId = useDnsProgramId();
+  const { programId } = useDnsProgramIds();
   const { signless, gasless } = useEzTransactions();
   const { countdown } = useGame();
   const [isLoading, setIsLoading] = useAtom(stateChangeLoadingAtom);

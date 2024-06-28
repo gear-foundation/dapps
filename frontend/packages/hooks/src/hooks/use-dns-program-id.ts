@@ -1,10 +1,15 @@
 import { useContext } from 'react';
-import { DnsContext } from '../providers/dns-provider';
+import { DnsContext, DefaultDnsValueName } from '../providers/dns-provider';
+import { HexString } from '@gear-js/api';
 
-function useDnsProgramId() {
-  const { programId } = useContext(DnsContext);
+function useDnsProgramIds<T extends string = DefaultDnsValueName>() {
+  const context = useContext(DnsContext);
 
-  return programId!;
+  if (context === undefined) {
+    throw new Error('useDnsProgramIds must be used within a DnsProvider');
+  }
+
+  return context as Record<T, HexString>;
 }
 
-export { useDnsProgramId };
+export { useDnsProgramIds };

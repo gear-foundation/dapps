@@ -2,7 +2,7 @@ import { Button } from '@/components/ui/button';
 import { useGameMessage, useSubscriptionOnGameMessage } from '../../hooks';
 import { useEffect } from 'react';
 import { BaseComponentProps } from '@/app/types';
-import { useCheckBalance, useDnsProgramId } from '@dapps-frontend/hooks';
+import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
 import { withoutCommas } from '@/app/utils';
 import { ProgramMetadata } from '@gear-js/api';
@@ -15,7 +15,7 @@ type GameStartButtonProps = BaseComponentProps & {
 };
 
 export function GameStartButton({ children, meta }: GameStartButtonProps) {
-  const programId = useDnsProgramId();
+  const { programId } = useDnsProgramIds();
   const message = useGameMessage(meta);
   const { account } = useAccount();
   const alert = useAlert();

@@ -5,10 +5,10 @@ import { Bytes } from '@polkadot/types';
 import { ProgramMetadata, UserMessageSent, decodeAddress } from '@gear-js/api';
 import { ContractError } from '../types';
 import { useSignlessTransactions } from '@dapps-frontend/ez-transactions';
-import { useDnsProgramId } from '@dapps-frontend/hooks';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
 export function useWatchMessages<T>(meta: ProgramMetadata) {
-  const programId = useDnsProgramId();
+  const { programId } = useDnsProgramIds();
   const { api } = useApi();
   const { account } = useAccount();
   const alert = useAlert();
