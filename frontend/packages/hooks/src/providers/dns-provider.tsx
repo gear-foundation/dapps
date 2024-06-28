@@ -30,6 +30,9 @@ export function DnsProvider({ children, name, dnsApiUrl, fallback }: PropsWithCh
 
   useEffect(() => {
     const init = async () => {
+      if (!dnsApiUrl || !name) {
+        throw new Error('dnsApiUrl or name is undefined');
+      }
       try {
         const response = await fetch(`${dnsApiUrl}/dns/by_name/${name}`);
         const dns: DnsResponse = await response.json();
@@ -38,6 +41,7 @@ export function DnsProvider({ children, name, dnsApiUrl, fallback }: PropsWithCh
       } catch (error) {
         const { message } = error as Error;
         alert.error(message);
+        console.error(message);
       }
     };
 
