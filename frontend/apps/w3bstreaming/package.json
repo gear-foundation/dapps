@@ -18,8 +18,8 @@
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
-    "@gear-js/api": "0.36.5",
-    "@gear-js/react-hooks": "0.10.6",
+    "@gear-js/api": "0.38.1",
+    "@gear-js/react-hooks": "0.10.7",
     "@gear-js/ui": "0.5.21",
     "@gear-js/vara-ui": "0.0.6",
     "@headlessui/react": "1.7.17",

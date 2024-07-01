@@ -1,0 +1,12 @@
+@use '@/assets/styles/utils' as *;
+
+.waitModalContent {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+
+  .leaveGameButton {
+    background: #EB5757;
+    color: #FFFFFF;
+  }
+}

@@ -1,0 +1,30 @@
+*,
+::after,
+::before {
+  border: none;
+}
+
+button {
+  cursor: pointer;
+
+  &:disabled {
+    pointer-events: none;
+  }
+}
+
+body {
+  font-family: 'Anuphan', sans-serif;
+  color: #000;
+  background-color: #fff;
+  font-variant-numeric: lining-nums proportional-nums;
+
+  @supports not (font-variation-settings: 'wdth' 115) {
+    & {
+      font-family: 'Anuphan-Fallback', sans-serif;
+    }
+  }
+
+  &.modal-open {
+    overflow-y: hidden;
+  }
+}
