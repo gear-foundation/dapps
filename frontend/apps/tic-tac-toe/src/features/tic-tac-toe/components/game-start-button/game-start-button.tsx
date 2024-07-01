@@ -2,9 +2,8 @@ import { Button } from '@/components/ui/button';
 import { useGameMessage, useSubscriptionOnGameMessage } from '../../hooks';
 import { useEffect } from 'react';
 import { BaseComponentProps } from '@/app/types';
-import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
-import { ADDRESS } from '../../consts';
 import { withoutCommas } from '@/app/utils';
 import { ProgramMetadata } from '@gear-js/api';
 import { useGaslessTransactions, useSignlessTransactions } from '@dapps-frontend/ez-transactions';
@@ -16,13 +15,14 @@ type GameStartButtonProps = BaseComponentProps & {
 };
 
 export function GameStartButton({ children, meta }: GameStartButtonProps) {
+  const { programId } = useDnsProgramIds();
   const message = useGameMessage(meta);
   const { account } = useAccount();
   const alert = useAlert();
 
   const signless = useSignlessTransactions();
   const gasless = useGaslessTransactions();
-  const calculateGas = useHandleCalculateGas(ADDRESS.GAME, meta);
+  const calculateGas = useHandleCalculateGas(programId, meta);
 
   const { checkBalance } = useCheckBalance({
     signlessPairVoucherId: signless.voucher?.id,
@@ -43,7 +43,7 @@ export function GameStartButton({ children, meta }: GameStartButtonProps) {
   };
 
   const onGameStart = async () => {
-    if (!meta || !account || !ADDRESS.GAME) {
+    if (!meta || !account || !programId) {
       return;
     }
     const payload = { StartGame: {} };
@@ -77,7 +77,7 @@ export function GameStartButton({ children, meta }: GameStartButtonProps) {
   };
 
   return (
-    <Button onClick={onGameStart} isLoading={isLoading || !meta || !ADDRESS.GAME || !account || gasless.isLoading}>
+    <Button onClick={onGameStart} isLoading={isLoading || !meta || !programId || !account || gasless.isLoading}>
       {children}
     </Button>
   );

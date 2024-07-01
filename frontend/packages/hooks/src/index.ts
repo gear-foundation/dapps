@@ -1,4 +1,12 @@
-import { useCountdown, useProgramMetadata, useHandleCalculateGas, useCheckBalance } from './hooks';
-import { AvailableBalanceProvider } from './providers';
+import { useCountdown, useProgramMetadata, useHandleCalculateGas, useCheckBalance, useDnsProgramIds } from './hooks';
+import { AvailableBalanceProvider, DnsProvider } from './providers';
 
-export { useCountdown, useProgramMetadata, useHandleCalculateGas, useCheckBalance, AvailableBalanceProvider };
+export {
+  useCountdown,
+  useProgramMetadata,
+  useHandleCalculateGas,
+  useCheckBalance,
+  AvailableBalanceProvider,
+  DnsProvider,
+  useDnsProgramIds,
+};

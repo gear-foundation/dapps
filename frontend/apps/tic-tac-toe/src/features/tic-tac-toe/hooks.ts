@@ -1,21 +1,15 @@
-import { useAccount, useApi, useBalance } from '@gear-js/react-hooks';
-import { useEffect, useMemo, useState } from 'react';
+import { useAccount, useApi } from '@gear-js/react-hooks';
+import { useEffect, useMemo } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import isEqual from 'lodash.isequal';
-import {
-  useGaslessTransactions,
-  useSignlessSendMessage,
-  useSignlessTransactions,
-} from '@dapps-frontend/ez-transactions';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
+import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
 import { IDecodedReplyGame, IGameInstance, IQueryResponseConfig, IQueryResponseGame } from './types';
 import { configAtom, countdownAtom, gameAtom, pendingAtom, stateChangeLoadingAtom } from './store';
-import { ADDRESS } from './consts';
 import { useOnceReadState } from '@/app/hooks/use-once-read-state';
 import { useWatchMessages } from '@/app/hooks/use-watch-messages';
 import { toNumber } from '@/app/utils';
 import { ProgramMetadata } from '@gear-js/api';
-
-const programIdGame = ADDRESS.GAME;
 
 export function useGame() {
   const setGameState = useSetAtom(gameAtom);
@@ -66,6 +60,7 @@ export function useGame() {
 
 export function useOnceGameState(metadata?: ProgramMetadata) {
   const { account } = useAccount();
+  const { programId } = useDnsProgramIds();
 
   const payloadGame = useMemo(
     () => (account?.decodedAddress ? { Game: { player_id: account.decodedAddress } } : undefined),
@@ -78,7 +73,7 @@ export function useOnceGameState(metadata?: ProgramMetadata) {
     error: configError,
     handleReadState: triggerConfig,
   } = useOnceReadState<IQueryResponseConfig>({
-    programId: programIdGame,
+    programId,
     payload: payloadConfig,
     meta: metadata,
   });
@@ -88,7 +83,7 @@ export function useOnceGameState(metadata?: ProgramMetadata) {
     error: gameError,
     handleReadState: triggerGame,
   } = useOnceReadState<IQueryResponseGame>({
-    programId: programIdGame,
+    programId,
     payload: payloadGame,
     meta: metadata,
   });
@@ -154,7 +149,8 @@ export const useInitGameSync = (metadata?: ProgramMetadata) => {
 };
 
 export function useGameMessage(meta: ProgramMetadata) {
-  return useSignlessSendMessage(ADDRESS.GAME, meta, { disableAlerts: true });
+  const { programId } = useDnsProgramIds();
+  return useSignlessSendMessage(programId, meta, { disableAlerts: true });
 }
 
 export function usePending() {
