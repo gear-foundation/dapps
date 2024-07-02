@@ -1,4 +1,3 @@
-import { HexString } from '@polkadot/util/types';
 import { ReactComponent as AcalaSVG } from 'assets/images/logos/acala.svg';
 import { ReactComponent as AstarSVG } from 'assets/images/logos/astar.svg';
 import { ReactComponent as BifrostSVG } from 'assets/images/logos/bifrost.svg';
@@ -37,7 +36,8 @@ import { PlayerType } from 'types';
 
 const ADDRESS = {
   NODE: process.env.REACT_APP_NODE_ADDRESS as string,
-  CONTRACT: process.env.REACT_APP_CONTRACT_ADDRESS as HexString,
+  DNS_API_URL: process.env.REACT_APP_DNS_API_URL as string,
+  DNS_NAME: process.env.REACT_APP_DNS_NAME as string,
 };
 
 enum LocalStorage {

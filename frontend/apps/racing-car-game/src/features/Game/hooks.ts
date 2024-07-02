@@ -5,7 +5,7 @@ import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import isEqual from 'lodash.isequal';
 import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
-import { ADDRESS } from '@/consts';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { useProgramMetadata } from '@/hooks';
 import metaTxt from '@/assets/meta/meta.txt';
 import { ContractError, GameState } from '@/types';
@@ -14,15 +14,17 @@ import { getDecodedReply, logger } from '@/utils';
 import { IS_SUBSCRIBED_ATOM } from '@/atoms';
 
 function usePlayerMoveMessage() {
+  const { programId } = useDnsProgramIds();
   const meta = useProgramMetadata(metaTxt);
 
-  return useSignlessSendMessage(ADDRESS.CONTRACT, meta, { disableAlerts: true });
+  return useSignlessSendMessage(programId, meta, { disableAlerts: true });
 }
 
 function useStartGameMessage() {
+  const { programId } = useDnsProgramIds();
   const meta = useProgramMetadata(metaTxt);
 
-  const message = useSignlessSendMessage(ADDRESS.CONTRACT, meta, { disableAlerts: true });
+  const message = useSignlessSendMessage(programId, meta, { disableAlerts: true });
 
   return { meta, message };
 }
@@ -36,6 +38,7 @@ function useSubscribeSentMessage() {
   const [replyData, setReplyData] = useAtom(REPLY_DATA_ATOM);
   const [currentSentMessageId, setCurrentSentMessageId] = useAtom(CURRENT_SENT_MESSAGE_ID_ATOM);
   const [isSubscribed, setIsSubscribed] = useAtom(IS_SUBSCRIBED_ATOM);
+  const { programId } = useDnsProgramIds();
 
   const handleUnsubscribeFromEvent = (onSuccess?: () => void) => {
     if (messageSubscription.current) {
@@ -56,7 +59,7 @@ function useSubscribeSentMessage() {
       const { message } = _data;
       const { destination, source, payload } = message;
       const isOwner = destination.toHex() === account?.decodedAddress;
-      const isCurrentProgram = source.toHex() === ADDRESS.CONTRACT;
+      const isCurrentProgram = source.toHex() === programId;
       // const isNeededMessageId = id.toHex() === currentSentMessageId;
 
       if (isOwner && isCurrentProgram) {
@@ -107,8 +110,8 @@ function useSubscribeSentMessage() {
 }
 
 function useGameState() {
+  const { programId } = useDnsProgramIds();
   const { api } = useApi();
-  const programId = ADDRESS.CONTRACT;
   const meta = useProgramMetadata(metaTxt);
   const [gameData, setGameData] = useState<GameState | null>(null);
   const setReplyData = useSetAtom(REPLY_DATA_ATOM);
@@ -120,7 +123,7 @@ function useGameState() {
       try {
         const res = await api.programState.read(
           {
-            programId: ADDRESS.CONTRACT,
+            programId,
             payload: {
               Game: {
                 account_id: account?.decodedAddress,

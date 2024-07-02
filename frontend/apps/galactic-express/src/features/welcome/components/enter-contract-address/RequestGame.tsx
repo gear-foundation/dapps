@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { WalletNew as Wallet } from '@dapps-frontend/ui';
 import { Button } from '@gear-js/vara-ui';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { cx } from 'utils';
 import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
 import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
@@ -41,6 +42,7 @@ function RequestGame() {
   const balances = useAccountDeriveBalancesAll();
   const { isApiReady } = useApi();
   const { api } = useApi();
+  const { programId } = useDnsProgramIds();
   const { getFormattedBalance, getFormattedBalanceValue, getChainBalanceValue } = useBalanceFormat();
   const balance =
     isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
@@ -125,7 +127,7 @@ function RequestGame() {
     try {
       const res = await api?.programState.read(
         {
-          programId: ADDRESS.CONTRACT,
+          programId,
           payload,
         },
         meta,

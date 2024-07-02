@@ -4,6 +4,7 @@ import { useAtom } from 'jotai';
 import moment, { Moment } from 'moment';
 import { useForm, isNotEmpty } from '@mantine/form';
 import { useAlert, withoutCommas } from '@gear-js/react-hooks';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { Button, Calendar, TextField, InputArea } from '@/ui';
 import styles from './LayoutCreateForm.module.scss';
 import { cx, logger } from '@/utils';
@@ -12,7 +13,6 @@ import { TimePicker } from '@/ui/TimePicker';
 import CreateSVG from '@/assets/icons/correct-icon.svg';
 import { useCreateStreamSendMessage } from '../../hooks';
 import { useCheckBalance, useHandleCalculateGas, useProgramState } from '@/hooks';
-import { ADDRESS } from '@/consts';
 import { PictureDropzone } from '../PictureDropzone';
 import { IS_CREATING_STREAM } from '../../atoms';
 import { STREAMS } from '@/App.routes';
@@ -28,7 +28,8 @@ function Section({ title, children }: SectionProps) {
 
 function LayoutCreateForm({ meta }: LayoutCreateFormProps) {
   const sendMessage = useCreateStreamSendMessage();
-  const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, meta);
+  const { programId } = useDnsProgramIds();
+  const calculateGas = useHandleCalculateGas(programId, meta);
   const { checkBalance } = useCheckBalance();
   const alert = useAlert();
   const navigate = useNavigate();

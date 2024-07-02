@@ -10,11 +10,10 @@ import {
 } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 import { AnyJson, AnyNumber } from '@polkadot/types/types';
-import { useAtom } from 'jotai';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import metaTxt from '@/assets/meta/meta.txt';
-import { ACCOUNT_ID_LOCAL_STORAGE_KEY, ADDRESS, LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
+import { ACCOUNT_ID_LOCAL_STORAGE_KEY, LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
 import { Handler, ProgramStateRes } from '@/types';
-import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
 import { WALLET_ID_LOCAL_STORAGE_KEY } from './features/Wallet/consts';
 import { AUTH_TOKEN_LOCAL_STORAGE_KEY } from './features/Auth/consts';
 import { useAccountAvailableBalance } from './features/Wallet/hooks';
@@ -37,25 +36,18 @@ export function useProgramMetadata(source: string) {
   return metadata;
 }
 
-export function useContractAddress() {
-  const [address] = useAtom(CONTRACT_ADDRESS_ATOM);
-
-  return address;
-}
-
 export function useContractAddressSetup() {
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const address = useContractAddress();
+  const { programId } = useDnsProgramIds();
 
   useEffect(() => {
-    if (!address) return;
+    if (!programId) return;
 
-    localStorage.setItem(LOCAL_STORAGE.CONTRACT_ADDRESS, address);
+    localStorage.setItem(LOCAL_STORAGE.CONTRACT_ADDRESS, programId);
 
-    searchParams.set(SEARCH_PARAMS.MASTER_CONTRACT_ID, address);
+    searchParams.set(SEARCH_PARAMS.MASTER_CONTRACT_ID, programId);
     setSearchParams(searchParams);
-  }, [address, searchParams, setSearchParams]);
+  }, [programId, searchParams, setSearchParams]);
 }
 
 // @deprecated
@@ -129,7 +121,7 @@ export function useMediaQuery(width: number) {
 }
 
 export function useProgramState<T>(payload?: AnyJson) {
-  const programId = ADDRESS.CONTRACT;
+  const { programId } = useDnsProgramIds();
   const meta = useProgramMetadata(metaTxt);
   const state: ProgramStateRes<T> = useReadFullState(programId, meta, payload);
 

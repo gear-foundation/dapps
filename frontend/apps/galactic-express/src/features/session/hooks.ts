@@ -6,10 +6,12 @@ import { useProgramMetadata } from 'hooks';
 import { ADDRESS } from 'consts';
 import { useAtomValue } from 'jotai';
 import { CURRENT_GAME_ATOM } from 'atoms';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { LaunchState } from './types';
 
 function useLaunchState() {
   const { account } = useAccount();
+  const { programId } = useDnsProgramIds();
   const currentGame = useAtomValue(CURRENT_GAME_ATOM);
   const meta = useProgramMetadata(metaTxt);
 
@@ -18,15 +20,16 @@ function useLaunchState() {
     [currentGame, account?.decodedAddress],
   );
 
-  const { state } = useReadFullState<LaunchState>(ADDRESS.CONTRACT as HexString, meta, payload);
+  const { state } = useReadFullState<LaunchState>(programId, meta, payload);
 
   return state?.Game;
 }
 
 function useLaunchMessage() {
+  const { programId } = useDnsProgramIds();
   const meta = useProgramMetadata(metaTxt);
 
-  return { meta: !!meta, message: useSendMessageWithGas(ADDRESS.CONTRACT as HexString, meta, { isMaxGasLimit: true }) };
+  return { meta: !!meta, message: useSendMessageWithGas(programId, meta, { isMaxGasLimit: true }) };
 }
 
 export { useLaunchState, useLaunchMessage };

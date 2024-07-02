@@ -3,18 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import { useAccount, useApi, useSendMessage } from '@gear-js/react-hooks';
 import { useProgramMetadata } from 'app/hooks/api';
 import { useBattle } from '../context';
-import { BATTLE_ADDRESS } from '../consts';
 import meta from '../assets/meta/battle.meta.txt';
 import type { HexString, UserMessageSent } from '@gear-js/api';
 import type { UnsubscribePromise } from '@polkadot/api/types';
 import type { BattleStatePlayer } from '../types/battles';
 import type { BattleCurrentStateVariants, RoundDamageType } from '../types/battles';
 import { useFullState } from './use-full-state';
-
-const programId = BATTLE_ADDRESS;
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
 export function useInitBattleData() {
   const { api } = useApi();
+  const { programId } = useDnsProgramIds();
   const navigate = useNavigate();
   const { account } = useAccount();
   const {
@@ -147,6 +146,7 @@ export function useInitBattleData() {
 
 export function useBattleMessage() {
   const metadata = useProgramMetadata(meta);
+  const { programId } = useDnsProgramIds();
 
   return useSendMessage(programId, metadata);
 }

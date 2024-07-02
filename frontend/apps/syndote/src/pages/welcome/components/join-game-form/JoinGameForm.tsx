@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '@gear-js/vara-ui';
 import { useSetAtom, useAtom } from 'jotai';
 import { decodeAddress } from '@gear-js/api';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { CURRENT_GAME_ADMIN_ATOM, CURRENT_STRATEGY_ID_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
 import metaTxt from 'assets/meta/syndote_meta.txt';
 import { useAccount, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
@@ -9,7 +10,6 @@ import { TextField } from 'components/layout/text-field';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { HexString } from '@gear-js/api';
 import { GameFoundModal, JoinModalFormValues } from 'pages/home/game-found-modal';
-import { ADDRESS } from 'consts';
 import { useProgramMetadata } from 'hooks/metadata';
 import { TextModal } from 'pages/home/text-modal';
 import styles from './JoinGameForm.module.scss';
@@ -30,6 +30,7 @@ type JoinFormValues = {
 function JoinGameForm({ onCancel }: Props) {
   const { account } = useAccount();
   const { api } = useApi();
+  const { programId } = useDnsProgramIds();
   const { getFormattedBalanceValue } = useBalanceFormat();
   const [foundState, setFoundState] = useState<State | null>(null);
   const meta = useProgramMetadata(metaTxt);
@@ -73,7 +74,7 @@ function JoinGameForm({ onCancel }: Props) {
     try {
       const res = await api?.programState.read(
         {
-          programId: ADDRESS.CONTRACT,
+          programId,
           payload,
         },
         meta,
