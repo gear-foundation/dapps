@@ -1,51 +1,49 @@
 import { useApp, useGame } from 'app/context';
 import { useEffect, useMemo } from 'react';
 import { useAccount, useSendMessageWithGas } from '@gear-js/react-hooks';
-import { ENV } from 'app/consts';
 import meta from 'assets/meta/tequila_train.meta.txt';
 
 import { IGame, IState } from '../types/game';
 import { useProgramMetadata, useReadState } from './use-metadata';
-
-const programIdGame = ENV.game;
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
 function useGameState() {
-	const { account } = useAccount();
+  const { programId } = useDnsProgramIds();
+  const { account } = useAccount();
 
   const payloadAll = useMemo(() => ({ All: null }), []);
 
-
   const payloadGame = useMemo(
-		() =>
-    account?.decodedAddress
-				? {
-					GetGame: { player_id : account?.decodedAddress },
-				}
-				: undefined,
+    () =>
+      account?.decodedAddress
+        ? {
+            GetGame: { player_id: account?.decodedAddress },
+          }
+        : undefined,
 
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[account?.decodedAddress],
-	);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [account?.decodedAddress],
+  );
 
-	const { state: game } = useReadState<IGame | null>({
-		programId: programIdGame,
-		meta,
-		payload: payloadGame,
-	});
+  const { state: game } = useReadState<IGame | null>({
+    programId,
+    meta,
+    payload: payloadGame,
+  });
 
-	const { state } = useReadState<{All: IState}>({
-		programId: programIdGame,
-		meta,
-		payload: payloadAll,
-	});
+  const { state } = useReadState<{ All: IState }>({
+    programId,
+    meta,
+    payload: payloadAll,
+  });
 
-	return { state, game };
+  return { state, game };
 }
 
 export const useInitGame = () => {
   const { setIsAllowed } = useApp();
   const { account } = useAccount();
-  const { game, state } = useGameState()
+  const { game, state } = useGameState();
 
   const { setState, setGame, setPlayers, setIsAdmin, setTimer } = useGame();
 
@@ -63,9 +61,8 @@ export const useInitGame = () => {
         const initialSeconds = game.Game[1] && parseInt(game.Game[1].replace(',', '')) / 1000;
         setTimer(Number(initialSeconds));
 
-      
         const gameState = game.Game[0].gameState;
-        
+
         if (game.Game[0].isStarted && gameState) {
           setPlayers(gameState.players);
           setIsAllowed(account?.decodedAddress === gameState.players[+gameState.currentPlayer].id);
@@ -82,14 +79,15 @@ export const useInitGame = () => {
       setGame(null);
       setIsAdmin(false);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [game, state, account]);
 };
 
-
 export function useGameMessage() {
   const metadata = useProgramMetadata(meta);
-  return useSendMessageWithGas(programIdGame, metadata, {
+  const { programId } = useDnsProgramIds();
+
+  return useSendMessageWithGas(programId, metadata, {
     disableAlerts: true,
     isMaxGasLimit: true,
   });

@@ -12,10 +12,10 @@ import {
   useBalanceFormat,
 } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
-import { ADDRESS, LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
+import { LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
 import { Handler, StreamsState, UsersState } from '@/types';
 import {
-  CONTRACT_ADDRESS_ATOM,
   IS_STREAMS_READ_ATOM,
   IS_USERS_READ_ATOM,
   STREAM_TEASERS_ATOM,
@@ -24,25 +24,20 @@ import {
 import { useAccountAvailableBalance } from './features/Wallet/hooks';
 import { useGetStreamMetadata } from './features/CreateStream/hooks';
 
-function useContractAddress() {
-  const [address] = useAtom(CONTRACT_ADDRESS_ATOM);
-
-  return address;
-}
 
 function useContractAddressSetup() {
   const [searchParams, setSearchParams] = useSearchParams();
-
-  const address = useContractAddress();
+  const { programId } = useDnsProgramIds();
+  // const address = useContractAddress();
 
   useEffect(() => {
-    if (!address) return;
+    if (!programId) return;
 
-    localStorage.setItem(LOCAL_STORAGE.CONTRACT_ADDRESS, address);
+    localStorage.setItem(LOCAL_STORAGE.CONTRACT_ADDRESS, programId);
 
-    searchParams.set(SEARCH_PARAMS.MASTER_CONTRACT_ID, address);
+    searchParams.set(SEARCH_PARAMS.MASTER_CONTRACT_ID, programId);
     setSearchParams(searchParams);
-  }, [address, searchParams, setSearchParams]);
+  }, [programId, searchParams, setSearchParams]);
 }
 
 function useClickOutside(handler: Handler, ...refs: (RefObject<HTMLElement> | MutableRefObject<HTMLElement>)[]): void {
@@ -113,7 +108,7 @@ function useMediaQuery(width: number) {
 function useProgramState() {
   const { meta } = useGetStreamMetadata();
   const { api } = useApi();
-  const programId = ADDRESS.CONTRACT;
+  const { programId } = useDnsProgramIds();
   const [streamTeasers, setStreamTeasers] = useAtom(STREAM_TEASERS_ATOM);
   const [users, setUsers] = useAtom(USERS_ATOM);
   const [isStreamsRead, setIsStreamsRead] = useAtom(IS_STREAMS_READ_ATOM);

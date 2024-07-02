@@ -16,6 +16,8 @@ declare module '*.txt' {
 interface ImportMetaEnv {
   readonly VITE_CONTRACT_ADDRESS: string;
   readonly VITE_NODE_ADDRESS: HexString;
+  readonly VITE_DNS_API_URL: string;
+  readonly VITE_DNS_NAME: string;
 }
 
 interface ImportMeta {

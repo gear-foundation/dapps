@@ -6,7 +6,7 @@ import { useAccount, useAlert, useApi, useHandleCalculateGas } from '@gear-js/re
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { UserMessageSent, decodeAddress } from '@gear-js/api';
 import { Container, Footer } from '@dapps-frontend/ui';
-import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import styles from './Layout.module.scss';
 import { cx, getDecodedReply, logger, withoutCommas } from '@/utils';
@@ -48,7 +48,8 @@ function LayoutComponent() {
   const navigate = useNavigate();
   const sendPlayerMoveMessage = usePlayerMoveMessage();
   const { meta, message: startGameMessage } = useStartGameMessage();
-  const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, meta);
+  const { programId } = useDnsProgramIds();
+  const calculateGas = useHandleCalculateGas(programId, meta);
   const [isStateRead, setIsStateRead] = useAtom(IS_STATE_READ_ATOM);
   const { api } = useApi();
 
@@ -130,8 +131,8 @@ function LayoutComponent() {
           setTimeout(() => decodePair(i + 1), 2000);
         }
       }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentSentMessageId],
   );
 
@@ -146,7 +147,7 @@ function LayoutComponent() {
 
     const signlessPairAddress = signless.pair && decodeAddress(signless.pair.address);
     const isOwner = destination.toHex() === account?.decodedAddress || destination.toHex() === signlessPairAddress;
-    const isCurrentProgram = source.toHex() === ADDRESS.CONTRACT;
+    const isCurrentProgram = source.toHex() === programId;
 
     const details = messageDetails.toHuman() as MessageDetails;
 

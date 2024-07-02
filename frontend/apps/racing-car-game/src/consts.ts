@@ -1,5 +1,3 @@
-import { HexString } from '@polkadot/util/types';
-
 export const ACCOUNT_ID_LOCAL_STORAGE_KEY = 'account';
 
 export const LOCAL_STORAGE = {
@@ -12,7 +10,8 @@ export const LOCAL_STORAGE = {
 
 export const ADDRESS = {
   NODE: process.env.REACT_APP_NODE_ADDRESS,
-  CONTRACT: process.env.REACT_APP_CONTRACT_ADDRESS as HexString,
+  DNS_API_URL: process.env.REACT_APP_DNS_API_URL as string,
+  DNS_NAME: process.env.REACT_APP_DNS_NAME as string,
   GASLESS_BACKEND: process.env.REACT_APP_GASLESS_BACKEND_ADDRESS as string,
   BASE_NODES: process.env.REACT_APP_DEFAULT_NODES_URL as string,
   STAGING_NODES: process.env.REACT_APP_STAGING_NODES_URL as string,

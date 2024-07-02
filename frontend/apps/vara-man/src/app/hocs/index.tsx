@@ -11,6 +11,7 @@ import {
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
   EzTransactionsProvider,
 } from '@dapps-frontend/ez-transactions';
+import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { ENV } from '@/app/consts';
 import { AppProvider } from '@/app/context/ctx-app';
 import { GameProvider } from '@/app/context/ctx-game';
@@ -21,6 +22,14 @@ const ApiProvider = ({ children }: ProviderProps) => (
   <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>
 );
 
+function DnsProvider({ children }: ProviderProps) {
+  return (
+    <SharedDnsProvider names={{ programId: ENV.DNS_NAME }} dnsApiUrl={ENV.DNS_API_URL}>
+      {children}
+    </SharedDnsProvider>
+  );
+}
+
 const AlertProvider = ({ children }: ProviderProps) => (
   <GearAlertProvider template={Alert} containerClassName={alertStyles.root}>
     {children}
@@ -30,16 +39,19 @@ const AlertProvider = ({ children }: ProviderProps) => (
 const BrowserRouterProvider = ({ children }: ProviderProps) => <BrowserRouter>{children}</BrowserRouter>;
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
+  const { programId } = useDnsProgramIds();
+
   return (
-    <SharedGaslessTransactionsProvider programId={ENV.GAME} backendAddress={ENV.GASLESS_BACKEND} voucherLimit={18}>
+    <SharedGaslessTransactionsProvider programId={programId} backendAddress={ENV.GASLESS_BACKEND} voucherLimit={18}>
       {children}
     </SharedGaslessTransactionsProvider>
   );
 }
 
 function SignlessTransactionsProvider({ children }: ProviderProps) {
+  const { programId } = useDnsProgramIds();
   return (
-    <SharedSignlessTransactionsProvider programId={ENV.GAME} metadataSource={metaTxt}>
+    <SharedSignlessTransactionsProvider programId={programId} metadataSource={metaTxt}>
       {children}
     </SharedSignlessTransactionsProvider>
   );
@@ -49,6 +61,7 @@ const providers = [
   BrowserRouterProvider,
   AlertProvider,
   ApiProvider,
+  DnsProvider,
   AccountProvider,
   AppProvider,
   GameProvider,

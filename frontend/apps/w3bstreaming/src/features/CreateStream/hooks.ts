@@ -1,6 +1,6 @@
 import { useAtomValue, useSetAtom } from 'jotai';
 import { useSendMessage } from '@gear-js/react-hooks';
-import { ADDRESS } from '@/consts';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { useProgramMetadata } from '@/hooks';
 import metaTxt from '@/assets/meta/w3bstreaming.meta.txt';
 import { META_ATOM } from '@/atoms';
@@ -20,8 +20,9 @@ function useGetStreamMetadata() {
 
 function useCreateStreamSendMessage() {
   const { meta } = useGetStreamMetadata();
+  const { programId } = useDnsProgramIds();
 
-  return useSendMessage(ADDRESS.CONTRACT, meta);
+  return useSendMessage(programId, meta);
 }
 
 export { useCreateStreamSendMessage, useCreateStreamMetadata, useGetStreamMetadata };

@@ -3,6 +3,7 @@ import { useAtom } from 'jotai';
 import moment from 'moment-timezone';
 import { useAccount, useAlert, withoutCommas } from '@gear-js/react-hooks';
 import { useForm, isNotEmpty } from '@mantine/form';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import styles from './ProfileInfo.module.scss';
 import { FormValues } from './ProfileInfo.interfaces';
 import { cx, logger } from '@/utils';
@@ -25,6 +26,7 @@ function ProfileInfo() {
   const { account } = useAccount();
   const alert = useAlert();
   const { meta } = useGetStreamMetadata();
+  const { programId } = useDnsProgramIds();
   const {
     state: { users },
     updateUsers,
@@ -33,7 +35,7 @@ function ProfileInfo() {
   const [userInfo, setUserInfo] = useState<User | null>(null);
   const [isEditingProfile, setIsEditingProfile] = useState<boolean>(false);
   const [isCreatingAccount, setIsCreatingAccount] = useAtom(IS_CREATING_ACCOUNT_ATOM);
-  const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, meta);
+  const calculateGas = useHandleCalculateGas(programId, meta);
   const { checkBalance } = useCheckBalance();
 
   const validateName = (value: string, name: string) => {

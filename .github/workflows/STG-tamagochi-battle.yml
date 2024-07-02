@@ -3,7 +3,7 @@ name: Staging - Deploy Tamagotchi Battle
 on:
   workflow_dispatch:
   push:
-    branches: ['master', 'main']
+    branches: ["master", "main"]
     paths:
       - frontend/apps/tamagotchi-battle/**
       - frontend/packages/**
@@ -18,7 +18,7 @@ env:
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
   KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
-  KUBECTL_VERSION: 'v1.22.17'
+  KUBECTL_VERSION: "v1.22.17"
   KUBE_NAMESPACE: gear-dapps
   KUBE_DEPLOYMENT_PREFIX: tamagotchi-battle
   REGISTRY: ghcr.io/${{ github.repository }}
@@ -76,7 +76,8 @@ jobs:
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |
             REACT_APP_NODE_ADDRESS=${{ secrets.REACT_APP_NODE_ADDRESS }}
-            REACT_APP_CONTRACT_ADDRESS=${{ secrets.REACT_APP_CONTRACT_ADDRESS_TAMAGOCHI_BATTLE }}
+            REACT_APP_DNS_API_URL_TAMAGOCHI_BATTLE=${{ secrets.REACT_APP_DNS_API_URL_TAMAGOCHI_BATTLE }}
+            REACT_APP_DNS_NAME=${{ secrets.REACT_APP_DNS_NAME_TAMAGOCHI_BATTLE }}
             REACT_APP_SENTRY_DSN=${{ secrets.REACT_SENTRY_DSN_TAMAGOCHI_BATTLE }}
             REACT_APP_GASLESS_BACKEND_ADDRESS=${{ secrets.REACT_APP_GASLESS_BACKEND_ADDRESS }}
 
