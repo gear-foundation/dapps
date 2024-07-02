@@ -1,5 +1,4 @@
 import { useAlert, useApi } from '@gear-js/react-hooks';
-import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { ADDRESS } from 'consts';
 import { useEffect, useState } from 'react';
 import { NFT, MarketNFT, BaseNFT } from 'types';
@@ -55,7 +54,6 @@ function useMergedNFTs() {
 function useMergedOwnerNFTs() {
   const { api } = useApi();
   const alert = useAlert();
-  const { programId } = useDnsProgramIds();
 
   const { NFTs: ownerNFTs } = useOwnersNft();
   const marketplaceStateBuffer = useMarketplaceStateBuffer();
@@ -73,7 +71,7 @@ function useMergedOwnerNFTs() {
         api.programState
           .readUsingWasm(
             {
-              programId,
+              programId: ADDRESS.MARKETPLACE_CONTRACT,
               fn_name: 'item_info',
               wasm: marketplaceStateBuffer,
               argument: { nft_contract_id: ADDRESS.NFT_CONTRACT, token_id: baseNft.id },

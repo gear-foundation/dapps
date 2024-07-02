@@ -1,4 +1,3 @@
-import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { useReadWasmState, useSendMessageWithGas } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 import { useMemo } from 'react';
@@ -20,10 +19,9 @@ function useMarketplaceStateBuffer() {
 function useMarketplaceWasmState<T>(functionName: string, argument: AnyJson) {
   const programMetadata = useMarketplaceMeta();
   const buffer = useMarketplaceStateBuffer();
-  const { programId } = useDnsProgramIds();
   
   return useReadWasmState<T>({
-    programId,
+    programId: ADDRESS.MARKETPLACE_CONTRACT,
     wasm: buffer,
     functionName,
     payload: '0x',
@@ -48,9 +46,8 @@ function useMarketNft(tokenId: string) {
 
 function useMarketplaceMessage() {
   const metadata = useMarketplaceMeta();
-  const { programId } = useDnsProgramIds();
 
-  return useSendMessageWithGas(programId, metadata);
+  return useSendMessageWithGas(ADDRESS.MARKETPLACE_CONTRACT, metadata);
 }
 
 function useMarketplaceActions(token_id: string, price: MarketNFT['price'] | undefined) {
