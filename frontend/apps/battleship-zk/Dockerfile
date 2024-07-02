@@ -7,7 +7,7 @@ COPY /frontend/yarn.lock .
 COPY /frontend/.yarnrc.yml .
 COPY /frontend/.yarn/releases .yarn/releases
 
-COPY ./frontend/apps/battleship ./apps/battleship
+COPY ./frontend/apps/battleship-zk ./apps/battleship-zk
 COPY ./frontend/packages ./packages
 
 RUN apk update
