@@ -3,7 +3,7 @@ import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
 import { useShips } from '@/features/zk/hooks/use-ships';
 import { StepResult } from '@/app/utils/sails/lib/lib';
 import { useSingleplayerGame } from '@/features/singleplayer/hooks/use-singleplayer-game';
-import { program } from '@/app/utils/sails';
+import { useProgram } from '@/app/utils/sails';
 import { useAccount } from '@gear-js/react-hooks';
 
 type MoveMadeEvent = {
@@ -20,6 +20,7 @@ const config = {
 };
 
 export function useEventMoveMadeSubscription() {
+  const program = useProgram();
   const gameType = 'single';
   const event = useRef<Promise<() => void> | null>(null);
   const { account } = useAccount();

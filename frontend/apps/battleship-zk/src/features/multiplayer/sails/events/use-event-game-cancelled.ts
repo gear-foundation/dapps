@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { program } from '@/app/utils/sails';
+import { useProgram } from '@/app/utils/sails';
 import { useMultiplayerGame } from '../../hooks/use-multiplayer-game';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { useNavigate } from 'react-router-dom';
@@ -11,6 +11,7 @@ type GameCancelledEvent = {
 
 export function useEventGameCancelled() {
   const { account } = useAccount();
+  const program = useProgram();
   const alert = useAlert();
   const navigate = useNavigate();
   const { game, triggerGame } = useMultiplayerGame();

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { ParticipantInfo } from '@/app/utils/sails/lib/lib';
-import { program } from '@/app/utils/sails';
+import { useProgram } from '@/app/utils/sails';
 import { useMultiplayerGame } from '../../hooks';
 import { useAccount } from '@gear-js/react-hooks';
 
@@ -13,6 +13,7 @@ export type GameEndEvent = {
 
 export function useEventGameEndSubscription() {
   const { account } = useAccount();
+  const program = useProgram();
   const event = useRef<Promise<() => void> | null>(null);
   const { game, triggerGame } = useMultiplayerGame();
   const [result, setResult] = useState<GameEndEvent | null>(null);
