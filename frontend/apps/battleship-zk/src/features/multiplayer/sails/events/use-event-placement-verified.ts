@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { program } from '@/app/utils/sails';
+import { useProgram } from '@/app/utils/sails';
 import { useMultiplayerGame } from '../../hooks/use-multiplayer-game';
 
 type PlacementVerifiedEvent = {
@@ -8,6 +8,7 @@ type PlacementVerifiedEvent = {
 
 export function useEventPlacementVerified() {
   const { game, triggerGame } = useMultiplayerGame();
+  const program = useProgram();
   const event = useRef<Promise<() => void> | null>(null);
 
   const placementVerifiedEventCallback = ({ admin }: PlacementVerifiedEvent) => {

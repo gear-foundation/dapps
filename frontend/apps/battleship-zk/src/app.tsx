@@ -8,15 +8,17 @@ import { withProviders } from '@/app/hocs';
 
 import { useAccountAvailableBalanceSync, useWalletSync } from '@/features/wallet/hooks';
 import { Container, Footer } from '@dapps-frontend/ui';
+import { useProgram } from './app/utils/sails';
 
 function Component() {
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
+  const program = useProgram();
 
   useWalletSync();
   useAccountAvailableBalanceSync();
 
-  const isAppReady = isApiReady && isAccountReady;
+  const isAppReady = isApiReady && isAccountReady && program;
 
   return (
     <main>

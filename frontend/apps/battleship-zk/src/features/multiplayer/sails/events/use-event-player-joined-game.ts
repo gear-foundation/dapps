@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react';
-import { program } from '@/app/utils/sails';
+import { useProgram } from '@/app/utils/sails';
 import { useMultiplayerGame } from '../../hooks/use-multiplayer-game';
 
 type PlayerJoinedEvent = {
@@ -9,6 +9,7 @@ type PlayerJoinedEvent = {
 
 export function useEventPlayerJoinedGame() {
   const { game, triggerGame } = useMultiplayerGame();
+  const program = useProgram();
   const event = useRef<Promise<() => void> | null>(null);
 
   const playerJoinedEventCallback = ({ game_id }: PlayerJoinedEvent) => {

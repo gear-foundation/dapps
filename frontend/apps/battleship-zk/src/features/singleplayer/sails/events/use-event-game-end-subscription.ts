@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { BattleshipParticipants } from '@/app/utils/sails/lib/lib';
-import { program } from '@/app/utils/sails';
+import { useProgram } from '@/app/utils/sails';
 import { useAccount } from '@gear-js/react-hooks';
 
 export type GameEndEvent = {
@@ -13,6 +13,7 @@ export type GameEndEvent = {
 
 export function useEventGameEndSubscription() {
   const { account } = useAccount();
+  const program = useProgram();
   const event = useRef<Promise<() => void> | null>(null);
   const [result, setResult] = useState<GameEndEvent | null>(null);
 

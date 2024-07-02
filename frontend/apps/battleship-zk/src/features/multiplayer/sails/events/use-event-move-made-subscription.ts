@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
 
 import { useShips } from '@/features/zk/hooks/use-ships';
-import { program } from '@/app/utils/sails';
+import { useProgram } from '@/app/utils/sails';
 import { useMultiplayerGame } from '../../hooks';
 import { useAccount } from '@gear-js/react-hooks';
 
@@ -13,6 +13,7 @@ type MoveMadeEvent = {
 };
 
 export function useEventMoveMadeSubscription() {
+  const program = useProgram();
   const gameType = 'multi';
   const event = useRef<Promise<() => void> | null>(null);
   const { account } = useAccount();

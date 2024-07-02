@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
 import { useShips } from '@/features/zk/hooks/use-ships';
-import { program } from '@/app/utils/sails';
+import { useProgram } from '@/app/utils/sails';
 import { useMultiplayerGame } from '../../hooks';
 import { useAccount } from '@gear-js/react-hooks';
 
@@ -23,6 +23,7 @@ const config = {
 export function useEventMoveVerifiedSubscription() {
   const event = useRef<Promise<() => void> | null>(null);
   const { account } = useAccount();
+  const program = useProgram();
   const { game, triggerGame } = useMultiplayerGame();
   const { updateEnemyBoard } = useShips();
   const { clearProofData } = useProofShipHit();

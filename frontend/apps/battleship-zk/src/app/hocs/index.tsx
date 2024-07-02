@@ -16,6 +16,7 @@ import {
 // import metaTxt from '@/features/game/assets/meta/battleship.meta.txt';
 import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
+import { ProgramProvider } from '../utils/sails';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
@@ -51,6 +52,7 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
 const providers = [
   BrowserRouter,
   ApiProvider,
+  ProgramProvider,
   AccountProvider,
   AlertProvider,
   GaslessTransactionsProvider,
