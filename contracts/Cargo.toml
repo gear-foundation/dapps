@@ -97,7 +97,8 @@ members = [
     "vara-man",
     "varatube",
     "w3bstreaming",
-
+    "zk-battleship/app",
+    "zk-battleship/wasm",
     # Noncontract crates
 
     "gear-lib",

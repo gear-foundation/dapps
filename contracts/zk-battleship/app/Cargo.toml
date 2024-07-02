@@ -1,0 +1,29 @@
+[package]
+name = "zk-battleship"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+gstd = { workspace = true, features = ["debug"] }
+primitive-types.workspace = true
+sails-rtl = { git = "https://github.com/gear-tech/sails", rev = "51b731ef8f064a23c6c98fa92d06eeafe44d3f9d" }
+gbuiltin-bls381 = { git = "https://github.com/gear-tech/gear", tag = "v1.3.0" }
+
+[features]
+debug = ["gstd/debug"]
+
+[dev-dependencies]
+env_logger = "*"
+gtest.workspace = true
+gear-core.workspace = true
+gclient.workspace = true
+hex-literal = "0.3.4"
+tokio = "1"
+gbuiltin-bls381 = { git = "https://github.com/gear-tech/gear", tag = "v1.3.0" }
+ark-groth16 = { version = "0.4" }
+ark-std = { version = "0.4" }
+
+
