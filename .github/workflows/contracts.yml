@@ -39,7 +39,7 @@ jobs:
           targets: wasm32-unknown-unknown
 
       - name: ${{ github.ref_type == 'tag' && 'Build' || 'Build & CI' }}
-        run: '[ $GITHUB_REF_TYPE = "tag" ] && cargo b || cargo xtask ci'
+        run: '[ $GITHUB_REF_TYPE = "tag" ] && cargo b -r || cargo xtask ci'
 
       - name: Update the nightly tag
         if: github.ref == 'refs/heads/master'
@@ -55,8 +55,8 @@ jobs:
           tag_name: ${{ github.ref == 'refs/heads/master' && 'nightly' || github.ref_name }}
           prerelease: ${{ github.ref == 'refs/heads/master' }}
           files: |
-            contracts/target/wasm32-unknown-unknown/debug/*.*.wasm
-            contracts/target/wasm32-unknown-unknown/debug/*.meta.txt
+            contracts/target/wasm32-unknown-unknown/release/*.*.wasm
+            contracts/target/wasm32-unknown-unknown/release/*.meta.txt
 
       - name: Upload the GitHub Pages artifact
         if: github.ref == 'refs/heads/master'

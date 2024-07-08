@@ -14,5 +14,5 @@ gear-lib = { git = "https://github.com/gear-foundation/dapps", tag = "v1.0.1" }
 
 ### ✅ Testing
 ```sh
-cargo t -p gear-lib
+cargo t -r -p gear-lib
 ```

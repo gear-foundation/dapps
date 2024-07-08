@@ -164,19 +164,19 @@ async fn gclient_state_consistency() -> Result<()> {
 
     let storage_code_hash = upload_code(
         &client,
-        "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/sharded_fungible_token_storage.opt.wasm",
     )
     .await?;
     let ft_logic_code_hash = upload_code(
         &client,
-        "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/sharded_fungible_token_logic.opt.wasm",
     )
     .await?;
 
     let ft_actor_id = upload_program(
         &client,
         &mut listener,
-        "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/sharded_fungible_token.opt.wasm",
         InitFToken {
             storage_code_hash,
             ft_logic_code_hash,
@@ -237,7 +237,7 @@ async fn gclient_state_consistency() -> Result<()> {
             &mut listener,
             goc_actor_id,
             Action::Start {
-                duration: 30_000,
+                duration: 375_000,
                 participation_cost: 10000,
                 fungible_token: Some(ft_actor_id.into())
             }

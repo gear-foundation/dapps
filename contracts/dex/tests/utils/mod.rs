@@ -16,11 +16,12 @@ pub use common::initialize_system;
 pub use fungible_token::FungibleToken;
 
 pub const FOREIGN_USER: u64 = 1029384756123;
-pub const FT_MAIN: &str = "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm";
+pub const FT_MAIN: &str =
+    "../target/wasm32-unknown-unknown/release/sharded_fungible_token.opt.wasm";
 pub const FT_STORAGE: &str =
-    "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm";
+    "../target/wasm32-unknown-unknown/release/sharded_fungible_token_storage.opt.wasm";
 pub const FT_LOGIC: &str =
-    "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm";
+    "../target/wasm32-unknown-unknown/release/sharded_fungible_token_logic.opt.wasm";
 pub const SPENT_BLOCKS: u32 = 1;
 
 const DEADLINE: u64 = 99999999999999999;

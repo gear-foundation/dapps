@@ -32,16 +32,16 @@ impl FToken for Program<'_> {
         let ftoken = Program::from_file_with_id(
             system,
             id,
-            "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm",
+            "../target/wasm32-unknown-unknown/release/sharded_fungible_token.opt.wasm",
         );
         let storage_code_hash: [u8; 32] = system
             .submit_code(
-                "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm",
+                "../target/wasm32-unknown-unknown/release/sharded_fungible_token_storage.opt.wasm",
             )
             .into();
         let ft_logic_code_hash: [u8; 32] = system
             .submit_code(
-                "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm",
+                "../target/wasm32-unknown-unknown/release/sharded_fungible_token_logic.opt.wasm",
             )
             .into();
 

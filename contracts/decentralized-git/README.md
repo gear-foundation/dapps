@@ -6,5 +6,5 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "decentralized-git*"
+cargo b -r -p "decentralized-git*"
 ```

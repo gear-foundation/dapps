@@ -10,12 +10,13 @@ use primitive_types::H256;
 use supply_chain_io::*;
 use supply_chain_state::{WASM_BINARY, WASM_EXPORTS};
 
-pub const FT_MAIN: &str = "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm";
+pub const FT_MAIN: &str =
+    "../target/wasm32-unknown-unknown/release/sharded_fungible_token.opt.wasm";
 pub const FT_STORAGE: &str =
-    "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm";
+    "../target/wasm32-unknown-unknown/release/sharded_fungible_token_storage.opt.wasm";
 pub const FT_LOGIC: &str =
-    "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm";
-pub const NFT_BINARY: &str = "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm";
+    "../target/wasm32-unknown-unknown/release/sharded_fungible_token_logic.opt.wasm";
+pub const NFT_BINARY: &str = "../target/wasm32-unknown-unknown/release/non_fungible_token.opt.wasm";
 
 pub struct Client {
     client: GearApi,

@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "dao-light*"
+cargo b -r -p "dao-light*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "dao-light*"
+cargo t -r -p "dao-light*"
 ```

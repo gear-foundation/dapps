@@ -6,19 +6,19 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "dynamic-nft*"
+cargo b -r -p "dynamic-nft*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "dynamic-nft*" -- --skip gclient
+cargo t -r -p "dynamic-nft*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "dynamic-nft*"
+cargo t -r -p "dynamic-nft*"
 ```

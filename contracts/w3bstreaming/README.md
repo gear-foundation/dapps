@@ -8,5 +8,5 @@ W3bstreaming is an example of a decentrilized streaming application based on the
 ### 🏗️ Building
 
 ```sh
-cargo b -p "w3bstreaming*"
+cargo b -r -p "w3bstreaming*"
 ```

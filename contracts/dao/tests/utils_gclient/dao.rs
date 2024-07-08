@@ -5,7 +5,7 @@ use dao_io::*;
 use gclient::{EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
 
-const DAO_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/dao.opt.wasm";
+const DAO_WASM_PATH: &str = "../target/wasm32-unknown-unknown/release/dao.opt.wasm";
 
 pub async fn init(
     api: &GearApi,
@@ -369,7 +369,7 @@ async fn send_message(
         .await?;
 
     let (message_id, _) = api
-        .send_message(program_id.into(), payload, gas_info.burned * 2, 0)
+        .send_message(program_id.into(), payload, gas_info.min_limit, 0)
         .await?;
 
     let (_, reply_data_result, _) = listener.reply_bytes_on(message_id).await?;

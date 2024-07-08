@@ -8,19 +8,19 @@ fn game() {
     system.init_logger();
     let player_1 = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/syndote_player.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
     );
     let player_2 = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/syndote_player.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
     );
     let player_3 = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/syndote_player.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
     );
     let player_4 = Program::from_file(
         &system,
-        "../target/wasm32-unknown-unknown/debug/syndote_player.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
     );
     let game = Program::current_opt(&system);
 

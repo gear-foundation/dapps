@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "rmrk*"
+cargo b -r -p "rmrk*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "rmrk*"
+cargo t -r -p "rmrk*"
 ```

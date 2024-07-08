@@ -7,7 +7,7 @@ use gstd::{prelude::*, ActorId};
 use nft_marketplace_io::*;
 use non_fungible_token_io::{Collection, Config, InitNFT, NFTAction, NFTEvent};
 
-const NFT_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm";
+const NFT_WASM_PATH: &str = "../target/wasm32-unknown-unknown/release/non_fungible_token.opt.wasm";
 
 pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     let mut listener = api.subscribe().await?;

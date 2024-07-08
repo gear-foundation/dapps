@@ -6,19 +6,19 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "non-fungible-token*"
+cargo b -r -p "non-fungible-token*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "non-fungible-token*" -- --skip gclient
+cargo t -r -p "non-fungible-token*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "non-fungible-token*"
+cargo t -r -p "non-fungible-token*"
 ```

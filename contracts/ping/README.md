@@ -8,11 +8,11 @@ An elementary application for the familiarity with Gear. You send "PING", and th
 ### 🏗️ Building
 
 ```sh
-cargo b -p "ping*"
+cargo b -r -p "ping*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "ping*"
+cargo t -r -p "ping*"
 ```

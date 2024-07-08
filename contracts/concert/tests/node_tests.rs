@@ -10,10 +10,10 @@ pub const MTK_ID: u64 = 2;
 async fn gclient_init() -> Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
     let multitoken_program =
-        code_from_os("../target/wasm32-unknown-unknown/debug/multi_token.opt.wasm")?;
+        code_from_os("../target/wasm32-unknown-unknown/release/multi_token.opt.wasm")?;
     let mut listener = api.subscribe().await?; // Subscribing for events.
 
-    let path = "../target/wasm32-unknown-unknown/debug/concert.opt.wasm";
+    let path = "../target/wasm32-unknown-unknown/release/concert.opt.wasm";
 
     // Checking that blocks still running.
     assert!(listener.blocks_running().await?);

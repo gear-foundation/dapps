@@ -3,7 +3,7 @@ use gclient::{EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
 use student_nft_io::*;
 
-const STUDENT_NFT_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/student_nft.opt.wasm";
+const STUDENT_NFT_WASM_PATH: &str = "../target/wasm32-unknown-unknown/release/student_nft.opt.wasm";
 
 pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     let mut listener = api.subscribe().await?;

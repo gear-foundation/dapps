@@ -6,19 +6,19 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "vara-man*"
+cargo b -r -p "vara-man*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "vara-man*" -- --skip gclient
+cargo t -r -p "vara-man*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "vara-man*"
+cargo t -r -p "vara-man*"
 ```

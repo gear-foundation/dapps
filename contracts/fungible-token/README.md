@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "fungible-token*"
+cargo b -r -p "fungible-token*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "fungible-token*"
+cargo t -r -p "fungible-token*"
 ```

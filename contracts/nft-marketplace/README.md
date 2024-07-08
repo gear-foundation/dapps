@@ -6,19 +6,19 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "nft-marketplace*"
+cargo b -r -p "nft-marketplace*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "nft-marketplace*" -- --skip gclient
+cargo t -r -p "nft-marketplace*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "nft-marketplace*"
+cargo t -r -p "nft-marketplace*"
 ```
