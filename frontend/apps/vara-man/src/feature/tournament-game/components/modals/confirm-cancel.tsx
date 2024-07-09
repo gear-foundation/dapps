@@ -15,7 +15,7 @@ export const ConfirmCancelModal = ({ setIsOpenCancelModal, onCancelGame }: Props
             This action cannot be undone. The game will be concluded, and all players will exit the gaming room. Any
             entry fees will be refunded to all players.
           </p>
-          <div className="flex gap-10">
+          <div className="flex flex-col gap-3 md:flex-row md:gap-10">
             <Button color="grey" text="End tournament" onClick={onCancelGame} />
             <Button text="Continue tournament" onClick={() => setIsOpenCancelModal(false)} />
           </div>

@@ -12,9 +12,10 @@ import { useCheckBalance } from '@dapps-frontend/hooks';
 
 type Props = {
   tournamentGame: ITournamentGameInstance;
+  setPlayGame?: (value: boolean) => void;
 };
 
-export const Registration = ({ tournamentGame }: Props) => {
+export const Registration = ({ tournamentGame, setPlayGame }: Props) => {
   const alert = useAlert();
   const { api } = useApi();
   const { account } = useAccount();
@@ -64,6 +65,7 @@ export const Registration = ({ tournamentGame }: Props) => {
           onError: onSuccess,
         }),
       );
+      setPlayGame && setPlayGame(true);
     }
   };
 
@@ -102,7 +104,7 @@ export const Registration = ({ tournamentGame }: Props) => {
   const bid = parseFloat(String(tournamentGame?.[0].bid).replace(/,/g, '') || '0') / 10 ** decimals;
 
   return (
-    <div className="flex flex-col gap-4 items-center w-3/5">
+    <div className="flex flex-col gap-4 items-center w-full">
       <h3 className="text-2xl font-bold">{tournamentGame?.[0].stage}</h3>
       <p className="text-[#555756]">
         Players ({tournamentGame?.[0].participants.length}/10). Waiting for other players...{' '}
@@ -156,16 +158,16 @@ export const Registration = ({ tournamentGame }: Props) => {
         {isAdmin ? (
           <>
             <Button
-              className="!bg-[#EB5757] !text-white !text-[14px]"
+              className="!bg-[#EB5757] !text-white md:!text-[14px]"
               text="Cancel tournament"
               onClick={onCancelGame}
               isLoading={isPending}
             />
-            <Button className="!text-[14px]" text="Start tournament" onClick={onStartGame} isLoading={isPending} />
+            <Button className="md:!text-[14px]" text="Start tournament" onClick={onStartGame} isLoading={isPending} />
           </>
         ) : (
           <Button
-            className="!text-[14px] w-full"
+            className="md:!text-[14px] w-full"
             color="grey"
             text="Cancel"
             onClick={onCancelGame}

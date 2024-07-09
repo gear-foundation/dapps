@@ -16,7 +16,7 @@
 
   body {
     @apply font-anuphan !important;
-    background: url("@/assets/images/background.jpg") center ;
+    background: url('@/assets/images/background.jpg') center;
   }
 
   .container {
@@ -115,4 +115,13 @@
   background: linear-gradient(180deg, #2d84e7 0%, #16b768 96.47%);
   background-clip: text;
   -webkit-text-stroke: 2px transparent;
+}
+
+.no-select {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none; /* Safari */
+  -khtml-user-select: none; /* Konqueror HTML */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+  user-select: none; /* Non-prefixed version, currently supported by Chrome, Opera and Firefox */
 }

@@ -1,77 +1,120 @@
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useRef, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useAtom } from 'jotai';
-import { useEffect } from 'react';
-import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
-import { GameCanvas } from './GameCanvas';
-import { useGame } from '@/app/context/ctx-game';
-import { Icons } from '@/components/ui/icons';
-import { GameTimer } from './components/timer';
-import { IGameLevel } from '@/app/types/game';
-import { calculatePoints } from '../game/utils/calculatePoints';
-import { COINS, GAME_OVER, gameLevels } from '../game/consts';
+import { IGameLevel, TileMap } from '@/app/types/game';
+import { GameOverModal } from './components/modals/game-over';
+import { useGameMessage } from '@/app/hooks/use-game';
+import { useApp } from '@/app/context/ctx-app';
+import { findMapLevel } from '../game/utils/findMapLevel';
+import { GameEngine } from '../game/models/Game';
+import { COINS, GAME_OVER } from '../game/consts';
+import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import useOnScreen from '@/hooks/use-on-screen';
+
+import { GameCanvas } from '../game/components/game-canvas/game-canvas';
 
 export const Game = () => {
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [, setGameOver] = useAtom(GAME_OVER);
-  const { configState } = useGame();
-  const [coins] = useAtom(COINS);
-  const level = searchParams.get('level') as IGameLevel;
-  const currentLevel = level || gameLevels.find((l) => l.level === level) !== undefined;
+  const [coins, setCoins] = useAtom(COINS);
+  const [gameOver, setGameOver] = useAtom(GAME_OVER);
+  const { setIsPending } = useApp();
 
-  const score = configState && calculatePoints(coins, configState, level);
+  const { gasless, signless } = useEzTransactions();
+
+  const handleMessage = useGameMessage();
+  const { checkBalance } = useCheckBalance({
+    signlessPairVoucherId: signless.voucher?.id,
+    gaslessVoucherId: gasless.voucherId,
+  });
+
+  const incrementCoins = (coinType: 'silver' | 'gold') => {
+    setCoins((prevCoins) => ({
+      ...prevCoins,
+      [coinType]: prevCoins[coinType] + 1,
+    }));
+  };
+
+  const level = searchParams.get('level') as IGameLevel;
+
+  const fogCanvasRef = useRef<HTMLCanvasElement>(null);
+  const isVisibleFog = useOnScreen(fogCanvasRef);
+
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const gameInstanceRef = useRef<GameEngine | null>(null);
+  const mapRef = useRef<TileMap | null>(null);
+
+  const gasLimit = 120000000000;
 
   useEffect(() => {
-    if (!currentLevel) {
-      navigate('/');
+    if (
+      canvasRef.current &&
+      fogCanvasRef.current &&
+      level &&
+      mapRef.current === null &&
+      gameInstanceRef.current === null &&
+      isVisibleFog &&
+      !gasless.isLoading
+    ) {
+      const gameContext = canvasRef.current;
+      const fogContext = fogCanvasRef.current;
+
+      fogCanvasRef.current.width = canvasRef.current.width;
+      fogCanvasRef.current.height = canvasRef.current.height;
+
+      const map = findMapLevel(level);
+      mapRef.current = map;
+      gameInstanceRef.current = new GameEngine(
+        gameContext,
+        fogContext,
+        level,
+        incrementCoins,
+        gameOver,
+        setGameOver,
+        map,
+      );
     }
-  }, [level]);
+
+    return () => {
+      gameInstanceRef.current?.cleanup();
+      mapRef.current = null;
+    };
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameOver, level, isVisibleFog, gasless.isLoading]);
+
+  useEffect(() => {
+    gameInstanceRef.current?.updateGameOver(gameOver);
+
+    if (gameOver && (coins.gold > 0 || coins.silver > 0) && !gasless.isLoading) {
+      checkBalance(gasLimit, () => {
+        setIsPending(true);
+        handleMessage({
+          payload: {
+            FinishSingleGame: {
+              gold_coins: coins.gold,
+              silver_coins: coins.silver,
+            },
+          },
+          voucherId: gasless.voucherId,
+          gasLimit,
+          onSuccess: () => setIsPending(false),
+          onError: () => setIsPending(false),
+        });
+      });
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameOver, gasless]);
+
+  const restartGame = () => {
+    gameInstanceRef.current = null;
+  };
 
   return (
-    <div>
-      <div className="w-full flex flex-col justify-center items-center">
-        <div className="w-[588px] flex justify-between my-3">
-          <div className="flex gap-3 items-center">
-            <div className="flex gap-3 items-center font-semibold">
-              <Icons.statsTimer />
-              <GameTimer />
-            </div>
-            <div className="flex gap-3 items-center font-semibold">
-              <Icons.statsCoins />
-              {score}
-            </div>
-          </div>
-          <div className="flex gap-3 items-center font-semibold cursor-pointer" onClick={() => setGameOver(true)}>
-            <Icons.exit />
-            Exit
-          </div>
-        </div>
-        <GameCanvas />
-        <div className="flex gap-5 my-3">
-          <div className="flex gap-3 items-center">
-            <div className="bg-[#DFDFDF] rounded-sm p-1">
-              <ArrowUp color="#767676" />
-            </div>
-            <div className="bg-[#DFDFDF] rounded-sm p-1">
-              <ArrowDown color="#767676" />
-            </div>
-            <span>Use arrows to move</span>
-          </div>
-          <div className="flex gap-3 items-center">
-            <div className="bg-[#DFDFDF] rounded-sm p-1">
-              <ArrowLeft color="#767676" />
-            </div>
-            <div className="bg-[#DFDFDF] rounded-sm p-1">
-              <ArrowRight color="#767676" />
-            </div>
-            <span>Rotate</span>
-          </div>
-          <div className="flex gap-3 items-center">
-            <div className="bg-[#DFDFDF] rounded-sm p-1 px-3 font-bold text-[#726F6F]">Shift</div>
-            <span>Hold shift to run</span>
-          </div>
-        </div>
-      </div>
+    <div className="ml-auto mr-auto max-md:w-full z-10">
+      {gameOver && <GameOverModal restartGame={restartGame} />}
+      <GameCanvas gameInstanceRef={gameInstanceRef} canvasRef={canvasRef} fogCanvasRef={fogCanvasRef} />
     </div>
   );
 };

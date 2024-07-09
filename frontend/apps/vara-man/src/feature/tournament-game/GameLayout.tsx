@@ -5,7 +5,7 @@ import { TileMap } from '@/app/types/game';
 import { useGameMessage } from '@/app/hooks/use-game';
 
 import { findMapLevel } from '../game/utils/findMapLevel';
-import { Game } from '../game/models/Game';
+import { GameEngine } from '../game/models/Game';
 import { COINS, GAME_OVER, MS_TIME_GAME_OVER } from '../game/consts';
 import { useGame } from '@/app/context/ctx-game';
 
@@ -13,12 +13,13 @@ import { GamePlayAgainModal } from './components/modals/game-play-again';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import useOnScreen from '@/hooks/use-on-screen';
+import { GameCanvas } from '../game/components/game-canvas/game-canvas';
 
 type Props = {
   isPause: boolean;
 };
 
-export const GameCanvas = ({ isPause }: Props) => {
+export const GameLayout = ({ isPause }: Props) => {
   const { tournamentGame, previousGame } = useGame();
   const [coins, setCoins] = useAtom(COINS);
   const [gameOver, setGameOver] = useAtom(GAME_OVER);
@@ -45,7 +46,7 @@ export const GameCanvas = ({ isPause }: Props) => {
   const isVisibleFog = useOnScreen(fogCanvasRef);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const gameInstanceRef = useRef<Game | null>(null);
+  const gameInstanceRef = useRef<GameEngine | null>(null);
   const mapRef = useRef<TileMap | null>(null);
 
   useEffect(() => {
@@ -66,7 +67,7 @@ export const GameCanvas = ({ isPause }: Props) => {
       const map = findMapLevel(level);
 
       mapRef.current = map;
-      gameInstanceRef.current = new Game(
+      gameInstanceRef.current = new GameEngine(
         gameContext,
         fogContext,
         level,
@@ -133,17 +134,14 @@ export const GameCanvas = ({ isPause }: Props) => {
   };
 
   return (
-    <div className="ml-auto mr-auto">
+    <div className="ml-auto mr-auto max-md:w-full z-10">
       {isOpenPlayAgain && <GamePlayAgainModal setIsOpenPlayAgain={setIsOpenPlayAgain} restartGame={restartGame} />}
-      <div className="ml-auto mr-auto" style={{ position: 'relative' }}>
-        <canvas ref={fogCanvasRef} style={{ position: 'absolute', left: 0, top: 0 }} />
-        <canvas
-          ref={canvasRef}
-          style={{
-            backgroundColor: '#000000ad',
-          }}
-        />
-      </div>
+      <GameCanvas
+        canvasRef={canvasRef}
+        fogCanvasRef={fogCanvasRef}
+        gameInstanceRef={gameInstanceRef}
+        isPause={isPause}
+      />
     </div>
   );
 };
