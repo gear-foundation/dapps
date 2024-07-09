@@ -37,7 +37,6 @@ members = [
     "feeds/channel/state",
     "feeds/state",
     "fungible-token",
-    "fungible-token/state",
     "galactic-express",
     "game-of-chance",
     "horse-races",
