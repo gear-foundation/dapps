@@ -17,7 +17,11 @@ export const GameCanvas = ({ canvasRef, fogCanvasRef, gameInstanceRef, isPause }
       style={{
         position: 'relative',
       }}>
-      <canvas className="absolute -left-6 md:relative md:left-0 md:h-auto h-[100dvh] z-1" ref={fogCanvasRef} />
+      <canvas
+        className="-left-6 md:relative md:left-0 md:h-auto h-[100dvh] z-1"
+        style={{ position: 'absolute' }}
+        ref={fogCanvasRef}
+      />
       <canvas
         ref={canvasRef}
         className="absolute -left-6 md:relative md:left-0 md:h-auto h-[100dvh]"

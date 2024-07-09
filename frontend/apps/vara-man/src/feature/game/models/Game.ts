@@ -218,16 +218,14 @@ export class GameEngine {
 
       this.enemies.forEach((enemy) => EnemyRenderer.render(this.context, enemy));
 
-      if (window.innerWidth < 768) {
-        this.context.restore();
+      this.context.restore();
 
-        if (this.level === 'Hard') {
-          this.fogContext.save();
-          this.fogContext.translate(offsetX, offsetY);
-          const radiusFogOfWar = window.innerWidth < 768 ? 120 : 150;
-          MapRenderer.renderFogOfWar(this.fogContext, this.character.position, radiusFogOfWar);
-          this.fogContext.restore();
-        }
+      if (this.level === 'Hard') {
+        this.fogContext.save();
+        this.fogContext.translate(offsetX, offsetY);
+        const radiusFogOfWar = window.innerWidth < 768 ? 120 : 150;
+        MapRenderer.renderFogOfWar(this.fogContext, this.character.position, radiusFogOfWar);
+        this.fogContext.restore();
       }
     }
   }
