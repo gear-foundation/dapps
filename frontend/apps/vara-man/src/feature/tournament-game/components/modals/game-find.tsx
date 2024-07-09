@@ -79,7 +79,7 @@ export const GameFindModal = ({ findGame, setIsOpenFindModal }: GameFindModalPro
   return (
     <Modal open>
       <Modal.Content classNameContent="max-w-[650px]">
-        <h2 className="typo-h2"> The game has been found</h2>
+        <h2 className="text-[34px]/[37px] font-semibold md:typo-h2"> The game has been found</h2>
         <div className="flex flex-col gap-5 mt-5">
           <p className="text-[#555756]">
             To proceed, review the parameters of the gaming session and click the “Join” button. If applicable, you will

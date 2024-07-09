@@ -1,3 +1,3 @@
-import { Game } from './Game'
+import { GameLayout } from './GameLayout'
 
-export { Game }
+export { GameLayout }

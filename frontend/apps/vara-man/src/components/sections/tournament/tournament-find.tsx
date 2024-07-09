@@ -81,12 +81,12 @@ export const TournamentFind = () => {
   };
 
   return (
-    <div className="flex flex-col gap-5 justify-center items-center grow h-full">
+    <div className="flex flex-col gap-5 md:justify-center items-center  grow h-full">
       {isOpenFindModal && findGame && <GameFindModal findGame={findGame} setIsOpenFindModal={setIsOpenFindModal} />}
       {isOpenNotFound && <GameNotFoundModal setIsOpenFindModal={setIsOpenNotFound} />}
 
-      <h2 className="typo-h2">Find a private game</h2>
-      <p>To find the game, you need to enter the administrator's address.</p>
+      <h2 className="text-[34px]/[37px] font-semibold text-center md:text-left">Find a private game</h2>
+      <p className="text-center md:text-left">To find the game, you need to enter the administrator's address.</p>
 
       <form onSubmit={handleSubmit} className="grid gap-4 w-full max-w-[600px] mx-auto mt-5">
         <div className="flex flex-col gap-10">
@@ -99,8 +99,14 @@ export const TournamentFind = () => {
             onChange={(e) => setFindAddress(e.target.value)}
           />
 
-          <div className="flex gap-5">
-            <Button color="grey" text="Back" className="w-full" onClick={() => navigate(-1)} isLoading={isPending} />
+          <div className="flex gap-5 flex-col md:flex-row">
+            <Button
+              color="grey"
+              text="Back"
+              className="w-full order-1 md:order-none"
+              onClick={() => navigate(-1)}
+              isLoading={isPending}
+            />
             <Button text="Continue" className="w-full" isLoading={isPending} onClick={onSearchGame} />
           </div>
         </div>
