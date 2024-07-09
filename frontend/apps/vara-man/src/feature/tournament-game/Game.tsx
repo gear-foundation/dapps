@@ -1,13 +1,9 @@
 import { useEffect, useState } from 'react';
 import { useAtom } from 'jotai';
-import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
 import { useAccount } from '@gear-js/react-hooks';
 
 import { useGame } from '@/app/context/ctx-game';
 
-import { Icons } from '@/components/ui/icons';
-import { GameTimer } from './components/timer';
-import { GameLayout } from './GameLayout';
 import { Registration } from './components/registration';
 import { GamePlayers } from './components/game-players';
 import { GameOverModal } from './components/modals/game-over';
@@ -18,7 +14,7 @@ import { COINS, GAME_OVER } from '../game/consts';
 
 import { IGameLevel } from '@/app/types/game';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useMediaQuery } from '@/hooks/use-mobile-device';
+import { GameInfoCanvas } from './components/game-canvas/game-canvas';
 
 export const Game = () => {
   const { account } = useAccount();
@@ -115,76 +111,6 @@ export const Game = () => {
 
       {isFinished && tournamentGame && <GameOverModal tournamentGame={tournamentGame} />}
       {isCanceledModal && <GameCanceledModal />}
-    </div>
-  );
-};
-
-type GameInfoCanvasProps = {
-  isStarted: boolean;
-  isRegistration: boolean;
-  isFinished: boolean;
-  gameOver: boolean;
-  setGameOver: (value: boolean) => void;
-  score: number | undefined | null;
-};
-
-const GameInfoCanvas = ({
-  isStarted,
-  isRegistration,
-  isFinished,
-  gameOver,
-  setGameOver,
-  score,
-}: GameInfoCanvasProps) => {
-  const isMobile = useMediaQuery('(max-width: 768px)');
-
-  return (
-    <div className="md:w-full md:flex md:flex-col md:justify-center md:items-center select-none">
-      {isStarted && (
-        <div className="w-full md:w-[588px] flex justify-between my-3">
-          <div className="flex gap-3 items-center">
-            <div className="flex gap-3 items-center font-semibold">
-              <Icons.statsTimer />
-              <GameTimer isPause={isRegistration || isFinished || gameOver} />
-            </div>
-            <div className="flex gap-3 items-center font-semibold">
-              <Icons.statsCoins />
-              {score}
-            </div>
-          </div>
-          <div className="flex gap-3 items-center font-semibold cursor-pointer" onClick={() => setGameOver(true)}>
-            <Icons.exit />
-            Exit
-          </div>
-        </div>
-      )}
-      <GameLayout isPause={isRegistration || isFinished || !isStarted} />
-      {!isMobile && (
-        <div className="flex gap-5 my-3">
-          <div className="flex gap-3 items-center">
-            <div className="bg-[#DFDFDF] rounded-sm p-1">
-              <ArrowUp color="#767676" />
-            </div>
-            <div className="bg-[#DFDFDF] rounded-sm p-1">
-              <ArrowDown color="#767676" />
-            </div>
-            <span>Use arrows to move</span>
-          </div>
-          <div className="flex gap-3 items-center">
-            <div className="bg-[#DFDFDF] rounded-sm p-1">
-              <ArrowLeft color="#767676" />
-            </div>
-            <div className="bg-[#DFDFDF] rounded-sm p-1">
-              <ArrowRight color="#767676" />
-            </div>
-            <span>Rotate</span>
-          </div>
-          <div className="flex gap-3 items-center">
-            <div className="bg-[#DFDFDF] rounded-sm p-1 px-3 font-bold text-[#726F6F]">Shift</div>
-            <span>Hold shift to run</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
