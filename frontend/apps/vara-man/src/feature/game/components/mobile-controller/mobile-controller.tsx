@@ -10,7 +10,7 @@ interface MobileControllerProps {
   gameInstanceRef: React.RefObject<GameEngine | null>;
 }
 
-const MobileController: React.FC<MobileControllerProps> = ({ gameInstanceRef }) => {
+const MobileController = ({ gameInstanceRef }: MobileControllerProps) => {
   const isMobile = useMediaQuery('(max-width: 768px)');
   const circleRef = useRef<HTMLDivElement | null>(null);
   const [isTouching, setIsTouching] = useState(false);
