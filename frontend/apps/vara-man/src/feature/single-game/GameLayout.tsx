@@ -10,9 +10,10 @@ import { IGameLevel } from '@/app/types/game';
 import { calculatePoints } from '../game/utils/calculatePoints';
 import { COINS, GAME_OVER, gameLevels } from '../game/consts';
 import { useMediaQuery } from '@/hooks/use-mobile-device';
+import { MOBILE_BREAKPOINT } from '@/app/consts';
 
 export const GameLayout = () => {
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery(MOBILE_BREAKPOINT);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [, setGameOver] = useAtom(GAME_OVER);
