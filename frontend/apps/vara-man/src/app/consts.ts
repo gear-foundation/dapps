@@ -40,3 +40,5 @@ export const SIGNLESS_ALLOWED_ACTIONS = [
   'FinishSingleGame',
   'CreateNewTournament',
 ];
+
+export const MOBILE_BREAKPOINT = '(max-width: 768px)'

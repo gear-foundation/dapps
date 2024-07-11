@@ -3,6 +3,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { GameEngine } from '../../models/Game';
 import { useMediaQuery } from '@/hooks/use-mobile-device';
 
+import { MOBILE_BREAKPOINT } from '@/app/consts';
 import MoveControlImg from '../../assets/images/move-control.png';
 import MoveShiftImg from '../../assets/images/move-shift.png';
 
@@ -11,7 +12,7 @@ interface MobileControllerProps {
 }
 
 const MobileController = ({ gameInstanceRef }: MobileControllerProps) => {
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery(MOBILE_BREAKPOINT);
   const circleRef = useRef<HTMLDivElement | null>(null);
   const [isTouching, setIsTouching] = useState(false);
   const [isShift, setIsShift] = useState(false);

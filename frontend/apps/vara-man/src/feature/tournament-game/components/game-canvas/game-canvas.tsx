@@ -3,6 +3,7 @@ import { useMediaQuery } from '@/hooks/use-mobile-device';
 import { ArrowUp, ArrowDown, ArrowLeft, ArrowRight } from 'lucide-react';
 import { GameLayout } from '../../GameLayout';
 import { GameTimer } from '../timer';
+import { MOBILE_BREAKPOINT } from '@/app/consts';
 
 type GameInfoCanvasProps = {
   isStarted: boolean;
@@ -21,7 +22,7 @@ export const GameInfoCanvas = ({
   setGameOver,
   score,
 }: GameInfoCanvasProps) => {
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useMediaQuery(MOBILE_BREAKPOINT);
 
   return (
     <div className="md:w-full md:flex md:flex-col md:justify-center md:items-center select-none">
