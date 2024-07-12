@@ -11,6 +11,7 @@ export function Modal({
   onOpenChange?: (open: boolean) => void;
   children: ReactNode;
 }) {
+  // Enable events when modal is open for alerts clicks
   useEffect(() => {
     if (open) {
       setTimeout(() => {

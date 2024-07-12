@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useCallback } from 'react';
 import { GameEngine } from '../../models/Game';
 import { useMediaQuery } from '@/hooks/use-mobile-device';
 import { MOBILE_BREAKPOINT } from '@/app/consts';
@@ -16,22 +16,44 @@ const MobileController = ({ gameInstanceRef }: MobileControllerProps) => {
   const [isTouching, setIsTouching] = useState(false);
   const [isShift, setIsShift] = useState(false);
   const [movementAngle, setMovementAngle] = useState<number | null>(null);
+  const [scrollUnlockTimer, setScrollUnlockTimer] = useState<NodeJS.Timeout | null>(null);
+
+  const blockScroll = useCallback(() => {
+    if (scrollUnlockTimer) {
+      clearTimeout(scrollUnlockTimer);
+      setScrollUnlockTimer(null);
+    }
+    document.body.style.overflow = 'hidden';
+    document.addEventListener('touchmove', preventDefault, { passive: false });
+  }, [scrollUnlockTimer]);
+
+  const unblockScroll = useCallback(() => {
+    document.body.style.overflow = '';
+    document.removeEventListener('touchmove', preventDefault);
+  }, []);
+
+  const preventDefault = (e: TouchEvent) => {
+    e.preventDefault();
+  };
 
   const handleShiftTouchStart = () => {
     if (isTouching && !isShift) {
       setIsShift(true);
+      blockScroll();
     }
   };
 
   const handleShiftTouchEnd = () => {
     setIsShift(false);
     setMovementAngle(null);
+    startScrollUnlockTimer();
   };
 
   const handleTouchStart = (event: React.TouchEvent) => {
     const touch = event.touches[0];
     if (touch && isInsideCircle(touch.clientX, touch.clientY, circleRef)) {
       setIsTouching(true);
+      blockScroll();
       handleMovement(event);
     }
   };
@@ -45,6 +67,7 @@ const MobileController = ({ gameInstanceRef }: MobileControllerProps) => {
   const handleTouchEnd = () => {
     setIsTouching(false);
     setMovementAngle(null);
+    startScrollUnlockTimer();
   };
 
   const handleMovement = (event: React.TouchEvent) => {
@@ -88,6 +111,38 @@ const MobileController = ({ gameInstanceRef }: MobileControllerProps) => {
 
     return () => cancelAnimationFrame(animationFrameId);
   }, [isTouching, movementAngle, gameInstanceRef, isShift]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      unblockScroll();
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        unblockScroll();
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      unblockScroll();
+    };
+  }, [unblockScroll]);
+
+  const startScrollUnlockTimer = () => {
+    if (scrollUnlockTimer) {
+      clearTimeout(scrollUnlockTimer);
+    }
+    const timer = setTimeout(() => {
+      unblockScroll();
+      setScrollUnlockTimer(null);
+    }, 3000);
+    setScrollUnlockTimer(timer);
+  };
 
   return (
     <>
