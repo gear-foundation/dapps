@@ -26,7 +26,7 @@ export const Game = () => {
 
   const [gameOver, setGameOver] = useAtom(GAME_OVER);
   const { configState } = useGame();
-  const [coins] = useAtom(COINS);
+  const [coins, setCoins] = useAtom(COINS);
 
   const level = tournamentGame?.[0].level || previousGame?.[0].level;
   const score = configState && calculatePoints(coins, configState, level as IGameLevel);
@@ -53,6 +53,10 @@ export const Game = () => {
       setActiveTab('play');
     }
   }, [playGame, isStarted]);
+
+  useEffect(() => {
+    setCoins({ gold: 0, silver: 0 });
+  }, [activeTab]);
 
   return (
     <div className="grid gap-4 grid-cols-1 md:grid-cols-3">

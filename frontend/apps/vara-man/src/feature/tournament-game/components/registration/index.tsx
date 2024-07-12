@@ -158,12 +158,17 @@ export const Registration = ({ tournamentGame, setPlayGame }: Props) => {
         {isAdmin ? (
           <>
             <Button
-              className="!bg-[#EB5757] !text-white md:!text-[14px]"
+              className="!bg-[#EB5757] !text-white md:!text-[14px] !px-3"
               text="Cancel tournament"
               onClick={onCancelGame}
               isLoading={isPending}
             />
-            <Button className="md:!text-[14px]" text="Start tournament" onClick={onStartGame} isLoading={isPending} />
+            <Button
+              className="md:!text-[14px] !px-3"
+              text="Start tournament"
+              onClick={onStartGame}
+              isLoading={isPending}
+            />
           </>
         ) : (
           <Button
