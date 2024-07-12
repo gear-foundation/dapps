@@ -106,13 +106,17 @@ export class GameEngine {
   }
 
   resize() {
-    const width = WIDTH_CANVAS;
-    const height = HEIGHT_CANVAS;
+    const dpr = window.devicePixelRatio || 1;
+    const width = WIDTH_CANVAS * dpr;
+    const height = HEIGHT_CANVAS * dpr;
 
     this.canvas.width = width;
     this.canvas.height = height;
     this.canvasFog.width = width;
     this.canvasFog.height = height;
+
+    this.context.scale(dpr, dpr);
+    this.fogContext.scale(dpr, dpr);
 
     this.render();
   }

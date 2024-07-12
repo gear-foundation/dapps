@@ -55,6 +55,7 @@
 
 .dropdown {
   @media screen and (max-width: 767px) {
+    z-index: 4;
     display: block;
 
     button {

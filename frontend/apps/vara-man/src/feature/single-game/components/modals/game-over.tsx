@@ -12,7 +12,7 @@ import { GAME_OVER, COINS } from '@/feature/game/consts';
 import { calculatePoints } from '@/feature/game/utils/calculatePoints';
 import { Modal } from '@/components/ui/modal/modal2';
 
-export const GameOverModal = ({ restartGame }: any) => {
+export const GameOverModal = ({ restartGame }: { restartGame: () => void }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
 
