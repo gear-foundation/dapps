@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import BackgroundMapImg from '@/assets/images/border.png';
 import MobileController from '../mobile-controller/mobile-controller';
 import { GameEngine } from '../../models/Game';
@@ -11,6 +11,34 @@ type GameCanvasProps = {
 };
 
 export const GameCanvas = ({ canvasRef, fogCanvasRef, gameInstanceRef, isPause }: GameCanvasProps) => {
+  useEffect(() => {
+    const resizeCanvas = () => {
+      const canvas = canvasRef.current;
+      const fogCanvas = fogCanvasRef.current;
+      if (canvas && fogCanvas) {
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = canvas.clientWidth * dpr;
+        canvas.height = canvas.clientHeight * dpr;
+        fogCanvas.width = fogCanvas.clientWidth * dpr;
+        fogCanvas.height = fogCanvas.clientHeight * dpr;
+        const ctx = canvas.getContext('2d');
+        const fogCtx = fogCanvas.getContext('2d');
+        if (ctx) ctx.scale(dpr, dpr);
+        if (fogCtx) fogCtx.scale(dpr, dpr);
+        if (gameInstanceRef.current) {
+          gameInstanceRef.current.resize();
+        }
+      }
+    };
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    return () => {
+      window.removeEventListener('resize', resizeCanvas);
+    };
+  }, [canvasRef, fogCanvasRef, gameInstanceRef]);
+
   return (
     <div
       className="ml-auto mr-auto max-md:w-full max-md:h-max z-2"
