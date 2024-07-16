@@ -64,7 +64,7 @@ export const Game = () => {
   return (
     <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
       {isMobile && (
-        <div className="tabs-mobile md:hidden">
+        <div>
           <Tabs className="flex flex-col" value={activeTab}>
             <TabsList className="flex border-b">
               <TabsTrigger
