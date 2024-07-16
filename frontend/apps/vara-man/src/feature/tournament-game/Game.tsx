@@ -15,8 +15,11 @@ import { COINS, GAME_OVER } from '../game/consts';
 import { IGameLevel } from '@/app/types/game';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { GameInfoCanvas } from './components/game-canvas/game-canvas';
+import { useMediaQuery } from '@/hooks/use-mobile-device';
+import { MOBILE_BREAKPOINT } from '@/app/consts';
 
 export const Game = () => {
+  const isMobile = useMediaQuery(MOBILE_BREAKPOINT);
   const { account } = useAccount();
   const [isCanceledModal, setCanceledModal] = useState(false);
   const [activeTab, setActiveTab] = useState('leaderboard');
@@ -60,58 +63,62 @@ export const Game = () => {
 
   return (
     <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
-      <div className="tabs-mobile md:hidden">
-        <Tabs className="flex flex-col" value={activeTab}>
-          <TabsList className="flex border-b">
-            <TabsTrigger
-              className="bg-white px-5 h-[45px] font-semibold flex-1 flex items-center justify-center data-[state=active]:border-b data-[state=active]:border-b-[#00FFC4]"
-              value="play"
-              onClick={() => setActiveTab('play')}>
-              Play
-            </TabsTrigger>
-            <TabsTrigger
-              className="bg-white px-5 h-[45px] font-semibold flex-1 flex items-center justify-center data-[state=active]:border-b data-[state=active]:border-b-[#00FFC4]"
-              value="leaderboard"
-              onClick={() => setActiveTab('leaderboard')}>
-              Leaderboard
-            </TabsTrigger>
-          </TabsList>
-          <div>
-            <TabsContent value="leaderboard" className="grow py-5 bg-white rounded-b-md outline-none">
-              {isRegistration && previousGame && (
-                <Registration setPlayGame={setPlayGame} tournamentGame={previousGame} />
-              )}
-              {isStarted && <GamePlayers />}
-            </TabsContent>
-            <TabsContent value="play" className="grow bg-white rounded-b-md outline-none">
-              <GameInfoCanvas
-                isStarted={isStarted}
-                isRegistration={isRegistration}
-                isFinished={isFinished}
-                gameOver={gameOver}
-                setGameOver={setGameOver}
-                score={score}
-              />
-            </TabsContent>
-          </div>
-        </Tabs>
-      </div>
+      {isMobile && (
+        <div className="tabs-mobile md:hidden">
+          <Tabs className="flex flex-col" value={activeTab}>
+            <TabsList className="flex border-b">
+              <TabsTrigger
+                className="bg-white px-5 h-[45px] font-semibold flex-1 flex items-center justify-center data-[state=active]:border-b data-[state=active]:border-b-[#00FFC4]"
+                value="play"
+                onClick={() => setActiveTab('play')}>
+                Play
+              </TabsTrigger>
+              <TabsTrigger
+                className="bg-white px-5 h-[45px] font-semibold flex-1 flex items-center justify-center data-[state=active]:border-b data-[state=active]:border-b-[#00FFC4]"
+                value="leaderboard"
+                onClick={() => setActiveTab('leaderboard')}>
+                Leaderboard
+              </TabsTrigger>
+            </TabsList>
+            <div>
+              <TabsContent value="leaderboard" className="grow py-5 bg-white rounded-b-md outline-none">
+                {isRegistration && previousGame && (
+                  <Registration setPlayGame={setPlayGame} tournamentGame={previousGame} />
+                )}
+                {isStarted && <GamePlayers />}
+              </TabsContent>
+              <TabsContent value="play" className="grow bg-white rounded-b-md outline-none">
+                <GameInfoCanvas
+                  isStarted={isStarted}
+                  isRegistration={isRegistration}
+                  isFinished={isFinished}
+                  gameOver={gameOver}
+                  setGameOver={setGameOver}
+                  score={score}
+                />
+              </TabsContent>
+            </div>
+          </Tabs>
+        </div>
+      )}
 
-      <div className="hidden md:flex md:col-span-1 lg:col-span-1 p-5 bg-white rounded-md">
+      <div className="hidden md:flex md:col-span-1 lg:col-span-1 md:py-5 bg-white rounded-md">
         {isRegistration && previousGame && <Registration tournamentGame={previousGame} />}
         {isStarted && <GamePlayers />}
       </div>
 
-      <div className="hidden md:flex md:col-span-2 lg:col-span-2 p-5 bg-white rounded-md">
-        <GameInfoCanvas
-          isStarted={isStarted}
-          isRegistration={isRegistration}
-          isFinished={isFinished}
-          gameOver={gameOver}
-          setGameOver={setGameOver}
-          score={score}
-        />
-      </div>
+      {!isMobile && (
+        <div className="hidden md:flex md:col-span-2 lg:col-span-2 p-5 bg-white rounded-md">
+          <GameInfoCanvas
+            isStarted={isStarted}
+            isRegistration={isRegistration}
+            isFinished={isFinished}
+            gameOver={gameOver}
+            setGameOver={setGameOver}
+            score={score}
+          />
+        </div>
+      )}
 
       {isFinished && tournamentGame && <GameOverModal tournamentGame={tournamentGame} />}
       {isCanceledModal && <GameCanceledModal />}

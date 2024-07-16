@@ -115,7 +115,7 @@ export const GamePlayers = () => {
   }, [tournamentGame]);
 
   return (
-    <div className="flex flex-col gap-4 items-center w-full md:w-3/5">
+    <div className="flex flex-col gap-4 items-center w-full">
       {isOpenCancelModal && (
         <ConfirmCancelModal setIsOpenCancelModal={setIsOpenCancelModal} onCancelGame={onCancelGame} />
       )}
