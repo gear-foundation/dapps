@@ -36,6 +36,8 @@ function ModalContent({ children, classNameContent }: { children: ReactNode; cla
           'fixed left-1/2 md:top-1/2 bottom-0 h-max rounded-t-lg z-10 w-full max-w-md -translate-x-1/2 md:-translate-y-1/2 rounded-md bg-white p-8 text-gray-900 shadow data-[state=closed]:animate-[dialog-content-hide_200ms] data-[state=open]:animate-[dialog-content-show_200ms]',
           classNameContent,
         )}>
+        <Dialog.Title />
+        <Dialog.Description />
         {children}
       </Dialog.Content>
     </Dialog.Portal>
