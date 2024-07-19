@@ -36,3 +36,4 @@ jobs:
           git add ../contracts/Cargo.toml
           git commit -m "Update GEAR dependencies to latest tag in contracts"
           git push
+        fi
