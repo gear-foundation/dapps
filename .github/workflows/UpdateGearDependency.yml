@@ -25,7 +25,7 @@ jobs:
     - name: Install GitPython
       run: |
         python -m pip install --upgrade pip
-        pip install gitpython
+        pip install requests packaging gitpython
 
     - name: Check for new tag and update Cargo.toml
       run: |
