@@ -28,6 +28,8 @@ jobs:
         pip install requests packaging gitpython
 
     - name: Check for new tag and update Cargo.toml
+      env:
+        GITHUB_TOKEN: ${{ secrets.UPDATE_GEAR_TAG_TOKEN }}
       run: |
         python update_cargo_toml.py
         if ! git diff --exit-code; then
