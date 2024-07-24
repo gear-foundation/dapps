@@ -2,6 +2,11 @@ name: Build Rust Stable Image
 
 on:
   workflow_dispatch:
+    inputs:
+      toolchain:
+        description: 'Specify the Rust toolchain version'
+        required: true
+        default: '1.78.0'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -9,7 +14,6 @@ concurrency:
 
 env:
   IMAGE_PREFIX: ci-rust
-  DEFAULT_TOOLCHAIN: 1.78.0
   REGISTRY: ghcr.io/${{ github.repository }}
 
 jobs:
@@ -35,4 +39,6 @@ jobs:
           context: docker
           file: docker/rust_ci.Dockerfile
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}:${{ env.DEFAULT_TOOLCHAIN }}
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}:${{ github.event.inputs.toolchain }}
+            ${{ env.REGISTRY }}/${{ env.IMAGE_PREFIX }}:latest

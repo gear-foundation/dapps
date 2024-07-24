@@ -1,20 +1,10 @@
-name: Contracts CI - Tests
+name: Contracts CI - Build
 
 on:
   workflow_dispatch:
-  pull_request:
-    paths-ignore:
-      - 'contracts/**'
-      - 'docker/**'
-  push:
-    paths-ignore:
-      - 'contracts/**'
-      - 'docker/**'
-    branches: [master]
 
 env:
   CARGO_TERM_COLOR: always
-  GEAR_VERSION: 1.4.1
 
 defaults:
   run:
@@ -31,40 +21,56 @@ concurrency:
 
 jobs:
   all:
-    name: Tests
+    name: Build - Release
     runs-on: self-hosted
-    #container:
-    #  image: ghcr.io/gear-foundation/dapps/ci-rust:1.78.0
+    container:
+      image: ghcr.io/gear-foundation/dapps/ci-rust:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Rust
-        uses: dtolnay/rust-toolchain@stable
+      - name: Build
+        run: 'cargo build --release --workspace;'
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v4
         with:
-          toolchain: nightly
-          targets: wasm32-unknown-unknown
-          components: clippy, rustfmt
+          name: wasm
+          path: |
+            contracts/target/wasm32-unknown-unknown/release/*.*.wasm
+            contracts/target/wasm32-unknown-unknown/release/*.meta.txt
 
-      - name: Prepare Gear Binary
+      - name: Update the nightly tag
+        if: github.ref == 'refs/heads/master'
         run: |
-          mkdir -p target/tmp
-          wget -qO- https://get.gear.rs/gear-v${{ env.GEAR_VERSION }}-x86_64-unknown-linux-gnu.tar.xz| tar xJ -C target/tmp
+          git tag nightly
+          git push -f origin nightly
 
-      # mandatory tasks
-      - name: Fmt
-        run: 'cargo +nightly fmt --all -- --config imports_granularity=Crate,edition=2021'
-      - name: Clippy
-        run: 'cargo clippy --release --workspace --all-targets --all-features -- -D warnings'
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ github.ref == 'refs/heads/master' && 'Nightly' || github.ref_name }}
+          tag_name: ${{ github.ref == 'refs/heads/master' && 'nightly' || github.ref_name }}
+          prerelease: ${{ github.ref == 'refs/heads/master' }}
+          files: |
+            contracts/target/wasm32-unknown-unknown/release/*.*.wasm
+            contracts/target/wasm32-unknown-unknown/release/*.meta.txt
 
-      # Only on push to master
-      - name: On Push to master
-        if: github.ref != 'refs/heads/master'
-        run: |
-          cargo test --release --workspace
-          cargo test --workspace
+      - name: Upload the GitHub Pages artifact
+        if: github.ref == 'refs/heads/master'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: contracts/target/doc
 
-      # Only on push to PR
-      - name: On Push to Pull Request
-        if: github.ref != 'refs/heads/master'
-        run: cargo test --release --workspace
+  # A separate job for the Pages deployment is neccessary to prevent the spam from the "deployed"
+  # messages in PRs.
+  # https://github.com/orgs/community/discussions/36919
+  deploy:
+    name: Deploy GitHub Pages
+    if: github.ref == 'refs/heads/master'
+    needs: all
+    environment: github-pages
+    runs-on: self-hosted
+    steps:
+      - name: Deploy GitHub Pages
+        uses: actions/deploy-pages@v4
