@@ -59,7 +59,6 @@ pub fn add_minter(
     )
 }
 
-
 pub fn add_url(nft: &Program<'_>, token_id: TokenId, url: &str, member: u64) -> RunResult {
     nft.send(
         member,
