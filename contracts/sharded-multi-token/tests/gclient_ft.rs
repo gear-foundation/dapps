@@ -87,8 +87,15 @@ async fn gclient_success_mint_batch_ft() -> gclient::Result<()> {
     let (api, user_account_0) = gclient_with_account(api, USER_ACCOUNTS[0])?;
     let mut listener = api.subscribe().await?;
 
-    api.transfer_keep_alive(user_account_1.encode().as_slice().into(), 10000)
-        .await?;
+    api.transfer_keep_alive(
+        user_account_1
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
+        10000,
+    )
+    .await?;
 
     mtoken_create(
         &api,
@@ -167,8 +174,15 @@ async fn gclient_success_burn_batch_ft() -> gclient::Result<()> {
     let (api, user_account_0) = gclient_with_account(api, USER_ACCOUNTS[0])?;
     let mut listener = api.subscribe().await?;
 
-    api.transfer_keep_alive(user_account_1.encode().as_slice().into(), 10000)
-        .await?;
+    api.transfer_keep_alive(
+        user_account_1
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
+        10000,
+    )
+    .await?;
 
     mtoken_create(
         &api,
@@ -392,8 +406,15 @@ async fn gclient_success_transfer_ft() -> gclient::Result<()> {
     let (api, user_account_0) = gclient_with_account(api, USER_ACCOUNTS[0])?;
     let mut listener = api.subscribe().await?;
 
-    api.transfer_keep_alive(user_account_1.encode().as_slice().into(), 10000)
-        .await?;
+    api.transfer_keep_alive(
+        user_account_1
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
+        10000,
+    )
+    .await?;
 
     mtoken_create(
         &api,

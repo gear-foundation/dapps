@@ -24,7 +24,7 @@ impl<'a> Factory<'a> {
             "../target/wasm32-unknown-unknown/debug/dex_factory.opt.wasm",
         );
         let pair_code_id: [u8; 32] = system
-            .submit_code("../target/wasm32-unknown-unknown/debug/dex.opt.wasm")
+            .submit_code_file("../target/wasm32-unknown-unknown/debug/dex.opt.wasm")
             .into();
 
         let result = program.send(

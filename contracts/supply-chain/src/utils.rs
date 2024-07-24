@@ -14,7 +14,7 @@ use sharded_fungible_token_io::{FTokenAction, FTokenEvent, LogicAction};
 use supply_chain_io::*;
 
 fn send<T: Decode>(actor: ActorId, payload: impl Encode) -> GstdResult<CodecMessageFuture<T>> {
-    msg::send_for_reply_as(actor, payload, 0, 0)
+    Ok(msg::send_for_reply_as(actor, payload, 0, 0)?)
 }
 
 fn nft_event_to_transfer(event: GstdResult<NFTEvent>) -> Result<NFTTransfer, Error> {

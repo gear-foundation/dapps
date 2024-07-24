@@ -22,8 +22,8 @@ impl<'a> FungibleToken<'a> {
     #[track_caller]
     pub fn initialize(system: &'a System) -> Self {
         let program = InnerProgram::from_file(system, FT_MAIN);
-        let storage_code_id: [u8; 32] = system.submit_code(FT_STORAGE).into();
-        let logic_code_id: [u8; 32] = system.submit_code(FT_LOGIC).into();
+        let storage_code_id: [u8; 32] = system.submit_code_file(FT_STORAGE).into();
+        let logic_code_id: [u8; 32] = system.submit_code_file(FT_LOGIC).into();
 
         assert!(!program
             .send(

@@ -90,12 +90,12 @@ async fn gclient_create_and_stop() -> Result<()> {
     assert!(listener.message_processed(message_id).await?.succeed());
 
     // Approve NFT to auction
-    let to = ActorId::from_slice(&auction_program_id.into_bytes()).unwrap();
-    println!("INIT DONE. Auction_contract_id: {:?}", to);
+
+    println!("INIT DONE. Auction_contract_id: {:?}", auction_program_id);
     transaction_id += 1;
     let approve_action = NFTAction::Approve {
         transaction_id,
-        to,
+        to: auction_program_id,
         token_id: TokenId::default(),
     };
     let gas_info = api
@@ -108,13 +108,10 @@ async fn gclient_create_and_stop() -> Result<()> {
     // Create Auction
     let starting_price = 1_000_000_000;
     let discount_rate = 2_000_000;
-    let nft_contract_actor_id = ActorId::from_slice(&nft_program_id.into_bytes()).unwrap();
-    println!(
-        "Approve DONE. nft_contract_actor_id: {:?}",
-        nft_contract_actor_id
-    );
+    // let nft_contract_actor_id = ActorId::from_slice(&nft_program_id.into_bytes()).unwrap();
+    println!("Approve DONE. nft_contract_actor_id: {:?}", nft_program_id);
     let create = Action::Create(CreateConfig {
-        nft_contract_actor_id,
+        nft_contract_actor_id: nft_program_id,
         starting_price,
         discount_rate,
         token_id: TokenId::default(),
@@ -247,13 +244,13 @@ async fn gclient_create_buy_reward() -> Result<()> {
         .await?;
     assert!(listener.message_processed(message_id).await?.succeed());
     // Approve NFT to auction
-    let to = ActorId::from_slice(&auction_program_id.into_bytes()).unwrap();
-    println!("INIT DONE. Auction_contract_id: {:?}", to);
+    // let to = ActorId::from_slice(&auction_program_id.into_bytes()).unwrap();
+    println!("INIT DONE. Auction_contract_id: {:?}", auction_program_id);
 
     transaction_id += 1;
     let approve_action = NFTAction::Approve {
         transaction_id,
-        to,
+        to: auction_program_id,
         token_id: TokenId::default(),
     };
     let gas_info = api
@@ -266,13 +263,10 @@ async fn gclient_create_buy_reward() -> Result<()> {
     // Create Auction
     let starting_price = 11_000_000_000_000;
     let discount_rate = 2_000_000;
-    let nft_contract_actor_id = ActorId::from_slice(&nft_program_id.into_bytes()).unwrap();
-    println!(
-        "Approve DONE. nft_contract_actor_id: {:?}",
-        nft_contract_actor_id
-    );
+    // let nft_contract_actor_id = ActorId::from_slice(&nft_program_id.into_bytes()).unwrap();
+    println!("Approve DONE. nft_contract_actor_id: {:?}", nft_program_id);
     let create = Action::Create(CreateConfig {
-        nft_contract_actor_id,
+        nft_contract_actor_id: nft_program_id,
         starting_price,
         discount_rate,
         token_id: TokenId::default(),

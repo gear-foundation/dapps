@@ -2,10 +2,9 @@
 
 use gstd::{
     collections::{HashMap, HashSet},
-    errors::Result as GstdResult,
     exec, msg,
     prelude::*,
-    ActorId, MessageId,
+    ActorId,
 };
 use student_nft_io::*;
 
@@ -484,21 +483,20 @@ extern fn handle() {
         }
     };
 
-    reply(result).expect("Failed to encode or reply with `StudentNftEvent`.");
+    msg::reply(result, 0).expect("Failed to encode or reply with `StudentNftEvent`.");
 }
 
 #[no_mangle]
 extern fn state() {
-    reply(unsafe {
-        let student_nft = STUDENT_NFT
-            .as_ref()
-            .expect("Uninitialized `StudentNFT` state.");
-        let student_nft_state: StudentNftState = student_nft.into();
-        student_nft_state
-    })
+    msg::reply(
+        unsafe {
+            let student_nft = STUDENT_NFT
+                .as_ref()
+                .expect("Uninitialized `StudentNFT` state.");
+            let student_nft_state: StudentNftState = student_nft.into();
+            student_nft_state
+        },
+        0,
+    )
     .expect("Failed to share state.");
-}
-
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
 }

@@ -479,9 +479,15 @@ pub async fn accept_offer(
 }
 
 pub async fn state(api: &GearApi, program_id: &ActorId) -> gclient::Result<Market> {
-    let program_id_ref = program_id.as_ref();
-
-    api.read_state(program_id_ref.into(), vec![]).await
+    api.read_state(
+        program_id
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
+        vec![],
+    )
+    .await
 }
 
 async fn send_message(

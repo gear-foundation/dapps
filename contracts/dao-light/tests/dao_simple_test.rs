@@ -10,8 +10,8 @@ fn deposit_tokens() {
     let sys = System::new();
     init_fungible_token(&sys);
     init_dao(&sys);
-    let dao = sys.get_program(2);
-    assert!(!approve(&sys.get_program(1), MEMBERS[0], 2, 1000).main_failed());
+    let dao = sys.get_program(2).unwrap();
+    assert!(!approve(&sys.get_program(1).unwrap(), MEMBERS[0], 2, 1000).main_failed());
     let res = deposit(&dao, MEMBERS[0], 1000);
     assert!(res.contains(&(
         MEMBERS[0],
@@ -28,8 +28,8 @@ fn create_proposal() {
     let sys = System::new();
     init_fungible_token(&sys);
     init_dao(&sys);
-    let ft = sys.get_program(1);
-    let dao = sys.get_program(2);
+    let ft = sys.get_program(1).unwrap();
+    let dao = sys.get_program(2).unwrap();
     assert!(!approve(&ft, MEMBERS[0], 2, 1000).main_failed());
     assert!(!deposit(&dao, MEMBERS[0], 1000).main_failed());
     let res = proposal(&dao, MEMBERS[0], MEMBERS[2], 800);
@@ -62,8 +62,8 @@ fn create_proposal_failures() {
     let sys = System::new();
     init_fungible_token(&sys);
     init_dao(&sys);
-    let ft = sys.get_program(1);
-    let dao = sys.get_program(2);
+    let ft = sys.get_program(1).unwrap();
+    let dao = sys.get_program(2).unwrap();
     assert!(!approve(&ft, MEMBERS[0], 2, 1000).main_failed());
     assert!(!deposit(&dao, MEMBERS[0], 1000).main_failed());
     // must fail since dao has not enough tokens for funding
@@ -83,8 +83,8 @@ fn vote_on_proposal() {
     let sys = System::new();
     init_fungible_token(&sys);
     init_dao(&sys);
-    let ft = sys.get_program(1);
-    let dao = sys.get_program(2);
+    let ft = sys.get_program(1).unwrap();
+    let dao = sys.get_program(2).unwrap();
     assert!(!approve(&ft, MEMBERS[0], 2, 1000).main_failed());
     assert!(!approve(&ft, MEMBERS[1], 2, 1000).main_failed());
     assert!(!deposit(&dao, MEMBERS[0], 1000).main_failed());
@@ -121,8 +121,8 @@ fn vote_on_proposal_failures() {
     init_fungible_token(&sys);
     init_dao(&sys);
 
-    let ft = sys.get_program(1);
-    let dao = sys.get_program(2);
+    let ft = sys.get_program(1).unwrap();
+    let dao = sys.get_program(2).unwrap();
 
     assert!(!approve(&ft, MEMBERS[0], 2, 1000).main_failed());
     assert!(!approve(&ft, MEMBERS[1], 2, 1000).main_failed());
@@ -158,8 +158,8 @@ fn process_proposal() {
     init_fungible_token(&sys);
     init_dao(&sys);
 
-    let ft = sys.get_program(1);
-    let dao = sys.get_program(2);
+    let ft = sys.get_program(1).unwrap();
+    let dao = sys.get_program(2).unwrap();
 
     assert!(!approve(&ft, MEMBERS[0], 2, 1000).main_failed());
     assert!(!approve(&ft, MEMBERS[1], 2, 2000).main_failed());
@@ -223,8 +223,8 @@ fn process_proposal_failures() {
     init_fungible_token(&sys);
     init_dao(&sys);
 
-    let ft = sys.get_program(1);
-    let dao = sys.get_program(2);
+    let ft = sys.get_program(1).unwrap();
+    let dao = sys.get_program(2).unwrap();
 
     assert!(!approve(&ft, MEMBERS[0], 2, 1000).main_failed());
     assert!(!deposit(&dao, MEMBERS[0], 1000).main_failed());
@@ -251,8 +251,8 @@ fn ragequit_dao() {
     init_fungible_token(&sys);
     init_dao(&sys);
 
-    let ft = sys.get_program(1);
-    let dao = sys.get_program(2);
+    let ft = sys.get_program(1).unwrap();
+    let dao = sys.get_program(2).unwrap();
 
     assert!(!approve(&ft, MEMBERS[1], 2, 1000).main_failed());
     assert!(!deposit(&dao, MEMBERS[1], 1000).main_failed());
@@ -307,8 +307,8 @@ fn ragequit_failures() {
     init_fungible_token(&sys);
     init_dao(&sys);
 
-    let ft = sys.get_program(1);
-    let dao = sys.get_program(2);
+    let ft = sys.get_program(1).unwrap();
+    let dao = sys.get_program(2).unwrap();
 
     assert!(!approve(&ft, MEMBERS[0], 2, 1000).main_failed());
     assert!(!deposit(&dao, MEMBERS[0], 1000).main_failed());

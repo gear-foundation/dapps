@@ -123,7 +123,11 @@ pub async fn remove_operator(
 }
 
 pub async fn get_state(api: &GearApi, program_id: &ActorId) -> gclient::Result<NFTMasterState> {
-    let program_id = program_id.encode().as_slice().into();
+    let program_id = program_id
+        .encode()
+        .as_slice()
+        .try_into()
+        .expect("Unexpected invalid `ProgramId`.");
     api.read_state(program_id, vec![]).await
 }
 

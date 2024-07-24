@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use auto_changed_nft_io::*;
 use gear_lib_old::non_fungible_token::token::*;
 use gstd::ActorId;

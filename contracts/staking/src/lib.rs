@@ -52,7 +52,10 @@ impl Staking {
             payload,
         };
 
-        let result = msg::send_for_reply_as(*token_address, payload, 0, 0)?.await?;
+        let result = msg::send_for_reply_as(*token_address, payload, 0, 0)
+            .unwrap()
+            .await
+            .unwrap();
 
         if let FTokenEvent::Err = result {
             Err(Error::TransferTokens)

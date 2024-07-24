@@ -1,6 +1,6 @@
 use blake2_rfc::blake2b;
 use gclient::GearApi;
-use gstd::ActorId;
+use gstd::{ActorId, Encode};
 
 pub const HASH_LENGTH: usize = 32;
 pub type Hash = [u8; HASH_LENGTH];
@@ -43,8 +43,15 @@ pub async fn get_user_to_actor_id(user: impl AsRef<str>) -> gclient::Result<Acto
 pub async fn init(api: &GearApi) -> gclient::Result<(ActorId, ActorId, ActorId)> {
     for user in &USERS[..4] {
         let user_id = get_user_to_actor_id(user).await?;
-        api.transfer_keep_alive(user_id.as_ref().into(), USERS_FUND)
-            .await?;
+        api.transfer_keep_alive(
+            user_id
+                .encode()
+                .as_slice()
+                .try_into()
+                .expect("Unexpected invalid `ProgramId`."),
+            USERS_FUND,
+        )
+        .await?;
     }
 
     let seller_id = get_user_to_actor_id(SELLER).await?;
@@ -52,17 +59,32 @@ pub async fn init(api: &GearApi) -> gclient::Result<(ActorId, ActorId, ActorId)>
     let treasury_id = get_user_to_actor_id(TREASURY).await?;
 
     api.transfer_keep_alive(
-        seller_id.as_ref().into(),
+        seller_id
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
         api.total_balance(api.account_id()).await? / 2,
     )
     .await?;
     api.transfer_keep_alive(
-        buyer_id.as_ref().into(),
+        buyer_id
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
         api.total_balance(api.account_id()).await? / 2,
     )
     .await?;
-    api.transfer_keep_alive(treasury_id.as_ref().into(), USERS_FUND)
-        .await?;
+    api.transfer_keep_alive(
+        treasury_id
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
+        USERS_FUND,
+    )
+    .await?;
 
     let ft_contract = super::ft::init(api).await?;
     let nft_contract = super::nft::init(api).await?;

@@ -12,7 +12,7 @@ fn buy() {
 
     let auction = init(&sys);
 
-    let nft_program = sys.get_program(2);
+    let nft_program = sys.get_program(2).unwrap();
     let token_id: u64 = 0;
     let result = auction.send_with_value(USERS[1], Action::Buy, 1_000_000_000_000_000);
 
