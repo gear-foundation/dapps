@@ -1,5 +1,5 @@
 use gstd::prelude::*;
-use gtest::{Program, System};
+use gtest::{Program, ProgramBuilder, System};
 use sharded_fungible_token_io::{FTokenAction, FTokenEvent, InitFToken, LogicAction};
 
 pub trait FToken {
@@ -29,18 +29,19 @@ pub trait FToken {
 
 impl FToken for Program<'_> {
     fn ftoken(owner: u64, id: u64, system: &System) -> Program<'_> {
-        let ftoken = Program::from_binary_with_id(
-            system,
-            id,
+        let ftoken = ProgramBuilder::from_file(
             "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm",
-        );
+        )
+        .with_id(id)
+        .build(system);
+
         let storage_code_hash: [u8; 32] = system
-            .submit_code(
+            .submit_code_file(
                 "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm",
             )
             .into();
         let ft_logic_code_hash: [u8; 32] = system
-            .submit_code(
+            .submit_code_file(
                 "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm",
             )
             .into();

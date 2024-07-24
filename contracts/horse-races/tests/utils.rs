@@ -1,5 +1,5 @@
 pub use gstd::{prelude::*, ActorId};
-use gtest::{Program, System};
+use gtest::{Program, ProgramBuilder, System};
 
 pub const FEE_BPS: u16 = 200;
 pub const NEW_FEE_BPS: u16 = 500;
@@ -20,17 +20,16 @@ pub fn get_programs(sys: &System) -> (Program<'_>, Program<'_>, Program<'_>) {
     sys.init_logger();
 
     let current_program = Program::current_with_id(sys, HORSE_RACES_ID);
-    let oracle_program = Program::from_binary_with_id(
-        sys,
-        ORACLE_ID,
-        "../target/wasm32-unknown-unknown/debug/oracle_randomness.opt.wasm",
-    );
-    let token_program = Program::from_binary_with_id(
-        sys,
-        TOKEN_ID,
-        "../target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm",
-    );
 
+    let oracle_program = ProgramBuilder::from_file(
+        "../target/wasm32-unknown-unknown/debug/oracle_randomness.opt.wasm",
+    )
+    .with_id(ORACLE_ID)
+    .build(sys);
+    let token_program =
+        ProgramBuilder::from_file("../target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm")
+            .with_id(TOKEN_ID)
+            .build(sys);
     (current_program, oracle_program, token_program)
 }
 

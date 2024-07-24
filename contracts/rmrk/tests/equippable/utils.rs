@@ -1,5 +1,5 @@
 use gstd::{collections::BTreeMap, prelude::*, ActorId};
-use gtest::{Program, System};
+use gtest::{Program, ProgramBuilder, System};
 use rmrk_catalog_io::*;
 use rmrk_io::*;
 use rmrk_state::WASM_BINARY;
@@ -13,7 +13,9 @@ const GEM_ID: u64 = 11;
 
 pub fn setup_catalog(system: &System) {
     let mut parts = BTreeMap::new();
-    let catalog = Program::from_binary_with_id(system, CATALOG_ID, PATH_TO_CATALOG);
+    let catalog = ProgramBuilder::from_file(PATH_TO_CATALOG)
+        .with_id(CATALOG_ID)
+        .build(system);
     let res = catalog.send(
         ADMIN,
         InitCatalog {

@@ -412,7 +412,6 @@ async fn gclient_auto_changed() -> Result<()> {
         name: String::from("MyToken"),
         description: String::from("My token"),
     };
-    // let actor_id = ActorId::from_slice(&api.account_id().encode()).unwrap();
     let actor_id = ActorId::new(
         api.account_id()
             .encode()
