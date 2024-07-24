@@ -25,12 +25,13 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        
+
+      # Ensure rustfmt is installed and setup problem matcher
       - name: Check Rust toolchain version exists
         id: check-toolchain
-        uses: actions/setup-rust@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          rust-version: ${{ github.event.inputs.toolchain }}
+          toolchain: ${{ github.event.inputs.toolchain }}
         continue-on-error: true
 
       - name: Fail if toolchain version does not exist
