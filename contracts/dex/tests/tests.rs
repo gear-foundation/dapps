@@ -21,7 +21,7 @@ fn swaps_and_fee() {
     let mut factory = Factory::initialize(&system, USERS[2], 0).succeed();
     let actor_pair = (fungible_token_a.actor_id(), fungible_token_b.actor_id());
     let pair_actor = factory.create_pair(actor_pair).succeed((actor_pair, 1));
-    let mut pair = Pair(system.get_program(pair_actor));
+    let mut pair = Pair(system.get_program(pair_actor).unwrap());
 
     // Checking the initialization results
 
@@ -227,7 +227,7 @@ fn swap_errors() {
     let mut factory = Factory::initialize(&system, 0, 0).succeed();
     let actor_pair = (fungible_token_a.actor_id(), fungible_token_b.actor_id());
     let pair_actor = factory.create_pair(actor_pair).succeed((actor_pair, 1));
-    let mut pair = Pair(system.get_program(pair_actor));
+    let mut pair = Pair(system.get_program(pair_actor).unwrap());
 
     pair.swap_exact_tokens_for_tokens_with_deadline(USERS[0], (0, 0), USERS[0], SwapKind::AForB, 0)
         .failed(Error::DeadlineExceeded);
@@ -343,7 +343,7 @@ fn add_liquidity() {
     let mut factory = Factory::initialize(&system, 0, 0).succeed();
     let actor_pair = (fungible_token_a.actor_id(), fungible_token_b.actor_id());
     let pair_actor = factory.create_pair(actor_pair).succeed((actor_pair, 1));
-    let mut pair = Pair(system.get_program(pair_actor));
+    let mut pair = Pair(system.get_program(pair_actor).unwrap());
 
     fungible_token_b.mint(pair.actor_id(), u128::MAX);
     pair.sync().succeed((0, u128::MAX));
@@ -388,7 +388,7 @@ fn add_liquidity_2() {
     let mut factory = Factory::initialize(&system, 0, 0).succeed();
     let actor_pair = (fungible_token_a.actor_id(), fungible_token_b.actor_id());
     let pair_actor = factory.create_pair(actor_pair).succeed((actor_pair, 1));
-    let mut pair = Pair(system.get_program(pair_actor));
+    let mut pair = Pair(system.get_program(pair_actor).unwrap());
 
     // 0 < MINIMUM_LIQUIDITY
     pair.add_liquidity(USERS[0], (0, 0), (0, 0), USERS[0])
@@ -434,7 +434,7 @@ fn remove_liquidity() {
     let mut factory = Factory::initialize(&system, 0, 0).succeed();
     let actor_pair = (fungible_token_a.actor_id(), fungible_token_b.actor_id());
     let pair_actor = factory.create_pair(actor_pair).succeed((actor_pair, 1));
-    let mut pair = Pair(system.get_program(pair_actor));
+    let mut pair = Pair(system.get_program(pair_actor).unwrap());
 
     pair.remove_liquidity_with_deadline(USERS[0], 0, (0, 0), USERS[0], 0)
         .failed(Error::DeadlineExceeded);

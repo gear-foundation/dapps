@@ -11,7 +11,7 @@ fn end_sale_no_time_left() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 1, 0);
 
@@ -25,7 +25,7 @@ fn end_sale_zero_tokens() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 1, 0);
 
@@ -41,7 +41,7 @@ fn end_sale_time_and_tokens_left() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 1, 0);
 
@@ -57,7 +57,7 @@ fn not_owner_end_sale() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 1, 0);
 
@@ -74,7 +74,7 @@ fn end_sale_before_start() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     end_sale(&ico, 0);
 }
@@ -85,7 +85,7 @@ fn end_sale_twice() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 1, 0);
 

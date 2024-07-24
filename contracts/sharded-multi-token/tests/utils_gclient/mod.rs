@@ -32,10 +32,24 @@ pub async fn setup_gclient() -> gclient::Result<(GearApi, ActorId)> {
 
     let user_fund = api.total_balance(api.account_id()).await? / 3;
 
-    api.transfer_keep_alive(user_account_0.as_ref().into(), user_fund)
-        .await?;
-    api.transfer_keep_alive(user_account_2.as_ref().into(), user_fund)
-        .await?;
+    api.transfer_keep_alive(
+        user_account_0
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
+        user_fund,
+    )
+    .await?;
+    api.transfer_keep_alive(
+        user_account_2
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
+        user_fund,
+    )
+    .await?;
 
     let storage_code_hash = upload_with_code_hash(&api, MT_STORAGE_WASM_PATH).await?;
     let mt_logic_code_hash = upload_with_code_hash(&api, MT_LOGIC_WASM_PATH).await?;

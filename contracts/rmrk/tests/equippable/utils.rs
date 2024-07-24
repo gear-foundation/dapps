@@ -13,8 +13,7 @@ const GEM_ID: u64 = 11;
 
 pub fn setup_catalog(system: &System) {
     let mut parts = BTreeMap::new();
-
-    let catalog = Program::from_file_with_id(system, CATALOG_ID, PATH_TO_CATALOG);
+    let catalog = Program::from_binary_with_id(system, CATALOG_ID, PATH_TO_CATALOG);
     let res = catalog.send(
         ADMIN,
         InitCatalog {
@@ -180,7 +179,7 @@ pub fn mint_tokens(system: &System) {
 }
 
 pub fn add_kanaria_assets(system: &System) {
-    let kanaria = system.get_program(KANARIA_ID);
+    let kanaria = system.get_program(KANARIA_ID).unwrap();
     let default_asset_id = 1;
     let composed_asset_id = 2;
 
@@ -212,7 +211,7 @@ pub fn add_kanaria_assets(system: &System) {
 }
 
 pub fn add_gem_assets(system: &System) {
-    let gem = system.get_program(GEM_ID);
+    let gem = system.get_program(GEM_ID).unwrap();
 
     // These refIds are used from the child's perspective, to group assets that can be equipped into a parent
     // With it, we avoid the need to do set it asset by asset
@@ -334,7 +333,7 @@ pub fn add_gem_assets(system: &System) {
 }
 
 pub fn equip_gems(system: &System) {
-    let kanaria = system.get_program(KANARIA_ID);
+    let kanaria = system.get_program(KANARIA_ID).unwrap();
 
     let result = kanaria.send(
         ADMIN,
@@ -380,7 +379,7 @@ pub fn equip_gems(system: &System) {
 }
 
 pub fn compose(system: &System, token_id: TokenId, asset_id: u64) {
-    let kanaria = system.get_program(KANARIA_ID);
+    let kanaria = system.get_program(KANARIA_ID).unwrap();
     let (metadata, equippable_group_id, catalog_address, part_ids): (
         String,
         u64,
@@ -399,7 +398,7 @@ pub fn compose(system: &System, token_id: TokenId, asset_id: u64) {
     println!("equippable_group_id {:?}", equippable_group_id);
     println!("catalog_address {:?}", catalog_address);
 
-    let catalog = system.get_program(CATALOG_ID);
+    let catalog = system.get_program(CATALOG_ID).unwrap();
     let catalog_state: CatalogState = catalog
         .read_state(0)
         .expect("Failed to decode CatalogState");

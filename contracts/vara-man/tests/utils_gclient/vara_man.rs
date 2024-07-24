@@ -252,7 +252,11 @@ pub async fn change_config(
 }
 
 pub async fn get_state(api: &GearApi, program_id: &ActorId) -> Option<VaraManState> {
-    let program_id = program_id.encode().as_slice().into();
+    let program_id = program_id
+        .encode()
+        .as_slice()
+        .try_into()
+        .expect("Unexpected invalid `ProgramId`.");
     let reply = api
         .read_state(program_id, StateQuery::All.encode())
         .await

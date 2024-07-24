@@ -13,7 +13,7 @@ const ZERO_ID: u64 = 0;
 fn mint_success() {
     let sys = System::new();
     utils::init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     let res = utils::mint(&nft, USERS[0], vec![0, 1]);
     let message = OnChainNFTEvent::Transfer(NFTTransfer {
         from: ZERO_ID.into(),
@@ -30,7 +30,7 @@ fn mint_success() {
 fn mint_failures() {
     let sys = System::new();
     utils::init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(utils::mint(&nft, USERS[0], vec![3, 3]).main_failed());
 
     // mint token
@@ -43,7 +43,7 @@ fn mint_failures() {
 fn burn_success() {
     let sys = System::new();
     utils::init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(!utils::mint(&nft, USERS[0], vec![0, 1]).main_failed());
     // Check that we minted a token properly
     utils::check_token_from_state(&nft, USERS[0], 0);
@@ -64,7 +64,7 @@ fn burn_success() {
 fn burn_failures() {
     let sys = System::new();
     utils::init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(!utils::mint(&nft, USERS[0], vec![0, 1]).main_failed());
     // must fail since the token doesn't exist
     assert!(utils::burn(&nft, USERS[0], 1).main_failed());
@@ -76,7 +76,7 @@ fn burn_failures() {
 fn transfer_success() {
     let sys = System::new();
     utils::init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(!utils::mint(&nft, USERS[0], vec![0, 1]).main_failed());
     // Check that we minted a token properly
     utils::check_token_from_state(&nft, USERS[0], 0);
@@ -98,7 +98,7 @@ fn transfer_success() {
 fn transfer_failures() {
     let sys = System::new();
     utils::init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(!utils::mint(&nft, USERS[0], vec![0, 1]).main_failed());
 
     // must fail since the token doesn't exist
@@ -113,7 +113,7 @@ fn transfer_failures() {
 fn approve_success() {
     let sys = System::new();
     utils::init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(!utils::mint(&nft, USERS[0], vec![0, 1]).main_failed());
     // Check that we minted a token properly
     utils::check_token_from_state(&nft, USERS[0], 0);
@@ -133,7 +133,7 @@ fn approve_success() {
 fn approve_failures() {
     let sys = System::new();
     utils::init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(!utils::mint(&nft, USERS[0], vec![0, 1]).main_failed());
     // must fail since the token doesn't exist
     assert!(utils::approve(&nft, USERS[0], USERS[1], 1).main_failed());
@@ -154,7 +154,7 @@ fn approve_failures() {
 fn test_token_uri_state() {
     let sys = System::new();
     utils::init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     let res = utils::mint(&nft, USERS[0], vec![0, 1]);
     let message = OnChainNFTEvent::Transfer(NFTTransfer {
         from: ZERO_ID.into(),

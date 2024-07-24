@@ -29,7 +29,7 @@ pub trait FToken {
 
 impl FToken for Program<'_> {
     fn ftoken(owner: u64, id: u64, system: &System) -> Program<'_> {
-        let ftoken = Program::from_file_with_id(
+        let ftoken = Program::from_binary_with_id(
             system,
             id,
             "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm",

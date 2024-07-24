@@ -35,7 +35,7 @@ fn init_with_mint(sys: &System) {
 fn mint() {
     let sys = System::new();
     init_with_mint(&sys);
-    let ft = sys.get_program(1);
+    let ft = sys.get_program(1).unwrap();
     let res = ft.send(USERS[0], FTAction::BalanceOf(USERS[0].into()));
     assert!(res.contains(&(USERS[0], FTEvent::Balance(1000000).encode())));
 }
@@ -44,7 +44,7 @@ fn mint() {
 fn burn() {
     let sys = System::new();
     init_with_mint(&sys);
-    let ft = sys.get_program(1);
+    let ft = sys.get_program(1).unwrap();
     let res = ft.send(USERS[0], FTAction::Burn(1000));
     assert!(res.contains(&(
         USERS[0],
@@ -64,7 +64,7 @@ fn burn_failures() {
     let sys = System::new();
     sys.init_logger();
     init_with_mint(&sys);
-    let ft = sys.get_program(1);
+    let ft = sys.get_program(1).unwrap();
     // must fail since the amount > the user balance
     let res = ft.send(USERS[0], FTAction::Burn(1000001));
     assert!(res.main_failed());
@@ -74,7 +74,7 @@ fn burn_failures() {
 fn transfer() {
     let sys = System::new();
     init_with_mint(&sys);
-    let ft = sys.get_program(1);
+    let ft = sys.get_program(1).unwrap();
     let res = ft.send(
         USERS[0],
         FTAction::Transfer {
@@ -105,7 +105,7 @@ fn transfer() {
 fn transfer_failures() {
     let sys = System::new();
     init_with_mint(&sys);
-    let ft = sys.get_program(1);
+    let ft = sys.get_program(1).unwrap();
     //must fail since the amount > balance
     let res = ft.send(
         USERS[0],
@@ -133,7 +133,7 @@ fn transfer_failures() {
 fn approve_and_transfer() {
     let sys = System::new();
     init_with_mint(&sys);
-    let ft = sys.get_program(1);
+    let ft = sys.get_program(1).unwrap();
 
     let res = ft.send(
         USERS[0],

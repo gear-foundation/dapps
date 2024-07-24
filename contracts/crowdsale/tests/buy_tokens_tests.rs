@@ -10,7 +10,7 @@ fn common_buy_tokens() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 2, 0);
 
@@ -23,7 +23,7 @@ fn buy_tokens_with_change() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 2, 0);
 
@@ -50,7 +50,7 @@ fn buy_tokens_after_price_update() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 2, 0);
 
@@ -89,7 +89,7 @@ fn buy_when_no_time_left() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 2, 0);
 
@@ -105,7 +105,7 @@ fn wrong_value_sent() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 2, 0);
 
@@ -119,7 +119,7 @@ fn wrong_value_after_price_update() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 2, 0);
 
@@ -139,7 +139,7 @@ fn all_tokens_bought() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 2, 0);
 
@@ -155,7 +155,7 @@ fn buy_before_start() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     let amount: u128 = 5;
     buy_tokens(&sys, &ico, amount, amount * START_PRICE);
@@ -167,7 +167,7 @@ fn buy_after_end_sale() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 2, 0);
 
@@ -185,7 +185,7 @@ fn buy_more_than_goal_tokens() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 2, 0);
 
@@ -199,7 +199,7 @@ fn buy_too_many_tokens() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 2, 0);
 
@@ -216,7 +216,7 @@ fn buy_zero_tokens() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 2, 0);
 
@@ -230,7 +230,7 @@ fn overflowing_multiplication_buy() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 2, 0);
 

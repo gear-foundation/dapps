@@ -13,7 +13,7 @@ fn success_roll() {
     let sys = System::new();
     sys.init_logger();
 
-    let oracle_program = Program::from_file_with_id(
+    let oracle_program = Program::from_binary_with_id(
         &sys,
         ORACLE_ID,
         "../target/wasm32-unknown-unknown/debug/oracle.opt.wasm",
@@ -52,7 +52,7 @@ fn success_roll_finished() {
 
     let state_wasm = get_state();
 
-    let oracle_program = Program::from_file_with_id(
+    let oracle_program = Program::from_binary_with_id(
         &sys,
         ORACLE_ID,
         "../target/wasm32-unknown-unknown/debug/oracle.opt.wasm",

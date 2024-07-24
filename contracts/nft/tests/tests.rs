@@ -11,7 +11,7 @@ const ZERO_ID: u64 = 0;
 fn mint_success() {
     let sys = System::new();
     init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
 
     let res = mint(&nft, USERS[0], USERS[1].into());
     let token_metadata = TokenMetadata {
@@ -58,7 +58,7 @@ fn mint_failures() {
     assert!(res.main_failed());
 
     // limit_exceed
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     let res = mint(&nft, USERS[0], USERS[1].into());
     assert!(!res.main_failed());
     let res = mint(&nft, USERS[0], USERS[1].into());
@@ -69,7 +69,7 @@ fn mint_failures() {
 fn burn_success() {
     let sys = System::new();
     init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     let res = mint(&nft, USERS[0], USERS[1].into());
     assert!(!res.main_failed());
     let res = burn(&nft, USERS[1], 0);
@@ -85,7 +85,7 @@ fn burn_success() {
 fn burn_failures() {
     let sys = System::new();
     init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     mint(&nft, USERS[0], USERS[1].into());
     // must fail since the token doesn't exist
     assert!(burn(&nft, USERS[1], 1).main_failed());
@@ -97,7 +97,7 @@ fn burn_failures() {
 fn transfer_success() {
     let sys = System::new();
     init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
 
     let res = transfer(&nft, USERS[1], USERS[2], 0);
@@ -118,7 +118,7 @@ fn transfer_success() {
 fn transfer_failures() {
     let sys = System::new();
     init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
 
     // must fail since the token doesn't exist
@@ -133,7 +133,7 @@ fn transfer_failures() {
 fn approve_success() {
     let sys = System::new();
     init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
     let res = approve(&nft, USERS[1], USERS[2], 0);
     let message = NftEvent::Approved {
@@ -156,7 +156,7 @@ fn approve_success() {
 fn approve_failures() {
     let sys = System::new();
     init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
     // must fail since the token doesn't exist
     assert!(approve(&nft, USERS[1], USERS[2], 1).main_failed());
@@ -177,7 +177,7 @@ fn approve_failures() {
 fn owner_success() {
     let sys = System::new();
     init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
     let res = owner_of(&nft, USERS[1], 0);
 
@@ -193,7 +193,7 @@ fn owner_success() {
 fn owner_failure() {
     let sys = System::new();
     init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
     let res = owner_of(&nft, USERS[1], 1);
     assert!(res.main_failed());
@@ -203,7 +203,7 @@ fn owner_failure() {
 fn is_approved_to_success() {
     let sys = System::new();
     init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
     assert!(!approve(&nft, USERS[1], USERS[2], 0).main_failed());
 
@@ -221,7 +221,7 @@ fn is_approved_to_success() {
 fn is_approved_to_failure() {
     let sys = System::new();
     init_nft(&sys);
-    let nft = sys.get_program(1);
+    let nft = sys.get_program(1).unwrap();
     assert!(!mint(&nft, USERS[0], USERS[1].into()).main_failed());
     assert!(!approve(&nft, USERS[1], USERS[2], 0).main_failed());
     let res = is_approved_to(&nft, USERS[1], 1, USERS[2]);

@@ -23,7 +23,7 @@ pub fn init_catalog(sys: &System, admin: u64) {
 fn add_parts() {
     let system = System::new();
     init_catalog(&system, ADMIN);
-    let catalog = system.get_program(1);
+    let catalog = system.get_program(1).unwrap();
 
     // Add fixed part
     let fixed_part_data = Part::Fixed(FixedPart {
@@ -157,7 +157,7 @@ fn add_parts() {
 fn add_parts_error_cases() {
     let system = System::new();
     init_catalog(&system, ADMIN);
-    let catalog = system.get_program(1);
+    let catalog = system.get_program(1).unwrap();
 
     let fixed_part_data = Part::Fixed(FixedPart {
         z: Some(0),
@@ -202,7 +202,7 @@ fn add_parts_error_cases() {
 fn equippable() {
     let system = System::new();
     init_catalog(&system, ADMIN);
-    let catalog = system.get_program(1);
+    let catalog = system.get_program(1).unwrap();
 
     // Add fixed part
     let fixed_part_id = 1;

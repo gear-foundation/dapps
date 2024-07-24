@@ -137,7 +137,7 @@ fn stake() {
     let mut st_token = init_staking_token(&sys);
     init_reward_token(&sys);
     sys.init_logger();
-    let staking = sys.get_program(1);
+    let staking = sys.get_program(1).unwrap();
 
     let id: ActorId = staking.id().into_bytes().into();
     st_token.approve(5, id, 1000);
@@ -161,7 +161,7 @@ fn update_staking_test() {
     init_staking_token(&sys);
     init_reward_token(&sys);
     sys.init_logger();
-    let staking = sys.get_program(1);
+    let staking = sys.get_program(1).unwrap();
 
     let res = staking.send(
         4,
@@ -182,7 +182,7 @@ fn send_reward() {
     let mut st_token = init_staking_token(&sys);
     init_reward_token(&sys);
     sys.init_logger();
-    let st = sys.get_program(1);
+    let st = sys.get_program(1).unwrap();
 
     let time = sys.block_timestamp();
 
@@ -273,7 +273,7 @@ fn withdraw() {
     let mut st_token = init_staking_token(&sys);
     init_reward_token(&sys);
     sys.init_logger();
-    let st = sys.get_program(1);
+    let st = sys.get_program(1).unwrap();
 
     let time = sys.block_timestamp();
 
@@ -382,7 +382,7 @@ fn meta_tests() {
     let mut st_token = init_staking_token(&sys);
     init_reward_token(&sys);
     sys.init_logger();
-    let st = sys.get_program(1);
+    let st = sys.get_program(1).unwrap();
 
     let time = sys.block_timestamp();
 

@@ -9,7 +9,7 @@ fn balance_after_two_purchases() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, (TIME_INCREASE_STEP + 1) as _, 0);
 
@@ -37,7 +37,7 @@ fn owner_balance() {
     let sys = System::new();
     init(&sys);
 
-    let ico = sys.get_program(2);
+    let ico = sys.get_program(2).unwrap();
 
     start_sale(&ico, 1, 0);
 

@@ -137,7 +137,11 @@ pub async fn gclient_success_request_value() -> gclient::Result<()> {
 
     let api = api.with(MANAGER_GCLIENT)?;
     let manager_account_id = api.account_id().clone();
-    let manager_program_id = manager_account_id.encode().as_slice().into();
+    let manager_program_id = manager_account_id
+        .encode()
+        .as_slice()
+        .try_into()
+        .expect("Unexpected invalid `ProgramId`.");
     let manager_id = ActorId::new((*api.account_id()).clone().into());
 
     let api = api.with(OWNER_GCLIENT)?;

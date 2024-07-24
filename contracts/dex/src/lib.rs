@@ -207,7 +207,10 @@ impl Contract {
 
     async fn calculate_fee(&self) -> Result<(bool, ActorId, U256), Error> {
         let fee_to_result: Result<FactoryEvent, FactoryError> =
-            utils::send(self.factory, FactoryAction::GetFeeTo)?.await?;
+            utils::send(self.factory, FactoryAction::GetFeeTo)
+                .unwrap()
+                .await
+                .unwrap();
         let Ok(FactoryEvent::FeeToSet(fee_receiver)) = fee_to_result else {
             return Err(Error::FeeToGettingFailed);
         };

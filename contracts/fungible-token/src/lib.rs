@@ -1,9 +1,7 @@
 #![no_std]
 
 use fungible_token_io::*;
-use gstd::{
-    collections::HashMap, errors::Result as GstdResult, msg, prelude::*, ActorId, MessageId,
-};
+use gstd::{collections::HashMap, msg, prelude::*, ActorId};
 
 #[cfg(test)]
 mod tests;
@@ -168,12 +166,8 @@ fn static_mut_state() -> &'static mut FungibleToken {
 
 #[no_mangle]
 extern fn state() {
-    reply(common_state())
+    msg::reply(common_state(), 0)
         .expect("Failed to encode or reply with `<AppMetadata as Metadata>::State` from `state()`");
-}
-
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
 }
 
 #[no_mangle]

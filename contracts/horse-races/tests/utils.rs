@@ -20,12 +20,12 @@ pub fn get_programs(sys: &System) -> (Program<'_>, Program<'_>, Program<'_>) {
     sys.init_logger();
 
     let current_program = Program::current_with_id(sys, HORSE_RACES_ID);
-    let oracle_program = Program::from_file_with_id(
+    let oracle_program = Program::from_binary_with_id(
         sys,
         ORACLE_ID,
         "../target/wasm32-unknown-unknown/debug/oracle_randomness.opt.wasm",
     );
-    let token_program = Program::from_file_with_id(
+    let token_program = Program::from_binary_with_id(
         sys,
         TOKEN_ID,
         "../target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm",

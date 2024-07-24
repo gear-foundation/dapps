@@ -48,8 +48,15 @@ pub async fn mint(api: &GearApi, program_id: &ActorId, error: bool) -> gclient::
 }
 
 pub async fn get_state(api: &GearApi, program_id: &ActorId) -> gclient::Result<StudentNftState> {
-    let program_id = program_id.encode().as_slice().into();
-    api.read_state(program_id, vec![]).await
+    api.read_state(
+        program_id
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
+        vec![],
+    )
+    .await
 }
 
 async fn send_message(

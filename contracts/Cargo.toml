@@ -14,8 +14,6 @@ members = [
     "dao/state",
     "dao-light",
     "dao-light/state",
-    "ddns",
-    "ddns/state",
     "decentralized-git",
     "decentralized-git/master",
     "decentralized-git/master/state",
@@ -161,7 +159,6 @@ concert-io.path = "concert/io"
 crowdsale-io.path = "crowdsale/io"
 dao-io.path = "dao/io"
 dao-light-io.path = "dao-light/io"
-ddns-io.path = "ddns/io"
 decentralized-git-io.path = "decentralized-git/io"
 decentralized-git-master-io.path = "decentralized-git/master/io"
 decentralized-git-user-io.path = "decentralized-git/user/io"
@@ -228,13 +225,13 @@ gstd = "1.4.2"
 gear-wasm-builder = "1.4.2"
 gmeta = "1.4.2"
 gclient = "1.4.2"
-gtest = { git = "https://github.com/gear-tech/gear", tag = "v1.4.2" }
+gtest = "1.4.2"
 gear-core = "1.4.2"
 
 # External
 
 primitive-types = { version = "0.12", default-features = false }
-sp-core = { version = "22", default-features = false, features = ["full_crypto", "sp-externalities"] }
+sp-core = { version = "21.0.0", default-features = false, features = ["full_crypto", "sp-externalities"] }
 sp-core-hashing = { version = "10", default-features = false }
 tokio = "1"
 blake2-rfc = "0.2"
