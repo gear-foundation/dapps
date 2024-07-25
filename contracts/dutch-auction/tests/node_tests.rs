@@ -3,7 +3,7 @@ use dutch_auction_io::auction::*;
 use gclient::{EventProcessor, GearApi, Result};
 use gear_lib_old::non_fungible_token::token::{TokenId, TokenMetadata};
 use gstd::prelude::*;
-use gstd::{ActorId, Encode};
+use gstd::Encode;
 use non_fungible_token_io::{Config, InitNFT, NFTAction};
 
 const NFT_PATH: &str = "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm";
