@@ -1,7 +1,7 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
-import { isActiveGameAtom, isGameReadyAtom, singleGameAtom } from '../atoms';
+import { gameEndResultAtom, isActiveGameAtom, isGameReadyAtom, singleGameAtom } from '../atoms';
 import { useSingleGameQuery } from '../sails/queries';
 
 export function useSingleplayerGame() {
@@ -10,6 +10,7 @@ export function useSingleplayerGame() {
   const [game, setGame] = useAtom(singleGameAtom);
   const [isGameReady, setIsGameReady] = useAtom(isGameReadyAtom);
   const [isActiveGame, setIsActiveGame] = useAtom(isActiveGameAtom);
+  const [gameEndResult, setGameEndResult] = useAtom(gameEndResultAtom);
   const [error, setError] = useState<unknown | null>(null);
 
   const triggerGame = async () => {
@@ -34,9 +35,10 @@ export function useSingleplayerGame() {
     setGame(undefined);
     setIsGameReady(false);
     setIsActiveGame(false);
+    setGameEndResult(null);
   };
 
-  return { game, isActiveGame, error, isGameReady, triggerGame, resetGameState };
+  return { game, isActiveGame, error, isGameReady, gameEndResult, triggerGame, resetGameState };
 }
 
 export function useInitSingleGame() {

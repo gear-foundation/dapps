@@ -111,6 +111,7 @@ export function Registration() {
   };
 
   useEffect(() => {
+    // ! TODO: check is need gameEndResult
     if (game && !gameEndResult) {
       const currentStatus = Object.keys(game.status)?.[0];
 

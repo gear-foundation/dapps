@@ -17,7 +17,7 @@ export function useEventGameEndSubscription() {
   const { account } = useAccount();
   const program = useProgram();
   const event = useRef<Promise<() => void> | null>(null);
-  const [result, setResult] = useAtom(gameEndResultAtom);
+  const [gameEndResult, setGameEndResult] = useAtom(gameEndResultAtom);
 
   const gameEndCallback = (ev: GameEndEvent) => {
     if (account?.decodedAddress !== ev.player) {
@@ -25,7 +25,7 @@ export function useEventGameEndSubscription() {
     }
 
     if (ev.winner) {
-      setResult(ev);
+      setGameEndResult(ev);
     }
   };
 
@@ -51,5 +51,5 @@ export function useEventGameEndSubscription() {
     };
   }, []);
 
-  return { gameEndResult: result };
+  return { gameEndResult };
 }

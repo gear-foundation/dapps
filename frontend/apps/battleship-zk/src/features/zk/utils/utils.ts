@@ -34,10 +34,12 @@ export const clearZkData = (gameType: GameType, account: Account) => {
 
   delete zkData[gameType];
 
-  localStorage.removeItem(`zk-data-${account.address}`);
+  localStorage.setItem(`zk-data-${account.address}`, JSON.stringify(zkData));
 };
 
-export const getVerificationVariables = (proofDataHit: ZkProofData | null | undefined): VerificationVariables | null => {
+export const getVerificationVariables = (
+  proofDataHit: ZkProofData | null | undefined,
+): VerificationVariables | null => {
   if (!proofDataHit) {
     return null;
   }
