@@ -10373,7 +10373,7 @@ __metadata:
     react-hook-form: "npm:7.48.2"
     react-router-dom: "npm:6.10.0"
     react-transition-group: "npm:4.4.5"
-    sails-js: "npm:0.1.4"
+    sails-js: "npm:0.1.8"
     sass: "npm:1.62.0"
     tailwindcss: "npm:3.3.2"
     typescript: "npm:4.9.5"
@@ -11214,10 +11214,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:12.0.0":
-  version: 12.0.0
-  resolution: "commander@npm:12.0.0"
-  checksum: e51cac1d1d0aa1f76581981d2256a9249497e08f5a370bf63b0dfc7e76a647fc8cbc3ddd507928f2bdca6c514c83834e87e2687ace2fe2fc7cc7e631bf80f83d
+"commander@npm:12.1.0":
+  version: 12.1.0
+  resolution: "commander@npm:12.1.0"
+  checksum: 6e1996680c083b3b897bfc1cfe1c58dfbcd9842fd43e1aaf8a795fbc237f65efcc860a3ef457b318e73f29a4f4a28f6403c3d653d021d960e4632dd45bde54a9
   languageName: node
   linkType: hard
 
@@ -22189,18 +22189,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"sails-js@npm:0.1.4":
-  version: 0.1.4
-  resolution: "sails-js@npm:0.1.4"
+"sails-js@npm:0.1.8":
+  version: 0.1.8
+  resolution: "sails-js@npm:0.1.8"
   dependencies:
-    commander: "npm:12.0.0"
+    commander: "npm:12.1.0"
   peerDependencies:
-    "@gear-js/api": ^0.38.0
+    "@gear-js/api": ^0.38.1
     "@polkadot/api": ^11.0.1
     "@polkadot/types": ^11.0.1
   bin:
     sails-js: app.js
-  checksum: 3283b1fd5e9cf661c3ed415b36cc15562e2fbd7277648717e84f4ef5bd8806043196dde3f168669f323d690f992346c18b282676b3c0ea87bbd6d097d956ab35
+  checksum: bad245f32e6dc06a9a642d4383cc1416ddb8ab3526385a30ba025fae112daf93355b7e540e4068e2651f993a6f74fe23536952f7f556ed3c6dc14889a8523f1e
   languageName: node
   linkType: hard
 

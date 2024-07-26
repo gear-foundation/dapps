@@ -1,22 +1,17 @@
-import { useAccount, useApi } from '@gear-js/react-hooks';
-import { useEffect, useMemo, useState } from 'react';
-import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
-import { useShips } from '@/features/zk/hooks/use-ships';
-import { ZkProofData } from '@/features/zk/types';
-import { usePending } from '@/features/game/hooks';
+import { useAccount } from '@gear-js/react-hooks';
+import { useMemo } from 'react';
+import { useMoveTransaction, usePending } from '@/features/game/hooks';
 import { useMultiplayerGame } from './use-multiplayer-game';
 import { useEventGameEndSubscription } from '../sails/events';
-import { useCancelGameMessage, useLeaveGameMessage, useMakeMoveMessage, useVerifyMoveMessage } from '../sails/messages';
+import { useCancelGameMessage, useLeaveGameMessage, useMakeMoveMessage } from '../sails/messages';
 
 export const useProcessWithMultiplayer = () => {
   const { game, triggerGame } = useMultiplayerGame();
   const { leaveGameMessage } = useLeaveGameMessage();
   const { cancelGameMessage } = useCancelGameMessage();
-  const { verifyMove } = useVerifyMoveMessage();
   const { makeMoveMessage } = useMakeMoveMessage();
+  const moveTransaction = useMoveTransaction('multi', makeMoveMessage, triggerGame);
   const { account } = useAccount();
-  const { api } = useApi();
-  const { getProofData, clearProofData } = useProofShipHit();
   const { gameEndResult } = useEventGameEndSubscription();
   const { setPending } = usePending();
 
@@ -25,13 +20,19 @@ export const useProcessWithMultiplayer = () => {
   const totalShoots = useMemo(() => (participant ? participant?.total_shots : 0), [game]);
   const successfulShoots = useMemo(() => (participant ? participant?.succesfull_shots : 0), [game]);
 
-  const gameUpdatedEvent = useMemo(
-    () => ({
-      turn: game?.status?.turn || '',
-      pendingVerification: game?.status?.pendingVerificationOfTheMove?.[0] || '',
-    }),
-    [game],
-  );
+  const gameUpdatedEvent = useMemo(() => {
+    if (gameEndResult) {
+      return { turn: '' };
+    }
+    const [pendingVerification, verificationRequired] =
+      (game && 'pendingVerificationOfTheMove' in game.status && game.status.pendingVerificationOfTheMove) || [];
+
+    return {
+      turn: (game && 'turn' in game.status && game.status.turn) || '',
+      pendingVerification,
+      verificationRequired: pendingVerification === account?.decodedAddress ? verificationRequired : undefined,
+    };
+  }, [game, gameEndResult]);
 
   const exitGame = async () => {
     if (game?.admin === account?.decodedAddress) {
@@ -42,8 +43,6 @@ export const useProcessWithMultiplayer = () => {
         await response();
       } catch (err) {
       } finally {
-        await triggerGame();
-
         setPending(false);
       }
 
@@ -59,72 +58,12 @@ export const useProcessWithMultiplayer = () => {
       await response();
     } catch (err) {
     } finally {
-      await triggerGame();
-
       setPending(false);
     }
   };
 
-  const getVerifyTransaction = async (proofDataHit: ZkProofData | null | undefined) => {
-    if (!proofDataHit) {
-      return;
-    }
-    if (!game) {
-      throw new Error('Game now found');
-    }
-
-    const { proofContent, publicContent } = proofDataHit;
-
-    const transaction = await verifyMove(
-      proofContent,
-      {
-        hash: publicContent.publicHash,
-        out: publicContent.results[0][0],
-        hit: publicContent.results[1][0],
-      },
-      game.admin,
-    );
-
-    return transaction;
-  };
-
-  const getHitTransaction = async (indexCell: number) => {
-    if (!game) {
-      throw new Error('Game now found');
-    }
-
-    const transaction = await makeMoveMessage(game.admin, indexCell);
-
-    return transaction;
-  };
-
-  const handleClickCell = async (indexCell: number) => {
-    if (!account?.address || !api) {
-      return;
-    }
-
-    const proofDataHit = getProofData('multi');
-
-    try {
-      const verifyTransaction = await getVerifyTransaction(proofDataHit);
-
-      if (verifyTransaction) {
-        const { response } = await verifyTransaction.signAndSend();
-        await response();
-
-        clearProofData('multi');
-      }
-
-      const hitTransaction = await getHitTransaction(indexCell);
-
-      const { response } = await hitTransaction.signAndSend();
-      await response();
-
-      await triggerGame();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  const verifyOponentsHit = () => moveTransaction(null, game?.admin);
+  const handleClickCell = (indexCell: number) => moveTransaction(indexCell, game?.admin);
 
   return {
     totalShoots,
@@ -133,6 +72,7 @@ export const useProcessWithMultiplayer = () => {
     gameStartTime: game?.start_time || undefined,
     gameUpdatedEvent,
     handleClickCell,
+    verifyOponentsHit,
     exitGame,
   };
 };

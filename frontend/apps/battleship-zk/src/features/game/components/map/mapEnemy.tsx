@@ -17,6 +17,7 @@ type Props = {
   onClickCell: (_: number) => void;
   isDisabledCell: boolean;
   onDefineDeadShip: (deadShips: RenderShips) => void;
+  lastHit: number | null;
 };
 
 type MarkedShips = {
@@ -29,6 +30,7 @@ export default function MapEnemy({
   onClickCell,
   isDisabledCell,
   onDefineDeadShip,
+  lastHit,
 }: Props) {
   const numRows = 5;
   const numCols = 5;
@@ -121,6 +123,7 @@ export default function MapEnemy({
     const isHit = cellStatus === 'Boom';
     const isDeadShips = cellStatus === 'DeadShip';
     const isHitShips = cellStatus === 'BoomShip';
+    const isPending = lastHit === cellIndex && cellStatus === 'Unknown';
 
     let cellClassName = `${styles.block}`;
 
@@ -144,10 +147,10 @@ export default function MapEnemy({
     return (
       <div
         key={`block-${row}-${col}`}
-        className={clsx(cellClassName, styles.blockEnemy)}
+        className={clsx(cellClassName, styles.blockEnemy, isDisabledCell && styles.blockDisabled)}
         style={cellStyle}
         onClick={() => handleCellClick(cellIndex)}>
-        {isHit && !isDeadShips && !isHitShips && <div className={styles.hitEmpty} />}
+        {isHit && !isDeadShips && !isHitShips && <div className={clsx(styles.hitEmpty, styles.hitEmptyEnemy)} />}
         {isDeadShips && !!deadShips[cellIndex] && handleRenderDeadShip(deadShips[cellIndex])}
         {(isDeadShips || isHitShips) && (
           <>
@@ -156,6 +159,7 @@ export default function MapEnemy({
             {Math.random() >= 0.5 && <img src={smokeSVG} alt="fire" className={styles.cellSmoke} />}
           </>
         )}
+        {isPending && <div className={styles.pendingCell} />}
       </div>
     );
   };

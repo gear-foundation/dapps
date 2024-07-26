@@ -6,7 +6,7 @@ import { useAccount } from '@gear-js/react-hooks';
 
 export type GameEndEvent = {
   winner: string;
-  total_time: string | number;
+  total_time: string | number | bigint;
   participants_info: [string, ParticipantInfo][];
   admin: string;
 };
@@ -15,8 +15,7 @@ export function useEventGameEndSubscription() {
   const { account } = useAccount();
   const program = useProgram();
   const event = useRef<Promise<() => void> | null>(null);
-  const { game, triggerGame } = useMultiplayerGame();
-  const [result, setResult] = useState<GameEndEvent | null>(null);
+  const { game, gameEndResult, setGameEndResult } = useMultiplayerGame();
   const [gameAdmin, setGameAdmin] = useState<string | null>(null);
 
   const gameEndCallback = useCallback(
@@ -34,7 +33,7 @@ export function useEventGameEndSubscription() {
       }
 
       if (ev.winner) {
-        setResult(ev);
+        setGameEndResult(ev);
       }
     },
     [gameAdmin],
@@ -68,5 +67,5 @@ export function useEventGameEndSubscription() {
     }
   }, [game?.admin]);
 
-  return { gameEndResult: result };
+  return { gameEndResult };
 }

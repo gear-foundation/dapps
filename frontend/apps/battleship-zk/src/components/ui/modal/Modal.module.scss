@@ -4,6 +4,7 @@
   align-items: center;
   padding: 0;
   background: none;
+  z-index: 1;
 
   &::backdrop {
     background-color: rgba(0, 0, 0, 0.2);

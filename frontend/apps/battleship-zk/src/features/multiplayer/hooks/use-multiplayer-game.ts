@@ -1,7 +1,7 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
-import { isActiveGameAtom, isGameReadyAtom, multiplayerGameAtom } from '../atoms';
+import { gameEndResultAtom, isActiveGameAtom, isGameReadyAtom, multiplayerGameAtom } from '../atoms';
 import { useMultiGameQuery } from '../sails/queries';
 
 export function useMultiplayerGame() {
@@ -10,6 +10,8 @@ export function useMultiplayerGame() {
   const [game, setGame] = useAtom(multiplayerGameAtom);
   const [isGameReady, setIsGameReady] = useAtom(isGameReadyAtom);
   const [isActiveGame, setIsActiveGame] = useAtom(isActiveGameAtom);
+  const [gameEndResult, setGameEndResult] = useAtom(gameEndResultAtom);
+
   const [error, setError] = useState<unknown | null>(null);
 
   const triggerGame = async () => {
@@ -21,7 +23,9 @@ export function useMultiplayerGame() {
       const res = await gameQuery(account.decodedAddress);
 
       setGame(res);
-      setIsActiveGame(!!res);
+      if (res) {
+        setIsActiveGame(true);
+      }
       setIsGameReady(true);
     } catch (err) {
       console.log(err);
@@ -35,17 +39,18 @@ export function useMultiplayerGame() {
     setIsActiveGame(false);
   };
 
-  return { game, isActiveGame, error, isGameReady, triggerGame, resetGameState };
+  return { game, isActiveGame, error, isGameReady, triggerGame, resetGameState, gameEndResult, setGameEndResult };
 }
 
 export function useInitMultiplayerGame() {
   const { account } = useAccount();
-  const { isActiveGame, triggerGame, resetGameState } = useMultiplayerGame();
+  const { isActiveGame, triggerGame, resetGameState, setGameEndResult } = useMultiplayerGame();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const initGame = async () => {
     setIsLoading(true);
     resetGameState();
+    setGameEndResult(null);
     await triggerGame();
     setIsLoading(false);
   };

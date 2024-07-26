@@ -1,4 +1,7 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { TransactionBuilder } from 'sails-js';
+import { ROUTES } from '@/app/consts';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
@@ -13,9 +16,6 @@ import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useShips } from '@/features/zk/hooks/use-ships';
 import { useProofShipArrangement } from '@/features/zk/hooks/use-proof-ship-arrangement';
 import { ZkProofData } from '@/features/zk/types';
-import { TransactionBuilder } from 'sails-js';
-import { useNavigate } from 'react-router-dom';
-import { useSingleplayerGame } from '@/features/singleplayer/hooks/use-singleplayer-game';
 
 type GameType = 'single' | 'multi';
 interface Props {
@@ -59,7 +59,7 @@ export default function ShipArrangement({ gameType, savedBoard, makeStartGameTra
   }, [savedBoard]);
 
   const handleGoBack = () => {
-    navigate('/');
+    navigate(ROUTES.HOME);
   };
 
   const onGameStart = async () => {

@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useProgram } from '@/app/utils/sails';
 import { useMultiplayerGame } from '../../hooks/use-multiplayer-game';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
-import { useNavigate } from 'react-router-dom';
 import { clearZkData } from '@/features/zk/utils';
+import { ROUTES } from '@/app/consts';
 
 type GameCancelledEvent = {
   game_id: string;
@@ -24,7 +25,7 @@ export function useEventGameCancelled() {
 
     await triggerGame();
     clearZkData('multi', account);
-    navigate('/');
+    navigate(ROUTES.HOME);
     alert.info('Admin has removed the game');
   };
 

@@ -1,18 +1,14 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAccount } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
 import { GameProcess, ShipArrangement } from '@/features/game';
 import { Modal } from '@/components';
-import { Button } from '@gear-js/vara-ui';
+import { ROUTES } from '@/app/consts';
 import { useShips } from '@/features/zk/hooks/use-ships';
 import { decodeAddress } from '@gear-js/api';
 import { usePending } from '@/features/game/hooks';
-import {
-  useEventPlacementVerified,
-  useEventGameCancelled,
-  useEventMoveMadeSubscription,
-  useEventMoveVerifiedSubscription,
-} from '../../sails/events';
+import { useEventPlacementVerified, useEventGameCancelled, useEventMoveMadeSubscription } from '../../sails/events';
 import { useMultiplayerGame, useProcessWithMultiplayer, useArrangementWithMultiplayer } from '../../hooks';
 import styles from './Multiplayer.module.scss';
 
@@ -20,9 +16,17 @@ export function Multiplayer() {
   const navigate = useNavigate();
   const { account } = useAccount();
   const { gameType, makeStartGameTransaction } = useArrangementWithMultiplayer();
-  const { totalShoots, successfulShoots, gameEndResult, gameStartTime, gameUpdatedEvent, handleClickCell, exitGame } =
-    useProcessWithMultiplayer();
-  const { game, triggerGame } = useMultiplayerGame();
+  const {
+    totalShoots,
+    successfulShoots,
+    gameEndResult,
+    gameStartTime,
+    gameUpdatedEvent,
+    handleClickCell,
+    exitGame,
+    verifyOponentsHit,
+  } = useProcessWithMultiplayer();
+  const { game, triggerGame, resetGameState } = useMultiplayerGame();
   const { getBoard } = useShips();
   const { pending } = usePending();
   const [savedPlayerBoard, setSavedPlayerBoard] = useState<string[] | null | undefined>();
@@ -30,13 +34,12 @@ export function Multiplayer() {
   useEventPlacementVerified();
   useEventGameCancelled();
   useEventMoveMadeSubscription();
-  useEventMoveVerifiedSubscription();
 
   const playerInfo = game?.participants_data.find((item) => decodeAddress(item[0]) === account?.decodedAddress)?.[1];
   const isPlacementStatus = Object.keys(game?.status || {})[0] === 'verificationPlacement';
 
   const handleCloseModal = () => {
-    navigate('/');
+    navigate(ROUTES.HOME);
   };
 
   const loadSavedBoard = () => {
@@ -77,6 +80,8 @@ export function Multiplayer() {
       admin={game?.admin}
       onClickCell={handleClickCell}
       onExitGame={exitGame}
+      onVerifyOponentsHit={verifyOponentsHit}
+      resetGameState={resetGameState}
     />
   );
 }

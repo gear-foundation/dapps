@@ -1,6 +1,7 @@
 import { buildPoseidon } from '@/features/zk/utils/poseidon';
 import { Account } from '@gear-js/react-hooks';
-import { GameType, ZkData } from '../types';
+import { GameType, ZkData, ZkProofData } from '../types';
+import { VerificationVariables } from '@/app/utils/sails/lib/lib';
 
 export const getHash = async (data: number[] | string[]) => {
   const poseidon = await buildPoseidon();
@@ -34,4 +35,21 @@ export const clearZkData = (gameType: GameType, account: Account) => {
   delete zkData[gameType];
 
   localStorage.removeItem(`zk-data-${account.address}`);
+};
+
+export const getVerificationVariables = (proofDataHit: ZkProofData | null | undefined): VerificationVariables | null => {
+  if (!proofDataHit) {
+    return null;
+  }
+
+  const { proofContent, publicContent } = proofDataHit;
+
+  return {
+    proof_bytes: proofContent,
+    public_input: {
+      hash: publicContent.publicHash,
+      out: publicContent.results[0][0],
+      hit: publicContent.results[1][0],
+    },
+  };
 };

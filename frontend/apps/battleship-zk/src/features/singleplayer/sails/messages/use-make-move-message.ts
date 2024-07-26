@@ -1,4 +1,5 @@
 import { useProgram } from '@/app/utils/sails';
+import { VerificationVariables } from '@/app/utils/sails/lib/lib';
 import { useMakeTransaction } from '@/app/utils/use-make-transaction';
 
 export const useMakeMoveMessage = () => {
@@ -6,8 +7,8 @@ export const useMakeMoveMessage = () => {
   const makeTransaction = useMakeTransaction();
   const program = useProgram();
 
-  const makeMoveMessage = async (step: number) => {
-    const transaction = await makeTransaction(program.single.makeMove(step, null));
+  const makeMoveMessage = async (step: number | null, verificationVariables: VerificationVariables | null) => {
+    const transaction = await makeTransaction(program.single.makeMove(step, verificationVariables, null));
 
     return await transaction.withGas(gasLimit);
   };

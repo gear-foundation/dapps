@@ -1,16 +1,17 @@
-import { ModalBottom } from '@/components/ui/modal';
-import { Button } from '@gear-js/vara-ui';
-import { Text } from '@/components/ui/text';
 import { useNavigate } from 'react-router-dom';
+import { decodeAddress } from '@gear-js/api';
+import { Button } from '@gear-js/vara-ui';
+import { ModalBottom } from '@/components/ui/modal';
+import { Text } from '@/components/ui/text';
 import { clearZkData } from '@/features/zk/utils';
 import { useAccount } from '@gear-js/react-hooks';
 import { GameType } from '@/features/game/types';
-import { decodeAddress } from '@gear-js/api';
-import { useSingleplayerGame } from '../../hooks';
+import { ROUTES } from '@/app/consts';
 import styles from './GameEndModal.module.scss';
 
 type Props = {
   onClose: () => void;
+  resetGameState: () => void;
   time: string;
   totalShoots: number;
   successfulShoots: number;
@@ -21,6 +22,7 @@ type Props = {
 
 export default function GameEndModal({
   onClose,
+  resetGameState,
   time,
   totalShoots,
   successfulShoots,
@@ -30,7 +32,6 @@ export default function GameEndModal({
 }: Props) {
   const { account } = useAccount();
   const navigate = useNavigate();
-  const { resetGameState } = useSingleplayerGame();
 
   const defineGameResults = () => {
     if (gameType === 'single') {
@@ -47,8 +48,9 @@ export default function GameEndModal({
   };
 
   const handleExit = () => {
+    navigate(ROUTES.HOME);
     clearLocalData();
-    navigate('/');
+    resetGameState();
   };
 
   const handlePlayAgain = () => {

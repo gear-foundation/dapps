@@ -22,18 +22,22 @@
 }
 
 .block {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   background: #ffffff;
-  border: 0.48px solid #CFCFCF;
+  border: 0.48px solid #cfcfcf;
   cursor: pointer;
   z-index: 1;
 
   &Enemy {
-    position: relative;
     background: transparent;
-    border: 1px solid #00FFC4;
+    border: 1px solid #00ffc4;
+  }
+
+  &Disabled {
+    cursor: auto;
   }
 }
 
@@ -48,14 +52,14 @@
   position: absolute;
   width: 24px;
   height: 24px;
-  
+
   & path {
     fill: #808080;
   }
 
   &Enemy {
     & path {
-      fill: #8A0000;
+      fill: #8a0000;
     }
   }
 }
@@ -66,6 +70,24 @@
   width: 72px;
   height: 72px;
   top: -16px;
+}
+
+.pendingCell {
+  border: 6px solid #64FFDB;
+  border-top: 6px solid transparent;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 .buttons {
@@ -86,12 +108,12 @@
 }
 
 .shipBlock {
-  background: url('../../assets/images/ship.svg'), #00FFC4;
+  background: url('../../assets/images/ship.svg'), #00ffc4;
 }
 
 .hitShip {
   border: 1px solid #00000033;
-  background: #CDCDCD;
+  background: #cdcdcd;
 
   &Enemy {
     background: transparent;
@@ -102,7 +124,13 @@
   width: 4px;
   height: 4px;
   border-radius: 50px;
-  background: #00000066;
+  background: #d9d9d9;
+
+  &Enemy {
+    width: 6px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.5);
+  }
 }
 
 .hitCell {
@@ -115,5 +143,76 @@
 
   &Enemy {
     background: transparent;
+  }
+}
+
+.circle {
+  overflow: hidden;
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  top: -1;
+  left: -1.5;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+}
+
+:root {
+  --circle-color: #d9d9d9;
+  --size-to: 36px;
+}
+
+.circleEl {
+  width: 0;
+  height: 0;
+  background: transparent;
+  border: 2px solid var(--circle-color);
+  border-radius: 50%;
+  animation: go 3s ease-out infinite;
+}
+
+.circleHit {
+  width: 0;
+  height: 0;
+  background: #00ffc4;
+  border-radius: 50%;
+  animation: pulse 3s ease-out infinite;
+}
+
+.circleElTwo {
+  animation-delay: 1s;
+}
+
+.circleElThree {
+  animation-delay: 2s;
+}
+
+@keyframes go {
+  100% {
+    width: var(--size-to);
+    height: var(--size-to);
+    box-shadow: 0 0 15px var(--circle-color);
+    opacity: 0;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.8;
+  }
+
+  50% {
+    border-radius: 50%;
+    opacity: 0.5;
+  }
+
+  85%,
+  100% {
+    width: var(--size-to);
+    height: var(--size-to);
+    border-radius: 0%;
+    opacity: 0;
   }
 }

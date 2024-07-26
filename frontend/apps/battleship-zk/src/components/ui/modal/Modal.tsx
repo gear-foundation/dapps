@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import { MouseEvent, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { CrossIcon } from '@/assets/images';
@@ -5,7 +6,6 @@ import { variantsOverlay, variantsPanel } from '@/components/ui/modal/Modal.vari
 import { Button } from '../button';
 
 import styles from './Modal.module.scss';
-import clsx from 'clsx';
 
 type Props = React.PropsWithChildren & {
   heading: string;

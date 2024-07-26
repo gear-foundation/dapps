@@ -1,8 +1,10 @@
+import { ProofBytes } from '@/app/utils/sails/lib/lib';
+
 export type ZkProofData = {
-  proofContent: { a: number[]; b: number[]; c: number[] };
+  proofContent: ProofBytes;
   publicContent: {
     results: [[number], [number]];
-    publicHash: number[];
+    publicHash: `0x${string}`;
   };
 };
 

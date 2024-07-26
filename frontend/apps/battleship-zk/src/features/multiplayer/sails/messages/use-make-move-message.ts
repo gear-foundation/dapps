@@ -1,4 +1,5 @@
 import { useProgram } from '@/app/utils/sails';
+import { VerificationVariables } from '@/app/utils/sails/lib/lib';
 import { useMakeTransaction } from '@/app/utils/use-make-transaction';
 
 export const useMakeMoveMessage = () => {
@@ -6,8 +7,15 @@ export const useMakeMoveMessage = () => {
   const makeTransaction = useMakeTransaction();
   const program = useProgram();
 
-  const makeMoveMessage = async (game_id: string, step: number) => {
-    const transaction = await makeTransaction(program.multiple.makeMove(game_id, step, null));
+  const makeMoveMessage = async (
+    step: number | null,
+    verify_variables: VerificationVariables | null,
+    game_id?: string,
+  ) => {
+    if (!game_id) {
+      throw new Error('game_id does not found');
+    }
+    const transaction = await makeTransaction(program.multiple.makeMove(game_id, verify_variables, step, null));
 
     return await transaction.withGas(gasLimit);
   };

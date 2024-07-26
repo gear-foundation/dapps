@@ -1,7 +1,7 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { getParsedZkData, setZkData } from '../utils';
-import { defineDeadShip } from '@/features/game/utils';
-import { StepResult } from '@/app/utils/sails/lib/lib';
+import { checkDeadShip, defineDeadShip } from '@/features/game/utils';
+import { isNull, isUndefined } from '@polkadot/util';
 
 type PlayerType = 'player' | 'enemy';
 type GameType = 'single' | 'multi';
@@ -121,8 +121,22 @@ export function useShips() {
       return;
     }
 
-    board[player_step] = stepResult as string;
+    board[player_step] = stepResult;
     setBoard(gameType, 'enemy', board);
+  };
+
+  const checkIsStepOnShip = (gameType: GameType, enemyStep?: number | null, playerType: PlayerType = 'player') => {
+    const board = getBoard(gameType, playerType);
+
+    if (!board || isNull(enemyStep) || isUndefined(enemyStep)) {
+      return;
+    }
+    const isDeadShip = checkDeadShip(enemyStep, board);
+
+    return {
+      isBoomShip: board[enemyStep] === 'BoomShip',
+      isDeadShip,
+    };
   };
 
   const updatePlayerBoard = (gameType: GameType, bot_step: number) => {
@@ -151,6 +165,7 @@ export function useShips() {
     setBoard,
     getBoard,
     createPlayerHits,
+    checkIsStepOnShip,
     updateEnemyBoard,
     updatePlayerBoard,
   };

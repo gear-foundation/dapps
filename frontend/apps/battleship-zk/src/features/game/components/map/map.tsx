@@ -1,14 +1,48 @@
 import { CrossIcon } from '@/assets/images';
 import styles from './map.module.scss';
+import clsx from 'clsx';
 
 type Props = {
   sizeBlock: number;
   shipStatusArray: string[];
+  lastHit?: number | null;
 };
 
-export default function Map({ sizeBlock = 64, shipStatusArray }: Props) {
+export default function Map({ sizeBlock = 64, shipStatusArray, lastHit }: Props) {
   const numRows = 5;
   const numCols = 5;
+
+  const renderEmptyCirculeAnimation = () => {
+    return (
+      <>
+        <div className={styles.circle}>
+          <span className={styles.circleEl} />
+        </div>
+        <div className={styles.circle}>
+          <span className={clsx(styles.circleEl, styles.circleElTwo)} />
+        </div>
+        <div className={styles.circle}>
+          <span className={clsx(styles.circleEl, styles.circleElThree)} />
+        </div>
+      </>
+    );
+  };
+
+  const renderHitCirculeAnimation = () => {
+    return (
+      <>
+        <div className={styles.circle}>
+          <span className={styles.circleHit} />
+        </div>
+        <div className={styles.circle}>
+          <span className={clsx(styles.circleHit, styles.circleElTwo)} />
+        </div>
+        <div className={styles.circle}>
+          <span className={clsx(styles.circleHit, styles.circleElThree)} />
+        </div>
+      </>
+    );
+  };
 
   const renderCell = (row: number, col: number) => {
     const cellIndex = row * numCols + col;
@@ -37,8 +71,18 @@ export default function Map({ sizeBlock = 64, shipStatusArray }: Props) {
 
     return (
       <div key={`block-${row}-${col}`} className={cellClassName} style={cellStyle}>
-        {isHit && !isHitShips && !isDeadShips && <div className={styles.hitEmpty} />}
-        {(isHitShips || isDeadShips) && <CrossIcon className={styles.cellCross} />}
+        {isHit && !isHitShips && !isDeadShips && (
+          <>
+            <div className={styles.hitEmpty} />
+            {lastHit === cellIndex && renderEmptyCirculeAnimation()}
+          </>
+        )}
+        {(isHitShips || isDeadShips) && (
+          <>
+            <CrossIcon className={styles.cellCross} />
+            {lastHit === cellIndex && renderHitCirculeAnimation()}
+          </>
+        )}
       </div>
     );
   };

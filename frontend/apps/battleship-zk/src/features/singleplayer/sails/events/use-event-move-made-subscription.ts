@@ -1,22 +1,18 @@
 import { useEffect, useRef } from 'react';
 import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
+import { isNull } from '@polkadot/util';
 import { useShips } from '@/features/zk/hooks/use-ships';
-import { StepResult } from '@/app/utils/sails/lib/lib';
+import { SingleUtilsStepResult } from '@/app/utils/sails/lib/lib';
 import { useSingleplayerGame } from '@/features/singleplayer/hooks/use-singleplayer-game';
 import { useProgram } from '@/app/utils/sails';
 import { useAccount } from '@gear-js/react-hooks';
+import { stepResultToBoardEntityMap } from '@/features/game/consts';
 
 type MoveMadeEvent = {
-  bot_step: number;
-  step: number;
-  step_result: StepResult;
+  bot_step: number | null;
+  step: number | null;
+  step_result: SingleUtilsStepResult | null;
   player: string;
-};
-
-const config = {
-  Missed: 'Boom',
-  Injured: 'BoomShip',
-  Killed: 'DeadShip',
 };
 
 export function useEventMoveMadeSubscription() {
@@ -31,9 +27,13 @@ export function useEventMoveMadeSubscription() {
   const updateBoards = (ev: MoveMadeEvent) => {
     const { step_result, bot_step, step } = ev;
 
-    updatePlayerBoard(gameType, bot_step);
-    updateEnemyBoard(gameType, config[step_result], step);
-    updatePlayerHits(gameType, bot_step);
+    if (!isNull(bot_step)) {
+      updatePlayerBoard(gameType, bot_step);
+      updatePlayerHits(gameType, bot_step);
+    }
+    if (!isNull(step_result) && !isNull(step)) {
+      updateEnemyBoard(gameType, stepResultToBoardEntityMap[step_result], step);
+    }
   };
 
   const generateProofHit = async (step: string) => {
@@ -57,12 +57,12 @@ export function useEventMoveMadeSubscription() {
     if (account?.decodedAddress !== ev.player) {
       return;
     }
-    console.log(ev);
     try {
-      const proofData = await generateProofHit(ev.bot_step.toString());
-
+      if (!isNull(ev.bot_step)) {
+        const proofData = await generateProofHit(ev.bot_step.toString());
+        saveProofData(gameType, proofData);
+      }
       updateBoards(ev);
-      saveProofData(gameType, proofData);
 
       triggerGame();
     } catch (err) {

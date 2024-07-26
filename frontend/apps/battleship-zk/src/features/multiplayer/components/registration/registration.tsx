@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
+import { useAtom } from 'jotai';
 import battleshipImage from '@/assets/images/illustration-battleship.png';
 import { Button } from '@gear-js/vara-ui';
 import { Heading } from '@/components/ui/heading';
@@ -17,6 +18,8 @@ import { useCancelGameMessage } from '../../sails/messages';
 import { useMultiplayerGame } from '../../hooks';
 import styles from './Registration.module.scss';
 import { useDeleteGameMessage } from '../../sails/messages/use-delete-player-message';
+import { ROUTES } from '@/app/consts';
+import { gameEndResultAtom } from '../../atoms';
 
 type UserProps = {
   name: string;
@@ -58,12 +61,13 @@ export function Registration() {
   const { account } = useAccount();
   const { game, triggerGame } = useMultiplayerGame();
   const { pending, setPending } = usePending();
+  const [gameEndResult] = useAtom(gameEndResultAtom);
 
   useEventPlayerJoinedGame();
   useEventGameCancelled();
 
   const startGame = () => {
-    navigate('/game');
+    navigate(ROUTES.GAME);
   };
 
   const cancelGame = async () => {
@@ -107,14 +111,14 @@ export function Registration() {
   };
 
   useEffect(() => {
-    if (game) {
+    if (game && !gameEndResult) {
       const currentStatus = Object.keys(game.status)?.[0];
 
       if (!['registration', 'verificationPlacement'].includes(currentStatus)) {
-        navigate('/game');
+        navigate(ROUTES.GAME);
       }
     }
-  }, [game]);
+  }, [game, gameEndResult]);
 
   return (
     <div className={styles.container}>

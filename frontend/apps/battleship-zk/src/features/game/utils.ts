@@ -112,3 +112,48 @@ export const defineDeadShip = (i: number, board: string[]) => {
 
   return board;
 };
+
+export function checkDeadShip(index: number, board: string[]): boolean {
+  const boardSize = 5;
+
+  if (board[index] !== 'BoomShip') {
+    return false;
+  }
+
+  const visited = new Set<number>();
+
+  const checkNeighbors = (index: number): boolean => {
+    if (visited.has(index)) {
+      return true;
+    }
+
+    visited.add(index);
+
+    const row = Math.floor(index / boardSize);
+    const col = index % boardSize;
+
+    const directions = [
+      [-1, 0], // up,
+      [1, 0], // down
+      [0, -1], // left
+      [0, 1], // right
+    ];
+
+    for (let [dx, dy] of directions) {
+      const newRow = row + dx;
+      const newCol = col + dy;
+      if (newRow >= 0 && newRow < boardSize && newCol >= 0 && newCol < boardSize) {
+        const newIndex = newRow * boardSize + newCol;
+        if (board[newIndex] === 'Ship') {
+          return false;
+        }
+        if (board[newIndex] === 'BoomShip' && !checkNeighbors(newIndex)) {
+          return false;
+        }
+      }
+    }
+    return true;
+  };
+
+  return checkNeighbors(index);
+}

@@ -7,9 +7,17 @@ import { useEventMoveMadeSubscription } from '../../sails/events/use-event-move-
 export function Singleplayer() {
   const gameType = 'single';
   const { makeStartGameTransaction } = useArrangementWithSingleplayer();
-  const { totalShoots, successfulShoots, gameEndResult, gameStartTime, gameUpdatedEvent, handleClickCell, exitGame } =
-    useProcessWithSingleplayer();
-  const { isActiveGame, triggerGame } = useSingleplayerGame();
+  const {
+    totalShoots,
+    successfulShoots,
+    gameEndResult,
+    gameStartTime,
+    gameUpdatedEvent,
+    handleClickCell,
+    exitGame,
+    verifyOponentsHit,
+  } = useProcessWithSingleplayer();
+  const { isActiveGame, triggerGame, resetGameState } = useSingleplayerGame();
 
   useInitSingleGame();
   useEventMoveMadeSubscription();
@@ -25,6 +33,8 @@ export function Singleplayer() {
       admin={undefined}
       onClickCell={handleClickCell}
       onExitGame={exitGame}
+      onVerifyOponentsHit={verifyOponentsHit}
+      resetGameState={resetGameState}
     />
   ) : (
     <ShipArrangement

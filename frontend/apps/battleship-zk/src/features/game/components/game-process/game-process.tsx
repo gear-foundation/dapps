@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { Text } from '@/components/ui/text';
@@ -12,15 +13,16 @@ import { getFormattedTime } from '../../utils';
 import { SHIP_LENGTHS } from '../../consts';
 import { GameType, RenderShips } from '../../types';
 import { Timer } from '../timer';
-import { useAccount } from '@gear-js/react-hooks';
+import { VerificationModal } from '@/features/game/components/verification-modal';
 
 type GameUpdatedEvent = {
   turn: string;
-  pendingVerification: string;
+  pendingVerification?: string;
+  verificationRequired?: number | null;
 };
 
 type GameResults = {
-  totalTime: string | number | undefined;
+  totalTime: string | number | bigint | undefined;
   winner: string;
 };
 
@@ -30,10 +32,12 @@ type Props = {
   successfulShoots: number;
   gameResults: GameResults | null;
   gameUpdatedEvent: GameUpdatedEvent;
-  gameStartTime: string | number | undefined;
+  gameStartTime: string | number | bigint | undefined;
   admin: string | undefined;
-  onClickCell: (handleClickCell: number) => void;
+  onClickCell: (handleClickCell: number) => Promise<void>;
+  onVerifyOponentsHit: () => Promise<void>;
   onExitGame: () => Promise<void>;
+  resetGameState: () => void;
 };
 
 export default function GameProcess({
@@ -45,7 +49,9 @@ export default function GameProcess({
   gameStartTime,
   admin,
   onClickCell,
+  onVerifyOponentsHit,
   onExitGame,
+  resetGameState,
 }: Props) {
   const { account } = useAccount();
   const { signless, gasless } = useEzTransactions();
@@ -58,31 +64,41 @@ export default function GameProcess({
     signlessPairVoucherId: signless.voucher?.id,
     gaslessVoucherId: gasless.voucherId,
   });
-  const { getBoard } = useShips();
+  const { getBoard, checkIsStepOnShip } = useShips();
   const [isOpenEndModal, setIsOpenEndModal] = useState(false);
   const openEndModal = () => setIsOpenEndModal(true);
   const closeEndModal = () => setIsOpenEndModal(false);
+  const [playerLastHit, setPlayerLastHit] = useState<number | null>(null);
+
+  const { verificationRequired, pendingVerification, turn } = gameUpdatedEvent;
+  const { isBoomShip, isDeadShip } = checkIsStepOnShip(gameType, verificationRequired) || {};
+  const isVerificationRequired = isBoomShip || isDeadShip;
 
   const isYourTurn =
-    gameType === 'single' ||
-    gameUpdatedEvent.turn === account?.decodedAddress ||
-    gameUpdatedEvent.pendingVerification === account?.decodedAddress;
+    (gameType === 'single' && !isVerificationRequired) ||
+    turn === account?.decodedAddress ||
+    // TODO: try remove
+    pendingVerification === account?.decodedAddress;
 
   const efficiency = totalShoots !== 0 ? ((successfulShoots / totalShoots) * 100).toFixed(2) : 0;
 
-  const onClickCellFinally = () => {
-    setDisabledCell(false);
-  };
-
-  const handleClickCell = async (indexCell: number) => {
+  const handleClickCell = (indexCell: number) => {
     if (!gasless.isLoading) {
       setDisabledCell(true);
-
-      await onClickCell(indexCell);
-
-      onClickCellFinally();
-      setPending(false);
+      onClickCell(indexCell)
+        .then(() => setPlayerLastHit(indexCell))
+        .catch((error) => console.log(error))
+        .finally(() => {
+          setDisabledCell(false);
+          setPending(false);
+        });
     }
+  };
+
+  const onVerifyHit = async () => {
+    setDisabledCell(true);
+    await onVerifyOponentsHit();
+    setDisabledCell(false);
   };
 
   const handleDefineDeadShips = (deadShips: RenderShips) => {
@@ -138,7 +154,7 @@ export default function GameProcess({
     <div className={styles.container}>
       <div className={styles.content}>
         <div>
-          <Map sizeBlock={32} shipStatusArray={playerShips} />
+          <Map sizeBlock={32} shipStatusArray={playerShips} lastHit={verificationRequired} />
         </div>
         <div className={styles.gameInfoWrapper}>
           <div className={styles.gameInfoTurn}>
@@ -183,8 +199,9 @@ export default function GameProcess({
           sizeBlock={86}
           onClickCell={handleClickCell}
           shipStatusArray={enemiesShips}
-          isDisabledCell={isDisabledCell || gasless.isLoading || !isYourTurn || !!gameResults}
+          isDisabledCell={isDisabledCell || gasless.isLoading || isVerificationRequired || !isYourTurn || !!gameResults}
           onDefineDeadShip={handleDefineDeadShips}
+          lastHit={playerLastHit}
         />
       </div>
       <div className={styles.exitButtonWrapper}>
@@ -198,9 +215,18 @@ export default function GameProcess({
           </Button>
         )}
       </div>
+      {isVerificationRequired && (
+        <VerificationModal
+          onVerifyHit={onVerifyHit}
+          isDeadShip={isDeadShip}
+          isLoading={isDisabledCell}
+          onExit={onExitGame}
+        />
+      )}
       {isOpenEndModal && gameResults && (
         <GameEndModal
           onClose={closeEndModal}
+          resetGameState={resetGameState}
           time={getFormattedTime(Number(gameResults.totalTime))}
           totalShoots={totalShoots}
           successfulShoots={successfulShoots}

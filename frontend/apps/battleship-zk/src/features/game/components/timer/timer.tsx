@@ -3,7 +3,7 @@ import { getFormattedTime } from '../../utils';
 
 type Props = {
   shouldGoOn: boolean;
-  start_time: number | string | undefined;
+  start_time: number | string | bigint | undefined;
 };
 
 export function Timer({ shouldGoOn, start_time }: Props) {
