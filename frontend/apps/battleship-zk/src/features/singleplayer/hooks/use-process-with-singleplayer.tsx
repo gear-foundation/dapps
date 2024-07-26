@@ -9,7 +9,7 @@ import { ROUTES } from '@/app/consts';
 export const useProcessWithSingleplayer = () => {
   const navigate = useNavigate();
   const { makeMoveMessage } = useMakeMoveMessage();
-  const { game, triggerGame } = useSingleplayerGame();
+  const { game, triggerGame, setIsGamePenging } = useSingleplayerGame();
 
   const moveTransaction = useMoveTransaction('single', makeMoveMessage, triggerGame);
 
@@ -24,8 +24,14 @@ export const useProcessWithSingleplayer = () => {
     navigate(ROUTES.HOME);
   };
 
-  const verifyOponentsHit = () => moveTransaction(null);
-  const handleClickCell = (indexCell: number) => moveTransaction(indexCell);
+  const verifyOponentsHit = () => {
+    setIsGamePenging(true);
+    return moveTransaction(null);
+  };
+  const handleClickCell = (indexCell: number) => {
+    setIsGamePenging(true);
+    return moveTransaction(indexCell);
+  };
 
   return {
     totalShoots,

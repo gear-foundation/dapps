@@ -111,7 +111,7 @@ export function Registration() {
   };
 
   useEffect(() => {
-    // ! TODO: check is need gameEndResult
+       // ! TODO: seems like unnecessary, try remove `gameEndResult`
     if (game && !gameEndResult) {
       const currentStatus = Object.keys(game.status)?.[0];
 

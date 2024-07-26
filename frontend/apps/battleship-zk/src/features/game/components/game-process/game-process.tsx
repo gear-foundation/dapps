@@ -34,6 +34,7 @@ type Props = {
   gameUpdatedEvent: GameUpdatedEvent;
   gameStartTime: string | number | bigint | undefined;
   admin: string | undefined;
+  isGamePenging?: boolean;
   onClickCell: (handleClickCell: number) => Promise<void>;
   onVerifyOponentsHit: () => Promise<void>;
   onExitGame: () => Promise<void>;
@@ -48,6 +49,7 @@ export default function GameProcess({
   gameResults,
   gameStartTime,
   admin,
+  isGamePenging,
   onClickCell,
   onVerifyOponentsHit,
   onExitGame,
@@ -75,9 +77,9 @@ export default function GameProcess({
   const isVerificationRequired = isBoomShip || isDeadShip;
 
   const isYourTurn =
-    (gameType === 'single' && !isVerificationRequired) ||
+    (gameType === 'single' && !isVerificationRequired && !isGamePenging) ||
     turn === account?.decodedAddress ||
-    // TODO: try remove
+    // ! TODO: seems like unnecessary, try remove
     pendingVerification === account?.decodedAddress;
 
   const efficiency = totalShoots !== 0 ? ((successfulShoots / totalShoots) * 100).toFixed(2) : 0;

@@ -21,6 +21,7 @@ export const useProcessWithMultiplayer = () => {
   const successfulShoots = useMemo(() => (participant ? participant?.succesfull_shots : 0), [game]);
 
   const gameUpdatedEvent = useMemo(() => {
+    // ! TODO: seems like unnecessary, try remove `gameEndResult`
     if (gameEndResult) {
       return { turn: '' };
     }

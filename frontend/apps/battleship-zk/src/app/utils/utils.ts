@@ -12,8 +12,6 @@ export function formatDate(input: string | number): string {
   });
 }
 
-// Set value in seconds
-export const sleep = (s: number) => new Promise((resolve) => setTimeout(resolve, s * 1000));
 
 export const copyToClipboard = async ({
   alert,

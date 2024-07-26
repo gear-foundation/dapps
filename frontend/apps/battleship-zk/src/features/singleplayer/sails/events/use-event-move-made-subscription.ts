@@ -20,7 +20,7 @@ export function useEventMoveMadeSubscription() {
   const gameType = 'single';
   const event = useRef<Promise<() => void> | null>(null);
   const { account } = useAccount();
-  const { game, triggerGame } = useSingleplayerGame();
+  const { game, triggerGame, setIsGamePenging } = useSingleplayerGame();
   const { getPlayerShips, updatePlayerHits, getPlayerHits, updateEnemyBoard, updatePlayerBoard } = useShips();
   const { requestProofHit, saveProofData, clearProofData } = useProofShipHit();
 
@@ -65,6 +65,7 @@ export function useEventMoveMadeSubscription() {
       updateBoards(ev);
 
       triggerGame();
+      setIsGamePenging(false);
     } catch (err) {
       console.log(err);
     }
