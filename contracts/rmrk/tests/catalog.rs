@@ -7,7 +7,7 @@ pub fn init_catalog(sys: &System, admin: u64) {
     sys.init_logger();
     let catalog = Program::from_file(
         sys,
-        "../target/wasm32-unknown-unknown/debug/rmrk_catalog.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/rmrk_catalog.opt.wasm",
     );
     let res = catalog.send(
         admin,

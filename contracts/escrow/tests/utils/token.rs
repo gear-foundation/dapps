@@ -30,19 +30,19 @@ pub trait FToken {
 impl FToken for Program<'_> {
     fn ftoken(owner: u64, id: u64, system: &System) -> Program<'_> {
         let ftoken = ProgramBuilder::from_file(
-            "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm",
+            "../target/wasm32-unknown-unknown/release/sharded_fungible_token.opt.wasm",
         )
         .with_id(id)
         .build(system);
 
         let storage_code_hash: [u8; 32] = system
             .submit_code_file(
-                "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm",
+                "../target/wasm32-unknown-unknown/release/sharded_fungible_token_storage.opt.wasm",
             )
             .into();
         let ft_logic_code_hash: [u8; 32] = system
             .submit_code_file(
-                "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm",
+                "../target/wasm32-unknown-unknown/release/sharded_fungible_token_logic.opt.wasm",
             )
             .into();
 

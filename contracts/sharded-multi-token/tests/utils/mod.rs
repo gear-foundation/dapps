@@ -70,12 +70,12 @@ impl MToken for Program<'_> {
 
         let storage_code_hash: [u8; 32] = system
             .submit_code_file(
-                "../target/wasm32-unknown-unknown/debug/sharded_multi_token_storage.opt.wasm",
+                "../target/wasm32-unknown-unknown/release/sharded_multi_token_storage.opt.wasm",
             )
             .into();
         let mt_logic_code_hash: [u8; 32] = system
             .submit_code_file(
-                "../target/wasm32-unknown-unknown/debug/sharded_multi_token_logic.opt.wasm",
+                "../target/wasm32-unknown-unknown/release/sharded_multi_token_logic.opt.wasm",
             )
             .into();
 

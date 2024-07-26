@@ -3,7 +3,7 @@ use gclient::{EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
 use vara_man_io::*;
 
-const VARA_MAN_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/vara_man.opt.wasm";
+const VARA_MAN_WASM_PATH: &str = "../target/wasm32-unknown-unknown/release/vara_man.opt.wasm";
 
 pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     init_with_config(

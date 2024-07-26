@@ -22,14 +22,15 @@ pub fn get_programs(sys: &System) -> (Program<'_>, Program<'_>, Program<'_>) {
     let current_program = Program::current_with_id(sys, HORSE_RACES_ID);
 
     let oracle_program = ProgramBuilder::from_file(
-        "../target/wasm32-unknown-unknown/debug/oracle_randomness.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/oracle_randomness.opt.wasm",
     )
     .with_id(ORACLE_ID)
     .build(sys);
-    let token_program =
-        ProgramBuilder::from_file("../target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm")
-            .with_id(TOKEN_ID)
-            .build(sys);
+    let token_program = ProgramBuilder::from_file(
+        "../target/wasm32-unknown-unknown/release/fungible_token.opt.wasm",
+    )
+    .with_id(TOKEN_ID)
+    .build(sys);
     (current_program, oracle_program, token_program)
 }
 
@@ -108,5 +109,5 @@ pub fn approve<'a>(token_program: &'a Program<'a>, from: u64, user: ActorId, amo
 }
 
 pub fn get_state() -> Vec<u8> {
-    std::fs::read("../target/wasm32-unknown-unknown/debug/horse_races_state.meta.wasm").unwrap()
+    std::fs::read("../target/wasm32-unknown-unknown/release/horse_races_state.meta.wasm").unwrap()
 }

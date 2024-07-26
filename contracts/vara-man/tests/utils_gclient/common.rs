@@ -94,7 +94,7 @@ pub async fn init_ft(api: &GearApi) -> Result<(MessageId, ProgramId, H256)> {
     }
     .encode();
 
-    let path = "../target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm";
+    let path = "../target/wasm32-unknown-unknown/release/fungible_token.opt.wasm";
 
     let gas_info = api
         .calculate_upload_gas(None, gclient::code_from_os(path)?, ft_init.clone(), 0, true)

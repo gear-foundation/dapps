@@ -22,7 +22,7 @@ pub fn init_concert(sys: &System) -> Program<'_> {
     let concert_program = Program::current_opt(sys);
     let mtk_program = Program::from_file(
         sys,
-        "../target/wasm32-unknown-unknown/debug/multi_token.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/multi_token.opt.wasm",
     );
     let res = mtk_program.send(
         USER,

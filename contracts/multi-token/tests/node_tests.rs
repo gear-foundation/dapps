@@ -30,7 +30,7 @@ async fn gclient_init() -> Result<()> {
     };
 
     let init_payload = init.encode();
-    let path = "../target/wasm32-unknown-unknown/debug/multi_token.opt.wasm";
+    let path = "../target/wasm32-unknown-unknown/release/multi_token.opt.wasm";
 
     let gas_info = api
         .calculate_upload_gas(

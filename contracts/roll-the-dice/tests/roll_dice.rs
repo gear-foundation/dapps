@@ -13,7 +13,7 @@ fn success_roll() {
     let sys = System::new();
     sys.init_logger();
     let oracle_program =
-        ProgramBuilder::from_file("../target/wasm32-unknown-unknown/debug/oracle.opt.wasm")
+        ProgramBuilder::from_file("../target/wasm32-unknown-unknown/release/oracle.opt.wasm")
             .with_id(ORACLE_ID)
             .build(&sys);
     let roll_dice_program = Program::current_with_id(&sys, ROLL_DICE_ID);
@@ -50,7 +50,7 @@ fn success_roll_finished() {
 
     let state_wasm = get_state();
     let oracle_program =
-        ProgramBuilder::from_file("../target/wasm32-unknown-unknown/debug/oracle.opt.wasm")
+        ProgramBuilder::from_file("../target/wasm32-unknown-unknown/release/oracle.opt.wasm")
             .with_id(ORACLE_ID)
             .build(&sys);
 
