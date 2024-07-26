@@ -17,7 +17,7 @@ impl<'a> NonFungibleToken<'a> {
     pub fn initialize(system: &'a System) -> Self {
         let program = InnerProgram::from_file(
             system,
-            "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm",
+            "../target/wasm32-unknown-unknown/release/non_fungible_token.opt.wasm",
         );
 
         assert!(!program

@@ -22,16 +22,16 @@ impl<'a> FungibleToken<'a> {
     pub fn initialize(system: &'a System) -> Self {
         let program = InnerProgram::from_file(
             system,
-            "../target/wasm32-unknown-unknown/debug/sharded_fungible_token.opt.wasm",
+            "../target/wasm32-unknown-unknown/release/sharded_fungible_token.opt.wasm",
         );
         let storage_code_id: [u8; 32] = system
             .submit_code_file(
-                "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_storage.opt.wasm",
+                "../target/wasm32-unknown-unknown/release/sharded_fungible_token_storage.opt.wasm",
             )
             .into();
         let logic_code_id: [u8; 32] = system
             .submit_code_file(
-                "../target/wasm32-unknown-unknown/debug/sharded_fungible_token_logic.opt.wasm",
+                "../target/wasm32-unknown-unknown/release/sharded_fungible_token_logic.opt.wasm",
             )
             .into();
 

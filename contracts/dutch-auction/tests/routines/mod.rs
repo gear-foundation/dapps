@@ -40,7 +40,7 @@ pub fn init(sys: &System) -> Program<'_> {
 pub fn init_nft(sys: &System, owner: u64) {
     let nft_program = Program::from_file(
         sys,
-        "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/non_fungible_token.opt.wasm",
     );
 
     let res = nft_program.send(

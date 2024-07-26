@@ -5,7 +5,7 @@ use dao_io::*;
 use gclient::{EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
 
-const DAO_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/dao.opt.wasm";
+const DAO_WASM_PATH: &str = "../target/wasm32-unknown-unknown/release/dao.opt.wasm";
 
 pub async fn init(
     api: &GearApi,
