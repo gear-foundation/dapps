@@ -34,7 +34,7 @@ jobs:
       env:
         GITHUB_TOKEN: ${{ secrets.UPDATE_GEAR_TAG_TOKEN }}
       run: |
-        python update_cargo_toml.py
+        python update_gear_version.py
         if ! git diff --exit-code; then
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

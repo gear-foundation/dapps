@@ -36,7 +36,7 @@ def update_wf_contracts(file_path, new_version):
     with open(file_path, 'r') as file:
         content = file.read()
 
-    content = re.sub(r'GEAR_VERSION: .*?', f'GEAR_VERSION: {new_version}', content)
+    content = re.sub(r'GEAR_VERSION: .*', f'GEAR_VERSION: {new_version}', content)
 
     with open(file_path, 'w') as file:
         file.write(content)
