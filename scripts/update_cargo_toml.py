@@ -32,7 +32,17 @@ def update_cargo_toml(file_path, new_version):
     with open(file_path, 'w') as file:
         file.write(content)
 
+def update_wf_contracts(file_path, new_version):
+    with open(file_path, 'r') as file:
+        content = file.read()
+
+    content = re.sub(r'GEAR_VERSION: .*?', f'GEAR_VERSION: {new_version}', content)
+
+    with open(file_path, 'w') as file:
+        file.write(content)
+
 if __name__ == "__main__":
     new_version = get_latest_semver_tag().lstrip('v')
     if new_version:
         update_cargo_toml('../contracts/Cargo.toml', new_version)
+        update_wf_contracts('../.github/workflows/contracts-tests.yml', new_version)
