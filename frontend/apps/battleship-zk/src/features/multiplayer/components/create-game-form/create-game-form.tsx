@@ -118,7 +118,7 @@ function CreateGameForm({ onCancel }: Props) {
           />
           <span className={styles.fieldError}>{createErrors.name}</span>
         </div>
-        {/* <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} /> */}
+        <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} />
         <GameDetails items={items} />
         <div className={styles.buttons}>
           <Button type="submit" text="Create game" isLoading={pending} className={styles.button} />

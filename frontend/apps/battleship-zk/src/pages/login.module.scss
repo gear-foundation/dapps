@@ -20,7 +20,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  @include gap(48px);
+  @include gap(32px);
 }
 
 .controlsWrapper {

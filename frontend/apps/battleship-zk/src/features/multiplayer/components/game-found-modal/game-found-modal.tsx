@@ -77,7 +77,7 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
           end of the game, any unused gas will be refunded.
         </p>
         <GameDetails items={items} />
-        {/* <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} /> */}
+        <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} />
         <form className={styles.form} onSubmit={onJoinSubmit(handleJoinSession)}>
           <div className={styles.input}>
             <TextField
