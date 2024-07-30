@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import { useAccount } from '@gear-js/react-hooks';
-import battleshipImage from '@/assets/images/illustration-battleship.png';
 import { Button } from '@gear-js/vara-ui';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
@@ -10,6 +9,7 @@ import { TextGradient } from '@/components/ui/text-gradient';
 import { WalletConnect } from '@/features/wallet';
 import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
+import { Illustration } from '@/features/game/components';
 import { useGameMode } from '@/features/game/hooks';
 import styles from './login.module.scss';
 
@@ -34,9 +34,7 @@ export default function Login() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <div className={styles.top}>
-          <img src={battleshipImage} alt="battleship" width={300} />
-        </div>
+        <Illustration />
         <div className={styles.header}>
           <Heading size="md" className={styles.mainHeading}>
             <TextGradient>Battleship Game</TextGradient>

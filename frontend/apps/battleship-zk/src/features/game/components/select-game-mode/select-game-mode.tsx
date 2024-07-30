@@ -1,6 +1,3 @@
-import { useNavigate } from 'react-router-dom';
-import { useAccount } from '@gear-js/react-hooks';
-import battleshipImage from '@/assets/images/illustration-battleship.png';
 import { ReactComponent as ArrowRight } from '@/assets/images/icons/arrow-right.svg';
 import { ReactComponent as AndroidLine } from '@/assets/images/icons/android-line.svg';
 import { ReactComponent as AdminLine } from '@/assets/images/icons/admin-line.svg';
@@ -10,6 +7,7 @@ import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import styles from './SelectGameMode.module.scss';
 import { useGameMode } from '../../hooks';
+import { Illustration } from '../illustration';
 
 export default function SelectGameMode() {
   const { setGameMode } = useGameMode();
@@ -38,9 +36,7 @@ export default function SelectGameMode() {
   return (
     <div className={styles.container}>
       <div className={styles.content}>
-        <div className={styles.top}>
-          <img src={battleshipImage} alt="battleship" width={300} />
-        </div>
+        <Illustration />
         <div className={styles.header}>
           <Heading className={styles.mainHeading}>Select game mode</Heading>
           <div>

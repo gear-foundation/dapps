@@ -2,12 +2,12 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
 import { useAtom } from 'jotai';
-import battleshipImage from '@/assets/images/illustration-battleship.png';
 import { Button } from '@gear-js/vara-ui';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { VaraIcon } from '@/components/layout/vara-svg';
 import { usePending } from '@/features/game/hooks';
+import { Illustration } from '@/features/game/components';
 import { getVaraAddress, useAccount, useAlert, useBalanceFormat } from '@gear-js/react-hooks';
 import { decodeAddress } from '@gear-js/api';
 import { stringShorten } from '@polkadot/util';
@@ -125,9 +125,7 @@ export function Registration() {
     <div className={styles.container}>
       {game && (
         <div className={styles.content}>
-          <div className={styles.top}>
-            <img src={battleshipImage} alt="battleship" width={300} />
-          </div>
+          <Illustration />
           <div className={styles.header}>
             <Heading className={styles.mainHeading}>Registration...</Heading>
             <div>

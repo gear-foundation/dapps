@@ -43,30 +43,6 @@
   width: 100%;
 }
 
-.top.top  {
-  width: 100%;
-  overflow: hidden;
-  margin-bottom: 0;
-  position: relative;
-
-  &:after {
-    box-shadow: inset 0px -50px 30px -21px rgba(255,255,255,1);
-    content: '';
-    display: block;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    width: 100%;
-  }
-
-  img {
-    width: 100%;
-    object-fit: cover;
-    object-position: top;
-    box-shadow: inset 0px -50px 30px -21px rgba(255,255,255,1);
-  }
-}
-
 .mainHeading {
   font-size: 34px;
   font-weight: 600;
