@@ -7,6 +7,7 @@ import { useSingleplayerGame } from '@/features/singleplayer/hooks/use-singlepla
 import { useProgram } from '@/app/utils/sails';
 import { useAccount } from '@gear-js/react-hooks';
 import { stepResultToBoardEntityMap } from '@/features/game/consts';
+import { usePending } from '@/features/game/hooks';
 
 type MoveMadeEvent = {
   bot_step: number | null;
@@ -20,7 +21,8 @@ export function useEventMoveMadeSubscription() {
   const gameType = 'single';
   const event = useRef<Promise<() => void> | null>(null);
   const { account } = useAccount();
-  const { game, triggerGame, setIsGamePenging } = useSingleplayerGame();
+  const { game, triggerGame } = useSingleplayerGame();
+  const { setPending } = usePending();
   const { getPlayerShips, updatePlayerHits, getPlayerHits, updateEnemyBoard, updatePlayerBoard } = useShips();
   const { requestProofHit, saveProofData, clearProofData } = useProofShipHit();
 
@@ -65,7 +67,7 @@ export function useEventMoveMadeSubscription() {
       updateBoards(ev);
 
       triggerGame();
-      setIsGamePenging(false);
+      setPending(false);
     } catch (err) {
       console.log(err);
     }

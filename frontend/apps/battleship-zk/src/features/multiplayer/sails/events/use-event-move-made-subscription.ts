@@ -8,6 +8,7 @@ import { useProgram } from '@/app/utils/sails';
 import { useMultiplayerGame } from '../../hooks';
 import { MultipleUtilsStepResult } from '@/app/utils/sails/lib/lib';
 import { stepResultToBoardEntityMap } from '@/features/game/consts';
+import { usePending } from '@/features/game/hooks';
 
 type MoveMadeEvent = {
   game_id: string;
@@ -22,6 +23,7 @@ export function useEventMoveMadeSubscription() {
   const event = useRef<Promise<() => void> | null>(null);
   const { account } = useAccount();
   const { game, triggerGame } = useMultiplayerGame();
+  const { setPending } = usePending();
   const { getPlayerShips, getPlayerHits, updatePlayerHits, updatePlayerBoard, updateEnemyBoard } = useShips();
   const { requestProofHit, saveProofData, clearProofData } = useProofShipHit();
 
@@ -65,6 +67,7 @@ export function useEventMoveMadeSubscription() {
     saveProofData(gameType, proofData);
 
     await triggerGame();
+    setPending(false);
   };
 
   const unsubscribeFromEvent = () => {

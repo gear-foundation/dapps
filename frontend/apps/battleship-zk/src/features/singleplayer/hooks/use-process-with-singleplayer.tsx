@@ -3,13 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useEventGameEndSubscription } from '../sails/events';
 import { useMakeMoveMessage } from '../sails/messages';
 import { useSingleplayerGame } from './use-singleplayer-game';
-import { useMoveTransaction } from '@/features/game/hooks';
+import { useMoveTransaction, usePending } from '@/features/game/hooks';
 import { ROUTES } from '@/app/consts';
 
 export const useProcessWithSingleplayer = () => {
   const navigate = useNavigate();
   const { makeMoveMessage } = useMakeMoveMessage();
-  const { game, triggerGame, setIsGamePenging } = useSingleplayerGame();
+  const { game, triggerGame } = useSingleplayerGame();
+  const { setPending } = usePending();
 
   const moveTransaction = useMoveTransaction('single', makeMoveMessage, triggerGame);
 
@@ -25,11 +26,11 @@ export const useProcessWithSingleplayer = () => {
   };
 
   const verifyOponentsHit = () => {
-    setIsGamePenging(true);
+    setPending(true);
     return moveTransaction(null);
   };
   const handleClickCell = (indexCell: number) => {
-    setIsGamePenging(true);
+    setPending(true);
     return moveTransaction(indexCell);
   };
 

@@ -43,7 +43,7 @@ export default function GameEndModal({
 
   const clearLocalData = () => {
     if (account?.address) {
-      clearZkData('single', account);
+      clearZkData(gameType, account);
     }
   };
 

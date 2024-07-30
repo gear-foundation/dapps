@@ -17,7 +17,7 @@ export function Singleplayer() {
     exitGame,
     verifyOponentsHit,
   } = useProcessWithSingleplayer();
-  const { isActiveGame, triggerGame, resetGameState, isGamePenging } = useSingleplayerGame();
+  const { isActiveGame, triggerGame, resetGameState } = useSingleplayerGame();
 
   useInitSingleGame();
   useEventMoveMadeSubscription();
@@ -30,7 +30,6 @@ export function Singleplayer() {
       gameResults={gameEndResult ? { totalTime: gameEndResult.time, winner: gameEndResult.winner } : null}
       gameStartTime={gameStartTime}
       gameUpdatedEvent={gameUpdatedEvent}
-      isGamePenging={isGamePenging}
       admin={undefined}
       onClickCell={handleClickCell}
       onExitGame={exitGame}

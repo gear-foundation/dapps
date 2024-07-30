@@ -3,6 +3,7 @@ import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import { gameEndResultAtom, isActiveGameAtom, isGameReadyAtom, multiplayerGameAtom } from '../atoms';
 import { useMultiGameQuery } from '../sails/queries';
+import { usePending } from '@/features/game/hooks';
 
 export function useMultiplayerGame() {
   const { account } = useAccount();
@@ -11,6 +12,7 @@ export function useMultiplayerGame() {
   const [isGameReady, setIsGameReady] = useAtom(isGameReadyAtom);
   const [isActiveGame, setIsActiveGame] = useAtom(isActiveGameAtom);
   const [gameEndResult, setGameEndResult] = useAtom(gameEndResultAtom);
+  const { setPending } = usePending();
 
   const [error, setError] = useState<unknown | null>(null);
 
@@ -37,6 +39,8 @@ export function useMultiplayerGame() {
     setGame(undefined);
     setIsGameReady(false);
     setIsActiveGame(false);
+    setPending(false);
+    setGameEndResult(null);
   };
 
   return { game, isActiveGame, error, isGameReady, triggerGame, resetGameState, gameEndResult, setGameEndResult };
@@ -50,7 +54,6 @@ export function useInitMultiplayerGame() {
   const initGame = async () => {
     setIsLoading(true);
     resetGameState();
-    setGameEndResult(null);
     await triggerGame();
     setIsLoading(false);
   };

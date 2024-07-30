@@ -137,6 +137,7 @@ function JoinGameForm({ onCancel }: Props) {
         <GameFoundModal
           entryFee={getFormattedBalanceValue(withoutCommas(String(foundState.bid))).toFixed()}
           players={foundState?.participants_data.length || 1}
+          // ! TODO: check this value
           gasAmount={1.121}
           onSubmit={handleJoinSession}
           onClose={handleCloseFoundModal}

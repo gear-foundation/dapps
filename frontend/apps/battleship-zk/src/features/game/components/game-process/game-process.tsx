@@ -34,7 +34,6 @@ type Props = {
   gameUpdatedEvent: GameUpdatedEvent;
   gameStartTime: string | number | bigint | undefined;
   admin: string | undefined;
-  isGamePenging?: boolean;
   onClickCell: (handleClickCell: number) => Promise<void>;
   onVerifyOponentsHit: () => Promise<void>;
   onExitGame: () => Promise<void>;
@@ -49,7 +48,6 @@ export default function GameProcess({
   gameResults,
   gameStartTime,
   admin,
-  isGamePenging,
   onClickCell,
   onVerifyOponentsHit,
   onExitGame,
@@ -60,8 +58,7 @@ export default function GameProcess({
   const [playerShips, setPlayerShips] = useState<string[]>([]);
   const [enemiesShips, setEnemiesShips] = useState<string[]>([]);
   const [enemiesDeadShips, setEnemiesDeadShips] = useState<number[]>([]);
-  const [isDisabledCell, setDisabledCell] = useState(false);
-  const { setPending } = usePending();
+  const { setPending, pending } = usePending();
   const { checkBalance } = useCheckBalance({
     signlessPairVoucherId: signless.voucher?.id,
     gaslessVoucherId: gasless.voucherId,
@@ -77,7 +74,7 @@ export default function GameProcess({
   const isVerificationRequired = isBoomShip || isDeadShip;
 
   const isYourTurn =
-    (gameType === 'single' && !isVerificationRequired && !isGamePenging) ||
+    (gameType === 'single' && !isVerificationRequired && !pending) ||
     turn === account?.decodedAddress ||
     // ! TODO: seems like unnecessary, try remove
     pendingVerification === account?.decodedAddress;
@@ -86,21 +83,22 @@ export default function GameProcess({
 
   const handleClickCell = (indexCell: number) => {
     if (!gasless.isLoading) {
-      setDisabledCell(true);
+      setPending(true);
       onClickCell(indexCell)
         .then(() => setPlayerLastHit(indexCell))
-        .catch((error) => console.log(error))
-        .finally(() => {
-          setDisabledCell(false);
+        .catch((error) => {
           setPending(false);
+          console.log(error);
         });
     }
   };
 
-  const onVerifyHit = async () => {
-    setDisabledCell(true);
-    await onVerifyOponentsHit();
-    setDisabledCell(false);
+  const onVerifyHit = () => {
+    setPending(true);
+    onVerifyOponentsHit().catch((error) => {
+      console.log(error);
+      setPending(false);
+    });
   };
 
   const handleDefineDeadShips = (deadShips: RenderShips) => {
@@ -201,7 +199,7 @@ export default function GameProcess({
           sizeBlock={86}
           onClickCell={handleClickCell}
           shipStatusArray={enemiesShips}
-          isDisabledCell={isDisabledCell || gasless.isLoading || isVerificationRequired || !isYourTurn || !!gameResults}
+          isDisabledCell={pending || gasless.isLoading || isVerificationRequired || !isYourTurn || !!gameResults}
           onDefineDeadShip={handleDefineDeadShips}
           lastHit={playerLastHit}
         />
@@ -218,12 +216,7 @@ export default function GameProcess({
         )}
       </div>
       {isVerificationRequired && (
-        <VerificationModal
-          onVerifyHit={onVerifyHit}
-          isDeadShip={isDeadShip}
-          isLoading={isDisabledCell}
-          onExit={onExitGame}
-        />
+        <VerificationModal onVerifyHit={onVerifyHit} isDeadShip={isDeadShip} isLoading={pending} onExit={onExitGame} />
       )}
       {isOpenEndModal && gameResults && (
         <GameEndModal

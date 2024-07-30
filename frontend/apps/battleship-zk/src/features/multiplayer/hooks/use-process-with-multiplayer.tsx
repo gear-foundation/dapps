@@ -1,13 +1,17 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useMoveTransaction, usePending } from '@/features/game/hooks';
 import { useMultiplayerGame } from './use-multiplayer-game';
 import { useEventGameEndSubscription } from '../sails/events';
 import { useCancelGameMessage, useLeaveGameMessage, useMakeMoveMessage } from '../sails/messages';
+import { ROUTES } from '@/app/consts';
+import { clearZkData } from '@/features/zk/utils';
 
 export const useProcessWithMultiplayer = () => {
-  const { game, triggerGame } = useMultiplayerGame();
+  const { game, triggerGame, resetGameState, setGameEndResult } = useMultiplayerGame();
   const { leaveGameMessage } = useLeaveGameMessage();
+  const navigate = useNavigate();
   const { cancelGameMessage } = useCancelGameMessage();
   const { makeMoveMessage } = useMakeMoveMessage();
   const moveTransaction = useMoveTransaction('multi', makeMoveMessage, triggerGame);
@@ -15,16 +19,13 @@ export const useProcessWithMultiplayer = () => {
   const { gameEndResult } = useEventGameEndSubscription();
   const { setPending } = usePending();
 
-  const participant = game?.participants_data.find((item) => item[0] === account?.decodedAddress)?.[1];
+  const participantsData = gameEndResult?.participants_info || game?.participants_data;
+  const participant = participantsData?.find((item) => item[0] === account?.decodedAddress)?.[1];
 
   const totalShoots = useMemo(() => (participant ? participant?.total_shots : 0), [game]);
   const successfulShoots = useMemo(() => (participant ? participant?.succesfull_shots : 0), [game]);
 
   const gameUpdatedEvent = useMemo(() => {
-    // ! TODO: seems like unnecessary, try remove `gameEndResult`
-    if (gameEndResult) {
-      return { turn: '' };
-    }
     const [pendingVerification, verificationRequired] =
       (game && 'pendingVerificationOfTheMove' in game.status && game.status.pendingVerificationOfTheMove) || [];
 
@@ -33,9 +34,22 @@ export const useProcessWithMultiplayer = () => {
       pendingVerification,
       verificationRequired: pendingVerification === account?.decodedAddress ? verificationRequired : undefined,
     };
-  }, [game, gameEndResult]);
+  }, [game]);
 
   const exitGame = async () => {
+    if (gameEndResult) {
+      navigate(ROUTES.HOME);
+      resetGameState();
+
+      if (account?.address) {
+        clearZkData('multi', account);
+      }
+
+      return;
+    }
+
+    setPending(true);
+
     if (game?.admin === account?.decodedAddress) {
       try {
         const transaction = await cancelGameMessage();
@@ -49,8 +63,6 @@ export const useProcessWithMultiplayer = () => {
 
       return;
     }
-
-    setPending(true);
 
     try {
       const transaction = await leaveGameMessage();

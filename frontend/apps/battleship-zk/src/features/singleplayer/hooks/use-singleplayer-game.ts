@@ -3,6 +3,7 @@ import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
 import { gameEndResultAtom, isActiveGameAtom, isGamePengingAtom, isGameReadyAtom, singleGameAtom } from '../atoms';
 import { useSingleGameQuery } from '../sails/queries';
+import { usePending } from '@/features/game/hooks';
 
 export function useSingleplayerGame() {
   const { account } = useAccount();
@@ -11,7 +12,7 @@ export function useSingleplayerGame() {
   const [isGameReady, setIsGameReady] = useAtom(isGameReadyAtom);
   const [isActiveGame, setIsActiveGame] = useAtom(isActiveGameAtom);
   const [gameEndResult, setGameEndResult] = useAtom(gameEndResultAtom);
-  const [isGamePenging, setIsGamePenging] = useAtom(isGamePengingAtom);
+  const { setPending } = usePending();
   const [error, setError] = useState<unknown | null>(null);
 
   const triggerGame = async () => {
@@ -26,6 +27,7 @@ export function useSingleplayerGame() {
         setIsActiveGame(true);
       }
       setIsGameReady(true);
+      return Promise.resolve();
     } catch (err) {
       console.log('ERrOR');
       setError(err);
@@ -36,7 +38,7 @@ export function useSingleplayerGame() {
     setGame(undefined);
     setIsGameReady(false);
     setIsActiveGame(false);
-    setIsGamePenging(false);
+    setPending(false);
     setGameEndResult(null);
   };
 
@@ -46,10 +48,8 @@ export function useSingleplayerGame() {
     error,
     isGameReady,
     gameEndResult,
-    isGamePenging,
     triggerGame,
     resetGameState,
-    setIsGamePenging,
   };
 }
 

@@ -103,7 +103,7 @@ export interface SingleGameState {
   verification_requirement: number | null;
 }
 
-export type BattleshipParticipants = 'player' | 'bot';
+export type BattleshipParticipants = 'Player' | 'Bot';
 
 export type SingleUtilsStepResult = 'Missed' | 'Injured' | 'Killed';
 

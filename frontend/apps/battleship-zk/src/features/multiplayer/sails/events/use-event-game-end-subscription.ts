@@ -1,4 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { isNull } from '@polkadot/util';
+import { useShips } from '@/features/zk/hooks/use-ships';
 import { ParticipantInfo } from '@/app/utils/sails/lib/lib';
 import { useProgram } from '@/app/utils/sails';
 import { useMultiplayerGame } from '../../hooks';
@@ -9,14 +11,16 @@ export type GameEndEvent = {
   total_time: string | number | bigint;
   participants_info: [string, ParticipantInfo][];
   admin: string;
+  last_hit: number | null;
 };
 
 export function useEventGameEndSubscription() {
   const { account } = useAccount();
   const program = useProgram();
   const event = useRef<Promise<() => void> | null>(null);
-  const { game, gameEndResult, setGameEndResult } = useMultiplayerGame();
+  const { game, gameEndResult, setGameEndResult, triggerGame } = useMultiplayerGame();
   const [gameAdmin, setGameAdmin] = useState<string | null>(null);
+  const { updateEnemyBoard } = useShips();
 
   const gameEndCallback = useCallback(
     async (ev: GameEndEvent) => {
@@ -34,6 +38,11 @@ export function useEventGameEndSubscription() {
 
       if (ev.winner) {
         setGameEndResult(ev);
+
+        if (ev.winner === account?.decodedAddress && !isNull(ev.last_hit)) {
+          updateEnemyBoard('multi', 'DeadShip', ev.last_hit);
+          triggerGame();
+        }
       }
     },
     [gameAdmin],
