@@ -9,7 +9,7 @@ license.workspace = true
 [dependencies]
 gstd = { workspace = true, features = ["debug"] }
 primitive-types.workspace = true
-sails-rtl = { git = "https://github.com/gear-tech/sails", rev = "51b731ef8f064a23c6c98fa92d06eeafe44d3f9d" }
+sails-rs.workspace = true
 gbuiltin-bls381 = { git = "https://github.com/gear-tech/gear", tag = "v1.3.0" }
 
 [features]

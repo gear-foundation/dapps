@@ -2,7 +2,7 @@ use super::{
     utils::{Result, *},
     Event,
 };
-use crate::services::verify::PublicMoveInput;
+use crate::services::verify::{PublicMoveInput, VerificationResult};
 use gstd::{exec, msg, prelude::*, ActorId};
 
 static mut SEED: u8 = 0;
@@ -38,78 +38,14 @@ pub fn start_single_game(
         player_board: vec![Entity::Unknown; 25],
         ship_hash: hash,
         bot_ships,
-        status: Status::PendingMove,
         start_time: block_timestamp,
         total_shots: 0,
         succesfull_shots: 0,
+        verification_requirement: None,
     };
     games.insert(player, game_instance);
     send_delete_game_delayed_message(player, block_timestamp, gas_limit, delay);
     Ok(())
-}
-
-/// Function for making a move in the single-player game.
-///
-/// # Arguments
-///
-/// * `games` - A mutable reference to the map that stores single-player game instances.
-/// * `player` - The `ActorId` representing the player making the move.
-/// * `step` - An 8-bit unsigned integer representing the player's move (position on the board).
-///
-/// # Returns
-///
-/// * `Result<Event>` - Returns an `Event` indicating the result of the move or an error if the move is invalid.
-///
-/// # Errors
-///
-/// * `Error::NoSuchGame` - Returned if there is no game associated with the given player.
-/// * `Error::StatusIsPendingVerification` - Returned if the game's status is currently pending verification of a move.
-/// * `Error::WrongStep` - Returned if the provided step is out of the valid range (0-24).
-///
-/// This function retrieves the game instance for the specified player, checks if the move is valid,
-/// updates the game state based on the move, and checks if the game has ended. If the game ends,
-/// it returns an `EndGame` event with the game statistics. If the game continues, it updates the game
-/// status to await verification of the bot's move and returns a `MoveMade` event with the results of the move.
-pub fn make_move(games: &mut SingleGamesMap, player: ActorId, step: u8) -> Result<Event> {
-    let game = games.get_mut(&player).ok_or(Error::NoSuchGame)?;
-
-    if matches!(game.status, Status::PendingVerificationOfTheMove(_)) {
-        return Err(Error::StatusIsPendingVerification);
-    }
-
-    if step > 24 {
-        return Err(Error::WrongStep);
-    }
-
-    let step_result = game.bot_ships.bang(step);
-    game.total_shots += 1;
-    if step_result != StepResult::Missed {
-        game.succesfull_shots += 1;
-    }
-
-    if game.bot_ships.check_end_game() {
-        let time = exec::block_timestamp() - game.start_time;
-        let total_shots = game.total_shots;
-        let succesfull_shots = game.succesfull_shots;
-        games.remove(&player);
-        return Ok(Event::EndGame {
-            player,
-            winner: BattleshipParticipants::Player,
-            time,
-            total_shots,
-            succesfull_shots,
-            last_hit: step,
-        });
-    }
-    let bot_step = move_analysis(&game.player_board);
-    game.status = Status::PendingVerificationOfTheMove(bot_step);
-
-    Ok(Event::MoveMade {
-        player,
-        step,
-        step_result,
-        bot_step,
-    })
 }
 
 /// This function verifies that the game's current state matches the expected values based on the provided public input.
@@ -125,11 +61,15 @@ pub fn check_game(
     games: &SingleGamesMap,
     player: ActorId,
     public_input: PublicMoveInput,
+    step: Option<u8>,
 ) -> Result<()> {
     let game = games.get(&player).ok_or(Error::NoSuchGame)?;
 
-    if game.status != Status::PendingVerificationOfTheMove(public_input.hit) {
-        return Err(Error::WrongStatusOrHit);
+    if game.verification_requirement.is_none() {
+        return Err(Error::WrongVerificationRequirement);
+    }
+    if public_input.out == 0 && step.is_none() {
+        return Err(Error::StepIsNotTaken);
     }
     if game.ship_hash != public_input.hash {
         return Err(Error::WrongShipHash);
@@ -139,61 +79,90 @@ pub fn check_game(
         _ => Err(Error::WrongOut),
     }
 }
-/// Function for verifying the result of the bot's move in the single-player game.
-///
-/// # Arguments
-///
-/// * `games` - A mutable reference to the map that stores single-player game instances.
-/// * `player` - The `ActorId` representing the player whose game is being updated.
-/// * `res` - An 8-bit unsigned integer representing the result of the bot's move verification. `0` for a miss, `1` for a hit.
-/// * `hit` - An 8-bit unsigned integer representing the position on the player's board that was targeted by the bot.
-///
-/// # Returns
-///
-/// * `Result<Event>` - Returns an `Event` indicating the result of the verified move or an error if the verification fails.
-///
-/// # Errors
-///
-/// * `Error::NoSuchGame` - Returned if there is no game associated with the given player.
-///
-/// This function updates the player's board based on the result of the bot's move,
-/// checks if the game has ended, and updates the game state accordingly. If the game ends,
-/// it returns an `EndGame` event with the game statistics. If the game continues, it updates
-/// the game status to await the player's next move and returns a `MoveVerified` event with the results.
-pub fn verified_move(
+
+pub fn make_move(
     games: &mut SingleGamesMap,
     player: ActorId,
-    res: u8,
-    hit: u8,
+    verification_result: Option<VerificationResult>,
+    step: Option<u8>,
 ) -> Result<Event> {
     let game = games.get_mut(&player).ok_or(Error::NoSuchGame)?;
 
-    match res {
-        0 => game.player_board[hit as usize] = Entity::Boom,
-        1 => game.player_board[hit as usize] = Entity::BoomShip,
-        2 => game.dead_ship(hit),
-        _ => return Err(Error::WrongOut),
+    if game.verification_requirement.is_some() && verification_result.is_none() {
+        return Err(Error::WrongVerificationRequirement);
     }
 
-    if game.check_end_game() {
+    if let Some(VerificationResult { res, hit }) = verification_result {
+        match res {
+            0 => game.player_board[hit as usize] = Entity::Boom,
+            1 => game.player_board[hit as usize] = Entity::BoomShip,
+            2 => game.dead_ship(hit),
+            _ => return Err(Error::WrongOut),
+        }
+
+        if game.check_end_game() {
+            let time = exec::block_timestamp() - game.start_time;
+            let total_shots = game.total_shots;
+            let succesfull_shots = game.succesfull_shots;
+            games.remove(&player);
+            return Ok(Event::EndGame {
+                player,
+                winner: BattleshipParticipants::Bot,
+                time,
+                total_shots,
+                succesfull_shots,
+                last_hit: hit,
+            });
+        }
+
+        if res != 0 {
+            let bot_step = move_analysis(&game.player_board);
+            game.verification_requirement = Some(bot_step);
+            return Ok(Event::MoveMade {
+                player,
+                step,
+                step_result: None,
+                bot_step: Some(bot_step),
+            });
+        }
+    }
+
+    let step = step.expect("`step` must not be None at this stage");
+    if step > 24 {
+        return Err(Error::WrongStep);
+    }
+    let step_result = game.bot_ships.bang(step);
+    game.total_shots += 1;
+    if step_result != StepResult::Missed {
+        game.succesfull_shots += 1;
+    }
+    if game.bot_ships.check_end_game() {
         let time = exec::block_timestamp() - game.start_time;
         let total_shots = game.total_shots;
         let succesfull_shots = game.succesfull_shots;
         games.remove(&player);
         return Ok(Event::EndGame {
             player,
-            winner: BattleshipParticipants::Bot,
+            winner: BattleshipParticipants::Player,
             time,
             total_shots,
             succesfull_shots,
-            last_hit: hit,
+            last_hit: step,
         });
     }
-    game.status = Status::PendingMove;
 
-    Ok(Event::MoveVerified {
-        step: hit,
-        result: res,
+    let bot_step = if step_result != StepResult::Missed {
+        None
+    } else {
+        Some(move_analysis(&game.player_board))
+    };
+    game.verification_requirement = bot_step;
+
+    Ok(Event::MoveMade {
+        player,
+        step: Some(step),
+        step_result: Some(step_result),
+        bot_step,
     })
 }
 

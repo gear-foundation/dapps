@@ -3,14 +3,15 @@
 #![allow(clippy::new_without_default)]
 #![allow(clippy::result_unit_err)]
 #![allow(clippy::should_implement_trait)]
+#![allow(clippy::too_many_arguments)]
 use gstd::{msg, ActorId};
-use sails_rtl::gstd::gprogram;
+use sails_rs::gstd::program;
 use services::{admin, multiple, session, single, verify::VerifyingKeyBytes};
 pub mod services;
 
 pub struct Program(());
 
-#[gprogram]
+#[program]
 impl Program {
     pub fn new(
         builtin_bls381: ActorId,
@@ -18,28 +19,28 @@ impl Program {
         verification_key_for_move: VerifyingKeyBytes,
         config: admin::storage::configuration::Configuration,
     ) -> Self {
-        admin::GstdDrivenService::seed(
+        admin::AdminService::seed(
             msg::source(),
             builtin_bls381,
             verification_key_for_start,
             verification_key_for_move,
             config,
         );
-        session::GstdDrivenService::seed();
-        single::GstdDrivenService::seed();
-        multiple::GstdDrivenService::seed();
+        session::SessionService::seed();
+        single::SingleService::seed();
+        multiple::MultipleService::seed();
         Self(())
     }
-    pub fn admin(&self) -> admin::GstdDrivenService {
-        admin::GstdDrivenService::new()
+    pub fn admin(&self) -> admin::AdminService {
+        admin::AdminService::new()
     }
-    pub fn single(&self) -> single::GstdDrivenService {
-        single::GstdDrivenService::new()
+    pub fn single(&self) -> single::SingleService {
+        single::SingleService::new()
     }
-    pub fn multiple(&self) -> multiple::GstdDrivenService {
-        multiple::GstdDrivenService::new()
+    pub fn multiple(&self) -> multiple::MultipleService {
+        multiple::MultipleService::new()
     }
-    pub fn session(&self) -> session::GstdDrivenService {
-        session::GstdDrivenService::new()
+    pub fn session(&self) -> session::SessionService {
+        session::SessionService::new()
     }
 }

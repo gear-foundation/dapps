@@ -4,8 +4,8 @@ pub type SessionMap = HashMap<ActorId, Session>;
 pub(crate) type Result<T, E = Error> = core::result::Result<T, E>;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rtl::scale_codec)]
-#[scale_info(crate = sails_rtl::scale_info)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum Error {
     AlreadyHaveActiveSession,
     NoActiveSession,
@@ -13,8 +13,8 @@ pub enum Error {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rtl::scale_codec)]
-#[scale_info(crate = sails_rtl::scale_info)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct Session {
     // the address of the player who will play on behalf of the user
     pub key: ActorId,
@@ -24,8 +24,8 @@ pub struct Session {
     pub allowed_actions: Vec<ActionsForSession>,
 }
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rtl::scale_codec)]
-#[scale_info(crate = sails_rtl::scale_info)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum ActionsForSession {
     PlaySingleGame,
     PlayMultipleGame,

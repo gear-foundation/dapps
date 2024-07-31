@@ -1,11 +1,11 @@
-// use battleship::services::multiple::{ParticipantInfo, Status as MultipleStatus};
-// use battleship::services::single::{Entity, Status};
-// use battleship::services::verify::VerifyingKeyBytes;
-// use gclient::{EventProcessor, GearApi, Result, WSAddress};
-// use gstd::{ActorId, Encode};
+use battleship::services::multiple::{ParticipantInfo, Status as MultipleStatus};
+use battleship::services::single::Entity;
+use battleship::services::verify::VerifyingKeyBytes;
+use gclient::{EventProcessor, GearApi, Result, WSAddress};
+use gstd::{ActorId, Encode};
 
-// mod utils_gclient;
-// use utils_gclient::*;
+mod utils_gclient;
+use utils_gclient::*;
 
 // #[tokio::test]
 // async fn gclient_success_verify() -> Result<()> {

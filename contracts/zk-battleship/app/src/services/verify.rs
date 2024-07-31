@@ -10,8 +10,8 @@ use gstd::{ext, msg, prelude::*, ActorId, Encode};
 type ArkScale<T> = ark_scale::ArkScale<T, { ark_scale::HOST_CALL }>;
 
 #[derive(Debug, Encode, Decode, TypeInfo, Clone)]
-#[codec(crate = sails_rtl::scale_codec)]
-#[scale_info(crate = sails_rtl::scale_info)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct VerifyingKeyBytes {
     pub alpha_g1_beta_g2: Vec<u8>,
     pub gamma_g2_neg_pc: Vec<u8>,
@@ -20,8 +20,8 @@ pub struct VerifyingKeyBytes {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo, Clone)]
-#[codec(crate = sails_rtl::scale_codec)]
-#[scale_info(crate = sails_rtl::scale_info)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct ProofBytes {
     pub a: Vec<u8>,
     pub b: Vec<u8>,
@@ -29,8 +29,8 @@ pub struct ProofBytes {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo, Clone)]
-#[codec(crate = sails_rtl::scale_codec)]
-#[scale_info(crate = sails_rtl::scale_info)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct PublicMoveInput {
     pub out: u8,
     pub hit: u8,
@@ -38,8 +38,24 @@ pub struct PublicMoveInput {
 }
 
 #[derive(Debug, Encode, Decode, TypeInfo, Clone)]
-#[codec(crate = sails_rtl::scale_codec)]
-#[scale_info(crate = sails_rtl::scale_info)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
+pub struct VerificationVariables {
+    pub proof_bytes: ProofBytes,
+    pub public_input: PublicMoveInput,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
+pub struct VerificationResult {
+    pub res: u8,
+    pub hit: u8,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo, Clone)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct PublicStartInput {
     pub hash: Vec<u8>,
 }

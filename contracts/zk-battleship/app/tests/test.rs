@@ -5,8 +5,8 @@
 // const USERS: &[u64] = &[3, 4, 5];
 
 // #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
-// #[codec(crate = sails_rtl::scale_codec)]
-// #[scale_info(crate = sails_rtl::scale_info)]
+// #[codec(crate = sails_rs::scale_codec)]
+// #[scale_info(crate = sails_rs::scale_info)]
 // struct Test {
 //     step_result: StepResult,
 //     bot_step: u8,
@@ -18,7 +18,7 @@
 //     sys.init_logger();
 //     let battleship = Program::from_file(
 //         &sys,
-//         "../target/wasm32-unknown-unknown/debug/battleship_wasm.opt.wasm",
+//         "../target/wasm32-unknown-unknown/release/battleship_wasm.opt.wasm",
 //     );
 //     let encoded_request = ["New".encode(), ().encode()].concat();
 //     battleship.send_bytes(USERS[0], encoded_request);

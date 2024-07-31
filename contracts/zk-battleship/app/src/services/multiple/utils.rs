@@ -6,8 +6,8 @@ pub type GamePairsMap = HashMap<ActorId, ActorId>;
 pub(crate) type Result<T, E = Error> = core::result::Result<T, E>;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rtl::scale_codec)]
-#[scale_info(crate = sails_rtl::scale_info)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum Error {
     SeveralGames,
     NoSuchGame,
@@ -19,6 +19,7 @@ pub enum Error {
     AlreadyVerified,
     WrongBid,
     WrongOut,
+    StepIsNotTaken,
 }
 
 pub struct MultipleGame {
@@ -32,8 +33,8 @@ pub struct MultipleGame {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rtl::scale_codec)]
-#[scale_info(crate = sails_rtl::scale_info)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct MultipleGameState {
     pub admin: ActorId,
     pub participants_data: Vec<(ActorId, ParticipantInfo)>,
@@ -45,8 +46,8 @@ pub struct MultipleGameState {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rtl::scale_codec)]
-#[scale_info(crate = sails_rtl::scale_info)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum Status {
     Registration,
     VerificationPlacement(Option<ActorId>),
@@ -55,14 +56,23 @@ pub enum Status {
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rtl::scale_codec)]
-#[scale_info(crate = sails_rtl::scale_info)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub struct ParticipantInfo {
     pub name: String,
     pub board: Vec<Entity>,
     pub ship_hash: Vec<u8>,
     pub total_shots: u8,
     pub succesfull_shots: u8,
+}
+
+#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
+pub enum StepResult {
+    Missed,
+    Injured,
+    Killed,
 }
 
 impl MultipleGame {

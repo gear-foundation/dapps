@@ -5,12 +5,10 @@ use crate::admin::storage::{
 };
 use crate::services;
 use crate::services::session::storage::SessionsStorage;
-use core::{fmt::Debug, marker::PhantomData};
-use gstd::{exec, msg, ActorId, Decode, Encode, String, TypeInfo, Vec};
-use sails_rtl::gstd::{
-    events::{EventTrigger, GStdEventTrigger},
-    gservice,
-};
+use core::fmt::Debug;
+use gstd::{exec, ext, msg, ActorId, Decode, Encode, String, TypeInfo, Vec};
+use sails_rs::gstd::service;
+use sails_rs::{format, Box};
 
 pub use utils::*;
 
@@ -19,8 +17,8 @@ pub mod storage;
 pub(crate) mod utils;
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
-#[codec(crate = sails_rtl::scale_codec)]
-#[scale_info(crate = sails_rtl::scale_info)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
 pub enum Event {
     SessionCreated,
     SingleGameStarted,
@@ -34,36 +32,27 @@ pub enum Event {
     },
     MoveMade {
         player: ActorId,
-        step: u8,
-        step_result: StepResult,
-        bot_step: u8,
-    },
-    MoveVerified {
-        step: u8,
-        result: u8,
+        step: Option<u8>,
+        step_result: Option<StepResult>,
+        bot_step: Option<u8>,
     },
 }
 
-pub type GstdDrivenService = Service<GStdEventTrigger<Event>>;
-
 #[derive(Clone)]
-pub struct Service<X>(PhantomData<X>);
+pub struct SingleService(());
 
-impl<X> Service<X> {
+impl SingleService {
     pub fn seed() -> Self {
         let _res = SingleGamesStorage::default();
         debug_assert!(_res.is_ok());
-        Self(PhantomData)
+        Self(())
     }
 }
 
-#[gservice]
-impl<X> Service<X>
-where
-    X: EventTrigger<Event>,
-{
+#[service(events = Event)]
+impl SingleService {
     pub fn new() -> Self {
-        Self(PhantomData)
+        Self(())
     }
 
     /// Function for creating a single-player game using Zero Knowledge (ZK) proofs.
@@ -110,42 +99,18 @@ where
                 config.delay_for_delete_single_game,
             )
         });
-        services::utils::deposit_event(Event::SingleGameStarted);
+        let _unused = self.notify_on(Event::SingleGameStarted);
     }
 
-    /// Function for making a move in the game.
-    ///
-    /// # Arguments
-    ///
-    /// * `step` - A step or move to be made in the game, represented as an 8-bit unsigned integer. It denotes the position where the shot will be made.
-    /// * `session_for_account` - An optional parameter representing the account associated with the game session. It is an abstraction of the account that can be used to identify or store session data.
-    pub fn make_move(&mut self, step: u8, session_for_account: Option<ActorId>) {
-        let player = services::session::funcs::get_player(
-            SessionsStorage::as_ref(),
-            msg::source(),
-            &session_for_account,
-            services::session::utils::ActionsForSession::PlaySingleGame,
-        );
-        let event = services::utils::panicking(move || {
-            funcs::make_move(SingleGamesStorage::as_mut(), player, step)
-        });
-
-        services::utils::deposit_event(event);
-    }
-
-    /// Function for verifying a move in the game using Zero Knowledge (ZK) proofs.
-    ///
-    /// # Arguments
-    ///
-    /// * `proof` - Zero Knowledge proof represented as a byte array. Used to verify the correctness of the move.
-    /// * `public_input` - Public input data for the move.
-    /// * `session_for_account` - An optional parameter representing an account associated with the game session. This is an account abstraction that can be used for identification or session data storage.
-    pub async fn verify_move(
+    pub async fn make_move(
         &mut self,
-        proof: services::verify::ProofBytes,
-        public_input: services::verify::PublicMoveInput,
+        step: Option<u8>,
+        verify_variables: Option<services::verify::VerificationVariables>,
         session_for_account: Option<ActorId>,
     ) {
+        if verify_variables.is_none() && step.is_none() {
+            ext::panic("Verification variables and step cannot be at the same time `None`")
+        }
         // get player ActorId
         let player = services::session::funcs::get_player(
             SessionsStorage::as_ref(),
@@ -153,37 +118,50 @@ where
             &session_for_account,
             services::session::utils::ActionsForSession::PlaySingleGame,
         );
+        let event = if let Some(services::verify::VerificationVariables {
+            proof_bytes,
+            public_input,
+        }) = verify_variables
+        {
+            // check game state
+            let input = public_input.clone();
+            services::utils::panicking(move || {
+                funcs::check_game(SingleGamesStorage::as_ref(), player, input, step)
+            });
 
-        // get prepared inputs bytes
-        let prepared_inputs_bytes = services::verify::get_move_prepared_inputs_bytes(
-            public_input.clone(),
-            VerificationKeyStorage::get_vk_for_move().ic.clone(),
-        );
+            // get prepared inputs bytes
+            let prepared_inputs_bytes = services::verify::get_move_prepared_inputs_bytes(
+                public_input.clone(),
+                VerificationKeyStorage::get_vk_for_move().ic.clone(),
+            );
 
-        // check game state
-        let input = public_input.clone();
-        services::utils::panicking(move || {
-            funcs::check_game(SingleGamesStorage::as_ref(), player, input)
-        });
-
-        // verify action
-        services::verify::verify(
-            VerificationKeyStorage::get_vk_for_move(),
-            proof,
-            prepared_inputs_bytes,
-            BuiltinStorage::get(),
-        )
-        .await;
-        // verified move after successful verification
-        let event = services::utils::panicking(move || {
-            funcs::verified_move(
-                SingleGamesStorage::as_mut(),
-                player,
-                public_input.out,
-                public_input.hit,
+            // verify action
+            services::verify::verify(
+                VerificationKeyStorage::get_vk_for_move(),
+                proof_bytes,
+                prepared_inputs_bytes,
+                BuiltinStorage::get(),
             )
-        });
-        services::utils::deposit_event(event);
+            .await;
+            // verified move after successful verification
+            let verification_result = services::verify::VerificationResult {
+                res: public_input.out,
+                hit: public_input.hit,
+            };
+            services::utils::panicking(move || {
+                funcs::make_move(
+                    SingleGamesStorage::as_mut(),
+                    player,
+                    Some(verification_result),
+                    step,
+                )
+            })
+        } else {
+            services::utils::panicking(move || {
+                funcs::make_move(SingleGamesStorage::as_mut(), player, None, step)
+            })
+        };
+        let _unused = self.notify_on(event);
     }
 
     /// Function for deleting a game. This function is called by a delayed message from the program itself
@@ -213,9 +191,6 @@ where
     pub fn total_shots(&self, player_id: ActorId) -> Option<u8> {
         crate::generate_getter_game!(total_shots, player_id)
     }
-    pub fn game_status(&self, player_id: ActorId) -> Option<Status> {
-        crate::generate_getter_game!(status, player_id)
-    }
     pub fn game(&self, player_id: ActorId) -> Option<SingleGame> {
         crate::generate_getter_game!(player_id)
     }
@@ -228,9 +203,9 @@ where
                     player_board: game.player_board.clone(),
                     ship_hash: game.ship_hash.clone(),
                     start_time: game.start_time,
-                    status: game.status.clone(),
                     total_shots: game.total_shots,
                     succesfull_shots: game.succesfull_shots,
+                    verification_requirement: game.verification_requirement,
                 };
                 (*actor_id, game_state)
             })

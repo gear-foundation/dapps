@@ -3,6 +3,7 @@ use super::{
     Event,
 };
 use crate::admin::storage::configuration::Configuration;
+use crate::services::verify::{VerificationResult, VerificationVariables};
 use crate::single::Entity;
 use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId};
 
@@ -333,60 +334,103 @@ pub fn set_verify_placement(
     }
 }
 
-/// Executes a move by the player in a multiplayer game, sending a message to the opponent
-/// and updating game state accordingly.
+/// Executes a move in the game, processes the results of move verification, and updates the game state.
 ///
 /// # Arguments
 ///
-/// * `games` - A mutable reference to the map storing multiple games.
-/// * `config` - The configuration settings for the game.
-/// * `player` - The `ActorId` representing the player making the move.
-/// * `game_id` - The `ActorId` representing the ID of the game.
-/// * `step` - The step or move to be executed, representing a shot at the opponent's board.
-/// * `block_timestamp` - The timestamp when the block was created.
+/// * `games` - A mutable reference to the `MultipleGamesMap`, representing the collection of ongoing games.
+/// * `game_pair` - A mutable reference to the `GamePairsMap`, representing the mapping of players to their games.
+/// * `config` - A configuration object containing gas limits and delay parameters.
+/// * `player` - The `ActorId` of the player making the move.
+/// * `game_id` - The `ActorId` of the game where the move is being made.
+/// * `step` - An `Option<u8>` representing the move step (index on the game board). It should be `Some` if the player is making a move.
+/// * `verification_result` - An `Option<VerificationResult>` representing the result of the move verification process, if available.
+/// * `block_timestamp` - The current block timestamp used to track the timing of moves.
 ///
 /// # Returns
 ///
-/// * `Result<Event>` - Returns an event indicating the outcome of the move.
+/// * `Result<Event>` - Returns an event indicating the outcome of the move or the end of the game.
 ///
 /// # Errors
 ///
-/// * `Error::WrongStep` - If the `step` exceeds the allowable range (0-24).
-/// * `Error::NoSuchGame` - If the game associated with `game_id` does not exist.
-/// * `Error::WrongStatus` - If the game status does not permit the player to make a move.
-/// * `Error::NotPlayer` - If the `player` is not recognized as a participant in the game.
+/// * Returns `Error::NoSuchGame` if the game with the given `game_id` does not exist.
+/// * Returns `Error::WrongStep` if the `step` value is out of bounds (greater than 24).
+/// * Returns `Error::NotPlayer` if the player is not a participant in the game.
 pub fn make_move(
     games: &mut MultipleGamesMap,
+    game_pair: &mut GamePairsMap,
     config: Configuration,
     player: ActorId,
     game_id: ActorId,
-    step: u8,
+    step: Option<u8>,
+    verification_result: Option<VerificationResult>,
     block_timestamp: u64,
 ) -> Result<Event> {
+    let game = games.get_mut(&game_id).ok_or(Error::NoSuchGame)?;
+
+    let opponent = game.get_opponent(&player);
+    let verified_result = if let Some(VerificationResult { res, hit }) = verification_result {
+        game.shot(&player, hit, res);
+
+        if game.check_end_game(&player) {
+            msg::send_with_gas(opponent, "", 0, 2 * game.bid).expect("Error in sending value");
+            let total_time = exec::block_timestamp() - game.start_time.unwrap();
+            let participants_info: Vec<_> = game.participants_data.clone().into_iter().collect();
+            let admin = game.admin;
+            game.participants_data.iter().for_each(|(id, _info)| {
+                game_pair.remove(id);
+            });
+            games.remove(&game_id);
+            return Ok(Event::EndGame {
+                admin,
+                winner: opponent,
+                total_time,
+                participants_info,
+                last_hit: Some(hit),
+            });
+        }
+        let verified_result = match res {
+            0 => Some((hit, StepResult::Missed)),
+            1 => Some((hit, StepResult::Injured)),
+            2 => Some((hit, StepResult::Killed)),
+            _ => unimplemented!(),
+        };
+        if res != 0 {
+            game.status = Status::Turn(opponent);
+            return Ok(Event::MoveMade {
+                game_id,
+                step,
+                verified_result,
+                turn: opponent,
+            });
+        }
+        verified_result
+    } else {
+        None
+    };
+
+    let step = step.expect("`step` must not be None at this stage");
     if step > 24 {
         return Err(Error::WrongStep);
     }
 
-    let game = games.get_mut(&game_id).ok_or(Error::NoSuchGame)?;
-    if game.status != Status::Turn(player) {
-        return Err(Error::WrongStatus);
-    }
     let data = game
         .participants_data
         .get_mut(&player)
         .ok_or(Error::NotPlayer)?;
     data.total_shots += 1;
-    let opponent = game.get_opponent(&player);
     msg::send(
         opponent,
         Event::MoveMade {
             game_id,
-            step,
-            target_address: opponent,
+            step: Some(step),
+            verified_result: verified_result.clone(),
+            turn: opponent,
         },
         0,
     )
     .expect("Error send message");
+
     game.status = Status::PendingVerificationOfTheMove((opponent, step));
     game.last_move_time = block_timestamp;
     send_check_time_delayed_message(
@@ -398,8 +442,9 @@ pub fn make_move(
 
     Ok(Event::MoveMade {
         game_id,
-        step,
-        target_address: opponent,
+        step: Some(step),
+        verified_result,
+        turn: opponent,
     })
 }
 
@@ -423,26 +468,41 @@ pub fn check_game_for_verify_placement(
 }
 
 /// Checks if a player is allowed to verify a move based on the current game state and provided inputs.
-pub fn check_game_for_verify_move(
+pub fn check_game_for_move(
     games: &MultipleGamesMap,
     game_id: ActorId,
     player: ActorId,
-    hit: u8,
-    hash: Vec<u8>,
+    verify_variables: Option<VerificationVariables>,
+    step: Option<u8>,
 ) -> Result<()> {
     let game = games.get(&game_id).ok_or(Error::NoSuchGame)?;
-
-    if game.status != Status::PendingVerificationOfTheMove((player, hit)) {
+    if matches!(game.status, Status::PendingVerificationOfTheMove(_)) && verify_variables.is_none()
+    {
         return Err(Error::WrongStatus);
     }
-    if game
-        .participants_data
-        .get(&player)
-        .expect("At this status must be determined")
-        .ship_hash
-        != hash
+    if matches!(game.status, Status::Turn(_)) && step.is_none() {
+        return Err(Error::WrongStatus);
+    }
+    if let Some(VerificationVariables {
+        proof_bytes: _,
+        public_input,
+    }) = verify_variables
     {
-        return Err(Error::WrongShipsHash);
+        if game.status != Status::PendingVerificationOfTheMove((player, public_input.hit)) {
+            return Err(Error::WrongStatus);
+        }
+        if public_input.out == 0 && step.is_none() {
+            return Err(Error::StepIsNotTaken);
+        }
+        if game
+            .participants_data
+            .get(&player)
+            .expect("At this status must be determined")
+            .ship_hash
+            != public_input.hash
+        {
+            return Err(Error::WrongShipsHash);
+        }
     }
 
     Ok(())
@@ -491,67 +551,6 @@ pub fn check_out_timing(
     }
 
     Ok(())
-}
-
-/// Verifies the move made by a player in a multiple-player game and updates the game state accordingly.
-///
-/// # Arguments
-///
-/// * `games` - Mutable reference to the map storing multiple games.
-/// * `game_pair` - Mutable reference to the map storing game pairs.
-/// * `game_id` - The `ActorId` representing the ID of the game to verify the move in.
-/// * `player` - The `ActorId` representing the ID of the player making the move.
-/// * `res` - The result of the move (0 for miss, 1 for hit).
-/// * `hit` - The specific position or step of the move.
-///
-/// # Returns
-///
-/// * `Result<Event>` - Returns `Ok` with an event indicating the result of the verified move.
-///
-/// # Errors
-///
-/// * `Error::NoSuchGame` - If the game associated with `game_id` does not exist.
-///
-/// This function verifies a move made by a player in a multiple-player game, updates the game state based on the move result (`res`),
-/// and checks if the game has ended. If the game ends, it sends the appropriate message to the winner and removes the game from storage.
-/// It transitions the game state to the next player's turn if the game continues.
-pub fn verified_move(
-    games: &mut MultipleGamesMap,
-    game_pair: &mut GamePairsMap,
-    game_id: ActorId,
-    player: ActorId,
-    res: u8,
-    hit: u8,
-) -> Result<Event> {
-    let game = games.get_mut(&game_id).ok_or(Error::NoSuchGame)?;
-    game.shot(&player, hit, res);
-
-    let opponent = game.get_opponent(&player);
-    if game.check_end_game(&player) {
-        msg::send_with_gas(opponent, "", 0, 2 * game.bid).expect("Error in sending value");
-        let total_time = exec::block_timestamp() - game.start_time.unwrap();
-        let participants_info: Vec<_> = game.participants_data.clone().into_iter().collect();
-        let admin = game.admin;
-        game.participants_data.iter().for_each(|(id, _info)| {
-            game_pair.remove(id);
-        });
-        games.remove(&game_id);
-        return Ok(Event::EndGame {
-            admin,
-            winner: opponent,
-            total_time,
-            participants_info,
-            last_hit: Some(hit),
-        });
-    }
-    game.status = Status::Turn(player);
-
-    Ok(Event::MoveVerified {
-        admin: game.admin,
-        opponent,
-        step: hit,
-        result: res,
-    })
 }
 
 /// Deletes a game from storage based on the provided `game_id` and `create_time`.

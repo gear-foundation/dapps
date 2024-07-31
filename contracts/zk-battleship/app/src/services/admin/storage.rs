@@ -193,8 +193,8 @@ pub mod configuration {
     pub struct ConfigurationStorage(());
 
     #[derive(Clone, Copy, Default, Encode, Decode, TypeInfo)]
-    #[codec(crate = sails_rtl::scale_codec)]
-    #[scale_info(crate = sails_rtl::scale_info)]
+    #[codec(crate = sails_rs::scale_codec)]
+    #[scale_info(crate = sails_rs::scale_info)]
     pub struct Configuration {
         pub gas_for_delete_single_game: u64,
         pub gas_for_delete_multiple_game: u64,
