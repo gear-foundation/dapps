@@ -26,6 +26,7 @@ export const Header = () => {
               balance: styles.walletBalance,
             },
             icon: styles.menuIcon,
+            dropdown: styles.dropdown,
           }}
           customItems={[
             {

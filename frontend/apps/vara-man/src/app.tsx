@@ -10,15 +10,15 @@ import { withProviders } from '@/app/hocs';
 
 import '@gear-js/vara-ui/dist/style.css';
 
-
 const Component = () => {
-
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">
-      <Header />
-      <main className="flex flex-col flex-1 relative container pt-3 pb-5">
+      <div className='container'>
+        <Header />
+      </div>
+      <main className="flex flex-col flex-1 relative pt-3 pb-5 container">
         {isApiReady && isAccountReady ? <Routing /> : <ApiLoader />}
       </main>
 

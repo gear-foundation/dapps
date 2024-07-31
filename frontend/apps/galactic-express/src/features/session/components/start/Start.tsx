@@ -10,6 +10,7 @@ import { getVaraAddress, useAccount, useApi } from '@gear-js/react-hooks';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import src from 'assets/images/earth.gif';
 import { Container } from 'components';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { Participant, Session } from '../../types';
 import { Traits } from '../traits';
 import { Form } from '../form';
@@ -42,13 +43,13 @@ type DecodedReply = {
 function Start({ participants, session, isUserAdmin, userAddress, adminAddress, bid, adminName }: Props) {
   const { api } = useApi();
   const { account } = useAccount();
+  const { programId } = useDnsProgramIds();
   const { decodedAddress } = account || {};
   const [registrationStatus, setRegistrationStatus] = useAtom(REGISTRATION_STATUS);
   const setCurrentGame = useSetAtom(CURRENT_GAME_ATOM);
   const { altitude, weather, reward } = session;
   const playersCount = participants?.length ? participants.length + 1 : 1;
   const isRegistered = decodedAddress ? !!participants.some((participant) => participant[0] === decodedAddress) : false;
-
   const containerClassName = clsx(styles.container, decodedAddress ? styles.smallMargin : styles.largeMargin);
 
   const meta = useEscrowMetadata();
@@ -72,7 +73,7 @@ function Start({ participants, session, isUserAdmin, userAddress, adminAddress, 
     const { message } = data;
     const { destination, source, payload } = message;
     const isOwner = destination.toHex() === account?.decodedAddress;
-    const isEscrowProgram = source.toHex() === ADDRESS.CONTRACT;
+    const isEscrowProgram = source.toHex() === programId;
 
     if (isOwner && isEscrowProgram) {
       const reply = getDecodedReply(payload);

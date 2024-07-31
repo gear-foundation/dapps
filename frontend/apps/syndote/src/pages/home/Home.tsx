@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useAtomValue, useSetAtom, useAtom } from 'jotai';
 import { useAccount, useApi, withoutCommas } from '@gear-js/react-hooks';
-import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { HexString } from '@polkadot/util/types';
 import { ADDRESS, fields, INIT_PLAYERS } from 'consts';
 import { MessageHandlePayload, MessagePayload, PlayerState, PlayersByStrategyAddress, Step } from 'types';
@@ -32,6 +32,7 @@ function Home() {
   const { account } = useAccount();
   const { api } = useApi();
   const metadata = useProgramMetadata(meta);
+  const { programId } = useDnsProgramIds();
   const [isLoading, setIsLoading] = useAtom(IS_LOADING);
   const playerName = useAtomValue(PLAYER_NAME_ATOM);
   const [modalContract, setModalContract] = useState<ModalContract>(null);
@@ -233,7 +234,7 @@ function Home() {
         const { message } = data;
         const { source, payload, destination } = message;
 
-        if (source.toHex() === ADDRESS.CONTRACT && destination.toHex() === admin.current) {
+        if (source.toHex() === programId && destination.toHex() === admin.current) {
           const decodedPayload = getDecodedPayload(payload) as MessagePayload;
 
           if (typeof decodedPayload === 'object' && decodedPayload !== null) {

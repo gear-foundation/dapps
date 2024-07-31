@@ -2,18 +2,18 @@ import { Button } from '@/components/ui/button';
 import { useGameMessage, useSubscriptionOnGameMessage } from '../../hooks';
 import { useEffect, useState } from 'react';
 import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
-import { ADDRESS } from '../../consts';
 import { withoutCommas } from '@/app/utils';
 import { ProgramMetadata } from '@gear-js/api';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
-import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
 
 type Props = {
   meta: ProgramMetadata;
 };
 
 export function GameSkipButton({ meta }: Props) {
-  const calculateGas = useHandleCalculateGas(ADDRESS.GAME, meta);
+  const { programId } = useDnsProgramIds();
+  const calculateGas = useHandleCalculateGas(programId, meta);
   const message = useGameMessage(meta);
   const alert = useAlert();
   const { account } = useAccount();
@@ -42,7 +42,7 @@ export function GameSkipButton({ meta }: Props) {
   };
 
   const onNextTurn = async () => {
-    if (!meta || !account || !ADDRESS.GAME) {
+    if (!meta || !account || !programId) {
       return;
     }
 

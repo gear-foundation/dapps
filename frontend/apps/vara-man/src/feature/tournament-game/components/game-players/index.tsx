@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useAtom } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 
@@ -8,7 +8,7 @@ import { cn } from '@/app/utils';
 import { SpriteIcon } from '@/components/ui/sprite-icon';
 import { useApp } from '@/app/context/ctx-app';
 import { useGameMessage } from '@/app/hooks/use-game';
-import { PRIZE_POOL } from '@/feature/game/consts';
+import { GAME_OVER, PRIZE_POOL } from '@/feature/game/consts';
 import { ConfirmCancelModal } from '../modals/confirm-cancel';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { useCheckBalance } from '@dapps-frontend/hooks';
@@ -28,6 +28,7 @@ export const GamePlayers = () => {
   });
   const gasLimit = 120000000000;
 
+  const setGameOver = useSetAtom(GAME_OVER);
   const [sortedParticipants, setSortedParticipants] = useState<any>([]);
   const [isOpenCancelModal, setIsOpenCancelModal] = useState(false);
 
@@ -65,6 +66,10 @@ export const GamePlayers = () => {
       const now = Date.now();
       const timeLeft = endTime - now;
       setTimeLeft(Math.max(timeLeft, 0));
+
+      if (timeLeft <= 0) {
+        setGameOver(true);
+      }
     };
 
     const timerId = setInterval(updateTimer, 1000);
@@ -110,7 +115,7 @@ export const GamePlayers = () => {
   }, [tournamentGame]);
 
   return (
-    <div className="flex flex-col gap-4 items-center w-3/5">
+    <div className="flex flex-col gap-4 items-center w-full">
       {isOpenCancelModal && (
         <ConfirmCancelModal setIsOpenCancelModal={setIsOpenCancelModal} onCancelGame={onCancelGame} />
       )}

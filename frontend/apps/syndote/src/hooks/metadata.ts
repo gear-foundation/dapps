@@ -7,6 +7,7 @@ import meta from 'assets/meta/syndote_meta.txt';
 import { ADDRESS } from 'consts';
 import { CURRENT_GAME_ADMIN_ATOM } from 'atoms';
 import { GameSessionState, State } from 'types';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
 function useBuffer(source: string) {
   const alert = useAlert();
@@ -65,11 +66,12 @@ function useStateMetadata(wasm: Buffer | undefined) {
 
 function useSyndoteMessage() {
   const metadata = useProgramMetadata(meta);
+  const { programId } = useDnsProgramIds();
 
   return {
     isMeta: !!meta,
-    sendMessage: useSendMessageWithGas(ADDRESS.CONTRACT, metadata, { isMaxGasLimit: true }),
-    sendPlayMessage: useSendMessage(ADDRESS.CONTRACT, metadata),
+    sendMessage: useSendMessageWithGas(programId, metadata, { isMaxGasLimit: true }),
+    sendPlayMessage: useSendMessage(programId, metadata),
   };
 }
 
@@ -77,6 +79,7 @@ function useReadGameSessionState() {
   const { account } = useAccount();
   const metadata = useProgramMetadata(meta);
   const admin = useAtomValue(CURRENT_GAME_ADMIN_ATOM);
+  const { programId } = useDnsProgramIds();
 
   console.log('getting state by', admin || account?.decodedAddress);
   const payload = useMemo(
@@ -88,7 +91,7 @@ function useReadGameSessionState() {
     [admin, account?.decodedAddress],
   );
 
-  const { state, isStateRead } = useReadFullState<GameSessionState>(ADDRESS.CONTRACT, metadata, payload);
+  const { state, isStateRead } = useReadFullState<GameSessionState>(programId, metadata, payload);
 
   return { state: state?.GameSession.gameSession, isStateRead };
 }

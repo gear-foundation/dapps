@@ -19,7 +19,7 @@ function useMarketplaceStateBuffer() {
 function useMarketplaceWasmState<T>(functionName: string, argument: AnyJson) {
   const programMetadata = useMarketplaceMeta();
   const buffer = useMarketplaceStateBuffer();
-
+  
   return useReadWasmState<T>({
     programId: ADDRESS.MARKETPLACE_CONTRACT,
     wasm: buffer,

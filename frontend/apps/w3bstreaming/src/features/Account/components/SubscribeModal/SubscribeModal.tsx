@@ -2,6 +2,7 @@ import { useAtom } from 'jotai';
 import { useNavigate } from 'react-router-dom';
 import { Loader, Modal } from 'components';
 import { useAccount, useAlert, withoutCommas } from '@gear-js/react-hooks';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { cx, logger } from '@/utils';
 import playSVG from '@/assets/icons/play-icon.svg';
 import cancelSVG from '@/assets/icons/cross-circle-icon.svg';
@@ -12,15 +13,15 @@ import { useSubscribeToStreamMessage } from '../../hooks';
 import styles from './SubscribeModal.module.scss';
 import { useGetStreamMetadata } from '@/features/CreateStream/hooks';
 import { useCheckBalance, useHandleCalculateGas, useProgramState } from '@/hooks';
-import { ADDRESS } from '@/consts';
 import { IS_SUBSCRIBING_ATOM } from '../../atoms';
 import { ACCOUNT } from '@/App.routes';
 
 function SubscribeModal({ speakerId, type, onClose }: SubscribeModalProps) {
   const { meta, isMeta } = useGetStreamMetadata();
   const [isLoading, setIsLoading] = useAtom(IS_SUBSCRIBING_ATOM);
+  const { programId } = useDnsProgramIds();
   const sendSubscribeMessage = useSubscribeToStreamMessage();
-  const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, meta);
+  const calculateGas = useHandleCalculateGas(programId, meta);
   const { checkBalance } = useCheckBalance();
   const alert = useAlert();
   const navigate = useNavigate();

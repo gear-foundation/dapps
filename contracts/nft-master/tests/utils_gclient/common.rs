@@ -15,7 +15,11 @@ pub async fn fund_users(api: &GearApi) -> gclient::Result<()> {
 
     for user in USERS {
         let user_id = get_user_to_actor_id(user).await?;
-        let user_program_id = user_id.encode().as_slice().into();
+        let user_program_id = user_id
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`.");
 
         api.transfer_keep_alive(user_program_id, amount).await?;
     }

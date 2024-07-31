@@ -93,13 +93,13 @@ export const TournamentCreate = () => {
   });
 
   return (
-    <div className="flex flex-col justify-center items-center grow h-full">
+    <div className="flex flex-col justify-center items-center md:grow h-full">
       <h2 className="typo-h2">Create a private game</h2>
       <p>Create your own game tournament, invite your friends, and compete for the ultimate reward.</p>
 
       <form onSubmit={handleSubmit} className="grid gap-4 w-full max-w-[600px] mx-auto mt-5">
-        <div className="flex flex-col gap-5">
-          <div className="flex gap-5">
+        <div className="flex flex-col gap-5 ">
+          <div className="flex flex-col gap-5 md:flex-row">
             <Input
               type="number"
               min={0}
@@ -128,7 +128,7 @@ export const TournamentCreate = () => {
             className="w-full"
           />
 
-          <div className="flex gap-5">
+          <div className="flex flex-col gap-5 md:flex-row">
             <Input
               type="text"
               label="Enter tournament name:"
@@ -152,8 +152,14 @@ export const TournamentCreate = () => {
 						<p>Required gas amount</p>
 					</div> */}
         </div>
-        <div className="flex gap-5">
-          <Button color="grey" text="Back" className="w-full" onClick={() => navigate(-1)} isLoading={isPending} />
+        <div className="flex flex-col gap-5 md:flex-row">
+          <Button
+            color="grey"
+            text="Back"
+            className="w-full order-1 md:order-none"
+            onClick={() => navigate(-1)}
+            isLoading={isPending}
+          />
           <Button type="submit" text="Create game" className="w-full" isLoading={isPending} />
         </div>
       </form>

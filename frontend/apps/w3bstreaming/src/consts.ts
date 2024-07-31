@@ -11,8 +11,8 @@ export const LOCAL_STORAGE = {
 export const ADDRESS = {
   NODE: (process.env.REACT_APP_NODE_ADDRESS || 'wss://testnet.vara-network.io') as string,
   NODES: 'https://idea.gear-tech.io/gear-nodes',
-  CONTRACT: (process.env.REACT_APP_CONTRACT_ADDRESS ||
-    '0x0658601d3de26a2172cdbc13543250dde44788c9b04636b1679c0bb5b71cf23e') as HexString,
+  DNS_API_URL: process.env.REACT_APP_DNS_API_URL as string,
+  DNS_NAME: process.env.REACT_APP_DNS_NAME as string,
   IPFS_GATEWAY: 'https://ipfs-gw.gear-tech.io/ipfs' as string,
   IPFS_NODE: process.env.REACT_APP_IPFS_ADDRESS as string,
   SIGNALING_SERVER: process.env.REACT_APP_SIGNALING_SERVER || 'ws://127.0.0.1:3001',

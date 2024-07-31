@@ -12,8 +12,7 @@ import { useEffect } from 'react';
 import { useAtom } from 'jotai';
 import { stateChangeLoadingAtom } from '../../store';
 import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
-import { ADDRESS } from '../../consts';
-import { useCheckBalance } from '@dapps-frontend/hooks';
+import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { withoutCommas } from '@/app/utils';
 import { ProgramMetadata } from '@gear-js/api';
@@ -24,13 +23,14 @@ type GameFieldProps = BaseComponentProps & {
 };
 
 export function GameField({ game, meta }: GameFieldProps) {
+  const { programId } = useDnsProgramIds();
   const { signless, gasless } = useEzTransactions();
   const { countdown } = useGame();
   const [isLoading, setIsLoading] = useAtom(stateChangeLoadingAtom);
   const board = game.board;
   const { account } = useAccount();
   const alert = useAlert();
-  const calculateGas = useHandleCalculateGas(ADDRESS.GAME, meta);
+  const calculateGas = useHandleCalculateGas(programId, meta);
   const message = useGameMessage(meta);
   const { checkBalance } = useCheckBalance({
     signlessPairVoucherId: signless.voucher?.id,
@@ -46,7 +46,7 @@ export function GameField({ game, meta }: GameFieldProps) {
   };
 
   const onSelectCell = async (value: number) => {
-    if (!meta || !account || !ADDRESS.GAME) {
+    if (!meta || !account || !programId) {
       return;
     }
 

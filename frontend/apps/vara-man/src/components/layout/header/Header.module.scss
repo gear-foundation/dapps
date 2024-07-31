@@ -37,12 +37,29 @@
 }
 
 .cancelGameButton {
-  background: #F24A4A12;
-  color: #F24A4A;
+  background: #f24a4a12;
+  color: #f24a4a;
   border-radius: 0;
 
   svg path {
-    fill: #F24A4A;
-    stroke: #F24A4A;
+    fill: #f24a4a;
+    stroke: #f24a4a;
+  }
+}
+
+.dropdown {
+  @media screen and (max-width: 767px) {
+    display: block;
+  }
+}
+
+.dropdown {
+  @media screen and (max-width: 767px) {
+    z-index: 4;
+    display: block;
+
+    button {
+      display: flex !important;
+    }
   }
 }

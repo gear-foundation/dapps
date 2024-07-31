@@ -5,16 +5,17 @@ import { useProgramMetadata } from '@/app/hooks/use-metadata';
 import meta from '@/assets/meta/vara_man.meta.txt';
 import { useGame } from '@/app/context/ctx-game';
 import { useApp } from '../context/ctx-app';
-import { programIdGame, useGameState } from './use-game-state';
+import { useGameState } from './use-game-state';
 import { useNavigate } from 'react-router-dom';
 import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
-import { ENV } from '../consts';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
 export const useInitGame = () => {
   const navigate = useNavigate();
   const { account } = useAccount();
   const { setIsSettled } = useApp();
   const { allState, config, admins, tournament } = useGameState();
+  const { programId } = useDnsProgramIds();
 
   const { setTournamentGame, setIsAdmin, setConfigState, setAllGames, setPreviousGame } = useGame();
 
@@ -26,7 +27,7 @@ export const useInitGame = () => {
   }, [config?.Config]);
 
   useEffect(() => {
-    if (!programIdGame || !account?.decodedAddress) return;
+    if (!programId || !account?.decodedAddress) return;
 
     if (admins?.Admins) {
       const isAdmin = admins.Admins.find((address) => address === account.decodedAddress);
@@ -59,5 +60,6 @@ export const useInitGame = () => {
 
 export function useGameMessage() {
   const metadata = useProgramMetadata(meta);
-  return useSignlessSendMessage(ENV.GAME, metadata, { disableAlerts: true });
+  const { programId } = useDnsProgramIds();
+  return useSignlessSendMessage(programId, metadata, { disableAlerts: true });
 }

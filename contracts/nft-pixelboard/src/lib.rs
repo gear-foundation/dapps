@@ -1,10 +1,7 @@
 #![no_std]
 
 use gear_lib_old::non_fungible_token::token::{TokenId, TokenMetadata};
-use gstd::{
-    async_main, collections::BTreeMap, errors::Result as GstdResult, exec, msg, prelude::*,
-    ActorId, MessageId,
-};
+use gstd::{async_main, collections::BTreeMap, exec, msg, prelude::*, ActorId};
 use nft_pixelboard_io::*;
 pub const MIN_STEP_FOR_TX: u64 = 3;
 
@@ -339,7 +336,8 @@ extern fn init() {
     let result = process_init();
     let is_err = result.is_err();
 
-    reply(result).expect("Failed to encode or reply with `Result<(), Error>` from `init()`");
+    msg::reply(result, 0)
+        .expect("Failed to encode or reply with `Result<(), Error>` from `init()`");
 
     if is_err {
         exec::exit(ActorId::zero());
@@ -420,7 +418,7 @@ async fn main() {
         Err(NFTPixelboardError::PreviousTxMustBeCompleted);
     let tx_id = if let Some((tx_id, pend_action)) = program.txs.get(&msg_source) {
         if action != *pend_action {
-            reply(_reply).expect(
+            msg::reply(_reply, 0).expect(
                 "Failed to encode or reply with `Result<NFTPixelboardEvent, NFTPixelboardError>`",
             );
             return;
@@ -462,12 +460,8 @@ async fn main() {
         }
         NFTPixelboardAction::Paint { token_id, painting } => program.paint(token_id, painting),
     };
-    reply(result)
+    msg::reply(result, 0)
         .expect("Failed to encode or reply with `Result<NFTPixelboardEvent, NFTPixelboardError>`");
-}
-
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
 }
 
 #[no_mangle]

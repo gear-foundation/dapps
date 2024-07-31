@@ -56,7 +56,7 @@ async fn gclient_start_game_test() -> Result<()> {
     let bot_actor_id = upload_program(
         &api,
         &mut listener,
-        "../target/wasm32-unknown-unknown/debug/battleship_bot.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/battleship_bot.opt.wasm",
         0,
     )
     .await?;
@@ -72,7 +72,7 @@ async fn gclient_start_game_test() -> Result<()> {
     }
     .encode();
 
-    let path = "../target/wasm32-unknown-unknown/debug/battleship.opt.wasm";
+    let path = "../target/wasm32-unknown-unknown/release/battleship.opt.wasm";
 
     let gas_info = api
         .calculate_upload_gas(
@@ -130,7 +130,7 @@ async fn gclient_turn_test() -> Result<()> {
     let bot_actor_id = upload_program(
         &api,
         &mut listener,
-        "../target/wasm32-unknown-unknown/debug/battleship_bot.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/battleship_bot.opt.wasm",
         0,
     )
     .await?;
@@ -145,7 +145,7 @@ async fn gclient_turn_test() -> Result<()> {
     }
     .encode();
 
-    let path = "../target/wasm32-unknown-unknown/debug/battleship.opt.wasm";
+    let path = "../target/wasm32-unknown-unknown/release/battleship.opt.wasm";
     let gas_info = api
         .calculate_upload_gas(
             None,

@@ -3,10 +3,9 @@
 use game_of_chance_io::*;
 use gstd::{
     collections::{BTreeMap, HashMap},
-    errors::Result as GstdResult,
     exec, msg,
     prelude::*,
-    ActorId, MessageId,
+    ActorId,
 };
 use rand::{RngCore, SeedableRng};
 use rand_xoshiro::Xoshiro128PlusPlus;
@@ -123,7 +122,7 @@ impl Contract {
             )
             .await?;
         } else {
-            send_value(winner, self.prize_fund)?;
+            msg::send_bytes(winner, [], self.prize_fund).expect("Error send value");
         }
 
         self.is_active = false;
@@ -182,8 +181,10 @@ impl Contract {
             },
             0,
             0,
-        )?
-        .await?
+        )
+        .unwrap()
+        .await
+        .unwrap()
         {
             FTokenEvent::Ok => Ok(()),
             FTokenEvent::Err => Err(Error::TokenTransferFailed),
@@ -224,7 +225,7 @@ impl Contract {
             let msg_value = msg::value();
 
             if msg_value != self.participation_cost {
-                send_value(msg_source, msg_value)?;
+                msg::send_bytes(msg_source, [], msg_value).expect("Error send value");
 
                 return Err(Error::InvalidParticipationCost);
             }
@@ -237,20 +238,12 @@ impl Contract {
     }
 }
 
-fn reply(payload: impl Encode) -> GstdResult<MessageId> {
-    msg::reply(payload, 0)
-}
-
-fn send_value(program: ActorId, value: u128) -> GstdResult<MessageId> {
-    msg::send_bytes(program, [], value)
-}
-
 #[no_mangle]
 extern fn init() {
     let result = process_init();
     let is_err = result.is_err();
-
-    reply(result).expect("Failed to encode or reply with `Result<(), Error>` from `init()`");
+    msg::reply(result, 0)
+        .expect("Failed to encode or reply with `Result<(), Error>` from `init()`");
 
     if is_err {
         exec::exit(ActorId::zero());
@@ -276,7 +269,7 @@ fn process_init() -> Result<(), Error> {
 
 #[gstd::async_main]
 async fn main() {
-    reply(process_handle().await).expect("failed to encode or reply from `handle()`");
+    msg::reply(process_handle().await, 0).expect("failed to encode or reply from `handle()`");
 }
 
 async fn process_handle() -> Result<Event, Error> {

@@ -1,17 +1,16 @@
 import { useState } from 'react';
 import Identicon from '@polkadot/react-identicon';
 import { VaraBalanceNew as VaraBalance } from '@dapps-frontend/ui';
-import { useAtom } from 'jotai';
+import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { cx } from '@/utils';
-import { ADDRESS } from '@/consts';
-import { CONTRACT_ADDRESS_ATOM } from '@/atoms';
+
 import { WalletInfoProps } from './WalletInfo.interfaces';
 import { Button } from '@/ui';
 import { WalletModal } from '../WalletModal';
 import styles from './WalletInfo.module.scss';
 
 function WalletInfo({ account, withoutBalance, buttonClassName }: WalletInfoProps) {
-  const address = useAtom(CONTRACT_ADDRESS_ATOM);
+  const { programId } = useDnsProgramIds();
   const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
 
   const handleCloseWalletModal = () => {
@@ -28,13 +27,8 @@ function WalletInfo({ account, withoutBalance, buttonClassName }: WalletInfoProp
         <div className={cx(styles['wallet-info'])}>
           {!withoutBalance && <VaraBalance />}
           <button className={cx(styles.description)} onClick={handleOpenWalletModal}>
-            {address && (
-              <Identicon
-                value={ADDRESS.CONTRACT}
-                size={21}
-                theme="polkadot"
-                className={cx(styles['description-icon'])}
-              />
+            {programId && (
+              <Identicon value={programId} size={21} theme="polkadot" className={cx(styles['description-icon'])} />
             )}
             <div className={cx(styles['description-name'])}>{account?.meta.name}</div>
           </button>

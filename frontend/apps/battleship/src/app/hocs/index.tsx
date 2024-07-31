@@ -7,6 +7,7 @@ import {
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
+import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import {
   SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
@@ -21,6 +22,14 @@ function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
 }
 
+function DnsProvider({ children }: ProviderProps) {
+  return (
+    <SharedDnsProvider names={{ programId: ADDRESS.DNS_NAME }} dnsApiUrl={ADDRESS.DNS_API_URL}>
+      {children}
+    </SharedDnsProvider>
+  );
+}
+
 function AlertProvider({ children }: ProviderProps) {
   return (
     <GearAlertProvider template={Alert} containerClassName={alertStyles.root}>
@@ -30,19 +39,18 @@ function AlertProvider({ children }: ProviderProps) {
 }
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
+  const { programId } = useDnsProgramIds();
   return (
-    <SharedGaslessTransactionsProvider
-      programId={ADDRESS.GAME}
-      backendAddress={ADDRESS.GASLESS_BACKEND}
-      voucherLimit={18}>
+    <SharedGaslessTransactionsProvider programId={programId} backendAddress={ADDRESS.GASLESS_BACKEND} voucherLimit={18}>
       {children}
     </SharedGaslessTransactionsProvider>
   );
 }
 
 function SignlessTransactionsProvider({ children }: ProviderProps) {
+  const { programId } = useDnsProgramIds();
   return (
-    <SharedSignlessTransactionsProvider programId={ADDRESS.GAME} metadataSource={metaTxt}>
+    <SharedSignlessTransactionsProvider programId={programId} metadataSource={metaTxt}>
       {children}
     </SharedSignlessTransactionsProvider>
   );
@@ -53,6 +61,7 @@ const providers = [
   ApiProvider,
   AccountProvider,
   AlertProvider,
+  DnsProvider,
   GaslessTransactionsProvider,
   SignlessTransactionsProvider,
   EzTransactionsProvider,

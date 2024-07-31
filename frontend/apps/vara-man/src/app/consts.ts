@@ -7,7 +7,8 @@ export const LOCAL_STORAGE = {
 
 export const ENV = {
   NODE: import.meta.env.VITE_NODE_ADDRESS,
-  GAME: import.meta.env.VITE_CONTRACT_ADDRESS,
+  DNS_API_URL: import.meta.env.VITE_DNS_API_URL,
+  DNS_NAME: import.meta.env.VITE_DNS_NAME,
   GASLESS_BACKEND: import.meta.env.VITE_GASLESS_BACKEND_ADDRESS,
 };
 
@@ -39,3 +40,5 @@ export const SIGNLESS_ALLOWED_ACTIONS = [
   'FinishSingleGame',
   'CreateNewTournament',
 ];
+
+export const MOBILE_BREAKPOINT = '(max-width: 768px)'

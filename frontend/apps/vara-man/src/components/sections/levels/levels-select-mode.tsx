@@ -6,13 +6,15 @@ import { useNavigate } from 'react-router-dom';
 
 const levels = [
   {
-    title: 'Easy',
+    id: 'Easy',
+    title: 'Easy!',
     enemies: 4,
     speed: 4,
     descriptionSpeed: 'Low enemy speed',
     color: '[--stats-theme:#00FFC4]',
   },
   {
+    id: 'Medium',
     title: 'Medium',
     enemies: 8,
     speed: 4,
@@ -20,7 +22,8 @@ const levels = [
     color: '[--stats-theme:#5984BE]',
   },
   {
-    title: 'Hard',
+    id: 'Hard',
+    title: 'Hardcore',
     enemies: 8,
     speed: 8,
     descriptionSpeed: 'High enemy speed',
@@ -36,20 +39,20 @@ export function LevelsSelectMode() {
   };
 
   return (
-    <div className="flex flex-col justify-center items-center grow h-full">
+    <div className="flex flex-col justify-center items-center grow h-full text-center md:text-left">
       <h2 className="typo-h2">Difficulty levels</h2>
       <p className="text-[#555756] mt-3">Think carefully and click on any of the difficulty levels.</p>
 
-      <div className="flex gap-7 mt-10 justify-between">
+      <div className="flex md:flex-row flex-col gap-7 mt-10 justify-between w-full md:w-max">
         {levels.map((item) => {
           return (
             <div
               key={item.title}
               className={cn('border rounded-2xl text-center cursor-pointer', item.color, 'border-[var(--stats-theme)]')}
-              onClick={() => startSingleGame(item.title)}>
-              <h3 className="text-xl font-semibold p-6">{item.title}</h3>
+              onClick={() => startSingleGame(item.id)}>
+              <h3 className="text-xl font-semibold md:p-6 p-3 md:text-center text-left">{item.title}</h3>
               <hr className="bg-[var(--stats-theme)] h-[1px] border-none" />
-              <div className="p-10 flex flex-col gap-4">
+              <div className="md:p-10 p-3 flex md:flex-col flex-row justify-between gap-4 md:text-center text-left">
                 <div>
                   {item.enemies} enemies
                   <div className="flex mt-2">
@@ -71,6 +74,11 @@ export function LevelsSelectMode() {
                   </div>
                 </div>
               </div>
+              {item.title === 'Hard' && (
+                <div className="bg-[#EB5757] rounded-b-2xl border border-[var(--stats-theme)] font-semibold text-white flex justify-center items-center gap-1.5">
+                  <Icons.blindMode /> Blind mode
+                </div>
+              )}
             </div>
           );
         })}

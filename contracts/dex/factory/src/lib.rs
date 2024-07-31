@@ -2,8 +2,8 @@
 
 use dex_factory_io::*;
 use gstd::{
-    collections::HashMap, errors::Result, exec, msg, prelude::*, prog::ProgramGenerator, ActorId,
-    CodeId, MessageId,
+    collections::HashMap, errors::CoreError, exec, msg, prelude::*, prog::ProgramGenerator,
+    ActorId, CodeId, MessageId,
 };
 
 struct Contract {
@@ -72,8 +72,10 @@ impl Contract {
                 },
                 0,
                 0,
-            )?
-            .await?;
+            )
+            .unwrap()
+            .await
+            .unwrap();
 
         result?;
 
@@ -157,6 +159,6 @@ extern fn state() {
     .expect("failed to encode or reply from `state()`");
 }
 
-fn reply(payload: impl Encode) -> Result<MessageId> {
+fn reply(payload: impl Encode) -> Result<MessageId, CoreError> {
     msg::reply(payload, 0)
 }

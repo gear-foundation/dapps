@@ -18,20 +18,27 @@ pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
         .await?
         .encode()
         .as_slice()
-        .into();
+        .try_into()
+        .expect("Unexpected invalid `ProgramId`.");
     api.transfer_keep_alive(destination, api.total_balance(api.account_id()).await? / 5)
         .await?;
-    let destination = get_user_to_actor_id("//Alex")
-        .await?
-        .encode()
-        .as_slice()
-        .into();
-    api.transfer_keep_alive(destination, api.total_balance(api.account_id()).await? / 5)
-        .await?;
-    let program_id_vara_man = vara_man.as_ref();
-    let program_id_vara_man: ProgramId = program_id_vara_man.into();
     api.transfer_keep_alive(
-        program_id_vara_man,
+        get_user_to_actor_id("//Alex")
+            .await?
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
+        api.total_balance(api.account_id()).await? / 5,
+    )
+    .await?;
+
+    api.transfer_keep_alive(
+        vara_man
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
         api.total_balance(api.account_id()).await? / 5,
     )
     .await?;
@@ -87,7 +94,7 @@ pub async fn init_ft(api: &GearApi) -> Result<(MessageId, ProgramId, H256)> {
     }
     .encode();
 
-    let path = "../target/wasm32-unknown-unknown/debug/fungible_token.opt.wasm";
+    let path = "../target/wasm32-unknown-unknown/release/fungible_token.opt.wasm";
 
     let gas_info = api
         .calculate_upload_gas(None, gclient::code_from_os(path)?, ft_init.clone(), 0, true)
