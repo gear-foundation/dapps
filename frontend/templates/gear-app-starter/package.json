@@ -4,7 +4,7 @@
   "private": true,
   "dependencies": {
     "@gear-js/api": "0.38.1",
-    "@gear-js/react-hooks": "0.10.7",
+    "@gear-js/react-hooks": "0.11.0",
     "@gear-js/ui": "0.5.21",
     "@headlessui/react": "^1.7.17",
     "@mantine/form": "^5.10.5",
