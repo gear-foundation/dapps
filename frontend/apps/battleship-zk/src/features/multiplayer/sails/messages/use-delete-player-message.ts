@@ -7,6 +7,8 @@ export const useDeleteGameMessage = () => {
   const program = useProgram();
 
   const deletePlayerMessage = async (playerId: string) => {
+    if (!program) throw new Error('program does not found');
+
     const transaction = await makeTransaction(program.multiple.deletePlayer(playerId, null));
 
     return await transaction.withGas(gasLimit);

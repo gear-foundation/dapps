@@ -7,6 +7,8 @@ export const useCancelGameMessage = () => {
   const program = useProgram();
 
   const cancelGameMessage = async () => {
+    if (!program) throw new Error('program does not found');
+
     const transaction = await makeTransaction(program.multiple.cancelGame(null));
 
     return await transaction.withGas(gasLimit);

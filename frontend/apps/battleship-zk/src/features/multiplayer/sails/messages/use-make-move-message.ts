@@ -12,9 +12,9 @@ export const useMakeMoveMessage = () => {
     verify_variables: VerificationVariables | null,
     game_id?: string,
   ) => {
-    if (!game_id) {
-      throw new Error('game_id does not found');
-    }
+    if (!game_id) throw new Error('game_id does not found');
+    if (!program) throw new Error('program does not found');
+
     const transaction = await makeTransaction(program.multiple.makeMove(game_id, verify_variables, step, null));
 
     return await transaction.withGas(gasLimit);

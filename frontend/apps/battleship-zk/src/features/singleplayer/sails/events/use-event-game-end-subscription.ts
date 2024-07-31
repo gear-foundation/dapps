@@ -1,12 +1,13 @@
-import { useEffect, useRef } from 'react';
+import { useRef } from 'react';
 import { isNull } from '@polkadot/util';
 import { BattleshipParticipants } from '@/app/utils/sails/lib/lib';
 import { useProgram } from '@/app/utils/sails';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useProgramEvent } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
 import { gameEndResultAtom } from '../../atoms';
 import { useSingleplayerGame } from '../../hooks';
 import { useShips } from '@/features/zk/hooks/use-ships';
+import { EVENT_NAME, SERVICE_NAME } from '../../consts';
 
 export type GameEndEvent = {
   winner: BattleshipParticipants;
@@ -25,7 +26,7 @@ export function useEventGameEndSubscription() {
   const { triggerGame } = useSingleplayerGame();
   const { updateEnemyBoard } = useShips();
 
-  const gameEndCallback = (ev: GameEndEvent) => {
+  const onData = (ev: GameEndEvent) => {
     if (account?.decodedAddress !== ev.player) {
       return;
     }
@@ -39,27 +40,12 @@ export function useEventGameEndSubscription() {
     }
   };
 
-  const unsubscribeFromEvent = () => {
-    if (event.current) {
-      event.current?.then((unsubCallback) => {
-        unsubCallback();
-      });
-    }
-  };
-
-  const subscribeToEvent = () => {
-    if (!event.current) {
-      event.current = program.single.subscribeToEndGameEvent((ev) => gameEndCallback(ev));
-    }
-  };
-
-  useEffect(() => {
-    subscribeToEvent();
-
-    return () => {
-      unsubscribeFromEvent();
-    };
-  }, []);
+  useProgramEvent({
+    program,
+    serviceName: SERVICE_NAME,
+    functionName: EVENT_NAME.SUBSCRIBE_TO_END_GAME_EVENT,
+    onData,
+  });
 
   return { gameEndResult };
 }

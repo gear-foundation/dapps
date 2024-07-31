@@ -1,10 +1,11 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { isNull } from '@polkadot/util';
 import { useShips } from '@/features/zk/hooks/use-ships';
 import { ParticipantInfo } from '@/app/utils/sails/lib/lib';
 import { useProgram } from '@/app/utils/sails';
 import { useMultiplayerGame } from '../../hooks';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useProgramEvent } from '@gear-js/react-hooks';
+import { EVENT_NAME, SERVICE_NAME } from '../consts';
 
 export type GameEndEvent = {
   winner: string;
@@ -17,12 +18,11 @@ export type GameEndEvent = {
 export function useEventGameEndSubscription() {
   const { account } = useAccount();
   const program = useProgram();
-  const event = useRef<Promise<() => void> | null>(null);
   const { game, gameEndResult, setGameEndResult, triggerGame } = useMultiplayerGame();
   const [gameAdmin, setGameAdmin] = useState<string | null>(null);
   const { updateEnemyBoard } = useShips();
 
-  const gameEndCallback = useCallback(
+  const onData = useCallback(
     async (ev: GameEndEvent) => {
       if (!account?.decodedAddress) {
         return;
@@ -48,27 +48,12 @@ export function useEventGameEndSubscription() {
     [gameAdmin],
   );
 
-  const unsubscribeFromEvent = () => {
-    if (event.current) {
-      event.current?.then((unsubCallback) => {
-        unsubCallback();
-      });
-    }
-  };
-
-  const subscribeToEvent = () => {
-    if (!event.current) {
-      event.current = program.multiple.subscribeToEndGameEvent(gameEndCallback);
-    }
-  };
-
-  useEffect(() => {
-    subscribeToEvent();
-
-    return () => {
-      unsubscribeFromEvent();
-    };
-  }, []);
+  useProgramEvent({
+    program,
+    serviceName: SERVICE_NAME,
+    functionName: EVENT_NAME.SUBSCRIBE_TO_END_GAME_EVENT,
+    onData,
+  });
 
   useEffect(() => {
     if (game?.admin) {

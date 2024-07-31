@@ -8,6 +8,8 @@ export const useStartGameMessage = () => {
   const program = useProgram();
 
   const startGameMessage = async (proof: ProofBytes, public_input: PublicStartInput) => {
+    if (!program) throw new Error('program does not found');
+
     const transaction = await makeTransaction(program.single.startSingleGame(proof, public_input, null));
 
     return await transaction.withGas(gasLimit);

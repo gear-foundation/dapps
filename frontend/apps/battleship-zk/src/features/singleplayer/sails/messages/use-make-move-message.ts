@@ -8,6 +8,8 @@ export const useMakeMoveMessage = () => {
   const program = useProgram();
 
   const makeMoveMessage = async (step: number | null, verificationVariables: VerificationVariables | null) => {
+    if (!program) throw new Error('program does not found');
+
     const transaction = await makeTransaction(program.single.makeMove(step, verificationVariables, null));
 
     return await transaction.withGas(gasLimit);

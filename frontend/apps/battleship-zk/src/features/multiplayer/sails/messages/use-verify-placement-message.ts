@@ -8,6 +8,8 @@ export const useVerifyPlacementMessage = () => {
   const program = useProgram();
 
   const verifyPlacementMessage = async (proof: ProofBytes, public_input: PublicStartInput, game_id: string) => {
+    if (!program) throw new Error('program does not found');
+
     const transaction = await makeTransaction(program.multiple.verifyPlacement(proof, public_input, null, game_id));
 
     return await transaction.withGas(gasLimit);

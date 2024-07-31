@@ -7,6 +7,8 @@ export const useJoinGameMessage = () => {
   const program = useProgram();
 
   const joinGameMessage = async (game_id: string, name: string) => {
+    if (!program) throw new Error('program does not found');
+
     const transaction = await makeTransaction(program.multiple.joinGame(game_id, name, null));
 
     return await transaction.withGas(gasLimit);

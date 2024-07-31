@@ -15,7 +15,7 @@ import {
 
 import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
-import { ProgramProvider } from '../utils/sails';
+import { QueryProvider } from './query-provider';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
@@ -51,9 +51,9 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
 const providers = [
   BrowserRouter,
   ApiProvider,
-  ProgramProvider,
   AccountProvider,
   AlertProvider,
+  QueryProvider,
   GaslessTransactionsProvider,
   // SignlessTransactionsProvider,
   EzTransactionsProvider,

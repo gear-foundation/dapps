@@ -1,7 +1,8 @@
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
-import { useAccount } from '@gear-js/react-hooks';
+import { UsePrepareProgramTransactionParameters, useAccount, usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import { TransactionBuilder } from 'sails-js';
+import { useProgram } from './sails';
 
 const useMakeTransaction = () => {
   const { account } = useAccount();

@@ -7,6 +7,8 @@ export const useLeaveGameMessage = () => {
   const program = useProgram();
 
   const leaveGameMessage = async () => {
+    if (!program) throw new Error('program does not found');
+
     const transaction = await makeTransaction(program.multiple.leaveGame(null));
 
     return await transaction.withGas(gasLimit);

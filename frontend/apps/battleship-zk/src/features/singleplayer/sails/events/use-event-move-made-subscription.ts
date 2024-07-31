@@ -1,13 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { useEffect } from 'react';
 import { useProofShipHit } from '@/features/zk/hooks/use-proof-ship-hit';
 import { isNull } from '@polkadot/util';
 import { useShips } from '@/features/zk/hooks/use-ships';
 import { SingleUtilsStepResult } from '@/app/utils/sails/lib/lib';
 import { useSingleplayerGame } from '@/features/singleplayer/hooks/use-singleplayer-game';
 import { useProgram } from '@/app/utils/sails';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useProgramEvent } from '@gear-js/react-hooks';
 import { stepResultToBoardEntityMap } from '@/features/game/consts';
 import { usePending } from '@/features/game/hooks';
+import { EVENT_NAME, SERVICE_NAME } from '../../consts';
 
 type MoveMadeEvent = {
   bot_step: number | null;
@@ -19,7 +20,6 @@ type MoveMadeEvent = {
 export function useEventMoveMadeSubscription() {
   const program = useProgram();
   const gameType = 'single';
-  const event = useRef<Promise<() => void> | null>(null);
   const { account } = useAccount();
   const { game, triggerGame } = useSingleplayerGame();
   const { setPending } = usePending();
@@ -55,7 +55,7 @@ export function useEventMoveMadeSubscription() {
     return proofData;
   };
 
-  const moveMadeCallback = async (ev: MoveMadeEvent) => {
+  const onData = async (ev: MoveMadeEvent) => {
     if (account?.decodedAddress !== ev.player) {
       return;
     }
@@ -73,27 +73,12 @@ export function useEventMoveMadeSubscription() {
     }
   };
 
-  const unsubscribeFromEvent = () => {
-    if (event.current) {
-      event.current?.then((unsubCallback) => {
-        unsubCallback();
-      });
-    }
-  };
-
-  const subscribeToEvent = () => {
-    if (!event.current) {
-      event.current = program.single.subscribeToMoveMadeEvent((ev: MoveMadeEvent) => moveMadeCallback(ev));
-    }
-  };
-
-  useEffect(() => {
-    subscribeToEvent();
-
-    return () => {
-      unsubscribeFromEvent();
-    };
-  }, []);
+  useProgramEvent({
+    program,
+    serviceName: SERVICE_NAME,
+    functionName: EVENT_NAME.SUBSCRIBE_TO_MOVE_MADE_EVENT,
+    onData,
+  });
 
   useEffect(() => {
     if (game === null) {

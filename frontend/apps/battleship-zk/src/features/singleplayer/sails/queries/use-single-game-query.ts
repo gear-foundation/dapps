@@ -6,7 +6,7 @@ export const useSingleGameQuery = () => {
   const program = useProgram();
 
   const gameQuery = (playerId: string) => {
-    if (!account?.decodedAddress) {
+    if (!account?.decodedAddress || !program) {
       return;
     }
 
