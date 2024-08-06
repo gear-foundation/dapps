@@ -14,6 +14,7 @@ import { SHIP_LENGTHS } from '../../consts';
 import { GameType, RenderShips } from '../../types';
 import { Timer } from '../timer';
 import { VerificationModal } from '@/features/game/components/verification-modal';
+import YourTurnModal from '../your-turn-modal/your-turn-modal';
 
 type GameUpdatedEvent = {
   turn: string;
@@ -165,7 +166,7 @@ export default function GameProcess({
           </div>
           <div className={styles.gameInfo}>
             <Text size="sm" weight="normal">
-              <span>{gameType === 'single' || isYourTurn ? 'Your Turn' : `Enemy's Turn`}</span>
+              {gameType === 'single' || isYourTurn ? 'Your Turn:' : `Enemy's Turn:`}
               <Timer remainingTime={remainingTime} shouldGoOn={!gameResults} redOnLast />
             </Text>
             <Text size="sm" weight="normal">
@@ -226,6 +227,7 @@ export default function GameProcess({
           gameType={gameType}
         />
       )}
+      <YourTurnModal isYourTurn={isYourTurn} />
     </div>
   );
 }
