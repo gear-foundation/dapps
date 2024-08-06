@@ -16,8 +16,8 @@
   background: black;
   z-index: 1;
 
-  background: rgb(0,0,0);
-    background: linear-gradient(90deg, rgba(0,0,0,1) 10%, rgba(0,51,39,1) 50%, rgba(0,0,0,1) 90%); 
+  background: rgb(0, 0, 0);
+  background: linear-gradient(90deg, rgba(0, 0, 0, 1) 10%, rgba(0, 51, 39, 1) 50%, rgba(0, 0, 0, 1) 90%);
 }
 
 .content {
@@ -33,6 +33,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  border: 2px solid #cfcfcf;
+  border-radius: 4px;
+  z-index: 1;
 }
 
 .row {
@@ -55,6 +58,9 @@
   gap: 15px;
   padding: 0 16px;
 
+  button {
+    // padding: 12px 10px;
+  }
   button,
   button span {
     width: 100%;
@@ -68,11 +74,12 @@
   &::after {
     position: absolute;
     z-index: 0;
-    top: 100%; left: 0;
+    top: 100%;
+    left: 0;
     width: 100%;
     height: 140px;
-    background: rgb(0,0,0);
-    background: linear-gradient(90deg, rgba(0,0,0,1) 10%, rgba(0,51,39,1) 50%, rgba(0,0,0,1) 90%); 
+    background: rgb(0, 0, 0);
+    background: linear-gradient(90deg, rgba(0, 0, 0, 1) 10%, rgba(0, 51, 39, 1) 50%, rgba(0, 0, 0, 1) 90%);
     content: '';
   }
 }

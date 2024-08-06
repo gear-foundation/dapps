@@ -94,23 +94,30 @@ export default function ShipArrangement({ gameType, savedBoard, makeStartGameTra
   return (
     <div className={styles.content}>
       <div className={styles.header}>
-        <Heading>Your ships</Heading>
+        <Heading>Your Ships</Heading>
         <div className={styles.textWrapper}>
           <Text size="lg">Click 'Generate' to choose a ship arrangement on the board.</Text>
         </div>
       </div>
-      <div style={{ width: '100%' }}>
+      <div className={styles.map}>
         <div>
           <Map sizeBlock={72} shipStatusArray={shipsBoard} />
         </div>
       </div>
       <div className={styles.buttons}>
-        <Button color="grey" onClick={handleGoBack} disabled={pending}>
+        <Button color="grey" size="small" onClick={handleGoBack} disabled={pending}>
           Back
         </Button>
-        <Button color="dark" text="Generate" onClick={onGenerateRandomLayout} disabled={isLoadingGenerate || pending} />
+        <Button
+          color="dark"
+          size="small"
+          text="Generate"
+          onClick={onGenerateRandomLayout}
+          disabled={isLoadingGenerate || pending}
+        />
         <Button
           text="Continue"
+          size="small"
           onClick={onGameStart}
           disabled={!shipsBoard.length || gasless.isLoading}
           isLoading={pending}
