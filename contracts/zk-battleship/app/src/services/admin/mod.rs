@@ -166,6 +166,9 @@ impl AdminService {
     pub fn builtin(&self) -> ActorId {
         BuiltinStorage::get()
     }
+    pub fn configuration(&self) -> Configuration {
+        ConfigurationStorage::get()
+    }
     pub fn verification_key(&self) -> (VerifyingKeyBytes, VerifyingKeyBytes) {
         (
             VerificationKeyStorage::get_vk_for_start().clone(),

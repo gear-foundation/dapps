@@ -66,4 +66,7 @@ impl SessionService {
             .map(|(actor_id, session)| (*actor_id, session.clone()))
             .collect()
     }
+    pub fn session_for_the_account(&self, account: ActorId) -> Option<Session> {
+        SessionsStorage::as_ref().get(&account).cloned()
+    }
 }

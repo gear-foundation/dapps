@@ -101,7 +101,29 @@ impl SingleService {
         });
         let _unused = self.notify_on(Event::SingleGameStarted);
     }
-
+    /// This function processes a move made by a player in a single-player game. It handles both 
+    /// regular moves and moves that require verification through a zero-knowledge proof (zk-proof).
+    ///
+    /// The function performs the following steps:
+    /// 1. Validates the input to ensure that either a step or verification variables are provided.
+    /// 2. Retrieves the `ActorId` of the player making the move, using session information.
+    /// 3. If verification variables are provided, it performs the following sub-steps:
+    ///    a. Validates the current game state to ensure that the move is allowed.
+    ///    b. Prepares the input bytes required for zk-proof verification.
+    ///    c. Verifies the move using zk-proof verification. 
+    ///    d. If the verification is successful, it processes the move by calling the `make_move` function
+    ///       with the verified result.
+    /// 4. If no verification is required, it directly processes the move by calling the `make_move` function.
+    /// 5. Sends a notification containing the result of the move.
+    ///
+    /// # Arguments
+    ///
+    /// * `step` - An optional `u8` representing the move step made by the player. 
+    ///            If `None`, it indicates that a verification process is required.
+    /// * `verify_variables` - An optional `VerificationVariables` struct containing 
+    ///                        proof bytes and public input required for zk-proof verification.
+    /// * `session_for_account` - An optional `ActorId` representing the session account 
+    ///                           being used to make the move.
     pub async fn make_move(
         &mut self,
         step: Option<u8>,

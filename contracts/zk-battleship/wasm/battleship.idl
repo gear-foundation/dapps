@@ -140,6 +140,7 @@ service Admin {
   Kill : (inheritor: actor_id) -> null;
   query Admin : () -> actor_id;
   query Builtin : () -> actor_id;
+  query Configuration : () -> Configuration;
   query VerificationKey : () -> struct { VerifyingKeyBytes, VerifyingKeyBytes };
 
   events {
@@ -183,6 +184,7 @@ service Multiple {
 service Session {
   CreateSession : (key: actor_id, duration: u64, allowed_actions: vec ActionsForSession) -> null;
   DeleteSession : () -> null;
+  query SessionForTheAccount : (account: actor_id) -> opt Session;
   query Sessions : () -> vec struct { actor_id, Session };
 
   events {

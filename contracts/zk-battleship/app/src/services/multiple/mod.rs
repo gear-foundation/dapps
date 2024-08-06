@@ -242,7 +242,7 @@ impl MultipleService {
     /// 1. Validates that either verification variables or a step is provided.
     /// 2. Retrieves the player associated with the current session.
     /// 3. Checks the current game state to ensure the move is valid.
-    /// 4. If verification variables are provided, it verifies the move using zk-SNARK proof verification:
+    /// 4. If verification variables are provided, it verifies the move using zk proof verification:
     ///     - Prepares input bytes for verification.
     ///     - Verifies the proof against the public inputs.
     ///     - If the proof is valid, processes the move and updates the game state.

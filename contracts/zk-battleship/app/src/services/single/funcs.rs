@@ -79,7 +79,27 @@ pub fn check_game(
         _ => Err(Error::WrongOut),
     }
 }
-
+/// Processes a player's move in a single-player battleship game against a bot.
+///
+/// # Parameters
+/// - `games`: Mutable reference to the map of ongoing single-player games.
+/// - `player`: The `ActorId` of the player making the move.
+/// - `verification_result`: Optional result from verification, indicating the outcome of a move.
+/// - `step`: Optional `u8` representing the player's move (board position).
+///
+/// # Returns
+/// - `Result<Event>`: An event indicating the move outcome or game end.
+///
+/// # Errors
+/// - `Error::NoSuchGame` if the game doesn't exist.
+/// - `Error::WrongVerificationRequirement` if verification is required but not provided.
+/// - `Error::WrongOut` for an invalid verification result.
+/// - `Error::WrongStep` if the step is out of range.
+///
+/// # Function Flow
+/// - If a verification result is provided, update the game state accordingly. If the game ends, declare the winner.
+/// - If no verification, process the player's move. If the game ends, declare the winner.
+/// - Determine the bot's next move and prepare for possible verification.
 pub fn make_move(
     games: &mut SingleGamesMap,
     player: ActorId,

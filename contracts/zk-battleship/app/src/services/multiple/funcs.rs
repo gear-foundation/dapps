@@ -508,24 +508,24 @@ pub fn check_game_for_move(
     Ok(())
 }
 
-/// Checks if the timing for a game has exceeded the allowed time limit and handles the outcome.
+/// Checks the timing of the last move in a game and determines if the game should end due to inactivity.
+///
+/// This function performs the following steps:
+/// 1. Retrieves the game instance from the `games` map using the provided `game_id`.
+/// 2. If the `last_move_time` of the game matches the provided `check_time`, it concludes that no move
+///    has been made since the last check, indicating a timeout situation.
+/// 3. Calculates the total time the game has been running by subtracting the start time from the current block timestamp.
+/// 4. Retrieves the participants' information and determines the winner and loser based on the current game status:
+///    - If the game is in a turn-based status, the opponent of the player who was supposed to move is declared the winner.
+/// 5. Sends an `EndGame` event to both the winner and the loser, transferring the bid amount to the winner and notifying both players.
+/// 6. Removes the game from both `games` and `game_pair` maps to clean up the game's data.
 ///
 /// # Arguments
 ///
-/// * `games` - A mutable reference to the map containing all active games.
-/// * `game_pair` - A mutable reference to the map linking players to their game IDs.
-/// * `game_id` - The unique identifier of the game to be checked.
-/// * `check_time` - The timestamp when the last move was made.
-///
-/// # Returns
-///
-/// * `Result<()>` - Returns an empty Ok result if the function executes successfully, otherwise an error.
-///
-/// # Details
-///
-/// This function checks if the last move in the specified game was made at `check_time`. If the last move time matches `check_time`,
-/// it assumes that the game has exceeded the allowed time limit for a move and proceeds to end the game. It refunds the bid to each
-/// participant and sends an `EndGame` event to all participants. Finally, it removes all participants from the `game_pair` map and deletes the game from the `games` map.
+/// * `games` - A mutable reference to the map storing all the active games.
+/// * `game_pair` - A mutable reference to the map storing pairs of players and their associated game IDs.
+/// * `game_id` - The unique identifier of the game being checked.
+/// * `check_time` - The timestamp of the last move, used to check if a timeout has occurred.
 pub fn check_out_timing(
     games: &mut MultipleGamesMap,
     game_pair: &mut GamePairsMap,
@@ -536,23 +536,27 @@ pub fn check_out_timing(
     if game.last_move_time == check_time {
         let total_time = exec::block_timestamp() - game.start_time.unwrap();
         let participants_info = game.participants_data.clone().into_iter().collect();
+        let (winner, loser) = match game.status {
+            Status::Turn(id) => (game.get_opponent(&id), id),
+            Status::PendingVerificationOfTheMove((id, _)) => (game.get_opponent(&id), id),
+            _ => unimplemented!(),
+        };
         let payload = Event::EndGame {
             admin: game.admin,
-            winner: ActorId::zero(),
+            winner,
             total_time,
             participants_info,
             last_hit: None,
         };
-        game.participants_data.iter().for_each(|(id, _info)| {
-            game_pair.remove(id);
-            msg::send(*id, payload.clone(), game.bid).expect("Error send message");
-        });
+        msg::send(winner, payload.clone(), 2*game.bid).expect("Error send message");
+        msg::send(loser, payload.clone(), 0).expect("Error send message");
+        game_pair.remove(&winner);
+        game_pair.remove(&loser);
         games.remove(&game_id);
     }
 
     Ok(())
 }
-
 /// Deletes a game from storage based on the provided `game_id` and `create_time`.
 ///
 /// # Arguments

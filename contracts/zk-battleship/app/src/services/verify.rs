@@ -117,7 +117,6 @@ async fn calculate_exponentiation(
     builtin_bls381_address: ActorId,
 ) -> ArkScale<<Bls12_381 as Pairing>::TargetField> {
     let request = Request::FinalExponentiation { f }.encode();
-
     let reply = msg::send_bytes_for_reply(builtin_bls381_address, &request, 0, 0)
         .expect("Failed to send message")
         .await
