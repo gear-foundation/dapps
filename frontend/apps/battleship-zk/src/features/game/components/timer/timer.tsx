@@ -19,6 +19,8 @@ export function Timer({ remainingTime, shouldGoOn, redOnLast }: Props) {
     if (remainingTime === undefined) {
       setTimeLeft(null);
       startTimeRef.current = null;
+    } else if (remainingTime === 0 ) {
+      setTimeLeft(0);
     } else {
       const updateTimer = () => {
         if (!shouldGoOn) {

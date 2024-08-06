@@ -12,11 +12,7 @@ export const useRemainingTimeQuery = () => {
   const program = useProgram();
   const { pending } = usePending();
 
-  const {
-    data: remainingTime,
-    refetch,
-    isFetching,
-  } = useProgramQuery({
+  const { data, refetch, isFetching } = useProgramQuery({
     program,
     serviceName: SERVICE_NAME,
     functionName: 'getRemainingTime',
@@ -29,6 +25,8 @@ export const useRemainingTimeQuery = () => {
       refetch();
     }
   }, [pending, gameEndResult]);
+
+  const remainingTime = gameEndResult?.winner === 'Bot' ? 0 : data;
 
   return isFetching ? undefined : remainingTime;
 };

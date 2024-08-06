@@ -6,14 +6,10 @@ import { useMultiplayerGame } from '../../hooks';
 
 export const useRemainingTimeQuery = () => {
   const { account } = useAccount();
-  const { game } = useMultiplayerGame();
+  const { game, gameEndResult } = useMultiplayerGame();
   const program = useProgram();
   const address = account?.decodedAddress || '';
-  const {
-    data: remainingTime,
-    isFetching,
-    refetch,
-  } = useProgramQuery({
+  const { data, isFetching, refetch } = useProgramQuery({
     program,
     serviceName: SERVICE_NAME,
     functionName: 'getRemainingTime',
@@ -24,6 +20,8 @@ export const useRemainingTimeQuery = () => {
   useEffect(() => {
     refetch();
   }, [game?.last_move_time]);
+
+  const remainingTime = gameEndResult && gameEndResult.winner !== address ? 0 : data;
 
   return isFetching ? undefined : remainingTime;
 };
