@@ -43,11 +43,12 @@ export function convertShipsToField(
   return field;
 }
 
-export const getFormattedTime = (time: number) => {
+export const getFormattedTime = (time: number, isPadMinutes = true) => {
   const minutes = Math.floor(time / (1000 * 60));
   const seconds = Math.floor((time % (1000 * 60)) / 1000);
+  const formattedMunutes = isPadMinutes ? String(minutes).padStart(2, '0') : minutes;
 
-  const formattedTime = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+  const formattedTime = `${formattedMunutes}:${String(seconds).padStart(2, '0')}`;
 
   return formattedTime;
 };

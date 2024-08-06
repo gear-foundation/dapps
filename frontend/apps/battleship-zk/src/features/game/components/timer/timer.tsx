@@ -1,24 +1,37 @@
-import { useEffect, useState } from 'react';
+import clsx from 'clsx';
+import { useEffect, useRef, useState } from 'react';
 import { getFormattedTime } from '../../utils';
+import styles from './timer.module.scss';
 
 type Props = {
+  remainingTime: string | number | bigint | null | undefined;
   shouldGoOn: boolean;
-  start_time: number | string | bigint | undefined;
+  redOnLast?: boolean;
 };
 
-export function Timer({ shouldGoOn, start_time }: Props) {
-  const [elapsedTime, setElapsedTime] = useState('');
+const TIME_LEFT_GAP = 1;
+
+export function Timer({ remainingTime, shouldGoOn, redOnLast }: Props) {
+  const [timeLeft, setTimeLeft] = useState<number | null>(null);
+  const startTimeRef = useRef<number | null>(null);
 
   useEffect(() => {
-    if (shouldGoOn && start_time) {
+    if (remainingTime === undefined) {
+      setTimeLeft(null);
+      startTimeRef.current = null;
+    } else {
       const updateTimer = () => {
+        if (!shouldGoOn) {
+          return;
+        }
         const currentTime = new Date().getTime();
-        const startTime = Number(start_time);
-        const elapsedTimeMilliseconds = currentTime - startTime;
+        if (startTimeRef.current === null) {
+          startTimeRef.current = currentTime;
+        }
+        const timeLeftMilliseconds =
+          Number(remainingTime) + (startTimeRef.current || currentTime) - currentTime - TIME_LEFT_GAP;
 
-        const formattedTime = getFormattedTime(elapsedTimeMilliseconds);
-
-        shouldGoOn && setElapsedTime(formattedTime);
+        setTimeLeft(Math.max(timeLeftMilliseconds, 0));
       };
 
       const timerInterval = setInterval(updateTimer, 1000);
@@ -27,7 +40,11 @@ export function Timer({ shouldGoOn, start_time }: Props) {
         clearInterval(timerInterval);
       };
     }
-  }, [shouldGoOn && start_time]);
+  }, [shouldGoOn, remainingTime]);
 
-  return <span>{elapsedTime}</span>;
+  const displayedTime = timeLeft ?? (remainingTime ? Math.max(Number(remainingTime), 0) : null);
+  const isRed = redOnLast && displayedTime !== null ? displayedTime < 10000 : false;
+  const formattedTimeLeft = displayedTime !== null ? getFormattedTime(displayedTime, false) : '';
+
+  return <span className={clsx(isRed && styles.red)}>{formattedTimeLeft}</span>;
 }

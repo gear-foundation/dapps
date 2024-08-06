@@ -4,7 +4,6 @@ import { ReactComponent as AdminLine } from '@/assets/images/icons/admin-line.sv
 import { ReactComponent as SearchLine } from '@/assets/images/icons/search-line.svg';
 import { Button } from '@/components/ui/button/button';
 import { Heading } from '@/components/ui/heading';
-import { Text } from '@/components/ui/text';
 import styles from './SelectGameMode.module.scss';
 import { useGameMode } from '../../hooks';
 import { Illustration } from '../illustration';
@@ -15,20 +14,20 @@ export default function SelectGameMode() {
   const gameMods = [
     {
       icon: <AndroidLine className={styles.buttonOptionSvg} />,
-      heading: `Play with a smart contract`,
-      description: `Start the game without any preparations right now.`,
+      heading: `Play with an on-chain program`,
+      description: `Start a single player game with a program on Vara.`,
       onClick: () => setGameMode('single'),
     },
     {
       icon: <SearchLine className={styles.buttonOptionSvg} />,
-      heading: `Find a private game`,
-      description: `To find the game, you need to enter the administrator's address.`,
+      heading: `Join a peer-to-peer game`,
+      description: `Enter the game's address to join the game.`,
       onClick: () => setGameMode('find'),
     },
     {
       icon: <AdminLine className={styles.buttonOptionSvg} />,
-      heading: `Create a game in admin mode`,
-      description: `Create a game and specify your participation rules.`,
+      heading: `Create a peer-to-peer game`,
+      description: `Create a new game and invite a friend to play.`,
       onClick: () => setGameMode('create'),
     },
   ];
@@ -39,9 +38,6 @@ export default function SelectGameMode() {
         <Illustration />
         <div className={styles.header}>
           <Heading className={styles.mainHeading}>Select game mode</Heading>
-          <div>
-            <Text className={styles.mainText}>Which mode shall we play in today?</Text>
-          </div>
         </div>
         <div className={styles.controlsWrapper}>
           {gameMods.map(({ icon, heading, description, onClick }) => (

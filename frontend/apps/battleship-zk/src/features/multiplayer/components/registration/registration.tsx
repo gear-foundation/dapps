@@ -111,15 +111,13 @@ export function Registration() {
   };
 
   useEffect(() => {
-       // ! TODO: seems like unnecessary, try remove `gameEndResult`
-    if (game && !gameEndResult) {
+    if (game) {
       const currentStatus = Object.keys(game.status)?.[0];
-
       if (!['registration', 'verificationPlacement'].includes(currentStatus)) {
         navigate(ROUTES.GAME);
       }
     }
-  }, [game, gameEndResult]);
+  }, [game]);
 
   return (
     <div className={styles.container}>

@@ -32,7 +32,7 @@ type Props = {
   successfulShoots: number;
   gameResults: GameResults | null;
   gameUpdatedEvent: GameUpdatedEvent;
-  gameStartTime: string | number | bigint | undefined;
+  remainingTime: string | number | bigint | null | undefined;
   admin: string | undefined;
   onClickCell: (handleClickCell: number) => Promise<void>;
   onVerifyOponentsHit: () => Promise<void>;
@@ -45,8 +45,8 @@ export default function GameProcess({
   totalShoots,
   successfulShoots,
   gameUpdatedEvent,
+  remainingTime,
   gameResults,
-  gameStartTime,
   admin,
   onClickCell,
   onVerifyOponentsHit,
@@ -76,8 +76,9 @@ export default function GameProcess({
   const isYourTurn =
     (gameType === 'single' && !isVerificationRequired && !pending) ||
     turn === account?.decodedAddress ||
-    // ! TODO: seems like unnecessary, try remove
     pendingVerification === account?.decodedAddress;
+
+  const showMapTimer = gameType === 'single' ? false : !isYourTurn;
 
   const efficiency = totalShoots !== 0 ? ((successfulShoots / totalShoots) * 100).toFixed(2) : 0;
 
@@ -159,26 +160,19 @@ export default function GameProcess({
         <div className={styles.gameInfoWrapper}>
           <div className={styles.gameInfoTurn}>
             <Text size="sm" weight="medium">
-              {gameType === 'multi' ? 'Multiplayer' : 'Singleplayer'}{' '}
-              {gameType === 'multi' && <span>{isYourTurn ? 'Your turn' : `Enemy's turn`}</span>}
+              {gameType === 'multi' ? 'Peer-to-peer game' : 'Singleplayer'}
             </Text>
           </div>
           <div className={styles.gameInfo}>
             <Text size="sm" weight="normal">
-              Time:{' '}
-              <span>
-                {gameResults?.totalTime ? (
-                  getFormattedTime(Number(gameResults.totalTime))
-                ) : (
-                  <Timer start_time={gameStartTime} shouldGoOn={!!gameStartTime && !gameResults} />
-                )}
-              </span>
+              <span>{gameType === 'single' || isYourTurn ? 'Your Turn' : `Enemy's Turn`}</span>
+              <Timer remainingTime={remainingTime} shouldGoOn={!gameResults} redOnLast />
             </Text>
             <Text size="sm" weight="normal">
-              Total shots: <span>{totalShoots}</span>
+              Total Shots: <span>{totalShoots}</span>
             </Text>
             <Text size="sm" weight="normal">
-              Successful hits: <span>{successfulShoots}</span>
+              Successful Hits: <span>{successfulShoots}</span>
             </Text>
             <Text size="sm" weight="normal">
               Efficiency: <span>{efficiency}%</span>
@@ -202,10 +196,12 @@ export default function GameProcess({
           isDisabledCell={pending || gasless.isLoading || isVerificationRequired || !isYourTurn || !!gameResults}
           onDefineDeadShip={handleDefineDeadShips}
           lastHit={playerLastHit}
+          showTimer={showMapTimer}
+          remainingTime={remainingTime}
         />
       </div>
       <div className={styles.exitButtonWrapper}>
-        {admin === account?.decodedAddress ? (
+        {admin === account?.decodedAddress && !gameResults ? (
           <Button className={styles.cancelGameButton} color="grey" onClick={onExitGame}>
             Cancel game
           </Button>
@@ -215,7 +211,7 @@ export default function GameProcess({
           </Button>
         )}
       </div>
-      {isVerificationRequired && (
+      {isVerificationRequired && !gameResults && (
         <VerificationModal onVerifyHit={onVerifyHit} isDeadShip={isDeadShip} isLoading={pending} onExit={onExitGame} />
       )}
       {isOpenEndModal && gameResults && (

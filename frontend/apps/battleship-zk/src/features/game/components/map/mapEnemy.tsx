@@ -10,6 +10,8 @@ import shipX2SVG from '@/assets/images/icons/ship-x2.svg';
 import shipX3SVG from '@/assets/images/icons/ship-x3.svg';
 import shipX4SVG from '@/assets/images/icons/ship-x4.svg';
 import { RenderShips, RenderedShip } from '../../types';
+import { Text } from '@/components/ui/text';
+import { Timer } from '../timer';
 
 type Props = {
   sizeBlock: number;
@@ -18,6 +20,8 @@ type Props = {
   isDisabledCell: boolean;
   onDefineDeadShip: (deadShips: RenderShips) => void;
   lastHit: number | null;
+  showTimer?: boolean;
+  remainingTime: string | number | bigint | null | undefined;
 };
 
 type MarkedShips = {
@@ -31,6 +35,8 @@ export default function MapEnemy({
   isDisabledCell,
   onDefineDeadShip,
   lastHit,
+  showTimer,
+  remainingTime,
 }: Props) {
   const numRows = 5;
   const numCols = 5;
@@ -188,6 +194,14 @@ export default function MapEnemy({
     <div className={styles.container}>
       <img src={seaPng} alt="sea" className={styles.sea} />
       {renderMap()}
+      {showTimer && (
+        <div className={styles.oponentsTurn}>
+          <Text size="sm">Opponent's Turn:</Text>
+          <Text weight="semibold" className={styles.time}>
+            <Timer remainingTime={remainingTime} shouldGoOn />
+          </Text>
+        </div>
+      )}
     </div>
   );
 }

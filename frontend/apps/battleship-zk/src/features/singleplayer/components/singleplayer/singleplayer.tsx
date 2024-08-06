@@ -11,7 +11,7 @@ export function Singleplayer() {
     totalShoots,
     successfulShoots,
     gameEndResult,
-    gameStartTime,
+    remainingTime,
     gameUpdatedEvent,
     handleClickCell,
     exitGame,
@@ -28,7 +28,7 @@ export function Singleplayer() {
       totalShoots={totalShoots}
       successfulShoots={successfulShoots}
       gameResults={gameEndResult ? { totalTime: gameEndResult.time, winner: gameEndResult.winner } : null}
-      gameStartTime={gameStartTime}
+      remainingTime={remainingTime}
       gameUpdatedEvent={gameUpdatedEvent}
       admin={undefined}
       onClickCell={handleClickCell}

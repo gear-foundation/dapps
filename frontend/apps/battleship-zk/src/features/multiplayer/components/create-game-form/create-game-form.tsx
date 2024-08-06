@@ -91,14 +91,14 @@ function CreateGameForm({ onCancel }: Props) {
         <Heading className={styles.mainHeading}>Create a private game</Heading>
         <div>
           <Text className={styles.mainText}>
-            Set the game parameters and click “Create game”. To have players join you, you need to share your address.
+            Configure the game settings and click 'Create game'. Share the game's address to invite a friend.
           </Text>
         </div>
       </div>
       <form className={styles.form} onSubmit={onCreateSubmit(handleCreateSession)}>
         <div className={styles.input}>
           <TextField
-            label="Entry fee"
+            label="Specify entry fee"
             variant="active"
             type="number"
             icon={<VaraIcon />}

@@ -1,5 +1,5 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMoveTransaction, usePending } from '@/features/game/hooks';
 import { useMultiplayerGame } from './use-multiplayer-game';
@@ -7,9 +7,10 @@ import { useEventGameEndSubscription } from '../sails/events';
 import { useCancelGameMessage, useLeaveGameMessage, useMakeMoveMessage } from '../sails/messages';
 import { ROUTES } from '@/app/consts';
 import { clearZkData } from '@/features/zk/utils';
+import { useRemainingTimeQuery } from '../sails/queries/use-remaining-time-query';
 
 export const useProcessWithMultiplayer = () => {
-  const { game, triggerGame, resetGameState, setGameEndResult } = useMultiplayerGame();
+  const { game, triggerGame, resetGameState } = useMultiplayerGame();
   const { leaveGameMessage } = useLeaveGameMessage();
   const navigate = useNavigate();
   const { cancelGameMessage } = useCancelGameMessage();
@@ -35,6 +36,8 @@ export const useProcessWithMultiplayer = () => {
       verificationRequired: pendingVerification === account?.decodedAddress ? verificationRequired : undefined,
     };
   }, [game]);
+
+  const remainingTime = useRemainingTimeQuery();
 
   const exitGame = async () => {
     if (gameEndResult) {
@@ -82,7 +85,7 @@ export const useProcessWithMultiplayer = () => {
     totalShoots,
     successfulShoots,
     gameEndResult,
-    gameStartTime: game?.start_time || undefined,
+    remainingTime,
     gameUpdatedEvent,
     handleClickCell,
     verifyOponentsHit,

@@ -1,7 +1,7 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useAtom } from 'jotai';
 import { useEffect, useState } from 'react';
-import { gameEndResultAtom, isActiveGameAtom, isGamePengingAtom, isGameReadyAtom, singleGameAtom } from '../atoms';
+import { gameEndResultAtom, isActiveGameAtom, isGameReadyAtom, singleGameAtom } from '../atoms';
 import { useSingleGameQuery } from '../sails/queries';
 import { usePending } from '@/features/game/hooks';
 
@@ -27,9 +27,8 @@ export function useSingleplayerGame() {
         setIsActiveGame(true);
       }
       setIsGameReady(true);
-      return Promise.resolve();
     } catch (err) {
-      console.log('ERrOR');
+      console.log(err);
       setError(err);
     }
   };

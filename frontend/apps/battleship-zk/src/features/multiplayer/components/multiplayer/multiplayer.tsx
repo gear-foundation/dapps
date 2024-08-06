@@ -20,7 +20,7 @@ export function Multiplayer() {
     totalShoots,
     successfulShoots,
     gameEndResult,
-    gameStartTime,
+    remainingTime,
     gameUpdatedEvent,
     handleClickCell,
     exitGame,
@@ -75,7 +75,7 @@ export function Multiplayer() {
       totalShoots={totalShoots}
       successfulShoots={successfulShoots}
       gameResults={gameEndResult ? { totalTime: gameEndResult.total_time, winner: gameEndResult.winner } : null}
-      gameStartTime={gameStartTime}
+      remainingTime={remainingTime}
       gameUpdatedEvent={gameUpdatedEvent}
       admin={game?.admin}
       onClickCell={handleClickCell}

@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import { isNull } from '@polkadot/util';
 import { BattleshipParticipants } from '@/app/utils/sails/lib/lib';
 import { useProgram } from '@/app/utils/sails';
@@ -21,7 +20,6 @@ export type GameEndEvent = {
 export function useEventGameEndSubscription() {
   const { account } = useAccount();
   const program = useProgram();
-  const event = useRef<Promise<() => void> | null>(null);
   const [gameEndResult, setGameEndResult] = useAtom(gameEndResultAtom);
   const { triggerGame } = useSingleplayerGame();
   const { updateEnemyBoard } = useShips();

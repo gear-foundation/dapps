@@ -48,7 +48,7 @@ export function useMultiplayerGame() {
 
 export function useInitMultiplayerGame() {
   const { account } = useAccount();
-  const { isActiveGame, triggerGame, resetGameState, setGameEndResult } = useMultiplayerGame();
+  const { isActiveGame, triggerGame, resetGameState } = useMultiplayerGame();
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const initGame = async () => {

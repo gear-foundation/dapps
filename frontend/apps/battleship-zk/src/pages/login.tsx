@@ -40,9 +40,8 @@ export default function Login() {
             <TextGradient>Battleship Game</TextGradient>
           </Heading>
           <div>
-            <Text size="lg" className={styles.mainText}>
-              Welcome to the classic Battleship game, where you will compete against a smart contract. To start the
-              game, connect your wallet.
+            <Text size="md" className={styles.mainText}>
+              Welcome to the 'Battleship' game, where you can compete with an on-chain program.
               {!account && ' To start the game, connect your wallet.'}
             </Text>
           </div>

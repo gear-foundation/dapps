@@ -104,15 +104,15 @@ function JoinGameForm({ onCancel }: Props) {
   return (
     <div className={styles.formWrapper}>
       <div className={styles.header}>
-        <Heading className={styles.mainHeading}>Find a private game</Heading>
+        <Heading className={styles.mainHeading}>Join a peer-to-peer game</Heading>
         <div>
-          <Text className={styles.mainText}>To find the game, you need to enter the administrator's address.</Text>
+          <Text className={styles.mainText}>Enter the game's address to join the game.</Text>
         </div>
       </div>
       <form className={styles.form} onSubmit={onJoinSubmit(handleOpenJoinSessionModal)}>
         <div className={styles.input}>
           <TextField
-            label="Specify the game admin address:"
+            label="Specify the game's address:"
             variant="active"
             placeholder="kG25c..."
             disabled={pending}

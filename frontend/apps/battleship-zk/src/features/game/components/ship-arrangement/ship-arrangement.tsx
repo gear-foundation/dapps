@@ -96,7 +96,7 @@ export default function ShipArrangement({ gameType, savedBoard, makeStartGameTra
       <div className={styles.header}>
         <Heading>Your ships</Heading>
         <div className={styles.textWrapper}>
-          <Text size="lg">Choose a ship placement scheme, and to see a new arrangement, click "Generate"</Text>
+          <Text size="lg">Click 'Generate' to choose a ship arrangement on the board.</Text>
         </div>
       </div>
       <div style={{ width: '100%' }}>
