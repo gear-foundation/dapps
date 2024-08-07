@@ -34,9 +34,9 @@ fn check_game_over() {
 
     check_user_reveal_with_game_over(&game, USERS[3], moves[3].clone(), USERS[1].into());
 
-    USERS
-        .iter()
-        .for_each(|user| sys.claim_value_from_mailbox(*user));
+    // USERS
+    //     .iter()
+    //     .for_each(|user| sys.claim_value_from_mailbox(*user));
 
     check_users_balance(&sys, &USERS[1], 100_000_000_000_000 + COMMON_BET * 3);
 }

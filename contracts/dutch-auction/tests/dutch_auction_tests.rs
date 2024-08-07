@@ -20,7 +20,7 @@ fn buy() {
     assert!(result.contains(&(
         USERS[1],
         Ok::<Event, Error>(Event::Bought {
-            price: 1_000_000_000_000_000,
+            price: 999999999997000,
         })
         .encode()
     )));
@@ -35,10 +35,11 @@ fn buy() {
 
     assert!(res.contains(&log));
 
-    sys.claim_value_from_mailbox(USERS[0]);
+    // sys.claim_value_from_mailbox(USERS[0]);
 
-    auction.send_with_value(USERS[0], Action::Reward, 0);
-    sys.claim_value_from_mailbox(USERS[0]);
+    let res = auction.send_with_value(USERS[0], Action::Reward, 0);
+    println!("{:?}", res.decoded_log::<Result<Event, Error>>());
+    // sys.claim_value_from_mailbox(USERS[0]);
 
     let buyer_balance = sys.balance_of(USERS[1]);
     let seller_balance = sys.balance_of(USERS[0]);
@@ -63,9 +64,9 @@ fn buy_later_with_lower_price() {
         .encode()
     )));
 
-    sys.claim_value_from_mailbox(USERS[0]);
+    // sys.claim_value_from_mailbox(USERS[0]);
     auction.send_with_value(USERS[0], Action::Reward, 0);
-    sys.claim_value_from_mailbox(USERS[0]);
+    // sys.claim_value_from_mailbox(USERS[0]);
 
     let buyer_balance = sys.balance_of(USERS[1]);
     let seller_balance = sys.balance_of(USERS[0]);

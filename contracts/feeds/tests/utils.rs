@@ -33,7 +33,7 @@ impl FeedsChannel for Program<'_> {
     fn channel(sys: &System) -> Program<'_> {
         let channel = Program::from_file(
             sys,
-            "../target/wasm32-unknown-unknown/release/feeds_channel.opt.wasm",
+            "../target/wasm32-unknown-unknown/debug/feeds_channel.opt.wasm",
         );
 
         let res = channel.send(OWNER, 0x00);
@@ -72,6 +72,7 @@ impl FeedsChannel for Program<'_> {
 
     fn post(&self, owner: u64, text: String, message: Message) {
         let res = self.send(owner, ChannelAction::Post(text));
+        println!("message: {:?}", message);
         let log = Log::builder()
             .dest(OWNER)
             .payload(ChannelOutput::MessagePosted(message));

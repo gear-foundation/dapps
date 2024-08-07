@@ -50,7 +50,7 @@ fn auction_with_native_tokens() {
 
         // check that marketplace has returned funds to the previous participant
         if i != 0 {
-            system.claim_value_from_mailbox(PARTICIPANTS[i - 1]);
+            // system.claim_value_from_mailbox(PARTICIPANTS[i - 1]);
             assert_eq!(
                 system.balance_of(PARTICIPANTS[i - 1]),
                 (i as u128 + 1) * NFT_PRICE
@@ -77,11 +77,11 @@ fn auction_with_native_tokens() {
     let treasury_fee = winner_price * ((TREASURY_FEE * BASE_PERCENT) as u128) / 10_000u128;
 
     // Check balance of SELLER
-    system.claim_value_from_mailbox(SELLER);
+    // system.claim_value_from_mailbox(SELLER);
     assert_eq!(system.balance_of(SELLER), winner_price - treasury_fee);
 
     // Check balance of TREASURY_ID
-    system.claim_value_from_mailbox(TREASURY_ID);
+    // system.claim_value_from_mailbox(TREASURY_ID);
     assert_eq!(system.balance_of(TREASURY_ID), treasury_fee);
 }
 

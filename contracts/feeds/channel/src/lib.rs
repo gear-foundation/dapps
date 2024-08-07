@@ -128,6 +128,7 @@ extern fn init() {
 
 #[gstd::async_main]
 async unsafe fn main() {
+    debug!("CHANNEL");
     let channel = unsafe { CHANNEL.get_or_insert(Default::default()) };
     let action: ChannelAction = msg::load().unwrap_or_else(|_| {
         panic!(
@@ -153,7 +154,6 @@ async unsafe fn main() {
             }
 
             let message = Message::new(text);
-
             channel.add_message(message.clone());
 
             msg::reply(ChannelOutput::MessagePosted(message.clone()), 0)

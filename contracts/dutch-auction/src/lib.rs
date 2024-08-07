@@ -151,7 +151,7 @@ impl Auction {
             return Err(Error::IncorrectRewarder);
         }
 
-        if let Err(_e) = msg::send(self.nft.owner, "REWARD", price) {
+        if let Err(_e) = msg::send_with_gas(self.nft.owner, "REWARD", 0, price) {
             return Err(Error::RewardSendFailed);
         }
         self.status = Status::Rewarded { price };

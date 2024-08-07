@@ -418,7 +418,7 @@ fn delegated_approve_success() {
         approved_actor_id: USERS[1].into(),
         nft_program_id: 1.into(),
         token_id: 0.into(),
-        expiration_timestamp: sys.block_timestamp() + 10,
+        expiration_timestamp: sys.block_timestamp() + 3_001,
     };
     let signature = pair.sign(message.encode().as_slice());
 
@@ -430,6 +430,8 @@ fn delegated_approve_success() {
         token_id: 0.into(),
     })
     .encode();
+
+    println!("{:?}", res.decoded_log::<NFTEvent>());
     assert!(res.contains(&(USERS[1], message)));
     assert!(!transfer(&nft, transaction_id, USERS[1], USERS[2], 0).main_failed());
 }

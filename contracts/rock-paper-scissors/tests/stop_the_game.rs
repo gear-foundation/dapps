@@ -17,9 +17,9 @@ fn check_during_the_first_round() {
 
     check_stop_the_game(&game, USERS[0], USERS);
 
-    USERS
-        .iter()
-        .for_each(|user| sys.claim_value_from_mailbox(*user));
+    // USERS
+    //     .iter()
+    //     .for_each(|user| sys.claim_value_from_mailbox(*user));
 
     USERS
         .iter()
@@ -81,9 +81,9 @@ fn check_not_all_players_in_progress_of_second_round() {
     let rewarding_users = [USERS[0], USERS[2], USERS[3]];
     check_stop_the_game(&game, USERS[0], &rewarding_users);
 
-    USERS
-        .iter()
-        .for_each(|user| sys.claim_value_from_mailbox(*user));
+    // USERS
+    //     .iter()
+    //     .for_each(|user| sys.claim_value_from_mailbox(*user));
 
     rewarding_users.iter().for_each(|user| {
         check_users_balance(

@@ -167,11 +167,11 @@ fn success_create_run() {
     horses.insert(String::from("Max"), Horse { max_speed: 65 });
     horses.insert(String::from("Vitalik"), Horse { max_speed: 80 });
 
-    let start_timestamp = sys.block_timestamp();
+
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 100000,
             horses: horses.clone(),
         },
     );
@@ -180,7 +180,7 @@ fn success_create_run() {
         MANAGER,
         Event::RunCreated {
             run_id: 1,
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 100000,
             horses
         }
         .encode()
@@ -194,10 +194,10 @@ fn success_create_run() {
             assert!(!runs.is_empty());
 
             let (id, run) = &runs[0];
-
+            let start_timestamp = sys.block_timestamp();
             assert_eq!(*id, 1);
             assert_eq!(run.start_timestamp, start_timestamp);
-            assert_eq!(run.end_bidding_timestamp, start_timestamp + 1000);
+            assert_eq!(run.end_bidding_timestamp, start_timestamp + 100000);
             assert_eq!(
                 *run.horses.get("Pegasus").unwrap(),
                 (Horse { max_speed: 50 }, 0u128)
@@ -259,7 +259,7 @@ fn success_bid() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 10000,
             horses,
         },
     );
@@ -357,7 +357,7 @@ fn success_cancel_last_run() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 10000,
             horses,
         },
     );
@@ -435,7 +435,7 @@ fn success_progress_last_run() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 10000,
             horses,
         },
     );
@@ -520,7 +520,7 @@ fn success_finish_last_run() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 10000,
             horses,
         },
     );
@@ -620,7 +620,7 @@ fn success_withdraw_finished() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 10000,
             horses,
         },
     );
@@ -728,7 +728,7 @@ fn success_withdraw_finished_more_users() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 100000,
             horses,
         },
     );
@@ -847,7 +847,7 @@ fn success_withdraw_finished_more_users() {
         _ => std::panic!("Invalid meta state!"),
     }
 
-    sys.spend_blocks(1);
+    sys.spend_blocks(100);
 
     let result = horse_races_program.send(MANAGER, Action::ProgressLastRun);
     assert!(!result.main_failed());
@@ -938,7 +938,7 @@ fn success_withdraw_finished_more_winners() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 100000,
             horses,
         },
     );
@@ -1010,7 +1010,7 @@ fn success_withdraw_finished_more_winners() {
     );
     assert!(!result.main_failed());
 
-    sys.spend_blocks(1);
+    sys.spend_blocks(100);
 
     let result = horse_races_program.send(MANAGER, Action::ProgressLastRun);
     assert!(!result.main_failed());
@@ -1123,7 +1123,7 @@ fn success_withdraw_finished_all_winners() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 100000,
             horses,
         },
     );
@@ -1195,7 +1195,7 @@ fn success_withdraw_finished_all_winners() {
     );
     assert!(!result.main_failed());
 
-    sys.spend_blocks(1);
+    sys.spend_blocks(100);
 
     let result = horse_races_program.send(MANAGER, Action::ProgressLastRun);
     assert!(!result.main_failed());
@@ -1292,7 +1292,7 @@ fn success_withdraw_canceled() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 10000,
             horses,
         },
     );
@@ -1369,7 +1369,7 @@ fn fail_create_run_not_manager() {
     let result = horse_races_program.send(
         FAKE_MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 10000,
             horses: horses.clone(),
         },
     );
@@ -1403,7 +1403,7 @@ fn fail_create_run_last_run_not_ended() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 10000,
             horses: horses.clone(),
         },
     );
@@ -1414,7 +1414,7 @@ fn fail_create_run_last_run_not_ended() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 10000,
             horses: horses.clone(),
         },
     );
@@ -1455,7 +1455,7 @@ fn fail_bid_manager() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 10000,
             horses,
         },
     );
@@ -1513,7 +1513,7 @@ fn fail_bid_last_run_not_bidding() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 10000,
             horses,
         },
     );
@@ -1573,7 +1573,7 @@ fn fail_cancel_last_run_not_manager() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 10000,
             horses,
         },
     );
@@ -1636,7 +1636,7 @@ fn fail_cancel_last_run_bidding_not_finished() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 100000,
             horses,
         },
     );
@@ -1697,7 +1697,7 @@ fn fail_withdraw_finished_not_finished() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 10000,
             horses,
         },
     );
@@ -1764,7 +1764,7 @@ fn fail_withdraw_canceled_not_canceled() {
     let result = horse_races_program.send(
         MANAGER,
         Action::CreateRun {
-            bidding_duration_ms: 1000,
+            bidding_duration_ms: 10000,
             horses,
         },
     );

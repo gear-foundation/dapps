@@ -14,7 +14,7 @@ fn success_play_single_game() {
     vara_man.change_status(ADMIN, Status::StartedWithNativeToken);
     let old_balance = system.balance_of(PLAYERS[0]);
     vara_man.finish_single_game(PLAYERS[0], 1, 5, None);
-    system.claim_value_from_mailbox(PLAYERS[0]);
+    // system.claim_value_from_mailbox(PLAYERS[0]);
     let new_balance = system.balance_of(PLAYERS[0]);
     assert_eq!(new_balance - old_balance, 100_000_000_000_000);
 }
@@ -59,7 +59,7 @@ fn success_play_tournament() {
 
     let old_balance = system.balance_of(PLAYERS[1]);
     vara_man.cancel_register(PLAYERS[1], None);
-    system.claim_value_from_mailbox(PLAYERS[1]);
+    // system.claim_value_from_mailbox(PLAYERS[1]);
     let new_balance = system.balance_of(PLAYERS[1]);
     assert_eq!(new_balance - old_balance, 10_000_000_000_000);
 

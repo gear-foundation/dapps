@@ -1,10 +1,7 @@
 use battleship_io::*;
 
 use gstd::{
-    collections::{BTreeMap, HashMap},
-    exec, msg,
-    prelude::*,
-    ActorId, MessageId,
+    collections::{BTreeMap, HashMap}, exec, msg, prelude::*, ActorId, MessageId
 };
 
 static mut BATTLESHIP: Option<Battleship> = None;
@@ -42,7 +39,6 @@ impl Battleship {
                 return Err(BattleshipError::AlreadyHaveActiveSession);
             }
         }
-
         let expires = block_timestamp + duration;
 
         let number_of_blocks = u32::try_from(duration.div_ceil(self.config.block_duration_ms))

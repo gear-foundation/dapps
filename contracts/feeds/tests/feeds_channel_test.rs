@@ -100,6 +100,7 @@ fn post() {
 
     // message for post
     message.text = String::from("Hello");
+    message.timestamp = sys.block_height()+1;
     expected_messages.push(message.clone());
 
     channel.post(OWNER, String::from("Hello"), message);

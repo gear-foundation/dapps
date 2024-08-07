@@ -130,7 +130,7 @@ fn offers() {
         .succeed((nft_program.actor_id(), TOKEN_ID.into(), withdrawn_tokens));
 
     // Check balance of SELLER after tokens withdrawal
-    system.claim_value_from_mailbox(BUYER);
+    // system.claim_value_from_mailbox(BUYER);
     assert_eq!(system.balance_of(BUYER), withdrawn_tokens);
 
     // Previous owner makes offer for native value
@@ -167,14 +167,14 @@ fn offers() {
         ));
 
     // Check balance of BUYER
-    system.claim_value_from_mailbox(BUYER);
+    // system.claim_value_from_mailbox(BUYER);
     assert_eq!(
         system.balance_of(BUYER),
         buyer_balance + offered_value - treasury_fee
     );
 
     // Check balance of TREASURY_ID
-    system.claim_value_from_mailbox(TREASURY_ID);
+    // system.claim_value_from_mailbox(TREASURY_ID);
     assert_eq!(system.balance_of(TREASURY_ID), treasury_fee);
 }
 

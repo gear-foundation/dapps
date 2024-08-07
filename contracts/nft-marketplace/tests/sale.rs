@@ -123,10 +123,10 @@ fn buy_with_native_tokens() {
     let treasury_fee = NFT_PRICE * ((TREASURY_FEE * BASE_PERCENT) as u128) / 10_000u128;
 
     // Check balance of SELLER
-    system.claim_value_from_mailbox(SELLER);
+    // system.claim_value_from_mailbox(SELLER);
     assert_eq!(system.balance_of(SELLER), NFT_PRICE - treasury_fee);
 
     // Check balance of TREASURY_ID
-    system.claim_value_from_mailbox(TREASURY_ID);
+    // system.claim_value_from_mailbox(TREASURY_ID);
     assert_eq!(system.balance_of(TREASURY_ID), treasury_fee);
 }

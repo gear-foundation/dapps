@@ -308,24 +308,25 @@ fn create_session_success() {
     let proxy_account = 10;
 
     let duration = MINIMUM_SESSION_SURATION_MS;
-    let session = Session {
-        key: proxy_account.into(),
-        expires: system.block_timestamp() + duration,
-        allowed_actions: vec![ActionsForSession::StartGame, ActionsForSession::Turn],
-    };
     let res = battleship.send(
         main_account,
         BattleshipAction::CreateSession {
             key: proxy_account.into(),
             duration,
-            allowed_actions: session.allowed_actions.clone(),
+            allowed_actions: vec![ActionsForSession::StartGame, ActionsForSession::Turn],
         },
     );
+    let session = Session {
+        key: proxy_account.into(),
+        expires: system.block_timestamp() + duration,
+        allowed_actions: vec![ActionsForSession::StartGame, ActionsForSession::Turn],
+    };
 
     assert!(res.contains(&(
         main_account,
         Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
     )));
+
 
     check_session_in_state(&battleship, main_account, Some(session));
 }
@@ -488,18 +489,12 @@ fn disallow_game_without_required_actions() {
     let battleship = system.get_program(1).unwrap();
 
     let duration = MINIMUM_SESSION_SURATION_MS;
-    let session = Session {
-        key: proxy_account.into(),
-        expires: system.block_timestamp() + duration,
-        allowed_actions: vec![ActionsForSession::Turn],
-    };
-
     let res = battleship.send(
         main_account,
         BattleshipAction::CreateSession {
             key: proxy_account.into(),
             duration,
-            allowed_actions: session.allowed_actions.clone(),
+            allowed_actions: vec![ActionsForSession::Turn],
         },
     );
 
@@ -507,6 +502,11 @@ fn disallow_game_without_required_actions() {
         main_account,
         Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
     )));
+    let session = Session {
+        key: proxy_account.into(),
+        expires: system.block_timestamp() + duration,
+        allowed_actions: vec![ActionsForSession::Turn],
+    };
 
     check_session_in_state(&battleship, main_account, Some(session));
 
@@ -541,18 +541,12 @@ fn disallow_game_without_required_actions() {
 
     check_session_in_state(&battleship, main_account, None);
 
-    let session = Session {
-        key: proxy_account.into(),
-        expires: system.block_timestamp() + duration,
-        allowed_actions: vec![ActionsForSession::StartGame],
-    };
-
     let res = battleship.send(
         main_account,
         BattleshipAction::CreateSession {
             key: proxy_account.into(),
             duration,
-            allowed_actions: session.allowed_actions.clone(),
+            allowed_actions: vec![ActionsForSession::StartGame],
         },
     );
 
@@ -560,6 +554,12 @@ fn disallow_game_without_required_actions() {
         main_account,
         Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
     )));
+
+    let session = Session {
+        key: proxy_account.into(),
+        expires: system.block_timestamp() + duration,
+        allowed_actions: vec![ActionsForSession::StartGame],
+    };
 
     check_session_in_state(&battleship, main_account, Some(session));
 
@@ -615,18 +615,13 @@ fn complete_session_game() {
     let battleship = system.get_program(1).unwrap();
 
     let duration = MINIMUM_SESSION_SURATION_MS;
-    let session = Session {
-        key: proxy_account.into(),
-        expires: system.block_timestamp() + duration,
-        allowed_actions: vec![ActionsForSession::StartGame, ActionsForSession::Turn],
-    };
 
     let res = battleship.send(
         main_account,
         BattleshipAction::CreateSession {
             key: proxy_account.into(),
             duration,
-            allowed_actions: session.allowed_actions.clone(),
+            allowed_actions: vec![ActionsForSession::StartGame, ActionsForSession::Turn],
         },
     );
 
@@ -634,6 +629,12 @@ fn complete_session_game() {
         main_account,
         Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
     )));
+
+    let session = Session {
+        key: proxy_account.into(),
+        expires: system.block_timestamp() + duration,
+        allowed_actions: vec![ActionsForSession::StartGame, ActionsForSession::Turn],
+    };
 
     check_session_in_state(&battleship, main_account, Some(session));
 
@@ -706,20 +707,20 @@ fn premature_session_deletion_by_user() {
     let battleship = system.get_program(1).unwrap();
 
     let duration = MINIMUM_SESSION_SURATION_MS;
-    let session = Session {
-        key: proxy_account.into(),
-        expires: system.block_timestamp() + duration,
-        allowed_actions: vec![ActionsForSession::Turn],
-    };
-
     let res = battleship.send(
         main_account,
         BattleshipAction::CreateSession {
             key: proxy_account.into(),
             duration,
-            allowed_actions: session.allowed_actions.clone(),
+            allowed_actions: vec![ActionsForSession::Turn],
         },
     );
+
+    let session = Session {
+        key: proxy_account.into(),
+        expires: system.block_timestamp() + duration,
+        allowed_actions: vec![ActionsForSession::Turn],
+    };
 
     assert!(res.contains(&(
         main_account,
