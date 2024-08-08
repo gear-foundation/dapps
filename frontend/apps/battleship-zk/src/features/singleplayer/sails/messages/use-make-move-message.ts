@@ -1,18 +1,24 @@
+import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { useProgram } from '@/app/utils/sails';
 import { VerificationVariables } from '@/app/utils/sails/lib/lib';
-import { useMakeTransaction } from '@/app/utils/use-make-transaction';
+import { usePrepareEzTransactionParams } from '@/app/utils/use-make-transaction';
 
 export const useMakeMoveMessage = () => {
-  const gasLimit = 250_000_000_000n;
-  const makeTransaction = useMakeTransaction();
   const program = useProgram();
+  const { prepareTransactionAsync } = usePrepareProgramTransaction({
+    program,
+    serviceName: 'single',
+    functionName: 'makeMove',
+  });
+  const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const makeMoveMessage = async (step: number | null, verificationVariables: VerificationVariables | null) => {
-    if (!program) throw new Error('program does not found');
-
-    const transaction = await makeTransaction(program.single.makeMove(step, verificationVariables, null));
-
-    return await transaction.withGas(gasLimit);
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
+    const { transaction } = await prepareTransactionAsync({
+      args: [step, verificationVariables, sessionForAccount],
+      ...params,
+    });
+    return transaction;
   };
 
   return { makeMoveMessage };
