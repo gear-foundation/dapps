@@ -57,7 +57,7 @@ export function Registration() {
   const { cancelGameMessage } = useCancelGameMessage();
   const { deletePlayerMessage } = useDeleteGameMessage();
   const { account } = useAccount();
-  const { game, triggerGame } = useMultiplayerGame();
+  const { game, triggerGame, resetGameState } = useMultiplayerGame();
   const { pending, setPending } = usePending();
 
   useEventPlayerJoinedGame();
@@ -79,6 +79,7 @@ export function Registration() {
       const { response } = await transaction.signAndSend();
 
       await response();
+      resetGameState()
     } catch (err) {
       console.log(err);
     } finally {
