@@ -1,6 +1,6 @@
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { useProgram } from '@/app/utils/sails';
-import { usePrepareEzTransactionParams } from '@/app/utils/use-make-transaction';
+import { usePrepareEzTransactionParams } from '@/app/utils/use-prepare-ez-transaction-params';
 import { ProofBytes, PublicStartInput } from '@/app/utils/sails/lib/lib';
 
 export const useStartGameMessage = () => {

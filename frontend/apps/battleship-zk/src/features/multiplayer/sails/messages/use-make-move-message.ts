@@ -1,7 +1,7 @@
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { useProgram } from '@/app/utils/sails';
 import { VerificationVariables } from '@/app/utils/sails/lib/lib';
-import { usePrepareEzTransactionParams } from '@/app/utils/use-make-transaction';
+import { usePrepareEzTransactionParams } from '@/app/utils/use-prepare-ez-transaction-params';
 
 export const useMakeMoveMessage = () => {
   const program = useProgram();

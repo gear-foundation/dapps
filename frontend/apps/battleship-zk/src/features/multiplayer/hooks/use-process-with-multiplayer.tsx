@@ -1,5 +1,5 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMoveTransaction, usePending } from '@/features/game/hooks';
 import { useMultiplayerGame } from './use-multiplayer-game';

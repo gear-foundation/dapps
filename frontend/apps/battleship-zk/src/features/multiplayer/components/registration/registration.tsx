@@ -1,7 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
-import { useAtom } from 'jotai';
 import { Button } from '@gear-js/vara-ui';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
@@ -19,7 +18,6 @@ import { useMultiplayerGame } from '../../hooks';
 import styles from './Registration.module.scss';
 import { useDeleteGameMessage } from '../../sails/messages/use-delete-player-message';
 import { ROUTES } from '@/app/consts';
-import { gameEndResultAtom } from '../../atoms';
 
 type UserProps = {
   name: string;
@@ -61,7 +59,6 @@ export function Registration() {
   const { account } = useAccount();
   const { game, triggerGame } = useMultiplayerGame();
   const { pending, setPending } = usePending();
-  const [gameEndResult] = useAtom(gameEndResultAtom);
 
   useEventPlayerJoinedGame();
   useEventGameCancelled();
@@ -82,7 +79,6 @@ export function Registration() {
       const { response } = await transaction.signAndSend();
 
       await response();
-      await triggerGame();
     } catch (err) {
       console.log(err);
     } finally {
