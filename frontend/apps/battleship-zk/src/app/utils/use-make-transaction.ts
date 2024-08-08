@@ -1,7 +1,6 @@
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { useAccount } from '@gear-js/react-hooks';
 import { web3FromSource } from '@polkadot/extension-dapp';
-import { TransactionBuilder } from 'sails-js';
 import { useProgram } from './sails';
 
 const usePrepareEzTransactionParams = () => {
@@ -36,37 +35,4 @@ const usePrepareEzTransactionParams = () => {
   return { prepareEzTransactionParams };
 };
 
-const useMakeTransaction = () => {
-  const gasLimit = 250_000_000_000n;
-  const { account } = useAccount();
-
-  const { gasless, signless } = useEzTransactions();
-  const { pair, voucher } = signless;
-
-  return async (transactrionBuilder: TransactionBuilder<null>) => {
-    if (!account?.decodedAddress) {
-      throw new Error('No account found!');
-    }
-
-    let voucherId = voucher?.id || gasless.voucherId;
-    if (account && gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
-      voucherId = await gasless.requestVoucher(account.address);
-    }
-
-    const injector = await web3FromSource(account.meta.source);
-
-    if (pair) {
-      transactrionBuilder.withAccount(pair);
-    } else {
-      transactrionBuilder.withAccount(account.decodedAddress, { signer: injector.signer });
-    }
-
-    if (voucherId) {
-      transactrionBuilder.withVoucher(voucherId);
-    }
-
-    return await transactrionBuilder.withGas(gasLimit);
-  };
-};
-
-export { usePrepareEzTransactionParams, useMakeTransaction };
+export { usePrepareEzTransactionParams };
