@@ -16,6 +16,7 @@ import {
 import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
 import { QueryProvider } from './query-provider';
+import { useProgram } from '../utils/sails';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
@@ -40,13 +41,15 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
   );
 }
 
-// function SignlessTransactionsProvider({ children }: ProviderProps) {
-//   return (
-//     <SharedSignlessTransactionsProvider programId={ADDRESS.GAME} metadataSource={metaTxt}>
-//       {children}
-//     </SharedSignlessTransactionsProvider>
-//   );
-// }
+function SignlessTransactionsProvider({ children }: ProviderProps) {
+  const program = useProgram();
+
+  return (
+    <SharedSignlessTransactionsProvider programId={ADDRESS.GAME} program={program}>
+      {children}
+    </SharedSignlessTransactionsProvider>
+  );
+}
 
 const providers = [
   BrowserRouter,
@@ -55,7 +58,7 @@ const providers = [
   AlertProvider,
   QueryProvider,
   GaslessTransactionsProvider,
-  // SignlessTransactionsProvider,
+  SignlessTransactionsProvider,
   EzTransactionsProvider,
 ];
 

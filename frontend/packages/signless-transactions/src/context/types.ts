@@ -1,8 +1,9 @@
+import { TransactionBuilder } from 'sails-js';
+import { IVoucherDetails } from '@gear-js/api';
 import { HexString } from '@polkadot/util/types';
 import { KeyringPair$Json, KeyringPair } from '@polkadot/keyring/types';
 
-import { useCreateSession } from '../hooks';
-import { IVoucherDetails } from '@gear-js/api';
+import { UseCreateSessionReturn } from '@/hooks';
 
 type Session = {
   key: HexString;
@@ -25,8 +26,8 @@ type SignlessContext = {
   session: Session | null | undefined;
   isSessionReady: boolean;
   voucherBalance: number;
-  createSession: (...args: Parameters<ReturnType<typeof useCreateSession>['createSession']>) => void;
-  deleteSession: (...args: Parameters<ReturnType<typeof useCreateSession>['deleteSession']>) => void;
+  createSession: (...args: Parameters<UseCreateSessionReturn['createSession']>) => void;
+  deleteSession: (...args: Parameters<UseCreateSessionReturn['deleteSession']>) => void;
   voucher: (IVoucherDetails & { id: HexString }) | undefined;
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -36,4 +37,31 @@ type SignlessContext = {
   storageVoucherBalance: number;
 };
 
-export type { State, Session, Storage, SignlessContext };
+type ActorId = string;
+
+type BaseProgramQueryProps = [originAddress?: ActorId, value?: number | string | bigint, atBlock?: `0x${string}`];
+
+// TODO: infer type from generic
+type ActionsForSession = any;
+
+type ProgramSession = {
+  key: ActorId;
+  expires: number | string | bigint;
+  allowed_actions: string[];
+};
+
+type BaseProgram =
+  | {
+      session: {
+        sessionForTheAccount: (account: ActorId, ...arg2: BaseProgramQueryProps) => Promise<ProgramSession | null>;
+        createSession: (
+          key: ActorId,
+          duration: number | string | bigint,
+          allowed_actions: Array<ActionsForSession>,
+        ) => TransactionBuilder<null>;
+        deleteSession: () => TransactionBuilder<null>;
+      };
+    }
+  | undefined;
+
+export type { State, Session, Storage, SignlessContext, BaseProgram, ProgramSession };

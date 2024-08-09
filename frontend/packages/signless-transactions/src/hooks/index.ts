@@ -1,4 +1,6 @@
-import { useCreateSession, Session } from './use-create-session';
+import { useCreateMetadataSession } from './use-create-metadata-session';
+import { useCreateSailsSession } from './use-create-sails-session';
+import { Session, UseCreateSessionReturn } from './use-create-base-session';
 import {
   useSignlessSendMessage,
   useSignlessSendMessageHandler,
@@ -7,5 +9,12 @@ import {
 import { useIsAvailable } from './use-is-available';
 import { useRandomPairOr } from './use-random-pair-or';
 
-export { useCreateSession, useSignlessSendMessage, useSignlessSendMessageHandler, useIsAvailable, useRandomPairOr };
-export type { SendSignlessMessageOptions, Session };
+export {
+  useCreateMetadataSession,
+  useCreateSailsSession,
+  useSignlessSendMessage,
+  useSignlessSendMessageHandler,
+  useIsAvailable,
+  useRandomPairOr,
+};
+export type { SendSignlessMessageOptions, Session, UseCreateSessionReturn };

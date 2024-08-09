@@ -15,4 +15,4 @@ export const ROUTES = {
   NOTFOUND: '*',
 };
 
-export const SIGNLESS_ALLOWED_ACTIONS = ['StartGame', 'Turn'];
+export const SIGNLESS_ALLOWED_ACTIONS = ['playSingleGame', 'playMultipleGame'];

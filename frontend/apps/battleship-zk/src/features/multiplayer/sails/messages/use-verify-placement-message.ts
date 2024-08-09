@@ -1,18 +1,24 @@
+import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
+import { usePrepareEzTransactionParams } from '@dapps-frontend/ez-transactions';
 import { useProgram } from '@/app/utils/sails';
-import { useMakeTransaction } from '@/app/utils/use-make-transaction';
 import { ProofBytes, PublicStartInput } from '@/app/utils/sails/lib/lib';
 
 export const useVerifyPlacementMessage = () => {
-  const gasLimit = 250_000_000_000n;
-  const makeTransaction = useMakeTransaction();
   const program = useProgram();
+  const { prepareTransactionAsync } = usePrepareProgramTransaction({
+    program,
+    serviceName: 'multiple',
+    functionName: 'verifyPlacement',
+  });
+  const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
   const verifyPlacementMessage = async (proof: ProofBytes, public_input: PublicStartInput, game_id: string) => {
-    if (!program) throw new Error('program does not found');
-
-    const transaction = await makeTransaction(program.multiple.verifyPlacement(proof, public_input, null, game_id));
-
-    return await transaction.withGas(gasLimit);
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
+    const { transaction } = await prepareTransactionAsync({
+      args: [proof, public_input, sessionForAccount, game_id],
+      ...params,
+    });
+    return transaction;
   };
 
   return { verifyPlacementMessage };

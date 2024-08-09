@@ -15,16 +15,21 @@ type Props = React.PropsWithChildren & {
   };
   onClose: () => void;
   closeOnMissclick?: boolean;
+  showModalMode?: boolean;
 };
 
-export function Modal({ heading, children, className, onClose, closeOnMissclick = true }: Props) {
+export function Modal({ heading, children, className, onClose, closeOnMissclick = true, showModalMode = true }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
 
   const disableScroll = () => document.body.classList.add('modal-open');
   const enableScroll = () => document.body.classList.remove('modal-open');
 
   const open = () => {
-    ref.current?.showModal();
+    if (showModalMode) {
+      ref.current?.showModal();
+    } else {
+      ref.current?.show();
+    }
     disableScroll();
   };
 

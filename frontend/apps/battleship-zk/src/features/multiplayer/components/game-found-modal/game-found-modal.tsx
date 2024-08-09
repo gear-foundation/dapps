@@ -13,8 +13,6 @@ import styles from './GameFoundModal.module.scss';
 
 type Props = {
   entryFee: number | string;
-  players: number;
-  gasAmount: number | string;
   onSubmit: (values: JoinModalFormValues) => Promise<void>;
   onClose: () => void;
 };
@@ -23,7 +21,7 @@ export type JoinModalFormValues = {
   name: string;
 };
 
-function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Props) {
+function GameFoundModal({ entryFee, onSubmit, onClose }: Props) {
   const { isApiReady } = useApi();
   const { pending } = usePending();
   const { getFormattedBalance } = useBalanceFormat();
@@ -41,15 +39,6 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
         </>
       ),
       key: '1',
-    },
-    {
-      name: 'Required gas amount ',
-      value: (
-        <>
-          {VaraSvg} {gasAmount} VARA
-        </>
-      ),
-      key: '3',
     },
   ];
 
@@ -69,7 +58,12 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
   };
 
   return (
-    <Modal heading="The game has been found" className={{ wrapper: styles.modalWrapper }} onClose={onClose}>
+    <Modal
+      heading="The game has been found"
+      className={{ wrapper: styles.modalWrapper, modal: styles.modal }}
+      onClose={onClose}
+      // hacky fix cuz the signless modal was not displaying above the dialog opened via showModal
+      showModalMode={false}>
       <div className={styles.container}>
         <p className={styles.mainText}>
           To proceed, review the parameters of the gaming session and click the “Join” button. If applicable, you will
