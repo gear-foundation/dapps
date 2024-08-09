@@ -1,7 +1,6 @@
 import { HexString, ProgramMetadata, decodeAddress } from '@gear-js/api';
-import { Account, useAccount, useAlert, useApi } from '@gear-js/react-hooks';
+import { Account, useAccount, useApi } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
-import { useBatchSignAndSend } from './use-batch-sign-and-send';
 import { web3FromSource } from '@polkadot/extension-dapp';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { sendTransaction } from '../utils';
@@ -13,13 +12,9 @@ function useCreateMetadataSession(
   createSignatureType?: (metadata: ProgramMetadata, payloadToSig: Session) => `0x${string}`,
 ) {
   const { api, isApiReady } = useApi();
-  const alert = useAlert();
   const { account } = useAccount();
-  const { batchSignAndSend } = useBatchSignAndSend('all');
 
-  const onError = (message: string) => alert.error(message);
-
-  const { getVoucherExtrinsic, signAndSendDeleteSession } = useCreateBaseSession(programId);
+  const { signAndSendCreateSession, signAndSendDeleteSession, onError } = useCreateBaseSession(programId);
 
   const getMessageExtrinsic = (payload: AnyJson) => {
     if (!isApiReady) throw new Error('API is not initialized');
@@ -89,12 +84,7 @@ function useCreateMetadataSession(
     }
 
     const messageExtrinsic = getMessageExtrinsic({ CreateSession: session });
-
-    const txs = shouldIssueVoucher
-      ? [messageExtrinsic, await getVoucherExtrinsic(session, voucherValue)]
-      : [messageExtrinsic];
-
-    batchSignAndSend(txs, { ...options, onError });
+    signAndSendCreateSession(messageExtrinsic, session, voucherValue, options, shouldIssueVoucher);
   };
 
   const deleteSession = async (key: HexString, pair: KeyringPair, options: Options) => {

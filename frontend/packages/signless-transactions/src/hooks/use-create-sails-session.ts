@@ -1,17 +1,13 @@
 import { HexString } from '@gear-js/api';
-import { useAccount, useAlert, useApi, usePrepareProgramTransaction } from '@gear-js/react-hooks';
-import { useBatchSignAndSend } from './use-batch-sign-and-send';
+import { useAccount, useApi, usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { BaseProgram } from '@/context/types';
 import { CreeateSessionOptions, Options, Session, useCreateBaseSession } from './use-create-base-session';
 
 function useCreateSailsSession(programId: HexString, program: BaseProgram) {
   const { isApiReady } = useApi();
-  const alert = useAlert();
   const { account } = useAccount();
-  const { batchSignAndSend } = useBatchSignAndSend('all');
-  const onError = (message: string) => alert.error(message);
-  const { getVoucherExtrinsic, signAndSendDeleteSession } = useCreateBaseSession(programId);
+  const { signAndSendCreateSession, signAndSendDeleteSession } = useCreateBaseSession(programId);
 
   const { prepareTransactionAsync: prepareCreateSession } = usePrepareProgramTransaction({
     program,
@@ -30,33 +26,26 @@ function useCreateSailsSession(programId: HexString, program: BaseProgram) {
     voucherValue: number,
     { shouldIssueVoucher, voucherId, pair, ...options }: Options & CreeateSessionOptions,
   ) => {
+    console.log("🚀 ~ useCreateSailsSession ~ session:", session)
+    console.log("🚀 ~ useCreateSailsSession ~ voucherId:", voucherId)
+    console.log("🚀 ~ useCreateSailsSession ~ pair:", pair)
     if (!isApiReady) throw new Error('API is not initialized');
     if (!account) throw new Error('Account not found');
 
     const { key, duration, allowedActions } = session;
 
     const { transaction } = await prepareCreateSession({
-      account: { addressOrPair: pair ? pair.address : account.decodedAddress },
+      account: pair ? { addressOrPair: pair.address } : undefined,
       args: [key, duration, allowedActions],
       voucherId,
     });
     const messageExtrinsic = transaction.extrinsic;
 
-    const txs = shouldIssueVoucher
-      ? [messageExtrinsic, await getVoucherExtrinsic(session, voucherValue)]
-      : [messageExtrinsic];
-
-    batchSignAndSend(txs, { ...options, onError });
+    signAndSendCreateSession(messageExtrinsic, session, voucherValue, options, shouldIssueVoucher);
   };
 
   const deleteSession = async (key: HexString, pair: KeyringPair, options: Options) => {
-    if (!account) throw new Error('Account not found');
-
-    const { transaction } = await prepareDeleteSession({
-      account: { addressOrPair: account.decodedAddress },
-      args: [],
-    });
-
+    const { transaction } = await prepareDeleteSession({ args: [] });
     signAndSendDeleteSession(transaction.extrinsic, key, pair, options);
   };
 

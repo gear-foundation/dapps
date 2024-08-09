@@ -85,6 +85,20 @@ function useCreateBaseSession(programId: HexString) {
     return api.voucher.update(session.key, voucher.id, { prolongDuration, balanceTopUp });
   };
 
+  const signAndSendCreateSession = async (
+    messageExtrinsic: SubmittableExtrinsic<'promise', ISubmittableResult>,
+    session: Session,
+    voucherValue: number,
+    options: Options,
+    shouldIssueVoucher?: boolean,
+  ) => {
+    const txs = shouldIssueVoucher
+      ? [messageExtrinsic, await getVoucherExtrinsic(session, voucherValue)]
+      : [messageExtrinsic];
+
+    batchSignAndSend(txs, { ...options, onError });
+  };
+
   const signAndSendDeleteSession = async (
     messageExtrinsic: SubmittableExtrinsic<'promise', ISubmittableResult>,
     key: HexString,
@@ -121,7 +135,7 @@ function useCreateBaseSession(programId: HexString) {
     batchSend(signedTxs, { ...options, onError });
   };
 
-  return { getVoucherExtrinsic, signAndSendDeleteSession };
+  return { signAndSendDeleteSession, signAndSendCreateSession, onError };
 }
 
 export { useCreateBaseSession };

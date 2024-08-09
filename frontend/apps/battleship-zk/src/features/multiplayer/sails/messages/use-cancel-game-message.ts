@@ -1,6 +1,6 @@
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
+import { usePrepareEzTransactionParams } from '@dapps-frontend/ez-transactions';
 import { useProgram } from '@/app/utils/sails';
-import { usePrepareEzTransactionParams } from '@/app/utils/use-prepare-ez-transaction-params';
 
 export const useCancelGameMessage = () => {
   const program = useProgram();
