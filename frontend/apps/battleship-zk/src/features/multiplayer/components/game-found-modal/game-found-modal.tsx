@@ -69,7 +69,12 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
   };
 
   return (
-    <Modal heading="The game has been found" className={{ wrapper: styles.modalWrapper }} onClose={onClose}>
+    <Modal
+      heading="The game has been found"
+      className={{ wrapper: styles.modalWrapper, modal: styles.modal }}
+      onClose={onClose}
+      // hacky fix cuz the signless modal was not displaying above the dialog opened via showModal
+      showModalMode={false}>
       <div className={styles.container}>
         <p className={styles.mainText}>
           To proceed, review the parameters of the gaming session and click the “Join” button. If applicable, you will
