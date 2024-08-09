@@ -13,8 +13,6 @@ import styles from './GameFoundModal.module.scss';
 
 type Props = {
   entryFee: number | string;
-  players: number;
-  gasAmount: number | string;
   onSubmit: (values: JoinModalFormValues) => Promise<void>;
   onClose: () => void;
 };
@@ -23,7 +21,7 @@ export type JoinModalFormValues = {
   name: string;
 };
 
-function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Props) {
+function GameFoundModal({ entryFee, onSubmit, onClose }: Props) {
   const { isApiReady } = useApi();
   const { pending } = usePending();
   const { getFormattedBalance } = useBalanceFormat();
@@ -41,15 +39,6 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
         </>
       ),
       key: '1',
-    },
-    {
-      name: 'Required gas amount ',
-      value: (
-        <>
-          {VaraSvg} {gasAmount} VARA
-        </>
-      ),
-      key: '3',
     },
   ];
 
