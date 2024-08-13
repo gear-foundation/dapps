@@ -11,9 +11,6 @@ export const createTamagotchiInitial = {
 };
 
 export const ENV = {
-  store: import.meta.env.VITE_STORE_ADDRESS as HexString,
-  balance: import.meta.env.VITE_FT_ADDRESS as HexString,
-  battle: import.meta.env.VITE_BATTLE_ADDRESS as HexString,
   NODE: import.meta.env.VITE_NODE_ADDRESS as string,
 };
 

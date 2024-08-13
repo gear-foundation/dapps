@@ -23709,7 +23709,7 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
     "@gear-js/react-hooks": "npm:0.12.0"
-    "@gear-js/ui": "npm:0.5.21"
+    "@gear-js/ui": "npm:0.5.26"
     "@headlessui-float/react": "npm:0.11.0"
     "@headlessui/react": "npm:1.7.13"
     "@mantine/form": "npm:5.10.0"

@@ -31,4 +31,7 @@ const providers = [
 ];
 
 export const withProviders = (Component: ComponentType) => () =>
-  providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
+  providers.reduceRight(
+    (children, Provider) => <Provider appName="Vara Tamagotchi">{children}</Provider>,
+    <Component />,
+  );
