@@ -7,11 +7,13 @@ import { AVAILABLE_BALANCE, IS_AVAILABLE_BALANCE_READY, WALLET } from './consts'
 import { SystemAccount, WalletId } from './types';
 
 function useWallet() {
-  const { account } = useAccount();
+  const { wallets, account } = useAccount();
 
   const defaultWalletId = account?.meta.source as WalletId | undefined;
   const [walletId, setWalletId] = useState(defaultWalletId);
+
   const wallet = walletId ? WALLET[walletId] : undefined;
+  const walletAccounts = wallets && walletId ? wallets[walletId].accounts : undefined;
 
   useEffect(() => {
     setWalletId(defaultWalletId);
@@ -19,7 +21,7 @@ function useWallet() {
 
   const resetWalletId = () => setWalletId(undefined);
 
-  return { wallet, walletId, setWalletId, resetWalletId };
+  return { wallet, walletId, walletAccounts, setWalletId, resetWalletId };
 }
 
 function useAccountAvailableBalance() {
