@@ -33,7 +33,11 @@ function AlertProvider({ children }: ProviderProps) {
 const providers = [BrowserRouter, AlertProvider, ApiProvider, DnsProvider, AccountProvider];
 
 function withProviders(Component: ComponentType) {
-  return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
+  return () =>
+    providers.reduceRight(
+      (children, Provider) => <Provider appName="Vara W3b Streaming">{children}</Provider>,
+      <Component />,
+    );
 }
 
 export { withProviders };
