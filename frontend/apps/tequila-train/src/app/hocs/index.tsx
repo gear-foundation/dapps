@@ -34,4 +34,7 @@ function AlertProvider({ children }: ProviderProps) {
 const providers = [BrowserRouter, AlertProvider, ApiProvider, DnsProvider, AccountProvider, AppProvider, GameProvider];
 
 export const withProviders = (Component: ComponentType) => () =>
-  providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
+  providers.reduceRight(
+    (children, Provider) => <Provider appName="Vara Tequila Train">{children}</Provider>,
+    <Component />,
+  );
