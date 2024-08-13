@@ -21,12 +21,12 @@ type Props = {
 
 export function WalletConnect({ onClose }: Props) {
   const alert = useAlert();
-  const { extensions, account, accounts, login } = useAccount();
+  const { wallets, isAnyWallet, account, login } = useAccount();
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  const { walletAccounts, setWalletId, getWalletAccounts } = useWallet();
+  const { walletAccounts, setWalletId } = useWallet();
 
   useEffect(() => {
     const isNovaWallet = window?.walletExtension?.isNovaWallet;
@@ -39,26 +39,29 @@ export function WalletConnect({ onClose }: Props) {
 
   const getWallets = () =>
     WALLETS.map(([id, { SVG, name }]) => {
-      const isEnabled = extensions?.some((extension) => extension.name === id);
-      const status = isEnabled ? 'Enabled' : 'Disabled';
+      const { status, accounts, connect } = wallets?.[id] || {};
+      const isEnabled = Boolean(status);
+      const isConnected = status === 'connected';
 
-      const accountsCount = getWalletAccounts(id)?.length;
+      const accountsCount = accounts?.length;
       const accountsStatus = `${accountsCount} ${accountsCount === 1 ? 'account' : 'accounts'}`;
-
-      const onClick = () => setWalletId(id);
 
       return (
         <li key={id}>
-          <Button variant="white" className={styles.walletButton} onClick={onClick} disabled={!isEnabled}>
+          <Button
+            variant="white"
+            className={styles.walletButton}
+            onClick={() => (isConnected ? setWalletId(id) : connect?.())}
+            disabled={!isEnabled}>
             <span className={styles.wallet}>
               <SVG className={styles.icon} />
               {name}
             </span>
 
             <span className={styles.status}>
-              <span className={styles.statusText}>{status}</span>
+              <span className={styles.statusText}>{isConnected ? 'Enabled' : 'Disabled'}</span>
 
-              {isEnabled && <span className={styles.statusAccounts}>{accountsStatus}</span>}
+              {isConnected && <span className={styles.statusAccounts}>{accountsStatus}</span>}
             </span>
           </Button>
         </li>
@@ -109,7 +112,7 @@ export function WalletConnect({ onClose }: Props) {
   return (
     <ModalBottom heading="Connect Wallet" onClose={onClose}>
       <div>
-        {accounts?.length ? (
+        {isAnyWallet ? (
           <ul className={styles.list}>{getAccounts() || getWallets()}</ul>
         ) : (
           <p>
