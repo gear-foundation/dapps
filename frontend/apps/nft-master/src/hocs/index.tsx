@@ -39,7 +39,11 @@ function UrqlProvider({ children }: ProviderProps) {
 const providers = [BrowserRouter, UrqlProvider, AlertProvider, ApiProvider, DnsProvider, AccountProvider];
 
 function withProviders(Component: ComponentType) {
-  return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
+  return () =>
+    providers.reduceRight(
+      (children, Provider) => <Provider appName="Vara NFT Portal">{children}</Provider>,
+      <Component />,
+    );
 }
 
 export { withProviders };

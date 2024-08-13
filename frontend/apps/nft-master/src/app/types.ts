@@ -18,10 +18,6 @@ export type SVGComponent = FC<
   }
 >;
 
-export type ArrayElement<ArrayType extends readonly unknown[]> = ArrayType extends readonly (infer ElementType)[]
-  ? ElementType
-  : never;
-
 declare global {
   interface Window {
     walletExtension?: { isNovaWallet: boolean };
