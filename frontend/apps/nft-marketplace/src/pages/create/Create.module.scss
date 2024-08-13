@@ -27,6 +27,7 @@
 
 .form {
   @include verticalGap(32px);
+  max-width: 540px;
 }
 
 .item {
@@ -35,29 +36,6 @@
   align-items: center;
 }
 
-.input,
-.button {
-  max-width: 540px;
-}
-
-.input {
-  flex: 1;
-  display: grid;
-  grid-template-columns: 4fr 6fr;
-}
-
-.error {
-  color: $errorColor;
-}
-
 .checkbox {
-  &Wrapper {
-    &::before {
-      content: '';
-    }
-  }
-
-  &Error {
-    margin-left: auto;
-  }
+  margin-left: 27%;
 }
