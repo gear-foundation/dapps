@@ -14,14 +14,7 @@ export default defineConfig({
     },
 
     rollupOptions: {
-      external: [
-        'react',
-        'react-dom',
-        '@gear-js/api',
-        '@gear-js/react-hooks',
-        '@polkadot/extension-dapp',
-        '@polkadot/wasm-crypto',
-      ],
+      external: ['react', 'react-dom', '@gear-js/api', '@gear-js/react-hooks', '@polkadot/wasm-crypto'],
       output: {
         intro: 'import "./style.css";',
       },

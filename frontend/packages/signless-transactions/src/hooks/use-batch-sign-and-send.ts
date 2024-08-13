@@ -1,6 +1,5 @@
 import { useApi, useAccount } from '@gear-js/react-hooks';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
-import { web3FromSource } from '@polkadot/extension-dapp';
 import { ISubmittableResult } from '@polkadot/types/types';
 
 import { useGetExtrinsicFailedError } from './use-get-extrinsic-failed-error';
@@ -64,13 +63,13 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
   ) => {
     if (!account) throw new Error('No account address');
 
-    const { address, meta } = account;
+    const { address, signer } = account;
     const batch = getBatch();
     const statusCallback = (result: ISubmittableResult) => handleStatus(result, options);
 
     const signAndSend = pair
       ? batch(txs).signAndSend(pair, statusCallback)
-      : web3FromSource(meta.source).then(({ signer }) => batch(txs).signAndSend(address, { signer }, statusCallback));
+      : batch(txs).signAndSend(address, { signer }, statusCallback);
 
     signAndSend.catch(({ message }: Error) => {
       const { onError = () => {}, onFinally = () => {} } = options;
@@ -86,12 +85,10 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
   ) => {
     if (!account) throw new Error('No account address');
 
-    const { address, meta } = account;
+    const { address, signer } = account;
     const batch = getBatch();
 
-    const signAsync = pair
-      ? batch(txs).signAsync(pair)
-      : web3FromSource(meta.source).then(({ signer }) => batch(txs).signAsync(address, { signer }));
+    const signAsync = pair ? batch(txs).signAsync(pair) : batch(txs).signAsync(address, { signer });
 
     return signAsync.catch(({ message }: Error) => {
       const { onError = () => {}, onFinally = () => {} } = options;
@@ -101,10 +98,7 @@ function useBatchSignAndSend(type?: 'all' | 'force') {
     });
   };
 
-  const batchSend = async (
-    txsBatch: SubmittableExtrinsic<'promise', ISubmittableResult>,
-    { pair, ...options }: Options = {},
-  ) => {
+  const batchSend = async (txsBatch: SubmittableExtrinsic<'promise', ISubmittableResult>, options: Options = {}) => {
     const statusCallback = (result: ISubmittableResult) => handleStatus(result, options);
     const send = txsBatch.send(statusCallback);
 

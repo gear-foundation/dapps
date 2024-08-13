@@ -3,42 +3,23 @@ import { useAccount, useApi, useBalance } from '@gear-js/react-hooks';
 import { formatBalance } from '@polkadot/util';
 import { useEffect, useState } from 'react';
 import { useAtomValue, useSetAtom } from 'jotai';
-import { AVAILABLE_BALANCE, IS_AVAILABLE_BALANCE_READY, WALLET, WALLET_ID_LOCAL_STORAGE_KEY } from './consts';
+import { AVAILABLE_BALANCE, IS_AVAILABLE_BALANCE_READY, WALLET } from './consts';
 import { SystemAccount, WalletId } from './types';
 
-function useWalletSync() {
-  const { account, isAccountReady } = useAccount();
-  const { address } = account || {};
-
-  useEffect(() => {
-    if (!isAccountReady) return;
-    if (!account) return localStorage.removeItem(WALLET_ID_LOCAL_STORAGE_KEY);
-
-    localStorage.setItem(WALLET_ID_LOCAL_STORAGE_KEY, account.meta.source);
-  }, [isAccountReady, address, account]);
-}
-
 function useWallet() {
-  const { accounts } = useAccount();
+  const { account } = useAccount();
 
-  const [walletId, setWalletId] = useState(
-    (localStorage.getItem(WALLET_ID_LOCAL_STORAGE_KEY) as WalletId | null) || undefined,
-  );
-
+  const defaultWalletId = account?.meta.source as WalletId | undefined;
+  const [walletId, setWalletId] = useState(defaultWalletId);
   const wallet = walletId ? WALLET[walletId] : undefined;
 
-  const getWalletAccounts = (id: WalletId) => accounts?.filter(({ meta }) => meta.source === id);
-  const walletAccounts = walletId ? getWalletAccounts(walletId) : undefined;
+  useEffect(() => {
+    setWalletId(defaultWalletId);
+  }, [defaultWalletId]);
 
   const resetWalletId = () => setWalletId(undefined);
 
-  return {
-    wallet,
-    walletAccounts,
-    setWalletId,
-    resetWalletId,
-    getWalletAccounts,
-  };
+  return { wallet, walletId, setWalletId, resetWalletId };
 }
 
 function useAccountAvailableBalance() {
@@ -99,7 +80,8 @@ function useAccountAvailableBalanceSync() {
     } else {
       setIsReady(true);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, api, isAccountReady, isApiReady, isReady, balance]);
 }
 
-export { useWalletSync, useWallet, useAccountAvailableBalance, useAccountAvailableBalanceSync };
+export { useWallet, useAccountAvailableBalance, useAccountAvailableBalanceSync };

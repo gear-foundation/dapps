@@ -14,69 +14,34 @@ import { WalletModalProps } from './wallet-modal.interface';
 import { AccountIcon } from '../account-icon';
 import { variantsPanel, variantsOverlay } from './wallet-modal.variants';
 import { ScrollArea } from '@/components/scroll-area';
-import { ArrayElement } from '@/types';
-import { Wallets } from '../../types';
 import clsx from 'clsx';
 
 function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
   const alert = useAlert();
-  const { extensions, account, accounts, login, logout } = useAccount();
-
-  const { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts } = useWallet();
-
-  const sortWallets = (wallets: Wallets): Wallets => {
-    const [accountsWallets, subwallet, noAccountsWallets] = wallets.reduce(
-      (acc: [Wallets, ArrayElement<Wallets> | null, Wallets], item) => {
-        const id = item[0];
-        if (id === 'subwallet-js') {
-          acc[1] = item;
-          return acc;
-        }
-
-        if (getWalletAccounts(id)?.length) {
-          acc[0].push(item);
-          return acc;
-        }
-
-        acc[2].push(item);
-        return acc;
-      },
-      [[], null, []],
-    );
-
-    const sortedAccountsWallets = accountsWallets.sort(([idA], [idB]) =>
-      getWalletAccounts(idA)!.length > getWalletAccounts(idB)!.length ? 1 : -1,
-    );
-
-    return subwallet
-      ? [
-          ...(getWalletAccounts(subwallet[0])?.length
-            ? [subwallet, ...sortedAccountsWallets]
-            : [...sortedAccountsWallets, subwallet]),
-          ...noAccountsWallets,
-        ]
-      : [...sortedAccountsWallets, ...noAccountsWallets];
-  };
+  const { wallets, isAnyWallet, account, login, logout } = useAccount();
+  const { wallet, walletAccounts, setWalletId, resetWalletId } = useWallet();
 
   const getWallets = () =>
-    sortWallets(WALLETS).map(([id, { SVG, name }]) => {
-      const isEnabled = extensions?.some((extension) => extension.name === id);
-      const status = isEnabled ? 'Enabled' : 'Disabled';
+    WALLETS.map(([id, { SVG, name }]) => {
+      const { status, accounts, connect } = wallets?.[id] || {};
+      const isEnabled = Boolean(status);
+      const isConnected = status === 'connected';
 
-      const accountsCount = getWalletAccounts(id)?.length || 0;
+      const accountsCount = accounts?.length || 0;
       const accountsStatus = `${accountsCount} ${accountsCount === 1 ? 'account' : 'accounts'}`;
-
-      const onClick = () => setWalletId(id);
 
       return (
         <li key={id}>
-          <button className={styles.walletButton} onClick={onClick} disabled={!isEnabled}>
+          <button
+            className={styles.walletButton}
+            onClick={() => (isConnected ? setWalletId(id) : connect?.())}
+            disabled={!isEnabled}>
             <WalletItem Icon={SVG} name={name} />
 
             <span className={styles.status}>
-              <span className={styles.statusText}>{status}</span>
+              <span className={styles.statusText}>{isConnected ? 'Enabled' : 'Disabled'}</span>
 
-              {isEnabled && <span className={styles.statusAccounts}>{accountsStatus}</span>}
+              {isConnected && <span className={styles.statusAccounts}>{accountsStatus}</span>}
             </span>
           </button>
         </li>
@@ -154,7 +119,7 @@ function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
                     <CrossIcon />
                   </button>
                 </div>
-                {accounts?.length ? (
+                {isAnyWallet ? (
                   <ScrollArea className={styles.content} type={isScrollable ? 'always' : undefined}>
                     <ul className={clsx(styles.list, isScrollable ? styles['list--scroll'] : '')}>
                       {getAccounts() || getWallets()}
