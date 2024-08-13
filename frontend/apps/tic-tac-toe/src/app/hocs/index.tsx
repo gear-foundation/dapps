@@ -68,7 +68,11 @@ const providers = [
 ];
 
 function withProviders(Component: ComponentType) {
-  return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
+  return () =>
+    providers.reduceRight(
+      (children, Provider) => <Provider appName="Vara Tic-Tac-Toe">{children}</Provider>,
+      <Component />,
+    );
 }
 
 export { withProviders };
