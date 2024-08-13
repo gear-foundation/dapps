@@ -4,11 +4,7 @@ import { Logo } from './logo';
 import { Menu } from './menu';
 import styles from './Header.module.scss';
 
-type Props = {
-  isAccountVisible: boolean;
-};
-
-function Header({ isAccountVisible }: Props) {
+function Header() {
   return (
     <header className={styles.header}>
       <nav className={styles.nav}>
@@ -17,7 +13,8 @@ function Header({ isAccountVisible }: Props) {
           <Menu />
         </OnLogin>
       </nav>
-      {isAccountVisible && <Wallet />}
+
+      <Wallet />
     </header>
   );
 }

@@ -2027,7 +2027,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dapps-frontend/ui@workspace:packages/ui"
   dependencies:
-    "@gear-js/ui": "npm:0.5.21"
+    "@gear-js/ui": "npm:0.5.26"
     "@gear-js/vara-ui": "npm:0.0.6"
     "@headlessui/react": "npm:1.7.17"
     "@polkadot/react-identicon": "npm:3.6.4"
@@ -2636,6 +2636,17 @@ __metadata:
     react: ">=17.0.2"
     sass: 1.62.0
   checksum: 26b6e55a302c2eaf268733957cefec2c502e410c3c61390e93e6702f52a4ff13da49b6018ee00a722faa9b68e519cd272db6436c0cbb74c23f6644b0a49e635e
+  languageName: node
+  linkType: hard
+
+"@gear-js/ui@npm:0.5.26":
+  version: 0.5.26
+  resolution: "@gear-js/ui@npm:0.5.26"
+  peerDependencies:
+    react: 18.2.0
+    react-dom: 18.2.0
+    sass: 1.69.1
+  checksum: 4a9e4f2a7297f6d50a99727b5089fddc42e2a984d5af51131f94918ab5c60855aa8c85e7114b85e2be288b3c3c89b9b41ede98f9f0d2b4cd406fa11c54de5c3e
   languageName: node
   linkType: hard
 
@@ -18738,7 +18749,7 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
     "@gear-js/react-hooks": "npm:0.12.0"
-    "@gear-js/ui": "npm:0.4.0"
+    "@gear-js/ui": "npm:0.5.26"
     "@polkadot/api": "npm:10.11.2"
     "@polkadot/react-identicon": "npm:3.1.4"
     "@polkadot/types": "npm:10.11.2"
@@ -18963,7 +18974,7 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
     "@gear-js/react-hooks": "npm:0.12.0"
-    "@gear-js/ui": "npm:0.4.0"
+    "@gear-js/ui": "npm:0.5.26"
     "@polkadot/api": "npm:10.11.2"
     "@polkadot/react-identicon": "npm:3.1.4"
     "@polkadot/types": "npm:10.11.2"

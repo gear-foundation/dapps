@@ -28,7 +28,8 @@ function AlertProvider({ children }: Props) {
 const providers = [BrowserRouter, AlertProvider, IPFSProvider, ApiProvider, AccountProvider];
 
 function withProviders(Component: ComponentType) {
-  return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
+  return () =>
+    providers.reduceRight((children, Provider) => <Provider appName="Vara NFT">{children}</Provider>, <Component />);
 }
 
 export { withProviders };

@@ -32,7 +32,7 @@ function Create() {
   const [isRarity, setIsRarity] = useState(false);
 
   const handleImageFileChange = (value: File | undefined) => {
-    if (!value) return alert.error('Image is required');
+    if (!value) return setImageFile(value);
     if (value.size / 1024 ** 2 > 5) return alert.error('Image size should not exceed 5MB');
     if (!IMAGE_FILE_TYPES.includes(value.type)) return alert.error('Image should be .jpg, .png or .gif');
 
