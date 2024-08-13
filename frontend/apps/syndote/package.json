@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
+    "@dapps-frontend/hooks": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.38.1",
     "@gear-js/react-hooks": "0.12.0",
