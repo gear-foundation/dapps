@@ -8,7 +8,7 @@
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.38.1",
     "@gear-js/react-hooks": "0.12.0",
-    "@gear-js/ui": "0.5.21",
+    "@gear-js/ui": "0.5.26",
     "@mantine/form": "4.2.12",
     "@polkadot/api": "10.11.2",
     "@polkadot/react-identicon": "3.1.4",

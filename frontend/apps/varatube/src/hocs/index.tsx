@@ -25,7 +25,8 @@ function AlertProvider({ children }: ProviderProps) {
 const providers = [BrowserRouter, AlertProvider, ApiProvider, AccountProvider, AvailableBalanceProvider];
 
 function withProviders(Component: ComponentType) {
-  return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
+  return () =>
+    providers.reduceRight((children, Provider) => <Provider appName="Varatube">{children}</Provider>, <Component />);
 }
 
 export { withProviders };
