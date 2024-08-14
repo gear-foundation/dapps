@@ -1,7 +1,7 @@
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
-  AccountProvider,
+  AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { Alert, alertStyles } from '@gear-js/ui';
@@ -12,6 +12,10 @@ import { IPFSProvider } from 'context';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
+}
+
+function AccountProvider({ children }: ProviderProps) {
+  return <GearAccountProvider appName="Vara NFT Marketplace">{children}</GearAccountProvider>;
 }
 
 function AlertProvider({ children }: ProviderProps) {
@@ -25,11 +29,7 @@ function AlertProvider({ children }: ProviderProps) {
 const providers = [BrowserRouter, IPFSProvider, AlertProvider, ApiProvider, AccountProvider];
 
 function withProviders(Component: ComponentType) {
-  return () =>
-    providers.reduceRight(
-      (children, Provider) => <Provider appName="Vara NFT Marketplace">{children}</Provider>,
-      <Component />,
-    );
+  return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
 }
 
 export { withProviders };

@@ -1,7 +1,7 @@
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
-  AccountProvider,
+  AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { ComponentType } from 'react';
@@ -19,6 +19,10 @@ import { QueryProvider } from './query-provider';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
+}
+
+function AccountProvider({ children }: ProviderProps) {
+  return <GearAccountProvider appName="Vara ZK Battleship">{children}</GearAccountProvider>;
 }
 
 function AlertProvider({ children }: ProviderProps) {
@@ -60,11 +64,7 @@ const providers = [
 ];
 
 function withProviders(Component: ComponentType) {
-  return () =>
-    providers.reduceRight(
-      (children, Provider) => <Provider appName="Vara ZK Battleship">{children}</Provider>,
-      <Component />,
-    );
+  return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
 }
 
 export { withProviders };

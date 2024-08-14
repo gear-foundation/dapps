@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
-  AccountProvider,
+  AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { Alert, alertStyles } from '@gear-js/ui';
@@ -13,6 +13,10 @@ import { AppProvider, LessonsProvider, TmgProvider } from '../context';
 const ApiProvider = ({ children }: ProviderProps) => (
   <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>
 );
+
+function AccountProvider({ children }: ProviderProps) {
+  return <GearAccountProvider appName="Vara Tamagotchi">{children}</GearAccountProvider>;
+}
 
 const AlertProvider = ({ children }: ProviderProps) => (
   <GearAlertProvider template={Alert} containerClassName={alertStyles.root}>
@@ -31,7 +35,4 @@ const providers = [
 ];
 
 export const withProviders = (Component: ComponentType) => () =>
-  providers.reduceRight(
-    (children, Provider) => <Provider appName="Vara Tamagotchi">{children}</Provider>,
-    <Component />,
-  );
+  providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);

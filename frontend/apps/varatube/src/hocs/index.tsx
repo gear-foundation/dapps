@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
-  AccountProvider,
+  AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { AvailableBalanceProvider } from '@dapps-frontend/hooks';
@@ -12,6 +12,10 @@ import { ADDRESS } from 'consts';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
+}
+
+function AccountProvider({ children }: ProviderProps) {
+  return <GearAccountProvider appName="Varatube">{children}</GearAccountProvider>;
 }
 
 function AlertProvider({ children }: ProviderProps) {
@@ -25,8 +29,7 @@ function AlertProvider({ children }: ProviderProps) {
 const providers = [BrowserRouter, AlertProvider, ApiProvider, AccountProvider, AvailableBalanceProvider];
 
 function withProviders(Component: ComponentType) {
-  return () =>
-    providers.reduceRight((children, Provider) => <Provider appName="Varatube">{children}</Provider>, <Component />);
+  return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
 }
 
 export { withProviders };

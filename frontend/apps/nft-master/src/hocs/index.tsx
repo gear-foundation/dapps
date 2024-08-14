@@ -1,7 +1,7 @@
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
-  AccountProvider,
+  AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { DnsProvider as SharedDnsProvider } from '@dapps-frontend/hooks';
@@ -14,6 +14,10 @@ import { ADDRESS } from '../consts';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.DEFAULT_NODE }}>{children}</GearApiProvider>;
+}
+
+function AccountProvider({ children }: ProviderProps) {
+  return <GearAccountProvider appName="Vara NFT Portal">{children}</GearAccountProvider>;
 }
 
 function DnsProvider({ children }: ProviderProps) {
@@ -39,11 +43,7 @@ function UrqlProvider({ children }: ProviderProps) {
 const providers = [BrowserRouter, UrqlProvider, AlertProvider, ApiProvider, DnsProvider, AccountProvider];
 
 function withProviders(Component: ComponentType) {
-  return () =>
-    providers.reduceRight(
-      (children, Provider) => <Provider appName="Vara NFT Portal">{children}</Provider>,
-      <Component />,
-    );
+  return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);
 }
 
 export { withProviders };
