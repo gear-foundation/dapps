@@ -89,8 +89,6 @@
 }
 
 .configuration {
-  white-space: nowrap;
-
   @include lg {
     grid-column: 1 / -1;
   }

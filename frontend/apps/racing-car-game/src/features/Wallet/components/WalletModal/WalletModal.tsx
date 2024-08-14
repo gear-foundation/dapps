@@ -99,6 +99,44 @@ function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
 
   const isScrollable = (walletAccounts?.length || 0) > 6;
 
+  const render = () => {
+    if (!isAnyWallet)
+      return isMobileDevice ? (
+        <p>
+          To use this application on the mobile devices, open this page inside the compatible wallets like SubWallet or
+          Nova.
+        </p>
+      ) : (
+        <p>
+          A compatible wallet was not found or is disabled. Install it following the{' '}
+          <a
+            href="https://wiki.vara-network.io/docs/account/create-account/"
+            target="_blank"
+            rel="noreferrer"
+            className={styles.external}>
+            instructions
+          </a>
+          .
+        </p>
+      );
+
+    if (!walletAccounts)
+      return (
+        <ScrollArea className={styles.content} type={isScrollable ? 'always' : undefined}>
+          <ul className={cx(styles.list, isScrollable ? styles['list--scroll'] : '')}>{getWallets()}</ul>
+        </ScrollArea>
+      );
+
+    if (walletAccounts.length)
+      return (
+        <ScrollArea className={styles.content} type={isScrollable ? 'always' : undefined}>
+          <ul className={cx(styles.list, isScrollable ? styles['list--scroll'] : '')}>{getAccounts()}</ul>
+        </ScrollArea>
+      );
+
+    return <p>No accounts found. Please open your extension and create a new account or import existing.</p>;
+  };
+
   return (
     <AnimatePresence initial={false}>
       {open && (
@@ -124,34 +162,7 @@ function WalletModal({ onClose, open, setOpen }: WalletModalProps) {
                     <CrossIcon />
                   </button>
                 </div>
-                {isAnyWallet ? (
-                  <ScrollArea className={styles.content} type={isScrollable ? 'always' : undefined}>
-                    <ul className={cx(styles.list, isScrollable ? styles['list--scroll'] : '')}>
-                      {getAccounts() || getWallets()}
-                    </ul>
-                  </ScrollArea>
-                ) : (
-                  <>
-                    {isMobileDevice ? (
-                      <p>
-                        To use this application on the mobile devices, open this page inside the compatible wallets like
-                        SubWallet or Nova.
-                      </p>
-                    ) : (
-                      <p>
-                        A compatible wallet was not found or is disabled. Install it following the{' '}
-                        <a
-                          href="https://wiki.vara-network.io/docs/account/create-account/"
-                          target="_blank"
-                          rel="noreferrer"
-                          className={styles.external}>
-                          instructions
-                        </a>
-                        .
-                      </p>
-                    )}
-                  </>
-                )}
+                {render()}
 
                 {wallet && (
                   <div className={styles.footer}>

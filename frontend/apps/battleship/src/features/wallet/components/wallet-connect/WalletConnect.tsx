@@ -109,24 +109,30 @@ export function WalletConnect({ onClose }: Props) {
       );
     });
 
+  const render = () => {
+    if (!isAnyWallet)
+      return (
+        <p>
+          <a href="https://novawallet.io/" target="_blank" rel="noreferrer">
+            Nova
+          </a>{' '}
+          or{' '}
+          <a href="https://www.subwallet.app/" target="_blank" rel="noreferrer">
+            Subwallet
+          </a>{' '}
+          extensions was not found or disabled. Please, install it.
+        </p>
+      );
+
+    if (!walletAccounts) return <ul className={styles.list}>{getWallets()}</ul>;
+    if (walletAccounts.length) return <ul className={styles.list}>{getAccounts()}</ul>;
+
+    return <p>No accounts found. Please open your extension and create a new account or import existing.</p>;
+  };
+
   return (
     <ModalBottom heading="Connect Wallet" onClose={onClose}>
-      <div>
-        {isAnyWallet ? (
-          <ul className={styles.list}>{getAccounts() || getWallets()}</ul>
-        ) : (
-          <p>
-            <a href="https://novawallet.io/" target="_blank" rel="noreferrer">
-              Nova
-            </a>{' '}
-            or{' '}
-            <a href="https://www.subwallet.app/" target="_blank" rel="noreferrer">
-              Subwallet
-            </a>{' '}
-            extensions was not found or disabled. Please, install it.
-          </p>
-        )}
-      </div>
+      <div>{render()}</div>
     </ModalBottom>
   );
 }

@@ -85,6 +85,31 @@ function WalletModal({ close }: Props) {
     close();
   };
 
+  const render = () => {
+    if (!isAnyWallet)
+      return (
+        <div className={styles.instruction}>
+          <p>A compatible wallet wasn't found or is disabled.</p>
+          <p>
+            Please, install it following the{' '}
+            <a href="https://wiki.vara-network.io/docs/account/create-account/" target="_blank" rel="noreferrer">
+              instructions
+            </a>
+            .
+          </p>
+        </div>
+      );
+
+    if (!walletAccounts) return <ul className={styles.list}>{getWallets()}</ul>;
+    if (walletAccounts.length) return <ul className={styles.list}>{getAccounts()}</ul>;
+
+    return (
+      <div className={styles.instruction}>
+        <p>No accounts found. Please open your extension and create a new account or import existing.</p>
+      </div>
+    );
+  };
+
   return (
     <Modal
       heading="Connect Wallet"
@@ -105,20 +130,7 @@ function WalletModal({ close }: Props) {
           </div>
         ) : null
       }>
-      {isAnyWallet ? (
-        <ul className={styles.list}>{getAccounts() || getWallets()}</ul>
-      ) : (
-        <div className={styles.instruction}>
-          <p>A compatible wallet wasn't found or is disabled.</p>
-          <p>
-            Please, install it following the{' '}
-            <a href="https://wiki.vara-network.io/docs/account/create-account/" target="_blank" rel="noreferrer">
-              instructions
-            </a>
-            .
-          </p>
-        </div>
-      )}
+      {render()}
     </Modal>
   );
 }
