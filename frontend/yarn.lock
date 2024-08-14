@@ -1934,8 +1934,8 @@ __metadata:
     vite: "npm:4.4.5"
     vite-plugin-dts: "npm:3.5.1"
   peerDependencies:
-    "@gear-js/api": 0.36.5
-    "@gear-js/react-hooks": 0.10.2
+    "@gear-js/api": 0.38.1
+    "@gear-js/react-hooks": 0.12.1
     react: 18.2.0
     react-dom: 18.2.0
   languageName: unknown
@@ -1959,8 +1959,8 @@ __metadata:
     vite-plugin-dts: "npm:3.5.1"
     vite-plugin-svgr: "npm:3.2.0"
   peerDependencies:
-    "@gear-js/api": 0.36.5
-    "@gear-js/react-hooks": 0.10.2
+    "@gear-js/api": 0.38.1
+    "@gear-js/react-hooks": 0.12.1
     react: 18.2.0
     react-dom: 18.2.0
   languageName: unknown
@@ -1984,7 +1984,7 @@ __metadata:
     vite-plugin-dts: "npm:3.5.1"
   peerDependencies:
     "@gear-js/api": 0.38.1
-    "@gear-js/react-hooks": 0.12.0
+    "@gear-js/react-hooks": 0.12.1
     "@polkadot/types": 11.0.2
     "@polkadot/util": 12.3.2
     react: 18.2.0
@@ -2016,8 +2016,8 @@ __metadata:
     vite-plugin-dts: "npm:3.5.1"
     vite-plugin-svgr: "npm:3.2.0"
   peerDependencies:
-    "@gear-js/api": 0.36.5
-    "@gear-js/react-hooks": 0.10.2
+    "@gear-js/api": 0.38.1
+    "@gear-js/react-hooks": 0.12.1
     react: 18.2.0
     react-dom: 18.2.0
   languageName: unknown
@@ -2048,7 +2048,7 @@ __metadata:
     vite-plugin-svgr: "npm:3.2.0"
   peerDependencies:
     "@gear-js/api": 0.38.1
-    "@gear-js/react-hooks": 0.12.0
+    "@gear-js/react-hooks": 0.12.1
     react: 18.2.0
     react-dom: 18.2.0
   languageName: unknown
@@ -2598,9 +2598,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gear-js/react-hooks@npm:0.12.0":
-  version: 0.12.0
-  resolution: "@gear-js/react-hooks@npm:0.12.0"
+"@gear-js/react-hooks@npm:0.12.1":
+  version: 0.12.1
+  resolution: "@gear-js/react-hooks@npm:0.12.1"
   dependencies:
     "@polkadot/api-derive": "npm:11.0.2"
     "@polkadot/util": "npm:12.6.2"
@@ -2615,7 +2615,7 @@ __metadata:
     react: 18.2.0
     react-dom: 18.2.0
     sails-js: 0.1.8
-  checksum: 5526e73f59607f1bb865394e06ee02a8c986202b6e2fa801b229d6b4c8dd7eb2867fe4e01093c9400b7002175f6ee475794a4c81160e3ba464322b04fda6dd62
+  checksum: 05263356b9406d5faa7fb94718bdc899d433f19173ccfa18dbf8dd6555cc08027847162a323766d99133ec54d1908833ce2418ae549d76cecd8f051fb55c0191
   languageName: node
   linkType: hard
 
@@ -10349,7 +10349,7 @@ __metadata:
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
     "@gear-js/vara-ui": "npm:0.0.6"
     "@mantine/form": "npm:6.0.15"
@@ -10408,7 +10408,7 @@ __metadata:
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
     "@gear-js/vara-ui": "npm:0.0.6"
     "@mantine/form": "npm:6.0.15"
@@ -13132,7 +13132,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
     "@mantine/form": "npm:4.2.12"
     "@polkadot/api": "npm:10.11.2"
@@ -14637,7 +14637,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
     "@gear-js/vara-ui": "npm:0.0.6"
     "@headlessui/react": "npm:1.7.17"
@@ -14840,7 +14840,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
     "@headlessui/react": "npm:^1.7.17"
     "@mantine/form": "npm:6.0.8"
@@ -14892,7 +14892,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.4.0"
     "@mantine/form": "npm:4.2.12"
     "@polkadot/api": "npm:10.11.2"
@@ -14937,7 +14937,7 @@ __metadata:
   resolution: "gear-app@workspace:templates/gear-app-starter"
   dependencies:
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
     "@headlessui/react": "npm:^1.7.17"
     "@mantine/form": "npm:^5.10.5"
@@ -18748,7 +18748,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.26"
     "@polkadot/api": "npm:10.11.2"
     "@polkadot/react-identicon": "npm:3.1.4"
@@ -18796,7 +18796,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@mantine/form": "npm:6.0.8"
     "@polkadot/api": "npm:10.11.2"
     "@polkadot/types": "npm:10.11.2"
@@ -18973,7 +18973,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.26"
     "@polkadot/api": "npm:10.11.2"
     "@polkadot/react-identicon": "npm:3.1.4"
@@ -20926,7 +20926,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
     "@headlessui/react": "npm:1.7.17"
     "@mantine/form": "npm:6.0.15"
@@ -23290,7 +23290,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.4.0"
     "@mantine/form": "npm:4.2.12"
     "@polkadot/api": "npm:10.11.2"
@@ -23436,7 +23436,7 @@ __metadata:
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
     "@mantine/form": "npm:6.0.8"
     "@polkadot/api": "npm:10.11.2"
@@ -23653,7 +23653,7 @@ __metadata:
     "@dapps-frontend/ui": "workspace:*"
     "@fireworks-js/react": "npm:2.10.7"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
     "@headlessui-float/react": "npm:0.10.1"
     "@headlessui/react": "npm:1.7.7"
@@ -23708,7 +23708,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.26"
     "@headlessui-float/react": "npm:0.11.0"
     "@headlessui/react": "npm:1.7.13"
@@ -23802,7 +23802,7 @@ __metadata:
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
     "@headlessui/react": "npm:1.7.13"
     "@mantine/form": "npm:6.0.19"
@@ -23955,7 +23955,7 @@ __metadata:
     "@dapps-frontend/error-tracking": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@headlessui/react": "npm:1.7.17"
     "@polkadot/api": "npm:10.11.2"
     "@polkadot/types": "npm:10.11.2"
@@ -24820,7 +24820,7 @@ __metadata:
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
+    "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
     "@headlessui/react": "npm:1.7.13"
     "@mantine/form": "npm:6.0.19"
@@ -24892,8 +24892,8 @@ __metadata:
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.0"
-    "@gear-js/ui": "npm:0.5.21"
+    "@gear-js/react-hooks": "npm:0.12.1"
+    "@gear-js/ui": "npm:0.5.26"
     "@mantine/form": "npm:4.2.12"
     "@polkadot/api": "npm:10.11.2"
     "@polkadot/react-identicon": "npm:3.1.4"

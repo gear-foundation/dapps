@@ -10,7 +10,7 @@
     "@dapps-frontend/error-tracking": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.38.1",
-    "@gear-js/react-hooks": "0.12.0",
+    "@gear-js/react-hooks": "0.12.1",
     "@gear-js/ui": "0.5.21",
     "@headlessui/react": "1.7.17",
     "@mantine/form": "6.0.15",
