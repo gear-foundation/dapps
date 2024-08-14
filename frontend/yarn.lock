@@ -2619,16 +2619,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gear-js/ui@npm:0.4.0":
-  version: 0.4.0
-  resolution: "@gear-js/ui@npm:0.4.0"
-  peerDependencies:
-    react: ">=17.0.2"
-    sass: ^1.49.9
-  checksum: 4a83264e9485b08dd1b8da0e7cf0a8932f8569772d1a060be6ad5ad041ef1678a1d588e47cb70fa9e2039b528c93fc363bc3f62472d8f6ffcaea1cee5631300f
-  languageName: node
-  linkType: hard
-
 "@gear-js/ui@npm:0.5.21":
   version: 0.5.21
   resolution: "@gear-js/ui@npm:0.5.21"
@@ -7994,15 +7984,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/lodash.isplainobject@npm:4.0.7":
-  version: 4.0.7
-  resolution: "@types/lodash.isplainobject@npm:4.0.7"
-  dependencies:
-    "@types/lodash": "npm:*"
-  checksum: 1b6a65ec80d64fd8306e234adb9633309d848a7329c31a07e73b1068156363a72d272213a6380c051b95e6bf534eeed3958429cb252ae5e51bca40f337175248
-  languageName: node
-  linkType: hard
-
 "@types/lodash.memoize@npm:^4.1.7":
   version: 4.1.9
   resolution: "@types/lodash.memoize@npm:4.1.9"
@@ -9877,7 +9858,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"array.prototype.tosorted@npm:^1.1.1, array.prototype.tosorted@npm:^1.1.3":
+"array.prototype.tosorted@npm:^1.1.3":
   version: 1.1.3
   resolution: "array.prototype.tosorted@npm:1.1.3"
   dependencies:
@@ -12823,7 +12804,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"es-iterator-helpers@npm:^1.0.12, es-iterator-helpers@npm:^1.0.15, es-iterator-helpers@npm:^1.0.17":
+"es-iterator-helpers@npm:^1.0.15, es-iterator-helpers@npm:^1.0.17":
   version: 1.0.18
   resolution: "es-iterator-helpers@npm:1.0.18"
   dependencies:
@@ -13125,55 +13106,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"escrow@workspace:apps/escrow":
-  version: 0.0.0-use.local
-  resolution: "escrow@workspace:apps/escrow"
-  dependencies:
-    "@dapps-frontend/error-tracking": "workspace:*"
-    "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.1"
-    "@gear-js/ui": "npm:0.5.21"
-    "@mantine/form": "npm:4.2.12"
-    "@polkadot/api": "npm:10.11.2"
-    "@polkadot/react-identicon": "npm:3.1.4"
-    "@polkadot/types": "npm:10.11.2"
-    "@polkadot/util": "npm:12.3.2"
-    "@polkadot/wasm-crypto": "npm:7.2.2"
-    "@testing-library/jest-dom": "npm:5.16.4"
-    "@testing-library/react": "npm:13.2.0"
-    "@testing-library/user-event": "npm:13.5.0"
-    "@types/jest": "npm:27.5.1"
-    "@types/lodash.isplainobject": "npm:4.0.7"
-    "@types/node": "npm:18.15.11"
-    "@types/react": "npm:18.2.33"
-    "@types/react-dom": "npm:18.2.14"
-    "@typescript-eslint/eslint-plugin": "npm:5.25.0"
-    "@typescript-eslint/parser": "npm:5.25.0"
-    assert: "npm:2.0.0"
-    buffer: "npm:6.0.3"
-    clsx: "npm:1.2.1"
-    eslint: "npm:8.16.0"
-    eslint-config-airbnb: "npm:19.0.4"
-    eslint-config-airbnb-typescript: "npm:17.0.0"
-    eslint-config-prettier: "npm:8.8.0"
-    eslint-plugin-import: "npm:2.27.5"
-    eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.32.2"
-    eslint-plugin-react-hooks: "npm:4.6.0"
-    lodash.isplainobject: "npm:4.0.6"
-    react: "npm:18.2.0"
-    react-app-rewired: "npm:2.2.1"
-    react-dom: "npm:18.2.0"
-    react-router-dom: "npm:6.10.0"
-    react-scripts: "npm:5.0.1"
-    react-transition-group: "npm:4.4.5"
-    sass: "npm:1.62.0"
-    typescript: "npm:4.9.5"
-    web-vitals: "npm:3.3.1"
-  languageName: unknown
-  linkType: soft
-
 "eslint-config-airbnb-base@npm:^15.0.0":
   version: 15.0.0
   resolution: "eslint-config-airbnb-base@npm:15.0.0"
@@ -13457,58 +13389,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-plugin-react@npm:7.32.2":
-  version: 7.32.2
-  resolution: "eslint-plugin-react@npm:7.32.2"
-  dependencies:
-    array-includes: "npm:^3.1.6"
-    array.prototype.flatmap: "npm:^1.3.1"
-    array.prototype.tosorted: "npm:^1.1.1"
-    doctrine: "npm:^2.1.0"
-    estraverse: "npm:^5.3.0"
-    jsx-ast-utils: "npm:^2.4.1 || ^3.0.0"
-    minimatch: "npm:^3.1.2"
-    object.entries: "npm:^1.1.6"
-    object.fromentries: "npm:^2.0.6"
-    object.hasown: "npm:^1.1.2"
-    object.values: "npm:^1.1.6"
-    prop-types: "npm:^15.8.1"
-    resolve: "npm:^2.0.0-next.4"
-    semver: "npm:^6.3.0"
-    string.prototype.matchall: "npm:^4.0.8"
-  peerDependencies:
-    eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
-  checksum: 9ddd5cfc508555a5cb3edbdcc9138dd472d269d3a45da0be3e267ea2b3fa1b5990823675208c0e11376c9c55e46aaad5b7a5f46c965eb4dcf6f1eebcebf174c3
-  languageName: node
-  linkType: hard
-
-"eslint-plugin-react@npm:7.33.2":
-  version: 7.33.2
-  resolution: "eslint-plugin-react@npm:7.33.2"
-  dependencies:
-    array-includes: "npm:^3.1.6"
-    array.prototype.flatmap: "npm:^1.3.1"
-    array.prototype.tosorted: "npm:^1.1.1"
-    doctrine: "npm:^2.1.0"
-    es-iterator-helpers: "npm:^1.0.12"
-    estraverse: "npm:^5.3.0"
-    jsx-ast-utils: "npm:^2.4.1 || ^3.0.0"
-    minimatch: "npm:^3.1.2"
-    object.entries: "npm:^1.1.6"
-    object.fromentries: "npm:^2.0.6"
-    object.hasown: "npm:^1.1.2"
-    object.values: "npm:^1.1.6"
-    prop-types: "npm:^15.8.1"
-    resolve: "npm:^2.0.0-next.4"
-    semver: "npm:^6.3.1"
-    string.prototype.matchall: "npm:^4.0.8"
-  peerDependencies:
-    eslint: ^3 || ^4 || ^5 || ^6 || ^7 || ^8
-  checksum: f9b247861024bafc396c4bd3c9ac946604b3b23077251c98f23602aa22027a0c33a69157fd49564e4ff7f17b3678e5dc366a46c7ec42a09454d7cbce786d5001
-  languageName: node
-  linkType: hard
-
-"eslint-plugin-react@npm:^7.27.1":
+"eslint-plugin-react@npm:7.34.1, eslint-plugin-react@npm:^7.27.1":
   version: 7.34.1
   resolution: "eslint-plugin-react@npm:7.34.1"
   dependencies:
@@ -14670,7 +14551,7 @@ __metadata:
     eslint-config-react-app: "npm:6.0.0"
     eslint-plugin-import: "npm:2.27.5"
     eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.32.2"
+    eslint-plugin-react: "npm:7.34.1"
     eslint-plugin-react-hooks: "npm:4.6.0"
     framer-motion: "npm:10.16.5"
     jotai: "npm:2.5.1"
@@ -14869,57 +14750,10 @@ __metadata:
     eslint-config-react-app: "npm:7.0.1"
     eslint-plugin-import: "npm:2.27.5"
     eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.33.2"
+    eslint-plugin-react: "npm:7.34.1"
     eslint-plugin-react-hooks: "npm:4.6.0"
     framer-motion: "npm:^10.16.4"
     jotai: "npm:^2.2.2"
-    react: "npm:18.2.0"
-    react-app-rewired: "npm:2.2.1"
-    react-dom: "npm:18.2.0"
-    react-router-dom: "npm:6.10.0"
-    react-scripts: "npm:5.0.1"
-    react-transition-group: "npm:4.4.5"
-    sass: "npm:1.62.0"
-    typescript: "npm:4.9.5"
-    web-vitals: "npm:3.3.1"
-  languageName: unknown
-  linkType: soft
-
-"game-of-chance@workspace:apps/game-of-chance":
-  version: 0.0.0-use.local
-  resolution: "game-of-chance@workspace:apps/game-of-chance"
-  dependencies:
-    "@dapps-frontend/error-tracking": "workspace:*"
-    "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.1"
-    "@gear-js/ui": "npm:0.4.0"
-    "@mantine/form": "npm:4.2.12"
-    "@polkadot/api": "npm:10.11.2"
-    "@polkadot/react-identicon": "npm:3.1.4"
-    "@polkadot/types": "npm:10.11.2"
-    "@polkadot/util": "npm:12.3.2"
-    "@polkadot/wasm-crypto": "npm:7.2.2"
-    "@testing-library/jest-dom": "npm:5.16.4"
-    "@testing-library/react": "npm:13.2.0"
-    "@testing-library/user-event": "npm:13.5.0"
-    "@types/jest": "npm:27.5.1"
-    "@types/node": "npm:18.15.11"
-    "@types/react": "npm:18.2.33"
-    "@types/react-dom": "npm:18.2.14"
-    "@typescript-eslint/eslint-plugin": "npm:5.25.0"
-    "@typescript-eslint/parser": "npm:5.25.0"
-    assert: "npm:2.0.0"
-    buffer: "npm:6.0.3"
-    clsx: "npm:1.2.1"
-    eslint: "npm:8.16.0"
-    eslint-config-airbnb: "npm:19.0.4"
-    eslint-config-airbnb-typescript: "npm:17.0.0"
-    eslint-config-prettier: "npm:8.8.0"
-    eslint-plugin-import: "npm:2.27.5"
-    eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.32.2"
-    eslint-plugin-react-hooks: "npm:4.6.0"
     react: "npm:18.2.0"
     react-app-rewired: "npm:2.2.1"
     react-dom: "npm:18.2.0"
@@ -14969,7 +14803,7 @@ __metadata:
     eslint-config-prettier: "npm:8.8.0"
     eslint-plugin-import: "npm:2.27.5"
     eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.33.2"
+    eslint-plugin-react: "npm:7.34.1"
     eslint-plugin-react-hooks: "npm:4.6.0"
     framer-motion: "npm:^10.16.5"
     ipfs-http-client: "npm:^57.0.3"
@@ -17940,13 +17774,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lodash.isplainobject@npm:4.0.6":
-  version: 4.0.6
-  resolution: "lodash.isplainobject@npm:4.0.6"
-  checksum: afd70b5c450d1e09f32a737bed06ff85b873ecd3d3d3400458725283e3f2e0bb6bf48e67dbe7a309eb371a822b16a26cca4a63c8c52db3fc7dc9d5f9dd324cbb
-  languageName: node
-  linkType: hard
-
 "lodash.memoize@npm:^4.1.1, lodash.memoize@npm:^4.1.2":
   version: 4.1.2
   resolution: "lodash.memoize@npm:4.1.2"
@@ -18773,7 +18600,7 @@ __metadata:
     eslint-config-prettier: "npm:8.8.0"
     eslint-plugin-import: "npm:2.27.5"
     eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.32.2"
+    eslint-plugin-react: "npm:7.34.1"
     eslint-plugin-react-hooks: "npm:4.6.0"
     ipfs-http-client: "npm:57.0.1"
     react: "npm:18.2.0"
@@ -18818,7 +18645,7 @@ __metadata:
     eslint-config-prettier: "npm:8.8.0"
     eslint-plugin-import: "npm:2.27.5"
     eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.32.2"
+    eslint-plugin-react: "npm:7.34.1"
     eslint-plugin-react-hooks: "npm:4.6.0"
     graphql: "npm:^16.8.1"
     jotai: "npm:2.1.0"
@@ -18998,7 +18825,7 @@ __metadata:
     eslint-config-prettier: "npm:8.8.0"
     eslint-plugin-import: "npm:2.27.5"
     eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.32.2"
+    eslint-plugin-react: "npm:7.34.1"
     eslint-plugin-react-hooks: "npm:4.6.0"
     ipfs-http-client: "npm:57.0.1"
     react: "npm:18.2.0"
@@ -19179,7 +19006,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object.hasown@npm:^1.1.2, object.hasown@npm:^1.1.3":
+"object.hasown@npm:^1.1.3":
   version: 1.1.3
   resolution: "object.hasown@npm:1.1.3"
   dependencies:
@@ -20951,7 +20778,7 @@ __metadata:
     eslint-config-react-app: "npm:7.0.1"
     eslint-plugin-import: "npm:2.27.5"
     eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.33.2"
+    eslint-plugin-react: "npm:7.34.1"
     eslint-plugin-react-hooks: "npm:4.6.0"
     framer-motion: "npm:10.16.4"
     jotai: "npm:2.2.1"
@@ -21943,7 +21770,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^2.0.0-next.4, resolve@npm:^2.0.0-next.5":
+"resolve@npm:^2.0.0-next.5":
   version: 2.0.0-next.5
   resolution: "resolve@npm:2.0.0-next.5"
   dependencies:
@@ -21979,7 +21806,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@npm%3A^2.0.0-next.4#optional!builtin<compat/resolve>, resolve@patch:resolve@npm%3A^2.0.0-next.5#optional!builtin<compat/resolve>":
+"resolve@patch:resolve@npm%3A^2.0.0-next.5#optional!builtin<compat/resolve>":
   version: 2.0.0-next.5
   resolution: "resolve@patch:resolve@npm%3A2.0.0-next.5#optional!builtin<compat/resolve>::version=2.0.0-next.5&hash=c3c19d"
   dependencies:
@@ -23039,7 +22866,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"string.prototype.matchall@npm:^4.0.10, string.prototype.matchall@npm:^4.0.6, string.prototype.matchall@npm:^4.0.8":
+"string.prototype.matchall@npm:^4.0.10, string.prototype.matchall@npm:^4.0.6":
   version: 4.0.11
   resolution: "string.prototype.matchall@npm:4.0.11"
   dependencies:
@@ -23283,53 +23110,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"supply-chain@workspace:apps/supply-chain":
-  version: 0.0.0-use.local
-  resolution: "supply-chain@workspace:apps/supply-chain"
-  dependencies:
-    "@dapps-frontend/error-tracking": "workspace:*"
-    "@dapps-frontend/ui": "workspace:*"
-    "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.1"
-    "@gear-js/ui": "npm:0.4.0"
-    "@mantine/form": "npm:4.2.12"
-    "@polkadot/api": "npm:10.11.2"
-    "@polkadot/react-identicon": "npm:3.1.4"
-    "@polkadot/types": "npm:10.11.2"
-    "@polkadot/util": "npm:12.3.2"
-    "@polkadot/wasm-crypto": "npm:7.2.2"
-    "@testing-library/jest-dom": "npm:5.16.4"
-    "@testing-library/react": "npm:13.2.0"
-    "@testing-library/user-event": "npm:13.5.0"
-    "@types/jest": "npm:27.5.1"
-    "@types/node": "npm:18.15.11"
-    "@types/react": "npm:18.2.33"
-    "@types/react-dom": "npm:18.2.14"
-    "@typescript-eslint/eslint-plugin": "npm:5.25.0"
-    "@typescript-eslint/parser": "npm:5.25.0"
-    assert: "npm:2.0.0"
-    buffer: "npm:6.0.3"
-    clsx: "npm:1.2.1"
-    eslint: "npm:8.16.0"
-    eslint-config-airbnb: "npm:19.0.4"
-    eslint-config-airbnb-typescript: "npm:17.0.0"
-    eslint-config-prettier: "npm:8.8.0"
-    eslint-plugin-import: "npm:2.27.5"
-    eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.32.2"
-    eslint-plugin-react-hooks: "npm:4.6.0"
-    react: "npm:18.2.0"
-    react-app-rewired: "npm:2.2.1"
-    react-dom: "npm:18.2.0"
-    react-router-dom: "npm:6.10.0"
-    react-scripts: "npm:5.0.1"
-    react-transition-group: "npm:4.4.5"
-    sass: "npm:1.62.0"
-    typescript: "npm:4.9.5"
-    web-vitals: "npm:3.3.1"
-  languageName: unknown
-  linkType: soft
-
 "supports-color@npm:^5.3.0, supports-color@npm:^5.5.0":
   version: 5.5.0
   resolution: "supports-color@npm:5.5.0"
@@ -23462,7 +23242,7 @@ __metadata:
     eslint-config-prettier: "npm:8.8.0"
     eslint-plugin-import: "npm:2.27.5"
     eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.32.2"
+    eslint-plugin-react: "npm:7.34.1"
     eslint-plugin-react-hooks: "npm:4.6.0"
     jotai: "npm:2.7.1"
     react: "npm:18.2.0"
@@ -23680,7 +23460,7 @@ __metadata:
     eslint-config-react-app: "npm:7.0.1"
     eslint-plugin-import: "npm:2.27.5"
     eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.32.2"
+    eslint-plugin-react: "npm:7.34.1"
     eslint-plugin-react-hooks: "npm:4.6.0"
     framer-motion: "npm:9.0.7"
     jotai: "npm:^2.4.3"
@@ -23833,7 +23613,7 @@ __metadata:
     eslint-config-react-app: "npm:7.0.1"
     eslint-plugin-import: "npm:2.27.5"
     eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.32.2"
+    eslint-plugin-react: "npm:7.34.1"
     eslint-plugin-react-hooks: "npm:4.6.0"
     framer-motion: "npm:10.12.4"
     postcss: "npm:8.4.23"
@@ -24855,7 +24635,7 @@ __metadata:
     eslint-config-react-app: "npm:7.0.1"
     eslint-plugin-import: "npm:2.27.5"
     eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.32.2"
+    eslint-plugin-react: "npm:7.34.1"
     eslint-plugin-react-hooks: "npm:4.6.0"
     framer-motion: "npm:10.12.4"
     jotai: "npm:2.7.0"
@@ -24918,7 +24698,7 @@ __metadata:
     eslint-config-prettier: "npm:8.8.0"
     eslint-plugin-import: "npm:2.27.5"
     eslint-plugin-jsx-a11y: "npm:6.7.1"
-    eslint-plugin-react: "npm:7.32.2"
+    eslint-plugin-react: "npm:7.34.1"
     eslint-plugin-react-hooks: "npm:4.6.0"
     ipfs-http-client: "npm:60.0.0"
     jotai: "npm:2.6.0"
