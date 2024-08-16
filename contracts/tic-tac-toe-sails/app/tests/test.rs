@@ -1,10 +1,9 @@
-use tic_tac_toe_wasm::{
-    traits::{TicTacToeFactory, TicTacToe},
-    TicTacToeFactory as Factory, TicTacToe as TicTacToeClient,
-    Config, GameResult
-};
 use sails_rs::calls::*;
 use sails_rs::gtest::calls::*;
+use tic_tac_toe_wasm::{
+    traits::{TicTacToe, TicTacToeFactory},
+    Config, GameResult, TicTacToe as TicTacToeClient, TicTacToeFactory as Factory,
+};
 
 #[tokio::test]
 async fn test_play_game() {
@@ -29,17 +28,9 @@ async fn test_play_game() {
 
     let mut client = TicTacToeClient::new(program_space);
     // start_game
-    client
-        .start_game()
-        .send_recv(tic_tac_toe_id)
-        .await
-        .unwrap();
+    client.start_game().send_recv(tic_tac_toe_id).await.unwrap();
     // check game instance
-    let game_instance = client
-        .game(100.into())
-        .recv(tic_tac_toe_id)
-        .await
-        .unwrap();
+    let game_instance = client.game(100.into()).recv(tic_tac_toe_id).await.unwrap();
     assert!(game_instance.is_some());
 
     client
@@ -64,7 +55,6 @@ async fn test_play_game() {
     assert_eq!(game_instance.game_over, true);
     assert_eq!(game_instance.game_result, Some(GameResult::Bot));
     // println!("GAME: {:?}", game_instance);
-
 }
 
 #[tokio::test]
@@ -96,25 +86,17 @@ async fn add_and_remove_admin() {
         .await
         .unwrap();
     // check state
-    let admins = client
-        .admins()
-        .recv(tic_tac_toe_id)
-        .await
-        .unwrap();
+    let admins = client.admins().recv(tic_tac_toe_id).await.unwrap();
     assert_eq!(admins, vec![100.into(), 101.into()]);
 
     // remove admin
-        client
+    client
         .remove_admin(101.into())
         .send_recv(tic_tac_toe_id)
         .await
         .unwrap();
     // check state
-    let admins = client
-        .admins()
-        .recv(tic_tac_toe_id)
-        .await
-        .unwrap();
+    let admins = client.admins().recv(tic_tac_toe_id).await.unwrap();
     assert_eq!(admins, vec![100.into()]);
 }
 
@@ -162,16 +144,8 @@ async fn allow_messages() {
     assert!(res.is_err());
 
     // start_game
-    client
-        .start_game()
-        .send_recv(tic_tac_toe_id)
-        .await
-        .unwrap();
+    client.start_game().send_recv(tic_tac_toe_id).await.unwrap();
     // check game instance
-    let game_instance = client
-        .game(100.into())
-        .recv(tic_tac_toe_id)
-        .await
-        .unwrap();
+    let game_instance = client.game(100.into()).recv(tic_tac_toe_id).await.unwrap();
     assert!(game_instance.is_some());
 }

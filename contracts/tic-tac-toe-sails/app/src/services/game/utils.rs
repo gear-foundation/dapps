@@ -34,7 +34,7 @@ pub enum GameError {
     MessageOnlyForProgram,
     NotAdmin,
     MessageProcessingSuspended,
-    NotAllowedToSendMessages
+    NotAllowedToSendMessages,
 }
 
 /// Represent game instance status.

@@ -1,7 +1,7 @@
+use sails_client_gen::ClientGenerator;
 use sails_idl_gen::program;
 use std::{env, fs::File, path::PathBuf};
 use tic_tac_toe_app::Program;
-use sails_client_gen::ClientGenerator;
 
 fn main() {
     gear_wasm_builder::build();
@@ -18,4 +18,3 @@ fn main() {
         .generate_to(PathBuf::from(env::var("OUT_DIR").unwrap()).join("tic_tac_toe_client.rs"))
         .unwrap();
 }
-

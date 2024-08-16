@@ -1,11 +1,11 @@
 use crate::services::game::{
-    GameError, GameInstance, Event, GameResult, Mark, Storage, VICTORIES,
+    GameError, GameInstance, Event, GameResult, Mark, Storage, VICTORIES, Config
 };
 use gstd::{exec, msg};
 use sails_rs::prelude::*;
 
 pub fn start_game(storage: &mut Storage, msg_source: ActorId) -> Result<Event, GameError> {
-    check_allow_messages(&storage, msg_source)?;
+    check_allow_messages(storage, msg_source)?;
     if let Some(current_game) = storage.current_games.get(&msg_source) {
         if !current_game.game_over {
             return Err(GameError::GameIsAlreadyStarted);
@@ -42,7 +42,7 @@ pub fn start_game(storage: &mut Storage, msg_source: ActorId) -> Result<Event, G
 }
 
 pub fn turn(storage: &mut Storage, msg_source: ActorId, step: u8) -> Result<Event, GameError> {
-    check_allow_messages(&storage, msg_source)?;
+    check_allow_messages(storage, msg_source)?;
     let game_instance = storage
         .current_games
         .get_mut(&msg_source)
@@ -62,21 +62,10 @@ pub fn turn(storage: &mut Storage, msg_source: ActorId, step: u8) -> Result<Even
     game_instance.last_time = block_timestamp;
 
     if let Some(mark) = get_result(&game_instance.board.clone()) {
-        game_instance.game_over = true;
         if mark == game_instance.player_mark {
-            game_instance.game_result = Some(GameResult::Player);
-            send_delayed_message_to_remove_game(
-                msg_source,
-                storage.config.gas_to_remove_game,
-                storage.config.time_interval,
-            );
+            game_over(game_instance, &msg_source, &storage.config, GameResult::Player);
         } else {
-            game_instance.game_result = Some(GameResult::Bot);
-            send_delayed_message_to_remove_game(
-                msg_source,
-                storage.config.gas_to_remove_game,
-                storage.config.time_interval,
-            );
+            game_over(game_instance, &msg_source, &storage.config, GameResult::Bot);
         }
         return Ok(Event::GameFinished {
             game: game_instance.clone(),
@@ -90,45 +79,28 @@ pub fn turn(storage: &mut Storage, msg_source: ActorId, step: u8) -> Result<Even
     }
 
     if let Some(mark) = get_result(&game_instance.board.clone()) {
-        game_instance.game_over = true;
         if mark == game_instance.player_mark {
-            game_instance.game_result = Some(GameResult::Player);
-            send_delayed_message_to_remove_game(
-                msg_source,
-                storage.config.gas_to_remove_game,
-                storage.config.time_interval,
-            );
+            game_over(game_instance, &msg_source, &storage.config, GameResult::Player);
         } else {
-            game_instance.game_result = Some(GameResult::Bot);
-            send_delayed_message_to_remove_game(
-                msg_source,
-                storage.config.gas_to_remove_game,
-                storage.config.time_interval,
-            );
+            game_over(game_instance, &msg_source, &storage.config, GameResult::Bot);
         }
         return Ok(Event::GameFinished {
             game: game_instance.clone(),
         });
     } else if !game_instance.board.contains(&None) || bot_step.is_none() {
-        game_instance.game_over = true;
-        game_instance.game_result = Some(GameResult::Draw);
-        send_delayed_message_to_remove_game(
-            msg_source,
-            storage.config.gas_to_remove_game,
-            storage.config.time_interval,
-        );
+        game_over(game_instance, &msg_source, &storage.config, GameResult::Draw);
         return Ok(Event::GameFinished {
             game: game_instance.clone(),
         });
     }
-
     Ok(Event::MoveMade {
         game: game_instance.clone(),
     })
 }
 
+
 pub fn skip(storage: &mut Storage, msg_source: ActorId) -> Result<Event, GameError> {
-    check_allow_messages(&storage, msg_source)?;
+    check_allow_messages(storage, msg_source)?;
     let game_instance = storage
         .current_games
         .get_mut(&msg_source)
@@ -150,55 +122,42 @@ pub fn skip(storage: &mut Storage, msg_source: ActorId) -> Result<Event, GameErr
             game_instance.board[step_num] = Some(game_instance.bot_mark);
             let win = get_result(&game_instance.board.clone());
             if let Some(mark) = win {
-                game_instance.game_over = true;
+
                 if mark == game_instance.player_mark {
-                    game_instance.game_result = Some(GameResult::Player);
-                    send_delayed_message_to_remove_game(
-                        msg_source,
-                        storage.config.gas_to_remove_game,
-                        storage.config.time_interval,
-                    );
+                    game_over(game_instance, &msg_source, &storage.config, GameResult::Player);
                 } else {
-                    game_instance.game_result = Some(GameResult::Bot);
-                    send_delayed_message_to_remove_game(
-                        msg_source,
-                        storage.config.gas_to_remove_game,
-                        storage.config.time_interval,
-                    );
+                    game_over(game_instance, &msg_source, &storage.config, GameResult::Bot);
                 }
                 return Ok(Event::GameFinished {
                     game: game_instance.clone(),
                 });
             } else if !game_instance.board.contains(&None) {
-                game_instance.game_over = true;
-                game_instance.game_result = Some(GameResult::Draw);
-                send_delayed_message_to_remove_game(
-                    msg_source,
-                    storage.config.gas_to_remove_game,
-                    storage.config.time_interval,
-                );
+                game_over(game_instance, &msg_source, &storage.config, GameResult::Draw);
                 return Ok(Event::GameFinished {
                     game: game_instance.clone(),
                 });
             }
         }
         None => {
-            game_instance.game_over = true;
-            game_instance.game_result = Some(GameResult::Draw);
-            send_delayed_message_to_remove_game(
-                msg_source,
-                storage.config.gas_to_remove_game,
-                storage.config.time_interval,
-            );
+            game_over(game_instance, &msg_source, &storage.config, GameResult::Draw);
             return Ok(Event::GameFinished {
                 game: game_instance.clone(),
             });
         }
     }
-
     Ok(Event::MoveMade {
         game: game_instance.clone(),
     })
+}
+
+fn game_over(game_instance: &mut GameInstance, msg_source: &ActorId, config: &Config, result: GameResult) {
+    game_instance.game_over = true;
+    game_instance.game_result = Some(result);
+    send_delayed_message_to_remove_game(
+        *msg_source,
+        config.gas_to_remove_game,
+        config.time_interval,
+    );
 }
 
 pub fn remove_game_instance(storage: &mut Storage, msg_source: ActorId, account: ActorId) -> Result<Event, GameError> {
