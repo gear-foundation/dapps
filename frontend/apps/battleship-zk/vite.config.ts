@@ -23,10 +23,7 @@ export default defineConfig({
   plugins: [
     svgr(),
     react(),
-    // disabling modules used in packages
-    nodePolyfills({
-      globals: { process: false, global: false },
-    }),
+    nodePolyfills(),
     checker({
       typescript: true,
       eslint: { lintCommand: 'eslint "./src/**/*.{ts,tsx}"', dev: { logLevel: ['error'] } },

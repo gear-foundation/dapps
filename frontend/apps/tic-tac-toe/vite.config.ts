@@ -25,15 +25,7 @@ export default defineConfig(({ mode }) => {
       outDir: 'build',
       sourcemap: true,
     },
-    plugins: [
-      svgr(),
-      react(),
-      // disabling modules used in packages
-      nodePolyfills({
-        globals: { process: false, global: false },
-      }),
-      eslint(),
-    ],
+    plugins: [svgr(), react(), nodePolyfills(), eslint()],
     assetsInclude: ['**/*.wasm?inline', '**/*.txt?inline'],
   };
 });

@@ -19,14 +19,7 @@ export default defineConfig({
     port: 3000,
   },
   base: './',
-  plugins: [
-    react(),
-    // disabling modules used in packages
-    nodePolyfills({
-      globals: { process: false, global: false },
-    }),
-    eslint(),
-  ],
+  plugins: [react(), nodePolyfills(), eslint()],
   assetsInclude: ['**/*.wasm?inline'],
   build: { outDir: 'build' },
 });
