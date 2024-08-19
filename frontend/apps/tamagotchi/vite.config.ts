@@ -18,15 +18,7 @@ export default defineConfig({
   preview: {
     port: 3000,
   },
-  plugins: [
-    react(),
-    // disabling modules used in packages
-    nodePolyfills({
-      globals: { process: false, global: false },
-    }),
-    eslint(),
-    checker({ typescript: true }),
-  ],
+  plugins: [react(), nodePolyfills(), eslint(), checker({ typescript: true })],
   assetsInclude: ['**/*.wasm?inline'],
   define: {
     'process.env': {},
