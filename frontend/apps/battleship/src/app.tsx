@@ -6,14 +6,13 @@ import { ApiLoader } from '@/components';
 import { Header } from '@/components/layout';
 import { withProviders } from '@/app/hocs';
 
-import { useAccountAvailableBalanceSync, useWalletSync } from '@/features/wallet/hooks';
+import { useAccountAvailableBalanceSync } from '@/features/wallet/hooks';
 import { Container, Footer } from '@dapps-frontend/ui';
 
 function Component() {
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
 
-  useWalletSync();
   useAccountAvailableBalanceSync();
 
   const isAppReady = isApiReady && isAccountReady;

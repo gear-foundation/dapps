@@ -1,8 +1,6 @@
 import { atom } from 'jotai';
 import { EnkryptSVG, PolkadotSVG, SubWalletSVG, TalismanSVG, NovaSVG } from './assets';
 
-export const WALLET_ID_LOCAL_STORAGE_KEY = 'wallet';
-
 export const VOUCHER_MIN_LIMIT = 3;
 
 const isNovaWallet = window?.walletExtension?.isNovaWallet;

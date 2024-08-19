@@ -1,28 +1,24 @@
 import { Button, Checkbox, FileInput, Input, Textarea } from '@gear-js/ui';
-import plus from 'assets/images/form/plus.svg';
+import { ReactComponent as PlusSVG } from 'assets/images/form/plus.svg';
 import { useIPFS, useNftMessage } from 'hooks';
 import { getMintDetails, getMintPayload } from 'utils';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { useEffect, useState } from 'react';
-import clsx from 'clsx';
+import { useAlert } from '@gear-js/react-hooks';
 import { Attributes } from './attributes';
 import styles from './Create.module.scss';
 
 type AttributesValue = { key: string; value: string };
-type Values = { name: string; description: string; image: FileList; attributes: AttributesValue[]; rarity: string };
+type Values = { name: string; description: string; attributes: AttributesValue[]; rarity: string };
 
 const defaultAttributes = [{ key: '', value: '' }];
 const defaultValues = { name: '', description: '', attributes: defaultAttributes, rarity: '' };
 
 const IMAGE_FILE_TYPES = ['image/png', 'image/gif', 'image/jpeg'];
 
-const validateImage = {
-  required: (files: FileList) => !!files.length || 'Attach image',
-  size: (files: FileList) => files[0].size / 1024 ** 2 < 10 || 'Image size should not exceed 10MB',
-  extension: (files: FileList) => IMAGE_FILE_TYPES.includes(files[0].type) || 'Image should be .jpg, .png or .gif',
-};
-
 function Create() {
+  const alert = useAlert();
+
   const { formState, control, register, handleSubmit, resetField, reset } = useForm<Values>({ defaultValues });
   const { fields, append, remove } = useFieldArray({ control, name: 'attributes' });
   const { errors } = formState;
@@ -30,8 +26,18 @@ function Create() {
   const ipfs = useIPFS();
   const sendMessage = useNftMessage();
 
+  const [imageFile, setImageFile] = useState<File>();
+
   const [isAnyAttribute, setIsAnyAttribute] = useState(false);
   const [isRarity, setIsRarity] = useState(false);
+
+  const handleImageFileChange = (value: File | undefined) => {
+    if (!value) return setImageFile(value);
+    if (value.size / 1024 ** 2 > 5) return alert.error('Image size should not exceed 5MB');
+    if (!IMAGE_FILE_TYPES.includes(value.type)) return alert.error('Image should be .jpg, .png or .gif');
+
+    setImageFile(value);
+  };
 
   const toggleAttributes = () => setIsAnyAttribute((prevValue) => !prevValue);
   const toggleRarity = () => setIsRarity((prevValue) => !prevValue);
@@ -44,27 +50,22 @@ function Create() {
     resetField('rarity');
   }, [isRarity, resetField]);
 
-  const triggerImageChange = () => {
-    // hacky fix cuz reset() doesn't trigger file input's onChange
-    const changeEvent = new Event('change', { bubbles: true });
-    document.querySelector('[name="image"]')?.dispatchEvent(changeEvent);
-  };
-
   const resetForm = () => {
     reset();
-    triggerImageChange();
+    setImageFile(undefined);
     setIsAnyAttribute(false);
     setIsRarity(false);
   };
 
   const onSubmit = async (data: Values) => {
+    if (!imageFile) return alert.error('Image is required');
+
     const { name, description, attributes, rarity } = data;
-    const image = data.image[0];
 
     const details = isAnyAttribute || isRarity ? getMintDetails(isAnyAttribute ? attributes : undefined, rarity) : '';
 
     ipfs
-      .add(image)
+      .add(imageFile)
       .then(({ cid }) => cid)
       .then(async (imageCid) => (details ? { detailsCid: (await ipfs.add(details)).cid, imageCid } : { imageCid }))
       .then(({ imageCid, detailsCid }) => getMintPayload(name, description, imageCid, detailsCid))
@@ -74,55 +75,53 @@ function Create() {
   return (
     <>
       <h2 className={styles.heading}>Create NFT</h2>
+
       <div className={styles.main}>
         <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
-          <div className={styles.item}>
-            <Input label="Name" className={styles.input} {...register('name', { required: 'Name is required' })} />
-            <p className={styles.error}>{errors.name?.message}</p>
-          </div>
+          <Input
+            label="Name"
+            gap="1/3"
+            error={errors.name?.message}
+            {...register('name', { required: 'Name is required' })}
+          />
 
-          <div className={styles.item}>
-            <Textarea
-              label="Description"
-              className={styles.input}
-              {...register('description', { required: 'Description is required' })}
-            />
-            <p className={styles.error}>{errors.description?.message}</p>
-          </div>
+          <Textarea
+            label="Description"
+            gap="1/3"
+            {...register('description', { required: 'Description is required' })}
+            error={errors.description?.message}
+          />
 
-          <div className={clsx(styles.input, styles.checkboxWrapper)}>
-            <div className={styles.item}>
-              <Checkbox label="Attributes" checked={isAnyAttribute} onChange={toggleAttributes} />
-              {isAnyAttribute && <Button icon={plus} color="transparent" onClick={() => append(defaultAttributes)} />}
-              <p className={clsx(styles.error, styles.checkboxError)}>
-                {(errors.attributes?.[0]?.key || errors.attributes?.[0]?.value) && 'Enter attributes'}
-              </p>
-            </div>
-          </div>
+          <Checkbox
+            label="Attributes"
+            checked={isAnyAttribute}
+            onChange={toggleAttributes}
+            className={styles.checkbox}
+          />
+
+          {isAnyAttribute && <Button icon={PlusSVG} color="transparent" onClick={() => append(defaultAttributes)} />}
           {isAnyAttribute && <Attributes register={register} fields={fields} onRemoveButtonClick={remove} />}
 
-          <div className={clsx(styles.input, styles.checkboxWrapper)}>
-            <div className={styles.item}>
-              <Checkbox label="Rarity" checked={isRarity} onChange={toggleRarity} />
-              <p className={clsx(styles.error, styles.checkboxError)}>{errors.rarity?.message}</p>
-            </div>
-          </div>
+          <Checkbox label="Rarity" checked={isRarity} onChange={toggleRarity} className={styles.checkbox} />
+
           {isRarity && (
-            <div className={styles.item}>
-              <Input label="Rarity" className={styles.input} {...register('rarity', { required: 'Enter rarity' })} />
-            </div>
+            <Input
+              label="Rarity"
+              gap="1/3"
+              error={errors.rarity?.message}
+              {...register('rarity', { required: true })}
+            />
           )}
 
-          <div className={styles.item}>
-            <FileInput
-              label="Image"
-              className={styles.input}
-              accept={IMAGE_FILE_TYPES.join(', ')}
-              {...register('image', { validate: validateImage })}
-            />
-            <p className={styles.error}>{errors.image?.message}</p>
-          </div>
-          <Button type="submit" text="Create" className={styles.button} block />
+          <FileInput
+            label="Image"
+            gap="1/3"
+            accept={IMAGE_FILE_TYPES}
+            value={imageFile}
+            onChange={handleImageFileChange}
+          />
+
+          <Button type="submit" text="Create" block />
         </form>
       </div>
     </>

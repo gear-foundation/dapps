@@ -2,7 +2,6 @@ import { HexString, IVoucherDetails, ProgramMetadata, decodeAddress } from '@gea
 import { Account, useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
-import { web3FromSource } from '@polkadot/extension-dapp';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { sendTransaction } from '../utils';
 import { useIsAvailable } from '.';
@@ -103,7 +102,7 @@ function useCreateSession(
   };
 
   const getAccountSignature = async (metadata: ProgramMetadata, account: Account, payloadToSign: Session) => {
-    const { signer } = await web3FromSource(account.meta.source);
+    const { signer } = account;
     const { signRaw } = signer;
 
     console.log('SIGNATURE:');
@@ -113,8 +112,6 @@ function useCreateSession(
     console.log(account);
     console.log('PAYLOAD_TO_SIGN');
     console.log(payloadToSign);
-    console.log('web3FromSource');
-    console.log(web3FromSource);
     console.log('SIGNER');
     console.log(signer);
     console.log('signRaw');

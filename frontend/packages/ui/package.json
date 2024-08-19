@@ -10,8 +10,8 @@
     "preview": "vite preview"
   },
   "peerDependencies": {
-    "@gear-js/api": "0.36.5",
-    "@gear-js/react-hooks": "0.10.2",
+    "@gear-js/api": "0.38.1",
+    "@gear-js/react-hooks": "0.12.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
@@ -23,7 +23,7 @@
     "framer-motion": "10.16.16"
   },
   "devDependencies": {
-    "@gear-js/ui": "0.5.21",
+    "@gear-js/ui": "0.5.26",
     "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",
     "@typescript-eslint/eslint-plugin": "6.0.0",

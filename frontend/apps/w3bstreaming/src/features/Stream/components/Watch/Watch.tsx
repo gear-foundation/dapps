@@ -1,6 +1,5 @@
 import { MutableRefObject, useEffect, useRef, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { web3Enable, web3FromAddress } from '@polkadot/extension-dapp';
 import { SignerResult } from '@polkadot/api/types';
 import { stringToHex } from '@polkadot/util';
 import { useAccount } from '@gear-js/react-hooks';
@@ -30,10 +29,8 @@ function Watch({ socket, streamId }: WatchProps) {
     if (account?.address && !publicKey.current) {
       const { address } = account;
 
-      web3Enable('streaming');
-
       try {
-        const { signer } = await web3FromAddress(address);
+        const { signer } = account;
 
         if (!signer.signRaw) {
           throw new Error('signRaw does not exist');

@@ -1,17 +1,21 @@
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
-  AccountProvider,
+  AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { Alert, alertStyles } from '@gear-js/vara-ui';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
-import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
+import { DnsProvider as SharedDnsProvider } from '@dapps-frontend/hooks';
 import { ADDRESS } from 'consts';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
+}
+
+function AccountProvider({ children }: ProviderProps) {
+  return <GearAccountProvider appName="Vara W3b Streaming">{children}</GearAccountProvider>;
 }
 
 function DnsProvider({ children }: ProviderProps) {
