@@ -28,9 +28,9 @@ export default defineConfig(({ mode }) => {
     plugins: [
       svgr(),
       react(),
-      // process is used in the error-tracking package to get envs
+      // disabling modules used in packages
       nodePolyfills({
-        globals: { process: false },
+        globals: { process: false, global: false },
       }),
       eslint(),
     ],

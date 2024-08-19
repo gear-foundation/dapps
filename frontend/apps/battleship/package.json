@@ -19,7 +19,7 @@
     "@gear-js/vara-ui": "0.0.6",
     "@mantine/form": "6.0.15",
     "@polkadot/api": "11.0.2",
-    "@polkadot/react-identicon": "3.1.4",
+    "@polkadot/react-identicon": "3.6.4",
     "@polkadot/types": "11.0.2",
     "@polkadot/util": "12.3.2",
     "@radix-ui/react-dropdown-menu": "2.0.5",
