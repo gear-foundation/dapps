@@ -20,7 +20,6 @@
     "@polkadot/api": "10.11.2",
     "@polkadot/types": "10.11.2",
     "@polkadot/util": "12.3.2",
-    "@polkadot/wasm-crypto": "7.2.2",
     "@radix-ui/react-scroll-area": "1.0.3",
     "@tanstack/react-query": "5.29.0",
     "buffer": "6.0.3",

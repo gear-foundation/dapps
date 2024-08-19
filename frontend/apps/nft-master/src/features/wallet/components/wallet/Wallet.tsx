@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
-import { AccountIcon, Button } from 'components';
+import Identicon from '@polkadot/react-identicon';
+import { Button } from 'components';
 import clsx from 'clsx';
 import { useIsAppReady } from 'app/hooks/use-is-app-ready';
 import { WalletModal } from '../wallet-modal';
@@ -21,7 +22,7 @@ export function Wallet({ className }: { className?: string }) {
         className={clsx(styles.button, className)}
         onClick={() => setOpen(true)}
         disabled={!isAppReady}>
-        {isSigned && <AccountIcon address={account.address} size={16} className={styles.icon} />}
+        {isSigned && <Identicon value={account.address} size={16} theme="polkadot" className={styles.icon} />}
         <span>{isSigned ? account.meta.name : 'Connect'}</span>
       </Button>
 

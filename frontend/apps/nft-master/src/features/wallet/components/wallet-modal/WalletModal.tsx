@@ -1,9 +1,10 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useNavigate } from 'react-router-dom';
 import { copyToClipboard, isMobileDevice } from 'utils';
-import { AccountIcon, Button, Modal, ScrollArea, Sprite } from 'components';
+import { Button, Modal, ScrollArea, Sprite } from 'components';
 import { usePendingUI } from 'hooks';
 import clsx from 'clsx';
+import Identicon from '@polkadot/react-identicon';
 import { WALLETS } from '../../consts';
 import { useWallet } from '../../hooks';
 import { WalletItem } from '../wallet-item';
@@ -75,7 +76,7 @@ export function WalletModal({ onClose }: Props) {
             className={styles.button}
             onClick={handleAccountClick}
             disabled={isActive}>
-            <AccountIcon address={address} className={styles.accountIcon} />
+            <Identicon value={address} size={20} theme="polkadot" />
             <span>{meta.name}</span>
           </Button>
 
