@@ -19,7 +19,14 @@ export default defineConfig({
     port: 3000,
   },
   base: './',
-  plugins: [react(), nodePolyfills(), eslint()],
+  plugins: [
+    react(),
+    // process is used in the error-tracking package to get envs
+    nodePolyfills({
+      globals: { process: false },
+    }),
+    eslint(),
+  ],
   assetsInclude: ['**/*.wasm?inline'],
   build: { outDir: 'build' },
 });

@@ -18,9 +18,16 @@ export default defineConfig({
   preview: {
     port: 3000,
   },
-  plugins: [react(), nodePolyfills(), eslint(), checker({ typescript: true })],
+  plugins: [
+    react(),
+    // process is used in the error-tracking package to get envs
+    nodePolyfills({
+      globals: { process: false },
+    }),
+    eslint(),
+    checker({ typescript: true }),
+  ],
   assetsInclude: ['**/*.wasm?inline'],
-
   define: {
     'process.env': {},
   },
