@@ -10,6 +10,8 @@
     "bump:ui": "yarn bump @gear-js/ui",
     "bump:vara-ui": "yarn bump @gear-js/vara-ui",
     "bump:polkadot": "yarn bump @polkadot/api @polkadot/types",
+    "bump:sails": "yarn bump sails-js",
+    "bump:query": "yarn bump @tanstack/react-query",
     "build:error-tracking": "yarn workspace @dapps-frontend/error-tracking build",
     "build:ui": "yarn workspace @dapps-frontend/ui build",
     "build:hooks": "yarn workspace @dapps-frontend/hooks build",

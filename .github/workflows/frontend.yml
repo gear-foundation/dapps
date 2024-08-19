@@ -30,13 +30,7 @@ jobs:
           # Apps
           - subdir: apps/battleship
             build: build
-          - subdir: apps/escrow
-            build: build
-            test: test --passWithNoTests
           - subdir: apps/galactic-express
-            build: build
-            test: test --passWithNoTests
-          - subdir: apps/game-of-chance
             build: build
             test: test --passWithNoTests
           - subdir: apps/nft-marketplace
@@ -50,9 +44,6 @@ jobs:
             test: test --passWithNoTests
           - subdir: apps/racing-car-game
             build: build
-          - subdir: apps/supply-chain
-            build: build
-            test: test --passWithNoTests
           - subdir: apps/syndote
             build: build
             test: test --passWithNoTests
