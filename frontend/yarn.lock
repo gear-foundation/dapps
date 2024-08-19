@@ -23149,6 +23149,8 @@ __metadata:
   resolution: "tic-tac-toe@workspace:apps/tic-tac-toe"
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
+    "@dapps-frontend/ez-transactions": "workspace:*"
+    "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
     "@gear-js/react-hooks": "npm:0.12.1"
