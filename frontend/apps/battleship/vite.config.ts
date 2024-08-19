@@ -23,7 +23,8 @@ export default defineConfig({
   plugins: [
     svgr(),
     react(),
-    nodePolyfills(),
+    // process is used in the error-tracking package to get envs
+    nodePolyfills({ globals: { process: false } }),
     checker({
       typescript: true,
       eslint: { lintCommand: 'eslint "./src/**/*.{ts,tsx}"', dev: { logLevel: ['error'] } },

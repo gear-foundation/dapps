@@ -25,7 +25,15 @@ export default defineConfig(({ mode }) => {
       outDir: 'build',
       sourcemap: true,
     },
-    plugins: [svgr(), react(), nodePolyfills(), eslint()],
+    plugins: [
+      svgr(),
+      react(),
+      // process is used in the error-tracking package to get envs
+      nodePolyfills({
+        globals: { process: false },
+      }),
+      eslint(),
+    ],
     assetsInclude: ['**/*.wasm?inline', '**/*.txt?inline'],
   };
 });
