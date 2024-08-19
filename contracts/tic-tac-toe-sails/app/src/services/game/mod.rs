@@ -11,6 +11,7 @@ pub struct Storage {
     current_games: HashMap<ActorId, GameInstance>,
     config: Config,
     messages_allowed: bool,
+    sessions: HashMap<ActorId, Session>,
 }
 
 static mut STORAGE: Option<Storage> = None;
@@ -19,14 +20,23 @@ static mut STORAGE: Option<Storage> = None;
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
 pub enum Event {
-    GameFinished { game: GameInstance },
-    GameStarted { game: GameInstance },
-    MoveMade { game: GameInstance },
+    GameFinished {
+        game: GameInstance,
+        player_address: ActorId,
+    },
+    GameStarted {
+        game: GameInstance,
+    },
+    MoveMade {
+        game: GameInstance,
+    },
     GameInstanceRemoved,
     ConfigUpdated,
     AdminRemoved,
     AdminAdded,
     StatusMessagesUpdated,
+    SessionCreated,
+    SessionDeleted,
 }
 
 #[derive(Clone)]
@@ -40,6 +50,7 @@ impl Service {
                 current_games: HashMap::with_capacity(10_000),
                 config,
                 messages_allowed: true,
+                sessions: HashMap::new(),
             });
         }
         Self(())
@@ -57,45 +68,77 @@ impl Service {
     pub fn new() -> Self {
         Self(())
     }
-    pub fn start_game(&mut self) {
+    pub fn create_session(
+        &mut self,
+        key: ActorId,
+        duration: u64,
+        allowed_actions: Vec<ActionsForSession>,
+        signature: Option<Vec<u8>>,
+    ) {
         let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::start_game(storage, msg::source()));
-        self.notify_on(event.clone()).expect("Notification Error ");
+        let event = services::utils::panicking(|| {
+            funcs::create_session(storage, key, duration, allowed_actions, signature)
+        });
+        self.notify_on(event.clone()).expect("Notification Error");
     }
-    pub fn turn(&mut self, step: u8) {
+
+    pub fn delete_session_from_program(&mut self, session_for_account: ActorId) {
         let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::turn(storage, msg::source(), step));
-        self.notify_on(event.clone()).expect("Notification Error ");
+        let event = services::utils::panicking(|| {
+            funcs::delete_session_from_program(storage, session_for_account)
+        });
+        self.notify_on(event.clone()).expect("Notification Error");
     }
-    pub fn skip(&mut self) {
+
+    pub fn delete_session_from_account(&mut self) {
         let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::skip(storage, msg::source()));
-        self.notify_on(event.clone()).expect("Notification Error ");
+        let event = services::utils::panicking(|| funcs::delete_session_from_account(storage));
+        self.notify_on(event.clone()).expect("Notification Error");
+    }
+    pub fn start_game(&mut self, session_for_account: Option<ActorId>) {
+        let storage = self.get_mut();
+        let event = services::utils::panicking(|| {
+            funcs::start_game(storage, msg::source(), session_for_account)
+        });
+        self.notify_on(event.clone()).expect("Notification Error");
+    }
+    pub fn turn(&mut self, step: u8, session_for_account: Option<ActorId>) {
+        let storage = self.get_mut();
+        let event = services::utils::panicking(|| {
+            funcs::turn(storage, msg::source(), step, session_for_account)
+        });
+        self.notify_on(event.clone()).expect("Notification Error");
+    }
+    pub fn skip(&mut self, session_for_account: Option<ActorId>) {
+        let storage = self.get_mut();
+        let event =
+            services::utils::panicking(|| funcs::skip(storage, msg::source(), session_for_account));
+        self.notify_on(event.clone()).expect("Notification Error");
     }
     pub fn remove_game_instance(&mut self, account: ActorId) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| {
             funcs::remove_game_instance(storage, msg::source(), account)
         });
-        self.notify_on(event.clone()).expect("Notification Error ");
+        self.notify_on(event.clone()).expect("Notification Error");
     }
     pub fn remove_game_instances(&mut self, accounts: Option<Vec<ActorId>>) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| {
             funcs::remove_game_instances(storage, msg::source(), accounts)
         });
-        self.notify_on(event.clone()).expect("Notification Error ");
+        self.notify_on(event.clone()).expect("Notification Error");
     }
     pub fn add_admin(&mut self, admin: ActorId) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::add_admin(storage, msg::source(), admin));
-        self.notify_on(event.clone()).expect("Notification Error ");
+        self.notify_on(event.clone()).expect("Notification Error");
     }
     pub fn remove_admin(&mut self, admin: ActorId) {
         let storage = self.get_mut();
         let event =
             services::utils::panicking(|| funcs::remove_admin(storage, msg::source(), admin));
-        self.notify_on(event.clone()).expect("Notification Error ");
+        self.notify_on(event.clone()).expect("Notification Error");
     }
     pub fn update_config(
         &mut self,
@@ -103,6 +146,7 @@ impl Service {
         gas_to_remove_game: Option<u64>,
         time_interval: Option<u32>,
         turn_deadline_ms: Option<u64>,
+        gas_to_delete_session: Option<u64>,
     ) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| {
@@ -113,16 +157,17 @@ impl Service {
                 gas_to_remove_game,
                 time_interval,
                 turn_deadline_ms,
+                gas_to_delete_session,
             )
         });
-        self.notify_on(event.clone()).expect("Notification Error ");
+        self.notify_on(event.clone()).expect("Notification Error");
     }
     pub fn allow_messages(&mut self, messages_allowed: bool) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| {
             funcs::allow_messages(storage, msg::source(), messages_allowed)
         });
-        self.notify_on(event.clone()).expect("Notification Error ");
+        self.notify_on(event.clone()).expect("Notification Error");
     }
 
     pub fn admins(&self) -> &'static Vec<ActorId> {
@@ -139,5 +184,8 @@ impl Service {
     }
     pub fn messages_allowed(&self) -> &'static bool {
         &self.get().messages_allowed
+    }
+    pub fn session_for_the_account(&self, account: ActorId) -> Option<Session> {
+        self.get().sessions.get(&account).cloned()
     }
 }

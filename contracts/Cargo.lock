@@ -8428,6 +8428,7 @@ dependencies = [
  "gstd",
  "gtest",
  "sails-rs",
+ "schnorrkel 0.10.2",
  "tic-tac-toe-wasm",
  "tokio",
 ]

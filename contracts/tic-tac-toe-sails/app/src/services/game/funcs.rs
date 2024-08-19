@@ -1,18 +1,148 @@
 use crate::services::game::{
-    GameError, GameInstance, Event, GameResult, Mark, Storage, VICTORIES, Config
+    ActionsForSession, Config, Event, GameError, GameInstance, GameResult, Mark, Session,
+    SignatureData, Storage, VICTORIES,
 };
-use gstd::{exec, msg};
+use gstd::{collections::HashMap, exec, msg};
 use sails_rs::prelude::*;
 
-pub fn start_game(storage: &mut Storage, msg_source: ActorId) -> Result<Event, GameError> {
+use schnorrkel::PublicKey;
+
+fn verify<P: AsRef<[u8]>, M: AsRef<[u8]>>(
+    signature: &[u8],
+    message: M,
+    pubkey: P,
+) -> Result<(), GameError> {
+    let signature =
+        schnorrkel::Signature::from_bytes(signature).map_err(|_| GameError::BadSignature)?;
+    let pub_key = PublicKey::from_bytes(pubkey.as_ref()).map_err(|_| GameError::BadPublicKey)?;
+    pub_key
+        .verify_simple(b"substrate", message.as_ref(), &signature)
+        .map(|_| ())
+        .map_err(|_| GameError::VerificationFailed)
+}
+
+pub fn create_session(
+    storage: &mut Storage,
+    key: ActorId,
+    duration: u64,
+    allowed_actions: Vec<ActionsForSession>,
+    signature: Option<Vec<u8>>,
+) -> Result<Event, GameError> {
+    if duration < storage.config.minimum_session_duration_ms {
+        return Err(GameError::DurationIsSmall);
+    }
+
+    let msg_source = msg::source();
+    let block_timestamp = exec::block_timestamp();
+    let block_height = exec::block_height();
+
+    let expires = block_timestamp + duration;
+
+    let number_of_blocks = u32::try_from(duration.div_ceil(storage.config.s_per_block * 1_000))
+        .expect("Duration is too large");
+
+    if allowed_actions.is_empty() {
+        return Err(GameError::ThereAreNoAllowedMessages);
+    }
+
+    let account = match signature {
+        Some(sig_bytes) => {
+            check_if_session_exists(&storage.sessions, &key)?;
+            let pub_key: [u8; 32] = (key).into();
+            let mut prefix = b"<Bytes>".to_vec();
+            let mut message = SignatureData {
+                key: msg_source,
+                duration,
+                allowed_actions: allowed_actions.clone(),
+            }
+            .encode();
+            let mut postfix = b"</Bytes>".to_vec();
+            prefix.append(&mut message);
+            prefix.append(&mut postfix);
+
+            verify(&sig_bytes, prefix, pub_key)?;
+            storage.sessions.entry(key).insert(Session {
+                key: msg_source,
+                expires,
+                allowed_actions,
+                expires_at_block: block_height + number_of_blocks,
+            });
+            key
+        }
+        None => {
+            check_if_session_exists(&storage.sessions, &msg_source)?;
+
+            storage.sessions.entry(msg_source).insert(Session {
+                key,
+                expires,
+                allowed_actions,
+                expires_at_block: block_height + number_of_blocks,
+            });
+            msg_source
+        }
+    };
+
+    let request = [
+        "TicTacToe".encode(),
+        "DeleteSessionFromProgram".to_string().encode(),
+        (account).encode(),
+    ]
+    .concat();
+
+    msg::send_bytes_with_gas_delayed(
+        exec::program_id(),
+        request,
+        storage.config.gas_to_delete_session,
+        0,
+        number_of_blocks,
+    )
+    .expect("Error in sending message");
+
+    Ok(Event::SessionCreated)
+}
+
+pub fn delete_session_from_program(
+    storage: &mut Storage,
+    session_for_account: ActorId,
+) -> Result<Event, GameError> {
+    if msg::source() != exec::program_id() {
+        return Err(GameError::MessageOnlyForProgram);
+    }
+
+    if let Some(session) = storage.sessions.remove(&session_for_account) {
+        if session.expires_at_block > exec::block_height() {
+            return Err(GameError::TooEarlyToDeleteSession);
+        }
+    }
+    Ok(Event::SessionDeleted)
+}
+
+pub fn delete_session_from_account(storage: &mut Storage) -> Result<Event, GameError> {
+    if storage.sessions.remove(&msg::source()).is_none() {
+        return Err(GameError::NoSession);
+    }
+    Ok(Event::SessionDeleted)
+}
+
+pub fn start_game(
+    storage: &mut Storage,
+    msg_source: ActorId,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, GameError> {
     check_allow_messages(storage, msg_source)?;
-    if let Some(current_game) = storage.current_games.get(&msg_source) {
+    let player = get_player(
+        &storage.sessions,
+        &msg_source,
+        &session_for_account,
+        ActionsForSession::StartGame,
+    );
+    if let Some(current_game) = storage.current_games.get(&player) {
         if !current_game.game_over {
             return Err(GameError::GameIsAlreadyStarted);
         }
     }
 
-    let turn = random_turn(msg_source);
+    let turn = random_turn(player);
 
     let (player_mark, bot_mark) = if turn == 0 {
         (Mark::O, Mark::X)
@@ -32,20 +162,30 @@ pub fn start_game(storage: &mut Storage, msg_source: ActorId) -> Result<Event, G
         game_instance.board[4] = Some(Mark::X);
     }
 
-    storage
-        .current_games
-        .insert(msg_source, game_instance.clone());
+    storage.current_games.insert(player, game_instance.clone());
 
     Ok(Event::GameStarted {
         game: game_instance,
     })
 }
 
-pub fn turn(storage: &mut Storage, msg_source: ActorId, step: u8) -> Result<Event, GameError> {
+pub fn turn(
+    storage: &mut Storage,
+    msg_source: ActorId,
+    step: u8,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, GameError> {
     check_allow_messages(storage, msg_source)?;
+    let player = get_player(
+        &storage.sessions,
+        &msg_source,
+        &session_for_account,
+        ActionsForSession::StartGame,
+    );
+
     let game_instance = storage
         .current_games
-        .get_mut(&msg_source)
+        .get_mut(&player)
         .ok_or(GameError::GameIsNotStarted)?;
 
     if game_instance.board[step as usize].is_some() {
@@ -63,12 +203,13 @@ pub fn turn(storage: &mut Storage, msg_source: ActorId, step: u8) -> Result<Even
 
     if let Some(mark) = get_result(&game_instance.board.clone()) {
         if mark == game_instance.player_mark {
-            game_over(game_instance, &msg_source, &storage.config, GameResult::Player);
+            game_over(game_instance, &player, &storage.config, GameResult::Player);
         } else {
-            game_over(game_instance, &msg_source, &storage.config, GameResult::Bot);
+            game_over(game_instance, &player, &storage.config, GameResult::Bot);
         }
         return Ok(Event::GameFinished {
             game: game_instance.clone(),
+            player_address: player,
         });
     }
 
@@ -80,17 +221,29 @@ pub fn turn(storage: &mut Storage, msg_source: ActorId, step: u8) -> Result<Even
 
     if let Some(mark) = get_result(&game_instance.board.clone()) {
         if mark == game_instance.player_mark {
-            game_over(game_instance, &msg_source, &storage.config, GameResult::Player);
+            game_over(
+                game_instance,
+                &msg_source,
+                &storage.config,
+                GameResult::Player,
+            );
         } else {
             game_over(game_instance, &msg_source, &storage.config, GameResult::Bot);
         }
         return Ok(Event::GameFinished {
             game: game_instance.clone(),
+            player_address: player,
         });
     } else if !game_instance.board.contains(&None) || bot_step.is_none() {
-        game_over(game_instance, &msg_source, &storage.config, GameResult::Draw);
+        game_over(
+            game_instance,
+            &msg_source,
+            &storage.config,
+            GameResult::Draw,
+        );
         return Ok(Event::GameFinished {
             game: game_instance.clone(),
+            player_address: player,
         });
     }
     Ok(Event::MoveMade {
@@ -98,12 +251,22 @@ pub fn turn(storage: &mut Storage, msg_source: ActorId, step: u8) -> Result<Even
     })
 }
 
-
-pub fn skip(storage: &mut Storage, msg_source: ActorId) -> Result<Event, GameError> {
+pub fn skip(
+    storage: &mut Storage,
+    msg_source: ActorId,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, GameError> {
     check_allow_messages(storage, msg_source)?;
+    let player = get_player(
+        &storage.sessions,
+        &msg_source,
+        &session_for_account,
+        ActionsForSession::StartGame,
+    );
+
     let game_instance = storage
         .current_games
-        .get_mut(&msg_source)
+        .get_mut(&player)
         .ok_or(GameError::GameIsNotStarted)?;
 
     if game_instance.game_over {
@@ -122,26 +285,28 @@ pub fn skip(storage: &mut Storage, msg_source: ActorId) -> Result<Event, GameErr
             game_instance.board[step_num] = Some(game_instance.bot_mark);
             let win = get_result(&game_instance.board.clone());
             if let Some(mark) = win {
-
                 if mark == game_instance.player_mark {
-                    game_over(game_instance, &msg_source, &storage.config, GameResult::Player);
+                    game_over(game_instance, &player, &storage.config, GameResult::Player);
                 } else {
-                    game_over(game_instance, &msg_source, &storage.config, GameResult::Bot);
+                    game_over(game_instance, &player, &storage.config, GameResult::Bot);
                 }
                 return Ok(Event::GameFinished {
                     game: game_instance.clone(),
+                    player_address: player,
                 });
             } else if !game_instance.board.contains(&None) {
-                game_over(game_instance, &msg_source, &storage.config, GameResult::Draw);
+                game_over(game_instance, &player, &storage.config, GameResult::Draw);
                 return Ok(Event::GameFinished {
                     game: game_instance.clone(),
+                    player_address: player,
                 });
             }
         }
         None => {
-            game_over(game_instance, &msg_source, &storage.config, GameResult::Draw);
+            game_over(game_instance, &player, &storage.config, GameResult::Draw);
             return Ok(Event::GameFinished {
                 game: game_instance.clone(),
+                player_address: player,
             });
         }
     }
@@ -150,17 +315,22 @@ pub fn skip(storage: &mut Storage, msg_source: ActorId) -> Result<Event, GameErr
     })
 }
 
-fn game_over(game_instance: &mut GameInstance, msg_source: &ActorId, config: &Config, result: GameResult) {
+fn game_over(
+    game_instance: &mut GameInstance,
+    player: &ActorId,
+    config: &Config,
+    result: GameResult,
+) {
     game_instance.game_over = true;
     game_instance.game_result = Some(result);
-    send_delayed_message_to_remove_game(
-        *msg_source,
-        config.gas_to_remove_game,
-        config.time_interval,
-    );
+    send_delayed_message_to_remove_game(*player, config.gas_to_remove_game, config.time_interval);
 }
 
-pub fn remove_game_instance(storage: &mut Storage, msg_source: ActorId, account: ActorId) -> Result<Event, GameError> {
+pub fn remove_game_instance(
+    storage: &mut Storage,
+    msg_source: ActorId,
+    account: ActorId,
+) -> Result<Event, GameError> {
     if msg_source != exec::program_id() {
         return Err(GameError::MessageOnlyForProgram);
     }
@@ -176,7 +346,11 @@ pub fn remove_game_instance(storage: &mut Storage, msg_source: ActorId, account:
     Ok(Event::GameInstanceRemoved)
 }
 
-pub fn remove_game_instances(storage: &mut Storage, msg_source: ActorId, accounts: Option<Vec<ActorId>>) -> Result<Event, GameError> {
+pub fn remove_game_instances(
+    storage: &mut Storage,
+    msg_source: ActorId,
+    accounts: Option<Vec<ActorId>>,
+) -> Result<Event, GameError> {
     if !storage.admins.contains(&msg_source) {
         return Err(GameError::NotAdmin);
     }
@@ -196,14 +370,22 @@ pub fn remove_game_instances(storage: &mut Storage, msg_source: ActorId, account
     Ok(Event::GameInstanceRemoved)
 }
 
-pub fn add_admin(storage: &mut Storage, msg_source: ActorId, admin: ActorId) -> Result<Event, GameError> {
+pub fn add_admin(
+    storage: &mut Storage,
+    msg_source: ActorId,
+    admin: ActorId,
+) -> Result<Event, GameError> {
     if !storage.admins.contains(&msg_source) {
         return Err(GameError::NotAdmin);
     }
     storage.admins.push(admin);
     Ok(Event::AdminAdded)
 }
-pub fn remove_admin(storage: &mut Storage, msg_source: ActorId, admin: ActorId) -> Result<Event, GameError> {
+pub fn remove_admin(
+    storage: &mut Storage,
+    msg_source: ActorId,
+    admin: ActorId,
+) -> Result<Event, GameError> {
     if !storage.admins.contains(&msg_source) {
         return Err(GameError::NotAdmin);
     }
@@ -218,6 +400,7 @@ pub fn update_config(
     gas_to_remove_game: Option<u64>,
     time_interval: Option<u32>,
     turn_deadline_ms: Option<u64>,
+    gas_to_delete_session: Option<u64>,
 ) -> Result<Event, GameError> {
     if !storage.admins.contains(&msg_source) {
         return Err(GameError::NotAdmin);
@@ -235,6 +418,9 @@ pub fn update_config(
     if let Some(turn_deadline_ms) = turn_deadline_ms {
         storage.config.turn_deadline_ms = turn_deadline_ms;
     }
+    if let Some(gas_to_delete_session) = gas_to_delete_session {
+        storage.config.gas_to_delete_session = gas_to_delete_session;
+    }
     Ok(Event::ConfigUpdated)
 }
 
@@ -248,6 +434,24 @@ pub fn allow_messages(
     }
     storage.messages_allowed = messages_allowed;
     Ok(Event::StatusMessagesUpdated)
+}
+
+fn check_if_session_exists(
+    session_map: &HashMap<ActorId, Session>,
+    account: &ActorId,
+) -> Result<(), GameError> {
+    if let Some(Session {
+        key: _,
+        expires: _,
+        allowed_actions: _,
+        expires_at_block,
+    }) = session_map.get(account)
+    {
+        if *expires_at_block > exec::block_height() {
+            return Err(GameError::AlreadyHaveActiveSession);
+        }
+    }
+    Ok(())
 }
 
 fn check_allow_messages(storage: &Storage, msg_source: ActorId) -> Result<(), GameError> {
@@ -359,8 +563,8 @@ fn get_result(map: &[Option<Mark>]) -> Option<Mark> {
     None
 }
 
-fn random_turn(msg_source: ActorId) -> u8 {
-    let random_input: [u8; 32] = msg_source.into();
+fn random_turn(account: ActorId) -> u8 {
+    let random_input: [u8; 32] = account.into();
     let (random, _) = exec::random(random_input).expect("Error in getting random number");
     random[0] % 2
 }
@@ -385,4 +589,34 @@ fn send_delayed_message_to_remove_game(
         time_interval,
     )
     .expect("Error in sending message");
+}
+
+fn get_player(
+    session_map: &HashMap<ActorId, Session>,
+    msg_source: &ActorId,
+    session_for_account: &Option<ActorId>,
+    actions_for_session: ActionsForSession,
+) -> ActorId {
+    let player = match session_for_account {
+        Some(account) => {
+            let session = session_map
+                .get(account)
+                .expect("This account has no valid session");
+            assert!(
+                session.expires > exec::block_timestamp(),
+                "The session has already expired"
+            );
+            assert!(
+                session.allowed_actions.contains(&actions_for_session),
+                "This message is not allowed"
+            );
+            assert_eq!(
+                session.key, *msg_source,
+                "The account is not approved for this session"
+            );
+            *account
+        }
+        None => *msg_source,
+    };
+    player
 }
