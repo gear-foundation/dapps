@@ -1,6 +1,4 @@
 import { AlertContainerFactory, withoutCommas } from '@gear-js/react-hooks';
-import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
-import { ACCOUNT_ID_LOCAL_STORAGE_KEY } from '@/app/consts';
 import { HexString } from '@polkadot/util/types';
 
 export function formatDate(input: string | number): string {
@@ -11,7 +9,6 @@ export function formatDate(input: string | number): string {
     year: 'numeric',
   });
 }
-
 
 export const copyToClipboard = async ({
   alert,
@@ -58,9 +55,6 @@ export const copyToClipboard = async ({
     unsecuredCopyToClipboard(value);
   }
 };
-
-export const isLoggedIn = ({ address }: InjectedAccountWithMeta) =>
-  localStorage.getItem(ACCOUNT_ID_LOCAL_STORAGE_KEY) === address;
 
 export function prettyDate(
   input: number | Date | string,
