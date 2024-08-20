@@ -1,6 +1,7 @@
+import { web3FromSource } from '@polkadot/extension-dapp';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { HexString, IVoucherDetails } from '@gear-js/api';
-import { useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { Account, useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { ISubmittableResult } from '@polkadot/types/types';
 import { KeyringPair } from '@polkadot/keyring/types';
 
@@ -45,6 +46,23 @@ function useCreateBaseSession(programId: HexString) {
   const { batchSignAndSend, batchSign, batchSend } = useBatchSignAndSend('all');
 
   const onError = (message: string) => alert.error(message);
+
+  const signHex = async (account: Account, hexToSign: `0x${string}`) => {
+    const { signer } = await web3FromSource(account.meta.source);
+    const { signRaw } = signer;
+
+    console.log('SIGNATURE:');
+    console.log('ACCOUNT', account);
+    console.log('SIGNER', signer);
+    console.log('signRaw', signRaw);
+    console.log('HEXtoSIGN: ', hexToSign);
+
+    if (!signRaw) {
+      throw new Error('signRaw is not a function');
+    }
+
+    return signRaw({ address: account.address, data: hexToSign, type: 'bytes' });
+  };
 
   const isVoucherExpired = async ({ expiry }: IVoucherDetails) => {
     if (!isApiReady) throw new Error('API is not initialized');
@@ -135,7 +153,7 @@ function useCreateBaseSession(programId: HexString) {
     batchSend(signedTxs, { ...options, onError });
   };
 
-  return { signAndSendDeleteSession, signAndSendCreateSession, onError };
+  return { signAndSendDeleteSession, signAndSendCreateSession, onError, signHex };
 }
 
 export { useCreateBaseSession };

@@ -1,7 +1,6 @@
 import { HexString, ProgramMetadata, decodeAddress } from '@gear-js/api';
 import { Account, useAccount, useApi } from '@gear-js/react-hooks';
 import { AnyJson } from '@polkadot/types/types';
-import { web3FromSource } from '@polkadot/extension-dapp';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { sendTransaction } from '../utils';
 import { CreeateSessionOptions, Options, Session, useCreateBaseSession } from './use-create-base-session';
@@ -14,7 +13,7 @@ function useCreateMetadataSession(
   const { api, isApiReady } = useApi();
   const { account } = useAccount();
 
-  const { signAndSendCreateSession, signAndSendDeleteSession, onError } = useCreateBaseSession(programId);
+  const { signAndSendCreateSession, signAndSendDeleteSession, onError, signHex } = useCreateBaseSession(programId);
 
   const getMessageExtrinsic = (payload: AnyJson) => {
     if (!isApiReady) throw new Error('API is not initialized');
@@ -27,21 +26,6 @@ function useCreateMetadataSession(
   };
 
   const getAccountSignature = async (metadata: ProgramMetadata, account: Account, payloadToSign: Session) => {
-    const { signer } = await web3FromSource(account.meta.source);
-    const { signRaw } = signer;
-
-    console.log('SIGNATURE:');
-    console.log('METADATA', metadata);
-    console.log('ACCOUNT', account);
-    console.log('PAYLOAD_TO_SIGN', payloadToSign);
-    console.log('web3FromSource', web3FromSource);
-    console.log('SIGNER', signer);
-    console.log('signRaw', signRaw);
-
-    if (!signRaw) {
-      throw new Error('signRaw is not a function');
-    }
-
     if (metadata.types?.others?.output === null) {
       throw new Error(`Metadata type doesn't exist`);
     }
@@ -53,8 +37,7 @@ function useCreateMetadataSession(
       ? createSignatureType(metadata, payloadToSign)
       : metadata.createType(metadata.types.others.output, payloadToSign).toHex();
 
-    console.log('HEXtoSIGN: ', hexToSign);
-    return signRaw({ address: account.address, data: hexToSign, type: 'bytes' });
+    return signHex(account, hexToSign);
   };
 
   const createSession = async (

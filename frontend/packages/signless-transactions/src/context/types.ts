@@ -1,3 +1,4 @@
+import { TypeRegistry } from '@polkadot/types';
 import { TransactionBuilder } from 'sails-js';
 import { IVoucherDetails } from '@gear-js/api';
 import { HexString } from '@polkadot/util/types';
@@ -50,17 +51,20 @@ type ProgramSession = {
   allowed_actions: string[];
 };
 
+type SignatureData = {
+  key: ActorId;
+  duration: number | string | bigint;
+  allowed_actions: Array<ActionsForSession>;
+};
+
 type BaseProgram =
   | {
       session: {
         sessionForTheAccount: (account: ActorId, ...arg2: BaseProgramQueryProps) => Promise<ProgramSession | null>;
-        createSession: (
-          key: ActorId,
-          duration: number | string | bigint,
-          allowed_actions: Array<ActionsForSession>,
-        ) => TransactionBuilder<null>;
-        deleteSession: () => TransactionBuilder<null>;
+        createSession: (signatureData: SignatureData, signature: `0x${string}` | null) => TransactionBuilder<null>;
+        deleteSessionFromAccount: () => TransactionBuilder<null>;
       };
+      registry: TypeRegistry;
     }
   | undefined;
 
