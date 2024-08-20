@@ -1,13 +1,10 @@
 import { Character } from './Character';
-
 import { CharacterRenderer } from './renders/CharacterRenderer';
 import { MapRenderer } from './renders/MapRenderer';
 import { EnemyRenderer } from './renders/EnemyRenderer';
 import { EnemyWithVision } from './EnemyWithVision';
-
 import { findEnemyStartPositions } from '../utils/findEnemyStartPositions';
 import { findCharacterStartPosition } from '../utils/findCharacterStartPosition';
-
 import { IGameLevel } from '@/app/types/game';
 import { TileMap } from '../types';
 import { HEIGHT_CANVAS, WIDTH_CANVAS, gameLevels } from '../consts';
@@ -19,12 +16,18 @@ export class GameEngine {
   private character: Character | undefined;
   private enemies: EnemyWithVision[] = [];
   private animationFrameId: number | null = null;
+  private resizeTimeout: number | undefined;
 
   private isUp = false;
   private isDown = false;
   private isLeft = false;
   private isRight = false;
   private isShift = false;
+
+  private incrementCoins: (coin: 'silver' | 'gold') => void;
+
+  private lastUpdateTime: number = 0; // Добавлено для ограничения FPS
+  private readonly frameDuration: number = 1000 / 60; // 60 FPS
 
   map: TileMap;
   level: IGameLevel;
@@ -51,15 +54,19 @@ export class GameEngine {
     this.setGameOver = setGameOver;
     this.gameOver = gameOver;
     this.pause = pause;
-
+    this.incrementCoins = incrementCoins;
+    this.init();
     this.resize();
+  }
 
+  init() {
+    this.resize();
     MapRenderer.initTilesets(this.map).then(() => {
       const startPosition = findCharacterStartPosition(this.map);
       const enemyStartPositions = findEnemyStartPositions(this.map);
 
       if (startPosition) {
-        this.character = new Character(startPosition.x, startPosition.y, true, this.map, incrementCoins, () =>
+        this.character = new Character(startPosition.x, startPosition.y, true, this.map, this.incrementCoins, () =>
           this.setGameOver(true),
         );
 
@@ -69,7 +76,7 @@ export class GameEngine {
       }
 
       const levelData = gameLevels.find((l) => {
-        return l.level === level;
+        return l.level === this.level;
       });
 
       enemyStartPositions.forEach(({ position, zone }) => {
@@ -105,8 +112,8 @@ export class GameEngine {
     return this.character;
   }
 
-  resize() {
-    const dpr = window.devicePixelRatio || 1;
+  resize = () => {
+    const dpr = Math.min(window.devicePixelRatio, 1.5);
     const width = WIDTH_CANVAS * dpr;
     const height = HEIGHT_CANVAS * dpr;
 
@@ -119,12 +126,21 @@ export class GameEngine {
     this.fogContext.scale(dpr, dpr);
 
     this.render();
-  }
+  };
+
+  private handleResize = () => {
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
+    this.resizeTimeout = window.setTimeout(() => {
+      this.resize();
+    }, 200);
+  };
 
   private initEventListeners() {
     window.addEventListener('keydown', this.handleKeyDown);
     window.addEventListener('keyup', this.handleKeyUp);
-    window.addEventListener('resize', this.resize.bind(this));
+    window.addEventListener('resize', this.handleResize);
   }
 
   public handleKeyDown = (event: { keyCode: number }) => {
@@ -167,70 +183,68 @@ export class GameEngine {
     }
   };
 
-  private update = () => {
+  update = () => {
     if (this.gameOver) {
       this.cleanup();
       return;
     }
-    if (this.animationFrameId !== null) {
-      if (!this.pause) {
-        if (this.character) {
-          if (window.innerWidth > 768) {
-            this.character.updateMovement(this.isLeft, this.isRight, this.isUp, this.isDown, this.isShift);
-          }
-        }
+
+    const now = performance.now();
+    const deltaTime = now - this.lastUpdateTime;
+
+    if (deltaTime >= this.frameDuration) {
+      this.lastUpdateTime = now - (deltaTime % this.frameDuration);
+
+      if (!this.pause && this.character) {
+        this.character.updateMovement(this.isLeft, this.isRight, this.isUp, this.isDown, this.isShift);
 
         this.enemies.forEach((enemy) => {
-          if (this.character) {
-            enemy.update({
-              mapData: this.map,
-              playerPosition: this.character.position,
-            });
-          }
+          enemy.update({ mapData: this.map, playerPosition: this.character!.position });
         });
 
         if (this.checkCollisions()) {
           this.setGameOver(true);
           return;
         }
+
         this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+        this.render();
       }
     }
 
     this.animationFrameId = requestAnimationFrame(this.update);
-    this.render();
   };
 
-  private render() {
-    if (this.character) {
-      let offsetX = 0;
-      let offsetY = 0;
+  render() {
+    if (!this.character) return;
 
-      if (window.innerWidth < 768) {
-        offsetX = WIDTH_CANVAS / 3.5 - this.character.position.x;
-        offsetY = HEIGHT_CANVAS / 3.5 - this.character.position.y;
+    let offsetX = 0;
+    let offsetY = 0;
 
-        this.context.save();
-        this.context.translate(offsetX, offsetY);
-      }
+    if (window.innerWidth < 768) {
+      offsetX = WIDTH_CANVAS / 3.5 - this.character.position.x;
+      offsetY = HEIGHT_CANVAS / 3.5 - this.character.position.y;
 
-      this.context.fillStyle = '#000000ad';
-      this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      this.context.save();
+      this.context.translate(offsetX, offsetY);
+    }
 
-      MapRenderer.render(this.context, this.map);
-      CharacterRenderer.render(this.context, this.character);
+    this.context.fillStyle = '#000000ad';
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
 
-      this.enemies.forEach((enemy) => EnemyRenderer.render(this.context, enemy));
+    MapRenderer.render(this.context, this.map);
+    CharacterRenderer.render(this.context, this.character);
 
-      this.context.restore();
+    this.enemies.forEach((enemy) => EnemyRenderer.render(this.context, enemy));
 
-      if (this.level === 'Hard') {
-        this.fogContext.save();
-        this.fogContext.translate(offsetX, offsetY);
-        const radiusFogOfWar = window.innerWidth < 768 ? 120 : 150;
-        MapRenderer.renderFogOfWar(this.fogContext, this.character.position, radiusFogOfWar);
-        this.fogContext.restore();
-      }
+    this.context.restore();
+
+    if (this.level === 'Hard') {
+      this.fogContext.save();
+      this.fogContext.translate(offsetX, offsetY);
+      const radiusFogOfWar = window.innerWidth < 768 ? 120 : 150;
+      MapRenderer.renderFogOfWar(this.fogContext, this.character.position, radiusFogOfWar);
+      this.fogContext.restore();
     }
   }
 
@@ -242,7 +256,11 @@ export class GameEngine {
 
     window.removeEventListener('keydown', this.handleKeyDown);
     window.removeEventListener('keyup', this.handleKeyUp);
-    window.removeEventListener('resize', this.resize.bind(this));
+    window.removeEventListener('resize', this.handleResize);
+
+    if (this.resizeTimeout) {
+      clearTimeout(this.resizeTimeout);
+    }
   }
 
   checkCollisions() {

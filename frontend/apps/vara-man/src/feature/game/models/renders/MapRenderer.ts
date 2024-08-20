@@ -49,12 +49,17 @@ export class MapRenderer {
     );
 
     await Promise.all(
-      this.tilesets.map(
-        (tileset) =>
-          new Promise((resolve) => {
-            tileset.image.onload = () => resolve(true);
-          }),
-      ),
+      this.tilesets.map((tileset) => {
+        if (!this.loadedImages[tileset.image.src]) {
+          return new Promise((resolve) => {
+            tileset.image.onload = () => {
+              this.loadedImages[tileset.image.src] = tileset.image;
+              resolve(true);
+            };
+          });
+        }
+        return Promise.resolve(true);
+      }),
     );
   }
 
@@ -93,7 +98,7 @@ export class MapRenderer {
         }
       }
     }
-	
+
     this.renderImageLayer(context, mapData);
     this.renderCoins(context, mapData);
   }
