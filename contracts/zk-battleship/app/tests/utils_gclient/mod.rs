@@ -92,10 +92,12 @@ pub async fn init(
         gas_for_check_time: 5_000_000_000,
         gas_for_delete_multiple_game: 5_000_000_000,
         gas_for_delete_single_game: 10_000_000_000,
-        // delay_for_check_time: 20, // 1 min
-        delay_for_check_time: 200,            // 10 min
+        gas_for_delete_session: 5_000_000_000,
+        delay_for_check_time: 20,             // 1 min
         delay_for_delete_multiple_game: 2400, // 2 hour
-        delay_for_delete_single_game: 400,    // 20 min
+        delay_for_delete_single_game: 2400,   // 2 hour
+        minimum_session_duration_ms: 180_000, // 3 mins
+        block_duration_ms: 3_000,
     };
     let request = [
         "New".encode(),

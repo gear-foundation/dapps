@@ -2,6 +2,7 @@ use super::{
     utils::{Result, *},
     Event,
 };
+use crate::admin::storage::configuration::Configuration;
 use crate::services::verify::{PublicMoveInput, VerificationResult};
 use gstd::{exec, msg, prelude::*, ActorId};
 
@@ -29,11 +30,10 @@ pub fn start_single_game(
     games: &mut SingleGamesMap,
     player: ActorId,
     hash: Vec<u8>,
-    gas_limit: u64,
-    delay: u32,
+    config: Configuration,
+    block_timestamp: u64,
 ) -> Result<()> {
     let bot_ships = generate_field();
-    let block_timestamp = exec::block_timestamp();
     let game_instance = SingleGame {
         player_board: vec![Entity::Unknown; 25],
         ship_hash: hash,
@@ -42,9 +42,21 @@ pub fn start_single_game(
         total_shots: 0,
         succesfull_shots: 0,
         verification_requirement: None,
+        last_move_time: block_timestamp,
     };
     games.insert(player, game_instance);
-    send_delete_game_delayed_message(player, block_timestamp, gas_limit, delay);
+    send_delete_game_delayed_message(
+        player,
+        block_timestamp,
+        config.gas_for_delete_single_game,
+        config.delay_for_delete_single_game,
+    );
+    send_check_time_delayed_message(
+        player,
+        block_timestamp,
+        config.gas_for_check_time,
+        config.delay_for_check_time,
+    );
     Ok(())
 }
 
@@ -105,6 +117,8 @@ pub fn make_move(
     player: ActorId,
     verification_result: Option<VerificationResult>,
     step: Option<u8>,
+    config: Configuration,
+    block_timestamp: u64,
 ) -> Result<Event> {
     let game = games.get_mut(&player).ok_or(Error::NoSuchGame)?;
 
@@ -131,13 +145,20 @@ pub fn make_move(
                 time,
                 total_shots,
                 succesfull_shots,
-                last_hit: hit,
+                last_hit: Some(hit),
             });
         }
 
         if res != 0 {
             let bot_step = move_analysis(&game.player_board);
             game.verification_requirement = Some(bot_step);
+            game.last_move_time = block_timestamp;
+            send_check_time_delayed_message(
+                player,
+                block_timestamp,
+                config.gas_for_check_time,
+                config.delay_for_check_time,
+            );
             return Ok(Event::MoveMade {
                 player,
                 step,
@@ -167,7 +188,7 @@ pub fn make_move(
             time,
             total_shots,
             succesfull_shots,
-            last_hit: step,
+            last_hit: Some(step),
         });
     }
 
@@ -177,7 +198,13 @@ pub fn make_move(
         Some(move_analysis(&game.player_board))
     };
     game.verification_requirement = bot_step;
-
+    game.last_move_time = block_timestamp;
+    send_check_time_delayed_message(
+        player,
+        block_timestamp,
+        config.gas_for_check_time,
+        config.delay_for_check_time,
+    );
     Ok(Event::MoveMade {
         player,
         step: Some(step),
@@ -212,6 +239,47 @@ fn send_delete_game_delayed_message(player: ActorId, start_time: u64, gas_limit:
 
     msg::send_bytes_with_gas_delayed(exec::program_id(), request, gas_limit, 0, delay)
         .expect("Error in sending message");
+}
+
+fn send_check_time_delayed_message(
+    actor_id: ActorId,
+    block_timestamp: u64,
+    gas_limit: u64,
+    delay: u32,
+) {
+    let request = [
+        "Single".encode(),
+        "CheckOutTiming".to_string().encode(),
+        (actor_id, block_timestamp).encode(),
+    ]
+    .concat();
+    msg::send_bytes_with_gas_delayed(exec::program_id(), request, gas_limit, 0, delay)
+        .expect("Error in sending message");
+}
+
+pub fn check_out_timing(
+    games: &mut SingleGamesMap,
+    actor_id: ActorId,
+    check_time: u64,
+) -> Result<Option<Event>> {
+    let game = games.get_mut(&actor_id).ok_or(Error::NoSuchGame)?;
+    let event = if game.last_move_time == check_time {
+        let time = exec::block_timestamp() - game.start_time;
+        let event = Event::EndGame {
+            player: actor_id,
+            winner: BattleshipParticipants::Bot,
+            time,
+            last_hit: None,
+            total_shots: game.total_shots,
+            succesfull_shots: game.succesfull_shots,
+        };
+        games.remove(&actor_id);
+        Some(event)
+    } else {
+        None
+    };
+
+    Ok(event)
 }
 
 /// This function is responsible for randomly or strategically placing ships on the game field,

@@ -199,9 +199,12 @@ pub mod configuration {
         pub gas_for_delete_single_game: u64,
         pub gas_for_delete_multiple_game: u64,
         pub gas_for_check_time: u64,
+        pub gas_for_delete_session: u64,
         pub delay_for_delete_single_game: u32,
         pub delay_for_delete_multiple_game: u32,
         pub delay_for_check_time: u32,
+        pub minimum_session_duration_ms: u64,
+        pub block_duration_ms: u64,
     }
 
     static mut INSTANCE: Option<Configuration> = None;

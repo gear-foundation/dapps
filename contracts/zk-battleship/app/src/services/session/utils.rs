@@ -7,9 +7,15 @@ pub(crate) type Result<T, E = Error> = core::result::Result<T, E>;
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
 pub enum Error {
+    AccessDenied,
     AlreadyHaveActiveSession,
     NoActiveSession,
     AllowedActionsIsEmpty,
+    DurationIsSmall,
+    DurationIsLarge,
+    BadSignature,
+    BadPublicKey,
+    VerificationFailed,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
@@ -22,6 +28,8 @@ pub struct Session {
     pub expires: u64,
     // what messages are allowed to be sent by the account (key)
     pub allowed_actions: Vec<ActionsForSession>,
+
+    pub expires_at_block: u32,
 }
 #[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord, Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rs::scale_codec)]
@@ -29,4 +37,13 @@ pub struct Session {
 pub enum ActionsForSession {
     PlaySingleGame,
     PlayMultipleGame,
+}
+
+#[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
+pub struct SignatureData {
+    pub key: ActorId,
+    pub duration: u64,
+    pub allowed_actions: Vec<ActionsForSession>,
 }

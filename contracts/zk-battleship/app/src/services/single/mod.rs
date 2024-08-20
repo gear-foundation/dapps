@@ -28,7 +28,7 @@ pub enum Event {
         time: u64,
         total_shots: u8,
         succesfull_shots: u8,
-        last_hit: u8,
+        last_hit: Option<u8>,
     },
     MoveMade {
         player: ActorId,
@@ -89,19 +89,19 @@ impl SingleService {
         )
         .await;
         // start single game
-        let config = ConfigurationStorage::get();
         services::utils::panicking(move || {
             funcs::start_single_game(
                 SingleGamesStorage::as_mut(),
                 player,
                 public_input.hash,
-                config.gas_for_delete_single_game,
-                config.delay_for_delete_single_game,
+                ConfigurationStorage::get(),
+                exec::block_timestamp(),
             )
         });
-        let _unused = self.notify_on(Event::SingleGameStarted);
+        self.notify_on(Event::SingleGameStarted)
+            .expect("Notification Error");
     }
-    /// This function processes a move made by a player in a single-player game. It handles both 
+    /// This function processes a move made by a player in a single-player game. It handles both
     /// regular moves and moves that require verification through a zero-knowledge proof (zk-proof).
     ///
     /// The function performs the following steps:
@@ -110,7 +110,7 @@ impl SingleService {
     /// 3. If verification variables are provided, it performs the following sub-steps:
     ///    a. Validates the current game state to ensure that the move is allowed.
     ///    b. Prepares the input bytes required for zk-proof verification.
-    ///    c. Verifies the move using zk-proof verification. 
+    ///    c. Verifies the move using zk-proof verification.
     ///    d. If the verification is successful, it processes the move by calling the `make_move` function
     ///       with the verified result.
     /// 4. If no verification is required, it directly processes the move by calling the `make_move` function.
@@ -118,11 +118,11 @@ impl SingleService {
     ///
     /// # Arguments
     ///
-    /// * `step` - An optional `u8` representing the move step made by the player. 
+    /// * `step` - An optional `u8` representing the move step made by the player.
     ///            If `None`, it indicates that a verification process is required.
-    /// * `verify_variables` - An optional `VerificationVariables` struct containing 
+    /// * `verify_variables` - An optional `VerificationVariables` struct containing
     ///                        proof bytes and public input required for zk-proof verification.
-    /// * `session_for_account` - An optional `ActorId` representing the session account 
+    /// * `session_for_account` - An optional `ActorId` representing the session account
     ///                           being used to make the move.
     pub async fn make_move(
         &mut self,
@@ -176,14 +176,23 @@ impl SingleService {
                     player,
                     Some(verification_result),
                     step,
+                    ConfigurationStorage::get(),
+                    exec::block_timestamp(),
                 )
             })
         } else {
             services::utils::panicking(move || {
-                funcs::make_move(SingleGamesStorage::as_mut(), player, None, step)
+                funcs::make_move(
+                    SingleGamesStorage::as_mut(),
+                    player,
+                    None,
+                    step,
+                    ConfigurationStorage::get(),
+                    exec::block_timestamp(),
+                )
             })
         };
-        let _unused = self.notify_on(event);
+        self.notify_on(event).expect("Notification Error");
     }
 
     /// Function for deleting a game. This function is called by a delayed message from the program itself
@@ -207,6 +216,18 @@ impl SingleService {
         });
     }
 
+    pub fn check_out_timing(&mut self, actor_id: ActorId, check_time: u64) {
+        if msg::source() != exec::program_id() {
+            services::utils::panic("This message can be sent only by the program")
+        }
+        let event = services::utils::panicking(move || {
+            funcs::check_out_timing(SingleGamesStorage::as_mut(), actor_id, check_time)
+        });
+        if let Some(event) = event {
+            self.notify_on(event).expect("Notification Error");
+        }
+    }
+
     pub fn start_time(&self, player_id: ActorId) -> Option<u64> {
         crate::generate_getter_game!(start_time, player_id)
     }
@@ -228,9 +249,17 @@ impl SingleService {
                     total_shots: game.total_shots,
                     succesfull_shots: game.succesfull_shots,
                     verification_requirement: game.verification_requirement,
+                    last_move_time: game.last_move_time,
                 };
                 (*actor_id, game_state)
             })
             .collect()
+    }
+    pub fn get_remaining_time(&self, player_id: ActorId) -> Option<u64> {
+        let current_time = exec::block_timestamp();
+        let time_to_move = ConfigurationStorage::get().delay_for_check_time as u64 * 3_000;
+        SingleGamesStorage::as_ref()
+            .get(&player_id)
+            .and_then(|game| time_to_move.checked_sub(current_time - game.last_move_time))
     }
 }

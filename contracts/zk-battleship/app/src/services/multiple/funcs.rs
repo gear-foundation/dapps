@@ -548,7 +548,7 @@ pub fn check_out_timing(
             participants_info,
             last_hit: None,
         };
-        msg::send(winner, payload.clone(), 2*game.bid).expect("Error send message");
+        msg::send(winner, payload.clone(), 2 * game.bid).expect("Error send message");
         msg::send(loser, payload.clone(), 0).expect("Error send message");
         game_pair.remove(&winner);
         game_pair.remove(&loser);

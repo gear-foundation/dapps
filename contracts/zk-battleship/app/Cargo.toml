@@ -10,6 +10,7 @@ license.workspace = true
 gstd = { workspace = true, features = ["debug"] }
 primitive-types.workspace = true
 sails-rs.workspace = true
+schnorrkel.workspace = true
 gbuiltin-bls381 = { git = "https://github.com/gear-tech/gear", tag = "v1.3.0" }
 
 [features]

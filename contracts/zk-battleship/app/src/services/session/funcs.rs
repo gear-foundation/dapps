@@ -1,39 +1,122 @@
+use super::sr25519::verify;
 use super::utils::{Result, *};
-use gstd::{exec, prelude::*, ActorId};
+use crate::admin::storage::configuration::Configuration;
+use gstd::{exec, msg, prelude::*, ActorId, Encode};
 
 pub fn create_session(
     session_map: &mut SessionMap,
-    source: ActorId,
-    block_timestamp: u64,
-    key: ActorId,
-    duration: u64,
-    allowed_actions: Vec<ActionsForSession>,
+    config: Configuration,
+    signature_data: SignatureData,
+    signature: Option<Vec<u8>>,
 ) -> Result<bool> {
-    if allowed_actions.is_empty() {
+    if signature_data.duration < config.minimum_session_duration_ms {
+        return Err(Error::DurationIsSmall);
+    }
+    let source = msg::source();
+    let block_timestamp = exec::block_timestamp();
+    let block_height = exec::block_height();
+
+    let expires = block_timestamp + signature_data.duration;
+
+    let number_of_blocks =
+        u32::try_from(signature_data.duration.div_ceil(config.block_duration_ms))
+            .expect("Duration is too large");
+
+    if signature_data.allowed_actions.is_empty() {
         return Err(Error::AllowedActionsIsEmpty);
     }
-    if let Some(Session {
-        key: _,
-        expires,
-        allowed_actions: _,
-    }) = session_map.get(&source)
-    {
-        if *expires > block_timestamp {
-            return Err(Error::AlreadyHaveActiveSession);
+    let account = match signature {
+        Some(sig_bytes) => {
+            check_if_session_exists(session_map, &signature_data.key, block_height)?;
+            let pub_key: [u8; 32] = (signature_data.key).into();
+            let mut prefix = b"<Bytes>".to_vec();
+            let mut message = SignatureData {
+                key: source,
+                duration: signature_data.duration,
+                allowed_actions: signature_data.allowed_actions.clone(),
+            }
+            .encode();
+
+            let mut postfix = b"</Bytes>".to_vec();
+            prefix.append(&mut message);
+            prefix.append(&mut postfix);
+
+            verify(&sig_bytes, prefix, pub_key)?;
+            session_map.entry(signature_data.key).insert(Session {
+                key: source,
+                expires,
+                allowed_actions: signature_data.allowed_actions,
+                expires_at_block: block_height + number_of_blocks,
+            });
+            signature_data.key
         }
-    }
-    session_map.entry(source).or_insert_with(|| Session {
-        key,
-        expires: block_timestamp + duration,
-        allowed_actions,
-    });
+        None => {
+            check_if_session_exists(session_map, &source, block_height)?;
+
+            session_map.entry(source).insert(Session {
+                key: signature_data.key,
+                expires,
+                allowed_actions: signature_data.allowed_actions,
+                expires_at_block: block_height + number_of_blocks,
+            });
+            source
+        }
+    };
+    let request = [
+        "Session".encode(),
+        "DeleteSessionFromProgram".to_string().encode(),
+        (account).encode(),
+    ]
+    .concat();
+
+    msg::send_bytes_with_gas_delayed(
+        exec::program_id(),
+        request,
+        config.gas_for_delete_session,
+        0,
+        number_of_blocks,
+    )
+    .expect("Error in sending message");
+
     Ok(true)
 }
 
-pub fn delete_session(session_map: &mut SessionMap, source: ActorId) -> Result<()> {
-    if session_map.remove(&source).is_none() {
-        return Err(Error::NoActiveSession);
+fn check_if_session_exists(
+    session_map: &SessionMap,
+    account: &ActorId,
+    block_height: u32,
+) -> Result<(), Error> {
+    if let Some(Session {
+        key: _,
+        expires: _,
+        allowed_actions: _,
+        expires_at_block,
+    }) = session_map.get(account)
+    {
+        if *expires_at_block > block_height {
+            return Err(Error::AlreadyHaveActiveSession);
+        };
     }
+    Ok(())
+}
+
+pub fn delete_session_from_program(
+    session_map: &mut SessionMap,
+    session_for_account: ActorId,
+) -> Result<()> {
+    if exec::program_id() != msg::source() {
+        return Err(Error::AccessDenied);
+    }
+    if let Some(session) = session_map.remove(&session_for_account) {
+        if session.expires_at_block > exec::block_height() {
+            return Err(Error::AccessDenied);
+        }
+    }
+    Ok(())
+}
+
+pub fn delete_session_from_account(session_map: &mut SessionMap, source: ActorId) -> Result<()> {
+    session_map.remove(&source);
     Ok(())
 }
 
@@ -65,109 +148,4 @@ pub fn get_player(
         None => source,
     };
     player
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::services::session::funcs;
-    use utils::*;
-    #[test]
-    fn create_session() {
-        // Initializing thread logger.
-        let _ = env_logger::try_init();
-
-        // Creating empty sessions map.
-        let mut sessions_map = sessions_map([]);
-        assert!(sessions_map.is_empty());
-
-        let source = alice();
-        let key: ActorId = 1.into();
-        let duration = 100;
-        let allowed_actions = vec![ActionsForSession::PlaySingleGame];
-
-        // # Test case #1.
-        // Ok: Create session
-        {
-            funcs::create_session(
-                &mut sessions_map,
-                source,
-                0,
-                key,
-                duration,
-                allowed_actions.clone(),
-            )
-            .unwrap();
-            assert_eq!(
-                *sessions_map.get(&source).unwrap(),
-                Session {
-                    key,
-                    expires: duration,
-                    allowed_actions: allowed_actions.clone()
-                }
-            );
-        }
-        // # Test case #2.
-        // Error: Allowed actions is empty
-        {
-            let res = funcs::create_session(&mut sessions_map, source, 0, key, duration, vec![]);
-            assert!(res.is_err_and(|err| err == Error::AllowedActionsIsEmpty));
-        }
-
-        // # Test case #3.
-        // Error: Already have active session
-        {
-            let res = funcs::create_session(
-                &mut sessions_map,
-                source,
-                0,
-                key,
-                duration,
-                allowed_actions.clone(),
-            );
-            assert!(res.is_err_and(|err| err == Error::AlreadyHaveActiveSession));
-        }
-    }
-
-    #[test]
-    fn delete_session() {
-        // Initializing thread logger.
-        let _ = env_logger::try_init();
-
-        // Creating session map.
-        let source = alice();
-        let session = Session {
-            key: 1.into(),
-            expires: 100,
-            allowed_actions: vec![ActionsForSession::PlaySingleGame],
-        };
-        let mut sessions_map = sessions_map([(source, session)]);
-        assert!(!sessions_map.is_empty());
-
-        // # Test case #1.
-        // Ok: delete session
-        {
-            funcs::delete_session(&mut sessions_map, source).unwrap();
-            assert!(sessions_map.is_empty())
-        }
-        // # Test case #2.
-        // Error: No active session
-        {
-            let res = funcs::delete_session(&mut sessions_map, source);
-            assert!(res.is_err_and(|err| err == Error::NoActiveSession));
-        }
-    }
-
-    mod utils {
-        use super::{Session, SessionMap};
-        use gstd::ActorId;
-
-        pub fn sessions_map<const N: usize>(content: [(ActorId, Session); N]) -> SessionMap {
-            content.into_iter().collect()
-        }
-
-        pub fn alice() -> ActorId {
-            1u64.into()
-        }
-    }
 }

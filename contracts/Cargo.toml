@@ -222,14 +222,14 @@ supply-chain-deploy.path = "supply-chain/deploy"
 
 # Gear
 
-gstd = "1.4.2"
-gear-wasm-builder = "1.4.2"
-gmeta = "1.4.2"
-gclient = "1.4.2"
-gtest = "1.4.2"
-gear-core = "1.4.2"
-sails-idl-gen = "0.2.0"
-sails-rs = "0.2.0"
+gstd = "1.5.0"
+gear-wasm-builder = "1.5.0"
+gmeta = "1.5.0"
+gclient = "1.5.0"
+gtest = "1.5.0"
+gear-core = "1.5.0"
+sails-idl-gen = "0.3.0"
+sails-rs = "0.3.0"
 
 
 # External

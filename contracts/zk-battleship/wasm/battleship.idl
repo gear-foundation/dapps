@@ -9,9 +9,12 @@ type Configuration = struct {
   gas_for_delete_single_game: u64,
   gas_for_delete_multiple_game: u64,
   gas_for_check_time: u64,
+  gas_for_delete_session: u64,
   delay_for_delete_single_game: u32,
   delay_for_delete_multiple_game: u32,
   delay_for_check_time: u32,
+  minimum_session_duration_ms: u64,
+  block_duration_ms: u64,
 };
 
 type VerificationVariables = struct {
@@ -76,6 +79,12 @@ type MultipleUtilsStepResult = enum {
   Killed,
 };
 
+type SignatureData = struct {
+  key: actor_id,
+  duration: u64,
+  allowed_actions: vec ActionsForSession,
+};
+
 type ActionsForSession = enum {
   PlaySingleGame,
   PlayMultipleGame,
@@ -85,6 +94,7 @@ type Session = struct {
   key: actor_id,
   expires: u64,
   allowed_actions: vec ActionsForSession,
+  expires_at_block: u32,
 };
 
 type SingleGame = struct {
@@ -94,6 +104,7 @@ type SingleGame = struct {
   start_time: u64,
   total_shots: u8,
   succesfull_shots: u8,
+  last_move_time: u64,
   verification_requirement: opt u8,
 };
 
@@ -110,6 +121,7 @@ type SingleGameState = struct {
   start_time: u64,
   total_shots: u8,
   succesfull_shots: u8,
+  last_move_time: u64,
   verification_requirement: opt u8,
 };
 
@@ -131,6 +143,7 @@ constructor {
 service Admin {
   ChangeAdmin : (new_admin: actor_id) -> null;
   ChangeBuiltinAddress : (new_builtin_address: actor_id) -> null;
+  ChangeConfiguration : (configuration: Configuration) -> null;
   ChangeVerificationKey : (new_vk_for_start: opt VerifyingKeyBytes, new_vk_for_move: opt VerifyingKeyBytes) -> null;
   DeleteMultipleGame : (game_id: actor_id) -> null;
   DeleteMultipleGamesByTime : (time: u64) -> null;
@@ -149,6 +162,7 @@ service Admin {
     AdminChanged;
     BuiltinAddressChanged;
     VerificationKeyChanged;
+    ConfigurationChanged;
     Killed: struct { inheritor: actor_id };
   }
 };
@@ -182,8 +196,9 @@ service Multiple {
 };
 
 service Session {
-  CreateSession : (key: actor_id, duration: u64, allowed_actions: vec ActionsForSession) -> null;
-  DeleteSession : () -> null;
+  CreateSession : (signature_data: SignatureData, signature: opt vec u8) -> null;
+  DeleteSessionFromAccount : () -> null;
+  DeleteSessionFromProgram : (session_for_account: actor_id) -> null;
   query SessionForTheAccount : (account: actor_id) -> opt Session;
   query Sessions : () -> vec struct { actor_id, Session };
 
@@ -194,18 +209,20 @@ service Session {
 };
 
 service Single {
+  CheckOutTiming : (actor_id: actor_id, check_time: u64) -> null;
   DeleteGame : (player: actor_id, start_time: u64) -> null;
   MakeMove : (step: opt u8, verify_variables: opt VerificationVariables, session_for_account: opt actor_id) -> null;
   StartSingleGame : (proof: ProofBytes, public_input: PublicStartInput, session_for_account: opt actor_id) -> null;
   query Game : (player_id: actor_id) -> opt SingleGame;
   query Games : () -> vec struct { actor_id, SingleGameState };
+  query GetRemainingTime : (player_id: actor_id) -> opt u64;
   query StartTime : (player_id: actor_id) -> opt u64;
   query TotalShots : (player_id: actor_id) -> opt u8;
 
   events {
     SessionCreated;
     SingleGameStarted;
-    EndGame: struct { player: actor_id, winner: BattleshipParticipants, time: u64, total_shots: u8, succesfull_shots: u8, last_hit: u8 };
+    EndGame: struct { player: actor_id, winner: BattleshipParticipants, time: u64, total_shots: u8, succesfull_shots: u8, last_hit: opt u8 };
     MoveMade: struct { player: actor_id, step: opt u8, step_result: opt SingleUtilsStepResult, bot_step: opt u8 };
   }
 };

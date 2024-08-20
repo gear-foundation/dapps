@@ -29,6 +29,7 @@ pub struct SingleGame {
     pub start_time: u64,
     pub total_shots: u8,
     pub succesfull_shots: u8,
+    pub last_move_time: u64,
     pub verification_requirement: Option<u8>,
 }
 
@@ -41,6 +42,7 @@ pub struct SingleGameState {
     pub start_time: u64,
     pub total_shots: u8,
     pub succesfull_shots: u8,
+    pub last_move_time: u64,
     pub verification_requirement: Option<u8>,
 }
 
