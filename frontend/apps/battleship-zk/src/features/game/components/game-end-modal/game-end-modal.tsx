@@ -33,13 +33,8 @@ export default function GameEndModal({
   const { account } = useAccount();
   const navigate = useNavigate();
 
-  const defineGameResults = () => {
-    if (gameType === 'single') {
-      return winner === 'Player' ? 'You win' : 'You Lose';
-    }
-
-    return decodeAddress(winner) === account?.decodedAddress ? 'You win' : 'You Lose';
-  };
+  const isPlayerWinner =
+    gameType === 'single' ? winner === 'Player' : decodeAddress(winner) === account?.decodedAddress;
 
   const clearLocalData = () => {
     if (account?.address) {
@@ -59,9 +54,9 @@ export default function GameEndModal({
   };
 
   return (
-    <ModalBottom heading={defineGameResults()} onClose={onClose}>
+    <ModalBottom heading={isPlayerWinner ? 'You win' : 'You Lose'} onClose={onClose}>
       <div className={styles.content}>
-        <Text>Awesome! Play again to improve your skills.</Text>
+        <Text>{isPlayerWinner && 'Awesome!'} Play again to improve your skills.</Text>
 
         <div className={styles.gameInfo}>
           <div className={styles.line}>
