@@ -41,6 +41,20 @@ export function ModalBottom({ heading, children, onClose }: Props) {
     }
   };
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
+
   return (
     <motion.dialog ref={ref} onClick={handleClick} className={styles.modal}>
       <motion.div className={styles.wrapper}>

@@ -5,34 +5,45 @@ import { useAccount, useAlert, useProgramEvent } from '@gear-js/react-hooks';
 import { clearZkData } from '@/features/zk/utils';
 import { ROUTES } from '@/app/consts';
 import { EVENT_NAME, SERVICE_NAME } from '../consts';
+import { useState } from 'react';
 
-type GameCancelledEvent = {
+type PlayerDeletedEvent = {
   game_id: string;
+  removable_player: string;
 };
 
-export function useEventGameCancelled() {
+export function useEventPlayerDeleted() {
   const { account } = useAccount();
   const program = useProgram();
   const alert = useAlert();
   const navigate = useNavigate();
   const { game, triggerGame, resetGameState } = useMultiplayerGame();
 
-  const onData = async ({ game_id }: GameCancelledEvent) => {
-    if (!account || game?.admin !== game_id) {
-      return;
-    }
+  const [isPlayerDeleted, setIsPlayerDeleted] = useState(false);
+
+  const onPlayerDeletedModalClose = async () => {
+    if (!account) return;
 
     await triggerGame();
     clearZkData('multi', account);
     resetGameState();
     navigate(ROUTES.HOME);
-    alert.info('Game canceled. The game was terminated by the administrator.');
+  };
+
+  const onData = async ({ game_id, removable_player }: PlayerDeletedEvent) => {
+    if (!account || game?.admin !== game_id || removable_player !== account.decodedAddress) {
+      return;
+    }
+
+    setIsPlayerDeleted(true);
   };
 
   useProgramEvent({
     program,
     serviceName: SERVICE_NAME,
-    functionName: EVENT_NAME.SUBSCRIBE_TO_GAME_CANCELED_EVENT,
+    functionName: EVENT_NAME.SUBSCRIBE_TO_PLAYER_DELETED_EVENT,
     onData,
   });
+
+  return { onPlayerDeletedModalClose, isPlayerDeleted };
 }

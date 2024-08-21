@@ -39,7 +39,7 @@ function CreateGameForm({ onCancel }: Props) {
   // ! TODO: check this logic
   const createForm = useForm({
     initialValues: {
-      fee: existentialDeposit + 5 || 0,
+      fee: 0,
       name: '',
     },
     validate: {

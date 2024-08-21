@@ -6,13 +6,18 @@ import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { VaraIcon } from '@/components/layout/vara-svg';
 import { usePending } from '@/features/game/hooks';
-import { Illustration } from '@/features/game/components';
+import { GameCancelledModal, Illustration } from '@/features/game/components';
 import { getVaraAddress, useAccount, useAlert, useBalanceFormat } from '@gear-js/react-hooks';
 import { decodeAddress } from '@gear-js/api';
 import { stringShorten } from '@polkadot/util';
 import { copyToClipboard } from '@/app/utils/utils';
 import { ReactComponent as FilledCrossSVG } from '../../assets/icons/filled-cross.svg';
-import { useEventGameCancelled, useEventPlayerJoinedGame } from '../../sails/events';
+import {
+  useEventGameCancelled,
+  useEventPlayerJoinedGame,
+  useEventPlayerDeleted,
+  useEventGameLeft,
+} from '../../sails/events';
 import { useCancelGameMessage } from '../../sails/messages';
 import { useMultiplayerGame } from '../../hooks';
 import styles from './Registration.module.scss';
@@ -62,6 +67,8 @@ export function Registration() {
 
   useEventPlayerJoinedGame();
   useEventGameCancelled();
+  const { isPlayerDeleted, onPlayerDeletedModalClose } = useEventPlayerDeleted();
+  useEventGameLeft();
 
   const startGame = () => {
     navigate(ROUTES.GAME);
@@ -166,6 +173,12 @@ export function Registration() {
           </div>
         </div>
       )}
+
+      <GameCancelledModal
+        isOpen={isPlayerDeleted}
+        text="You have been removed from the game by an administrator."
+        onClose={onPlayerDeletedModalClose}
+      />
     </div>
   );
 }

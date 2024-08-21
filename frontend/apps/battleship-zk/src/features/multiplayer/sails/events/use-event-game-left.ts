@@ -6,18 +6,18 @@ import { clearZkData } from '@/features/zk/utils';
 import { ROUTES } from '@/app/consts';
 import { EVENT_NAME, SERVICE_NAME } from '../consts';
 
-type GameCancelledEvent = {
+type GameLeftEvent = {
   game_id: string;
 };
 
-export function useEventGameCancelled() {
+export function useEventGameLeft() {
   const { account } = useAccount();
   const program = useProgram();
   const alert = useAlert();
   const navigate = useNavigate();
   const { game, triggerGame, resetGameState } = useMultiplayerGame();
 
-  const onData = async ({ game_id }: GameCancelledEvent) => {
+  const onData = async ({ game_id }: GameLeftEvent) => {
     if (!account || game?.admin !== game_id) {
       return;
     }
@@ -26,13 +26,13 @@ export function useEventGameCancelled() {
     clearZkData('multi', account);
     resetGameState();
     navigate(ROUTES.HOME);
-    alert.info('Game canceled. The game was terminated by the administrator.');
+    alert.info('Game canceled. Your opponent has left the game.');
   };
 
   useProgramEvent({
     program,
     serviceName: SERVICE_NAME,
-    functionName: EVENT_NAME.SUBSCRIBE_TO_GAME_CANCELED_EVENT,
+    functionName: EVENT_NAME.SUBSCRIBE_TO_GAME_LEFT_EVENT,
     onData,
   });
 }
