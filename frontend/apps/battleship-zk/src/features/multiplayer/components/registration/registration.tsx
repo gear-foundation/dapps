@@ -79,7 +79,7 @@ export function Registration() {
       const { response } = await transaction.signAndSend();
 
       await response();
-      resetGameState()
+      resetGameState();
     } catch (err) {
       console.log(err);
     } finally {

@@ -36,6 +36,7 @@ function CreateGameForm({ onCancel }: Props) {
   const existentialDeposit = Number(getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toFixed());
   const { getChainBalanceValue } = useBalanceFormat();
 
+  // ! TODO: check this logic
   const createForm = useForm({
     initialValues: {
       fee: existentialDeposit + 5 || 0,

@@ -15,7 +15,7 @@ export function useEventGameCancelled() {
   const program = useProgram();
   const alert = useAlert();
   const navigate = useNavigate();
-  const { game, triggerGame } = useMultiplayerGame();
+  const { game, triggerGame, resetGameState } = useMultiplayerGame();
 
   const onData = async ({ game_id }: GameCancelledEvent) => {
     if (!account || game?.admin !== game_id) {
@@ -24,6 +24,7 @@ export function useEventGameCancelled() {
 
     await triggerGame();
     clearZkData('multi', account);
+    resetGameState();
     navigate(ROUTES.HOME);
     alert.info('Admin has removed the game');
   };
