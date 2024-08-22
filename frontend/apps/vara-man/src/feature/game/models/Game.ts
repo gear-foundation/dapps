@@ -222,8 +222,8 @@ export class GameEngine {
     let offsetY = 0;
 
     if (window.innerWidth < 768) {
-      offsetX = WIDTH_CANVAS / 3.5 - this.character.position.x;
-      offsetY = HEIGHT_CANVAS / 3.5 - this.character.position.y;
+      offsetX = window.innerWidth / 2.5 - this.character.position.x;
+      offsetY = window.innerHeight / 4 - this.character.position.y;
 
       this.context.save();
       this.context.translate(offsetX, offsetY);
