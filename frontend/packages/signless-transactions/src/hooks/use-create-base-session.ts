@@ -1,7 +1,6 @@
 import { HexString, IVoucherDetails } from '@gear-js/api';
 import { Account, useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { SubmittableExtrinsic } from '@polkadot/api/types';
-import { web3FromSource } from '@polkadot/extension-dapp';
 import { KeyringPair } from '@polkadot/keyring/types';
 import { ISubmittableResult } from '@polkadot/types/types';
 
@@ -48,7 +47,7 @@ function useCreateBaseSession(programId: HexString) {
   const onError = (message: string) => alert.error(message);
 
   const signHex = async (account: Account, hexToSign: `0x${string}`) => {
-    const { signer } = await web3FromSource(account.meta.source);
+    const { signer } = account;
     const { signRaw } = signer;
 
     console.log('SIGNATURE:');
