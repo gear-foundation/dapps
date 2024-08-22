@@ -1,5 +1,5 @@
-import { TileMap } from '../../types';
-import { Vec2 } from '../Vec2';
+import { TileMap } from "../../types";
+import { Vec2 } from "../Vec2";
 
 class Tileset {
   image: HTMLImageElement;
@@ -9,6 +9,7 @@ class Tileset {
   imageHeight: number;
   firstgid: number;
   tilecount: number;
+  cachedTiles: { tx: number; ty: number }[] = [];
 
   constructor(
     src: string,
@@ -27,14 +28,27 @@ class Tileset {
     this.imageHeight = imageHeight;
     this.firstgid = firstgid;
     this.tilecount = tilecount;
+
+    this.cacheTilePositions();
+  }
+
+  private cacheTilePositions() {
+    const cols = this.imageWidth / this.tileWidth;
+    for (let i = 0; i < this.tilecount; i++) {
+      const tx = (i % cols) * this.tileWidth;
+      const ty = Math.floor(i / cols) * this.tileHeight;
+      this.cachedTiles.push({ tx, ty });
+    }
+  }
+
+  getTilePosition(index: number) {
+    return this.cachedTiles[index];
   }
 }
 
 export class MapRenderer {
   private static tilesets: Tileset[] = [];
   private static loadedImages: { [key: string]: HTMLImageElement } = {};
-
-  private static tileCache: { [key: number]: { tileset: Tileset; tx: number; ty: number } } = {};
 
   public static async initTilesets(mapData: TileMap) {
     this.tilesets = mapData.tilesets.map(
@@ -52,10 +66,11 @@ export class MapRenderer {
 
     await Promise.all(
       this.tilesets.map((tileset) => {
-        if (!this.loadedImages[tileset.image.src]) {
+        const src = tileset.image.src;
+        if (!this.loadedImages[src]) {
           return new Promise((resolve) => {
             tileset.image.onload = () => {
-              this.loadedImages[tileset.image.src] = tileset.image;
+              this.loadedImages[src] = tileset.image;
               resolve(true);
             };
           });
@@ -63,97 +78,73 @@ export class MapRenderer {
         return Promise.resolve(true);
       }),
     );
-
-    // Create cache for tiles
-    this.cacheTiles(mapData);
-  }
-
-  private static cacheTiles(mapData: TileMap) {
-    for (const tileset of this.tilesets) {
-      const cols = tileset.imageWidth / tileset.tileWidth;
-      for (let i = 0; i < tileset.tilecount; i++) {
-        const tx = (i % cols) * tileset.tileWidth;
-        const ty = Math.floor(i / cols) * tileset.tileHeight;
-        this.tileCache[tileset.firstgid + i] = { tileset, tx, ty };
-      }
-    }
   }
 
   public static render(context: CanvasRenderingContext2D, mapData: TileMap) {
     const tileLayer = mapData.layers.find((layer) => layer.name === 'main');
+    if (!tileLayer || !tileLayer.visible) return;
 
-    if (!tileLayer || !tileLayer.visible) {
-      return;
-    }
-
-    const { width, height, data } = tileLayer;
-
-    for (let y = 0; y < height; y++) {
-      for (let x = 0; x < width; x++) {
-        const tileIndex = data[y * width + x] - 1;
-        if (tileIndex < 0) continue;
-
-        for (const tileset of this.tilesets) {
-          if (tileIndex < (tileset.imageWidth / tileset.tileWidth) * (tileset.imageHeight / tileset.tileHeight)) {
-            const cols = tileset.imageWidth / tileset.tileWidth;
-            const tx = (tileIndex % cols) * tileset.tileWidth;
-            const ty = Math.floor(tileIndex / cols) * tileset.tileHeight;
-            context.drawImage(
-              tileset.image,
-              tx,
-              ty,
-              tileset.tileWidth,
-              tileset.tileHeight,
-              x * mapData.tilewidth,
-              y * mapData.tileheight,
-              mapData.tilewidth,
-              mapData.tileheight,
-            );
-            break;
-          }
-        }
-      }
-    }
-
+    this.renderLayer(context, tileLayer, mapData);
     this.renderImageLayer(context, mapData);
     this.renderCoins(context, mapData);
   }
 
-  public static renderCoins(context: CanvasRenderingContext2D, mapData: TileMap) {
-    const coinLayer = mapData.layers.find((layer) => layer.name === 'coins');
-    if (!coinLayer || !coinLayer.visible) {
-      return;
-    }
-
-    const { width, height, data } = coinLayer;
+  private static renderLayer(context: CanvasRenderingContext2D, layer: any, mapData: TileMap) {
+    const { width, height, data } = layer;
 
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
         const tileIndex = data[y * width + x];
-        if (tileIndex > 0) {
-          const tileset = this.tilesets.find(
-            (ts) => tileIndex >= ts.firstgid && tileIndex < ts.firstgid + ts.tilecount,
-          );
-          if (!tileset) continue;
+        if (tileIndex <= 0) continue;
 
-          const localTileIndex = tileIndex - tileset.firstgid;
-          const cols = tileset.imageWidth / tileset.tileWidth;
-          const tx = (localTileIndex % cols) * tileset.tileWidth;
-          const ty = Math.floor(localTileIndex / cols) * tileset.tileHeight;
+        const tileset = this.getTilesetForTile(tileIndex);
+        if (!tileset) continue;
 
-          context.drawImage(
-            tileset.image,
-            tx,
-            ty,
-            tileset.tileWidth,
-            tileset.tileHeight,
-            x * mapData.tilewidth,
-            y * mapData.tileheight,
-            mapData.tilewidth,
-            mapData.tileheight,
-          );
-        }
+        const localTileIndex = tileIndex - tileset.firstgid;
+        const { tx, ty } = tileset.getTilePosition(localTileIndex);
+
+        context.drawImage(
+          tileset.image,
+          tx,
+          ty,
+          tileset.tileWidth,
+          tileset.tileHeight,
+          x * mapData.tilewidth,
+          y * mapData.tileheight,
+          mapData.tilewidth,
+          mapData.tileheight,
+        );
       }
+    }
+  }
+
+  private static getTilesetForTile(tileIndex: number): Tileset | undefined {
+    return this.tilesets.find(
+      (ts) => tileIndex >= ts.firstgid && tileIndex < ts.firstgid + ts.tilecount,
+    );
+  }
+
+  public static renderCoins(context: CanvasRenderingContext2D, mapData: TileMap) {
+    const coinLayer = mapData.layers.find((layer) => layer.name === 'coins');
+    if (!coinLayer || !coinLayer.visible) return;
+
+    this.renderLayer(context, coinLayer, mapData);
+  }
+
+  public static renderImageLayer(context: CanvasRenderingContext2D, mapData: TileMap) {
+    const imageLayer = mapData.layers.find((layer) => layer.type === 'imagelayer');
+    if (!imageLayer || !imageLayer.visible || !imageLayer.image) return;
+
+    const imageSrc = imageLayer.image;
+    if (!this.loadedImages[imageSrc]) {
+      const image = new Image();
+      image.src = imageSrc;
+      image.onload = () => {
+        context.drawImage(image, 0, 0);
+        this.loadedImages[imageSrc] = image;
+      };
+    } else {
+      context.drawImage(this.loadedImages[imageSrc], 0, 0);
     }
   }
 
@@ -194,28 +185,5 @@ export class MapRenderer {
     context.stroke();
     context.closePath();
     context.fill();
-  }
-
-  public static renderImageLayer(context: CanvasRenderingContext2D, mapData: TileMap) {
-    const imageLayer = mapData.layers.find((layer) => layer.type === 'imagelayer');
-
-    if (!imageLayer || !imageLayer.visible) {
-      return;
-    }
-
-    if (imageLayer.image) {
-      if (!this.loadedImages[imageLayer.image]) {
-        const image = new Image();
-        image.src = imageLayer.image;
-        image.onload = () => {
-          context.drawImage(image, 0, 0);
-          if (imageLayer.image) {
-            this.loadedImages[imageLayer.image] = image;
-          }
-        };
-      } else {
-        context.drawImage(this.loadedImages[imageLayer.image], 0, 0);
-      }
-    }
   }
 }

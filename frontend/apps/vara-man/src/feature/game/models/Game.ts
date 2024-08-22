@@ -222,7 +222,7 @@ export class GameEngine {
     let offsetY = 0;
 
     if (window.innerWidth < 768) {
-      offsetX = window.innerWidth / 2.5 - this.character.position.x;
+      offsetX = window.innerWidth / 2.8 - this.character.position.x;
       offsetY = window.innerHeight / 4 - this.character.position.y;
 
       this.context.save();
@@ -230,7 +230,7 @@ export class GameEngine {
     }
 
     this.context.fillStyle = '#000000ad';
-    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.fillRect(0, 0, WIDTH_CANVAS, HEIGHT_CANVAS);
 
     MapRenderer.render(this.context, this.map);
     CharacterRenderer.render(this.context, this.character);
