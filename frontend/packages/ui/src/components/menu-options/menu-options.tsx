@@ -5,7 +5,6 @@ import { ReactComponent as UserSVG } from './assets/user.svg';
 import { ReactComponent as GridSVG } from './assets/grid.svg';
 import { ReactComponent as DisconnectSVG } from './assets/disconnect.svg';
 import clsx from 'clsx';
-import { useWallet } from '@/features/wallet-new/hooks';
 
 export type ClassNameProps = {
   container?: string;
@@ -25,11 +24,9 @@ export type Props = {
 
 export function MenuOptions({ customItems, className, onClose }: Props) {
   const { account, logout } = useAccount();
-  const { resetWalletId } = useWallet();
 
   const handleLogout = () => {
     logout();
-    resetWalletId();
     onClose?.();
   };
 

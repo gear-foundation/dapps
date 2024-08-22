@@ -1,14 +1,10 @@
 import { useAccount } from '@gear-js/react-hooks';
+import { Wallet } from '@dapps-frontend/ui';
 import { Logo } from './logo';
 import { CreateLink } from './create-link';
-import { Account } from './account';
 import styles from './Header.module.scss';
 
-type Props = {
-  isAccountVisible: boolean;
-};
-
-function Header({ isAccountVisible }: Props) {
+function Header() {
   const { account } = useAccount();
 
   return (
@@ -17,7 +13,8 @@ function Header({ isAccountVisible }: Props) {
         <Logo />
         {account && <CreateLink />}
       </nav>
-      {isAccountVisible && <Account />}
+
+      <Wallet />
     </header>
   );
 }

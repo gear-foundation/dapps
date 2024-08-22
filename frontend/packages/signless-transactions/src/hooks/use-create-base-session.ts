@@ -1,9 +1,9 @@
-import { web3FromSource } from '@polkadot/extension-dapp';
-import { SubmittableExtrinsic } from '@polkadot/api/types';
 import { HexString, IVoucherDetails } from '@gear-js/api';
 import { Account, useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
-import { ISubmittableResult } from '@polkadot/types/types';
+import { SubmittableExtrinsic } from '@polkadot/api/types';
+import { web3FromSource } from '@polkadot/extension-dapp';
 import { KeyringPair } from '@polkadot/keyring/types';
+import { ISubmittableResult } from '@polkadot/types/types';
 
 import { useBatchSignAndSend } from './use-batch-sign-and-send';
 import { sendTransaction } from '../utils';

@@ -1,8 +1,5 @@
 import { EnkryptSVG, NovaIcon, PolkadotSVG, SubWalletSVG, TalismanSVG } from './assets';
-// eslint-disable-next-line import/no-cycle
 import type { IWalletExtensionContent, IWalletId } from './types';
-
-export const WALLET_ID_LOCAL_STORAGE_KEY = 'wallet';
 
 export const isNovaWallet = !!window?.walletExtension?.isNovaWallet;
 

@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
-  AccountProvider,
+  AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { Alert, alertStyles } from '@gear-js/ui';
@@ -15,6 +15,10 @@ import { ENV } from 'app/consts';
 const ApiProvider = ({ children }: ProviderProps) => (
   <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>
 );
+
+function AccountProvider({ children }: ProviderProps) {
+  return <GearAccountProvider appName="Vara Tamagotchi Battle">{children}</GearAccountProvider>;
+}
 
 function DnsProvider({ children }: ProviderProps) {
   return (

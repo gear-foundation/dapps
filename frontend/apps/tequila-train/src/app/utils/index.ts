@@ -1,6 +1,4 @@
 import { AlertContainerFactory } from '@gear-js/react-hooks';
-import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
-import { LOCAL_STORAGE } from 'app/consts';
 import { DominoNumber, DominoTileType, StateDominoNumber, StateDominoTileType } from '../types/game';
 import { isHex } from '@polkadot/util';
 import { ClassValue, clsx } from 'clsx';
@@ -20,7 +18,6 @@ export const copyToClipboard = async (key: string, alert: AlertContainerFactory,
     alert.error('Copy error');
   }
 };
-export const isLoggedIn = ({ address }: InjectedAccountWithMeta) => localStorage[LOCAL_STORAGE.ACCOUNT] === address;
 
 export const getBgColors = (v: number) => {
   switch (v) {
@@ -72,22 +69,23 @@ export const isPartialSubset = (array1: any[], array2: any[]) => array2.some((el
 export const hexRequired = (value: string) =>
   !value ? 'Field is required' : !isHex(value) ? 'String must be in Hex format' : null;
 export const stringRequired = (value: string) => (!value ? 'Field is required' : null);
-export const numberRequired = (value: number | null | undefined) => (value === null || value === undefined ? 'Field is required' : null);
+export const numberRequired = (value: number | null | undefined) =>
+  value === null || value === undefined ? 'Field is required' : null;
 
 const stringToNumberMapping: Record<StateDominoNumber, DominoNumber> = {
-  'Zero': "0",
-  'One': "1",
-  'Two': "2",
-  'Three': "3",
-  'Four': "4",
-  'Five': "5",
-  'Six': "6",
-  'Seven': "7",
-  'Eight': "8",
-  'Nine': "9",
-  'Ten': "10",
-  'Eleven': "11",
-  'Twelve': "12",
+  Zero: '0',
+  One: '1',
+  Two: '2',
+  Three: '3',
+  Four: '4',
+  Five: '5',
+  Six: '6',
+  Seven: '7',
+  Eight: '8',
+  Nine: '9',
+  Ten: '10',
+  Eleven: '11',
+  Twelve: '12',
 };
 
 const convertTileStringToNumbers = (tile: StateDominoTileType): DominoTileType => {
