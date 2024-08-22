@@ -29,14 +29,12 @@ export function useEventGameLeft() {
   };
 
   const onData = async ({ game_id }: GameLeftEvent) => {
-    console.log('! GameLeft myacc:', account?.decodedAddress, game?.admin);
 
     if (!account || game?.admin !== game_id) {
       return;
     }
 
     if (game?.admin === account?.decodedAddress) {
-      console.log(2);
       if (getIsPlacementStatus(game)) {
         setIsGameLeft(true);
       } else {
@@ -49,7 +47,6 @@ export function useEventGameLeft() {
       resetGameState();
       setIsGameLeft(false);
       navigate(ROUTES.HOME);
-      console.log(1);
     }
   };
 

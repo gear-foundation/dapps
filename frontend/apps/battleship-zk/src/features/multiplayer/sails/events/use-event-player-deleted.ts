@@ -31,7 +31,6 @@ export function useEventPlayerDeleted() {
   };
 
   const onData = async ({ game_id, removable_player }: PlayerDeletedEvent) => {
-    console.log('! PlayerDeleted');
     if (!account || game?.admin !== game_id || removable_player !== account.decodedAddress) {
       return;
     }
