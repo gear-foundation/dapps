@@ -34,6 +34,8 @@ export class MapRenderer {
   private static tilesets: Tileset[] = [];
   private static loadedImages: { [key: string]: HTMLImageElement } = {};
 
+  private static tileCache: { [key: number]: { tileset: Tileset; tx: number; ty: number } } = {};
+
   public static async initTilesets(mapData: TileMap) {
     this.tilesets = mapData.tilesets.map(
       (tileset) =>
@@ -61,6 +63,20 @@ export class MapRenderer {
         return Promise.resolve(true);
       }),
     );
+
+    // Create cache for tiles
+    this.cacheTiles(mapData);
+  }
+
+  private static cacheTiles(mapData: TileMap) {
+    for (const tileset of this.tilesets) {
+      const cols = tileset.imageWidth / tileset.tileWidth;
+      for (let i = 0; i < tileset.tilecount; i++) {
+        const tx = (i % cols) * tileset.tileWidth;
+        const ty = Math.floor(i / cols) * tileset.tileHeight;
+        this.tileCache[tileset.firstgid + i] = { tileset, tx, ty };
+      }
+    }
   }
 
   public static render(context: CanvasRenderingContext2D, mapData: TileMap) {
