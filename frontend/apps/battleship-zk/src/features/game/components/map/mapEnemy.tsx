@@ -156,7 +156,7 @@ export default function MapEnemy({
         className={clsx(cellClassName, styles.blockEnemy, isDisabledCell && styles.blockDisabled)}
         style={cellStyle}
         onClick={() => handleCellClick(cellIndex)}>
-        {isHit && !isDeadShips && !isHitShips && <div className={clsx(styles.hitEmpty, styles.hitEmptyEnemy)} />}
+        {isHit && !isDeadShips && !isHitShips && <div className={styles.hitCircle} />}
         {isDeadShips && !!deadShips[cellIndex] && handleRenderDeadShip(deadShips[cellIndex])}
         {(isDeadShips || isHitShips) && (
           <>
