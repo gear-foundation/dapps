@@ -1,34 +1,7 @@
-@use '@/assets/styles/utils' as *;
-
 .content {
   display: flex;
   flex-direction: column;
   gap: 24px;
-}
-
-.gameInfo {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  background: #ffffff;
-  padding: 16px;
-
-  .line {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-
-    p {
-      white-space: nowrap;
-    }
-
-    hr {
-      margin: 0px 10px;
-      border: 0;
-      width: 100%;
-      border-bottom: 1px solid #dadada;
-    }
-  }
 }
 
 .buttons {

@@ -53,22 +53,9 @@ export const useProcessWithMultiplayer = () => {
 
     setPending(true);
 
-    if (game?.admin === account?.decodedAddress) {
-      try {
-        const transaction = await cancelGameMessage();
-        const { response } = await transaction.signAndSend();
-
-        await response();
-      } catch (err) {
-      } finally {
-        setPending(false);
-      }
-
-      return;
-    }
-
     try {
-      const transaction = await leaveGameMessage();
+      const getTransaction = game?.admin === account?.decodedAddress ? cancelGameMessage : leaveGameMessage;
+      const transaction = await getTransaction();
       const { response } = await transaction.signAndSend();
 
       await response();

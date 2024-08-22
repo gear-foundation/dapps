@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom';
 import { useProgram } from '@/app/utils/sails';
 import { useMultiplayerGame } from '../../hooks/use-multiplayer-game';
-import { useAccount, useAlert, useProgramEvent } from '@gear-js/react-hooks';
+import { useAccount, useProgramEvent } from '@gear-js/react-hooks';
 import { clearZkData } from '@/features/zk/utils';
 import { ROUTES } from '@/app/consts';
 import { EVENT_NAME, SERVICE_NAME } from '../consts';
@@ -15,22 +15,23 @@ type PlayerDeletedEvent = {
 export function useEventPlayerDeleted() {
   const { account } = useAccount();
   const program = useProgram();
-  const alert = useAlert();
   const navigate = useNavigate();
   const { game, triggerGame, resetGameState } = useMultiplayerGame();
 
   const [isPlayerDeleted, setIsPlayerDeleted] = useState(false);
 
-  const onPlayerDeletedModalClose = async () => {
+  const onPlayerDeleted = async () => {
     if (!account) return;
 
     await triggerGame();
     clearZkData('multi', account);
     resetGameState();
+    setIsPlayerDeleted(false);
     navigate(ROUTES.HOME);
   };
 
   const onData = async ({ game_id, removable_player }: PlayerDeletedEvent) => {
+    console.log('! PlayerDeleted');
     if (!account || game?.admin !== game_id || removable_player !== account.decodedAddress) {
       return;
     }
@@ -45,5 +46,5 @@ export function useEventPlayerDeleted() {
     onData,
   });
 
-  return { onPlayerDeletedModalClose, isPlayerDeleted };
+  return { onPlayerDeleted, isPlayerDeleted };
 }

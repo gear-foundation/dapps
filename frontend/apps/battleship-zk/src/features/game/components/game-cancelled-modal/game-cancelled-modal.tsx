@@ -5,13 +5,12 @@ import { ModalBottom } from '@/components/ui/modal';
 import styles from './GameCancelledModal.module.scss';
 
 type Props = {
-  isOpen: boolean;
   text: string;
   onClose: () => void;
 };
 
-export default function GameCancelledModal({ isOpen, text, onClose }: Props) {
-  return isOpen ? (
+export default function GameCancelledModal({ text, onClose }: Props) {
+  return (
     <ModalBottom heading="Game canceled" onClose={onClose}>
       <div className={styles.content}>
         <Text>{text}</Text>
@@ -20,5 +19,5 @@ export default function GameCancelledModal({ isOpen, text, onClose }: Props) {
         </div>
       </div>
     </ModalBottom>
-  ) : null;
+  );
 }

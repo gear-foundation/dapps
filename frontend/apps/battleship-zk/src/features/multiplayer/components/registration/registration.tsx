@@ -66,9 +66,9 @@ export function Registration() {
   const { pending, setPending } = usePending();
 
   useEventPlayerJoinedGame();
-  useEventGameCancelled();
-  const { isPlayerDeleted, onPlayerDeletedModalClose } = useEventPlayerDeleted();
-  useEventGameLeft();
+  const { isGameCancelled, onGameCancelled } = useEventGameCancelled();
+  const { isPlayerDeleted, onPlayerDeleted } = useEventPlayerDeleted();
+  const { isGameLeft, onGameLeft } = useEventGameLeft();
 
   const startGame = () => {
     navigate(ROUTES.GAME);
@@ -174,11 +174,16 @@ export function Registration() {
         </div>
       )}
 
-      <GameCancelledModal
-        isOpen={isPlayerDeleted}
-        text="You have been removed from the game by an administrator."
-        onClose={onPlayerDeletedModalClose}
-      />
+      {isPlayerDeleted && (
+        <GameCancelledModal
+          text={'You have been removed from the game by an administrator.'}
+          onClose={onPlayerDeleted}
+        />
+      )}
+      {isGameCancelled && (
+        <GameCancelledModal text={'The game was terminated by the administrator.'} onClose={onGameCancelled} />
+      )}
+      {isGameLeft && <GameCancelledModal text={'Your opponent has left the game.'} onClose={onGameLeft} />}
     </div>
   );
 }
