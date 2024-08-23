@@ -20,17 +20,14 @@ export default function VoucherExpiredModal() {
     }
   }, [isVoucherExpired]);
 
-  return (
-    isOpen &&
-    isVoucherExpired && (
-      <ModalBottom heading="Voucher Expired" onClose={() => setIsOpen(false)}>
-        <div className={styles.content}>
-          <Text>Your voucher has expired and couldn't be used.</Text>
-          <div className={styles.buttons}>
-            <Button color="dark" text="Exit" onClick={() => setIsOpen(false)} />
-          </div>
+  return isOpen && isVoucherExpired ? (
+    <ModalBottom heading="Voucher Expired" onClose={() => setIsOpen(false)}>
+      <div className={styles.content}>
+        <Text>Your voucher has expired and couldn't be used.</Text>
+        <div className={styles.buttons}>
+          <Button color="dark" text="Exit" onClick={() => setIsOpen(false)} />
         </div>
-      </ModalBottom>
-    )
-  );
+      </div>
+    </ModalBottom>
+  ) : null;
 }
