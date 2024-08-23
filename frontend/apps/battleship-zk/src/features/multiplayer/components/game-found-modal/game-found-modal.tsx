@@ -62,7 +62,6 @@ function GameFoundModal({ entryFee, onSubmit, onClose }: Props) {
       heading="The game has been found"
       className={{ wrapper: styles.modalWrapper, modal: styles.modal }}
       onClose={onClose}
-      // hacky fix cuz the signless modal was not displaying above the dialog opened via showModal
       showModalMode={false}>
       <div className={styles.container}>
         <p className={styles.mainText}>

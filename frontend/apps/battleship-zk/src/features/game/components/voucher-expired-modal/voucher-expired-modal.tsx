@@ -6,9 +6,7 @@ import { useCountdown } from '@dapps-frontend/hooks';
 import { ModalBottom } from '@/components/ui/modal';
 import styles from './VoucherExpiredModal.module.scss';
 
-type Props = {};
-
-export default function VoucherExpiredModal({}: Props) {
+export default function VoucherExpiredModal() {
   const { expireTimestamp, setIsEnabled } = useGaslessTransactions();
   const [isOpen, setIsOpen] = useState(true);
 
@@ -23,17 +21,16 @@ export default function VoucherExpiredModal({}: Props) {
   }, [isVoucherExpired]);
 
   return (
-    <>
-      {isOpen && isVoucherExpired && (
-        <ModalBottom heading="Voucher Expired" onClose={() => setIsOpen(false)}>
-          <div className={styles.content}>
-            <Text>Your voucher has expired and couldn't be used.</Text>
-            <div className={styles.buttons}>
-              <Button color="dark" text="Exit" onClick={() => setIsOpen(false)} />
-            </div>
+    isOpen &&
+    isVoucherExpired && (
+      <ModalBottom heading="Voucher Expired" onClose={() => setIsOpen(false)}>
+        <div className={styles.content}>
+          <Text>Your voucher has expired and couldn't be used.</Text>
+          <div className={styles.buttons}>
+            <Button color="dark" text="Exit" onClick={() => setIsOpen(false)} />
           </div>
-        </ModalBottom>
-      )}
-    </>
+        </div>
+      </ModalBottom>
+    )
   );
 }

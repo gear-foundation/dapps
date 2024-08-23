@@ -50,12 +50,6 @@ function useCreateBaseSession(programId: HexString) {
     const { signer } = account;
     const { signRaw } = signer;
 
-    console.log('SIGNATURE:');
-    console.log('ACCOUNT', account);
-    console.log('SIGNER', signer);
-    console.log('signRaw', signRaw);
-    console.log('HEXtoSIGN: ', hexToSign);
-
     if (!signRaw) {
       throw new Error('signRaw is not a function');
     }

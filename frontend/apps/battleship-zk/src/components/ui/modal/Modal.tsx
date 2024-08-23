@@ -15,6 +15,7 @@ type Props = React.PropsWithChildren & {
   };
   onClose: () => void;
   closeOnMissclick?: boolean;
+  // hacky fix cuz the signless modal was not displaying above the dialog opened via showModal
   showModalMode?: boolean;
 };
 
