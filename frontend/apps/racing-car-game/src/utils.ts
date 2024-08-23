@@ -1,5 +1,5 @@
 import { ProgramMetadata } from '@gear-js/api';
-import { SignlessTransactionsProviderProps } from '@dapps-frontend/signless-transactions';
+import { SignlessTransactionsMetadataProviderProps } from '@dapps-frontend/signless-transactions';
 import { AlertContainerFactory } from '@gear-js/react-hooks/dist/esm/types';
 import { Bytes } from '@polkadot/types';
 import { Codec } from '@polkadot/types/types';
@@ -104,7 +104,7 @@ export const logger = (message: unknown | unknown[]) => {
 /**
  * Get first element of tuple type
  *  */
-export const createSignatureType: SignlessTransactionsProviderProps['createSignatureType'] = (
+export const createSignatureType: SignlessTransactionsMetadataProviderProps['createSignatureType'] = (
   metadata,
   payloadToSign,
 ) => {

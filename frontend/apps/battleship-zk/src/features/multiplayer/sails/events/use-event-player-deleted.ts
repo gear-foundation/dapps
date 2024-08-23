@@ -7,46 +7,43 @@ import { ROUTES } from '@/app/consts';
 import { EVENT_NAME, SERVICE_NAME } from '../consts';
 import { useState } from 'react';
 
-type GameCancelledEvent = {
+type PlayerDeletedEvent = {
   game_id: string;
+  removable_player: string;
 };
 
-export function useEventGameCancelled() {
+export function useEventPlayerDeleted() {
   const { account } = useAccount();
   const program = useProgram();
   const navigate = useNavigate();
   const { game, triggerGame, resetGameState } = useMultiplayerGame();
 
-  const [isGameCancelled, setIsGameCancelled] = useState(false);
+  const [isPlayerDeleted, setIsPlayerDeleted] = useState(false);
 
-  const onGameCancelled = async () => {
+  const onPlayerDeleted = async () => {
     if (!account) return;
 
     await triggerGame();
     clearZkData('multi', account);
     resetGameState();
-    setIsGameCancelled(false);
+    setIsPlayerDeleted(false);
     navigate(ROUTES.HOME);
   };
 
-  const onData = async ({ game_id }: GameCancelledEvent) => {
-    if (!account || game?.admin !== game_id) {
+  const onData = async ({ game_id, removable_player }: PlayerDeletedEvent) => {
+    if (!account || game?.admin !== game_id || removable_player !== account.decodedAddress) {
       return;
     }
 
-    if (game?.admin === account?.decodedAddress) {
-      onGameCancelled();
-    } else {
-      setIsGameCancelled(true);
-    }
+    setIsPlayerDeleted(true);
   };
 
   useProgramEvent({
     program,
     serviceName: SERVICE_NAME,
-    functionName: EVENT_NAME.SUBSCRIBE_TO_GAME_CANCELED_EVENT,
+    functionName: EVENT_NAME.SUBSCRIBE_TO_PLAYER_DELETED_EVENT,
     onData,
   });
 
-  return { isGameCancelled, onGameCancelled };
+  return { onPlayerDeleted, isPlayerDeleted };
 }

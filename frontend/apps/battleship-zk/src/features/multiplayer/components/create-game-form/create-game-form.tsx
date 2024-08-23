@@ -38,7 +38,7 @@ function CreateGameForm({ onCancel }: Props) {
 
   const createForm = useForm({
     initialValues: {
-      fee: existentialDeposit + 5 || 0,
+      fee: 0,
       name: '',
     },
     validate: {
@@ -72,18 +72,6 @@ function CreateGameForm({ onCancel }: Props) {
       setPending(false);
     }
   };
-
-  const items = [
-    {
-      name: 'Required gas amount ',
-      value: (
-        <>
-          <VaraIcon /> {1.21} VARA
-        </>
-      ),
-      key: '3',
-    },
-  ];
 
   return (
     <div className={styles.formWrapper}>
@@ -119,7 +107,6 @@ function CreateGameForm({ onCancel }: Props) {
           <span className={styles.fieldError}>{createErrors.name}</span>
         </div>
         <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} />
-        <GameDetails items={items} />
         <div className={styles.buttons}>
           <Button type="submit" text="Create game" isLoading={pending} className={styles.button} />
           <Button

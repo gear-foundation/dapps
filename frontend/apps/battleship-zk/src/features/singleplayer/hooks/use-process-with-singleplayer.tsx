@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@/app/consts';
 import { useMoveTransaction, usePending } from '@/features/game/hooks';
