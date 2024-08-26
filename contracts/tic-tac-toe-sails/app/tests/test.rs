@@ -17,8 +17,11 @@ async fn test_play_game() {
     let config = Config {
         s_per_block: 3,
         gas_to_remove_game: 5_000_000_000,
-        time_interval: 2_000,
-        turn_deadline_ms: 10_000,
+        time_interval: 20,
+        turn_deadline_ms: 30_000,
+        gas_to_delete_session: 5_000_000_000,
+        minimum_session_duration_ms: 180_000
+
     };
     let tic_tac_toe_id = tic_tac_toe_factory
         .new(config)
@@ -28,19 +31,19 @@ async fn test_play_game() {
 
     let mut client = TicTacToeClient::new(program_space);
     // start_game
-    client.start_game().send_recv(tic_tac_toe_id).await.unwrap();
+    client.start_game(None).send_recv(tic_tac_toe_id).await.unwrap();
     // check game instance
     let game_instance = client.game(100.into()).recv(tic_tac_toe_id).await.unwrap();
     assert!(game_instance.is_some());
 
     client
-        .turn(0.into())
+        .turn(0.into(), None)
         .send_recv(tic_tac_toe_id)
         .await
         .unwrap();
 
     client
-        .turn(1.into())
+        .turn(1.into(), None)
         .send_recv(tic_tac_toe_id)
         .await
         .unwrap();
@@ -69,8 +72,10 @@ async fn add_and_remove_admin() {
     let config = Config {
         s_per_block: 3,
         gas_to_remove_game: 5_000_000_000,
-        time_interval: 2_000,
-        turn_deadline_ms: 10_000,
+        time_interval: 20,
+        turn_deadline_ms: 30_000,
+        gas_to_delete_session: 5_000_000_000,
+        minimum_session_duration_ms: 180_000
     };
     let tic_tac_toe_id = tic_tac_toe_factory
         .new(config)
@@ -112,8 +117,10 @@ async fn allow_messages() {
     let config = Config {
         s_per_block: 3,
         gas_to_remove_game: 5_000_000_000,
-        time_interval: 2_000,
-        turn_deadline_ms: 10_000,
+        time_interval: 20,
+        turn_deadline_ms: 30_000,
+        gas_to_delete_session: 5_000_000_000,
+        minimum_session_duration_ms: 180_000
     };
     let tic_tac_toe_id = tic_tac_toe_factory
         .new(config)
@@ -137,14 +144,14 @@ async fn allow_messages() {
     assert_eq!(messages_allowed, false);
 
     let res = client
-        .start_game()
+        .start_game(None)
         .with_args(GTestArgs::new(101.into()))
         .send_recv(tic_tac_toe_id)
         .await;
     assert!(res.is_err());
 
     // start_game
-    client.start_game().send_recv(tic_tac_toe_id).await.unwrap();
+    client.start_game(None).send_recv(tic_tac_toe_id).await.unwrap();
     // check game instance
     let game_instance = client.game(100.into()).recv(tic_tac_toe_id).await.unwrap();
     assert!(game_instance.is_some());
