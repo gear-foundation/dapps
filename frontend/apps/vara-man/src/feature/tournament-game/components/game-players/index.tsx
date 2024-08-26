@@ -173,7 +173,7 @@ export const GamePlayers = () => {
                 <div className="flex items-center gap-3">
                   <p className="font-semibold">{participant.name}</p>
                 </div>
-                <div className="flex items-center justify-end gap-1 w-full mr-20">
+                <div className="flex items-center justify-end gap-1 lg:w-full lg:mr-20">
                   <SpriteIcon name="game-time" height={16} width={16} />
                   <p className="font-semibold">{timeFormatted}</p>
                 </div>
