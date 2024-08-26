@@ -1,7 +1,7 @@
 use crate::services::game::{
     Config, Event, GameError, Level, Player, Stage, Status, Storage, Tournament, MAX_PARTICIPANTS,
 };
-use gstd::{collections::HashMap, exec, msg, debug, prelude::*, ActorId};
+use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId};
 use sails_rs::U256;
 
 pub fn create_new_tournament(
@@ -186,7 +186,6 @@ pub async fn finish_single_game(
     silver_coins: u16,
     level: Level,
 ) -> Result<Event, GameError> {
-    debug!("FINISH");
     if gold_coins > storage.config.max_number_gold_coins
         || silver_coins > storage.config.max_number_silver_coins
     {
@@ -202,11 +201,8 @@ pub async fn finish_single_game(
     let prize = storage.config.one_point_in_value * points;
 
     if storage.status == Status::StartedWithNativeToken {
-        debug!("msg_src {:?} prize {:?}", msg_src, prize);
         msg::send_with_gas(msg_src, "", 0, prize).expect("Error in sending value");
-        debug!("send_with_gas");
     } else if let Status::StartedWithFungibleToken { ft_address } = storage.status {
-        debug!("Status::StartedWithFungibleToken");
         let value: U256 = prize.into();
         let request = [
             "Vft".encode(),
@@ -225,7 +221,6 @@ pub async fn finish_single_game(
         .expect("Error in sending a message")
         .await
         .expect("Error in mint Fungible Token");
-        debug!("msg_src {:?} prize {:?}", msg_src, value);
     }
     Ok(Event::SingleGameFinished {
         gold_coins,

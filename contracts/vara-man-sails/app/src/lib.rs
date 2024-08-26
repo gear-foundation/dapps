@@ -1,5 +1,6 @@
 #![no_std]
 #![allow(clippy::new_without_default)]
+#![allow(clippy::comparison_chain)]
 
 use sails_rs::prelude::*;
 mod services;
