@@ -8,36 +8,33 @@ import { EzGaslessTransactions, EzSignlessTransactions } from '@dapps-frontend/e
 
 import styles from './Header.module.scss';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
+import { Logo } from './logo';
+import clsx from 'clsx';
+import { useAccount } from '@gear-js/react-hooks';
 
 export const Header = () => {
   const { isAdmin } = useGame();
+  const { account } = useAccount();
 
   return (
     <CommonHeader
+      // logo={
+      //   <Link to="/">
+      //     <Icons.logo className="h-[40px] lg:h-15" />
+      //   </Link>
+      // }
       logo={
-        <Link to="/">
-          <Icons.logo className="h-15" />
-        </Link>
+        <Logo className={clsx(styles.header__logo, !account && styles['header__logo--center'])} label="Tic-Tac-Toe" />
       }
       menu={
         <MenuHandler
-          className={{
-            wallet: {
-              balance: styles.walletBalance,
-            },
-            icon: styles.menuIcon,
-            dropdown: styles.dropdown,
-          }}
           customItems={[
-            {
-              key: 'signless',
-              option: <EzSignlessTransactions allowedActions={SIGNLESS_ALLOWED_ACTIONS} />,
-            },
+            { key: 'signless', option: <EzSignlessTransactions allowedActions={SIGNLESS_ALLOWED_ACTIONS} /> },
             { key: 'gasless', option: <EzGaslessTransactions /> },
           ]}
         />
       }
-      className={{ header: styles.header, content: styles.container }}>
+      className={{ header: styles.header, content: styles.header__container }}>
       {isAdmin && <HeaderAdmin />}
     </CommonHeader>
   );

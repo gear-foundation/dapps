@@ -15,9 +15,7 @@ const Component = () => {
   const { isAccountReady } = useAccount();
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">
-      <div className='container'>
-        <Header />
-      </div>
+      <Header />
       <main className="flex flex-col flex-1 relative pt-3 pb-5 container">
         {isApiReady && isAccountReady ? <Routing /> : <ApiLoader />}
       </main>
