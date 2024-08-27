@@ -4,15 +4,15 @@ import {
   AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
-import { ComponentType } from 'react';
-import { BrowserRouter } from 'react-router-dom';
-
-import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import {
   SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
   EzTransactionsProvider,
-} from '@dapps-frontend/ez-transactions';
+} from '@gear-js/ez-transactions';
+import { ComponentType } from 'react';
+import { BrowserRouter } from 'react-router-dom';
+
+import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 
 import metaTxt from '@/features/tic-tac-toe/assets/meta/tic_tac_toe.meta.txt';
 import { ADDRESS } from '@/app/consts';

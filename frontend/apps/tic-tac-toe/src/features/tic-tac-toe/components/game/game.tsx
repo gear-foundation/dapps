@@ -1,3 +1,5 @@
+import { ProgramMetadata } from '@gear-js/api';
+import { EzTransactionsSwitch } from '@gear-js/ez-transactions';
 import { HelpDescription } from '../ui/typography';
 import styles from './game.module.scss';
 import { GameField } from '../game-field';
@@ -10,8 +12,6 @@ import { Heading } from '@/components/ui/heading';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { useGame } from '@/features/tic-tac-toe/hooks';
 import { BaseComponentProps } from '@/app/types';
-import { ProgramMetadata } from '@gear-js/api';
-import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 
 type GameProps = BaseComponentProps & {

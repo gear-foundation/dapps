@@ -1,10 +1,10 @@
+import { ProgramMetadata } from '@gear-js/api';
+import { useEzTransactions } from '@gear-js/ez-transactions';
+import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { useGameMessage, useSubscriptionOnGameMessage } from '../../hooks';
-import { useEffect, useState } from 'react';
-import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
 import { withoutCommas } from '@/app/utils';
-import { ProgramMetadata } from '@gear-js/api';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
 
 type Props = {

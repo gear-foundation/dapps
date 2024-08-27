@@ -1,13 +1,14 @@
+import { ProgramMetadata } from '@gear-js/api';
+import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
+import { useGaslessTransactions, useSignlessTransactions } from '@gear-js/ez-transactions';
+import { useAtom } from 'jotai';
+import { useEffect } from 'react';
+
 import { Button } from '@/components/ui/button';
 import { useGameMessage, useSubscriptionOnGameMessage } from '../../hooks';
-import { useEffect } from 'react';
 import { BaseComponentProps } from '@/app/types';
 import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
-import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
 import { withoutCommas } from '@/app/utils';
-import { ProgramMetadata } from '@gear-js/api';
-import { useGaslessTransactions, useSignlessTransactions } from '@dapps-frontend/ez-transactions';
-import { useAtom } from 'jotai';
 import { stateChangeLoadingAtom } from '../../store';
 
 type GameStartButtonProps = BaseComponentProps & {

@@ -1,9 +1,9 @@
+import { useSignlessSendMessage } from '@gear-js/ez-transactions';
 import { useAccount, useApi } from '@gear-js/react-hooks';
 import { useEffect, useMemo } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import isEqual from 'lodash.isequal';
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
-import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
 import { IDecodedReplyGame, IGameInstance, IQueryResponseConfig, IQueryResponseGame } from './types';
 import { configAtom, countdownAtom, gameAtom, pendingAtom, stateChangeLoadingAtom } from './store';
 import { useOnceReadState } from '@/app/hooks/use-once-read-state';

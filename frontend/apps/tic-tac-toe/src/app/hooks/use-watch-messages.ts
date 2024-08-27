@@ -1,10 +1,10 @@
+import { useSignlessTransactions } from '@gear-js/ez-transactions'
 import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
 import { MutableRefObject, useRef, useState } from 'react';
 import { UnsubscribePromise } from '@polkadot/api/types';
 import { Bytes } from '@polkadot/types';
 import { ProgramMetadata, UserMessageSent, decodeAddress } from '@gear-js/api';
 import { ContractError } from '../types';
-import { useSignlessTransactions } from '@dapps-frontend/ez-transactions';
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
 export function useWatchMessages<T>(meta: ProgramMetadata) {

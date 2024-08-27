@@ -1,21 +1,21 @@
+import { ProgramMetadata } from '@gear-js/api';
+import { useEzTransactions } from '@gear-js/ez-transactions';
 import clsx from 'clsx';
+import { motion } from 'framer-motion';
+import { useAtom } from 'jotai';
+import { useEffect } from 'react';
 import styles from './game-field.module.scss';
 import { GameCell } from '../game-cell';
 import type { IGameInstance } from '../../types';
 import { GameMark } from '../game-mark';
 import { useGame, useGameMessage, useSubscriptionOnGameMessage } from '../../hooks';
 import { calculateWinner } from '../../utils';
-import { motion } from 'framer-motion';
 import { variantsGameMark } from '../../variants';
 import { BaseComponentProps } from '@/app/types';
-import { useEffect } from 'react';
-import { useAtom } from 'jotai';
 import { stateChangeLoadingAtom } from '../../store';
 import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
 import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import { withoutCommas } from '@/app/utils';
-import { ProgramMetadata } from '@gear-js/api';
 
 type GameFieldProps = BaseComponentProps & {
   game: IGameInstance;
@@ -82,6 +82,7 @@ export function GameField({ game, meta }: GameFieldProps) {
 
   useEffect(() => {
     setIsLoading(isOpened);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpened]);
 
   return (
