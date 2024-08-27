@@ -89,10 +89,10 @@ export const GameLayout = ({ isPause, isCanceledModal }: Props) => {
   }, [gameOver, level, isVisibleFog]);
 
   useEffect(() => {
-    if (!isPause || !isCanceledModal) {
+    if (!isPause) {
       gameInstanceRef.current?.updatePause();
     }
-  }, [isCanceledModal, isPause]);
+  }, [isPause]);
 
   useEffect(() => {
     gameInstanceRef.current?.updateGameOver(gameOver);

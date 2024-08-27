@@ -171,7 +171,7 @@ export const GamePlayers = () => {
                   {(index === 1 || index === 2) && <SpriteIcon name="medal-line" height={24} width={24} />}
                 </div>
                 <div className="flex items-center gap-3">
-                  <p className="font-semibold">{participant.name}</p>
+                  <p className="font-semibold w-10 lg:w-20 text-ellipsis overflow-hidden">{participant.name}</p>
                 </div>
                 <div className="flex items-center justify-end gap-1 lg:w-full lg:mr-20">
                   <SpriteIcon name="game-time" height={16} width={16} />

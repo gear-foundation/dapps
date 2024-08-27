@@ -1,6 +1,6 @@
 .header {
   position: relative;
-  z-index: 90;
+  z-index: 12;
   padding: 20px;
 
   &__container {
@@ -23,6 +23,10 @@
     @media screen and (max-width: 767px) {
       display: none;
     }
+  }
+
+  @media screen and (max-width: 767px) {
+    z-index: 10;
   }
 }
 

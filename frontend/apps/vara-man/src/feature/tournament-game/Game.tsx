@@ -43,13 +43,14 @@ export const Game = () => {
     const isAdmin = admin === account?.decodedAddress;
 
     if (previousGame && !tournamentGame) {
+      setGameOver(false);
       if (!isAdmin) {
         setCanceledModal(true);
       } else {
         setPreviousGame(null);
       }
     }
-  }, [tournamentGame]);
+  }, [account?.decodedAddress, previousGame, tournamentGame]);
 
   useEffect(() => {
     if (playGame || isStarted) {
@@ -120,7 +121,7 @@ export const Game = () => {
         </div>
       )}
 
-      {isFinished && tournamentGame && <GameOverModal tournamentGame={tournamentGame} />}
+      {isFinished && tournamentGame && !isRegistration && <GameOverModal tournamentGame={tournamentGame} />}
       {isCanceledModal && <GameCanceledModal />}
     </div>
   );
