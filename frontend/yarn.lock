@@ -2569,6 +2569,24 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@gear-js/ez-transactions@portal:/D:/Projects/gear/gear-js/utils/ez-transactions::locator=dapps-frontend%40workspace%3A.":
+  version: 0.0.0-use.local
+  resolution: "@gear-js/ez-transactions@portal:/D:/Projects/gear/gear-js/utils/ez-transactions::locator=dapps-frontend%40workspace%3A."
+  dependencies:
+    "@gear-js/vara-ui": "npm:0.0.10"
+    "@polkadot/keyring": "npm:12.6.2"
+    "@polkadot/react-identicon": "npm:3.6.4"
+    "@polkadot/types": "npm:11.0.2"
+    clsx: "npm:2.0.0"
+    react-hook-form: "npm:7.52.2"
+  peerDependencies:
+    "@gear-js/api": 0.38.1
+    "@gear-js/react-hooks": 0.12.1
+    react: 18.2.0
+    react-dom: 18.2.0
+  languageName: node
+  linkType: soft
+
 "@gear-js/react-hooks@npm:0.12.1":
   version: 0.12.1
   resolution: "@gear-js/react-hooks@npm:0.12.1"
@@ -2608,6 +2626,16 @@ __metadata:
     react-dom: 18.2.0
     sass: 1.69.1
   checksum: 10c0/4a9e4f2a7297f6d50a99727b5089fddc42e2a984d5af51131f94918ab5c60855aa8c85e7114b85e2be288b3c3c89b9b41ede98f9f0d2b4cd406fa11c54de5c3e
+  languageName: node
+  linkType: hard
+
+"@gear-js/vara-ui@npm:0.0.10":
+  version: 0.0.10
+  resolution: "@gear-js/vara-ui@npm:0.0.10"
+  peerDependencies:
+    react: ^18.2.0
+    react-dom: ^18.2.0
+  checksum: 10c0/f8cb7cbf1e6183085386752d86d3e4ad067d308545bfed0c27e22944e11cd74cc469c57e16a288f69b9c18077285825b25c899c630028caf408662bb366b5900
   languageName: node
   linkType: hard
 
@@ -9539,13 +9567,13 @@ __metadata:
   resolution: "battleship-zk@workspace:apps/battleship-zk"
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
-    "@dapps-frontend/ez-transactions": "workspace:*"
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
+    "@gear-js/ez-transactions": "npm:link"
     "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
-    "@gear-js/vara-ui": "npm:0.0.6"
+    "@gear-js/vara-ui": "npm:0.0.10"
     "@mantine/form": "npm:6.0.15"
     "@polkadot/api": "npm:11.0.2"
     "@polkadot/react-identicon": "npm:3.6.4"
@@ -9565,7 +9593,7 @@ __metadata:
     autoprefixer: "npm:10.4.14"
     buffer: "npm:6.0.3"
     class-variance-authority: "npm:0.6.1"
-    clsx: "npm:1.2.1"
+    clsx: "npm:2.0.0"
     eslint: "npm:8.43.0"
     eslint-config-react-app: "npm:7.0.1"
     ffjavascript: "npm:0.3.0"
@@ -9577,7 +9605,7 @@ __metadata:
     react: "npm:18.2.0"
     react-countdown: "npm:2.3.5"
     react-dom: "npm:18.2.0"
-    react-hook-form: "npm:7.48.2"
+    react-hook-form: "npm:7.52.2"
     react-router-dom: "npm:6.10.0"
     react-transition-group: "npm:4.4.5"
     sails-js: "npm:0.1.8"
@@ -20450,6 +20478,15 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18
   checksum: 10c0/0f05a8f9e8400ff0012214b5af60e2195e52ca67d615dfd1d183b1446a021ec49074dc38653251ad2c47dd6585bff84eb1ff75f369a84676701403a4a2f90033
+  languageName: node
+  linkType: hard
+
+"react-hook-form@npm:7.52.2":
+  version: 7.52.2
+  resolution: "react-hook-form@npm:7.52.2"
+  peerDependencies:
+    react: ^16.8.0 || ^17 || ^18 || ^19
+  checksum: 10c0/2b8d37239d40f4326a24609c1bf5b4ba2cf66bc4a988213ccd7eb92a254dd5bf9c4b94caa353bce4b1d6d8a9ecd2ea3103e25c6d2d72d53f7be26f09053a8b2f
   languageName: node
   linkType: hard
 

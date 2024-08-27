@@ -1,12 +1,11 @@
+import { EzTransactionsSwitch } from '@gear-js/ez-transactions';
 import { Button } from '@gear-js/vara-ui';
 import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { TextField } from '@/components/layout/text-field';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
-import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
-import { GameDetails } from '@/components/layout/game-details';
 import { VaraIcon } from '@/components/layout/vara-svg';
 import { usePending } from '@/features/game/hooks';
 import { useMultiplayerGame } from '../../hooks';

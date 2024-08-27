@@ -1,12 +1,13 @@
+import { EzTransactionsSwitch } from '@gear-js/ez-transactions';
+import { useAccountDeriveBalancesAll, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { Button } from '@gear-js/vara-ui';
+
 import { Modal } from '@/components/ui/modal';
 import { ReactComponent as VaraSVG } from '@/assets/images/icons/vara-coin.svg';
 import { ReactComponent as TVaraSVG } from '@/assets/images/icons/tvara-coin.svg';
-import { useAccountDeriveBalancesAll, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { TextField } from '@/components/layout/text-field';
-import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { GameDetails } from '@/components/layout/game-details';
-import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 import { usePending } from '@/features/game/hooks';
 import styles from './GameFoundModal.module.scss';

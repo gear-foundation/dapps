@@ -4,14 +4,13 @@ import {
   AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
-import { ComponentType } from 'react';
-import { BrowserRouter } from 'react-router-dom';
-
 import {
   SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
   EzTransactionsProvider,
-} from '@dapps-frontend/ez-transactions';
+} from '@gear-js/ez-transactions';
+import { ComponentType } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 
 import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';

@@ -24,5 +24,8 @@
     "./apps/*",
     "./packages/*",
     "./templates/*"
-  ]
+  ],
+  "resolutions": {
+    "@gear-js/ez-transactions": "portal:/D:/Projects/gear/gear-js/utils/ez-transactions"
+  }
 }

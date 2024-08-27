@@ -1,16 +1,16 @@
+import { EzSignlessTransactions, EzGaslessTransactions } from '@gear-js/ez-transactions';
+import { useAccount } from '@gear-js/react-hooks';
 import { Suspense } from 'react';
 import Identicon from '@polkadot/react-identicon';
 import { motion } from 'framer-motion';
 import { Text } from '@/components/ui/text';
 import { Button } from '@/components/ui/button';
+import { MenuOptions } from '@dapps-frontend/ui';
+import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 
-import { useAccount } from '@gear-js/react-hooks';
 import { useWallet } from '../../hooks';
 
 import styles from './WalletChange.module.scss';
-import { MenuOptions } from '@dapps-frontend/ui';
-import { EzSignlessTransactions, EzGaslessTransactions } from '@dapps-frontend/ez-transactions';
-import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 
 type Props = {
   onClose(): void;
