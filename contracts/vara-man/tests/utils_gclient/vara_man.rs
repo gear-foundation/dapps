@@ -3,7 +3,7 @@ use gclient::{EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
 use vara_man_io::*;
 
-const VARA_MAN_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/vara_man.opt.wasm";
+const VARA_MAN_WASM_PATH: &str = "../target/wasm32-unknown-unknown/release/vara_man.opt.wasm";
 
 pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     init_with_config(
@@ -252,7 +252,11 @@ pub async fn change_config(
 }
 
 pub async fn get_state(api: &GearApi, program_id: &ActorId) -> Option<VaraManState> {
-    let program_id = program_id.encode().as_slice().into();
+    let program_id = program_id
+        .encode()
+        .as_slice()
+        .try_into()
+        .expect("Unexpected invalid `ProgramId`.");
     let reply = api
         .read_state(program_id, StateQuery::All.encode())
         .await

@@ -6,11 +6,11 @@ use gstd::{prelude::*, ActorId};
 use sharded_multi_token_io::*;
 
 const MT_LOGIC_WASM_PATH: &str =
-    "../target/wasm32-unknown-unknown/debug/sharded_multi_token_logic.opt.wasm";
+    "../target/wasm32-unknown-unknown/release/sharded_multi_token_logic.opt.wasm";
 const MT_STORAGE_WASM_PATH: &str =
-    "../target/wasm32-unknown-unknown/debug/sharded_multi_token_storage.opt.wasm";
+    "../target/wasm32-unknown-unknown/release/sharded_multi_token_storage.opt.wasm";
 const MT_MAIN_WASM_PATH: &str =
-    "../target/wasm32-unknown-unknown/debug/sharded_multi_token.opt.wasm";
+    "../target/wasm32-unknown-unknown/release/sharded_multi_token.opt.wasm";
 const HASH_LENGTH: usize = 32;
 type Hash = [u8; HASH_LENGTH];
 pub const USER_ACCOUNTS: [&str; 3] = ["//Bob", "//Alice", "//Amy"];
@@ -32,10 +32,24 @@ pub async fn setup_gclient() -> gclient::Result<(GearApi, ActorId)> {
 
     let user_fund = api.total_balance(api.account_id()).await? / 3;
 
-    api.transfer_keep_alive(user_account_0.as_ref().into(), user_fund)
-        .await?;
-    api.transfer_keep_alive(user_account_2.as_ref().into(), user_fund)
-        .await?;
+    api.transfer_keep_alive(
+        user_account_0
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
+        user_fund,
+    )
+    .await?;
+    api.transfer_keep_alive(
+        user_account_2
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
+        user_fund,
+    )
+    .await?;
 
     let storage_code_hash = upload_with_code_hash(&api, MT_STORAGE_WASM_PATH).await?;
     let mt_logic_code_hash = upload_with_code_hash(&api, MT_LOGIC_WASM_PATH).await?;

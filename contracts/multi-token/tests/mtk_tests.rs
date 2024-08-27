@@ -16,7 +16,7 @@ const NFT_2_ID: u128 = 100002;
 fn mint_success() {
     let sys = System::new();
     init_mtk(&sys, USERS[0]);
-    let mtk = sys.get_program(1);
+    let mtk = sys.get_program(1).unwrap();
     // USERS[0] should have no token_ids before
     check_token_ids_for_owner(&mtk, USERS[0], vec![]);
     mint_internal(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT, None, None);
@@ -41,7 +41,7 @@ fn mint_success() {
 fn mint_failures() {
     let sys = System::new();
     init_mtk(&sys, USERS[0]);
-    let mtk = sys.get_program(1);
+    let mtk = sys.get_program(1).unwrap();
     // MUST fail since we are minting to ZERO_ID
     mint_internal(
         &mtk,
@@ -111,7 +111,7 @@ fn mint_failures() {
 fn burn() {
     let sys = System::new();
     init_mtk(&sys, USERS[0]);
-    let mtk = sys.get_program(1);
+    let mtk = sys.get_program(1).unwrap();
     mint_internal(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT, None, None);
     check_balance(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT);
     burn_internal(&mtk, USERS[0], TOKEN_ID, TOKENS_TO_BURN, None);
@@ -142,7 +142,7 @@ fn burn() {
 fn burn_failures() {
     let sys = System::new();
     init_mtk(&sys, USERS[0]);
-    let mtk = sys.get_program(1);
+    let mtk = sys.get_program(1).unwrap();
     mint_internal(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT, None, None);
     // MUST fail since we do not have enough tokens
     burn_internal(
@@ -188,7 +188,7 @@ fn burn_failures() {
 fn balance() {
     let sys = System::new();
     init_mtk(&sys, USERS[0]);
-    let mtk = sys.get_program(1);
+    let mtk = sys.get_program(1).unwrap();
     mint_internal(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT, None, None);
     check_balance(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT);
     balance_internal(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT);
@@ -198,7 +198,7 @@ fn balance() {
 fn balance_of_batch() {
     let sys = System::new();
     init_mtk(&sys, USERS[0]);
-    let mtk = sys.get_program(1);
+    let mtk = sys.get_program(1).unwrap();
     mint_internal(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT, None, None);
     check_balance(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT);
     mint_internal(&mtk, USERS[1], TOKEN_ID + 1, TOKEN_AMOUNT, None, None);
@@ -216,7 +216,7 @@ fn balance_of_batch() {
 fn transfer_from() {
     let sys = System::new();
     init_mtk(&sys, USERS[0]);
-    let mtk = sys.get_program(1);
+    let mtk = sys.get_program(1).unwrap();
     mint_internal(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT, None, None);
     check_balance(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT);
     // USERS[1] should have no token_ids before
@@ -233,7 +233,7 @@ fn transfer_from() {
 fn transfer_from_failures() {
     let sys = System::new();
     init_mtk(&sys, USERS[0]);
-    let mtk = sys.get_program(1);
+    let mtk = sys.get_program(1).unwrap();
     mint_internal(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT, None, None);
     check_balance(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT);
     // MUST fail since we are sending to a ZERO account
@@ -293,7 +293,7 @@ fn transfer_from_failures() {
 fn transfer_from_batch() {
     let sys = System::new();
     init_mtk(&sys, USERS[0]);
-    let mtk = sys.get_program(1);
+    let mtk = sys.get_program(1).unwrap();
     mint_batch_internal(
         &mtk,
         USERS[0],
@@ -325,7 +325,7 @@ fn transfer_from_batch() {
 fn test_approve_and_revoke() {
     let sys = System::new();
     init_mtk(&sys, USERS[0]);
-    let mtk = sys.get_program(1);
+    let mtk = sys.get_program(1).unwrap();
     approve(&mtk, USERS[0], USERS[1], None);
     mint_internal(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT, None, None);
     check_balance(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT);
@@ -366,7 +366,7 @@ fn test_approve_and_revoke() {
 fn transform() {
     let sys = System::new();
     init_mtk(&sys, USERS[0]);
-    let mtk = sys.get_program(1);
+    let mtk = sys.get_program(1).unwrap();
     mint_internal(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT, None, None);
     check_balance(&mtk, USERS[0], TOKEN_ID, TOKEN_AMOUNT);
     let nfts = vec![BurnToNFT {

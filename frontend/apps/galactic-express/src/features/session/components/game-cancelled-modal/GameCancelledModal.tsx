@@ -10,8 +10,7 @@ type Props = {
 function GameCancelledModal({ admin, onClose }: Props) {
   return (
     <Modal
-      heading="The game has been canceled 
-    by the administrator"
+      heading="The game has been canceled by the administrator"
       className={{ header: styles.modalHeader }}
       onClose={onClose}>
       <div className={styles.container}>

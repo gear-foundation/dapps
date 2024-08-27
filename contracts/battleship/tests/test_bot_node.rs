@@ -11,7 +11,7 @@ async fn gclient_start_game_test() -> Result<()> {
                                                // Checking that blocks still running.
     assert!(listener.blocks_running().await?);
 
-    let path = "../target/wasm32-unknown-unknown/debug/battleship_bot.opt.wasm";
+    let path = "../target/wasm32-unknown-unknown/release/battleship_bot.opt.wasm";
 
     let gas_info = api
         .calculate_upload_gas(None, gclient::code_from_os(path)?, vec![0], 0, true)
@@ -54,7 +54,7 @@ async fn gclient_turn_test() -> Result<()> {
                                                // Checking that blocks still running.
     assert!(listener.blocks_running().await?);
 
-    let path = "../target/wasm32-unknown-unknown/debug/battleship_bot.opt.wasm";
+    let path = "../target/wasm32-unknown-unknown/release/battleship_bot.opt.wasm";
 
     let gas_info = api
         .calculate_upload_gas(None, gclient::code_from_os(path)?, vec![], 0, true)

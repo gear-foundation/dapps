@@ -21,10 +21,10 @@ impl<'a> Factory<'a> {
     ) -> InitResult<Self, Error> {
         let program = InnerProgram::from_file(
             system,
-            "../target/wasm32-unknown-unknown/debug/dex_factory.opt.wasm",
+            "../target/wasm32-unknown-unknown/release/dex_factory.opt.wasm",
         );
         let pair_code_id: [u8; 32] = system
-            .submit_code("../target/wasm32-unknown-unknown/debug/dex.opt.wasm")
+            .submit_code_file("../target/wasm32-unknown-unknown/release/dex.opt.wasm")
             .into();
 
         let result = program.send(
@@ -104,7 +104,7 @@ impl FactoryState<'_> {
                     0,
                     fn_name,
                     gclient::code_from_os(
-                        "../target/wasm32-unknown-unknown/debug/dex_factory_state.meta.wasm",
+                        "../target/wasm32-unknown-unknown/release/dex_factory_state.meta.wasm",
                     )
                     .unwrap(),
                     argument,

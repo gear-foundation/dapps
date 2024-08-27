@@ -4,7 +4,7 @@ use gstd::{prelude::*, ActorId};
 use nft_marketplace_io::*;
 
 const MARKETPLACE_WASM_PATH: &str =
-    "../target/wasm32-unknown-unknown/debug/nft_marketplace.opt.wasm";
+    "../target/wasm32-unknown-unknown/release/nft_marketplace.opt.wasm";
 pub const TREASURY_FEE: u16 = 3;
 
 pub async fn init(api: &GearApi, admin: &ActorId, treasury: &ActorId) -> gclient::Result<ActorId> {
@@ -479,9 +479,15 @@ pub async fn accept_offer(
 }
 
 pub async fn state(api: &GearApi, program_id: &ActorId) -> gclient::Result<Market> {
-    let program_id_ref = program_id.as_ref();
-
-    api.read_state(program_id_ref.into(), vec![]).await
+    api.read_state(
+        program_id
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
+        vec![],
+    )
+    .await
 }
 
 async fn send_message(

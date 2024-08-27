@@ -8,7 +8,6 @@ use gtest::{Log, Program, RunResult, System};
 use non_fungible_token_io::{Config, InitNFT, NFTAction, NFTEvent};
 
 pub const USERS: &[u64] = &[4, 5, 6];
-#[allow(dead_code)]
 pub const DURATION: u32 = 169 * 60 * 60;
 
 pub fn init(sys: &System) -> Program<'_> {
@@ -41,7 +40,7 @@ pub fn init(sys: &System) -> Program<'_> {
 pub fn init_nft(sys: &System, owner: u64) {
     let nft_program = Program::from_file(
         sys,
-        "../target/wasm32-unknown-unknown/debug/non_fungible_token.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/non_fungible_token.opt.wasm",
     );
 
     let res = nft_program.send(
@@ -122,7 +121,6 @@ pub fn update_auction(
     )
 }
 
-#[allow(dead_code)]
 pub fn nft_owner(nft_program: &Program<'_>, from: u64, token_id: TokenId) -> RunResult {
     nft_program.send(from, NFTAction::Owner { token_id })
 }

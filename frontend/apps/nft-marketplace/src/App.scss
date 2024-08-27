@@ -11,13 +11,6 @@
   box-sizing: content-box;
 }
 
-#modal-root {
-  > div > div > div {
-    max-height: 50vh;
-    overflow-y: auto;
-  }
-}
-
 main {
   flex: 1;
   padding: 30px 0 60px;

@@ -2,7 +2,7 @@
   "name": "dapps-frontend",
   "version": "1.0.2",
   "private": true,
-  "packageManager": "yarn@4.0.1",
+  "packageManager": "yarn@4.4.0",
   "scripts": {
     "bump": "yarn up --exact",
     "bump:api": "yarn bump @gear-js/api",
@@ -10,6 +10,8 @@
     "bump:ui": "yarn bump @gear-js/ui",
     "bump:vara-ui": "yarn bump @gear-js/vara-ui",
     "bump:polkadot": "yarn bump @polkadot/api @polkadot/types",
+    "bump:sails": "yarn bump sails-js",
+    "bump:query": "yarn bump @tanstack/react-query",
     "build:error-tracking": "yarn workspace @dapps-frontend/error-tracking build",
     "build:ui": "yarn workspace @dapps-frontend/ui build",
     "build:hooks": "yarn workspace @dapps-frontend/hooks build",

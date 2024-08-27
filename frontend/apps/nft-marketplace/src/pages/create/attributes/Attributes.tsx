@@ -1,5 +1,5 @@
 import { Button, Input } from '@gear-js/ui';
-import minus from 'assets/images/form/minus.svg';
+import { ReactComponent as MinusSVG } from 'assets/images/form/minus.svg';
 import { FieldArrayWithId, UseFormRegister } from 'react-hook-form';
 import styles from './Attributes.module.scss';
 
@@ -14,16 +14,24 @@ function Attributes({ register, fields, onRemoveButtonClick }: Props) {
     fields.map(({ id }, index) => (
       <div key={id} className={styles.field}>
         <div className={styles.inputs}>
-          <Input label="Key" className={styles.input} {...register(`attributes.${index}.key`, { required: true })} />
+          <Input
+            label="Key"
+            gap="1/3"
+            className={styles.input}
+            {...register(`attributes.${index}.key`, { required: true })}
+          />
+
           <Input
             label="Value"
+            gap="1/3"
             className={styles.input}
             {...register(`attributes.${index}.value`, { required: true })}
           />
         </div>
+
         {index !== 0 && (
           <Button
-            icon={minus}
+            icon={MinusSVG}
             color="transparent"
             onClick={() => onRemoveButtonClick(index)}
             className={styles.button}

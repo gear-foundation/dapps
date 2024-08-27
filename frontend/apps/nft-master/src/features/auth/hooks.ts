@@ -42,7 +42,7 @@ function useAuthSync() {
 }
 
 function useAutoLogin() {
-  const { login, accounts, isAccountReady } = useAccount();
+  const { login, wallets, isAccountReady } = useAccount();
   const alert = useAlert();
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -53,7 +53,9 @@ function useAutoLogin() {
     const accountAddress = searchParams.get('account');
 
     if (accountAddress) {
-      const account = accounts?.find(({ address }) => address === accountAddress);
+      const account = Object.values(wallets || {})
+        .flatMap(({ accounts }) => accounts)
+        .find((_account) => _account?.address === accountAddress);
 
       if (account) {
         login(account);
@@ -64,7 +66,7 @@ function useAutoLogin() {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchParams, accounts, isAccountReady]);
+  }, [searchParams, wallets, isAccountReady]);
 }
 
 export { useAuth, useAuthSync, useAutoLogin };

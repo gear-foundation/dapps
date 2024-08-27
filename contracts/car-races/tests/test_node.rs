@@ -64,7 +64,7 @@ async fn gclient_start_game_test() -> Result<()> {
     }
     .encode();
 
-    let path = "../target/wasm32-unknown-unknown/debug/car_races.opt.wasm";
+    let path = "../target/wasm32-unknown-unknown/release/car_races.opt.wasm";
 
     let gas_info = api
         .calculate_upload_gas(
@@ -102,7 +102,7 @@ async fn gclient_start_game_test() -> Result<()> {
     let car_1_id = upload_program(
         &api,
         &mut listener,
-        "../target/wasm32-unknown-unknown/debug/car_3.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/car_3.opt.wasm",
         0,
     )
     .await?;
@@ -110,7 +110,7 @@ async fn gclient_start_game_test() -> Result<()> {
     let car_2_id = upload_program(
         &api,
         &mut listener,
-        "../target/wasm32-unknown-unknown/debug/car_3.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/car_3.opt.wasm",
         0,
     )
     .await?;

@@ -16,7 +16,12 @@ async fn gclient_mint_test() -> Result<()> {
         name: String::from("MyToken"),
         description: String::from("My token"),
     };
-    let actor_id = ActorId::from_slice(&api.account_id().encode()).unwrap();
+    let actor_id = ActorId::new(
+        api.account_id()
+            .encode()
+            .try_into()
+            .expect("Unexpected invalid account id length."),
+    );
     let init_nft = InitNFT {
         collection,
         royalties: None,
@@ -84,7 +89,12 @@ async fn gclient_burn_test() -> Result<()> {
         description: String::from("My token"),
     };
 
-    let actor_id = ActorId::from_slice(&api.account_id().encode()).unwrap();
+    let actor_id = ActorId::new(
+        api.account_id()
+            .encode()
+            .try_into()
+            .expect("Unexpected invalid account id length."),
+    );
     let init_nft = InitNFT {
         collection,
         royalties: None,
@@ -190,7 +200,12 @@ async fn gclient_transfer_test() -> Result<()> {
         description: String::from("My token"),
     };
 
-    let actor_id = ActorId::from_slice(&api.account_id().encode()).unwrap();
+    let actor_id = ActorId::new(
+        api.account_id()
+            .encode()
+            .try_into()
+            .expect("Unexpected invalid account id length."),
+    );
     let init_nft = InitNFT {
         collection,
         royalties: None,
@@ -279,7 +294,12 @@ async fn gclient_owner_test() -> Result<()> {
         description: String::from("My token"),
     };
 
-    let actor_id = ActorId::from_slice(&api.account_id().encode()).unwrap();
+    let actor_id = ActorId::new(
+        api.account_id()
+            .encode()
+            .try_into()
+            .expect("Unexpected invalid account id length."),
+    );
     let init_nft = InitNFT {
         collection,
         royalties: None,
@@ -362,7 +382,12 @@ async fn gclient_approved() -> Result<()> {
         description: String::from("My token"),
     };
 
-    let actor_id = ActorId::from_slice(&api.account_id().encode()).unwrap();
+    let actor_id = ActorId::new(
+        api.account_id()
+            .encode()
+            .try_into()
+            .expect("Unexpected invalid account id length."),
+    );
     let init_nft = InitNFT {
         collection,
         royalties: None,

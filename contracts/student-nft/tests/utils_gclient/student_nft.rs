@@ -3,7 +3,7 @@ use gclient::{EventProcessor, GearApi};
 use gstd::{prelude::*, ActorId};
 use student_nft_io::*;
 
-const STUDENT_NFT_WASM_PATH: &str = "../target/wasm32-unknown-unknown/debug/student_nft.opt.wasm";
+const STUDENT_NFT_WASM_PATH: &str = "../target/wasm32-unknown-unknown/release/student_nft.opt.wasm";
 
 pub async fn init(api: &GearApi) -> gclient::Result<ActorId> {
     let mut listener = api.subscribe().await?;
@@ -48,8 +48,15 @@ pub async fn mint(api: &GearApi, program_id: &ActorId, error: bool) -> gclient::
 }
 
 pub async fn get_state(api: &GearApi, program_id: &ActorId) -> gclient::Result<StudentNftState> {
-    let program_id = program_id.encode().as_slice().into();
-    api.read_state(program_id, vec![]).await
+    api.read_state(
+        program_id
+            .encode()
+            .as_slice()
+            .try_into()
+            .expect("Unexpected invalid `ProgramId`."),
+        vec![],
+    )
+    .await
 }
 
 async fn send_message(

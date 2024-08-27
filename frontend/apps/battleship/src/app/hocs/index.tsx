@@ -1,7 +1,7 @@
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
-  AccountProvider,
+  AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { ComponentType } from 'react';
@@ -20,6 +20,10 @@ import { Alert, alertStyles } from '@/components/ui/alert';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
+}
+
+function AccountProvider({ children }: ProviderProps) {
+  return <GearAccountProvider appName="Vara Battleship">{children}</GearAccountProvider>;
 }
 
 function DnsProvider({ children }: ProviderProps) {

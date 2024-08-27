@@ -4,10 +4,11 @@ use gstd::{collections::BTreeMap, prelude::*, ActorId};
 use tamagotchi_battle_io::*;
 
 const PATHS: [&str; 2] = [
-    "../target/wasm32-unknown-unknown/debug/tamagotchi.opt.wasm",
-    "../target/wasm32-unknown-unknown/debug/tamagotchi_battle.opt.wasm",
+    "../target/wasm32-unknown-unknown/release/tamagotchi.opt.wasm",
+    "../target/wasm32-unknown-unknown/release/tamagotchi_battle.opt.wasm",
 ];
-const META_WASM: &str = "../target/wasm32-unknown-unknown/debug/tamagotchi_battle_state.meta.wasm";
+const META_WASM: &str =
+    "../target/wasm32-unknown-unknown/release/tamagotchi_battle_state.meta.wasm";
 
 pub const PLAYERS: &[&str] = &[
     "//John", "//Mike", "//Dan", "//Bot", "//Jack", "//Mops", "//Alex",
@@ -125,7 +126,8 @@ async fn gclient_battle() -> Result<()> {
                     .get_specific_actor_id(player)
                     .encode()
                     .as_slice()
-                    .into(),
+                    .try_into()
+                    .expect("Unexpected invalid `ProgramId`."),
                 amount,
             )
             .await?;

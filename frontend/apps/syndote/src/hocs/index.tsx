@@ -1,7 +1,7 @@
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
-  AccountProvider,
+  AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { Alert, alertStyles } from '@gear-js/ui';
@@ -12,6 +12,10 @@ import { ADDRESS } from 'consts';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
+}
+
+function AccountProvider({ children }: ProviderProps) {
+  return <GearAccountProvider appName="Vara Syndote">{children}</GearAccountProvider>;
 }
 
 function DnsProvider({ children }: ProviderProps) {

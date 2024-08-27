@@ -5,7 +5,7 @@ use std::{
 };
 use xshell::Shell;
 
-const NODE_LINK: &str = "https://get.gear.rs/gear-v1.1.0-x86_64-unknown-linux-gnu.tar.xz";
+const NODE_LINK: &str = "https://get.gear.rs/gear-v1.4.2-x86_64-unknown-linux-gnu.tar.xz";
 
 fn main() -> Result<()> {
     let Some(command) = env::args().nth(1) else {
@@ -67,11 +67,11 @@ fn main() -> Result<()> {
             xshell::cmd!(sh, "cargo fmt --all --check").run()?;
             xshell::cmd!(
                 sh,
-                "cargo clippy --all-targets --no-deps -- -D warnings -A unused-imports"
+                "cargo clippy -r --all-targets --no-deps -- -D warnings -A unused-imports"
             )
             .run()?;
             node()?;
-            xshell::cmd!(sh, "cargo t").run()?;
+            xshell::cmd!(sh, "cargo t-r").run()?;
             docs()?;
         }
         "docs" => docs()?,

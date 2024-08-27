@@ -1,0 +1,72 @@
+@use 'variables' as *;
+
+@mixin gap($value, $direction: bottom) {
+  $margin: 'margin-#{$direction}';
+
+  > *:not(:last-child) {
+    #{$margin}: $value;
+  }
+}
+
+@mixin square($size) {
+  width: $size;
+  height: $size;
+}
+
+@mixin circle($size) {
+  @include square($size);
+  border-radius: 50%;
+}
+
+@mixin flexCenter {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@mixin svgColor($color) {
+  path {
+    fill: $color;
+  }
+}
+
+@mixin absoluteCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin textOverflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@mixin flex-gap($gap: 1.25em) {
+  $gap-half: calc(#{$gap} * 0.5);
+
+  @if type-of($gap) == 'number' {
+    $gap-half: $gap * 0.5;
+  } @else if type-of($gap) == 'list' {
+    $gap-half: ();
+    @each $value in $gap {
+      $value-half: calc(#{$value} * 0.5);
+      @if type-of($value) == 'number' {
+        $value-half: $value * 0.5;
+      }
+      $gap-half: append($gap-half, $value-half);
+    }
+  }
+
+  @include gap($gap-half, right);
+
+  @supports selector(:first-child) {
+    gap: $gap;
+
+    @include gap(0, right);
+  }
+}
+
+@mixin loaderWrapper {
+  position: relative;
+}
