@@ -1,3 +1,4 @@
+use super::session::Storage as SessionStorage;
 use crate::services;
 use gstd::msg;
 use sails_rs::{collections::HashMap, gstd::service, prelude::*};
@@ -11,7 +12,12 @@ pub struct Storage {
     current_games: HashMap<ActorId, GameInstance>,
     config: Config,
     messages_allowed: bool,
-    sessions: HashMap<ActorId, Session>,
+}
+
+impl Storage {
+    pub fn get_config() -> &'static Config {
+        unsafe { &STORAGE.as_ref().expect("Storage is not initialized").config }
+    }
 }
 
 static mut STORAGE: Option<Storage> = None;
@@ -35,14 +41,12 @@ pub enum Event {
     AdminRemoved,
     AdminAdded,
     StatusMessagesUpdated,
-    SessionCreated,
-    SessionDeleted,
 }
 
 #[derive(Clone)]
-pub struct Service(());
+pub struct GameService(());
 
-impl Service {
+impl GameService {
     pub fn init(config: Config) -> Self {
         unsafe {
             STORAGE = Some(Storage {
@@ -50,7 +54,6 @@ impl Service {
                 current_games: HashMap::with_capacity(10_000),
                 config,
                 messages_allowed: true,
-                sessions: HashMap::new(),
             });
         }
         Self(())
@@ -64,55 +67,32 @@ impl Service {
 }
 
 #[service(events = Event)]
-impl Service {
+impl GameService {
     pub fn new() -> Self {
         Self(())
     }
-    pub fn create_session(
-        &mut self,
-        key: ActorId,
-        duration: u64,
-        allowed_actions: Vec<ActionsForSession>,
-        signature: Option<Vec<u8>>,
-    ) {
-        let storage = self.get_mut();
-        let event = services::utils::panicking(|| {
-            funcs::create_session(storage, key, duration, allowed_actions, signature)
-        });
-        self.notify_on(event.clone()).expect("Notification Error");
-    }
-
-    pub fn delete_session_from_program(&mut self, session_for_account: ActorId) {
-        let storage = self.get_mut();
-        let event = services::utils::panicking(|| {
-            funcs::delete_session_from_program(storage, session_for_account)
-        });
-        self.notify_on(event.clone()).expect("Notification Error");
-    }
-
-    pub fn delete_session_from_account(&mut self) {
-        let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::delete_session_from_account(storage));
-        self.notify_on(event.clone()).expect("Notification Error");
-    }
     pub fn start_game(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
+        let sessions = SessionStorage::get_session_map();
         let event = services::utils::panicking(|| {
-            funcs::start_game(storage, msg::source(), session_for_account)
+            funcs::start_game(storage, sessions, msg::source(), session_for_account)
         });
         self.notify_on(event.clone()).expect("Notification Error");
     }
     pub fn turn(&mut self, step: u8, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
+        let sessions = SessionStorage::get_session_map();
         let event = services::utils::panicking(|| {
-            funcs::turn(storage, msg::source(), step, session_for_account)
+            funcs::turn(storage, sessions, msg::source(), step, session_for_account)
         });
         self.notify_on(event.clone()).expect("Notification Error");
     }
     pub fn skip(&mut self, session_for_account: Option<ActorId>) {
         let storage = self.get_mut();
-        let event =
-            services::utils::panicking(|| funcs::skip(storage, msg::source(), session_for_account));
+        let sessions = SessionStorage::get_session_map();
+        let event = services::utils::panicking(|| {
+            funcs::skip(storage, sessions, msg::source(), session_for_account)
+        });
         self.notify_on(event.clone()).expect("Notification Error");
     }
     pub fn remove_game_instance(&mut self, account: ActorId) {
@@ -184,8 +164,5 @@ impl Service {
     }
     pub fn messages_allowed(&self) -> &'static bool {
         &self.get().messages_allowed
-    }
-    pub fn session_for_the_account(&self, account: ActorId) -> Option<Session> {
-        self.get().sessions.get(&account).cloned()
     }
 }

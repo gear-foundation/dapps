@@ -20,8 +20,7 @@ async fn test_play_game() {
         time_interval: 20,
         turn_deadline_ms: 30_000,
         gas_to_delete_session: 5_000_000_000,
-        minimum_session_duration_ms: 180_000
-
+        minimum_session_duration_ms: 180_000,
     };
     let tic_tac_toe_id = tic_tac_toe_factory
         .new(config)
@@ -31,7 +30,11 @@ async fn test_play_game() {
 
     let mut client = TicTacToeClient::new(program_space);
     // start_game
-    client.start_game(None).send_recv(tic_tac_toe_id).await.unwrap();
+    client
+        .start_game(None)
+        .send_recv(tic_tac_toe_id)
+        .await
+        .unwrap();
     // check game instance
     let game_instance = client.game(100.into()).recv(tic_tac_toe_id).await.unwrap();
     assert!(game_instance.is_some());
@@ -75,7 +78,7 @@ async fn add_and_remove_admin() {
         time_interval: 20,
         turn_deadline_ms: 30_000,
         gas_to_delete_session: 5_000_000_000,
-        minimum_session_duration_ms: 180_000
+        minimum_session_duration_ms: 180_000,
     };
     let tic_tac_toe_id = tic_tac_toe_factory
         .new(config)
@@ -120,7 +123,7 @@ async fn allow_messages() {
         time_interval: 20,
         turn_deadline_ms: 30_000,
         gas_to_delete_session: 5_000_000_000,
-        minimum_session_duration_ms: 180_000
+        minimum_session_duration_ms: 180_000,
     };
     let tic_tac_toe_id = tic_tac_toe_factory
         .new(config)
@@ -151,7 +154,11 @@ async fn allow_messages() {
     assert!(res.is_err());
 
     // start_game
-    client.start_game(None).send_recv(tic_tac_toe_id).await.unwrap();
+    client
+        .start_game(None)
+        .send_recv(tic_tac_toe_id)
+        .await
+        .unwrap();
     // check game instance
     let game_instance = client.game(100.into()).recv(tic_tac_toe_id).await.unwrap();
     assert!(game_instance.is_some());

@@ -13,6 +13,13 @@ type ActionsForSession = enum {
   Skip,
 };
 
+type SessionData = struct {
+  key: actor_id,
+  expires: u64,
+  allowed_actions: vec ActionsForSession,
+  expires_at_block: u32,
+};
+
 type GameInstance = struct {
   board: vec opt Mark,
   player_mark: Mark,
@@ -33,23 +40,26 @@ type GameResult = enum {
   Draw,
 };
 
-type Session = struct {
-  key: actor_id,
-  expires: u64,
-  allowed_actions: vec ActionsForSession,
-  expires_at_block: u32,
-};
-
 constructor {
   New : (config: Config);
+};
+
+service Session {
+  CreateSession : (key: actor_id, duration: u64, allowed_actions: vec ActionsForSession, signature: opt vec u8) -> null;
+  DeleteSessionFromAccount : () -> null;
+  DeleteSessionFromProgram : (session_for_account: actor_id) -> null;
+  query SessionForTheAccount : (account: actor_id) -> opt SessionData;
+  query Sessions : () -> vec struct { actor_id, SessionData };
+
+  events {
+    SessionCreated;
+    SessionDeleted;
+  }
 };
 
 service TicTacToe {
   AddAdmin : (admin: actor_id) -> null;
   AllowMessages : (messages_allowed: bool) -> null;
-  CreateSession : (key: actor_id, duration: u64, allowed_actions: vec ActionsForSession, signature: opt vec u8) -> null;
-  DeleteSessionFromAccount : () -> null;
-  DeleteSessionFromProgram : (session_for_account: actor_id) -> null;
   RemoveAdmin : (admin: actor_id) -> null;
   RemoveGameInstance : (account: actor_id) -> null;
   RemoveGameInstances : (accounts: opt vec actor_id) -> null;
@@ -62,7 +72,6 @@ service TicTacToe {
   query Config : () -> Config;
   query Game : (player_id: actor_id) -> opt GameInstance;
   query MessagesAllowed : () -> bool;
-  query SessionForTheAccount : (account: actor_id) -> opt Session;
 
   events {
     GameFinished: struct { game: GameInstance, player_address: actor_id };
@@ -73,8 +82,6 @@ service TicTacToe {
     AdminRemoved;
     AdminAdded;
     StatusMessagesUpdated;
-    SessionCreated;
-    SessionDeleted;
   }
 };
 

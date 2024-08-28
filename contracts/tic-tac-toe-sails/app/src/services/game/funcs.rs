@@ -1,137 +1,19 @@
 use crate::services::game::{
-    ActionsForSession, Config, Event, GameError, GameInstance, GameResult, Mark, Session,
-    SignatureData, Storage, VICTORIES,
+    Config, Event, GameError, GameInstance, GameResult, Mark, Storage, VICTORIES,
 };
+use crate::services::session::utils::{ActionsForSession, SessionData};
 use gstd::{collections::HashMap, exec, msg};
 use sails_rs::prelude::*;
 
-use schnorrkel::PublicKey;
-
-fn verify<P: AsRef<[u8]>, M: AsRef<[u8]>>(
-    signature: &[u8],
-    message: M,
-    pubkey: P,
-) -> Result<(), GameError> {
-    let signature =
-        schnorrkel::Signature::from_bytes(signature).map_err(|_| GameError::BadSignature)?;
-    let pub_key = PublicKey::from_bytes(pubkey.as_ref()).map_err(|_| GameError::BadPublicKey)?;
-    pub_key
-        .verify_simple(b"substrate", message.as_ref(), &signature)
-        .map(|_| ())
-        .map_err(|_| GameError::VerificationFailed)
-}
-
-pub fn create_session(
-    storage: &mut Storage,
-    key: ActorId,
-    duration: u64,
-    allowed_actions: Vec<ActionsForSession>,
-    signature: Option<Vec<u8>>,
-) -> Result<Event, GameError> {
-    if duration < storage.config.minimum_session_duration_ms {
-        return Err(GameError::DurationIsSmall);
-    }
-
-    let msg_source = msg::source();
-    let block_timestamp = exec::block_timestamp();
-    let block_height = exec::block_height();
-
-    let expires = block_timestamp + duration;
-
-    let number_of_blocks = u32::try_from(duration.div_ceil(storage.config.s_per_block * 1_000))
-        .expect("Duration is too large");
-
-    if allowed_actions.is_empty() {
-        return Err(GameError::ThereAreNoAllowedMessages);
-    }
-
-    let account = match signature {
-        Some(sig_bytes) => {
-            check_if_session_exists(&storage.sessions, &key)?;
-            let pub_key: [u8; 32] = (key).into();
-            let mut prefix = b"<Bytes>".to_vec();
-            let mut message = SignatureData {
-                key: msg_source,
-                duration,
-                allowed_actions: allowed_actions.clone(),
-            }
-            .encode();
-            let mut postfix = b"</Bytes>".to_vec();
-            prefix.append(&mut message);
-            prefix.append(&mut postfix);
-
-            verify(&sig_bytes, prefix, pub_key)?;
-            storage.sessions.entry(key).insert(Session {
-                key: msg_source,
-                expires,
-                allowed_actions,
-                expires_at_block: block_height + number_of_blocks,
-            });
-            key
-        }
-        None => {
-            check_if_session_exists(&storage.sessions, &msg_source)?;
-
-            storage.sessions.entry(msg_source).insert(Session {
-                key,
-                expires,
-                allowed_actions,
-                expires_at_block: block_height + number_of_blocks,
-            });
-            msg_source
-        }
-    };
-
-    let request = [
-        "TicTacToe".encode(),
-        "DeleteSessionFromProgram".to_string().encode(),
-        (account).encode(),
-    ]
-    .concat();
-
-    msg::send_bytes_with_gas_delayed(
-        exec::program_id(),
-        request,
-        storage.config.gas_to_delete_session,
-        0,
-        number_of_blocks,
-    )
-    .expect("Error in sending message");
-
-    Ok(Event::SessionCreated)
-}
-
-pub fn delete_session_from_program(
-    storage: &mut Storage,
-    session_for_account: ActorId,
-) -> Result<Event, GameError> {
-    if msg::source() != exec::program_id() {
-        return Err(GameError::MessageOnlyForProgram);
-    }
-
-    if let Some(session) = storage.sessions.remove(&session_for_account) {
-        if session.expires_at_block > exec::block_height() {
-            return Err(GameError::TooEarlyToDeleteSession);
-        }
-    }
-    Ok(Event::SessionDeleted)
-}
-
-pub fn delete_session_from_account(storage: &mut Storage) -> Result<Event, GameError> {
-    if storage.sessions.remove(&msg::source()).is_none() {
-        return Err(GameError::NoSession);
-    }
-    Ok(Event::SessionDeleted)
-}
-
 pub fn start_game(
     storage: &mut Storage,
+    sessions: &HashMap<ActorId, SessionData>,
     msg_source: ActorId,
     session_for_account: Option<ActorId>,
 ) -> Result<Event, GameError> {
     check_allow_messages(storage, msg_source)?;
     let player = get_player(
-        &storage.sessions,
+        sessions,
         &msg_source,
         &session_for_account,
         ActionsForSession::StartGame,
@@ -171,13 +53,14 @@ pub fn start_game(
 
 pub fn turn(
     storage: &mut Storage,
+    sessions: &HashMap<ActorId, SessionData>,
     msg_source: ActorId,
     step: u8,
     session_for_account: Option<ActorId>,
 ) -> Result<Event, GameError> {
     check_allow_messages(storage, msg_source)?;
     let player = get_player(
-        &storage.sessions,
+        sessions,
         &msg_source,
         &session_for_account,
         ActionsForSession::StartGame,
@@ -253,12 +136,13 @@ pub fn turn(
 
 pub fn skip(
     storage: &mut Storage,
+    sessions: &HashMap<ActorId, SessionData>,
     msg_source: ActorId,
     session_for_account: Option<ActorId>,
 ) -> Result<Event, GameError> {
     check_allow_messages(storage, msg_source)?;
     let player = get_player(
-        &storage.sessions,
+        sessions,
         &msg_source,
         &session_for_account,
         ActionsForSession::StartGame,
@@ -436,24 +320,6 @@ pub fn allow_messages(
     Ok(Event::StatusMessagesUpdated)
 }
 
-fn check_if_session_exists(
-    session_map: &HashMap<ActorId, Session>,
-    account: &ActorId,
-) -> Result<(), GameError> {
-    if let Some(Session {
-        key: _,
-        expires: _,
-        allowed_actions: _,
-        expires_at_block,
-    }) = session_map.get(account)
-    {
-        if *expires_at_block > exec::block_height() {
-            return Err(GameError::AlreadyHaveActiveSession);
-        }
-    }
-    Ok(())
-}
-
 fn check_allow_messages(storage: &Storage, msg_source: ActorId) -> Result<(), GameError> {
     if !storage.messages_allowed && !storage.admins.contains(&msg_source) {
         return Err(GameError::NotAllowedToSendMessages);
@@ -592,7 +458,7 @@ fn send_delayed_message_to_remove_game(
 }
 
 fn get_player(
-    session_map: &HashMap<ActorId, Session>,
+    session_map: &HashMap<ActorId, SessionData>,
     msg_source: &ActorId,
     session_for_account: &Option<ActorId>,
     actions_for_session: ActionsForSession,

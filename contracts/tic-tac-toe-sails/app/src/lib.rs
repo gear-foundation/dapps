@@ -4,17 +4,23 @@
 use sails_rs::prelude::*;
 mod services;
 use crate::services::game::utils::Config;
-use services::game::Service;
+use services::game::GameService;
+use services::session::SessionService;
 pub struct Program(());
 
 #[program]
 impl Program {
     pub fn new(config: Config) -> Self {
-        Service::init(config);
+        GameService::init(config);
+        SessionService::init();
         Self(())
     }
 
-    pub fn tic_tac_toe(&self) -> Service {
-        Service::new()
+    pub fn tic_tac_toe(&self) -> GameService {
+        GameService::new()
+    }
+
+    pub fn session(&self) -> SessionService {
+        SessionService::new()
     }
 }
