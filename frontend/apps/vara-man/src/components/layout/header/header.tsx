@@ -18,14 +18,7 @@ export const Header = () => {
 
   return (
     <CommonHeader
-      // logo={
-      //   <Link to="/">
-      //     <Icons.logo className="h-[40px] lg:h-15" />
-      //   </Link>
-      // }
-      logo={
-        <Logo className={clsx(styles.header__logo, !account && styles['header__logo--center'])} label="Tic-Tac-Toe" />
-      }
+      logo={<Logo className={clsx(styles.header__logo, !account && styles['header__logo--center'])} />}
       menu={
         <MenuHandler
           customItems={[
