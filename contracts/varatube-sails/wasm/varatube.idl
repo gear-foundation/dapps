@@ -1,0 +1,49 @@
+type Period = enum {
+  Year,
+  NineMonths,
+  SixMonths,
+  ThreeMonths,
+  Month,
+};
+
+type Config = struct {
+  gas_for_token_transfer: u64,
+  gas_to_start_subscription_update: u64,
+  block_duration: u32,
+  min_gas_limit: u64,
+};
+
+type SubscriberData = struct {
+  currency_id: actor_id,
+  period: Period,
+  subscription_start: opt struct { u64, u32 },
+  renewal_date: opt struct { u64, u32 },
+};
+
+constructor {
+  New : ();
+};
+
+service Varatube {
+  AddTokenData : (token_id: actor_id, price: u128) -> null;
+  CancelSubscription : () -> null;
+  ManagePendingSubscription : (enable: bool) -> null;
+  RegisterSubscription : (period: Period, currency_id: actor_id, with_renewal: bool) -> null;
+  UpdateConfig : (gas_for_token_transfer: opt u64, gas_to_start_subscription_update: opt u64, block_duration: opt u32) -> null;
+  UpdateSubscription : (subscriber: actor_id) -> null;
+  query Admins : () -> vec actor_id;
+  query Config : () -> Config;
+  query Currencies : () -> vec struct { actor_id, u128 };
+  query GetSubscriber : (account: actor_id) -> opt SubscriberData;
+  query Subscribers : () -> vec struct { actor_id, SubscriberData };
+
+  events {
+    SubscriptionRegistered;
+    SubscriptionUpdated;
+    SubscriptionCancelled;
+    PendingSubscriptionManaged;
+    PaymentAdded;
+    ConfigUpdated;
+  }
+};
+
