@@ -131,12 +131,14 @@ export const GameLayout = ({ isPause, isCanceledModal }: Props) => {
     setGameOver(false);
     setMessageSent(false);
     gameInstanceRef.current?.updateGameOver(gameOver);
+    gameInstanceRef.current?.cleanup();
     gameInstanceRef.current = null;
+    mapRef.current = null;
   };
 
   return (
     <div className="ml-auto mr-auto max-md:w-full z-10">
-      {isOpenPlayAgain && !isCanceledModal && (
+      {isOpenPlayAgain && !isCanceledModal && previousGame && (
         <GamePlayAgainModal setIsOpenPlayAgain={setIsOpenPlayAgain} restartGame={restartGame} />
       )}
       <GameCanvas
