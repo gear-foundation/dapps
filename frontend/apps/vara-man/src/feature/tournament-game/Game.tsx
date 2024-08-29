@@ -43,13 +43,14 @@ export const Game = () => {
     const isAdmin = admin === account?.decodedAddress;
 
     if (previousGame && !tournamentGame) {
+      setGameOver(false);
       if (!isAdmin) {
         setCanceledModal(true);
       } else {
         setPreviousGame(null);
       }
     }
-  }, [tournamentGame]);
+  }, [account?.decodedAddress, previousGame, tournamentGame]);
 
   useEffect(() => {
     if (playGame || isStarted) {
@@ -62,7 +63,7 @@ export const Game = () => {
   }, [activeTab]);
 
   return (
-    <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+    <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
       {isMobile && (
         <div>
           <Tabs className="flex flex-col" value={activeTab}>
@@ -92,8 +93,8 @@ export const Game = () => {
                   isStarted={isStarted}
                   isRegistration={isRegistration}
                   isFinished={isFinished}
+                  isCanceledModal={isCanceledModal}
                   gameOver={gameOver}
-                  setGameOver={setGameOver}
                   score={score}
                 />
               </TabsContent>
@@ -102,25 +103,25 @@ export const Game = () => {
         </div>
       )}
 
-      <div className="hidden md:flex md:col-span-1 lg:col-span-1 md:py-5 bg-white rounded-md">
+      <div className="hidden md:flex md:col-span-1 lg:col-span-1 md:py-5 bg-white rounded-md max-w-sm">
         {isRegistration && previousGame && <Registration tournamentGame={previousGame} />}
         {isStarted && <GamePlayers />}
       </div>
 
       {!isMobile && (
-        <div className="hidden md:flex md:col-span-2 lg:col-span-2 p-5 bg-white rounded-md">
+        <div className="hidden md:flex md:col-span-1 lg:col-span-1 p-5 bg-white rounded-md">
           <GameInfoCanvas
             isStarted={isStarted}
             isRegistration={isRegistration}
             isFinished={isFinished}
+            isCanceledModal={isCanceledModal}
             gameOver={gameOver}
-            setGameOver={setGameOver}
             score={score}
           />
         </div>
       )}
 
-      {isFinished && tournamentGame && <GameOverModal tournamentGame={tournamentGame} />}
+      {isFinished && tournamentGame && !isRegistration && <GameOverModal tournamentGame={tournamentGame} />}
       {isCanceledModal && <GameCanceledModal />}
     </div>
   );
