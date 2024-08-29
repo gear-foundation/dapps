@@ -7,6 +7,12 @@ type Config = struct {
   minimum_session_duration_ms: u64,
 };
 
+type SignatureData = struct {
+  key: actor_id,
+  duration: u64,
+  allowed_actions: vec ActionsForSession,
+};
+
 type ActionsForSession = enum {
   StartGame,
   Move,
@@ -45,7 +51,7 @@ constructor {
 };
 
 service Session {
-  CreateSession : (key: actor_id, duration: u64, allowed_actions: vec ActionsForSession, signature: opt vec u8) -> null;
+  CreateSession : (signature_data: SignatureData, signature: opt vec u8) -> null;
   DeleteSessionFromAccount : () -> null;
   DeleteSessionFromProgram : (session_for_account: actor_id) -> null;
   query SessionForTheAccount : (account: actor_id) -> opt SessionData;

@@ -47,17 +47,11 @@ impl SessionService {
     pub fn new() -> Self {
         Self(())
     }
-    pub fn create_session(
-        &mut self,
-        key: ActorId,
-        duration: u64,
-        allowed_actions: Vec<ActionsForSession>,
-        signature: Option<Vec<u8>>,
-    ) {
+    pub fn create_session(&mut self, signature_data: SignatureData, signature: Option<Vec<u8>>) {
         let sessions = self.as_mut();
         let config = GameStorage::get_config();
         let event = services::utils::panicking(|| {
-            funcs::create_session(sessions, config, key, duration, allowed_actions, signature)
+            funcs::create_session(sessions, config, signature_data, signature)
         });
         self.notify_on(event.clone()).expect("Notification Error");
     }
@@ -76,7 +70,7 @@ impl SessionService {
         self.notify_on(event.clone()).expect("Notification Error");
     }
 
-    pub fn sessions(&self) ->Vec<(ActorId, SessionData)> {
+    pub fn sessions(&self) -> Vec<(ActorId, SessionData)> {
         self.as_ref().clone().into_iter().collect()
     }
 
