@@ -137,7 +137,7 @@ export const GameLayout = ({ isPause, isCanceledModal }: Props) => {
   };
 
   return (
-    <div className="ml-auto mr-auto max-md:w-full z-10">
+    <div className="ml-auto mr-auto max-md:w-full z-2">
       {isOpenPlayAgain && !isCanceledModal && !isPause && (
         <GamePlayAgainModal setIsOpenPlayAgain={setIsOpenPlayAgain} restartGame={restartGame} />
       )}
