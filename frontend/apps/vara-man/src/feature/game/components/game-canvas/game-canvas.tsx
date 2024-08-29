@@ -35,13 +35,19 @@ const useResizeCanvas = (
       }
     };
 
+    if (gameInstanceRef.current) {
+      resizeCanvas();
+    } else {
+      const timeoutId = setTimeout(resizeCanvas, 100);
+      return () => clearTimeout(timeoutId);
+    }
+
     window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, [canvasRef, fogCanvasRef, gameInstanceRef]);
+  }, [canvasRef, fogCanvasRef, gameInstanceRef.current]);
 };
 
 export const GameCanvas = ({ canvasRef, fogCanvasRef, gameInstanceRef, isPause }: GameCanvasProps) => {

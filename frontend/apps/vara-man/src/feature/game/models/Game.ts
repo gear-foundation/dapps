@@ -60,7 +60,6 @@ export class GameEngine {
   }
 
   init() {
-    this.resize();
     MapRenderer.initTilesets(this.map).then(() => {
       const startPosition = findCharacterStartPosition(this.map);
       const enemyStartPositions = findEnemyStartPositions(this.map);
@@ -71,6 +70,8 @@ export class GameEngine {
         );
 
         this.initEventListeners();
+
+        this.resize();
       } else {
         console.error('The character starting position was not found.');
       }
@@ -224,11 +225,13 @@ export class GameEngine {
   };
 
   render() {
-    if (!this.character) return;
+    if (!this.character) {
+      requestAnimationFrame(this.update);
+      return;
+    }
 
     let offsetX = 0;
     let offsetY = 0;
-
     if (window.innerWidth < 768) {
       offsetX = window.innerWidth / 2.8 - this.character.position.x;
       offsetY = window.innerHeight / 4 - this.character.position.y;

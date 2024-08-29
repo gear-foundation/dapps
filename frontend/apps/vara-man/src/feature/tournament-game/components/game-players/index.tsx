@@ -38,8 +38,6 @@ export const GamePlayers = () => {
 
   const [timeLeft, setTimeLeft] = useState(endTime - Date.now());
 
-  const onSuccess = () => setIsPending(false);
-
   const isAdmin = tournamentGame?.[0].admin === account?.decodedAddress;
 
   const onCancelGame = () => {
@@ -51,8 +49,15 @@ export const GamePlayers = () => {
           payload: { CancelTournament: {} },
           voucherId: gasless.voucherId,
           gasLimit,
-          onSuccess,
-          onError: onSuccess,
+          onSuccess: () => {
+            setIsPending(false);
+            setTimeLeft(0);
+            setGameOver(false);
+          },
+          onError: () => {
+            setIsPending(false);
+            setTimeLeft(0);
+          },
         }),
       );
     }
@@ -65,17 +70,19 @@ export const GamePlayers = () => {
     const updateTimer = () => {
       const now = Date.now();
       const timeLeft = endTime - now;
-      setTimeLeft(Math.max(timeLeft, 0));
-
-      if (timeLeft <= 0) {
+      if (timeLeft <= 0 && tournamentGame?.[0]?.stage === 'Started') {
         setGameOver(true);
+      } else if (timeLeft <= 0) {
+        setTimeLeft(0);
+      } else {
+        setTimeLeft(Math.max(timeLeft, 0));
       }
     };
 
     const timerId = setInterval(updateTimer, 1000);
 
     return () => clearInterval(timerId);
-  }, [endTime]);
+  }, [endTime, tournamentGame]);
 
   const minutes = Math.floor(timeLeft / 60000);
   const seconds = Math.floor((timeLeft % 60000) / 1000);

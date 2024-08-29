@@ -95,7 +95,7 @@ export const GameLayout = ({ isPause, isCanceledModal }: Props) => {
   }, [isPause]);
 
   useEffect(() => {
-    gameInstanceRef.current?.updateGameOver(gameOver);
+    // gameInstanceRef.current?.updateGameOver(gameOver);
 
     if (!messageSent && gameOver && timeGameOver > 0) {
       setIsOpenPlayAgain(true);
@@ -138,7 +138,7 @@ export const GameLayout = ({ isPause, isCanceledModal }: Props) => {
 
   return (
     <div className="ml-auto mr-auto max-md:w-full z-10">
-      {isOpenPlayAgain && !isCanceledModal && previousGame && (
+      {isOpenPlayAgain && !isCanceledModal && !isPause && (
         <GamePlayAgainModal setIsOpenPlayAgain={setIsOpenPlayAgain} restartGame={restartGame} />
       )}
       <GameCanvas
