@@ -26,7 +26,6 @@ export class CharacterRenderer {
 		context.translate(position.x, position.y);
 		context.rotate(rotation);
 
-		// Рендерим части тела
 		this.renderLegs(context, character);
 		this.renderArms(context, character);
 		this.renderTorso(context, character);

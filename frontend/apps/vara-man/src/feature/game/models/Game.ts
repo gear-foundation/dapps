@@ -168,25 +168,29 @@ export class GameEngine {
     }
   };
 
-  public handleKeyUp = (event: { keyCode: number }) => {
-    switch (event.keyCode) {
-      case 38: // Arrow Up
-      case 87: // W
+  public handleKeyUp = (event: { key: string }) => {
+    switch (event.key) {
+      case 'ArrowUp':
+      case 'w':
+      case 'W':
         this.isUp = false;
         break;
-      case 40: // Arrow Down
-      case 83: // S
+      case 'ArrowDown':
+      case 's':
+      case 'S':
         this.isDown = false;
         break;
-      case 37: // Arrow Left
-      case 65: // A
+      case 'ArrowLeft':
+      case 'a':
+      case 'A':
         this.isLeft = false;
         break;
-      case 39: // Arrow Right
-      case 68: // D
+      case 'ArrowRight':
+      case 'd':
+      case 'D':
         this.isRight = false;
         break;
-      case 16: // Shift
+      case 'Shift':
         this.isShift = false;
         break;
     }
