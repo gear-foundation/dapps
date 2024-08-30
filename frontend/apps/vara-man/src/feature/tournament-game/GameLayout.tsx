@@ -17,9 +17,10 @@ import { GameCanvas } from '../game/components/game-canvas/game-canvas';
 
 type Props = {
   isPause: boolean;
+  isCanceledModal: boolean;
 };
 
-export const GameLayout = ({ isPause }: Props) => {
+export const GameLayout = ({ isPause, isCanceledModal }: Props) => {
   const { tournamentGame, previousGame } = useGame();
   const [coins, setCoins] = useAtom(COINS);
   const [gameOver, setGameOver] = useAtom(GAME_OVER);
@@ -94,7 +95,7 @@ export const GameLayout = ({ isPause }: Props) => {
   }, [isPause]);
 
   useEffect(() => {
-    gameInstanceRef.current?.updateGameOver(gameOver);
+    // gameInstanceRef.current?.updateGameOver(gameOver);
 
     if (!messageSent && gameOver && timeGameOver > 0) {
       setIsOpenPlayAgain(true);
@@ -130,12 +131,16 @@ export const GameLayout = ({ isPause }: Props) => {
     setGameOver(false);
     setMessageSent(false);
     gameInstanceRef.current?.updateGameOver(gameOver);
+    gameInstanceRef.current?.cleanup();
     gameInstanceRef.current = null;
+    mapRef.current = null;
   };
 
   return (
-    <div className="ml-auto mr-auto max-md:w-full z-10">
-      {isOpenPlayAgain && <GamePlayAgainModal setIsOpenPlayAgain={setIsOpenPlayAgain} restartGame={restartGame} />}
+    <div className="ml-auto mr-auto max-md:w-full z-2">
+      {isOpenPlayAgain && !isCanceledModal && !isPause && (
+        <GamePlayAgainModal setIsOpenPlayAgain={setIsOpenPlayAgain} restartGame={restartGame} />
+      )}
       <GameCanvas
         canvasRef={canvasRef}
         fogCanvasRef={fogCanvasRef}
