@@ -1,6 +1,6 @@
 use super::session::Storage as SessionStorage;
 use crate::services;
-use gstd::msg;
+use gstd::{exec, msg};
 use sails_rs::{collections::HashMap, gstd::service, prelude::*};
 mod funcs;
 pub mod utils;
@@ -12,6 +12,7 @@ pub struct Storage {
     current_games: HashMap<ActorId, GameInstance>,
     config: Config,
     messages_allowed: bool,
+    dns_info: Option<(ActorId, String)>,
 }
 
 impl Storage {
@@ -41,20 +42,38 @@ pub enum Event {
     AdminRemoved,
     AdminAdded,
     StatusMessagesUpdated,
+    Killed {
+        inheritor: ActorId,
+    },
 }
 
 #[derive(Clone)]
 pub struct GameService(());
 
 impl GameService {
-    pub fn init(config: Config) -> Self {
+    pub async fn init(config: Config, dns_id_and_name: Option<(ActorId, String)>) -> Self {
         unsafe {
             STORAGE = Some(Storage {
                 admins: vec![msg::source()],
                 current_games: HashMap::with_capacity(10_000),
                 config,
                 messages_allowed: true,
+                dns_info: dns_id_and_name.clone(),
             });
+        }
+
+        if let Some((id, name)) = dns_id_and_name {
+            let request = [
+                "Dns".encode(),
+                "AddNewProgram".to_string().encode(),
+                (name, exec::program_id()).encode(),
+            ]
+            .concat();
+
+            msg::send_bytes_with_gas_for_reply(id, request, 5_000_000_000, 0, 0)
+                .expect("Error in sending message")
+                .await
+                .expect("Error in `AddNewProgram`");
         }
         Self(())
     }
@@ -148,6 +167,25 @@ impl GameService {
             funcs::allow_messages(storage, msg::source(), messages_allowed)
         });
         self.notify_on(event.clone()).expect("Notification Error");
+    }
+    pub async fn kill(&mut self, inheritor: ActorId) {
+        let storage = self.get();
+        if let Some((id, _name)) = &storage.dns_info {
+            let request = ["Dns".encode(), "DeleteMe".to_string().encode(), ().encode()].concat();
+
+            msg::send_bytes_with_gas_for_reply(*id, request, 5_000_000_000, 0, 0)
+                .expect("Error in sending message")
+                .await
+                .expect("Error in `AddNewProgram`");
+        }
+
+        if !storage.admins.contains(&msg::source()) {
+            services::utils::panic(GameError::NotAdmin);
+        }
+
+        self.notify_on(Event::Killed { inheritor })
+            .expect("Notification Error");
+        exec::exit(inheritor);
     }
 
     pub fn admins(&self) -> &'static Vec<ActorId> {

@@ -11,7 +11,7 @@ async fn test_play_game() {
     program_space.system().init_logger();
     let code_id = program_space
         .system()
-        .submit_code_file("../../target/wasm32-unknown-unknown/debug/tic_tac_toe_wasm.opt.wasm");
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm");
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -23,7 +23,7 @@ async fn test_play_game() {
         minimum_session_duration_ms: 180_000,
     };
     let tic_tac_toe_id = tic_tac_toe_factory
-        .new(config)
+        .new(config, None)
         .send_recv(code_id, "123")
         .await
         .unwrap();
@@ -69,7 +69,7 @@ async fn add_and_remove_admin() {
     program_space.system().init_logger();
     let code_id = program_space
         .system()
-        .submit_code_file("../../target/wasm32-unknown-unknown/debug/tic_tac_toe_wasm.opt.wasm");
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm");
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -81,7 +81,7 @@ async fn add_and_remove_admin() {
         minimum_session_duration_ms: 180_000,
     };
     let tic_tac_toe_id = tic_tac_toe_factory
-        .new(config)
+        .new(config, None)
         .send_recv(code_id, "123")
         .await
         .unwrap();
@@ -114,7 +114,7 @@ async fn allow_messages() {
     program_space.system().init_logger();
     let code_id = program_space
         .system()
-        .submit_code_file("../../target/wasm32-unknown-unknown/debug/tic_tac_toe_wasm.opt.wasm");
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm");
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -126,7 +126,7 @@ async fn allow_messages() {
         minimum_session_duration_ms: 180_000,
     };
     let tic_tac_toe_id = tic_tac_toe_factory
-        .new(config)
+        .new(config, None)
         .send_recv(code_id, "123")
         .await
         .unwrap();

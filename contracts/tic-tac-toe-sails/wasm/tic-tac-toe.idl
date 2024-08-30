@@ -47,7 +47,7 @@ type GameResult = enum {
 };
 
 constructor {
-  New : (config: Config);
+  New : (config: Config, dns_id_and_name: opt struct { actor_id, str });
 };
 
 service Session {
@@ -66,6 +66,7 @@ service Session {
 service TicTacToe {
   AddAdmin : (admin: actor_id) -> null;
   AllowMessages : (messages_allowed: bool) -> null;
+  Kill : (inheritor: actor_id) -> null;
   RemoveAdmin : (admin: actor_id) -> null;
   RemoveGameInstance : (account: actor_id) -> null;
   RemoveGameInstances : (accounts: opt vec actor_id) -> null;
@@ -88,6 +89,7 @@ service TicTacToe {
     AdminRemoved;
     AdminAdded;
     StatusMessagesUpdated;
+    Killed: struct { inheritor: actor_id };
   }
 };
 
