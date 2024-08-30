@@ -70,6 +70,7 @@ const providers = [
   AccountProvider,
   AlertProvider,
   QueryProvider,
+  DnsProvider,
   GaslessTransactionsProvider,
   SignlessTransactionsProvider,
   EzTransactionsProvider,
