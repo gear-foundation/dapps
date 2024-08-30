@@ -54,15 +54,15 @@ export const GameCanvas = ({ canvasRef, fogCanvasRef, gameInstanceRef, isPause }
   useResizeCanvas(canvasRef, fogCanvasRef, gameInstanceRef);
 
   return (
-    <div className="ml-auto mr-auto max-md:w-full max-md:h-max z-2" style={{ position: 'relative' }}>
+    <div className="ml-auto mr-auto max-md:w-full max-md:h-max z-2 h-screen lg:h-full" style={{ position: 'relative' }}>
       <canvas
-        className="-left-6 md:relative md:left-0 md:h-auto h-[100dvh] z-1"
+        className="-left-6 md:relative md:left-0 md:h-auto  z-1"
         style={{ position: 'absolute' }}
         ref={fogCanvasRef}
       />
       <canvas
         ref={canvasRef}
-        className="absolute -left-6 md:relative md:left-0 md:h-auto h-[100dvh]"
+        className="absolute -left-6 md:relative md:left-0 "
         style={{
           backgroundImage: `radial-gradient(circle, rgba(255,255,255,0) 25%, rgba(255,255,255,1) 65%), url(${BackgroundMapImg})`,
           backgroundRepeat: 'no-repeat',
