@@ -43,7 +43,7 @@ export function GameField({ game }: GameFieldProps) {
       await turnMessage(step);
     } catch (error) {
       console.log(error);
-      alert.error('Game turn error');
+      alert.error((error instanceof Error && error.message) || 'Game turn error');
       setIsLoading(false);
     }
   };

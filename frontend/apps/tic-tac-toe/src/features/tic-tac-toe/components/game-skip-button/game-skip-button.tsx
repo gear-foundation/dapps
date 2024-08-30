@@ -22,7 +22,7 @@ export function GameSkipButton() {
       await skipMessage();
     } catch (error) {
       console.log(error);
-      alert.error('Game skip error');
+      alert.error((error instanceof Error && error.message) || 'Game skip error');
       setIsLoading(false);
     }
   };

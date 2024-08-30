@@ -27,7 +27,7 @@ export function GameStartButton({ children }: GameStartButtonProps) {
       await startGameMessage();
     } catch (error) {
       console.log(error);
-      alert.error('Game start error');
+      alert.error((error instanceof Error && error.message) || 'Game start error');
       setIsLoading(false);
     }
   };
