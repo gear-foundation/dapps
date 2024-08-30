@@ -12,6 +12,7 @@ import {
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
   EzTransactionsProvider,
 } from '@dapps-frontend/ez-transactions';
+import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 
 import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
@@ -34,22 +35,30 @@ function AlertProvider({ children }: ProviderProps) {
   );
 }
 
-function GaslessTransactionsProvider({ children }: ProviderProps) {
+function DnsProvider({ children }: ProviderProps) {
   return (
-    <SharedGaslessTransactionsProvider
-      programId={ADDRESS.GAME}
-      backendAddress={ADDRESS.GASLESS_BACKEND}
-      voucherLimit={18}>
+    <SharedDnsProvider names={{ programId: ADDRESS.DNS_NAME }} dnsApiUrl={ADDRESS.DNS_API_URL}>
+      {children}
+    </SharedDnsProvider>
+  );
+}
+
+function GaslessTransactionsProvider({ children }: ProviderProps) {
+  const { programId } = useDnsProgramIds();
+
+  return (
+    <SharedGaslessTransactionsProvider programId={programId} backendAddress={ADDRESS.GASLESS_BACKEND} voucherLimit={18}>
       {children}
     </SharedGaslessTransactionsProvider>
   );
 }
 
 function SignlessTransactionsProvider({ children }: ProviderProps) {
+  const { programId } = useDnsProgramIds();
   const program = useProgram();
 
   return (
-    <SharedSignlessTransactionsProvider programId={ADDRESS.GAME} program={program}>
+    <SharedSignlessTransactionsProvider programId={programId} program={program}>
       {children}
     </SharedSignlessTransactionsProvider>
   );
