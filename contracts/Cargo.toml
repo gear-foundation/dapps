@@ -95,7 +95,8 @@ members = [
     "vara-man",
     "varatube",
     "w3bstreaming",
-
+    "zk-battleship/app",
+    "zk-battleship/wasm",
     # Noncontract crates
 
     "gear-lib",
@@ -225,8 +226,10 @@ gstd = "1.5.0"
 gear-wasm-builder = "1.5.0"
 gmeta = "1.5.0"
 gclient = "1.5.0"
-gtest = "1.4.2"
+gtest = "1.5.0"
 gear-core = "1.5.0"
+sails-idl-gen = "0.3.0"
+sails-rs = "0.3.0"
 
 # External
 
