@@ -2,8 +2,8 @@ import { useAccount } from '@gear-js/react-hooks';
 
 import { ReactNode, createContext, useContext, useEffect } from 'react';
 
-import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
-import { useSignlessTransactions } from '@dapps-frontend/signless-transactions';
+import { useGaslessTransactions } from '@/features/gasless-transactions';
+import { useSignlessTransactions } from '@/features/signless-transactions';
 
 import { DEFAULT_VALUES } from './consts';
 import { Value } from './types';
