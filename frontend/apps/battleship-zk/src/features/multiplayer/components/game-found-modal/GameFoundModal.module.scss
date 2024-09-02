@@ -1,0 +1,43 @@
+.modal {
+  position: relative;
+  &::before {
+    position: fixed;
+    content: '';
+    min-width: 467px;
+    height: 100vh;
+    top:0;
+    background: #000000A6;
+    backdrop-filter: blur(10px);
+  }
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 23px;
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.button {
+  width: 100%;
+}
+
+.modalWrapper {
+  background: #fff;
+  border-radius: 8px 8px 0px 0px;
+}
+
+.mainText {
+  opacity: 0.7;
+}

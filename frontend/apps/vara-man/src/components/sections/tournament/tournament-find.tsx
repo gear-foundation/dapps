@@ -92,8 +92,8 @@ export const TournamentFind = () => {
         <div className="flex flex-col gap-10">
           <Input
             type="text"
-            label="Specify the game admin address:"
             placeholder="kG…"
+            label="Specify the game admin address:"
             required
             className="w-full"
             onChange={(e) => setFindAddress(e.target.value)}

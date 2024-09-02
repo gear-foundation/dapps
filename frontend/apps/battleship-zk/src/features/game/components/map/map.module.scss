@@ -1,0 +1,225 @@
+@use '@/assets/styles/utils' as *;
+
+.map {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.container {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.block {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border: 0.48px solid #cfcfcf;
+  cursor: pointer;
+  z-index: 1;
+
+  &Enemy {
+    background: transparent;
+    border: 1px solid #00ffc4;
+  }
+
+  &Disabled {
+    cursor: auto;
+  }
+}
+
+.cellFire {
+  width: 68px;
+  height: 68px;
+  z-index: 1;
+  transform: translateY(-20px);
+}
+
+.cellCross {
+  position: absolute;
+  width: 24px;
+  height: 24px;
+
+  & path {
+    fill: #eb5757;
+  }
+
+  &Enemy {
+    & path {
+      fill: #8a0000;
+    }
+  }
+}
+
+.cellSmoke {
+  z-index: 1;
+  position: absolute;
+  width: 72px;
+  height: 72px;
+  top: -16px;
+}
+
+.pendingCell {
+  border: 6px solid #64ffdb;
+  border-top: 6px solid transparent;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.buttons {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+
+  button,
+  button span {
+    width: 100%;
+  }
+}
+
+.sea {
+  position: absolute;
+  width: 100%;
+}
+
+.shipBlock {
+  background: url('../../assets/images/ship.svg'), #00ffc4;
+}
+
+.hitShip {
+  border: 1px solid #00000033;
+  background: #f5abab;
+
+  &Enemy {
+    background: transparent;
+  }
+}
+
+.hitCircle {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #eb5757;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(235, 87, 87, 0.5);
+  }
+}
+
+.hitCell {
+  border: 1px solid #00000033;
+}
+
+.deadShip {
+  border: 1px solid #00000033;
+  background: #f5abab;
+
+  &Enemy {
+    background: transparent;
+  }
+}
+
+.circle {
+  overflow: hidden;
+  width: 32px;
+  height: 32px;
+  position: absolute;
+  display: flex;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+}
+
+:root {
+  --size-to: 36px;
+}
+
+.circleEl {
+  width: 0;
+  height: 0;
+  border: 2px solid #eb5757;
+  border-radius: 50%;
+  animation: pulse 3s ease-out infinite;
+}
+
+.circleElTwo {
+  animation-delay: 1s;
+}
+
+.circleElThree {
+  animation-delay: 2s;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.8;
+  }
+
+  50% {
+    border-radius: 50%;
+    opacity: 0.5;
+  }
+
+  85%,
+  100% {
+    width: var(--size-to);
+    height: var(--size-to);
+    border-radius: 0%;
+    opacity: 0;
+  }
+}
+
+.oponentsTurn {
+  position: absolute;
+  top: -16px;
+  width: 100%;
+  height: calc(100% + 16px + 48px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.5);
+  text-shadow: 0px 1px 4px rgba(0, 0, 0, 0.25);
+  z-index: 1;
+  user-select: none;
+
+  .time {
+    font-size: 54px;
+    line-height: 1;
+  }
+}

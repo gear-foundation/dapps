@@ -4,8 +4,7 @@ import { useAtomValue, useSetAtom } from 'jotai';
 import { CreateType } from '@gear-js/api';
 import { formatBalance } from '@polkadot/util';
 import { useAlert, useAccount, useApi, useBalance } from '@gear-js/react-hooks';
-import { LOCAL_STORAGE } from '@/consts';
-import { AVAILABLE_BALANCE, IS_AVAILABLE_BALANCE_READY, WALLET, WALLET_ID_LOCAL_STORAGE_KEY, WalletId } from './consts';
+import { AVAILABLE_BALANCE, IS_AVAILABLE_BALANCE_READY, WALLET, WalletId } from './consts';
 import { SystemAccount } from './types';
 
 function useWasmMetadata(source: RequestInfo | URL) {
@@ -26,34 +25,21 @@ function useWasmMetadata(source: RequestInfo | URL) {
 }
 
 function useWallet() {
-  const { accounts } = useAccount();
+  const { wallets, account } = useAccount();
 
-  const [walletId, setWalletId] = useState<WalletId | undefined>(localStorage[LOCAL_STORAGE.WALLET]);
+  const defaultWalletId = account?.meta.source as WalletId | undefined;
+  const [walletId, setWalletId] = useState(defaultWalletId);
+
+  const wallet = walletId ? WALLET[walletId] : undefined;
+  const walletAccounts = wallets && walletId ? wallets[walletId].accounts : undefined;
+
+  useEffect(() => {
+    setWalletId(defaultWalletId);
+  }, [defaultWalletId]);
 
   const resetWalletId = () => setWalletId(undefined);
 
-  const getWalletAccounts = (id: WalletId) => accounts?.filter(({ meta }) => meta.source === id) || [];
-
-  const saveWallet = () => walletId && localStorage.setItem(LOCAL_STORAGE.WALLET, walletId);
-
-  const removeWallet = () => localStorage.removeItem(LOCAL_STORAGE.WALLET);
-
-  const wallet = walletId && WALLET[walletId];
-  const walletAccounts = walletId && getWalletAccounts(walletId);
-
-  return { wallet, walletAccounts, setWalletId, resetWalletId, getWalletAccounts, saveWallet, removeWallet };
-}
-
-function useWalletSync() {
-  const { account, isAccountReady } = useAccount();
-  const { address } = account || {};
-
-  useEffect(() => {
-    if (!isAccountReady) return;
-    if (!account) return localStorage.removeItem(WALLET_ID_LOCAL_STORAGE_KEY);
-
-    localStorage.setItem(WALLET_ID_LOCAL_STORAGE_KEY, account.meta.source);
-  }, [isAccountReady, address, account]);
+  return { wallet, walletId, walletAccounts, setWalletId, resetWalletId };
 }
 
 export function useAccountAvailableBalance() {
@@ -117,4 +103,4 @@ export function useAccountAvailableBalanceSync() {
   }, [account, api, isAccountReady, isApiReady, isReady, balance, isBalanceReady, setAvailableBalance, setIsReady]);
 }
 
-export { useWalletSync, useWallet, useWasmMetadata };
+export { useWallet, useWasmMetadata };

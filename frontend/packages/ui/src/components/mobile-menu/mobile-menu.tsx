@@ -24,7 +24,6 @@ type Props = {
 
 export function MobileMenu({ children, className, onClose, walletModalHandler }: Props) {
   const { account, logout } = useAccount();
-
   const { walletAccounts } = useWallet();
 
   const getAccounts = () =>

@@ -14,7 +14,6 @@ import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import metaTxt from '@/assets/meta/meta.txt';
 import { ACCOUNT_ID_LOCAL_STORAGE_KEY, LOCAL_STORAGE, SEARCH_PARAMS } from '@/consts';
 import { Handler, ProgramStateRes } from '@/types';
-import { WALLET_ID_LOCAL_STORAGE_KEY } from './features/Wallet/consts';
 import { AUTH_TOKEN_LOCAL_STORAGE_KEY } from './features/Auth/consts';
 import { useAccountAvailableBalance } from './features/Wallet/hooks';
 
@@ -143,35 +142,36 @@ export function useReadState<T>({
 
 export function useLoginByParams() {
   const { search } = useLocation();
-  const { login, accounts } = useAccount();
+  const { login, isAccountReady, wallets } = useAccount();
 
   const query = useMemo(() => new URLSearchParams(search), [search]);
 
   useEffect(() => {
+    // TODO: auth is not needed, remove!
     const isAccount = localStorage.getItem(ACCOUNT_ID_LOCAL_STORAGE_KEY);
-    const isWallet = localStorage.getItem(WALLET_ID_LOCAL_STORAGE_KEY);
     const isAuthToken = localStorage.getItem(AUTH_TOKEN_LOCAL_STORAGE_KEY);
 
-    if (query.size) {
+    if (isAccountReady && query.size) {
       const account = query.get(ACCOUNT_ID_LOCAL_STORAGE_KEY);
-      const wallet = query.get(WALLET_ID_LOCAL_STORAGE_KEY);
       const authToken = query.get(AUTH_TOKEN_LOCAL_STORAGE_KEY);
 
-      const isEmptyStorage = !isAuthToken && !isAccount && !isWallet;
+      const isEmptyStorage = !isAuthToken && !isAccount;
       const isSameUser = isAccount === account;
-      const isDataCorrect = account && authToken && wallet;
+      const isDataCorrect = account && authToken;
 
       if ((isEmptyStorage || !isSameUser) && !!isDataCorrect) {
         localStorage.setItem(ACCOUNT_ID_LOCAL_STORAGE_KEY, account);
-        localStorage.setItem(WALLET_ID_LOCAL_STORAGE_KEY, wallet);
         localStorage.setItem(AUTH_TOKEN_LOCAL_STORAGE_KEY, authToken);
 
-        const candidate = accounts?.find((a) => a.address === account);
+        const candidate = Object.values(wallets || {})
+          .flatMap(({ accounts }) => accounts)
+          .find((acc) => acc?.address === account);
+
         if (candidate) login(candidate);
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [accounts, query]);
+  }, [isAccountReady, wallets, query]);
 }
 
 export const useHandleCalculateGas = (address: HexString, meta?: ProgramMetadata) => {
@@ -183,8 +183,7 @@ export const useHandleCalculateGas = (address: HexString, meta?: ProgramMetadata
   return (initPayload: AnyJson, value?: AnyNumber | undefined) => {
     const balance = Number(withoutCommas(availableBalance?.value || ''));
     const existentialDeposit = Number(withoutCommas(availableBalance?.existentialDeposit || ''));
-    console.log(balance);
-    console.log(existentialDeposit);
+
     if (!balance || balance < existentialDeposit) {
       alert.error(`Low balance when calculating gas`);
     }

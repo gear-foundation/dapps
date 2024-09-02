@@ -1,8 +1,6 @@
 import { AlertContainerFactory } from '@gear-js/react-hooks';
-import { InjectedAccountWithMeta } from '@polkadot/extension-inject/types';
 import { HexString } from '@polkadot/util/types';
 import { NotificationResponseTypes, NotificationType, TamagotchiState } from '@/app/types/lessons';
-import { LOCAL_STORAGE } from '@/app/consts';
 import type { ItemsStoreResponse, StoreItemsNames, StoreItemType } from '@/app/types/ft-store';
 import { ClassValue, clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -33,7 +31,6 @@ export const copyToClipboard = async (key: string, alert: AlertContainerFactory,
     unsecuredCopyToClipboard(key);
   }
 };
-export const isLoggedIn = ({ address }: InjectedAccountWithMeta) => localStorage[LOCAL_STORAGE.ACCOUNT] === address;
 
 export const getNotificationTypeValue = (
   str: NotificationResponseTypes,

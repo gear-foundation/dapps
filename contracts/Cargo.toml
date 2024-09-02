@@ -231,7 +231,6 @@ gear-core = "1.5.0"
 sails-idl-gen = "0.3.0"
 sails-rs = "0.3.0"
 
-
 # External
 
 primitive-types = { version = "0.12", default-features = false }

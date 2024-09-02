@@ -1,0 +1,84 @@
+@use '@/assets/styles/utils' as *;
+
+.container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @include gap(64px);
+  width: 100%;
+}
+
+.header {
+  @include gap(24px);
+  text-align: center;
+  padding: 0 16px;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  @include gap(32px);
+}
+
+.controlsWrapper {
+  @include gap(12px);
+  width: 100%;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 32px;
+  align-items: center;
+   > div:first-child {
+    margin-bottom: 32px;
+  }
+}
+
+.startGameButton {
+  width: 100%;
+}
+
+.mainHeading {
+  font-size: 42px;
+  font-weight: 600;
+  line-height: 42px;
+}
+
+.mainText {
+  line-height: 25.6px;
+}
+
+.muted {
+  color: rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.link {
+  position: relative;
+  color: #000;
+  font-weight: 600;
+  transition: color 250ms ease;
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;
+    margin-top: -2px;
+    height: 2px;
+    background-color: #000000;
+    transition: opacity 250ms ease;
+  }
+
+  &:hover {
+    color: #404040;
+
+    &::after {
+      opacity: 0;
+    }
+  }
+}

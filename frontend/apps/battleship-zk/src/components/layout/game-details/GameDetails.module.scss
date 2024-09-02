@@ -1,0 +1,29 @@
+.info {
+  width: 100%;
+  padding: 16px;
+  display: grid;
+  grid-template-rows: auto;
+  background: #F7F9FA;
+  color: #000000;
+  gap: 13px;
+  border-radius: 15px;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  
+  .itemName {
+    font-size: 14px;
+    font-weight: 400;
+    text-align: start;
+  }
+
+  .itemValue {
+    font-size: 14px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+}

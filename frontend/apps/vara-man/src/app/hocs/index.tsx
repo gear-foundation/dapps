@@ -3,7 +3,7 @@ import { BrowserRouter } from 'react-router-dom';
 import {
   ApiProvider as GearApiProvider,
   AlertProvider as GearAlertProvider,
-  AccountProvider,
+  AccountProvider as GearAccountProvider,
   ProviderProps,
 } from '@gear-js/react-hooks';
 import {
@@ -21,6 +21,10 @@ import metaTxt from '@/assets/meta/vara_man.meta.txt';
 const ApiProvider = ({ children }: ProviderProps) => (
   <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>
 );
+
+function AccountProvider({ children }: ProviderProps) {
+  return <GearAccountProvider appName="Vara-Man">{children}</GearAccountProvider>;
+}
 
 function DnsProvider({ children }: ProviderProps) {
   return (

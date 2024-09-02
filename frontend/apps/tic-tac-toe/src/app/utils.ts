@@ -1,5 +1,4 @@
-import { Account, AlertContainerFactory } from '@gear-js/react-hooks';
-import { ACCOUNT_ID_LOCAL_STORAGE_KEY } from '@/app/consts';
+import { AlertContainerFactory } from '@gear-js/react-hooks';
 import { HexString } from '@polkadot/util/types';
 
 export function formatDate(input: string | number): string {
@@ -59,8 +58,6 @@ export const copyToClipboard = async ({
     unsecuredCopyToClipboard(value);
   }
 };
-
-export const isLoggedIn = ({ address }: Account) => localStorage.getItem(ACCOUNT_ID_LOCAL_STORAGE_KEY) === address;
 
 export function prettyDate(
   input: number | Date | string,
