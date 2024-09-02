@@ -203,4 +203,7 @@ impl GameService {
     pub fn messages_allowed(&self) -> &'static bool {
         &self.get().messages_allowed
     }
+    pub fn dns_info(&self) -> Option<(ActorId, String)> {
+        self.get().dns_info.clone()
+    }
 }
