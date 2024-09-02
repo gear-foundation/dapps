@@ -1,16 +1,16 @@
+type Config = struct {
+  gas_for_token_transfer: u64,
+  gas_to_start_subscription_update: u64,
+  block_duration: u32,
+  min_gas_limit: u64,
+};
+
 type Period = enum {
   Year,
   NineMonths,
   SixMonths,
   ThreeMonths,
   Month,
-};
-
-type Config = struct {
-  gas_for_token_transfer: u64,
-  gas_to_start_subscription_update: u64,
-  block_duration: u32,
-  min_gas_limit: u64,
 };
 
 type SubscriberData = struct {
@@ -21,12 +21,13 @@ type SubscriberData = struct {
 };
 
 constructor {
-  New : ();
+  New : (config: Config, dns_id_and_name: opt struct { actor_id, str });
 };
 
 service Varatube {
   AddTokenData : (token_id: actor_id, price: u128) -> null;
   CancelSubscription : () -> null;
+  Kill : (inheritor: actor_id) -> null;
   ManagePendingSubscription : (enable: bool) -> null;
   RegisterSubscription : (period: Period, currency_id: actor_id, with_renewal: bool) -> null;
   UpdateConfig : (gas_for_token_transfer: opt u64, gas_to_start_subscription_update: opt u64, block_duration: opt u32) -> null;
@@ -44,6 +45,7 @@ service Varatube {
     PendingSubscriptionManaged;
     PaymentAdded;
     ConfigUpdated;
+    Killed: struct { inheritor: actor_id };
   }
 };
 

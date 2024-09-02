@@ -1,7 +1,7 @@
 #![no_std]
 #![allow(clippy::new_without_default)]
 
-use gstd::msg;
+use gstd::{exec, msg};
 use sails_rs::{collections::HashMap, prelude::*};
 pub mod funcs;
 pub mod utils;
@@ -13,6 +13,7 @@ pub struct Storage {
     currencies: HashMap<ActorId, Price>,
     subscribers: HashMap<ActorId, SubscriberData>,
     config: Config,
+    dns_info: Option<(ActorId, String)>,
 }
 
 static mut STORAGE: Option<Storage> = None;
@@ -27,19 +28,33 @@ pub enum Event {
     PendingSubscriptionManaged,
     PaymentAdded,
     ConfigUpdated,
+    Killed { inheritor: ActorId },
 }
 
 #[derive(Clone)]
 pub struct Service(());
 
 impl Service {
-    pub fn init(config: Config) -> Self {
+    pub async fn init(config: Config, dns_id_and_name: Option<(ActorId, String)>) -> Self {
         unsafe {
             STORAGE = Some(Storage {
                 admins: vec![msg::source()],
                 config,
                 ..Default::default()
             });
+        }
+        if let Some((id, name)) = dns_id_and_name {
+            let request = [
+                "Dns".encode(),
+                "AddNewProgram".to_string().encode(),
+                (name, exec::program_id()).encode(),
+            ]
+            .concat();
+
+            msg::send_bytes_with_gas_for_reply(id, request, 5_000_000_000, 0, 0)
+                .expect("Error in sending message")
+                .await
+                .expect("Error in `AddNewProgram`");
         }
         Self(())
     }
@@ -123,6 +138,26 @@ impl Service {
         self.notify_on(event.clone()).expect("Notification Error");
     }
 
+    pub async fn kill(&mut self, inheritor: ActorId) {
+        let storage = self.get();
+        if let Some((id, _name)) = &storage.dns_info {
+            let request = ["Dns".encode(), "DeleteMe".to_string().encode(), ().encode()].concat();
+
+            msg::send_bytes_with_gas_for_reply(*id, request, 5_000_000_000, 0, 0)
+                .expect("Error in sending message")
+                .await
+                .expect("Error in `AddNewProgram`");
+        }
+
+        if !storage.admins.contains(&msg::source()) {
+            panic(VaraTubeError::NotAdmin);
+        }
+
+        self.notify_on(Event::Killed { inheritor })
+            .expect("Notification Error");
+        exec::exit(inheritor);
+    }
+
     pub fn admins(&self) -> &'static Vec<ActorId> {
         &self.get().admins
     }
@@ -144,12 +179,13 @@ impl Service {
     }
 }
 
-pub struct Program;
+pub struct Program(());
 
 #[program]
 impl Program {
-    pub fn new() -> Self {
-        Self
+    pub async fn new(config: Config, dns_id_and_name: Option<(ActorId, String)>) -> Self {
+        Service::init(config, dns_id_and_name).await;
+        Self(())
     }
     pub fn varatube(&self) -> Service {
         Service(())
