@@ -12,7 +12,7 @@ use vara_man_wasm::{
 fn init_fungible_token(sys: &System, vara_man_id: ActorId) -> (ActorId, Program<'_>) {
     let vft = Program::from_file(
         sys,
-        "../../target/wasm32-unknown-unknown/debug/extended_vft_wasm.opt.wasm",
+        "../../target/wasm32-unknown-unknown/release/extended_vft_wasm.opt.wasm",
     );
     let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
     let encoded_request = ["New".encode(), payload.encode()].concat();
@@ -47,8 +47,8 @@ async fn test_play_game() {
     let system = cloned_program_space.system();
     system.init_logger();
 
-    let code_id =
-        system.submit_code_file("../../target/wasm32-unknown-unknown/debug/vara_man_wasm.opt.wasm");
+    let code_id = system
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man_wasm.opt.wasm");
 
     let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -66,7 +66,7 @@ async fn test_play_game() {
         time_for_single_round: 180_000,
     };
     let vara_man_id = vara_man_factory
-        .new(config)
+        .new(config, None)
         .send_recv(code_id, "123")
         .await
         .unwrap();
@@ -110,8 +110,8 @@ async fn test_play_game_with_fungible_token() {
     let system = cloned_program_space.system();
     system.init_logger();
 
-    let code_id =
-        system.submit_code_file("../../target/wasm32-unknown-unknown/debug/vara_man_wasm.opt.wasm");
+    let code_id = system
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man_wasm.opt.wasm");
 
     let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -129,7 +129,7 @@ async fn test_play_game_with_fungible_token() {
         time_for_single_round: 180_000,
     };
     let vara_man_id = vara_man_factory
-        .new(config)
+        .new(config, None)
         .send_recv(code_id, "123")
         .await
         .unwrap();
@@ -164,8 +164,8 @@ async fn test_play_tournament() {
     let system = cloned_program_space.system();
     system.init_logger();
 
-    let code_id =
-        system.submit_code_file("../../target/wasm32-unknown-unknown/debug/vara_man_wasm.opt.wasm");
+    let code_id = system
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man_wasm.opt.wasm");
 
     let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -183,7 +183,7 @@ async fn test_play_tournament() {
         time_for_single_round: 180_000,
     };
     let vara_man_id = vara_man_factory
-        .new(config)
+        .new(config, None)
         .send_recv(code_id, "123")
         .await
         .unwrap();

@@ -122,6 +122,7 @@ pub struct VaraManState {
     pub status: Status,
     pub config: Config,
     pub admins: Vec<ActorId>,
+    pub dns_info: Option<(ActorId, String)>,
 }
 
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
@@ -145,6 +146,7 @@ impl From<Storage> for VaraManState {
             status,
             config,
             admins,
+            dns_info,
         } = value;
 
         let tournaments = tournaments
@@ -171,6 +173,7 @@ impl From<Storage> for VaraManState {
             status,
             config,
             admins,
+            dns_info,
         }
     }
 }

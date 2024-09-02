@@ -12,6 +12,7 @@ pub struct Storage {
     status: Status,
     config: Config,
     admins: Vec<ActorId>,
+    dns_info: Option<(ActorId, String)>,
 }
 
 #[derive(Default, Debug, Clone)]
@@ -77,20 +78,39 @@ pub enum Event {
     StatusChanged(Status),
     ConfigChanged(Config),
     LeftGame,
+    Killed {
+        inheritor: ActorId,
+    },
 }
 
 #[derive(Clone)]
 pub struct Service(());
 
 impl Service {
-    pub fn init(config: Config) -> Self {
+    pub async fn init(config: Config, dns_id_and_name: Option<(ActorId, String)>) -> Self {
         unsafe {
             STORAGE = Some(Storage {
                 config,
                 admins: vec![msg::source()],
+                dns_info: dns_id_and_name.clone(),
                 ..Default::default()
             });
         }
+
+        if let Some((id, name)) = dns_id_and_name {
+            let request = [
+                "Dns".encode(),
+                "AddNewProgram".to_string().encode(),
+                (name, exec::program_id()).encode(),
+            ]
+            .concat();
+
+            msg::send_bytes_with_gas_for_reply(id, request, 5_000_000_000, 0, 0)
+                .expect("Error in sending message")
+                .await
+                .expect("Error in `AddNewProgram`");
+        }
+
         Self(())
     }
     pub fn get_mut(&mut self) -> &'static mut Storage {
@@ -200,6 +220,26 @@ impl Service {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::add_admin(storage, new_admin_id));
         self.notify_on(event.clone()).expect("Notification Error");
+    }
+
+    pub async fn kill(&mut self, inheritor: ActorId) {
+        let storage = self.get();
+        if let Some((id, _name)) = &storage.dns_info {
+            let request = ["Dns".encode(), "DeleteMe".to_string().encode(), ().encode()].concat();
+
+            msg::send_bytes_with_gas_for_reply(*id, request, 5_000_000_000, 0, 0)
+                .expect("Error in sending message")
+                .await
+                .expect("Error in `AddNewProgram`");
+        }
+
+        if !storage.admins.contains(&msg::source()) {
+            services::utils::panic(GameError::NotAdmin);
+        }
+
+        self.notify_on(Event::Killed { inheritor })
+            .expect("Notification Error");
+        exec::exit(inheritor);
     }
 
     pub fn config(&self) -> &'static Config {

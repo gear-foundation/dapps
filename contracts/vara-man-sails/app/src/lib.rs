@@ -10,8 +10,8 @@ pub struct Program(());
 
 #[program]
 impl Program {
-    pub fn new(config: Config) -> Self {
-        Service::init(config);
+    pub async fn new(config: Config, dns_id_and_name: Option<(ActorId, String)>) -> Self {
+        Service::init(config, dns_id_and_name).await;
         Self(())
     }
 
