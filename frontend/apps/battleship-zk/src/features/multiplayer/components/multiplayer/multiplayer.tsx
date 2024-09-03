@@ -91,23 +91,18 @@ export function Multiplayer() {
       {isGameLeft && <GameCancelledModal text={'Your opponent has left the game.'} onClose={onGameLeft} />}
     </>
   ) : (
-    <>
-      <GameProcess
-        gameType={gameType}
-        totalShoots={totalShoots}
-        successfulShoots={successfulShoots}
-        gameResults={gameEndResult ? { totalTime: gameEndResult.total_time, winner: gameEndResult.winner } : null}
-        remainingTime={remainingTime}
-        gameUpdatedEvent={gameUpdatedEvent}
-        admin={game?.admin}
-        onClickCell={handleClickCell}
-        onExitGame={exitGame}
-        onVerifyOponentsHit={verifyOponentsHit}
-        resetGameState={resetGameState}
-      />
-      {isGameCancelled && (
-        <GameCancelledModal text={'The game was terminated by the administrator.'} onClose={onGameCancelled} />
-      )}
-    </>
+    <GameProcess
+      gameType={gameType}
+      totalShoots={totalShoots}
+      successfulShoots={successfulShoots}
+      gameResults={gameEndResult ? { totalTime: gameEndResult.total_time, winner: gameEndResult.winner } : null}
+      remainingTime={remainingTime}
+      gameUpdatedEvent={gameUpdatedEvent}
+      admin={game?.admin}
+      onClickCell={handleClickCell}
+      onExitGame={exitGame}
+      onVerifyOponentsHit={verifyOponentsHit}
+      resetGameState={resetGameState}
+    />
   );
 }
