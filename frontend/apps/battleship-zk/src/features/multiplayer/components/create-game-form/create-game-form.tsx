@@ -6,7 +6,6 @@ import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
-import { GameDetails } from '@/components/layout/game-details';
 import { VaraIcon } from '@/components/layout/vara-svg';
 import { usePending } from '@/features/game/hooks';
 import { useMultiplayerGame } from '../../hooks';
@@ -83,7 +82,7 @@ function CreateGameForm({ onCancel }: Props) {
           </Text>
         </div>
       </div>
-      <form className={styles.form} onSubmit={onCreateSubmit(handleCreateSession)}>
+      <form className={styles.form} id="create_game_form" onSubmit={onCreateSubmit(handleCreateSession)}>
         <div className={styles.input}>
           <TextField
             label="Specify entry fee"
@@ -106,19 +105,18 @@ function CreateGameForm({ onCancel }: Props) {
           />
           <span className={styles.fieldError}>{createErrors.name}</span>
         </div>
-        <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} />
-        <div className={styles.buttons}>
-          <Button type="submit" text="Create game" isLoading={pending} className={styles.button} />
-          <Button
-            type="submit"
-            text="Cancel"
-            color="grey"
-            isLoading={pending}
-            className={styles.button}
-            onClick={onCancel}
-          />
-        </div>
       </form>
+      <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} />
+      <div className={styles.buttons}>
+        <Button
+          type="submit"
+          form="create_game_form"
+          text="Create game"
+          isLoading={pending}
+          className={styles.button}
+        />
+        <Button text="Cancel" color="grey" isLoading={pending} className={styles.button} onClick={onCancel} />
+      </div>
     </div>
   );
 }
