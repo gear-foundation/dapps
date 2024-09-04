@@ -103,7 +103,8 @@ impl MultipleService {
             )
         });
 
-        let _unused = self.notify_on(Event::GameCreated { player_id });
+        self.notify_on(Event::GameCreated { player_id })
+            .expect("Notification Error");
     }
     /// Joins an existing game with the specified game ID for a player and updates the game storage.
     ///
@@ -134,7 +135,8 @@ impl MultipleService {
                 value,
             )
         });
-        let _unused = self.notify_on(Event::JoinedTheGame { player_id, game_id });
+        self.notify_on(Event::JoinedTheGame { player_id, game_id })
+            .expect("Notification Error");
     }
     /// Allows a player to leave a game and updates the game storage accordingly.
     ///
@@ -156,7 +158,7 @@ impl MultipleService {
             )
         });
 
-        let _unused = self.notify_on(event);
+        self.notify_on(event).expect("Notification Error");
     }
     /// Cancels an existing game for a player and updates the game storage accordingly.
     ///
@@ -170,14 +172,14 @@ impl MultipleService {
             &session_for_account,
             ActionsForSession::PlayMultipleGame,
         );
-        let game_id = services::utils::panicking(move || {
+        let event = services::utils::panicking(move || {
             funcs::cancel_game(
                 MultipleGamesStorage::as_mut(),
                 GamePairsStorage::as_mut(),
                 player,
             )
         });
-        let _unused = self.notify_on(Event::GameCanceled { game_id });
+        self.notify_on(event).expect("Notification Error");
     }
 
     /// Verifies the placement of ships in a multiplayer game using zero-knowledge proofs.
@@ -234,7 +236,7 @@ impl MultipleService {
                 exec::block_timestamp(),
             )
         });
-        let _unused = self.notify_on(event);
+        self.notify_on(event).expect("Notification Error");
     }
     /// Executes a player's move in the game, including verification of the move if required.
     ///
@@ -336,7 +338,7 @@ impl MultipleService {
                 )
             })
         };
-        let _unused = self.notify_on(event);
+        self.notify_on(event).expect("Notification Error");
     }
 
     /// Deletes an existing game from the storage based on the game ID and creation time.
@@ -360,7 +362,7 @@ impl MultipleService {
                 create_time,
             )
         });
-        let _unused = self.notify_on(event);
+        self.notify_on(event).expect("Notification Error");
     }
 
     /// Checks the timing of a game and updates the game state accordingly.
@@ -376,7 +378,7 @@ impl MultipleService {
         if msg::source() != exec::program_id() {
             services::utils::panic("This message can be sent only by the program")
         }
-        services::utils::panicking(move || {
+        let possible_event = services::utils::panicking(move || {
             funcs::check_out_timing(
                 MultipleGamesStorage::as_mut(),
                 GamePairsStorage::as_mut(),
@@ -384,6 +386,10 @@ impl MultipleService {
                 check_time,
             )
         });
+
+        if let Some(event) = possible_event {
+            self.notify_on(event).expect("Notification Error");
+        }
     }
 
     pub fn delete_player(
@@ -406,7 +412,7 @@ impl MultipleService {
                 removable_player,
             )
         });
-        let _unused = self.notify_on(event);
+        self.notify_on(event).expect("Notification Error");
     }
 
     pub fn games(&self) -> Vec<(ActorId, MultipleGameState)> {
