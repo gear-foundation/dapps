@@ -7,7 +7,7 @@ export type GaslessContext = {
   isActive: boolean;
   voucherStatus: VoucherStatus | null;
   expireTimestamp: number | null;
-  requestVoucher: (accountAddress: string) => Promise<`0x${string}`>;
+  requestVoucher: (accountAddress: string, isSaveContext?: boolean) => Promise<`0x${string}`>;
   setIsEnabled: (value: boolean) => void;
 };
 
