@@ -1,5 +1,5 @@
 import { Button } from '@gear-js/vara-ui';
-import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { TextField } from '@/components/layout/text-field';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { Heading } from '@/components/ui/heading';
@@ -28,6 +28,7 @@ type Props = {
 function CreateGameForm({ onCancel }: Props) {
   const { account } = useAccount();
   const { api } = useApi();
+  const alert = useAlert();
   const { getFormattedBalanceValue } = useBalanceFormat();
   const { createGameMessage } = useCreateGameMessage();
   const { triggerGame } = useMultiplayerGame();
@@ -59,13 +60,15 @@ function CreateGameForm({ onCancel }: Props) {
     try {
       setPending(true);
 
-      const transaction = await createGameMessage(values.name);
-      const withFee = await transaction.withValue(BigInt(getChainBalanceValue(values.fee).toFixed()));
-      const { response } = await withFee.signAndSend();
+      const transaction = await createGameMessage(values.name, BigInt(getChainBalanceValue(values.fee).toFixed()));
+      const { response } = await transaction.signAndSend();
 
       await response();
       await triggerGame();
     } catch (err) {
+      const { message, docs } = err as Error & { docs: string };
+      const errorText = message || docs || 'Create game error';
+      alert.error(errorText);
       console.log(err);
     } finally {
       setPending(false);

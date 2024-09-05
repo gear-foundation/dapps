@@ -13,7 +13,7 @@ const usePrepareEzTransactionParams = () => {
     const sessionForAccount = sendFromPair ? account.decodedAddress : null;
 
     let voucherId = sendFromPair ? voucher?.id : gasless.voucherId;
-    if (account && gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
+    if (account && gasless.isEnabled && !gasless.voucherId && (sendFromBaseAccount || !signless.isActive)) {
       voucherId = await gasless.requestVoucher(account.address);
     }
 
