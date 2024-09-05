@@ -413,6 +413,7 @@ pub fn make_move(
         };
         if res != 0 {
             game.status = Status::Turn(opponent);
+            game.last_move_time = block_timestamp;
             return Ok(Event::MoveMade {
                 game_id,
                 step,
