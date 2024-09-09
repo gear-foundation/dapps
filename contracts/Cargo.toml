@@ -96,7 +96,8 @@ members = [
     "vara-man",
     "varatube",
     "w3bstreaming",
-
+    "zk-battleship/app",
+    "zk-battleship/wasm",
     # Noncontract crates
 
     "gear-lib",
@@ -231,6 +232,7 @@ gear-core = "1.5.0"
 sails-idl-gen = "0.3.0"
 sails-rs = "0.3.0"
 sails-client-gen = "0.3.0"
+
 
 # External
 

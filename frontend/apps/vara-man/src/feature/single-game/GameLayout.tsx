@@ -44,7 +44,7 @@ export const GameLayout = () => {
               {score}
             </div>
           </div>
-          <div className="flex gap-3 items-center font-semibold cursor-pointer" onClick={() => setGameOver(true)}>
+          <div className="flex gap-3 items-center font-semibold cursor-pointer" onClick={() => navigate('/')}>
             <Icons.exit />
             Exit
           </div>

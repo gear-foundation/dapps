@@ -1,5 +1,14 @@
 .modal {
-  min-width: 670px;
+  position: relative;
+  &::before {
+    position: fixed;
+    content: '';
+    min-width: 467px;
+    height: 100vh;
+    top:0;
+    background: #000000A6;
+    backdrop-filter: blur(10px);
+  }
 }
 
 .container {
@@ -26,6 +35,7 @@
 
 .modalWrapper {
   background: #fff;
+  border-radius: 8px 8px 0px 0px;
 }
 
 .mainText {

@@ -8,8 +8,16 @@ import { ROUTES } from '@/app/consts';
 import { useShips } from '@/features/zk/hooks/use-ships';
 import { decodeAddress } from '@gear-js/api';
 import { usePending } from '@/features/game/hooks';
-import { useEventPlacementVerified, useEventGameCancelled, useEventMoveMadeSubscription } from '../../sails/events';
+import { GameCancelledModal } from '@/features/game/components';
+import {
+  useEventPlacementVerified,
+  useEventGameCancelled,
+  useEventMoveMadeSubscription,
+  useEventPlayerDeleted,
+  useEventGameLeft,
+} from '../../sails/events';
 import { useMultiplayerGame, useProcessWithMultiplayer, useArrangementWithMultiplayer } from '../../hooks';
+import { getIsPlacementStatus } from '../../utils';
 import styles from './Multiplayer.module.scss';
 
 export function Multiplayer() {
@@ -32,11 +40,13 @@ export function Multiplayer() {
   const [savedPlayerBoard, setSavedPlayerBoard] = useState<string[] | null | undefined>();
 
   useEventPlacementVerified();
-  useEventGameCancelled();
+  const { isGameCancelled, onGameCancelled } = useEventGameCancelled();
   useEventMoveMadeSubscription();
+  const { isPlayerDeleted, onPlayerDeleted } = useEventPlayerDeleted();
+  const { isGameLeft, onGameLeft } = useEventGameLeft();
 
   const playerInfo = game?.participants_data.find((item) => decodeAddress(item[0]) === account?.decodedAddress)?.[1];
-  const isPlacementStatus = Object.keys(game?.status || {})[0] === 'verificationPlacement';
+  const isPlacementStatus = getIsPlacementStatus(game);
 
   const handleCloseModal = () => {
     navigate(ROUTES.HOME);
@@ -68,6 +78,17 @@ export function Multiplayer() {
           </div>
         </Modal>
       )}
+
+      {isPlayerDeleted && (
+        <GameCancelledModal
+          text={'You have been removed from the game by an administrator.'}
+          onClose={onPlayerDeleted}
+        />
+      )}
+      {isGameCancelled && (
+        <GameCancelledModal text={'The game was terminated by the administrator.'} onClose={onGameCancelled} />
+      )}
+      {isGameLeft && <GameCancelledModal text={'Your opponent has left the game.'} onClose={onGameLeft} />}
     </>
   ) : (
     <GameProcess

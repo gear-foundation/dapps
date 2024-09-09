@@ -12,7 +12,7 @@ export default function Map({ sizeBlock = 64, shipStatusArray, lastHit }: Props)
   const numRows = 5;
   const numCols = 5;
 
-  const renderEmptyCirculeAnimation = () => {
+  const renderHitCirculeAnimation = () => {
     return (
       <>
         <div className={styles.circle}>
@@ -23,22 +23,6 @@ export default function Map({ sizeBlock = 64, shipStatusArray, lastHit }: Props)
         </div>
         <div className={styles.circle}>
           <span className={clsx(styles.circleEl, styles.circleElThree)} />
-        </div>
-      </>
-    );
-  };
-
-  const renderHitCirculeAnimation = () => {
-    return (
-      <>
-        <div className={styles.circle}>
-          <span className={styles.circleHit} />
-        </div>
-        <div className={styles.circle}>
-          <span className={clsx(styles.circleHit, styles.circleElTwo)} />
-        </div>
-        <div className={styles.circle}>
-          <span className={clsx(styles.circleHit, styles.circleElThree)} />
         </div>
       </>
     );
@@ -71,18 +55,9 @@ export default function Map({ sizeBlock = 64, shipStatusArray, lastHit }: Props)
 
     return (
       <div key={`block-${row}-${col}`} className={cellClassName} style={cellStyle}>
-        {isHit && !isHitShips && !isDeadShips && (
-          <>
-            <div className={styles.hitEmpty} />
-            {lastHit === cellIndex && renderEmptyCirculeAnimation()}
-          </>
-        )}
-        {(isHitShips || isDeadShips) && (
-          <>
-            <CrossIcon className={styles.cellCross} />
-            {lastHit === cellIndex && renderHitCirculeAnimation()}
-          </>
-        )}
+        {(isHit || isHitShips || (isDeadShips && lastHit === cellIndex)) && <div className={styles.hitCircle} />}
+        {isDeadShips && lastHit !== cellIndex && <CrossIcon className={styles.cellCross} />}
+        {lastHit === cellIndex && renderHitCirculeAnimation()}
       </div>
     );
   };

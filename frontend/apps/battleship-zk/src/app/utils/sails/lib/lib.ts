@@ -15,9 +15,12 @@ export interface Configuration {
   gas_for_delete_single_game: number | string | bigint;
   gas_for_delete_multiple_game: number | string | bigint;
   gas_for_check_time: number | string | bigint;
+  gas_for_delete_session: number | string | bigint;
   delay_for_delete_single_game: number;
   delay_for_delete_multiple_game: number;
   delay_for_check_time: number;
+  minimum_session_duration_ms: number | string | bigint;
+  block_duration_ms: number | string | bigint;
 }
 
 export interface VerificationVariables {
@@ -69,12 +72,18 @@ export type Status =
 
 export type MultipleUtilsStepResult = 'Missed' | 'Injured' | 'Killed';
 
+export interface SignatureData {
+  key: ActorId;
+  duration: number | string | bigint;
+  allowed_actions: Array<ActionsForSession>;
+}
 export type ActionsForSession = 'playSingleGame' | 'playMultipleGame';
 
 export interface Session {
   key: ActorId;
   expires: number | string | bigint;
   allowed_actions: Array<ActionsForSession>;
+  expires_at_block: number;
 }
 
 export interface SingleGame {
@@ -128,9 +137,12 @@ export class Program {
         gas_for_delete_single_game: 'u64',
         gas_for_delete_multiple_game: 'u64',
         gas_for_check_time: 'u64',
+        gas_for_delete_session: 'u64',
         delay_for_delete_single_game: 'u32',
         delay_for_delete_multiple_game: 'u32',
         delay_for_check_time: 'u32',
+        minimum_session_duration_ms: 'u64',
+        block_duration_ms: 'u64',
       },
       VerificationVariables: { proof_bytes: 'ProofBytes', public_input: 'PublicMoveInput' },
       ProofBytes: { a: 'Vec<u8>', b: 'Vec<u8>', c: 'Vec<u8>' },
@@ -162,8 +174,9 @@ export class Program {
         },
       },
       MultipleUtilsStepResult: { _enum: ['Missed', 'Injured', 'Killed'] },
+      SignatureData: { key: '[u8;32]', duration: 'u64', allowed_actions: 'Vec<ActionsForSession>' },
       ActionsForSession: { _enum: ['PlaySingleGame', 'PlayMultipleGame'] },
-      Session: { key: '[u8;32]', expires: 'u64', allowed_actions: 'Vec<ActionsForSession>' },
+      Session: { key: '[u8;32]', expires: 'u64', allowed_actions: 'Vec<ActionsForSession>', expires_at_block: 'u32' },
       SingleGame: {
         player_board: 'Vec<Entity>',
         ship_hash: 'Vec<u8>',
@@ -968,31 +981,40 @@ export class Multiple {
 export class Session {
   constructor(private _program: Program) {}
 
-  public createSession(
-    key: ActorId,
-    duration: number | string | bigint,
-    allowed_actions: Array<ActionsForSession>,
-  ): TransactionBuilder<null> {
+  public createSession(signature_data: SignatureData, signature: `0x${string}` | null): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'CreateSession', key, duration, allowed_actions],
-      '(String, String, [u8;32], u64, Vec<ActionsForSession>)',
+      ['Session', 'CreateSession', signature_data, signature],
+      '(String, String, SignatureData, Option<Vec<u8>>)',
       'Null',
       this._program.programId,
     );
   }
 
-  public deleteSession(): TransactionBuilder<null> {
+  public deleteSessionFromAccount(): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Session', 'DeleteSession'],
+      ['Session', 'DeleteSessionFromAccount'],
       '(String, String)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public deleteSessionFromProgram(session_for_account: ActorId): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Session', 'DeleteSessionFromProgram', session_for_account],
+      '(String, String, [u8;32])',
       'Null',
       this._program.programId,
     );

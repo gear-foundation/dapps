@@ -10,7 +10,6 @@ import { useWallet } from '../../hooks';
 import styles from './WalletChange.module.scss';
 import { MenuOptions } from '@dapps-frontend/ui';
 import { EzSignlessTransactions, EzGaslessTransactions } from '@dapps-frontend/ez-transactions';
-import { useIsLocationGamePage } from '@/features/game/hooks';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 
 type Props = {
@@ -20,7 +19,6 @@ type Props = {
 
 export function WalletChange({ onClose, openConnectWallet }: Props) {
   const { account, logout } = useAccount();
-  const isGamePage = useIsLocationGamePage();
   const { walletAccounts } = useWallet();
 
   const getAccounts = () =>

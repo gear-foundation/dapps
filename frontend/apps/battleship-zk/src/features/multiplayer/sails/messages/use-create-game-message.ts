@@ -1,17 +1,24 @@
+import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
+import { usePrepareEzTransactionParams } from '@dapps-frontend/ez-transactions';
 import { useProgram } from '@/app/utils/sails';
-import { useMakeTransaction } from '@/app/utils/use-make-transaction';
 
 export const useCreateGameMessage = () => {
-  const gasLimit = 250_000_000_000n;
-  const makeTransaction = useMakeTransaction();
   const program = useProgram();
+  const { prepareTransactionAsync } = usePrepareProgramTransaction({
+    program,
+    serviceName: 'multiple',
+    functionName: 'createGame',
+  });
+  const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
-  const createGameMessage = async (name: string) => {
-    if (!program) throw new Error('program does not found');
-
-    const transaction = await makeTransaction(program.multiple.createGame(name, null));
-
-    return await transaction.withGas(gasLimit);
+  const createGameMessage = async (name: string, value: bigint) => {
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams(true);
+    const { transaction } = await prepareTransactionAsync({
+      args: [name, sessionForAccount],
+      ...params,
+      value,
+    });
+    return transaction;
   };
 
   return { createGameMessage };

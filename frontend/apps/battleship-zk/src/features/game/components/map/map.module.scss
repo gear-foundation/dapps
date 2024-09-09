@@ -55,7 +55,7 @@
   height: 24px;
 
   & path {
-    fill: #808080;
+    fill: #eb5757;
   }
 
   &Enemy {
@@ -114,35 +114,29 @@
 
 .hitShip {
   border: 1px solid #00000033;
-  background: #cdcdcd;
+  background: #f5abab;
 
   &Enemy {
     background: transparent;
   }
 }
 
-.hitEmpty {
-  width: 4px;
-  height: 4px;
-  border-radius: 50px;
-  background: #d9d9d9;
+.hitCircle {
+  position: relative;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #eb5757;
 
-  &Enemy {
-    position: relative;
-    width: 8px;
-    height: 8px;
-    background: #eb5757;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: -4px;
-      left: -4px;
-      width: 16px;
-      height: 16px;
-      border-radius: 50px;
-      background: rgba(235, 87, 87, 0.5);
-    }
+  &::before {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: -4px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: rgba(235, 87, 87, 0.5);
   }
 }
 
@@ -152,7 +146,7 @@
 
 .deadShip {
   border: 1px solid #00000033;
-  background: #ffe8e8;
+  background: #f5abab;
 
   &Enemy {
     background: transparent;
@@ -164,8 +158,6 @@
   width: 32px;
   height: 32px;
   position: absolute;
-  top: -1;
-  left: -1.5;
   display: flex;
   align-items: center;
   align-content: center;
@@ -173,23 +165,13 @@
 }
 
 :root {
-  --circle-color: #d9d9d9;
   --size-to: 36px;
 }
 
 .circleEl {
   width: 0;
   height: 0;
-  background: transparent;
-  border: 2px solid var(--circle-color);
-  border-radius: 50%;
-  animation: go 3s ease-out infinite;
-}
-
-.circleHit {
-  width: 0;
-  height: 0;
-  background: #00ffc4;
+  border: 2px solid #eb5757;
   border-radius: 50%;
   animation: pulse 3s ease-out infinite;
 }
@@ -200,15 +182,6 @@
 
 .circleElThree {
   animation-delay: 2s;
-}
-
-@keyframes go {
-  100% {
-    width: var(--size-to);
-    height: var(--size-to);
-    box-shadow: 0 0 15px var(--circle-color);
-    opacity: 0;
-  }
 }
 
 @keyframes pulse {

@@ -1,39 +1,22 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAccount } from '@gear-js/react-hooks';
-import { WALLET, WALLET_ID_LOCAL_STORAGE_KEY } from './consts';
+import { WALLET } from './consts';
 import { IWalletId } from './types';
 
-export function useWalletSync() {
-  const { account, isAccountReady } = useAccount();
-  const { address } = account || {};
-
-  useEffect(() => {
-    if (!isAccountReady) return;
-    if (!account) return localStorage.removeItem(WALLET_ID_LOCAL_STORAGE_KEY);
-
-    localStorage.setItem(WALLET_ID_LOCAL_STORAGE_KEY, account.meta.source);
-  }, [isAccountReady, address, account]);
-}
-
 export function useWallet() {
-  const { accounts } = useAccount();
+  const { wallets, account } = useAccount();
 
-  const [walletId, setWalletId] = useState(
-    (localStorage.getItem(WALLET_ID_LOCAL_STORAGE_KEY) as IWalletId | null) || undefined,
-  );
+  const defaultWalletId = account?.meta.source as IWalletId | undefined;
+  const [walletId, setWalletId] = useState(defaultWalletId);
 
   const wallet = walletId ? WALLET[walletId] : undefined;
+  const walletAccounts = wallets && walletId ? wallets[walletId].accounts : undefined;
 
-  const getWalletAccounts = (id: IWalletId) => accounts?.filter(({ meta }) => meta.source === id) || [];
-  const walletAccounts = walletId ? getWalletAccounts(walletId) : undefined;
+  useEffect(() => {
+    setWalletId(defaultWalletId);
+  }, [defaultWalletId]);
 
-  const resetWalletId = useCallback(() => setWalletId(undefined), []);
+  const resetWalletId = () => setWalletId(undefined);
 
-  return {
-    wallet,
-    walletAccounts,
-    setWalletId,
-    getWalletAccounts,
-    resetWalletId,
-  };
+  return { wallet, walletId, walletAccounts, setWalletId, resetWalletId };
 }

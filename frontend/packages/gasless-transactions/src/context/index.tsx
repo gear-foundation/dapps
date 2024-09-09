@@ -30,11 +30,18 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   const isActive = Boolean(accountAddress && voucherId);
   const [voucherStatus, setVoucherStatus] = useState<VoucherStatus | null>(null);
 
-  const requestVoucher = async (_accountAddress: string) =>
+  const expireTimestamp = useMemo(
+    () => (voucherId && voucherStatus ? Date.now() + voucherStatus.duration * 1000 : null),
+    [voucherId, voucherStatus],
+  );
+
+  const requestVoucher = async (_accountAddress: string, isSaveContext = true) =>
     withLoading(
       getVoucherId(backendAddress, _accountAddress, programId).then((result) => {
-        setAccountAddress(_accountAddress);
-        setVoucherId(result);
+        if (isSaveContext) {
+          setAccountAddress(_accountAddress);
+          setVoucherId(result);
+        }
 
         return result;
       }),
@@ -73,9 +80,18 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
   }, [account]);
 
   const value = useMemo(
-    () => ({ voucherId, isLoading, isEnabled, isActive, voucherStatus, requestVoucher, setIsEnabled }),
+    () => ({
+      voucherId,
+      isLoading,
+      isEnabled,
+      isActive,
+      voucherStatus,
+      expireTimestamp,
+      requestVoucher,
+      setIsEnabled,
+    }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [voucherId, isLoading, isEnabled, isActive, voucherStatus?.id],
+    [voucherId, isLoading, isEnabled, isActive, voucherStatus?.id, expireTimestamp],
   );
 
   return <Provider value={value}>{children}</Provider>;

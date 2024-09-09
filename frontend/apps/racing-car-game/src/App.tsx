@@ -14,7 +14,7 @@ import 'babel-polyfill';
 import { useLoginByParams } from './hooks';
 import { CURRENT_GAME, IS_CURRENT_GAME_READ_ATOM } from './atoms';
 import { ProtectedRoute } from './features/Auth/components';
-import { useAccountAvailableBalance, useAccountAvailableBalanceSync, useWalletSync } from './features/Wallet/hooks';
+import { useAccountAvailableBalance, useAccountAvailableBalanceSync } from './features/Wallet/hooks';
 import { LoginPage } from './pages/LoginPage';
 import { ApiLoader } from './components/ApiLoader';
 import { useGameState } from './features/Game/hooks';
@@ -42,7 +42,6 @@ function AppComponent() {
 
   useAuthSync();
   useLoginByParams();
-  useWalletSync();
   useAccountAvailableBalanceSync();
 
   return (

@@ -7,4 +7,3 @@ export { Text, textVariants } from './ui/text';
 export { TextGradient } from './ui/text-gradient';
 export { ScrollArea, ScrollBar } from './ui/scroll-area';
 export { Sprite } from './ui/sprite';
-export { AccountIcon } from './ui/account-icon';
