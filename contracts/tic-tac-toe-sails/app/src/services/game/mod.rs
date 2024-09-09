@@ -169,6 +169,10 @@ impl GameService {
         self.notify_on(event.clone()).expect("Notification Error");
     }
     pub async fn kill(&mut self, inheritor: ActorId) {
+        if !storage.admins.contains(&msg::source()) {
+            services::utils::panic(GameError::NotAdmin);
+        }
+
         let storage = self.get();
         if let Some((id, _name)) = &storage.dns_info {
             let request = ["Dns".encode(), "DeleteMe".to_string().encode(), ().encode()].concat();
@@ -177,10 +181,6 @@ impl GameService {
                 .expect("Error in sending message")
                 .await
                 .expect("Error in `AddNewProgram`");
-        }
-
-        if !storage.admins.contains(&msg::source()) {
-            services::utils::panic(GameError::NotAdmin);
         }
 
         self.notify_on(Event::Killed { inheritor })
