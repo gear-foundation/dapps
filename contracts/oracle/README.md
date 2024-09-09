@@ -6,19 +6,19 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "oracle*"
+cargo b -r -p "oracle*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "oracle*" -- --skip gclient
+cargo t -r -p "oracle*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "oracle*"
+cargo t -r -p "oracle*"
 ```

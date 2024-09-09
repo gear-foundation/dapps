@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "multisig-wallet*"
+cargo b -r -p "multisig-wallet*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "multisig-wallet*"
+cargo t -r -p "multisig-wallet*"
 ```

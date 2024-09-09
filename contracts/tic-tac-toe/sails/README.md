@@ -6,7 +6,7 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "tic-tac-toe-wasm"
+cargo b -r -p "tic-tac-toe-wasm"
 ```
 
 ### ✅ Testing

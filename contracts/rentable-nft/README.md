@@ -6,19 +6,19 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "rentable-nft*"
+cargo b -r -p "rentable-nft*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "rentable-nft*" -- --skip gclient
+cargo t -r -p "rentable-nft*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "rentable-nft*"
+cargo t -r -p "rentable-nft*"
 ```
