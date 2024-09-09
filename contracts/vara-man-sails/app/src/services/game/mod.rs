@@ -224,6 +224,9 @@ impl Service {
 
     pub async fn kill(&mut self, inheritor: ActorId) {
         let storage = self.get();
+        if !storage.admins.contains(&msg::source()) {
+            services::utils::panic(GameError::NotAdmin);
+        }
         if let Some((id, _name)) = &storage.dns_info {
             let request = ["Dns".encode(), "DeleteMe".to_string().encode(), ().encode()].concat();
 
@@ -231,10 +234,6 @@ impl Service {
                 .expect("Error in sending message")
                 .await
                 .expect("Error in `AddNewProgram`");
-        }
-
-        if !storage.admins.contains(&msg::source()) {
-            services::utils::panic(GameError::NotAdmin);
         }
 
         self.notify_on(Event::Killed { inheritor })
