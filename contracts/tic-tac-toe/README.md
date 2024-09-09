@@ -1,24 +1,16 @@
 [![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=vara-man/https://github.com/gear-foundation/dapps)
 [![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts.yml?logo=rust&label=docs)](https://dapps.gear.rs/vara_man_io)
 
-# Vara Man
+# Tic-Tac-Toe
 
 ### 🏗️ Building
 
 ```sh
-cargo b -r -p "vara-man*"
+cargo b -r -p "tic-tac-toe*"
 ```
 
 ### ✅ Testing
 
-Run all tests, except `gclient` ones:
 ```sh
-cargo t -r -p "vara-man*" -- --skip gclient
-```
-
-Run all tests:
-```sh
-# Download the node binary.
-cargo xtask node
-cargo t -r -p "vara-man*"
+cargo t -r -p "tic-tac-toe*"
 ```

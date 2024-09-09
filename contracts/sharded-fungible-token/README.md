@@ -8,11 +8,11 @@ An advanced version of fungible token that supports sharding.
 ### 🏗️ Building
 
 ```sh
-cargo b -p "sharded-fungible-token*"
+cargo b -r -p "sharded-fungible-token*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "sharded-fungible-token*"
+cargo t -r -p "sharded-fungible-token*"
 ```
