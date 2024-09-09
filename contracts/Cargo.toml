@@ -91,8 +91,8 @@ members = [
     "tamagotchi-battle",
     "tamagotchi-battle/state",
     "tequila-train",
-    "tic-tac-toe",
-    "tic-tac-toe-sails/wasm",
+    "tic-tac-toe/gstd",
+    "tic-tac-toe/sails/wasm",
     "vara-man",
     "varatube",
     "w3bstreaming",
@@ -207,7 +207,7 @@ syndote-player-io.path = "syndote/player/io"
 tamagotchi-io.path = "tamagotchi/io"
 tamagotchi-battle-io.path = "tamagotchi-battle/io"
 tequila-train-io.path = "tequila-train/io"
-tic-tac-toe-io.path = "tic-tac-toe/io"
+tic-tac-toe-io.path = "tic-tac-toe/gstd/io"
 vara-man-io.path = "vara-man/io"
 varatube-io.path = "varatube/io"
 w3bstreaming-io.path = "w3bstreaming/io"
