@@ -64,6 +64,8 @@ type BaseProgram =
         sessionForTheAccount: (account: ActorId, ...arg2: BaseProgramQueryProps) => Promise<ProgramSession | null>;
         createSession: (signatureData: SignatureData, signature: `0x${string}` | null) => TransactionBuilder<null>;
         deleteSessionFromAccount: () => TransactionBuilder<null>;
+        subscribeToSessionCreatedEvent: (callback: (data: null) => void | Promise<void>) => Promise<() => void>;
+        subscribeToSessionDeletedEvent: (callback: (data: null) => void | Promise<void>) => Promise<() => void>;
       };
       registry: TypeRegistry;
     }

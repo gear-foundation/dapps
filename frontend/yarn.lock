@@ -2560,16 +2560,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gear-js/vara-ui@npm:0.0.10":
-  version: 0.0.10
-  resolution: "@gear-js/vara-ui@npm:0.0.10"
-  peerDependencies:
-    react: ^18.2.0
-    react-dom: ^18.2.0
-  checksum: 10c0/f8cb7cbf1e6183085386752d86d3e4ad067d308545bfed0c27e22944e11cd74cc469c57e16a288f69b9c18077285825b25c899c630028caf408662bb366b5900
-  languageName: node
-  linkType: hard
-
 "@gear-js/vara-ui@npm:0.0.6":
   version: 0.0.6
   resolution: "@gear-js/vara-ui@npm:0.0.6"

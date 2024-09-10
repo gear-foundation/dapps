@@ -22,7 +22,8 @@ function EzTransactionsProvider({ children }: Props) {
 
   const signlessContext = useSignlessTransactions();
 
-  const onSessionCreate = async (signlessAccountAddress: string) => gasless.requestVoucher(signlessAccountAddress);
+  const onSessionCreate = async (signlessAccountAddress: string) =>
+    gasless.requestVoucher(signlessAccountAddress, false);
 
   const signless = {
     ...signlessContext,

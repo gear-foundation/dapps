@@ -35,11 +35,13 @@ function GaslessTransactionsProvider({ backendAddress, programId, voucherLimit, 
     [voucherId, voucherStatus],
   );
 
-  const requestVoucher = async (_accountAddress: string) =>
+  const requestVoucher = async (_accountAddress: string, isSaveContext = true) =>
     withLoading(
       getVoucherId(backendAddress, _accountAddress, programId).then((result) => {
-        setAccountAddress(_accountAddress);
-        setVoucherId(result);
+        if (isSaveContext) {
+          setAccountAddress(_accountAddress);
+          setVoucherId(result);
+        }
 
         return result;
       }),

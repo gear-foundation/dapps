@@ -6,13 +6,13 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "horse-races*"
+cargo b -r -p "horse-races*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "horse-races*"
+cargo t -r -p "horse-races*"
 ```
 
 ## Overview

@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "syndote*"
+cargo b -r -p "syndote*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "syndote*"
+cargo t -r -p "syndote*"
 ```

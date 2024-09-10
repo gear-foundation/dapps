@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "nft-pixelboard*"
+cargo b -r -p "nft-pixelboard*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "nft-pixelboard*"
+cargo t -r -p "nft-pixelboard*"
 ```
