@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "varatube*"
+cargo b -r -p "varatube*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "varatube*"
+cargo t -r -p "varatube*"
 ```

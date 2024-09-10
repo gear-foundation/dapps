@@ -6,19 +6,19 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "on-chain-nft*"
+cargo b -r -p "on-chain-nft*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "on-chain-nft*" -- --skip gclient
+cargo t -r -p "on-chain-nft*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "on-chain-nft*"
+cargo t -r -p "on-chain-nft*"
 ```

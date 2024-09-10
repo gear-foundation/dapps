@@ -3,6 +3,7 @@ import {
   getTypedEntries,
   useAccount,
   useBalance,
+  useProgramEvent,
   useProgramQuery,
   useReadFullState,
   useVouchers,
@@ -31,12 +32,29 @@ function useMetadataSession(programId: HexString, metadata: ProgramMetadata | un
 
 function useSailsSession(program: BaseProgram) {
   const { account } = useAccount();
-  const { data: responseSession } = useProgramQuery({
+  const { data: responseSession, refetch } = useProgramQuery({
     program,
     serviceName: 'session',
     functionName: 'sessionForTheAccount',
     args: [account?.decodedAddress || ''],
-    watch: true,
+  });
+
+  useProgramEvent({
+    program,
+    serviceName: 'session',
+    functionName: 'subscribeToSessionCreatedEvent',
+    onData: () => {
+      refetch();
+    },
+  });
+
+  useProgramEvent({
+    program,
+    serviceName: 'session',
+    functionName: 'subscribeToSessionDeletedEvent',
+    onData: () => {
+      refetch();
+    },
   });
 
   const isSessionReady = responseSession !== undefined;

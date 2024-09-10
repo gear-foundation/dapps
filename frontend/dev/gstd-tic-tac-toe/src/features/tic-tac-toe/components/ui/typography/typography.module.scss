@@ -1,0 +1,13 @@
+.description {
+  max-width: 354px;
+
+  @media screen and (max-width: 767px) {
+    font-size: 14px;
+    line-height: 20px;
+    text-align: center;
+
+    br {
+      display: none;
+    }
+  }
+}

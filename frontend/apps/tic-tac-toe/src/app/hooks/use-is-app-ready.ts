@@ -22,11 +22,6 @@ export function useIsAppReadySync() {
   const { setIsAppReady } = useIsAppReady();
 
   useAccountAvailableBalanceSync();
-  console.log('----------------');
-  console.log(isApiReady);
-  console.log(isAccountReady);
-  console.log(isAvailableBalanceReady);
-  console.log(isAuthReady);
   useEffect(() => {
     setIsAppReady(isApiReady && isAccountReady && isAvailableBalanceReady && isAuthReady);
     // eslint-disable-next-line react-hooks/exhaustive-deps
