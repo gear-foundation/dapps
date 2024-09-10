@@ -1,0 +1,17 @@
+[package]
+name = "car-races-app"
+version.workspace = true
+edition.workspace = true
+
+[dependencies]
+sails-rs.workspace = true
+parity-scale-codec.workspace = true
+scale-info.workspace = true
+gstd.workspace = true
+schnorrkel.workspace = true
+
+[build-dependencies]
+sails-client-gen.workspace = true
+
+[dev-dependencies]
+gtest.workspace = true
