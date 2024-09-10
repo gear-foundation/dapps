@@ -21,14 +21,14 @@ app.post('/issue', async function (req, res) {
 
 app.post('/prolong', async function (req, res) {
   const data = req.body;
-  const voucher = await gaslessService.prolong(data.voucherId, data.account, data.balance, data.durationInSec);
-  res.send("OK");
+  await gaslessService.prolong(data.voucherId, data.account, data.balance, data.durationInSec);
+  res.status(200);
 });
 
 app.post('/revoke', async function (req, res) {
   const data = req.body;
-  const voucher = await gaslessService.revoke(data.voucherId, data.account);
-  res.send("OK");
+  await gaslessService.revoke(data.voucherId, data.account);
+  res.status(200);
 });
 
 const port = process.env.PORT || 3000;
