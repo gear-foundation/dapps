@@ -43,6 +43,14 @@ Example contains three functions for issuing and revoking vouchers:
 
 These functions are part of the `GaslessService` class, which interacts with the Gear API to manage vouchers.
 
+Example of using the `GaslessService` class is provided in the `index.ts` file.
+
+```POST /issue```
+
+```POST /prolong```
+
+```POST /revoke```
+
 
 ## Getting started
 
