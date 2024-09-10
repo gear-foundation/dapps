@@ -8,19 +8,19 @@ An advanced version of multi token that supports sharding.
 ### 🏗️ Building
 
 ```sh
-cargo b -p "sharded-multi-token*"
+cargo b -r -p "sharded-multi-token*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "sharded-multi-token*" -- --skip gclient
+cargo t -r -p "sharded-multi-token*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "sharded-multi-token*"
+cargo t -r -p "sharded-multi-token*"
 ```
