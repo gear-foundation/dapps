@@ -8,14 +8,16 @@ const secondsToBlock = 3;
 
 export class GaslessService  {
   private api: GearApi;
+  private readonly voucherAccount;
 
   constructor() {
     this.api = new GearApi({ providerAddress: process.env.NODE_URL });
+    this.voucherAccount = this.getVoucherAccount();
   }
 
   /**
    * Issues a voucher for the given account, programId, amount, and duration.
-   * 
+   *
    * @param account - The account to issue the voucher for.
    * @param programId - The programId to issue the voucher for.
    * @param amount - The amount to issue the voucher for.
@@ -24,14 +26,13 @@ export class GaslessService  {
    */
   async issue(account: HexString, programId: HexString, amount: number, durationInSec: number): Promise<string> {
     await Promise.all([this.api.isReadyOrError, waitReady()])
-    const voucherAccount = this.getVoucherAccount();
 
     const durationInBlocks = Math.round(durationInSec / secondsToBlock);
-  
+
     const { extrinsic } = await this.api.voucher.issue(account, amount * 1e12, durationInBlocks, [programId]);
 
-    const [voucherId] = await new Promise<[HexString, HexString]>((resolve, reject) => {
-      extrinsic.signAndSend(voucherAccount, ({
+    const voucherId = await new Promise<HexString>((resolve, reject) => {
+      extrinsic.signAndSend(this.voucherAccount, ({
         events,
         status,
       }) => {
@@ -39,7 +40,7 @@ export class GaslessService  {
           const viEvent = events.find(({ event }) => event.method === 'VoucherIssued');
           if (viEvent) {
             const data = viEvent.event.data as VoucherIssuedData;
-            resolve([data.voucherId.toHex(), status.asInBlock.toHex()]);
+            resolve(data.voucherId.toHex());
           } else {
             const efEvent = events.find(({ event }) => event.method === 'ExtrinsicFailed');
 
@@ -54,7 +55,7 @@ export class GaslessService  {
 
   /**
    * Prolongs the voucher with the given voucherId, account, balance, and prolongDurationInSec.
-   * 
+   *
    * @param voucherId - The voucherId to prolong
    * @param account - The account to prolong the voucher for
    * @param balance - The required balance to top up the voucher
@@ -63,7 +64,6 @@ export class GaslessService  {
   async prolong(voucherId: HexString, account: string, balance: number, prolongDurationInSec: number) {
     const voucherBalance = (await this.api.balance.findOut(voucherId)).toBigInt() / BigInt(1e12);
     const durationInBlocks = Math.round(prolongDurationInSec / secondsToBlock);
-    const voucherAccount = this.getVoucherAccount();
 
     const topUp = BigInt(balance) - voucherBalance;
 
@@ -79,15 +79,15 @@ export class GaslessService  {
 
     const tx = this.api.voucher.update(account, voucherId, params);
 
-    const blockHash = await new Promise<HexString>((resolve, reject) => {
-      tx.signAndSend(voucherAccount, ({
+    await new Promise<void>((resolve, reject) => {
+      tx.signAndSend(this.voucherAccount, ({
         events,
         status,
       }) => {
         if (status.isInBlock) {
           const vuEvent = events.find(({ event }) => event.method === 'VoucherUpdated');
           if (vuEvent) {
-            resolve(status.asInBlock.toHex());
+            resolve();
           } else {
             const efEvent = events.find(({ event }) => event.method === 'ExtrinsicFailed');
             if (efEvent) {
@@ -103,22 +103,21 @@ export class GaslessService  {
 
   /**
    * Revokes the voucher with the given voucherId and account.
-   * 
+   *
    * @param voucherId - The voucherId to revoke
    * @param account - The account to revoke the voucher for
    */
   async revoke(voucherId: HexString, account: string) {
-    const voucherAccount = this.getVoucherAccount();
     const tx = this.api.voucher.revoke(account, voucherId);
-    await new Promise<HexString>((resolve, reject) => {
-      tx.signAndSend(voucherAccount, ({
+    await new Promise<void>((resolve, reject) => {
+      tx.signAndSend(this.voucherAccount, ({
         events,
         status,
       }) => {
         if (status.isInBlock) {
           const vuEvent = events.find(({ event }) => event.method === 'VoucherRevoked');
           if (vuEvent) {
-            resolve(status.asInBlock.toHex());
+            resolve();
           } else {
             const efEvent = events.find(({ event }) => event.method === 'ExtrinsicFailed');
             if (efEvent) {
