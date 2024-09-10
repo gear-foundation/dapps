@@ -1,0 +1,13 @@
+[package]
+name = "tic-tac-toe-io"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+authors.workspace = true
+
+[dependencies]
+gmeta.workspace = true
+gstd.workspace = true
+primitive-types = { workspace = true, features = ["scale-info"] }
+parity-scale-codec.workspace = true
+scale-info.workspace = true

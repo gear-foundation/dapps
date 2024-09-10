@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -r -p "tic-tac-toe*"
+cargo b -r -p "tic-tac-toe"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -r -p "tic-tac-toe*"
+cargo t -r -p "tic-tac-toe"
 ```

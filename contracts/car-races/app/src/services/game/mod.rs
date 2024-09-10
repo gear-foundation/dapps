@@ -146,9 +146,9 @@ where
                     game.state = GameState::PlayerAction;
                     game.current_round = game.current_round.saturating_add(1);
 
-                    round_info = Some(create_round_info(&game));
-
                     game.update_positions();
+
+                    round_info = Some(create_round_info(&game));
 
                     if game.state == GameState::Finished {
                         send_msg_to_remove_game_instance(player);
@@ -162,7 +162,7 @@ where
             }
         })
     }
-
+    
     pub fn remove_game_instance(&mut self, account: ActorId) {
         assert_eq!(
             self.exec_context.actor_id(),
