@@ -4,7 +4,7 @@ import { decodeAddress } from '@gear-js/api';
 import { useState } from 'react';
 import clsx from 'clsx';
 
-import { useCountdown } from '../../hooks';
+import { useCountdown } from '@dapps-frontend/hooks';
 import { ReactComponent as SignlessSVG } from '@/assets/icons/signless.svg';
 import { ReactComponent as PowerSVG } from '@/assets/icons/power.svg';
 import { useSignlessTransactions } from '../../context';

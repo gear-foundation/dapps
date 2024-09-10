@@ -1,7 +1,7 @@
 # @dapps-frontend/ez-transcations
 
-A package for providing gasless and signless transactions.
-This frontend solution interacts with a blockchain program, allowing users to make transactions without paying gas fees or signing on-chain transactions.
+A library to provide gasless and signless transactions.
+By interacting with a Gear program via voucher, gasless backend and local account it allows users to make transactions without paying gas fees or signing on-chain transactions.
 
 ## Install:
 
@@ -11,7 +11,7 @@ yarn add @dapps-frontend/ez-transcations
 
 ## Gasless-transactions
 
-The gas fees, which are usually required to execute transactions on the blockchain, are covered by a backend service provided by the dApp developer. When a user initiates a transaction, the backend issue a [voucher](https://wiki.vara.network/docs/api/vouchers) for that specific user. This voucher effectively covers the gas cost for the transaction, allowing the user to execute it without having to pay any fees themselves.
+The gas fees, which are usually required to execute transactions on the blockchain, are covered by a [gasless backend service](https://github.com/gear-foundation/dapps/tree/master/backend/gasless) provided by the dApp developer. When a user initiates a transaction, the backend issue a [voucher](https://wiki.vara.network/docs/api/vouchers) for that specific user. This voucher effectively covers the gas cost for the transaction, allowing the user to execute it without having to pay any fees themselves.
 
 ### Provider
 
@@ -22,8 +22,8 @@ import { GaslessTransactionsProvider } from '@dapps-frontend/ez-transcations';
 
 <GaslessTransactionsProvider
   programId={'0x...'} // Program address
-  backendAddress={'0x...'}  // Address of the gasless backend
-  voucherLimit={18} // Limit at which the voucher balance needs to be replenished
+  backendAddress={'https://.../'}  // URL-address of the gasless backend
+  voucherLimit={18} // Limit at which the voucher balance needs to be topped up
 >
   <App>
 </GaslessTransactionsProvider>
@@ -44,7 +44,7 @@ const { voucherId, isLoading, isEnabled, isActive, expireTimestamp, requestVouch
 
 `isLoading` - a boolean value indicating whether the voucher is being created/updated at the moment.
 
-`isEnabled` - a boolean indicating whether the gasless transaction feature is currently enabled.
+`isEnabled` - a boolean indicating whether the gasless transaction feature is currently enabled (either by user or programmatically).
 
 `isActive` - a boolean indicating whether the gasless transaction is currently active. This typically means that a voucher has been successfully created and is ready for use.
 

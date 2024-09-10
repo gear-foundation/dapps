@@ -1,7 +1,7 @@
 import { HexString, ProgramMetadata } from '@gear-js/api';
 import { ReactNode } from 'react';
 
-import { useProgramMetadata } from '../hooks';
+import { useProgramMetadata } from '@dapps-frontend/hooks';
 
 import { Session, useCreateMetadataSession } from '../hooks';
 import { usePair, useMetadataSession } from './hooks';
