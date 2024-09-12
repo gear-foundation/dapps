@@ -1914,7 +1914,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dapps-frontend/ez-transactions@workspace:packages/ez-transactions"
   dependencies:
-    "@gear-js/vara-ui": "npm:0.0.6"
+    "@gear-js/vara-ui": "npm:0.0.10"
     "@polkadot/keyring": "npm:12.6.2"
     "@polkadot/react-identicon": "npm:3.6.4"
     "@polkadot/types": "npm:11.0.2"
