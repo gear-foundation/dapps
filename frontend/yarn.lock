@@ -1914,7 +1914,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dapps-frontend/ez-transactions@workspace:packages/ez-transactions"
   dependencies:
-    "@gear-js/vara-ui": "npm:0.0.6"
+    "@gear-js/vara-ui": "npm:0.0.10"
     "@polkadot/keyring": "npm:12.6.2"
     "@polkadot/react-identicon": "npm:3.6.4"
     "@polkadot/types": "npm:11.0.2"
@@ -1971,7 +1971,7 @@ __metadata:
   resolution: "@dapps-frontend/ui@workspace:packages/ui"
   dependencies:
     "@gear-js/ui": "npm:0.5.26"
-    "@gear-js/vara-ui": "npm:0.0.6"
+    "@gear-js/vara-ui": "npm:0.0.10"
     "@headlessui/react": "npm:1.7.17"
     "@polkadot/react-identicon": "npm:3.6.4"
     "@radix-ui/react-scroll-area": "npm:1.0.5"
@@ -2560,13 +2560,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gear-js/vara-ui@npm:0.0.6":
-  version: 0.0.6
-  resolution: "@gear-js/vara-ui@npm:0.0.6"
+"@gear-js/vara-ui@npm:0.0.10":
+  version: 0.0.10
+  resolution: "@gear-js/vara-ui@npm:0.0.10"
   peerDependencies:
     react: ^18.2.0
     react-dom: ^18.2.0
-  checksum: 10c0/f7bc79a6c1cb1af2fca88cb6cd32a3faf41a4d48f189d6176194a9e8270799f4b28d848280c32af39f7605966072dc128ec0e0def8cff5267d6cc385aaf67ab7
+  checksum: 10c0/f8cb7cbf1e6183085386752d86d3e4ad067d308545bfed0c27e22944e11cd74cc469c57e16a288f69b9c18077285825b25c899c630028caf408662bb366b5900
   languageName: node
   linkType: hard
 
@@ -9494,7 +9494,7 @@ __metadata:
     "@gear-js/api": "npm:0.38.1"
     "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
-    "@gear-js/vara-ui": "npm:0.0.6"
+    "@gear-js/vara-ui": "npm:0.0.10"
     "@mantine/form": "npm:6.0.15"
     "@polkadot/api": "npm:11.0.2"
     "@polkadot/react-identicon": "npm:3.6.4"
@@ -9553,7 +9553,7 @@ __metadata:
     "@gear-js/api": "npm:0.38.1"
     "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
-    "@gear-js/vara-ui": "npm:0.0.6"
+    "@gear-js/vara-ui": "npm:0.0.10"
     "@mantine/form": "npm:6.0.15"
     "@polkadot/api": "npm:11.0.2"
     "@polkadot/react-identicon": "npm:3.6.4"
@@ -13714,7 +13714,7 @@ __metadata:
     "@gear-js/api": "npm:0.38.1"
     "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
-    "@gear-js/vara-ui": "npm:0.0.6"
+    "@gear-js/vara-ui": "npm:0.0.10"
     "@headlessui/react": "npm:1.7.17"
     "@mantine/form": "npm:6.0.15"
     "@polkadot/api": "npm:11.0.2"
@@ -23855,7 +23855,7 @@ __metadata:
     "@gear-js/api": "npm:0.38.1"
     "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.26"
-    "@gear-js/vara-ui": "npm:0.0.6"
+    "@gear-js/vara-ui": "npm:0.0.10"
     "@headlessui/react": "npm:1.7.13"
     "@mantine/form": "npm:6.0.19"
     "@polkadot/api": "npm:11.0.2"
