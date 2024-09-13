@@ -1,0 +1,52 @@
+.card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 40px;
+  gap: 48px;
+  border-radius: 8px;
+  border: 2px solid #000000;
+  background: #ffffff;
+  &.sm {
+    gap: 24px;
+  }
+}
+
+h2 {
+  &.md {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 48px;
+  }
+
+  &.sm {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 28.8px;
+  }
+}
+
+.center {
+  text-align: center;
+}
+
+.left {
+  text-align: left;
+}
+
+.subtitle {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0.25px;
+  text-align: center;
+
+  &.md {
+    margin-top: 16px;
+  }
+
+  &.sm {
+    margin-top: 8px;
+  }
+}

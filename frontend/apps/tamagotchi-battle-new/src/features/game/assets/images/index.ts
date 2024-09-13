@@ -1,0 +1,11 @@
+import backgroundSvg from './background.svg';
+export { backgroundSvg };
+export { ReactComponent as AdminIcon } from './icons/admin.svg';
+export { ReactComponent as SearchIcon } from './icons/search.svg';
+export { ReactComponent as CodeSlashIcon } from './icons/code-slash.svg';
+export { ReactComponent as ArrowRightIcon } from './icons/arrow-right.svg';
+export { ReactComponent as MagicLineIcon } from './icons/magic-line.svg';
+export { ReactComponent as HealthIcon } from './icons/health.svg';
+export { ReactComponent as AttackIcon } from './icons/attack.svg';
+export { ReactComponent as DefenseIcon } from './icons/defense.svg';
+export { ReactComponent as DodgeIcon } from './icons/dodge.svg';
