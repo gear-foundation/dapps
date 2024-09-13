@@ -64,6 +64,9 @@ async fn test_play_game() {
         gas_for_finish_tournament: 10_000_000_000,
         gas_for_mint_fungible_token: 10_000_000_000,
         time_for_single_round: 180_000,
+        minimum_session_duration_ms: 180_000,
+        gas_to_delete_session: 5_000_000_000,
+        s_per_block: 3,
     };
     let vara_man_id = vara_man_factory
         .new(config, None)
@@ -86,7 +89,7 @@ async fn test_play_game() {
 
     let old_balance = system.balance_of(program_space.actor_id());
     client
-        .finish_single_game(1, 5, Level::Easy)
+        .finish_single_game(1, 5, Level::Easy, None)
         .send_recv(vara_man_id)
         .await
         .unwrap();
@@ -127,6 +130,9 @@ async fn test_play_game_with_fungible_token() {
         gas_for_finish_tournament: 10_000_000_000,
         gas_for_mint_fungible_token: 10_000_000_000,
         time_for_single_round: 180_000,
+        minimum_session_duration_ms: 180_000,
+        gas_to_delete_session: 5_000_000_000,
+        s_per_block: 3,
     };
     let vara_man_id = vara_man_factory
         .new(config, None)
@@ -148,7 +154,7 @@ async fn test_play_game_with_fungible_token() {
     let status = client.status().recv(vara_man_id).await.unwrap();
     assert_eq!(status, Status::StartedWithFungibleToken { ft_address });
     client
-        .finish_single_game(1, 5, Level::Easy)
+        .finish_single_game(1, 5, Level::Easy, None)
         .send_recv(vara_man_id)
         .await
         .unwrap();
@@ -181,6 +187,9 @@ async fn test_play_tournament() {
         gas_for_finish_tournament: 10_000_000_000,
         gas_for_mint_fungible_token: 10_000_000_000,
         time_for_single_round: 180_000,
+        minimum_session_duration_ms: 180_000,
+        gas_to_delete_session: 5_000_000_000,
+        s_per_block: 3,
     };
     let vara_man_id = vara_man_factory
         .new(config, None)
@@ -210,6 +219,7 @@ async fn test_play_tournament() {
             "Admin tournament".to_string(),
             Level::Easy,
             180_000,
+            None
         )
         .with_value(10_000_000_000_000)
         .send_recv(vara_man_id)
@@ -221,7 +231,7 @@ async fn test_play_tournament() {
     assert_eq!(state.players_to_game_id.len(), 1);
 
     client
-        .register_for_tournament(program_space.actor_id(), "player #1".to_string())
+        .register_for_tournament(program_space.actor_id(), "player #1".to_string(), None)
         .with_value(10_000_000_000_000)
         .with_args(GTestArgs::new(player_id))
         .send_recv(vara_man_id)
@@ -233,7 +243,7 @@ async fn test_play_tournament() {
 
     let old_balance = system.balance_of(player_id);
     client
-        .cancel_register()
+        .cancel_register(None)
         .with_args(GTestArgs::new(player_id))
         .send_recv(vara_man_id)
         .await
@@ -249,7 +259,7 @@ async fn test_play_tournament() {
     assert_eq!(new_balance - old_balance, 10_000_000_000_000);
 
     client
-        .register_for_tournament(program_space.actor_id(), "player #1".to_string())
+        .register_for_tournament(program_space.actor_id(), "player #1".to_string(), None)
         .with_value(10_000_000_000_000)
         .with_args(GTestArgs::new(player_id))
         .send_recv(vara_man_id)
@@ -257,17 +267,17 @@ async fn test_play_tournament() {
         .unwrap();
 
     client
-        .start_tournament()
+        .start_tournament(None)
         .send_recv(vara_man_id)
         .await
         .unwrap();
     client
-        .record_tournament_result(1_000, 1, 5)
+        .record_tournament_result(1_000, 1, 5, None)
         .send_recv(vara_man_id)
         .await
         .unwrap();
     client
-        .record_tournament_result(1_000, 1, 5)
+        .record_tournament_result(1_000, 1, 5, None)
         .with_args(GTestArgs::new(player_id))
         .send_recv(vara_man_id)
         .await

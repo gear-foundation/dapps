@@ -1,4 +1,4 @@
-use crate::services::game::Storage;
+use crate::services::game::GameStorage;
 use sails_rs::prelude::*;
 
 pub const MAX_PARTICIPANTS: u16 = 10;
@@ -79,6 +79,9 @@ pub struct Config {
     pub gas_for_finish_tournament: u64,
     pub gas_for_mint_fungible_token: u64,
     pub time_for_single_round: u32,
+    pub gas_to_delete_session: u64,
+    pub minimum_session_duration_ms: u64,
+    pub s_per_block: u64,
 }
 
 impl Config {
@@ -138,9 +141,9 @@ pub struct TournamentState {
     pub duration_ms: u32,
 }
 
-impl From<Storage> for VaraManState {
-    fn from(value: Storage) -> Self {
-        let Storage {
+impl From<GameStorage> for VaraManState {
+    fn from(value: GameStorage) -> Self {
+        let GameStorage {
             tournaments,
             players_to_game_id,
             status,

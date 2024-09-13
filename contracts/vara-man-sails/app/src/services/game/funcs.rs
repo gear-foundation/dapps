@@ -1,26 +1,37 @@
 use crate::services::game::{
-    Config, Event, GameError, Level, Player, Stage, Status, Storage, Tournament, MAX_PARTICIPANTS,
+    Config, Event, GameError, GameStorage, Level, Player, Stage, Status, Tournament,
+    MAX_PARTICIPANTS,
 };
+use crate::services::session::utils::{ActionsForSession, SessionData};
 use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId};
 use sails_rs::U256;
 
 pub fn create_new_tournament(
-    storage: &mut Storage,
+    storage: &mut GameStorage,
+    sessions: &HashMap<ActorId, SessionData>,
     tournament_name: String,
     name: String,
     level: Level,
     duration_ms: u32,
+    session_for_account: Option<ActorId>,
 ) -> Result<Event, GameError> {
     let msg_src = msg::source();
     let msg_value = msg::value();
 
-    if storage.tournaments.contains_key(&msg_src) {
+    let player = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::CreateNewTournament,
+    );
+
+    if storage.tournaments.contains_key(&player) {
         msg::send_with_gas(msg_src, "", 0, msg_value).expect("Error in sending the value");
         return Err(GameError::AlreadyHaveTournament);
     }
     let mut participants = HashMap::new();
     participants.insert(
-        msg_src,
+        player,
         Player {
             name: name.clone(),
             time: 0,
@@ -29,15 +40,15 @@ pub fn create_new_tournament(
     );
     let game = Tournament {
         tournament_name: tournament_name.clone(),
-        admin: msg_src,
+        admin: player,
         level,
         participants,
         bid: msg_value,
         stage: Stage::Registration,
         duration_ms,
     };
-    storage.tournaments.insert(msg_src, game);
-    storage.players_to_game_id.insert(msg_src, msg_src);
+    storage.tournaments.insert(player, game);
+    storage.players_to_game_id.insert(player, player);
     Ok(Event::NewTournamentCreated {
         tournament_name,
         name,
@@ -47,13 +58,21 @@ pub fn create_new_tournament(
 }
 
 pub fn register_for_tournament(
-    storage: &mut Storage,
+    storage: &mut GameStorage,
+    sessions: &HashMap<ActorId, SessionData>,
     admin_id: ActorId,
     name: String,
+    session_for_account: Option<ActorId>,
 ) -> Result<Event, GameError> {
     let msg_src = msg::source();
     let msg_value = msg::value();
-    let reply = register(storage, msg_src, msg_value, admin_id, name);
+    let player = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::RegisterForTournament,
+    );
+    let reply = register(storage, player, msg_value, admin_id, name);
     if reply.is_err() {
         msg::send_with_gas(msg_src, "", 0, msg_value).expect("Error in sending the value");
     }
@@ -61,8 +80,8 @@ pub fn register_for_tournament(
 }
 
 fn register(
-    storage: &mut Storage,
-    msg_src: ActorId,
+    storage: &mut GameStorage,
+    player: ActorId,
     msg_value: u128,
     admin_id: ActorId,
     name: String,
@@ -71,7 +90,7 @@ fn register(
         return Err(GameError::GameIsPaused);
     }
 
-    if storage.players_to_game_id.contains_key(&msg_src) {
+    if storage.players_to_game_id.contains_key(&player) {
         return Err(GameError::SeveralRegistrations);
     }
     let game = storage
@@ -90,14 +109,14 @@ fn register(
     }
 
     game.participants.insert(
-        msg_src,
+        player,
         Player {
             name: name.clone(),
             time: 0,
             points: 0,
         },
     );
-    storage.players_to_game_id.insert(msg_src, admin_id);
+    storage.players_to_game_id.insert(player, admin_id);
     Ok(Event::PlayerRegistered {
         admin_id,
         name,
@@ -105,11 +124,21 @@ fn register(
     })
 }
 
-pub fn cancel_register(storage: &mut Storage) -> Result<Event, GameError> {
+pub fn cancel_register(
+    storage: &mut GameStorage,
+    sessions: &HashMap<ActorId, SessionData>,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, GameError> {
     let msg_src = msg::source();
+    let player = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::CancelRegister,
+    );
     let admin_id = storage
         .players_to_game_id
-        .get(&msg_src)
+        .get(&player)
         .ok_or(GameError::NoSuchPlayer)?;
 
     let game = storage
@@ -117,7 +146,7 @@ pub fn cancel_register(storage: &mut Storage) -> Result<Event, GameError> {
         .get_mut(admin_id)
         .ok_or(GameError::NoSuchGame)?;
 
-    if game.admin == msg_src {
+    if game.admin == player {
         return Err(GameError::AccessDenied);
     }
     if game.stage != Stage::Registration {
@@ -126,17 +155,27 @@ pub fn cancel_register(storage: &mut Storage) -> Result<Event, GameError> {
     if game.bid != 0 {
         msg::send_with_gas(msg_src, "", 0, game.bid).expect("Error in sending the value");
     }
-    game.participants.remove(&msg_src);
-    storage.players_to_game_id.remove(&msg_src);
+    game.participants.remove(&player);
+    storage.players_to_game_id.remove(&player);
 
     Ok(Event::RegisterCanceled)
 }
 
-pub fn cancel_tournament(storage: &mut Storage) -> Result<Event, GameError> {
+pub fn cancel_tournament(
+    storage: &mut GameStorage,
+    sessions: &HashMap<ActorId, SessionData>,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, GameError> {
     let msg_src = msg::source();
+    let player = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::CancelTournament,
+    );
     let game = storage
         .tournaments
-        .get(&msg_src)
+        .get(&player)
         .ok_or(GameError::NoSuchGame)?;
 
     game.participants.iter().for_each(|(id, _)| {
@@ -146,16 +185,27 @@ pub fn cancel_tournament(storage: &mut Storage) -> Result<Event, GameError> {
         storage.players_to_game_id.remove(id);
     });
 
-    storage.tournaments.remove(&msg_src);
+    storage.tournaments.remove(&player);
 
-    Ok(Event::TournamentCanceled { admin_id: msg_src })
+    Ok(Event::TournamentCanceled { admin_id: player })
 }
 
-pub fn delete_player(storage: &mut Storage, player_id: ActorId) -> Result<Event, GameError> {
+pub fn delete_player(
+    storage: &mut GameStorage,
+    sessions: &HashMap<ActorId, SessionData>,
+    player_id: ActorId,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, GameError> {
     let msg_src = msg::source();
+    let player = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::DeletePlayer,
+    );
     let game = storage
         .tournaments
-        .get_mut(&msg_src)
+        .get_mut(&player)
         .ok_or(GameError::NoSuchGame)?;
 
     if game.admin == player_id {
@@ -181,10 +231,12 @@ pub fn delete_player(storage: &mut Storage, player_id: ActorId) -> Result<Event,
 }
 
 pub async fn finish_single_game(
-    storage: &mut Storage,
+    storage: &mut GameStorage,
+    sessions: &HashMap<ActorId, SessionData>,
     gold_coins: u16,
     silver_coins: u16,
     level: Level,
+    session_for_account: Option<ActorId>,
 ) -> Result<Event, GameError> {
     if gold_coins > storage.config.max_number_gold_coins
         || silver_coins > storage.config.max_number_silver_coins
@@ -193,6 +245,12 @@ pub async fn finish_single_game(
     }
 
     let msg_src = msg::source();
+    let _player = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::FinishSingleGame,
+    );
     let (points_for_gold, points_for_silver) =
         storage.config.get_points_per_gold_coin_for_level(level);
     let points = points_for_gold * gold_coins as u128 + points_for_silver * silver_coins as u128;
@@ -233,14 +291,24 @@ pub async fn finish_single_game(
     })
 }
 
-pub fn start_tournament(storage: &mut Storage) -> Result<Event, GameError> {
+pub fn start_tournament(
+    storage: &mut GameStorage,
+    sessions: &HashMap<ActorId, SessionData>,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, GameError> {
     let msg_src = msg::source();
+    let player = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::StartTournament,
+    );
     if storage.status == Status::Paused {
         return Err(GameError::GameIsPaused);
     }
     let game = storage
         .tournaments
-        .get_mut(&msg_src)
+        .get_mut(&player)
         .ok_or(GameError::NoSuchGame)?;
 
     if game.stage != Stage::Registration {
@@ -252,7 +320,7 @@ pub fn start_tournament(storage: &mut Storage) -> Result<Event, GameError> {
     let request = [
         "VaraMan".encode(),
         "FinishTournament".to_string().encode(),
-        (msg_src, time_start).encode(),
+        (player, time_start).encode(),
     ]
     .concat();
     msg::send_bytes_with_gas_delayed(
@@ -267,7 +335,7 @@ pub fn start_tournament(storage: &mut Storage) -> Result<Event, GameError> {
 }
 
 pub fn finish_tournament(
-    storage: &mut Storage,
+    storage: &mut GameStorage,
     admin_id: ActorId,
     time_start: u64,
 ) -> Result<Event, GameError> {
@@ -330,10 +398,12 @@ pub fn finish_tournament(
 }
 
 pub fn record_tournament_result(
-    storage: &mut Storage,
+    storage: &mut GameStorage,
+    sessions: &HashMap<ActorId, SessionData>,
     time: u128,
     gold_coins: u16,
     silver_coins: u16,
+    session_for_account: Option<ActorId>,
 ) -> Result<Event, GameError> {
     if gold_coins > storage.config.max_number_gold_coins
         || silver_coins > storage.config.max_number_silver_coins
@@ -341,9 +411,15 @@ pub fn record_tournament_result(
         return Err(GameError::ExceededLimit);
     }
     let msg_src = msg::source();
+    let player = get_player(
+        sessions,
+        &msg_src,
+        &session_for_account,
+        ActionsForSession::RecordTournamentResult,
+    );
     let admin_id = storage
         .players_to_game_id
-        .get(&msg_src)
+        .get(&player)
         .ok_or(GameError::NoSuchPlayer)?;
     let game = storage
         .tournaments
@@ -356,7 +432,7 @@ pub fn record_tournament_result(
 
     let player = game
         .participants
-        .get_mut(&msg_src)
+        .get_mut(&player)
         .ok_or(GameError::NoSuchPlayer)?;
 
     let (points_for_gold, points_for_silver) = storage
@@ -379,12 +455,22 @@ pub fn record_tournament_result(
     })
 }
 
-pub fn leave_game(storage: &mut Storage) -> Result<Event, GameError> {
-    storage.players_to_game_id.remove(&msg::source());
+pub fn leave_game(
+    storage: &mut GameStorage,
+    sessions: &HashMap<ActorId, SessionData>,
+    session_for_account: Option<ActorId>,
+) -> Result<Event, GameError> {
+    let player = get_player(
+        sessions,
+        &msg::source(),
+        &session_for_account,
+        ActionsForSession::LeaveGame,
+    );
+    storage.players_to_game_id.remove(&player);
     Ok(Event::LeftGame)
 }
 
-pub fn change_status(storage: &mut Storage, status: Status) -> Result<Event, GameError> {
+pub fn change_status(storage: &mut GameStorage, status: Status) -> Result<Event, GameError> {
     if storage.admins.contains(&msg::source()) {
         storage.status = status;
         Ok(Event::StatusChanged(status))
@@ -393,7 +479,7 @@ pub fn change_status(storage: &mut Storage, status: Status) -> Result<Event, Gam
     }
 }
 
-pub fn change_config(storage: &mut Storage, config: Config) -> Result<Event, GameError> {
+pub fn change_config(storage: &mut GameStorage, config: Config) -> Result<Event, GameError> {
     if storage.admins.contains(&msg::source()) {
         storage.config = config;
         Ok(Event::ConfigChanged(config))
@@ -402,11 +488,41 @@ pub fn change_config(storage: &mut Storage, config: Config) -> Result<Event, Gam
     }
 }
 
-pub fn add_admin(storage: &mut Storage, new_admin_id: ActorId) -> Result<Event, GameError> {
+pub fn add_admin(storage: &mut GameStorage, new_admin_id: ActorId) -> Result<Event, GameError> {
     if storage.admins.contains(&msg::source()) {
         storage.admins.push(new_admin_id);
         Ok(Event::AdminAdded(new_admin_id))
     } else {
         Err(GameError::NotAdmin)
     }
+}
+
+fn get_player(
+    session_map: &HashMap<ActorId, SessionData>,
+    msg_source: &ActorId,
+    session_for_account: &Option<ActorId>,
+    actions_for_session: ActionsForSession,
+) -> ActorId {
+    let player = match session_for_account {
+        Some(account) => {
+            let session = session_map
+                .get(account)
+                .expect("This account has no valid session");
+            assert!(
+                session.expires > exec::block_timestamp(),
+                "The session has already expired"
+            );
+            assert!(
+                session.allowed_actions.contains(&actions_for_session),
+                "This message is not allowed"
+            );
+            assert_eq!(
+                session.key, *msg_source,
+                "The account is not approved for this session"
+            );
+            *account
+        }
+        None => *msg_source,
+    };
+    player
 }
