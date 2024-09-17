@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import BackgroundMapImg from '@/assets/images/border.png';
 import MobileController from '../mobile-controller/mobile-controller';
 import { GameEngine } from '../../models/Game';
@@ -10,13 +10,17 @@ type GameCanvasProps = {
   isPause?: boolean;
 };
 
-export const GameCanvas = ({ canvasRef, fogCanvasRef, gameInstanceRef, isPause }: GameCanvasProps) => {
+const useResizeCanvas = (
+  canvasRef: GameCanvasProps['canvasRef'],
+  fogCanvasRef: GameCanvasProps['fogCanvasRef'],
+  gameInstanceRef: GameCanvasProps['gameInstanceRef'],
+) => {
   useEffect(() => {
     const resizeCanvas = () => {
       const canvas = canvasRef.current;
       const fogCanvas = fogCanvasRef.current;
       if (canvas && fogCanvas) {
-        const dpr = window.devicePixelRatio || 1;
+        const dpr = window.devicePixelRatio;
         canvas.width = canvas.clientWidth * dpr;
         canvas.height = canvas.clientHeight * dpr;
         fogCanvas.width = fogCanvas.clientWidth * dpr;
@@ -31,28 +35,34 @@ export const GameCanvas = ({ canvasRef, fogCanvasRef, gameInstanceRef, isPause }
       }
     };
 
+    if (gameInstanceRef.current) {
+      resizeCanvas();
+    } else {
+      const timeoutId = setTimeout(resizeCanvas, 100);
+      return () => clearTimeout(timeoutId);
+    }
+
     window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
 
     return () => {
       window.removeEventListener('resize', resizeCanvas);
     };
-  }, [canvasRef, fogCanvasRef, gameInstanceRef]);
+  }, [canvasRef, fogCanvasRef, gameInstanceRef.current]);
+};
+
+export const GameCanvas = ({ canvasRef, fogCanvasRef, gameInstanceRef, isPause }: GameCanvasProps) => {
+  useResizeCanvas(canvasRef, fogCanvasRef, gameInstanceRef);
 
   return (
-    <div
-      className="ml-auto mr-auto max-md:w-full max-md:h-max z-2"
-      style={{
-        position: 'relative',
-      }}>
+    <div className="ml-auto mr-auto max-md:w-full max-md:h-max z-2 h-screen lg:h-full" style={{ position: 'relative' }}>
       <canvas
-        className="-left-6 md:relative md:left-0 md:h-auto h-[100dvh] z-1"
+        className="-left-6 md:relative md:left-0 md:h-auto  z-1"
         style={{ position: 'absolute' }}
         ref={fogCanvasRef}
       />
       <canvas
         ref={canvasRef}
-        className="absolute -left-6 md:relative md:left-0 md:h-auto h-[100dvh]"
+        className="absolute -left-6 md:relative md:left-0 "
         style={{
           backgroundImage: `radial-gradient(circle, rgba(255,255,255,0) 25%, rgba(255,255,255,1) 65%), url(${BackgroundMapImg})`,
           backgroundRepeat: 'no-repeat',

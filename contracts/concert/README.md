@@ -6,19 +6,19 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "concert*"
+cargo b -r -p "concert*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "concert*" -- --skip gclient
+cargo t -r -p "concert*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "concert*"
+cargo t -r -p "concert*"
 ```

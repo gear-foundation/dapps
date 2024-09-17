@@ -11,11 +11,12 @@ export const useCreateGameMessage = () => {
   });
   const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
-  const createGameMessage = async (name: string) => {
+  const createGameMessage = async (name: string, value: bigint) => {
     const { sessionForAccount, ...params } = await prepareEzTransactionParams(true);
     const { transaction } = await prepareTransactionAsync({
       args: [name, sessionForAccount],
       ...params,
+      value,
     });
     return transaction;
   };

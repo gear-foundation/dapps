@@ -7,7 +7,7 @@ import {
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { Alert, alertStyles } from '@gear-js/ui';
-import { GaslessTransactionsProvider as SharedGaslessTransactionsProvider } from '@dapps-frontend/gasless-transactions';
+import { GaslessTransactionsProvider as SharedGaslessTransactionsProvider } from '@dapps-frontend/ez-transactions';
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { BattleProvider } from 'features/battle/context';
 import { ENV } from 'app/consts';

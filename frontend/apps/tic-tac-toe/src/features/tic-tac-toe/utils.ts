@@ -1,5 +1,4 @@
 import { Cell } from './types';
-import { toNumber } from '@/app/utils';
 
 export function calculateWinner(squares: Cell[]) {
   const lines: [number[], string][] = [
@@ -18,8 +17,4 @@ export function calculateWinner(squares: Cell[]) {
       return lines[i];
     }
   }
-}
-
-export function calculateWinRate(wins: string, games: string) {
-  return Math.floor((toNumber(wins) / toNumber(games) || 0) * 10000) / 100;
 }

@@ -5,7 +5,7 @@ import { useBattleMessage } from '../../hooks';
 import { cn, gasLimitToNumber } from 'app/utils';
 import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useApi } from '@gear-js/react-hooks';
-import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
+import { useGaslessTransactions } from '@dapps-frontend/ez-transactions';
 import { GAS_LIMIT } from 'app/consts';
 
 export const BattleWaitAdmin = () => {

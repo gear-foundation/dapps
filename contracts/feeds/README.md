@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "feeds*"
+cargo b -r -p "feeds*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "feeds*"
+cargo t -r -p "feeds*"
 ```

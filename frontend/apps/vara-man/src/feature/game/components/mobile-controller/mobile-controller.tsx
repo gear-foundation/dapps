@@ -33,7 +33,9 @@ const MobileController = ({ gameInstanceRef }: MobileControllerProps) => {
   }, []);
 
   const preventDefault = (e: TouchEvent) => {
-    e.preventDefault();
+    if (e.cancelable) {
+      e.preventDefault();
+    }
   };
 
   const handleShiftTouchStart = () => {

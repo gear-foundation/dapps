@@ -14,9 +14,10 @@ import {
   EzTransactionsProvider,
 } from '@dapps-frontend/ez-transactions';
 
-import metaTxt from '@/features/tic-tac-toe/assets/meta/tic_tac_toe.meta.txt';
 import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
+import { QueryProvider } from './query-provider';
+import { useProgram } from '../utils';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
@@ -53,8 +54,9 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
 
 function SignlessTransactionsProvider({ children }: ProviderProps) {
   const { programId } = useDnsProgramIds();
+  const program = useProgram();
   return (
-    <SharedSignlessTransactionsProvider programId={programId} metadataSource={metaTxt}>
+    <SharedSignlessTransactionsProvider programId={programId} program={program}>
       {children}
     </SharedSignlessTransactionsProvider>
   );
@@ -66,6 +68,7 @@ const providers = [
   AccountProvider,
   AlertProvider,
   DnsProvider,
+  QueryProvider,
   GaslessTransactionsProvider,
   SignlessTransactionsProvider,
   EzTransactionsProvider,
