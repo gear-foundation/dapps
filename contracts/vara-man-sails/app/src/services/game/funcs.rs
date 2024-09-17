@@ -24,6 +24,9 @@ pub fn create_new_tournament(
         &session_for_account,
         ActionsForSession::CreateNewTournament,
     );
+    if storage.status == Status::Paused {
+        return Err(GameError::GameIsPaused);
+    }
 
     if storage.tournaments.contains_key(&player) {
         msg::send_with_gas(msg_src, "", 0, msg_value).expect("Error in sending the value");
