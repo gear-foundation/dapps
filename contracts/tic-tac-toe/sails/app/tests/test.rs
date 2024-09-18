@@ -9,9 +9,9 @@ use tic_tac_toe_wasm::{
 async fn test_play_game() {
     let program_space = GTestRemoting::new(100.into());
     program_space.system().init_logger();
-    let code_id = program_space
-        .system()
-        .submit_code_file("../../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm");
+    let code_id = program_space.system().submit_code_file(
+        "../../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm",
+    );
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -40,13 +40,13 @@ async fn test_play_game() {
     assert!(game_instance.is_some());
 
     client
-        .turn(0.into(), None)
+        .turn(0, None)
         .send_recv(tic_tac_toe_id)
         .await
         .unwrap();
 
     client
-        .turn(1.into(), None)
+        .turn(1, None)
         .send_recv(tic_tac_toe_id)
         .await
         .unwrap();
@@ -58,7 +58,7 @@ async fn test_play_game() {
         .await
         .unwrap()
         .unwrap();
-    assert_eq!(game_instance.game_over, true);
+    assert!(game_instance.game_over);
     assert_eq!(game_instance.game_result, Some(GameResult::Bot));
     // println!("GAME: {:?}", game_instance);
 }
@@ -67,9 +67,9 @@ async fn test_play_game() {
 async fn add_and_remove_admin() {
     let program_space = GTestRemoting::new(100.into());
     program_space.system().init_logger();
-    let code_id = program_space
-        .system()
-        .submit_code_file("../../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm");
+    let code_id = program_space.system().submit_code_file(
+        "../../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm",
+    );
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -112,9 +112,9 @@ async fn add_and_remove_admin() {
 async fn allow_messages() {
     let program_space = GTestRemoting::new(100.into());
     program_space.system().init_logger();
-    let code_id = program_space
-        .system()
-        .submit_code_file("../../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm");
+    let code_id = program_space.system().submit_code_file(
+        "../../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm",
+    );
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -144,7 +144,7 @@ async fn allow_messages() {
         .recv(tic_tac_toe_id)
         .await
         .unwrap();
-    assert_eq!(messages_allowed, false);
+    assert!(!messages_allowed);
 
     let res = client
         .start_game(None)

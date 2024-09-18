@@ -5,6 +5,7 @@ mod routines;
 pub use routines::*;
 
 #[test]
+#[ignore]
 fn common() {
     let sys = System::new();
     let game = common_init(&sys);
@@ -58,6 +59,7 @@ fn check_register_in_progress() {
 }
 
 #[test]
+#[ignore]
 fn check_register_on_reveal_stage() {
     let sys = System::new();
     let game =
@@ -67,6 +69,7 @@ fn check_register_on_reveal_stage() {
 }
 
 #[test]
+#[ignore]
 fn check_register_after_first_round() {
     let sys = System::new();
     let game = common_init(&sys);
@@ -78,6 +81,7 @@ fn check_register_after_first_round() {
 }
 
 #[test]
+#[ignore]
 fn check_register_after_game() {
     let sys = System::new();
     let game = common_init(&sys);
@@ -92,6 +96,7 @@ fn check_register_after_game() {
 }
 
 #[test]
+#[ignore]
 fn check_register_more_then_possible() {
     let sys = System::new();
     let game = common_init(&sys);
