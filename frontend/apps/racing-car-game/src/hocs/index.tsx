@@ -15,8 +15,8 @@ import {
 import { ADDRESS } from 'consts';
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { Alert, alertStyles } from '@/ui';
-import metaTxt from '@/assets/meta/meta.txt';
-import { createSignatureType } from '@/utils';
+import { QueryProvider } from './query-provider';
+import { useProgram } from '@/app/utils';
 
 function DnsProvider({ children }: ProviderProps) {
   return (
@@ -44,6 +44,7 @@ function AlertProvider({ children }: ProviderProps) {
 
 function GaslessTransactionsProvider({ children }: ProviderProps) {
   const { programId } = useDnsProgramIds();
+
   return (
     <SharedGaslessTransactionsProvider programId={programId} backendAddress={ADDRESS.GASLESS_BACKEND} voucherLimit={6}>
       {children}
@@ -53,11 +54,9 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
 
 function SignlessTransactionsProvider({ children }: ProviderProps) {
   const { programId } = useDnsProgramIds();
+  const program = useProgram();
   return (
-    <SharedSignlessTransactionsProvider
-      programId={programId}
-      metadataSource={metaTxt}
-      createSignatureType={createSignatureType}>
+    <SharedSignlessTransactionsProvider programId={programId} program={program}>
       {children}
     </SharedSignlessTransactionsProvider>
   );
@@ -68,6 +67,7 @@ const providers = [
   AlertProvider,
   ApiProvider,
   DnsProvider,
+  QueryProvider,
   AccountProvider,
   GaslessTransactionsProvider,
   SignlessTransactionsProvider,

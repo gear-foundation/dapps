@@ -8,19 +8,19 @@ https://eips.ethereum.org/EIPS/eip-1155
 ### 🏗️ Building
 
 ```sh
-cargo b -p "multi-token*"
+cargo b -r -p "multi-token*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "multi-token*" -- --skip gclient
+cargo t -r -p "multi-token*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "multi-token*"
+cargo t -r -p "multi-token*"
 ```

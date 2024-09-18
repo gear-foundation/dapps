@@ -1,259 +1,52 @@
-import { memo, useCallback, useEffect, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAtom, useAtomValue } from 'jotai';
 import isEqual from 'lodash.isequal';
-import { useAccount, useAlert, useApi, useHandleCalculateGas } from '@gear-js/react-hooks';
-import { UnsubscribePromise } from '@polkadot/api/types';
-import { UserMessageSent, decodeAddress } from '@gear-js/api';
+import { useAccount } from '@gear-js/react-hooks';
+
 import { Container, Footer } from '@dapps-frontend/ui';
-import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import styles from './Layout.module.scss';
-import { cx, getDecodedReply, logger, withoutCommas } from '@/utils';
+import { cx } from '@/utils';
 import { Heading } from '../Heading';
 import { Road } from '../Road';
 import { Button } from '@/ui';
 import accelerateSVG from '@/assets/icons/accelerate-icon.svg';
 import shootSVG from '@/assets/icons/shoot-icon.svg';
 import { ReactComponent as GearLogoIcon } from '@/assets/icons/gear-logo-icon.svg';
-import { CURRENT_GAME, IS_CURRENT_GAME_READ_ATOM, IS_SUBSCRIBED_ATOM } from '@/atoms';
-import { usePlayerMoveMessage, useStartGameMessage } from '../../hooks';
 import { Loader } from '@/components';
-import { MessageDetails, RepliesQueue, UserMessage, WinStatus } from './Layout.interface';
 import { PLAY } from '@/App.routes';
-import { ContractError, DecodedReplyItem, GameState } from '@/types';
-import { ADDRESS } from '@/consts';
 import { useAccountAvailableBalance } from '@/features/Wallet/hooks';
-import {
-  CURRENT_SENT_MESSAGE_ID_ATOM,
-  IS_STARTING_NEW_GAME_ATOM,
-  IS_STATE_READ_ATOM,
-  REPLY_DATA_ATOM,
-} from '../../atoms';
+import { useEventRoundInfoSubscription, usePlayerMoveMessage, useStartGameMessage, useGameQuery } from '../../sails';
+import { GameResult } from '@/app/utils';
 
 function LayoutComponent() {
   const { signless, gasless } = useEzTransactions();
-  const [currentGame, setCurrentGame] = useAtom(CURRENT_GAME);
-  const isCurrentGameRead = useAtomValue(IS_CURRENT_GAME_READ_ATOM);
+  const { game: currentGame, refetch } = useGameQuery();
+  const isCurrentGameRead = currentGame !== undefined;
   const [isPlayerAction, setIsPlayerAction] = useState<boolean>(true);
-  const [isLoading, setIsLoading] = useAtom(IS_STARTING_NEW_GAME_ATOM);
+  const [isLoading, setIsLoading] = useState(false);
   const [isRoadLoaded, setIsRoadLoaded] = useState(false);
   const { isAvailableBalanceReady } = useAccountAvailableBalance();
   const { account } = useAccount();
-  const alert = useAlert();
-  const { checkBalance } = useCheckBalance({
-    signlessPairVoucherId: signless.voucher?.id,
-    gaslessVoucherId: gasless.voucherId,
-  });
   const navigate = useNavigate();
-  const sendPlayerMoveMessage = usePlayerMoveMessage();
-  const { meta, message: startGameMessage } = useStartGameMessage();
-  const { programId } = useDnsProgramIds();
-  const calculateGas = useHandleCalculateGas(programId, meta);
-  const [isStateRead, setIsStateRead] = useAtom(IS_STATE_READ_ATOM);
-  const { api } = useApi();
+  const { playerMoveMessage } = usePlayerMoveMessage();
+  const { startGameMessage } = useStartGameMessage();
 
-  const messageSubscription: React.MutableRefObject<UnsubscribePromise | null> = useRef(null);
-  const repliesQueue: React.MutableRefObject<RepliesQueue> = useRef([]);
-  const [replyData, setReplyData] = useAtom(REPLY_DATA_ATOM);
-  const [currentSentMessageId, setCurrentSentMessageId] = useAtom(CURRENT_SENT_MESSAGE_ID_ATOM);
-  const [isSubscribed, setIsSubscribed] = useAtom(IS_SUBSCRIBED_ATOM);
+  const subscriptionCallback = useCallback(() => {
+    refetch();
+    setIsPlayerAction(true);
+  }, []);
 
-  const handleUnsubscribeFromEvent = (onSuccess?: () => void) => {
-    if (messageSubscription.current) {
-      messageSubscription.current?.then((unsubCallback) => {
-        unsubCallback();
-        logger('UNsubscribed from reply');
-        setIsSubscribed(false);
-        onSuccess?.();
-      });
-    }
-  };
-
-  const decodePair = useCallback(
-    (i: number) => {
-      logger('triggers SentMessageId Effect');
-
-      if (i > 2) {
-        setIsStateRead(false);
-        setIsLoading(false);
-      }
-
-      if (currentSentMessageId) {
-        logger(`SentMessageId exists: ${currentSentMessageId}`);
-        logger(repliesQueue.current);
-        const foundRepliesPair = repliesQueue.current.find(
-          (item) => (item.auto?.toHuman().details as MessageDetails).to === currentSentMessageId,
-        );
-
-        logger(`Reply Pair found:`);
-        logger({ auto: foundRepliesPair?.auto?.toHuman(), manual: foundRepliesPair?.manual?.toHuman() });
-        logger(`Reply found: ${foundRepliesPair?.manual}`);
-
-        if (foundRepliesPair?.auto?.toHuman() && foundRepliesPair.manual?.toHuman()) {
-          const { manual } = foundRepliesPair;
-
-          logger('trying to decode....:');
-          try {
-            const reply = getDecodedReply(manual.payload, meta);
-            logger('DECODED message successfully');
-            logger('new reply HAS COME:');
-            logger(reply);
-
-            if (reply && reply.cars.length && !isEqual(reply?.cars, replyData?.cars)) {
-              logger('prev reply state:');
-              logger(replyData);
-              logger('new reply UPDATED and going to state:');
-              logger(reply);
-              setReplyData(reply);
-              setCurrentSentMessageId(null);
-              handleUnsubscribeFromEvent();
-            }
-          } catch (e) {
-            logger(e);
-            alert.error((e as ContractError).message);
-          }
-        }
-
-        if (foundRepliesPair && foundRepliesPair.auto?.toHuman() && !foundRepliesPair.manual?.toHuman()) {
-          setCurrentSentMessageId(null);
-          setIsPlayerAction(true);
-          handleUnsubscribeFromEvent();
-
-          if (isLoading) {
-            setIsStateRead(false);
-            setIsLoading(false);
-          }
-        }
-
-        if (!foundRepliesPair?.auto?.toHuman()) {
-          console.log(`reply not found, retrying(${i + 1})`);
-          setTimeout(() => decodePair(i + 1), 2000);
-        }
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [currentSentMessageId],
-  );
-
-  useEffect(() => {
-    decodePair(0);
-  }, [decodePair]);
-
-  const handleChangeState = ({ data: _data }: UserMessageSent) => {
-    const { message } = _data;
-
-    const { destination, source, details: messageDetails, id } = message as UserMessage;
-
-    const signlessPairAddress = signless.pair && decodeAddress(signless.pair.address);
-    const isOwner = destination.toHex() === account?.decodedAddress || destination.toHex() === signlessPairAddress;
-    const isCurrentProgram = source.toHex() === programId;
-
-    const details = messageDetails.toHuman() as MessageDetails;
-
-    if (isOwner && isCurrentProgram) {
-      if (details?.to && !repliesQueue.current.map((item) => item.auto?.toHuman().id).includes(id.toHex())) {
-        console.log('pushed');
-        console.log(repliesQueue.current.map((item) => (item.auto?.toHuman()?.details as MessageDetails).to));
-
-        repliesQueue.current.push({ auto: message, manual: null });
-      }
-
-      if (!details && !repliesQueue.current[repliesQueue.current.length - 1].manual) {
-        console.log('pushed2');
-
-        repliesQueue.current[repliesQueue.current.length - 1].manual = message;
-      }
-      logger(repliesQueue.current.map((item) => ({ auto: item.auto?.toHuman(), manual: item.manual?.toHuman() })));
-    }
-  };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-
-  const handleSubscribeToEvent = useCallback(async () => {
-    if (api && meta && !isSubscribed) {
-      messageSubscription.current = api.gearEvents.subscribeToGearEvent('UserMessageSent', handleChangeState);
-      setIsSubscribed(true);
-      logger('Subscribed on reply');
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [api, isSubscribed, meta, signless.pair?.address]);
-
-  const defineStrategyAction = (type: 'accelerate' | 'shoot') => {
-    if (type === 'accelerate') {
-      return 'BuyAcceleration';
-    }
-
-    if (type === 'shoot') {
-      return 'BuyShell';
-    }
-  };
+  useEventRoundInfoSubscription(subscriptionCallback);
 
   const handleActionChoose = async (type: 'accelerate' | 'shoot') => {
     setIsPlayerAction(false);
-    logger(`CLICK ACTION ${type}`);
-    logger(`Disabling actions`);
-    const payload = {
-      PlayerMove: {
-        strategy_action: defineStrategyAction(type),
-      },
-    };
 
-    handleSubscribeToEvent();
-
-    let { voucherId } = gasless;
-    if (account && gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
-      voucherId = await gasless.requestVoucher(account.address);
-    }
-
-    const getOnError = (error: string) => () => {
-      setIsPlayerAction(true);
-      handleUnsubscribeFromEvent();
-      logger(error);
-    };
-
-    calculateGas(payload)
-      .then((res) => res.toHuman())
-      .then(({ min_limit }) => {
-        const minLimit = withoutCommas(min_limit as string);
-        const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
-        logger(`Calculating gas:`);
-        logger(`MIN_LIMIT ${min_limit}`);
-        logger(`LIMIT ${gasLimit}`);
-        logger(`Calculated gas SUCCESS`);
-        logger(`Sending message`);
-        console.log(`START TURN ${Number(currentGame?.currentRound) + 1}`);
-
-        const sendMessage = () =>
-          sendPlayerMoveMessage({
-            payload,
-            gasLimit,
-            voucherId,
-            onError: getOnError(`Errror send message`),
-            onSuccess: (messageId) => {
-              logger(`sucess on ID: ${messageId}`);
-            },
-            onInBlock: (messageId) => {
-              logger('messageInBlock');
-              logger(`messageID: ${messageId}`);
-              setCurrentSentMessageId(messageId);
-            },
-          });
-
-        if (voucherId) {
-          sendMessage();
-        } else {
-          checkBalance(gasLimit, sendMessage, getOnError(`Errror check balance`));
-        }
-      })
-      .catch((error) => {
-        logger(error);
-        setIsPlayerAction(true);
-        handleUnsubscribeFromEvent();
-        alert.error('Gas calculation error');
-      });
+    const strategyActionMap = { accelerate: 'BuyAcceleration' as const, shoot: 'BuyShell' as const };
+    playerMoveMessage(strategyActionMap[type], { onError: () => setIsPlayerAction(true) });
   };
 
-  const defineWinStatus = (): WinStatus => {
+  const defineWinStatus = (): GameResult | null => {
     if (currentGame?.state === 'Finished') {
       return currentGame.result;
     }
@@ -263,115 +56,30 @@ function LayoutComponent() {
 
   const handleStartNewGame = useCallback(
     async (startManually?: boolean) => {
-      if (meta && isCurrentGameRead && !isLoading && (!currentGame || startManually)) {
-        const payload = {
-          StartGame: {},
-        };
-
-        handleSubscribeToEvent();
-
-        const onError = (error?: unknown) => {
-          handleUnsubscribeFromEvent();
-          setIsStateRead(true);
+      console.log('handleStartNewGame', isCurrentGameRead && !isLoading && (!currentGame || startManually));
+      if (isCurrentGameRead && !isLoading && (!currentGame || startManually)) {
+        const onError = () => {
           setIsLoading(false);
-          logger(error || 'error');
           navigate(PLAY, { replace: true });
         };
 
-        setIsPlayerAction(false);
+        setIsPlayerAction(true);
         setIsLoading(true);
-        setIsStateRead(false);
 
-        let { voucherId } = gasless;
-        if (account && gasless.isEnabled && !gasless.voucherId && !signless.isActive) {
-          voucherId = await gasless.requestVoucher(account.address);
-        }
-
-        calculateGas(payload)
-          .then((res) => res.toHuman())
-          .then(({ min_limit }) => {
-            const minLimit = withoutCommas(min_limit as string);
-            const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
-
-            const sendMessage = () => {
-              startGameMessage({
-                payload,
-                gasLimit,
-                voucherId,
-                onInBlock: (messageId) => {
-                  logger('Start Game messageInBlock');
-                  logger(`messageID: ${messageId}`);
-                  setCurrentSentMessageId(messageId);
-                },
-                onError,
-              });
-            };
-
-            if (voucherId) {
-              sendMessage();
-            } else {
-              checkBalance(gasLimit, sendMessage, onError);
-            }
-          })
-          .catch((error) => {
-            alert.error('Gas calculation error');
-            onError(error);
-          });
+        await startGameMessage({ onError });
+        console.log('refetch');
+        await refetch();
+        setIsLoading(false);
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [meta, currentGame, isCurrentGameRead, account, gasless, signless, handleSubscribeToEvent],
+    [currentGame, isCurrentGameRead, account, gasless, signless],
   );
-
-  useEffect(() => {
-    if (isStateRead) {
-      setIsPlayerAction(true);
-    }
-  }, [isStateRead]);
 
   useEffect(() => {
     handleStartNewGame();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [meta, isCurrentGameRead]);
-
-  useEffect(() => {
-    if (replyData && currentGame) {
-      const { cars, result } = replyData;
-      logger('Updates state to new reply');
-
-      setCurrentGame(() =>
-        cars.reduce((acc: GameState, item: DecodedReplyItem) => {
-          const [address, position, effect] = item;
-
-          return {
-            ...acc,
-            cars: {
-              ...acc.cars,
-              [address]: {
-                ...acc.cars[address],
-                position,
-                roundResult: effect,
-              },
-            },
-          };
-        }, currentGame),
-      );
-      setCurrentGame((prev) =>
-        prev
-          ? {
-              ...prev,
-              result,
-              state: result ? 'Finished' : prev.state,
-              currentRound: String(Number(prev.currentRound) + 1),
-            }
-          : null,
-      );
-      logger('Enabling actions');
-      setIsPlayerAction(true);
-      logger(`END OF TURN ${Number(currentGame.currentRound) + 1}`);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [replyData]);
+  }, [isCurrentGameRead]);
 
   const handleRoadLoaded = () => {
     setIsRoadLoaded(true);
@@ -379,16 +87,16 @@ function LayoutComponent() {
 
   return (
     <>
-      {currentGame && account?.decodedAddress && isAvailableBalanceReady && !isLoading && isStateRead ? (
+      {currentGame && account?.decodedAddress && isAvailableBalanceReady && !isLoading ? (
         <div className={cx(styles.container, currentGame.state !== 'Finished' ? styles['container-flexed'] : '')}>
           {isRoadLoaded && (
             <Heading
-              currentTurn={currentGame.currentRound}
+              currentTurn={String(currentGame.current_round)}
               isPlayerAction={isPlayerAction}
               winStatus={defineWinStatus()}
             />
           )}
-          <Road newCars={currentGame.cars} carIds={currentGame.carIds} onRoadLoaded={handleRoadLoaded} />
+          <Road newCars={currentGame.cars} carIds={currentGame.car_ids} onRoadLoaded={handleRoadLoaded} />
           {isRoadLoaded && (
             <>
               {currentGame.state !== 'Finished' && (
@@ -399,7 +107,7 @@ function LayoutComponent() {
                     size="large"
                     icon={accelerateSVG}
                     disabled={!isPlayerAction}
-                    isLoading={!account.decodedAddress || !meta}
+                    isLoading={!account.decodedAddress}
                     className={cx(styles['control-button'])}
                     onClick={() => handleActionChoose('accelerate')}
                   />
@@ -409,7 +117,7 @@ function LayoutComponent() {
                     size="large"
                     icon={shootSVG}
                     disabled={!isPlayerAction}
-                    isLoading={!account.decodedAddress || !meta}
+                    isLoading={!account.decodedAddress}
                     className={cx(styles['control-button'], styles['control-button-red'])}
                     onClick={() => handleActionChoose('shoot')}
                   />

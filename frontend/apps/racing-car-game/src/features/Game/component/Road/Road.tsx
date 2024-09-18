@@ -1,7 +1,7 @@
 import { MutableRefObject, memo, useEffect, useRef, useState } from 'react';
 import isEqual from 'lodash.isequal';
 import styles from './Road.module.scss';
-import { cx, withoutCommas } from '@/utils';
+import { cx } from '@/utils';
 import startSVG from '@/assets/icons/game-start-icon.svg';
 import finishSVG from '@/assets/icons/game-finish-icon.svg';
 import roadLineSVG from '@/assets/icons/road-line-svg.svg';
@@ -81,10 +81,10 @@ function RoadComponent({ newCars, carIds, onRoadLoaded }: RoadProps) {
         ...acc,
         [id]: {
           ...newCars[id],
-          speed: Number(withoutCommas(newCars[id].speed)),
-          position: Number(withoutCommas(newCars[id].position)) + carDistanceFromInit,
+          speed: newCars[id].speed,
+          position: newCars[id].position + carDistanceFromInit,
           positionY: carPositionsY[i],
-          effect: defineCarEffect(newCars[id].roundResult),
+          effect: defineCarEffect(newCars[id].round_result),
         },
       }),
       {},
@@ -101,9 +101,9 @@ function RoadComponent({ newCars, carIds, onRoadLoaded }: RoadProps) {
               ...prev,
               [id]: {
                 ...prev[id],
-                speed: Number(withoutCommas(newCars[id].speed)),
-                position: Number(withoutCommas(newCarsToUpdate[id].position)) + carDistanceFromInit,
-                effect: defineCarEffect(newCarsToUpdate[id].roundResult),
+                speed: newCars[id].speed,
+                position: newCarsToUpdate[id].position + carDistanceFromInit,
+                effect: defineCarEffect(newCarsToUpdate[id].round_result),
               },
             }
           : null,

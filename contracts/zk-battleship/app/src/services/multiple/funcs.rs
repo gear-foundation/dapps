@@ -86,27 +86,43 @@ pub fn create_game(
 /// * `game_pair` - A mutable reference to the map storing game pairs.
 /// * `player` - The `ActorId` representing the player canceling the game.
 ///
-/// # Returns
-///
-/// * `Result<ActorId>` - Returns the `ActorId` of the canceled game's player if the game exists, otherwise returns an error.
-///
-/// # Errors
-///
-/// * `Error::NoSuchGame` - If the game associated with the player does not exist.
 pub fn cancel_game(
     games: &mut MultipleGamesMap,
     game_pair: &mut GamePairsMap,
     player: ActorId,
-) -> Result<ActorId> {
+) -> Result<Event> {
     let game = games.get(&player).ok_or(Error::NoSuchGame)?;
 
-    return_bid_to_participants(game);
-    game.participants_data.iter().for_each(|(id, _info)| {
-        game_pair.remove(id);
-    });
-    games.remove(&player);
-
-    Ok(player)
+    let event = match game.status {
+        Status::VerificationPlacement(_) | Status::Registration => {
+            return_bid_to_participants(game);
+            game.participants_data.iter().for_each(|(id, _info)| {
+                game_pair.remove(id);
+            });
+            games.remove(&player);
+            Event::GameCanceled { game_id: player }
+        }
+        Status::Turn(_) | Status::PendingVerificationOfTheMove(_) => {
+            let winner = game.get_opponent(&player);
+            if game.bid != 0 {
+                msg::send_with_gas(winner, "", 0, 2 * game.bid).expect("Error in sending value");
+            }
+            let total_time = exec::block_timestamp() - game.start_time.unwrap();
+            let participants_info = game.participants_data.clone().into_iter().collect();
+            let admin = game.admin;
+            game_pair.remove(&admin);
+            game_pair.remove(&winner);
+            games.remove(&admin);
+            Event::EndGame {
+                admin,
+                winner,
+                total_time,
+                participants_info,
+                last_hit: None,
+            }
+        }
+    };
+    Ok(event)
 }
 /// Joins an existing multiplayer game as a participant.
 ///
@@ -397,6 +413,7 @@ pub fn make_move(
         };
         if res != 0 {
             game.status = Status::Turn(opponent);
+            game.last_move_time = block_timestamp;
             return Ok(Event::MoveMade {
                 game_id,
                 step,
@@ -419,18 +436,6 @@ pub fn make_move(
         .get_mut(&player)
         .ok_or(Error::NotPlayer)?;
     data.total_shots += 1;
-    msg::send(
-        opponent,
-        Event::MoveMade {
-            game_id,
-            step: Some(step),
-            verified_result: verified_result.clone(),
-            turn: opponent,
-        },
-        0,
-    )
-    .expect("Error send message");
-
     game.status = Status::PendingVerificationOfTheMove((opponent, step));
     game.last_move_time = block_timestamp;
     send_check_time_delayed_message(
@@ -531,7 +536,7 @@ pub fn check_out_timing(
     game_pair: &mut GamePairsMap,
     game_id: ActorId,
     check_time: u64,
-) -> Result<()> {
+) -> Result<Option<Event>> {
     let game = games.get_mut(&game_id).ok_or(Error::NoSuchGame)?;
     if game.last_move_time == check_time {
         let total_time = exec::block_timestamp() - game.start_time.unwrap();
@@ -541,21 +546,22 @@ pub fn check_out_timing(
             Status::PendingVerificationOfTheMove((id, _)) => (game.get_opponent(&id), id),
             _ => unimplemented!(),
         };
-        let payload = Event::EndGame {
+        let event = Event::EndGame {
             admin: game.admin,
             winner,
             total_time,
             participants_info,
             last_hit: None,
         };
-        msg::send(winner, payload.clone(), 2 * game.bid).expect("Error send message");
-        msg::send(loser, payload.clone(), 0).expect("Error send message");
+        msg::send_with_gas(winner, "", 0, 2 * game.bid).expect("Error send message");
+        msg::send_with_gas(loser, "", 0, 0).expect("Error send message");
         game_pair.remove(&winner);
         game_pair.remove(&loser);
         games.remove(&game_id);
+        return Ok(Some(event));
     }
 
-    Ok(())
+    Ok(None)
 }
 /// Deletes a game from storage based on the provided `game_id` and `create_time`.
 ///
@@ -638,252 +644,3 @@ fn send_check_time_delayed_message(
     msg::send_bytes_with_gas_delayed(exec::program_id(), request, gas_limit, 0, delay)
         .expect("Error in sending message");
 }
-
-// #[cfg(test)]
-// mod tests {
-//     use super::*;
-//     use crate::services::multiple::funcs;
-//     use utils::*;
-
-//     #[test]
-//     fn create_game() {
-//         // Initializing thread logger.
-//         let _ = env_logger::try_init();
-
-//         // Creating game_pair_map.
-//         let alice = alice();
-//         let mut game_pair_map = game_pair_map([]);
-//         assert!(game_pair_map.is_empty());
-//         let mut multiple_game_map = multiple_game_map([]);
-//         assert!(multiple_game_map.is_empty());
-
-//         // # Test case #1.
-//         // Ok: Create game
-//         {
-//             funcs::create_game(&mut multiple_game_map, &mut game_pair_map, alice, 100).unwrap();
-//             assert_eq!(*game_pair_map.get(&alice).unwrap(), alice);
-//             assert_eq!(
-//                 *multiple_game_map.get(&alice).unwrap(),
-//                 multiple_game(alice)
-//             );
-//         }
-//         // # Test case #2.
-//         // Error: Several games
-//         {
-//             let res = funcs::create_game(&mut multiple_game_map, &mut game_pair_map, alice, 100);
-//             assert!(res.is_err_and(|err| err == Error::SeveralGames));
-//         }
-//     }
-
-//     #[test]
-//     fn cancel_game() {
-//         // Initializing thread logger.
-//         let _ = env_logger::try_init();
-
-//         // Creating game_pair_map.
-//         let alice = alice();
-//         let bob = bob();
-//         let mut game_pair_map = game_pair_map([(alice, alice), (bob, alice)]);
-//         assert!(!game_pair_map.is_empty());
-//         let mut game = multiple_game(alice);
-//         game.second_player_board = Some((alice, vec![Entity::Unknown; 25]));
-//         game.participants.1 = bob;
-//         let mut multiple_game_map = multiple_game_map([(alice, game)]);
-//         assert!(!multiple_game_map.is_empty());
-
-//         // # Test case #1.
-//         // Ok: Cancel game
-//         {
-//             funcs::cancel_game(&mut multiple_game_map, &mut game_pair_map, alice).unwrap();
-//             assert!(game_pair_map.is_empty());
-//             assert!(multiple_game_map.is_empty());
-//         }
-//         // # Test case #2.
-//         // Error: No such game
-//         {
-//             let res = funcs::cancel_game(&mut multiple_game_map, &mut game_pair_map, alice);
-//             assert!(res.is_err_and(|err| err == Error::NoSuchGame));
-//         }
-//     }
-
-//     #[test]
-//     fn join_game() {
-//         // Initializing thread logger.
-//         let _ = env_logger::try_init();
-
-//         // Creating game_pair_map.
-//         let alice = alice();
-//         let bob = bob();
-//         let mut pair_map = game_pair_map([(alice, alice), (bob, bob)]);
-//         assert!(!pair_map.is_empty());
-//         let mut game = multiple_game(alice);
-//         let mut game_map = multiple_game_map([(alice, game.clone()), (bob, game.clone())]);
-//         assert!(!game_map.is_empty());
-
-//         // # Test case #1.
-//         // Error: several games
-//         {
-//             let res = funcs::join_game(&mut game_map, &mut pair_map, bob, alice, 100);
-//             assert!(res.is_err_and(|err| err == Error::SeveralGames));
-//         }
-
-//         // # Test case #2.
-//         // Ok: join to game
-//         let mut pair_map = game_pair_map([(alice, alice)]);
-//         let mut game_map = multiple_game_map([(alice, game.clone())]);
-//         {
-//             funcs::join_game(&mut game_map, &mut pair_map, bob, alice, 100).unwrap();
-//             game.second_player_board = Some((bob, vec![Entity::Unknown; 25]));
-//             game.participants.1 = bob;
-//             game.status = Status::VerificationPlacement(None);
-//             assert_eq!(*pair_map.get(&bob).unwrap(), alice);
-//             assert_eq!(*game_map.get(&alice).unwrap(), game);
-//         }
-//         // # Test case #3.
-//         // Error: there's already a player registered
-//         let john = john();
-//         {
-//             let res = funcs::join_game(&mut game_map, &mut pair_map, john, alice, 100);
-//             assert!(res.is_err_and(|err| err == Error::WrongStatus));
-//         }
-//     }
-
-//     #[test]
-//     fn leave_game() {
-//         // Initializing thread logger.
-//         let _ = env_logger::try_init();
-
-//         // Creating game_pair_map.
-//         let alice = alice();
-//         let bob = bob();
-//         let mut pair_map = game_pair_map([(alice, alice), (bob, alice)]);
-//         assert!(!pair_map.is_empty());
-//         let mut game = multiple_game(alice);
-//         game.second_player_board = Some((alice, vec![Entity::Unknown; 25]));
-//         game.participants.1 = bob;
-//         let mut game_map = multiple_game_map([(alice, game.clone())]);
-//         assert!(!game_map.is_empty());
-
-//         // # Test case #1.
-//         // Error: wrong status
-//         {
-//             let res = funcs::leave_game(&mut game_map, &mut pair_map, bob);
-//             assert!(res.is_err_and(|err| err == Error::WrongStatus));
-//         }
-
-//         // # Test case #2.
-//         // Ok: leave game when status is verification placement
-//         game.status = Status::VerificationPlacement(None);
-//         let mut game_map = multiple_game_map([(alice, game.clone())]);
-//         {
-//             funcs::leave_game(&mut game_map, &mut pair_map, bob).unwrap();
-//             game.second_player_board = None;
-//             game.participants.1 = ActorId::zero();
-//             game.status = Status::Registration;
-//             assert_eq!(pair_map.len(), 1);
-//             assert_eq!(*game_map.get(&alice).unwrap(), game);
-//         }
-//         // # Test case #3.
-//         // Ok: leave game when status is turn
-//         game.status = Status::Turn(alice);
-//         let mut game_map = multiple_game_map([(alice, game.clone())]);
-//         let mut pair_map = game_pair_map([(alice, alice), (bob, alice)]);
-//         {
-//             let event = funcs::leave_game(&mut game_map, &mut pair_map, bob).unwrap();
-//             assert_eq!(event, Event::EndGame { winner: alice });
-//             assert_eq!(pair_map.len(), 1);
-//         }
-//         // # Test case #4.
-//         // Ok: leave game when status is game over
-//         game.status = Status::GameOver(alice);
-//         let mut game_map = multiple_game_map([(alice, game.clone())]);
-//         let mut pair_map = game_pair_map([(alice, alice), (bob, alice)]);
-//         {
-//             let event = funcs::leave_game(&mut game_map, &mut pair_map, bob).unwrap();
-//             assert_eq!(event, Event::GameLeft { game_id: alice });
-//             assert_eq!(pair_map.len(), 1);
-//         }
-//     }
-
-//     #[test]
-//     fn set_verify_placement() {
-//         // Initializing thread logger.
-//         let _ = env_logger::try_init();
-
-//         // Creating game_pair_map.
-//         let alice = alice();
-//         let bob = bob();
-//         let mut game = multiple_game(alice);
-//         let mut game_map = multiple_game_map([(alice, game.clone())]);
-//         assert!(!game_map.is_empty());
-
-//         // # Test case #1.
-//         // Error: wrong status
-//         {
-//             let res = funcs::set_verify_placement(&mut game_map, alice, alice, 0);
-
-//             assert!(res.is_err_and(|err| err == Error::WrongStatus));
-//         }
-//         // # Test case #2.
-//         // Ok: status VerificationPlacement(None)
-//         game.status = Status::VerificationPlacement(None);
-//         let mut game_map = multiple_game_map([(alice, game.clone())]);
-//         {
-//             funcs::set_verify_placement(&mut game_map, alice, alice, 0).unwrap();
-//             game.status = Status::VerificationPlacement(Some(alice));
-//             assert_eq!(*game_map.get(&alice).unwrap(), game);
-//         }
-//         // # Test case #3.
-//         // Error: a case where Alice wants to double verify ships
-//         {
-//             let res = funcs::set_verify_placement(&mut game_map, alice, alice, 0);
-//             assert!(res.is_err_and(|err| err == Error::AlreadyVerified));
-//         }
-//         // # Test case #4.
-//         // Ok: status VerificationPlacement(Some(alice))
-//         {
-//             funcs::set_verify_placement(&mut game_map, bob, alice, 0).unwrap();
-//             game.status = Status::Turn(alice);
-//             game.start_time = Some(0);
-//             assert_eq!(*game_map.get(&alice).unwrap(), game);
-//         }
-//     }
-
-//     mod utils {
-//         use super::{GamePairsMap, MultipleGame, MultipleGamesMap};
-//         use crate::multiple::Status;
-//         use crate::single::Entity;
-//         use gstd::{vec, ActorId};
-
-//         pub fn game_pair_map<const N: usize>(content: [(ActorId, ActorId); N]) -> GamePairsMap {
-//             content.into_iter().collect()
-//         }
-//         pub fn multiple_game_map<const N: usize>(
-//             content: [(ActorId, MultipleGame); N],
-//         ) -> MultipleGamesMap {
-//             content.into_iter().collect()
-//         }
-//         pub fn multiple_game(player: ActorId) -> MultipleGame {
-//             MultipleGame {
-//                 first_player_board: (player, vec![Entity::Unknown; 25]),
-//                 second_player_board: None,
-//                 participants: (player, ActorId::zero()),
-//                 ship_hashes: ((ActorId::zero(), vec![]), (ActorId::zero(), vec![])),
-//                 start_time: None,
-//                 end_time: None,
-//                 status: Status::Registration,
-//                 bid: 100,
-//             }
-//         }
-
-//         pub fn alice() -> ActorId {
-//             1u64.into()
-//         }
-//         pub fn bob() -> ActorId {
-//             2u64.into()
-//         }
-//         pub fn john() -> ActorId {
-//             3u64.into()
-//         }
-//     }
-// }
