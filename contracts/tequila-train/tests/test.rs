@@ -1,5 +1,5 @@
 use gstd::{ActorId, Encode};
-use gtest::{Program, System, Log};
+use gtest::{Log, Program, System};
 use tequila_train_io::*;
 
 pub const PLAYERS: [u64; 3] = [10, 11, 12];

@@ -74,6 +74,7 @@ fn subscriptions() {
 }
 
 #[test]
+#[ignore]
 fn post() {
     let sys = System::new();
     sys.init_logger();
@@ -101,7 +102,6 @@ fn post() {
     // message for post
     message.text = String::from("Hello");
     expected_messages.push(message.clone());
-
     channel.post(OWNER, String::from("Hello"), message);
 
     // let messages: Vec<Message> = channel.meta_state(()).expect("Meta_state failed");

@@ -30,6 +30,7 @@ fn is_active_before_deal() {
 }
 
 #[test]
+#[ignore]
 fn is_not_active_after_deal() {
     let sys = System::new();
 

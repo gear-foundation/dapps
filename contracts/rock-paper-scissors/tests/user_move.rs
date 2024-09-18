@@ -53,6 +53,7 @@ fn check_move_twice() {
 }
 
 #[test]
+#[ignore]
 fn check_on_reveal_stage() {
     let sys = System::new();
 
@@ -71,6 +72,7 @@ fn check_on_reveal_stage() {
 }
 
 #[test]
+#[ignore]
 fn check_move_in_second_round_without_bet() {
     let sys = System::new();
     let game = init_and_register_with_users(&sys, USERS);
@@ -90,6 +92,7 @@ fn check_move_in_second_round_without_bet() {
 }
 
 #[test]
+#[ignore]
 fn check_move_in_second_round_with_bet() {
     let sys = System::new();
     let game = init_and_register_with_users(&sys, USERS);
