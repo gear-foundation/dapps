@@ -376,22 +376,13 @@ pub fn finish_tournament(
     }
 
     let prize = game.bid * game.participants.len() as u128 / winners.len() as u128;
-    winners.iter().for_each(|id| {
-        msg::send_with_gas(*id, "", 0, prize).expect("Error in sending value");
-    });
+    if prize != 0 {
+        winners.iter().for_each(|id| {
+            msg::send_with_gas(*id, "", 0, prize).expect("Error in sending value");
+        });
+    }
     game.stage = Stage::Finished(winners.clone());
     let participants: Vec<(ActorId, Player)> = game.participants.clone().into_iter().collect();
-
-    msg::send(
-        game.admin,
-        Ok::<Event, GameError>(Event::GameFinished {
-            winners: winners.clone(),
-            participants: participants.clone(),
-            prize,
-        }),
-        0,
-    )
-    .expect("Error in sending message");
 
     Ok(Event::GameFinished {
         winners,
