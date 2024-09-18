@@ -39,12 +39,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Rust
+      - name: Set up Rust (Stable)
         uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: nightly
+          toolchain: stable
           targets: wasm32-unknown-unknown
-          components: rustfmt
 
       - name: Prepare Gear Binary
         run: |

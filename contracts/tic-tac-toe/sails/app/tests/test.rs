@@ -40,13 +40,13 @@ async fn test_play_game() {
     assert!(game_instance.is_some());
 
     client
-        .turn(0.into(), None)
+        .turn(0, None)
         .send_recv(tic_tac_toe_id)
         .await
         .unwrap();
 
     client
-        .turn(1.into(), None)
+        .turn(1, None)
         .send_recv(tic_tac_toe_id)
         .await
         .unwrap();
@@ -58,7 +58,7 @@ async fn test_play_game() {
         .await
         .unwrap()
         .unwrap();
-    assert_eq!(game_instance.game_over, true);
+    assert!(game_instance.game_over);
     assert_eq!(game_instance.game_result, Some(GameResult::Bot));
     // println!("GAME: {:?}", game_instance);
 }
@@ -144,7 +144,7 @@ async fn allow_messages() {
         .recv(tic_tac_toe_id)
         .await
         .unwrap();
-    assert_eq!(messages_allowed, false);
+    assert!(!messages_allowed);
 
     let res = client
         .start_game(None)
