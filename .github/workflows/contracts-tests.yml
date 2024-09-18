@@ -44,7 +44,7 @@ jobs:
         with:
           toolchain: nightly
           targets: wasm32-unknown-unknown
-          components: clippy, rustfmt
+          components: rustfmt
 
       - name: Prepare Gear Binary
         run: |
