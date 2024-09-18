@@ -5,7 +5,7 @@ import { EnemyRenderer } from './renders/EnemyRenderer';
 import { EnemyWithVision } from './EnemyWithVision';
 import { findEnemyStartPositions } from '../utils/findEnemyStartPositions';
 import { findCharacterStartPosition } from '../utils/findCharacterStartPosition';
-import { IGameLevel } from '@/app/types/game';
+import { Level } from '@/app/utils';
 import { TileMap } from '../types';
 import { HEIGHT_CANVAS, WIDTH_CANVAS, gameLevels } from '../consts';
 
@@ -30,7 +30,7 @@ export class GameEngine {
   private readonly frameDuration: number = 1000 / 60; // 60 FPS
 
   map: TileMap;
-  level: IGameLevel;
+  level: Level;
 
   setGameOver = (gameOver: boolean) => {};
   gameOver = false;
@@ -39,7 +39,7 @@ export class GameEngine {
   constructor(
     private canvas: HTMLCanvasElement,
     private canvasFog: HTMLCanvasElement,
-    level: IGameLevel,
+    level: Level,
     incrementCoins: (coin: 'silver' | 'gold') => void,
     gameOver: boolean,
     setGameOver: (gameOver: boolean) => void,
