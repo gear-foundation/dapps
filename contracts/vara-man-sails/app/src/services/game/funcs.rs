@@ -382,6 +382,7 @@ pub fn finish_tournament(
         });
     }
     game.stage = Stage::Finished(winners.clone());
+    
     let participants: Vec<(ActorId, Player)> = game.participants.clone().into_iter().collect();
 
     Ok(Event::GameFinished {
