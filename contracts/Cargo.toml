@@ -7,7 +7,6 @@ members = [
     "auto-changed-nft/state",
     "battleship",
     "car-races",
-    "concert",
     "crowdsale",
     "crowdsale/state",
     "dao",
@@ -75,9 +74,6 @@ members = [
     "sharded-fungible-token",
     "sharded-fungible-token/logic",
     "sharded-fungible-token/storage",
-    "sharded-multi-token",
-    "sharded-multi-token/logic",
-    "sharded-multi-token/storage",
     "staking",
     "staking/state",
     "student-nft",
@@ -130,8 +126,6 @@ rmrk-catalog.path = "rmrk/catalog"
 sharded-fungible-token.path = "sharded-fungible-token"
 sharded-fungible-token-logic.path = "sharded-fungible-token/logic"
 sharded-fungible-token-storage.path = "sharded-fungible-token/storage"
-sharded-multi-token-logic.path = "sharded-multi-token/logic"
-sharded-multi-token-storage.path = "sharded-multi-token/storage"
 supply-chain.path = "supply-chain"
 syndote-player.path = "syndote/player"
 tamagotchi.path = "tamagotchi"
@@ -157,7 +151,6 @@ tamagotchi-battle-state.path = "tamagotchi-battle/state"
 auto-changed-nft-io.path = "auto-changed-nft/io"
 battleship-io.path = "battleship/io"
 car-races-io.path = "car-races/io"
-concert-io.path = "concert/io"
 crowdsale-io.path = "crowdsale/io"
 dao-io.path = "dao/io"
 dao-light-io.path = "dao-light/io"
@@ -196,9 +189,6 @@ roll-the-dice-io.path = "roll-the-dice/io"
 sharded-fungible-token-io.path = "sharded-fungible-token/io"
 sharded-fungible-token-logic-io.path = "sharded-fungible-token/logic/io"
 sharded-fungible-token-storage-io.path = "sharded-fungible-token/storage/io"
-sharded-multi-token-io.path = "sharded-multi-token/io"
-sharded-multi-token-logic-io.path = "sharded-multi-token/logic/io"
-sharded-multi-token-storage-io.path = "sharded-multi-token/storage/io"
 staking-io.path = "staking/io"
 student-nft-io.path = "student-nft/io"
 supply-chain-io.path = "supply-chain/io"
