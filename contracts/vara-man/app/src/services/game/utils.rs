@@ -78,7 +78,6 @@ pub struct Config {
     pub points_per_silver_coin_hard: u128,
     pub gas_for_finish_tournament: u64,
     pub gas_for_mint_fungible_token: u64,
-    pub time_for_single_round: u32,
     pub gas_to_delete_session: u64,
     pub minimum_session_duration_ms: u64,
     pub s_per_block: u64,
