@@ -25,6 +25,7 @@ pub fn create_new_tournament(
         ActionsForSession::CreateNewTournament,
     );
     if storage.status == Status::Paused {
+        msg::send_with_gas(msg_src, "", 0, msg_value).expect("Error in sending the value");
         return Err(GameError::GameIsPaused);
     }
 
