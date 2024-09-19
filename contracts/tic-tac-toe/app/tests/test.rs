@@ -10,7 +10,7 @@ async fn test_play_game() {
     let program_space = GTestRemoting::new(100.into());
     program_space.system().init_logger();
     let code_id = program_space.system().submit_code_file(
-        "../../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm",
+        "../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm",
     );
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
@@ -68,7 +68,7 @@ async fn add_and_remove_admin() {
     let program_space = GTestRemoting::new(100.into());
     program_space.system().init_logger();
     let code_id = program_space.system().submit_code_file(
-        "../../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm",
+        "../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm",
     );
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
@@ -113,7 +113,7 @@ async fn allow_messages() {
     let program_space = GTestRemoting::new(100.into());
     program_space.system().init_logger();
     let code_id = program_space.system().submit_code_file(
-        "../../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm",
+        "../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm",
     );
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
