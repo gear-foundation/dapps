@@ -1,7 +1,6 @@
 #![no_std]
 
 use galactic_express_io::*;
-use gear_lib::tx_manager::TransactionManager;
 use gstd::{
     collections::HashMap,
     errors::Error as GstdError,
@@ -53,9 +52,9 @@ impl Random {
     }
 }
 
-static mut STATE: Option<(Contract, TransactionManager<()>)> = None;
+static mut STATE: Option<Contract> = None;
 
-fn state_mut() -> Result<&'static mut (Contract, TransactionManager<()>), Error> {
+fn state_mut() -> Result<&'static mut Contract, Error> {
     unsafe { STATE.as_mut().ok_or(Error::StateUninitaliazed) }
 }
 
@@ -439,12 +438,11 @@ extern fn init() {
 
 fn process_init() -> Result<(), Error> {
     unsafe {
-        STATE = Some((
+        STATE = Some(
             Contract {
                 ..Default::default()
             },
-            TransactionManager::new(),
-        ));
+        );
     }
 
     Ok(())
@@ -457,7 +455,7 @@ async fn main() {
 
 async fn process_main() -> Result<Event, Error> {
     let action = msg::load()?;
-    let (contract, _tx_manager) = state_mut()?;
+    let contract = state_mut()?;
 
     match action {
         Action::CreateNewSession { name } => contract.create_new_session(name),
@@ -486,7 +484,7 @@ async fn process_main() -> Result<Event, Error> {
 
 #[no_mangle]
 extern fn state() {
-    let (state, _tx_manager) = unsafe { STATE.take().expect("Unexpected error in taking state") };
+    let state = unsafe { STATE.take().expect("Unexpected error in taking state") };
     let query: StateQuery = msg::load().expect("Unable to load the state query");
     let reply = match query {
         StateQuery::All => StateReply::All(state.into()),

@@ -144,12 +144,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "anstyle"
-version = "1.0.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "038dfcf04a5feb68e9c60b21c9625a54c2c0616e79b72b0fd87075a056ae1d1b"
-
-[[package]]
 name = "anyhow"
 version = "1.0.86"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -349,12 +343,6 @@ dependencies = [
  "rand 0.8.5",
  "rayon",
 ]
-
-[[package]]
-name = "array-bytes"
-version = "4.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f52f63c5c1316a16a4b35eaac8b76a98248961a533f061684cb2a7cb0eafb6c6"
 
 [[package]]
 name = "array-bytes"
@@ -580,46 +568,6 @@ name = "atomic-waker"
 version = "1.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1505bd5d3d116872e7271a6d4e16d81d0c8570876c8de68093a09ac269d8aac0"
-
-[[package]]
-name = "auto-changed-nft"
-version = "1.1.0"
-dependencies = [
- "auto-changed-nft-io",
- "gclient",
- "gear-lib-derive",
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "gtest",
- "hex-literal 0.4.1",
- "primitive-types",
- "sp-core 21.0.0",
- "sp-core-hashing 10.0.0",
- "tokio",
-]
-
-[[package]]
-name = "auto-changed-nft-io"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gmeta",
- "gstd",
- "primitive-types",
-]
-
-[[package]]
-name = "auto-changed-nft-state"
-version = "1.1.0"
-dependencies = [
- "auto-changed-nft-io",
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
-]
 
 [[package]]
 name = "autocfg"
@@ -1125,31 +1073,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "clap"
-version = "4.5.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "90bc066a67923782aa8515dbaea16946c5bcc5addbd668bb80af688e53e548a0"
-dependencies = [
- "clap_builder",
-]
-
-[[package]]
-name = "clap_builder"
-version = "4.5.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "ae129e2e766ae0ec03484e609954119f123cc1fe650337e155d03b022f24f7b4"
-dependencies = [
- "anstyle",
- "clap_lex",
-]
-
-[[package]]
-name = "clap_lex"
-version = "0.7.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "98cc8fbded0c607b7ba9dd60cd98df59af97e84d24e49c8557331cfc26d301ce"
-
-[[package]]
 name = "cmake"
 version = "0.1.50"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1452,41 +1375,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "248e3bacc7dc6baa3b21e405ee045c3047101a49145e7e9eca583ab4c2ca5345"
 
 [[package]]
-name = "crowdsale"
-version = "1.1.0"
-dependencies = [
- "crowdsale-io",
- "gclient",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "gtest",
- "sharded-fungible-token",
- "sharded-fungible-token-io",
- "sharded-fungible-token-logic",
- "sharded-fungible-token-storage",
- "tokio",
-]
-
-[[package]]
-name = "crowdsale-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "crowdsale-state"
-version = "1.1.0"
-dependencies = [
- "crowdsale-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
-]
-
-[[package]]
 name = "crunchy"
 version = "0.2.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1612,71 +1500,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "dao"
-version = "1.1.0"
-dependencies = [
- "blake2-rfc",
- "dao-io",
- "gclient",
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "sharded-fungible-token",
- "sharded-fungible-token-io",
- "sharded-fungible-token-logic",
- "sharded-fungible-token-storage",
- "tokio",
-]
-
-[[package]]
-name = "dao-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "dao-light"
-version = "1.1.0"
-dependencies = [
- "dao-light-io",
- "fungible-token",
- "fungible-token-io",
- "gear-wasm-builder",
- "gstd",
- "gtest",
-]
-
-[[package]]
-name = "dao-light-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "dao-light-state"
-version = "1.1.0"
-dependencies = [
- "dao-light-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "dao-state"
-version = "1.1.0"
-dependencies = [
- "dao-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
-]
-
-[[package]]
 name = "darling"
 version = "0.14.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1761,90 +1584,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "decentralized-git"
-version = "1.1.0"
-dependencies = [
- "decentralized-git-io",
- "decentralized-git-user-io",
- "gear-wasm-builder",
- "gstd",
-]
-
-[[package]]
-name = "decentralized-git-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "decentralized-git-master"
-version = "1.1.0"
-dependencies = [
- "decentralized-git-master-io",
- "decentralized-git-user-io",
- "gear-wasm-builder",
- "gstd",
-]
-
-[[package]]
-name = "decentralized-git-master-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "decentralized-git-master-state"
-version = "1.1.0"
-dependencies = [
- "decentralized-git-master-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "decentralized-git-state"
-version = "1.1.0"
-dependencies = [
- "decentralized-git-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "decentralized-git-user"
-version = "1.1.0"
-dependencies = [
- "decentralized-git-io",
- "decentralized-git-user-io",
- "gear-wasm-builder",
- "gstd",
-]
-
-[[package]]
-name = "decentralized-git-user-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "decentralized-git-user-state"
-version = "1.1.0"
-dependencies = [
- "decentralized-git-user-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
-]
-
-[[package]]
 name = "defer"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1893,80 +1632,6 @@ dependencies = [
  "quote",
  "rustc_version",
  "syn 2.0.72",
-]
-
-[[package]]
-name = "dex"
-version = "1.1.0"
-dependencies = [
- "dex-factory",
- "dex-factory-io",
- "dex-factory-state",
- "dex-io",
- "dex-state",
- "gclient",
- "gear-core",
- "gear-lib",
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "primitive-types",
- "sharded-fungible-token",
- "sharded-fungible-token-io",
- "sharded-fungible-token-logic",
- "sharded-fungible-token-storage",
- "sp-core-hashing 10.0.0",
- "tokio",
-]
-
-[[package]]
-name = "dex-factory"
-version = "1.1.0"
-dependencies = [
- "dex-factory-io",
- "dex-io",
- "gear-wasm-builder",
- "gstd",
-]
-
-[[package]]
-name = "dex-factory-io"
-version = "1.1.0"
-dependencies = [
- "dex-io",
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "dex-factory-state"
-version = "1.1.0"
-dependencies = [
- "dex-factory-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "dex-io"
-version = "1.1.0"
-dependencies = [
- "gear-lib",
- "gmeta",
- "gstd",
- "primitive-types",
-]
-
-[[package]]
-name = "dex-state"
-version = "1.1.0"
-dependencies = [
- "dex-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "primitive-types",
 ]
 
 [[package]]
@@ -2047,42 +1712,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "75b325c5dbd37f80359721ad39aca5a29fb04c89279657cffdda8736d0c0b9d2"
 
 [[package]]
-name = "dutch-auction"
-version = "1.1.0"
-dependencies = [
- "dutch-auction-io",
- "gclient",
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "gtest",
- "non-fungible-token",
- "non-fungible-token-io",
- "primitive-types",
- "tokio",
-]
-
-[[package]]
-name = "dutch-auction-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
- "primitive-types",
-]
-
-[[package]]
-name = "dutch-auction-state"
-version = "1.1.0"
-dependencies = [
- "dutch-auction-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
-]
-
-[[package]]
 name = "dyn-clonable"
 version = "0.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2108,46 +1737,6 @@ name = "dyn-clone"
 version = "1.0.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0d6ef0072f8a535281e4876be788938b528e9a1d43900b82c2569af7da799125"
-
-[[package]]
-name = "dynamic-nft"
-version = "1.1.0"
-dependencies = [
- "dynamic-nft-io",
- "gclient",
- "gear-lib-derive",
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "gtest",
- "hex-literal 0.4.1",
- "primitive-types",
- "sp-core 21.0.0",
- "sp-core-hashing 10.0.0",
- "tokio",
-]
-
-[[package]]
-name = "dynamic-nft-io"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gmeta",
- "gstd",
- "primitive-types",
-]
-
-[[package]]
-name = "dynamic-nft-state"
-version = "1.1.0"
-dependencies = [
- "dynamic-nft-io",
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
-]
 
 [[package]]
 name = "dynasm"
@@ -2355,42 +1944,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "escrow"
-version = "1.1.0"
-dependencies = [
- "escrow-io",
- "gclient",
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "sharded-fungible-token",
- "sharded-fungible-token-io",
- "sharded-fungible-token-logic",
- "sharded-fungible-token-storage",
- "tokio",
-]
-
-[[package]]
-name = "escrow-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
- "primitive-types",
-]
-
-[[package]]
-name = "escrow-state"
-version = "1.1.0"
-dependencies = [
- "escrow-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "primitive-types",
-]
-
-[[package]]
 name = "etc"
 version = "0.1.20"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2497,65 +2050,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9fc0510504f03c51ada170672ac806f1f105a88aa97a5281117e1ddc3368e51a"
 
 [[package]]
-name = "feeds"
-version = "1.1.0"
-dependencies = [
- "feeds-channel",
- "feeds-channel-io",
- "feeds-io",
- "gear-wasm-builder",
- "gstd",
- "gtest",
-]
-
-[[package]]
-name = "feeds-channel"
-version = "1.1.0"
-dependencies = [
- "async-trait",
- "feeds-channel-io",
- "feeds-io",
- "gear-wasm-builder",
- "gstd",
-]
-
-[[package]]
-name = "feeds-channel-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "feeds-channel-state"
-version = "1.1.0"
-dependencies = [
- "feeds-channel-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "feeds-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "feeds-state"
-version = "1.1.0"
-dependencies = [
- "feeds-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
-]
-
-[[package]]
 name = "ff"
 version = "0.13.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2648,9 +2142,9 @@ dependencies = [
  "smallvec",
  "sp-api",
  "sp-arithmetic",
- "sp-core 22.0.0",
+ "sp-core",
  "sp-core-hashing-proc-macro",
- "sp-debug-derive 9.0.0",
+ "sp-debug-derive",
  "sp-inherents",
  "sp-io",
  "sp-runtime",
@@ -2717,7 +2211,7 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "serde",
- "sp-core 22.0.0",
+ "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std 9.0.0",
@@ -2732,35 +2226,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "88a41f105fe1d5b6b34b2055e3dc59bb79b46b48b2040b9e6c7b4b5de097aa41"
 dependencies = [
  "autocfg",
-]
-
-[[package]]
-name = "fungible-token"
-version = "1.1.0"
-dependencies = [
- "fungible-token-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "gtest",
-]
-
-[[package]]
-name = "fungible-token-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "fungible-token-state"
-version = "1.1.0"
-dependencies = [
- "fungible-token-io",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
 ]
 
 [[package]]
@@ -2907,7 +2372,6 @@ name = "galactic-express"
 version = "1.1.0"
 dependencies = [
  "galactic-express-io",
- "gear-lib",
  "gear-wasm-builder",
  "gstd",
  "gtest",
@@ -2918,7 +2382,6 @@ dependencies = [
 name = "galactic-express-io"
 version = "1.1.0"
 dependencies = [
- "gear-lib",
  "gmeta",
  "gstd",
  "parity-scale-codec",
@@ -2932,34 +2395,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b7021443741e4bfcd99d37fa6c321b205d7c696b2084fd3e10cf79f89fda6a48"
 dependencies = [
  "gear-dlmalloc",
-]
-
-[[package]]
-name = "game-of-chance"
-version = "1.1.0"
-dependencies = [
- "game-of-chance-io",
- "gclient",
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "primitive-types",
- "rand 0.8.5",
- "rand_xoshiro",
- "sharded-fungible-token",
- "sharded-fungible-token-io",
- "sharded-fungible-token-logic",
- "sharded-fungible-token-storage",
- "sp-core-hashing 10.0.0",
- "tokio",
-]
-
-[[package]]
-name = "game-of-chance-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
 ]
 
 [[package]]
@@ -3028,7 +2463,7 @@ dependencies = [
  "log",
  "primitive-types",
  "sp-arithmetic",
- "sp-core 22.0.0",
+ "sp-core",
  "sp-io",
  "sp-runtime",
  "sp-std 9.0.0",
@@ -3162,33 +2597,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "gear-lib"
-version = "1.1.0"
-dependencies = [
- "ahash 0.8.11",
- "gstd",
- "indexmap 2.2.6",
- "primitive-types",
-]
-
-[[package]]
-name = "gear-lib-derive"
-version = "1.1.0"
-dependencies = [
- "quote",
- "syn 2.0.72",
-]
-
-[[package]]
-name = "gear-lib-old"
-version = "1.1.0"
-dependencies = [
- "gstd",
- "primitive-types",
- "schnorrkel 0.10.2",
-]
-
-[[package]]
 name = "gear-node-wrapper"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3222,7 +2630,7 @@ dependencies = [
  "gwasmi",
  "log",
  "parity-scale-codec",
- "sp-core 22.0.0",
+ "sp-core",
  "sp-std 9.0.0",
  "sp-wasm-interface-common",
 ]
@@ -3234,7 +2642,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b8e85693d331cd75effed01ecaeccc6ae28e137e454b020dc341829c9c74e3e"
 dependencies = [
  "parity-scale-codec",
- "sp-debug-derive 9.0.0",
+ "sp-debug-derive",
  "sp-std 9.0.0",
  "sp-wasm-interface-common",
 ]
@@ -3516,9 +2924,9 @@ dependencies = [
  "impl-trait-for-tuples",
  "parity-scale-codec",
  "primitive-types",
- "sp-externalities 0.20.0",
+ "sp-externalities",
  "sp-std 9.0.0",
- "sp-storage 14.0.0",
+ "sp-storage",
  "sp-tracing 10.0.0",
  "static_assertions",
 ]
@@ -3603,7 +3011,7 @@ dependencies = [
  "scale-value",
  "serde",
  "serde_json",
- "sp-core 22.0.0",
+ "sp-core",
  "sp-runtime",
  "subxt",
  "thiserror",
@@ -3824,12 +3232,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ebdb29d2ea9ed0083cd8cece49bbd968021bd99b0849edb4a9a7ee0fdf6a4e0"
 
 [[package]]
-name = "hex-literal"
-version = "0.4.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6fe2267d4ed49bc07b63801559be28c718ea06c4738b7a03c94df7386d2cde46"
-
-[[package]]
 name = "hmac"
 version = "0.8.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3876,39 +3278,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e3d1354bf6b7235cb4a0576c2619fd4ed18183f689b12b006a0ee7329eeff9a5"
 dependencies = [
  "windows-sys 0.52.0",
-]
-
-[[package]]
-name = "horse-races"
-version = "1.1.0"
-dependencies = [
- "fungible-token",
- "fungible-token-io",
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "horse-races-io",
- "horse-races-state",
- "oracle-randomness",
- "oracle-randomness-io",
-]
-
-[[package]]
-name = "horse-races-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "horse-races-state"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "horse-races-io",
 ]
 
 [[package]]
@@ -4020,38 +3389,6 @@ name = "ident_case"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "b9e0384b61958566e926dc50660321d12159025e767c18e043daf26b70104c39"
-
-[[package]]
-name = "identity"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "hex-literal 0.4.1",
- "identity-io",
- "identity-state",
- "sha2 0.10.8",
- "sp-core 21.0.0",
-]
-
-[[package]]
-name = "identity-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "identity-state"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "identity-io",
-]
 
 [[package]]
 name = "idna"
@@ -4875,141 +4212,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "650eef8c711430f1a879fdd01d4745a7deea475becfb90269c06775983bbf086"
 
 [[package]]
-name = "nft"
-version = "1.1.0"
-dependencies = [
- "gclient",
- "gear-core",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "gtest",
- "nft-io",
- "sp-core 21.0.0",
- "tokio",
-]
-
-[[package]]
-name = "nft-io"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gmeta",
- "gstd",
- "parity-scale-codec",
- "primitive-types",
- "scale-info",
-]
-
-[[package]]
-name = "nft-marketplace"
-version = "1.1.0"
-dependencies = [
- "async-trait",
- "blake2-rfc",
- "gclient",
- "gear-lib-old",
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "nft-marketplace-io",
- "non-fungible-token",
- "non-fungible-token-io",
- "primitive-types",
- "sharded-fungible-token",
- "sharded-fungible-token-io",
- "sharded-fungible-token-logic",
- "sharded-fungible-token-storage",
- "tokio",
-]
-
-[[package]]
-name = "nft-marketplace-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
- "primitive-types",
-]
-
-[[package]]
-name = "nft-marketplace-state"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "nft-marketplace-io",
-]
-
-[[package]]
-name = "nft-master"
-version = "1.1.0"
-dependencies = [
- "gclient",
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "nft-master-io",
- "tokio",
-]
-
-[[package]]
-name = "nft-master-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "nft-master-state"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "nft-master-io",
-]
-
-[[package]]
-name = "nft-pixelboard"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "nft-pixelboard-io",
- "non-fungible-token",
- "non-fungible-token-io",
- "sharded-fungible-token",
- "sharded-fungible-token-io",
- "sharded-fungible-token-logic",
- "sharded-fungible-token-storage",
-]
-
-[[package]]
-name = "nft-pixelboard-io"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "nft-pixelboard-state"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "nft-pixelboard-io",
-]
-
-[[package]]
 name = "nix"
 version = "0.26.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5048,46 +4250,6 @@ checksum = "d273983c5a657a70a3e8f2a01329822f3b8c8172b73826411a55751e404a0a4a"
 dependencies = [
  "memchr",
  "minimal-lexical",
-]
-
-[[package]]
-name = "non-fungible-token"
-version = "1.1.0"
-dependencies = [
- "gclient",
- "gear-lib-derive",
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "gtest",
- "hex-literal 0.4.1",
- "non-fungible-token-io",
- "primitive-types",
- "sp-core 21.0.0",
- "sp-core-hashing 10.0.0",
- "tokio",
-]
-
-[[package]]
-name = "non-fungible-token-io"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gmeta",
- "gstd",
- "primitive-types",
-]
-
-[[package]]
-name = "non-fungible-token-state"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "non-fungible-token-io",
 ]
 
 [[package]]
@@ -5206,43 +4368,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a6a622008b6e321afc04970976f62ee297fdbaa6f95318ca343e3eebb9648441"
 dependencies = [
  "memchr",
-]
-
-[[package]]
-name = "on-chain-nft"
-version = "1.1.0"
-dependencies = [
- "gclient",
- "gear-lib-derive",
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "gtest",
- "on-chain-nft-io",
- "on-chain-nft-state",
- "primitive-types",
- "tokio",
-]
-
-[[package]]
-name = "on-chain-nft-io"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "on-chain-nft-state"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "on-chain-nft-io",
 ]
 
 [[package]]
@@ -5871,15 +4996,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "rand_xoshiro"
-version = "0.6.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f97cdb2a36ed4183de61b2f824cc45c9f1037f28afe0a322e9fff4c108b5aaa"
-dependencies = [
- "rand_core 0.6.4",
-]
-
-[[package]]
 name = "rayon"
 version = "1.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -6020,46 +5136,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "71fe3824f5629716b1589be05dacd749f6aa084c87e00e016714a8cdfccc997c"
 dependencies = [
  "bytecheck",
-]
-
-[[package]]
-name = "rentable-nft"
-version = "1.1.0"
-dependencies = [
- "gclient",
- "gear-lib-derive",
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "gtest",
- "hex-literal 0.4.1",
- "primitive-types",
- "rentable-nft-io",
- "sp-core 21.0.0",
- "sp-core-hashing 10.0.0",
- "tokio",
-]
-
-[[package]]
-name = "rentable-nft-io"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gmeta",
- "gstd",
- "primitive-types",
-]
-
-[[package]]
-name = "rentable-nft-state"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "rentable-nft-io",
 ]
 
 [[package]]
@@ -6231,37 +5307,6 @@ dependencies = [
  "gmeta",
  "gstd",
  "rock-paper-scissors-io",
-]
-
-[[package]]
-name = "roll-the-dice"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "oracle",
- "oracle-io",
- "roll-the-dice-io",
- "roll-the-dice-state",
-]
-
-[[package]]
-name = "roll-the-dice-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "roll-the-dice-state"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "roll-the-dice-io",
 ]
 
 [[package]]
@@ -6889,77 +5934,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "sharded-fungible-token"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "hex-literal 0.4.1",
- "primitive-types",
- "sharded-fungible-token-io",
- "sharded-fungible-token-logic",
- "sharded-fungible-token-logic-io",
- "sharded-fungible-token-storage",
- "sp-core 21.0.0",
- "sp-core-hashing 10.0.0",
-]
-
-[[package]]
-name = "sharded-fungible-token-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
- "primitive-types",
-]
-
-[[package]]
-name = "sharded-fungible-token-logic"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gear-wasm-builder",
- "gstd",
- "hex",
- "primitive-types",
- "sharded-fungible-token-io",
- "sharded-fungible-token-logic-io",
- "sharded-fungible-token-storage-io",
-]
-
-[[package]]
-name = "sharded-fungible-token-logic-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
- "primitive-types",
- "sharded-fungible-token-io",
- "sharded-fungible-token-storage-io",
-]
-
-[[package]]
-name = "sharded-fungible-token-storage"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gstd",
- "primitive-types",
- "sharded-fungible-token-storage-io",
-]
-
-[[package]]
-name = "sharded-fungible-token-storage-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
- "primitive-types",
-]
-
-[[package]]
 name = "sharded-slab"
 version = "0.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7196,8 +6170,8 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "sp-api-proc-macro",
- "sp-core 22.0.0",
- "sp-externalities 0.20.0",
+ "sp-core",
+ "sp-externalities",
  "sp-metadata-ir",
  "sp-runtime",
  "sp-state-machine",
@@ -7231,7 +6205,7 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "serde",
- "sp-core 22.0.0",
+ "sp-core",
  "sp-io",
  "sp-std 9.0.0",
 ]
@@ -7253,44 +6227,11 @@ dependencies = [
 
 [[package]]
 name = "sp-core"
-version = "21.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f18d9e2f67d8661f9729f35347069ac29d92758b59135176799db966947a7336"
-dependencies = [
- "array-bytes 4.2.0",
- "bitflags 1.3.2",
- "blake2",
- "bounded-collections",
- "ed25519-zebra",
- "hash-db",
- "hash256-std-hasher",
- "libsecp256k1",
- "log",
- "merlin 2.0.1",
- "parity-scale-codec",
- "paste",
- "primitive-types",
- "scale-info",
- "schnorrkel 0.9.1",
- "secp256k1",
- "secrecy",
- "sp-core-hashing 9.0.0",
- "sp-debug-derive 8.0.0",
- "sp-externalities 0.19.0",
- "sp-runtime-interface 17.0.0",
- "sp-std 8.0.0",
- "sp-storage 13.0.0",
- "ss58-registry",
- "zeroize",
-]
-
-[[package]]
-name = "sp-core"
 version = "22.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d0de478e02efd547693b33ad02515e09933d5b69b7f3036fa890b92e50fd9dfc"
 dependencies = [
- "array-bytes 6.2.2",
+ "array-bytes",
  "bitflags 1.3.2",
  "blake2",
  "bounded-collections",
@@ -7317,11 +6258,11 @@ dependencies = [
  "secrecy",
  "serde",
  "sp-core-hashing 10.0.0",
- "sp-debug-derive 9.0.0",
- "sp-externalities 0.20.0",
- "sp-runtime-interface 18.0.0",
+ "sp-debug-derive",
+ "sp-externalities",
+ "sp-runtime-interface",
  "sp-std 9.0.0",
- "sp-storage 14.0.0",
+ "sp-storage",
  "ss58-registry",
  "substrate-bip39",
  "thiserror",
@@ -7372,17 +6313,6 @@ dependencies = [
 
 [[package]]
 name = "sp-debug-derive"
-version = "8.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7f531814d2f16995144c74428830ccf7d94ff4a7749632b83ad8199b181140c"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.72",
-]
-
-[[package]]
-name = "sp-debug-derive"
 version = "9.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f12dae7cf6c1e825d13ffd4ce16bd9309db7c539929d0302b4443ed451a9f4e5"
@@ -7394,18 +6324,6 @@ dependencies = [
 
 [[package]]
 name = "sp-externalities"
-version = "0.19.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a0f71c671e01a8ca60da925d43a1b351b69626e268b8837f8371e320cf1dd100"
-dependencies = [
- "environmental",
- "parity-scale-codec",
- "sp-std 8.0.0",
- "sp-storage 13.0.0",
-]
-
-[[package]]
-name = "sp-externalities"
 version = "0.20.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3313e2c5f2523b06062e541dff9961bde88ad5a28861621dc7b7b47a32bb0f7c"
@@ -7413,7 +6331,7 @@ dependencies = [
  "environmental",
  "parity-scale-codec",
  "sp-std 9.0.0",
- "sp-storage 14.0.0",
+ "sp-storage",
 ]
 
 [[package]]
@@ -7445,10 +6363,10 @@ dependencies = [
  "parity-scale-codec",
  "rustversion",
  "secp256k1",
- "sp-core 22.0.0",
- "sp-externalities 0.20.0",
+ "sp-core",
+ "sp-externalities",
  "sp-keystore",
- "sp-runtime-interface 18.0.0",
+ "sp-runtime-interface",
  "sp-state-machine",
  "sp-std 9.0.0",
  "sp-tracing 11.0.0",
@@ -7465,8 +6383,8 @@ checksum = "6eda1d2572a15340927a9f7db75ffe74366b645eaf9212015b4a96ad8e9d4c46"
 dependencies = [
  "parity-scale-codec",
  "parking_lot",
- "sp-core 22.0.0",
- "sp-externalities 0.20.0",
+ "sp-core",
+ "sp-externalities",
  "thiserror",
 ]
 
@@ -7510,29 +6428,10 @@ dependencies = [
  "serde",
  "sp-application-crypto",
  "sp-arithmetic",
- "sp-core 22.0.0",
+ "sp-core",
  "sp-io",
  "sp-std 9.0.0",
  "sp-weights",
-]
-
-[[package]]
-name = "sp-runtime-interface"
-version = "17.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6e676128182f90015e916f806cba635c8141e341e7abbc45d25525472e1bbce8"
-dependencies = [
- "bytes",
- "impl-trait-for-tuples",
- "parity-scale-codec",
- "primitive-types",
- "sp-externalities 0.19.0",
- "sp-runtime-interface-proc-macro 11.0.0",
- "sp-std 8.0.0",
- "sp-storage 13.0.0",
- "sp-tracing 10.0.0",
- "sp-wasm-interface 14.0.0",
- "static_assertions",
 ]
 
 [[package]]
@@ -7545,26 +6444,13 @@ dependencies = [
  "impl-trait-for-tuples",
  "parity-scale-codec",
  "primitive-types",
- "sp-externalities 0.20.0",
- "sp-runtime-interface-proc-macro 12.0.0",
+ "sp-externalities",
+ "sp-runtime-interface-proc-macro",
  "sp-std 9.0.0",
- "sp-storage 14.0.0",
+ "sp-storage",
  "sp-tracing 11.0.0",
- "sp-wasm-interface 15.0.0",
+ "sp-wasm-interface",
  "static_assertions",
-]
-
-[[package]]
-name = "sp-runtime-interface-proc-macro"
-version = "11.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a5d5bd5566fe5633ec48dfa35ab152fd29f8a577c21971e1c6db9f28afb9bbb9"
-dependencies = [
- "Inflector",
- "proc-macro-crate 1.3.1",
- "proc-macro2",
- "quote",
- "syn 2.0.72",
 ]
 
 [[package]]
@@ -7590,7 +6476,7 @@ dependencies = [
  "parity-scale-codec",
  "scale-info",
  "serde",
- "sp-core 22.0.0",
+ "sp-core",
  "sp-runtime",
  "sp-std 9.0.0",
 ]
@@ -7607,8 +6493,8 @@ dependencies = [
  "parking_lot",
  "rand 0.8.5",
  "smallvec",
- "sp-core 22.0.0",
- "sp-externalities 0.20.0",
+ "sp-core",
+ "sp-externalities",
  "sp-panic-handler",
  "sp-std 9.0.0",
  "sp-trie",
@@ -7631,20 +6517,6 @@ checksum = "2d5bbc9339227d1b6a9b7ccd9b2920c818653d40eef1512f1e2e824d72e7a336"
 
 [[package]]
 name = "sp-storage"
-version = "13.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "94294be83f11d4958cfea89ed5798f0b6605f5defc3a996948848458abbcc18e"
-dependencies = [
- "impl-serde",
- "parity-scale-codec",
- "ref-cast",
- "serde",
- "sp-debug-derive 8.0.0",
- "sp-std 8.0.0",
-]
-
-[[package]]
-name = "sp-storage"
 version = "14.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a21245c3a7799ff6d3f1f159b496f9ac72eb32cd6fe68c6f73013155289aa9f1"
@@ -7653,7 +6525,7 @@ dependencies = [
  "parity-scale-codec",
  "ref-cast",
  "serde",
- "sp-debug-derive 9.0.0",
+ "sp-debug-derive",
  "sp-std 9.0.0",
 ]
 
@@ -7699,7 +6571,7 @@ dependencies = [
  "parking_lot",
  "scale-info",
  "schnellru",
- "sp-core 22.0.0",
+ "sp-core",
  "sp-std 9.0.0",
  "thiserror",
  "tracing",
@@ -7739,17 +6611,6 @@ dependencies = [
 
 [[package]]
 name = "sp-wasm-interface"
-version = "14.0.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a19c122609ca5d8246be6386888596320d03c7bc880959eaa2c36bcd5acd6846"
-dependencies = [
- "impl-trait-for-tuples",
- "parity-scale-codec",
- "sp-std 8.0.0",
-]
-
-[[package]]
-name = "sp-wasm-interface"
 version = "15.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d07945f592d2792632e6f030108769757e928a0fd78cf8659c9c210a5e341e55"
@@ -7784,8 +6645,8 @@ dependencies = [
  "serde",
  "smallvec",
  "sp-arithmetic",
- "sp-core 22.0.0",
- "sp-debug-derive 9.0.0",
+ "sp-core",
+ "sp-debug-derive",
  "sp-std 9.0.0",
 ]
 
@@ -7827,39 +6688,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a8f112729512f8e442d81f95a8a7ddf2b7c6b8a1a6f509a95864142b30cab2d3"
 
 [[package]]
-name = "staking"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "gtest",
- "sharded-fungible-token",
- "sharded-fungible-token-io",
- "sharded-fungible-token-logic",
- "sharded-fungible-token-storage",
- "staking-io",
-]
-
-[[package]]
-name = "staking-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "staking-state"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "staking-io",
-]
-
-[[package]]
 name = "static_assertions"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7889,36 +6717,6 @@ name = "strsim"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "73473c0e59e6d5812c5dfe2a064a6444949f089e20eec9a2e5506596494e4623"
-
-[[package]]
-name = "student-nft"
-version = "1.1.0"
-dependencies = [
- "gclient",
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "student-nft-io",
- "tokio",
-]
-
-[[package]]
-name = "student-nft-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "student-nft-state"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "student-nft-io",
-]
 
 [[package]]
 name = "substrate-bip39"
@@ -8038,64 +6836,6 @@ dependencies = [
  "scale-info",
  "sp-core-hashing 9.0.0",
  "thiserror",
-]
-
-[[package]]
-name = "supply-chain"
-version = "1.1.0"
-dependencies = [
- "gclient",
- "gear-lib-old",
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "non-fungible-token",
- "non-fungible-token-io",
- "non-fungible-token-state",
- "sharded-fungible-token",
- "sharded-fungible-token-io",
- "sharded-fungible-token-logic",
- "sharded-fungible-token-storage",
- "supply-chain-deploy",
- "supply-chain-io",
- "supply-chain-state",
- "tokio",
-]
-
-[[package]]
-name = "supply-chain-deploy"
-version = "1.1.0"
-dependencies = [
- "clap",
- "gclient",
- "gstd",
- "non-fungible-token-io",
- "primitive-types",
- "sharded-fungible-token-io",
- "sp-core-hashing 10.0.0",
- "supply-chain",
- "supply-chain-io",
- "supply-chain-state",
- "tokio",
-]
-
-[[package]]
-name = "supply-chain-io"
-version = "1.1.0"
-dependencies = [
- "gear-lib-old",
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "supply-chain-state"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "supply-chain-io",
 ]
 
 [[package]]
@@ -8354,21 +7094,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tic-tac-toe"
-version = "1.1.0"
-dependencies = [
- "gclient",
- "gear-core",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "gtest",
- "hex",
- "tic-tac-toe-io",
- "tokio",
-]
-
-[[package]]
 name = "tic-tac-toe-app"
 version = "1.1.0"
 dependencies = [
@@ -8380,17 +7105,6 @@ dependencies = [
  "schnorrkel 0.10.2",
  "tic-tac-toe-wasm",
  "tokio",
-]
-
-[[package]]
-name = "tic-tac-toe-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
- "parity-scale-codec",
- "primitive-types",
- "scale-info",
 ]
 
 [[package]]
@@ -8825,55 +7539,6 @@ name = "valuable"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "830b7e5d4d90034032940e4ace0d9a9a057e7a45cd94e6c007832e39edb82f6d"
-
-[[package]]
-name = "vara-man"
-version = "1.1.0"
-dependencies = [
- "blake2-rfc",
- "fungible-token",
- "fungible-token-io",
- "gclient",
- "gear-core",
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "hex",
- "sp-core 21.0.0",
- "tokio",
- "vara-man-io",
-]
-
-[[package]]
-name = "vara-man-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
- "parity-scale-codec",
- "scale-info",
-]
-
-[[package]]
-name = "varatube"
-version = "1.1.0"
-dependencies = [
- "fungible-token",
- "fungible-token-io",
- "gear-core",
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "varatube-io",
-]
-
-[[package]]
-name = "varatube-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
 
 [[package]]
 name = "version_check"
@@ -9871,7 +8536,7 @@ dependencies = [
  "gear-core",
  "gstd",
  "gtest",
- "hex-literal 0.3.4",
+ "hex-literal",
  "primitive-types",
  "sails-rs",
  "schnorrkel 0.10.2",
