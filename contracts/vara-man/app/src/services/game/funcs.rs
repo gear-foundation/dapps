@@ -272,7 +272,7 @@ pub async fn finish_single_game(
             (msg_src, value).encode(),
         ]
         .concat();
-        // msg::send_bytes_with_gas(ft_address, request, storage.config.gas_for_mint_fungible_token, 0).expect("Error in sending a message");
+    
         msg::send_bytes_with_gas_for_reply(
             ft_address,
             request,
