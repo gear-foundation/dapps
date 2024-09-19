@@ -2081,6 +2081,31 @@ dependencies = [
 ]
 
 [[package]]
+name = "extended-vft-app"
+version = "0.1.0"
+source = "git+https://github.com/gear-foundation/standards/#9b603453c5bed4feb00cf24a5a0c1d55cea58a40"
+dependencies = [
+ "gear-wasm-builder",
+ "gstd",
+ "log",
+ "parity-scale-codec",
+ "sails-rs",
+ "scale-info",
+ "vft-service",
+]
+
+[[package]]
+name = "extended_vft_wasm"
+version = "0.1.0"
+source = "git+https://github.com/gear-foundation/standards/#9b603453c5bed4feb00cf24a5a0c1d55cea58a40"
+dependencies = [
+ "extended-vft-app",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+]
+
+[[package]]
 name = "fake-simd"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5594,6 +5619,7 @@ dependencies = [
  "futures",
  "gclient",
  "gear-core-errors",
+ "gear-wasm-builder",
  "gprimitives",
  "gstd",
  "gtest",
@@ -7630,6 +7656,7 @@ checksum = "830b7e5d4d90034032940e4ace0d9a9a057e7a45cd94e6c007832e39edb82f6d"
 name = "vara-man-app"
 version = "1.1.0"
 dependencies = [
+ "extended_vft_wasm",
  "gclient",
  "gear-core",
  "gstd",
@@ -7656,6 +7683,18 @@ name = "version_check"
 version = "0.9.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
+
+[[package]]
+name = "vft-service"
+version = "0.1.0"
+source = "git+https://github.com/gear-foundation/standards/#9b603453c5bed4feb00cf24a5a0c1d55cea58a40"
+dependencies = [
+ "gstd",
+ "log",
+ "parity-scale-codec",
+ "sails-rs",
+ "scale-info",
+]
 
 [[package]]
 name = "w3bstreaming"
