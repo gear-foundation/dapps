@@ -1,5 +1,5 @@
 import { useAccount } from '@gear-js/react-hooks';
-import { useEffect, useMemo } from 'react';
+import { useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useMoveTransaction, usePending } from '@/features/game/hooks';
 import { useMultiplayerGame } from './use-multiplayer-game';
@@ -53,22 +53,9 @@ export const useProcessWithMultiplayer = () => {
 
     setPending(true);
 
-    if (game?.admin === account?.decodedAddress) {
-      try {
-        const transaction = await cancelGameMessage();
-        const { response } = await transaction.signAndSend();
-
-        await response();
-      } catch (err) {
-      } finally {
-        setPending(false);
-      }
-
-      return;
-    }
-
     try {
-      const transaction = await leaveGameMessage();
+      const getTransaction = game?.admin === account?.decodedAddress ? cancelGameMessage : leaveGameMessage;
+      const transaction = await getTransaction();
       const { response } = await transaction.signAndSend();
 
       await response();

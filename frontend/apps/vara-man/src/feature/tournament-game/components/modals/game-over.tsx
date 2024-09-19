@@ -89,12 +89,12 @@ export const GameOverModal = ({ tournamentGame }: Props) => {
   return (
     <div>
       <Modal open>
-        <Modal.Content classNameContent='max-w-[600px]'>
+        <Modal.Content classNameContent="max-w-[600px]">
           <div className="flex flex-col justify-center gap-5 text-center">
-            <h3 className="text-3xl font-semibold">Game Over</h3>
+            <h3 className="text-3xl font-semibold lg:text-center text-left">Game Over</h3>
             {winners.length > 1 ? (
               winners.map((winner: { points: string; name: string }[], index: Key | null | undefined) => (
-                <div key={index} className="flex items-center justify-between gap-3 w-4/5 mx-auto">
+                <div key={index} className="flex flex-col lg:flex-row items-center justify-between gap-3 w-4/5 mx-auto">
                   <div>
                     <p className="text-[#555756]">{winner?.[1].name}</p>
                   </div>
@@ -117,17 +117,19 @@ export const GameOverModal = ({ tournamentGame }: Props) => {
             ) : (
               <div>
                 <div>
-                  <p className="text-[#555756] mt-2">{winners?.[0][1].name} wins!</p>
+                  <p className="text-[#555756] lg:mt-2 lg:mb-0 mb-4 text-left lg:text-center">
+                    {winners?.[0][1].name} wins!
+                  </p>
                 </div>
-                <div className="flex">
-                  <div className="bg-[#F7F9FA] w-full p-5 font-medium flex gap-5 justify-center items-center">
+                <div className="flex flex-col lg:flex-row">
+                  <div className="bg-[#F7F9FA] w-full p-5 font-medium flex gap-5 justify-between lg:justify-center items-center">
                     Score:
                     <span className="flex items-center gap-2 font-semibold">
                       <Icons.statsCoins />
                       {winners?.[0][1].points}
                     </span>
                   </div>
-                  <div className="bg-[#F7F9FA] w-full p-5 font-medium flex gap-5 justify-center items-center">
+                  <div className="bg-[#F7F9FA] w-full p-5 font-medium flex gap-5 justify-between lg:justify-center items-center">
                     Winner prize:
                     <span className="flex items-center gap-2 font-semibold">
                       <SpriteIcon name="vara-coin" height={24} width={24} />

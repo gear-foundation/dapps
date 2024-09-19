@@ -117,7 +117,7 @@ export const defineDeadShip = (i: number, board: string[]) => {
 export function checkDeadShip(index: number, board: string[]): boolean {
   const boardSize = 5;
 
-  if (board[index] !== 'BoomShip') {
+  if (!['BoomShip', 'DeadShip'].includes(board[index])) {
     return false;
   }
 
@@ -148,7 +148,7 @@ export function checkDeadShip(index: number, board: string[]): boolean {
         if (board[newIndex] === 'Ship') {
           return false;
         }
-        if (board[newIndex] === 'BoomShip' && !checkNeighbors(newIndex)) {
+        if (['BoomShip', 'DeadShip'].includes(board[newIndex]) && !checkNeighbors(newIndex)) {
           return false;
         }
       }

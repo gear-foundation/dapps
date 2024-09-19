@@ -139,19 +139,22 @@ export function useShips() {
     };
   };
 
-  const updatePlayerBoard = (gameType: GameType, bot_step: number) => {
-    const board = getBoard(gameType, 'player');
+  const updatePlayerBoard = (gameType: GameType, enemy_step: number) => {
+    let board = getBoard(gameType, 'player');
 
     if (!board) {
       return;
     }
 
-    if (board[bot_step] === 'Empty') {
-      board[bot_step] = 'Boom';
+    if (board[enemy_step] === 'Empty') {
+      board[enemy_step] = 'Boom';
     }
 
-    if (board[bot_step] === 'Ship') {
-      board[bot_step] = 'BoomShip';
+    if (board[enemy_step] === 'Ship') {
+      board[enemy_step] = 'BoomShip';
+      if (checkDeadShip(enemy_step, board)) {
+        board = defineDeadShip(enemy_step, board);
+      }
     }
 
     setBoard(gameType, 'player', board);

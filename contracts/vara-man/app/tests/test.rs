@@ -214,7 +214,7 @@ async fn test_play_tournament() {
             "Admin tournament".to_string(),
             Level::Easy,
             180_000,
-            None
+            None,
         )
         .with_value(10_000_000_000_000)
         .send_recv(vara_man_id)

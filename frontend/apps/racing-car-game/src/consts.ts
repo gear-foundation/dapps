@@ -22,4 +22,4 @@ export const SEARCH_PARAMS = {
   MASTER_CONTRACT_ID: 'master',
 };
 
-export const SIGNLESS_ALLOWED_ACTIONS = ['StartGame', 'PlayerMove'];
+export const SIGNLESS_ALLOWED_ACTIONS = ['StartGame', 'Move', 'Skip'];

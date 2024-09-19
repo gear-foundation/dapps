@@ -15,4 +15,3 @@ gear-core.workspace = true
 gclient.workspace = true
 vara-man-wasm = { path = "../wasm" }
 tokio = "1"
-extended_vft_wasm = { git = "https://github.com/gear-foundation/standards/", branch = "gstd-pinned-v1.5.0"}

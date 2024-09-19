@@ -1,6 +1,5 @@
 #![no_std]
 
-use gear_lib::tx_manager::TransactionManagerError;
 use gmeta::{InOut, Metadata, Out};
 use gstd::{errors::Error as GstdError, prelude::*, ActorId};
 
@@ -166,7 +165,6 @@ pub enum Error {
     FuelOrPayloadOverload,
     SessionFull,
     NotEnoughParticipants,
-    TxManager(TransactionManagerError),
     NoSuchGame,
     WrongBid,
     NoSuchPlayer,
@@ -179,11 +177,5 @@ pub enum Error {
 impl From<GstdError> for Error {
     fn from(error: GstdError) -> Self {
         Error::GstdError(error.to_string())
-    }
-}
-
-impl From<TransactionManagerError> for Error {
-    fn from(error: TransactionManagerError) -> Self {
-        Self::TxManager(error)
     }
 }

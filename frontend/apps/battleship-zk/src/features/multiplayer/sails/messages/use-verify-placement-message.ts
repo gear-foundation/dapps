@@ -1,18 +1,33 @@
-import { useProgram } from '@/app/utils/sails';
-import { useMakeTransaction } from '@/app/utils/use-make-transaction';
+import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
+import { usePrepareEzTransactionParams } from '@dapps-frontend/ez-transactions';
+import { useConfigurationQuery, useProgram } from '@/app/utils/sails';
 import { ProofBytes, PublicStartInput } from '@/app/utils/sails/lib/lib';
 
 export const useVerifyPlacementMessage = () => {
-  const gasLimit = 250_000_000_000n;
-  const makeTransaction = useMakeTransaction();
   const program = useProgram();
+  const { prepareTransactionAsync } = usePrepareProgramTransaction({
+    program,
+    serviceName: 'multiple',
+    functionName: 'verifyPlacement',
+  });
+  const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
+  const { data: config } = useConfigurationQuery();
 
   const verifyPlacementMessage = async (proof: ProofBytes, public_input: PublicStartInput, game_id: string) => {
-    if (!program) throw new Error('program does not found');
+    const { sessionForAccount, ...params } = await prepareEzTransactionParams();
+    const { transaction } = await prepareTransactionAsync({
+      args: [proof, public_input, sessionForAccount, game_id],
+      ...params,
+    });
+    const calculatedGas = BigInt(transaction.extrinsic.args[2].toString());
 
-    const transaction = await makeTransaction(program.multiple.verifyPlacement(proof, public_input, null, game_id));
+    // When calculating gas for two players simultaneously,
+    // make sure to account for the gas_for_check_time allocated in the contract for a delayed message,
+    // which will be deducted from the last signing player.
+    const requiredGas = calculatedGas + BigInt(config?.gas_for_check_time || 0);
 
-    return await transaction.withGas(gasLimit);
+    await transaction.withGas(requiredGas);
+    return transaction;
   };
 
   return { verifyPlacementMessage };

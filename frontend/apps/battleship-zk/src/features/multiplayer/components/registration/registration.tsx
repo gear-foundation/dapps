@@ -1,25 +1,28 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import clsx from 'clsx';
-import { useAtom } from 'jotai';
 import { Button } from '@gear-js/vara-ui';
 import { Heading } from '@/components/ui/heading';
 import { Text } from '@/components/ui/text';
 import { VaraIcon } from '@/components/layout/vara-svg';
 import { usePending } from '@/features/game/hooks';
-import { Illustration } from '@/features/game/components';
+import { GameCancelledModal, Illustration } from '@/features/game/components';
 import { getVaraAddress, useAccount, useAlert, useBalanceFormat } from '@gear-js/react-hooks';
 import { decodeAddress } from '@gear-js/api';
 import { stringShorten } from '@polkadot/util';
 import { copyToClipboard } from '@/app/utils/utils';
 import { ReactComponent as FilledCrossSVG } from '../../assets/icons/filled-cross.svg';
-import { useEventGameCancelled, useEventPlayerJoinedGame } from '../../sails/events';
+import {
+  useEventGameCancelled,
+  useEventPlayerJoinedGame,
+  useEventPlayerDeleted,
+  useEventGameLeft,
+} from '../../sails/events';
 import { useCancelGameMessage } from '../../sails/messages';
 import { useMultiplayerGame } from '../../hooks';
 import styles from './Registration.module.scss';
 import { useDeleteGameMessage } from '../../sails/messages/use-delete-player-message';
 import { ROUTES } from '@/app/consts';
-import { gameEndResultAtom } from '../../atoms';
 
 type UserProps = {
   name: string;
@@ -59,12 +62,13 @@ export function Registration() {
   const { cancelGameMessage } = useCancelGameMessage();
   const { deletePlayerMessage } = useDeleteGameMessage();
   const { account } = useAccount();
-  const { game, triggerGame } = useMultiplayerGame();
+  const { game, triggerGame, resetGameState } = useMultiplayerGame();
   const { pending, setPending } = usePending();
-  const [gameEndResult] = useAtom(gameEndResultAtom);
 
   useEventPlayerJoinedGame();
-  useEventGameCancelled();
+  const { isGameCancelled, onGameCancelled } = useEventGameCancelled();
+  const { isPlayerDeleted, onPlayerDeleted } = useEventPlayerDeleted();
+  const { isGameLeft, onGameLeft } = useEventGameLeft();
 
   const startGame = () => {
     navigate(ROUTES.GAME);
@@ -82,7 +86,7 @@ export function Registration() {
       const { response } = await transaction.signAndSend();
 
       await response();
-      await triggerGame();
+      resetGameState();
     } catch (err) {
       console.log(err);
     } finally {
@@ -169,6 +173,17 @@ export function Registration() {
           </div>
         </div>
       )}
+
+      {isPlayerDeleted && (
+        <GameCancelledModal
+          text={'You have been removed from the game by an administrator.'}
+          onClose={onPlayerDeleted}
+        />
+      )}
+      {isGameCancelled && (
+        <GameCancelledModal text={'The game was terminated by the administrator.'} onClose={onGameCancelled} />
+      )}
+      {isGameLeft && <GameCancelledModal text={'Your opponent has left the game.'} onClose={onGameLeft} />}
     </div>
   );
 }

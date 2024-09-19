@@ -32,6 +32,9 @@
   flex-direction: column;
   padding: 0 32px;
   align-items: center;
+   > div:first-child {
+    margin-bottom: 32px;
+  }
 }
 
 .startGameButton {

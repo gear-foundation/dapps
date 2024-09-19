@@ -272,7 +272,7 @@ pub async fn finish_single_game(
             (msg_src, value).encode(),
         ]
         .concat();
-    
+
         msg::send_bytes_with_gas_for_reply(
             ft_address,
             request,
@@ -383,7 +383,7 @@ pub fn finish_tournament(
         });
     }
     game.stage = Stage::Finished(winners.clone());
-    
+
     let participants: Vec<(ActorId, Player)> = game.participants.clone().into_iter().collect();
 
     Ok(Event::GameFinished {

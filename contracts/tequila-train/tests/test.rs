@@ -1,5 +1,5 @@
 use gstd::{ActorId, Encode};
-use gtest::{Program, System};
+use gtest::{Log, Program, System};
 use tequila_train_io::*;
 
 pub const PLAYERS: [u64; 3] = [10, 11, 12];
@@ -241,7 +241,12 @@ fn cancel_register() {
     assert_eq!(state.games[0].1.initial_players.len(), 2);
 
     program.cancel_register(PLAYERS[1], PLAYERS[0].into(), None);
-    system.claim_value_from_mailbox(PLAYERS[1]);
+
+    let log = Log::builder().dest(PLAYERS[1]);
+    let mailbox = system.get_mailbox(PLAYERS[1]);
+    assert!(mailbox.contains(&log));
+    assert!(mailbox.claim_value(log).is_ok());
+
     let balance = system.balance_of(PLAYERS[1]);
     assert_eq!(balance, bid);
 
@@ -283,7 +288,12 @@ fn delete_player() {
     assert_eq!(state.games[0].1.initial_players.len(), 2);
 
     program.delete_player(PLAYERS[0], PLAYERS[1].into(), None);
-    system.claim_value_from_mailbox(PLAYERS[1]);
+
+    let log = Log::builder().dest(PLAYERS[1]);
+    let mailbox = system.get_mailbox(PLAYERS[1]);
+    assert!(mailbox.contains(&log));
+    assert!(mailbox.claim_value(log).is_ok());
+
     let balance = system.balance_of(PLAYERS[1]);
     assert_eq!(balance, bid);
 
@@ -325,10 +335,20 @@ fn cancel_game() {
     assert!(!state.games.is_empty());
 
     program.cancel_game(PLAYERS[0], None);
-    system.claim_value_from_mailbox(PLAYERS[1]);
+
+    let log = Log::builder().dest(PLAYERS[1]);
+    let mailbox = system.get_mailbox(PLAYERS[1]);
+    assert!(mailbox.contains(&log));
+    assert!(mailbox.claim_value(log).is_ok());
+
     let balance = system.balance_of(PLAYERS[1]);
     assert_eq!(balance, bid);
-    system.claim_value_from_mailbox(PLAYERS[0]);
+
+    let log = Log::builder().dest(PLAYERS[0]);
+    let mailbox = system.get_mailbox(PLAYERS[0]);
+    assert!(mailbox.contains(&log));
+    assert!(mailbox.claim_value(log).is_ok());
+
     let balance = system.balance_of(PLAYERS[0]);
     assert_eq!(balance, bid);
 
@@ -362,14 +382,24 @@ fn failures_test() {
     system.mint_to(PLAYERS[0], 2 * bid);
     program.create_game(PLAYERS[0], bid, None);
     program.create_game(PLAYERS[0], bid, Some(Error::SeveralGames));
-    system.claim_value_from_mailbox(PLAYERS[0]);
+
+    let log = Log::builder().dest(PLAYERS[0]);
+    let mailbox = system.get_mailbox(PLAYERS[0]);
+    assert!(mailbox.contains(&log));
+    assert!(mailbox.claim_value(log).is_ok());
+
     assert_eq!(system.balance_of(PLAYERS[0]), bid);
 
     // You can't play one game and be an admin in another game
     system.mint_to(PLAYERS[1], 2 * bid);
     program.register(PLAYERS[1], bid, PLAYERS[0].into(), None);
     program.create_game(PLAYERS[1], bid, Some(Error::SeveralGames));
-    system.claim_value_from_mailbox(PLAYERS[1]);
+
+    let log = Log::builder().dest(PLAYERS[1]);
+    let mailbox = system.get_mailbox(PLAYERS[1]);
+    assert!(mailbox.contains(&log));
+    assert!(mailbox.claim_value(log).is_ok());
+
     assert_eq!(system.balance_of(PLAYERS[1]), bid);
 
     // A non-existent game id has been entered
@@ -380,7 +410,12 @@ fn failures_test() {
         PLAYERS[1].into(),
         Some(Error::GameDoesNotExist),
     );
-    system.claim_value_from_mailbox(PLAYERS[2]);
+
+    let log = Log::builder().dest(PLAYERS[2]);
+    let mailbox = system.get_mailbox(PLAYERS[2]);
+    assert!(mailbox.contains(&log));
+    assert!(mailbox.claim_value(log).is_ok());
+
     assert_eq!(system.balance_of(PLAYERS[2]), 2 * bid);
     // Wrong bid
     program.register(
@@ -389,7 +424,12 @@ fn failures_test() {
         PLAYERS[0].into(),
         Some(Error::WrongBid),
     );
-    system.claim_value_from_mailbox(PLAYERS[2]);
+
+    let log = Log::builder().dest(PLAYERS[2]);
+    let mailbox = system.get_mailbox(PLAYERS[2]);
+    assert!(mailbox.contains(&log));
+    assert!(mailbox.claim_value(log).is_ok());
+
     assert_eq!(system.balance_of(PLAYERS[2]), 2 * bid);
     // Already registered
     program.register(
@@ -398,7 +438,12 @@ fn failures_test() {
         PLAYERS[0].into(),
         Some(Error::SeveralGames),
     );
-    system.claim_value_from_mailbox(PLAYERS[1]);
+
+    let log = Log::builder().dest(PLAYERS[1]);
+    let mailbox = system.get_mailbox(PLAYERS[1]);
+    assert!(mailbox.contains(&log));
+    assert!(mailbox.claim_value(log).is_ok());
+
     assert_eq!(system.balance_of(PLAYERS[1]), bid);
     // Registered In Another Game
     program.create_game(PLAYERS[2], bid, None);
@@ -408,7 +453,12 @@ fn failures_test() {
         PLAYERS[2].into(),
         Some(Error::SeveralGames),
     );
-    system.claim_value_from_mailbox(PLAYERS[1]);
+
+    let log = Log::builder().dest(PLAYERS[1]);
+    let mailbox = system.get_mailbox(PLAYERS[1]);
+    assert!(mailbox.contains(&log));
+    assert!(mailbox.claim_value(log).is_ok());
+
     assert_eq!(system.balance_of(PLAYERS[1]), bid);
 
     // Admin try cancel register
