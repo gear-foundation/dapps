@@ -1,9 +1,7 @@
 use gtest::{Log, Program, System};
 use sails_rs::calls::*;
 use sails_rs::gtest::calls::*;
-use sails_rs::ActorId;
-use sails_rs::Encode;
-use sails_rs::U256;
+use sails_rs::{ActorId, Encode, U256};
 use vara_man_wasm::{
     traits::{VaraMan, VaraManFactory},
     Config, Level, Status, VaraMan as VaraManClient, VaraManFactory as Factory,
