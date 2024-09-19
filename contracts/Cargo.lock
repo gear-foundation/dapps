@@ -10856,24 +10856,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "830b7e5d4d90034032940e4ace0d9a9a057e7a45cd94e6c007832e39edb82f6d"
 
 [[package]]
-name = "vara-man"
-version = "1.1.0"
-dependencies = [
- "blake2-rfc",
- "fungible-token",
- "fungible-token-io",
- "gclient 1.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "gear-core 1.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "gear-wasm-builder 1.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "gstd 1.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "gtest 1.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "hex",
- "sp-core 21.0.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "tokio",
- "vara-man-io",
-]
-
-[[package]]
 name = "vara-man-app"
 version = "1.1.0"
 dependencies = [
@@ -10886,16 +10868,6 @@ dependencies = [
  "schnorrkel 0.10.2",
  "tokio",
  "vara-man-wasm",
-]
-
-[[package]]
-name = "vara-man-io"
-version = "1.1.0"
-dependencies = [
- "gmeta 1.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "gstd 1.5.0 (registry+https://github.com/rust-lang/crates.io-index)",
- "parity-scale-codec",
- "scale-info",
 ]
 
 [[package]]

@@ -92,8 +92,7 @@ members = [
     "tamagotchi-battle/state",
     "tequila-train",
     "tic-tac-toe",
-    "vara-man",
-    "vara-man-sails/wasm",
+    "vara-man/wasm",
     "varatube",
     "w3bstreaming",
 
@@ -207,7 +206,6 @@ tamagotchi-io.path = "tamagotchi/io"
 tamagotchi-battle-io.path = "tamagotchi-battle/io"
 tequila-train-io.path = "tequila-train/io"
 tic-tac-toe-io.path = "tic-tac-toe/io"
-vara-man-io.path = "vara-man/io"
 varatube-io.path = "varatube/io"
 w3bstreaming-io.path = "w3bstreaming/io"
 
