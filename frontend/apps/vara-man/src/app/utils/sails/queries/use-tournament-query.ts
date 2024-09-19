@@ -11,7 +11,7 @@ export const useTournamentQuery = () => {
     functionName: 'getTournament',
     args: [account?.decodedAddress!],
     query: { enabled: account ? undefined : false },
-    watch: true,
+    watch: account ? true : false,
   });
 
   return { tournament: data?.[0], isFetching, refetch, error };

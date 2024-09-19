@@ -11,7 +11,7 @@ export const useAllStateQuery = () => {
     functionName: 'all',
     args: [],
     query: { enabled: account ? undefined : false },
-    watch: true,
+    watch: account ? true : false,
   });
 
   return { allState: data, isFetching, refetch, error };
