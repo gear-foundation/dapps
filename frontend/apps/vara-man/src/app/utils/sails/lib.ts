@@ -16,7 +16,6 @@ export interface Config {
   points_per_silver_coin_hard: number | string | bigint;
   gas_for_finish_tournament: number | string | bigint;
   gas_for_mint_fungible_token: number | string | bigint;
-  time_for_single_round: number;
   gas_to_delete_session: number | string | bigint;
   minimum_session_duration_ms: number | string | bigint;
   s_per_block: number | string | bigint;
@@ -100,7 +99,6 @@ export class Program {
         points_per_silver_coin_hard: 'u128',
         gas_for_finish_tournament: 'u64',
         gas_for_mint_fungible_token: 'u64',
-        time_for_single_round: 'u32',
         gas_to_delete_session: 'u64',
         minimum_session_duration_ms: 'u64',
         s_per_block: 'u64',
