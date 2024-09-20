@@ -21,7 +21,7 @@ const Component = () => {
   const { tournamentGame } = useGame();
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT);
 
-  const isHeader = pathname === '/game' || (tournamentGame && tournamentGame[0].stage !== 'Registration');
+  const isHeader = pathname === '/game' || (tournamentGame && 'registration' in tournamentGame.stage);
 
   return (
     <div className="flex flex-col min-h-screen overflow-hidden">

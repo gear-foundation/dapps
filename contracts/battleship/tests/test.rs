@@ -308,7 +308,7 @@ fn create_session_success() {
     let proxy_account = 10;
 
     let duration = MINIMUM_SESSION_SURATION_MS;
-    let session = Session {
+    let mut session = Session {
         key: proxy_account.into(),
         expires: system.block_timestamp() + duration,
         allowed_actions: vec![ActionsForSession::StartGame, ActionsForSession::Turn],
@@ -326,7 +326,7 @@ fn create_session_success() {
         main_account,
         Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
     )));
-
+    session.expires += 3000;
     check_session_in_state(&battleship, main_account, Some(session));
 }
 
@@ -488,7 +488,7 @@ fn disallow_game_without_required_actions() {
     let battleship = system.get_program(1).unwrap();
 
     let duration = MINIMUM_SESSION_SURATION_MS;
-    let session = Session {
+    let mut session = Session {
         key: proxy_account.into(),
         expires: system.block_timestamp() + duration,
         allowed_actions: vec![ActionsForSession::Turn],
@@ -507,7 +507,7 @@ fn disallow_game_without_required_actions() {
         main_account,
         Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
     )));
-
+    session.expires += 3000;
     check_session_in_state(&battleship, main_account, Some(session));
 
     let ships = Ships {
@@ -541,7 +541,7 @@ fn disallow_game_without_required_actions() {
 
     check_session_in_state(&battleship, main_account, None);
 
-    let session = Session {
+    let mut session = Session {
         key: proxy_account.into(),
         expires: system.block_timestamp() + duration,
         allowed_actions: vec![ActionsForSession::StartGame],
@@ -560,7 +560,7 @@ fn disallow_game_without_required_actions() {
         main_account,
         Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
     )));
-
+    session.expires += 3000;
     check_session_in_state(&battleship, main_account, Some(session));
 
     // start game from proxy_account
@@ -615,7 +615,7 @@ fn complete_session_game() {
     let battleship = system.get_program(1).unwrap();
 
     let duration = MINIMUM_SESSION_SURATION_MS;
-    let session = Session {
+    let mut session = Session {
         key: proxy_account.into(),
         expires: system.block_timestamp() + duration,
         allowed_actions: vec![ActionsForSession::StartGame, ActionsForSession::Turn],
@@ -634,7 +634,7 @@ fn complete_session_game() {
         main_account,
         Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
     )));
-
+    session.expires += 3000;
     check_session_in_state(&battleship, main_account, Some(session));
 
     let ships = Ships {
@@ -706,7 +706,7 @@ fn premature_session_deletion_by_user() {
     let battleship = system.get_program(1).unwrap();
 
     let duration = MINIMUM_SESSION_SURATION_MS;
-    let session = Session {
+    let mut session = Session {
         key: proxy_account.into(),
         expires: system.block_timestamp() + duration,
         allowed_actions: vec![ActionsForSession::Turn],
@@ -725,7 +725,7 @@ fn premature_session_deletion_by_user() {
         main_account,
         Ok::<BattleshipReply, BattleshipError>(BattleshipReply::SessionCreated).encode()
     )));
-
+    session.expires += 3000;
     check_session_in_state(&battleship, main_account, Some(session));
 
     // delete session

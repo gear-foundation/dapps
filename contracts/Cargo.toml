@@ -3,87 +3,24 @@ resolver = "2"
 # Keep in the lexicographic order!
 # Remove a member if it's used as a dependency in the workspace.
 members = [
-    "auto-changed-nft",
-    "auto-changed-nft/state",
     "battleship",
     "car-races",
-    "concert",
-    "crowdsale",
-    "crowdsale/state",
-    "dao",
-    "dao/state",
-    "dao-light",
-    "dao-light/state",
-    "decentralized-git",
-    "decentralized-git/master",
-    "decentralized-git/master/state",
-    "decentralized-git/state",
-    "decentralized-git/user",
-    "decentralized-git/user/state",
-    "dex",
-    "dex/factory",
-    "dex/factory/state",
-    "dex/state",
-    "dutch-auction",
-    "dutch-auction/state",
-    "dynamic-nft",
-    "dynamic-nft/state",
-    "escrow",
-    "escrow/state",
-    "feeds",
-    "feeds/channel",
-    "feeds/channel/state",
-    "feeds/state",
-    "fungible-token",
-    "fungible-token/state",
     "galactic-express",
-    "game-of-chance",
-    "horse-races",
-    "horse-races/state",
-    "identity",
-    "identity/state",
     "multi-token",
     "multisig-wallet",
     "multisig-wallet/state",
-    "nft",
-    "nft-marketplace",
-    "nft-marketplace/state",
-    "nft-master",
-    "nft-master/state",
-    "nft-pixelboard",
-    "nft-pixelboard/state",
-    "non-fungible-token",
-    "non-fungible-token/state",
-    "on-chain-nft",
-    "on-chain-nft/state",
     "oracle",
     "oracle/state",
     "oracle/randomness",
     "oracle/randomness/state",
     "ping",
     "ping/state",
-    "rentable-nft",
-    "rentable-nft/state",
     "rmrk",
     "rmrk/catalog",
     "rmrk/resource",
     "rmrk/state",
     "rock-paper-scissors",
     "rock-paper-scissors/state",
-    "roll-the-dice",
-    "roll-the-dice/state",
-    "sharded-fungible-token",
-    "sharded-fungible-token/logic",
-    "sharded-fungible-token/storage",
-    "sharded-multi-token",
-    "sharded-multi-token/logic",
-    "sharded-multi-token/storage",
-    "staking",
-    "staking/state",
-    "student-nft",
-    "student-nft/state",
-    "supply-chain",
-    "supply-chain/state",
     "syndote",
     "syndote/player",
     "tamagotchi",
@@ -91,16 +28,11 @@ members = [
     "tamagotchi-battle",
     "tamagotchi-battle/state",
     "tequila-train",
-    "tic-tac-toe/gstd",
-    "tic-tac-toe/sails/wasm",
-    "vara-man",
-    "varatube",
+    "tic-tac-toe/wasm",
     "w3bstreaming",
-    "zk-battleship/app",
     "zk-battleship/wasm",
     # Noncontract crates
 
-    "gear-lib",
     "xtask",
 ]
 
@@ -118,108 +50,44 @@ publish = false
 # Keep in the lexicographic order!
 
 battleship-bot.path = "battleship/bot"
-dex-factory.path = "dex/factory"
-feeds-channel.path = "feeds/channel"
-fungible-token.path = "fungible-token"
-multi-token.path = "multi-token"
-nft.path = "nft"
-non-fungible-token.path = "non-fungible-token"
 oracle.path = "oracle"
 oracle-randomness.path = "oracle/randomness"
 rmrk-catalog.path = "rmrk/catalog"
-sharded-fungible-token.path = "sharded-fungible-token"
-sharded-fungible-token-logic.path = "sharded-fungible-token/logic"
-sharded-fungible-token-storage.path = "sharded-fungible-token/storage"
-sharded-multi-token-logic.path = "sharded-multi-token/logic"
-sharded-multi-token-storage.path = "sharded-multi-token/storage"
-supply-chain.path = "supply-chain"
 syndote-player.path = "syndote/player"
 tamagotchi.path = "tamagotchi"
 
 # Local states
 # Keep in the lexicographic order!
 
-crowdsale-state.path = "crowdsale/state"
-dex-factory-state.path = "dex/factory/state"
-dex-state.path = "dex/state"
-horse-races-state.path = "horse-races/state"
-identity-state.path = "identity/state"
-non-fungible-token-state.path = "non-fungible-token/state"
-on-chain-nft-state.path = "on-chain-nft/state"
 rmrk-state.path = "rmrk/state"
-roll-the-dice-state.path = "roll-the-dice/state"
-supply-chain-state.path = "supply-chain/state"
 tamagotchi-battle-state.path = "tamagotchi-battle/state"
 
 # Local IO-crates
 # Keep in the lexicographic order!
 
-auto-changed-nft-io.path = "auto-changed-nft/io"
 battleship-io.path = "battleship/io"
 car-races-io.path = "car-races/io"
-concert-io.path = "concert/io"
-crowdsale-io.path = "crowdsale/io"
-dao-io.path = "dao/io"
-dao-light-io.path = "dao-light/io"
-decentralized-git-io.path = "decentralized-git/io"
-decentralized-git-master-io.path = "decentralized-git/master/io"
-decentralized-git-user-io.path = "decentralized-git/user/io"
-dex-factory-io.path = "dex/factory/io"
-dex-io.path = "dex/io"
-dutch-auction-io.path = "dutch-auction/io"
-dynamic-nft-io.path = "dynamic-nft/io"
-escrow-io.path = "escrow/io"
-feeds-channel-io.path = "feeds/channel/io"
-feeds-io.path = "feeds/io"
-fungible-token-io.path = "fungible-token/io"
 galactic-express-io.path = "galactic-express/io"
-game-of-chance-io.path = "game-of-chance/io"
-horse-races-io.path = "horse-races/io"
-identity-io.path = "identity/io"
 multi-token-io.path = "multi-token/io"
 multisig-wallet-io.path = "multisig-wallet/io"
-nft-io.path = "nft/io"
-nft-marketplace-io.path = "nft-marketplace/io"
-nft-master-io.path = "nft-master/io"
-nft-pixelboard-io.path = "nft-pixelboard/io"
-non-fungible-token-io.path = "non-fungible-token/io"
-on-chain-nft-io.path = "on-chain-nft/io"
-oracle-io.path = "oracle/io"
-oracle-randomness-io.path = "oracle/randomness/io"
 ping-io.path = "ping/io"
-rentable-nft-io.path = "rentable-nft/io"
 rmrk-catalog-io.path = "rmrk/catalog/io"
 rmrk-io.path = "rmrk/io"
 rmrk-resource-io.path = "rmrk/resource/io"
 rock-paper-scissors-io.path = "rock-paper-scissors/io"
-roll-the-dice-io.path = "roll-the-dice/io"
-sharded-fungible-token-io.path = "sharded-fungible-token/io"
-sharded-fungible-token-logic-io.path = "sharded-fungible-token/logic/io"
-sharded-fungible-token-storage-io.path = "sharded-fungible-token/storage/io"
-sharded-multi-token-io.path = "sharded-multi-token/io"
-sharded-multi-token-logic-io.path = "sharded-multi-token/logic/io"
-sharded-multi-token-storage-io.path = "sharded-multi-token/storage/io"
-staking-io.path = "staking/io"
-student-nft-io.path = "student-nft/io"
-supply-chain-io.path = "supply-chain/io"
+oracle-io.path = "oracle/io"
+oracle-randomness-io.path = "oracle/randomness/io"
 syndote-io.path = "syndote/io"
 syndote-player-io.path = "syndote/player/io"
 tamagotchi-io.path = "tamagotchi/io"
 tamagotchi-battle-io.path = "tamagotchi-battle/io"
 tequila-train-io.path = "tequila-train/io"
 tic-tac-toe-io.path = "tic-tac-toe/gstd/io"
-vara-man-io.path = "vara-man/io"
-varatube-io.path = "varatube/io"
 w3bstreaming-io.path = "w3bstreaming/io"
 
 # Local libraries
 # Keep in the lexicographic order!
-
-gear-lib.path = "gear-lib"
-gear-lib-old.path = "gear-lib-old"
-gear-lib-derive.path = "gear-lib-old/derive"
 rmrk-types.path = "rmrk/types"
-supply-chain-deploy.path = "supply-chain/deploy"
 
 # Gear
 

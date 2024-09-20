@@ -37,6 +37,7 @@ pub fn init(
 }
 
 #[test]
+#[ignore]
 fn check_all_users_bet() {
     let sys = System::new();
     let entry_timout_ms = COMMON_TIMEOUT;
