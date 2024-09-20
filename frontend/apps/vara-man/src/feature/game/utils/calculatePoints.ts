@@ -1,16 +1,13 @@
-import { IGameCoins, IGameConfig, IGameLevel } from '@/app/types/game'
+import { IGameCoins } from '@/app/types/game';
+import { Config, Level } from '@/app/utils';
 
-export const calculatePoints = (
-	coins: IGameCoins,
-	configState: IGameConfig,
-	level: 'Easy' | 'Medium' | 'Hard'
-) => {
-	const pointsPerGoldCoin = configState[`pointsPerGoldCoin${level}`]
-	const pointsPerSilverCoin = configState[`pointsPerSilverCoin${level}`]
+export const calculatePoints = (coins: IGameCoins, configState: Config, level: Level) => {
+  const loverCaseLevel = level.toLowerCase() as 'easy' | 'medium' | 'hard';
+  const pointsPerGoldCoin = configState[`points_per_gold_coin_${loverCaseLevel}`];
+  const pointsPerSilverCoin = configState[`points_per_silver_coin_${loverCaseLevel}`];
 
-	const points =
-		Math.floor(Number(pointsPerGoldCoin) * coins.gold) +
-		Math.floor(Number(pointsPerSilverCoin) * coins.silver)
+  const points =
+    Math.floor(Number(pointsPerGoldCoin) * coins.gold) + Math.floor(Number(pointsPerSilverCoin) * coins.silver);
 
-	return points
-}
+  return points;
+};
