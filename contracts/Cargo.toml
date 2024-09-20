@@ -29,6 +29,7 @@ members = [
     "tamagotchi-battle/state",
     "tequila-train",
     "tic-tac-toe/wasm",
+    "vara-man/wasm",
     "w3bstreaming",
     "zk-battleship/wasm",
     # Noncontract crates
@@ -82,7 +83,6 @@ syndote-player-io.path = "syndote/player/io"
 tamagotchi-io.path = "tamagotchi/io"
 tamagotchi-battle-io.path = "tamagotchi-battle/io"
 tequila-train-io.path = "tequila-train/io"
-tic-tac-toe-io.path = "tic-tac-toe/gstd/io"
 w3bstreaming-io.path = "w3bstreaming/io"
 
 # Local libraries
@@ -100,7 +100,6 @@ gear-core = "1.5.0"
 sails-idl-gen = "0.3.0"
 sails-rs = "0.3.0"
 sails-client-gen = "0.3.0"
-
 
 # External
 

@@ -438,11 +438,9 @@ extern fn init() {
 
 fn process_init() -> Result<(), Error> {
     unsafe {
-        STATE = Some(
-            Contract {
-                ..Default::default()
-            },
-        );
+        STATE = Some(Contract {
+            ..Default::default()
+        });
     }
 
     Ok(())
