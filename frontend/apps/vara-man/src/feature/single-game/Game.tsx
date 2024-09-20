@@ -1,16 +1,15 @@
 import { useRef, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useAtom } from 'jotai';
-import { IGameLevel, TileMap } from '@/app/types/game';
+import { TileMap } from '@/app/types/game';
 import { GameOverModal } from './components/modals/game-over';
-import { useGameMessage } from '@/app/hooks/use-game';
 import { useApp } from '@/app/context/ctx-app';
 import { findMapLevel } from '../game/utils/findMapLevel';
 import { GameEngine } from '../game/models/Game';
 import { COINS, GAME_OVER } from '../game/consts';
-import { useCheckBalance } from '@dapps-frontend/hooks';
 import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 import useOnScreen from '@/hooks/use-on-screen';
+import { Level, useFinishSingleGameMessage } from '@/app/utils';
 
 import { GameCanvas } from '../game/components/game-canvas/game-canvas';
 
@@ -20,13 +19,9 @@ export const Game = () => {
   const [gameOver, setGameOver] = useAtom(GAME_OVER);
   const { setIsPending } = useApp();
 
-  const { gasless, signless } = useEzTransactions();
+  const { gasless } = useEzTransactions();
 
-  const handleMessage = useGameMessage();
-  const { checkBalance } = useCheckBalance({
-    signlessPairVoucherId: signless.voucher?.id,
-    gaslessVoucherId: gasless.voucherId,
-  });
+  const { finishSingleGameMessage } = useFinishSingleGameMessage();
 
   const incrementCoins = (coinType: 'silver' | 'gold') => {
     setCoins((prevCoins) => ({
@@ -35,7 +30,7 @@ export const Game = () => {
     }));
   };
 
-  const level = searchParams.get('level') as IGameLevel;
+  const level = searchParams.get('level') as Level;
 
   const fogCanvasRef = useRef<HTMLCanvasElement>(null);
   const isVisibleFog = useOnScreen(fogCanvasRef);
@@ -43,8 +38,6 @@ export const Game = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const gameInstanceRef = useRef<GameEngine | null>(null);
   const mapRef = useRef<TileMap | null>(null);
-
-  const gasLimit = 120000000000;
 
   useEffect(() => {
     if (
@@ -87,23 +80,12 @@ export const Game = () => {
     gameInstanceRef.current?.updateGameOver(gameOver);
 
     if (gameOver && (coins.gold > 0 || coins.silver > 0) && !gasless.isLoading) {
-      checkBalance(gasLimit, () => {
-        setIsPending(true);
-        handleMessage({
-          payload: {
-            FinishSingleGame: {
-              gold_coins: coins.gold,
-              silver_coins: coins.silver,
-            },
-          },
-          voucherId: gasless.voucherId,
-          gasLimit,
-          onSuccess: () => setIsPending(false),
-          onError: () => setIsPending(false),
-        });
+      setIsPending(true);
+      finishSingleGameMessage(coins.gold, coins.silver, level, {
+        onSuccess: () => setIsPending(false),
+        onError: () => setIsPending(false),
       });
     }
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [gameOver, gasless]);
 

@@ -7,7 +7,7 @@ import { useGame } from '@/app/context/ctx-game';
 import { useApp } from '@/app/context/ctx-app';
 
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { IGameLevel } from '@/app/types/game';
+import { Level } from '@/app/utils';
 import { GAME_OVER, COINS } from '@/feature/game/consts';
 import { calculatePoints } from '@/feature/game/utils/calculatePoints';
 import { Modal } from '@/components/ui/modal/modal2';
@@ -21,7 +21,7 @@ export const GameOverModal = ({ restartGame }: { restartGame: () => void }) => {
 
   const [coins, setCoins] = useAtom(COINS);
   const { configState } = useGame();
-  const currentLevel = searchParams.get('level') as IGameLevel;
+  const currentLevel = searchParams.get('level') as Level;
 
   const score = configState && calculatePoints(coins, configState, currentLevel);
 
