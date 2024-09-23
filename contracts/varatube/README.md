@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -r -p "varatube*"
+cargo b -r -p "varatube-wasm"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -r -p "varatube*"
+cargo t -r -p "varatube-app"
 ```

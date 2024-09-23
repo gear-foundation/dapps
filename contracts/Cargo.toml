@@ -28,8 +28,7 @@ members = [
     "tamagotchi-battle",
     "tamagotchi-battle/state",
     "tequila-train",
-    "varatube",
-    "varatube-sails/wasm",
+    "varatube/wasm",
     "tic-tac-toe/wasm",
     "vara-man/wasm",
     "w3bstreaming",
@@ -99,10 +98,6 @@ gmeta = "1.5.0"
 gclient = "1.5.0"
 gtest = "1.5.0"
 gear-core = "1.5.0"
-sails-idl-gen = "0.3.0"
-sails-rs = "0.3.0"
-sails-client-gen = "0.3.0"
-
 sails-idl-gen = "0.3.0"
 sails-rs = "0.3.0"
 sails-client-gen = "0.3.0"
