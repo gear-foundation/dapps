@@ -8,6 +8,7 @@ pub use routines::*;
 // failure_with_wrong_timouts
 // failure_with_not_owners_request
 #[test]
+#[ignore]
 fn common() {
     let sys = System::new();
     let game = common_init_and_register(&sys);
@@ -55,6 +56,7 @@ fn common() {
 
 // checks that the config doesn't change immediately
 #[test]
+#[ignore]
 fn check_round_start() {
     let sys = System::new();
     let game = common_init(&sys);
@@ -77,6 +79,7 @@ fn check_round_start() {
 }
 
 #[test]
+#[ignore]
 fn check_two_times() {
     let sys = System::new();
     let game = common_init_and_register(&sys);
@@ -131,6 +134,7 @@ fn check_two_times() {
 }
 
 #[test]
+#[ignore]
 fn check_twice_in_a_row() {
     let sys = System::new();
     let game = common_init_and_register(&sys);

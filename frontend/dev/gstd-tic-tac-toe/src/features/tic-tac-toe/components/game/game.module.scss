@@ -1,0 +1,90 @@
+@use '@/utils' as *;
+
+.game {
+  display: grid;
+  align-items: center;
+  width: 100%;
+  max-width: 940px;
+  margin: auto;
+
+  @media screen and (min-width: 768px) {
+    grid-template-columns: minmax(auto, 400px) minmax(auto, 430px);
+    grid-template-areas: '.. game' '.. game' 'heading game' 'text game' 'actions game' '.. game' '.. game';
+    grid-gap: 24px 60px;
+    padding: 0 20px;
+  }
+
+  @media screen and (max-width: 767px) {
+    grid-template-areas: 'heading' 'text' 'game' 'actions';
+    grid-template-columns: 1fr;
+    grid-gap: 16px;
+    padding: 0 16px;
+  }
+
+  > * {
+    grid-column: 1 / 2;
+  }
+
+  &__heading {
+    grid-area: heading;
+
+    @media screen and (max-width: 767px) {
+      justify-self: center;
+      font-size: 32px !important;
+      font-weight: bold !important;
+      line-height: 1 !important;
+      text-align: center;
+    }
+
+    .loose {
+      --color-to: #cfcfcf;
+    }
+  }
+
+  &__text {
+    grid-area: text;
+
+    @media screen and (max-width: 767px) {
+      justify-self: center;
+    }
+  }
+
+  &__actions {
+    grid-area: actions;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-gap: 16px;
+
+    @media screen and (max-width: 767px) {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  &__play {
+    button {
+      width: 100%;
+      margin-bottom: 24px;
+    }
+  }
+
+  &__countdown {
+    grid-column: 1 / -1;
+  }
+
+  &__field {
+    grid-area: game;
+    position: relative;
+
+    @media screen and (max-width: 767px) {
+      padding: 16px 0;
+    }
+  }
+}
+
+.choose {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

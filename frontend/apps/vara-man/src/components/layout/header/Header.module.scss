@@ -1,65 +1,43 @@
 .header {
-  height: 100px;
-  width: 100%;
-  box-sizing: border-box;
-  background: transparent;
-}
+  position: relative;
+  z-index: 10;
+  padding: 20px;
 
-.container {
-  height: 100%;
-  padding: 20px 0;
-  max-width: 1200px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: auto;
-}
-
-.walletBalance {
-  color: #000000;
-}
-
-.menuIcon {
-  & svg path {
-    fill: #000000;
-    stroke: #000000;
+  &__container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0;
   }
-}
 
-.vara-logo {
-  margin-right: 22px;
-}
-
-.headerContent {
-  display: flex;
-  align-items: center;
-  gap: 48px;
-}
-
-.cancelGameButton {
-  background: #f24a4a12;
-  color: #f24a4a;
-  border-radius: 0;
-
-  svg path {
-    fill: #f24a4a;
-    stroke: #f24a4a;
+  &__logo {
+    flex-shrink: 0;
   }
-}
 
-.dropdown {
-  @media screen and (max-width: 767px) {
-    display: block;
-  }
-}
-
-.dropdown {
-  @media screen and (max-width: 767px) {
-    z-index: 4;
-    display: block;
-
-    button {
-      display: flex !important;
+  &__wallet {
+    @media screen and (max-width: 767px) {
+      display: none;
     }
   }
+}
+
+.wallet > button {
+  font-size: 16px;
+  padding-right: 22px;
+  padding-left: 22px;
+}
+
+.mobile_balance {
+  display: none;
+
+  @media screen and (max-width: 767px) {
+    display: block;
+    display: flex;
+    margin-right: 14px;
+  }
+}
+
+.menu_wrapper {
+  display: flex;
+  flex-direction: row-reverse;
 }
