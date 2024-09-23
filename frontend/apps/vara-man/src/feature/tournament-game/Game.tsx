@@ -12,11 +12,11 @@ import { GameCanceledModal } from './components/modals/game-canceled';
 import { calculatePoints } from '../game/utils/calculatePoints';
 import { COINS, GAME_OVER } from '../game/consts';
 
-import { IGameLevel } from '@/app/types/game';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { GameInfoCanvas } from './components/game-canvas/game-canvas';
 import { useMediaQuery } from '@/hooks/use-mobile-device';
 import { MOBILE_BREAKPOINT } from '@/app/consts';
+import { Level } from '@/app/utils';
 
 export const Game = () => {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT);
@@ -31,15 +31,16 @@ export const Game = () => {
   const { configState } = useGame();
   const [coins, setCoins] = useAtom(COINS);
 
-  const level = tournamentGame?.[0].level || previousGame?.[0].level;
-  const score = configState && calculatePoints(coins, configState, level as IGameLevel);
+  const level = tournamentGame?.level || previousGame?.level;
+  const score = configState && calculatePoints(coins, configState, level as Level);
 
-  const isRegistration = tournamentGame?.[0].stage === 'Registration' || previousGame?.[0].stage === 'Registration';
-  const isFinished = tournamentGame?.[0].stage.Finished || previousGame?.[0].stage.Finished;
-  const isStarted = tournamentGame?.[0].stage.Started || previousGame?.[0].stage.Started;
+  const stage = tournamentGame?.stage || previousGame?.stage;
+  const isRegistration = Boolean(stage && 'registration' in stage);
+  const isFinished = Boolean(stage && 'finished' in stage);
+  const isStarted = Boolean(stage && 'started' in stage);
 
   useEffect(() => {
-    const admin = tournamentGame?.[0].admin || previousGame?.[0].admin;
+    const admin = tournamentGame?.admin || previousGame?.admin;
     const isAdmin = admin === account?.decodedAddress;
 
     if (previousGame && !tournamentGame) {

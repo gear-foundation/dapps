@@ -1914,41 +1914,21 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@dapps-frontend/ez-transactions@workspace:packages/ez-transactions"
   dependencies:
-    "@dapps-frontend/gasless-transactions": "workspace:*"
-    "@dapps-frontend/signless-transactions": "workspace:*"
+    "@gear-js/vara-ui": "npm:0.0.10"
+    "@polkadot/keyring": "npm:12.6.2"
+    "@polkadot/react-identicon": "npm:3.6.4"
+    "@polkadot/types": "npm:11.0.2"
     "@types/node": "npm:18.17.15"
     "@types/react": "npm:18.2.33"
     "@types/react-dom": "npm:18.2.14"
     "@typescript-eslint/eslint-plugin": "npm:6.0.0"
     "@typescript-eslint/parser": "npm:6.0.0"
     "@vitejs/plugin-react": "npm:4.0.3"
+    clsx: "npm:2.0.0"
     eslint: "npm:8.45.0"
     eslint-plugin-react-hooks: "npm:4.6.0"
     eslint-plugin-react-refresh: "npm:0.4.3"
-    typescript: "npm:5.0.2"
-    vite: "npm:4.4.5"
-    vite-plugin-dts: "npm:3.5.1"
-  peerDependencies:
-    "@gear-js/api": 0.38.1
-    "@gear-js/react-hooks": 0.12.1
-    react: 18.2.0
-    react-dom: 18.2.0
-  languageName: unknown
-  linkType: soft
-
-"@dapps-frontend/gasless-transactions@workspace:*, @dapps-frontend/gasless-transactions@workspace:packages/gasless-transactions":
-  version: 0.0.0-use.local
-  resolution: "@dapps-frontend/gasless-transactions@workspace:packages/gasless-transactions"
-  dependencies:
-    "@types/node": "npm:18.17.15"
-    "@types/react": "npm:18.2.33"
-    "@types/react-dom": "npm:18.2.14"
-    "@typescript-eslint/eslint-plugin": "npm:6.0.0"
-    "@typescript-eslint/parser": "npm:6.0.0"
-    "@vitejs/plugin-react": "npm:4.0.3"
-    eslint: "npm:8.45.0"
-    eslint-plugin-react-hooks: "npm:4.6.0"
-    eslint-plugin-react-refresh: "npm:0.4.3"
+    react-hook-form: "npm:7.52.2"
     typescript: "npm:5.0.2"
     vite: "npm:4.4.5"
     vite-plugin-dts: "npm:3.5.1"
@@ -1986,43 +1966,12 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@dapps-frontend/signless-transactions@workspace:*, @dapps-frontend/signless-transactions@workspace:packages/signless-transactions":
-  version: 0.0.0-use.local
-  resolution: "@dapps-frontend/signless-transactions@workspace:packages/signless-transactions"
-  dependencies:
-    "@dapps-frontend/hooks": "workspace:*"
-    "@gear-js/vara-ui": "npm:0.0.6"
-    "@polkadot/keyring": "npm:12.6.2"
-    "@polkadot/react-identicon": "npm:3.6.4"
-    "@types/node": "npm:18.17.15"
-    "@types/react": "npm:18.2.33"
-    "@types/react-dom": "npm:18.2.14"
-    "@typescript-eslint/eslint-plugin": "npm:6.0.0"
-    "@typescript-eslint/parser": "npm:6.0.0"
-    "@vitejs/plugin-react": "npm:4.0.3"
-    clsx: "npm:2.0.0"
-    eslint: "npm:8.45.0"
-    eslint-plugin-react-hooks: "npm:4.6.0"
-    eslint-plugin-react-refresh: "npm:0.4.3"
-    react-hook-form: "npm:7.49.0"
-    typescript: "npm:5.0.2"
-    vite: "npm:4.4.5"
-    vite-plugin-dts: "npm:3.5.1"
-    vite-plugin-svgr: "npm:3.2.0"
-  peerDependencies:
-    "@gear-js/api": 0.38.1
-    "@gear-js/react-hooks": 0.12.1
-    react: 18.2.0
-    react-dom: 18.2.0
-  languageName: unknown
-  linkType: soft
-
 "@dapps-frontend/ui@workspace:*, @dapps-frontend/ui@workspace:packages/ui":
   version: 0.0.0-use.local
   resolution: "@dapps-frontend/ui@workspace:packages/ui"
   dependencies:
     "@gear-js/ui": "npm:0.5.26"
-    "@gear-js/vara-ui": "npm:0.0.6"
+    "@gear-js/vara-ui": "npm:0.0.10"
     "@headlessui/react": "npm:1.7.17"
     "@polkadot/react-identicon": "npm:3.6.4"
     "@radix-ui/react-scroll-area": "npm:1.0.5"
@@ -2618,16 +2567,6 @@ __metadata:
     react: ^18.2.0
     react-dom: ^18.2.0
   checksum: 10c0/f8cb7cbf1e6183085386752d86d3e4ad067d308545bfed0c27e22944e11cd74cc469c57e16a288f69b9c18077285825b25c899c630028caf408662bb366b5900
-  languageName: node
-  linkType: hard
-
-"@gear-js/vara-ui@npm:0.0.6":
-  version: 0.0.6
-  resolution: "@gear-js/vara-ui@npm:0.0.6"
-  peerDependencies:
-    react: ^18.2.0
-    react-dom: ^18.2.0
-  checksum: 10c0/f7bc79a6c1cb1af2fca88cb6cd32a3faf41a4d48f189d6176194a9e8270799f4b28d848280c32af39f7605966072dc128ec0e0def8cff5267d6cc385aaf67ab7
   languageName: node
   linkType: hard
 
@@ -9555,7 +9494,7 @@ __metadata:
     "@gear-js/api": "npm:0.38.1"
     "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
-    "@gear-js/vara-ui": "npm:0.0.6"
+    "@gear-js/vara-ui": "npm:0.0.10"
     "@mantine/form": "npm:6.0.15"
     "@polkadot/api": "npm:11.0.2"
     "@polkadot/react-identicon": "npm:3.6.4"
@@ -9614,7 +9553,7 @@ __metadata:
     "@gear-js/api": "npm:0.38.1"
     "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
-    "@gear-js/vara-ui": "npm:0.0.6"
+    "@gear-js/vara-ui": "npm:0.0.10"
     "@mantine/form": "npm:6.0.15"
     "@polkadot/api": "npm:11.0.2"
     "@polkadot/react-identicon": "npm:3.6.4"
@@ -13775,7 +13714,7 @@ __metadata:
     "@gear-js/api": "npm:0.38.1"
     "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
-    "@gear-js/vara-ui": "npm:0.0.6"
+    "@gear-js/vara-ui": "npm:0.0.10"
     "@headlessui/react": "npm:1.7.17"
     "@mantine/form": "npm:6.0.15"
     "@polkadot/api": "npm:11.0.2"
@@ -20454,12 +20393,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-hook-form@npm:7.49.0":
-  version: 7.49.0
-  resolution: "react-hook-form@npm:7.49.0"
+"react-hook-form@npm:7.52.2":
+  version: 7.52.2
+  resolution: "react-hook-form@npm:7.52.2"
   peerDependencies:
-    react: ^16.8.0 || ^17 || ^18
-  checksum: 10c0/0f05a8f9e8400ff0012214b5af60e2195e52ca67d615dfd1d183b1446a021ec49074dc38653251ad2c47dd6585bff84eb1ff75f369a84676701403a4a2f90033
+    react: ^16.8.0 || ^17 || ^18 || ^19
+  checksum: 10c0/2b8d37239d40f4326a24609c1bf5b4ba2cf66bc4a988213ccd7eb92a254dd5bf9c4b94caa353bce4b1d6d8a9ecd2ea3103e25c6d2d72d53f7be26f09053a8b2f
   languageName: node
   linkType: hard
 
@@ -22742,7 +22681,7 @@ __metadata:
   resolution: "tamagotchi-battle@workspace:apps/tamagotchi-battle"
   dependencies:
     "@dapps-frontend/error-tracking": "workspace:*"
-    "@dapps-frontend/gasless-transactions": "workspace:*"
+    "@dapps-frontend/ez-transactions": "workspace:*"
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@fireworks-js/react": "npm:2.10.7"

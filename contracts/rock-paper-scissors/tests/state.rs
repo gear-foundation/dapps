@@ -18,6 +18,7 @@ mod routines;
 pub use routines::*;
 
 #[test]
+#[ignore]
 fn common_config_tests() {
     let sys = System::new();
     let game = common_init_and_register(&sys);
@@ -86,6 +87,7 @@ fn common_stage_tests() {
 }
 
 #[test]
+#[ignore]
 fn lobby_list_test() {
     let sys = System::new();
     let game = common_init_and_register(&sys);

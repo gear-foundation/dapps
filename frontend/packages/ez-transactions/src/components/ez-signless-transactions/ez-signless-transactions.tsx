@@ -1,4 +1,4 @@
-import { SignlessTransactions } from '@dapps-frontend/signless-transactions';
+import { SignlessTransactions } from '@/features/signless-transactions';
 import { useEzTransactions } from '../../context';
 
 type Props = {
