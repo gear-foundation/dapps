@@ -11921,44 +11921,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"dapp@workspace:templates/create-gear-app":
-  version: 0.0.0-use.local
-  resolution: "dapp@workspace:templates/create-gear-app"
-  dependencies:
-    "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.1"
-    "@gear-js/ui": "npm:0.5.28"
-    "@polkadot/api": "npm:11.0.2"
-    "@polkadot/react-identicon": "npm:3.10.1"
-    "@polkadot/types": "npm:11.0.2"
-    "@tanstack/react-query": "npm:5.56.2"
-    "@types/react": "npm:18.3.9"
-    "@types/react-dom": "npm:18.3.0"
-    "@typescript-eslint/eslint-plugin": "npm:8.7.0"
-    "@typescript-eslint/parser": "npm:8.7.0"
-    "@vitejs/plugin-react": "npm:4.3.1"
-    clsx: "npm:2.1.1"
-    eslint: "npm:8.57.0"
-    eslint-config-prettier: "npm:9.1.0"
-    eslint-import-resolver-typescript: "npm:3.6.3"
-    eslint-plugin-import: "npm:2.30.0"
-    eslint-plugin-jsx-a11y: "npm:6.10.0"
-    eslint-plugin-react: "npm:7.36.1"
-    eslint-plugin-react-hooks: "npm:4.6.2"
-    eslint-plugin-react-refresh: "npm:0.4.12"
-    react: "npm:18.3.1"
-    react-dom: "npm:18.3.1"
-    react-router-dom: "npm:6.26.2"
-    sails-js: "npm:0.1.8"
-    sass: "npm:1.79.3"
-    typescript: "npm:5.6.2"
-    vite: "npm:5.4.7"
-    vite-plugin-checker: "npm:0.8.0"
-    vite-plugin-node-polyfills: "npm:0.22.0"
-    vite-plugin-svgr: "npm:4.2.0"
-  languageName: unknown
-  linkType: soft
-
 "dapps-frontend@workspace:.":
   version: 0.0.0-use.local
   resolution: "dapps-frontend@workspace:."
@@ -15089,6 +15051,44 @@ __metadata:
     sass: "npm:^1.58.3"
     typescript: "npm:4.9.5"
     web-vitals: "npm:^2.1.4"
+  languageName: unknown
+  linkType: soft
+
+"gear-dapp@workspace:templates/create-gear-app":
+  version: 0.0.0-use.local
+  resolution: "gear-dapp@workspace:templates/create-gear-app"
+  dependencies:
+    "@gear-js/api": "npm:0.38.1"
+    "@gear-js/react-hooks": "npm:0.12.1"
+    "@gear-js/ui": "npm:0.5.28"
+    "@polkadot/api": "npm:11.0.2"
+    "@polkadot/react-identicon": "npm:3.10.1"
+    "@polkadot/types": "npm:11.0.2"
+    "@tanstack/react-query": "npm:5.56.2"
+    "@types/react": "npm:18.3.9"
+    "@types/react-dom": "npm:18.3.0"
+    "@typescript-eslint/eslint-plugin": "npm:8.7.0"
+    "@typescript-eslint/parser": "npm:8.7.0"
+    "@vitejs/plugin-react": "npm:4.3.1"
+    clsx: "npm:2.1.1"
+    eslint: "npm:8.57.0"
+    eslint-config-prettier: "npm:9.1.0"
+    eslint-import-resolver-typescript: "npm:3.6.3"
+    eslint-plugin-import: "npm:2.30.0"
+    eslint-plugin-jsx-a11y: "npm:6.10.0"
+    eslint-plugin-react: "npm:7.36.1"
+    eslint-plugin-react-hooks: "npm:4.6.2"
+    eslint-plugin-react-refresh: "npm:0.4.12"
+    react: "npm:18.3.1"
+    react-dom: "npm:18.3.1"
+    react-router-dom: "npm:6.26.2"
+    sails-js: "npm:0.1.8"
+    sass: "npm:1.79.3"
+    typescript: "npm:5.6.2"
+    vite: "npm:5.4.7"
+    vite-plugin-checker: "npm:0.8.0"
+    vite-plugin-node-polyfills: "npm:0.22.0"
+    vite-plugin-svgr: "npm:4.2.0"
   languageName: unknown
   linkType: soft
 
@@ -25125,6 +25125,44 @@ __metadata:
   checksum: 10c0/c3c99c4aa1ffffb098cc85c0c13c21871e6cbb9a83537d4e0650aa61589c347b2add787ceac68b8ea7fa1b7f446e9059d8e374cd7e7ab13b170a6caf8ad29c30
   languageName: node
   linkType: hard
+
+"vara-dapp@workspace:templates/create-vara-app":
+  version: 0.0.0-use.local
+  resolution: "vara-dapp@workspace:templates/create-vara-app"
+  dependencies:
+    "@gear-js/api": "npm:0.38.1"
+    "@gear-js/react-hooks": "npm:0.12.1"
+    "@gear-js/vara-ui": "npm:0.0.10"
+    "@polkadot/api": "npm:11.0.2"
+    "@polkadot/react-identicon": "npm:3.10.1"
+    "@polkadot/types": "npm:11.0.2"
+    "@tanstack/react-query": "npm:5.56.2"
+    "@types/react": "npm:18.3.9"
+    "@types/react-dom": "npm:18.3.0"
+    "@typescript-eslint/eslint-plugin": "npm:8.7.0"
+    "@typescript-eslint/parser": "npm:8.7.0"
+    "@vitejs/plugin-react": "npm:4.3.1"
+    clsx: "npm:2.1.1"
+    eslint: "npm:8.57.0"
+    eslint-config-prettier: "npm:9.1.0"
+    eslint-import-resolver-typescript: "npm:3.6.3"
+    eslint-plugin-import: "npm:2.30.0"
+    eslint-plugin-jsx-a11y: "npm:6.10.0"
+    eslint-plugin-react: "npm:7.36.1"
+    eslint-plugin-react-hooks: "npm:4.6.2"
+    eslint-plugin-react-refresh: "npm:0.4.12"
+    react: "npm:18.3.1"
+    react-dom: "npm:18.3.1"
+    react-router-dom: "npm:6.26.2"
+    sails-js: "npm:0.1.8"
+    sass: "npm:1.79.3"
+    typescript: "npm:5.6.2"
+    vite: "npm:5.4.7"
+    vite-plugin-checker: "npm:0.8.0"
+    vite-plugin-node-polyfills: "npm:0.22.0"
+    vite-plugin-svgr: "npm:4.2.0"
+  languageName: unknown
+  linkType: soft
 
 "vara-man@workspace:apps/vara-man":
   version: 0.0.0-use.local
