@@ -262,6 +262,4 @@ sha2 = "0.10"
 num-traits = { version = "0.2", default-features = false }
 scale-info = { version = "2", default-features = false }
 parity-scale-codec = { version = "3", default-features = false }
-
-[patch.crates-io]
-gear-wasm-instrument = { git = "https://github.com/gear-tech/gear.git", tag = "v1.5.0" }
+gear-wasm-instrument = "=1.5.0"

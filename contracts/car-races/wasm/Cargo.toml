@@ -13,6 +13,7 @@ gear-wasm-builder.workspace = true
 sails-idl-gen.workspace = true
 sails-client-gen.workspace = true
 car-races-app = { path = "../app" }
+gear-wasm-instrument.workspace = true
 
 [lib]
 crate-type = ["rlib"]
