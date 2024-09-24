@@ -17,6 +17,6 @@ A ready-made application template with a well-thought-out infrastructure for qui
 Create new project based on this template:
 
 ```sh
-npx degit gear-foundation/dapps/frontend/templates/creage-gear-app dApp
+npx degit gear-foundation/dapps/frontend/templates/creage-vara-app dApp
 cd dApp
 ```
