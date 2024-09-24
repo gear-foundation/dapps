@@ -1,50 +1,36 @@
 import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
+
 import { AccountButton } from '../account-button';
 import { WalletModal } from '../wallet-modal';
-import styles from './wallet.module.css';
 import { VaraBalance } from '../vara-balance';
+import styles from './wallet.module.css';
 
-export type ClassNameProps = {
-  balance?: string;
-};
-type Props = {
-  isWalletModalOpen?: boolean;
-  walletModalHandler?: (bool: boolean) => void;
-  className?: ClassNameProps;
-};
-
-function Wallet({ isWalletModalOpen, walletModalHandler, className }: Props) {
+function Wallet() {
   const { account, isAccountReady } = useAccount();
 
-  const [isModalOpen, setIsModalOpen] = useState(isWalletModalOpen || false);
-  const openModal = () => walletModalHandler?.(true) || setIsModalOpen(true);
-  const closeModal = () => walletModalHandler?.(false) || setIsModalOpen(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
 
-  useEffect(() => {
-    if (isWalletModalOpen !== undefined) {
-      setIsModalOpen(isWalletModalOpen);
-    }
-  }, [isWalletModalOpen]);
+  if (!isAccountReady) return;
 
-  return isAccountReady ? (
+  return (
     <>
       <div className={styles.wallet}>
-        <VaraBalance className={className?.balance} />
+        <VaraBalance />
 
         {account ? (
-          <div className={styles.accountButton}>
-            <AccountButton address={account.address} name={account.meta.name} onClick={openModal} />
-          </div>
+          <AccountButton address={account.address} name={account.meta.name} onClick={openModal} />
         ) : (
-          <Button text="Connect Wallet" color="primary" className={styles.connectButton} onClick={openModal} />
+          <Button text="Connect Wallet" color="primary" onClick={openModal} />
         )}
       </div>
 
-      <WalletModal onClose={closeModal} open={isModalOpen} setOpen={openModal} />
+      {isModalOpen && <WalletModal close={closeModal} />}
     </>
-  ) : null;
+  );
 }
 
 export { Wallet };

@@ -4,18 +4,20 @@
   gap: 48px;
 }
 
-.accountButton {
+/* TODO: removed for now, but need to add for a mobile */
+/* .accountButton {
   display: block;
-  
+
   @media screen and (max-width: 767px) {
     display: none;
   }
-}
+} */
 
-.connectButton.connectButton {
+/* TODO: removed for now, maybe will need for mobile */
+/* .connectButton.connectButton {
   font-size: 16px;
 
   @media screen and (max-width: 767px) {
     height: 44px;
   }
-}
+} */
