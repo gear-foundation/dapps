@@ -2,16 +2,30 @@
 
 use sails_rs::{gstd::GStdExecContext, prelude::*};
 pub mod services;
-use services::game::{CarRacesService, InitConfig};
-use services::session::SessionService;
+use services::{
+    session::{Config, SessionService},
+    CarRacesService, InitConfig,
+};
+
+use session_service::*;
+
 #[derive(Default)]
 pub struct Program;
 
 #[program]
 impl Program {
-    pub fn new(init_config: InitConfig) -> Self {
-        CarRacesService::<GStdExecContext>::seed(init_config, GStdExecContext::new());
-        SessionService::init();
+    pub async fn new(
+        init_config: InitConfig,
+        session_config: Config,
+        dns_id_and_name: Option<(ActorId, String)>,
+    ) -> Self {
+        CarRacesService::<GStdExecContext>::init(
+            init_config,
+            GStdExecContext::new(),
+            dns_id_and_name,
+        )
+        .await;
+        SessionService::init(session_config);
         Self
     }
 

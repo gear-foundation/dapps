@@ -6,9 +6,11 @@ members = [
     "auto-changed-nft",
     "auto-changed-nft/state",
     "battleship",
+    "car-races/app",
     "car-races/car-1",
     "car-races/car-2",
     "car-races/car-3",
+    "car-races/wasm",
     "concert",
     "crowdsale",
     "crowdsale/state",
@@ -98,8 +100,6 @@ members = [
     "vara-man",
     "varatube",
     "w3bstreaming",
-    "zk-battleship/app",
-    "zk-battleship/wasm",
     # Noncontract crates
 
     "gear-lib",
@@ -230,11 +230,12 @@ gear-wasm-builder = "1.5.0"
 gmeta = "1.5.0"
 gclient = "1.5.0"
 gtest = "1.5.0"
-gear-core = "1.5.0"
-sails-idl-gen = "0.3.0"
-sails-rs = "0.3.0"
-sails-client-gen = "0.3.0"
-
+gear-core = "=1.5.0"
+gear-wasm-instrument = "=1.5.0"
+sails-idl-gen = "0.4.0"
+sails-rs = { version = "0.4.0", features = ["debug" ]}
+sails-client-gen = "0.4.0"
+session-service = { git = "https://github.com/gear-foundation/signless-gasless-session-service.git" }
 
 # External
 

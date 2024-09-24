@@ -1,10 +1,9 @@
 type InitConfig = struct {
-  config: Config,
+  config: ServicesConfig,
 };
 
-type Config = struct {
+type ServicesConfig = struct {
   gas_to_remove_game: u64,
-  gas_to_delete_session: u64,
   initial_speed: u32,
   min_speed: u32,
   max_speed: u32,
@@ -15,8 +14,12 @@ type Config = struct {
   time_for_game_storage: u64,
   block_duration_ms: u64,
   gas_for_reply_deposit: u64,
+};
+
+type SessionConfig = struct {
+  gas_to_delete_session: u64,
   minimum_session_duration_ms: u64,
-  s_per_block: u64,
+  ms_per_block: u64,
 };
 
 type StrategyAction = enum {
@@ -87,7 +90,7 @@ type SessionData = struct {
 };
 
 constructor {
-  New : (init_config: InitConfig);
+  New : (init_config: InitConfig, session_config: SessionConfig);
 };
 
 service CarRacesService {
@@ -99,10 +102,10 @@ service CarRacesService {
   RemoveGameInstance : (account: actor_id) -> null;
   RemoveInstances : (player_ids: opt vec actor_id) -> null;
   StartGame : (session_for_account: opt actor_id) -> null;
-  UpdateConfig : (config: Config) -> null;
+  UpdateConfig : (config: ServicesConfig) -> null;
   query Admins : () -> vec actor_id;
   query AllGames : () -> vec struct { actor_id, Game };
-  query ConfigState : () -> Config;
+  query ConfigState : () -> ServicesConfig;
   query Game : (account_id: actor_id) -> opt Game;
   query MessagesAllowed : () -> bool;
   query StrategyIds : () -> vec actor_id;

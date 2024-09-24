@@ -1,4 +1,4 @@
-use super::{config, Config, Error};
+use super::{config, Error};
 use sails_rs::{collections::BTreeMap, prelude::*};
 
 pub const DEFAULT_SPEED: u32 = 100;

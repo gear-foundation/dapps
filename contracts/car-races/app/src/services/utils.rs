@@ -1,13 +1,16 @@
-use core::fmt::Debug;
-use gstd::{ext, format};
-
-pub fn panicking<T, E: Debug, F: FnOnce() -> Result<T, E>>(f: F) -> T {
-    match f() {
-        Ok(v) => v,
-        Err(e) => panic(e),
-    }
-}
-
-pub fn panic(err: impl Debug) -> ! {
-    ext::panic(&format!("{err:?}"))
+#[macro_export]
+macro_rules! event_or_panic_async {
+    ($self:expr, $expr:expr) => {{
+        let result: Result<Event, Error> = $expr().await;
+        match result {
+            Ok(value) => {
+                if let Err(e) = $self.notify_on(value) {
+                    panic!("Error in depositing events: {:?}", e);
+                }
+            }
+            Err(e) => {
+                panic!("Message processing failed with error: {:?}", e);
+            }
+        }
+    }};
 }
