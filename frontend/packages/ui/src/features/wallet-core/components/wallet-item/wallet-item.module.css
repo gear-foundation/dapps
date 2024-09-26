@@ -1,0 +1,11 @@
+.wallet {
+  display: flex;
+  align-items: center;
+}
+
+.icon {
+  margin-right: 8px;
+  background-color: #fff;
+  border-radius: 50%;
+  border: 1px solid #ebeeee;
+}
