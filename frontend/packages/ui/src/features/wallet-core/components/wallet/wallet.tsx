@@ -1,32 +1,15 @@
-import { Button as GearButton } from '@gear-js/ui';
-import { Button as VaraButton } from '@gear-js/vara-ui';
 import { useAccount, useApi, useBalanceFormat, useDeriveBalancesAll } from '@gear-js/react-hooks';
 import cx from 'clsx';
 import { useState } from 'react';
 
 import { ReactComponent as VaraSVG } from '../../assets/vara.svg';
-import { VaraAccountButton, GearAccountButton } from '../account-button';
 import { WalletModal } from '../wallet-modal';
+import { UI_CONFIG } from '../ui-config';
 import styles from './wallet.module.css';
 
 type Props = {
   variant?: 'gear' | 'vara';
 };
-
-const BALANCE_COLOR = {
-  gear: 'light',
-  vara: 'dark',
-} as const;
-
-const ACCOUNT_BUTTON = {
-  gear: GearAccountButton,
-  vara: VaraAccountButton,
-} as const;
-
-const BUTTON = {
-  gear: GearButton,
-  vara: VaraButton,
-} as const;
 
 function Wallet({ variant = 'vara' }: Props) {
   const { isApiReady } = useApi();
@@ -41,10 +24,7 @@ function Wallet({ variant = 'vara' }: Props) {
   const closeModal = () => setIsModalOpen(false);
 
   if (!isAccountReady) return;
-
-  const balanceColor = BALANCE_COLOR[variant];
-  const AccountButton = ACCOUNT_BUTTON[variant];
-  const Button = BUTTON[variant];
+  const { Button, AccountButton } = UI_CONFIG[variant];
 
   return (
     <>
@@ -53,7 +33,7 @@ function Wallet({ variant = 'vara' }: Props) {
           <div className={styles.balance}>
             <VaraSVG />
 
-            <p className={cx(styles.text, styles[balanceColor])}>
+            <p className={cx(styles.text, styles[variant])}>
               <span className={styles.value}>{balance.value}</span>
               <span className={styles.unit}>{balance.unit}</span>
             </p>

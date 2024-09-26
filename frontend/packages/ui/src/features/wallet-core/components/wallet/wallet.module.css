@@ -14,11 +14,11 @@
     align-items: flex-end;
     gap: 4px;
 
-    &.light {
+    &.gear {
       color: #fff;
     }
 
-    &.dark {
+    &.vara {
       color: #000;
     }
 

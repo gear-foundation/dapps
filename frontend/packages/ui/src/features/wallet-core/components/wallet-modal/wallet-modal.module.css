@@ -3,10 +3,6 @@
   flex-direction: column;
   gap: 16px;
 
-  .walletButton {
-    justify-content: space-between;
-  }
-
   .account {
     display: flex;
     align-items: center;
