@@ -18,7 +18,7 @@ export const AccountComponent = () => {
         </Link>
       )}
 
-      <Wallet />
+      <Wallet variant="gear" />
     </div>
   );
 };
