@@ -15,6 +15,11 @@
   justify-content: space-between;
   align-items: center;
   margin: auto;
+
+  // overriding vara-ui balance color
+  > div > div > div > p {
+    color: #ffffff !important;
+  }
 }
 
 .walletBalance {
@@ -30,4 +35,8 @@
 
 .vara-logo {
   margin-right: 22px;
+}
+
+.test {
+  border: 1px solid red;
 }
