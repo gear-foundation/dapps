@@ -23265,6 +23265,7 @@ __metadata:
     "@gear-js/api": "npm:0.38.1"
     "@gear-js/react-hooks": "npm:0.12.1"
     "@gear-js/ui": "npm:0.5.21"
+    "@gear-js/vara-ui": "npm:0.0.11"
     "@mantine/form": "npm:6.0.8"
     "@polkadot/api": "npm:11.0.2"
     "@polkadot/react-identicon": "npm:3.6.4"
