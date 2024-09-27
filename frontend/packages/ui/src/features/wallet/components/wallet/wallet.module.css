@@ -1,7 +1,7 @@
 .wallet {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 20px;
 }
 
 .balance {
@@ -13,7 +13,14 @@
     display: flex;
     align-items: flex-end;
     gap: 4px;
-    color: #fff;
+
+    &.gear {
+      color: #fff;
+    }
+
+    &.vara {
+      color: #000;
+    }
 
     .value {
       font-size: 20px;
@@ -29,3 +36,21 @@
     }
   }
 }
+
+/* TODO: removed for now, but need to add for a mobile */
+/* .accountButton {
+  display: block;
+
+  @media screen and (max-width: 767px) {
+    display: none;
+  }
+} */
+
+/* TODO: removed for now, maybe will need for mobile */
+/* .connectButton.connectButton {
+  font-size: 16px;
+
+  @media screen and (max-width: 767px) {
+    height: 44px;
+  }
+} */

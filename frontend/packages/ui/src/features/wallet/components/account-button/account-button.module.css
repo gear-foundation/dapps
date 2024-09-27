@@ -1,6 +1,4 @@
-.button {
-  /* identicon override */
-  > div {
-    cursor: pointer;
-  }
+.icon {
+  /* overriding Identicon */
+  cursor: pointer !important;
 }
