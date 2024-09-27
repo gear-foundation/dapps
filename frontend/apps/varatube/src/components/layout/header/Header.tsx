@@ -25,9 +25,6 @@ function Header() {
               item: styles.menuOptionsItem,
               nativeIcon: styles.menuOptionsIcon,
             },
-            wallet: {
-              balance: styles.balance,
-            },
           }}
         />
       }
