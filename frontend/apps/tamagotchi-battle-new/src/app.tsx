@@ -8,8 +8,10 @@ function Component() {
   // const { isGameReady } = useInitGame();
   // const { errorGame } = useInitGameSync();
 
+  const program = true;
+
   const errorGame = false;
-  const isGameReady = true;
+  const isGameReady = program;
 
   return (
     <MainLayout>

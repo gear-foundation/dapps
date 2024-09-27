@@ -1,0 +1,21 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 24px;
+  background: #4b4b55;
+  border: 1.5px solid #0b0b0b;
+  border-radius: 16px;
+  height: 190px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 17px;
+}
+
+.text {
+  color: #ffffff;
+}

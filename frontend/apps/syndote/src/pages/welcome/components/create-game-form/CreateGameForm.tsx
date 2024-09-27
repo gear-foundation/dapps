@@ -10,10 +10,6 @@ import { isNotEmpty, useForm } from '@mantine/form';
 import { useSyndoteMessage } from 'hooks/metadata';
 import styles from './CreateGameForm.module.scss';
 
-export interface ContractFormValues {
-  [key: string]: string;
-}
-
 type CreateFormValues = {
   fee: number;
   name: string;

@@ -8,6 +8,20 @@
     justify-content: space-between;
     align-items: center;
   }
+  &__logoWrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    max-width: 672px;
+    margin-right: 24px;
+  }
+
+  &__tutorial {
+    @media screen and (max-width: 767px) {
+      display: none !important;
+    }
+  }
 
   &__logo {
     flex-shrink: 0;

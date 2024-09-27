@@ -7,9 +7,17 @@ export const ADDRESS = {
   SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN_TTT,
 };
 
+export const MAX_PLAYERS_COUNT = 50;
+
 export const ROUTES = {
   HOME: '/',
-  LOGIN: '/login',
+  IMPORT_CHARACTER: '/import-character',
+  GENERATE_CHARACTER: '/generate-character',
+  CREATE_GAME: '/create',
+  FIND_GAME: '/find',
+  WAITING: '/waiting',
+
   GAME: '/game',
+
   NOTFOUND: '*',
 };

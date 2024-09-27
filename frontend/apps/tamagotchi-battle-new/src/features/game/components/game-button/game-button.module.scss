@@ -1,0 +1,267 @@
+.outer {
+  position: relative;
+  padding: 7px 8px;
+  border-radius: 12px;
+  width: 210px;
+  height: 70px;
+  overflow: hidden;
+
+  & > ::after {
+    content: '';
+    transition: all 0.3s ease;
+    position: absolute;
+    height: 100%;
+    width: 100%;
+  }
+
+  &:disabled > ::after {
+    background: #000000cc;
+  }
+
+  &:hover:not(:disabled) > ::after {
+    background: #ffffff2d;
+  }
+
+  &.red {
+    background: linear-gradient(180deg, #d44f4f 0%, #8f3030 20.83%, #591414 94.27%);
+  }
+  &.green {
+    background: linear-gradient(180deg, #b0d44f 0%, #628f30 20.83%, #365914 94.27%);
+  }
+  &.cyan {
+    background: linear-gradient(180deg, #00ffc4 0%, #0ed3a3 20.83%, #145951 94.27%);
+  }
+  &.black {
+    background: linear-gradient(180deg, #4b4b55 0%, #464650 20.5%, #35353d 94.27%);
+    width: 144px;
+    height: 44px;
+    padding: 4px 5.5px 5px;
+    border-radius: 6px;
+  }
+}
+
+.inner {
+  transition: all 2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  border-radius: 8px;
+  color: #ddd;
+
+  width: 100%;
+  height: 100%;
+
+  box-shadow: 0px 1px 3px 0px #ffffff40 inset;
+}
+.red .inner {
+  background: linear-gradient(180deg, #ca3d3d 0%, #852626 100%);
+}
+.green .inner {
+  background: linear-gradient(180deg, #a1ca3d 0%, #5c8526 100%);
+}
+.cyan .inner {
+  background: linear-gradient(180deg, #00ffc4 0%, #008e6b 100%);
+}
+.black .inner {
+  background: linear-gradient(180deg, #494953 0%, #4a4a53 100%);
+  border-radius: 4px;
+}
+
+.pending {
+  pointer-events: none;
+  & .inner {
+    > svg:first-child {
+      animation: rotateSpinner 2.5s linear infinite;
+    }
+  }
+  &.red .inner {
+    background: #852626;
+    color: #ca3d3d;
+  }
+  &.green .inner {
+    background: #5c8526;
+    color: #a1ca3d;
+  }
+  &.cyan .inner {
+    background: #008e6b;
+    color: #03f8bf;
+  }
+}
+
+.text {
+  position: relative;
+  font-size: 23px;
+  font-weight: 700;
+  line-height: 29.9px;
+  letter-spacing: -0.025em;
+
+  // color: #fcd1d1;
+  color: transparent; /* Чтобы градиент применялся только к тексту */
+
+  // text-shadow: 0px 1px 0px #553211;
+  //   text-shadow: 5px 5px #558ABB;\
+}
+.red .text {
+  background: linear-gradient(180deg, #ffffff 0%, #fcd1d1 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+.green .text {
+  background: linear-gradient(180deg, #fffdeb 0%, #fffada 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.cyan .text {
+  background: linear-gradient(180deg, #ffffff 0%, #a7f0e7 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+.black .text {
+  background: linear-gradient(180deg, #ffffff 0%, #c9f5f0 100%);
+  background-clip: text;
+  -webkit-background-clip: text;
+  font-size: 16px;
+  line-height: 20.8px;
+}
+
+.blocked {
+  .text {
+    font-size: 18px;
+    line-height: 23.4px;
+  }
+
+  .shadow {
+    top: 24px;
+  }
+
+  .stroke {
+    position: absolute;
+    top: 23px;
+  }
+}
+
+.stroke {
+  position: absolute;
+  top: 20px;
+}
+
+.red .stroke {
+  -webkit-text-stroke: 3px #551111;
+}
+.green .stroke {
+  -webkit-text-stroke: 3px #3c5511;
+}
+.cyan .stroke {
+  -webkit-text-stroke: 3px #11554d;
+}
+.black .stroke {
+  -webkit-text-stroke: 2px #0b0b0b;
+  top: 11px;
+}
+
+.shadow {
+  position: absolute;
+  top: 21px;
+}
+
+.red .shadow {
+  -webkit-text-stroke: 3px #553211;
+}
+.green .shadow {
+  -webkit-text-stroke: 3px #3c5511;
+}
+.cyan .shadow {
+  -webkit-text-stroke: 3px #3c5511;
+}
+.black .shadow {
+  -webkit-text-stroke: 2px #35353e;
+  top: 12px;
+}
+
+.glow {
+  position: absolute;
+  top: 12.5px;
+  right: 12.24px;
+}
+
+.black .glow {
+  top: 5px;
+  right: 5px;
+  transform: scale(0.6);
+}
+
+.blackAnimation {
+  border-radius: 50%;
+  position: absolute;
+  animation: glare 3s linear infinite;
+}
+
+.outer:hover {
+  .blackAnimation {
+    display: none;
+  }
+}
+
+@keyframes glare {
+  0%,
+  40% {
+    width: 65.95px;
+    height: 72px;
+    top: -50px;
+    left: 15.1px;
+    opacity: 0;
+    transform: rotate(-25.46deg);
+    background: linear-gradient(244.48deg, rgba(74, 74, 84, 0.25) 24.28%, rgba(210, 210, 225, 0.175) 85.2%);
+  }
+  50% {
+    width: 65.95px;
+    height: 72px;
+    top: -24.41px;
+    left: 15.1px;
+    opacity: 0.1;
+    transform: rotate(-25.46deg);
+  }
+  65% {
+    width: 115.69px;
+    height: 79.66px;
+    top: -6.18px;
+    left: -19.71px;
+    opacity: 1;
+    transform: rotate(10.12deg);
+    background: linear-gradient(
+      228.67deg,
+      rgba(74, 74, 84, 0.25) 12.63%,
+      rgba(210, 210, 225, 0.125) 52.79%,
+      rgba(74, 74, 84, 0.25) 97.08%
+    );
+  }
+  80% {
+    width: 227.45px;
+    height: 93.86px;
+    top: -8.55px;
+    left: -29.85px;
+    opacity: 1;
+  }
+  100% {
+    width: 187.45px;
+    height: 93.86px;
+    top: -8.55px;
+    left: 20px;
+    opacity: 0;
+    transform: rotate(10.12deg);
+    background: linear-gradient(
+      228.67deg,
+      rgba(74, 74, 84, 0.25) 12.63%,
+      rgba(210, 210, 225, 0.125) 52.79%,
+      rgba(74, 74, 84, 0.25) 97.08%
+    );
+  }
+}
+
+@keyframes rotateSpinner {
+  to {
+    transform: rotate(360deg);
+  }
+}

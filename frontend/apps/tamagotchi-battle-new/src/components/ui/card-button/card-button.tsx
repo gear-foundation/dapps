@@ -7,11 +7,11 @@ import styles from './card-button.module.scss';
 type CardButtonProps = BaseComponentProps & {
   onClick: React.MouseEventHandler<HTMLDivElement>;
   title: string;
-  subTitle: string;
+  description: string;
   icon: React.ReactNode;
 };
 
-export function CardButton({ onClick, icon, title, className, subTitle }: CardButtonProps) {
+export function CardButton({ onClick, icon, title, className, description }: CardButtonProps) {
   return (
     <div onClick={onClick} className={clsx(styles.card, className)}>
       <div>
@@ -22,7 +22,7 @@ export function CardButton({ onClick, icon, title, className, subTitle }: CardBu
           </Text>
         </div>
         <Text size="sm" className={styles.center}>
-          {subTitle}
+          {description}
         </Text>
       </div>
       <ArrowRightIcon />

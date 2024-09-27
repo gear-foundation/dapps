@@ -9,10 +9,6 @@ import styles from './RequestGame.module.scss';
 import { CreateGameForm } from '../create-game-form';
 import { JoinGameForm } from '../join-game-form';
 
-export interface ContractFormValues {
-  [key: string]: string;
-}
-
 type Status = 'creating' | 'joining' | null;
 
 function RequestGame() {

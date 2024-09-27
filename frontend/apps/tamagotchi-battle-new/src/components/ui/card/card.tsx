@@ -24,17 +24,17 @@ export const titleVariants = cva('', {
 type CardProps = BaseComponentProps &
   VariantProps<typeof titleVariants> & {
     title?: string;
-    subTitle?: string;
+    description?: string;
   };
 
-export function Card({ children, title, align, className, size, subTitle }: CardProps) {
+export function Card({ children, title, align, className, size, description }: CardProps) {
   return (
     <div className={clsx(styles.card, size === 'sm' && styles.sm, className)}>
       <div>
         {title && <h2 className={titleVariants({ align, size })}>{title}</h2>}
-        {subTitle && (
-          <Text size="sm" className={styles.center}>
-            {subTitle}
+        {description && (
+          <Text size="sm" className={titleVariants({ className: styles.description, align, size })}>
+            {description}
           </Text>
         )}
       </div>

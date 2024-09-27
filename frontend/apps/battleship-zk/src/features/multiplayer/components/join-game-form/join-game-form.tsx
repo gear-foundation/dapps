@@ -16,10 +16,6 @@ import { useJoinGameMessage } from '../../sails/messages';
 import { useMultiGameQuery } from '../../sails/queries';
 import styles from './JoinGameForm.module.scss';
 
-export interface ContractFormValues {
-  [key: string]: string;
-}
-
 type Props = {
   onCancel: () => void;
 };

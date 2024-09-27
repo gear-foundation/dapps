@@ -2,16 +2,14 @@ import { Input, Button } from '@gear-js/vara-ui';
 import { useSetAtom } from 'jotai';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Card } from '@/components';
-import { CardButton } from '@/components/ui/card-button';
-import { gameStatusAtom } from '../../store';
-import { Character } from '../character';
+import { Card, CardButton } from '@/components';
+import { gameStatusAtom } from '@/features/game/store';
+import { Character, CharacterStats, Background } from '@/features/game/components';
+import { AdminIcon, SearchIcon } from '@/features/game/assets/images';
+import { ROUTES } from '@/app/consts';
 import styles from './import-character.module.scss';
-import { CharacterStats } from '../character-stats';
-import { AdminIcon, SearchIcon } from '../../assets/images';
-import { Background } from '../background';
 
-export const ImportCharacter = () => {
+export default function GenerateCharacter() {
   const navigate = useNavigate();
   const setGameStatus = useSetAtom(gameStatusAtom);
   const [address, setAddress] = useState<string>();
@@ -36,16 +34,16 @@ export const ImportCharacter = () => {
         <div className={styles.container}>
           <div className={styles.buttons}>
             <CardButton
-              onClick={() => setGameStatus('find')}
-              icon={<AdminIcon />}
+              onClick={() => navigate(ROUTES.FIND_GAME)}
+              icon={<SearchIcon />}
               title="Find a private game"
-              subTitle="To find the game, you need to enter the administrator's address."
+              description="To find the game, you need to enter the administrator's address."
             />
             <CardButton
-              onClick={() => setGameStatus('create')}
-              icon={<SearchIcon />}
+              onClick={() => navigate(ROUTES.CREATE_GAME)}
+              icon={<AdminIcon />}
               title="Create a game in administrator mode"
-              subTitle="Create a game and specify your participation rules."
+              description="Create a game and specify your participation rules."
             />
           </div>
           <Button text="Back" color="grey" onClick={() => setGameStatus(null)} />
@@ -53,4 +51,4 @@ export const ImportCharacter = () => {
       </Background>
     </>
   );
-};
+}

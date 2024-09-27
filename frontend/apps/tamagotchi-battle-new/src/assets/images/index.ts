@@ -17,3 +17,4 @@ export { ReactComponent as CaretDown } from './icons/caret-down.svg';
 export { ReactComponent as VaraCoinIcon } from './icons/vara-coin.svg';
 export { ReactComponent as TVaraCoinIcon } from './icons/tvara-coin.svg';
 export { ReactComponent as BonusPointsIcon } from './icons/star.svg';
+export { ReactComponent as UserIcon } from './icons/user.svg';

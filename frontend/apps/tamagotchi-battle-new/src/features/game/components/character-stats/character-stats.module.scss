@@ -1,21 +1,149 @@
 .container {
+  position: absolute;
+  top: 48px;
   display: flex;
-  flex-direction: column;
-  gap: 24px;
-  padding: 24px;
-  background: #4b4b55;
-  border: 1.5px solid #0b0b0b;
-  border-radius: 16px;
-  height: 190px;
+  height: 120px;
+  width: 458px;
+  align-self: normal;
+  color: #fff;
+  &.left {
+    left: 120px;
+  }
+
+  &.right {
+    right: 120px;
+  }
 }
 
-.row {
+.top {
+  position: absolute;
+  width: 340px;
+  height: 68px;
+  top: 8px;
+
+  .vector {
+    position: absolute;
+    top: 0;
+    color: #4b4b55;
+    z-index: -1;
+  }
+}
+
+.left .top {
+  left: 0;
+}
+.right .top {
+  right: 0;
+}
+
+.right .vector {
+  transform: scaleX(-1);
+}
+
+.bottom {
+  position: absolute;
+
+  width: 340px;
+  height: 68px;
+
+  &.left {
+    left: 28px;
+  }
+  &.right {
+    right: 28px;
+  }
+
+  top: 39.5px;
+  .vector {
+    position: absolute;
+    color: #3d3d47;
+    z-index: -1;
+  }
+}
+
+.name {
+  text-align: right;
+  margin: 8px 19px;
+  height: 22px;
+  line-height: 22px;
+}
+.right .name {
+  text-align: left;
+}
+
+.health {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 2px 19px;
+  width: 287px;
+}
+.left .health {
+  text-align: left;
+  margin-left: auto;
+}
+.right .health {
+  text-align: left;
+  margin-right: auto;
+}
+
+.stats {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 17px;
+  margin: 46.5px 44px 0 auto;
+  width: 249px;
 }
 
-.text {
-  color: #ffffff;
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.attack {
+  color: #db4242;
+}
+
+.defense {
+  color: #9cc53c;
+}
+
+.dodgeStat {
+  gap: 4px;
+}
+
+.dodge {
+  color: #ffad33;
+}
+
+.healthCount {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.avatar {
+  position: absolute;
+  top: 0;
+  height: 120px;
+  width: 120px;
+  padding-top: 22px;
+  background: #595964;
+  border: 1.5px solid #0b0b0b;
+  border-radius: 16px;
+
+  &.left {
+    right: 0;
+  }
+
+  &.right {
+    left: 0;
+  }
+}
+
+.active {
+  background: #00ffc4;
+  box-shadow:
+    0px 2.4px 4.8px 0px #00ffc466,
+    0px 0.6px 1.8px 0px #00000033 inset;
 }

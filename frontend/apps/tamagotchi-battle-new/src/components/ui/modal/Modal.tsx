@@ -1,17 +1,20 @@
+import clsx from 'clsx';
 import { MouseEvent, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
-import styles from './Modal.module.scss';
 import { variantsOverlay, variantsPanel } from '@/components/ui/modal/modal.variants';
 import { Button } from '../button';
 import { Sprite } from '@/components/ui/sprite';
 import type { BaseComponentProps } from '@/app/types';
+import styles from './Modal.module.scss';
 
 type Props = BaseComponentProps & {
-  heading: string;
+  title: string;
+  description?: string;
   onClose: () => void;
+  buttons?: React.ReactNode;
 };
 
-export function Modal({ heading, children, onClose }: Props) {
+export function Modal({ title, description, children, buttons, onClose, className }: Props) {
   const ref = useRef<HTMLDialogElement>(null);
 
   const disableScroll = () => document.body.classList.add('modal-open');
@@ -49,16 +52,25 @@ export function Modal({ heading, children, onClose }: Props) {
       ref={ref}
       onClick={handleClick}
       className={styles.modal}>
-      <motion.div initial="enter" animate="center" exit="exit" variants={variantsPanel} className={styles.wrapper}>
+      <motion.div
+        initial="enter"
+        animate="center"
+        exit="exit"
+        variants={variantsPanel}
+        className={clsx(styles.wrapper, className)}>
         <div className={styles.header}>
-          <h2 className={styles.title}>{heading}</h2>
-
+          <div className={styles.titleContainer}>
+            <h2 className={styles.title}>{title}</h2>
+            <p className={styles.description}>{description}</p>
+          </div>
           <Button variant="text" onClick={onClose} className={styles['modal-close']}>
             <Sprite name="close" width={25} height={24} />
           </Button>
         </div>
 
         {children}
+
+        {buttons && <div className={styles.buttons}>{buttons}</div>}
       </motion.div>
     </motion.dialog>
   );

@@ -8,7 +8,9 @@ const ScrollArea = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof ScrollAreaPrimitive.Root>
 >(({ className, children, ...props }, ref) => (
   <ScrollAreaPrimitive.Root ref={ref} className={clsx(styles.root, className)} {...props}>
+    <div className={clsx(styles.gradient, styles.top)} />
     <ScrollAreaPrimitive.Viewport className={styles.viewport}>{children}</ScrollAreaPrimitive.Viewport>
+    <div className={clsx(styles.gradient, styles.bottom)} />
     <ScrollBar />
     <ScrollAreaPrimitive.Corner />
   </ScrollAreaPrimitive.Root>
@@ -29,7 +31,7 @@ const ScrollBar = React.forwardRef<
       className,
     )}
     {...props}>
-    <ScrollAreaPrimitive.ScrollAreaThumb className={styles.thumb} />
+    {/* <ScrollAreaPrimitive.ScrollAreaThumb className={styles.thumb} /> */}
   </ScrollAreaPrimitive.ScrollAreaScrollbar>
 ));
 ScrollBar.displayName = ScrollAreaPrimitive.ScrollAreaScrollbar.displayName;

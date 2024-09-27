@@ -1,0 +1,51 @@
+.card {
+  position: absolute;
+  width: 620px;
+  top: 48px;
+  right: 120px;
+}
+
+.character {
+  position: absolute;
+  width: 620px;
+  top: 246px;
+  left: 211px;
+}
+
+.tutorial {
+  position: absolute;
+  width: 526px;
+  top: 655px;
+  left: 120px;
+}
+
+.redButton {
+  background: #eb5757;
+  color: #ffffff;
+  &:hover {
+    background: #eb5757;
+  }
+}
+
+.buttons {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  & > * {
+    flex: 1;
+  }
+}
+
+.info {
+  display: flex;
+  gap: 6px;
+  color: #58696eb2;
+}
+
+.footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}

@@ -1,10 +1,11 @@
-import { cva, VariantProps } from 'class-variance-authority';
+import { cva, type VariantProps } from 'class-variance-authority';
 import { BaseHTMLAttributes } from 'react';
 import styles from './text.module.scss';
 
 export const textVariants = cva('', {
   variants: {
     size: {
+      xs: styles.xs,
       sm: styles.sm,
       md: styles.md,
       lg: styles.lg,
@@ -27,6 +28,7 @@ export interface TextProps extends BaseHTMLAttributes<HTMLParagraphElement>, Var
 
 export function Text({ children, className, size, weight, ...props }: TextProps) {
   return (
+    // eslint-disable-next-line react/jsx-props-no-spreading
     <p className={textVariants({ size, weight, className })} {...props}>
       {children}
     </p>

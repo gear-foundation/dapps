@@ -1,0 +1,44 @@
+.list {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: 551px;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 17px 1fr 158px;
+  gap: 12px;
+  padding: 15.5px 12px;
+  border-radius: 8px;
+  border: 1px solid #00000012;
+
+  &:first-child {
+    margin-top: 16px;
+  }
+
+  &:last-child {
+    margin-bottom: 16px;
+  }
+
+  &:not(:first-child) {
+    margin-top: 4px;
+  }
+
+  &.my {
+    background: #00ffc4;
+  }
+}
+
+.number {
+  width: 17px;
+  opacity: 0.5;
+}
+
+.addressWrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #58696e;
+  width: 180px;
+}

@@ -11,7 +11,6 @@
 
 .scrollbar {
   display: flex;
-  background-color: rgba(0, 0, 0, 0.1);
   touch-action: none;
   user-select: none;
   transition-property: background-color;
@@ -48,4 +47,21 @@
   &:hover {
     background-color: rgba(0, 0, 0, 1);
   }
+}
+
+.top {
+  background: linear-gradient(0deg, rgba(255, 255, 255, 0) 0%, #ffffff 78.26%);
+  top: -10px;
+}
+
+.bottom {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #ffffff 78.26%);
+  bottom: -10px;
+}
+
+.gradient {
+  position: absolute;
+  left: 0;
+  height: 46px;
+  width: 100%;
 }

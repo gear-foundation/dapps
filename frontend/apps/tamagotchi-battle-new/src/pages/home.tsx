@@ -1,42 +1,33 @@
-import { useAccount } from '@gear-js/react-hooks';
-import { WalletNew as Wallet } from '@dapps-frontend/ui';
-import { Card, Loader } from '@/components';
-import { useProgram } from '@/app/utils';
-import { Background, ImportCharacter, SelectGameMode } from '@/features/game/components';
-import { useAtomValue } from 'jotai';
-import { gameStatusAtom } from '@/features/game/store';
-import { GameStatus } from '@/features/game/types';
+import { useNavigate } from 'react-router-dom';
+import { Card } from '@/components';
+import { ROUTES } from '@/app/consts';
+import { Background } from '@/features/game/components';
+import { CardButton } from '@/components/ui/card-button';
+import { CodeSlashIcon, MagicLineIcon } from '@/features/game/assets/images';
+
+import styles from './home.module.scss';
 
 export default function Home() {
-  const { account } = useAccount();
-  // const { gameState } = useGame();
-  const gameStatus = useAtomValue(gameStatusAtom);
-  // const gameStatus = 'import' as GameStatus;
-  // const program = useProgram();
-  const program = true;
+  const navigate = useNavigate();
 
-  return program ? (
-    <>
-      {!account && (
-        <Background>
-          <Card
-            title="Tamagotchi Battle"
-            subTitle="Create your Tamagotchi character and engage in battles with other players.">
-            <Wallet />
-          </Card>
-        </Background>
-      )}
-      {!!account && (
-        <>
-          {gameStatus === null && <SelectGameMode />}
-          {gameStatus === 'import' && <ImportCharacter />}
-          {gameStatus === 'generate' && <SelectGameMode />}
-          {gameStatus === 'create' && <SelectGameMode />}
-          {gameStatus === 'find' && <SelectGameMode />}
-        </>
-      )}
-    </>
-  ) : (
-    <Loader />
+  return (
+    <Background>
+      <Card title="Tamagotchi Battle" description="Select game mode" className={styles.card}>
+        <div className={styles.container}>
+          <CardButton
+            onClick={() => navigate(ROUTES.IMPORT_CHARACTER)}
+            icon={<CodeSlashIcon />}
+            title="Import Character from Program"
+            description="Enter the program ID to view your character."
+          />
+          <CardButton
+            onClick={() => navigate(ROUTES.GENERATE_CHARACTER)}
+            icon={<MagicLineIcon />}
+            title="Generate Character Without a Code"
+            description="Simply generate a random appearance and attributes."
+          />
+        </div>
+      </Card>
+    </Background>
   );
 }

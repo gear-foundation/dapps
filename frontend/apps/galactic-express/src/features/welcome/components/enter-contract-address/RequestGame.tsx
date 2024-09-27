@@ -22,10 +22,6 @@ import { TextModal } from 'features/session/components/game-not-found-modal';
 import { GameIntro } from '../game-intro';
 import styles from './RequestGame.module.scss';
 
-export interface ContractFormValues {
-  [key: string]: string;
-}
-
 type Status = 'creating' | 'joining' | null;
 
 type CreateFormValues = {
