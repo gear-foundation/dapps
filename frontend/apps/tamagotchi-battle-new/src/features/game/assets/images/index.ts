@@ -20,3 +20,4 @@ export { ReactComponent as GameButtonGlowSvg } from './icons/game-button-glow.sv
 export { ReactComponent as LoaderIcon } from './icons/loader.svg';
 export { ReactComponent as UserSmileIcon } from './icons/user-smile.svg';
 export { ReactComponent as UserSkullIcon } from './icons/user-skull.svg';
+export { ReactComponent as SkullBigIcon } from './icons/skull-big.svg';

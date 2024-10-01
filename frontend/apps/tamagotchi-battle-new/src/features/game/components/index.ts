@@ -3,3 +3,8 @@ export { Character } from './character';
 export { CharacterStats } from './character-stats';
 export { CharacterStatsForm } from './character-stats-form';
 export { WaitList } from './wait-list';
+export { List } from './list';
+export { GameButton } from './game-button';
+export { GameOverCard } from './game-over-card';
+export { Timer } from './timer';
+export * from './battle-history-card';

@@ -32,6 +32,23 @@
   top: 684px;
 }
 
+.exit {
+  position: absolute;
+  top: 692px;
+  right: 263px;
+  height: 40px;
+  width: 93px;
+}
+
+.cancelTournament {
+  position: absolute;
+  top: 688px;
+  right: 137.5px;
+  height: 44px;
+  width: 168px;
+  font-size: 14px;
+}
+
 .players {
   display: flex;
   align-items: center;
@@ -42,4 +59,29 @@
     align-items: center;
     gap: 6px;
   }
+}
+
+.list {
+  position: absolute;
+  top: 767px;
+}
+
+.historyItem {
+  display: flex;
+}
+
+.endTurnHistory {
+  position: absolute;
+  top: 441px;
+}
+
+.nextButton {
+  width: 579px;
+  position: absolute;
+  top: 589px;
+}
+
+.gameOver {
+  position: absolute;
+  top: 0px;
 }

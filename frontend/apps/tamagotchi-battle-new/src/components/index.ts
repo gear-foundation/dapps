@@ -4,3 +4,4 @@ export { Modal } from './ui/modal';
 export { Card } from './ui/card';
 export { CardButton } from './ui/card-button';
 export { Text } from './ui/text';
+export { Segmented } from './ui/segmented';

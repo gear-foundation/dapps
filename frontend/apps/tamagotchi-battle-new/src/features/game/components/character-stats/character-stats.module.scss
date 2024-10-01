@@ -66,9 +66,14 @@
   margin: 8px 19px;
   height: 22px;
   line-height: 22px;
+  display: flex;
+  gap: 8px;
+  color: #fff;
+  justify-content: flex-end;
 }
+
 .right .name {
-  text-align: left;
+  justify-content: flex-start;
 }
 
 .health {
@@ -146,4 +151,11 @@
   box-shadow:
     0px 2.4px 4.8px 0px #00ffc466,
     0px 0.6px 1.8px 0px #00000033 inset;
+}
+
+.defeated {
+  .stat,
+  .healthCount {
+    opacity: 0.2;
+  }
 }

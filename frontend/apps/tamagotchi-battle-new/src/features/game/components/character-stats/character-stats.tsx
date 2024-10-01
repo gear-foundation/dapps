@@ -1,38 +1,38 @@
 import clsx from 'clsx';
 import { VariantProps, cva } from 'class-variance-authority';
 import { Text } from '@/components';
-import { AttackIcon, DefenseIcon, DodgeIcon, HealthIcon } from '../../assets/images';
+import { AttackIcon, DefenseIcon, DodgeIcon, HealthIcon, SkullBigIcon } from '../../assets/images';
 import { ReactComponent as MockAvatarIcon } from './avatar.svg';
 import { ReactComponent as VectorIcon } from './vector.svg';
 import { HealthIndicator } from '../health-indicator';
 import styles from './character-stats.module.scss';
+import { PlayerState } from '../battle-history-card';
 
 export const variants = cva('', {
-  variants: { align: { left: styles.left, right: styles.right } },
-  defaultVariants: { align: 'left' },
+  variants: { align: { left: styles.left, right: styles.right }, status: { defeated: styles.defeated, alive: null } },
+  defaultVariants: { align: 'left', status: 'alive' },
 });
 
-type CharacterStats = {
-  icon: React.ReactNode;
-  title: string;
-  value: number;
-};
+type CharacterStatsProps = VariantProps<typeof variants> &
+  PlayerState & {
+    className?: string;
+  };
 
-type CharacterStatsProps = {
-  className?: string;
-} & VariantProps<typeof variants>;
-
-export const CharacterStats = ({ className, align }: CharacterStatsProps) => {
+export const CharacterStats = ({
+  className,
+  align,
+  name,
+  attack,
+  currentHealth,
+  deffence,
+  dodge,
+}: CharacterStatsProps) => {
   // ! TODO: use as props
-  const name = 'Player Name 1';
-  const currentHealth = 92;
-  const attack = 30;
-  const deffence = 10;
-  const dodge = 30;
   const isActive = false;
+  const status = currentHealth === 0 ? 'defeated' : 'alive';
 
   return (
-    <div className={variants({ align, className: clsx(styles.container, className) })}>
+    <div className={variants({ align, status, className: clsx(styles.container, className) })}>
       <div className={variants({ align, className: clsx(styles.bottom) })}>
         <VectorIcon className={styles.vector} />
         <div className={styles.stats}>
@@ -60,6 +60,8 @@ export const CharacterStats = ({ className, align }: CharacterStatsProps) => {
         <VectorIcon className={styles.vector} />
         <Text size="lg" weight="bold" className={styles.name}>
           {name}
+
+          {status === 'defeated' && <SkullBigIcon />}
         </Text>
         <div className={styles.health}>
           <div className={styles.healthCount}>
