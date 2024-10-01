@@ -1,3 +1,4 @@
-import { Wallet } from './components';
+import { Wallet, WalletModal } from './components';
+import { useWallet } from './hooks';
 
-export { Wallet };
+export { Wallet, WalletModal, useWallet };

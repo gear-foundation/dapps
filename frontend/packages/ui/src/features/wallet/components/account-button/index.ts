@@ -1,3 +1,3 @@
-import { AccountButton } from './account-button';
+import { VaraAccountButton, GearAccountButton } from './account-button';
 
-export { AccountButton };
+export { VaraAccountButton, GearAccountButton };

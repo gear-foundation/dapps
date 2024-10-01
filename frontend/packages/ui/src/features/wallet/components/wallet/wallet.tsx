@@ -1,33 +1,41 @@
-import { Button } from '@gear-js/ui';
-import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { useAccount, useApi, useBalanceFormat, useDeriveBalancesAll } from '@gear-js/react-hooks';
+import cx from 'clsx';
 import { useState } from 'react';
 
 import { ReactComponent as VaraSVG } from '../../assets/vara.svg';
-import { useFreeAccountBalance } from '../../hooks';
-import { AccountButton } from '../account-button';
 import { WalletModal } from '../wallet-modal';
+import { UI_CONFIG } from '../ui-config';
 import styles from './wallet.module.css';
 
-function Wallet() {
+type Props = {
+  variant?: 'gear' | 'vara';
+  // temp solution to support responsiveness in MenuHandler, until it's supported here
+  accountButtonClassName?: string;
+};
+
+function Wallet({ variant = 'vara', accountButtonClassName }: Props) {
   const { isApiReady } = useApi();
   const { account, isAccountReady } = useAccount();
 
   const { getFormattedBalance } = useBalanceFormat();
-  const { freeAccountBalance } = useFreeAccountBalance();
-  const balance = isApiReady && freeAccountBalance ? getFormattedBalance(freeAccountBalance) : undefined;
+  const balances = useDeriveBalancesAll(account?.decodedAddress);
+  const balance = isApiReady && balances ? getFormattedBalance(balances.freeBalance) : undefined;
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  return isAccountReady ? (
+  if (!isAccountReady) return null;
+  const { Button, AccountButton } = UI_CONFIG[variant];
+
+  return (
     <>
       <div className={styles.wallet}>
         {balance && (
           <div className={styles.balance}>
             <VaraSVG />
 
-            <p className={styles.text}>
+            <p className={cx(styles.text, styles[variant])}>
               <span className={styles.value}>{balance.value}</span>
               <span className={styles.unit}>{balance.unit}</span>
             </p>
@@ -35,15 +43,17 @@ function Wallet() {
         )}
 
         {account ? (
-          <AccountButton address={account.address} name={account.meta.name} onClick={openModal} />
+          <div className={accountButtonClassName}>
+            <AccountButton address={account.address} name={account.meta.name} onClick={openModal} />
+          </div>
         ) : (
-          <Button text="Connect Wallet" color="lightGreen" onClick={openModal} />
+          <Button text="Connect Wallet" color="primary" onClick={openModal} />
         )}
       </div>
 
-      {isModalOpen && <WalletModal close={closeModal} />}
+      {isModalOpen && <WalletModal variant={variant} close={closeModal} />}
     </>
-  ) : null;
+  );
 }
 
 export { Wallet };

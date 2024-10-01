@@ -49,7 +49,7 @@ export const Home = () => {
               <StartDisclaimer fileName="tamagotchi" wikiPath="Gaming/tamagotchi" className="m-auto mt-9" />
             </div>
           ) : (
-            <Wallet />
+            <Wallet variant="gear" />
           )}
         </div>
       </div>

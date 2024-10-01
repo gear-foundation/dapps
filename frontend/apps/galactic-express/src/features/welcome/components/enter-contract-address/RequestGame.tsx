@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { WalletNew as Wallet } from '@dapps-frontend/ui';
+import { Wallet } from '@dapps-frontend/ui';
 import { Button } from '@gear-js/vara-ui';
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { cx } from 'utils';

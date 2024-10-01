@@ -3,7 +3,7 @@ import Identicon from '@polkadot/react-identicon';
 import { motion } from 'framer-motion';
 import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
-import { useWallet } from '@/features/wallet-new/hooks';
+import { useWallet } from '@/features/wallet';
 import styles from './mobile-menu.module.css';
 import clsx from 'clsx';
 
@@ -19,10 +19,10 @@ type Props = {
   }[];
   className?: ClassNameProps;
   onClose(): void;
-  walletModalHandler: (bool: boolean) => void;
+  onChangeAccountClick(): void;
 } & PropsWithChildren;
 
-export function MobileMenu({ children, className, onClose, walletModalHandler }: Props) {
+export function MobileMenu({ children, className, onClose, onChangeAccountClick }: Props) {
   const { account, logout } = useAccount();
   const { walletAccounts } = useWallet();
 
@@ -45,7 +45,7 @@ export function MobileMenu({ children, className, onClose, walletModalHandler }:
     });
 
   const handleChangeButtonClick = () => {
-    walletModalHandler(true);
+    onChangeAccountClick();
     onClose();
   };
 

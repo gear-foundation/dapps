@@ -1,7 +1,8 @@
 import { useAccount } from '@gear-js/react-hooks';
 import { useEffect, useState } from 'react';
-import { WALLET } from '../consts';
-import { WalletId } from '../types';
+
+import { WALLET } from './consts';
+import { WalletId } from './types';
 
 function useWallet() {
   const { wallets, account } = useAccount();

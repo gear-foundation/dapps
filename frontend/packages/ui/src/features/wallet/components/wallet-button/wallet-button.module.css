@@ -1,11 +1,11 @@
+.button {
+  /* overriding @gear-js/ui and @gear-js/vara-ui */
+  justify-content: space-between !important;
+}
+
 .wallet {
   display: flex;
   align-items: center;
-  font-weight: 700;
-  font-size: 14px;
-  line-height: 120%;
-  letter-spacing: 0.02em;
-  color: #000;
 }
 
 .icon {
