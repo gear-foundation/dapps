@@ -6,7 +6,7 @@ const USERS: &[u64] = &[3, 4, 5, 6];
 
 fn common_init<'a>(sys: &'a System, users: &[u64], required: u32) -> Program<'a> {
     sys.init_logger();
-    USERS.into_iter().for_each(|id| {
+    USERS.iter().for_each(|id| {
         sys.mint_to(*id, 1_000_000_000_000_000);
     });
     let wallet = Program::current_opt(sys);

@@ -193,7 +193,7 @@ pub fn add_kanaria_assets(system: &System) {
     let composed_asset_id = 2;
 
     add_equippable_asset_entry(
-        &system,
+        system,
         &kanaria,
         0,
         None,
@@ -203,7 +203,7 @@ pub fn add_kanaria_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
-        &system,
+        system,
         &kanaria,
         0,
         Some(CATALOG_ID.into()),
@@ -214,11 +214,11 @@ pub fn add_kanaria_assets(system: &System) {
 
     let token_id: TokenId = 1.into();
 
-    add_asset_to_token(&system, &kanaria, token_id, default_asset_id, 0);
-    add_asset_to_token(&system, &kanaria, token_id, composed_asset_id, 0);
+    add_asset_to_token(system, &kanaria, token_id, default_asset_id, 0);
+    add_asset_to_token(system, &kanaria, token_id, composed_asset_id, 0);
 
-    accept_asset(&system, &kanaria, token_id, default_asset_id);
-    accept_asset(&system, &kanaria, token_id, composed_asset_id);
+    accept_asset(system, &kanaria, token_id, default_asset_id);
+    accept_asset(system, &kanaria, token_id, composed_asset_id);
 }
 
 pub fn add_gem_assets(system: &System) {
@@ -231,7 +231,7 @@ pub fn add_gem_assets(system: &System) {
     let equippable_ref_id_right_gem = 3;
 
     add_equippable_asset_entry(
-        &system,
+        system,
         &gem,
         0,
         Some(CATALOG_ID.into()),
@@ -241,7 +241,7 @@ pub fn add_gem_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
-        &system,
+        system,
         &gem,
         equippable_ref_id_left_gem,
         Some(CATALOG_ID.into()),
@@ -251,7 +251,7 @@ pub fn add_gem_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
-        &system,
+        system,
         &gem,
         equippable_ref_id_mid_gem,
         Some(CATALOG_ID.into()),
@@ -261,7 +261,7 @@ pub fn add_gem_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
-        &system,
+        system,
         &gem,
         equippable_ref_id_right_gem,
         Some(CATALOG_ID.into()),
@@ -271,7 +271,7 @@ pub fn add_gem_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
-        &system,
+        system,
         &gem,
         0,
         Some(CATALOG_ID.into()),
@@ -281,7 +281,7 @@ pub fn add_gem_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
-        &system,
+        system,
         &gem,
         equippable_ref_id_left_gem,
         Some(CATALOG_ID.into()),
@@ -291,7 +291,7 @@ pub fn add_gem_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
-        &system,
+        system,
         &gem,
         equippable_ref_id_mid_gem,
         Some(CATALOG_ID.into()),
@@ -301,7 +301,7 @@ pub fn add_gem_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
-        &system,
+        system,
         &gem,
         equippable_ref_id_right_gem,
         Some(CATALOG_ID.into()),
@@ -314,21 +314,21 @@ pub fn add_gem_assets(system: &System) {
     // e.g. Any asset on gem, which sets its equippableRefId to equippableRefIdLeftGem
     // will be considered a valid equip into any kanaria on slot 9 (left gem).
     set_valid_parent_for_equippable_group(
-        &system,
+        system,
         &gem,
         equippable_ref_id_left_gem,
         9,
         KANARIA_ID.into(),
     );
     set_valid_parent_for_equippable_group(
-        &system,
+        system,
         &gem,
         equippable_ref_id_mid_gem,
         10,
         KANARIA_ID.into(),
     );
     set_valid_parent_for_equippable_group(
-        &system,
+        system,
         &gem,
         equippable_ref_id_right_gem,
         11,
@@ -338,35 +338,35 @@ pub fn add_gem_assets(system: &System) {
     // We add assets of type A to gem 1 and 2, and type B to gem 3. Both are nested into the first kanaria
     // This means gems 1 and 2 will have the same asset, which is totally valid.
 
-    add_asset_to_token(&system, &gem, 1.into(), 1, 0);
-    add_asset_to_token(&system, &gem, 1.into(), 2, 0);
-    add_asset_to_token(&system, &gem, 1.into(), 3, 0);
-    add_asset_to_token(&system, &gem, 1.into(), 4, 0);
+    add_asset_to_token(system, &gem, 1.into(), 1, 0);
+    add_asset_to_token(system, &gem, 1.into(), 2, 0);
+    add_asset_to_token(system, &gem, 1.into(), 3, 0);
+    add_asset_to_token(system, &gem, 1.into(), 4, 0);
 
-    add_asset_to_token(&system, &gem, 2.into(), 1, 0);
-    add_asset_to_token(&system, &gem, 2.into(), 2, 0);
-    add_asset_to_token(&system, &gem, 2.into(), 3, 0);
-    add_asset_to_token(&system, &gem, 2.into(), 4, 0);
+    add_asset_to_token(system, &gem, 2.into(), 1, 0);
+    add_asset_to_token(system, &gem, 2.into(), 2, 0);
+    add_asset_to_token(system, &gem, 2.into(), 3, 0);
+    add_asset_to_token(system, &gem, 2.into(), 4, 0);
 
-    add_asset_to_token(&system, &gem, 3.into(), 5, 0);
-    add_asset_to_token(&system, &gem, 3.into(), 6, 0);
-    add_asset_to_token(&system, &gem, 3.into(), 7, 0);
-    add_asset_to_token(&system, &gem, 3.into(), 8, 0);
+    add_asset_to_token(system, &gem, 3.into(), 5, 0);
+    add_asset_to_token(system, &gem, 3.into(), 6, 0);
+    add_asset_to_token(system, &gem, 3.into(), 7, 0);
+    add_asset_to_token(system, &gem, 3.into(), 8, 0);
 
-    accept_asset(&system, &gem, 1.into(), 1);
-    accept_asset(&system, &gem, 1.into(), 2);
-    accept_asset(&system, &gem, 1.into(), 3);
-    accept_asset(&system, &gem, 1.into(), 4);
+    accept_asset(system, &gem, 1.into(), 1);
+    accept_asset(system, &gem, 1.into(), 2);
+    accept_asset(system, &gem, 1.into(), 3);
+    accept_asset(system, &gem, 1.into(), 4);
 
-    accept_asset(&system, &gem, 2.into(), 1);
-    accept_asset(&system, &gem, 2.into(), 2);
-    accept_asset(&system, &gem, 2.into(), 3);
-    accept_asset(&system, &gem, 2.into(), 4);
+    accept_asset(system, &gem, 2.into(), 1);
+    accept_asset(system, &gem, 2.into(), 2);
+    accept_asset(system, &gem, 2.into(), 3);
+    accept_asset(system, &gem, 2.into(), 4);
 
-    accept_asset(&system, &gem, 3.into(), 5);
-    accept_asset(&system, &gem, 3.into(), 6);
-    accept_asset(&system, &gem, 3.into(), 7);
-    accept_asset(&system, &gem, 3.into(), 8);
+    accept_asset(system, &gem, 3.into(), 5);
+    accept_asset(system, &gem, 3.into(), 6);
+    accept_asset(system, &gem, 3.into(), 7);
+    accept_asset(system, &gem, 3.into(), 8);
 }
 
 pub fn equip_gems(system: &System) {

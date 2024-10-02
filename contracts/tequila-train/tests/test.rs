@@ -1,3 +1,4 @@
+#![allow(clippy::too_many_arguments)]
 use gstd::{ActorId, Encode};
 use gtest::{Log, Program, System};
 use tequila_train_io::*;
