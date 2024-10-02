@@ -43,6 +43,7 @@ fn ft_balance_of(program: Program<'_>, sys: &System, account: ActorId) {
     println!("STATE {:?}", state)
 }
 
+// TODO: Remove `ignore` after adding it to the release tag https://github.com/gear-tech/gear/pull/4270
 #[ignore]
 #[tokio::test]
 async fn test_play_game() {
@@ -112,7 +113,6 @@ async fn test_play_game() {
     assert_eq!(new_balance - old_balance, 100_000_000_000_000);
 }
 
-#[ignore]
 #[tokio::test]
 async fn test_play_game_with_fungible_token() {
     let system = System::new();
@@ -172,6 +172,7 @@ async fn test_play_game_with_fungible_token() {
     ft_balance_of(ft_program, program_space.system(), program_space.actor_id());
 }
 
+// TODO: Remove `ignore` after adding it to the release tag https://github.com/gear-tech/gear/pull/4270
 #[ignore]
 #[tokio::test]
 async fn test_play_tournament() {

@@ -4347,27 +4347,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7843ec2de400bcbc6a6328c958dc38e5359da6e93e72e37bc5246bf1ae776389"
 
 [[package]]
-name = "multi-token"
-version = "1.1.0"
-dependencies = [
- "gclient",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "gtest",
- "multi-token-io",
- "tokio",
-]
-
-[[package]]
-name = "multi-token-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
 name = "multisig-wallet"
 version = "1.1.0"
 dependencies = [
@@ -5461,38 +5440,6 @@ version = "1.1.0"
 dependencies = [
  "gstd",
  "primitive-types",
-]
-
-[[package]]
-name = "rock-paper-scissors"
-version = "1.1.0"
-dependencies = [
- "gclient",
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "gtest",
- "rock-paper-scissors-io",
- "sp-core-hashing",
- "tokio",
-]
-
-[[package]]
-name = "rock-paper-scissors-io"
-version = "1.1.0"
-dependencies = [
- "gmeta",
- "gstd",
-]
-
-[[package]]
-name = "rock-paper-scissors-state"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "rock-paper-scissors-io",
 ]
 
 [[package]]

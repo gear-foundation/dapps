@@ -16,6 +16,7 @@ pub trait RMRKToken {
     fn rmrk(sys: &System, resource_hash: Option<[u8; 32]>) -> Program<'_>;
     fn mint_to_root_owner(
         &self,
+        system: &System,
         user: u64,
         root_owner: u64,
         token_id: u64,
@@ -23,15 +24,17 @@ pub trait RMRKToken {
     );
     fn mint_to_nft(
         &self,
+        system: &System,
         user: u64,
         parent_id: u64,
         parent_token_id: u64,
         token_id: u64,
         exp_error: Option<RMRKError>,
     );
-    fn burn(&self, token_id: u64, user: u64, exp_error: Option<RMRKError>);
+    fn burn(&self, system: &System, token_id: u64, user: u64, exp_error: Option<RMRKError>);
     fn accept_child(
         &self,
+        system: &System,
         user: u64,
         parent_token_id: u64,
         child_contract_id: u64,
@@ -40,6 +43,7 @@ pub trait RMRKToken {
     );
     fn reject_child(
         &self,
+        system: &System,
         user: u64,
         parent_token_id: u64,
         child_contract_id: u64,
@@ -48,16 +52,25 @@ pub trait RMRKToken {
     );
     fn remove_child(
         &self,
+        system: &System,
         user: u64,
         parent_token_id: u64,
         child_contract_id: u64,
         child_token_id: u64,
         exp_error: Option<RMRKError>,
     );
-    fn approve(&self, user: u64, to: u64, token_id: u64);
-    fn transfer(&self, from: u64, to: u64, token_id: u64, exp_error: Option<RMRKError>);
+    fn approve(&self, system: &System, user: u64, to: u64, token_id: u64);
+    fn transfer(
+        &self,
+        system: &System,
+        from: u64,
+        to: u64,
+        token_id: u64,
+        exp_error: Option<RMRKError>,
+    );
     fn transfer_to_nft(
         &self,
+        system: &System,
         from: u64,
         to: u64,
         token_id: u64,
@@ -76,13 +89,13 @@ pub trait RMRKToken {
         token_id: u64,
         expected_accepted_children: HashSet<(CollectionId, TokenId)>,
     );
-    fn check_root_owner(&self, token_id: u64, root_owner: u64);
+    fn check_root_owner(&self, system: &System, token_id: u64, root_owner: u64);
 }
 
 impl RMRKToken for Program<'_> {
     fn rmrk(sys: &System, resource_hash: Option<[u8; 32]>) -> Program<'_> {
         let rmrk = Program::current_opt(sys);
-        let res = rmrk.send(
+        let mid = rmrk.send(
             USERS[0],
             InitRMRK {
                 name: "RMRKToken".to_string(),
@@ -91,19 +104,21 @@ impl RMRKToken for Program<'_> {
                 resource_name: "ResourceName".to_string(),
             },
         );
-        assert!(!res.main_failed());
+        let res = sys.run_next_block();
+        assert!(res.succeed.contains(&mid));
         rmrk
     }
 
     fn mint_to_nft(
         &self,
+        system: &System,
         user: u64,
         parent_id: u64,
         parent_token_id: u64,
         token_id: u64,
         exp_error: Option<RMRKError>,
     ) {
-        let res = self.send(
+        self.send(
             user,
             RMRKAction::MintToNft {
                 parent_id: parent_id.into(),
@@ -111,29 +126,36 @@ impl RMRKToken for Program<'_> {
                 token_id: token_id.into(),
             },
         );
+        let res = system.run_next_block();
+        println!(" RES {:?}", res);
         if let Some(exp_error) = exp_error {
             let error: Result<RMRKReply, RMRKError> = Err(exp_error);
             assert!(res.contains(&(user, error.encode())));
         } else {
             let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::MintedToNft);
+            let decoded_log = res.decoded_log::<Result<RMRKReply, RMRKError>>();
+            println!(" LOG {:?}", decoded_log);
             assert!(res.contains(&(user, reply.encode())));
         }
     }
 
     fn mint_to_root_owner(
         &self,
+        system: &System,
         user: u64,
         root_owner: u64,
         token_id: u64,
         exp_error: Option<RMRKError>,
     ) {
-        let res = self.send(
+        self.send(
             user,
             RMRKAction::MintToRootOwner {
                 root_owner: root_owner.into(),
                 token_id: token_id.into(),
             },
         );
+        let res = system.run_next_block();
+
         if let Some(exp_error) = exp_error {
             let error: Result<RMRKReply, RMRKError> = Err(exp_error);
             assert!(res.contains(&(user, error.encode())));
@@ -143,31 +165,28 @@ impl RMRKToken for Program<'_> {
         }
     }
 
-    fn burn(&self, user: u64, token_id: u64, exp_error: Option<RMRKError>) {
-        let res = self.send(user, RMRKAction::Burn(token_id.into()));
-
+    fn burn(&self, system: &System, user: u64, token_id: u64, exp_error: Option<RMRKError>) {
+        self.send(user, RMRKAction::Burn(token_id.into()));
+        let res = system.run_next_block();
         if let Some(exp_error) = exp_error {
             let error: Result<RMRKReply, RMRKError> = Err(exp_error);
-            let decoded_log = res.decoded_log::<Result<RMRKReply, RMRKError>>();
-            println!("DECODED LOG {:?}", decoded_log);
             assert!(res.contains(&(user, error.encode())));
         } else {
             let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::Burnt);
-            let decoded_log = res.decoded_log::<Result<RMRKReply, RMRKError>>();
-            println!("DECODED LOG {:?}", decoded_log);
             assert!(res.contains(&(user, reply.encode())));
         }
     }
 
     fn accept_child(
         &self,
+        system: &System,
         user: u64,
         parent_token_id: u64,
         child_contract_id: u64,
         child_token_id: u64,
         exp_error: Option<RMRKError>,
     ) {
-        let res = self.send(
+        self.send(
             user,
             RMRKAction::AcceptChild {
                 parent_token_id: parent_token_id.into(),
@@ -175,11 +194,10 @@ impl RMRKToken for Program<'_> {
                 child_token_id: child_token_id.into(),
             },
         );
+        let res = system.run_next_block();
 
         if let Some(exp_error) = exp_error {
             let error: Result<RMRKReply, RMRKError> = Err(exp_error);
-            let decoded_log = res.decoded_log::<Result<RMRKReply, RMRKError>>();
-            println!("DECODED LOG {:?}", decoded_log);
             assert!(res.contains(&(user, error.encode())));
         } else {
             let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::ChildAccepted);
@@ -189,13 +207,14 @@ impl RMRKToken for Program<'_> {
 
     fn reject_child(
         &self,
+        system: &System,
         user: u64,
         parent_token_id: u64,
         child_contract_id: u64,
         child_token_id: u64,
         exp_error: Option<RMRKError>,
     ) {
-        let res = self.send(
+        self.send(
             user,
             RMRKAction::RejectChild {
                 parent_token_id: parent_token_id.into(),
@@ -203,11 +222,10 @@ impl RMRKToken for Program<'_> {
                 child_token_id: child_token_id.into(),
             },
         );
+        let res = system.run_next_block();
 
         if let Some(exp_error) = exp_error {
             let error: Result<RMRKReply, RMRKError> = Err(exp_error);
-            let decoded_log = res.decoded_log::<Result<RMRKReply, RMRKError>>();
-            println!("DECODED LOG {:?}", decoded_log);
             assert!(res.contains(&(user, error.encode())));
         } else {
             let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::ChildRejected);
@@ -217,13 +235,14 @@ impl RMRKToken for Program<'_> {
 
     fn remove_child(
         &self,
+        system: &System,
         user: u64,
         parent_token_id: u64,
         child_contract_id: u64,
         child_token_id: u64,
         exp_error: Option<RMRKError>,
     ) {
-        let res = self.send(
+        self.send(
             user,
             RMRKAction::RemoveChild {
                 parent_token_id: parent_token_id.into(),
@@ -231,6 +250,7 @@ impl RMRKToken for Program<'_> {
                 child_token_id: child_token_id.into(),
             },
         );
+        let res = system.run_next_block();
 
         if let Some(exp_error) = exp_error {
             let error: Result<RMRKReply, RMRKError> = Err(exp_error);
@@ -241,26 +261,36 @@ impl RMRKToken for Program<'_> {
         }
     }
 
-    fn approve(&self, user: u64, to: u64, token_id: u64) {
-        let res = self.send(
+    fn approve(&self, system: &System, user: u64, to: u64, token_id: u64) {
+        self.send(
             user,
             RMRKAction::Approve {
                 to: to.into(),
                 token_id: token_id.into(),
             },
         );
+        let res = system.run_next_block();
+
         let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::Approved);
         assert!(res.contains(&(user, reply.encode())));
     }
 
-    fn transfer(&self, from: u64, to: u64, token_id: u64, exp_error: Option<RMRKError>) {
-        let res = self.send(
+    fn transfer(
+        &self,
+        system: &System,
+        from: u64,
+        to: u64,
+        token_id: u64,
+        exp_error: Option<RMRKError>,
+    ) {
+        self.send(
             from,
             RMRKAction::Transfer {
                 to: to.into(),
                 token_id: token_id.into(),
             },
         );
+        let res = system.run_next_block();
 
         if let Some(exp_error) = exp_error {
             let error: Result<RMRKReply, RMRKError> = Err(exp_error);
@@ -273,13 +303,14 @@ impl RMRKToken for Program<'_> {
 
     fn transfer_to_nft(
         &self,
+        system: &System,
         from: u64,
         to: u64,
         token_id: u64,
         destination_id: u64,
         exp_error: Option<RMRKError>,
     ) {
-        let res = self.send(
+        self.send(
             from,
             RMRKAction::TransferToNft {
                 to: to.into(),
@@ -287,7 +318,7 @@ impl RMRKToken for Program<'_> {
                 destination_id: destination_id.into(),
             },
         );
-
+        let res = system.run_next_block();
         if let Some(exp_error) = exp_error {
             let error: Result<RMRKReply, RMRKError> = Err(exp_error);
             let decoded_log = res.decoded_log::<Result<RMRKReply, RMRKError>>();
@@ -295,8 +326,7 @@ impl RMRKToken for Program<'_> {
             assert!(res.contains(&(from, error.encode())));
         } else {
             let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::TransferredToNft);
-            let decoded_log = res.decoded_log::<Result<RMRKReply, RMRKError>>();
-            println!(" DECODED LOG {:?}", decoded_log);
+            let _decoded_log = res.decoded_log::<Result<RMRKReply, RMRKError>>();
             assert!(res.contains(&(from, reply.encode())));
         }
     }
@@ -361,24 +391,27 @@ impl RMRKToken for Program<'_> {
             HashSet::from_iter(accepted_children);
         assert_eq!(accepted_children, expected_accepted_children);
     }
-    fn check_root_owner(&self, token_id: u64, root_owner: u64) {
-        let res = self.send(10, RMRKAction::RootOwner(token_id.into()));
+    fn check_root_owner(&self, system: &System, token_id: u64, root_owner: u64) {
+        self.send(10, RMRKAction::RootOwner(token_id.into()));
         let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::RootOwner(root_owner.into()));
-        assert!(res.contains(&(10, reply.encode())));
+        let result = system.run_next_block();
+        assert!(result.contains(&(10, reply.encode())));
     }
 }
 
 pub fn mint_parent_and_child(
+    system: &System,
     rmrk_child: &Program<'_>,
     rmrk_parent: &Program<'_>,
     child_token_id: u64,
     parent_token_id: u64,
 ) {
     // mint `parent_token_id`
-    rmrk_parent.mint_to_root_owner(USERS[0], USERS[0], parent_token_id, None);
+    rmrk_parent.mint_to_root_owner(system, USERS[0], USERS[0], parent_token_id, None);
 
     // mint RMRK child token to RMRK parent token
     rmrk_child.mint_to_nft(
+        system,
         USERS[3],
         PARENT_NFT_CONTRACT,
         parent_token_id,
@@ -388,14 +421,22 @@ pub fn mint_parent_and_child(
 }
 
 pub fn mint_parent_and_child_with_acceptance(
+    system: &System,
     rmrk_child: &Program<'_>,
     rmrk_parent: &Program<'_>,
     child_token_id: u64,
     parent_token_id: u64,
 ) {
-    mint_parent_and_child(rmrk_child, rmrk_parent, child_token_id, parent_token_id);
+    mint_parent_and_child(
+        system,
+        rmrk_child,
+        rmrk_parent,
+        child_token_id,
+        parent_token_id,
+    );
     // accept child
     rmrk_parent.accept_child(
+        system,
         USERS[0],
         parent_token_id,
         CHILD_NFT_CONTRACT,
@@ -406,6 +447,7 @@ pub fn mint_parent_and_child_with_acceptance(
 
 // ownership chain is  USERS[0] > parent_token_id > child_token_id > grand_token_id
 pub fn rmrk_chain(
+    system: &System,
     rmrk_grand: &Program<'_>,
     rmrk_child: &Program<'_>,
     rmrk_parent: &Program<'_>,
@@ -414,10 +456,12 @@ pub fn rmrk_chain(
     parent_token_id: u64,
 ) {
     // mint `parent_token_id`
-    rmrk_parent.mint_to_root_owner(USERS[0], USERS[0], parent_token_id, None);
+    rmrk_parent.mint_to_root_owner(system, USERS[0], USERS[0], parent_token_id, None);
 
+    println!("vemvefpv");
     // mint child_token_id to parent_token_id
     rmrk_child.mint_to_nft(
+        system,
         USERS[1],
         PARENT_NFT_CONTRACT,
         parent_token_id,
@@ -426,14 +470,18 @@ pub fn rmrk_chain(
     );
     // accept child
     rmrk_parent.accept_child(
+        system,
         USERS[0],
         parent_token_id,
         CHILD_NFT_CONTRACT,
         child_token_id,
         None,
     );
+    system.run_next_block();
+    println!("vemvefpv");
     // mint grand_token_id to child_token_id
     rmrk_grand.mint_to_nft(
+        system,
         USERS[1],
         CHILD_NFT_CONTRACT,
         child_token_id,
@@ -442,5 +490,17 @@ pub fn rmrk_chain(
     );
 
     // accept child
-    rmrk_child.accept_child(USERS[0], child_token_id, 3, grand_token_id, None);
+    rmrk_child.accept_child(system, USERS[0], child_token_id, 3, grand_token_id, None);
+}
+
+pub fn mint_value_to_users(system: &System) {
+    USERS
+        .iter()
+        .for_each(|id| system.mint_to(*id, 100_000_000_000_000));
+    let child_token_id: u64 = 1;
+    let parent_token_id: u64 = 10;
+    system.mint_to(child_token_id, 100_000_000_000_000);
+    system.mint_to(parent_token_id, 100_000_000_000_000);
+    system.mint_to(200, 100_000_000_000_000);
+    system.mint_to(8, 100_000_000_000_000);
 }
