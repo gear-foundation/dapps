@@ -10,13 +10,13 @@ Deliver the cargo 📦 to the orbit 🌌 using fuel ⛽️ efficiently.
 ### 🏗️ Building
 
 ```sh
-cargo b -r -p "galactic-express-wasm"
+cargo b -r -p "galactic-express"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -r -p "galactic-express-app"
+cargo t -r -p "galactic-express"
 ```
 
 ## Stages
