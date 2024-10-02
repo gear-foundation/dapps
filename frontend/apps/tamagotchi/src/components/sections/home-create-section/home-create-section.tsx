@@ -51,7 +51,7 @@ export const HomeCreateSection = () => {
                 <CreateTamagotchiForm />{' '}
               </div>
             ) : (
-              <Wallet />
+              <Wallet variant="gear" />
             )}
           </div>
         )}

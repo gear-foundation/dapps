@@ -2,12 +2,12 @@ import { Link } from 'react-router-dom';
 import { Header as CommonHeader, MenuHandler } from '@dapps-frontend/ui';
 import { ReactComponent as VaraSVG } from 'assets/images/icons/logo-vara.svg';
 import { ReactComponent as CrossSVG } from 'assets/images/icons/cross-icon.svg';
-import styles from './Header.module.scss';
 import { Button } from '@gear-js/vara-ui';
 import { useReadGameSessionState, useSyndoteMessage } from 'hooks/metadata';
 import { useAccount } from '@gear-js/react-hooks';
 import clsx from 'clsx';
 import { useQuitGame } from 'hooks/useQuitGame';
+import styles from './Header.module.scss';
 
 function Header() {
   const { state } = useReadGameSessionState();
@@ -43,17 +43,11 @@ function Header() {
               )}
             </>
           )}
-          <MenuHandler
-            className={{
-              wallet: {
-                balance: styles.walletBalance,
-              },
-              icon: styles.menuIcon,
-            }}
-          />
+          <MenuHandler className={{ icon: styles.menuIcon }} />
         </div>
       }
-      className={{ header: styles.header, content: styles.container }}></CommonHeader>
+      className={{ header: styles.header, content: styles.container }}
+    />
   );
 }
 

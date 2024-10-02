@@ -21,7 +21,7 @@
     "@gear-js/api": "0.38.1",
     "@gear-js/react-hooks": "0.12.1",
     "@gear-js/ui": "0.5.21",
-    "@gear-js/vara-ui": "0.0.10",
+    "@gear-js/vara-ui": "0.0.11",
     "@headlessui/react": "1.7.17",
     "@mantine/form": "6.0.15",
     "@polkadot/api": "11.0.2",

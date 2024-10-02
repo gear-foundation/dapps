@@ -1,23 +1,28 @@
 import { useAccount, useAlert } from '@gear-js/react-hooks';
-import { Button, Modal, buttonStyles } from '@gear-js/ui';
-import clsx from 'clsx';
-import { copyToClipboard } from '@/utils';
+import cx from 'clsx';
+
+import { copyToClipboard, isMobileDevice } from '@/utils';
+
 import { ReactComponent as CopySVG } from '../../assets/copy.svg';
+import { ReactComponent as EditSVG } from '../../assets/edit-icon.svg';
 import { ReactComponent as ExitSVG } from '../../assets/exit.svg';
 import { WALLETS } from '../../consts';
 import { useWallet } from '../../hooks';
-import { AccountButton } from '../account-button';
-import { WalletItem } from '../wallet-item';
+import { UI_CONFIG } from '../ui-config';
 import styles from './wallet-modal.module.css';
 
 type Props = {
+  variant?: 'gear' | 'vara';
   close: () => void;
 };
 
-function WalletModal({ close }: Props) {
-  const { wallets, isAnyWallet, account, login, logout } = useAccount();
+function WalletModal({ variant = 'vara', close }: Props) {
   const alert = useAlert();
+  const { wallets, isAnyWallet, account, login, logout } = useAccount();
   const { wallet, walletAccounts, setWalletId, resetWalletId } = useWallet();
+
+  const variantCn = styles[variant];
+  const { WalletButton, AccountButton, Button, Modal } = UI_CONFIG[variant];
 
   const getWallets = () =>
     WALLETS.map(([id, { SVG, name }]) => {
@@ -25,31 +30,22 @@ function WalletModal({ close }: Props) {
       const isEnabled = Boolean(status);
       const isConnected = status === 'connected';
 
-      const accountsCount = accounts?.length;
+      const accountsCount = accounts?.length || 0;
       const accountsStatus = `${accountsCount} ${accountsCount === 1 ? 'account' : 'accounts'}`;
 
       return (
         <li key={id}>
-          <button
-            type="button"
-            className={clsx(
-              buttonStyles.button,
-              buttonStyles.large,
-              buttonStyles.light,
-              buttonStyles.block,
-              styles.walletButton,
-              isEnabled && styles.enabled,
-            )}
+          <WalletButton
+            SVG={SVG}
+            name={name}
             onClick={() => (isConnected ? setWalletId(id) : connect?.())}
             disabled={!isEnabled}>
-            <WalletItem SVG={SVG} name={name} />
+            <span className={styles.status}>
+              <span className={cx(styles.statusText, variantCn)}>{isConnected ? 'Enabled' : 'Disabled'}</span>
 
-            <div className={styles.status}>
-              <p className={styles.statusText}>{isConnected ? 'Enabled' : 'Disabled'}</p>
-
-              {isConnected && <p className={styles.statusAccounts}>{accountsStatus}</p>}
-            </div>
-          </button>
+              {isConnected && <span className={cx(styles.statusAccounts, variantCn)}>{accountsStatus}</span>}
+            </span>
+          </WalletButton>
         </li>
       );
     });
@@ -69,67 +65,80 @@ function WalletModal({ close }: Props) {
       };
 
       const handleCopyClick = () => {
-        copyToClipboard({ alert, value: address });
+        copyToClipboard({ value: address, alert });
+        close();
       };
 
       return (
         <li key={address} className={styles.account}>
-          <AccountButton address={address} name={meta.name} size="large" color={color} onClick={handleClick} block />
-          <Button icon={CopySVG} color="transparent" onClick={handleCopyClick} />
+          <AccountButton.Modal address={address} name={meta.name} color={color} onClick={handleClick} />
+
+          <Button
+            icon={CopySVG}
+            color="transparent"
+            onClick={handleCopyClick}
+            className={cx(styles.copyButton, variantCn)}
+          />
         </li>
       );
     });
 
   const handleLogoutButtonClick = () => {
     logout();
+    resetWalletId();
     close();
   };
 
   const render = () => {
     if (!isAnyWallet)
-      return (
-        <div className={styles.instruction}>
-          <p>A compatible wallet wasn't found or is disabled.</p>
-          <p>
-            Please, install it following the{' '}
-            <a href="https://wiki.vara-network.io/docs/account/create-account/" target="_blank" rel="noreferrer">
-              instructions
-            </a>
-            .
-          </p>
-        </div>
+      return isMobileDevice ? (
+        <p className={cx(styles.text, variantCn)}>
+          To use this application on mobile devices, open this page inside compatible wallets like Nova or SubWallet.
+        </p>
+      ) : (
+        <p className={cx(styles.text, variantCn)}>
+          A compatible wallet was not found or is disabled. Install it following the{' '}
+          <a href="https://wiki.vara-network.io/docs/account/create-account/" target="_blank" rel="noreferrer">
+            instructions
+          </a>
+          .
+        </p>
       );
 
     if (!walletAccounts) return <ul className={styles.list}>{getWallets()}</ul>;
     if (walletAccounts.length) return <ul className={styles.list}>{getAccounts()}</ul>;
 
     return (
-      <div className={styles.instruction}>
-        <p>No accounts found. Please open your extension and create a new account or import existing.</p>
+      <p className={cx(styles.text, variantCn)}>
+        No accounts found. Please open your extension and create a new account or import existing.
+      </p>
+    );
+  };
+
+  const renderFooter = () => {
+    if (!wallet) return null;
+
+    return (
+      <div className={styles.footer}>
+        <WalletButton.Change SVG={wallet.SVG} name={wallet.name} onClick={resetWalletId}>
+          <EditSVG className={cx(styles.editIcon, variantCn)} />
+        </WalletButton.Change>
+
+        {account && (
+          <Button
+            icon={ExitSVG}
+            text="Logout"
+            color="transparent"
+            onClick={handleLogoutButtonClick}
+            className={cx(styles.logoutButton, variantCn)}
+          />
+        )}
       </div>
     );
   };
 
   return (
-    <Modal
-      heading="Connect Wallet"
-      close={close}
-      footer={
-        wallet ? (
-          <div className={styles.footer}>
-            <button
-              type="button"
-              className={clsx(buttonStyles.button, buttonStyles.transparent)}
-              onClick={resetWalletId}>
-              <WalletItem SVG={wallet.SVG} name={wallet.name} />
-
-              <span className={styles.changeText}>Change</span>
-            </button>
-
-            {account && <Button icon={ExitSVG} text="Logout" color="transparent" onClick={handleLogoutButtonClick} />}
-          </div>
-        ) : null
-      }>
+    <Modal heading="Connect Wallet" close={close} footer={renderFooter()}>
       {render()}
     </Modal>
   );
