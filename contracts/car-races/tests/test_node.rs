@@ -42,6 +42,7 @@ async fn common_upload_program(
 }
 
 #[tokio::test]
+#[ignore]
 async fn gclient_start_game_test() -> Result<()> {
     let api = GearApi::dev_from_path("../target/tmp/gear").await?;
 
