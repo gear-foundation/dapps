@@ -5,6 +5,7 @@ import {
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { DnsProvider as SharedDnsProvider } from '@dapps-frontend/hooks';
+import { QueryProvider } from '@dapps-frontend/ui';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider as UrqlClientProvider } from 'urql';
@@ -40,7 +41,15 @@ function UrqlProvider({ children }: ProviderProps) {
   return <UrqlClientProvider value={urqlClient}>{children}</UrqlClientProvider>;
 }
 
-const providers = [BrowserRouter, UrqlProvider, AlertProvider, ApiProvider, DnsProvider, AccountProvider];
+const providers = [
+  BrowserRouter,
+  UrqlProvider,
+  AlertProvider,
+  ApiProvider,
+  DnsProvider,
+  AccountProvider,
+  QueryProvider,
+];
 
 function withProviders(Component: ComponentType) {
   return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);

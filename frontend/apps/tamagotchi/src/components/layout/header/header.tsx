@@ -9,7 +9,7 @@ export const Header = () => {
         <SpriteIcon name="logo" width={180} height={44} className="h-10" />
       </Link>
 
-      <Wallet variant="gear" />
+      <Wallet theme="gear" />
     </header>
   );
 };

@@ -23,5 +23,9 @@
     "./apps/*",
     "./packages/*",
     "./templates/*"
-  ]
+  ],
+  "resolutions": {
+    "@polkadot/api": "11.0.2",
+    "@polkadot/types": "11.0.2"
+  }
 }
