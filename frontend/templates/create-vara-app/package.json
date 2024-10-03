@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@gear-js/api": "0.38.1",
-    "@gear-js/react-hooks": "0.12.1",
+    "@gear-js/react-hooks": "0.13.0",
     "@gear-js/vara-ui": "0.0.10",
     "@polkadot/api": "11.0.2",
     "@polkadot/react-identicon": "3.10.1",
