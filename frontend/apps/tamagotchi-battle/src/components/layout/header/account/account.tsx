@@ -18,7 +18,7 @@ export const AccountComponent = () => {
         </Link>
       )}
 
-      <Wallet variant="gear" />
+      <Wallet theme="gear" />
     </div>
   );
 };

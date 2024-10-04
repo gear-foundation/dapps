@@ -1,6 +1,27 @@
-import { Footer, Header, Container, StartDisclaimer, MenuOptions, MobileMenu, MenuHandler } from './components';
-import { Wallet } from './features';
+import { Wallet } from '@gear-js/wallet-connect';
 
-import { Switcher } from './components/switcher';
+import {
+  Footer,
+  Header,
+  Container,
+  StartDisclaimer,
+  MenuOptions,
+  MobileMenu,
+  MenuHandler,
+  Switcher,
+} from './components';
 
-export { Footer, Header, Container, StartDisclaimer, MenuOptions, Wallet, MobileMenu, MenuHandler, Switcher };
+import { QueryProvider } from './providers';
+
+export {
+  Footer,
+  Header,
+  Container,
+  StartDisclaimer,
+  MenuOptions,
+  Wallet,
+  MobileMenu,
+  MenuHandler,
+  Switcher,
+  QueryProvider,
+};

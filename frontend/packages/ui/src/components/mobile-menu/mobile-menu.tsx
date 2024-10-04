@@ -3,7 +3,6 @@ import Identicon from '@polkadot/react-identicon';
 import { motion } from 'framer-motion';
 import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
-import { useWallet } from '@/features/wallet';
 import styles from './mobile-menu.module.css';
 import clsx from 'clsx';
 
@@ -24,25 +23,22 @@ type Props = {
 
 export function MobileMenu({ children, className, onClose, onChangeAccountClick }: Props) {
   const { account, logout } = useAccount();
-  const { walletAccounts } = useWallet();
 
-  const getAccounts = () =>
-    walletAccounts?.map((_account) => {
-      const { address, meta } = _account;
-      const isActive = address === account?.address;
-      if (!isActive) return null;
+  const renderAccount = () => {
+    if (!account) return null;
+    const { address, meta } = account;
 
-      return (
-        <li key={address}>
-          <div className={styles.account}>
-            <Suspense>
-              <Identicon value={address} size={34} theme="polkadot" className={styles.accountIcon} />
-            </Suspense>
-            <p className={styles.textName}>{meta.name}</p>
-          </div>
-        </li>
-      );
-    });
+    return (
+      <li key={address}>
+        <div className={styles.account}>
+          <Suspense>
+            <Identicon value={address} size={34} theme="polkadot" className={styles.accountIcon} />
+          </Suspense>
+          <p className={styles.textName}>{meta.name}</p>
+        </div>
+      </li>
+    );
+  };
 
   const handleChangeButtonClick = () => {
     onChangeAccountClick();
@@ -65,7 +61,7 @@ export function MobileMenu({ children, className, onClose, onChangeAccountClick 
         <div className={styles.changeAccount}>
           {children}
           <div>
-            <ul className={styles.list}>{getAccounts()}</ul>
+            <ul className={styles.list}>{renderAccount()}</ul>
           </div>
 
           <div className={clsx(styles.buttons, className?.buttons)}>

@@ -16,7 +16,7 @@
     "@dapps-frontend/hooks": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.38.1",
-    "@gear-js/react-hooks": "0.12.1",
+    "@gear-js/react-hooks": "0.13.0",
     "@gear-js/ui": "0.5.26",
     "@gear-js/vara-ui": "0.0.11",
     "@headlessui/react": "1.7.13",

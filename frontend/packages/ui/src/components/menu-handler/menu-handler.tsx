@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Wallet, WalletModal } from '@/features/wallet';
 import { Button } from '@gear-js/vara-ui';
+import { Wallet, WalletModal } from '@gear-js/wallet-connect';
 import { ReactComponent as BurgerMenuSVG } from './assets/burger-menu.svg';
 import { ReactComponent as CrossSVG } from '@/assets/cross-icon.svg';
 import styles from './menu-handler.module.css';

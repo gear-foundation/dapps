@@ -12,11 +12,11 @@ import {
   EzTransactionsProvider,
 } from '@dapps-frontend/ez-transactions';
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
+import { QueryProvider } from '@dapps-frontend/ui';
 import { ENV } from '@/app/consts';
 import { AppProvider } from '@/app/context/ctx-app';
 import { GameProvider } from '@/app/context/ctx-game';
 import { Alert, alertStyles } from '@/components/ui/alert';
-import { QueryProvider } from './query-provider';
 import { useProgram } from '../utils';
 
 const ApiProvider = ({ children }: ProviderProps) => (
@@ -69,8 +69,8 @@ const providers = [
   AlertProvider,
   ApiProvider,
   DnsProvider,
-  QueryProvider,
   AccountProvider,
+  QueryProvider,
   AppProvider,
   GameProvider,
   GaslessTransactionsProvider,

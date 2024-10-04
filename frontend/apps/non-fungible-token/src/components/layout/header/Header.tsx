@@ -14,7 +14,7 @@ function Header() {
         {account && <CreateLink />}
       </nav>
 
-      <Wallet variant="gear" />
+      <Wallet theme="gear" />
     </header>
   );
 }

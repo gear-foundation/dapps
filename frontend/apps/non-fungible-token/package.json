@@ -25,7 +25,7 @@
     "@dapps-frontend/error-tracking": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.38.1",
-    "@gear-js/react-hooks": "0.12.1",
+    "@gear-js/react-hooks": "0.13.0",
     "@gear-js/ui": "0.5.26",
     "@polkadot/api": "11.0.2",
     "@polkadot/react-identicon": "3.6.4",

@@ -1,12 +1,4 @@
-import {
-  useAccount,
-  useAccountDeriveBalancesAll,
-  useAlert,
-  useApi,
-  useBalanceFormat,
-  withoutCommas,
-  getVaraAddress,
-} from '@gear-js/react-hooks';
+import { useAccount, useAlert, useApi, useBalanceFormat, withoutCommas, getVaraAddress } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/vara-ui';
 import { Players } from 'types';
 import { useSyndoteMessage } from 'hooks/metadata';
@@ -29,15 +21,12 @@ type Props = {
 };
 
 function SessionInfo({ entryFee, players, adminId }: Props) {
-  const { isApiReady } = useApi();
+  const { api } = useApi();
   const { account } = useAccount();
   const alert = useAlert();
   const { isMeta, sendMessage } = useSyndoteMessage();
-  const { getFormattedBalance, getFormattedBalanceValue } = useBalanceFormat();
-  const balances = useAccountDeriveBalancesAll();
-  const balance =
-    isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
-  const VaraSvg = balance?.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />;
+  const { getFormattedBalanceValue } = useBalanceFormat();
+  const VaraSvg = api?.registry.chainTokens[0].toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />;
 
   const handleCopy = (value: string) => {
     copyToClipboard({ alert, value });

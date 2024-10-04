@@ -4,7 +4,7 @@ import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
 import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
 import { useAtom } from 'jotai';
 import { IS_LOADING } from 'atoms';
-import { useAccount, useAccountDeriveBalancesAll, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { TextField } from 'components/layout/text-field';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { useSyndoteMessage } from 'hooks/metadata';
@@ -26,13 +26,10 @@ type Props = {
 
 function CreateGameForm({ onCancel }: Props) {
   const { account } = useAccount();
-  const balances = useAccountDeriveBalancesAll();
-  const { isApiReady } = useApi();
   const { api } = useApi();
-  const { getFormattedBalance, getFormattedBalanceValue, getChainBalanceValue } = useBalanceFormat();
-  const balance =
-    isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
-  const { isMeta, sendMessage: sendNewSessionMessage } = useSyndoteMessage();
+  const { getFormattedBalanceValue, getChainBalanceValue } = useBalanceFormat();
+
+  const { sendMessage: sendNewSessionMessage } = useSyndoteMessage();
   const [isLoading, setIsLoading] = useAtom(IS_LOADING);
   const existentialDeposit = Number(getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toFixed());
 
@@ -99,7 +96,7 @@ function CreateGameForm({ onCancel }: Props) {
           label="Entry fee"
           variant="active"
           type="number"
-          icon={balance?.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />}
+          icon={api?.registry.chainTokens[0].toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />}
           disabled={isLoading}
           {...getCreateInputProps('fee')}
         />
