@@ -1,3 +1,4 @@
+import { VariantProps, cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { MouseEvent, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
@@ -7,14 +8,32 @@ import { Sprite } from '@/components/ui/sprite';
 import type { BaseComponentProps } from '@/app/types';
 import styles from './Modal.module.scss';
 
-type Props = BaseComponentProps & {
-  title: string;
-  description?: string;
-  onClose: () => void;
-  buttons?: React.ReactNode;
-};
+const variants = cva('', {
+  variants: { size: { md: styles.md, sm: styles.sm } },
+  defaultVariants: { size: 'md' },
+});
 
-export function Modal({ title, description, children, buttons, onClose, className }: Props) {
+type Props = BaseComponentProps &
+  VariantProps<typeof variants> & {
+    title: string;
+    description?: string;
+    onClose: () => void;
+    buttons?: React.ReactNode;
+    modalClassName?: string;
+    closeOnBackdrop?: boolean;
+  };
+
+export function Modal({
+  title,
+  description,
+  buttons,
+  onClose,
+  className,
+  modalClassName,
+  closeOnBackdrop = true,
+  size,
+  children,
+}: Props) {
   const ref = useRef<HTMLDialogElement>(null);
 
   const disableScroll = () => document.body.classList.add('modal-open');
@@ -40,7 +59,7 @@ export function Modal({ title, description, children, buttons, onClose, classNam
   const handleClick = ({ target }: MouseEvent) => {
     const isBackdropClick = target === ref.current;
 
-    if (isBackdropClick) onClose();
+    if (isBackdropClick && closeOnBackdrop) onClose();
   };
 
   return (
@@ -51,7 +70,7 @@ export function Modal({ title, description, children, buttons, onClose, classNam
       variants={variantsOverlay}
       ref={ref}
       onClick={handleClick}
-      className={styles.modal}>
+      className={variants({ className: clsx(styles.modal, modalClassName), size })}>
       <motion.div
         initial="enter"
         animate="center"
@@ -61,7 +80,7 @@ export function Modal({ title, description, children, buttons, onClose, classNam
         <div className={styles.header}>
           <div className={styles.titleContainer}>
             <h2 className={styles.title}>{title}</h2>
-            <p className={styles.description}>{description}</p>
+            {description && <p className={styles.description}>{description}</p>}
           </div>
           <Button variant="text" onClick={onClose} className={styles['modal-close']}>
             <Sprite name="close" width={25} height={24} />

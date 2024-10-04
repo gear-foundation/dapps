@@ -96,11 +96,14 @@ export default function GamePage() {
         <div className={clsx(styles.character, styles.left)}>
           <Character {...mockCharacterView} />
         </div>
+
         {!isTurnEnd && <Timer remainingTime={timeLeft} shouldGoOn={true} />}
+
         <CharacterStats align="right" {...mockPlayer2} characterView={mockCharacterView} />
         <div className={clsx(styles.character, styles.right)}>
           <Character {...mockCharacterView} />
         </div>
+
         {!isBattleEnd && (
           <div className={styles.buttons}>
             <GameButton

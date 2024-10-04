@@ -19,6 +19,7 @@ type CharacterStatsProps = VariantProps<typeof variants> &
   PlayerState & {
     className?: string;
     characterView: CharacterView;
+    isActive?: boolean;
   };
 
 export const CharacterStats = ({
@@ -27,12 +28,12 @@ export const CharacterStats = ({
   name,
   attack,
   currentHealth,
+  // ! TODO: display percents
   deffence,
   dodge,
   characterView,
+  isActive = false,
 }: CharacterStatsProps) => {
-  // ! TODO: use as props
-  const isActive = false;
   const status = currentHealth === 0 ? 'defeated' : 'alive';
 
   return (
@@ -49,7 +50,7 @@ export const CharacterStats = ({
           <div className={styles.stat}>
             <DefenseIcon className={styles.defense} />
             <Text size="xs" weight="bold">
-              {deffence}
+              {deffence}%
             </Text>
           </div>
           <div className={clsx(styles.stat, styles.dodgeStat)}>

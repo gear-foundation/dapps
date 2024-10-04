@@ -9,6 +9,7 @@ import { InfoIcon } from '@/features/game/assets/images';
 import { mockPlayer1 } from '@/features/game/mock';
 import { mockCharacterView } from '@/features/game/consts';
 import styles from './waiting.module.scss';
+import { ROUTES } from '@/app/consts';
 
 export default function WaitingPage() {
   const navigate = useNavigate();
@@ -83,7 +84,7 @@ export default function WaitingPage() {
           align="left"
           className={styles.tutorial}>
           <div className={styles.buttons}>
-            <Button text="Leave game" className={styles.redButton} onClick={onLeaveGame} />
+            <Button color="dark" text="Show tutorial" onClick={() => navigate(ROUTES.ONBOARDING)} className={styles.tutorialButton} />
           </div>
         </Card>
       </Background>

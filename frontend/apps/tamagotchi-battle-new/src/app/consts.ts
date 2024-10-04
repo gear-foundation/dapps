@@ -18,6 +18,7 @@ export const ROUTES = {
   WAITING: '/waiting',
 
   GAME: '/game',
+  ONBOARDING: '/onboarding',
 
   NOTFOUND: '*',
 };

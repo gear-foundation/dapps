@@ -1,0 +1,151 @@
+.character {
+  position: absolute;
+  width: 295px;
+
+  &.left {
+    left: 211px;
+    top: 246px;
+  }
+  &.right {
+    right: 211px;
+    top: 254px;
+  }
+}
+
+.redButton {
+  background: #eb5757;
+  color: #ffffff;
+  &:hover {
+    background: #eb5757;
+  }
+}
+
+.attack {
+  color: #bb3939;
+  font-weight: 600;
+}
+.reflect {
+  color: #7aa330;
+  font-weight: 600;
+}
+
+.dodge {
+  color: #fba21c;
+  font-weight: 600;
+}
+
+.ultimate {
+  color: #01ae84;
+  font-weight: 600;
+}
+
+.exit {
+  position: absolute;
+  top: 692px;
+  right: 263px;
+  height: 40px;
+  width: 93px;
+}
+
+.cancelTournament {
+  position: absolute;
+  top: 688px;
+  right: 137.5px;
+  height: 44px;
+  width: 168px;
+  font-size: 14px;
+}
+
+.players {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  > div {
+    gap: 8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.modal {
+  position: relative;
+  max-width: 670px;
+  padding: 32px 40px;
+  > p {
+    margin-top: 12px;
+  }
+}
+
+.modalButtons {
+  display: flex;
+  align-items: center;
+  top: 566px;
+  gap: 16px;
+  margin-top: 32px;
+  > button {
+    flex: 1;
+  }
+  > :last-child {
+    margin-left: 8px;
+  }
+}
+
+.blur-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 20;
+
+  background-color: #000000a6;
+  backdrop-filter: blur(8px);
+}
+
+.characterCircle {
+  position: relative;
+  top: 314px;
+  right: 366px;
+  overflow: hidden;
+  margin: 0 auto;
+  height: 340px;
+  width: 340px;
+  border-radius: 50%;
+  > :first-child {
+    left: 366px;
+    top: -205px;
+    > :last-child {
+      left: -339px;
+    }
+  }
+}
+
+.backdrop {
+  align-items: flex-end;
+  padding: 29px;
+  height: 100%;
+
+  &::backdrop {
+    background-color: transparent;
+    backdrop-filter: none;
+  }
+}
+
+.gameButtons {
+  position: absolute;
+  display: flex;
+  top: -126px;
+  left: -4px;
+  gap: 24px;
+}
+
+.highlighted {
+  z-index: 30;
+}
+
+.segmented {
+  position: absolute;
+  top: -106px;
+}

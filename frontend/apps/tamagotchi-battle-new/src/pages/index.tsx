@@ -15,6 +15,7 @@ import FindGamePage from './find-game';
 import NotFoundPage from './not-found';
 import WaitingPage from './waiting';
 import GamePage from './game';
+import OnboardingPage from './onboarding';
 
 const routes = [
   { path: ROUTES.HOME, Page: Home },
@@ -25,8 +26,7 @@ const routes = [
   { path: ROUTES.FIND_GAME, Page: FindGamePage },
   { path: ROUTES.WAITING, Page: WaitingPage },
   { path: ROUTES.GAME, Page: GamePage },
-
-  // { path: ROUTES.GAME, Page: lazy(() => import('./')), isPrivate: true },
+  { path: ROUTES.ONBOARDING, Page: OnboardingPage },
 ];
 
 export function Routing() {

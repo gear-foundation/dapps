@@ -38,6 +38,7 @@ export default function GenerateCharacter() {
             <div className={styles.character}>
               <Character
                 {...characterView}
+                loaderBackground={true}
                 fallback={prevCharacterView && <Character {...prevCharacterView} withSpiner={false} />}
               />
             </div>

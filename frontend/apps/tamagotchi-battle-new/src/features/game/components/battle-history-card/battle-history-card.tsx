@@ -70,7 +70,7 @@ const BattleHistoryCard = ({
         <div className={styles.stat}>
           <DefenseIcon className={clsx(styles.icon, action === 'reflect' && styles.reflect)} />
           <Text size="xs" weight="bold">
-            {deffence}
+            {deffence}%
           </Text>
         </div>
         <div className={clsx(styles.stat, styles.dodgeStat)}>

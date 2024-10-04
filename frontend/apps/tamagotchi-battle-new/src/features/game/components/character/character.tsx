@@ -1,8 +1,9 @@
-import React, { Suspense } from 'react';
+import clsx from 'clsx';
+import React, { Suspense, memo } from 'react';
 import { BackColor, BodyColor, LoaderIcon } from '../../assets/images';
 import { getLazySvg } from '../../utils';
-import styles from './character.module.scss';
 import { Text } from '@/components';
+import styles from './character.module.scss';
 
 export type CharacterView = {
   headIndex: number;
@@ -16,10 +17,21 @@ export type CharacterView = {
 type CharacterProps = CharacterView & {
   fallback?: React.ReactNode;
   withSpiner?: boolean;
+  loaderBackground?: boolean;
 };
 
-export const Character = (props: CharacterProps) => {
-  const { accessoryIndex, bodyIndex, hatIndex, headIndex, bodyColor, backColor, fallback, withSpiner = true } = props;
+export const Character = memo((props: CharacterProps) => {
+  const {
+    accessoryIndex,
+    bodyIndex,
+    hatIndex,
+    headIndex,
+    bodyColor,
+    backColor,
+    fallback,
+    withSpiner = true,
+    loaderBackground = false,
+  } = props;
 
   const Hat = getLazySvg('hat', hatIndex);
   const Head = getLazySvg('head', headIndex);
@@ -33,7 +45,7 @@ export const Character = (props: CharacterProps) => {
           <>
             {fallback && <div className={styles.fallback}>{fallback}</div>}
             {withSpiner && (
-              <div className={styles.loader}>
+              <div className={clsx(styles.loader, loaderBackground && styles.loaderBackground)}>
                 <LoaderIcon />
                 <Text size="xs" weight="semibold" className={styles.loaderText}>
                   Please wait
@@ -51,4 +63,4 @@ export const Character = (props: CharacterProps) => {
       </Suspense>
     </div>
   );
-};
+});

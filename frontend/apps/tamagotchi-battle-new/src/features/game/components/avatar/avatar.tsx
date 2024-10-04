@@ -2,7 +2,7 @@ import styles from './avatar.module.scss';
 import { VariantProps, cva } from 'class-variance-authority';
 import { CharacterView } from '../character/character';
 import { getLazySvg } from '../../utils';
-import { Suspense } from 'react';
+import { Suspense, memo } from 'react';
 import { BodyColor } from '../../assets/images';
 
 export const variants = cva('', {
@@ -12,8 +12,8 @@ export const variants = cva('', {
 
 type AvatarProps = VariantProps<typeof variants> & CharacterView;
 
-export const Avatar = (props: AvatarProps) => {
-  const { size, accessoryIndex, bodyIndex, hatIndex, headIndex, bodyColor, backColor } = props;
+export const Avatar = memo((props: AvatarProps) => {
+  const { size, hatIndex, headIndex, bodyColor } = props;
 
   const Hat = getLazySvg('hat', hatIndex);
   const Head = getLazySvg('head', headIndex);
@@ -26,8 +26,7 @@ export const Avatar = (props: AvatarProps) => {
           <Head />
           <Hat />
         </div>
-        {/* <MockAvatarIcon /> */}
       </Suspense>
     </div>
   );
-};
+});
