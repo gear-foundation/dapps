@@ -5,9 +5,10 @@ import { Card, Text } from '@/components';
 import { Background, WaitList } from '@/features/game/components';
 import { Character } from '@/features/game/components/character';
 import { CharacterStats } from '@/features/game/components/character-stats';
-
-import styles from './waiting.module.scss';
 import { InfoIcon } from '@/features/game/assets/images';
+import { mockPlayer1 } from '@/features/game/mock';
+import { mockCharacterView } from '@/features/game/consts';
+import styles from './waiting.module.scss';
 
 export default function WaitingPage() {
   const navigate = useNavigate();
@@ -47,9 +48,9 @@ export default function WaitingPage() {
   return (
     <>
       <Background>
-        <CharacterStats />
+        <CharacterStats {...mockPlayer1} characterView={mockCharacterView} />
         <div className={styles.character}>
-          <Character />
+          <Character {...mockCharacterView} />
         </div>
         <Card
           title={tournamentName}

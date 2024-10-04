@@ -1,68 +1,44 @@
 .wrapper {
   background: #fff;
 
+  display: flex;
+  gap: 16px;
   width: 456px;
   border: 1.5px solid #0b0b0b;
 
   &.left {
-    padding: 11px 21px 12px 23px;
+    padding: 9px 21px 9px 23px;
     border-radius: 10px 0 0 10px;
     border-right: 0.75px solid #0b0b0b;
   }
   &.right {
-    padding: 11px 23px 12px 21px;
+    padding: 9px 23px 9px 21px;
     border-radius: 0 10px 10px 0;
     border-left: 0.75px solid #0b0b0b;
   }
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
+.info {
+  flex: 1;
 }
 
-.status {
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.winsCount {
   height: 26px;
-  padding: 2px 9px;
+  padding: 5px 8px;
   border-radius: 4px;
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-}
-
-.alive {
-  color: #0ed3a3;
+  gap: 7px;
   background: #00ffc412;
-  width: 77px;
-}
-
-.defeat {
-  color: #ca445f;
-  background: #ca445f12;
-  width: 109px;
-}
-
-.action-attack {
-  color: #ca3d3d;
-  font-weight: 700;
-  text-transform: capitalize;
-}
-
-.action-ultimate {
   color: #0ed3a3;
-  font-weight: 700;
-  text-transform: capitalize;
-}
-
-.action-reflect {
-  color: #7ea732;
-  font-weight: 700;
-  text-transform: capitalize;
-}
-
-.healthRow {
-  display: flex;
 }
 
 .healthCount {
@@ -73,32 +49,24 @@
   margin-right: 16px;
 }
 
-.recivedDamage {
-  color: #ca445f;
-}
-
-.recivedText {
-  line-height: 22px;
-  margin-left: auto;
-}
-
 .stats {
   display: flex;
   align-items: center;
-  gap: 24px;
-  height: 22px;
-  margin-top: 2px;
+  gap: 8px;
+  height: 17px;
+  margin-top: 12px;
+  margin-bottom: 4px;
 }
 
 .stat {
   display: flex;
   align-items: center;
   gap: 6px;
-  width: 53px;
+  width: 60px;
+}
 
-  &:first-child {
-    width: 63px;
-  }
+.attackStat {
+  width: 52px;
 }
 
 .icon {
@@ -107,10 +75,6 @@
 
 .attack {
   color: #db4242;
-}
-
-.ultimate {
-  color: #00ffc4;
 }
 
 .reflect {
@@ -124,35 +88,4 @@
 
 .dodge {
   color: #ffad33;
-}
-
-.dodged {
-  color: #a5a5a5;
-  flex: 1;
-  text-align: right;
-  line-height: 22px;
-}
-
-.healthCount {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
-.cross {
-  position: absolute;
-  top: -13px;
-  right: -11px;
-  background: #fff;
-  border: 2px solid #000000;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 32px;
-  width: 32px;
-  svg {
-    height: 18px;
-    width: 18px;
-  }
 }

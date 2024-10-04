@@ -132,10 +132,12 @@
   top: 0;
   height: 120px;
   width: 120px;
-  padding-top: 22px;
   background: #595964;
   border: 1.5px solid #0b0b0b;
   border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   &.left {
     right: 0;

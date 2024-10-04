@@ -21,28 +21,6 @@
   justify-content: space-between;
 }
 
-.status {
-  height: 26px;
-  padding: 2px 9px;
-  border-radius: 4px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-}
-
-.alive {
-  color: #0ed3a3;
-  background: #00ffc412;
-  width: 77px;
-}
-
-.defeat {
-  color: #ca445f;
-  background: #ca445f12;
-  width: 109px;
-}
-
 .action-attack {
   color: #ca3d3d;
   font-weight: 700;

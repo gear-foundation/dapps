@@ -6,7 +6,9 @@ import { ReactComponent as MockAvatarIcon } from './avatar.svg';
 import { ReactComponent as VectorIcon } from './vector.svg';
 import { HealthIndicator } from '../health-indicator';
 import styles from './character-stats.module.scss';
-import { PlayerState } from '../battle-history-card';
+import { PlayerState } from '../../types';
+import { Avatar } from '../avatar';
+import { CharacterView } from '../character/character';
 
 export const variants = cva('', {
   variants: { align: { left: styles.left, right: styles.right }, status: { defeated: styles.defeated, alive: null } },
@@ -16,6 +18,7 @@ export const variants = cva('', {
 type CharacterStatsProps = VariantProps<typeof variants> &
   PlayerState & {
     className?: string;
+    characterView: CharacterView;
   };
 
 export const CharacterStats = ({
@@ -26,6 +29,7 @@ export const CharacterStats = ({
   currentHealth,
   deffence,
   dodge,
+  characterView,
 }: CharacterStatsProps) => {
   // ! TODO: use as props
   const isActive = false;
@@ -75,7 +79,7 @@ export const CharacterStats = ({
       </div>
 
       <div className={variants({ align, className: clsx(styles.avatar, { [styles.active]: isActive }) })}>
-        <MockAvatarIcon />
+        <Avatar {...characterView} />
       </div>
     </div>
   );

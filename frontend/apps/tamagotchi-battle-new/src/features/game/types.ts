@@ -1,5 +1,7 @@
-// CHANGE IT
-export type GameStatus = 'import' | 'generate' | 'create' | 'find' | null;
+export type AssetType = 'head' | 'hat' | 'body' | 'accessories';
+export type AssetsCount = Record<AssetType, number>;
+
+export type PlayerStatus = 'defeated' | 'alive';
 
 export type PlayerState = {
   name: string;
@@ -12,3 +14,6 @@ export type PlayerState = {
   isDodged: boolean;
   recivedDamage: number;
 };
+
+// @deprecated
+export type GameStatus = 'import' | 'generate' | 'create' | 'find' | null;

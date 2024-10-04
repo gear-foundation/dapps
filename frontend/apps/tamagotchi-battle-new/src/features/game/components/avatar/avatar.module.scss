@@ -1,0 +1,35 @@
+.container {
+  height: 100%;
+}
+
+.wrapper {
+  position: relative;
+  width: 80px;
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  & > svg {
+    position: absolute;
+    top: 0;
+    left: -9px;
+    width: 100px;
+    height: 98px;
+  }
+}
+
+.md {
+  &.container {
+    width: 100%;
+  }
+  .wrapper {
+    height: 80%;
+    width: 100%;
+  }
+  svg {
+    width: 124px;
+    height: 163px;
+    left: -3px;
+  }
+}

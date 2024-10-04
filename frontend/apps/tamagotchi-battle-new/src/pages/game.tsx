@@ -19,52 +19,11 @@ import { useState } from 'react';
 import { Segmented } from '@/components';
 import { List } from '@/features/game/components/list/list';
 import { ExitIcon } from '@/features/wallet/assets';
-import { PlayerState } from '@/features/game/types';
-
-const mockPlayer1: PlayerState = {
-  name: 'Player name 1',
-  currentHealth: 40,
-  attack: 30,
-  deffence: 10,
-  dodge: 30,
-  playerId: 1,
-  action: 'attack',
-  isDodged: true,
-  recivedDamage: 13,
-};
-
-const mockPlayer2: PlayerState = {
-  name: 'Player name 2',
-  currentHealth: 0,
-  attack: 10,
-  deffence: 13,
-  dodge: 5,
-  playerId: 2,
-  action: 'reflect',
-  isDodged: false,
-  recivedDamage: 0,
-};
-
-const segmentedOptions = [
-  {
-    label: (
-      <div className={styles.players}>
-        <span>Players:</span>
-        <div>
-          21 <UserSmileIcon />
-        </div>
-        <div>
-          11 <UserSkullIcon />
-        </div>
-      </div>
-    ),
-    value: 'players',
-  },
-  {
-    label: 'Battle History ',
-    value: 'history',
-  },
-];
+import { BattleCard } from '@/features/game/components/battle-card';
+import { mockPlayer1, mockPlayer2 } from '@/features/game/mock';
+import { PlayersList } from '@/features/game/components/playersList';
+import { PlayerStatus } from '@/features/game/types';
+import { mockCharacterView } from '@/features/game/consts';
 
 type Tabs = 'players' | 'history';
 
@@ -91,27 +50,57 @@ export default function GamePage() {
   const isTurnEnd = true;
   const isBattleEnd = mockPlayer1.currentHealth === 0 || mockPlayer2.currentHealth === 0;
 
-  const isGameOver = false;
+  const isPlayerDefeated = true;
+  const isGameOver = isPlayerDefeated;
   const isTournamentOver = false;
 
   const timeLeft = 50000;
   const prizeCount = 100;
 
+  const showOtherBattles = isPlayerDefeated;
+  const showPlayersList = isPlayerDefeated && selectedTab === 'players';
+
+  const playersListItems = [
+    { name: 'Sandeeps', status: 'defeated' as PlayerStatus },
+    { name: 'CodeWithSomya', status: 'alive' as PlayerStatus },
+    { name: 'Shivam98', status: 'defeated' as PlayerStatus },
+  ];
+
+  const alivePlayersCount = playersListItems.reduce((acc, { status }) => (status === 'alive' ? acc + 1 : acc), 0);
+
+  const segmentedOptions = [
+    {
+      label: (
+        <div className={styles.players}>
+          <span>Players:</span>
+          <div>
+            {alivePlayersCount} <UserSmileIcon />
+          </div>
+          <div>
+            {playersListItems.length - alivePlayersCount} <UserSkullIcon />
+          </div>
+        </div>
+      ),
+      value: 'players',
+    },
+    {
+      label: 'Battle History ',
+      value: 'history',
+    },
+  ];
+
   return (
     <>
       <Background>
-        <CharacterStats align="left" {...mockPlayer1} />
+        <CharacterStats align="left" {...mockPlayer1} characterView={mockCharacterView} />
         <div className={clsx(styles.character, styles.left)}>
-          <Character />
+          <Character {...mockCharacterView} />
         </div>
-
         {!isTurnEnd && <Timer remainingTime={timeLeft} shouldGoOn={true} />}
-
-        <CharacterStats align="right" {...mockPlayer2} />
+        <CharacterStats align="right" {...mockPlayer2} characterView={mockCharacterView} />
         <div className={clsx(styles.character, styles.right)}>
-          <Character />
+          <Character {...mockCharacterView} />
         </div>
-
         {!isBattleEnd && (
           <div className={styles.buttons}>
             <GameButton
@@ -138,23 +127,19 @@ export default function GamePage() {
             />
           </div>
         )}
-
         {isTurnEnd && !isBattleEnd && !isGameOver && (
           <Button color="primary" className={styles.nextButton} text={`Next turn (${timeLeft / 1000})`} />
         )}
-
         {isBattleEnd && !isGameOver && (
           <Button color="primary" className={styles.nextButton} text={`Start next battle`} />
         )}
-
         {isTurnEnd && isShowTurnEndCard && !isGameOver && (
           <div className={clsx(styles.historyItem, styles.endTurnHistory)}>
             <BattleHistoryCard {...mockPlayer1} />
             <BattleHistoryCard {...mockPlayer2} align="right" onClose={() => setIsShowTurnEndCard(false)} />
           </div>
         )}
-
-        {isGameOver && (
+        {/* {isGameOver && (
           <GameOverCard
             className={styles.gameOver}
             prizeCount={prizeCount}
@@ -163,36 +148,63 @@ export default function GamePage() {
             player1name={mockPlayer1.name}
             player2name={mockPlayer2.name}
           />
-        )}
-
+        )} */}
         <Segmented
           className={styles.segmented}
           options={segmentedOptions}
           value={selectedTab}
           onChange={(value) => setSelectedTab(value as Tabs)}
         />
-
         {isAdmin ? (
           <Button text="Cancel tournament" size="small" className={clsx(styles.cancelTournament, styles.redButton)} />
         ) : (
           <Button text="Exit" icon={ExitIcon} color="transparent" className={styles.exit} />
         )}
-        <List
-          className={styles.list}
-          maxLength={6}
-          items={[
-            <div className={styles.historyItem}>
-              <BattleHistoryCard {...mockPlayer1} />
-              <BattleHistoryCard {...mockPlayer2} align="right" />
-            </div>,
-            <div className={styles.historyItem}>
-              <BattleHistoryCard {...mockPlayer1} />
-              <BattleHistoryCard {...mockPlayer2} align="right" />
-            </div>,
-          ]}
-        />
 
-        <List className={styles.list} maxLength={7} items={[]} />
+        {showPlayersList && (
+          <PlayersList
+            bid={prizeCount}
+            items={playersListItems}
+            className={styles.list}
+            tournamentName={tournamentName}
+          />
+        )}
+
+        {selectedTab === 'history' && (
+          <>
+            {showOtherBattles ? (
+              <List
+                className={styles.list}
+                maxLength={7}
+                items={[
+                  <div className={styles.historyItem}>
+                    <BattleCard {...mockPlayer1} characterView={mockCharacterView} winsCount={20} />
+                    <BattleCard {...mockPlayer2} characterView={mockCharacterView} align="right" />
+                  </div>,
+                  <div className={styles.historyItem}>
+                    <BattleCard {...mockPlayer1} characterView={mockCharacterView} />
+                    <BattleCard {...mockPlayer2} characterView={mockCharacterView} align="right" winsCount={10} />
+                  </div>,
+                ]}
+              />
+            ) : (
+              <List
+                className={styles.list}
+                maxLength={6}
+                items={[
+                  <div className={styles.historyItem}>
+                    <BattleHistoryCard {...mockPlayer1} />
+                    <BattleHistoryCard {...mockPlayer2} align="right" />
+                  </div>,
+                  <div className={styles.historyItem}>
+                    <BattleHistoryCard {...mockPlayer1} />
+                    <BattleHistoryCard {...mockPlayer2} align="right" />
+                  </div>,
+                ]}
+              />
+            )}
+          </>
+        )}
       </Background>
     </>
   );

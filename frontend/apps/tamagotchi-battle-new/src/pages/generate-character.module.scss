@@ -2,21 +2,33 @@
   width: 100%;
   display: flex;
   align-items: center;
+  justify-content: center;
   height: 295px;
-  gap: 16px;
-  & > div {
-    flex: 1;
-  }
 }
 
 .card {
-  margin-top: 32px;
-  width: 686px;
-  padding-bottom: 8px;
+  position: absolute;
+  top: 158px;
+  width: 668px;
+
+  height: 472px;
+
+  &Filled {
+    top: 56px;
+    width: 881px;
+
+    & > :first-child {
+      gap: 24px;
+      padding-top: 32px;
+      padding-bottom: 0;
+      gap: 0px;
+    }
+  }
 }
 
 .container {
-  margin-top: 48px;
+  position: absolute;
+  top: 556px;
   width: 1000px;
   display: flex;
   flex-direction: column;
@@ -31,4 +43,8 @@
   & > div {
     flex: 1;
   }
+}
+
+.generate {
+  width: 306px;
 }

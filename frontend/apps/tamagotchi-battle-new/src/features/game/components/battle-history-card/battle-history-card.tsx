@@ -6,8 +6,7 @@ import styles from './battle-history-card.module.scss';
 import { VariantProps, cva } from 'class-variance-authority';
 import { CrossIcon } from '@/assets/images';
 import { PlayerState } from '../../types';
-
-
+import { PlayerStatus } from '../player-status/player-status';
 
 export const variants = cva('', {
   variants: { align: { left: styles.left, right: styles.right } },
@@ -42,10 +41,7 @@ const BattleHistoryCard = ({
           Player {playerId} uses <span className={styles[`action-${action}`]}>{action}</span>
         </Text>
 
-        <Text size="xs" weight="semibold" className={clsx(styles.status, isAlive ? styles.alive : styles.defeat)}>
-          {!isAlive && <SkullBigIcon />}
-          {isAlive ? 'Alive' : 'Defeated'}
-        </Text>
+        <PlayerStatus isAlive={isAlive} />
       </div>
       <div className={styles.healthRow}>
         <div className={styles.healthCount}>

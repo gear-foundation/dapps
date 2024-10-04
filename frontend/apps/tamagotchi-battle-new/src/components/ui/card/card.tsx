@@ -25,20 +25,24 @@ type CardProps = BaseComponentProps &
   VariantProps<typeof titleVariants> & {
     title?: string;
     description?: string;
+    rightSideSlot?: React.ReactNode;
   };
 
-export function Card({ children, title, align, className, size, description }: CardProps) {
+export function Card({ children, title, align, className, size, description, rightSideSlot }: CardProps) {
   return (
     <div className={clsx(styles.card, size === 'sm' && styles.sm, className)}>
-      <div>
-        {title && <h2 className={titleVariants({ align, size })}>{title}</h2>}
-        {description && (
-          <Text size="sm" className={titleVariants({ className: styles.description, align, size })}>
-            {description}
-          </Text>
-        )}
+      <div className={styles.leftSide}>
+        <div className={styles.header}>
+          {title && <h2 className={titleVariants({ align, size })}>{title}</h2>}
+          {description && (
+            <Text size="sm" className={titleVariants({ className: styles.description, align, size })}>
+              {description}
+            </Text>
+          )}
+        </div>
+        {children}
       </div>
-      {children}
+      {rightSideSlot && <div className={styles.rightSide}>{rightSideSlot}</div>}
     </div>
   );
 }

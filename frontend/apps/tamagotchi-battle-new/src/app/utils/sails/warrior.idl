@@ -1,0 +1,9 @@
+constructor {
+  New : (link: str);
+};
+
+service Warrior {
+  query GetLink : () -> str;
+  query GetOwner : () -> actor_id;
+};
+

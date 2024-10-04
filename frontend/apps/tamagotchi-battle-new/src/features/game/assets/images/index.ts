@@ -21,3 +21,6 @@ export { ReactComponent as LoaderIcon } from './icons/loader.svg';
 export { ReactComponent as UserSmileIcon } from './icons/user-smile.svg';
 export { ReactComponent as UserSkullIcon } from './icons/user-skull.svg';
 export { ReactComponent as SkullBigIcon } from './icons/skull-big.svg';
+export { ReactComponent as CupStarIcon } from './icons/cup-star.svg';
+export { ReactComponent as CaretRightIcon } from './icons/caret-right.svg';
+export * from './character';

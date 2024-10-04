@@ -18,6 +18,7 @@ const Segmented = ({ className, options, onChange, value }: SegmentedProps) => {
     <div className={clsx(styles.wrapper, className)}>
       {options.map((option) => (
         <button
+          key={option.value}
           type="button"
           className={clsx(styles.option, value === option.value && styles.selected)}
           onClick={() => onChange(option.value)}>

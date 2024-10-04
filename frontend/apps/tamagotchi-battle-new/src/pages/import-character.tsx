@@ -10,16 +10,26 @@ import { AdminIcon, SearchIcon } from '@/features/game/assets/images';
 import { ROUTES } from '@/app/consts';
 
 import styles from './import-character.module.scss';
+import clsx from 'clsx';
+import { mockCharacterView } from '@/features/game/consts';
 
 export default function ImportCharacter() {
   const navigate = useNavigate();
   const setGameStatus = useSetAtom(gameStatusAtom);
   const [address, setAddress] = useState<string>();
 
+  const isCharacterFound = Boolean(true);
+
   return (
     <>
       <Background>
-        <Card title="Import Character from Program" size="sm" className={styles.card}>
+        <Card
+          title="Import Character from Program"
+          description="Enter the program ID to review your Tamagotchi."
+          size="sm"
+          className={clsx(styles.card, isCharacterFound && styles.cardFilled)}
+          align="left"
+          rightSideSlot={isCharacterFound && <CharacterStatsForm />}>
           <Input
             type="text"
             placeholder="0x…"
@@ -28,10 +38,11 @@ export default function ImportCharacter() {
             className="w-full"
             onChange={(e) => setAddress(e.target.value)}
           />
-          <div className={styles.character}>
-            <Character />
-            <CharacterStatsForm />
-          </div>
+          {isCharacterFound && (
+            <div className={styles.character}>
+              <Character {...mockCharacterView} />
+            </div>
+          )}
         </Card>
         <div className={styles.container}>
           <div className={styles.buttons}>

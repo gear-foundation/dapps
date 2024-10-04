@@ -1,16 +1,30 @@
 .card {
   display: flex;
+  border-radius: 8px;
+  border: 2px solid #000000;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.leftSide {
+  display: flex;
+  flex: 1;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   flex-direction: column;
   padding: 40px;
   gap: 48px;
   border-radius: 8px;
-  border: 2px solid #000000;
-  background: #ffffff;
-  &.sm {
-    gap: 24px;
-  }
+}
+.sm .leftSide {
+  gap: 24px;
+}
+
+.rightSide {
+  background: #4b4b55;
+  border-left: 2px solid #000000;
+  width: 386px;
+  padding: 32px 40px;
 }
 
 h2 {
@@ -25,6 +39,10 @@ h2 {
     font-weight: 700;
     line-height: 28.8px;
   }
+}
+
+.header {
+  width: 100%;
 }
 
 .center {
