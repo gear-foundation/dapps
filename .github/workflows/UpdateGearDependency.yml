@@ -36,6 +36,8 @@ jobs:
       run: |
         python update_gear_version.py
         if ! git diff --exit-code; then
+          echo "Changes detected in the repository after running the update_gear_version.py script."
+
           # Configure git
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -46,18 +48,27 @@ jobs:
 
           # Create a new branch
           branch_name="update-gear-dependencies-$(date +%Y%m%d%H%M%S)"
+          echo "Creating a new branch: $branch_name"
           git checkout -b $branch_name
 
           # Stage and commit changes
+          echo "Staging changed files."
           git add ../contracts/Cargo.toml
+
+          echo "Committing changes with message: 'Update GEAR dependencies to latest tag in contracts'"
           git commit -m "Update GEAR dependencies to latest tag in contracts"
 
           # Push the new branch
+          echo "Pushing the new branch: $branch_name"
           git push origin $branch_name
 
           # Install GitHub CLI
+          echo "Installing GitHub CLI to create the pull request."
           sudo apt-get update && sudo apt-get install gh -y
 
           # Create a pull request using GitHub CLI
+          echo "Creating a pull request for the new branch: $branch_name"
           gh pr create --title "Update GEAR dependencies" --body "Automatically created pull request to update GEAR dependencies" --base master --head $branch_name
+        else
+          echo "No changes were detected after running the update_gear_version.py script."
         fi
