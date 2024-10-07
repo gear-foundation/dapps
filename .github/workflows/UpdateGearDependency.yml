@@ -25,7 +25,7 @@ jobs:
       with:
         python-version: '3.x'
 
-    - name: Install GitPython
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install requests packaging gitpython
@@ -36,9 +36,24 @@ jobs:
       run: |
         python update_gear_version.py
         if ! git diff --exit-code; then
+          # Configure git
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          # Create a new branch
+          branch_name="update-gear-dependencies-$(date +%Y%m%d%H%M%S)"
+          git checkout -b $branch_name
+
+          # Stage and commit changes
           git add ../contracts/Cargo.toml
           git commit -m "Update GEAR dependencies to latest tag in contracts"
-          git push origin master -f
+
+          # Push the new branch
+          git push origin $branch_name
+
+          # Install GitHub CLI
+          sudo apt-get update && sudo apt-get install gh -y
+
+          # Create a pull request using GitHub CLI
+          gh pr create --title "Update GEAR dependencies" --body "Automatically created pull request to update GEAR dependencies" --base master --head $branch_name
         fi
