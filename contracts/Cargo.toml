@@ -94,7 +94,7 @@ gmeta = "1.6.1"
 gclient = "1.6.1"
 gtest = "1.6.1"
 gear-core = "1.6.1"
-sails-idl-gen = "0.6.0"
+sails-idl-gen = "0.5.0"
 sails-rs = "0.6.0"
 sails-client-gen = "0.6.0"
 
