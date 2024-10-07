@@ -39,15 +39,12 @@ def update_cargo_toml(file_path, gear_version, sails_version):
     with open(file_path, 'w') as file:
         file.write(content)
 
-def update_wf_contracts(file_path, gear_version, sails_version):
+def update_wf_contracts(file_path, gear_version):
     with open(file_path, 'r') as file:
         content = file.read()
 
     # Update GEAR version in workflow
     content = re.sub(r'GEAR_VERSION: .*', f'GEAR_VERSION: {gear_version}', content)
-
-    # Update SAILS version in workflow (if necessary, depending on workflow setup)
-    content = re.sub(r'SAILS_VERSION: .*', f'SAILS_VERSION: {sails_version}', content)
 
     with open(file_path, 'w') as file:
         file.write(content)
@@ -61,4 +58,4 @@ if __name__ == "__main__":
     
     if gear_version and sails_version:
         update_cargo_toml('../contracts/Cargo.toml', gear_version, sails_version)
-        update_wf_contracts('../.github/workflows/contracts-tests.yml', gear_version, sails_version)
+        update_wf_contracts('../.github/workflows/contracts-tests.yml', gear_version)
