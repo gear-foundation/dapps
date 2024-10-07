@@ -14,6 +14,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
+  GEAR_VERSION: 1.6.1
 
 defaults:
   run:
@@ -29,53 +30,15 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  prepare:
-    name: Prepare
-    runs-on: ubuntu-latest
-
-    outputs:
-      GEAR_VERSION: ${{ steps.get_gear_version.outputs.GEAR_VERSION }}
-
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python (to get the latest GEAR version)
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install requests
-
-      - name: Get latest GEAR version
-        id: get_gear_version
-        run: |
-          python - <<EOF
-          import re, requests
-
-          tags = requests.get("https://api.github.com/repos/gear-tech/gear/tags").json()
-          valid_tags = sorted(
-              (tag['name'] for tag in tags if re.match(r'^v\d+\.\d+\.\d+$', tag['name'])),
-              key=lambda s: [int(part) for part in s.lstrip('v').split('.')],
-              reverse=True
-          )
-    
-          if valid_tags:
-              print(f"::set-output name=GEAR_VERSION::{valid_tags[0].lstrip('v')}")
-          else:
-              raise Exception("No valid GEAR version found")
-          EOF
-
-  test:
+  all:
+    name: Tests
     runs-on: self-hosted
-    needs: [prepare]
+    #container:
+    #  image: ghcr.io/gear-foundation/dapps/ci-rust:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        
+
       - name: Set up Rust (Stable)
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -85,8 +48,7 @@ jobs:
       - name: Prepare Gear Binary
         run: |
           mkdir -p target/tmp
-          wget -qO- https://get.gear.rs/gear-v${{ needs.prepare.outputs.GEAR_VERSION }}-x86_64-unknown-linux-gnu.tar.xz | tar xJ -C target/tmp
-
+          wget -qO- https://get.gear.rs/gear-v${{ env.GEAR_VERSION }}-x86_64-unknown-linux-gnu.tar.xz| tar xJ -C target/tmp
       # mandatory tasks
       - name: Fmt
         run: 'cargo +nightly fmt --all -- --config imports_granularity=Crate,edition=2021'
