@@ -29,9 +29,6 @@ members = [
     "vara-man/wasm",
     "w3bstreaming",
     "zk-battleship/wasm",
-    # Noncontract crates
-
-    "xtask",
 ]
 
 [workspace.package]
