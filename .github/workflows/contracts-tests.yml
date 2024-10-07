@@ -29,8 +29,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  all:
-    name: Tests
+  prepare:
+    name: prepare
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -41,29 +41,33 @@ jobs:
         with:
           python-version: '3.12'
 
+      - name: Set up Python (to get the latest GEAR version)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
       - name: Get latest GEAR version
         id: get_gear_version
         run: |
-          import re
-          import requests
+          python - <<EOF
+          import re, requests
 
-          GEAR_REPO_TAGS_URL = "https://api.github.com/repos/gear-tech/gear/tags"
-          
-          response = requests.get(GEAR_REPO_TAGS_URL)
-          response.raise_for_status()
-          tags = response.json()
-
-          # Filter valid semantic versioning tags (vX.Y.Z format)
-          valid_tags = [tag['name'] for tag in tags if re.match(r'^v\d+\.\d+\.\d+$', tag['name'])]
-          # Sort tags by version in descending order
-          valid_tags.sort(key=lambda s: [int(part) for part in s.lstrip('v').split('.')], reverse=True)
-
-          latest_version = valid_tags[0] if valid_tags else None
-          if latest_version:
-              print(f"::set-output name=GEAR_VERSION::{latest_version.lstrip('v')}")
+          tags = requests.get("https://api.github.com/repos/gear-tech/gear/tags").json()
+          valid_tags = sorted(
+              (tag['name'] for tag in tags if re.match(r'^v\d+\.\d+\.\d+$', tag['name'])),
+              key=lambda s: [int(part) for part in s.lstrip('v').split('.')],
+              reverse=True
+          )
+    
+          if valid_tags:
+              print(f"::set-output name=GEAR_VERSION::{valid_tags[0].lstrip('v')}")
           else:
               raise Exception("No valid GEAR version found")
+          EOF
 
+  test:
+    runs-on: self-hosted
+    steps:
       - name: Set up Rust (Stable)
         uses: dtolnay/rust-toolchain@stable
         with:
