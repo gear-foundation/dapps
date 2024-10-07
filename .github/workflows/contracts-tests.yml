@@ -39,7 +39,7 @@ jobs:
       - name: Set up Python (to get the latest GEAR version)
         uses: actions/setup-python@v2
         with:
-          python-version: '3.x'
+          python-version: '3.9.0'
 
       - name: Get latest GEAR version
         id: get_gear_version
