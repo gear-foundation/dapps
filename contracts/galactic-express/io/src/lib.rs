@@ -179,4 +179,3 @@ impl From<GstdError> for Error {
         Error::GstdError(error.to_string())
     }
 }
-

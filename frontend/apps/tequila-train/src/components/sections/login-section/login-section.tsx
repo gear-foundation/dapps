@@ -1,4 +1,4 @@
-import { WalletNew } from '@dapps-frontend/ui';
+import { Wallet } from '@dapps-frontend/ui';
 
 export const LoginSection = () => {
   return (
@@ -18,12 +18,10 @@ export const LoginSection = () => {
         </div>
         <div className="basis-[540px] grow lg:grow-0">
           <h2 className="text-[32px] leading-none font-bold tracking-[0.08em] text-black">Welcome to Tequila Train </h2>
-          <p className="mt-3 text-[#555756] tracking-[0.08em]">
-            Connect your wallet to start
-          </p>
+          <p className="mt-3 text-[#555756] tracking-[0.08em]">Connect your wallet to start</p>
 
           <div className="mt-6">
-            <WalletNew />
+            <Wallet />
           </div>
         </div>
       </div>

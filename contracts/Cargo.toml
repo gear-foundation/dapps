@@ -6,7 +6,6 @@ members = [
     "battleship",
     "car-races",
     "galactic-express",
-    "multi-token",
     "multisig-wallet",
     "multisig-wallet/state",
     "oracle",
@@ -19,8 +18,6 @@ members = [
     "rmrk/catalog",
     "rmrk/resource",
     "rmrk/state",
-    "rock-paper-scissors",
-    "rock-paper-scissors/state",
     "syndote",
     "syndote/player",
     "tamagotchi",
@@ -29,6 +26,7 @@ members = [
     "tamagotchi-battle/state",
     "tequila-train",
     "tic-tac-toe/wasm",
+    "vara-man/wasm",
     "w3bstreaming",
     "zk-battleship/wasm",
     # Noncontract crates
@@ -82,7 +80,6 @@ syndote-player-io.path = "syndote/player/io"
 tamagotchi-io.path = "tamagotchi/io"
 tamagotchi-battle-io.path = "tamagotchi-battle/io"
 tequila-train-io.path = "tequila-train/io"
-tic-tac-toe-io.path = "tic-tac-toe/gstd/io"
 w3bstreaming-io.path = "w3bstreaming/io"
 
 # Local libraries
@@ -91,16 +88,15 @@ rmrk-types.path = "rmrk/types"
 
 # Gear
 
-gstd = "1.5.0"
-gear-wasm-builder = "1.5.0"
-gmeta = "1.5.0"
-gclient = "1.5.0"
-gtest = "1.5.0"
-gear-core = "1.5.0"
-sails-idl-gen = "0.3.0"
-sails-rs = "0.3.0"
-sails-client-gen = "0.3.0"
-
+gstd = "1.6.1"
+gear-wasm-builder = "1.6.1"
+gmeta = "1.6.1"
+gclient = "1.6.1"
+gtest = "1.6.1"
+gear-core = "1.6.1"
+sails-idl-gen = "0.6.0"
+sails-rs = "0.6.0"
+sails-client-gen = "0.6.0"
 
 # External
 

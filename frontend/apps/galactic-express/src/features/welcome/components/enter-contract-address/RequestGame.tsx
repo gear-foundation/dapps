@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { WalletNew as Wallet } from '@dapps-frontend/ui';
+import { Wallet } from '@dapps-frontend/ui';
 import { Button } from '@gear-js/vara-ui';
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { cx } from 'utils';
@@ -9,12 +9,11 @@ import { useSetAtom, useAtom } from 'jotai';
 import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM, REGISTRATION_STATUS } from 'atoms';
 import { useLaunchMessage } from 'features/session/hooks';
 import metaTxt from 'assets/meta/galactic_express_meta.txt';
-import { useAccount, useAccountDeriveBalancesAll, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
 import { TextField } from 'components/layout/TextField';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { HexString, decodeAddress } from '@gear-js/api';
 import { GameFoundModal } from 'features/session/components/game-found-modal';
-import { ADDRESS } from 'consts';
 import { useProgramMetadata } from 'hooks';
 import { LaunchState } from 'features/session/types';
 import { JoinModalFormValues } from 'features/session/components/game-found-modal/GameFoundModal';
@@ -35,15 +34,12 @@ type JoinFormValues = {
 
 function RequestGame() {
   const { account } = useAccount();
-  const balances = useAccountDeriveBalancesAll();
-  const { isApiReady } = useApi();
   const { api } = useApi();
   const { programId } = useDnsProgramIds();
-  const { getFormattedBalance, getFormattedBalanceValue, getChainBalanceValue } = useBalanceFormat();
-  const balance =
-    isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
+  const { getFormattedBalanceValue, getChainBalanceValue } = useBalanceFormat();
+
   const [foundState, setFoundState] = useState<LaunchState | null>(null);
-  const { meta: isMeta, message: sendNewSessionMessage } = useLaunchMessage();
+  const { message: sendNewSessionMessage } = useLaunchMessage();
   const meta = useProgramMetadata(metaTxt);
   const setCurrentGame = useSetAtom(CURRENT_GAME_ATOM);
   const setPlayerName = useSetAtom(PLAYER_NAME_ATOM);
@@ -192,7 +188,7 @@ function RequestGame() {
                   label="Entry fee"
                   variant="active"
                   type="number"
-                  icon={balance?.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />}
+                  icon={api?.registry.chainTokens[0].toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />}
                   disabled={isLoading}
                   {...getCreateInputProps('fee')}
                 />

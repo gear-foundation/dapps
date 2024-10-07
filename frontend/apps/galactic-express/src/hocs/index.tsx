@@ -6,6 +6,7 @@ import {
 } from '@gear-js/react-hooks';
 import { DnsProvider as SharedDnsProvider } from '@dapps-frontend/hooks';
 import { Alert, alertStyles } from '@gear-js/ui';
+import { QueryProvider } from '@dapps-frontend/ui';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { ADDRESS } from 'consts';
@@ -34,7 +35,7 @@ function AlertProvider({ children }: ProviderProps) {
   );
 }
 
-const providers = [BrowserRouter, AlertProvider, DnsProvider, ApiProvider, AccountProvider];
+const providers = [BrowserRouter, AlertProvider, DnsProvider, ApiProvider, AccountProvider, QueryProvider];
 
 function withProviders(Component: ComponentType) {
   return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);

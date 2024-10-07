@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { WalletNew as Wallet } from '@dapps-frontend/ui';
+import { Wallet } from '@dapps-frontend/ui';
 import { Button } from '@gear-js/vara-ui';
 import { useAtom } from 'jotai';
 import { IS_LOADING } from 'atoms';

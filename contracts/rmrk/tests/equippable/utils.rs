@@ -16,14 +16,15 @@ pub fn setup_catalog(system: &System) {
     let catalog = ProgramBuilder::from_file(PATH_TO_CATALOG)
         .with_id(CATALOG_ID)
         .build(system);
-    let res = catalog.send(
+    let mid = catalog.send(
         ADMIN,
         InitCatalog {
             catalog_type: "svg".to_string(),
             symbol: "CatalogSymbol".to_string(),
         },
     );
-    assert!(!res.main_failed());
+    let res = system.run_next_block();
+    assert!(res.succeed.contains(&mid));
 
     let part_id_for_back_1 = 1;
     let part_for_back_1 = Part::Fixed(FixedPart {
@@ -105,15 +106,16 @@ pub fn setup_catalog(system: &System) {
     });
     parts.insert(part_id_for_gem_slot_3, part_for_gem_slot_3);
 
-    let result = catalog.send(ADMIN, CatalogAction::AddParts(parts.clone()));
+    catalog.send(ADMIN, CatalogAction::AddParts(parts.clone()));
     let expected_reply: Result<CatalogReply, CatalogError> = Ok(CatalogReply::PartsAdded(parts));
-    assert!(result.contains(&(ADMIN, expected_reply.encode())));
+    let res = system.run_next_block();
+    assert!(res.contains(&(ADMIN, expected_reply.encode())));
 }
 
 pub fn mint_tokens(system: &System) {
     let kanaria = Program::current_with_id(system, KANARIA_ID);
 
-    let res = kanaria.send(
+    let mid = kanaria.send(
         ADMIN,
         InitRMRK {
             name: "Kanaria".to_string(),
@@ -122,10 +124,11 @@ pub fn mint_tokens(system: &System) {
             resource_name: "".to_string(),
         },
     );
-    assert!(!res.main_failed());
+    let res = system.run_next_block();
+    assert!(res.succeed.contains(&mid));
 
     let gem = Program::current_with_id(system, GEM_ID);
-    let res = gem.send(
+    let mid = gem.send(
         ADMIN,
         InitRMRK {
             name: "Gem".to_string(),
@@ -134,17 +137,19 @@ pub fn mint_tokens(system: &System) {
             resource_name: "".to_string(),
         },
     );
-    assert!(!res.main_failed());
+    let res = system.run_next_block();
+    assert!(res.succeed.contains(&mid));
 
     // mint 5 birds
     for token_id in 1..6 {
-        let res = kanaria.send(
+        kanaria.send(
             ADMIN,
             RMRKAction::MintToRootOwner {
                 root_owner: ADMIN.into(),
                 token_id: token_id.into(),
             },
         );
+        let res = system.run_next_block();
         let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::MintedToRootOwner);
         assert!(res.contains(&(ADMIN, reply.encode())));
     }
@@ -153,7 +158,7 @@ pub fn mint_tokens(system: &System) {
     let mut gem_token_id = 1;
     for token_id in 1..6 {
         for _i in 1..4 {
-            let res = gem.send(
+            gem.send(
                 ADMIN,
                 RMRKAction::MintToNft {
                     parent_id: KANARIA_ID.into(),
@@ -162,9 +167,11 @@ pub fn mint_tokens(system: &System) {
                 },
             );
             let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::MintedToNft);
+            let res = system.run_next_block();
+
             assert!(res.contains(&(ADMIN, reply.encode())));
 
-            let res = kanaria.send(
+            kanaria.send(
                 ADMIN,
                 RMRKAction::AcceptChild {
                     parent_token_id: token_id.into(),
@@ -172,7 +179,7 @@ pub fn mint_tokens(system: &System) {
                     child_token_id: gem_token_id.into(),
                 },
             );
-
+            let res = system.run_next_block();
             let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::ChildAccepted);
             assert!(res.contains(&(ADMIN, reply.encode())));
             gem_token_id += 1;
@@ -186,6 +193,7 @@ pub fn add_kanaria_assets(system: &System) {
     let composed_asset_id = 2;
 
     add_equippable_asset_entry(
+        system,
         &kanaria,
         0,
         None,
@@ -195,6 +203,7 @@ pub fn add_kanaria_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
+        system,
         &kanaria,
         0,
         Some(CATALOG_ID.into()),
@@ -205,11 +214,11 @@ pub fn add_kanaria_assets(system: &System) {
 
     let token_id: TokenId = 1.into();
 
-    add_asset_to_token(&kanaria, token_id, default_asset_id, 0);
-    add_asset_to_token(&kanaria, token_id, composed_asset_id, 0);
+    add_asset_to_token(system, &kanaria, token_id, default_asset_id, 0);
+    add_asset_to_token(system, &kanaria, token_id, composed_asset_id, 0);
 
-    accept_asset(&kanaria, token_id, default_asset_id);
-    accept_asset(&kanaria, token_id, composed_asset_id);
+    accept_asset(system, &kanaria, token_id, default_asset_id);
+    accept_asset(system, &kanaria, token_id, composed_asset_id);
 }
 
 pub fn add_gem_assets(system: &System) {
@@ -222,6 +231,7 @@ pub fn add_gem_assets(system: &System) {
     let equippable_ref_id_right_gem = 3;
 
     add_equippable_asset_entry(
+        system,
         &gem,
         0,
         Some(CATALOG_ID.into()),
@@ -231,6 +241,7 @@ pub fn add_gem_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
+        system,
         &gem,
         equippable_ref_id_left_gem,
         Some(CATALOG_ID.into()),
@@ -240,6 +251,7 @@ pub fn add_gem_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
+        system,
         &gem,
         equippable_ref_id_mid_gem,
         Some(CATALOG_ID.into()),
@@ -249,6 +261,7 @@ pub fn add_gem_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
+        system,
         &gem,
         equippable_ref_id_right_gem,
         Some(CATALOG_ID.into()),
@@ -258,6 +271,7 @@ pub fn add_gem_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
+        system,
         &gem,
         0,
         Some(CATALOG_ID.into()),
@@ -267,6 +281,7 @@ pub fn add_gem_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
+        system,
         &gem,
         equippable_ref_id_left_gem,
         Some(CATALOG_ID.into()),
@@ -276,6 +291,7 @@ pub fn add_gem_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
+        system,
         &gem,
         equippable_ref_id_mid_gem,
         Some(CATALOG_ID.into()),
@@ -285,6 +301,7 @@ pub fn add_gem_assets(system: &System) {
     );
 
     add_equippable_asset_entry(
+        system,
         &gem,
         equippable_ref_id_right_gem,
         Some(CATALOG_ID.into()),
@@ -296,48 +313,66 @@ pub fn add_gem_assets(system: &System) {
     // 9, 10 and 11 are the slot part ids for the gems, defined on the catalog.
     // e.g. Any asset on gem, which sets its equippableRefId to equippableRefIdLeftGem
     // will be considered a valid equip into any kanaria on slot 9 (left gem).
-    set_valid_parent_for_equippable_group(&gem, equippable_ref_id_left_gem, 9, KANARIA_ID.into());
-    set_valid_parent_for_equippable_group(&gem, equippable_ref_id_mid_gem, 10, KANARIA_ID.into());
-    set_valid_parent_for_equippable_group(&gem, equippable_ref_id_right_gem, 11, KANARIA_ID.into());
+    set_valid_parent_for_equippable_group(
+        system,
+        &gem,
+        equippable_ref_id_left_gem,
+        9,
+        KANARIA_ID.into(),
+    );
+    set_valid_parent_for_equippable_group(
+        system,
+        &gem,
+        equippable_ref_id_mid_gem,
+        10,
+        KANARIA_ID.into(),
+    );
+    set_valid_parent_for_equippable_group(
+        system,
+        &gem,
+        equippable_ref_id_right_gem,
+        11,
+        KANARIA_ID.into(),
+    );
 
     // We add assets of type A to gem 1 and 2, and type B to gem 3. Both are nested into the first kanaria
     // This means gems 1 and 2 will have the same asset, which is totally valid.
 
-    add_asset_to_token(&gem, 1.into(), 1, 0);
-    add_asset_to_token(&gem, 1.into(), 2, 0);
-    add_asset_to_token(&gem, 1.into(), 3, 0);
-    add_asset_to_token(&gem, 1.into(), 4, 0);
+    add_asset_to_token(system, &gem, 1.into(), 1, 0);
+    add_asset_to_token(system, &gem, 1.into(), 2, 0);
+    add_asset_to_token(system, &gem, 1.into(), 3, 0);
+    add_asset_to_token(system, &gem, 1.into(), 4, 0);
 
-    add_asset_to_token(&gem, 2.into(), 1, 0);
-    add_asset_to_token(&gem, 2.into(), 2, 0);
-    add_asset_to_token(&gem, 2.into(), 3, 0);
-    add_asset_to_token(&gem, 2.into(), 4, 0);
+    add_asset_to_token(system, &gem, 2.into(), 1, 0);
+    add_asset_to_token(system, &gem, 2.into(), 2, 0);
+    add_asset_to_token(system, &gem, 2.into(), 3, 0);
+    add_asset_to_token(system, &gem, 2.into(), 4, 0);
 
-    add_asset_to_token(&gem, 3.into(), 5, 0);
-    add_asset_to_token(&gem, 3.into(), 6, 0);
-    add_asset_to_token(&gem, 3.into(), 7, 0);
-    add_asset_to_token(&gem, 3.into(), 8, 0);
+    add_asset_to_token(system, &gem, 3.into(), 5, 0);
+    add_asset_to_token(system, &gem, 3.into(), 6, 0);
+    add_asset_to_token(system, &gem, 3.into(), 7, 0);
+    add_asset_to_token(system, &gem, 3.into(), 8, 0);
 
-    accept_asset(&gem, 1.into(), 1);
-    accept_asset(&gem, 1.into(), 2);
-    accept_asset(&gem, 1.into(), 3);
-    accept_asset(&gem, 1.into(), 4);
+    accept_asset(system, &gem, 1.into(), 1);
+    accept_asset(system, &gem, 1.into(), 2);
+    accept_asset(system, &gem, 1.into(), 3);
+    accept_asset(system, &gem, 1.into(), 4);
 
-    accept_asset(&gem, 2.into(), 1);
-    accept_asset(&gem, 2.into(), 2);
-    accept_asset(&gem, 2.into(), 3);
-    accept_asset(&gem, 2.into(), 4);
+    accept_asset(system, &gem, 2.into(), 1);
+    accept_asset(system, &gem, 2.into(), 2);
+    accept_asset(system, &gem, 2.into(), 3);
+    accept_asset(system, &gem, 2.into(), 4);
 
-    accept_asset(&gem, 3.into(), 5);
-    accept_asset(&gem, 3.into(), 6);
-    accept_asset(&gem, 3.into(), 7);
-    accept_asset(&gem, 3.into(), 8);
+    accept_asset(system, &gem, 3.into(), 5);
+    accept_asset(system, &gem, 3.into(), 6);
+    accept_asset(system, &gem, 3.into(), 7);
+    accept_asset(system, &gem, 3.into(), 8);
 }
 
 pub fn equip_gems(system: &System) {
     let kanaria = system.get_program(KANARIA_ID).unwrap();
 
-    let result = kanaria.send(
+    kanaria.send(
         ADMIN,
         RMRKAction::Equip {
             token_id: 1.into(),       // Kanaria 1
@@ -348,10 +383,11 @@ pub fn equip_gems(system: &System) {
             child_asset_id: 2, // Asset id for child meant for the left gem
         },
     );
+    let res = system.run_next_block();
     let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::ChildAssetEquipped);
-    assert!(result.contains(&(ADMIN, reply.encode())));
+    assert!(res.contains(&(ADMIN, reply.encode())));
 
-    let result = kanaria.send(
+    kanaria.send(
         ADMIN,
         RMRKAction::Equip {
             token_id: 1.into(),       // Kanaria 1
@@ -362,10 +398,11 @@ pub fn equip_gems(system: &System) {
             child_asset_id: 3, // Asset id for child meant for the mid gem
         },
     );
+    let res = system.run_next_block();
     let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::ChildAssetEquipped);
-    assert!(result.contains(&(ADMIN, reply.encode())));
+    assert!(res.contains(&(ADMIN, reply.encode())));
 
-    let result = kanaria.send(
+    kanaria.send(
         ADMIN,
         RMRKAction::Equip {
             token_id: 1.into(),       // Kanaria 1
@@ -376,8 +413,9 @@ pub fn equip_gems(system: &System) {
             child_asset_id: 8, // Asset id for child meant for the mid gem
         },
     );
+    let res = system.run_next_block();
     let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::ChildAssetEquipped);
-    assert!(result.contains(&(ADMIN, reply.encode())));
+    assert!(res.contains(&(ADMIN, reply.encode())));
 }
 
 pub fn compose(system: &System, token_id: TokenId, asset_id: u64) {
@@ -424,6 +462,7 @@ pub fn compose(system: &System, token_id: TokenId, asset_id: u64) {
 }
 
 fn add_equippable_asset_entry(
+    system: &System,
     program: &Program<'_>,
     equippable_group_id: u64,
     catalog_address: Option<ActorId>,
@@ -431,7 +470,7 @@ fn add_equippable_asset_entry(
     part_ids: Vec<PartId>,
     _id: u64,
 ) {
-    let result = program.send(
+    program.send(
         ADMIN,
         RMRKAction::AddEquippableAssetEntry {
             equippable_group_id,
@@ -442,16 +481,18 @@ fn add_equippable_asset_entry(
     );
 
     let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::EquippableAssetEntryAdded);
-    assert!(result.contains(&(ADMIN, reply.encode())));
+    let res = system.run_next_block();
+    assert!(res.contains(&(ADMIN, reply.encode())));
 }
 
 fn set_valid_parent_for_equippable_group(
+    system: &System,
     program: &Program<'_>,
     equippable_group_id: u64,
     slot_part_id: PartId,
     parent_id: ActorId,
 ) {
-    let result = program.send(
+    program.send(
         ADMIN,
         RMRKAction::SetValidParentForEquippableGroup {
             equippable_group_id,
@@ -461,16 +502,18 @@ fn set_valid_parent_for_equippable_group(
     );
 
     let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::ValidParentEquippableGroupIdSet);
-    assert!(result.contains(&(ADMIN, reply.encode())));
+    let res = system.run_next_block();
+    assert!(res.contains(&(ADMIN, reply.encode())));
 }
 
 fn add_asset_to_token(
+    system: &System,
     program: &Program<'_>,
     token_id: TokenId,
     asset_id: u64,
     replaces_asset_with_id: u64,
 ) {
-    let result = program.send(
+    program.send(
         ADMIN,
         RMRKAction::AddAssetToToken {
             token_id,
@@ -480,11 +523,13 @@ fn add_asset_to_token(
     );
 
     let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::AssetAddedToToken);
-    assert!(result.contains(&(ADMIN, reply.encode())));
+    let res = system.run_next_block();
+    assert!(res.contains(&(ADMIN, reply.encode())));
 }
 
-fn accept_asset(program: &Program<'_>, token_id: TokenId, asset_id: u64) {
-    let res = program.send(ADMIN, RMRKAction::AcceptAsset { token_id, asset_id });
+fn accept_asset(system: &System, program: &Program<'_>, token_id: TokenId, asset_id: u64) {
+    program.send(ADMIN, RMRKAction::AcceptAsset { token_id, asset_id });
     let reply: Result<RMRKReply, RMRKError> = Ok(RMRKReply::AssetAccepted);
+    let res = system.run_next_block();
     assert!(res.contains(&(ADMIN, reply.encode())));
 }

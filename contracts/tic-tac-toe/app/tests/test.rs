@@ -1,17 +1,23 @@
 use sails_rs::calls::*;
-use sails_rs::gtest::calls::*;
+use sails_rs::gtest::{calls::*, System};
 use tic_tac_toe_wasm::{
     traits::{TicTacToe, TicTacToeFactory},
     Config, GameResult, TicTacToe as TicTacToeClient, TicTacToeFactory as Factory,
 };
 
+pub const ADMIN_ID: u64 = 10;
+pub const USER_ID: u64 = 11;
+
 #[tokio::test]
 async fn test_play_game() {
-    let program_space = GTestRemoting::new(100.into());
-    program_space.system().init_logger();
-    let code_id = program_space.system().submit_code_file(
-        "../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm",
-    );
+    let system = System::new();
+    system.init_logger();
+    system.mint_to(ADMIN_ID, 100_000_000_000_000);
+    system.mint_to(USER_ID, 100_000_000_000_000);
+    let program_space = GTestRemoting::new(system, ADMIN_ID.into());
+    let code_id = program_space
+        .system()
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm");
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -36,7 +42,11 @@ async fn test_play_game() {
         .await
         .unwrap();
     // check game instance
-    let game_instance = client.game(100.into()).recv(tic_tac_toe_id).await.unwrap();
+    let game_instance = client
+        .game(ADMIN_ID.into())
+        .recv(tic_tac_toe_id)
+        .await
+        .unwrap();
     assert!(game_instance.is_some());
 
     client
@@ -51,25 +61,35 @@ async fn test_play_game() {
         .await
         .unwrap();
 
+    client
+        .turn(3, None)
+        .send_recv(tic_tac_toe_id)
+        .await
+        .unwrap();
+
     // check game instance
     let game_instance = client
-        .game(100.into())
+        .game(ADMIN_ID.into())
         .recv(tic_tac_toe_id)
         .await
         .unwrap()
         .unwrap();
+
     assert!(game_instance.game_over);
     assert_eq!(game_instance.game_result, Some(GameResult::Bot));
-    // println!("GAME: {:?}", game_instance);
 }
 
 #[tokio::test]
 async fn add_and_remove_admin() {
-    let program_space = GTestRemoting::new(100.into());
-    program_space.system().init_logger();
-    let code_id = program_space.system().submit_code_file(
-        "../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm",
-    );
+    let system = System::new();
+    system.init_logger();
+    system.mint_to(ADMIN_ID, 100_000_000_000_000);
+    system.mint_to(USER_ID, 100_000_000_000_000);
+    let program_space = GTestRemoting::new(system, ADMIN_ID.into());
+
+    let code_id = program_space
+        .system()
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm");
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -89,32 +109,36 @@ async fn add_and_remove_admin() {
     let mut client = TicTacToeClient::new(program_space.clone());
     // add admin
     client
-        .add_admin(101.into())
+        .add_admin(USER_ID.into())
         .send_recv(tic_tac_toe_id)
         .await
         .unwrap();
     // check state
     let admins = client.admins().recv(tic_tac_toe_id).await.unwrap();
-    assert_eq!(admins, vec![100.into(), 101.into()]);
+    assert_eq!(admins, vec![ADMIN_ID.into(), USER_ID.into()]);
 
     // remove admin
     client
-        .remove_admin(101.into())
+        .remove_admin(USER_ID.into())
         .send_recv(tic_tac_toe_id)
         .await
         .unwrap();
     // check state
     let admins = client.admins().recv(tic_tac_toe_id).await.unwrap();
-    assert_eq!(admins, vec![100.into()]);
+    assert_eq!(admins, vec![ADMIN_ID.into()]);
 }
 
 #[tokio::test]
 async fn allow_messages() {
-    let program_space = GTestRemoting::new(100.into());
-    program_space.system().init_logger();
-    let code_id = program_space.system().submit_code_file(
-        "../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm",
-    );
+    let system = System::new();
+    system.init_logger();
+    system.mint_to(ADMIN_ID, 100_000_000_000_000);
+    system.mint_to(USER_ID, 100_000_000_000_000);
+    let program_space = GTestRemoting::new(system, ADMIN_ID.into());
+
+    let code_id = program_space
+        .system()
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm");
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -148,7 +172,7 @@ async fn allow_messages() {
 
     let res = client
         .start_game(None)
-        .with_args(GTestArgs::new(101.into()))
+        .with_args(GTestArgs::new(USER_ID.into()))
         .send_recv(tic_tac_toe_id)
         .await;
     assert!(res.is_err());
@@ -160,6 +184,10 @@ async fn allow_messages() {
         .await
         .unwrap();
     // check game instance
-    let game_instance = client.game(100.into()).recv(tic_tac_toe_id).await.unwrap();
+    let game_instance = client
+        .game(ADMIN_ID.into())
+        .recv(tic_tac_toe_id)
+        .await
+        .unwrap();
     assert!(game_instance.is_some());
 }

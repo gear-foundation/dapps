@@ -18,7 +18,7 @@ export default defineConfig({
       formats: ['es'],
     },
     rollupOptions: {
-      external: ['react', 'react-dom', '@gear-js/api', '@gear-js/react-hooks'],
+      external: ['react', 'react-dom', '@gear-js/api', '@gear-js/react-hooks', '@tanstack/react-query'],
       output: {
         globals: { react: 'React', 'react-dom': 'ReactDOM' },
         intro: 'import "./style.css";',

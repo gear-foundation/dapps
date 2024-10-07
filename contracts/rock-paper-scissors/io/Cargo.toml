@@ -1,9 +1,0 @@
-[package]
-name = "rock-paper-scissors-io"
-version.workspace = true
-edition.workspace = true
-publish.workspace = true
-
-[dependencies]
-gstd.workspace = true
-gmeta.workspace = true
