@@ -40,6 +40,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
+          # Output changes for logging
+          echo "The following changes were made:"
+          git diff
+
           # Create a new branch
           branch_name="update-gear-dependencies-$(date +%Y%m%d%H%M%S)"
           git checkout -b $branch_name
