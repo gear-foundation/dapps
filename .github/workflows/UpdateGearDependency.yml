@@ -2,7 +2,7 @@ name: Update GEAR Dependencies
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs every day at midnight
+    - cron: '*/30 * * * *' # Runs every 30 minutes
   workflow_dispatch: # Allows manual triggering of the workflow
 
 defaults:
