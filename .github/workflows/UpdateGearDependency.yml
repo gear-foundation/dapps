@@ -35,7 +35,7 @@ jobs:
 
     - name: Check for new tag and update Cargo.toml
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.WF_SECRET }}
       run: |
         python update_gear_version.py
         if ! git diff --exit-code; then
