@@ -36,7 +36,7 @@ jobs:
 
     - name: Check for new tag and update Cargo.toml
       env:
-        GITHUB_TOKEN: ${{ secrets.UPDATE_GEAR_TAG_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.WF_SECRET }}
       run: |
         python update_gear_version.py
         if ! git diff --exit-code; then
@@ -69,7 +69,7 @@ jobs:
 
           # Create a pull request using GitHub CLI
           echo "Creating a pull request for the new branch: $branch_name"
-          GITHUB_TOKEN="${{ secrets.UPDATE_GEAR_TAG_TOKEN }}" gh pr create --title "Update GEAR dependencies" --body "Automatically created pull request to update GEAR dependencies" --base master --head $branch_name
+          gh pr create --title "Update GEAR dependencies" --body "Automatically created pull request to update GEAR dependencies" --base master --head $branch_name
         else
           echo "No changes were detected after running the update_gear_version.py script."
         fi
