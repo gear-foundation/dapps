@@ -24,6 +24,7 @@ import { mockPlayer1, mockPlayer2 } from '@/features/game/mock';
 import { PlayersList } from '@/features/game/components/playersList';
 import { PlayerStatus } from '@/features/game/types';
 import { mockCharacterView } from '@/features/game/consts';
+import { SphereAnimation, FireballCanvas } from '@/features/game/components/animations';
 
 type Tabs = 'players' | 'history';
 
@@ -95,13 +96,16 @@ export default function GamePage() {
         <CharacterStats align="left" {...mockPlayer1} characterView={mockCharacterView} />
         <div className={clsx(styles.character, styles.left)}>
           <Character {...mockCharacterView} />
+          <SphereAnimation className={styles.fireSphere} type="attack" />
         </div>
 
+        <FireballCanvas />
         {!isTurnEnd && <Timer remainingTime={timeLeft} shouldGoOn={true} />}
 
         <CharacterStats align="right" {...mockPlayer2} characterView={mockCharacterView} />
         <div className={clsx(styles.character, styles.right)}>
           <Character {...mockCharacterView} />
+          <SphereAnimation className={styles.fireSphere} type="ultimate" />
         </div>
 
         {!isBattleEnd && (

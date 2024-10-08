@@ -1,9 +1,12 @@
 type Config = struct {
   health: u16,
   max_participants: u8,
+  attack_range: struct { u16, u16 },
+  defence_range: struct { u16, u16 },
+  dodge_range: struct { u16, u16 },
+  available_points: u16,
   time_for_move_in_blocks: u32,
   block_duration_ms: u32,
-  gas_to_delete_session: u64,
   gas_to_check_pair: u64,
   gas_for_create_warrior: u64,
   gas_to_cancel_the_battle: u64,
@@ -12,16 +15,10 @@ type Config = struct {
   reservation_time: u32,
 };
 
-type PlayerSettings = struct {
-  health: u16,
-  attack: u16,
-  defence: u16,
-  doge: u16,
-};
-
 type Move = enum {
   Attack,
-  Defence,
+  Reflect,
+  Ultimate,
 };
 
 type BattleState = struct {
@@ -43,8 +40,17 @@ type Player = struct {
   owner: actor_id,
   name: str,
   player_settings: PlayerSettings,
-  link: str,
+  appearance_identifiers: vec u8,
   number_of_victories: u8,
+  ultimate_reload: u8,
+  reflect_reload: u8,
+};
+
+type PlayerSettings = struct {
+  health: u16,
+  attack: u16,
+  defence: u16,
+  dodge: u16,
 };
 
 type State = enum {
@@ -54,23 +60,19 @@ type State = enum {
 };
 
 type Pair = struct {
-  player_health_1: struct { actor_id, u16 },
-  player_health_2: struct { actor_id, u16 },
+  player_1: actor_id,
+  player_2: actor_id,
   action: opt struct { actor_id, Move },
   round: u8,
   round_start_time: u64,
 };
 
-/// Reservation identifier.
-/// 
-/// The identifier is used to reserve and unreserve gas amount for program
-/// execution later.
 type ReservationId = struct {
   [u8, 32],
 };
 
 constructor {
-  New : (config: Config);
+  New : (config: Config, warrior_code_id: code_id);
 };
 
 service Battle {
@@ -80,11 +82,11 @@ service Battle {
   CancelTournament : () -> null;
   ChangeConfig : (config: Config) -> null;
   ChangeWarriorCodeId : (warrior_code_id: code_id) -> null;
-  CreateNewBattle : (name: str, warrior_id: actor_id, player_settings: PlayerSettings) -> null;
+  CreateNewBattle : (name: str, warrior_id: actor_id, attack: u16, defence: u16, dodge: u16) -> null;
   DelayedCancelTournament : (game_id: actor_id, time_creation: u64) -> null;
-  GenerateWarrior : (init: str) -> null;
+  GenerateWarrior : (appearance_identifiers: vec u8) -> null;
   MakeMove : (warrior_move: Move) -> null;
-  Register : (game_id: actor_id, warrior_id: actor_id, name: str, player_settings: PlayerSettings) -> null;
+  Register : (game_id: actor_id, warrior_id: actor_id, name: str, attack: u16, defence: u16, dodge: u16) -> null;
   StartBattle : () -> null;
   StartNextFight : () -> null;
   query Admins : () -> vec actor_id;

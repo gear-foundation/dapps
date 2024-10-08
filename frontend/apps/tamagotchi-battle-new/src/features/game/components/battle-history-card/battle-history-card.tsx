@@ -1,12 +1,12 @@
 import clsx from 'clsx';
 import { Text } from '@/components';
-import { AttackIcon, DefenseIcon, DodgeIcon, HealthIcon, SkullBigIcon } from '../../assets/images';
+import { AttackIcon, DefenseIcon, DodgeIcon, HealthIcon } from '../../assets/images';
 import { HealthIndicator } from '../health-indicator';
-import styles from './battle-history-card.module.scss';
 import { VariantProps, cva } from 'class-variance-authority';
 import { CrossIcon } from '@/assets/images';
 import { PlayerState } from '../../types';
 import { PlayerStatus } from '../player-status/player-status';
+import styles from './battle-history-card.module.scss';
 
 export const variants = cva('', {
   variants: { align: { left: styles.left, right: styles.right } },

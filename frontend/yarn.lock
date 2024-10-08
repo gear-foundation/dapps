@@ -1993,6 +1993,7 @@ __metadata:
   peerDependencies:
     "@gear-js/api": 0.38.1
     "@gear-js/react-hooks": 0.13.0
+    "@tanstack/react-query": 5.29.0
     react: 18.2.0
     react-dom: 18.2.0
   languageName: unknown
@@ -2684,6 +2685,27 @@ __metadata:
     "@polkadot/wasm-crypto": 7.3.2
     rxjs: 7.8.1
   checksum: 10c0/2adbeaf006ead72c0c18421ed1bb09908452f5ec1e094b0e9e6c96574d5f4c9eb35fa10567dfb5e7cce8ad122283e1e4879ca2f06d4e48e68f74985e9fd743a9
+  languageName: node
+  linkType: hard
+
+"@gear-js/react-hooks@npm:0.12.1":
+  version: 0.12.1
+  resolution: "@gear-js/react-hooks@npm:0.12.1"
+  dependencies:
+    "@polkadot/api-derive": "npm:11.0.2"
+    "@polkadot/util": "npm:12.6.2"
+    "@substrate/connect": "npm:0.8.10"
+    bignumber.js: "npm:9.1.2"
+    nanoid: "npm:5.0.1"
+    react-transition-group: "npm:4.4.5"
+  peerDependencies:
+    "@gear-js/api": 0.38.1
+    "@polkadot/api": 11.0.2
+    "@tanstack/react-query": 5.29.0
+    react: 18.2.0
+    react-dom: 18.2.0
+    sails-js: 0.1.8
+  checksum: 10c0/05263356b9406d5faa7fb94718bdc899d433f19173ccfa18dbf8dd6555cc08027847162a323766d99133ec54d1908833ce2418ae549d76cecd8f051fb55c0191
   languageName: node
   linkType: hard
 

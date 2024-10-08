@@ -3,13 +3,19 @@
   width: 295px;
 
   &.left {
-    left: 211px;
-    top: 246px;
+    left: 210px;
+    top: 214px;
   }
   &.right {
-    right: 211px;
-    top: 254px;
+    right: 187px;
+    top: 222px;
   }
+}
+
+.fireSphere {
+  position: absolute;
+  left: -8px;
+  top: -36px;
 }
 
 .redButton {
