@@ -1,17 +1,15 @@
 name: Contracts CI - Tests
 
 on:
-  workflow_dispatch:
   pull_request:
-    branches: [master]  # Добавляем ветку master
-    paths-ignore:
-      - 'frontend/**'
-      - 'docker/**'
+    branches: [master, main]
+    paths:
+      - contracts/**
   push:
-    branches: [master]
-    paths-ignore:
-      - 'frontend/**'
-      - 'docker/**'
+    branches: [master, main]
+    paths:
+      - contracts/**
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
