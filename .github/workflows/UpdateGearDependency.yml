@@ -57,6 +57,7 @@ jobs:
           # Stage and commit changes
           echo "Staging changed files."
           git add ../contracts/Cargo.toml
+          git add ../.github/workflows/contracts-tests.yml
 
           echo "Committing changes with message: 'Update GEAR dependencies to latest tag in contracts'"
           git commit -m "Update GEAR dependencies to latest tag in contracts"
