@@ -2,7 +2,7 @@ name: Update GEAR Dependencies
 
 on:
   schedule:
-    - cron: '*/30 * * * *' # Runs every 30 minutes
+    - cron: '0 */2 * * *' # Runs every 30 minutes
   workflow_dispatch: # Allows manual triggering of the workflow
 
 defaults:
@@ -70,30 +70,19 @@ jobs:
           echo "Committing changes with message: 'Update GEAR dependencies to latest tag in contracts'"
           git commit -m "Update GEAR dependencies to latest tag in contracts"
 
-          # Push the new branch
+          # Check if there's an open PR with the label 'auto-update-gear'
+          open_prs=$(gh pr list --label "auto-update-gear" --state open --json number --jq '.[].number')
+
+          if [ -n "$open_prs" ]; then
+            echo "An open pull request with the label 'auto-update-gear' already exists. Exiting."
+            exit 0
+          fi
+
+          # If no matching PR was found, push the branch and create a new PR
           echo "Pushing the new branch: $branch_name"
           git push origin $branch_name
 
-          # List open PRs with a specific label
-          open_prs=$(gh pr list --label "auto-update-gear" --state open --json number --jq '.[].number')
-
-          for pr in $open_prs; do
-            # Get PR details locally
-            pr_branch=$(gh pr view $pr --json headRefName --jq '.headRefName')
-            git fetch origin $pr_branch
-
-            # Compare local changes
-            pr_diff=$(git diff origin/$pr_branch)
-            current_diff=$(git diff HEAD~1 HEAD)
-
-            if [ "$pr_diff" = "$current_diff" ]; then
-              echo "An open pull request with the same changes already exists: #$pr"
-              exit 0
-            fi
-          done
-
-          # If no matching PR was found, create a new PR with a specific label
-          echo "No matching open PR found, creating a new pull request."
+          echo "Creating a new pull request."
           gh pr create --title "Update GEAR dependencies" --body "Automatically created pull request to update GEAR dependencies" --base master --head $branch_name --label "auto-update-gear"
         else
           echo "No changes were detected after running the update_gear_version.py script."
