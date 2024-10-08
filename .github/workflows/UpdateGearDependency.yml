@@ -35,6 +35,11 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests packaging gitpython
 
+    - name: Remove Cargo.lock file
+      run: |
+        echo "Removing contracts/Cargo.lock"
+        rm -f ../contracts/Cargo.lock
+
     - name: Check for new tag and update Cargo.toml
       env:
         GITHUB_TOKEN: ${{ secrets.WF_SECRET }}
@@ -60,6 +65,7 @@ jobs:
           echo "Staging changed files."
           git add ../contracts/Cargo.toml
           git add ../.github/workflows/contracts-tests.yml
+          git add ../contracts/Cargo.lock
 
           echo "Committing changes with message: 'Update GEAR dependencies to latest tag in contracts'"
           git commit -m "Update GEAR dependencies to latest tag in contracts"
