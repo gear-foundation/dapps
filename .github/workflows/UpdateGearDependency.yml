@@ -35,13 +35,6 @@ jobs:
         python -m pip install --upgrade pip
         pip install requests packaging gitpython
 
-    - name: Remove and update Cargo.lock file
-      run: |
-        echo "Removing contracts/Cargo.lock"
-        rm -f ../contracts/Cargo.lock
-        echo "Updating contracts/Cargo.lock"
-        cd ../contracts && cargo generate-lockfile
-
     - name: Check for new tag and update Cargo.toml
       env:
         GITHUB_TOKEN: ${{ secrets.WF_SECRET }}
@@ -62,6 +55,12 @@ jobs:
           branch_name="update-gear-dependencies-$(date +%Y%m%d%H%M%S)"
           echo "Creating a new branch: $branch_name"
           git checkout -b $branch_name
+
+          # Remove and update Cargo.lock file
+          echo "Removing contracts/Cargo.lock"
+          rm -f ../contracts/Cargo.lock
+          echo "Updating contracts/Cargo.lock"
+          cd ../contracts && cargo generate-lockfile
 
           # Stage and commit changes
           echo "Staging changed files."
