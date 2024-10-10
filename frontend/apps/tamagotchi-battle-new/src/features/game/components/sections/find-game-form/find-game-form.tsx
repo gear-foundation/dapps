@@ -1,14 +1,19 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input } from '@gear-js/vara-ui';
 import { decodeAddress } from '@gear-js/api';
-import { useAccount, useAlert, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { HexString } from '@gear-js/api';
 
 import { GameFoundModal, JoinModalFormValues } from '../../modals/game-found-modal';
 import styles from './find-game-form.module.scss';
 import { Card, Modal } from '@/components';
+import { BattleState, useBattleQuery, useRegisterMessage } from '@/app/utils';
+import { usePending } from '@/features/game/hooks';
+import { ROUTES } from '@/app/consts';
+import { useAtomValue } from 'jotai';
+import { characterAtom } from '@/features/game/store';
 
 type Props = {};
 
@@ -20,21 +25,15 @@ function FindGameForm({}: Props) {
   const navigate = useNavigate();
   const { account } = useAccount();
   const { getFormattedBalanceValue } = useBalanceFormat();
-  // const { joinGameMessage } = useJoinGameMessage();
-  const alert = useAlert();
-  // const gameQuery = useMultiGameQuery();
-  // const [foundState, setFoundState] = useState<MultipleGameState | null>(null);
+  const { registerMessage } = useRegisterMessage();
 
-  const foundState = { bid: '123' };
-  // const { pending, setPending } = usePending();
+  const [foundState, setFoundState] = useState<BattleState | null>(null);
+
+  const { pending, setPending } = usePending();
   const [isJoinSessionModalShown, setIsJoinSessionModalShown] = useState<boolean>(false);
-  console.log('🚀 ~ FindGameForm ~ isJoinSessionModalShown:', isJoinSessionModalShown);
-  const [foundGame, setFoundGame] = useState<HexString | undefined>(undefined);
   const [gameNotFoundModal, setGameNotFoundModal] = useState<boolean>(false);
 
-  const pending = false;
-
-  const joinForm = useForm({
+  const joinForm = useForm<FindGameFormValues>({
     initialValues: {
       address: undefined,
     },
@@ -43,7 +42,16 @@ function FindGameForm({}: Props) {
     },
   });
 
-  const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit } = joinForm;
+  const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit, values } = joinForm;
+
+  const { refetch } = useBattleQuery(values.address?.length === 49 ? decodeAddress(values.address) : '');
+  const character = useAtomValue(characterAtom);
+
+  useEffect(() => {
+    if (!character) {
+      navigate(ROUTES.HOME);
+    }
+  }, [character]);
 
   const handleCloseFoundModal = () => {
     setIsJoinSessionModalShown(false);
@@ -55,16 +63,16 @@ function FindGameForm({}: Props) {
     }
 
     try {
-      const decodedAdminAddress = decodeAddress(values.address);
+      const response = await refetch();
+      console.log('🚀 ~ handleOpenJoinSessionModal ~ response:', response);
+      const { data } = response;
+      console.log('🚀 ~ handleOpenJoinSessionModal ~ data:', data);
 
-      // const state = await gameQuery(decodedAdminAddress.trim());
-
-      // if (state?.status && Object.keys(state.status)[0] === 'registration') {
-      //   setFoundState(state);
-      //   setFoundGame(decodedAdminAddress);
-      setIsJoinSessionModalShown(true);
-      return;
-      // }
+      if (data?.state && 'registration' in data.state) {
+        setFoundState(data);
+        setIsJoinSessionModalShown(true);
+        return;
+      }
 
       setGameNotFoundModal(true);
     } catch (err: any) {
@@ -73,22 +81,23 @@ function FindGameForm({}: Props) {
   };
 
   const handleJoinSession = async (values: JoinModalFormValues) => {
-    // if (foundGame && foundState && account) {
-    //   setPending(true);
-    //   try {
-    //     // const transaction = await joinGameMessage(foundGame, values.name, BigInt(foundState.bid));
-    //     // const { response } = await transaction.signAndSend();
-    //     // await response();
-    //     // await triggerGame();
-    //   } catch (err) {
-    //     console.log(err);
-    //     const { message, docs } = err as Error & { docs: string };
-    //     const errorText = message || docs || 'Create game error';
-    //     alert.error(errorText);
-    //   } finally {
-    //     setPending(false);
-    //   }
-    // }
+    if (foundState && account && character) {
+      setPending(true);
+      const gameId = decodeAddress(foundState.admin);
+
+      const { appearance, attack, defence, dodge, warriorId } = character;
+      const { name } = values;
+      registerMessage(
+        { value: BigInt(foundState.bid), name, appearance, attack, defence, dodge, warriorId, gameId },
+        {
+          onSuccess: () => {
+            setPending(false);
+            navigate(ROUTES.WAITING);
+          },
+          onError: () => setPending(false),
+        },
+      );
+    }
   };
 
   const handleCloseNotFoundModal = () => {

@@ -1,7 +1,7 @@
 import clsx from 'clsx';
 import { VariantProps, cva } from 'class-variance-authority';
 import { Text } from '@/components';
-import { AttackIcon, DefenseIcon, DodgeIcon, HealthIcon, SkullBigIcon } from '../../assets/images';
+import { AttackIcon, DefenceIcon, DodgeIcon, HealthIcon, SkullBigIcon } from '../../assets/images';
 import { ReactComponent as MockAvatarIcon } from './avatar.svg';
 import { ReactComponent as VectorIcon } from './vector.svg';
 import { HealthIndicator } from '../health-indicator';
@@ -27,14 +27,14 @@ export const CharacterStats = ({
   align,
   name,
   attack,
-  currentHealth,
+  health,
   // ! TODO: display percents
-  deffence,
+  defence,
   dodge,
   characterView,
   isActive = false,
 }: CharacterStatsProps) => {
-  const status = currentHealth === 0 ? 'defeated' : 'alive';
+  const status = health === 0 ? 'defeated' : 'alive';
 
   return (
     <div className={variants({ align, status, className: clsx(styles.container, className) })}>
@@ -48,9 +48,9 @@ export const CharacterStats = ({
             </Text>
           </div>
           <div className={styles.stat}>
-            <DefenseIcon className={styles.defense} />
+            <DefenceIcon className={styles.defence} />
             <Text size="xs" weight="bold">
-              {deffence}%
+              {defence}%
             </Text>
           </div>
           <div className={clsx(styles.stat, styles.dodgeStat)}>
@@ -72,10 +72,10 @@ export const CharacterStats = ({
           <div className={styles.healthCount}>
             <HealthIcon />
             <Text size="xs" weight="bold">
-              {currentHealth}
+              {health}
             </Text>
           </div>
-          <HealthIndicator currentHealth={currentHealth} />
+          <HealthIndicator health={health} />
         </div>
       </div>
 

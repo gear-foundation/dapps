@@ -12,10 +12,13 @@
   margin: 0 auto;
   top: 217px;
   width: 546px;
-  padding: 32px;
+  > div {
+    padding: 32px;
+  }
   gap: 28px;
   h2 {
     font-size: 32px;
+    line-height: 38px;
   }
 }
 

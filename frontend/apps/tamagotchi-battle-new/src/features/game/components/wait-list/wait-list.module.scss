@@ -2,12 +2,12 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  max-height: 551px;
+  height: 551px;
 }
 
 .item {
   display: grid;
-  grid-template-columns: 17px 1fr 158px;
+  grid-template-columns: 17px 1fr 180px;
   gap: 12px;
   padding: 15.5px 12px;
   border-radius: 8px;
@@ -40,5 +40,4 @@
   align-items: center;
   gap: 6px;
   color: #58696e;
-  width: 180px;
 }

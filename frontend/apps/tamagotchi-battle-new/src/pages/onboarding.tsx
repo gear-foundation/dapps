@@ -7,7 +7,7 @@ import { Character } from '@/features/game/components/character';
 import { CharacterStats } from '@/features/game/components/character-stats';
 import {
   AttackButtonIcon,
-  DefenseButtonIcon,
+  DefenceButtonIcon,
   UltimateButtonIcon,
   UserSkullIcon,
   UserSmileIcon,
@@ -18,6 +18,7 @@ import { useState } from 'react';
 import { Modal, Segmented, Text } from '@/components';
 import { mockPlayer1, mockPlayer2 } from '@/features/game/mock';
 import { mockCharacterView, mockCharacterView2 } from '@/features/game/consts';
+import { characterStorage } from '@/features/game/store';
 import styles from './onboarding.module.scss';
 
 const steps = [
@@ -83,6 +84,7 @@ const steps = [
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
+  const characterView = characterStorage.get()?.appearance || mockCharacterView;
 
   const onClose = () => {
     navigate(-1);
@@ -121,12 +123,12 @@ export default function OnboardingPage() {
         <CharacterStats
           align="left"
           {...mockPlayer1}
-          characterView={mockCharacterView}
+          characterView={characterView}
           className={clsx(step === 2 && styles.highlighted)}
           isActive
         />
         <div className={clsx(styles.character, styles.left)}>
-          <Character {...mockCharacterView} />
+          <Character {...characterView} />
         </div>
 
         {<Timer remainingTime={timeLeft} shouldGoOn={false} />}
@@ -159,7 +161,7 @@ export default function OnboardingPage() {
           {step === 1 && (
             <div className={styles.gameButtons}>
               <GameButton color="red" text="Attack" icon={<AttackButtonIcon />} />
-              <GameButton color="green" text="Reflect" icon={<DefenseButtonIcon />} />
+              <GameButton color="green" text="Reflect" icon={<DefenceButtonIcon />} />
               <GameButton color="cyan" text="Ultimate" icon={<UltimateButtonIcon />} />
             </div>
           )}
@@ -174,7 +176,7 @@ export default function OnboardingPage() {
           <div className={styles.characterCircle}>
             <Background>
               <div className={clsx(styles.character, styles.left)}>
-                <Character {...mockCharacterView} />
+                <Character {...characterView} />
               </div>
             </Background>
           </div>

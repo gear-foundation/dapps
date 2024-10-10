@@ -9,11 +9,12 @@ type CardButtonProps = BaseComponentProps & {
   title: string;
   description: string;
   icon: React.ReactNode;
+  disabled?: boolean;
 };
 
-export function CardButton({ onClick, icon, title, className, description }: CardButtonProps) {
+export function CardButton({ onClick, icon, title, className, description, disabled }: CardButtonProps) {
   return (
-    <div onClick={onClick} className={clsx(styles.card, className)}>
+    <div onClick={onClick} className={clsx(styles.card, className, disabled && styles.disabled)}>
       <div>
         <div className={styles.title}>
           {icon}

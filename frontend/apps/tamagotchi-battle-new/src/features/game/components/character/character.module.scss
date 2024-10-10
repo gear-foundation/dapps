@@ -12,6 +12,15 @@
   }
 }
 
+.sm {
+  height: 279px;
+  width: 279px;
+  & > svg {
+    height: 279px;
+    width: 279px;
+  }
+}
+
 .loader {
   position: absolute;
   top: 0;

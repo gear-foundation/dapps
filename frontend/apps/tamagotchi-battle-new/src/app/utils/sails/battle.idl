@@ -15,6 +15,15 @@ type Config = struct {
   reservation_time: u32,
 };
 
+type Appearance = struct {
+  head_index: u16,
+  hat_index: u16,
+  body_index: u16,
+  accessory_index: u16,
+  body_color: str,
+  back_color: str,
+};
+
 type Move = enum {
   Attack,
   Reflect,
@@ -23,6 +32,7 @@ type Move = enum {
 
 type BattleState = struct {
   admin: actor_id,
+  battle_name: str,
   time_creation: u64,
   bid: u128,
   participants: vec struct { actor_id, Player },
@@ -36,11 +46,11 @@ type BattleState = struct {
 };
 
 type Player = struct {
-  warrior_id: actor_id,
+  warrior_id: opt actor_id,
   owner: actor_id,
-  name: str,
+  user_name: str,
   player_settings: PlayerSettings,
-  appearance_identifiers: vec u8,
+  appearance: Appearance,
   number_of_victories: u8,
   ultimate_reload: u8,
   reflect_reload: u8,
@@ -72,7 +82,7 @@ type ReservationId = struct {
 };
 
 constructor {
-  New : (config: Config, warrior_code_id: code_id);
+  New : (config: Config);
 };
 
 service Battle {
@@ -81,23 +91,20 @@ service Battle {
   CancelRegister : () -> null;
   CancelTournament : () -> null;
   ChangeConfig : (config: Config) -> null;
-  ChangeWarriorCodeId : (warrior_code_id: code_id) -> null;
-  CreateNewBattle : (name: str, warrior_id: actor_id, attack: u16, defence: u16, dodge: u16) -> null;
+  CreateNewBattle : (battle_name: str, user_name: str, warrior_id: opt actor_id, appearance: opt Appearance, attack: u16, defence: u16, dodge: u16) -> null;
   DelayedCancelTournament : (game_id: actor_id, time_creation: u64) -> null;
-  GenerateWarrior : (appearance_identifiers: vec u8) -> null;
   MakeMove : (warrior_move: Move) -> null;
-  Register : (game_id: actor_id, warrior_id: actor_id, name: str, attack: u16, defence: u16, dodge: u16) -> null;
+  Register : (game_id: actor_id, warrior_id: opt actor_id, appearance: opt Appearance, user_name: str, attack: u16, defence: u16, dodge: u16) -> null;
   StartBattle : () -> null;
   StartNextFight : () -> null;
   query Admins : () -> vec actor_id;
   query Config : () -> Config;
   query GetBattle : (game_id: actor_id) -> opt BattleState;
   query GetMyBattle : () -> opt BattleState;
-  query WarriorCodeId : () -> code_id;
 
   events {
     NewBattleCreated: struct { battle_id: actor_id, bid: u128 };
-    PlayerRegistered: struct { admin_id: actor_id, name: str, bid: u128 };
+    PlayerRegistered: struct { admin_id: actor_id, user_name: str, bid: u128 };
     RegisterCanceled;
     BattleCanceled: struct { game_id: actor_id };
     BattleStarted;
@@ -110,7 +117,6 @@ service Battle {
     WarriorGenerated: struct { address: actor_id };
     AdminAdded: struct { new_admin: actor_id };
     ConfigChanged: struct { config: Config };
-    WarriorCodeIdChanged: struct { warrior_code_id: code_id };
   }
 };
 

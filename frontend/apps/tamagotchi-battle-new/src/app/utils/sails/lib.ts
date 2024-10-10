@@ -1,6 +1,8 @@
-import { ActorId, TransactionBuilder, CodeId, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
+import { TransactionBuilder, getServiceNamePrefix, getFnNamePrefix, ZERO_ADDRESS } from 'sails-js';
 import { GearApi, decodeAddress } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
+
+type ActorId = string;
 
 export interface Config {
   health: number;
@@ -19,10 +21,20 @@ export interface Config {
   reservation_time: number;
 }
 
+export interface Appearance {
+  head_index: number;
+  hat_index: number;
+  body_index: number;
+  accessory_index: number;
+  body_color: string;
+  back_color: string;
+}
+
 export type Move = 'attack' | 'reflect' | 'ultimate';
 
 export interface BattleState {
   admin: ActorId;
+  battle_name: string;
   time_creation: number | string | bigint;
   bid: number | string | bigint;
   participants: Array<[ActorId, Player]>;
@@ -36,11 +48,11 @@ export interface BattleState {
 }
 
 export interface Player {
-  warrior_id: ActorId;
+  warrior_id: ActorId | null;
   owner: ActorId;
-  name: string;
+  user_name: string;
   player_settings: PlayerSettings;
-  appearance_identifiers: `0x${string}`;
+  appearance: Appearance;
   number_of_victories: number;
   ultimate_reload: number;
   reflect_reload: number;
@@ -90,9 +102,18 @@ export class Program {
         reservation_amount: 'u64',
         reservation_time: 'u32',
       },
+      Appearance: {
+        head_index: 'u16',
+        hat_index: 'u16',
+        body_index: 'u16',
+        accessory_index: 'u16',
+        body_color: 'String',
+        back_color: 'String',
+      },
       Move: { _enum: ['Attack', 'Reflect', 'Ultimate'] },
       BattleState: {
         admin: '[u8;32]',
+        battle_name: 'String',
         time_creation: 'u64',
         bid: 'u128',
         participants: 'Vec<([u8;32], Player)>',
@@ -105,11 +126,11 @@ export class Program {
         reservation: 'Vec<([u8;32], ReservationId)>',
       },
       Player: {
-        warrior_id: '[u8;32]',
+        warrior_id: 'Option<[u8;32]>',
         owner: '[u8;32]',
-        name: 'String',
+        user_name: 'String',
         player_settings: 'PlayerSettings',
-        appearance_identifiers: 'Vec<u8>',
+        appearance: 'Appearance',
         number_of_victories: 'u8',
         ultimate_reload: 'u8',
         reflect_reload: 'u8',
@@ -133,13 +154,13 @@ export class Program {
     this.battle = new Battle(this);
   }
 
-  newCtorFromCode(code: Uint8Array | Buffer, config: Config, warrior_code_id: CodeId): TransactionBuilder<null> {
+  newCtorFromCode(code: Uint8Array | Buffer, config: Config): TransactionBuilder<null> {
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,
       'upload_program',
-      ['New', config, warrior_code_id],
-      '(String, Config, [u8;32])',
+      ['New', config],
+      '(String, Config)',
       'String',
       code,
     );
@@ -148,13 +169,13 @@ export class Program {
     return builder;
   }
 
-  newCtorFromCodeId(codeId: `0x${string}`, config: Config, warrior_code_id: CodeId) {
+  newCtorFromCodeId(codeId: `0x${string}`, config: Config) {
     const builder = new TransactionBuilder<null>(
       this.api,
       this.registry,
       'create_program',
-      ['New', config, warrior_code_id],
-      '(String, Config, [u8;32])',
+      ['New', config],
+      '(String, Config)',
       'String',
       codeId,
     );
@@ -232,22 +253,11 @@ export class Battle {
     );
   }
 
-  public changeWarriorCodeId(warrior_code_id: CodeId): TransactionBuilder<null> {
-    if (!this._program.programId) throw new Error('Program ID is not set');
-    return new TransactionBuilder<null>(
-      this._program.api,
-      this._program.registry,
-      'send_message',
-      ['Battle', 'ChangeWarriorCodeId', warrior_code_id],
-      '(String, String, [u8;32])',
-      'Null',
-      this._program.programId,
-    );
-  }
-
   public createNewBattle(
-    name: string,
-    warrior_id: ActorId,
+    battle_name: string,
+    user_name: string,
+    warrior_id: ActorId | null,
+    appearance: Appearance | null,
     attack: number,
     defence: number,
     dodge: number,
@@ -257,8 +267,8 @@ export class Battle {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Battle', 'CreateNewBattle', name, warrior_id, attack, defence, dodge],
-      '(String, String, String, [u8;32], u16, u16, u16)',
+      ['Battle', 'CreateNewBattle', battle_name, user_name, warrior_id, appearance, attack, defence, dodge],
+      '(String, String, String, String, Option<[u8;32]>, Option<Appearance>, u16, u16, u16)',
       'Null',
       this._program.programId,
     );
@@ -272,19 +282,6 @@ export class Battle {
       'send_message',
       ['Battle', 'DelayedCancelTournament', game_id, time_creation],
       '(String, String, [u8;32], u64)',
-      'Null',
-      this._program.programId,
-    );
-  }
-
-  public generateWarrior(appearance_identifiers: `0x${string}`): TransactionBuilder<null> {
-    if (!this._program.programId) throw new Error('Program ID is not set');
-    return new TransactionBuilder<null>(
-      this._program.api,
-      this._program.registry,
-      'send_message',
-      ['Battle', 'GenerateWarrior', appearance_identifiers],
-      '(String, String, Vec<u8>)',
       'Null',
       this._program.programId,
     );
@@ -305,8 +302,9 @@ export class Battle {
 
   public register(
     game_id: ActorId,
-    warrior_id: ActorId,
-    name: string,
+    warrior_id: ActorId | null,
+    appearance: Appearance | null,
+    user_name: string,
     attack: number,
     defence: number,
     dodge: number,
@@ -316,8 +314,8 @@ export class Battle {
       this._program.api,
       this._program.registry,
       'send_message',
-      ['Battle', 'Register', game_id, warrior_id, name, attack, defence, dodge],
-      '(String, String, [u8;32], [u8;32], String, u16, u16, u16)',
+      ['Battle', 'Register', game_id, warrior_id, appearance, user_name, attack, defence, dodge],
+      '(String, String, [u8;32], Option<[u8;32]>, Option<Appearance>, String, u16, u16, u16)',
       'Null',
       this._program.programId,
     );
@@ -428,25 +426,6 @@ export class Battle {
     return result[2].toJSON() as unknown as BattleState | null;
   }
 
-  public async warriorCodeId(
-    originAddress?: string,
-    value?: number | string | bigint,
-    atBlock?: `0x${string}`,
-  ): Promise<CodeId> {
-    const payload = this._program.registry.createType('(String, String)', ['Battle', 'WarriorCodeId']).toHex();
-    const reply = await this._program.api.message.calculateReply({
-      destination: this._program.programId!,
-      origin: originAddress ? decodeAddress(originAddress) : ZERO_ADDRESS,
-      payload,
-      value: value || 0,
-      gasLimit: this._program.api.blockGasLimit.toBigInt(),
-      at: atBlock,
-    });
-    if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, [u8;32])', reply.payload);
-    return result[2].toJSON() as unknown as CodeId;
-  }
-
   public subscribeToNewBattleCreatedEvent(
     callback: (data: { battle_id: ActorId; bid: number | string | bigint }) => void | Promise<void>,
   ): Promise<() => void> {
@@ -467,7 +446,7 @@ export class Battle {
   }
 
   public subscribeToPlayerRegisteredEvent(
-    callback: (data: { admin_id: ActorId; name: string; bid: number | string | bigint }) => void | Promise<void>,
+    callback: (data: { admin_id: ActorId; user_name: string; bid: number | string | bigint }) => void | Promise<void>,
   ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
@@ -478,8 +457,11 @@ export class Battle {
       if (getServiceNamePrefix(payload) === 'Battle' && getFnNamePrefix(payload) === 'PlayerRegistered') {
         callback(
           this._program.registry
-            .createType('(String, String, {"admin_id":"[u8;32]","name":"String","bid":"u128"})', message.payload)[2]
-            .toJSON() as unknown as { admin_id: ActorId; name: string; bid: number | string | bigint },
+            .createType(
+              '(String, String, {"admin_id":"[u8;32]","user_name":"String","bid":"u128"})',
+              message.payload,
+            )[2]
+            .toJSON() as unknown as { admin_id: ActorId; user_name: string; bid: number | string | bigint },
         );
       }
     });
@@ -678,25 +660,6 @@ export class Battle {
           this._program.registry
             .createType('(String, String, {"config":"Config"})', message.payload)[2]
             .toJSON() as unknown as { config: Config },
-        );
-      }
-    });
-  }
-
-  public subscribeToWarriorCodeIdChangedEvent(
-    callback: (data: { warrior_code_id: CodeId }) => void | Promise<void>,
-  ): Promise<() => void> {
-    return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
-      if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
-        return;
-      }
-
-      const payload = message.payload.toHex();
-      if (getServiceNamePrefix(payload) === 'Battle' && getFnNamePrefix(payload) === 'WarriorCodeIdChanged') {
-        callback(
-          this._program.registry
-            .createType('(String, String, {"warrior_code_id":"[u8;32]"})', message.payload)[2]
-            .toJSON() as unknown as { warrior_code_id: CodeId },
         );
       }
     });

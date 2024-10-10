@@ -23,3 +23,14 @@
   margin-bottom: 10px;
   line-height: 20px;
 }
+
+.disabled {
+  pointer-events: none;
+  background: #f6f6f6;
+  border: 2px solid #00000033;
+  color: #0000004d;
+
+  .title {
+    color: #00000033;
+  }
+}

@@ -1,33 +1,26 @@
 import { VariantProps, cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { Text } from '@/components';
-import { AttackIcon, CupStarIcon, DefenseIcon, DodgeIcon, HealthIcon } from '../../assets/images';
+import { AttackIcon, CupStarIcon, DefenceIcon, DodgeIcon, HealthIcon } from '../../assets/images';
 import { PlayerState } from '../../types';
 import { Avatar } from '../avatar';
 import { CharacterView } from '../character/character';
 import styles from './battle-card.module.scss';
+import { PlayerSettings } from '@/app/utils';
 
 export const variants = cva('', {
   variants: { align: { left: styles.left, right: styles.right } },
   defaultVariants: { align: 'left' },
 });
 
-type BattleCardProps = PlayerState &
+type BattleCardProps = PlayerSettings &
   VariantProps<typeof variants> & {
+    name: string;
     winsCount?: number;
     characterView: CharacterView;
   };
 
-const BattleCard = ({
-  align,
-  name,
-  attack,
-  currentHealth,
-  deffence,
-  dodge,
-  winsCount = 0,
-  characterView,
-}: BattleCardProps) => {
+const BattleCard = ({ align, name, attack, health, defence, dodge, winsCount = 0, characterView }: BattleCardProps) => {
   return (
     <div className={variants({ className: styles.wrapper, align })}>
       <Avatar size="sm" {...characterView} />
@@ -45,7 +38,7 @@ const BattleCard = ({
           <div className={styles.stat}>
             <HealthIcon />
             <Text size="xs" weight="bold">
-              {currentHealth}
+              {health}
             </Text>
           </div>
           <div className={clsx(styles.stat, styles.attackStat)}>
@@ -55,9 +48,9 @@ const BattleCard = ({
             </Text>
           </div>
           <div className={styles.stat}>
-            <DefenseIcon className={clsx(styles.icon, styles.reflect)} />
+            <DefenceIcon className={clsx(styles.icon, styles.reflect)} />
             <Text size="xs" weight="bold">
-              {deffence}%
+              {defence}%
             </Text>
           </div>
           <div className={clsx(styles.stat, styles.dodgeStat)}>

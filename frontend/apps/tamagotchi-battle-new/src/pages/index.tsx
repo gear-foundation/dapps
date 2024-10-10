@@ -1,5 +1,5 @@
-import { Suspense } from 'react';
-import { Route } from 'react-router-dom';
+import { Suspense, useEffect } from 'react';
+import { Route, useNavigate, useLocation } from 'react-router-dom';
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
 import { ROUTES } from '@/app/consts';
 import { Card, Loader } from '@/components';
@@ -8,6 +8,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import { WalletNew as Wallet } from '@dapps-frontend/ui';
 
 import Home from './home';
+import { useMyBattleQuery } from '@/app/utils';
 import ImportCharacterPage from './import-character';
 import GenerateCharacterPage from './generate-character';
 import CreateGamePage from './create-game';
@@ -31,6 +32,22 @@ const routes = [
 
 export function Routing() {
   const { account } = useAccount();
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const { battleState, isFetching } = useMyBattleQuery();
+
+  useEffect(() => {
+    if (battleState && !isFetching) {
+      const { state } = battleState;
+      if ('registration' in state && location.pathname !== ROUTES.WAITING && location.pathname !== ROUTES.ONBOARDING) {
+        navigate(ROUTES.WAITING);
+      }
+      if ('started' in state && location.pathname !== ROUTES.GAME && location.pathname !== ROUTES.ONBOARDING) {
+        navigate(ROUTES.GAME);
+      }
+    }
+  });
 
   return (
     <ErrorTrackingRoutes>

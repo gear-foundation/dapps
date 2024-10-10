@@ -40,7 +40,7 @@ export default function ImportCharacter() {
           />
           {isCharacterFound && (
             <div className={styles.character}>
-              <Character {...mockCharacterView} />
+              <Character {...mockCharacterView} size='sm' />
             </div>
           )}
         </Card>

@@ -1,16 +1,17 @@
-import { useAccount, useAlert, useApi, useBalanceFormat } from '@gear-js/react-hooks';
-import { useSetAtom } from 'jotai';
+import { useEffect } from 'react';
+import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { useAtomValue } from 'jotai';
 import { useNavigate } from 'react-router-dom';
 import { Input, Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { VaraIcon } from '@/components/layout';
-// import { usePending } from '@/features/game/hooks';
-// import { useMultiplayerGame } from '../../hooks';
-// import { useCreateGameMessage } from '../../sails/messages';
-import styles from './CreateGameForm.module.scss';
+import { usePending } from '@/features/game/hooks';
 import { Background } from '../../background';
 import { Card } from '@/components';
-import { gameStatusAtom } from '@/features/game/store';
+import { characterAtom } from '@/features/game/store';
+import { useCreateNewBattleMessage } from '@/app/utils';
+import { ROUTES } from '@/app/consts';
+import styles from './CreateGameForm.module.scss';
 
 type CreateGameFormValues = {
   fee: number;
@@ -24,14 +25,18 @@ function CreateGameForm({}: Props) {
   const navigate = useNavigate();
   const { account } = useAccount();
   const { api } = useApi();
-  const alert = useAlert();
-  const setGameStatus = useSetAtom(gameStatusAtom);
   const { getFormattedBalanceValue } = useBalanceFormat();
 
-  const pending = false;
-  // const { createGameMessage } = useCreateGameMessage();
-  // const { triggerGame } = useMultiplayerGame();
-  // const { pending, setPending } = usePending();
+  const character = useAtomValue(characterAtom);
+
+  useEffect(() => {
+    if (!character) {
+      navigate(-1);
+    }
+  }, [character]);
+
+  const { createNewBattleMessage } = useCreateNewBattleMessage();
+  const { pending, setPending } = usePending();
   const existentialDeposit = Number(getFormattedBalanceValue(api?.existentialDeposit.toNumber() || 0).toFixed());
   const { getChainBalanceValue } = useBalanceFormat();
 
@@ -51,26 +56,28 @@ function CreateGameForm({}: Props) {
     },
   });
 
-  const { errors: createErrors, getInputProps: getCreateInputProps, onSubmit: onCreateSubmit } = createForm;
+  const { getInputProps: getCreateInputProps, onSubmit: onCreateSubmit } = createForm;
 
   const handleCreateSession = async (values: CreateGameFormValues) => {
-    // if (!account?.decodedAddress) {
-    //   return;
-    // }
-    // try {
-    //   setPending(true);
-    //   const transaction = await createGameMessage(values.name, BigInt(getChainBalanceValue(values.fee).toFixed()));
-    //   const { response } = await transaction.signAndSend();
-    //   await response();
-    //   await triggerGame();
-    // } catch (err) {
-    //   const { message, docs } = err as Error & { docs: string };
-    //   const errorText = message || docs || 'Create game error';
-    //   alert.error(errorText);
-    //   console.log(err);
-    // } finally {
-    //   setPending(false);
-    // }
+    if (!account?.decodedAddress || !character) {
+      return;
+    }
+    const { appearance, attack, defence, dodge, warriorId } = character;
+    const { name, tournamentName } = values;
+    const fee = BigInt(getChainBalanceValue(values.fee).toFixed());
+    setPending(true);
+    await createNewBattleMessage(
+      { value: fee, name, tournamentName, appearance, attack, defence, dodge, warriorId },
+      {
+        onSuccess: () => {
+          setPending(false);
+          navigate(ROUTES.WAITING);
+        },
+        onError: () => {
+          setPending(false);
+        },
+      },
+    );
   };
 
   return (

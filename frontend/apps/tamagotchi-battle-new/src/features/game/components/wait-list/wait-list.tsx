@@ -2,7 +2,7 @@ import { Text } from '@/components';
 import { Button } from '@gear-js/vara-ui';
 import styles from './wait-list.module.scss';
 import { copyToClipboard } from '@/app/utils';
-import { getVaraAddress, useAlert } from '@gear-js/react-hooks';
+import { getVaraAddress, useAccount, useAlert } from '@gear-js/react-hooks';
 import { stringShorten } from '@polkadot/util';
 import { CopyIcon } from '../../assets/images';
 import clsx from 'clsx';
@@ -19,6 +19,7 @@ type WaitListProps = {
 
 const WaitList = ({ items }: WaitListProps) => {
   const alert = useAlert();
+  const {account} = useAccount()
 
   const handleCopyAddress = (value: string) => {
     copyToClipboard({ alert, value });
@@ -28,7 +29,7 @@ const WaitList = ({ items }: WaitListProps) => {
     <ScrollArea className={styles.list}>
       {items.map(({ name, address }, index) => {
         // ! TODO: scroll to my on mount
-        const isMy = index === 4;
+        const isMy = address === account.decodedAddress;
 
         return (
           <div key={address} className={clsx(styles.item, { [styles.my]: isMy })}>

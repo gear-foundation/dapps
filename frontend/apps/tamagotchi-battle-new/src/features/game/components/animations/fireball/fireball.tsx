@@ -161,7 +161,8 @@ export const FireballCanvas: React.FC = () => {
   };
 
   return (
-    <div style={{ zIndex: 999 }}>
+    // <div style={{ zIndex: 999 }}>
+    <div>
       <canvas ref={canvasRef} style={{ width: '900px', height: '500px' }} />
       <button onClick={() => launchFireball(-250, 200, 2.46, -3.03, 500)}>Launch Fireball</button>
     </div>

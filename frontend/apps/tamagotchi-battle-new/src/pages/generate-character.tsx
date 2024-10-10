@@ -1,5 +1,6 @@
-import clsx from 'clsx';
 import { Button } from '@gear-js/vara-ui';
+import clsx from 'clsx';
+import { useSetAtom } from 'jotai';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -10,18 +11,34 @@ import { CharacterView } from '@/features/game/components/character/character';
 import { generateRandomCharacterView } from '@/features/game/utils';
 import { ROUTES } from '@/app/consts';
 
+import { characterAtom, characterStorage } from '@/features/game/store';
+import { CharacterStatsFormValues } from '@/features/game/types';
 import styles from './generate-character.module.scss';
 
 export default function GenerateCharacter() {
   const navigate = useNavigate();
-  const [characterView, setCharacterView] = useState<CharacterView>(generateRandomCharacterView());
+  const [characterView, setCharacterView] = useState<CharacterView>(
+    characterStorage.get()?.appearance || generateRandomCharacterView(),
+  );
   const [prevCharacterView, setPrevCharacterView] = useState<CharacterView | null>(generateRandomCharacterView());
-
-  const isCharacterReady = Boolean(true);
+  const [characterStats, setCharacterStats] = useState<CharacterStatsFormValues>();
+  const [isNextDisabled, setIsNextDisabled] = useState(true);
 
   const generate = () => {
     setPrevCharacterView(characterView);
     setCharacterView(generateRandomCharacterView());
+  };
+
+  const setCharacter = useSetAtom(characterAtom);
+
+  const onNextClick = (to: string) => {
+    if (!characterStats) return;
+    const { attack, defence, dodge } = characterStats;
+    const character = { attack, defence, dodge, appearance: characterView, warriorId: null };
+
+    setCharacter(character);
+    characterStorage.set(character);
+    navigate(to);
   };
 
   return (
@@ -33,31 +50,39 @@ export default function GenerateCharacter() {
           size="sm"
           className={clsx(styles.card, styles.cardFilled)}
           align="left"
-          rightSideSlot={<CharacterStatsForm />}>
-          {isCharacterReady && (
-            <div className={styles.character}>
-              <Character
-                {...characterView}
-                loaderBackground={true}
-                fallback={prevCharacterView && <Character {...prevCharacterView} withSpiner={false} />}
-              />
-            </div>
-          )}
+          rightSideSlot={
+            <CharacterStatsForm
+              onValuesChange={(stats, isValid) => {
+                setCharacterStats(stats);
+                setIsNextDisabled(!isValid);
+              }}
+            />
+          }>
+          <div className={styles.character}>
+            <Character
+              {...characterView}
+              loaderBackground={true}
+              size="sm"
+              fallback={prevCharacterView && <Character {...prevCharacterView} withSpiner={false} size="sm" />}
+            />
+          </div>
           <Button text="Generate" color="dark" onClick={generate} className={styles.generate} />
         </Card>
         <div className={styles.container}>
           <div className={styles.buttons}>
             <CardButton
-              onClick={() => navigate(ROUTES.FIND_GAME)}
+              onClick={() => onNextClick(ROUTES.FIND_GAME)}
               icon={<SearchIcon />}
               title="Find a private game"
               description="To find the game, you need to enter the administrator's address."
+              disabled={isNextDisabled}
             />
             <CardButton
-              onClick={() => navigate(ROUTES.CREATE_GAME)}
+              onClick={() => onNextClick(ROUTES.CREATE_GAME)}
               icon={<AdminIcon />}
               title="Create a game in administrator mode"
               description="Create a game and specify your participation rules."
+              disabled={isNextDisabled}
             />
           </div>
           <Button text="Back" color="grey" onClick={() => navigate(-1)} />

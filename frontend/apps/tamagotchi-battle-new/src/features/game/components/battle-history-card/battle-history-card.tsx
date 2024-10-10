@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { Text } from '@/components';
-import { AttackIcon, DefenseIcon, DodgeIcon, HealthIcon } from '../../assets/images';
+import { AttackIcon, DefenceIcon, DodgeIcon, HealthIcon } from '../../assets/images';
 import { HealthIndicator } from '../health-indicator';
 import { VariantProps, cva } from 'class-variance-authority';
 import { CrossIcon } from '@/assets/images';
@@ -22,8 +22,8 @@ const BattleHistoryCard = ({
   align,
   action,
   attack,
-  currentHealth,
-  deffence,
+  health,
+  defence,
   dodge,
   isDodged,
   recivedDamage,
@@ -32,7 +32,7 @@ const BattleHistoryCard = ({
 }: BattleHistoryCardProps) => {
   const name = 'Player Name 1';
 
-  const isAlive = currentHealth > 0;
+  const isAlive = health > 0;
 
   return (
     <div className={variants({ className: styles.wrapper, align })}>
@@ -47,10 +47,10 @@ const BattleHistoryCard = ({
         <div className={styles.healthCount}>
           <HealthIcon />
           <Text size="xs" weight="bold">
-            {currentHealth} {recivedDamage > 0 && <span className={styles.recivedDamage}>(-{recivedDamage})</span>}
+            {health} {recivedDamage > 0 && <span className={styles.recivedDamage}>(-{recivedDamage})</span>}
           </Text>
         </div>
-        <HealthIndicator currentHealth={currentHealth} prevHealth={currentHealth + recivedDamage} size="sm" />
+        <HealthIndicator health={health} prevHealth={health + recivedDamage} size="sm" />
 
         <Text className={styles.recivedText}>received 12 damage</Text>
       </div>
@@ -68,9 +68,9 @@ const BattleHistoryCard = ({
           </Text>
         </div>
         <div className={styles.stat}>
-          <DefenseIcon className={clsx(styles.icon, action === 'reflect' && styles.reflect)} />
+          <DefenceIcon className={clsx(styles.icon, action === 'reflect' && styles.reflect)} />
           <Text size="xs" weight="bold">
-            {deffence}%
+            {defence}%
           </Text>
         </div>
         <div className={clsx(styles.stat, styles.dodgeStat)}>

@@ -13,16 +13,16 @@ export const variants = cva('', {
 type AvatarProps = VariantProps<typeof variants> & CharacterView;
 
 export const Avatar = memo((props: AvatarProps) => {
-  const { size, hatIndex, headIndex, bodyColor } = props;
+  const { size, hat_index, head_index, body_color } = props;
 
-  const Hat = getLazySvg('hat', hatIndex);
-  const Head = getLazySvg('head', headIndex);
+  const Hat = getLazySvg('hat', hat_index);
+  const Head = getLazySvg('head', head_index);
 
   return (
     <div className={variants({ className: styles.container, size })}>
       <Suspense fallback={null}>
         <div className={styles.wrapper}>
-          <BodyColor style={{ color: bodyColor }} />
+          <BodyColor style={{ color: body_color }} />
           <Head />
           <Hat />
         </div>

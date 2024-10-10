@@ -2,10 +2,12 @@ import { Button } from '@gear-js/vara-ui';
 import { useForm } from '@mantine/form';
 import { Text } from '@/components';
 import { Heading } from '@/components/ui/heading';
-import { AttackIcon, CaretRightIcon, DefenseIcon, DodgeIcon } from '../../assets/images';
+import { AttackIcon, CaretRightIcon, DefenceIcon, DodgeIcon } from '../../assets/images';
 import styles from './character-stats-form.module.scss';
+import { CharacterStatsFormValues } from '../../types';
+import { useEffect } from 'react';
 
-type Stats = 'attack' | 'defense' | 'dodge';
+type Stats = 'attack' | 'defence' | 'dodge';
 
 type CharacterStats = {
   icon: React.ReactNode;
@@ -25,8 +27,8 @@ const charStats: CharacterStats[] = [
     minCount: 10,
   },
   {
-    icon: <DefenseIcon />,
-    name: 'defense',
+    icon: <DefenceIcon />,
+    name: 'defence',
     description: "Reflects the opponent's attack back to them. Each point equals 10%.",
     percentPerPoint: 5,
     maxCount: 10,
@@ -42,20 +44,21 @@ const charStats: CharacterStats[] = [
   },
 ];
 
-export const CharacterStatsForm = () => {
+type CharacterStatsFormProps = {
+  onValuesChange?: (values: CharacterStatsFormValues, isValid: boolean) => void;
+};
+
+export const CharacterStatsForm = ({ onValuesChange }: CharacterStatsFormProps) => {
   const statsForm = useForm({
     initialValues: {
       attack: 10,
-      defense: 0,
+      defence: 0,
       dodge: 0,
-    },
-    validate: {
-      // name: isNotEmpty(`Name shouldn't be empty`),
     },
     transformValues: (values) => {
       return {
         attack: Math.min(values.attack, charStats[0].maxCount),
-        defense: Math.min(values.defense, charStats[1].maxCount),
+        defence: Math.min(values.defence, charStats[1].maxCount),
         dodge: Math.min(values.dodge, charStats[2].maxCount),
       };
     },
@@ -63,7 +66,12 @@ export const CharacterStatsForm = () => {
 
   const { getInputProps, setFieldValue, onSubmit, values } = statsForm;
   const initialPoints = 10;
-  const availablePoints = 20 + initialPoints - values.attack - values.defense - values.dodge;
+  const availablePoints = 20 + initialPoints - values.attack - values.defence - values.dodge;
+
+  useEffect(() => {
+    const isValid = availablePoints === 0;
+    onValuesChange?.(values, isValid);
+  }, [values, availablePoints]);
 
   const drawRow = ({ icon, name, percentPerPoint, maxCount, minCount, description }: CharacterStats) => {
     const getValidCount = (count: number) => {

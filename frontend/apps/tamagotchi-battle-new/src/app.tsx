@@ -3,12 +3,13 @@ import { withProviders } from '@/app/hocs';
 import { Loader, LoadingError, MainLayout } from '@/components';
 import '@gear-js/vara-ui/dist/style.css';
 import { Routing } from '@/pages';
+import { useProgram } from './app/utils';
 
 function Component() {
+  // ! TODO
   // const { isGameReady } = useInitGame();
   // const { errorGame } = useInitGameSync();
-
-  const program = true;
+  const program = useProgram();
 
   const errorGame = false;
   const isGameReady = program;

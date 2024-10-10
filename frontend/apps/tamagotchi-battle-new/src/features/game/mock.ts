@@ -2,9 +2,9 @@ import { PlayerState } from './types';
 
 const mockPlayer1: PlayerState = {
   name: 'Player name 1',
-  currentHealth: 100,
+  health: 100,
   attack: 30,
-  deffence: 8,
+  defence: 8,
   dodge: 4,
   playerId: 1,
   action: 'attack',
@@ -14,9 +14,9 @@ const mockPlayer1: PlayerState = {
 
 const mockPlayer2: PlayerState = {
   name: 'Player name 2',
-  currentHealth: 100,
+  health: 100,
   attack: 10,
-  deffence: 13,
+  defence: 13,
   dodge: 5,
   playerId: 2,
   action: 'reflect',
