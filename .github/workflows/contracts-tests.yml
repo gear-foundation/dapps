@@ -1,20 +1,19 @@
 name: Contracts CI - Tests
 
 on:
-  workflow_dispatch:
   pull_request:
-    paths-ignore:
-      - 'frontend/**'
-      - 'docker/**'
+    branches: [master, main]
+    paths:
+      - contracts/**
   push:
-    paths-ignore:
-      - 'frontend/**'
-      - 'docker/**'
-    branches: [master]
+    branches: [master, main]
+    paths:
+      - contracts/**
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
-  GEAR_VERSION: 1.6.1
+  GEAR_VERSION: 1.6.2
 
 defaults:
   run:
