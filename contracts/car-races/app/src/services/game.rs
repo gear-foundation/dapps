@@ -1,108 +1,7 @@
-//! Data types for the contract input/output.
-
-#![no_std]
-use codec::{Decode, Encode};
-use gmeta::{In, InOut, Metadata};
-use gstd::{collections::BTreeMap, prelude::*, ActorId, MessageId};
-// prices for acceleration and shuffles are constants for simple implementation
-pub const ACCELERATION_COST: u32 = 10;
-pub const SHELL_COST: u32 = 20;
-
-pub const DEFAULT_ACC_AMOUNT: u32 = 20;
-pub const DEFAULT_SHELL_AMOUNT: u32 = 25;
-
-pub const MAX_ACC_AMOUNT: u32 = 40;
-pub const MAX_SHELL_AMOUNT: u32 = 40;
-pub const MAX_DISTANCE: u32 = 3_242;
-pub const TIME: u32 = 1;
+use super::{config, Error};
+use sails_rs::{collections::BTreeMap, prelude::*};
 
 pub const DEFAULT_SPEED: u32 = 100;
-
-pub const GAS_FOR_STRATEGY: u64 = 20_000_000_000;
-pub const GAS_FOR_ROUND: u64 = 150_000_000_000;
-pub const RESERVATION_AMOUNT: u64 = 240_000_000_000;
-pub const RESERVATION_TIME: u32 = 86_400;
-pub const GAS_MIN_AMOUNT: u64 = 30_000_000_000;
-
-/// Time deadline for player turn(30_000ms).
-pub const TURN_DEADLINE_MS: u64 = 30_000;
-
-pub const MIN_SPEED: u32 = 10;
-
-/// Time after which the game instance must be removed
-/// 1 block = 3s (1 minutes)
-pub const TIME_INTERVAL: u32 = 20;
-
-/// Gas for deleting the game instance
-pub const GAS_TO_REMOVE_GAME: u64 = 20_000_000_000;
-
-/// Contract metadata. This is the contract's interface description.
-///
-/// It defines the types of messages that can be sent to the contract.
-pub struct ContractMetadata;
-
-impl Metadata for ContractMetadata {
-    /// Init message type.
-    ///
-    /// Describes incoming/outgoing types for the `init()` function.
-    ///
-    /// The [`GameInit`] type is passed for initial smart-contract data(i.e config..) if any.
-    type Init = In<GameInit>;
-    /// Handle message type.
-    ///
-    /// Describes incoming/outgoing types for the `handle()` function.
-    ///
-    /// We use the [`GameAction`] type for incoming and [`GameReply`] for outgoing
-    /// messages.
-    type Handle = InOut<GameAction, Result<GameReply, GameError>>;
-    /// Asynchronous handle message type.
-    ///
-    /// Describes incoming/outgoing types for the `main()` function in case of
-    /// asynchronous interaction.
-    ///
-    /// The unit tuple is used as we don't use asynchronous interaction in this
-    /// contract.
-    type Others = InOut<(), RoundInfo>;
-    /// Reply message type.
-    ///
-    /// Describes incoming/outgoing types of messages performed using the
-    /// `handle_reply()` function.
-    ///
-    /// The unit tuple is used as we don't process any replies in this contract.
-    type Reply = ();
-    /// Signal message type.
-    ///
-    /// Describes only the outgoing type from the program while processing the
-    /// system signal.
-    ///
-    /// The unit tuple is used as we don't process any signals in this contract.
-    type Signal = ();
-
-    type State = InOut<StateQuery, StateReply>;
-}
-
-#[derive(Encode, Decode, TypeInfo)]
-pub enum StateQuery {
-    Admins,
-    StrategyIds,
-    Game { account_id: ActorId },
-    AllGames,
-    MsgIdToGameId,
-    Config,
-    MessagesAllowed,
-}
-
-#[derive(Encode, Decode, TypeInfo)]
-pub enum StateReply {
-    Admins(Vec<ActorId>),
-    StrategyIds(Vec<ActorId>),
-    Game(Option<Game>),
-    AllGames(Vec<(ActorId, Game)>),
-    MsgIdToGameId(Vec<(MessageId, ActorId)>),
-    WaitingMsgs(Vec<(MessageId, MessageId)>),
-    Config(Config),
-    MessagesAllowed(bool),
-}
 
 #[derive(Encode, Decode, TypeInfo, Clone, Debug)]
 pub struct Car {
@@ -140,45 +39,6 @@ pub enum GameResult {
     Lose,
 }
 
-#[derive(Encode, Decode, TypeInfo)]
-pub struct GameInit {
-    pub config: Config,
-}
-
-#[derive(Encode, Decode, TypeInfo)]
-pub enum GameAction {
-    AddAdmin(ActorId),
-    RemoveAdmin(ActorId),
-    AddStrategyIds {
-        car_ids: Vec<ActorId>,
-    },
-    StartGame,
-    Play {
-        account: ActorId,
-    },
-    PlayerMove {
-        strategy_action: StrategyAction,
-    },
-    UpdateConfig {
-        gas_to_remove_game: Option<u64>,
-        initial_speed: Option<u32>,
-        min_speed: Option<u32>,
-        max_speed: Option<u32>,
-        gas_for_round: Option<u64>,
-        time_interval: Option<u32>,
-        max_distance: Option<u32>,
-        time: Option<u32>,
-        time_for_game_storage: Option<u64>,
-    },
-    RemoveGameInstance {
-        account_id: ActorId,
-    },
-    RemoveGameInstances {
-        players_ids: Option<Vec<ActorId>>,
-    },
-    AllowMessages(bool),
-}
-
 #[derive(Encode, Decode, TypeInfo, Debug)]
 pub enum StrategyAction {
     BuyAcceleration,
@@ -198,20 +58,6 @@ pub enum CarAction {
     YourTurn(BTreeMap<ActorId, Car>),
 }
 
-#[derive(Encode, Decode, TypeInfo, PartialEq, Eq)]
-pub enum GameReply {
-    GameFinished,
-    GameStarted,
-    StrategyAdded,
-    MoveMade,
-    GameInstanceRemoved,
-    InstancesRemoved,
-    AdminAdded,
-    AdminRemoved,
-    ConfigUpdated,
-    StatusMessagesUpdated,
-}
-
 #[derive(Debug, Clone, Encode, Decode, TypeInfo)]
 pub enum GameError {
     NotAdmin,
@@ -223,6 +69,54 @@ pub enum GameError {
 }
 
 impl Game {
+    pub async fn process_car_turn(&mut self) -> Result<(), Error> {
+        let car_id = self.get_current_car_id();
+
+        let payload_bytes = [
+            "CarStrategy".encode(),
+            "MakeMove".encode(),
+            self.cars.clone().encode(),
+        ]
+        .concat();
+
+        let bytes = gstd::msg::send_bytes_with_gas_for_reply(
+            car_id,
+            payload_bytes,
+            config().gas_for_round,
+            0,
+            config().gas_for_reply_deposit,
+        )
+        .expect("Error in sending a message")
+        .await
+        .expect("Error in receiving reply");
+
+        if let Ok((_, _, strategy_action)) =
+            <(String, String, StrategyAction)>::decode(&mut bytes.as_ref())
+        {
+            self.apply_strategy_move(strategy_action);
+        } else {
+            // car eliminated from race for wrong payload
+            self.car_ids.retain(|id| *id != car_id);
+        }
+
+        let num_of_cars = self.car_ids.len() as u8;
+        self.current_turn = (self.current_turn + 1) % num_of_cars;
+
+        Ok(())
+    }
+
+    pub fn apply_strategy_move(&mut self, strategy_move: StrategyAction) {
+        match strategy_move {
+            StrategyAction::BuyAcceleration => {
+                self.buy_acceleration();
+            }
+            StrategyAction::BuyShell => {
+                self.buy_shell();
+            }
+            StrategyAction::Skip => {}
+        }
+    }
+
     pub fn buy_acceleration(&mut self) {
         let car_id = self.get_current_car_id();
         let car = self.cars.get_mut(&car_id).expect("Get Car: Can't be None");
@@ -245,11 +139,11 @@ impl Game {
         self.car_ids[self.current_turn as usize]
     }
 
-    pub fn update_positions(&mut self, config: &Config) {
+    pub fn update_positions(&mut self) {
         let mut winners = Vec::with_capacity(3);
         for (car_id, car) in self.cars.iter_mut() {
-            car.position = car.position.saturating_add(car.speed * config.time);
-            if car.position >= config.max_distance {
+            car.position = car.position.saturating_add(car.speed * config().time);
+            if car.position >= config().max_distance {
                 self.state = GameState::Finished;
                 winners.push((*car_id, car.position));
             }
@@ -332,19 +226,18 @@ impl Game {
         // then we slowed the first car
         cars_vec[0].0
     }
-}
 
-#[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
-pub struct Config {
-    pub gas_to_remove_game: u64,
-    pub initial_speed: u32,
-    pub min_speed: u32,
-    pub max_speed: u32,
-    pub gas_for_round: u64,
-    pub time_interval: u32,
-    pub max_distance: u32,
-    pub time: u32,
-    pub time_for_game_storage: u64,
+    pub fn verify_game_state(&mut self) -> Result<(), Error> {
+        if self.state != GameState::PlayerAction {
+            Err(Error::NotPlayerTurn)
+        } else {
+            Ok(())
+        }
+    }
+
+    pub fn is_player_action_or_finished(&self) -> bool {
+        self.state == GameState::PlayerAction || self.state == GameState::Finished
+    }
 }
 
 #[derive(Debug, Default, Encode, Decode, TypeInfo, Clone)]
