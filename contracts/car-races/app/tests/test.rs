@@ -57,7 +57,11 @@ fn test_car_races_without_session() {
     };
 
     let dns_id_and_name: Option<(ActorId, String)> = None;
-    let payload = ["New".encode(), (init_config, session_config, dns_id_and_name).encode()].concat();
+    let payload = [
+        "New".encode(),
+        (init_config, session_config, dns_id_and_name).encode(),
+    ]
+    .concat();
 
     let mid = car_races.send_bytes(10, payload);
     let res = system.run_next_block();
@@ -78,11 +82,7 @@ fn test_car_races_without_session() {
     let payload = [
         "CarRacesService".encode(),
         "AddStrategyIds".encode(),
-        vec![
-            car_strategy_1.id(),
-            car_strategy_2.id(),
-        ]
-        .encode(),
+        vec![car_strategy_1.id(), car_strategy_2.id()].encode(),
     ]
     .concat();
     let mid = car_races.send_bytes(10, payload);
@@ -121,7 +121,7 @@ fn test_car_races_without_session() {
         let res = system.run_next_block();
         assert!(res.succeed.contains(&mid));
 
-        game = if let Some(game) = get_game(&system,&car_races, 10.into()) {
+        game = if let Some(game) = get_game(&system, &car_races, 10.into()) {
             game
         } else {
             std::panic!("Game does not exist")

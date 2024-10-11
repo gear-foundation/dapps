@@ -1,6 +1,6 @@
 #![allow(clippy::new_without_default)]
 use collections::HashMap;
-use sails_rs::{prelude::*};
+use sails_rs::prelude::*;
 use session::Storage as SessionStorage;
 use session::{ActionsForSession, SessionData};
 pub mod error;
@@ -48,13 +48,10 @@ pub struct Config {
 #[derive(Debug, Decode, Encode, TypeInfo)]
 pub enum Event {
     RoundInfo(RoundInfo),
-    Killed {
-        inheritor: ActorId,
-    },
+    Killed { inheritor: ActorId },
 }
 #[service(events = Event)]
-impl CarRacesService
-{
+impl CarRacesService {
     pub fn allow_messages(&mut self, messages_allowed: bool) {
         let msg_src = msg::source();
         assert!(self.data().admins.contains(&msg_src), "Not admin");
@@ -183,11 +180,7 @@ impl CarRacesService
     }
 
     pub fn remove_game_instance(&mut self, account: ActorId) {
-        assert_eq!(
-            msg::source(),
-            exec::program_id(),
-            "Not program"
-        );
+        assert_eq!(msg::source(), exec::program_id(), "Not program");
 
         let game = self
             .data()
@@ -274,12 +267,8 @@ impl CarRacesService
     }
 }
 
-impl CarRacesService
-{
-    pub async fn init(
-        config: InitConfig,
-        dns_id_and_name: Option<(ActorId, String)>,
-    ) {
+impl CarRacesService {
+    pub async fn init(config: InitConfig, dns_id_and_name: Option<(ActorId, String)>) {
         unsafe {
             DATA = Some(ContractData {
                 admins: vec![msg::source()],

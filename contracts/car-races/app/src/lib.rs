@@ -1,6 +1,6 @@
 #![no_std]
 
-use sails_rs::{prelude::*};
+use sails_rs::prelude::*;
 pub mod services;
 use services::{
     session::{Config, SessionService},
@@ -19,11 +19,7 @@ impl Program {
         session_config: Config,
         dns_id_and_name: Option<(ActorId, String)>,
     ) -> Self {
-        CarRacesService::init(
-            init_config,
-            dns_id_and_name,
-        )
-        .await;
+        CarRacesService::init(init_config, dns_id_and_name).await;
         SessionService::init(session_config);
         Self
     }
