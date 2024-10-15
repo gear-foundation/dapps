@@ -1,6 +1,6 @@
 import React from 'react';
 import { AssetType } from './types';
-import { assetsCount, back_colors, body_colors, CHARACTER_ASSETS_PATH } from './consts';
+import { assetsCount, back_colors, body_colors } from './consts';
 import { CharacterView } from './components/character/character';
 
 export const getLazySvg = (assetType: AssetType, index: number) => {
@@ -8,7 +8,7 @@ export const getLazySvg = (assetType: AssetType, index: number) => {
   const assetNumber = hasAsset ? index + 1 : 1;
 
   return React.lazy(() =>
-    import(`${CHARACTER_ASSETS_PATH}${assetType}-${assetNumber}.svg`).then((module) => ({
+    import(`./assets/images/character/${assetType}-${assetNumber}.svg`).then((module) => ({
       default: module.ReactComponent,
     })),
   );
