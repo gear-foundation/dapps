@@ -1,0 +1,133 @@
+type InitConfig = struct {
+  config: ServicesConfig,
+};
+
+type ServicesConfig = struct {
+  gas_to_remove_game: u64,
+  initial_speed: u32,
+  min_speed: u32,
+  max_speed: u32,
+  gas_for_round: u64,
+  time_interval: u32,
+  max_distance: u32,
+  time: u32,
+  time_for_game_storage: u64,
+  block_duration_ms: u64,
+  gas_for_reply_deposit: u64,
+};
+
+type SessionConfig = struct {
+  gas_to_delete_session: u64,
+  minimum_session_duration_ms: u64,
+  ms_per_block: u64,
+};
+
+type StrategyAction = enum {
+  BuyAcceleration,
+  BuyShell,
+  Skip,
+};
+
+type Game = struct {
+  cars: map (actor_id, Car),
+  car_ids: vec actor_id,
+  current_turn: u8,
+  state: GameState,
+  result: opt GameResult,
+  current_round: u32,
+  last_time_step: u64,
+};
+
+type Car = struct {
+  position: u32,
+  speed: u32,
+  car_actions: vec RoundAction,
+  round_result: opt RoundAction,
+};
+
+type RoundAction = enum {
+  Accelerated,
+  SlowedDown,
+  SlowedDownAndAccelerated,
+};
+
+type GameState = enum {
+  ReadyToStart,
+  Race,
+  Stopped,
+  Finished,
+  PlayerAction,
+};
+
+type GameResult = enum {
+  Win,
+  Draw,
+  Lose,
+};
+
+type RoundInfo = struct {
+  cars: vec struct { actor_id, u32, opt RoundAction },
+  result: opt GameResult,
+};
+
+type SignatureData = struct {
+  key: actor_id,
+  duration: u64,
+  allowed_actions: vec ActionsForSession,
+};
+
+type ActionsForSession = enum {
+  StartGame,
+  Move,
+  Skip,
+};
+
+type SessionData = struct {
+  key: actor_id,
+  expires: u64,
+  allowed_actions: vec ActionsForSession,
+  expires_at_block: u32,
+};
+
+constructor {
+  New : (init_config: InitConfig, session_config: SessionConfig, dns_id_and_name: opt struct { actor_id, str });
+};
+
+service CarRacesService {
+  AddAdmin : (admin: actor_id) -> null;
+  AddStrategyIds : (car_ids: vec actor_id) -> null;
+  AllowMessages : (messages_allowed: bool) -> null;
+  Kill : (inheritor: actor_id) -> null;
+  PlayerMove : (strategy_move: StrategyAction, session_for_account: opt actor_id) -> null;
+  RemoveAdmin : (admin: actor_id) -> null;
+  RemoveGameInstance : (account: actor_id) -> null;
+  RemoveInstances : (player_ids: opt vec actor_id) -> null;
+  StartGame : (session_for_account: opt actor_id) -> null;
+  UpdateConfig : (config: ServicesConfig) -> null;
+  query Admins : () -> vec actor_id;
+  query AllGames : () -> vec struct { actor_id, Game };
+  query ConfigState : () -> ServicesConfig;
+  query DnsInfo : () -> opt struct { actor_id, str };
+  query Game : (account_id: actor_id) -> opt Game;
+  query MessagesAllowed : () -> bool;
+  query StrategyIds : () -> vec actor_id;
+
+  events {
+    RoundInfo: RoundInfo;
+    Killed: struct { inheritor: actor_id };
+  }
+};
+
+service Session {
+  CreateSession : (signature_data: SignatureData, signature: opt vec u8) -> null;
+  DeleteSessionFromAccount : () -> null;
+  DeleteSessionFromProgram : (session_for_account: actor_id) -> null;
+  query SessionForTheAccount : (account: actor_id) -> opt SessionData;
+  query Sessions : () -> vec struct { actor_id, SessionData };
+
+  events {
+    SessionCreated;
+    SessionDeleted;
+  }
+};
+

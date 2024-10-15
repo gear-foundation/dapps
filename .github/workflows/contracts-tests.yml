@@ -1,20 +1,19 @@
 name: Contracts CI - Tests
 
 on:
-  workflow_dispatch:
   pull_request:
-    paths-ignore:
-      - 'frontend/**'
-      - 'docker/**'
+    branches: [master, main]
+    paths:
+      - contracts/**
   push:
-    paths-ignore:
-      - 'frontend/**'
-      - 'docker/**'
-    branches: [master]
+    branches: [master, main]
+    paths:
+      - contracts/**
+  workflow_dispatch:
 
 env:
   CARGO_TERM_COLOR: always
-  GEAR_VERSION: 1.5.0
+  GEAR_VERSION: 1.6.2
 
 defaults:
   run:
@@ -49,7 +48,6 @@ jobs:
         run: |
           mkdir -p target/tmp
           wget -qO- https://get.gear.rs/gear-v${{ env.GEAR_VERSION }}-x86_64-unknown-linux-gnu.tar.xz| tar xJ -C target/tmp
-
       # mandatory tasks
       - name: Fmt
         run: 'cargo +nightly fmt --all -- --config imports_granularity=Crate,edition=2021'
@@ -57,5 +55,3 @@ jobs:
         run: 'cargo clippy --release --workspace --all-targets --all-features -- -D warnings'
       - name: Test
         run: cargo test --release --workspace
-
-
