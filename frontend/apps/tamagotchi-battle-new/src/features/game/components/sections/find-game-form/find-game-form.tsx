@@ -49,7 +49,7 @@ function FindGameForm() {
     if (!character) {
       navigate(ROUTES.HOME);
     }
-  }, [character]);
+  }, [character, navigate]);
 
   const handleCloseFoundModal = () => {
     setIsJoinSessionModalShown(false);
@@ -127,6 +127,7 @@ function FindGameForm() {
       {isJoinSessionModalShown && foundState && (
         <GameFoundModal
           entryFee={getFormattedBalanceValue(withoutCommas(String(foundState.bid))).toFixed()}
+          participantsCount={foundState.participants.length}
           onSubmit={handleJoinSession}
           onClose={handleCloseFoundModal}
         />

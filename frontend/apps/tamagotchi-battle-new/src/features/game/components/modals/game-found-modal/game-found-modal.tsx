@@ -1,4 +1,4 @@
-import { useAccountDeriveBalancesAll, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { useApi } from '@gear-js/react-hooks';
 import { Button, Input } from '@gear-js/vara-ui';
 import { Modal } from '@/components/ui/modal';
 import { ReactComponent as VaraSVG } from '@/assets/images/icons/vara-coin.svg';
@@ -8,9 +8,11 @@ import { GameDetails } from '@/components/layout';
 import { UserIcon } from '@/assets/images';
 import styles from './game-found-modal.module.scss';
 import { MAX_PLAYERS_COUNT } from '@/app/consts';
+import { usePending } from '@/features/game/hooks';
 
 type Props = {
   entryFee: number | string;
+  participantsCount: number;
   onSubmit: (values: JoinModalFormValues) => Promise<void>;
   onClose: () => void;
 };
@@ -19,17 +21,12 @@ export type JoinModalFormValues = {
   name: string;
 };
 
-function GameFoundModal({ entryFee, onSubmit, onClose }: Props) {
-  const { isApiReady } = useApi();
-  // const { pending } = usePending();
-  const players = 1;
-  const pending = false;
-  const { getFormattedBalance } = useBalanceFormat();
-  const balances = useAccountDeriveBalancesAll();
-  const balance =
-    isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
+function GameFoundModal({ entryFee, participantsCount, onSubmit, onClose }: Props) {
+  const { api } = useApi();
+  const { pending } = usePending();
 
-  const VaraSvg = balance?.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />;
+  const VaraSvg = api?.registry.chainTokens[0].toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />;
+
   const items = [
     {
       name: 'Entry fee',
@@ -44,7 +41,7 @@ function GameFoundModal({ entryFee, onSubmit, onClose }: Props) {
       name: 'Players already joined the game',
       value: (
         <>
-          <UserIcon /> {players} / {MAX_PLAYERS_COUNT}
+          <UserIcon /> {participantsCount} / {MAX_PLAYERS_COUNT}
         </>
       ),
       key: '2',

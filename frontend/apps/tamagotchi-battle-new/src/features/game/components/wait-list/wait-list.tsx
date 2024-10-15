@@ -35,7 +35,7 @@ const WaitList = ({ items }: WaitListProps) => {
   return (
     <ScrollArea className={styles.list}>
       {items.map(({ name, address }, index) => {
-        const isMy = address === account.decodedAddress;
+        const isMy = address === account?.decodedAddress;
 
         return (
           <div key={address} ref={isMy ? myItemRef : undefined} className={clsx(styles.item, { [styles.my]: isMy })}>

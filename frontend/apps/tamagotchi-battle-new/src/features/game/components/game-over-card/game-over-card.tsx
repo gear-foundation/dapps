@@ -23,6 +23,7 @@ const GameOverCard = ({ bid, className, state, totalParticipants, participantsMa
   const isDraw = isTournamentOver && state.gameIsOver.winners[1];
 
   const getMyResultStatus = () => {
+    if (!account) return null;
     if (isDraw && state.gameIsOver.winners.includes(account.decodedAddress)) return 'It’s a draw';
     if (!isAlive) return 'You lose';
     if (isTournamentOver && state.gameIsOver.winners[0] === account.decodedAddress) return 'You win';

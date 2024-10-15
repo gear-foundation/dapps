@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { AssetType } from './types';
 import { assetsCount, back_colors, body_colors, CHARACTER_ASSETS_PATH } from './consts';
 import { CharacterView } from './components/character/character';
