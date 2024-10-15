@@ -1,2 +1,2 @@
-export { ReactComponent as BodyColor } from './body-color.svg';
-export { ReactComponent as BackColor } from './back-color.svg';
+export { ReactComponent as BodyColor } from './static/body-color.svg';
+export { ReactComponent as BackColor } from './static/back-color.svg';
