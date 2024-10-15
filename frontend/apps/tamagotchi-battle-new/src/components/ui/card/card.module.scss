@@ -20,6 +20,10 @@
   gap: 24px;
 }
 
+.md .leftSide {
+  gap: 28px;
+}
+
 .rightSide {
   background: #4b4b55;
   border-left: 2px solid #000000;
@@ -28,10 +32,16 @@
 }
 
 h2 {
-  &.md {
+  &.lg {
     font-size: 40px;
     font-weight: 700;
     line-height: 48px;
+  }
+
+  &.md {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 38px;
   }
 
   &.sm {
@@ -59,8 +69,12 @@ h2 {
   line-height: 24px;
   letter-spacing: 0.25px;
 
-  &.md {
+  &.lg {
     margin-top: 16px;
+  }
+
+  &.md {
+    margin-top: 8px;
   }
 
   &.sm {

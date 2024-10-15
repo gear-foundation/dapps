@@ -1,6 +1,7 @@
 import clsx from 'clsx';
 import React, { useEffect, useRef } from 'react';
 import styles from './sphere.module.scss';
+import { Move } from '@/app/utils';
 
 const PARTICLE_RADIUS = 20;
 
@@ -26,7 +27,7 @@ class ParticleFlame implements Particle {
   g;
   b;
 
-  constructor(W: number, H: number, flamewidth: number, type: 'attack' | 'ultimate') {
+  constructor(W: number, H: number, flamewidth: number, type: Move) {
     this.speed = { x: -2.5 + Math.random() * 5, y: -15 + Math.random() * 10 };
     const locmin = W / 2 - flamewidth / 2;
     const locmax = W / 2 + flamewidth / 2;
@@ -36,7 +37,7 @@ class ParticleFlame implements Particle {
     this.life = 10 + Math.random() * 10;
     this.remaining_life = this.life;
 
-    if (type === 'attack') {
+    if (type === 'Attack') {
       this.r = 255;
       this.g = Math.round(Math.random() * 90 + 100);
       this.b = Math.round(Math.random() * 20 + 10);
@@ -49,7 +50,7 @@ class ParticleFlame implements Particle {
 }
 
 type FireAnimationProps = {
-  type: 'attack' | 'ultimate';
+  type?: Move;
   className?: string;
 };
 
@@ -68,6 +69,11 @@ export const SphereAnimation: React.FC<FireAnimationProps> = ({ type, className 
     canvas.width = W;
     canvas.height = H;
 
+    if (!type || type === 'Reflect') {
+      ctx.clearRect(0, 0, W, H);
+      return;
+    }
+
     const particles: Particle[] = [];
     const particle_count = 100;
     const flamewidth = 360;
@@ -77,7 +83,7 @@ export const SphereAnimation: React.FC<FireAnimationProps> = ({ type, className 
     }
 
     function drawFlames() {
-      if (!ctx) return;
+      if (!ctx || !type) return;
       ctx.globalCompositeOperation = 'source-over';
       ctx.clearRect(0, 0, W, H);
       ctx.globalCompositeOperation = 'lighter';
@@ -108,12 +114,16 @@ export const SphereAnimation: React.FC<FireAnimationProps> = ({ type, className 
     const interval = setInterval(drawFlames, 33);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [type]);
 
   return (
     <canvas
       ref={canvasRef}
-      className={clsx(className, { [styles.attack]: type === 'attack', [styles.ultimate]: type === 'ultimate' })}
+      className={clsx(className, {
+        [styles.attack]: type === 'Attack',
+        [styles.ultimate]: type === 'Ultimate',
+        [styles.reflect]: type === 'Reflect',
+      })}
     />
   );
 };

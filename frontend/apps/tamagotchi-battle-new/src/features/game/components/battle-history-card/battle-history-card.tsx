@@ -26,19 +26,17 @@ const BattleHistoryCard = ({
   defence,
   dodge,
   isDodged,
-  recivedDamage,
-  playerId,
+  receivedDamage,
+  name,
   onClose,
 }: BattleHistoryCardProps) => {
-  const name = 'Player Name 1';
-
   const isAlive = health > 0;
 
   return (
     <div className={variants({ className: styles.wrapper, align })}>
       <div className={styles.header}>
         <Text>
-          Player {playerId} uses <span className={styles[`action-${action}`]}>{action}</span>
+          {name} uses <span className={styles[`action-${action}`]}>{action}</span>
         </Text>
 
         <PlayerStatus isAlive={isAlive} />
@@ -47,28 +45,28 @@ const BattleHistoryCard = ({
         <div className={styles.healthCount}>
           <HealthIcon />
           <Text size="xs" weight="bold">
-            {health} {recivedDamage > 0 && <span className={styles.recivedDamage}>(-{recivedDamage})</span>}
+            {health} {receivedDamage > 0 && <span className={styles.receivedDamage}>(-{receivedDamage})</span>}
           </Text>
         </div>
-        <HealthIndicator health={health} prevHealth={health + recivedDamage} size="sm" />
+        <HealthIndicator health={health} prevHealth={health + receivedDamage} size="sm" />
 
-        <Text className={styles.recivedText}>received 12 damage</Text>
+        {Boolean(receivedDamage) && <Text className={styles.recivedText}>received {receivedDamage} damage</Text>}
       </div>
       <div className={styles.stats}>
         <div className={styles.stat}>
           <AttackIcon
             className={clsx(
               styles.icon,
-              action === 'attack' && styles.attack,
-              action === 'ultimate' && styles.ultimate,
+              action === 'Attack' && styles.attack,
+              action === 'Ultimate' && styles.ultimate,
             )}
           />
           <Text size="xs" weight="bold">
-            {attack} {action === 'ultimate' && '(x2)'}
+            {attack} {action === 'Ultimate' && '(x2)'}
           </Text>
         </div>
         <div className={styles.stat}>
-          <DefenceIcon className={clsx(styles.icon, action === 'reflect' && styles.reflect)} />
+          <DefenceIcon className={clsx(styles.icon, action === 'Reflect' && styles.reflect)} />
           <Text size="xs" weight="bold">
             {defence}%
           </Text>

@@ -1,3 +1,4 @@
+import { BattleHistory } from '@/features/game/types';
 import React, { useRef, useEffect } from 'react';
 
 interface Particle {
@@ -20,9 +21,15 @@ interface Fireball {
   xv: number;
   yv: number;
   life: number;
+  reflectLeft?: number;
+  reflectRight?: number;
 }
 
-export const FireballCanvas: React.FC = () => {
+type FireballCanvasProps = {
+  lastTurnHistory: BattleHistory;
+};
+
+export const FireballCanvas: React.FC<FireballCanvasProps> = ({ lastTurnHistory }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const fireballs = useRef<{ [key: number]: Fireball }>({});
   const particles = useRef<{ [key: number]: Particle }>({});
@@ -69,11 +76,6 @@ export const FireballCanvas: React.FC = () => {
     ) => {
       const index = ++nextParticleIndex.current;
       particles.current[index] = { index, x, y, r, o, c, xv, yv, rv, ov };
-    };
-
-    const newFireball = (x: number, y: number, xv: number, yv: number, life: number) => {
-      const index = ++nextFireballIndex.current;
-      fireballs.current[index] = { index, x, y, xv, yv, life };
     };
 
     const loop = () => {
@@ -135,12 +137,14 @@ export const FireballCanvas: React.FC = () => {
           f.y = boundary;
           f.yv *= -1;
         }
-        if (f.x > (boundary = edge.current.right - 7)) {
+        if (f.x > (boundary = f.reflectLeft || edge.current.right - 7)) {
           f.x = boundary;
-          f.xv *= -1;
-        } else if (f.x < (boundary = edge.current.left + 7)) {
+          f.xv *= -1.5;
+          f.yv *= -1;
+        } else if (f.x < (boundary = f.reflectRight || edge.current.left + 7)) {
           f.x = boundary;
-          f.xv *= -1;
+          f.xv *= -1.5;
+          f.yv *= -1;
         }
 
         if (--f.life < 0) delete fireballs.current[f.index];
@@ -156,15 +160,58 @@ export const FireballCanvas: React.FC = () => {
     };
   }, []);
 
-  const launchFireball = (x: number, y: number, xv: number, yv: number, life: number) => {
-    fireballs.current[++nextFireballIndex.current] = { index: nextFireballIndex.current, x, y, xv, yv, life };
+  const launchFireball = (
+    x: number,
+    y: number,
+    xv: number,
+    yv: number,
+    life: number,
+    reflectLeft?: number,
+    reflectRight?: number,
+  ) => {
+    fireballs.current[++nextFireballIndex.current] = {
+      index: nextFireballIndex.current,
+      x,
+      y,
+      xv,
+      yv,
+      life,
+      reflectLeft,
+      reflectRight,
+    };
   };
 
+  useEffect(() => {
+    const playerAttack = ['Attack', 'Ultimate'].includes(lastTurnHistory.player.action);
+    const opponentAttack = ['Attack', 'Ultimate'].includes(lastTurnHistory.opponent.action);
+
+    if (playerAttack) {
+      if (lastTurnHistory.opponent.isDodged) {
+        launchFireball(-250, 200, 2.46, -3.03, 400);
+      } else {
+        if (lastTurnHistory.opponent.action === 'Reflect') {
+          launchFireball(-250, 200, 2.46, -3.03, 350, 230);
+        } else {
+          launchFireball(-250, 200, 2.46, -3.03, 230);
+        }
+      }
+    }
+    if (opponentAttack) {
+      if (lastTurnHistory.player.isDodged) {
+        launchFireball(300, 200, -2.46, -3.03, 410);
+      } else {
+        if (lastTurnHistory.player.action === 'Reflect') {
+          launchFireball(300, 200, -2.46, -3.03, 350, undefined, -180);
+        } else {
+          launchFireball(300, 200, -2.46, -3.03, 250);
+        }
+      }
+    }
+  }, []);
+
   return (
-    // <div style={{ zIndex: 999 }}>
     <div>
-      <canvas ref={canvasRef} style={{ width: '900px', height: '500px' }} />
-      <button onClick={() => launchFireball(-250, 200, 2.46, -3.03, 500)}>Launch Fireball</button>
+      <canvas ref={canvasRef} style={{ width: '1440px', height: '500px', position: 'absolute', top: 0, left: 0 }} />
     </div>
   );
 };

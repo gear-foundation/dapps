@@ -1,334 +1,279 @@
 import clsx from 'clsx';
+import { useAtomValue, useSetAtom } from 'jotai';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
 
-import { Background } from '@/features/game/components';
-import { Character } from '@/features/game/components/character';
-import { CharacterStats } from '@/features/game/components/character-stats';
 import {
-  AttackButtonIcon,
-  DefenceButtonIcon,
-  UltimateButtonIcon,
-  UserSkullIcon,
-  UserSmileIcon,
-} from '@/features/game/assets/images';
-
-import { BattleHistoryCard, GameButton, GameOverCard, Timer } from '@/features/game/components';
+  Background,
+  BattleTabs,
+  Character,
+  CharacterStats,
+  BattleHistoryCard,
+  GameButton,
+  GameOverCard,
+  Timer,
+  SphereAnimation,
+  FireballCanvas,
+  GameSpinner,
+  TimerButton,
+} from '@/features/game/components';
+import { AttackButtonIcon, DefenceButtonIcon, UltimateButtonIcon } from '@/features/game/assets/images';
 import { useEffect, useState } from 'react';
-import { Loader, Segmented } from '@/components';
-import { List } from '@/features/game/components/list/list';
+import { Loader, Modal } from '@/components';
 import { ExitIcon } from '@/features/wallet/assets';
-import { BattleCard } from '@/features/game/components/battle-card';
-import { mockPlayer1, mockPlayer2 } from '@/features/game/mock';
-import { PlayersList } from '@/features/game/components/playersList';
-import { PlayerStatus } from '@/features/game/types';
-import { SphereAnimation, FireballCanvas } from '@/features/game/components/animations';
 import {
-  Player,
+  Move,
   useCancelTournamentMessage,
   useConfigQuery,
+  useExitGameMessage,
   useMakeMoveMessage,
   useMyBattleQuery,
   useStartNextFightMessage,
 } from '@/app/utils';
 import { ROUTES } from '@/app/consts';
+import { battleHistoryAtom, battleHistoryStorage } from '@/features/game/store';
+import { useParticipants, usePending, usePrepareBattleHistory } from '@/features/game/hooks';
 import styles from './game.module.scss';
-
-type Tabs = 'players' | 'history';
 
 export default function GamePage() {
   const navigate = useNavigate();
   const { account } = useAccount();
   const { battleState, isFetching } = useMyBattleQuery();
+  const { pending } = usePending();
   const { config } = useConfigQuery();
   const { cancelTournamentMessage } = useCancelTournamentMessage();
   const { startNextFightMessage } = useStartNextFightMessage();
   const { makeMoveMessage } = useMakeMoveMessage();
+  const { exitGameMessage } = useExitGameMessage();
 
-  const [tappedButton, setTappedButton] = useState<'attack' | 'reflect' | 'ultimate' | null>(null);
-  const [selectedTab, setSelectedTab] = useState<Tabs>('players');
+  const [isOpenCancelTournamentModal, setIsOpenCancelTournamentModal] = useState(false);
+
+  const [tappedButton, setTappedButton] = useState<Move | null>(null);
+
+  const battleHistory = useAtomValue(battleHistoryAtom);
+  const lastTurnHistory = battleHistory?.[0];
+
   const [isShowTurnEndCard, setIsShowTurnEndCard] = useState(false);
   const [isShowNextTurnButton, setIsShowNextTurnButton] = useState(false);
 
-  const { pairs, players_to_pairs } = battleState || {};
-  const pairId = players_to_pairs?.find(([address]) => account.decodedAddress === address)?.[1];
-  const pair = pairs?.find(([number]) => pairId === number)?.[1];
+  const { allParticipants, isAlive, me, opponent, participantsMap, pair } = useParticipants(battleState);
+
+  const { admin, state, waiting_player, bid } = battleState || {};
 
   useEffect(() => {
     if (!isFetching && !battleState) {
       navigate(ROUTES.HOME);
     }
-  }, [isFetching, battleState]);
+  }, [isFetching, battleState, navigate]);
 
-  useEffect(() => {
-    if (pair?.round) {
-      setIsShowNextTurnButton(true);
-      setIsShowTurnEndCard(true);
-      setTappedButton(null);
-    }
-  }, [pair?.round]);
+  const resetTurnCallback = () => {
+    setIsShowNextTurnButton(true);
+    setIsShowTurnEndCard(true);
+    setTappedButton(null);
+  };
 
-  if (!battleState || !config) {
+  usePrepareBattleHistory({ me, opponent, pair, resetTurnCallback });
+  const setBattleHistory = useSetAtom(battleHistoryAtom);
+
+  if (!battleState || !config || !state) {
     return <Loader />;
   }
 
-  const { battle_name, admin, state, participants, defeated_participants } = battleState;
-  console.log('🚀 ~ GamePage ~ battleState:', battleState);
-
-  console.log('🚀 ~ GamePage ~ pairs:', pairs);
-  const { player_1, player_2, round_start_time } = pair || {};
-
-  const allParticipants = [...participants, ...defeated_participants];
-
-  const participantsMap = allParticipants.reduce(
-    (acc, [key, player]) => {
-      acc[key] = player;
-      return acc;
-    },
-    {} as Record<string, Player>,
-  );
-
-  const opponentsAddress = account.decodedAddress === player_1 ? player_2 : player_1;
-
-  const me = participantsMap[account.decodedAddress];
-  const opponent = opponentsAddress ? participantsMap[opponentsAddress] : null;
-
+  const showStartNextBattle = !opponent && waiting_player?.[0] !== account.decodedAddress && isAlive;
+  const showWaitingForOpponent = waiting_player?.[0] === account.decodedAddress;
   const isAdmin = account.decodedAddress === admin;
+  const isTournamentOver = 'gameIsOver' in state;
 
   const onAttackClick = () => {
-    setTappedButton('attack');
-    makeMoveMessage('attack', { onError: () => setTappedButton(null) });
+    setTappedButton('Attack');
+    makeMoveMessage('Attack', { onError: () => setTappedButton(null) });
   };
   const onReflectClick = () => {
-    setTappedButton('reflect');
-    makeMoveMessage('reflect', { onError: () => setTappedButton(null) });
+    setTappedButton('Reflect');
+    makeMoveMessage('Reflect', { onError: () => setTappedButton(null) });
   };
   const onUltimateClick = () => {
-    setTappedButton('ultimate');
-    makeMoveMessage('ultimate', { onError: () => setTappedButton(null) });
+    setTappedButton('Ultimate');
+    makeMoveMessage('Ultimate', { onError: () => setTappedButton(null) });
   };
 
-  const isTurnEnd = tappedButton !== null;
-  const isBattleEnd = mockPlayer1.health === 0 || mockPlayer2.health === 0;
-
-  const isPlayerDefeated = true;
-  const isTournamentOver = 'gameIsOver' in state;
-  const tournamentWinnerName = isTournamentOver ? participantsMap[state.gameIsOver.winner].user_name : null;
-
-  const resultStatus = isTournamentOver && state.gameIsOver.winner === account.decodedAddress ? 'win' : 'lose';
-  // const isTournamentOver = false;
-
+  const { round_start_time } = pair || {};
   const roundDuration = config.time_for_move_in_blocks * config.block_duration_ms;
   const timeLeft = round_start_time ? Number(round_start_time) + roundDuration - Date.now() : null;
-  const prizeCount = 100;
-
-  const showOtherBattles = isPlayerDefeated;
-  const showPlayersList = isPlayerDefeated && selectedTab === 'players';
-
-  const alivePlayersListItems = participants.map(([_, { user_name }]) => ({
-    name: user_name,
-    status: 'alive' as PlayerStatus,
-  }));
-  const defeatedPlayersListItems = defeated_participants.map(([_, { user_name }]) => ({
-    name: user_name,
-    status: 'defeated' as PlayerStatus,
-  }));
-
-  const playersListItems = [...alivePlayersListItems, ...defeatedPlayersListItems];
-
-  const segmentedOptions = [
-    {
-      label: (
-        <div className={styles.players}>
-          <span>Players:</span>
-          <div>
-            {participants.length} <UserSmileIcon />
-          </div>
-          <div>
-            {defeated_participants.length} <UserSkullIcon />
-          </div>
-        </div>
-      ),
-      value: 'players',
-    },
-    {
-      label: 'Battle History ',
-      value: 'history',
-    },
-  ];
 
   const onCancelTournament = () => {
     cancelTournamentMessage({ onSuccess: () => navigate(ROUTES.HOME) });
   };
 
+  const onExitGame = () => {
+    exitGameMessage();
+  };
+
   return (
     <>
       <Background>
-        <CharacterStats
-          align="left"
-          {...mockPlayer1}
-          characterView={me.appearance}
-          name={me.user_name}
-          {...me.player_settings}
-        />
+        <CharacterStats align="left" characterView={me.appearance} name={me.user_name} {...me.player_settings} />
         <div className={clsx(styles.character, styles.left)}>
           <Character {...me.appearance} />
-          <SphereAnimation className={styles.fireSphere} type="attack" />
+
+          <SphereAnimation
+            className={styles.fireSphere}
+            type={tappedButton || (isShowNextTurnButton ? lastTurnHistory?.player.action : undefined)}
+          />
         </div>
 
-        <FireballCanvas />
-        {!isTurnEnd && opponent && !isShowNextTurnButton && <Timer remainingTime={timeLeft} shouldGoOn={true} />}
+        {opponent && !isShowNextTurnButton && <Timer remainingTime={timeLeft} isYourTurn={tappedButton === null} />}
 
-        {/* ! TODO if no opponent */}
         {opponent && (
           <>
             <CharacterStats
               align="right"
-              {...mockPlayer2}
               characterView={opponent.appearance}
               name={opponent.user_name}
               {...opponent.player_settings}
             />
             <div className={clsx(styles.character, styles.right)}>
               <Character {...opponent.appearance} />
-              <SphereAnimation className={styles.fireSphere} type="ultimate" />
+
+              {isShowNextTurnButton && (
+                <SphereAnimation className={styles.fireSphere} type={lastTurnHistory?.opponent.action} />
+              )}
             </div>
           </>
         )}
 
-        {!isBattleEnd && !isTournamentOver && !isShowNextTurnButton && (
-          <div className={styles.buttons}>
-            <GameButton
-              onClick={onAttackClick}
-              color="red"
-              text="Attack"
-              icon={<AttackButtonIcon />}
-              pending={tappedButton === 'attack'}
-            />
-            <GameButton
-              onClick={onReflectClick}
-              color="green"
-              text="Reflect"
-              icon={<DefenceButtonIcon />}
-              pending={tappedButton === 'reflect'}
-              turnsBlocked={me.reflect_reload}
-            />
-            <GameButton
-              onClick={onUltimateClick}
-              color="cyan"
-              text="Ultimate"
-              icon={<UltimateButtonIcon />}
-              pending={tappedButton === 'ultimate'}
-              turnsBlocked={me.ultimate_reload}
-            />
-          </div>
-        )}
-        {isBattleEnd && !isTournamentOver && (
+        {lastTurnHistory && isShowNextTurnButton && <FireballCanvas lastTurnHistory={lastTurnHistory} />}
+
+        {showWaitingForOpponent ||
+          (!!opponent && !isTournamentOver && !isShowNextTurnButton && (
+            <div className={styles.buttons}>
+              <GameButton
+                onClick={onAttackClick}
+                color="red"
+                text="Attack"
+                icon={<AttackButtonIcon />}
+                pending={tappedButton === 'Attack' || pending}
+                disabled={showWaitingForOpponent}
+              />
+              <GameButton
+                onClick={onReflectClick}
+                color="green"
+                text="Reflect"
+                icon={<DefenceButtonIcon />}
+                pending={tappedButton === 'Reflect' || pending}
+                turnsBlocked={me.reflect_reload}
+                disabled={showWaitingForOpponent}
+              />
+              <GameButton
+                onClick={onUltimateClick}
+                color="cyan"
+                text="Ultimate"
+                icon={<UltimateButtonIcon />}
+                pending={tappedButton === 'Ultimate' || pending}
+                turnsBlocked={me.ultimate_reload}
+                disabled={showWaitingForOpponent}
+              />
+            </div>
+          ))}
+
+        {showStartNextBattle && !isTournamentOver && (
           <Button
             color="primary"
             className={styles.nextButton}
             text={`Start next battle`}
-            onClick={() => startNextFightMessage()}
+            onClick={() => {
+              setBattleHistory(null);
+              battleHistoryStorage.set(null);
+              startNextFightMessage();
+            }}
+            disabled={pending}
           />
         )}
-        {isShowTurnEndCard && !isTournamentOver && (
+
+        {showWaitingForOpponent && <GameSpinner text="Please wait for your opponent" />}
+
+        {isShowTurnEndCard && lastTurnHistory && opponent && !isTournamentOver && (
           <div className={clsx(styles.historyItem, styles.endTurnHistory)}>
-            <BattleHistoryCard {...mockPlayer1} />
-            <BattleHistoryCard {...mockPlayer2} align="right" onClose={() => setIsShowTurnEndCard(false)} />
+            <BattleHistoryCard {...me.player_settings} {...lastTurnHistory.player} name={me.user_name} />
+            <BattleHistoryCard
+              {...opponent.player_settings}
+              {...lastTurnHistory.opponent}
+              name={opponent.user_name}
+              align="right"
+              onClose={() => setIsShowTurnEndCard(false)}
+            />
           </div>
         )}
-        {isShowNextTurnButton && !isBattleEnd && !isTournamentOver && timeLeft && (
-          <Button
-            color="primary"
+        {isShowNextTurnButton && !!opponent && !isTournamentOver && !!timeLeft && (
+          <TimerButton
+            text={`Next turn`}
             className={styles.nextButton}
-            text={`Next turn (${timeLeft / 1000})`}
-            onClick={() => setIsShowNextTurnButton(false)}
+            onClick={() => {
+              setIsShowNextTurnButton(false);
+              setIsShowTurnEndCard(false);
+            }}
+            disabled={pending}
+            remainingTime={timeLeft}
           />
         )}
-        {isTournamentOver && tournamentWinnerName && (
-          <GameOverCard
-            className={styles.gameOver}
-            prizeCount={prizeCount}
-            isTournamentOver={isTournamentOver}
-            result={resultStatus}
-            player1name={tournamentWinnerName}
-            player2name={mockPlayer2.name}
-          />
-        )}
-        <Segmented
-          className={styles.segmented}
-          options={segmentedOptions}
-          value={selectedTab}
-          onChange={(value) => setSelectedTab(value as Tabs)}
+
+        <GameOverCard
+          className={styles.gameOver}
+          bid={Number(bid)}
+          totalParticipants={allParticipants.length}
+          state={state}
+          participantsMap={participantsMap}
+          isAlive={isAlive}
         />
+
         {isAdmin ? (
           <Button
             text="Cancel tournament"
             size="small"
             className={clsx(styles.cancelTournament, styles.redButton)}
-            onClick={onCancelTournament}
+            onClick={() => setIsOpenCancelTournamentModal(true)}
+            disabled={pending}
           />
         ) : (
-          <Button text="Exit" icon={ExitIcon} color="transparent" className={styles.exit} />
-        )}
-
-        {showPlayersList && (
-          <PlayersList
-            bid={Number(battleState.bid)}
-            items={playersListItems}
-            className={styles.list}
-            tournamentName={battle_name}
+          <Button
+            text="Exit"
+            icon={ExitIcon}
+            color="transparent"
+            className={styles.exit}
+            onClick={onExitGame}
+            disabled={pending}
           />
         )}
 
-        {selectedTab === 'history' && (
-          <>
-            {showOtherBattles ? (
-              <List
-                className={styles.list}
-                maxLength={7}
-                items={battleState.pairs.map(([key, { player_1, player_2 }]) => {
-                  const player1 = participantsMap[player_1];
-                  const player2 = participantsMap[player_2];
+        <BattleTabs
+          battleState={battleState}
+          participantsMap={participantsMap}
+          me={me}
+          opponent={opponent}
+          isAlive={isAlive}
+        />
 
-                  return (
-                    <div key={key} className={styles.historyItem}>
-                      <BattleCard
-                        {...player1.player_settings}
-                        name={player1.user_name}
-                        characterView={player1.appearance}
-                        winsCount={player1.number_of_victories}
-                      />
-                      <BattleCard
-                        {...player2.player_settings}
-                        name={player2.user_name}
-                        characterView={player2.appearance}
-                        winsCount={player2.number_of_victories}
-                        align="right"
-                      />
-                    </div>
-                  );
-                })}
-              />
-            ) : (
-              <List
-                className={styles.list}
-                maxLength={6}
-                items={battleState.pairs.map(([key, { player_1, player_2 }]) => {
-                  const player1 = participantsMap[player_1];
-                  const player2 = participantsMap[player_2];
-
-                  return (
-                    <div key={key} className={styles.historyItem}>
-                      <BattleHistoryCard {...mockPlayer1} />
-                      <BattleHistoryCard {...mockPlayer2} align="right" />
-                    </div>
-                  );
-                })}
-              />
-            )}
-          </>
+        {isOpenCancelTournamentModal && (
+          <Modal
+            title="Sure you want to end the game?"
+            description={`This action cannot be undone. The game will be concluded, and all players will exit the gaming room. ${
+              !isTournamentOver ? 'Any entry fees will be refunded to all players.' : ''
+            }`}
+            className={styles.cancelTournamentModal}
+            onClose={() => setIsOpenCancelTournamentModal(false)}
+            buttons={
+              <>
+                <Button color="grey" text="End tournament" onClick={onCancelTournament} disabled={pending} />
+                <Button
+                  color="primary"
+                  text="Continue tournament"
+                  onClick={() => setIsOpenCancelTournamentModal(false)}
+                  disabled={pending}
+                />
+              </>
+            }
+          />
         )}
       </Background>
     </>

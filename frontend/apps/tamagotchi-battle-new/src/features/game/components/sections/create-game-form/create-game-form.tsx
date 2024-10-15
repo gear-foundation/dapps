@@ -11,7 +11,7 @@ import { Card } from '@/components';
 import { characterAtom } from '@/features/game/store';
 import { useCreateNewBattleMessage } from '@/app/utils';
 import { ROUTES } from '@/app/consts';
-import styles from './CreateGameForm.module.scss';
+import styles from './create-game-form.module.scss';
 
 type CreateGameFormValues = {
   fee: number;
@@ -85,6 +85,7 @@ function CreateGameForm({}: Props) {
       <Card
         title="Create a private game"
         description="Create your own game tournament, invite your friends, and compete for the ultimate reward."
+        size="lg"
         className={styles.card}>
         <form className={styles.form} id="create_game_form" onSubmit={onCreateSubmit(handleCreateSession)}>
           <div className={styles.formRow}>

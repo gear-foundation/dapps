@@ -1,20 +1,17 @@
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { useProgram } from '@/app/utils';
 import { Options, useSignAndSend } from '@/app/hooks/use-sign-and-send';
-import { usePending } from '@/features/game/hooks';
 
-export const useCancelTournamentMessage = () => {
+export const useExitGameMessage = () => {
   const program = useProgram();
   const { prepareTransactionAsync } = usePrepareProgramTransaction({
     program,
     serviceName: 'battle',
-    functionName: 'cancelTournament',
+    functionName: 'exitGame',
   });
   const { signAndSend } = useSignAndSend();
-  const { setPending } = usePending();
 
-  const cancelTournamentMessage = async (options: Options) => {
-    setPending(true);
+  const exitGameMessage = async (options?: Options) => {
     const { transaction } = await prepareTransactionAsync({
       args: [],
       gasLimit: { increaseGas: 10 },
@@ -22,5 +19,5 @@ export const useCancelTournamentMessage = () => {
     signAndSend(transaction, options);
   };
 
-  return { cancelTournamentMessage };
+  return { exitGameMessage };
 };

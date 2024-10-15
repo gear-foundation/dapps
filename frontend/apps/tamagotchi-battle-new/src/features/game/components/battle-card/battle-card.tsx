@@ -2,7 +2,6 @@ import { VariantProps, cva } from 'class-variance-authority';
 import clsx from 'clsx';
 import { Text } from '@/components';
 import { AttackIcon, CupStarIcon, DefenceIcon, DodgeIcon, HealthIcon } from '../../assets/images';
-import { PlayerState } from '../../types';
 import { Avatar } from '../avatar';
 import { CharacterView } from '../character/character';
 import styles from './battle-card.module.scss';

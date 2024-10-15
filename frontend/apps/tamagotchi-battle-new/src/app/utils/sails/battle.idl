@@ -7,7 +7,6 @@ type Config = struct {
   available_points: u16,
   time_for_move_in_blocks: u32,
   block_duration_ms: u32,
-  gas_to_check_pair: u64,
   gas_for_create_warrior: u64,
   gas_to_cancel_the_battle: u64,
   time_to_cancel_the_battle: u32,
@@ -66,7 +65,7 @@ type PlayerSettings = struct {
 type State = enum {
   Registration,
   Started,
-  GameIsOver: struct { winner: actor_id },
+  GameIsOver: struct { winners: struct { actor_id, opt actor_id } },
 };
 
 type Pair = struct {
@@ -93,6 +92,7 @@ service Battle {
   ChangeConfig : (config: Config) -> null;
   CreateNewBattle : (battle_name: str, user_name: str, warrior_id: opt actor_id, appearance: opt Appearance, attack: u16, defence: u16, dodge: u16) -> null;
   DelayedCancelTournament : (game_id: actor_id, time_creation: u64) -> null;
+  ExitGame : () -> null;
   MakeMove : (warrior_move: Move) -> null;
   Register : (game_id: actor_id, warrior_id: opt actor_id, appearance: opt Appearance, user_name: str, attack: u16, defence: u16, dodge: u16) -> null;
   StartBattle : () -> null;
@@ -117,6 +117,9 @@ service Battle {
     WarriorGenerated: struct { address: actor_id };
     AdminAdded: struct { new_admin: actor_id };
     ConfigChanged: struct { config: Config };
+    GameLeft;
+    RoundAction: struct { struct { actor_id, Move }, struct { actor_id, Move } };
+    AutomaticMoveMade;
   }
 };
 

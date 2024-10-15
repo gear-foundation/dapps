@@ -1,0 +1,25 @@
+.list {
+  position: absolute;
+  top: 767px;
+}
+
+.historyItem {
+  display: flex;
+}
+
+.players {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  > div {
+    gap: 8;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+}
+
+.segmented {
+  position: absolute;
+  top: 684px;
+}

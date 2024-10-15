@@ -108,6 +108,7 @@ function FindGameForm({}: Props) {
     <Card
       title="Find a private game"
       description="To find the game, you need to enter the administrator&#39;s address."
+      size="lg"
       className={styles.card}>
       <form className={styles.form} onSubmit={onJoinSubmit(handleOpenJoinSessionModal)}>
         <div className={styles.input}>

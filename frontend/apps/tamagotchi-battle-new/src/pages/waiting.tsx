@@ -1,14 +1,13 @@
 import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Card, Loader, Text } from '@/components';
+import { Card, Loader, Text, Modal } from '@/components';
 import { Background, WaitList } from '@/features/game/components';
 import { Character } from '@/features/game/components/character';
 import { CharacterStats } from '@/features/game/components/character-stats';
 import { InfoIcon } from '@/features/game/assets/images';
-import { mockPlayer1 } from '@/features/game/mock';
 import { ROUTES } from '@/app/consts';
 import {
   useMyBattleQuery,
@@ -16,7 +15,7 @@ import {
   useCancelTournamentMessage,
   useStartBattleMessage,
 } from '@/app/utils';
-import { usePending } from '@/features/game/hooks';
+import { usePending, useRestGameState } from '@/features/game/hooks';
 import styles from './waiting.module.scss';
 
 export default function WaitingPage() {
@@ -24,10 +23,14 @@ export default function WaitingPage() {
   const { account } = useAccount();
 
   const { battleState, isFetching } = useMyBattleQuery();
-  console.log('🚀 ~ WaitingPage ~ battleState:', battleState);
   const { cancelTournamentMessage } = useCancelTournamentMessage();
   const { cancelRegisterMessage } = useCancelRegisterMessage();
   const { startBattleMessage } = useStartBattleMessage();
+
+  const [isOpenLeaveModal, setIsOpenLeaveModal] = useState(false);
+  const [isOpenCancelTournamentModal, setIsOpenCancelTournamentModal] = useState(false);
+
+  useRestGameState();
 
   useEffect(() => {
     if (!isFetching && !battleState) {
@@ -58,19 +61,20 @@ export default function WaitingPage() {
   };
 
   const onCancelTournament = () => {
-    cancelTournamentMessage({ onSuccess: () => navigate(ROUTES.HOME) });
+    cancelTournamentMessage({
+      onSuccess: () => navigate(ROUTES.HOME),
+      onError: () => setIsOpenCancelTournamentModal(false),
+    });
   };
 
   const onLeaveGame = () => {
-    cancelRegisterMessage({ onSuccess: () => navigate(ROUTES.HOME) });
+    cancelRegisterMessage({ onSuccess: () => navigate(ROUTES.HOME), onError: () => setIsOpenLeaveModal(false) });
   };
-
-  // ! TODO replace mockPlayer
 
   return (
     <>
       <Background>
-        <CharacterStats {...mockPlayer1} characterView={appearance} name={user_name} {...player_settings} />
+        <CharacterStats characterView={appearance} name={user_name} {...player_settings} />
         <div className={styles.character}>
           <Character {...appearance} size="sm" />
         </div>
@@ -87,13 +91,23 @@ export default function WaitingPage() {
                   <Button
                     text="Cancel tournament"
                     className={styles.redButton}
-                    onClick={onCancelTournament}
+                    onClick={() => setIsOpenCancelTournamentModal(true)}
                     disabled={pending}
                   />
-                  <Button text="Start tournament" color="primary" onClick={onStartTournament} disabled={pending} />
+                  <Button
+                    text="Start tournament"
+                    color="primary"
+                    onClick={onStartTournament}
+                    disabled={pending || items.length < 2}
+                  />
                 </>
               ) : (
-                <Button text="Leave game" className={styles.redButton} onClick={onLeaveGame} disabled={pending} />
+                <Button
+                  text="Leave game"
+                  className={styles.redButton}
+                  onClick={() => setIsOpenLeaveModal(true)}
+                  disabled={pending}
+                />
               )}
             </div>
             <Text size="xs" weight="medium" className={styles.info}>
@@ -119,6 +133,40 @@ export default function WaitingPage() {
             />
           </div>
         </Card>
+
+        {isOpenLeaveModal && (
+          <Modal
+            title="Confirm action"
+            description="Are you sure you want to leave the game? You’ll need to reconnect and select your character again."
+            className={styles.leaveModal}
+            onClose={() => setIsOpenLeaveModal(false)}
+            buttons={
+              <>
+                <Button color="grey" text="Back" onClick={() => setIsOpenLeaveModal(false)} />
+                <Button className={styles.redButton} text="Leave game" onClick={onLeaveGame} />
+              </>
+            }
+          />
+        )}
+
+        {isOpenCancelTournamentModal && (
+          <Modal
+            title="Sure you want to end the game?"
+            description="This action cannot be undone. The game will be concluded, and all players will exit the gaming room. Any entry fees will be refunded to all players."
+            className={styles.cancelTournamentModal}
+            onClose={() => setIsOpenCancelTournamentModal(false)}
+            buttons={
+              <>
+                <Button color="grey" text="End tournament" onClick={onCancelTournament} />
+                <Button
+                  color="primary"
+                  text="Continue tournament"
+                  onClick={() => setIsOpenCancelTournamentModal(false)}
+                />
+              </>
+            }
+          />
+        )}
       </Background>
     </>
   );

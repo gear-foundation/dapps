@@ -4,11 +4,12 @@ import { BaseComponentProps } from '@/app/types';
 import { Text } from '../text';
 import styles from './card.module.scss';
 
-export const titleVariants = cva('', {
+export const cardVariants = cva('', {
   variants: {
     size: {
       sm: styles.sm,
       md: styles.md,
+      lg: styles.lg,
     },
     align: {
       left: styles.left,
@@ -22,7 +23,7 @@ export const titleVariants = cva('', {
 });
 
 type CardProps = BaseComponentProps &
-  VariantProps<typeof titleVariants> & {
+  VariantProps<typeof cardVariants> & {
     title?: string;
     description?: string;
     rightSideSlot?: React.ReactNode;
@@ -30,12 +31,12 @@ type CardProps = BaseComponentProps &
 
 export function Card({ children, title, align, className, size, description, rightSideSlot }: CardProps) {
   return (
-    <div className={clsx(styles.card, size === 'sm' && styles.sm, className)}>
+    <div className={cardVariants({ className: clsx(styles.card, className), size })}>
       <div className={styles.leftSide}>
         <div className={styles.header}>
-          {title && <h2 className={titleVariants({ align, size })}>{title}</h2>}
+          {title && <h2 className={cardVariants({ align, size })}>{title}</h2>}
           {description && (
-            <Text size="sm" className={titleVariants({ className: styles.description, align, size })}>
+            <Text size="sm" className={cardVariants({ className: styles.description, align, size })}>
               {description}
             </Text>
           )}

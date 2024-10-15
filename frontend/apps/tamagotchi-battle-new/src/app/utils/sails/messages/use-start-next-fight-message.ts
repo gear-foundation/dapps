@@ -1,6 +1,7 @@
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
 import { useProgram } from '@/app/utils';
 import { Options, useSignAndSend } from '@/app/hooks/use-sign-and-send';
+import { usePending } from '@/features/game/hooks';
 
 export const useStartNextFightMessage = () => {
   const program = useProgram();
@@ -10,8 +11,10 @@ export const useStartNextFightMessage = () => {
     functionName: 'startNextFight',
   });
   const { signAndSend } = useSignAndSend();
+  const { setPending } = usePending();
 
   const startNextFightMessage = async (options?: Options) => {
+    setPending(true);
     const { transaction } = await prepareTransactionAsync({
       args: [],
       gasLimit: { increaseGas: 10 },

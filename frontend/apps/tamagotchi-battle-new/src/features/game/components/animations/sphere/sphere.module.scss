@@ -12,3 +12,11 @@
   background: #00ffc41a;
   mix-blend-mode: plus-lighter;
 }
+
+.reflect {
+  display: block;
+  border-radius: 50%;
+  box-shadow: 0px 28px 100px 0px #16981b inset;
+  background: radial-gradient(60.28% 60.28% at 85.56% 31.67%, #56750a 0%, rgba(36, 49, 3, 0.1) 100%);
+  mix-blend-mode: plus-lighter;
+}

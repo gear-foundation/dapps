@@ -1,4 +1,4 @@
 export * from './sails';
-export * from './lib';
+export * from './battle';
 export * from './queries';
 export * from './messages';

@@ -6,7 +6,7 @@ import { Text } from '@/components';
 import { VaraIcon } from '@/components/layout';
 import { Heading } from '@/components/ui/heading';
 import { PlayerStatus } from '../player-status/player-status';
-import styles from './playersList.module.scss';
+import styles from './players-list.module.scss';
 
 type Item = {
   name: string;

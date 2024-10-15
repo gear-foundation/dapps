@@ -12,12 +12,10 @@ import {
   UserSkullIcon,
   UserSmileIcon,
 } from '@/features/game/assets/images';
-
 import { GameButton, Timer } from '@/features/game/components';
 import { useState } from 'react';
 import { Modal, Segmented, Text } from '@/components';
-import { mockPlayer1, mockPlayer2 } from '@/features/game/mock';
-import { mockCharacterView, mockCharacterView2 } from '@/features/game/consts';
+import { mockCharacterView, mockCharacterView2, mockPlayer1, mockPlayer2 } from '@/features/game/consts';
 import { characterStorage } from '@/features/game/store';
 import styles from './onboarding.module.scss';
 
@@ -84,7 +82,10 @@ const steps = [
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
-  const characterView = characterStorage.get()?.appearance || mockCharacterView;
+  const character = characterStorage.get();
+  const characterView = character?.appearance || mockCharacterView;
+  const { attack, defence, dodge } = character || {};
+  const characterStats = character ? { attack, defence, dodge } : null;
 
   const onClose = () => {
     navigate(-1);
@@ -123,6 +124,7 @@ export default function OnboardingPage() {
         <CharacterStats
           align="left"
           {...mockPlayer1}
+          {...characterStats}
           characterView={characterView}
           className={clsx(step === 2 && styles.highlighted)}
           isActive

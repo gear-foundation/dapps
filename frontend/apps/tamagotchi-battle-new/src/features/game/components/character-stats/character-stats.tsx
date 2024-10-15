@@ -2,13 +2,13 @@ import clsx from 'clsx';
 import { VariantProps, cva } from 'class-variance-authority';
 import { Text } from '@/components';
 import { AttackIcon, DefenceIcon, DodgeIcon, HealthIcon, SkullBigIcon } from '../../assets/images';
-import { ReactComponent as MockAvatarIcon } from './avatar.svg';
 import { ReactComponent as VectorIcon } from './vector.svg';
 import { HealthIndicator } from '../health-indicator';
 import styles from './character-stats.module.scss';
 import { PlayerState } from '../../types';
 import { Avatar } from '../avatar';
 import { CharacterView } from '../character/character';
+import { PlayerSettings } from '@/app/utils';
 
 export const variants = cva('', {
   variants: { align: { left: styles.left, right: styles.right }, status: { defeated: styles.defeated, alive: null } },
@@ -16,10 +16,11 @@ export const variants = cva('', {
 });
 
 type CharacterStatsProps = VariantProps<typeof variants> &
-  PlayerState & {
-    className?: string;
+  PlayerSettings & {
+    name: string;
     characterView: CharacterView;
     isActive?: boolean;
+    className?: string;
   };
 
 export const CharacterStats = ({
@@ -28,7 +29,6 @@ export const CharacterStats = ({
   name,
   attack,
   health,
-  // ! TODO: display percents
   defence,
   dodge,
   characterView,

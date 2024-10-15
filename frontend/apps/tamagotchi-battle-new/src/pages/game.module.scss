@@ -14,8 +14,10 @@
 
 .fireSphere {
   position: absolute;
-  left: -8px;
-  top: -36px;
+  left: 0px;
+  top: -26px;
+  height: 100%;
+  width: 100%;
 }
 
 .redButton {
@@ -33,11 +35,6 @@
   gap: 24px;
 }
 
-.segmented {
-  position: absolute;
-  top: 684px;
-}
-
 .exit {
   position: absolute;
   top: 692px;
@@ -53,23 +50,6 @@
   height: 44px;
   width: 168px;
   font-size: 14px;
-}
-
-.players {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  > div {
-    gap: 8;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-}
-
-.list {
-  position: absolute;
-  top: 767px;
 }
 
 .historyItem {
@@ -90,4 +70,8 @@
 .gameOver {
   position: absolute;
   top: 0px;
+}
+
+.cancelTournamentModal {
+  width: 650px;
 }

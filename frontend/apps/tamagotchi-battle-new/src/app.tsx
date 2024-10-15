@@ -3,30 +3,26 @@ import { withProviders } from '@/app/hocs';
 import { Loader, LoadingError, MainLayout } from '@/components';
 import '@gear-js/vara-ui/dist/style.css';
 import { Routing } from '@/pages';
-import { useProgram } from './app/utils';
+import { useMyBattleQuery, useProgram } from './app/utils';
 
 function Component() {
-  // ! TODO
-  // const { isGameReady } = useInitGame();
-  // const { errorGame } = useInitGameSync();
   const program = useProgram();
 
-  const errorGame = false;
-  const isGameReady = program;
+  const { error } = useMyBattleQuery();
+  const isGameReady = !!program;
 
   return (
     <MainLayout>
-      {!!errorGame && (
+      {!!error && (
         <LoadingError>
           <p>Error in the Game contract :(</p>
           <pre>
-            <small>Error message:</small> <code>{errorGame}</code>
-            {/* <small>Error message:</small> <code>{errorGame.message}</code> */}
+            <small>Error message:</small> <code>{error.message}</code>
           </pre>
         </LoadingError>
       )}
-      {!errorGame && isGameReady && <Routing />}
-      {!errorGame && !isGameReady && <Loader />}
+      {!error && isGameReady && <Routing />}
+      {!error && !isGameReady && <Loader />}
     </MainLayout>
   );
 }

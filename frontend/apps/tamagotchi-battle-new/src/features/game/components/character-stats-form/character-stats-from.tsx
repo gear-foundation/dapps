@@ -1,11 +1,11 @@
+import { useEffect } from 'react';
 import { Button } from '@gear-js/vara-ui';
 import { useForm } from '@mantine/form';
 import { Text } from '@/components';
 import { Heading } from '@/components/ui/heading';
 import { AttackIcon, CaretRightIcon, DefenceIcon, DodgeIcon } from '../../assets/images';
-import styles from './character-stats-form.module.scss';
 import { CharacterStatsFormValues } from '../../types';
-import { useEffect } from 'react';
+import styles from './character-stats-form.module.scss';
 
 type Stats = 'attack' | 'defence' | 'dodge';
 
@@ -30,7 +30,7 @@ const charStats: CharacterStats[] = [
     icon: <DefenceIcon />,
     name: 'defence',
     description: "Reflects the opponent's attack back to them. Each point equals 10%.",
-    percentPerPoint: 5,
+    percentPerPoint: 10,
     maxCount: 10,
     minCount: 0,
   },

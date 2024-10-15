@@ -1,5 +1,8 @@
-import { AssetsCount } from './types';
+import { AssetsCount, PlayerState } from './types';
 
+export const TIME_LEFT_GAP = 1;
+
+export const MAX_HEALTH = 100;
 export const assetsCount: AssetsCount = {
   hat: 9,
   head: 5,
@@ -29,3 +32,27 @@ export const mockCharacterView2 = {
   body_color: body_colors[1],
   back_color: back_colors[1],
 };
+
+const mockPlayer1: PlayerState = {
+  name: 'Player name 1',
+  health: 100,
+  attack: 30,
+  defence: 8,
+  dodge: 4,
+  action: 'Attack',
+  isDodged: true,
+  receivedDamage: 0,
+};
+
+const mockPlayer2: PlayerState = {
+  name: 'Player name 2',
+  health: 100,
+  attack: 10,
+  defence: 13,
+  dodge: 5,
+  action: 'Reflect',
+  isDodged: false,
+  receivedDamage: 0,
+};
+
+export { mockPlayer1, mockPlayer2 };

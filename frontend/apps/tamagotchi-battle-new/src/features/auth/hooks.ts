@@ -4,7 +4,6 @@ import { IS_AUTH_READY_ATOM } from './consts';
 import { useWallet } from '@/features/wallet/hooks';
 import { useEffect } from 'react';
 
-// TODO: not needed, remove!
 export function useAuth() {
   const [isAuthReady, setIsAuthReady] = useAtom(IS_AUTH_READY_ATOM);
 

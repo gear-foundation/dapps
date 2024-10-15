@@ -12,7 +12,7 @@ export default function Home() {
 
   return (
     <Background>
-      <Card title="Tamagotchi Battle" description="Select game mode" className={styles.card}>
+      <Card title="Tamagotchi Battle" description="Select game mode" className={styles.card} size="lg">
         <div className={styles.container}>
           <CardButton
             onClick={() => navigate(ROUTES.IMPORT_CHARACTER)}

@@ -2,10 +2,8 @@ import { Suspense, useEffect } from 'react';
 import { Route, useNavigate, useLocation } from 'react-router-dom';
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
 import { ROUTES } from '@/app/consts';
-import { Card, Loader } from '@/components';
-import { Background } from '@/features/game/components';
+import { Loader, NotAuthorized } from '@/components';
 import { useAccount } from '@gear-js/react-hooks';
-import { WalletNew as Wallet } from '@dapps-frontend/ui';
 
 import Home from './home';
 import { useMyBattleQuery } from '@/app/utils';
@@ -32,6 +30,7 @@ const routes = [
 
 export function Routing() {
   const { account } = useAccount();
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -49,18 +48,8 @@ export function Routing() {
     }
   });
 
-  return (
+  return account ? (
     <ErrorTrackingRoutes>
-      {!account && (
-        <Background>
-          <Card
-            title="Tamagotchi Battle"
-            description="Create your Tamagotchi character and engage in battles with other players.">
-            <Wallet />
-          </Card>
-        </Background>
-      )}
-
       {routes.map(({ path, Page }) => (
         <Route
           key={path}
@@ -73,5 +62,7 @@ export function Routing() {
         />
       ))}
     </ErrorTrackingRoutes>
+  ) : (
+    <NotAuthorized />
   );
 }

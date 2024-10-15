@@ -28,7 +28,6 @@ export interface TextProps extends BaseHTMLAttributes<HTMLParagraphElement>, Var
 
 export function Text({ children, className, size, weight, ...props }: TextProps) {
   return (
-    // eslint-disable-next-line react/jsx-props-no-spreading
     <p className={textVariants({ size, weight, className })} {...props}>
       {children}
     </p>
