@@ -36,11 +36,11 @@ export default function WaitingPage() {
     if (!isFetching && !battleState) {
       navigate(ROUTES.HOME);
     }
-  }, [isFetching, battleState]);
+  }, [isFetching, battleState, navigate]);
 
   const { pending } = usePending();
 
-  if (!battleState) {
+  if (!battleState || !account) {
     return <Loader />;
   }
 

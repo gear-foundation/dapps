@@ -20,6 +20,7 @@ export function useRestGameState() {
   useEffect(() => {
     setBattleHistory(null);
     battleHistoryStorage.set(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }
 
@@ -70,7 +71,7 @@ export function usePrepareBattleHistory({ pair, me, opponent, resetTurnCallback 
       resetTurnCallback();
       resetLastMoves();
     }
-  }, [pair?.round, lastMoves, me, opponent]);
+  }, [pair?.round, lastMoves, me, opponent, resetLastMoves, resetTurnCallback, setBattleHistory]);
 }
 
 export type UseTimerParams = {
@@ -121,13 +122,13 @@ export function useParticipants(battleState?: BattleState | null) {
   const { account } = useAccount();
 
   const { pairs, players_to_pairs } = battleState || {};
-  const pairId = players_to_pairs?.find(([address]) => account.decodedAddress === address)?.[1];
+  const pairId = players_to_pairs?.find(([address]) => account?.decodedAddress === address)?.[1];
   const pair = pairs?.find(([number]) => pairId === number)?.[1];
 
   const { participants, defeated_participants } = battleState || {};
 
   const { player_1, player_2 } = pair || {};
-  const isAlive = Boolean(participants?.some(([address]) => address === account.decodedAddress));
+  const isAlive = Boolean(participants?.some(([address]) => address === account?.decodedAddress));
 
   const allParticipants = participants && defeated_participants ? [...participants, ...defeated_participants] : [];
 
@@ -139,9 +140,9 @@ export function useParticipants(battleState?: BattleState | null) {
     {} as Record<string, Player>,
   );
 
-  const opponentsAddress = account.decodedAddress === player_1 ? player_2 : player_1;
+  const opponentsAddress = account?.decodedAddress === player_1 ? player_2 : player_1;
 
-  const me = participantsMap[account.decodedAddress];
+  const me = participantsMap[account?.decodedAddress || ''];
   const opponent = opponentsAddress ? participantsMap[opponentsAddress] : null;
 
   return { participantsMap, allParticipants, me, opponent, isAlive, pair };

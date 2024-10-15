@@ -4,11 +4,10 @@ import { Text } from '@/components';
 import { AttackIcon, DefenceIcon, DodgeIcon, HealthIcon, SkullBigIcon } from '../../assets/images';
 import { ReactComponent as VectorIcon } from './vector.svg';
 import { HealthIndicator } from '../health-indicator';
-import styles from './character-stats.module.scss';
-import { PlayerState } from '../../types';
 import { Avatar } from '../avatar';
 import { CharacterView } from '../character/character';
 import { PlayerSettings } from '@/app/utils';
+import styles from './character-stats.module.scss';
 
 export const variants = cva('', {
   variants: { align: { left: styles.left, right: styles.right }, status: { defeated: styles.defeated, alive: null } },

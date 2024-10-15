@@ -2688,27 +2688,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@gear-js/react-hooks@npm:0.12.1":
-  version: 0.12.1
-  resolution: "@gear-js/react-hooks@npm:0.12.1"
-  dependencies:
-    "@polkadot/api-derive": "npm:11.0.2"
-    "@polkadot/util": "npm:12.6.2"
-    "@substrate/connect": "npm:0.8.10"
-    bignumber.js: "npm:9.1.2"
-    nanoid: "npm:5.0.1"
-    react-transition-group: "npm:4.4.5"
-  peerDependencies:
-    "@gear-js/api": 0.38.1
-    "@polkadot/api": 11.0.2
-    "@tanstack/react-query": 5.29.0
-    react: 18.2.0
-    react-dom: 18.2.0
-    sails-js: 0.1.8
-  checksum: 10c0/05263356b9406d5faa7fb94718bdc899d433f19173ccfa18dbf8dd6555cc08027847162a323766d99133ec54d1908833ce2418ae549d76cecd8f051fb55c0191
-  languageName: node
-  linkType: hard
-
 "@gear-js/react-hooks@npm:0.13.0":
   version: 0.13.0
   resolution: "@gear-js/react-hooks@npm:0.13.0"
@@ -23711,7 +23690,7 @@ __metadata:
     "@dapps-frontend/hooks": "workspace:*"
     "@dapps-frontend/ui": "workspace:*"
     "@gear-js/api": "npm:0.38.1"
-    "@gear-js/react-hooks": "npm:0.12.1"
+    "@gear-js/react-hooks": "npm:0.13.0"
     "@headlessui/react": "npm:1.7.17"
     "@polkadot/api": "npm:11.0.2"
     "@polkadot/types": "npm:11.0.2"

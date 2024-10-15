@@ -15,13 +15,11 @@ import { ROUTES } from '@/app/consts';
 import { useAtomValue } from 'jotai';
 import { characterAtom } from '@/features/game/store';
 
-type Props = {};
-
 type FindGameFormValues = {
   address: HexString | undefined;
 };
 
-function FindGameForm({}: Props) {
+function FindGameForm() {
   const navigate = useNavigate();
   const { account } = useAccount();
   const { getFormattedBalanceValue } = useBalanceFormat();

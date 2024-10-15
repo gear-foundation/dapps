@@ -18,7 +18,7 @@ export default function ImportCharacter() {
   const navigate = useNavigate();
   const [address, setAddress] = useState<string>('');
 
-  const { appearance, error } = useGetAppearanceQuery(address);
+  const { appearance } = useGetAppearanceQuery(address);
   const [characterStats, setCharacterStats] = useState<CharacterStatsFormValues>();
   const [isNextDisabled, setIsNextDisabled] = useState(true);
 

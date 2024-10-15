@@ -19,9 +19,7 @@ type CreateGameFormValues = {
   tournamentName: string;
 };
 
-type Props = {};
-
-function CreateGameForm({}: Props) {
+function CreateGameForm() {
   const navigate = useNavigate();
   const { account } = useAccount();
   const { api } = useApi();
@@ -33,7 +31,7 @@ function CreateGameForm({}: Props) {
     if (!character) {
       navigate(-1);
     }
-  }, [character]);
+  }, [character, navigate]);
 
   const { createNewBattleMessage } = useCreateNewBattleMessage();
   const { pending, setPending } = usePending();

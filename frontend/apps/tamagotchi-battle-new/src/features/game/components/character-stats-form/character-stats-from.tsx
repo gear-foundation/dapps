@@ -64,14 +64,14 @@ export const CharacterStatsForm = ({ onValuesChange }: CharacterStatsFormProps) 
     },
   });
 
-  const { getInputProps, setFieldValue, onSubmit, values } = statsForm;
+  const { getInputProps, setFieldValue, values } = statsForm;
   const initialPoints = 10;
   const availablePoints = 20 + initialPoints - values.attack - values.defence - values.dodge;
 
   useEffect(() => {
     const isValid = availablePoints === 0;
     onValuesChange?.(values, isValid);
-  }, [values, availablePoints]);
+  }, [values, availablePoints, onValuesChange]);
 
   const drawRow = ({ icon, name, percentPerPoint, maxCount, minCount, description }: CharacterStats) => {
     const getValidCount = (count: number) => {

@@ -76,7 +76,7 @@ export default function GamePage() {
   usePrepareBattleHistory({ me, opponent, pair, resetTurnCallback });
   const setBattleHistory = useSetAtom(battleHistoryAtom);
 
-  if (!battleState || !config || !state) {
+  if (!battleState || !config || !state || !account) {
     return <Loader />;
   }
 

@@ -158,6 +158,7 @@ export const FireballCanvas: React.FC<FireballCanvasProps> = ({ lastTurnHistory 
     return () => {
       window.removeEventListener('resize', resize);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const launchFireball = (
@@ -207,6 +208,7 @@ export const FireballCanvas: React.FC<FireballCanvasProps> = ({ lastTurnHistory 
         }
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

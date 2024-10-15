@@ -1,6 +1,6 @@
 import { Background } from '@/features/game/components';
 import { Card } from '@/components/ui/card';
-import { WalletNew as Wallet } from '@dapps-frontend/ui';
+import { Wallet } from '@dapps-frontend/ui';
 import styles from './not-authorized.module.scss';
 
 export function NotAuthorized() {
@@ -11,7 +11,7 @@ export function NotAuthorized() {
         title="Tamagotchi Battle"
         description="Create your Tamagotchi character and engage in battles with other players."
         className={styles.card}>
-        <Wallet />
+        <Wallet theme="vara" />
       </Card>
     </Background>
   );
