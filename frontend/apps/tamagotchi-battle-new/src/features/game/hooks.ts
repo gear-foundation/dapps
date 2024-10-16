@@ -42,9 +42,7 @@ export function usePrepareBattleHistory({ pair, me, opponent, turnEndCallback }:
 
       setBattleHistory((prev) => {
         const myReceivedDamage = (prev?.[0].player.health ?? MAX_HEALTH) - myHealth;
-        console.log("🚀 ~ setBattleHistory ~ myReceivedDamage:", myReceivedDamage)
         const opponentsReceivedDamage = (prev?.[0].opponent.health ?? MAX_HEALTH) - opponentsHealth;
-        console.log("🚀 ~ setBattleHistory ~ opponentsReceivedDamage:", opponentsReceivedDamage)
         const isBothUseReflect = myMove === 'Reflect' && opponentsMove === 'Reflect';
         const meReflectAll = myMove === 'Reflect' && me?.player_settings.defence === 100;
         const opponentReflectAll = opponentsMove === 'Reflect' && opponent?.player_settings.defence === 100;

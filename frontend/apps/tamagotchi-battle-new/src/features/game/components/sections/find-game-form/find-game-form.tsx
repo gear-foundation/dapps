@@ -62,9 +62,7 @@ function FindGameForm() {
 
     try {
       const response = await refetch();
-      console.log('🚀 ~ handleOpenJoinSessionModal ~ response:', response);
       const { data } = response;
-      console.log('🚀 ~ handleOpenJoinSessionModal ~ data:', data);
 
       if (data?.state && 'registration' in data.state) {
         setFoundState(data);

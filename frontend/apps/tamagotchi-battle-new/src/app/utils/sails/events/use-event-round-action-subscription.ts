@@ -14,7 +14,9 @@ export function useEventRoundActionSubscription(pair?: Pair) {
 
     if (players.includes(player1[0]) && players.includes(player2[0]) && account) {
       const myData = account.decodedAddress === player1[0] ? player1 : player2;
+      console.log('🚀 ~ onData ~ myData:', myData);
       const opponentsData = account.decodedAddress === player1[0] ? player2 : player1;
+      console.log('🚀 ~ onData ~ opponentsData:', opponentsData);
 
       setLastMoves({ moves: [myData[1], opponentsData[1]], newHealth: [myData[2], opponentsData[2]] });
     }
