@@ -73,7 +73,7 @@ export default function WaitingPage() {
 
   return (
     <>
-      <Background>
+      <Background className={styles.background}>
         <CharacterStats characterView={appearance} name={user_name} {...player_settings} />
         <div className={styles.character}>
           <Character {...appearance} size="sm" />

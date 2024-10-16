@@ -5,17 +5,18 @@ import { useState } from 'react';
 export function useEventRoundActionSubscription(pair?: Pair) {
   const program = useProgram();
   const { account } = useAccount();
-  const [lastMoves, setLastMoves] = useState<[Move, Move] | null>(null);
+  const [lastMoves, setLastMoves] = useState<{ moves: [Move, Move]; newHealth: [number, number] } | null>(null);
 
   const resetLastMoves = () => setLastMoves(null);
 
-  const onData = ([player1, player2]: [[string, Move], [string, Move]]) => {
+  const onData = ([player1, player2]: [[string, Move, number], [string, Move, number]]) => {
     const players = [pair?.player_1, pair?.player_2];
 
     if (players.includes(player1[0]) && players.includes(player2[0]) && account) {
-      const myMove = account.decodedAddress === player1[0] ? player1[1] : player2[1];
-      const opponentsMove = account.decodedAddress === player1[0] ? player2[1] : player1[1];
-      setLastMoves([myMove, opponentsMove]);
+      const myData = account.decodedAddress === player1[0] ? player1 : player2;
+      const opponentsData = account.decodedAddress === player1[0] ? player2 : player1;
+
+      setLastMoves({ moves: [myData[1], opponentsData[1]], newHealth: [myData[2], opponentsData[2]] });
     }
   };
 

@@ -692,7 +692,7 @@ export class Battle {
   }
 
   public subscribeToRoundActionEvent(
-    callback: (data: [[ActorId, Move], [ActorId, Move]]) => void | Promise<void>,
+    callback: (data: [[ActorId, Move, number], [ActorId, Move, number]]) => void | Promise<void>,
   ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
@@ -703,8 +703,8 @@ export class Battle {
       if (getServiceNamePrefix(payload) === 'Battle' && getFnNamePrefix(payload) === 'RoundAction') {
         callback(
           this._program.registry
-            .createType('(String, String, (([u8;32], Move), ([u8;32], Move)))', message.payload)[2]
-            .toJSON() as unknown as [[ActorId, Move], [ActorId, Move]],
+            .createType('(String, String, (([u8;32], Move, u16), ([u8;32], Move, u16)))', message.payload)[2]
+            .toJSON() as unknown as [[ActorId, Move, number], [ActorId, Move, number]],
         );
       }
     });

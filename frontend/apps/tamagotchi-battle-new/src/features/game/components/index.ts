@@ -15,5 +15,4 @@ export { PlayersList } from './players-list';
 export { GameSpinner } from './game-spinner';
 export { BattleTabs } from './sections/battle-tabs';
 export { Timer } from './timer';
-export { TimerButton } from './timer-button';
 export * from './battle-history-card';

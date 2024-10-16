@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 551px;
+  height: 420px;
 }
 
 .item {
@@ -12,6 +12,7 @@
   padding: 15.5px 12px;
   border-radius: 8px;
   border: 1px solid #00000012;
+  text-align: left;
 
   &:first-child {
     margin-top: 16px;

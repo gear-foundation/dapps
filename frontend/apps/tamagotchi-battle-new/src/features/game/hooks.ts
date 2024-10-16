@@ -28,22 +28,23 @@ type UsePrepareBattleHistoryParams = {
   pair?: Pair;
   me: Player;
   opponent: Player | null;
-  resetTurnCallback: () => void;
+  turnEndCallback: () => void;
 };
 
-export function usePrepareBattleHistory({ pair, me, opponent, resetTurnCallback }: UsePrepareBattleHistoryParams) {
+export function usePrepareBattleHistory({ pair, me, opponent, turnEndCallback }: UsePrepareBattleHistoryParams) {
   const setBattleHistory = useSetAtom(battleHistoryAtom);
   const { lastMoves, resetLastMoves } = useEventRoundActionSubscription(pair);
 
   useEffect(() => {
-    if (pair?.round && pair?.round !== 1 && lastMoves && opponent) {
-      const [myMove, opponentsMove] = lastMoves;
+    if (lastMoves && opponent) {
+      const [myMove, opponentsMove] = lastMoves.moves;
+      const [myHealth, opponentsHealth] = lastMoves.newHealth;
 
       setBattleHistory((prev) => {
-        const opponentsHealth = opponent?.player_settings.health;
-        const myHealth = me?.player_settings.health;
         const myReceivedDamage = (prev?.[0].player.health ?? MAX_HEALTH) - myHealth;
+        console.log("🚀 ~ setBattleHistory ~ myReceivedDamage:", myReceivedDamage)
         const opponentsReceivedDamage = (prev?.[0].opponent.health ?? MAX_HEALTH) - opponentsHealth;
+        console.log("🚀 ~ setBattleHistory ~ opponentsReceivedDamage:", opponentsReceivedDamage)
         const isBothUseReflect = myMove === 'Reflect' && opponentsMove === 'Reflect';
         const meReflectAll = myMove === 'Reflect' && me?.player_settings.defence === 100;
         const opponentReflectAll = opponentsMove === 'Reflect' && opponent?.player_settings.defence === 100;
@@ -68,10 +69,11 @@ export function usePrepareBattleHistory({ pair, me, opponent, resetTurnCallback 
         return next;
       });
 
-      resetTurnCallback();
+      turnEndCallback();
       resetLastMoves();
     }
-  }, [pair?.round, lastMoves, me, opponent, resetLastMoves, resetTurnCallback, setBattleHistory]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lastMoves, me?.player_settings.defence, opponent?.player_settings.defence]);
 }
 
 export type UseTimerParams = {

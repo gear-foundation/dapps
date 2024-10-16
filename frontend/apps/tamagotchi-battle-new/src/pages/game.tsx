@@ -16,7 +16,6 @@ import {
   SphereAnimation,
   FireballCanvas,
   GameSpinner,
-  TimerButton,
 } from '@/features/game/components';
 import { AttackButtonIcon, DefenceButtonIcon, UltimateButtonIcon } from '@/features/game/assets/images';
 import { useEffect, useState } from 'react';
@@ -50,12 +49,12 @@ export default function GamePage() {
   const [isOpenCancelTournamentModal, setIsOpenCancelTournamentModal] = useState(false);
 
   const [tappedButton, setTappedButton] = useState<Move | null>(null);
+  const [showAnimation, setShowAnimation] = useState(false);
 
   const battleHistory = useAtomValue(battleHistoryAtom);
   const lastTurnHistory = battleHistory?.[0];
 
   const [isShowTurnEndCard, setIsShowTurnEndCard] = useState(false);
-  const [isShowNextTurnButton, setIsShowNextTurnButton] = useState(false);
 
   const { allParticipants, isAlive, me, opponent, participantsMap, pair } = useParticipants(battleState);
 
@@ -67,13 +66,16 @@ export default function GamePage() {
     }
   }, [isFetching, battleState, navigate]);
 
-  const resetTurnCallback = () => {
-    setIsShowNextTurnButton(true);
+  const turnEndCallback = () => {
     setIsShowTurnEndCard(true);
     setTappedButton(null);
+    setShowAnimation(true);
+    setTimeout(() => {
+      setShowAnimation(false);
+    }, 3000);
   };
 
-  usePrepareBattleHistory({ me, opponent, pair, resetTurnCallback });
+  usePrepareBattleHistory({ me, opponent, pair, turnEndCallback });
   const setBattleHistory = useSetAtom(battleHistoryAtom);
 
   if (!battleState || !config || !state || !account) {
@@ -107,7 +109,9 @@ export default function GamePage() {
   };
 
   const onExitGame = () => {
-    exitGameMessage();
+    exitGameMessage({
+      onSuccess: () => navigate(ROUTES.HOME),
+    });
   };
 
   return (
@@ -119,11 +123,11 @@ export default function GamePage() {
 
           <SphereAnimation
             className={styles.fireSphere}
-            type={tappedButton || (isShowNextTurnButton ? lastTurnHistory?.player.action : undefined)}
+            type={tappedButton || (showAnimation ? lastTurnHistory?.player.action : undefined)}
           />
         </div>
 
-        {opponent && !isShowNextTurnButton && <Timer remainingTime={timeLeft} isYourTurn={tappedButton === null} />}
+        {opponent && !showAnimation && <Timer remainingTime={timeLeft} isYourTurn={tappedButton === null} />}
 
         {opponent && (
           <>
@@ -136,17 +140,17 @@ export default function GamePage() {
             <div className={clsx(styles.character, styles.right)}>
               <Character {...opponent.appearance} />
 
-              {isShowNextTurnButton && (
+              {showAnimation && (
                 <SphereAnimation className={styles.fireSphere} type={lastTurnHistory?.opponent.action} />
               )}
             </div>
           </>
         )}
 
-        {lastTurnHistory && isShowNextTurnButton && <FireballCanvas lastTurnHistory={lastTurnHistory} />}
+        {lastTurnHistory && showAnimation && <FireballCanvas lastTurnHistory={lastTurnHistory} />}
 
         {showWaitingForOpponent ||
-          (!!opponent && !isTournamentOver && !isShowNextTurnButton && (
+          (!!opponent && !isTournamentOver && (
             <div className={styles.buttons}>
               <GameButton
                 onClick={onAttackClick}
@@ -205,18 +209,6 @@ export default function GamePage() {
             />
           </div>
         )}
-        {isShowNextTurnButton && !!opponent && !isTournamentOver && !!timeLeft && (
-          <TimerButton
-            text={`Next turn`}
-            className={styles.nextButton}
-            onClick={() => {
-              setIsShowNextTurnButton(false);
-              setIsShowTurnEndCard(false);
-            }}
-            disabled={pending}
-            remainingTime={timeLeft}
-          />
-        )}
 
         <GameOverCard
           className={styles.gameOver}
@@ -232,7 +224,7 @@ export default function GamePage() {
             text="Cancel tournament"
             size="small"
             className={clsx(styles.cancelTournament, styles.redButton)}
-            onClick={() => setIsOpenCancelTournamentModal(true)}
+            onClick={() => (isTournamentOver ? onCancelTournament() : setIsOpenCancelTournamentModal(true))}
             disabled={pending}
           />
         ) : (

@@ -26,7 +26,7 @@ export const BattleTabs = ({ battleState, participantsMap, me, opponent, isAlive
   const battleHistory = useAtomValue(battleHistoryAtom);
 
   const showOtherBattles = !isAlive;
-  const showPlayersList = !isAlive && selectedTab === 'players';
+  const showPlayersList = selectedTab === 'players';
 
   const alivePlayersListItems = participants.map(([_, { user_name }]) => ({
     name: user_name,
@@ -117,10 +117,10 @@ export const BattleTabs = ({ battleState, participantsMap, me, opponent, isAlive
                   battleHistory?.map((history, index) => {
                     return (
                       <div key={index} className={styles.historyItem}>
-                        <BattleHistoryCard {...history.player} {...me.player_settings} name={me.user_name} />
+                        <BattleHistoryCard {...me.player_settings} {...history.player} name={me.user_name} />
                         <BattleHistoryCard
+                          {...opponent.player_settings}
                           {...history.opponent}
-                          {...me.player_settings}
                           name={opponent.user_name}
                           align="right"
                         />

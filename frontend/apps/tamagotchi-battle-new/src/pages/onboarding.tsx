@@ -13,7 +13,7 @@ import {
   UserSmileIcon,
 } from '@/features/game/assets/images';
 import { GameButton, Timer } from '@/features/game/components';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Modal, Segmented, Text } from '@/components';
 import { mockCharacterView, mockCharacterView2, mockPlayer1, mockPlayer2 } from '@/features/game/consts';
 import { characterStorage } from '@/features/game/store';
@@ -86,6 +86,10 @@ export default function OnboardingPage() {
   const characterView = character?.appearance || mockCharacterView;
   const { attack, defence, dodge } = character || {};
   const characterStats = character ? { attack, defence, dodge } : null;
+
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, []);
 
   const onClose = () => {
     navigate(-1);

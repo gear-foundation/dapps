@@ -38,7 +38,7 @@
 .exit {
   position: absolute;
   top: 692px;
-  right: 263px;
+  left: calc(50% + 364px);
   height: 40px;
   width: 93px;
 }
@@ -46,7 +46,7 @@
 .cancelTournament {
   position: absolute;
   top: 688px;
-  right: 137.5px;
+  left: calc(50% + 433px);
   height: 44px;
   width: 168px;
   font-size: 14px;

@@ -46,7 +46,7 @@ export function Routing() {
         navigate(ROUTES.GAME);
       }
     }
-  });
+  }, [battleState, isFetching, navigate, location.pathname]);
 
   return account ? (
     <ErrorTrackingRoutes>
