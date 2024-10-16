@@ -16,3 +16,4 @@ export { GameSpinner } from './game-spinner';
 export { BattleTabs } from './sections/battle-tabs';
 export { Timer } from './timer';
 export * from './battle-history-card';
+export { BattleHistorySinc } from './battle-history-sync';

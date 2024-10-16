@@ -118,7 +118,7 @@ service Battle {
     AdminAdded: struct { new_admin: actor_id };
     ConfigChanged: struct { config: Config };
     GameLeft;
-    RoundAction: struct { struct { actor_id, Move, u16 }, struct { actor_id, Move, u16 } };
+    RoundAction: struct { round: u8, player_1: struct { actor_id, Move, u16 }, player_2: struct { actor_id, Move, u16 } };
     AutomaticMoveMade;
   }
 };

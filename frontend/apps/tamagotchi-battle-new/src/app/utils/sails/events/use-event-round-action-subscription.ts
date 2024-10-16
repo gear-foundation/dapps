@@ -1,29 +1,36 @@
 import { useAccount, useProgramEvent } from '@gear-js/react-hooks';
 import { Move, Pair, useProgram } from '@/app/utils';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
-export function useEventRoundActionSubscription(pair?: Pair) {
+type RoundData = {
+  round: number;
+  player_1: [string, Move, number];
+  player_2: [string, Move, number];
+};
+
+export function useEventRoundActionSubscription(pair: Pair) {
   const program = useProgram();
   const { account } = useAccount();
   const [lastMoves, setLastMoves] = useState<{ moves: [Move, Move]; newHealth: [number, number] } | null>(null);
 
   const resetLastMoves = () => setLastMoves(null);
 
-  const onData = ([player1, player2]: [[string, Move, number], [string, Move, number]]) => {
-    const players = [pair?.player_1, pair?.player_2];
+  const roundRef = useRef<number | null>(null);
 
-    if (players.includes(player1[0]) && players.includes(player2[0]) && account) {
-      const myData = account.decodedAddress === player1[0] ? player1 : player2;
-      console.log('🚀 ~ onData ~ myData:', myData);
-      const opponentsData = account.decodedAddress === player1[0] ? player2 : player1;
-      console.log('🚀 ~ onData ~ opponentsData:', opponentsData);
+  const onData = ({ round, player_1, player_2 }: RoundData) => {
+    const players = [pair.player_1, pair.player_2];
+
+    if (players.includes(player_1[0]) && players.includes(player_2[0]) && account && roundRef.current !== round) {
+      roundRef.current = round;
+      const myData = account.decodedAddress === player_1[0] ? player_1 : player_2;
+      const opponentsData = account.decodedAddress === player_1[0] ? player_2 : player_1;
 
       setLastMoves({ moves: [myData[1], opponentsData[1]], newHealth: [myData[2], opponentsData[2]] });
     }
   };
 
   useProgramEvent({
-    program: pair ? program : undefined,
+    program,
     serviceName: 'battle',
     functionName: 'subscribeToRoundActionEvent',
     onData,

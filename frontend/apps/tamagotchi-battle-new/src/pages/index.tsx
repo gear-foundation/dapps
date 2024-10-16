@@ -45,6 +45,9 @@ export function Routing() {
       if ('started' in state && location.pathname !== ROUTES.GAME && location.pathname !== ROUTES.ONBOARDING) {
         navigate(ROUTES.GAME);
       }
+      if ('gameIsOver' in state && location.pathname !== ROUTES.GAME && location.pathname !== ROUTES.ONBOARDING) {
+        navigate(ROUTES.GAME);
+      }
     }
   }, [battleState, isFetching, navigate, location.pathname]);
 

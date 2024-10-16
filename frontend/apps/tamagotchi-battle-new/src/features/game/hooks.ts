@@ -24,8 +24,8 @@ export function useRestGameState() {
   }, []);
 }
 
-type UsePrepareBattleHistoryParams = {
-  pair?: Pair;
+export type UsePrepareBattleHistoryParams = {
+  pair: Pair;
   me: Player;
   opponent: Player | null;
   turnEndCallback: () => void;
@@ -34,6 +34,9 @@ type UsePrepareBattleHistoryParams = {
 export function usePrepareBattleHistory({ pair, me, opponent, turnEndCallback }: UsePrepareBattleHistoryParams) {
   const setBattleHistory = useSetAtom(battleHistoryAtom);
   const { lastMoves, resetLastMoves } = useEventRoundActionSubscription(pair);
+
+  const myFullDefence = me?.player_settings.defence === 100;
+  const opponentFullDefence = opponent?.player_settings.defence === 100;
 
   useEffect(() => {
     if (lastMoves && opponent) {
@@ -44,8 +47,8 @@ export function usePrepareBattleHistory({ pair, me, opponent, turnEndCallback }:
         const myReceivedDamage = (prev?.[0].player.health ?? MAX_HEALTH) - myHealth;
         const opponentsReceivedDamage = (prev?.[0].opponent.health ?? MAX_HEALTH) - opponentsHealth;
         const isBothUseReflect = myMove === 'Reflect' && opponentsMove === 'Reflect';
-        const meReflectAll = myMove === 'Reflect' && me?.player_settings.defence === 100;
-        const opponentReflectAll = opponentsMove === 'Reflect' && opponent?.player_settings.defence === 100;
+        const meReflectAll = myMove === 'Reflect' && myFullDefence;
+        const opponentReflectAll = opponentsMove === 'Reflect' && opponentFullDefence;
 
         const newHistory: BattleHistory = {
           player: {
@@ -71,7 +74,7 @@ export function usePrepareBattleHistory({ pair, me, opponent, turnEndCallback }:
       resetLastMoves();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [lastMoves, me?.player_settings.defence, opponent?.player_settings.defence]);
+  }, [lastMoves, myFullDefence, opponentFullDefence]);
 }
 
 export type UseTimerParams = {

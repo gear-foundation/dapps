@@ -7,6 +7,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import {
   Background,
   BattleTabs,
+  BattleHistorySinc,
   Character,
   CharacterStats,
   BattleHistoryCard,
@@ -32,7 +33,7 @@ import {
 } from '@/app/utils';
 import { ROUTES } from '@/app/consts';
 import { battleHistoryAtom, battleHistoryStorage } from '@/features/game/store';
-import { useParticipants, usePending, usePrepareBattleHistory } from '@/features/game/hooks';
+import { useParticipants, usePending } from '@/features/game/hooks';
 import styles from './game.module.scss';
 
 export default function GamePage() {
@@ -75,7 +76,6 @@ export default function GamePage() {
     }, 3000);
   };
 
-  usePrepareBattleHistory({ me, opponent, pair, turnEndCallback });
   const setBattleHistory = useSetAtom(battleHistoryAtom);
 
   if (!battleState || !config || !state || !account) {
@@ -196,6 +196,10 @@ export default function GamePage() {
         )}
 
         {showWaitingForOpponent && <GameSpinner text="Please wait for your opponent" />}
+
+        {opponent && pair && (
+          <BattleHistorySinc me={me} opponent={opponent} turnEndCallback={turnEndCallback} pair={pair} />
+        )}
 
         {isShowTurnEndCard && lastTurnHistory && opponent && !isTournamentOver && (
           <div className={clsx(styles.historyItem, styles.endTurnHistory)}>
