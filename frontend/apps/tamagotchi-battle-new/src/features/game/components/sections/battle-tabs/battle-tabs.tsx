@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { useAtomValue } from 'jotai';
+import { useAtom, useSetAtom } from 'jotai';
 
 import { BattleHistoryCard, BattleCard, PlayersList, List } from '@/features/game/components';
 import { Segmented } from '@/components';
 import { BattleState, Player } from '@/app/utils';
 import { UserSkullIcon, UserSmileIcon } from '@/features/game/assets/images';
 import { PlayerStatus } from '@/features/game/types';
-import { battleHistoryAtom } from '@/features/game/store';
+import { battleHistoryAtom, otherPairBattleWatchAtom } from '@/features/game/store';
 import styles from './battle-tabs.module.scss';
 
 type Tabs = 'players' | 'history';
@@ -14,16 +14,17 @@ type Tabs = 'players' | 'history';
 type BattleTabsProps = {
   battleState: BattleState;
   participantsMap: Record<string, Player>;
-  me: Player;
+  player: Player | null;
   opponent: Player | null;
   isAlive: boolean;
 };
 
-export const BattleTabs = ({ battleState, participantsMap, me, opponent, isAlive }: BattleTabsProps) => {
+export const BattleTabs = ({ battleState, participantsMap, player, opponent, isAlive }: BattleTabsProps) => {
   const { participants, defeated_participants, battle_name } = battleState;
   const [selectedTab, setSelectedTab] = useState<Tabs>('players');
 
-  const battleHistory = useAtomValue(battleHistoryAtom);
+  const [battleHistory, setBattleHistory] = useAtom(battleHistoryAtom);
+  const setOtherPairBattleWatch = useSetAtom(otherPairBattleWatchAtom);
 
   const showOtherBattles = !isAlive;
   const showPlayersList = selectedTab === 'players';
@@ -88,7 +89,28 @@ export const BattleTabs = ({ battleState, participantsMap, me, opponent, isAlive
                 const player2 = participantsMap[player_2];
 
                 return (
-                  <div key={key} className={styles.historyItem}>
+                  <div
+                    key={key}
+                    className={styles.historyItem}
+                    onClick={() => {
+                      setOtherPairBattleWatch(key);
+                      setBattleHistory([
+                        {
+                          player: {
+                            action: 'Attack',
+                            health: player1.player_settings.health,
+                            isDodged: false,
+                            receivedDamage: 0,
+                          },
+                          opponent: {
+                            action: 'Attack',
+                            health: player1.player_settings.health,
+                            isDodged: false,
+                            receivedDamage: 0,
+                          },
+                        },
+                      ]);
+                    }}>
                     <BattleCard
                       {...player1.player_settings}
                       name={player1.user_name}
@@ -114,10 +136,11 @@ export const BattleTabs = ({ battleState, participantsMap, me, opponent, isAlive
               maxLength={6}
               items={
                 (opponent &&
+                  player &&
                   battleHistory?.map((history, index) => {
                     return (
                       <div key={index} className={styles.historyItem}>
-                        <BattleHistoryCard {...me.player_settings} {...history.player} name={me.user_name} />
+                        <BattleHistoryCard {...player.player_settings} {...history.player} name={player.user_name} />
                         <BattleHistoryCard
                           {...opponent.player_settings}
                           {...history.opponent}

@@ -117,9 +117,11 @@ export const CharacterStatsForm = ({ onValuesChange }: CharacterStatsFormProps) 
             disabled={values[name] >= maxCount || availablePoints === 0}
           />
 
-          <Text size="xs" weight="medium" className={styles.max}>
-            {maxCount} max
-          </Text>
+          <Button color="transparent" className={styles.max}>
+            <Text size="xs" weight="medium">
+              {maxCount} max
+            </Text>
+          </Button>
         </div>
         <Text size="xs" className={styles.description}>
           {description}

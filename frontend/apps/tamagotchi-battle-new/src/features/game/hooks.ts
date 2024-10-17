@@ -3,7 +3,7 @@ import { atom, useAtom, useSetAtom } from 'jotai';
 import { BattleHistory } from './types';
 import { useEventRoundActionSubscription } from '@/app/utils/sails/events';
 import { BattleState, Pair, Player } from '@/app/utils';
-import { battleHistoryAtom, battleHistoryStorage } from './store';
+import { battleHistoryAtom, battleHistoryStorage, otherPairBattleWatchAtom } from './store';
 import { MAX_HEALTH, TIME_LEFT_GAP } from './consts';
 import { useAccount } from '@gear-js/react-hooks';
 
@@ -26,16 +26,16 @@ export function useRestGameState() {
 
 export type UsePrepareBattleHistoryParams = {
   pair: Pair;
-  me: Player;
+  player: Player;
   opponent: Player | null;
   turnEndCallback: () => void;
 };
 
-export function usePrepareBattleHistory({ pair, me, opponent, turnEndCallback }: UsePrepareBattleHistoryParams) {
+export function usePrepareBattleHistory({ pair, player, opponent, turnEndCallback }: UsePrepareBattleHistoryParams) {
   const setBattleHistory = useSetAtom(battleHistoryAtom);
   const { lastMoves, resetLastMoves } = useEventRoundActionSubscription(pair);
 
-  const myFullDefence = me?.player_settings.defence === 100;
+  const myFullDefence = player?.player_settings.defence === 100;
   const opponentFullDefence = opponent?.player_settings.defence === 100;
 
   useEffect(() => {
@@ -123,9 +123,11 @@ export function useTimer({ remainingTime, shouldGoOn = true }: UseTimerParams) {
 
 export function useParticipants(battleState?: BattleState | null) {
   const { account } = useAccount();
+  const [otherPairBattleWatch] = useAtom(otherPairBattleWatchAtom);
 
   const { pairs, players_to_pairs } = battleState || {};
-  const pairId = players_to_pairs?.find(([address]) => account?.decodedAddress === address)?.[1];
+  const pairId =
+    otherPairBattleWatch ?? players_to_pairs?.find(([address]) => account?.decodedAddress === address)?.[1];
   const pair = pairs?.find(([number]) => pairId === number)?.[1];
 
   const { participants, defeated_participants } = battleState || {};
@@ -143,10 +145,11 @@ export function useParticipants(battleState?: BattleState | null) {
     {} as Record<string, Player>,
   );
 
-  const opponentsAddress = account?.decodedAddress === player_1 ? player_2 : player_1;
+  const playerAddress = otherPairBattleWatch !== null ? player_1 : account?.decodedAddress;
+  const opponentsAddress = playerAddress === player_1 ? player_2 : player_1;
 
-  const me = participantsMap[account?.decodedAddress || ''];
+  const player = playerAddress ? participantsMap[playerAddress] : null;
   const opponent = opponentsAddress ? participantsMap[opponentsAddress] : null;
 
-  return { participantsMap, allParticipants, me, opponent, isAlive, pair };
+  return { participantsMap, allParticipants, player, opponent, isAlive, pair };
 }

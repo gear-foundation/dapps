@@ -11,10 +11,19 @@ type GameOverCardProps = {
   state: State;
   participantsMap: Record<string, Player>;
   isAlive: boolean;
+  isShowOtherBattle: boolean;
   className?: string;
 };
 
-const GameOverCard = ({ bid, className, state, totalParticipants, participantsMap, isAlive }: GameOverCardProps) => {
+const GameOverCard = ({
+  bid,
+  className,
+  state,
+  totalParticipants,
+  participantsMap,
+  isAlive,
+  isShowOtherBattle,
+}: GameOverCardProps) => {
   const { account } = useAccount();
   const { getFormattedBalanceValue } = useBalanceFormat();
   const isTournamentOver = 'gameIsOver' in state;
@@ -25,7 +34,7 @@ const GameOverCard = ({ bid, className, state, totalParticipants, participantsMa
   const getMyResultStatus = () => {
     if (!account) return null;
     if (isDraw && state.gameIsOver.winners.includes(account.decodedAddress)) return 'It’s a draw';
-    if (!isAlive) return 'You lose';
+    if (!isAlive && (!isShowOtherBattle || isTournamentOver)) return 'You lose';
     if (isTournamentOver && state.gameIsOver.winners[0] === account.decodedAddress) return 'You win';
     return null;
   };

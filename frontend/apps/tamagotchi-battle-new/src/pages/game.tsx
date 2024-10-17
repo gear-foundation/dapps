@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@gear-js/vara-ui';
 import { useAccount } from '@gear-js/react-hooks';
@@ -32,7 +32,7 @@ import {
   useStartNextFightMessage,
 } from '@/app/utils';
 import { ROUTES } from '@/app/consts';
-import { battleHistoryAtom, battleHistoryStorage } from '@/features/game/store';
+import { battleHistoryAtom, battleHistoryStorage, otherPairBattleWatchAtom } from '@/features/game/store';
 import { useParticipants, usePending } from '@/features/game/hooks';
 import styles from './game.module.scss';
 
@@ -57,7 +57,10 @@ export default function GamePage() {
 
   const [isShowTurnEndCard, setIsShowTurnEndCard] = useState(false);
 
-  const { allParticipants, isAlive, me, opponent, participantsMap, pair } = useParticipants(battleState);
+  const [otherPairBattleWatch] = useAtom(otherPairBattleWatchAtom);
+  const isShowOtherBattle = Boolean(battleState?.pairs.some(([pairId]) => pairId === otherPairBattleWatch));
+
+  const { allParticipants, isAlive, player, opponent, participantsMap, pair } = useParticipants(battleState);
 
   const { admin, state, waiting_player, bid } = battleState || {};
 
@@ -117,17 +120,26 @@ export default function GamePage() {
   return (
     <>
       <Background>
-        <CharacterStats align="left" characterView={me.appearance} name={me.user_name} {...me.player_settings} />
-        <div className={clsx(styles.character, styles.left)}>
-          <Character {...me.appearance} />
+        {player && (
+          <>
+            <CharacterStats
+              align="left"
+              characterView={player.appearance}
+              name={player.user_name}
+              {...player.player_settings}
+            />
+            <div className={clsx(styles.character, styles.left)}>
+              <Character {...player.appearance} />
 
-          <SphereAnimation
-            className={styles.fireSphere}
-            type={tappedButton || (showAnimation ? lastTurnHistory?.player.action : undefined)}
-          />
-        </div>
+              <SphereAnimation
+                className={styles.fireSphere}
+                type={tappedButton || (showAnimation ? lastTurnHistory?.player.action : undefined)}
+              />
+            </div>
+          </>
+        )}
 
-        {opponent && !showAnimation && <Timer remainingTime={timeLeft} isYourTurn={tappedButton === null} />}
+        {player && opponent && !showAnimation && <Timer remainingTime={timeLeft} isYourTurn={tappedButton === null} />}
 
         {opponent && (
           <>
@@ -150,7 +162,7 @@ export default function GamePage() {
         {lastTurnHistory && showAnimation && <FireballCanvas lastTurnHistory={lastTurnHistory} />}
 
         {showWaitingForOpponent ||
-          (!!opponent && !isTournamentOver && (
+          (!!opponent && !!player && !isTournamentOver && !isShowOtherBattle && (
             <div className={styles.buttons}>
               <GameButton
                 onClick={onAttackClick}
@@ -166,7 +178,7 @@ export default function GamePage() {
                 text="Reflect"
                 icon={<DefenceButtonIcon />}
                 pending={tappedButton === 'Reflect' || pending}
-                turnsBlocked={me.reflect_reload}
+                turnsBlocked={player.reflect_reload}
                 disabled={showWaitingForOpponent}
               />
               <GameButton
@@ -175,13 +187,13 @@ export default function GamePage() {
                 text="Ultimate"
                 icon={<UltimateButtonIcon />}
                 pending={tappedButton === 'Ultimate' || pending}
-                turnsBlocked={me.ultimate_reload}
+                turnsBlocked={player.ultimate_reload}
                 disabled={showWaitingForOpponent}
               />
             </div>
           ))}
 
-        {showStartNextBattle && !isTournamentOver && (
+        {showStartNextBattle && !isTournamentOver && !isShowOtherBattle && (
           <Button
             color="primary"
             className={styles.nextButton}
@@ -197,13 +209,13 @@ export default function GamePage() {
 
         {showWaitingForOpponent && <GameSpinner text="Please wait for your opponent" />}
 
-        {opponent && pair && (
-          <BattleHistorySinc me={me} opponent={opponent} turnEndCallback={turnEndCallback} pair={pair} />
+        {player && opponent && pair && (
+          <BattleHistorySinc player={player} opponent={opponent} turnEndCallback={turnEndCallback} pair={pair} />
         )}
 
-        {isShowTurnEndCard && lastTurnHistory && opponent && !isTournamentOver && (
+        {isShowTurnEndCard && lastTurnHistory && player && opponent && !isTournamentOver && (
           <div className={clsx(styles.historyItem, styles.endTurnHistory)}>
-            <BattleHistoryCard {...me.player_settings} {...lastTurnHistory.player} name={me.user_name} />
+            <BattleHistoryCard {...player.player_settings} {...lastTurnHistory.player} name={player.user_name} />
             <BattleHistoryCard
               {...opponent.player_settings}
               {...lastTurnHistory.opponent}
@@ -221,6 +233,7 @@ export default function GamePage() {
           state={state}
           participantsMap={participantsMap}
           isAlive={isAlive}
+          isShowOtherBattle={isShowOtherBattle}
         />
 
         {isAdmin ? (
@@ -245,7 +258,7 @@ export default function GamePage() {
         <BattleTabs
           battleState={battleState}
           participantsMap={participantsMap}
-          me={me}
+          player={player}
           opponent={opponent}
           isAlive={isAlive}
         />

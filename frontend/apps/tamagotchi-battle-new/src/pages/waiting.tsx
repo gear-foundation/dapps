@@ -45,13 +45,13 @@ export default function WaitingPage() {
   }
 
   const { participants, battle_name, admin } = battleState;
-  const me = participants.find(([address]) => address === account.decodedAddress)?.[1];
+  const player = participants.find(([address]) => address === account.decodedAddress)?.[1];
 
-  if (!me) {
+  if (!player) {
     return <div>Character not found</div>;
   }
 
-  const { appearance, player_settings, user_name } = me;
+  const { appearance, player_settings, user_name } = player;
 
   const items = participants?.map(([address, { user_name }]) => ({ name: user_name, address }));
   const isAdmin = account.decodedAddress === admin;

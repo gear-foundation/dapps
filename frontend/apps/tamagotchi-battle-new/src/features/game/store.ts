@@ -17,3 +17,5 @@ export const battleHistoryStorage = getStorage<BattleHistory[]>(BATTLE_HISTORY_L
 
 export const characterAtom = atom<Character | null>(characterStorage.get());
 export const battleHistoryAtom = atom<BattleHistory[] | null>(battleHistoryStorage.get());
+
+export const otherPairBattleWatchAtom = atom<number | null>(null);
