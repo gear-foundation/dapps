@@ -12,57 +12,55 @@
 }
 
 .contextMenuWrapper {
-    position: relative;
+  position: relative;
 }
 
 .dropdownContainer {
-    position: absolute;
-    top: -10px;
-    right: -10px;
-    width: max-content;
-    padding: 24px 24px 24px 12px;
-    color: #000;
-    background: #fff;
-    border-radius: 4px;
-    box-shadow: 0px 10px 20px 0px #5B5B5B26;
-    display: block;
-    z-index: 1;
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: max-content;
+  padding: 24px 24px 24px 12px;
+  color: #000;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0px 10px 20px 0px #5b5b5b26;
+  display: block;
+  z-index: 1;
 
-    @media screen and (max-width: 767px) {
-        display: none;
-      }
+  @media screen and (max-width: 767px) {
+    display: none;
+  }
 }
 
 .dropdownHeader {
-    display: flex;
-    justify-content: flex-end;
+  display: flex;
+  justify-content: flex-end;
 
-    & .closeIcon {
-        position: relative;
-        top: -14px;
-        left: 14px;
-    }
+  & .closeIcon {
+    position: relative;
+    top: -14px;
+    left: 14px;
+  }
 }
 
-.balanceWrapper {
+.accountButton {
+  @media screen and (max-width: 767px) {
     display: none;
-    
-    @media screen and (max-width: 767px) {
-        display: block;
-      }
+  }
 }
 
 .mobileWrapper {
-    position: absolute;
-    left: 0;
-    top: 100%;
-    width: 100%;
-    padding: 16px;
-    display: none;
-    z-index: 1;
-    background: #fff;
+  position: absolute;
+  left: 0;
+  top: 100%;
+  width: 100%;
+  padding: 16px;
+  display: none;
+  z-index: 1;
+  background: #fff;
 
-    @media screen and (max-width: 767px) {
-      display: block;
-    }
+  @media screen and (max-width: 767px) {
+    display: block;
+  }
 }

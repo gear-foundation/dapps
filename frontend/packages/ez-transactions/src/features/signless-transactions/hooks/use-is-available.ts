@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 
 function useIsAvailable(requiredBalance: number, isSessionActive: boolean) {
   const { account } = useAccount();
-  const balances = useDeriveBalancesAll(account?.address);
+  const { data: balances } = useDeriveBalancesAll({ address: account?.address, watch: true });
   const { getChainBalanceValue } = useBalanceFormat();
 
   const [isAvailable, setIsAvailable] = useState(false);

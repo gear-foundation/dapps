@@ -25,16 +25,7 @@ function Header() {
           <GalexSVG />
         </Link>
       }
-      menu={
-        <MenuHandler
-          className={{
-            wallet: {
-              balance: styles.walletBalance,
-            },
-            icon: styles.menuIcon,
-          }}
-        />
-      }
+      menu={<MenuHandler className={{ icon: styles.menuIcon }} />}
       className={{ header: styles.header, content: styles.container }}>
       {isUserAdmin && isRegistration && <CancelGameButton isAdmin={isUserAdmin} participants={participants || []} />}
     </CommonHeader>

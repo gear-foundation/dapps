@@ -1,9 +1,8 @@
-import { useState } from 'react';
 import { cx } from 'utils';
 import { Modal } from 'components/layout/modal';
 import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
 import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
-import { useAccountDeriveBalancesAll, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { useApi } from '@gear-js/react-hooks';
 import { TextField } from 'components/layout/TextField';
 import { Button } from '@gear-js/vara-ui';
 import { isNotEmpty, useForm } from '@mantine/form';
@@ -23,14 +22,9 @@ export type JoinModalFormValues = {
 };
 
 function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Props) {
-  const { isApiReady } = useApi();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
-  const { getFormattedBalance } = useBalanceFormat();
-  const balances = useAccountDeriveBalancesAll();
-  const balance =
-    isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
+  const { api } = useApi();
+  const VaraSvg = api?.registry.chainTokens[0].toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />;
 
-  const VaraSvg = balance?.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />;
   const items = [
     {
       name: 'Entry fee',
@@ -101,8 +95,8 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
             <span className={cx(styles['field-error'])}>{joinErrors.name}</span>
           </div>
           <div className={styles.inputs}>
-            <Button text="Cancel" color="dark" disabled={isLoading} className={styles.button} onClick={onClose} />
-            <Button type="submit" text="Join" disabled={isLoading} className={styles.button} />
+            <Button text="Cancel" color="dark" className={styles.button} onClick={onClose} />
+            <Button type="submit" text="Join" className={styles.button} />
           </div>
         </form>
       </div>

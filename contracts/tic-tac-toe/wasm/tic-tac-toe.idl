@@ -26,6 +26,7 @@ type SessionData = struct {
   expires_at_block: u32,
 };
 
+/// Represent concrete game instance.
 type GameInstance = struct {
   board: vec opt Mark,
   player_mark: Mark,
@@ -35,11 +36,13 @@ type GameInstance = struct {
   game_result: opt GameResult,
 };
 
+/// Indicates tic-tac-toe board mark-state.
 type Mark = enum {
   X,
   O,
 };
 
+/// Represent game instance status.
 type GameResult = enum {
   Player,
   Bot,
