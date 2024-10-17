@@ -1,5 +1,5 @@
 #![no_std]
-
+#![allow(clippy::new_without_default)]
 use sails_rs::gstd::msg;
 use sails_rs::prelude::*;
 
