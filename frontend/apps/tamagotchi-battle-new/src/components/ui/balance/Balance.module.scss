@@ -1,0 +1,40 @@
+@use '@/utils' as *;
+
+.wrapper {
+  display: flex;
+  align-items: center;
+  @include gap(10px, right);
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.balance {
+  display: block;
+  line-height: 1;
+}
+
+.amount {
+  font-weight: 700;
+  font-size: 18px;
+  line-height: 20px;
+  letter-spacing: -0.02em;
+}
+
+.small {
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: rgba(#000, 0.6);
+}
+
+.decimal {
+  margin-left: 1px;
+}
+
+.unit {
+  margin-left: 4px;
+  text-transform: uppercase;
+}

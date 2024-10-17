@@ -1,0 +1,34 @@
+@use '@/assets/styles/utils' as *;
+
+.card {
+  margin-top: 100px;
+  width: 668px;
+  max-width: 100%;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.buttons {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  & > * {
+    flex: 1;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 48px;
+  width: 100%;
+}
+
+.gameNotFoundModal {
+  max-width: 508px;
+}

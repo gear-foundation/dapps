@@ -1,0 +1,34 @@
+.character {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  height: 295px;
+  gap: 16px;
+  & > div {
+    flex: 1;
+  }
+}
+
+.card {
+  margin-top: 32px;
+  width: 686px;
+  padding-bottom: 8px;
+}
+
+.container {
+  margin-top: 48px;
+  width: 1000px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.buttons {
+  display: flex;
+  gap: 16px;
+  & > div {
+    flex: 1;
+  }
+}
