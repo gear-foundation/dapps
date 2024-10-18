@@ -22,6 +22,7 @@ members = [
     "rmrk/catalog",
     "rmrk/resource",
     "rmrk/state",
+    "syndote-sails/wasm",
     "syndote",
     "syndote/player",
     "tamagotchi",

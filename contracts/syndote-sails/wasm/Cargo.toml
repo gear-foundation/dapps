@@ -1,0 +1,13 @@
+[package]
+name = "syndote-wasm"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+syndote-app = { path = "../app" }
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+sails-idl-gen.workspace = true
+syndote-app = { path = "../app" }

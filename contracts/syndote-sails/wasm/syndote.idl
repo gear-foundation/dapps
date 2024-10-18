@@ -1,0 +1,8 @@
+constructor {
+  New : ();
+};
+
+service Syndote {
+  query StartGame : () -> null;
+};
+

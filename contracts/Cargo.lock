@@ -7249,6 +7249,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "syndote-app"
+version = "1.1.0"
+dependencies = [
+ "gclient",
+ "gear-core",
+ "gstd",
+ "gtest",
+ "sails-rs",
+ "tokio",
+]
+
+[[package]]
 name = "syndote-io"
 version = "1.1.0"
 dependencies = [
@@ -7273,6 +7285,15 @@ dependencies = [
  "gmeta",
  "gstd",
  "syndote-io",
+]
+
+[[package]]
+name = "syndote-wasm"
+version = "1.1.0"
+dependencies = [
+ "gear-wasm-builder",
+ "sails-idl-gen",
+ "syndote-app",
 ]
 
 [[package]]
