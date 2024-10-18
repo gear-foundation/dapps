@@ -1,10 +1,25 @@
-use gstd::{exec, msg};
-use sails_rs::{collections::HashMap, gstd::service, prelude::*};
+use gstd::{exec, msg, ReservationId};
+use sails_rs::{collections::{HashMap, HashSet}, gstd::service, prelude::*};
 mod funcs;
 pub mod utils;
 use utils::*;
+use crate::services;
 
-#[derive(Default)]
+const RESERVATION_AMOUNT: u64 = 245_000_000_000;
+const GAS_FOR_ROUND: u64 = 60_000_000_000;
+
+pub const NUMBER_OF_CELLS: u8 = 40;
+pub const NUMBER_OF_PLAYERS: u8 = 4;
+pub const JAIL_POSITION: u8 = 10;
+pub const LOTTERY_POSITION: u8 = 20;
+pub const COST_FOR_UPGRADE: u32 = 500;
+pub const FINE: u32 = 1_000;
+pub const PENALTY: u8 = 5;
+pub const INITIAL_BALANCE: u32 = 15_000;
+pub const NEW_CIRCLE: u32 = 2_000;
+pub const WAIT_DURATION: u32 = 5;
+
+#[derive(Default, Clone)]
 pub struct Storage {
     admin: ActorId,
     properties_in_bank: HashSet<u8>,
@@ -19,6 +34,7 @@ pub struct Storage {
     ownership: Vec<ActorId>,
     game_status: GameStatus,
     winner: ActorId,
+    reservations: Vec<ReservationId>,
     dns_info: Option<(ActorId, String)>,
 }
 
@@ -36,6 +52,7 @@ static mut STORAGE: Option<Storage> = None;
 pub enum Event {
     Registered,
     StartRegistration,
+    Played,
     GameFinished {
         winner: ActorId,
     },
@@ -64,7 +81,7 @@ pub enum Event {
 pub struct GameService(());
 
 impl GameService {
-    pub async fn init(config: Config, dns_id_and_name: Option<(ActorId, String)>) -> Self {
+    pub async fn init(dns_id_and_name: Option<(ActorId, String)>) -> Self {
         unsafe {
             STORAGE = Some(Storage {
                 admin: msg::source(),
@@ -100,118 +117,49 @@ impl GameService {
     pub fn new() -> Self {
         Self(())
     }
-    pub fn start_game(&mut self, session_for_account: Option<ActorId>) {
-        let storage = self.get_mut();
-        let sessions = SessionStorage::get_session_map();
-        let event = services::utils::panicking(|| {
-            funcs::start_game(storage, sessions, msg::source(), session_for_account)
-        });
-        self.notify_on(event.clone()).expect("Notification Error");
-    }
-    pub fn turn(&mut self, step: u8, session_for_account: Option<ActorId>) {
-        let storage = self.get_mut();
-        let sessions = SessionStorage::get_session_map();
-        let event = services::utils::panicking(|| {
-            funcs::turn(storage, sessions, msg::source(), step, session_for_account)
-        });
-        self.notify_on(event.clone()).expect("Notification Error");
-    }
-    pub fn skip(&mut self, session_for_account: Option<ActorId>) {
-        let storage = self.get_mut();
-        let sessions = SessionStorage::get_session_map();
-        let event = services::utils::panicking(|| {
-            funcs::skip(storage, sessions, msg::source(), session_for_account)
-        });
-        self.notify_on(event.clone()).expect("Notification Error");
-    }
-    pub fn remove_game_instance(&mut self, account: ActorId) {
+    pub fn register(&mut self, player:ActorId) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| {
-            funcs::remove_game_instance(storage, msg::source(), account)
+            funcs::register(storage, &player)
         });
         self.notify_on(event.clone()).expect("Notification Error");
-    }
-    pub fn remove_game_instances(&mut self, accounts: Option<Vec<ActorId>>) {
-        let storage = self.get_mut();
-        let event = services::utils::panicking(|| {
-            funcs::remove_game_instances(storage, msg::source(), accounts)
-        });
-        self.notify_on(event.clone()).expect("Notification Error");
-    }
-    pub fn add_admin(&mut self, admin: ActorId) {
-        let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::add_admin(storage, msg::source(), admin));
-        self.notify_on(event.clone()).expect("Notification Error");
-    }
-    pub fn remove_admin(&mut self, admin: ActorId) {
-        let storage = self.get_mut();
-        let event =
-            services::utils::panicking(|| funcs::remove_admin(storage, msg::source(), admin));
-        self.notify_on(event.clone()).expect("Notification Error");
-    }
-    pub fn update_config(
-        &mut self,
-        s_per_block: Option<u64>,
-        gas_to_remove_game: Option<u64>,
-        time_interval: Option<u32>,
-        turn_deadline_ms: Option<u64>,
-        gas_to_delete_session: Option<u64>,
-    ) {
-        let storage = self.get_mut();
-        let event = services::utils::panicking(|| {
-            funcs::update_config(
-                storage,
-                msg::source(),
-                s_per_block,
-                gas_to_remove_game,
-                time_interval,
-                turn_deadline_ms,
-                gas_to_delete_session,
-            )
-        });
-        self.notify_on(event.clone()).expect("Notification Error");
-    }
-    pub fn allow_messages(&mut self, messages_allowed: bool) {
-        let storage = self.get_mut();
-        let event = services::utils::panicking(|| {
-            funcs::allow_messages(storage, msg::source(), messages_allowed)
-        });
-        self.notify_on(event.clone()).expect("Notification Error");
-    }
-    pub async fn kill(&mut self, inheritor: ActorId) {
-        let storage = self.get();
-        if !storage.admins.contains(&msg::source()) {
-            services::utils::panic(GameError::NotAdmin);
-        }
-        if let Some((id, _name)) = &storage.dns_info {
-            let request = ["Dns".encode(), "DeleteMe".to_string().encode(), ().encode()].concat();
-
-            msg::send_bytes_with_gas_for_reply(*id, request, 5_000_000_000, 0, 0)
-                .expect("Error in sending message")
-                .await
-                .expect("Error in `AddNewProgram`");
-        }
-
-        self.notify_on(Event::Killed { inheritor })
-            .expect("Notification Error");
-        exec::exit(inheritor);
     }
 
-    pub fn admins(&self) -> &'static Vec<ActorId> {
-        &self.get().admins
+    pub fn reserve_gas(&mut self) {
+        let storage = self.get_mut();
+        let event = services::utils::panicking(|| {
+            funcs::reserve_gas(storage)
+        });
+        self.notify_on(event.clone()).expect("Notification Error");
     }
-    pub fn game(&self, player_id: ActorId) -> Option<GameInstance> {
-        self.get().current_games.get(&player_id).cloned()
+
+    pub fn start_registration(&mut self) {
+        let storage = self.get_mut();
+        let event = services::utils::panicking(|| {
+            funcs::start_registration(storage)
+        });
+        self.notify_on(event.clone()).expect("Notification Error");
     }
-    pub fn all_games(&self) -> Vec<(ActorId, GameInstance)> {
-        self.get().current_games.clone().into_iter().collect()
-    }
-    pub fn config(&self) -> &'static Config {
-        &self.get().config
-    }
-    pub fn messages_allowed(&self) -> &'static bool {
-        &self.get().messages_allowed
-    }
+    // pub async fn kill(&mut self, inheritor: ActorId) {
+    //     let storage = self.get();
+    //     if !storage.admins.contains(&msg::source()) {
+    //         services::utils::panic(GameError::NotAdmin);
+    //     }
+    //     if let Some((id, _name)) = &storage.dns_info {
+    //         let request = ["Dns".encode(), "DeleteMe".to_string().encode(), ().encode()].concat();
+
+    //         msg::send_bytes_with_gas_for_reply(*id, request, 5_000_000_000, 0, 0)
+    //             .expect("Error in sending message")
+    //             .await
+    //             .expect("Error in `AddNewProgram`");
+    //     }
+
+    //     self.notify_on(Event::Killed { inheritor })
+    //         .expect("Notification Error");
+    //     exec::exit(inheritor);
+    // }
+
+
     pub fn dns_info(&self) -> Option<(ActorId, String)> {
         self.get().dns_info.clone()
     }

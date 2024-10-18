@@ -1,6 +1,5 @@
-#![no_std]
-
-use sails_rs::{collections::BTreeSet, prelude::*, ActorId};
+use sails_rs::{collections::{BTreeSet, HashSet, HashMap}, prelude::*, ActorId, gstd::{exec, msg}};
+use crate::services::syndote::{Storage, PENALTY};
 
 pub type Price = u32;
 pub type Rent = u32;
@@ -33,7 +32,7 @@ pub struct StorageState {
     pub winner: ActorId,
 }
 
-#[derive(Default, Debug, Clone, Encode, Decode, TypeInfo)]
+#[derive(Default, Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub struct PlayerInfo {
@@ -47,7 +46,7 @@ pub struct PlayerInfo {
     pub lost: bool,
 }
 
-#[derive(PartialEq, Eq, Encode, Decode, Clone, TypeInfo, Copy)]
+#[derive(Debug, PartialEq, Eq, Encode, Decode, Clone, TypeInfo, Copy)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
 pub enum Gear {
@@ -83,18 +82,24 @@ impl Default for GameStatus {
 
 
 impl Storage {
-    pub fn check_status(&self, game_status: GameStatus) {
-        assert_eq!(self.game_status, game_status, "Wrong game status");
+    pub fn check_status(&self, game_status: GameStatus) -> Result<(), GameError> {
+        if self.game_status != game_status {
+            return Err(GameError::WrongStatus);
+        }
+        Ok(())
     }
 
-    pub fn only_admin(&self) {
-        assert_eq!(msg::source(), self.admin, "Only admin can start the game");
+    pub fn only_admin(&self) -> Result<(), GameError> {
+        if self.admin != msg::source() {
+            return Err(GameError::AccessDenied);
+        }
+        Ok(())
     }
-    pub fn only_player(&self) {
-        assert!(
-            self.players.contains_key(&msg::source()),
-            "You are not in the game"
-        );
+    pub fn only_player(&self) -> Result<(), GameError> {
+        if !self.players.contains_key(&msg::source()) {
+            return Err(GameError::NotPlayer);
+        }
+        Ok(())
     }
 }
 
@@ -294,8 +299,13 @@ pub fn init_properties(
     }
 }
 
+#[derive(Debug)]
 pub enum GameError {
     StrategicError,
+    AlreadyRegistered,
+    NotPlayer,
+    AccessDenied,
+    WrongStatus,
 }
 
 impl From<Storage> for StorageState {

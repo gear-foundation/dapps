@@ -3,17 +3,17 @@
 
 use sails_rs::prelude::*;
 mod services;
-use services::syndote::Service;
+use services::syndote::GameService;
 pub struct Program(());
 
 #[program]
 impl Program {
-    pub fn new() -> Self {
-        Service::seed();
+    pub fn new(dns_id_and_name: Option<(ActorId, String)>) -> Self {
+        GameService::init(dns_id_and_name);
         Self(())
     }
 
-    pub fn syndote(&self) -> Service {
-        Service::new()
+    pub fn syndote(&self) -> GameService {
+        GameService::new()
     }
 }
