@@ -176,3 +176,17 @@ pub fn panicking<T, E: Debug, F: FnOnce() -> Result<T, E>>(f: F) -> T {
 pub fn panic(err: impl Debug) -> ! {
     ext::panic(&format!("{err:?}"))
 }
+
+#[derive(Debug, Clone, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct SubscriberDataState {
+    pub is_active: bool,
+    pub start_date: u64,
+    pub start_block: u32,
+    pub end_date: u64,
+    pub end_block: u32,
+    pub period: Period,
+    pub will_renew: bool,
+    pub price: u128,
+}
