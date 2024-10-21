@@ -5,7 +5,7 @@ on:
 
 env:
   CARGO_TERM_COLOR: always
-  DEFAULT_TOOLCHAIN: 1.78.0
+  DEFAULT_TOOLCHAIN: 1.82.0
 
 defaults:
   run:
