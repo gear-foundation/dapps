@@ -1,6 +1,5 @@
-import { useAccount } from '@gear-js/react-hooks';
+import { useGetSubscriberQuery } from 'app/utils/sails/queries';
 import { Loader } from 'components';
-import { useProgramState } from 'hooks/api';
 
 import { ReactNode } from 'react';
 
@@ -9,19 +8,9 @@ type Props = {
 };
 
 function OnLogin({ children }: Props) {
-  const { account } = useAccount();
-  const { decodedAddress } = account || {};
+  const { subscriber, isFetched } = useGetSubscriberQuery();
 
-  const { subscriptionsState, isSubscriptionsStateRead } = useProgramState();
-  const subscription = subscriptionsState && decodedAddress ? subscriptionsState[decodedAddress] : undefined;
-
-  return isSubscriptionsStateRead ? (
-    <>
-      {subscription && children} {!subscription && <p />}
-    </>
-  ) : (
-    <Loader />
-  );
+  return !isFetched ? <>{subscriber ? children : <p />}</> : <Loader />;
 }
 
 export { OnLogin };

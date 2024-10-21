@@ -1,26 +1,20 @@
-import { useAccount } from '@gear-js/react-hooks';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useProgramState, useSubscriptionsMessage } from './api';
+import { useGetSubscriberQuery } from 'app/utils';
 
 function useSubscription() {
   const navigate = useNavigate();
 
-  const { account } = useAccount();
-  const { decodedAddress } = account || {};
-
-  const { subscriptionsState, isSubscriptionsStateRead } = useProgramState();
-
-  const subscription = subscriptionsState && decodedAddress ? subscriptionsState[decodedAddress] : undefined;
+  const { subscriber, isFetched } = useGetSubscriberQuery();
 
   useEffect(() => {
-    if (isSubscriptionsStateRead && !subscription) {
+    if (isFetched && !subscriber) {
       navigate('/subscription');
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSubscriptionsStateRead, subscription, account]);
+  }, [isFetched, subscriber]);
 
-  return isSubscriptionsStateRead;
+  return Boolean(subscriber);
 }
 
-export { useSubscriptionsMessage, useSubscription };
+export { useSubscription };
