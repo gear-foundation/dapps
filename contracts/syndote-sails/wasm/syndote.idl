@@ -20,9 +20,17 @@ constructor {
 };
 
 service Syndote {
+  AddGear : (properties_for_sale: opt vec u8) -> null;
+  BuyCell : (properties_for_sale: opt vec u8) -> null;
+  ChangeAdmin : (admin: actor_id) -> null;
+  Kill : (inheritor: actor_id) -> null;
+  PayRent : (properties_for_sale: opt vec u8) -> null;
+  Play : () -> null;
   Register : (player: actor_id) -> null;
   ReserveGas : () -> null;
   StartRegistration : () -> null;
+  ThrowRoll : (pay_fine: bool, properties_for_sale: opt vec u8) -> null;
+  Upgrade : (properties_for_sale: opt vec u8) -> null;
   query DnsInfo : () -> opt struct { actor_id, str };
 
   events {

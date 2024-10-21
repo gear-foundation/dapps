@@ -222,3 +222,295 @@ async fn take_your_turn(player: &ActorId, storage: &Storage) -> Result<Vec<u8>, 
     .expect("Invalid wait duration.")
     .await
 }
+
+
+pub fn throw_roll(storage: &mut Storage, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) -> Result<Event, GameError> {
+    storage.only_player()?;
+    let player_info = match get_player_info(&storage.current_player, &mut storage.players, storage.round)
+    {
+        Ok(player_info) => player_info,
+        Err(_) => {
+            return Ok(Event::StrategicError);
+        }
+    };
+
+    // If a player is not in the jail
+    if !player_info.in_jail {
+        //     debug!("PENALTY: PLAYER IS NOT IN JAIL");
+        player_info.penalty += 1;
+        return Ok(Event::StrategicError);
+    }
+
+    if let Some(properties) = properties_for_sale {
+        if sell_property(
+            &storage.admin,
+            &mut storage.ownership,
+            &properties,
+            &mut storage.properties_in_bank,
+            &storage.properties,
+            player_info,
+        )
+        .is_err()
+        {
+            return Ok(Event::StrategicError);
+        };
+    }
+
+    let (r1, r2) = get_rolls();
+    if r1 == r2 {
+        player_info.in_jail = false;
+        player_info.position = r1 + r2;
+    } else if pay_fine {
+        if player_info.balance < FINE {
+            player_info.penalty += 1;
+            return Ok(Event::StrategicError);
+        }
+        player_info.balance -= FINE;
+        player_info.in_jail = false;
+    }
+    player_info.round = storage.round;
+    Ok(Event::Jail {
+            in_jail: player_info.in_jail,
+            position: player_info.position,
+        }
+    )
+}
+
+
+pub fn add_gear(storage: &mut Storage, properties_for_sale: Option<Vec<u8>>) -> Result<Event, GameError> {
+    storage.only_player()?;
+    let player_info = match get_player_info(&storage.current_player, &mut storage.players, storage.round)
+    {
+        Ok(player_info) => player_info,
+        Err(_) => {
+            return Ok(Event::StrategicError);
+        }
+    };
+
+    if let Some(properties) = properties_for_sale {
+        if sell_property(
+            &storage.admin,
+            &mut storage.ownership,
+            &properties,
+            &mut storage.properties_in_bank,
+            &storage.properties,
+            player_info,
+        )
+        .is_err()
+        {
+            return Ok(Event::StrategicError);
+        };
+    }
+
+    // if player did not check his balance itself
+    if player_info.balance < COST_FOR_UPGRADE {
+        //  debug!("PENALTY: NOT ENOUGH BALANCE FOR UPGRADE");
+        player_info.penalty += 1;
+        return Ok(Event::StrategicError);
+    }
+
+    let position = player_info.position;
+
+    let gears = if let Some((account, gears, _, _)) = &mut storage.properties[position as usize] {
+        if account != &msg::source() {
+            //       debug!("PENALTY: TRY TO UPGRADE NOT OWN CELL");
+            player_info.penalty += 1;
+            return Ok(Event::StrategicError);
+        }
+        gears
+    } else {
+        player_info.penalty += 1;
+        return Ok(Event::StrategicError);
+    };
+
+    // maximum amount of gear is reached
+    if gears.len() == 3 {
+        //        debug!("PENALTY: MAXIMUM AMOUNT OF GEARS ON CELL");
+        player_info.penalty += 1;
+        return Ok(Event::StrategicError);
+    }
+
+    gears.push(Gear::Bronze);
+    player_info.balance -= COST_FOR_UPGRADE;
+    player_info.round = storage.round;
+    Ok(Event::StrategicSuccess)
+}
+
+pub fn upgrade(storage: &mut Storage, properties_for_sale: Option<Vec<u8>>) -> Result<Event, GameError> {
+    storage.only_player()?;
+    let player_info = match get_player_info(&storage.current_player, &mut storage.players, storage.round)
+    {
+        Ok(player_info) => player_info,
+        Err(_) => {
+            return Ok(Event::StrategicError);
+        }
+    };
+
+    if let Some(properties) = properties_for_sale {
+        if sell_property(
+            &storage.admin,
+            &mut storage.ownership,
+            &properties,
+            &mut storage.properties_in_bank,
+            &storage.properties,
+            player_info,
+        )
+        .is_err()
+        {
+            return Ok(Event::StrategicError);
+        };
+    }
+
+    // if player did not check his balance itself
+    if player_info.balance < COST_FOR_UPGRADE {
+        //       debug!("PENALTY: NOT ENOUGH BALANCE FOR UPGRADE");
+        player_info.penalty += 1;
+        return Ok(Event::StrategicError);
+    }
+
+    let position = player_info.position;
+
+    if let Some((account, gears, price, rent)) = &mut storage.properties[position as usize] {
+        if account != &msg::source() {
+            player_info.penalty += 1;
+            return Ok(Event::StrategicError);
+        }
+        // if nothing to upgrade
+        if gears.is_empty() {
+            //        debug!("PENALTY: NOTHING TO UPGRADE");
+            player_info.penalty += 1;
+            return Ok(Event::StrategicError);
+        }
+        for gear in gears {
+            if *gear != Gear::Gold {
+                *gear = gear.upgrade();
+                // add 10 percent to the price of cell
+                *price += *price / 10;
+                // add 10 percent to the price of rent
+                *rent += *rent / 10;
+                break;
+            }
+        }
+    } else {
+        player_info.penalty += 1;
+        return Ok(Event::StrategicError);
+    };
+
+    player_info.balance -= COST_FOR_UPGRADE;
+    player_info.round = storage.round;
+    Ok(Event::StrategicSuccess)
+}
+
+pub fn buy_cell(storage: &mut Storage, properties_for_sale: Option<Vec<u8>>) -> Result<Event, GameError> {
+    storage.only_player()?;
+    let player_info = match get_player_info(&storage.current_player, &mut storage.players, storage.round)
+    {
+        Ok(player_info) => player_info,
+        Err(_) => {
+            return Ok(Event::StrategicError);
+        }
+    };
+    let position = player_info.position;
+
+    if let Some(properties) = properties_for_sale {
+        if sell_property(
+            &storage.admin,
+            &mut storage.ownership,
+            &properties,
+            &mut storage.properties_in_bank,
+            &storage.properties,
+            player_info,
+        )
+        .is_err()
+        {
+            return Ok(Event::StrategicError);
+        };
+    }
+
+    // if a player on the field that can't be sold (for example, jail)
+    if let Some((account, _, price, _)) = storage.properties[position as usize].as_mut() {
+        if account != &mut ActorId::zero() {
+            //       debug!("PENALTY: THAT CELL IS ALREDY BOUGHT");
+            player_info.penalty += 1;
+            return Ok(Event::StrategicError);
+        }
+        // if a player has not enough balance
+        if player_info.balance < *price {
+            player_info.penalty += 1;
+            //      debug!("PENALTY: NOT ENOUGH BALANCE FOR BUYING");
+            return Ok(Event::StrategicError);
+        }
+        player_info.balance -= *price;
+        *account = msg::source();
+    } else {
+        player_info.penalty += 1;
+        //       debug!("PENALTY: THAT FIELD CAN'T BE SOLD");
+        return Ok(Event::StrategicError);
+    };
+    player_info.cells.insert(position);
+    storage.ownership[position as usize] = msg::source();
+    player_info.round = storage.round;
+    Ok(Event::StrategicSuccess)
+}
+
+pub fn pay_rent(storage: &mut Storage, properties_for_sale: Option<Vec<u8>>) -> Result<Event, GameError> {
+    storage.only_player()?;
+    let player_info = match get_player_info(&storage.current_player, &mut storage.players, storage.round)
+    {
+        Ok(player_info) => player_info,
+        Err(_) => {
+            return Ok(Event::StrategicError);
+        }
+    };
+    if let Some(properties) = properties_for_sale {
+        if sell_property(
+            &storage.admin,
+            &mut storage.ownership,
+            &properties,
+            &mut storage.properties_in_bank,
+            &storage.properties,
+            player_info,
+        )
+        .is_err()
+        {
+            return Ok(Event::StrategicError);
+        };
+    }
+
+    let position = player_info.position;
+    let account = storage.ownership[position as usize];
+
+    if account == msg::source() {
+        player_info.penalty += 1;
+        //   debug!("PENALTY: PAY RENT TO HIMSELF");
+        return Ok(Event::StrategicError);
+    }
+
+    let (_, _, _, rent) = storage.properties[position as usize]
+        .clone()
+        .unwrap_or_default();
+    if rent == 0 {
+        //    debug!("PENALTY: CELL WITH NO PROPERTIES");
+        player_info.penalty += 1;
+        return Ok(Event::StrategicError);
+    };
+
+    if player_info.balance < rent {
+        //    debug!("PENALTY: NOT ENOUGH BALANCE TO PAY RENT");
+        player_info.penalty += 1;
+        return Ok(Event::StrategicError);
+    }
+    player_info.balance -= rent;
+    player_info.debt = 0;
+    player_info.round = storage.round;
+    storage.players.entry(account).and_modify(|player_info| {
+        player_info.balance = player_info.balance.saturating_add(rent)
+    });
+    Ok(Event::StrategicSuccess)
+}
+
+pub fn change_admin(storage: &mut Storage, admin: ActorId) -> Result<Event, GameError> {
+    storage.only_admin()?;
+    storage.admin = admin;
+    Ok(Event::AdminChanged)
+}

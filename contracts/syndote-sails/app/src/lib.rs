@@ -8,8 +8,8 @@ pub struct Program(());
 
 #[program]
 impl Program {
-    pub fn new(dns_id_and_name: Option<(ActorId, String)>) -> Self {
-        GameService::init(dns_id_and_name);
+    pub async fn new(dns_id_and_name: Option<(ActorId, String)>) -> Self {
+        GameService::init(dns_id_and_name).await;
         Self(())
     }
 

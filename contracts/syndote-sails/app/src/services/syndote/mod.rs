@@ -11,7 +11,6 @@ const GAS_FOR_ROUND: u64 = 60_000_000_000;
 pub const NUMBER_OF_CELLS: u8 = 40;
 pub const NUMBER_OF_PLAYERS: u8 = 4;
 pub const JAIL_POSITION: u8 = 10;
-pub const LOTTERY_POSITION: u8 = 20;
 pub const COST_FOR_UPGRADE: u32 = 500;
 pub const FINE: u32 = 1_000;
 pub const PENALTY: u8 = 5;
@@ -37,12 +36,6 @@ pub struct Storage {
     reservations: Vec<ReservationId>,
     dns_info: Option<(ActorId, String)>,
 }
-
-// impl Storage {
-//     pub fn get_config() -> &'static Config {
-//         unsafe { &STORAGE.as_ref().expect("Storage is not initialized").config }
-//     }
-// }
 
 static mut STORAGE: Option<Storage> = None;
 
@@ -140,24 +133,84 @@ impl GameService {
         });
         self.notify_on(event.clone()).expect("Notification Error");
     }
-    // pub async fn kill(&mut self, inheritor: ActorId) {
-    //     let storage = self.get();
-    //     if !storage.admins.contains(&msg::source()) {
-    //         services::utils::panic(GameError::NotAdmin);
-    //     }
-    //     if let Some((id, _name)) = &storage.dns_info {
-    //         let request = ["Dns".encode(), "DeleteMe".to_string().encode(), ().encode()].concat();
 
-    //         msg::send_bytes_with_gas_for_reply(*id, request, 5_000_000_000, 0, 0)
-    //             .expect("Error in sending message")
-    //             .await
-    //             .expect("Error in `AddNewProgram`");
-    //     }
+    pub async fn play(&mut self) {
+        let storage = self.get_mut();
+        let res = funcs::play(storage).await;
+        let event = match res {
+            Ok(v) => v,
+            Err(e) => services::utils::panic(e),
+        };
 
-    //     self.notify_on(Event::Killed { inheritor })
-    //         .expect("Notification Error");
-    //     exec::exit(inheritor);
-    // }
+        self.notify_on(event.clone()).expect("Notification Error");
+    }
+
+    pub fn throw_roll(&mut self, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) {
+        let storage = self.get_mut();
+        let event = services::utils::panicking(|| {
+            funcs::throw_roll(storage, pay_fine, properties_for_sale)
+        });
+        self.notify_on(event.clone()).expect("Notification Error");
+    }
+
+    pub fn add_gear(&mut self, properties_for_sale: Option<Vec<u8>>) {
+        let storage = self.get_mut();
+        let event = services::utils::panicking(|| {
+            funcs::add_gear(storage, properties_for_sale)
+        });
+        self.notify_on(event.clone()).expect("Notification Error");
+    }
+
+    pub fn upgrade(&mut self, properties_for_sale: Option<Vec<u8>>) {
+        let storage = self.get_mut();
+        let event = services::utils::panicking(|| {
+            funcs::upgrade(storage, properties_for_sale)
+        });
+        self.notify_on(event.clone()).expect("Notification Error");
+    }
+
+    pub fn buy_cell(&mut self, properties_for_sale: Option<Vec<u8>>) {
+        let storage = self.get_mut();
+        let event = services::utils::panicking(|| {
+            funcs::buy_cell(storage, properties_for_sale)
+        });
+        self.notify_on(event.clone()).expect("Notification Error");
+    }
+
+    pub fn pay_rent(&mut self, properties_for_sale: Option<Vec<u8>>) {
+        let storage = self.get_mut();
+        let event = services::utils::panicking(|| {
+            funcs::pay_rent(storage, properties_for_sale)
+        });
+        self.notify_on(event.clone()).expect("Notification Error");
+    }
+
+    pub fn change_admin(&mut self, admin: ActorId) {
+        let storage = self.get_mut();
+        let event = services::utils::panicking(|| {
+            funcs::change_admin(storage, admin)
+        });
+        self.notify_on(event.clone()).expect("Notification Error");
+    }
+    
+    pub async fn kill(&mut self, inheritor: ActorId) {
+        let storage = self.get();
+        if storage.admin != msg::source() {
+            services::utils::panic(GameError::AccessDenied);
+        }
+        if let Some((id, _name)) = &storage.dns_info {
+            let request = ["Dns".encode(), "DeleteMe".to_string().encode(), ().encode()].concat();
+
+            msg::send_bytes_with_gas_for_reply(*id, request, 5_000_000_000, 0, 0)
+                .expect("Error in sending message")
+                .await
+                .expect("Error in `AddNewProgram`");
+        }
+
+        self.notify_on(Event::Killed { inheritor })
+            .expect("Notification Error");
+        exec::exit(inheritor);
+    }
 
 
     pub fn dns_info(&self) -> Option<(ActorId, String)> {
