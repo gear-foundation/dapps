@@ -1,6 +1,6 @@
+use player_app::PlayerProgram;
 use sails_idl_gen::program;
 use std::{env, fs::File, path::PathBuf};
-use syndote_player_app::Program;
 
 fn main() {
     gear_wasm_builder::build();
@@ -11,5 +11,5 @@ fn main() {
 
     let idl_file = File::create(idl_file_path).unwrap();
 
-    program::generate_idl::<Program>(idl_file).unwrap();
+    program::generate_idl::<PlayerProgram>(idl_file).unwrap();
 }

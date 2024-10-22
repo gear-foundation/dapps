@@ -2,7 +2,7 @@
 #![allow(clippy::new_without_default)]
 
 use sails_rs::prelude::*;
-mod services;
+pub mod services;
 use services::syndote::GameService;
 pub struct Program(());
 

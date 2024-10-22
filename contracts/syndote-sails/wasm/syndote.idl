@@ -4,7 +4,7 @@ type PlayerInfo = struct {
   debt: u32,
   in_jail: bool,
   round: u128,
-  cells: BTreeSetForU8,
+  cells: vec u8,
   penalty: u8,
   lost: bool,
 };
@@ -13,6 +13,26 @@ type Gear = enum {
   Bronze,
   Silver,
   Gold,
+};
+
+type StorageState = struct {
+  admin: actor_id,
+  properties_in_bank: vec u8,
+  round: u128,
+  players: vec struct { actor_id, PlayerInfo },
+  players_queue: vec actor_id,
+  current_player: actor_id,
+  current_step: u64,
+  properties: vec opt struct { actor_id, vec Gear, u32, u32 },
+  ownership: vec actor_id,
+  game_status: GameStatus,
+  winner: actor_id,
+};
+
+type GameStatus = enum {
+  Registration,
+  Play,
+  Finished,
 };
 
 constructor {
@@ -29,9 +49,10 @@ service Syndote {
   Register : (player: actor_id) -> null;
   ReserveGas : () -> null;
   StartRegistration : () -> null;
-  ThrowRoll : (pay_fine: bool, properties_for_sale: opt vec u8) -> null;
+  ThrowRoll : (pay_fine: bool, properties_for_sale: opt vec u8) -> Event;
   Upgrade : (properties_for_sale: opt vec u8) -> null;
   query DnsInfo : () -> opt struct { actor_id, str };
+  query GetStorage : () -> StorageState;
 
   events {
     Registered;

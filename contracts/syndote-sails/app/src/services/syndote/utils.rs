@@ -1,5 +1,10 @@
-use sails_rs::{collections::{BTreeSet, HashSet, HashMap}, prelude::*, ActorId, gstd::{exec, msg}};
 use crate::services::syndote::{Storage, PENALTY};
+use sails_rs::{
+    collections::{HashMap, HashSet},
+    gstd::{exec, msg},
+    prelude::*,
+    ActorId,
+};
 
 pub type Price = u32;
 pub type Rent = u32;
@@ -13,25 +18,6 @@ pub struct YourTurn {
     pub properties: Vec<Option<(ActorId, Gears, Price, Rent)>>,
 }
 
-#[derive(Clone, Default, Encode, Decode, TypeInfo)]
-#[codec(crate = gstd::codec)]
-#[scale_info(crate = gstd::scale_info)]
-pub struct StorageState {
-    pub admin: ActorId,
-    pub properties_in_bank: Vec<u8>,
-    pub round: u128,
-    pub players: Vec<(ActorId, PlayerInfo)>,
-    pub players_queue: Vec<ActorId>,
-    pub current_player: ActorId,
-    pub current_step: u64,
-    // mapping from cells to built properties,
-    pub properties: Vec<Option<(ActorId, Gears, u32, u32)>>,
-    // mapping from cells to accounts who have properties on it
-    pub ownership: Vec<ActorId>,
-    pub game_status: GameStatus,
-    pub winner: ActorId,
-}
-
 #[derive(Default, Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
@@ -41,7 +27,7 @@ pub struct PlayerInfo {
     pub debt: u32,
     pub in_jail: bool,
     pub round: u128,
-    pub cells: BTreeSet<u8>,
+    pub cells: Vec<u8>,
     pub penalty: u8,
     pub lost: bool,
 }
@@ -79,7 +65,6 @@ impl Default for GameStatus {
         Self::Registration
     }
 }
-
 
 impl Storage {
     pub fn check_status(&self, game_status: GameStatus) -> Result<(), GameError> {
@@ -142,7 +127,12 @@ pub fn sell_property(
 
     for property in properties_for_sale {
         if let Some((_, _, price, _)) = properties[*property as usize] {
-            player_info.cells.remove(property);
+            let index_to_remove = player_info
+                .cells
+                .iter()
+                .position(|cell| cell == property)
+                .unwrap();
+            player_info.cells.remove(index_to_remove);
             player_info.balance += price / 2;
             ownership[*property as usize] = *admin;
             properties_in_bank.insert(*property);
@@ -184,7 +174,8 @@ pub fn bankrupt_and_penalty(
                 }
                 if let Some((_, _, price, _)) = &properties[*cell as usize] {
                     player_info.balance += price / 2;
-                    player_info.cells.remove(cell);
+                    let index_to_remove = player_info.cells.iter().position(|c| c == cell).unwrap();
+                    player_info.cells.remove(index_to_remove);
                     ownership[*cell as usize] = *admin;
                     properties_in_bank.insert(*cell);
                 }
@@ -306,6 +297,25 @@ pub enum GameError {
     NotPlayer,
     AccessDenied,
     WrongStatus,
+}
+
+#[derive(Clone, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct StorageState {
+    pub admin: ActorId,
+    pub properties_in_bank: Vec<u8>,
+    pub round: u128,
+    pub players: Vec<(ActorId, PlayerInfo)>,
+    pub players_queue: Vec<ActorId>,
+    pub current_player: ActorId,
+    pub current_step: u64,
+    // mapping from cells to built properties,
+    pub properties: Vec<Option<(ActorId, Gears, u32, u32)>>,
+    // mapping from cells to accounts who have properties on it
+    pub ownership: Vec<ActorId>,
+    pub game_status: GameStatus,
+    pub winner: ActorId,
 }
 
 impl From<Storage> for StorageState {

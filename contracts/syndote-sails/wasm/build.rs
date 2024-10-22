@@ -1,3 +1,4 @@
+use sails_client_gen::ClientGenerator;
 use sails_idl_gen::program;
 use std::{env, fs::File, path::PathBuf};
 use syndote_app::Program;
@@ -9,7 +10,11 @@ fn main() {
 
     let idl_file_path = manifest_dir_path.join("syndote.idl");
 
-    let idl_file = File::create(idl_file_path).unwrap();
+    let idl_file = File::create(idl_file_path.clone()).unwrap();
 
     program::generate_idl::<Program>(idl_file).unwrap();
+
+    ClientGenerator::from_idl_path(&idl_file_path)
+        .generate_to(PathBuf::from(env::var("OUT_DIR").unwrap()).join("syndote_client.rs"))
+        .unwrap();
 }

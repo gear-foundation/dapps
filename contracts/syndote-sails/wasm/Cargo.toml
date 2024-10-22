@@ -6,8 +6,10 @@ license.workspace = true
 
 [dependencies]
 syndote-app = { path = "../app" }
+sails-rs.workspace = true
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
 sails-idl-gen.workspace = true
+sails-client-gen.workspace = true
 syndote-app = { path = "../app" }

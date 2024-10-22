@@ -1,7 +1,6 @@
-// use crate::services::syndote::{Storage, GameStatus, PlayerInfo, GameError, Event, init_properties, NUMBER_OF_PLAYERS, INITIAL_BALANCE, RESERVATION_AMOUNT, GAS_FOR_ROUND};
 use crate::services::syndote::*;
+use gstd::{errors::Error, ReservationId, ReservationIdExt};
 use sails_rs::ActorId;
-use gstd::{ReservationId, ReservationIdExt, errors::Error};
 
 pub fn register(storage: &mut Storage, player: &ActorId) -> Result<Event, GameError> {
     storage.check_status(GameStatus::Registration)?;
@@ -23,8 +22,8 @@ pub fn register(storage: &mut Storage, player: &ActorId) -> Result<Event, GameEr
 }
 
 pub fn reserve_gas(storage: &mut Storage) -> Result<Event, GameError> {
-    let reservation_id = ReservationId::reserve(RESERVATION_AMOUNT, 600)
-        .expect("reservation across executions");
+    let reservation_id =
+        ReservationId::reserve(RESERVATION_AMOUNT, 600).expect("reservation across executions");
 
     storage.reservations.push(reservation_id);
     Ok(Event::GasReserved)
@@ -48,8 +47,6 @@ pub async fn play(storage: &mut Storage) -> Result<Event, GameError> {
     if msg_src != storage.admin && msg_src != exec::program_id() {
         return Err(GameError::AccessDenied);
     }
-
-
     while storage.game_status == GameStatus::Play {
         if storage.players_queue.len() <= 1 {
             storage.winner = storage.players_queue[0];
@@ -61,28 +58,17 @@ pub async fn play(storage: &mut Storage) -> Result<Event, GameError> {
         }
         if exec::gas_available() <= GAS_FOR_ROUND {
             if let Some(id) = storage.reservations.pop() {
-                let request = [
-                    "Syndote".encode(),
-                    "Play".to_string().encode(),
-                    ().encode(),
-                ]
-                .concat();
-            
-                msg::send_bytes_from_reservation(
-                    id,
-                    exec::program_id(),
-                    request,
-                    0,
-                )
-                .expect("Error in sending message");
+                let request =
+                    ["Syndote".encode(), "Play".to_string().encode(), ().encode()].concat();
+
+                msg::send_bytes_from_reservation(id, exec::program_id(), request, 0)
+                    .expect("Error in sending message");
 
                 return Ok(Event::NextRoundFromReservation);
             } else {
                 panic!("GIVE ME MORE GAS");
             };
-            
         }
-
         // // check penalty and debt of the players for the previous round
         // // if penalty is equal to 5 points we remove the player from the game
         // // if a player has a debt and he has not enough balance to pay it
@@ -130,12 +116,12 @@ pub async fn play(storage: &mut Storage) -> Result<Event, GameError> {
                 let roll_sum = r1 + r2;
                 (player_info.position + roll_sum) % NUMBER_OF_CELLS
             };
-
             // If a player is on a cell that belongs to another player
             // we write down a debt on him in the amount of the rent.
             // This is done in order to penalize the participant's contract
             // if he misses the rent
             let account = storage.ownership[position as usize];
+
             if account != player && account != ActorId::zero() {
                 if let Some((_, _, _, rent)) = storage.properties[position as usize] {
                     player_info.debt = rent;
@@ -161,7 +147,6 @@ pub async fn play(storage: &mut Storage) -> Result<Event, GameError> {
                     }
                 }
             }
-
             // check penalty and debt of the players for the previous round
             // if penalty is equal to 5 points we remove the player from the game
             // if a player has a debt and he has not enough balance to pay it
@@ -196,13 +181,8 @@ pub async fn play(storage: &mut Storage) -> Result<Event, GameError> {
     Ok(Event::Played)
 }
 
-
 async fn take_your_turn(player: &ActorId, storage: &Storage) -> Result<Vec<u8>, Error> {
-    let players: Vec<_> = storage
-        .players
-        .clone()
-        .into_iter()
-        .collect();
+    let players: Vec<_> = storage.players.clone().into_iter().collect();
 
     let request = [
         "Player".encode(),
@@ -211,28 +191,26 @@ async fn take_your_turn(player: &ActorId, storage: &Storage) -> Result<Vec<u8>, 
     ]
     .concat();
 
-    msg::send_bytes_for_reply(
-        *player,
-        request,
-        0,
-        0,
-    )
-    .expect("Error on sending `YourTurn` message")
-    .up_to(Some(WAIT_DURATION))
-    .expect("Invalid wait duration.")
-    .await
+    msg::send_bytes_for_reply(*player, request, 0, 0)
+        .expect("Error on sending `YourTurn` message")
+        .up_to(Some(WAIT_DURATION))
+        .expect("Invalid wait duration.")
+        .await
 }
 
-
-pub fn throw_roll(storage: &mut Storage, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) -> Result<Event, GameError> {
+pub fn throw_roll(
+    storage: &mut Storage,
+    pay_fine: bool,
+    properties_for_sale: Option<Vec<u8>>,
+) -> Result<Event, GameError> {
     storage.only_player()?;
-    let player_info = match get_player_info(&storage.current_player, &mut storage.players, storage.round)
-    {
-        Ok(player_info) => player_info,
-        Err(_) => {
-            return Ok(Event::StrategicError);
-        }
-    };
+    let player_info =
+        match get_player_info(&storage.current_player, &mut storage.players, storage.round) {
+            Ok(player_info) => player_info,
+            Err(_) => {
+                return Ok(Event::StrategicError);
+            }
+        };
 
     // If a player is not in the jail
     if !player_info.in_jail {
@@ -270,22 +248,23 @@ pub fn throw_roll(storage: &mut Storage, pay_fine: bool, properties_for_sale: Op
     }
     player_info.round = storage.round;
     Ok(Event::Jail {
-            in_jail: player_info.in_jail,
-            position: player_info.position,
-        }
-    )
+        in_jail: player_info.in_jail,
+        position: player_info.position,
+    })
 }
 
-
-pub fn add_gear(storage: &mut Storage, properties_for_sale: Option<Vec<u8>>) -> Result<Event, GameError> {
+pub fn add_gear(
+    storage: &mut Storage,
+    properties_for_sale: Option<Vec<u8>>,
+) -> Result<Event, GameError> {
     storage.only_player()?;
-    let player_info = match get_player_info(&storage.current_player, &mut storage.players, storage.round)
-    {
-        Ok(player_info) => player_info,
-        Err(_) => {
-            return Ok(Event::StrategicError);
-        }
-    };
+    let player_info =
+        match get_player_info(&storage.current_player, &mut storage.players, storage.round) {
+            Ok(player_info) => player_info,
+            Err(_) => {
+                return Ok(Event::StrategicError);
+            }
+        };
 
     if let Some(properties) = properties_for_sale {
         if sell_property(
@@ -336,15 +315,18 @@ pub fn add_gear(storage: &mut Storage, properties_for_sale: Option<Vec<u8>>) -> 
     Ok(Event::StrategicSuccess)
 }
 
-pub fn upgrade(storage: &mut Storage, properties_for_sale: Option<Vec<u8>>) -> Result<Event, GameError> {
+pub fn upgrade(
+    storage: &mut Storage,
+    properties_for_sale: Option<Vec<u8>>,
+) -> Result<Event, GameError> {
     storage.only_player()?;
-    let player_info = match get_player_info(&storage.current_player, &mut storage.players, storage.round)
-    {
-        Ok(player_info) => player_info,
-        Err(_) => {
-            return Ok(Event::StrategicError);
-        }
-    };
+    let player_info =
+        match get_player_info(&storage.current_player, &mut storage.players, storage.round) {
+            Ok(player_info) => player_info,
+            Err(_) => {
+                return Ok(Event::StrategicError);
+            }
+        };
 
     if let Some(properties) = properties_for_sale {
         if sell_property(
@@ -401,15 +383,18 @@ pub fn upgrade(storage: &mut Storage, properties_for_sale: Option<Vec<u8>>) -> R
     Ok(Event::StrategicSuccess)
 }
 
-pub fn buy_cell(storage: &mut Storage, properties_for_sale: Option<Vec<u8>>) -> Result<Event, GameError> {
+pub fn buy_cell(
+    storage: &mut Storage,
+    properties_for_sale: Option<Vec<u8>>,
+) -> Result<Event, GameError> {
     storage.only_player()?;
-    let player_info = match get_player_info(&storage.current_player, &mut storage.players, storage.round)
-    {
-        Ok(player_info) => player_info,
-        Err(_) => {
-            return Ok(Event::StrategicError);
-        }
-    };
+    let player_info =
+        match get_player_info(&storage.current_player, &mut storage.players, storage.round) {
+            Ok(player_info) => player_info,
+            Err(_) => {
+                return Ok(Event::StrategicError);
+            }
+        };
     let position = player_info.position;
 
     if let Some(properties) = properties_for_sale {
@@ -447,21 +432,24 @@ pub fn buy_cell(storage: &mut Storage, properties_for_sale: Option<Vec<u8>>) -> 
         //       debug!("PENALTY: THAT FIELD CAN'T BE SOLD");
         return Ok(Event::StrategicError);
     };
-    player_info.cells.insert(position);
+    player_info.cells.push(position);
     storage.ownership[position as usize] = msg::source();
     player_info.round = storage.round;
     Ok(Event::StrategicSuccess)
 }
 
-pub fn pay_rent(storage: &mut Storage, properties_for_sale: Option<Vec<u8>>) -> Result<Event, GameError> {
+pub fn pay_rent(
+    storage: &mut Storage,
+    properties_for_sale: Option<Vec<u8>>,
+) -> Result<Event, GameError> {
     storage.only_player()?;
-    let player_info = match get_player_info(&storage.current_player, &mut storage.players, storage.round)
-    {
-        Ok(player_info) => player_info,
-        Err(_) => {
-            return Ok(Event::StrategicError);
-        }
-    };
+    let player_info =
+        match get_player_info(&storage.current_player, &mut storage.players, storage.round) {
+            Ok(player_info) => player_info,
+            Err(_) => {
+                return Ok(Event::StrategicError);
+            }
+        };
     if let Some(properties) = properties_for_sale {
         if sell_property(
             &storage.admin,
@@ -503,9 +491,10 @@ pub fn pay_rent(storage: &mut Storage, properties_for_sale: Option<Vec<u8>>) -> 
     player_info.balance -= rent;
     player_info.debt = 0;
     player_info.round = storage.round;
-    storage.players.entry(account).and_modify(|player_info| {
-        player_info.balance = player_info.balance.saturating_add(rent)
-    });
+    storage
+        .players
+        .entry(account)
+        .and_modify(|player_info| player_info.balance = player_info.balance.saturating_add(rent));
     Ok(Event::StrategicSuccess)
 }
 
