@@ -117,7 +117,10 @@ export const CharacterStatsForm = ({ onValuesChange }: CharacterStatsFormProps) 
             disabled={values[name] >= maxCount || availablePoints === 0}
           />
 
-          <Button color="transparent" className={styles.max}>
+          <Button
+            color="transparent"
+            className={styles.max}
+            onClick={() => setFieldValue(name, Math.min(maxCount, value + availablePoints))}>
             <Text size="xs" weight="medium">
               {maxCount} max
             </Text>
