@@ -18,7 +18,7 @@ export default function ImportCharacter() {
   const navigate = useNavigate();
   const [address, setAddress] = useState<string>('');
 
-  const { appearance } = useGetAppearanceQuery(address);
+  const { appearance, error } = useGetAppearanceQuery(address);
   const [characterStats, setCharacterStats] = useState<CharacterStatsFormValues>();
   const [isNextDisabled, setIsNextDisabled] = useState(true);
 
@@ -61,7 +61,8 @@ export default function ImportCharacter() {
             label="Specify program ID of your Tamagotchi character"
             required
             className="w-full"
-            onChange={(e) => setAddress(e.target.value)}
+            onChange={(e) => setAddress(e.target.value.trim())}
+            error={error && 'The program must include the "Warrior" service and the "getAppearance" function.'}
           />
           {isCharacterFound && appearance && (
             <div className={styles.character}>
