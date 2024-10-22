@@ -1,14 +1,13 @@
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@gear-js/vara-ui';
-import { Modal } from '@/components';
-import styles from './game-canceled-modal.module.scss';
-import { ROUTES } from '@/app/consts';
 import { useSetAtom } from 'jotai';
+import { useNavigate } from 'react-router-dom';
+import { Modal } from '@/components';
+import { ROUTES } from '@/app/consts';
 import { isBattleCanceledAtom } from '@/features/game/store';
+import styles from './game-canceled-modal.module.scss';
 
 export const GameCanceledModal = () => {
   const navigate = useNavigate();
-  // const { isCanceled, setIsCanceled } = useEventRegisterCanceledSubscription(gameId);
   const setIsCanceled = useSetAtom(isBattleCanceledAtom);
   const onClose = () => {
     setIsCanceled(false);
