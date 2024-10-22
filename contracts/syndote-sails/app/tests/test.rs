@@ -1,7 +1,7 @@
 use sails_rs::calls::*;
 use sails_rs::{
     gtest::{calls::*, Program, System},
-    ActorId, Encode, MessageId,
+    Encode, MessageId,
 };
 use syndote_wasm::{
     traits::{Syndote, SyndoteFactory},
@@ -34,36 +34,36 @@ async fn test_play_game() {
 
     // upload player program
     let player_1 = Program::from_file(
-        &program_space.system(),
+        program_space.system(),
         "../../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
     );
     let player_2 = Program::from_file(
-        &program_space.system(),
+        program_space.system(),
         "../../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
     );
     let player_3 = Program::from_file(
-        &program_space.system(),
+        program_space.system(),
         "../../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
     );
     let player_4 = Program::from_file(
-        &program_space.system(),
+        program_space.system(),
         "../../target/wasm32-unknown-unknown/release/syndote_player.opt.wasm",
     );
     let request = ["New".encode(), ().encode()].concat();
     check_send(
-        &program_space.system(),
+        program_space.system(),
         player_1.send_bytes(USER_ID, request.clone()),
     );
     check_send(
-        &program_space.system(),
+        program_space.system(),
         player_2.send_bytes(USER_ID, request.clone()),
     );
     check_send(
-        &program_space.system(),
+        program_space.system(),
         player_3.send_bytes(USER_ID, request.clone()),
     );
     check_send(
-        &program_space.system(),
+        program_space.system(),
         player_4.send_bytes(USER_ID, request),
     );
 
@@ -99,7 +99,7 @@ async fn test_play_game() {
     assert_eq!(state.winner, 0.into());
 
     // start game
-    let res = client.play().send_recv(syndote_id).await.unwrap();
+    client.play().send_recv(syndote_id).await.unwrap();
 
     // check state
     let state = client.get_storage().recv(syndote_id).await.unwrap();
