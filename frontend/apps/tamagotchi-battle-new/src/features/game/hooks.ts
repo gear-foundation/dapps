@@ -3,7 +3,7 @@ import { atom, useAtom, useSetAtom } from 'jotai';
 import { BattleHistory } from './types';
 import { useEventRoundActionSubscription } from '@/app/utils/sails/events';
 import { BattleState, Pair, Player } from '@/app/utils';
-import { battleHistoryAtom, battleHistoryStorage, otherPairBattleWatchAtom } from './store';
+import { battleHistoryAtom, battleHistoryStorage, isBattleCanceledAtom, otherPairBattleWatchAtom } from './store';
 import { MAX_HEALTH, TIME_LEFT_GAP } from './consts';
 import { useAccount } from '@gear-js/react-hooks';
 
@@ -15,11 +15,15 @@ export function usePending() {
   return { pending, setPending };
 }
 
-export function useRestGameState() {
+export function useResetGameState() {
   const setBattleHistory = useSetAtom(battleHistoryAtom);
+  const setOtherPairBattleWatch = useSetAtom(otherPairBattleWatchAtom);
+  const setIsBattleCanceledAtom = useSetAtom(isBattleCanceledAtom);
   useEffect(() => {
     setBattleHistory(null);
     battleHistoryStorage.set(null);
+    setOtherPairBattleWatch(null);
+    setIsBattleCanceledAtom(false);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 }

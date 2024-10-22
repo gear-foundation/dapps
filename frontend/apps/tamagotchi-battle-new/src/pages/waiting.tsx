@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Card, Loader, Text, Modal } from '@/components';
-import { Background, WaitList } from '@/features/game/components';
+import { Background, GameCanceledModal, WaitList } from '@/features/game/components';
 import { Character } from '@/features/game/components/character';
 import { CharacterStats } from '@/features/game/components/character-stats';
 import { InfoIcon } from '@/features/game/assets/images';
@@ -15,7 +15,8 @@ import {
   useCancelTournamentMessage,
   useStartBattleMessage,
 } from '@/app/utils';
-import { usePending, useRestGameState } from '@/features/game/hooks';
+import { usePending, useResetGameState } from '@/features/game/hooks';
+import { useEventBattleCanceledSubscription } from '@/app/utils/sails/events';
 import styles from './waiting.module.scss';
 
 export default function WaitingPage() {
@@ -26,19 +27,24 @@ export default function WaitingPage() {
   const { cancelTournamentMessage } = useCancelTournamentMessage();
   const { cancelRegisterMessage } = useCancelRegisterMessage();
   const { startBattleMessage } = useStartBattleMessage();
+  const { isBattleCanceled } = useEventBattleCanceledSubscription(battleState?.admin);
 
   const [isOpenLeaveModal, setIsOpenLeaveModal] = useState(false);
   const [isOpenCancelTournamentModal, setIsOpenCancelTournamentModal] = useState(false);
 
-  useRestGameState();
+  useResetGameState();
 
   useEffect(() => {
-    if (!isFetching && !battleState) {
+    if (!isFetching && !battleState && !isBattleCanceled) {
       navigate(ROUTES.HOME);
     }
-  }, [isFetching, battleState, navigate]);
+  }, [isFetching, battleState, isBattleCanceled, navigate]);
 
   const { pending } = usePending();
+
+  if (isBattleCanceled) {
+    return <GameCanceledModal />;
+  }
 
   if (!battleState || !account) {
     return <Loader />;

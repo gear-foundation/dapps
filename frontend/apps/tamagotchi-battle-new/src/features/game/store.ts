@@ -19,3 +19,4 @@ export const characterAtom = atom<Character | null>(characterStorage.get());
 export const battleHistoryAtom = atom<BattleHistory[] | null>(battleHistoryStorage.get());
 
 export const otherPairBattleWatchAtom = atom<number | null>(null);
+export const isBattleCanceledAtom = atom<boolean>(false);
