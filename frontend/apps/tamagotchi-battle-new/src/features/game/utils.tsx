@@ -4,8 +4,7 @@ import { assetsCount, back_colors, body_colors } from './consts';
 import { CharacterView } from './components/character/character';
 
 export const getLazySvg = (assetType: AssetType, index: number) => {
-  const hasAsset = index >= 0 && index < assetsCount[assetType];
-  const assetNumber = hasAsset ? index + 1 : 1;
+  const assetNumber = index > 0 ? (index % assetsCount[assetType]) + 1 : 1;
 
   return React.lazy(() =>
     import(`./assets/images/character/${assetType}-${assetNumber}.svg`).then((module) => ({
