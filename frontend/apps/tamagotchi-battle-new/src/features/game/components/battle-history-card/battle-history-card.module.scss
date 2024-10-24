@@ -1,0 +1,136 @@
+.wrapper {
+  background: #fff;
+
+  width: 456px;
+  border: 1.5px solid #0b0b0b;
+
+  &.left {
+    padding: 11px 21px 12px 23px;
+    border-radius: 10px 0 0 10px;
+    border-right: 0.75px solid #0b0b0b;
+  }
+  &.right {
+    padding: 11px 23px 12px 21px;
+    border-radius: 0 10px 10px 0;
+    border-left: 0.75px solid #0b0b0b;
+  }
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+}
+
+.action-Attack {
+  color: #ca3d3d;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.action-Ultimate {
+  color: #0ed3a3;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.action-Reflect {
+  color: #7ea732;
+  font-weight: 700;
+  text-transform: capitalize;
+}
+
+.healthRow {
+  display: flex;
+}
+
+.healthCount {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 72px;
+  margin-right: 16px;
+}
+
+.receivedDamage {
+  color: #ca445f;
+}
+
+.recivedText {
+  line-height: 22px;
+  margin-left: auto;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  height: 22px;
+  margin-top: 2px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 53px;
+
+  &:first-child {
+    width: 63px;
+  }
+}
+
+.icon {
+  color: #cfcfcf;
+}
+
+.attack {
+  color: #db4242;
+}
+
+.ultimate {
+  color: #00ffc4;
+}
+
+.reflect {
+  color: #9cc53c;
+}
+
+.dodgeStat {
+  gap: 2px;
+  width: 91px;
+}
+
+.dodge {
+  color: #ffad33;
+}
+
+.dodged {
+  color: #a5a5a5;
+  flex: 1;
+  text-align: right;
+  line-height: 22px;
+}
+
+.healthCount {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.cross {
+  position: absolute;
+  top: -13px;
+  right: -11px;
+  background: #fff;
+  border: 2px solid #000000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  width: 32px;
+  svg {
+    height: 18px;
+    width: 18px;
+  }
+}

@@ -1,0 +1,19 @@
+%absoluteCenter {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@mixin gap($value, $direction: bottom) {
+  $margin: 'margin-#{$direction}';
+
+  > *:not(:last-child) {
+    #{$margin}: $value;
+  }
+}
+
+@mixin textOverflow {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

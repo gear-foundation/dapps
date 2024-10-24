@@ -12,10 +12,6 @@ import { useMultiplayerGame } from '../../hooks';
 import { useCreateGameMessage } from '../../sails/messages';
 import styles from './CreateGameForm.module.scss';
 
-export interface ContractFormValues {
-  [key: string]: string;
-}
-
 type CreateFormValues = {
   fee: number;
   name: string;

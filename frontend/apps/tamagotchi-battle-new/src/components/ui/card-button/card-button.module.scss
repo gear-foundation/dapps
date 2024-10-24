@@ -1,0 +1,36 @@
+.card {
+  display: flex;
+  padding: 20px 24px;
+  gap: 16px;
+  border-radius: 12px;
+  border: 2px solid #000000;
+  background: #ffffff;
+  box-shadow: 0px 4px 100px 0px #cacaca33;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #f5f5f5;
+    transition: all 0.3s ease;
+  }
+}
+
+.title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+  line-height: 20px;
+}
+
+.disabled {
+  pointer-events: none;
+  background: #f6f6f6;
+  border: 2px solid #00000033;
+  color: #0000004d;
+
+  .title {
+    color: #00000033;
+  }
+}

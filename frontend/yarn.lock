@@ -1993,6 +1993,7 @@ __metadata:
   peerDependencies:
     "@gear-js/api": 0.38.1
     "@gear-js/react-hooks": 0.13.0
+    "@tanstack/react-query": 5.29.0
     react: 18.2.0
     react-dom: 18.2.0
   languageName: unknown
@@ -23680,6 +23681,55 @@ __metadata:
   checksum: 10c0/5212f4d90f21fc21b87008570a37de46af9c955a7c197d0f0e1d888edd5ef597f1f41194bec6b1fdc8a21e9460089d370bf728ce39b13abe93324a768b7043fd
   languageName: node
   linkType: hard
+
+"tamagotchi-battle-new@workspace:apps/tamagotchi-battle-new":
+  version: 0.0.0-use.local
+  resolution: "tamagotchi-battle-new@workspace:apps/tamagotchi-battle-new"
+  dependencies:
+    "@dapps-frontend/error-tracking": "workspace:*"
+    "@dapps-frontend/hooks": "workspace:*"
+    "@dapps-frontend/ui": "workspace:*"
+    "@gear-js/api": "npm:0.38.1"
+    "@gear-js/react-hooks": "npm:0.13.0"
+    "@mantine/form": "npm:6.0.15"
+    "@polkadot/api": "npm:11.0.2"
+    "@polkadot/types": "npm:11.0.2"
+    "@polkadot/util": "npm:12.3.2"
+    "@polkadot/util-crypto": "npm:12.6.2"
+    "@radix-ui/react-dialog": "npm:1.0.4"
+    "@radix-ui/react-scroll-area": "npm:1.0.4"
+    "@tanstack/react-query": "npm:5.29.0"
+    "@types/node": "npm:18.16.19"
+    "@types/react": "npm:18.2.33"
+    "@types/react-dom": "npm:18.2.14"
+    "@vitejs/plugin-react-swc": "npm:3.3.2"
+    assert: "npm:2.0.0"
+    autoprefixer: "npm:10.4.15"
+    buffer: "npm:6.0.3"
+    class-variance-authority: "npm:0.6.1"
+    clsx: "npm:1.2.1"
+    eslint: "npm:8.48.0"
+    eslint-config-react-app: "npm:7.0.1"
+    framer-motion: "npm:10.16.2"
+    jotai: "npm:2.2.1"
+    postcss: "npm:8.4.29"
+    prettier: "npm:3.0.3"
+    react: "npm:18.2.0"
+    react-countdown: "npm:2.3.5"
+    react-dom: "npm:18.2.0"
+    react-router-dom: "npm:6.10.0"
+    react-transition-group: "npm:4.4.5"
+    rollup-plugin-visualizer: "npm:5.9.2"
+    sails-js: "npm:0.1.8"
+    sass: "npm:1.62.0"
+    tailwindcss: "npm:3.3.3"
+    typescript: "npm:4.9.5"
+    vite: "npm:4.4.9"
+    vite-plugin-eslint: "npm:1.8.1"
+    vite-plugin-node-polyfills: "npm:0.17.0"
+    vite-plugin-svgr: "npm:3.2.0"
+  languageName: unknown
+  linkType: soft
 
 "tamagotchi-battle@workspace:apps/tamagotchi-battle":
   version: 0.0.0-use.local
