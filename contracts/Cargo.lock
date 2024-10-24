@@ -547,7 +547,7 @@ checksum = "721cae7de5c34fbb2acd27e21e6d2cf7b886dce0c27388d46c4e6c47ea4318dd"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -618,6 +618,39 @@ name = "base64ct"
 version = "1.6.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8c3c1a368f70d6cf7302d78f8f7093da241fb8e8807c05cc9e51a125895a6d5b"
+
+[[package]]
+name = "battle"
+version = "1.1.0"
+dependencies = [
+ "battle",
+ "battle-app",
+ "battle-client",
+ "gstd",
+ "gtest",
+ "sails-idl-gen",
+ "sails-rs",
+ "tokio",
+]
+
+[[package]]
+name = "battle-app"
+version = "0.1.0"
+dependencies = [
+ "gstd",
+ "sails-rs",
+]
+
+[[package]]
+name = "battle-client"
+version = "1.1.0"
+dependencies = [
+ "battle-app",
+ "mockall",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+]
 
 [[package]]
 name = "battleship"
@@ -1551,7 +1584,7 @@ checksum = "f46882e17999c6cc590af592290432be3bce0428cb0d5f8b6715e4dc7b383eb3"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -1612,7 +1645,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "strsim 0.11.1",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -1634,7 +1667,7 @@ checksum = "d336a2a514f6ccccaa3e09b02d41d35330c07ddf03a62165fcec10bb561c7806"
 dependencies = [
  "darling_core 0.20.10",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -1697,7 +1730,7 @@ checksum = "62d671cc41a825ebabc75757b62d3d168c577f9149b2d49ece1dad1f72119d25"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -1710,7 +1743,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "rustc_version",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -1730,7 +1763,7 @@ checksum = "cb7330aeadfbe296029522e6c40f315320aba36fc43a5b3632f3795348f3bd22"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -1783,6 +1816,12 @@ dependencies = [
  "redox_users",
  "winapi",
 ]
+
+[[package]]
+name = "downcast"
+version = "0.11.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1435fa1053d8b2fbbe9be7e97eca7f33d37b28409959813daefc1446a14247f1"
 
 [[package]]
 name = "downcast-rs"
@@ -1987,7 +2026,7 @@ checksum = "a1ab991c1362ac86c61ab6f556cff143daa22e5a15e4e189df818b2fd19fe65b"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -2008,7 +2047,7 @@ dependencies = [
  "darling 0.20.10",
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -2124,13 +2163,13 @@ dependencies = [
  "prettyplease",
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
 name = "extended-vft-app"
 version = "0.1.0"
-source = "git+https://github.com/gear-foundation/standards/#a74c7e7df7eee18010c32229a86588f8aab29e74"
+source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -2144,7 +2183,7 @@ dependencies = [
 [[package]]
 name = "extended-vmt-app"
 version = "0.1.0"
-source = "git+https://github.com/gear-foundation/standards/#a74c7e7df7eee18010c32229a86588f8aab29e74"
+source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
 dependencies = [
  "gear-wasm-builder",
  "gstd",
@@ -2158,7 +2197,7 @@ dependencies = [
 [[package]]
 name = "extended_vft_wasm"
 version = "0.1.0"
-source = "git+https://github.com/gear-foundation/standards/#a74c7e7df7eee18010c32229a86588f8aab29e74"
+source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
 dependencies = [
  "extended-vft-app",
  "sails-client-gen",
@@ -2169,7 +2208,7 @@ dependencies = [
 [[package]]
 name = "extended_vmt_wasm"
 version = "0.1.0"
-source = "git+https://github.com/gear-foundation/standards/#a74c7e7df7eee18010c32229a86588f8aab29e74"
+source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
 dependencies = [
  "extended-vmt-app",
  "sails-client-gen",
@@ -2271,6 +2310,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "fragile"
+version = "2.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c2141d6d6c8512188a7891b4b01590a45f6dac67afb4f255c4124dbb86d4eaa"
+
+[[package]]
 name = "frame-metadata"
 version = "15.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2344,7 +2389,7 @@ dependencies = [
  "proc-macro-warning",
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -2357,7 +2402,7 @@ dependencies = [
  "proc-macro-crate 1.3.1",
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -2368,7 +2413,7 @@ checksum = "0c3562da4b7b8e24189036c58d459b260e10c8b7af2dd180b7869ae29bb66277"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -2476,7 +2521,7 @@ checksum = "162ee34ebcb7c64a8abebc059ce0fee27c2262618d7b60ed8faf72fef13c3650"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -2632,7 +2677,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2b6c7b3dc1307f835f34a958a85e38733dea9ac38c1c7eaf91bf4191c246604e"
 dependencies = [
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -2950,7 +2995,7 @@ checksum = "553630feadf7b76442b0849fd25fdf89b860d933623aec9693fed19af0400c78"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -3061,7 +3106,7 @@ checksum = "aa7e53b4c825fef578e8342784d1c45f8f83ece78f4b6090ff0f27a118227083"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -3105,7 +3150,7 @@ dependencies = [
  "proc-macro-crate 1.3.1",
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -3189,7 +3234,7 @@ checksum = "6a607026ef46bf04c1a5aa997a50f5e389a062af59ad20caf16d4afa470cede4"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -3221,7 +3266,7 @@ dependencies = [
  "gprimitives",
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -4250,7 +4295,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "regex-syntax 0.6.29",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -4298,7 +4343,7 @@ dependencies = [
  "macro_magic_core",
  "macro_magic_macros",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -4312,7 +4357,7 @@ dependencies = [
  "macro_magic_core_macros",
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -4323,7 +4368,7 @@ checksum = "d710e1214dffbab3b5dacb21475dde7d6ed84c69ff722b3a47a782668d44fbac"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -4334,7 +4379,7 @@ checksum = "b8fb85ec1620619edf2984a7693497d4ec88a9665d8b87e942856884c92dbf2a"
 dependencies = [
  "macro_magic_core",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -4470,6 +4515,33 @@ dependencies = [
  "libc",
  "wasi 0.11.0+wasi-snapshot-preview1",
  "windows-sys 0.52.0",
+]
+
+[[package]]
+name = "mockall"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "43766c2b5203b10de348ffe19f7e54564b64f3d6018ff7648d1e2d6d3a0f0a48"
+dependencies = [
+ "cfg-if",
+ "downcast",
+ "fragile",
+ "lazy_static",
+ "mockall_derive",
+ "predicates",
+ "predicates-tree",
+]
+
+[[package]]
+name = "mockall_derive"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "af7cbce79ec385a1d4f54baa90a76401eb15d9cab93685f62e7e9f942aa00ae2"
+dependencies = [
+ "cfg-if",
+ "proc-macro2",
+ "quote",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -4637,7 +4709,7 @@ checksum = "96667db765a921f7b295ffee8b60472b686a51d4f21c2ee4ffdb94c7013b65a6"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -4912,7 +4984,7 @@ dependencies = [
  "pest_meta",
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -4947,29 +5019,29 @@ dependencies = [
 
 [[package]]
 name = "pin-project"
-version = "1.1.6"
+version = "1.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "baf123a161dde1e524adf36f90bc5d8d3462824a9c43553ad07a8183161189ec"
+checksum = "be57f64e946e500c8ee36ef6331845d40a93055567ec57e8fae13efd33759b95"
 dependencies = [
  "pin-project-internal",
 ]
 
 [[package]]
 name = "pin-project-internal"
-version = "1.1.6"
+version = "1.1.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "a4502d8515ca9f32f1fb543d987f63d95a14934883db45bdb48060b6b69257f8"
+checksum = "3c0f5fad0874fc7abcd4d750e76917eaebbecaa2c20bde22e1dbeeba8beb758c"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
 name = "pin-project-lite"
-version = "0.2.14"
+version = "0.2.15"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bda66fc9667c18cb2758a2ac84d1167245054bcf85d5d1aaa6923f45801bdd02"
+checksum = "915a1e146535de9163f3987b8944ed8cf49a18bb0056bcebcdcece385cece4ff"
 
 [[package]]
 name = "pin-utils"
@@ -5067,13 +5139,39 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "925383efa346730478fb4838dbe9137d2a47675ad789c546d150a6e1dd4ab31c"
 
 [[package]]
-name = "prettyplease"
-version = "0.2.24"
+name = "predicates"
+version = "3.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "910d41a655dac3b764f1ade94821093d3610248694320cd072303a8eedcf221d"
+checksum = "7e9086cc7640c29a356d1a29fd134380bee9d8f79a17410aa76e7ad295f42c97"
+dependencies = [
+ "anstyle",
+ "predicates-core",
+]
+
+[[package]]
+name = "predicates-core"
+version = "1.0.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ae8177bee8e75d6846599c6b9ff679ed51e882816914eec639944d7c9aa11931"
+
+[[package]]
+name = "predicates-tree"
+version = "1.0.11"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "41b740d195ed3166cd147c8047ec98db0e22ec019eb8eeb76d343b795304fb13"
+dependencies = [
+ "predicates-core",
+ "termtree",
+]
+
+[[package]]
+name = "prettyplease"
+version = "0.2.25"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "64d1ec885c64d0457d564db4ec299b2dae3f9c02808b8ad9c3a089c591b18033"
 dependencies = [
  "proc-macro2",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -5140,7 +5238,7 @@ checksum = "3d1eaa7fa0aa1929ffdf7eeb6eac234dde6268914a14ad44d23521ab6a9b258e"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -5340,7 +5438,7 @@ checksum = "bcc303e793d3734489387d205e9b186fac9c6cfacedd98cbb2e8a5943595f3e6"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -5841,7 +5939,7 @@ dependencies = [
  "proc-macro-error",
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -5859,6 +5957,7 @@ dependencies = [
  "gtest",
  "hashbrown 0.14.5",
  "hex",
+ "mockall",
  "parity-scale-codec",
  "sails-macros",
  "scale-info",
@@ -5939,14 +6038,14 @@ dependencies = [
  "proc-macro-crate 3.2.0",
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
 name = "scale-info"
-version = "2.11.4"
+version = "2.11.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "22760a375f81a31817aeaf6f5081e9ccb7ffd7f2da1809a6e3fc82b6656f10d5"
+checksum = "1aa7ffc1c0ef49b0452c6e2986abf2b07743320641ffd5fc63d552458e3b779b"
 dependencies = [
  "bitvec",
  "cfg-if",
@@ -5958,14 +6057,14 @@ dependencies = [
 
 [[package]]
 name = "scale-info-derive"
-version = "2.11.4"
+version = "2.11.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "abc61ebe25a5c410c0e245028fc9934bf8fa4817199ef5a24a68092edfd34614"
+checksum = "46385cc24172cf615450267463f937c10072516359b3ff1cb24228a4a08bf951"
 dependencies = [
  "proc-macro-crate 3.2.0",
  "proc-macro2",
  "quote",
- "syn 1.0.109",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -5987,7 +6086,7 @@ dependencies = [
  "proc-macro2",
  "quote",
  "scale-info",
- "syn 2.0.82",
+ "syn 2.0.85",
  "thiserror",
 ]
 
@@ -6224,7 +6323,7 @@ checksum = "7e85ad2009c50b58e87caa8cd6dac16bdf511bbfb7af6c33df902396aa480fa5"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -6599,7 +6698,7 @@ dependencies = [
  "proc-macro-crate 1.3.1",
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -6699,7 +6798,7 @@ checksum = "8dc707d9f5bf155d584900783e328cb3dc79c950f898a18a8f24066f41f040a5"
 dependencies = [
  "quote",
  "sp-core-hashing",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -6724,7 +6823,7 @@ checksum = "f12dae7cf6c1e825d13ffd4ce16bd9309db7c539929d0302b4443ed451a9f4e5"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -6868,7 +6967,7 @@ dependencies = [
  "proc-macro-crate 1.3.1",
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -7011,7 +7110,7 @@ dependencies = [
  "parity-scale-codec",
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -7206,7 +7305,7 @@ dependencies = [
  "scale-info",
  "scale-typegen",
  "subxt-metadata",
- "syn 2.0.82",
+ "syn 2.0.85",
  "thiserror",
  "tokio",
 ]
@@ -7267,7 +7366,7 @@ dependencies = [
  "quote",
  "scale-typegen",
  "subxt-codegen",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -7296,9 +7395,9 @@ dependencies = [
 
 [[package]]
 name = "syn"
-version = "2.0.82"
+version = "2.0.85"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "83540f837a8afc019423a8edb95b52a8effe46957ee402287f4292fae35be021"
+checksum = "5023162dfcd14ef8f32034d8bcd4cc5ddc61ef7a247c024a33e24e1f24d21b56"
 dependencies = [
  "proc-macro2",
  "quote",
@@ -7470,6 +7569,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "termtree"
+version = "0.4.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3369f5ac52d5eb6ab48c6b4ffdc8efbcad6b89c765749064ba298f2c68a16a76"
+
+[[package]]
 name = "thiserror"
 version = "1.0.65"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7486,7 +7591,7 @@ checksum = "ae71770322cbd277e69d762a16c444af02aa0575ac0d174f0b9562d3b37f8602"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -7609,7 +7714,7 @@ checksum = "693d596312e88961bc67d7f1f97af8a70227d9f90c31bba5806eec004978d752"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -7761,7 +7866,7 @@ checksum = "34704c8d6ebcbc939824180af020566b01a7c01f80641264eba0999f6c2b6be7"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -8014,7 +8119,7 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 [[package]]
 name = "vft-service"
 version = "0.1.0"
-source = "git+https://github.com/gear-foundation/standards/#a74c7e7df7eee18010c32229a86588f8aab29e74"
+source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
 dependencies = [
  "gstd",
  "log",
@@ -8026,7 +8131,7 @@ dependencies = [
 [[package]]
 name = "vmt-service"
 version = "0.1.0"
-source = "git+https://github.com/gear-foundation/standards/#a74c7e7df7eee18010c32229a86588f8aab29e74"
+source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
 dependencies = [
  "gstd",
  "log",
@@ -8104,6 +8209,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "warrior-app"
+version = "0.1.0"
+dependencies = [
+ "sails-rs",
+]
+
+[[package]]
+name = "warrior-wasm"
+version = "1.1.0"
+dependencies = [
+ "gear-wasm-builder",
+ "sails-idl-gen",
+ "sails-rs",
+ "warrior-app",
+]
+
+[[package]]
 name = "wasi"
 version = "0.9.0+wasi-snapshot-preview1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -8137,7 +8259,7 @@ dependencies = [
  "once_cell",
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
  "wasm-bindgen-shared",
 ]
 
@@ -8159,7 +8281,7 @@ checksum = "26c6ab57572f7a24a4985830b120de1594465e5d500f24afe89e16b4e833ef68"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
  "wasm-bindgen-backend",
  "wasm-bindgen-shared",
 ]
@@ -8988,7 +9110,7 @@ checksum = "fa4f8080344d4671fb4e831a13ad1e68092748387dfc4f55e356242fae12ce3e"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
@@ -9008,7 +9130,7 @@ checksum = "ce36e65b0d2999d2aafac989fb249189a141aee1f53c612c1f37d72631959f69"
 dependencies = [
  "proc-macro2",
  "quote",
- "syn 2.0.82",
+ "syn 2.0.85",
 ]
 
 [[package]]
