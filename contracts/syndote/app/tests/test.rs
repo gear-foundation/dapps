@@ -3,7 +3,7 @@ use sails_rs::{
     gtest::{calls::*, Program, System},
     Encode, MessageId,
 };
-use syndote_wasm::{
+use syndote::{
     traits::{Syndote, SyndoteFactory},
     GameStatus, Syndote as SyndoteClient, SyndoteFactory as Factory,
 };
@@ -20,7 +20,7 @@ async fn test_play_game() {
     let program_space = GTestRemoting::new(system, ADMIN_ID.into());
     let code_id = program_space
         .system()
-        .submit_code_file("../../target/wasm32-unknown-unknown/release/syndote_wasm.opt.wasm");
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/syndote.opt.wasm");
 
     let syndote_factory = Factory::new(program_space.clone());
 
