@@ -11,6 +11,7 @@ members = [
     "car-races/car-2",
     "car-races/car-3",
     "car-races/wasm",
+    "concert/wasm",
     "galactic-express",
     "multisig-wallet",
     "multisig-wallet/state",
