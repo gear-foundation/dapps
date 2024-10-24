@@ -2,12 +2,12 @@
 name = "syndote-player"
 version.workspace = true
 edition.workspace = true
-publish.workspace = true
+license.workspace = true
 
 [dependencies]
-gstd.workspace = true
-syndote-io.workspace = true
+player-app = { path = "../app" }
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
-syndote-player-io.workspace = true
+sails-idl-gen.workspace = true
+player-app = { path = "../app" }
