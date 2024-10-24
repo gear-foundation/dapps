@@ -3,6 +3,8 @@ resolver = "2"
 # Keep in the lexicographic order!
 # Remove a member if it's used as a dependency in the workspace.
 members = [
+    "battle",
+    "battle/warrior/wasm",
     "battleship",
     "car-races/app",
     "car-races/car-1",
