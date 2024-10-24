@@ -67,7 +67,7 @@ async fn create_concert() {
         .submit_code_file("../../target/wasm32-unknown-unknown/release/concert.opt.wasm");
 
     let concert_factory = Factory::new(program_space.clone());
-    let (vmt_id, _vmt_program) = init_multitoken(&program_space.system());
+    let (vmt_id, _vmt_program) = init_multitoken(program_space.system());
     let concert_id = concert_factory
         .new(USER_ID.into(), vmt_id)
         .send_recv(code_id, "123")
@@ -111,13 +111,13 @@ async fn buy_tickets() {
         .submit_code_file("../../target/wasm32-unknown-unknown/release/concert.opt.wasm");
 
     let concert_factory = Factory::new(program_space.clone());
-    let (vmt_id, vmt_program) = init_multitoken(&program_space.system());
+    let (vmt_id, vmt_program) = init_multitoken(program_space.system());
     let concert_id = concert_factory
         .new(USER_ID.into(), vmt_id)
         .send_recv(code_id, "123")
         .await
         .unwrap();
-    grant_roles(&program_space.system(), &vmt_program, concert_id);
+    grant_roles(program_space.system(), &vmt_program, concert_id);
     let mut client = ConcertClient::new(program_space.clone());
     // create
     client
@@ -155,7 +155,7 @@ async fn buy_tickets() {
     assert_eq!(state.tickets_left, U256::from(99));
     assert_eq!(state.metadata[0].0, USER_ID.into());
     let balance = get_balance(
-        &program_space.system(),
+        program_space.system(),
         &vmt_program,
         USER_ID.into(),
         TOKEN_ID,
@@ -174,13 +174,13 @@ async fn hold_concert() {
         .submit_code_file("../../target/wasm32-unknown-unknown/release/concert.opt.wasm");
 
     let concert_factory = Factory::new(program_space.clone());
-    let (vmt_id, vmt_program) = init_multitoken(&program_space.system());
+    let (vmt_id, vmt_program) = init_multitoken(program_space.system());
     let concert_id = concert_factory
         .new(USER_ID.into(), vmt_id)
         .send_recv(code_id, "123")
         .await
         .unwrap();
-    grant_roles(&program_space.system(), &vmt_program, concert_id);
+    grant_roles(program_space.system(), &vmt_program, concert_id);
     let mut client = ConcertClient::new(program_space.clone());
     // create
     client
@@ -217,16 +217,16 @@ async fn hold_concert() {
     // check state
     let state = client.get_storage().recv(concert_id).await.unwrap();
 
-    assert_eq!(state.running, false);
+    assert!(!state.running);
     let balance = get_balance(
-        &program_space.system(),
+        program_space.system(),
         &vmt_program,
         USER_ID.into(),
         TOKEN_ID,
     );
     assert_eq!(balance, 0.into());
     let balance = get_balance(
-        &program_space.system(),
+        program_space.system(),
         &vmt_program,
         USER_ID.into(),
         TOKEN_ID + 1,
