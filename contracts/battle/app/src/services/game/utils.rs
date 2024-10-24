@@ -151,11 +151,8 @@ impl Battle {
     pub fn create_pairs(&mut self, round_start_time: u64) {
         self.pairs = HashMap::new();
         self.players_to_pairs = HashMap::new();
-        let mut participants_vec: Vec<(ActorId, Player)> = self
-            .participants
-            .clone()
-            .into_iter()
-            .collect();
+        let mut participants_vec: Vec<(ActorId, Player)> =
+            self.participants.clone().into_iter().collect();
 
         while participants_vec.len() > 1 {
             let range = participants_vec.len() as u8;

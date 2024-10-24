@@ -272,7 +272,49 @@ pub fn cancel_register(storage: &mut Storage) -> Result<Event, BattleError> {
     battle.participants.remove(&msg_src);
     storage.players_to_battle_id.remove(&msg_src);
 
-    Ok(Event::RegisterCanceled)
+    Ok(Event::RegisterCanceled { player_id: msg_src })
+}
+
+pub fn delete_player(storage: &mut Storage, player_id: ActorId) -> Result<Event, BattleError> {
+    let msg_src = msg::source();
+    let admin_id = storage
+        .players_to_battle_id
+        .get(&msg_src)
+        .ok_or(BattleError::NoSuchPlayer)?;
+
+    let battle = storage
+        .battles
+        .get_mut(admin_id)
+        .ok_or(BattleError::NoSuchGame)?;
+
+    if battle.admin != msg_src {
+        return Err(BattleError::AccessDenied);
+    }
+
+    if battle.state != State::Registration {
+        return Err(BattleError::WrongState);
+    }
+
+    if !battle.participants.contains_key(&player_id) {
+        return Err(BattleError::NoSuchPlayer);
+    }
+
+    let reservation_id = battle
+        .reservation
+        .get(&player_id)
+        .ok_or(BattleError::NoSuchReservation)?;
+
+    if battle.bid != 0 {
+        msg::send_with_gas(player_id, "", 0, battle.bid).expect("Error in sending the value");
+    }
+    reservation_id
+        .unreserve()
+        .expect("Unreservation across executions");
+    battle.reservation.remove(&player_id);
+    battle.participants.remove(&player_id);
+    storage.players_to_battle_id.remove(&player_id);
+
+    Ok(Event::RegisterCanceled { player_id })
 }
 
 pub fn cancel_tournament(storage: &mut Storage) -> Result<Event, BattleError> {

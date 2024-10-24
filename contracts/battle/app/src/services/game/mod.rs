@@ -34,7 +34,9 @@ pub enum Event {
         user_name: String,
         bid: u128,
     },
-    RegisterCanceled,
+    RegisterCanceled {
+        player_id: ActorId,
+    },
     BattleCanceled {
         game_id: ActorId,
     },
@@ -154,6 +156,11 @@ impl BattleService {
         let event = services::utils::panicking(|| funcs::cancel_register(storage));
         self.notify_on(event.clone()).expect("Notification Error");
     }
+    pub fn delete_player(&mut self, player_id: ActorId) {
+        let storage = self.get_mut();
+        let event = services::utils::panicking(|| funcs::delete_player(storage, player_id));
+        self.notify_on(event.clone()).expect("Notification Error");
+    }
     pub fn cancel_tournament(&mut self) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::cancel_tournament(storage));
@@ -214,12 +221,20 @@ impl BattleService {
 
     pub fn get_battle(&self, game_id: ActorId) -> Option<BattleState> {
         let storage = self.get();
-        storage.battles.get(&game_id).cloned().map(|battle| battle.into())
+        storage
+            .battles
+            .get(&game_id)
+            .cloned()
+            .map(|battle| battle.into())
     }
     pub fn get_my_battle(&self) -> Option<BattleState> {
         let storage = self.get();
         if let Some(game_id) = storage.players_to_battle_id.get(&msg::source()) {
-            storage.battles.get(game_id).cloned().map(|battle| battle.into())
+            storage
+                .battles
+                .get(game_id)
+                .cloned()
+                .map(|battle| battle.into())
         } else {
             None
         }
