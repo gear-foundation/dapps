@@ -1,4 +1,4 @@
-use crate::services::syndote::*;
+use crate::services::game::*;
 use gstd::{errors::Error, ReservationId, ReservationIdExt};
 use sails_rs::ActorId;
 

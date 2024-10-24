@@ -1,4 +1,4 @@
-use crate::services::syndote::{Storage, PENALTY};
+use crate::services::game::{Storage, PENALTY};
 use sails_rs::{
     collections::{HashMap, HashSet},
     gstd::{exec, msg},

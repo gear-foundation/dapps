@@ -10,5 +10,5 @@ sails-rs = { workspace = true, features = ["gtest"] }
 
 [dev-dependencies]
 gclient.workspace = true
-syndote-wasm = { path = "../wasm" }
+syndote = { path = "../wasm" }
 tokio = "1"
