@@ -29,6 +29,14 @@
   &.my {
     background: #00ffc4;
   }
+
+  &.admin {
+    grid-template-columns: 28px 17px 1fr 180px;
+  }
+}
+
+.cross {
+  margin-right: 4px;
 }
 
 .number {

@@ -1,5 +1,4 @@
-import { Appearance, Move } from '@/app/utils';
-import { HexString } from '@gear-js/api';
+import { Move } from '@/app/utils';
 
 export type AssetType = 'head' | 'hat' | 'body' | 'accessories';
 export type AssetsCount = Record<AssetType, number>;
@@ -16,8 +15,6 @@ export type PlayerState = {
   isDodged: boolean;
   receivedDamage: number;
 };
-
-export type Character = CharacterStatsFormValues & { appearance: Appearance | null; warriorId: HexString | null };
 
 export type CharacterStatsFormValues = {
   attack: number;

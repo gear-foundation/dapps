@@ -5,6 +5,7 @@ import { Text } from '@/components';
 import { Heading } from '@/components/ui/heading';
 import { AttackIcon, CaretRightIcon, DefenceIcon, DodgeIcon } from '../../assets/images';
 import { CharacterStatsFormValues } from '../../types';
+import { characterStatsStorage } from '../../store';
 import styles from './character-stats-form.module.scss';
 
 type Stats = 'attack' | 'defence' | 'dodge';
@@ -50,7 +51,7 @@ type CharacterStatsFormProps = {
 
 export const CharacterStatsForm = ({ onValuesChange }: CharacterStatsFormProps) => {
   const statsForm = useForm({
-    initialValues: {
+    initialValues: characterStatsStorage.get() || {
       attack: 10,
       defence: 0,
       dodge: 0,
@@ -67,6 +68,7 @@ export const CharacterStatsForm = ({ onValuesChange }: CharacterStatsFormProps) 
   const { getInputProps, setFieldValue, values } = statsForm;
   const initialPoints = 10;
   const availablePoints = 20 + initialPoints - values.attack - values.defence - values.dodge;
+  const displayedAvailablePoints = Math.min(20, Math.max(availablePoints, 0));
 
   useEffect(() => {
     const isValid = availablePoints === 0;
@@ -75,7 +77,8 @@ export const CharacterStatsForm = ({ onValuesChange }: CharacterStatsFormProps) 
 
   const drawRow = ({ icon, name, percentPerPoint, maxCount, minCount, description }: CharacterStats) => {
     const getValidCount = (count: number) => {
-      return Math.max(minCount, Math.min(Number(count), maxCount));
+      const negative = Math.min(availablePoints, 0);
+      return Math.max(minCount, Math.min(Number(count) + negative, maxCount));
     };
 
     const value = values[name];
@@ -85,7 +88,7 @@ export const CharacterStatsForm = ({ onValuesChange }: CharacterStatsFormProps) 
         <div className={styles.row}>
           {icon}
           <Text size="md" className={styles.text}>
-            {name} {percentPerPoint && <span>({percentPerPoint * value}%)</span>}:
+            {name} {percentPerPoint && <span>({percentPerPoint * Math.min(value, maxCount)}%)</span>}:
           </Text>
 
           <Button
@@ -140,7 +143,7 @@ export const CharacterStatsForm = ({ onValuesChange }: CharacterStatsFormProps) 
       </Heading>
 
       <Text size="sm">
-        <span className={styles.points}>{availablePoints} points</span> are available to distribute.
+        <span className={styles.points}>{displayedAvailablePoints} points</span> are available to distribute.
       </Text>
 
       <form className={styles.stats}>{charStats.map((stats) => drawRow(stats))}</form>

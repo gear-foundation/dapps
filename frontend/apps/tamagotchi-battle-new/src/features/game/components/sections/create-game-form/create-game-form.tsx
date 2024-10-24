@@ -8,7 +8,7 @@ import { VaraIcon } from '@/components/layout';
 import { usePending } from '@/features/game/hooks';
 import { Background } from '../../background';
 import { Card } from '@/components';
-import { characterAtom } from '@/features/game/store';
+import { characterAppearanceAtom, characterStatsStorage, warriorIdStorage } from '@/features/game/store';
 import { useCreateNewBattleMessage } from '@/app/utils';
 import { ROUTES } from '@/app/consts';
 import styles from './create-game-form.module.scss';
@@ -25,13 +25,15 @@ function CreateGameForm() {
   const { api } = useApi();
   const { getFormattedBalanceValue } = useBalanceFormat();
 
-  const character = useAtomValue(characterAtom);
+  const appearance = useAtomValue(characterAppearanceAtom);
+  const characterStats = characterStatsStorage.get();
+  const warriorId = warriorIdStorage.get();
 
   useEffect(() => {
-    if (!character) {
+    if (!appearance || !characterStats) {
       navigate(-1);
     }
-  }, [character, navigate]);
+  }, [appearance, characterStats, navigate]);
 
   const { createNewBattleMessage } = useCreateNewBattleMessage();
   const { pending, setPending } = usePending();
@@ -57,10 +59,10 @@ function CreateGameForm() {
   const { getInputProps: getCreateInputProps, onSubmit: onCreateSubmit } = createForm;
 
   const handleCreateSession = async (values: CreateGameFormValues) => {
-    if (!account?.decodedAddress || !character) {
+    if (!account?.decodedAddress || !appearance || !characterStats) {
       return;
     }
-    const { appearance, attack, defence, dodge, warriorId } = character;
+    const { attack, defence, dodge } = characterStats;
     const { name, tournamentName } = values;
     const fee = BigInt(getChainBalanceValue(values.fee).toFixed());
     setPending(true);

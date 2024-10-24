@@ -287,6 +287,19 @@ export class Battle {
     );
   }
 
+  public deletePlayer(player_id: ActorId): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Battle', 'DeletePlayer', player_id],
+      '(String, String, [u8;32])',
+      'Null',
+      this._program.programId,
+    );
+  }
+
   public exitGame(): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
@@ -480,7 +493,9 @@ export class Battle {
     });
   }
 
-  public subscribeToRegisterCanceledEvent(callback: (data: null) => void | Promise<void>): Promise<() => void> {
+  public subscribeToRegisterCanceledEvent(
+    callback: (data: { player_id: ActorId }) => void | Promise<void>,
+  ): Promise<() => void> {
     return this._program.api.gearEvents.subscribeToGearEvent('UserMessageSent', ({ data: { message } }) => {
       if (!message.source.eq(this._program.programId) || !message.destination.eq(ZERO_ADDRESS)) {
         return;
@@ -488,7 +503,11 @@ export class Battle {
 
       const payload = message.payload.toHex();
       if (getServiceNamePrefix(payload) === 'Battle' && getFnNamePrefix(payload) === 'RegisterCanceled') {
-        callback(null);
+        callback(
+          this._program.registry
+            .createType('(String, String, {"player_id":"[u8;32]"})', message.payload)[2]
+            .toJSON() as unknown as { player_id: ActorId },
+        );
       }
     });
   }

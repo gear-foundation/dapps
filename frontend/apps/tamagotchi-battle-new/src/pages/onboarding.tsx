@@ -16,7 +16,7 @@ import { GameButton, Timer } from '@/features/game/components';
 import { useEffect, useState } from 'react';
 import { Modal, Segmented, Text } from '@/components';
 import { mockCharacterView, mockCharacterView2, mockPlayer1, mockPlayer2 } from '@/features/game/consts';
-import { characterStorage } from '@/features/game/store';
+import { characterAppearanceStorage, characterStatsStorage } from '@/features/game/store';
 import styles from './onboarding.module.scss';
 
 const steps = [
@@ -82,10 +82,8 @@ const steps = [
 
 export default function OnboardingPage() {
   const navigate = useNavigate();
-  const character = characterStorage.get();
-  const characterView = character?.appearance || mockCharacterView;
-  const { attack, defence, dodge } = character || {};
-  const characterStats = character ? { attack, defence, dodge } : null;
+  const characterView = characterAppearanceStorage.get() || mockCharacterView;
+  const characterStats = characterStatsStorage.get();
 
   useEffect(() => {
     window.scrollTo({ top: 0 });

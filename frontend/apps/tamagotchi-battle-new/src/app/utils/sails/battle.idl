@@ -92,6 +92,7 @@ service Battle {
   ChangeConfig : (config: Config) -> null;
   CreateNewBattle : (battle_name: str, user_name: str, warrior_id: opt actor_id, appearance: opt Appearance, attack: u16, defence: u16, dodge: u16) -> null;
   DelayedCancelTournament : (game_id: actor_id, time_creation: u64) -> null;
+  DeletePlayer : (player_id: actor_id) -> null;
   ExitGame : () -> null;
   MakeMove : (warrior_move: Move) -> null;
   Register : (game_id: actor_id, warrior_id: opt actor_id, appearance: opt Appearance, user_name: str, attack: u16, defence: u16, dodge: u16) -> null;
@@ -105,7 +106,7 @@ service Battle {
   events {
     NewBattleCreated: struct { battle_id: actor_id, bid: u128 };
     PlayerRegistered: struct { admin_id: actor_id, user_name: str, bid: u128 };
-    RegisterCanceled;
+    RegisterCanceled: struct { player_id: actor_id };
     BattleCanceled: struct { game_id: actor_id };
     BattleStarted;
     MoveMade;

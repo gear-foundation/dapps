@@ -18,7 +18,7 @@ const List = ({ items, className, maxLength, ...restProps }: ListProps) => {
     <div className={clsx(styles.wrapper, className)} {...restProps}>
       {displayedItems}
       {items.length > maxLength && !showAll && (
-        <Button color="light" text="Show More" onClick={() => setShowAll(true)} />
+        <Button color="border" text="Show More" onClick={() => setShowAll(true)} />
       )}
     </div>
   );

@@ -11,17 +11,22 @@ import { CharacterView } from '@/features/game/components/character/character';
 import { generateRandomCharacterView } from '@/features/game/utils';
 import { ROUTES } from '@/app/consts';
 
-import { characterAtom, characterStorage } from '@/features/game/store';
+import {
+  characterAppearanceAtom,
+  characterAppearanceStorage,
+  characterStatsStorage,
+  warriorIdStorage,
+} from '@/features/game/store';
 import { CharacterStatsFormValues } from '@/features/game/types';
 import styles from './generate-character.module.scss';
 
 export default function GenerateCharacter() {
   const navigate = useNavigate();
   const [characterView, setCharacterView] = useState<CharacterView>(
-    characterStorage.get()?.appearance || generateRandomCharacterView(),
+    characterAppearanceStorage.get() || generateRandomCharacterView(),
   );
   const [prevCharacterView, setPrevCharacterView] = useState<CharacterView | null>(generateRandomCharacterView());
-  const [characterStats, setCharacterStats] = useState<CharacterStatsFormValues>();
+  const [characterStats, setCharacterStats] = useState<CharacterStatsFormValues | null>(characterStatsStorage.get());
   const [isNextDisabled, setIsNextDisabled] = useState(true);
 
   const generate = () => {
@@ -29,15 +34,14 @@ export default function GenerateCharacter() {
     setCharacterView(generateRandomCharacterView());
   };
 
-  const setCharacter = useSetAtom(characterAtom);
+  const setCharacterAppearance = useSetAtom(characterAppearanceAtom);
 
   const onNextClick = (to: string) => {
     if (!characterStats) return;
-    const { attack, defence, dodge } = characterStats;
-    const character = { attack, defence, dodge, appearance: characterView, warriorId: null };
-
-    setCharacter(character);
-    characterStorage.set(character);
+    setCharacterAppearance(characterView);
+    characterStatsStorage.set(characterStats);
+    characterAppearanceStorage.set(characterView);
+    warriorIdStorage.set(null);
     navigate(to);
   };
 

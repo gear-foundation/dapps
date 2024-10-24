@@ -10,7 +10,12 @@ import { AdminIcon, SearchIcon } from '@/features/game/assets/images';
 import { ROUTES } from '@/app/consts';
 import { useGetAppearanceQuery } from '@/app/utils/sails/queries/use-get-appearance-query';
 import { CharacterStatsFormValues } from '@/features/game/types';
-import { characterAtom, characterStorage } from '@/features/game/store';
+import {
+  characterAppearanceAtom,
+  characterAppearanceStorage,
+  characterStatsStorage,
+  warriorIdStorage,
+} from '@/features/game/store';
 
 import styles from './import-character.module.scss';
 
@@ -19,20 +24,21 @@ export default function ImportCharacter() {
   const [address, setAddress] = useState<string>('');
 
   const { appearance, error } = useGetAppearanceQuery(address);
-  const [characterStats, setCharacterStats] = useState<CharacterStatsFormValues>();
+  const [characterStats, setCharacterStats] = useState<CharacterStatsFormValues | null>(characterStatsStorage.get());
   const [isNextDisabled, setIsNextDisabled] = useState(true);
 
   const isCharacterFound = Boolean(appearance);
 
-  const setCharacter = useSetAtom(characterAtom);
+  const setCharacterAppearance = useSetAtom(characterAppearanceAtom);
 
   const onNextClick = (to: string) => {
     if (!characterStats || !appearance) return;
     const { attack, defence, dodge } = characterStats;
-    const character = { attack, defence, dodge, warriorId: address as `0x${string}`, appearance };
 
-    setCharacter(character);
-    characterStorage.set(character);
+    setCharacterAppearance(appearance);
+    warriorIdStorage.set(address as `0x${string}`);
+    characterAppearanceStorage.set(appearance);
+    characterStatsStorage.set({ attack, defence, dodge });
     navigate(to);
   };
 

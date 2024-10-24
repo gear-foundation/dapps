@@ -6,3 +6,4 @@ export { useStartBattleMessage } from './use-start-battle-message';
 export { useMakeMoveMessage } from './use-make-move-message';
 export { useStartNextFightMessage } from './use-start-next-fight-message';
 export { useExitGameMessage } from './use-exit-game-message';
+export { useDeletePlayerMessage } from './use-delete-player-message';

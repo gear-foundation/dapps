@@ -8,8 +8,14 @@ export function useEventBattleCanceledSubscription(currentGameId?: string) {
   const [isBattleCanceled, setIsBattleCanceled] = useAtom(isBattleCanceledAtom);
   const { account } = useAccount();
 
-  const onData = ({ game_id }: { game_id: string }) => {
+  const onBattleCanceled = ({ game_id }: { game_id: string }) => {
     if (currentGameId === game_id && account?.decodedAddress !== currentGameId) {
+      setIsBattleCanceled(true);
+    }
+  };
+
+  const onRegisterCanceled = ({ player_id }: { player_id: string }) => {
+    if (account?.decodedAddress === player_id) {
       setIsBattleCanceled(true);
     }
   };
@@ -18,7 +24,14 @@ export function useEventBattleCanceledSubscription(currentGameId?: string) {
     program,
     serviceName: 'battle',
     functionName: 'subscribeToBattleCanceledEvent',
-    onData,
+    onData: onBattleCanceled,
+  });
+
+  useProgramEvent({
+    program,
+    serviceName: 'battle',
+    functionName: 'subscribeToRegisterCanceledEvent',
+    onData: onRegisterCanceled,
   });
 
   return { isBattleCanceled, setIsBattleCanceled };

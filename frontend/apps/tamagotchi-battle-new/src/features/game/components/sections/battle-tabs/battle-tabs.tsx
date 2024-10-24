@@ -29,13 +29,15 @@ export const BattleTabs = ({ battleState, participantsMap, player, opponent, isA
   const showOtherBattles = !isAlive;
   const showPlayersList = selectedTab === 'players';
 
-  const alivePlayersListItems = participants.map(([_, { user_name }]) => ({
+  const alivePlayersListItems = participants.map(([address, { user_name }]) => ({
     name: user_name,
     status: 'alive' as PlayerStatus,
+    address,
   }));
-  const defeatedPlayersListItems = defeated_participants.map(([_, { user_name }]) => ({
+  const defeatedPlayersListItems = defeated_participants.map(([address, { user_name }]) => ({
     name: user_name,
     status: 'defeated' as PlayerStatus,
+    address,
   }));
 
   const playersListItems = [...alivePlayersListItems, ...defeatedPlayersListItems];

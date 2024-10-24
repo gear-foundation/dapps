@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useAtomValue } from 'jotai';
 import { useNavigate } from 'react-router-dom';
 import { Button, Input } from '@gear-js/vara-ui';
 import { decodeAddress } from '@gear-js/api';
@@ -7,13 +8,12 @@ import { isNotEmpty, useForm } from '@mantine/form';
 import { HexString } from '@gear-js/api';
 
 import { GameFoundModal, JoinModalFormValues } from '../../modals/game-found-modal';
-import styles from './find-game-form.module.scss';
 import { Card, Modal } from '@/components';
 import { BattleState, useBattleQuery, useRegisterMessage } from '@/app/utils';
 import { usePending } from '@/features/game/hooks';
 import { ROUTES } from '@/app/consts';
-import { useAtomValue } from 'jotai';
-import { characterAtom } from '@/features/game/store';
+import { characterAppearanceAtom, characterStatsStorage, warriorIdStorage } from '@/features/game/store';
+import styles from './find-game-form.module.scss';
 
 type FindGameFormValues = {
   address: HexString | undefined;
@@ -43,13 +43,15 @@ function FindGameForm() {
   const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit, values } = joinForm;
 
   const { refetch } = useBattleQuery(values.address?.length === 49 ? decodeAddress(values.address) : '');
-  const character = useAtomValue(characterAtom);
+  const appearance = useAtomValue(characterAppearanceAtom);
+  const characterStats = characterStatsStorage.get();
+  const warriorId = warriorIdStorage.get();
 
   useEffect(() => {
-    if (!character) {
+    if (!appearance || !characterStats) {
       navigate(ROUTES.HOME);
     }
-  }, [character, navigate]);
+  }, [appearance, characterStats, navigate]);
 
   const handleCloseFoundModal = () => {
     setIsJoinSessionModalShown(false);
@@ -77,11 +79,10 @@ function FindGameForm() {
   };
 
   const handleJoinSession = async (values: JoinModalFormValues) => {
-    if (foundState && account && character) {
+    if (foundState && account && appearance && characterStats) {
       setPending(true);
       const gameId = decodeAddress(foundState.admin);
-
-      const { appearance, attack, defence, dodge, warriorId } = character;
+      const { attack, defence, dodge } = characterStats;
       const { name } = values;
       registerMessage(
         { value: BigInt(foundState.bid), name, appearance, attack, defence, dodge, warriorId, gameId },

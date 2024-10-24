@@ -3,9 +3,9 @@ import clsx from 'clsx';
 import { stringShorten } from '@polkadot/util';
 import { Button } from '@gear-js/vara-ui';
 import { Text } from '@/components';
-import { copyToClipboard } from '@/app/utils';
+import { copyToClipboard, useDeletePlayerMessage } from '@/app/utils';
 import { getVaraAddress, useAccount, useAlert } from '@gear-js/react-hooks';
-import { CopyIcon } from '../../assets/images';
+import { CopyIcon, FilledCrossIcon } from '../../assets/images';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import styles from './wait-list.module.scss';
 
@@ -16,11 +16,13 @@ type WaitListItem = {
 
 type WaitListProps = {
   items: WaitListItem[];
+  isAdmin: boolean;
 };
 
-const WaitList = ({ items }: WaitListProps) => {
+const WaitList = ({ items, isAdmin }: WaitListProps) => {
   const alert = useAlert();
   const { account } = useAccount();
+  const { deletePlayerMessage } = useDeletePlayerMessage();
 
   const handleCopyAddress = (value: string) => {
     copyToClipboard({ alert, value });
@@ -38,7 +40,24 @@ const WaitList = ({ items }: WaitListProps) => {
         const isMy = address === account?.decodedAddress;
 
         return (
-          <div key={address} ref={isMy ? myItemRef : undefined} className={clsx(styles.item, { [styles.my]: isMy })}>
+          <div
+            key={address}
+            ref={isMy ? myItemRef : undefined}
+            className={clsx(styles.item, { [styles.my]: isMy, [styles.admin]: isAdmin })}>
+            {isAdmin && (
+              <>
+                {!isMy ? (
+                  <Button
+                    icon={FilledCrossIcon}
+                    className={styles.cross}
+                    onClick={() => deletePlayerMessage(address)}
+                    color="transparent"
+                  />
+                ) : (
+                  <span />
+                )}
+              </>
+            )}
             <Text size="sm" weight="semibold" className={styles.number}>
               {index + 1}
             </Text>

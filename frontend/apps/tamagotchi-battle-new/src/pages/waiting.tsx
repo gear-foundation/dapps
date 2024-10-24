@@ -89,7 +89,7 @@ export default function WaitingPage() {
           description="We are waiting for all players to join, create their characters, and for the administrator to start the game."
           size="sm"
           className={styles.card}>
-          <WaitList items={items} />
+          <WaitList items={items} isAdmin={isAdmin} />
           <div className={styles.footer}>
             <div className={styles.buttons}>
               {isAdmin ? (

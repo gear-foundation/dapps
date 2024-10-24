@@ -4,11 +4,13 @@ import { ROUTES } from '@/app/consts';
 import { Background } from '@/features/game/components';
 import { CardButton } from '@/components/ui/card-button';
 import { CodeSlashIcon, MagicLineIcon } from '@/features/game/assets/images';
+import { useResetCharacterStats } from '@/features/game/hooks';
 
 import styles from './home.module.scss';
 
 export default function Home() {
   const navigate = useNavigate();
+  useResetCharacterStats();
 
   return (
     <Background>
