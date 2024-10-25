@@ -1,13 +1,13 @@
 [package]
-name = "varatube"
+name = "syndote-player"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
 
 [dependencies]
-varatube-app = { path = "../app" }
+player-app = { path = "../app" }
 
 [build-dependencies]
 gear-wasm-builder.workspace = true
 sails-idl-gen.workspace = true
-varatube-app = { path = "../app" }
+player-app = { path = "../app" }

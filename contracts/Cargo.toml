@@ -3,12 +3,15 @@ resolver = "2"
 # Keep in the lexicographic order!
 # Remove a member if it's used as a dependency in the workspace.
 members = [
+    "battle",
+    "battle/warrior/wasm",
     "battleship",
     "car-races/app",
     "car-races/car-1",
     "car-races/car-2",
     "car-races/car-3",
     "car-races/wasm",
+    "concert/wasm",
     "galactic-express",
     "multisig-wallet",
     "multisig-wallet/state",
@@ -22,8 +25,8 @@ members = [
     "rmrk/catalog",
     "rmrk/resource",
     "rmrk/state",
-    "syndote",
-    "syndote/player",
+    "syndote/wasm",
+    "syndote/player/wasm",
     "tamagotchi",
     "tamagotchi/state",
     "tamagotchi-battle",
