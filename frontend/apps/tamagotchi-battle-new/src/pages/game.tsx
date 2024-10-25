@@ -32,7 +32,13 @@ import {
   useStartNextFightMessage,
 } from '@/app/utils';
 import { ROUTES } from '@/app/consts';
-import { battleHistoryAtom, battleHistoryStorage, otherPairBattleWatchAtom } from '@/features/game/store';
+import {
+  battleHistoryAtom,
+  battleHistoryStorage,
+  currentPlayersAtom,
+  currentPlayersStorage,
+  otherPairBattleWatchAtom,
+} from '@/features/game/store';
 import { useParticipants, usePending } from '@/features/game/hooks';
 import styles from './game.module.scss';
 
@@ -60,7 +66,10 @@ export default function GamePage() {
   const [otherPairBattleWatch] = useAtom(otherPairBattleWatchAtom);
   const isShowOtherBattle = Boolean(battleState?.pairs.some(([pairId]) => pairId === otherPairBattleWatch));
 
-  const { allParticipants, isAlive, player, opponent, participantsMap, pair } = useParticipants(battleState);
+  const { allParticipants, isAlive, hasPlayer, hasOpponent, participantsMap, pair, currentPlayers } =
+    useParticipants(battleState);
+
+  const { player, opponent } = currentPlayers || {};
 
   const { admin, state, waiting_player, bid } = battleState || {};
 
@@ -80,15 +89,18 @@ export default function GamePage() {
   };
 
   const setBattleHistory = useSetAtom(battleHistoryAtom);
+  const setCurrentPlayers = useSetAtom(currentPlayersAtom);
 
   if (!battleState || !config || !state || !account) {
     return <Loader />;
   }
 
-  const showStartNextBattle = !opponent && waiting_player?.[0] !== account.decodedAddress && isAlive;
+  const showStartNextBattle = !hasOpponent && waiting_player?.[0] !== account.decodedAddress && isAlive;
   const showWaitingForOpponent = waiting_player?.[0] === account.decodedAddress;
   const isAdmin = account.decodedAddress === admin;
   const isTournamentOver = 'gameIsOver' in state;
+  const isCurrentDraw =
+    !isTournamentOver && battleHistory?.[0].player.health === 0 && battleHistory?.[0].opponent.health === 0;
 
   const onAttackClick = () => {
     setTappedButton('Attack');
@@ -128,18 +140,22 @@ export default function GamePage() {
               name={player.user_name}
               {...player.player_settings}
             />
-            <div className={clsx(styles.character, styles.left)}>
-              <Character {...player.appearance} />
+            {(player.player_settings.health !== 0 || isCurrentDraw) && (
+              <div className={clsx(styles.character, styles.left)}>
+                <Character {...player.appearance} />
 
-              <SphereAnimation
-                className={styles.fireSphere}
-                type={tappedButton || (showAnimation ? lastTurnHistory?.player.action : undefined)}
-              />
-            </div>
+                <SphereAnimation
+                  className={styles.fireSphere}
+                  type={tappedButton || (showAnimation ? lastTurnHistory?.player.action : undefined)}
+                />
+              </div>
+            )}
           </>
         )}
 
-        {player && opponent && !showAnimation && <Timer remainingTime={timeLeft} isYourTurn={tappedButton === null} />}
+        {hasPlayer && hasOpponent && !showAnimation && (
+          <Timer remainingTime={timeLeft} isYourTurn={tappedButton === null && !isShowOtherBattle} />
+        )}
 
         {opponent && (
           <>
@@ -149,20 +165,22 @@ export default function GamePage() {
               name={opponent.user_name}
               {...opponent.player_settings}
             />
-            <div className={clsx(styles.character, styles.right)}>
-              <Character {...opponent.appearance} />
+            {(opponent.player_settings.health !== 0 || isCurrentDraw) && (
+              <div className={clsx(styles.character, styles.right)}>
+                <Character {...opponent.appearance} />
 
-              {showAnimation && (
-                <SphereAnimation className={styles.fireSphere} type={lastTurnHistory?.opponent.action} />
-              )}
-            </div>
+                {showAnimation && (
+                  <SphereAnimation className={styles.fireSphere} type={lastTurnHistory?.opponent.action} />
+                )}
+              </div>
+            )}
           </>
         )}
 
         {lastTurnHistory && showAnimation && <FireballCanvas lastTurnHistory={lastTurnHistory} />}
 
         {showWaitingForOpponent ||
-          (!!opponent && !!player && !isTournamentOver && !isShowOtherBattle && (
+          (hasOpponent && hasPlayer && player && opponent && !isTournamentOver && !isShowOtherBattle && (
             <div className={styles.buttons}>
               <GameButton
                 onClick={onAttackClick}
@@ -170,7 +188,7 @@ export default function GamePage() {
                 text="Attack"
                 icon={<AttackButtonIcon />}
                 pending={tappedButton === 'Attack' || pending}
-                disabled={showWaitingForOpponent}
+                disabled={showWaitingForOpponent || !!(tappedButton && tappedButton !== 'Attack')}
               />
               <GameButton
                 onClick={onReflectClick}
@@ -179,7 +197,7 @@ export default function GamePage() {
                 icon={<DefenceButtonIcon />}
                 pending={tappedButton === 'Reflect' || pending}
                 turnsBlocked={player.reflect_reload}
-                disabled={showWaitingForOpponent}
+                disabled={showWaitingForOpponent || !!(tappedButton && tappedButton !== 'Reflect')}
               />
               <GameButton
                 onClick={onUltimateClick}
@@ -188,7 +206,7 @@ export default function GamePage() {
                 icon={<UltimateButtonIcon />}
                 pending={tappedButton === 'Ultimate' || pending}
                 turnsBlocked={player.ultimate_reload}
-                disabled={showWaitingForOpponent}
+                disabled={showWaitingForOpponent || !!(tappedButton && tappedButton !== 'Ultimate')}
               />
             </div>
           ))}
@@ -201,6 +219,8 @@ export default function GamePage() {
             onClick={() => {
               setBattleHistory(null);
               battleHistoryStorage.set(null);
+              setCurrentPlayers(null);
+              currentPlayersStorage.set(null);
               startNextFightMessage();
             }}
             disabled={pending}
@@ -213,18 +233,24 @@ export default function GamePage() {
           <BattleHistorySinc player={player} opponent={opponent} turnEndCallback={turnEndCallback} pair={pair} />
         )}
 
-        {isShowTurnEndCard && lastTurnHistory && player && opponent && !isTournamentOver && (
-          <div className={clsx(styles.historyItem, styles.endTurnHistory)}>
-            <BattleHistoryCard {...player.player_settings} {...lastTurnHistory.player} name={player.user_name} />
-            <BattleHistoryCard
-              {...opponent.player_settings}
-              {...lastTurnHistory.opponent}
-              name={opponent.user_name}
-              align="right"
-              onClose={() => setIsShowTurnEndCard(false)}
-            />
-          </div>
-        )}
+        {isShowTurnEndCard &&
+          lastTurnHistory &&
+          player &&
+          opponent &&
+          !isTournamentOver &&
+          !isCurrentDraw &&
+          isAlive && (
+            <div className={clsx(styles.historyItem, styles.endTurnHistory)}>
+              <BattleHistoryCard {...player.player_settings} {...lastTurnHistory.player} name={player.user_name} />
+              <BattleHistoryCard
+                {...opponent.player_settings}
+                {...lastTurnHistory.opponent}
+                name={opponent.user_name}
+                align="right"
+                onClose={() => setIsShowTurnEndCard(false)}
+              />
+            </div>
+          )}
 
         <GameOverCard
           className={styles.gameOver}
@@ -240,7 +266,7 @@ export default function GamePage() {
           <Button
             text="Cancel tournament"
             size="small"
-            className={clsx(styles.cancelTournament, styles.redButton)}
+            className={clsx(styles.cancelTournament, styles.redButton, !isAlive && styles.defeated)}
             onClick={() => (isTournamentOver ? onCancelTournament() : setIsOpenCancelTournamentModal(true))}
             disabled={pending}
           />
@@ -249,19 +275,13 @@ export default function GamePage() {
             text="Exit"
             icon={ExitIcon}
             color="transparent"
-            className={styles.exit}
+            className={clsx(styles.exit, !isAlive && styles.defeated)}
             onClick={onExitGame}
             disabled={pending}
           />
         )}
 
-        <BattleTabs
-          battleState={battleState}
-          participantsMap={participantsMap}
-          player={player}
-          opponent={opponent}
-          isAlive={isAlive}
-        />
+        <BattleTabs battleState={battleState} participantsMap={participantsMap} isAlive={isAlive} />
 
         {isOpenCancelTournamentModal && (
           <Modal

@@ -1,11 +1,39 @@
-.list {
+.tabs {
   position: absolute;
-  top: 767px;
+  top: 684px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  &.defeated {
+    top: 642px;
+  }
+}
+
+.list {
+  margin-top: 30px;
+}
+
+.playersList {
+  margin-top: 43px;
+}
+
+.switcher {
+  margin-top: 31px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
 }
 
 .historyItem {
   display: flex;
   cursor: pointer;
+
+  &.disabled {
+    cursor: auto;
+    pointer-events: none;
+  }
 }
 
 .players {
@@ -18,9 +46,4 @@
     align-items: center;
     gap: 6px;
   }
-}
-
-.segmented {
-  position: absolute;
-  top: 684px;
 }

@@ -4,6 +4,7 @@ import { AttackIcon, DefenceIcon, DodgeIcon, HealthIcon } from '../../assets/ima
 import { HealthIndicator } from '../health-indicator';
 import { VariantProps, cva } from 'class-variance-authority';
 import { CrossIcon } from '@/assets/images';
+import { Move } from '@/app/utils';
 import { PlayerState } from '../../types';
 import { PlayerStatus } from '../player-status/player-status';
 import styles from './battle-history-card.module.scss';
@@ -13,9 +14,10 @@ export const variants = cva('', {
   defaultVariants: { align: 'left' },
 });
 
-type BattleHistoryCardProps = PlayerState &
+type BattleHistoryCardProps = Omit<PlayerState, 'action'> &
   VariantProps<typeof variants> & {
     onClose?: () => void;
+    action: Move | null;
   };
 
 const BattleHistoryCard = ({
@@ -36,7 +38,13 @@ const BattleHistoryCard = ({
     <div className={variants({ className: styles.wrapper, align })}>
       <div className={styles.header}>
         <Text>
-          {name} uses <span className={styles[`action-${action}`]}>{action}</span>
+          {action ? (
+            <>
+              {name} uses <span className={styles[`action-${action}`]}>{action}</span>
+            </>
+          ) : (
+            <span>{name}</span>
+          )}
         </Text>
 
         <PlayerStatus isAlive={isAlive} />

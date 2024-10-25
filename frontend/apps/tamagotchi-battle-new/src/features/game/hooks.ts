@@ -7,6 +7,8 @@ import {
   battleHistoryAtom,
   battleHistoryStorage,
   characterStatsStorage,
+  currentPlayersAtom,
+  currentPlayersStorage,
   isBattleCanceledAtom,
   otherPairBattleWatchAtom,
   warriorIdStorage,
@@ -53,6 +55,7 @@ export type UsePrepareBattleHistoryParams = {
 export function usePrepareBattleHistory({ pair, player, opponent, turnEndCallback }: UsePrepareBattleHistoryParams) {
   const setBattleHistory = useSetAtom(battleHistoryAtom);
   const { lastMoves, resetLastMoves } = useEventRoundActionSubscription(pair);
+  const setCurrentPlayers = useSetAtom(currentPlayersAtom);
 
   const myFullDefence = player?.player_settings.defence === 100;
   const opponentFullDefence = opponent?.player_settings.defence === 100;
@@ -87,6 +90,17 @@ export function usePrepareBattleHistory({ pair, player, opponent, turnEndCallbac
         const next = prev ? [newHistory, ...prev] : [newHistory];
         battleHistoryStorage.set(next);
         return next;
+      });
+
+      setCurrentPlayers((prev) => {
+        if (prev) {
+          const newPlayers = { ...prev };
+          newPlayers.player.player_settings.health = myHealth;
+          newPlayers.opponent.player_settings.health = opponentsHealth;
+          currentPlayersStorage.set(newPlayers);
+          return newPlayers;
+        }
+        return prev;
       });
 
       turnEndCallback();
@@ -143,6 +157,7 @@ export function useTimer({ remainingTime, shouldGoOn = true }: UseTimerParams) {
 export function useParticipants(battleState?: BattleState | null) {
   const { account } = useAccount();
   const [otherPairBattleWatch] = useAtom(otherPairBattleWatchAtom);
+  const [currentPlayers, setCurrentPlayers] = useAtom(currentPlayersAtom);
 
   const { pairs, players_to_pairs } = battleState || {};
   const pairId =
@@ -170,5 +185,15 @@ export function useParticipants(battleState?: BattleState | null) {
   const player = playerAddress ? participantsMap[playerAddress] : null;
   const opponent = opponentsAddress ? participantsMap[opponentsAddress] : null;
 
-  return { participantsMap, allParticipants, player, opponent, isAlive, pair };
+  const hasPlayer = Boolean(player);
+  const hasOpponent = Boolean(opponent);
+
+  useEffect(() => {
+    if (player && opponent) {
+      setCurrentPlayers({ player, opponent });
+      currentPlayersStorage.set({ player, opponent });
+    }
+  }, [player, opponent]);
+
+  return { participantsMap, allParticipants, hasPlayer, hasOpponent, isAlive, pair, currentPlayers };
 }

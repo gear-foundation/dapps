@@ -50,7 +50,7 @@ class ParticleFlame implements Particle {
 }
 
 type FireAnimationProps = {
-  type?: Move;
+  type?: Move | null;
   className?: string;
 };
 

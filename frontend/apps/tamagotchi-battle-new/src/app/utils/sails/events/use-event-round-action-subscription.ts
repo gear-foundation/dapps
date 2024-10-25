@@ -22,8 +22,10 @@ export function useEventRoundActionSubscription(pair: Pair) {
 
     if (players.includes(player_1[0]) && players.includes(player_2[0]) && account && roundRef.current !== round) {
       roundRef.current = round;
-      const myData = account.decodedAddress === player_1[0] ? player_1 : player_2;
-      const opponentsData = account.decodedAddress === player_1[0] ? player_2 : player_1;
+      const isMyBattle = players.includes(account.decodedAddress);
+      const isMatchPlayers = isMyBattle ? account.decodedAddress === player_1[0] : pair.player_1 === player_1[0];
+      const myData = isMatchPlayers ? player_1 : player_2;
+      const opponentsData = isMatchPlayers ? player_2 : player_1;
 
       setLastMoves({ moves: [myData[1], opponentsData[1]], newHealth: [myData[2], opponentsData[2]] });
     }

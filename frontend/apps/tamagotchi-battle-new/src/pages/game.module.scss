@@ -41,6 +41,9 @@
   left: calc(50% + 364px);
   height: 40px;
   width: 93px;
+  &.defeated {
+    top: 650px;
+  }
 }
 
 .cancelTournament {
@@ -50,6 +53,9 @@
   height: 44px;
   width: 168px;
   font-size: 14px;
+  &.defeated {
+    top: 646px;
+  }
 }
 
 .historyItem {
@@ -63,6 +69,7 @@
 
 .nextButton {
   width: 579px;
+  z-index: 1;
   position: absolute;
   top: 589px;
 }

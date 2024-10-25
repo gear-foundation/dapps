@@ -1,4 +1,4 @@
-import { Move } from '@/app/utils';
+import { Move, Player } from '@/app/utils';
 
 export type AssetType = 'head' | 'hat' | 'body' | 'accessories';
 export type AssetsCount = Record<AssetType, number>;
@@ -23,7 +23,7 @@ export type CharacterStatsFormValues = {
 };
 
 type BattleHistoryItem = {
-  action: Move;
+  action: Move | null;
   receivedDamage: number;
   health: number;
   isDodged: boolean;
@@ -32,4 +32,9 @@ type BattleHistoryItem = {
 export type BattleHistory = {
   player: BattleHistoryItem;
   opponent: BattleHistoryItem;
+};
+
+export type CurrentPlayers = {
+  player: Player;
+  opponent: Player;
 };
