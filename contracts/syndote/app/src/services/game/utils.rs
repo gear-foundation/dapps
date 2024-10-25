@@ -1,17 +1,90 @@
-use crate::*;
-impl Game {
-    pub fn check_status(&self, game_status: GameStatus) {
-        assert_eq!(self.game_status, game_status, "Wrong game status");
+use crate::services::game::{Storage, PENALTY};
+use sails_rs::{
+    collections::{HashMap, HashSet},
+    gstd::{exec, msg},
+    prelude::*,
+    ActorId,
+};
+
+pub type Price = u32;
+pub type Rent = u32;
+pub type Gears = Vec<Gear>;
+
+#[derive(Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct YourTurn {
+    pub players: Vec<(ActorId, PlayerInfo)>,
+    pub properties: Vec<Option<(ActorId, Gears, Price, Rent)>>,
+}
+
+#[derive(Default, Debug, Clone, Encode, Decode, TypeInfo, PartialEq, Eq)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct PlayerInfo {
+    pub position: u8,
+    pub balance: u32,
+    pub debt: u32,
+    pub in_jail: bool,
+    pub round: u128,
+    pub cells: Vec<u8>,
+    pub penalty: u8,
+    pub lost: bool,
+}
+
+#[derive(Debug, PartialEq, Eq, Encode, Decode, Clone, TypeInfo, Copy)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum Gear {
+    Bronze,
+    Silver,
+    Gold,
+}
+
+impl Gear {
+    pub fn upgrade(&self) -> Self {
+        match *self {
+            Self::Bronze => Self::Silver,
+            Self::Silver => Self::Gold,
+            Self::Gold => Self::Gold,
+        }
+    }
+}
+
+#[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub enum GameStatus {
+    Registration,
+    Play,
+    Finished,
+}
+
+impl Default for GameStatus {
+    fn default() -> Self {
+        Self::Registration
+    }
+}
+
+impl Storage {
+    pub fn check_status(&self, game_status: GameStatus) -> Result<(), GameError> {
+        if self.game_status != game_status {
+            return Err(GameError::WrongStatus);
+        }
+        Ok(())
     }
 
-    pub fn only_admin(&self) {
-        assert_eq!(msg::source(), self.admin, "Only admin can start the game");
+    pub fn only_admin(&self) -> Result<(), GameError> {
+        if self.admin != msg::source() {
+            return Err(GameError::AccessDenied);
+        }
+        Ok(())
     }
-    pub fn only_player(&self) {
-        assert!(
-            self.players.contains_key(&msg::source()),
-            "You are not in the game"
-        );
+    pub fn only_player(&self) -> Result<(), GameError> {
+        if !self.players.contains_key(&msg::source()) {
+            return Err(GameError::NotPlayer);
+        }
+        Ok(())
     }
 }
 
@@ -54,7 +127,12 @@ pub fn sell_property(
 
     for property in properties_for_sale {
         if let Some((_, _, price, _)) = properties[*property as usize] {
-            player_info.cells.remove(property);
+            let index_to_remove = player_info
+                .cells
+                .iter()
+                .position(|cell| cell == property)
+                .unwrap();
+            player_info.cells.remove(index_to_remove);
             player_info.balance += price / 2;
             ownership[*property as usize] = *admin;
             properties_in_bank.insert(*property);
@@ -96,7 +174,8 @@ pub fn bankrupt_and_penalty(
                 }
                 if let Some((_, _, price, _)) = &properties[*cell as usize] {
                     player_info.balance += price / 2;
-                    player_info.cells.remove(cell);
+                    let index_to_remove = player_info.cells.iter().position(|c| c == cell).unwrap();
+                    player_info.cells.remove(index_to_remove);
                     ownership[*cell as usize] = *admin;
                     properties_in_bank.insert(*cell);
                 }
@@ -211,13 +290,37 @@ pub fn init_properties(
     }
 }
 
+#[derive(Debug)]
 pub enum GameError {
     StrategicError,
+    AlreadyRegistered,
+    NotPlayer,
+    AccessDenied,
+    WrongStatus,
 }
 
-impl From<Game> for GameState {
-    fn from(game: Game) -> GameState {
-        GameState {
+#[derive(Clone, Default, Encode, Decode, TypeInfo)]
+#[codec(crate = gstd::codec)]
+#[scale_info(crate = gstd::scale_info)]
+pub struct StorageState {
+    pub admin: ActorId,
+    pub properties_in_bank: Vec<u8>,
+    pub round: u128,
+    pub players: Vec<(ActorId, PlayerInfo)>,
+    pub players_queue: Vec<ActorId>,
+    pub current_player: ActorId,
+    pub current_step: u64,
+    // mapping from cells to built properties,
+    pub properties: Vec<Option<(ActorId, Gears, u32, u32)>>,
+    // mapping from cells to accounts who have properties on it
+    pub ownership: Vec<ActorId>,
+    pub game_status: GameStatus,
+    pub winner: ActorId,
+}
+
+impl From<Storage> for StorageState {
+    fn from(game: Storage) -> StorageState {
+        StorageState {
             admin: game.admin,
             properties_in_bank: game.properties_in_bank.iter().copied().collect(),
             round: game.round,
