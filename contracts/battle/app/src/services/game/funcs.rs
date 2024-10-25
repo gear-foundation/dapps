@@ -481,7 +481,7 @@ pub fn automatic_move(
                 };
                 pair.action = None;
                 let current_round = pair.round;
-                if let Some(battle_result) = round_result {
+                let (player_1_health, player_2_health) = if let Some(battle_result) = round_result {
                     match battle_result {
                         BattleResult::PlayerWin(winner) => {
                             let loser = pair.get_opponent(&winner);
@@ -493,6 +493,12 @@ pub fn automatic_move(
                                 .participants
                                 .get_mut(&winner)
                                 .expect("The player must exist");
+
+                            let healths = if player_1.owner == winner {
+                                (player_winner.player_settings.health, 0)
+                            } else {
+                                (0, player_winner.player_settings.health)
+                            };
                             player_winner.player_settings.health = storage.config.health;
                             player_winner.reflect_reload = 0;
                             player_winner.ultimate_reload = 0;
@@ -502,6 +508,7 @@ pub fn automatic_move(
                             battle.players_to_pairs.remove(&winner);
                             battle.players_to_pairs.remove(&loser);
                             battle.check_end_game();
+                            healths
                         }
                         BattleResult::Draw(id_1, id_2) => {
                             let player_1 = battle
@@ -523,6 +530,7 @@ pub fn automatic_move(
                             battle.players_to_pairs.remove(&id_1);
                             battle.players_to_pairs.remove(&id_2);
                             battle.check_draw_end_game();
+                            (0, 0)
                         }
                     }
                 } else {
@@ -534,16 +542,16 @@ pub fn automatic_move(
                         pair.round,
                         storage.config.time_for_move_in_blocks,
                     );
-                }
+                    (
+                        player_1.player_settings.health,
+                        player_2.player_settings.health,
+                    )
+                };
 
                 return Ok(Event::RoundAction {
                     round: current_round,
-                    player_1: (
-                        opponent_info.0,
-                        opponent_info.1,
-                        player_1.player_settings.health,
-                    ),
-                    player_2: (player_id, Move::Attack, player_2.player_settings.health),
+                    player_1: (opponent_info.0, opponent_info.1, player_1_health),
+                    player_2: (player_id, Move::Attack, player_2_health),
                 });
             } else {
                 pair.action = Some((player_id, Move::Attack));
@@ -638,7 +646,7 @@ pub fn make_move(storage: &mut Storage, warrior_move: Move) -> Result<Event, Bat
         };
         pair.action = None;
         let current_round = pair.round;
-        if let Some(battle_result) = round_result {
+        let (player_1_health, player_2_health) = if let Some(battle_result) = round_result {
             match battle_result {
                 BattleResult::PlayerWin(winner) => {
                     let loser = pair.get_opponent(&winner);
@@ -651,6 +659,11 @@ pub fn make_move(storage: &mut Storage, warrior_move: Move) -> Result<Event, Bat
                         .participants
                         .get_mut(&winner)
                         .expect("The player must exist");
+                    let healths = if player_1.owner == winner {
+                        (player_winner.player_settings.health, 0)
+                    } else {
+                        (0, player_winner.player_settings.health)
+                    };
                     player_winner.player_settings.health = storage.config.health;
                     player_winner.reflect_reload = 0;
                     player_winner.ultimate_reload = 0;
@@ -659,6 +672,7 @@ pub fn make_move(storage: &mut Storage, warrior_move: Move) -> Result<Event, Bat
                     battle.players_to_pairs.remove(&winner);
                     battle.players_to_pairs.remove(&loser);
                     battle.check_end_game();
+                    healths
                 }
                 BattleResult::Draw(id_1, id_2) => {
                     let player_1 = battle
@@ -680,20 +694,21 @@ pub fn make_move(storage: &mut Storage, warrior_move: Move) -> Result<Event, Bat
                     battle.players_to_pairs.remove(&id_1);
                     battle.players_to_pairs.remove(&id_2);
                     battle.check_draw_end_game();
+                    (0, 0)
                 }
             }
         } else {
             pair.round += 1;
             pair.round_start_time = exec::block_timestamp();
-        }
+            (
+                player_1.player_settings.health,
+                player_2.player_settings.health,
+            )
+        };
         Ok(Event::RoundAction {
             round: current_round,
-            player_1: (
-                opponent_info.0,
-                opponent_info.1,
-                player_1.player_settings.health,
-            ),
-            player_2: (player, warrior_move, player_2.player_settings.health),
+            player_1: (opponent_info.0, opponent_info.1, player_1_health),
+            player_2: (player, warrior_move, player_2_health),
         })
     } else {
         pair.action = Some((player, warrior_move));
