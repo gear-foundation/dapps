@@ -183,8 +183,8 @@ export const FireballCanvas: React.FC<FireballCanvasProps> = ({ lastTurnHistory 
   };
 
   useEffect(() => {
-    const playerAttack = ['Attack', 'Ultimate'].includes(lastTurnHistory.player.action);
-    const opponentAttack = ['Attack', 'Ultimate'].includes(lastTurnHistory.opponent.action);
+    const playerAttack = ['Attack', 'Ultimate'].includes(lastTurnHistory.player.action || '');
+    const opponentAttack = ['Attack', 'Ultimate'].includes(lastTurnHistory.opponent.action || '');
 
     if (playerAttack) {
       if (lastTurnHistory.opponent.isDodged) {

@@ -193,7 +193,7 @@ export function useParticipants(battleState?: BattleState | null) {
       setCurrentPlayers({ player, opponent });
       currentPlayersStorage.set({ player, opponent });
     }
-  }, [player, opponent]);
+  }, [player, opponent, setCurrentPlayers]);
 
   return { participantsMap, allParticipants, hasPlayer, hasOpponent, isAlive, pair, currentPlayers };
 }
