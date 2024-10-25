@@ -4,9 +4,7 @@ This project is a battleship game that leverages zero-knowledge (zk) cryptograph
 
 For a more in-depth explanation of the game mechanics, design, and zk proof integration, please visit the project [wiki](https://wiki.vara.network/docs/examples/Gaming/Battleship/zk-battleship).
 
-:::tip
-The project code is developed using the [Sails](https://github.com/gear-tech/sails) framework.
-:::  
+⚙️ **Note**: The project code is developed using the [Sails](https://github.com/gear-tech/sails) framework.
 
 ### 🏗️ Building
 

@@ -4,9 +4,7 @@ This project is a competitive environment where strategy-based programs race aga
 
 A detailed description of the project can be found on the [wiki](https://wiki.vara.network/docs/examples/Gaming/racingcars).
 
-:::tip
-The project code is developed using the [Sails](https://github.com/gear-tech/sails) framework.
-:::  
+⚙️ **Note**: The project code is developed using the [Sails](https://github.com/gear-tech/sails) framework.
 
 ### 🏗️ Building
 
