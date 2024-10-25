@@ -1,0 +1,73 @@
+type Config = struct {
+  gas_for_token_transfer: u64,
+  gas_to_start_subscription_update: u64,
+  block_duration: u32,
+  min_gas_limit: u64,
+};
+
+/// Set of time periods for which a subscription can be purchased
+/// in context of the sucbscription contract.
+type Period = enum {
+  Year,
+  NineMonths,
+  SixMonths,
+  ThreeMonths,
+  Month,
+};
+
+type SubscriberDataState = struct {
+  is_active: bool,
+  start_date: u64,
+  start_block: u32,
+  end_date: u64,
+  end_block: u32,
+  period: Period,
+  will_renew: bool,
+  price: u128,
+};
+
+type SubscriberData = struct {
+  /// Id of the payment method.
+  currency_id: actor_id,
+  /// Subscription period
+  period: Period,
+  /// If `None`, means that subscriber has paid for the
+  /// subscription, but didn't succeed sending delayed
+  /// message for subscription check/renewal.
+  subscription_start: opt struct { u64, u32 },
+  /// Subscription renewal date.
+  /// 
+  /// If None, then no renewal desired.
+  renewal_date: opt struct { u64, u32 },
+};
+
+constructor {
+  New : (config: Config, dns_id_and_name: opt struct { actor_id, str });
+};
+
+service Varatube {
+  AddTokenData : (token_id: actor_id, price: u128) -> null;
+  CancelSubscription : () -> null;
+  Kill : (inheritor: actor_id) -> null;
+  ManagePendingSubscription : (enable: bool) -> null;
+  RegisterSubscription : (period: Period, currency_id: actor_id, with_renewal: bool) -> null;
+  UpdateConfig : (gas_for_token_transfer: opt u64, gas_to_start_subscription_update: opt u64, block_duration: opt u32) -> null;
+  UpdateSubscription : (subscriber: actor_id) -> null;
+  query Admins : () -> vec actor_id;
+  query AllSubscriptions : () -> vec struct { actor_id, SubscriberDataState };
+  query Config : () -> Config;
+  query Currencies : () -> vec struct { actor_id, u128 };
+  query GetSubscriber : (account: actor_id) -> opt SubscriberData;
+  query Subscribers : () -> vec struct { actor_id, SubscriberData };
+
+  events {
+    SubscriptionRegistered;
+    SubscriptionUpdated;
+    SubscriptionCancelled;
+    PendingSubscriptionManaged;
+    PaymentAdded;
+    ConfigUpdated;
+    Killed: struct { inheritor: actor_id };
+  }
+};
+

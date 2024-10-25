@@ -32,6 +32,7 @@ members = [
     "tamagotchi-battle",
     "tamagotchi-battle/state",
     "tequila-train",
+    "varatube/wasm",
     "tic-tac-toe/wasm",
     "vara-man/wasm",
     "w3bstreaming",
