@@ -12,5 +12,5 @@ schnorrkel.workspace = true
 
 [dev-dependencies]
 gclient.workspace = true
-tic-tac-toe-wasm = { path = "../wasm" }
+tic-tac-toe = { path = "../wasm" }
 tokio = "1"

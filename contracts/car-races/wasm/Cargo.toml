@@ -1,5 +1,5 @@
 [package]
-name = "car-races-wasm"
+name = "car-races"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -16,4 +16,4 @@ car-races-app = { path = "../app" }
 
 [lib]
 crate-type = ["rlib"]
-name = "car_races_wasm"
+name = "car_races"
