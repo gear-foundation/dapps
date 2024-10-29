@@ -3,9 +3,9 @@ import { cx } from 'utils';
 import { REGISTRATION_STATUS } from 'atoms';
 import { getVaraAddress, useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
-import { useLaunchMessage } from 'features/session/hooks';
 import { shortenString } from 'features/session/utils';
 import { RankWithName } from 'features/session/types';
+import { useCancelGameMessage, useLeaveGameMessage } from 'app/utils';
 import styles from './WinStatus.module.scss';
 
 type Props = {
@@ -16,25 +16,22 @@ type Props = {
 };
 
 function WinStatus({ type, userRank, winners, admin }: Props) {
-  const { meta, message: sendNewSessionMessage } = useLaunchMessage();
   const setRegistrationStatus = useSetAtom(REGISTRATION_STATUS);
+  const { cancelGameMessage } = useCancelGameMessage();
+  const { leaveGameMessage } = useLeaveGameMessage();
   const { account } = useAccount();
 
   const isAdmin = admin === account?.decodedAddress;
 
-  const onInBlock = () => {
+  const onSuccess = () => {
     setRegistrationStatus('registration');
   };
 
   const handleCreateNewSession = () => {
-    if (!meta) {
-      return;
-    }
-
     if (isAdmin) {
-      sendNewSessionMessage({ payload: { CancelGame: null }, onInBlock });
+      cancelGameMessage({ onSuccess });
     } else {
-      sendNewSessionMessage({ payload: { LeaveGame: null }, onInBlock });
+      leaveGameMessage({ onSuccess });
     }
   };
 
