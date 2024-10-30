@@ -21,7 +21,7 @@ pub struct Storage {
     admin: ActorId
 }
 
-#[derive(Default, Clone)]
+#[derive(Default, Clone, Debug)]
 pub struct Game {
     admin_id: AdminId,
     properties_in_bank: HashSet<u8>,
@@ -162,7 +162,7 @@ impl GameService {
         self.notify_on(event.clone()).expect("Notification Error");
     }
     pub fn play(&mut self, admin_id: AdminId) {
-        debug!("START PLAY");
+        debug!("START PLAY {:?}", exec::gas_available());
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::play(storage, admin_id));
         self.notify_on(event.clone()).expect("Notification Error");
@@ -196,7 +196,7 @@ impl GameService {
         self.notify_on(event.clone()).expect("Notification Error");
     }
 
-    pub fn throw_roll(&mut self, admin_id: AdminId, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) -> Event {
+    pub fn throw_roll(&mut self, admin_id: AdminId, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) {
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
@@ -211,10 +211,9 @@ impl GameService {
             storage.config.reservation_duration_in_block,
         ); 
         self.notify_on(event.clone()).expect("Notification Error");
-        event
     }
 
-    pub fn add_gear(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) -> Event {
+    pub fn add_gear(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) {
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
@@ -230,10 +229,9 @@ impl GameService {
             storage.config.reservation_duration_in_block,
         ); 
         self.notify_on(event.clone()).expect("Notification Error");
-        event
     }
 
-    pub fn upgrade(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) -> Event {
+    pub fn upgrade(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) {
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
@@ -248,10 +246,9 @@ impl GameService {
             storage.config.reservation_duration_in_block,
         ); 
         self.notify_on(event.clone()).expect("Notification Error");
-        event
     }
 
-    pub fn buy_cell(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) -> Event {
+    pub fn buy_cell(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) {
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
@@ -266,10 +263,9 @@ impl GameService {
             storage.config.reservation_duration_in_block,
         ); 
         self.notify_on(event.clone()).expect("Notification Error");
-        event
     }
 
-    pub fn pay_rent(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) -> Event {
+    pub fn pay_rent(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) {
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
@@ -285,10 +281,10 @@ impl GameService {
             storage.config.reservation_duration_in_block,
         );
         debug!("pay_rent 2");
+        debug!("game_instance {:?}", game_instance);
         self.notify_on(event.clone()).expect("Notification Error");
-        event
     }
-    pub fn skip(&mut self, admin_id: AdminId) -> Event {
+    pub fn skip(&mut self, admin_id: AdminId) {
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
@@ -299,9 +295,11 @@ impl GameService {
             storage.config.gas_for_step,
             storage.config.min_gas_limit,
             storage.config.reservation_duration_in_block,
-        ); 
+        );
+        debug!("skip {:?}", exec::gas_available());
+        debug!("game_instance {:?}", game_instance);
         self.notify_on(event.clone()).expect("Notification Error");
-        event
+        debug!("end skip {:?}", exec::gas_available());
     }
 
     pub fn change_admin(&mut self, admin: ActorId) {

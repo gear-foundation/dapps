@@ -1,4 +1,5 @@
 use gstd::ReservationId;
+use gstd::debug;
 use sails_rs::{
     collections::{HashMap, HashSet, BTreeSet},
     gstd::{exec, msg},
@@ -401,6 +402,7 @@ pub fn take_your_turn(
     player: &ActorId,
     game_info: GameInfo,
 ) -> Result<MessageId, GameError> {
+    debug!("take_your_turn");
     let request = [
         "Player".encode(),
         "YourTurn".to_string().encode(),

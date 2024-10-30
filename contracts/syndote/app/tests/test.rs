@@ -110,19 +110,14 @@ async fn test_play_game() {
         .unwrap();
 
     client
-        .make_reservation(ADMIN_ID.into())
-        .send_recv(syndote_id)
-        .await
-        .unwrap();
-
-    client
         .play(ADMIN_ID.into())
         .send_recv(syndote_id)
         .await
         .unwrap();
 
-    // // check state
-    // let state = client.get_storage().recv(syndote_id).await.unwrap();
+    // check state
+    let state = client.get_game_session(ADMIN_ID.into()).recv(syndote_id).await.unwrap();
+    println!("STATE {:?}", state);
     // assert_eq!(state.game_status, GameStatus::Play);
     // assert_eq!(state.round, 0);
     // assert_eq!(state.winner, 0.into());

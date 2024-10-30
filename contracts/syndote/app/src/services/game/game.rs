@@ -198,6 +198,7 @@ impl GameSessionActions for Game {
         awaiting_reply_msg_id_to_session_id: &mut HashMap<MessageId, AdminId>,
         gas_refill_timeout: u32,
     ) -> Result<Event, GameError> {
+        debug!("play here");
         let program_id = exec::program_id();
         let msg_source = msg::source();
         self.only_admin_or_program(&program_id, &msg_source)?;
@@ -274,6 +275,7 @@ impl GameSessionActions for Game {
         awaiting_reply_msg_id_to_session_id: &mut HashMap<MessageId, AdminId>,
         gas_refill_timeout: u32,
     ) -> Result<(), GameError> {
+        debug!("make_step");
         let current_player: ActorId = self.players_queue[self.current_turn as usize];
         self.current_player = current_player;
         let mut player_info = self.get_player_info()?;
@@ -317,16 +319,18 @@ impl GameSessionActions for Game {
                 if let Some(id) = player_info.reservation_id {
                     match take_your_turn(id, &current_player, game_info) {
                         Ok(awaiting_reply_msg_id) => {
+                            debug!("take_your_turn success");
                             awaiting_reply_msg_id_to_session_id
                                 .insert(awaiting_reply_msg_id, self.admin_id);
                             if self.current_msg_id == MessageId::zero() {
                                 self.current_msg_id = msg::id();
                             }
                             self.game_status = GameStatus::Wait;
-                            debug!("wait_for");
+                            debug!("wait_for {:?}", exec::gas_available());
                             exec::wait_for(time_for_step);
                         }
                         Err(_) => {
+                            debug!("ERROR");
                             self.exclude_player_from_game(current_player);
                             self.current_turn = self.current_turn.saturating_sub(1);
                             self.check_amount_of_players();
@@ -334,6 +338,7 @@ impl GameSessionActions for Game {
                         }
                     }
                 } else {
+                    debug!("GameStatus::WaitingForGasForStrategy");
                     self.game_status = GameStatus::WaitingForGasForStrategy(current_player);
                     exec::wait_for(gas_refill_timeout);
                 }
@@ -373,6 +378,7 @@ impl GameSessionActions for Game {
                 let gas_available = exec::gas_available();
 
                 let reservation_id = if gas_available.saturating_sub(gas_for_step) > min_gas_limit {
+                    debug!("ReservationId::reserve {:?}", gas_available - min_gas_limit);
                     match ReservationId::reserve(
                         gas_available - min_gas_limit,
                         reservation_duration_in_block,
@@ -408,7 +414,7 @@ impl GameSessionActions for Game {
         }
         debug!("WAKE");
         exec::wake(self.current_msg_id).expect("Unable to wake the msg");
-        debug!("WAKE Success");
+        debug!("WAKE Success {:?}",  exec::gas_available());
         Event::Step {
             players: self
                 .players
