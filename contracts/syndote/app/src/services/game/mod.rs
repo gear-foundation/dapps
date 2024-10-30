@@ -300,6 +300,7 @@ impl GameService {
         debug!("game_instance {:?}", game_instance);
         self.notify_on(event.clone()).expect("Notification Error");
         debug!("end skip {:?}", exec::gas_available());
+        
     }
 
     pub fn change_admin(&mut self, admin: ActorId) {
