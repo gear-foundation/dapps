@@ -48,7 +48,7 @@ function WinStatus({ type, userRank, winners, admin }: Props) {
           Winners:{' '}
           <ul>
             {winners.map((item) => (
-              <li className={cx(account?.decodedAddress === item[0] ? styles['user-winner'] : '')}>
+              <li key={item[0]} className={cx(account?.decodedAddress === item[0] ? styles['user-winner'] : '')}>
                 {item[2] || shortenString(getVaraAddress(item[0]), 6)}
               </li>
             ))}

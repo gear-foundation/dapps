@@ -100,7 +100,7 @@ function Session({ session, turns, rankings, userId, participants, admin }: Prop
     ));
 
   const sortRanks = () => {
-    const isAllZeros = rankings.every((rank) => rank[1] === '0');
+    const isAllZeros = rankings.every((rank) => rank[1] === 0);
 
     const sortedRanks = isAllZeros
       ? []
@@ -119,7 +119,7 @@ function Session({ session, turns, rankings, userId, participants, admin }: Prop
 
     return {
       isUserWinner: winners.map((item) => item[0]).includes(userId || '0x'),
-      userRank: sortedRanks.find((item) => item[0] === userId)?.[1] || '',
+      userRank: sortedRanks.find((item) => item[0] === userId)?.[1] || '0',
       winners,
     };
   };
