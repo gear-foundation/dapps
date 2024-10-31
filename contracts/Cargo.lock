@@ -119,10 +119,53 @@ dependencies = [
 ]
 
 [[package]]
-name = "anstyle"
-version = "1.0.8"
+name = "anstream"
+version = "0.6.17"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1bec1de6f59aedf83baf9ff929c98f2ad654b97c9510f4e70cf6f661d49fd5b1"
+checksum = "23a1e53f0f5d86382dafe1cf314783b2044280f406e7e1506368220ad11b1338"
+dependencies = [
+ "anstyle",
+ "anstyle-parse",
+ "anstyle-query",
+ "anstyle-wincon",
+ "colorchoice",
+ "is_terminal_polyfill",
+ "utf8parse",
+]
+
+[[package]]
+name = "anstyle"
+version = "1.0.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8365de52b16c035ff4fcafe0092ba9390540e3e352870ac09933bebcaa2c8c56"
+
+[[package]]
+name = "anstyle-parse"
+version = "0.2.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3b2d16507662817a6a20a9ea92df6652ee4f94f914589377d69f3b21bc5798a9"
+dependencies = [
+ "utf8parse",
+]
+
+[[package]]
+name = "anstyle-query"
+version = "1.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "79947af37f4177cfead1110013d678905c37501914fba0efea834c3fe9a8d60c"
+dependencies = [
+ "windows-sys 0.59.0",
+]
+
+[[package]]
+name = "anstyle-wincon"
+version = "3.0.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2109dbce0e72be3ec00bed26e6a7479ca384ad226efdd66db8fa2e3a38c83125"
+dependencies = [
+ "anstyle",
+ "windows-sys 0.59.0",
+]
 
 [[package]]
 name = "anyhow"
@@ -909,17 +952,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "car-races"
-version = "1.1.0"
-dependencies = [
- "car-races-app",
- "gear-wasm-builder",
- "sails-client-gen",
- "sails-idl-gen",
- "sails-rs",
-]
-
-[[package]]
 name = "car-races-app"
 version = "1.1.0"
 dependencies = [
@@ -930,6 +962,17 @@ dependencies = [
  "sails-rs",
  "scale-info",
  "session-service",
+]
+
+[[package]]
+name = "car-races-wasm"
+version = "1.1.0"
+dependencies = [
+ "car-races-app",
+ "gear-wasm-builder",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
 ]
 
 [[package]]
@@ -1111,6 +1154,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "colorchoice"
+version = "1.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5b63caa9aa9397e2d9480a9b13673856c78d8ac123288526c37d7839f2a86990"
+
+[[package]]
 name = "colored"
 version = "2.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1128,6 +1177,29 @@ checksum = "ba5a308b75df32fe02788e748662718f03fde005016435c444eea572398219fd"
 dependencies = [
  "bytes",
  "memchr",
+]
+
+[[package]]
+name = "concert"
+version = "1.1.0"
+dependencies = [
+ "concert-app",
+ "gear-wasm-builder",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+]
+
+[[package]]
+name = "concert-app"
+version = "1.1.0"
+dependencies = [
+ "concert",
+ "extended_vmt_wasm",
+ "gclient",
+ "gstd",
+ "sails-rs",
+ "tokio",
 ]
 
 [[package]]
@@ -1979,6 +2051,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "env_filter"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4f2c92ceda6ceec50f43169f9ee8424fe2db276791afde7b2cd8bc084cb376ab"
+dependencies = [
+ "log",
+ "regex",
+]
+
+[[package]]
 name = "env_logger"
 version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1989,6 +2071,19 @@ dependencies = [
  "log",
  "regex",
  "termcolor",
+]
+
+[[package]]
+name = "env_logger"
+version = "0.11.5"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e13fa619b91fb2381732789fc5de83b45675e882f66623b7d8cb4f643017018d"
+dependencies = [
+ "anstream",
+ "anstyle",
+ "env_filter",
+ "humantime",
+ "log",
 ]
 
 [[package]]
@@ -2086,11 +2181,36 @@ dependencies = [
 ]
 
 [[package]]
+name = "extended-vmt-app"
+version = "0.1.0"
+source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
+dependencies = [
+ "gear-wasm-builder",
+ "gstd",
+ "log",
+ "parity-scale-codec",
+ "sails-rs",
+ "scale-info",
+ "vmt-service",
+]
+
+[[package]]
 name = "extended_vft_wasm"
 version = "0.1.0"
 source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
 dependencies = [
  "extended-vft-app",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+]
+
+[[package]]
+name = "extended_vmt_wasm"
+version = "0.1.0"
+source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
+dependencies = [
+ "extended-vmt-app",
  "sails-client-gen",
  "sails-idl-gen",
  "sails-rs",
@@ -2789,7 +2909,7 @@ version = "1.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c266ad0fc2e5c4974a6699893815165fe1e193084fa7f23a17ccbc660bb20854"
 dependencies = [
- "env_logger",
+ "env_logger 0.10.2",
  "gear-core",
  "hex",
  "nonempty",
@@ -3165,7 +3285,7 @@ dependencies = [
  "colored",
  "core-processor",
  "derive_more 0.99.18",
- "env_logger",
+ "env_logger 0.10.2",
  "etc",
  "gear-common",
  "gear-core",
@@ -3634,6 +3754,12 @@ dependencies = [
  "libc",
  "windows-sys 0.52.0",
 ]
+
+[[package]]
+name = "is_terminal_polyfill"
+version = "1.70.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7943c866cc5cd64cbc25b2e01621d07fa8eb2a1a23160ee81ce38704e97b8ecf"
 
 [[package]]
 name = "itertools"
@@ -5337,9 +5463,9 @@ dependencies = [
 
 [[package]]
 name = "regex"
-version = "1.11.0"
+version = "1.11.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "38200e5ee88914975b69f657f0801b6f6dccafd44fd9326302a4aaeecfacb1d8"
+checksum = "b544ef1b4eac5dc2db33ea63606ae9ffcfac26c1416a2806ae0bf5f56b201191"
 dependencies = [
  "aho-corasick",
  "memchr",
@@ -7500,17 +7626,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "tic-tac-toe"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "sails-client-gen",
- "sails-idl-gen",
- "sails-rs",
- "tic-tac-toe-app",
-]
-
-[[package]]
 name = "tic-tac-toe-app"
 version = "1.1.0"
 dependencies = [
@@ -7518,8 +7633,19 @@ dependencies = [
  "gstd",
  "sails-rs",
  "schnorrkel 0.10.2",
- "tic-tac-toe",
+ "tic-tac-toe-wasm",
  "tokio",
+]
+
+[[package]]
+name = "tic-tac-toe-wasm"
+version = "1.1.0"
+dependencies = [
+ "gear-wasm-builder",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+ "tic-tac-toe-app",
 ]
 
 [[package]]
@@ -7943,6 +8069,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "utf8parse"
+version = "0.2.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
+
+[[package]]
 name = "uuid"
 version = "1.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -7955,17 +8087,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "830b7e5d4d90034032940e4ace0d9a9a057e7a45cd94e6c007832e39edb82f6d"
 
 [[package]]
-name = "vara-man"
-version = "1.1.0"
-dependencies = [
- "gear-wasm-builder",
- "sails-client-gen",
- "sails-idl-gen",
- "sails-rs",
- "vara-man-app",
-]
-
-[[package]]
 name = "vara-man-app"
 version = "1.1.0"
 dependencies = [
@@ -7976,7 +8097,39 @@ dependencies = [
  "sails-rs",
  "schnorrkel 0.10.2",
  "tokio",
- "vara-man",
+ "vara-man-wasm",
+]
+
+[[package]]
+name = "vara-man-wasm"
+version = "1.1.0"
+dependencies = [
+ "gear-wasm-builder",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+ "vara-man-app",
+]
+
+[[package]]
+name = "varatube"
+version = "1.1.0"
+dependencies = [
+ "gear-wasm-builder",
+ "sails-idl-gen",
+ "varatube-app",
+]
+
+[[package]]
+name = "varatube-app"
+version = "1.1.0"
+dependencies = [
+ "gclient",
+ "gear-core",
+ "gstd",
+ "gtest",
+ "sails-rs",
+ "tokio",
 ]
 
 [[package]]
@@ -7987,6 +8140,18 @@ checksum = "0b928f33d975fc6ad9f86c8f283853ad26bdd5b10b7f1542aa2fa15e2289105a"
 
 [[package]]
 name = "vft-service"
+version = "0.1.0"
+source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
+dependencies = [
+ "gstd",
+ "log",
+ "parity-scale-codec",
+ "sails-rs",
+ "scale-info",
+]
+
+[[package]]
+name = "vmt-service"
 version = "0.1.0"
 source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
 dependencies = [
@@ -8994,18 +9159,9 @@ dependencies = [
 name = "zk-battleship"
 version = "1.1.0"
 dependencies = [
- "gear-wasm-builder",
- "sails-idl-gen",
- "zk-battleship-app",
-]
-
-[[package]]
-name = "zk-battleship-app"
-version = "1.1.0"
-dependencies = [
  "ark-groth16",
  "ark-std",
- "env_logger",
+ "env_logger 0.11.5",
  "gbuiltin-bls381",
  "gclient",
  "gear-core",
@@ -9016,4 +9172,13 @@ dependencies = [
  "sails-rs",
  "schnorrkel 0.10.2",
  "tokio",
+]
+
+[[package]]
+name = "zk-battleship-wasm"
+version = "1.1.0"
+dependencies = [
+ "gear-wasm-builder",
+ "sails-idl-gen",
+ "zk-battleship",
 ]
