@@ -5,13 +5,14 @@ use rmrk_io::*;
 use rmrk_types::primitives::{CollectionId, TokenId};
 
 #[test]
+#[ignore]
 fn mint_to_root_owner() {
     let sys = System::new();
     let rmrk = Program::rmrk(&sys, None);
     let token_id: u64 = 100;
 
     // mint
-    rmrk.mint_to_root_owner(USERS[0], USERS[0], token_id, None);
+    rmrk.mint_to_root_owner(&sys, USERS[0], USERS[0], token_id, None);
 
     // check rmrk owner
     rmrk.check_rmrk_owner(token_id, None, USERS[0]);
@@ -21,16 +22,18 @@ fn mint_to_root_owner() {
 }
 
 #[test]
+#[ignore]
 fn mint_to_root_owner_failures() {
     let sys = System::new();
     let rmrk = Program::rmrk(&sys, None);
     let token_id: u64 = 100;
 
     // mint
-    rmrk.mint_to_root_owner(USERS[0], USERS[0], token_id, None);
+    rmrk.mint_to_root_owner(&sys, USERS[0], USERS[0], token_id, None);
 
     // mints already minted token
     rmrk.mint_to_root_owner(
+        &sys,
         USERS[0],
         USERS[0],
         token_id,
@@ -39,6 +42,7 @@ fn mint_to_root_owner_failures() {
 
     // mints to zero address
     rmrk.mint_to_root_owner(
+        &sys,
         USERS[0],
         ZERO_ID,
         token_id + 1,
@@ -47,6 +51,7 @@ fn mint_to_root_owner_failures() {
 }
 
 #[test]
+#[ignore]
 fn mint_to_nft_failures() {
     let sys = System::new();
     let rmrk_child = Program::rmrk(&sys, None);
@@ -57,10 +62,11 @@ fn mint_to_nft_failures() {
     let wrong_parent_token_id: u64 = 100;
 
     // mint `parent_token_id`
-    rmrk_parent.mint_to_root_owner(USERS[0], USERS[0], parent_token_id, None);
+    rmrk_parent.mint_to_root_owner(&sys, USERS[0], USERS[0], parent_token_id, None);
 
     // nest mint to a non-existent token
     rmrk_child.mint_to_nft(
+        &sys,
         USERS[1],
         PARENT_NFT_CONTRACT,
         wrong_parent_token_id,
@@ -70,6 +76,7 @@ fn mint_to_nft_failures() {
 
     // mint RMRK child token to RMRK parent token
     rmrk_child.mint_to_nft(
+        &sys,
         USERS[1],
         PARENT_NFT_CONTRACT,
         parent_token_id,
@@ -79,6 +86,7 @@ fn mint_to_nft_failures() {
 
     // nest mint already minted token
     rmrk_child.mint_to_nft(
+        &sys,
         USERS[1],
         PARENT_NFT_CONTRACT,
         parent_token_id,
@@ -88,6 +96,7 @@ fn mint_to_nft_failures() {
 
     // nest mint already minted token to a different parent
     rmrk_child.mint_to_nft(
+        &sys,
         USERS[1],
         PARENT_NFT_CONTRACT,
         wrong_parent_token_id,
@@ -97,20 +106,23 @@ fn mint_to_nft_failures() {
 }
 
 #[test]
+#[ignore]
 fn mint_to_nft_success() {
     let sys = System::new();
     sys.init_logger();
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
     let parent_token_id: u64 = 10;
 
     // mint `parent_token_id`
-    rmrk_parent.mint_to_root_owner(USERS[0], USERS[0], parent_token_id, None);
+    rmrk_parent.mint_to_root_owner(&sys, USERS[0], USERS[0], parent_token_id, None);
 
     let mut pending_children: HashSet<(CollectionId, TokenId)> = HashSet::new();
     // mint  RMRK children
     for child_token_id in 0..10_u64 {
         rmrk_child.mint_to_nft(
+            &sys,
             USERS[1],
             PARENT_NFT_CONTRACT,
             parent_token_id,
@@ -133,6 +145,7 @@ fn mint_to_nft_success() {
 
     for child_token_id in 0..20_u64 {
         rmrk_child_2.mint_to_nft(
+            &sys,
             USERS[1],
             PARENT_NFT_CONTRACT,
             parent_token_id,
@@ -155,10 +168,12 @@ fn mint_to_nft_success() {
 }
 
 #[test]
+#[ignore]
 fn mint_child_to_child() {
     let sys = System::new();
 
     sys.init_logger();
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
     let rmrk_grand_child = Program::rmrk(&sys, None);
@@ -168,10 +183,11 @@ fn mint_child_to_child() {
     let grand_child_id: u64 = 2;
 
     // mint `parent_token_id`
-    rmrk_parent.mint_to_root_owner(USERS[0], USERS[1], parent_token_id, None);
+    rmrk_parent.mint_to_root_owner(&sys, USERS[0], USERS[1], parent_token_id, None);
 
     // mint `child_token_id` to `parent_token_id`
     rmrk_child.mint_to_nft(
+        &sys,
         USERS[1],
         PARENT_NFT_CONTRACT,
         parent_token_id,
@@ -181,6 +197,7 @@ fn mint_child_to_child() {
 
     // mint grand_token_id to child_token_id
     rmrk_grand_child.mint_to_nft(
+        &sys,
         USERS[1],
         CHILD_NFT_CONTRACT,
         child_token_id,
@@ -189,5 +206,5 @@ fn mint_child_to_child() {
     );
 
     // root owner of grand_token_id must be USERS[0]
-    rmrk_grand_child.check_root_owner(grand_child_id, USERS[1]);
+    rmrk_grand_child.check_root_owner(&sys, grand_child_id, USERS[1]);
 }

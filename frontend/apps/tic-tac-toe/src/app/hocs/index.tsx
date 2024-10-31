@@ -8,6 +8,7 @@ import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
+import { QueryProvider } from '@dapps-frontend/ui';
 import {
   SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
@@ -16,7 +17,6 @@ import {
 
 import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
-import { QueryProvider } from './query-provider';
 import { useProgram } from '../utils';
 
 function ApiProvider({ children }: ProviderProps) {

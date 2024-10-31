@@ -14,5 +14,5 @@ gtest.workspace = true
 gstd.workspace = true
 gear-core.workspace = true
 gclient.workspace = true
-galactic-express-wasm = { path = "../wasm" }
+galactic-express = { path = "../wasm" }
 tokio = "1"

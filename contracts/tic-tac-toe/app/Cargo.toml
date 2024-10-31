@@ -10,8 +10,6 @@ sails-rs = { workspace = true, features = ["gtest"] }
 schnorrkel.workspace = true
 
 [dev-dependencies]
-gtest.workspace = true
-gear-core.workspace = true
 gclient.workspace = true
 tic-tac-toe-wasm = { path = "../wasm" }
 tokio = "1"

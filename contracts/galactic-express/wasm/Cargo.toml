@@ -1,5 +1,5 @@
 [package]
-name = "galactic-express-wasm"
+name = "galactic-express"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -16,4 +16,4 @@ galactic-express-app = { path = "../app" }
 
 [lib]
 crate-type = ["rlib"]
-name = "galactic_express_wasm"
+name = "galactic_express"

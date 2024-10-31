@@ -3,10 +3,16 @@ resolver = "2"
 # Keep in the lexicographic order!
 # Remove a member if it's used as a dependency in the workspace.
 members = [
+    "battle",
+    "battle/warrior/wasm",
     "battleship",
-    "car-races",
+    "car-races/app",
+    "car-races/car-1",
+    "car-races/car-2",
+    "car-races/car-3",
+    "car-races/wasm",
+    "concert/wasm",
     "galactic-express/wasm",
-    "multi-token",
     "multisig-wallet",
     "multisig-wallet/state",
     "oracle",
@@ -19,22 +25,18 @@ members = [
     "rmrk/catalog",
     "rmrk/resource",
     "rmrk/state",
-    "rock-paper-scissors",
-    "rock-paper-scissors/state",
-    "syndote",
-    "syndote/player",
+    "syndote/wasm",
+    "syndote/player/wasm",
     "tamagotchi",
     "tamagotchi/state",
     "tamagotchi-battle",
     "tamagotchi-battle/state",
     "tequila-train",
+    "varatube/wasm",
     "tic-tac-toe/wasm",
     "vara-man/wasm",
     "w3bstreaming",
     "zk-battleship/wasm",
-    # Noncontract crates
-
-    "xtask",
 ]
 
 [workspace.package]
@@ -68,7 +70,6 @@ tamagotchi-battle-state.path = "tamagotchi-battle/state"
 
 battleship-io.path = "battleship/io"
 car-races-io.path = "car-races/io"
-galactic-express-io.path = "galactic-express/io"
 multi-token-io.path = "multi-token/io"
 multisig-wallet-io.path = "multisig-wallet/io"
 ping-io.path = "ping/io"
@@ -91,15 +92,16 @@ rmrk-types.path = "rmrk/types"
 
 # Gear
 
-gstd = "=1.5.0"
-gear-wasm-builder = "=1.5.0"
-gmeta = "=1.5.0"
-gclient = "=1.5.0"
-gtest = "=1.5.0"
-gear-core = "=1.5.0"
-sails-idl-gen = "0.5.0"
-sails-rs = "0.5.0"
-sails-client-gen = "0.5.0"
+gstd = "1.6.2"
+gear-wasm-builder = "1.6.2"
+gmeta = "1.6.2"
+gclient = "1.6.2"
+gtest = "1.6.1"
+gear-core = "1.6.2"
+sails-idl-gen = "0.6.1"
+sails-rs = "0.6.1"
+sails-client-gen = "0.6.1"
+session-service = { git = "https://github.com/gear-foundation/signless-gasless-session-service.git" }
 
 # External
 

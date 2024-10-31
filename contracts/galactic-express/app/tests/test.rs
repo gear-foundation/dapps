@@ -1,4 +1,4 @@
-use galactic_express_wasm::{
+use galactic_express::{
     traits::{GalacticExpress, GalacticExpressFactory},
     GalacticExpress as GalacticExpressClient, GalacticExpressFactory as Factory, Participant,
     StageState,
@@ -6,18 +6,24 @@ use galactic_express_wasm::{
 use gstd::errors::{ErrorReplyReason, SimpleExecutionError};
 use sails_rs::calls::*;
 use sails_rs::errors::{Error, RtlError};
-use sails_rs::gtest::calls::*;
+use sails_rs::gtest::{calls::*, System};
 
 pub const ADMIN: u64 = 10;
 pub const PLAYERS: [u64; 3] = [12, 13, 14];
 
 #[tokio::test]
 async fn test_play_game() {
-    let program_space = GTestRemoting::new(ADMIN.into());
+    let system = System::new();
+    system.init_logger();
+    system.mint_to(ADMIN, 100_000_000_000_000);
+    system.mint_to(PLAYERS[0], 100_000_000_000_000);
+    system.mint_to(PLAYERS[1], 100_000_000_000_000);
+    system.mint_to(PLAYERS[2], 100_000_000_000_000);
+    let program_space = GTestRemoting::new(system, ADMIN.into());
     program_space.system().init_logger();
-    let code_id = program_space.system().submit_code_file(
-        "../../target/wasm32-unknown-unknown/release/galactic_express_wasm.opt.wasm",
-    );
+    let code_id = program_space
+        .system()
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/galactic_express.opt.wasm");
 
     let galactic_express_factory = Factory::new(program_space.clone());
     let galactic_express_id = galactic_express_factory
@@ -83,11 +89,17 @@ async fn test_play_game() {
 
 #[tokio::test]
 async fn cancel_register_and_delete_player() {
-    let program_space = GTestRemoting::new(ADMIN.into());
+    let system = System::new();
+    system.init_logger();
+    system.mint_to(ADMIN, 100_000_000_000_000);
+    system.mint_to(PLAYERS[0], 100_000_000_000_000);
+    system.mint_to(PLAYERS[1], 100_000_000_000_000);
+    system.mint_to(PLAYERS[2], 100_000_000_000_000);
+    let program_space = GTestRemoting::new(system, ADMIN.into());
     program_space.system().init_logger();
-    let code_id = program_space.system().submit_code_file(
-        "../../target/wasm32-unknown-unknown/release/galactic_express_wasm.opt.wasm",
-    );
+    let code_id = program_space
+        .system()
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/galactic_express.opt.wasm");
 
     let galactic_express_factory = Factory::new(program_space.clone());
     let galactic_express_id = galactic_express_factory
@@ -170,11 +182,17 @@ async fn cancel_register_and_delete_player() {
 
 #[tokio::test]
 async fn errors() {
-    let program_space = GTestRemoting::new(ADMIN.into());
+    let system = System::new();
+    system.init_logger();
+    system.mint_to(ADMIN, 100_000_000_000_000);
+    system.mint_to(PLAYERS[0], 100_000_000_000_000);
+    system.mint_to(PLAYERS[1], 100_000_000_000_000);
+    system.mint_to(PLAYERS[2], 100_000_000_000_000);
+    let program_space = GTestRemoting::new(system, ADMIN.into());
     program_space.system().init_logger();
-    let code_id = program_space.system().submit_code_file(
-        "../../target/wasm32-unknown-unknown/release/galactic_express_wasm.opt.wasm",
-    );
+    let code_id = program_space
+        .system()
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/galactic_express.opt.wasm");
 
     let galactic_express_factory = Factory::new(program_space.clone());
     let galactic_express_id = galactic_express_factory
@@ -284,7 +302,7 @@ async fn errors() {
         fuel_amount: 42,
         payload_amount: 20,
     };
-    program_space.system().mint_to(100, bid);
+    program_space.system().mint_to(100, 100_000_000_000_000);
 
     let res = client
         .register(ADMIN.into(), player)

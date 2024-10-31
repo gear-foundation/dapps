@@ -1,9 +1,9 @@
+use crate::services::galactic_express::utils;
 use crate::services::galactic_express::{
     Event, Game, GameError, HaltReason, Participant, Random, Results, Stage, Storage, Turn,
     Weather, MAX_FUEL, MAX_PARTICIPANTS, MAX_PAYLOAD, PENALTY_LEVEL, REWARD, TURNS, TURN_ALTITUDE,
 };
-use gstd::{collections::HashMap, msg};
-use sails_rs::prelude::*;
+use sails_rs::{collections::HashMap, gstd::msg, prelude::*};
 
 pub fn create_new_session(storage: &mut Storage, name: String) -> Result<Event, GameError> {
     let msg_src = msg::source();
@@ -26,7 +26,9 @@ pub fn create_new_session(storage: &mut Storage, name: String) -> Result<Event, 
         Stage::Registration(participants) => {
             participants.clear();
         }
-        Stage::Results { .. } => *stage = Stage::Registration(HashMap::new()),
+        Stage::Results { .. } => {
+            *stage = Stage::Registration(HashMap::<sails_rs::ActorId, utils::Participant>::new())
+        }
     }
 
     let mut random = Random::new()?;
