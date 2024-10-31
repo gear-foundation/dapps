@@ -1,6 +1,6 @@
 import clsx from 'clsx';
 import { Button } from '@gear-js/vara-ui';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
 import { useState } from 'react';
 import { BaseComponentProps } from '@/app/types';
 import { Text } from '@/components';
@@ -24,6 +24,7 @@ type PlayersListProps = BaseComponentProps & {
 const PlayersList = ({ items, className, bid, tournamentName, ...restProps }: PlayersListProps) => {
   const [showAll, setShowAll] = useState(false);
   const { account } = useAccount();
+  const { getFormattedBalanceValue } = useBalanceFormat();
   const maxLength = 10;
   const displayedItems = showAll ? items : items.slice(0, maxLength);
 
@@ -49,7 +50,7 @@ const PlayersList = ({ items, className, bid, tournamentName, ...restProps }: Pl
 
                 <VaraIcon className={styles.icon} />
                 <Text size="sm" weight="semibold">
-                  {bid.toFixed(2)}
+                  {getFormattedBalanceValue(bid).toFixed(2)}
                 </Text>
               </div>
             </div>
