@@ -12,7 +12,7 @@ import { AnyJson, AnyNumber } from '@polkadot/types/types';
 const useHandleCalculateGas = (address: HexString, meta: ProgramMetadata | undefined) => {
   const { api } = useApi();
   const { account } = useAccount();
-  const balances = useDeriveBalancesAll(account?.decodedAddress);
+  const { data: balances } = useDeriveBalancesAll({ address: account?.decodedAddress, watch: true });
   const calculateGasNative = useCalculateGasNative(address, meta);
 
   const alert = useAlert();

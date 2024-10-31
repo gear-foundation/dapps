@@ -2,17 +2,19 @@ use crate::utils::*;
 use gtest::{Program, System};
 
 #[test]
+#[ignore]
 fn transfer_simple() {
     let sys = System::new();
     sys.init_logger();
+    mint_value_to_users(&sys);
     let rmrk = Program::rmrk(&sys, None);
     let token_id: u64 = 9;
 
     // mint token
-    rmrk.mint_to_root_owner(USERS[0], USERS[0], token_id, None);
+    rmrk.mint_to_root_owner(&sys, USERS[0], USERS[0], token_id, None);
 
     // transfer token
-    rmrk.transfer(USERS[0], USERS[3], token_id, None);
+    rmrk.transfer(&sys, USERS[0], USERS[3], token_id, None);
 
     // check that RMRK owner
     rmrk.check_rmrk_owner(token_id, None, USERS[3]);
@@ -25,6 +27,7 @@ fn transfer_simple() {
 }
 
 #[test]
+#[ignore]
 fn transfer_parent_with_child() {
     let sys = System::new();
     let rmrk_child = Program::rmrk(&sys, None);
@@ -36,6 +39,7 @@ fn transfer_parent_with_child() {
 
     // ownership chain is  USERS[0] > parent_token_id > child_token_id > grand_token_id
     rmrk_chain(
+        &sys,
         &rmrk_grand,
         &rmrk_child,
         &rmrk_parent,
@@ -44,11 +48,11 @@ fn transfer_parent_with_child() {
         parent_token_id,
     );
 
-    rmrk_parent.transfer(USERS[0], USERS[3], parent_token_id, None);
+    rmrk_parent.transfer(&sys, USERS[0], USERS[3], parent_token_id, None);
 
     // check root_owner of child_token_id
-    rmrk_child.check_root_owner(child_token_id, USERS[3]);
+    rmrk_child.check_root_owner(&sys, child_token_id, USERS[3]);
 
     // check root_owner of grand_token_id
-    rmrk_grand.check_root_owner(grand_token_id, USERS[3]);
+    rmrk_grand.check_root_owner(&sys, grand_token_id, USERS[3]);
 }

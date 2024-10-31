@@ -1,0 +1,16 @@
+[package]
+name = "concert-app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+gstd = { workspace = true, features = ["debug"] }
+sails-rs = { workspace = true, features = ["gtest"] }
+
+[dev-dependencies]
+gclient.workspace = true
+concert = { path = "../wasm" }
+tokio = "1"
+extended_vmt_wasm = { git = "https://github.com/gear-foundation/standards/"}
+

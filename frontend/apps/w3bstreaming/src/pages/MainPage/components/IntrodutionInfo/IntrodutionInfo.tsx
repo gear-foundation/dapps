@@ -1,4 +1,4 @@
-import { WalletNew as Wallet } from '@dapps-frontend/ui';
+import { Wallet } from '@dapps-frontend/ui';
 import styles from './IntrodutionInfo.module.scss';
 import mainFrame from '@/assets/icons/main-page-frame.png';
 import animImg from '@/assets/icons/main-page-wara-anim.png';

@@ -6,19 +6,19 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "battleship*"
+cargo b -r -p "battleship*"
 ```
 
 ### ✅ Testing
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -p "battleship*" -- --skip gclient
+cargo t -r -p "battleship*" -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
 cargo xtask node
-cargo t -p "battleship*"
+cargo t -r -p "battleship*"
 ```

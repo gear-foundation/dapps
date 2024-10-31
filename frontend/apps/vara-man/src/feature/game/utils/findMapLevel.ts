@@ -1,4 +1,4 @@
-import { IGameLevel } from '@/app/types/game'
+import { Level } from '@/app/utils'
 import EasyMap from '../assets/map/map-easy.json'
 import MediumMap from '../assets/map/map-medium.json'
 import HardMap from '../assets/map/map-hard.json'
@@ -10,7 +10,7 @@ const maps = {
 	Hard: HardMap,
 }
 
-export const findMapLevel = (level: IGameLevel): TileMap => {
+export const findMapLevel = (level: Level): TileMap => {
 	const map = maps[level]
 
 	if (!map) {
