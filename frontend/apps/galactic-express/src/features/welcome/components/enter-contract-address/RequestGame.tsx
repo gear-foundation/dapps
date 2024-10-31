@@ -1,24 +1,20 @@
 import { useEffect, useState } from 'react';
 import { Wallet } from '@dapps-frontend/ui';
 import { Button } from '@gear-js/vara-ui';
-import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { cx } from 'utils';
 import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
 import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
 import { useSetAtom, useAtom } from 'jotai';
 import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM, REGISTRATION_STATUS } from 'atoms';
-import { useLaunchMessage } from 'features/session/hooks';
-import metaTxt from 'assets/meta/galactic_express_meta.txt';
-import { useAccount, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount, useApi, useBalanceFormat } from '@gear-js/react-hooks';
 import { TextField } from 'components/layout/TextField';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { HexString, decodeAddress } from '@gear-js/api';
 import { GameFoundModal } from 'features/session/components/game-found-modal';
-import { useProgramMetadata } from 'hooks';
-import { LaunchState } from 'features/session/types';
 import { JoinModalFormValues } from 'features/session/components/game-found-modal/GameFoundModal';
 import { TextModal } from 'features/session/components/game-not-found-modal';
 import { GameIntro } from '../game-intro';
+import { GameState, useGetGameQuery, useCreateNewSessionMessage } from 'app/utils';
 import styles from './RequestGame.module.scss';
 
 type Status = 'creating' | 'joining' | null;
@@ -35,12 +31,11 @@ type JoinFormValues = {
 function RequestGame() {
   const { account } = useAccount();
   const { api } = useApi();
-  const { programId } = useDnsProgramIds();
   const { getFormattedBalanceValue, getChainBalanceValue } = useBalanceFormat();
 
-  const [foundState, setFoundState] = useState<LaunchState | null>(null);
-  const { message: sendNewSessionMessage } = useLaunchMessage();
-  const meta = useProgramMetadata(metaTxt);
+  const { createNewSessionMessage } = useCreateNewSessionMessage();
+
+  const [foundState, setFoundState] = useState<GameState | null>(null);
   const setCurrentGame = useSetAtom(CURRENT_GAME_ATOM);
   const setPlayerName = useSetAtom(PLAYER_NAME_ATOM);
   const setRegistrationStatus = useSetAtom(REGISTRATION_STATUS);
@@ -63,7 +58,7 @@ function RequestGame() {
     },
   });
 
-  const joinForm = useForm({
+  const joinForm = useForm<JoinFormValues>({
     initialValues: {
       address: undefined,
     },
@@ -74,7 +69,9 @@ function RequestGame() {
 
   const { errors: createErrors, getInputProps: getCreateInputProps, onSubmit: onCreateSubmit } = createForm;
 
-  const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit } = joinForm;
+  const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit, values } = joinForm;
+
+  const { refetch } = useGetGameQuery(values.address?.length === 49 ? decodeAddress(values.address) : undefined);
 
   const handleSetStatus = (newStatus: Status) => {
     setStatus(newStatus);
@@ -88,25 +85,11 @@ function RequestGame() {
     if (!account?.decodedAddress) {
       return;
     }
-
-    const payload = {
-      CreateNewSession: {
-        name: values.name,
-      },
-    };
-
     setIsLoading(true);
-    sendNewSessionMessage({
-      payload,
-      value: getChainBalanceValue(values.fee).toFixed(),
-      onSuccess: () => {
-        setIsLoading(false);
-      },
-      onError: () => {
-        console.log('error');
-        setIsLoading(false);
-      },
-    });
+    createNewSessionMessage(
+      { name: values.name, value: BigInt(getChainBalanceValue(values.fee).toFixed()) },
+      { onSuccess: () => setIsLoading(false), onError: () => setIsLoading(false) },
+    );
   };
 
   const handleOpenJoinSessionModal = async (values: JoinFormValues) => {
@@ -114,21 +97,11 @@ function RequestGame() {
       return;
     }
 
-    const payload = { GetGame: { playerId: decodeAddress(values.address || '') } };
-
     try {
-      const res = await api?.programState.read(
-        {
-          programId,
-          payload,
-        },
-        meta,
-      );
+      const { data } = await refetch();
 
-      const state = (await res?.toHuman()) as LaunchState;
-
-      if (state?.Game) {
-        setFoundState(state);
+      if (data) {
+        setFoundState(data);
         setFoundGame(decodeAddress(values.address || ''));
         setIsJoinSessionModalShown(true);
         return;
@@ -248,8 +221,10 @@ function RequestGame() {
       )}
       {isJoinSessionModalShown && (
         <GameFoundModal
-          entryFee={getFormattedBalanceValue(withoutCommas(foundState?.Game.bid || '')).toFixed()}
-          players={(foundState?.Game.stage.Registration?.length || 0) + 1}
+          entryFee={getFormattedBalanceValue(String(foundState?.bid || '')).toFixed()}
+          players={
+            ((foundState && 'registration' in foundState?.stage && foundState?.stage.registration?.length) || 0) + 1
+          }
           gasAmount={1.121}
           onSubmit={handleJoinSession}
           onClose={handleCloseFoundModal}

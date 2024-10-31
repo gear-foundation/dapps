@@ -3,17 +3,17 @@ import { Footer } from '@dapps-frontend/ui';
 import { Routing } from 'pages';
 import { Header, ApiLoader } from 'components';
 import { withProviders } from 'hocs';
-import { useProgramState } from 'hooks/api';
 import 'simplebar-react/dist/simplebar.min.css';
 import 'App.scss';
 import '@gear-js/vara-ui/dist/style.css';
+import { useGetSubscriberQuery } from 'app/utils';
 
 function Component() {
   const { isApiReady } = useApi();
   const { isAccountReady } = useAccount();
-  const { isSubscriptionsStateRead } = useProgramState();
+  const { isFetched } = useGetSubscriberQuery();
 
-  const isAppReady = isApiReady && isAccountReady && isSubscriptionsStateRead;
+  const isAppReady = isApiReady && isAccountReady && isFetched;
 
   return (
     <>

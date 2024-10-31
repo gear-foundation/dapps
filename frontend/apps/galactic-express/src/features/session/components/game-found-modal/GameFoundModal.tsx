@@ -77,7 +77,7 @@ function GameFoundModal({ entryFee, players, gasAmount, onSubmit, onClose }: Pro
         </p>
         <div className={styles.info}>
           {items.map((item) => (
-            <div className={styles.item}>
+            <div className={styles.item} key={item.name}>
               <span className={styles.itemName}>{item.name}</span>
               <span className={styles.itemValue}>{item.value}</span>
             </div>
