@@ -1,17 +1,18 @@
 import { useAtomValue, useSetAtom, useAtom } from 'jotai';
 import { CURRENT_GAME_ATOM, IS_LOADING, PLAYER_NAME_ATOM } from 'atoms';
-import { useAccount, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
 import { useForm } from '@mantine/form';
 import { Card } from 'components';
-import { ChangeEvent, Dispatch, SetStateAction, useState } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { RegistrationStatus } from 'features/session/types';
 import { ReactComponent as RocketSVG } from '../../assets/rocket.svg';
 import { INITIAL_VALUES, VALIDATE, WEATHERS } from '../../consts';
-import { useLaunchMessage } from '../../hooks';
 import { Range } from '../range';
 import { Probability } from '../probability';
 import styles from './Form.module.scss';
+import { useStartGameMessage, useRegisterMessage } from 'app/utils';
+import { getPanicType } from 'utils';
 
 type Props = {
   weather: string;
@@ -30,10 +31,11 @@ function Form({ weather, bid, isAdmin, setRegistrationStatus }: Props) {
   });
   const playerName = useAtomValue(PLAYER_NAME_ATOM);
   const currentGameAddress = useAtomValue(CURRENT_GAME_ATOM);
+  const { startGameMessage } = useStartGameMessage();
+  const { registerMessage } = useRegisterMessage();
 
-  const { fuel, payload } = values;
-
-  const { meta, message: sendMessage } = useLaunchMessage();
+  const fuel = Number(values.fuel);
+  const payload = Number(values.payload);
 
   const handleNumberInputChange = ({ target }: ChangeEvent<HTMLInputElement>) => {
     const value = +target.value;
@@ -52,29 +54,45 @@ function Form({ weather, bid, isAdmin, setRegistrationStatus }: Props) {
   });
 
   const handleSubmit = () => {
-    if (!isAdmin && meta && account?.decodedAddress) {
+    if (!isAdmin && account?.decodedAddress && currentGameAddress && playerName) {
       setIsLoading(true);
-      sendMessage({
-        payload: {
-          Register: {
-            creator: currentGameAddress,
-            participant: { fuel_amount: fuel, payload_amount: payload, name: playerName, id: account.decodedAddress },
+
+      registerMessage(
+        {
+          creator: currentGameAddress,
+          participant: { fuel_amount: fuel, payload_amount: payload, name: playerName, id: account.decodedAddress },
+          value: bid ? BigInt(bid) : undefined,
+        },
+        {
+          onSuccess: () => {
+            setRegistrationStatus('success');
+            setCurrentGame(null);
+            setIsLoading(false);
+          },
+          onError: (error) => {
+            setIsLoading(false);
+
+            const panicType = getPanicType(error);
+            if (panicType === 'SessionFull') {
+              setRegistrationStatus('MaximumPlayersReached');
+            }
           },
         },
-        value: Number(withoutCommas(bid || '')),
-        onSuccess: () => {
-          setRegistrationStatus('success');
-          setCurrentGame('');
-          setIsLoading(false);
-        },
-        onError: () => {
-          setIsLoading(false);
-        },
-      });
+      );
     }
 
-    if (isAdmin && meta) {
-      sendMessage({ payload: { StartGame: { fuel_amount: fuel, payload_amount: payload } } });
+    if (isAdmin) {
+      startGameMessage(
+        { fuel: fuel, payload: payload },
+        {
+          onError: (error) => {
+            const panicType = getPanicType(error);
+            if (panicType === 'NotEnoughParticipants') {
+              setRegistrationStatus(panicType);
+            }
+          },
+        },
+      );
     }
   };
 
