@@ -20,6 +20,8 @@ const periods = [
   { label: '1 month', value: 'Month', rate: 1 },
 ];
 
+const initialValues = { isRenewal: true, period: periods[0].value };
+
 const VOUCHER_MIN_LIMIT = 18;
 
-export { ADDRESS, LOCAL_STORAGE, periods, VOUCHER_MIN_LIMIT };
+export { ADDRESS, LOCAL_STORAGE, periods, initialValues, VOUCHER_MIN_LIMIT };
