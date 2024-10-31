@@ -1993,6 +1993,7 @@ __metadata:
   peerDependencies:
     "@gear-js/api": 0.38.1
     "@gear-js/react-hooks": 0.13.0
+    "@tanstack/react-query": 5.29.0
     react: 18.2.0
     react-dom: 18.2.0
   languageName: unknown
