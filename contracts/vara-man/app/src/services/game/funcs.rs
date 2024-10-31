@@ -3,8 +3,7 @@ use crate::services::game::{
     MAX_PARTICIPANTS,
 };
 use crate::services::session::utils::{ActionsForSession, SessionData};
-use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId};
-use sails_rs::U256;
+use sails_rs::{U256, gstd::{exec, msg}, prelude::*, collections::HashMap, ActorId};
 
 pub fn create_new_tournament(
     storage: &mut GameStorage,
