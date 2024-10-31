@@ -110,6 +110,12 @@ async fn test_play_game() {
         .unwrap();
 
     client
+        .make_reservation(ADMIN_ID.into())
+        .send_recv(syndote_id)
+        .await
+        .unwrap();
+
+    client
         .play(ADMIN_ID.into())
         .send_recv(syndote_id)
         .await
