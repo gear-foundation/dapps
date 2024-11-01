@@ -2,7 +2,7 @@ use gtest::{Log, Program};
 use sails_rs::calls::*;
 use sails_rs::gtest::{calls::*, System};
 use sails_rs::{ActorId, Encode, U256};
-use vara_man_wasm::{
+use vara_man::{
     traits::{VaraMan, VaraManFactory},
     Config, Level, Status, VaraMan as VaraManClient, VaraManFactory as Factory,
 };
@@ -54,7 +54,7 @@ async fn test_play_game() {
 
     let code_id = program_space
         .system()
-        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man_wasm.opt.wasm");
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man.opt.wasm");
 
     let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -122,7 +122,7 @@ async fn test_play_game_with_fungible_token() {
 
     let code_id = program_space
         .system()
-        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man_wasm.opt.wasm");
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man.opt.wasm");
 
     let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -184,7 +184,7 @@ async fn test_play_tournament() {
 
     let code_id = program_space
         .system()
-        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man_wasm.opt.wasm");
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man.opt.wasm");
 
     let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {
