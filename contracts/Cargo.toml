@@ -12,7 +12,7 @@ members = [
     "car-races/car-3",
     "car-races/wasm",
     "concert/wasm",
-    "galactic-express",
+    "galactic-express/wasm",
     "multisig-wallet",
     "multisig-wallet/state",
     "oracle",
@@ -70,7 +70,6 @@ tamagotchi-battle-state.path = "tamagotchi-battle/state"
 
 battleship-io.path = "battleship/io"
 car-races-io.path = "car-races/io"
-galactic-express-io.path = "galactic-express/io"
 multi-token-io.path = "multi-token/io"
 multisig-wallet-io.path = "multisig-wallet/io"
 ping-io.path = "ping/io"

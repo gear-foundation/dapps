@@ -3,11 +3,11 @@ import clsx from 'clsx';
 import { Link } from 'react-router-dom';
 import { MenuHandler, Header as CommonHeader } from '@dapps-frontend/ui';
 import logo from 'assets/images/logo.png';
-import { useFTBalance } from 'hooks/api';
 import styles from './Header.module.scss';
+import { useBalanceOfQuery } from 'app/utils';
 
 function Header() {
-  const tokens = useFTBalance();
+  const { balance } = useBalanceOfQuery();
 
   return (
     <CommonHeader
@@ -39,9 +39,9 @@ function Header() {
           My Subscription
         </Link>
 
-        {tokens && (
+        {balance && (
           <p className={styles.balance}>
-            <span className={styles.currency}>Tokens:</span> {tokens}
+            <span className={styles.currency}>Tokens:</span> {String(balance)}
           </p>
         )}
       </>
