@@ -2,6 +2,7 @@ import React from 'react';
 import { AssetType } from './types';
 import { assetsCount, back_colors, body_colors } from './consts';
 import { CharacterView } from './components/character/character';
+import { decodeAddress } from '@gear-js/api';
 
 export const getLazySvg = (assetType: AssetType, index: number) => {
   const assetNumber = index > 0 ? (index % assetsCount[assetType]) + 1 : 1;
@@ -23,3 +24,14 @@ export const generateRandomCharacterView = (): CharacterView => ({
   body_color: body_colors[getRandomNumber(body_colors.length)],
   back_color: back_colors[getRandomNumber(back_colors.length)],
 });
+
+export const getSafeDecodedAddress = (address?: string) => {
+  if (address) {
+    try {
+      return decodeAddress(address.trim());
+    } catch (error) {
+      // empty
+    }
+  }
+  return null;
+};
