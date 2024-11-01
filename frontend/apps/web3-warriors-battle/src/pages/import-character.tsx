@@ -47,7 +47,7 @@ export default function ImportCharacter() {
       <Background>
         <Card
           title="Import Character from Program"
-          description="Enter the program ID to review your Tamagotchi."
+          description="Enter the program ID to review your Warrior."
           size="sm"
           className={clsx(styles.card, isCharacterFound && styles.cardFilled)}
           align="left"
@@ -64,7 +64,7 @@ export default function ImportCharacter() {
           <Input
             type="text"
             placeholder="0x…"
-            label="Specify program ID of your Tamagotchi character"
+            label="Specify program ID of your Warrior character"
             required
             className="w-full"
             onChange={(e) => setAddress(e.target.value.trim())}

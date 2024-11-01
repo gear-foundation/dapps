@@ -10,7 +10,7 @@
 
 ## Description
 
-React application of [Tamagotchi Battle](https://wiki.gear-tech.io/docs/examples/Gaming/tamagotchi-battle) based on [Rust smart-contract](https://github.com/gear-foundation/dapps/tree/master/contracts/tamagotchi-battle).
+React application of Web3 Warriors Battle based on [Rust smart-contract](https://github.com/gear-foundation/dapps/tree/master/contracts/battle).
 
 ## Getting started
 

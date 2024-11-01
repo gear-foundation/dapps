@@ -8,7 +8,7 @@ COPY /frontend/yarn.lock .
 COPY /frontend/.yarnrc.yml .
 COPY /frontend/.yarn/releases .yarn/releases
 
-COPY ./frontend/apps/tamagotchi-battle-new ./apps/tamagotchi-battle-new
+COPY ./frontend/apps/web3-warriors-battle ./apps/web3-warriors-battle
 COPY ./frontend/packages ./packages
 
 RUN apk update
@@ -27,7 +27,7 @@ ENV VITE_DNS_API_URL=${VITE_DNS_API_URL} \
     VITE_SENTRY_DSN=${VITE_SENTRY_DSN} \
     DISABLE_ESLINT_PLUGIN=true
 
-WORKDIR /frontend/apps/tamagotchi-battle-new
+WORKDIR /frontend/apps/web3-warriors-battle
 
 RUN yarn install
 
@@ -35,4 +35,4 @@ RUN yarn build
 
 RUN npm install --global serve
 
-CMD ["serve", "-s", "/frontend/apps/tamagotchi-battle-new/build"]
+CMD ["serve", "-s", "/frontend/apps/web3-warriors-battle/build"]

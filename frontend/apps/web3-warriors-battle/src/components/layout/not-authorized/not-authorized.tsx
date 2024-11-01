@@ -8,8 +8,8 @@ export function NotAuthorized() {
     <Background>
       <Card
         size="lg"
-        title="Tamagotchi Battle"
-        description="Create your Tamagotchi character and engage in battles with other players."
+        title="Web3 Warriors Battle"
+        description="Create your Warrior character and engage in battles with other players."
         className={styles.card}>
         <Wallet theme="vara" />
       </Card>

@@ -18,7 +18,7 @@ function ApiProvider({ children }: ProviderProps) {
 }
 
 function AccountProvider({ children }: ProviderProps) {
-  return <GearAccountProvider appName="Vara Tic-Tac-Toe">{children}</GearAccountProvider>;
+  return <GearAccountProvider appName="Vara Web3 Warriors Battle">{children}</GearAccountProvider>;
 }
 
 function AlertProvider({ children }: ProviderProps) {

@@ -5,7 +5,7 @@ on:
   push:
     branches: ["master", "main"]
     paths:
-      - frontend/apps/tamagotchi-battle-new/**
+      - frontend/apps/web3-warriors-battle/**
       - frontend/packages/**
 
 concurrency:
@@ -71,7 +71,7 @@ jobs:
       - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          file: frontend/apps/tamagotchi-battle-new/Dockerfile
+          file: frontend/apps/web3-warriors-battle/Dockerfile
           push: true
           tags: ${{ needs.prepair.outputs.image_name }}
           build-args: |

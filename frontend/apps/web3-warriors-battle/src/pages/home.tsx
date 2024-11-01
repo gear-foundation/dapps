@@ -14,7 +14,7 @@ export default function Home() {
 
   return (
     <Background>
-      <Card title="Tamagotchi Battle" description="Select game mode" className={styles.card} size="lg">
+      <Card title="Web3 Warriors Battle" description="Select game mode" className={styles.card} size="lg">
         <div className={styles.container}>
           <CardButton
             onClick={() => navigate(ROUTES.IMPORT_CHARACTER)}
