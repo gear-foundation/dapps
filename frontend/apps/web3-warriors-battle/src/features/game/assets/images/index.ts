@@ -24,4 +24,5 @@ export { ReactComponent as SkullBigIcon } from './icons/skull-big.svg';
 export { ReactComponent as CupStarIcon } from './icons/cup-star.svg';
 export { ReactComponent as CaretRightIcon } from './icons/caret-right.svg';
 export { ReactComponent as FilledCrossIcon } from './icons/filled-cross.svg';
+export { ReactComponent as ExitIcon } from './icons/exit.svg';
 export * from './character';

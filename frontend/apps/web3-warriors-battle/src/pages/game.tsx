@@ -18,10 +18,9 @@ import {
   FireballCanvas,
   GameSpinner,
 } from '@/features/game/components';
-import { AttackButtonIcon, DefenceButtonIcon, UltimateButtonIcon } from '@/features/game/assets/images';
+import { AttackButtonIcon, DefenceButtonIcon, ExitIcon, UltimateButtonIcon } from '@/features/game/assets/images';
 import { useEffect, useState } from 'react';
 import { Loader, Modal } from '@/components';
-import { ExitIcon } from '@/features/wallet/assets';
 import {
   Move,
   useCancelTournamentMessage,
@@ -273,9 +272,9 @@ export default function GamePage() {
         ) : (
           <Button
             text="Exit"
+            size="small"
             icon={ExitIcon}
-            color="transparent"
-            className={clsx(styles.exit, !isAlive && styles.defeated)}
+            className={clsx(styles.exit, styles.redButton, !isAlive && styles.defeated)}
             onClick={onExitGame}
             disabled={pending}
           />

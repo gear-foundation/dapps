@@ -3,7 +3,7 @@ import { Button } from '@gear-js/vara-ui';
 import { useForm } from '@mantine/form';
 import { Text } from '@/components';
 import { Heading } from '@/components/ui/heading';
-import { AttackIcon, CaretRightIcon, DefenceIcon, DodgeIcon } from '../../assets/images';
+import { AttackIcon, CaretRightIcon, DefenceIcon, DodgeIcon, InfoIcon } from '../../assets/images';
 import { CharacterStatsFormValues } from '../../types';
 import { characterStatsStorage } from '../../store';
 import styles from './character-stats-form.module.scss';
@@ -69,6 +69,7 @@ export const CharacterStatsForm = ({ onValuesChange }: CharacterStatsFormProps) 
   const initialPoints = 10;
   const availablePoints = 20 + initialPoints - values.attack - values.defence - values.dodge;
   const displayedAvailablePoints = Math.min(20, Math.max(availablePoints, 0));
+  const isShowInfo = availablePoints !== 0;
 
   useEffect(() => {
     const isValid = availablePoints === 0;
@@ -142,11 +143,20 @@ export const CharacterStatsForm = ({ onValuesChange }: CharacterStatsFormProps) 
         Set Character's Attributes
       </Heading>
 
-      <Text size="sm">
+      <Text size="sm" className={styles.subtitle}>
         <span className={styles.points}>{displayedAvailablePoints} points</span> are available to distribute.
       </Text>
 
       <form className={styles.stats}>{charStats.map((stats) => drawRow(stats))}</form>
+
+      {isShowInfo && (
+        <div className={styles.info}>
+          <InfoIcon />
+          <Text size="xs" weight="semibold">
+            Distribute all points between attributes to continue
+          </Text>
+        </div>
+      )}
     </div>
   );
 };
