@@ -1,0 +1,126 @@
+type Config = struct {
+  health: u16,
+  max_participants: u8,
+  attack_range: struct { u16, u16 },
+  defence_range: struct { u16, u16 },
+  dodge_range: struct { u16, u16 },
+  available_points: u16,
+  time_for_move_in_blocks: u32,
+  block_duration_ms: u32,
+  gas_for_create_warrior: u64,
+  gas_to_cancel_the_battle: u64,
+  time_to_cancel_the_battle: u32,
+  reservation_amount: u64,
+  reservation_time: u32,
+};
+
+type Appearance = struct {
+  head_index: u16,
+  hat_index: u16,
+  body_index: u16,
+  accessory_index: u16,
+  body_color: str,
+  back_color: str,
+};
+
+type Move = enum {
+  Attack,
+  Reflect,
+  Ultimate,
+};
+
+type BattleState = struct {
+  admin: actor_id,
+  battle_name: str,
+  time_creation: u64,
+  bid: u128,
+  participants: vec struct { actor_id, Player },
+  defeated_participants: vec struct { actor_id, Player },
+  state: State,
+  pairs: vec struct { u16, Pair },
+  players_to_pairs: vec struct { actor_id, u16 },
+  waiting_player: opt struct { actor_id, u16 },
+  pair_id: u16,
+  reservation: vec struct { actor_id, ReservationId },
+};
+
+type Player = struct {
+  warrior_id: opt actor_id,
+  owner: actor_id,
+  user_name: str,
+  player_settings: PlayerSettings,
+  appearance: Appearance,
+  number_of_victories: u8,
+  ultimate_reload: u8,
+  reflect_reload: u8,
+};
+
+type PlayerSettings = struct {
+  health: u16,
+  attack: u16,
+  defence: u16,
+  dodge: u16,
+};
+
+type State = enum {
+  Registration,
+  Started,
+  GameIsOver: struct { winners: struct { actor_id, opt actor_id } },
+};
+
+type Pair = struct {
+  player_1: actor_id,
+  player_2: actor_id,
+  action: opt struct { actor_id, Move },
+  round: u8,
+  round_start_time: u64,
+};
+
+type ReservationId = struct {
+  [u8, 32],
+};
+
+constructor {
+  New : (config: Config);
+};
+
+service Battle {
+  AddAdmin : (new_admin: actor_id) -> null;
+  AutomaticMove : (player_id: actor_id, number_of_victories: u8, round: u8) -> null;
+  CancelRegister : () -> null;
+  CancelTournament : () -> null;
+  ChangeConfig : (config: Config) -> null;
+  CreateNewBattle : (battle_name: str, user_name: str, warrior_id: opt actor_id, appearance: opt Appearance, attack: u16, defence: u16, dodge: u16) -> null;
+  DelayedCancelTournament : (game_id: actor_id, time_creation: u64) -> null;
+  DeletePlayer : (player_id: actor_id) -> null;
+  ExitGame : () -> null;
+  MakeMove : (warrior_move: Move) -> null;
+  Register : (game_id: actor_id, warrior_id: opt actor_id, appearance: opt Appearance, user_name: str, attack: u16, defence: u16, dodge: u16) -> null;
+  StartBattle : () -> null;
+  StartNextFight : () -> null;
+  query Admins : () -> vec actor_id;
+  query Config : () -> Config;
+  query GetBattle : (game_id: actor_id) -> opt BattleState;
+  query GetMyBattle : () -> opt BattleState;
+
+  events {
+    NewBattleCreated: struct { battle_id: actor_id, bid: u128 };
+    PlayerRegistered: struct { admin_id: actor_id, user_name: str, bid: u128 };
+    RegisterCanceled: struct { player_id: actor_id };
+    BattleCanceled: struct { game_id: actor_id };
+    BattleStarted;
+    MoveMade;
+    BattleFinished: struct { winner: actor_id };
+    PairChecked: struct { game_id: actor_id, pair_id: u8, round: u8 };
+    FirstRoundChecked: struct { game_id: actor_id, wave: u8 };
+    NextBattleStarted;
+    EnemyWaiting;
+    WarriorGenerated: struct { address: actor_id };
+    AdminAdded: struct { new_admin: actor_id };
+    ConfigChanged: struct { config: Config };
+    GameLeft;
+    RoundAction: struct { round: u8, player_1: struct { actor_id, Move, u16 }, player_2: struct { actor_id, Move, u16 } };
+    AutomaticMoveMade;
+  }
+};
+

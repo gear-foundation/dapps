@@ -1,0 +1,29 @@
+.wrapper {
+  position: absolute;
+  top: 248px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 222px;
+  height: 222px;
+  background: #4b4b55;
+  border: 1.5px solid #0b0b0b;
+  color: #ffffff;
+  border-radius: 20px;
+  padding: 40px;
+  text-align: center;
+
+  > svg {
+    animation: rotateSpinner 2.5s linear infinite;
+    height: 48px;
+    width: 48px;
+    margin-bottom: 7px;
+  }
+}
+
+@keyframes rotateSpinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
