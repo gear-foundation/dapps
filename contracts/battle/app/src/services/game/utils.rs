@@ -117,24 +117,6 @@ impl Battle {
         }
     }
 
-    pub fn delete_players(&mut self, loser_1: &ActorId, loser_2: &ActorId, pair_id: u16) {
-        let player_loser_1 = self
-            .participants
-            .remove(loser_1)
-            .expect("The player must exist");
-        let player_loser_2 = self
-            .participants
-            .remove(loser_2)
-            .expect("The player must exist");
-
-        self.defeated_participants.insert(*loser_1, player_loser_1);
-        self.defeated_participants.insert(*loser_2, player_loser_2);
-
-        self.pairs.remove(&pair_id);
-        self.players_to_pairs.remove(loser_1);
-        self.players_to_pairs.remove(loser_2);
-    }
-
     pub fn check_min_player_amount(&self) -> Result<(), BattleError> {
         if self.participants.len() <= 1 {
             return Err(BattleError::NotEnoughPlayers);
@@ -183,6 +165,7 @@ impl Battle {
             self.pairs.insert(self.pair_id, pair);
             self.players_to_pairs.insert(player.owner, self.pair_id);
             self.waiting_player = Some((player.owner, self.pair_id));
+            self.pair_id += 1;
         }
     }
     pub fn send_delayed_message_make_move_from_reservation(&mut self, time_for_move: u32) {
