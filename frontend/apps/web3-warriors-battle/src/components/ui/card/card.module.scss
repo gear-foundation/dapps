@@ -1,0 +1,83 @@
+.card {
+  display: flex;
+  border-radius: 8px;
+  border: 2px solid #000000;
+  background: #ffffff;
+  overflow: hidden;
+}
+
+.leftSide {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: flex-start;
+  flex-direction: column;
+  padding: 40px;
+  gap: 48px;
+  border-radius: 8px;
+}
+.sm .leftSide {
+  gap: 24px;
+}
+
+.md .leftSide {
+  gap: 28px;
+}
+
+.rightSide {
+  background: #4b4b55;
+  border-left: 2px solid #000000;
+  width: 386px;
+  padding: 32px 40px;
+}
+
+h2 {
+  &.lg {
+    font-size: 40px;
+    font-weight: 700;
+    line-height: 48px;
+  }
+
+  &.md {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 38px;
+  }
+
+  &.sm {
+    font-size: 24px;
+    font-weight: 700;
+    line-height: 28.8px;
+  }
+}
+
+.header {
+  width: 100%;
+}
+
+.center {
+  text-align: center;
+}
+
+.left {
+  text-align: left;
+}
+
+.description {
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 24px;
+  letter-spacing: 0.25px;
+
+  &.lg {
+    margin-top: 16px;
+  }
+
+  &.md {
+    margin-top: 8px;
+  }
+
+  &.sm {
+    margin-top: 8px;
+  }
+}

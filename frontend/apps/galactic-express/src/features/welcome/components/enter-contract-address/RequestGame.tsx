@@ -17,10 +17,6 @@ import { GameIntro } from '../game-intro';
 import { GameState, useGetGameQuery, useCreateNewSessionMessage } from 'app/utils';
 import styles from './RequestGame.module.scss';
 
-export interface ContractFormValues {
-  [key: string]: string;
-}
-
 type Status = 'creating' | 'joining' | null;
 
 type CreateFormValues = {
