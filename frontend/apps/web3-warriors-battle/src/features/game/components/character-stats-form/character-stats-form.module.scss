@@ -30,6 +30,11 @@
 .title {
   color: #ffffff;
   margin-bottom: 8px;
+  line-height: 29px;
+}
+
+.subtitle {
+  height: 24px;
 }
 
 .text {
@@ -144,4 +149,17 @@
   left: 0px;
   bottom: 0px;
   border-width: 0 0 1.5px 1.5px;
+}
+
+.info {
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #fdd87c;
+  background: #fdd87c14;
+  padding: 0 8px;
+  border-radius: 8px;
+  margin: 63px -13.5px 0;
 }

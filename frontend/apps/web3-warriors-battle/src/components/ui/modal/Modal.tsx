@@ -63,34 +63,37 @@ export function Modal({
   };
 
   return (
-    <motion.dialog
-      initial="enter"
-      animate="center"
-      exit="exit"
-      variants={variantsOverlay}
-      ref={ref}
-      onClick={handleClick}
-      className={variants({ className: clsx(styles.modal, modalClassName), size })}>
-      <motion.div
+    // We don't use ::backdrop for displaing alerts
+    <div className={styles.backdrop}>
+      <motion.dialog
         initial="enter"
         animate="center"
         exit="exit"
-        variants={variantsPanel}
-        className={clsx(styles.wrapper, className)}>
-        <div className={styles.header}>
-          <div className={styles.titleContainer}>
-            <h2 className={styles.title}>{title}</h2>
-            {description && <p className={styles.description}>{description}</p>}
+        variants={variantsOverlay}
+        ref={ref}
+        onClick={handleClick}
+        className={variants({ className: clsx(styles.modal, modalClassName), size })}>
+        <motion.div
+          initial="enter"
+          animate="center"
+          exit="exit"
+          variants={variantsPanel}
+          className={clsx(styles.wrapper, className)}>
+          <div className={styles.header}>
+            <div className={styles.titleContainer}>
+              <h2 className={styles.title}>{title}</h2>
+              {description && <p className={styles.description}>{description}</p>}
+            </div>
+            <Button variant="text" onClick={onClose} className={styles['modal-close']}>
+              <Sprite name="close" width={25} height={24} />
+            </Button>
           </div>
-          <Button variant="text" onClick={onClose} className={styles['modal-close']}>
-            <Sprite name="close" width={25} height={24} />
-          </Button>
-        </div>
 
-        {children}
+          {children}
 
-        {buttons && <div className={styles.buttons}>{buttons}</div>}
-      </motion.div>
-    </motion.dialog>
+          {buttons && <div className={styles.buttons}>{buttons}</div>}
+        </motion.div>
+      </motion.dialog>
+    </div>
   );
 }

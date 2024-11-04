@@ -23,6 +23,7 @@
 .redButton {
   background: #eb5757;
   color: #ffffff;
+  border-radius: 4px;
   &:hover {
     background: #eb5757;
   }
@@ -37,10 +38,11 @@
 
 .exit {
   position: absolute;
-  top: 692px;
-  left: calc(50% + 364px);
-  height: 40px;
-  width: 93px;
+  top: 688px;
+  left: calc(50% + 494px);
+  gap: 8px;
+  height: 44px;
+  width: 107px;
   &.defeated {
     top: 650px;
   }

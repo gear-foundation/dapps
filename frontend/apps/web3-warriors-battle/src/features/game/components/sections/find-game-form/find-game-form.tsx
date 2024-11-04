@@ -14,6 +14,7 @@ import { usePending } from '@/features/game/hooks';
 import { ROUTES } from '@/app/consts';
 import { characterAppearanceAtom, characterStatsStorage, warriorIdStorage } from '@/features/game/store';
 import styles from './find-game-form.module.scss';
+import { getSafeDecodedAddress } from '@/features/game/utils';
 
 type FindGameFormValues = {
   address: HexString | undefined;
@@ -42,7 +43,7 @@ function FindGameForm() {
 
   const { errors: joinErrors, getInputProps: getJoinInputProps, onSubmit: onJoinSubmit, values } = joinForm;
 
-  const { refetch } = useBattleQuery(values.address?.length === 49 ? decodeAddress(values.address) : '');
+  const { refetch } = useBattleQuery(getSafeDecodedAddress(values.address));
   const appearance = useAtomValue(characterAppearanceAtom);
   const characterStats = characterStatsStorage.get();
   const warriorId = warriorIdStorage.get();
