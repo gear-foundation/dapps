@@ -5,11 +5,17 @@
   width: 100%;
   padding: 0;
   background: none;
+}
 
-  &::backdrop {
-    background-color: rgba(0, 0, 0, 0.2);
-    backdrop-filter: blur(10px);
-  }
+.backdrop {
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(10px);
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 10;
 }
 
 .wrapper {
