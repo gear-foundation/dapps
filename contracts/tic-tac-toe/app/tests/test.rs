@@ -1,6 +1,6 @@
 use sails_rs::calls::*;
 use sails_rs::gtest::{calls::*, System};
-use tic_tac_toe_wasm::{
+use tic_tac_toe::{
     traits::{TicTacToe, TicTacToeFactory},
     Config, GameResult, TicTacToe as TicTacToeClient, TicTacToeFactory as Factory,
 };
@@ -17,7 +17,7 @@ async fn test_play_game() {
     let program_space = GTestRemoting::new(system, ADMIN_ID.into());
     let code_id = program_space
         .system()
-        .submit_code_file("../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm");
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/tic_tac_toe.opt.wasm");
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -89,7 +89,7 @@ async fn add_and_remove_admin() {
 
     let code_id = program_space
         .system()
-        .submit_code_file("../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm");
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/tic_tac_toe.opt.wasm");
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -138,7 +138,7 @@ async fn allow_messages() {
 
     let code_id = program_space
         .system()
-        .submit_code_file("../../target/wasm32-unknown-unknown/release/tic_tac_toe_wasm.opt.wasm");
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/tic_tac_toe.opt.wasm");
 
     let tic_tac_toe_factory = Factory::new(program_space.clone());
     let config = Config {

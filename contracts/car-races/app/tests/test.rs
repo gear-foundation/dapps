@@ -11,7 +11,7 @@ const PATH_TO_STRATEGIES: [&str; 2] = [
 ];
 
 const PATH_TO_CAR_RACES: &str =
-    "../../target/wasm32-unknown-unknown/release/car_races_wasm.opt.wasm";
+    "../../target/wasm32-unknown-unknown/release/car_races.opt.wasm";
 
 #[test]
 fn test_car_races_without_session() {
