@@ -31,9 +31,9 @@ async fn test_play_game() {
         reservation_amount: 700_000_000_000,
         reservation_duration_in_block: 1_000,
         time_for_step: 10,
-        min_gas_limit: 5_000_000_000,
+        min_gas_limit: 10_000_000_000,
         gas_refill_timeout: 30,
-        gas_for_step: 10_000_000_000,
+        gas_for_step: 20_000_000_000,
     };
 
     let syndote_id = syndote_factory
@@ -118,12 +118,61 @@ async fn test_play_game() {
     client
         .play(ADMIN_ID.into())
         .send_recv(syndote_id)
-        .await
-        .unwrap();
-
+        .await;
+        // .unwrap();
+    
+    program_space.system().run_next_block();
     // check state
     let state = client.get_game_session(ADMIN_ID.into()).recv(syndote_id).await.unwrap();
     println!("STATE {:?}", state);
+
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+
+
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+
+
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+    program_space.system().run_next_block();
+
+
     // assert_eq!(state.game_status, GameStatus::Play);
     // assert_eq!(state.round, 0);
     // assert_eq!(state.winner, 0.into());

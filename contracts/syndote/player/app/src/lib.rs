@@ -68,7 +68,7 @@ impl PlayerService {
         &self,
         game_info: GameInfo,
     ) {
-        debug!("YOUR TURN!");
+        debug!("YOUR TURN! {:?}", exec::program_id());
         debug!("GAS IN STRATEGY {:?}", exec::gas_available());
         let monopoly_id = msg::source();
 
@@ -91,6 +91,7 @@ impl PlayerService {
                 msg::send_bytes(monopoly_id, request, 0)
                     .expect("Error in sending a message `ThrowRoll`");
                 debug!("ThrowRoll");
+                debug!("I SEND");
                 return;
             } else {
                 let request = [
@@ -103,6 +104,7 @@ impl PlayerService {
                 msg::send_bytes(monopoly_id, request, 0)
                     .expect("Error in sending a message `ThrowRoll`");
                 debug!("ThrowRoll");
+                debug!("I SEND");
                 return;
             }
         }
@@ -126,6 +128,7 @@ impl PlayerService {
             msg::send_bytes(monopoly_id, request, 0)
                 .expect("Error in sending a message `Skip`");
             debug!("Skip");
+            debug!("I SEND");
             return;
         };
         if my_cell {
@@ -136,12 +139,14 @@ impl PlayerService {
             } else {
                 send_request(monopoly_id, "Upgrade".to_string(), game_info.admin_id);
                 debug!("Upgrade");
+                return;
             }
         }
         if free_cell {
             if player_info.balance >= *price && player_info.balance >= 1_000 {
                 send_request(monopoly_id, "BuyCell".to_string(), game_info.admin_id);
                 debug!("BuyCell");
+                return;
             } else {
                 let request = [
                     "Syndote".encode(),
@@ -153,12 +158,26 @@ impl PlayerService {
                 msg::send_bytes(monopoly_id, request, 0)
                     .expect("Error in sending a message `Skip`");
                 debug!("Skip");
+                debug!("I SEND");
+                return;
             }
         } else if !my_cell {
             send_request(monopoly_id, "PayRent".to_string(), game_info.admin_id);
             debug!("PayRent");
+            return;
         }
         debug!("END");
+        let request = [
+            "Syndote".encode(),
+            "Skip".to_string().encode(),
+            (game_info.admin_id).encode(),
+        ]
+        .concat();
+    
+        msg::send_bytes(monopoly_id, request, 0)
+            .expect("Error in sending a message `Skip`");
+        debug!("Skip");
+        debug!("I SEND");
     }
 }
 
@@ -172,6 +191,7 @@ fn send_request(program_id: ActorId, action: String, admin_id: ActorId) {
 
     msg::send_bytes(program_id, request, 0)
         .expect("Error in sending a message");
+    debug!("I SEND");
 }
 
 pub struct PlayerProgram(());

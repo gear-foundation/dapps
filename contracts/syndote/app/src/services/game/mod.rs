@@ -15,7 +15,6 @@ pub use utils::*;
 pub struct Storage {
     game_sessions: HashMap<AdminId, Game>,
     config: Config,
-    awaiting_reply_msg_id_to_session_id: HashMap<MessageId, AdminId>,
     players_to_sessions: HashMap<ActorId, AdminId>,
     dns_info: Option<(ActorId, String)>,
     admin: ActorId
@@ -197,6 +196,7 @@ impl GameService {
     }
 
     pub fn throw_roll(&mut self, admin_id: AdminId, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) {
+        debug!("ANSWER");
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
@@ -214,6 +214,7 @@ impl GameService {
     }
 
     pub fn add_gear(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) {
+        debug!("ANSWER");
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
@@ -232,6 +233,7 @@ impl GameService {
     }
 
     pub fn upgrade(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) {
+        debug!("ANSWER");
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
@@ -249,6 +251,7 @@ impl GameService {
     }
 
     pub fn buy_cell(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) {
+        debug!("ANSWER");
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
@@ -266,13 +269,14 @@ impl GameService {
     }
 
     pub fn pay_rent(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) {
+        debug!("ANSWER");
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
             .get_mut(&admin_id)
             .expect("Game does not exist");
 
-        debug!("pay_rent {:?}",  exec::gas_available());
+        debug!("pay_rent {:?} msg source {:?}",  exec::gas_available(), msg::source());
         funcs::pay_rent(game_instance, properties_for_sale);
         // debug!("finalize_turn_outcome");
         let event = game_instance.finalize_turn_outcome(
@@ -283,8 +287,10 @@ impl GameService {
         debug!("pay_rent 2");
         debug!("game_instance {:?}", game_instance);
         self.notify_on(event.clone()).expect("Notification Error");
+        debug!("AFTER EVENT");
     }
     pub fn skip(&mut self, admin_id: AdminId) {
+        debug!("ANSWER");
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions

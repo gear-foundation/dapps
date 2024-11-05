@@ -393,7 +393,9 @@ pub enum GameError {
     /// Error reply on wrong move
     StrategicError,
 
-    AccessDenied
+    AccessDenied,
+
+    LimitHasBeenReached,
 }
 
 

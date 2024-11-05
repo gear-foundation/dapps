@@ -79,7 +79,6 @@ pub fn play(storage: &mut Storage, admin_id: AdminId) -> Result<Event, GameError
     game.play(
         storage.config.min_gas_limit,
         storage.config.time_for_step,
-        &mut storage.awaiting_reply_msg_id_to_session_id,
         storage.config.gas_refill_timeout,
     )
 }
