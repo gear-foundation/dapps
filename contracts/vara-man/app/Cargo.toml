@@ -1,0 +1,17 @@
+[package]
+name = "vara-man-app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+gstd = { workspace = true, features = ["debug"] }
+sails-rs = { workspace = true, features = ["gtest"] }
+schnorrkel.workspace = true
+
+[dev-dependencies]
+gtest.workspace = true
+gclient.workspace = true
+vara-man = { path = "../wasm" }
+tokio = "1"
+extended_vft_wasm = { git = "https://github.com/gear-foundation/standards/"}

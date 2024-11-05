@@ -28,20 +28,26 @@ mod tests {
     extern crate std;
 
     use gstd::{Encode, String};
-    use gtest::{Log, Program, System};
+    use gtest::{Program, System};
 
     #[test]
     fn it_works() {
         let system = System::new();
         system.init_logger();
+        system.mint_to(42, 100_000_000_000_000);
 
         let program = Program::current_opt(&system);
 
-        let res = program.send_bytes(42, "INIT");
-        assert!(!res.main_failed());
+        let mid = program.send_bytes(42, "INIT");
+        let res = system.run_next_block();
+        assert!(res.succeed.contains(&mid));
 
-        let res = program.send_bytes(42, String::from("PING").encode());
-        let log = Log::builder().source(1).dest(42).payload_bytes("PONG");
-        assert!(res.contains(&log));
+        let mid = program.send_bytes(42, String::from("PING").encode());
+        let res = system.run_next_block();
+        assert!(res.succeed.contains(&mid));
+        let log = &res.log[0];
+        assert_eq!(log.source(), 1.into());
+        assert_eq!(log.destination(), 42.into());
+        assert_eq!(log.payload(), "PONG".as_bytes());
     }
 }

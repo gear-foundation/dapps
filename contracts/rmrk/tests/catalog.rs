@@ -5,18 +5,20 @@ pub const ADMIN: u64 = 10;
 
 pub fn init_catalog(sys: &System, admin: u64) {
     sys.init_logger();
+    sys.mint_to(admin, 100_000_000_000_000);
     let catalog = Program::from_file(
         sys,
         "../target/wasm32-unknown-unknown/release/rmrk_catalog.opt.wasm",
     );
-    let res = catalog.send(
+    let mid = catalog.send(
         admin,
         InitCatalog {
             catalog_type: "svg".to_string(),
             symbol: "BaseSymbol".to_string(),
         },
     );
-    assert!(!res.main_failed());
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
 }
 
 #[test]
@@ -34,9 +36,10 @@ fn add_parts() {
 
     let added_part = BTreeMap::from([(part_id, fixed_part_data.clone())]);
 
-    let result = catalog.send(ADMIN, CatalogAction::AddParts(added_part.clone()));
+    catalog.send(ADMIN, CatalogAction::AddParts(added_part.clone()));
     let expected_reply: Result<CatalogReply, CatalogError> =
         Ok(CatalogReply::PartsAdded(added_part));
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // check that fixed part is in the state
@@ -56,9 +59,10 @@ fn add_parts() {
     let part_id = 2;
 
     let added_part = BTreeMap::from([(part_id, slot_part_data.clone())]);
-    let result = catalog.send(ADMIN, CatalogAction::AddParts(added_part.clone()));
+    catalog.send(ADMIN, CatalogAction::AddParts(added_part.clone()));
     let expected_reply: Result<CatalogReply, CatalogError> =
         Ok(CatalogReply::PartsAdded(added_part));
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Check that slot part is in the state
@@ -93,8 +97,9 @@ fn add_parts() {
     parts.insert(fixed_part_id_1, fixed_part_data_1.clone());
     parts.insert(fixed_part_id_2, fixed_part_data_2.clone());
 
-    let result = catalog.send(ADMIN, CatalogAction::AddParts(parts.clone()));
+    catalog.send(ADMIN, CatalogAction::AddParts(parts.clone()));
     let expected_reply: Result<CatalogReply, CatalogError> = Ok(CatalogReply::PartsAdded(parts));
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     let state: CatalogState = catalog.read_state(0).expect("Failed to decode the state");
@@ -122,9 +127,10 @@ fn add_parts() {
 
     // Remove parts
     let removed_parts = vec![fixed_part_id_1, slot_part_id];
-    let result = catalog.send(ADMIN, CatalogAction::RemoveParts(removed_parts.clone()));
+    catalog.send(ADMIN, CatalogAction::RemoveParts(removed_parts.clone()));
     let expected_reply: Result<CatalogReply, CatalogError> =
         Ok(CatalogReply::PartsRemoved(removed_parts));
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // check that fixed part_1 is NOT in the state
@@ -143,13 +149,15 @@ fn add_parts() {
     assert!(!slot_part_in_state);
 
     // Zero length array of parts
-    let result = catalog.send(ADMIN, CatalogAction::RemoveParts(vec![]));
+    catalog.send(ADMIN, CatalogAction::RemoveParts(vec![]));
     let expected_reply: Result<CatalogReply, CatalogError> = Err(CatalogError::ZeroLengthPassed);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Cannot remove non-existing part
-    let result = catalog.send(ADMIN, CatalogAction::RemoveParts(vec![fixed_part_id_1]));
+    catalog.send(ADMIN, CatalogAction::RemoveParts(vec![fixed_part_id_1]));
     let expected_reply: Result<CatalogReply, CatalogError> = Err(CatalogError::PartDoesNotExist);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 }
 
@@ -168,8 +176,9 @@ fn add_parts_error_cases() {
     let added_part = BTreeMap::from([(part_id, fixed_part_data.clone())]);
 
     // Cannot add part with zero id
-    let result = catalog.send(ADMIN, CatalogAction::AddParts(added_part));
+    catalog.send(ADMIN, CatalogAction::AddParts(added_part));
     let expected_reply: Result<CatalogReply, CatalogError> = Err(CatalogError::PartIdCantBeZero);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // check that fixed part is in the state
@@ -181,20 +190,23 @@ fn add_parts_error_cases() {
 
     let added_part = BTreeMap::from([(part_id, fixed_part_data.clone())]);
 
-    let result = catalog.send(ADMIN, CatalogAction::AddParts(added_part.clone()));
+    catalog.send(ADMIN, CatalogAction::AddParts(added_part.clone()));
     let expected_reply: Result<CatalogReply, CatalogError> =
         Ok(CatalogReply::PartsAdded(added_part));
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Cannot add part with already existing id
     let added_part = BTreeMap::from([(part_id, fixed_part_data)]);
-    let result = catalog.send(ADMIN, CatalogAction::AddParts(added_part));
+    catalog.send(ADMIN, CatalogAction::AddParts(added_part));
     let expected_reply: Result<CatalogReply, CatalogError> = Err(CatalogError::PartAlreadyExists);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Zero length BTreeMap
-    let result = catalog.send(ADMIN, CatalogAction::AddParts(BTreeMap::new()));
+    catalog.send(ADMIN, CatalogAction::AddParts(BTreeMap::new()));
     let expected_reply: Result<CatalogReply, CatalogError> = Err(CatalogError::ZeroLengthPassed);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 }
 
@@ -230,12 +242,13 @@ fn equippable() {
     parts.insert(slot_part_id_1, slot_part_data_1);
     parts.insert(slot_part_id_2, slot_part_data_2);
 
-    let result = catalog.send(ADMIN, CatalogAction::AddParts(parts.clone()));
+    catalog.send(ADMIN, CatalogAction::AddParts(parts.clone()));
     let expected_reply: Result<CatalogReply, CatalogError> = Ok(CatalogReply::PartsAdded(parts));
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Is not equippable if address was not added
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::CheckEquippable {
             part_id: slot_part_id_2,
@@ -243,10 +256,11 @@ fn equippable() {
         },
     );
     let expected_reply: Result<CatalogReply, CatalogError> = Ok(CatalogReply::NotInEquippableList);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Is equippable if added in the part definition
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::CheckEquippable {
             part_id: slot_part_id_1,
@@ -254,10 +268,11 @@ fn equippable() {
         },
     );
     let expected_reply: Result<CatalogReply, CatalogError> = Ok(CatalogReply::InEquippableList);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Is equippable if added afterward
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::AddEquippableAddresses {
             part_id: slot_part_id_2,
@@ -268,8 +283,9 @@ fn equippable() {
         part_id: slot_part_id_2,
         collection_ids: vec![100.into()],
     });
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::CheckEquippable {
             part_id: slot_part_id_2,
@@ -277,19 +293,21 @@ fn equippable() {
         },
     );
     let expected_reply: Result<CatalogReply, CatalogError> = Ok(CatalogReply::InEquippableList);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Is equippable if set to all
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::SetEquippableToAll {
             part_id: slot_part_id_1,
         },
     );
     let expected_reply: Result<CatalogReply, CatalogError> = Ok(CatalogReply::EquippableToAllSet);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::CheckEquippable {
             part_id: slot_part_id_1,
@@ -297,11 +315,12 @@ fn equippable() {
         },
     );
     let expected_reply: Result<CatalogReply, CatalogError> = Ok(CatalogReply::InEquippableList);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Can reset equippable addresses
     // Reset the slot that is equippable to all
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::ResetEquippableAddress {
             part_id: slot_part_id_1,
@@ -309,9 +328,10 @@ fn equippable() {
     );
     let expected_reply: Result<CatalogReply, CatalogError> =
         Ok(CatalogReply::EqippableAddressesReset);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::CheckEquippable {
             part_id: slot_part_id_1,
@@ -319,10 +339,11 @@ fn equippable() {
         },
     );
     let expected_reply: Result<CatalogReply, CatalogError> = Ok(CatalogReply::NotInEquippableList);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Reset the slot that is equippable to indixated addresses
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::ResetEquippableAddress {
             part_id: slot_part_id_2,
@@ -330,9 +351,10 @@ fn equippable() {
     );
     let expected_reply: Result<CatalogReply, CatalogError> =
         Ok(CatalogReply::EqippableAddressesReset);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::CheckEquippable {
             part_id: slot_part_id_2,
@@ -340,10 +362,11 @@ fn equippable() {
         },
     );
     let expected_reply: Result<CatalogReply, CatalogError> = Ok(CatalogReply::NotInEquippableList);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Cannot add equippable addresses for non existing part
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::AddEquippableAddresses {
             part_id: 100,
@@ -351,10 +374,11 @@ fn equippable() {
         },
     );
     let expected_reply: Result<CatalogReply, CatalogError> = Err(CatalogError::PartDoesNotExist);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Cannot add empty list of equippable addresses
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::AddEquippableAddresses {
             part_id: slot_part_id_1,
@@ -362,10 +386,11 @@ fn equippable() {
         },
     );
     let expected_reply: Result<CatalogReply, CatalogError> = Err(CatalogError::ZeroLengthPassed);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Cannot add equippable addresses to non slot part
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::AddEquippableAddresses {
             part_id: fixed_part_id,
@@ -373,23 +398,26 @@ fn equippable() {
         },
     );
     let expected_reply: Result<CatalogReply, CatalogError> = Err(CatalogError::WrongPartFormat);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Cannot reset equippable for non existing part
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::ResetEquippableAddress { part_id: 1000 },
     );
     let expected_reply: Result<CatalogReply, CatalogError> = Err(CatalogError::PartDoesNotExist);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 
     // Cannot reset equippable for fixed part
-    let result = catalog.send(
+    catalog.send(
         ADMIN,
         CatalogAction::ResetEquippableAddress {
             part_id: fixed_part_id,
         },
     );
     let expected_reply: Result<CatalogReply, CatalogError> = Err(CatalogError::WrongPartFormat);
+    let result = system.run_next_block();
     assert!(result.contains(&(ADMIN, expected_reply.encode())));
 }

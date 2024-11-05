@@ -7,7 +7,7 @@ function SessionPassedInfo() {
   const setCurrentGame = useSetAtom(CURRENT_GAME_ATOM);
 
   const handleClick = () => {
-    setCurrentGame('');
+    setCurrentGame(null);
   };
 
   return (

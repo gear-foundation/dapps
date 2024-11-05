@@ -2,14 +2,15 @@ import re
 import requests
 from packaging import version
 
-# GitHub API URL to get the latest tags
+# GitHub API URLs to get the latest tags
 GEAR_REPO_TAGS_URL = "https://api.github.com/repos/gear-tech/gear/tags"
+SAILS_REPO_TAGS_URL = "https://api.github.com/repos/gear-tech/sails/tags"
 
 # ABSOLUTE PATH to cargo file
 CARGO_FILE_PATH = '../contracts/Cargo.toml'
 
-def get_latest_semver_tag():
-    response = requests.get(GEAR_REPO_TAGS_URL)
+def get_latest_semver_tag(repo_url):
+    response = requests.get(repo_url)
     response.raise_for_status()
     tags = response.json()
     # Filter out tags that are not valid semantic versions
@@ -18,31 +19,43 @@ def get_latest_semver_tag():
     valid_tags.sort(key=lambda s: version.parse(s.lstrip('v')), reverse=True)
     return valid_tags[0] if valid_tags else None
 
-def update_cargo_toml(file_path, new_version):
+def update_cargo_toml(file_path, gear_version, sails_version):
     with open(file_path, 'r') as file:
         content = file.read()
 
-    content = re.sub(r'gstd = ".*?"', f'gstd = "{new_version}"', content)
-    content = re.sub(r'gear-wasm-builder = ".*?"', f'gear-wasm-builder = "{new_version}"', content)
-    content = re.sub(r'gmeta = ".*?"', f'gmeta = "{new_version}"', content)
-    content = re.sub(r'gclient = ".*?"', f'gclient = "{new_version}"', content)
-    content = re.sub(r'gtest = { git = "https://github.com/gear-tech/gear", tag = ".*?" }', f'gtest = {{ git = "https://github.com/gear-tech/gear", tag = "v{new_version}" }}', content)
-    content = re.sub(r'gear-core = ".*?"', f'gear-core = "{new_version}"', content)
+    # Update GEAR dependencies
+    content = re.sub(r'gstd = ".*?"', f'gstd = "{gear_version}"', content)
+    content = re.sub(r'gear-wasm-builder = ".*?"', f'gear-wasm-builder = "{gear_version}"', content)
+    content = re.sub(r'gmeta = ".*?"', f'gmeta = "{gear_version}"', content)
+    content = re.sub(r'gclient = ".*?"', f'gclient = "{gear_version}"', content)
+    content = re.sub(r'gtest = { git = "https://github.com/gear-tech/gear", tag = ".*?" }', f'gtest = {{ git = "https://github.com/gear-tech/gear", tag = "v{gear_version}" }}', content)
+    content = re.sub(r'gear-core = ".*?"', f'gear-core = "{gear_version}"', content)
+
+    # Update SAILS dependencies
+    content = re.sub(r'sails-idl-gen = ".*?"', f'sails-idl-gen = "{sails_version}"', content)
+    content = re.sub(r'sails-rs = ".*?"', f'sails-rs = "{sails_version}"', content)
+    content = re.sub(r'sails-client-gen = ".*?"', f'sails-client-gen = "{sails_version}"', content)
 
     with open(file_path, 'w') as file:
         file.write(content)
 
-def update_wf_contracts(file_path, new_version):
+def update_wf_contracts(file_path, gear_version):
     with open(file_path, 'r') as file:
         content = file.read()
 
-    content = re.sub(r'GEAR_VERSION: .*', f'GEAR_VERSION: {new_version}', content)
+    # Update GEAR version in workflow
+    content = re.sub(r'GEAR_VERSION: .*', f'GEAR_VERSION: {gear_version}', content)
 
     with open(file_path, 'w') as file:
         file.write(content)
 
 if __name__ == "__main__":
-    new_version = get_latest_semver_tag().lstrip('v')
-    if new_version:
-        update_cargo_toml('../contracts/Cargo.toml', new_version)
-        update_wf_contracts('../.github/workflows/contracts-tests.yml', new_version)
+    # Get the latest GEAR version
+    gear_version = get_latest_semver_tag(GEAR_REPO_TAGS_URL).lstrip('v')
+    
+    # Get the latest SAILS version
+    sails_version = get_latest_semver_tag(SAILS_REPO_TAGS_URL).lstrip('v')
+    
+    if gear_version and sails_version:
+        update_cargo_toml('../contracts/Cargo.toml', gear_version, sails_version)
+        update_wf_contracts('../.github/workflows/contracts-tests.yml', gear_version)

@@ -4,7 +4,7 @@ import { useBattleMessage } from 'features/battle/hooks';
 import { Button } from '@gear-js/ui';
 import { useApi } from '@gear-js/react-hooks';
 import { gasLimitToNumber } from 'app/utils';
-import { useGaslessTransactions } from '@dapps-frontend/gasless-transactions';
+import { useGaslessTransactions } from '@dapps-frontend/ez-transactions';
 import { GAS_LIMIT } from 'app/consts';
 
 export const NewGameButton = () => {

@@ -1,6 +1,3 @@
-[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=galactic-express/https://github.com/gear-foundation/dapps)
-[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts.yml?logo=rust&label=docs)](https://dapps.gear.rs/galactic_express_io)
-
 # [Galactic Express](https://wiki.gear-tech.io/docs/examples/Gaming/galactic-express)
 
 Galactic Express (GalEx) is a 100% on-chain PvE economic game.
@@ -10,13 +7,13 @@ Deliver the cargo 📦 to the orbit 🌌 using fuel ⛽️ efficiently.
 ### 🏗️ Building
 
 ```sh
-cargo b -p "galactic-express*"
+cargo b -r -p "galactic-express"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "galactic-express*"
+cargo t -r -p "galactic-express-app"
 ```
 
 ## Stages

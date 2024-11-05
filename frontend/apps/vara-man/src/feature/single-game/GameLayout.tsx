@@ -6,9 +6,9 @@ import { Game } from './Game';
 import { useGame } from '@/app/context/ctx-game';
 import { Icons } from '@/components/ui/icons';
 import { GameTimer } from './components/timer';
-import { IGameLevel } from '@/app/types/game';
+import { Level } from '@/app/utils';
 import { calculatePoints } from '../game/utils/calculatePoints';
-import { COINS, GAME_OVER, gameLevels } from '../game/consts';
+import { COINS, gameLevels } from '../game/consts';
 import { useMediaQuery } from '@/hooks/use-mobile-device';
 import { MOBILE_BREAKPOINT } from '@/app/consts';
 
@@ -16,10 +16,9 @@ export const GameLayout = () => {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [, setGameOver] = useAtom(GAME_OVER);
   const { configState } = useGame();
   const [coins] = useAtom(COINS);
-  const level = searchParams.get('level') as IGameLevel;
+  const level = searchParams.get('level') as Level;
   const currentLevel = level || gameLevels.find((l) => l.level === level) !== undefined;
 
   const score = configState && calculatePoints(coins, configState, level);
@@ -44,7 +43,7 @@ export const GameLayout = () => {
               {score}
             </div>
           </div>
-          <div className="flex gap-3 items-center font-semibold cursor-pointer" onClick={() => setGameOver(true)}>
+          <div className="flex gap-3 items-center font-semibold cursor-pointer" onClick={() => navigate('/')}>
             <Icons.exit />
             Exit
           </div>

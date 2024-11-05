@@ -12,11 +12,11 @@ import { GameCanceledModal } from './components/modals/game-canceled';
 import { calculatePoints } from '../game/utils/calculatePoints';
 import { COINS, GAME_OVER } from '../game/consts';
 
-import { IGameLevel } from '@/app/types/game';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { GameInfoCanvas } from './components/game-canvas/game-canvas';
 import { useMediaQuery } from '@/hooks/use-mobile-device';
 import { MOBILE_BREAKPOINT } from '@/app/consts';
+import { Level } from '@/app/utils';
 
 export const Game = () => {
   const isMobile = useMediaQuery(MOBILE_BREAKPOINT);
@@ -31,25 +31,27 @@ export const Game = () => {
   const { configState } = useGame();
   const [coins, setCoins] = useAtom(COINS);
 
-  const level = tournamentGame?.[0].level || previousGame?.[0].level;
-  const score = configState && calculatePoints(coins, configState, level as IGameLevel);
+  const level = tournamentGame?.level || previousGame?.level;
+  const score = configState && calculatePoints(coins, configState, level as Level);
 
-  const isRegistration = tournamentGame?.[0].stage === 'Registration' || previousGame?.[0].stage === 'Registration';
-  const isFinished = tournamentGame?.[0].stage.Finished || previousGame?.[0].stage.Finished;
-  const isStarted = tournamentGame?.[0].stage.Started || previousGame?.[0].stage.Started;
+  const stage = tournamentGame?.stage || previousGame?.stage;
+  const isRegistration = Boolean(stage && 'registration' in stage);
+  const isFinished = Boolean(stage && 'finished' in stage);
+  const isStarted = Boolean(stage && 'started' in stage);
 
   useEffect(() => {
-    const admin = tournamentGame?.[0].admin || previousGame?.[0].admin;
+    const admin = tournamentGame?.admin || previousGame?.admin;
     const isAdmin = admin === account?.decodedAddress;
 
     if (previousGame && !tournamentGame) {
+      setGameOver(false);
       if (!isAdmin) {
         setCanceledModal(true);
       } else {
         setPreviousGame(null);
       }
     }
-  }, [tournamentGame]);
+  }, [account?.decodedAddress, previousGame, tournamentGame]);
 
   useEffect(() => {
     if (playGame || isStarted) {
@@ -62,7 +64,7 @@ export const Game = () => {
   }, [activeTab]);
 
   return (
-    <div className="grid gap-4 grid-cols-1 md:grid-cols-3">
+    <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
       {isMobile && (
         <div>
           <Tabs className="flex flex-col" value={activeTab}>
@@ -92,8 +94,8 @@ export const Game = () => {
                   isStarted={isStarted}
                   isRegistration={isRegistration}
                   isFinished={isFinished}
+                  isCanceledModal={isCanceledModal}
                   gameOver={gameOver}
-                  setGameOver={setGameOver}
                   score={score}
                 />
               </TabsContent>
@@ -102,25 +104,25 @@ export const Game = () => {
         </div>
       )}
 
-      <div className="hidden md:flex md:col-span-1 lg:col-span-1 md:py-5 bg-white rounded-md">
+      <div className="hidden md:flex md:col-span-1 lg:col-span-1 md:py-5 bg-white rounded-md max-w-sm">
         {isRegistration && previousGame && <Registration tournamentGame={previousGame} />}
         {isStarted && <GamePlayers />}
       </div>
 
       {!isMobile && (
-        <div className="hidden md:flex md:col-span-2 lg:col-span-2 p-5 bg-white rounded-md">
+        <div className="hidden md:flex md:col-span-1 lg:col-span-1 p-5 bg-white rounded-md">
           <GameInfoCanvas
             isStarted={isStarted}
             isRegistration={isRegistration}
             isFinished={isFinished}
+            isCanceledModal={isCanceledModal}
             gameOver={gameOver}
-            setGameOver={setGameOver}
             score={score}
           />
         </div>
       )}
 
-      {isFinished && tournamentGame && <GameOverModal tournamentGame={tournamentGame} />}
+      {isFinished && tournamentGame && !isRegistration && <GameOverModal tournamentGame={tournamentGame} />}
       {isCanceledModal && <GameCanceledModal />}
     </div>
   );

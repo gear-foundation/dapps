@@ -9,6 +9,7 @@ import {
 import { Alert, alertStyles } from '@gear-js/ui';
 import { ENV } from '../consts';
 import { AppProvider, LessonsProvider, TmgProvider } from '../context';
+import { QueryProvider } from '@dapps-frontend/ui';
 
 const ApiProvider = ({ children }: ProviderProps) => (
   <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>
@@ -32,6 +33,7 @@ const providers = [
   AppProvider,
   LessonsProvider,
   TmgProvider,
+  QueryProvider,
 ];
 
 export const withProviders = (Component: ComponentType) => () =>
