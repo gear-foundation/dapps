@@ -220,27 +220,14 @@ impl GameSessionActions for Game {
         if self.players_queue.len() == NUMBER_OF_PLAYERS as usize  && self.game_status == GameStatus::Registration {
             self.game_status = GameStatus::Play;
         }
-        // if matches!(self.game_status, GameStatus::WaitingForGasForStrategy(_)){
-        //     debug!("MATCHES!");
-        //     return Ok(Event::GameFinished {
-        //         admin_id: self.admin_id,
-        //         winner: self.winner,
-        //     });
-        // }
+
         match self.game_status {
             GameStatus::Play | GameStatus::WaitingForGasForGameContract => {
                 while self.game_status != GameStatus::Finished {
-                    // if self.round == 44 {
-                    //     break
-                    // }
                     self.make_step(
                         time_for_step,
                         gas_refill_timeout,
                     )?;
-                    if matches!(self.game_status, GameStatus::WaitingForGasForStrategy(_)){
-                        debug!("MATCHES!");
-                        break
-                    }
                 }
 
                 Ok(Event::GameFinished {
@@ -266,9 +253,6 @@ impl GameSessionActions for Game {
                 self.check_amount_of_players();
                 debug!("FUCK 3 {:?}", self.game_status);
                 while self.game_status != GameStatus::Finished {
-                    // if self.round == 44 {
-                    //     break
-                    // }
                     self.make_step(
                         time_for_step,
                         gas_refill_timeout,
@@ -344,7 +328,7 @@ impl GameSessionActions for Game {
                             self.game_status = GameStatus::Wait;
                             debug!("wait_for {:?} current_msg_id {:?}", exec::gas_available(), self.current_msg_id);
                             // exec::wait_for(time_for_step);
-                            exec::wait_for(40);
+                            exec::wait_for(1000);
                         }
                         Err(_) => {
                             debug!("ERROR");
