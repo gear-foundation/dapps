@@ -41,6 +41,7 @@ impl PingPongService {
 
 pub struct PingPongProgram(());
 
+#[allow(clippy::new_without_default)]
 #[sails_rs::program]
 impl PingPongProgram {
     // Program's constructor
