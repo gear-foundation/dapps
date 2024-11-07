@@ -1,13 +1,12 @@
+use crate::services::game::game_actions::PENALTY;
+use crate::services::game::Game;
 use gstd::ReservationId;
-use gstd::debug;
 use sails_rs::{
-    collections::{HashMap, HashSet, BTreeSet},
+    collections::{BTreeSet, HashMap, HashSet},
     gstd::{exec, msg},
     prelude::*,
     ActorId,
 };
-use crate::services::game::Game;
-use crate::services::game::game::PENALTY;
 pub type Price = u32;
 pub type Rent = u32;
 pub type Gears = Vec<Gear>;
@@ -99,7 +98,6 @@ pub struct GameInfo {
     pub ownership: Vec<ActorId>,
 }
 
-
 #[derive(Debug, PartialEq, Eq, Encode, Decode, Clone, TypeInfo, Copy)]
 #[codec(crate = gstd::codec)]
 #[scale_info(crate = gstd::scale_info)]
@@ -143,7 +141,6 @@ pub fn get_player_info<'a>(
     current_round: u128,
 ) -> Result<&'a mut PlayerInfo, GameError> {
     if &msg::source() != player {
-        //        debug!("PENALTY: WRONG MSG::SOURCE()");
         players.entry(msg::source()).and_modify(|player_info| {
             player_info.penalty += 1;
         });
@@ -151,7 +148,6 @@ pub fn get_player_info<'a>(
     }
     let player_info = players.get_mut(player).expect("Cant be None: Get Player");
     if player_info.round >= current_round {
-        //   debug!("PENALTY: MOVE ALREADY MADE");
         player_info.penalty += 1;
         return Err(GameError::StrategicError);
     }
@@ -240,7 +236,6 @@ pub fn bankrupt_and_penalty(
         }
     }
 }
-
 
 pub fn init_properties(
     properties: &mut Vec<Option<(ActorId, Gears, Price, Rent)>>,
@@ -396,15 +391,15 @@ pub enum GameError {
     AccessDenied,
 
     LimitHasBeenReached,
-}
 
+    Break,
+}
 
 pub fn take_your_turn(
     reservation_id: ReservationId,
     player: &ActorId,
     game_info: GameInfo,
 ) -> Result<MessageId, GameError> {
-    debug!("take_your_turn");
     let request = [
         "Player".encode(),
         "YourTurn".to_string().encode(),
@@ -420,7 +415,6 @@ pub fn msg_to_play_game(
     program_id: &ActorId,
     admin_id: &ActorId,
 ) -> Result<MessageId, GameError> {
-
     let request = [
         "Syndote".encode(),
         "Play".to_string().encode(),
@@ -428,13 +422,8 @@ pub fn msg_to_play_game(
     ]
     .concat();
 
-    msg::send_bytes_from_reservation(
-        reservation_id,
-        *program_id,
-        request,
-        0,
-    )
-    .map_err(|_| GameError::ReservationNotValid)
+    msg::send_bytes_from_reservation(reservation_id, *program_id, request, 0)
+        .map_err(|_| GameError::ReservationNotValid)
 }
 
 #[derive(Debug, PartialEq, Eq, Clone, TypeInfo, Encode, Decode, Default)]
@@ -467,7 +456,11 @@ impl From<Game> for GameState {
             admin_id: game.admin_id,
             properties_in_bank: game.properties_in_bank.into_iter().collect(),
             round: game.round,
-            players: game.players.into_iter().map(|(id, player_info)| (id, player_info.clone().into())).collect(),
+            players: game
+                .players
+                .into_iter()
+                .map(|(id, player_info)| (id, player_info.clone().into()))
+                .collect(),
             owners_to_strategy_ids: game.owners_to_strategy_ids.into_iter().collect(),
             players_queue: game.players_queue,
             current_turn: game.current_turn,

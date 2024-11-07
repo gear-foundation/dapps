@@ -1,9 +1,9 @@
 #![no_std]
 
-use sails_rs::gstd::{exec, msg};
+use gstd::ReservationId;
 use sails_rs::collections::BTreeSet;
+use sails_rs::gstd::{exec, msg};
 use sails_rs::prelude::*;
-use gstd::{ReservationId, debug};
 
 pub const COST_FOR_UPGRADE: u32 = 500;
 pub const FINE: u32 = 1_000;
@@ -64,12 +64,7 @@ impl PlayerService {
     pub fn new() -> Self {
         Self(())
     }
-    pub fn your_turn(
-        &self,
-        game_info: GameInfo,
-    ) {
-        debug!("YOUR TURN! {:?}", exec::program_id());
-        debug!("GAS IN STRATEGY {:?}", exec::gas_available());
+    pub fn your_turn(&self, game_info: GameInfo) {
         let monopoly_id = msg::source();
 
         let (_, player_info) = game_info
@@ -87,11 +82,9 @@ impl PlayerService {
                     (game_info.admin_id, false, None::<Vec<u8>>).encode(),
                 ]
                 .concat();
-            
+
                 msg::send_bytes(monopoly_id, request, 0)
                     .expect("Error in sending a message `ThrowRoll`");
-                debug!("ThrowRoll");
-                debug!("I SEND");
                 return;
             } else {
                 let request = [
@@ -100,11 +93,9 @@ impl PlayerService {
                     (game_info.admin_id, true, None::<Vec<u8>>).encode(),
                 ]
                 .concat();
-            
+
                 msg::send_bytes(monopoly_id, request, 0)
                     .expect("Error in sending a message `ThrowRoll`");
-                debug!("ThrowRoll");
-                debug!("I SEND");
                 return;
             }
         }
@@ -124,28 +115,22 @@ impl PlayerService {
                 (game_info.admin_id).encode(),
             ]
             .concat();
-        
-            msg::send_bytes(monopoly_id, request, 0)
-                .expect("Error in sending a message `Skip`");
-            debug!("Skip");
-            debug!("I SEND");
+
+            msg::send_bytes(monopoly_id, request, 0).expect("Error in sending a message `Skip`");
             return;
         };
         if my_cell {
             if gears.len() < 3 {
                 send_request(monopoly_id, "AddGear".to_string(), game_info.admin_id);
-                debug!("AddGear");
                 return;
             } else {
                 send_request(monopoly_id, "Upgrade".to_string(), game_info.admin_id);
-                debug!("Upgrade");
                 return;
             }
         }
         if free_cell {
             if player_info.balance >= *price && player_info.balance >= 1_000 {
                 send_request(monopoly_id, "BuyCell".to_string(), game_info.admin_id);
-                debug!("BuyCell");
                 return;
             } else {
                 let request = [
@@ -154,30 +139,23 @@ impl PlayerService {
                     (game_info.admin_id).encode(),
                 ]
                 .concat();
-            
+
                 msg::send_bytes(monopoly_id, request, 0)
                     .expect("Error in sending a message `Skip`");
-                debug!("Skip");
-                debug!("I SEND");
                 return;
             }
         } else if !my_cell {
             send_request(monopoly_id, "PayRent".to_string(), game_info.admin_id);
-            debug!("PayRent");
             return;
         }
-        debug!("END");
         let request = [
             "Syndote".encode(),
             "Skip".to_string().encode(),
             (game_info.admin_id).encode(),
         ]
         .concat();
-    
-        msg::send_bytes(monopoly_id, request, 0)
-            .expect("Error in sending a message `Skip`");
-        debug!("Skip");
-        debug!("I SEND");
+
+        msg::send_bytes(monopoly_id, request, 0).expect("Error in sending a message `Skip`");
     }
 }
 
@@ -189,9 +167,7 @@ fn send_request(program_id: ActorId, action: String, admin_id: ActorId) {
     ]
     .concat();
 
-    msg::send_bytes(program_id, request, 0)
-        .expect("Error in sending a message");
-    debug!("I SEND");
+    msg::send_bytes(program_id, request, 0).expect("Error in sending a message");
 }
 
 pub struct PlayerProgram(());

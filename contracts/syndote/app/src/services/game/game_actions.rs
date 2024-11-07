@@ -1,5 +1,5 @@
 use crate::services::game::*;
-use gstd::{exec, msg, prelude::*, ActorId, MessageId, ReservationId, debug};
+use gstd::{exec, msg, prelude::*, ActorId, MessageId, ReservationId};
 pub const NUMBER_OF_CELLS: u8 = 40;
 pub const NUMBER_OF_PLAYERS: u8 = 4;
 pub const JAIL_POSITION: u8 = 10;
@@ -33,11 +33,7 @@ pub trait GameSessionActions {
         time_for_step: u32,
         gas_refill_timeout: u32,
     ) -> Result<Event, GameError>;
-    fn make_step(
-        &mut self,
-        time_for_step: u32,
-        gas_refill_timeout: u32,
-    ) -> Result<(), GameError>;
+    fn make_step(&mut self, time_for_step: u32, gas_refill_timeout: u32) -> Result<(), GameError>;
     fn check_amount_of_players(&mut self);
     fn finalize_turn_outcome(
         &mut self,
@@ -182,9 +178,7 @@ impl GameSessionActions for Game {
             }
             _ => return Err(GameError::WrongGameStatus),
         }
-        self
-            .owners_to_strategy_ids
-            .remove(&owner_id);
+        self.owners_to_strategy_ids.remove(&owner_id);
         self.check_amount_of_players();
         if let Some(fee) = self.entry_fee {
             msg::send_with_gas(owner_id, "", 0, fee).expect("Error in sending a message");
@@ -200,13 +194,11 @@ impl GameSessionActions for Game {
         time_for_step: u32,
         gas_refill_timeout: u32,
     ) -> Result<Event, GameError> {
-        debug!("play here");
         let program_id = exec::program_id();
         let msg_source = msg::source();
         self.only_admin_or_program(&program_id, &msg_source)?;
 
         if exec::gas_available() < min_gas_limit {
-            debug!("exec::gas_available() < min_gas_limit");
             if let Some(id) = self.reservations.pop() {
                 self.current_msg_id = msg_to_play_game(id, &program_id, &self.admin_id)?;
                 return Ok(Event::NextRoundFromReservation);
@@ -217,17 +209,19 @@ impl GameSessionActions for Game {
             }
         }
 
-        if self.players_queue.len() == NUMBER_OF_PLAYERS as usize  && self.game_status == GameStatus::Registration {
+        if self.players_queue.len() == NUMBER_OF_PLAYERS as usize
+            && self.game_status == GameStatus::Registration
+        {
             self.game_status = GameStatus::Play;
         }
 
         match self.game_status {
             GameStatus::Play | GameStatus::WaitingForGasForGameContract => {
                 while self.game_status != GameStatus::Finished {
-                    self.make_step(
-                        time_for_step,
-                        gas_refill_timeout,
-                    )?;
+                    let res = self.make_step(time_for_step, gas_refill_timeout);
+                    if matches!(res, Err(GameError::Break)) {
+                        break;
+                    }
                 }
 
                 Ok(Event::GameFinished {
@@ -236,27 +230,23 @@ impl GameSessionActions for Game {
                 })
             }
             GameStatus::Wait | GameStatus::WaitingForGasForStrategy(_) => {
-                debug!("GameStatus::Wait | GameStatus::WaitingForGasForStrategy(_)");
                 // ` GameStatus::Wait` means that the player has missed his turn
                 // or his strategy did not manage to make a move within the allotted time.
                 // `GameStatus::WaitingForGasForStrategy(_)` means that player didn't manage to reserve a gas
                 // for his strate within the alloted time
                 // The player is removed from the game.
-                debug!("FUCK 1");
                 self.exclude_player_from_game(self.current_player);
-                debug!("FUCK 2");
 
                 // If the value of current_turn was 0 (meaning the player who missed their turn and was removed was the last in the array),
                 // then this value remains the same.
                 // If the value was 1, 2, or 3, then it is properly decreased by one.
                 self.current_turn = self.current_turn.saturating_sub(1);
                 self.check_amount_of_players();
-                debug!("FUCK 3 {:?}", self.game_status);
                 while self.game_status != GameStatus::Finished {
-                    self.make_step(
-                        time_for_step,
-                        gas_refill_timeout,
-                    )?;
+                    let res = self.make_step(time_for_step, gas_refill_timeout);
+                    if matches!(res, Err(GameError::Break)) {
+                        break;
+                    }
                 }
 
                 Ok(Event::GameFinished {
@@ -272,12 +262,7 @@ impl GameSessionActions for Game {
         }
     }
 
-    fn make_step(
-        &mut self,
-        time_for_step: u32,
-        gas_refill_timeout: u32,
-    ) -> Result<(), GameError> {
-        debug!("make_step");
+    fn make_step(&mut self, time_for_step: u32, gas_refill_timeout: u32) -> Result<(), GameError> {
         let current_player: ActorId = self.players_queue[self.current_turn as usize];
         self.current_player = current_player;
         let mut player_info = self.get_player_info()?;
@@ -321,17 +306,11 @@ impl GameSessionActions for Game {
                 if let Some(id) = player_info.reservation_id {
                     match take_your_turn(id, &current_player, game_info) {
                         Ok(_) => {
-                            debug!("take_your_turn success");
-                            if self.current_msg_id == MessageId::zero() {
-                                self.current_msg_id = msg::id();
-                            }
+                            self.current_msg_id = msg::id();
                             self.game_status = GameStatus::Wait;
-                            debug!("wait_for {:?} current_msg_id {:?}", exec::gas_available(), self.current_msg_id);
-                            // exec::wait_for(time_for_step);
-                            exec::wait_for(1000);
+                            exec::wait_for(time_for_step);
                         }
                         Err(_) => {
-                            debug!("ERROR");
                             self.exclude_player_from_game(current_player);
                             self.current_turn = self.current_turn.saturating_sub(1);
                             self.check_amount_of_players();
@@ -339,27 +318,39 @@ impl GameSessionActions for Game {
                         }
                     }
                 } else {
-                    debug!("PLAYER INFO: {:?}", player_info);
-                    debug!("GameStatus::WaitingForGasForStrategy");
-                    debug!("gas_refill_timeout {:?}", gas_refill_timeout);
                     self.game_status = GameStatus::WaitingForGasForStrategy(current_player);
-                    exec::wait_for(gas_refill_timeout);
-                    Ok(())
+                    // exec::wait_for(gas_refill_timeout);
+
+                    let gas = exec::gas_available() - 5_000_000_000;
+                    let request = [
+                        "Syndote".encode(),
+                        "Play".to_string().encode(),
+                        (self.admin_id).encode(),
+                    ]
+                    .concat();
+
+                    msg::send_bytes_with_gas_delayed(
+                        exec::program_id(),
+                        request,
+                        gas,
+                        0,
+                        gas_refill_timeout,
+                    )
+                    .expect("Error in sending message");
+                    Err(GameError::Break)
                 }
             }
         }
     }
-    
-    fn check_amount_of_players(&mut self)  {
-        if self.players_queue.len() == 0 {
-            debug!("FUCKFUCK 0 check");
+
+    fn check_amount_of_players(&mut self) {
+        if self.players_queue.is_empty() {
             self.game_status = GameStatus::Finished;
         }
         if self.players_queue.len() == 1 {
-            debug!("FUCKFUCK 1 check");
             self.winner = self.players_queue[0];
-                self.game_status = GameStatus::Finished;
-                self.send_prize_pool_to_winner();
+            self.game_status = GameStatus::Finished;
+            self.send_prize_pool_to_winner();
         }
     }
 
@@ -369,15 +360,12 @@ impl GameSessionActions for Game {
         min_gas_limit: u64,
         reservation_duration_in_block: u32,
     ) -> Event {
-        debug!("finalize");
         match self.players_queue.len() {
             0 => {
-                debug!("FUCKFUCK 0");
                 // All players have been removed from the game (either penalized or bankrupt)
                 self.game_status = GameStatus::Finished;
             }
             1 => {
-                debug!("FUCKFUCK 1");
                 self.winner = self.players_queue[0];
                 self.game_status = GameStatus::Finished;
                 self.send_prize_pool_to_winner();
@@ -386,19 +374,14 @@ impl GameSessionActions for Game {
                 let gas_available = exec::gas_available();
 
                 let reservation_id = if gas_available.saturating_sub(gas_for_step) > min_gas_limit {
-                    debug!("ReservationId::reserve {:?}", gas_available - min_gas_limit);
                     match ReservationId::reserve(
                         gas_available - min_gas_limit,
                         reservation_duration_in_block,
                     ) {
                         Ok(id) => Some(id),
-                        Err(_) => {
-                            debug!("SOS Reservation 1 {:?}", gas_available - gas_for_step);
-                            None
-                        },
+                        Err(_) => None,
                     }
                 } else {
-                    debug!("SOS Reservation {:?}", gas_available - gas_for_step);
                     None
                 };
                 self.players
@@ -424,10 +407,7 @@ impl GameSessionActions for Game {
                 &mut self.current_turn,
             );
         }
-        debug!("WAKE {:?}", self.current_msg_id);
-        debug!("round {:?}", self.round);
         exec::wake(self.current_msg_id).expect("Unable to wake the msg");
-        debug!("after wake! Success {:?}",  exec::gas_available());
         Event::Step {
             players: self
                 .players
@@ -505,7 +485,6 @@ impl GameSessionActions for Game {
     }
 
     fn exclude_player_from_game(&mut self, player: ActorId) {
-        debug!("FUCKFUCK players_queue retain {:?}", player);
         self.players_queue.retain(|&p| p != player);
         self.players.entry(player).and_modify(|info| {
             info.lost = true;

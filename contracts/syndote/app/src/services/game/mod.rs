@@ -1,12 +1,12 @@
-use gstd::{exec, msg, ReservationId, debug};
+use crate::services::game::game_actions::GameSessionActions;
+use gstd::{exec, msg, ReservationId};
 use sails_rs::{
     collections::{HashMap, HashSet},
     gstd::service,
     prelude::*,
 };
-use crate::services::game::game::GameSessionActions;
 mod funcs;
-mod game;
+mod game_actions;
 pub mod utils;
 use crate::services;
 pub use utils::*;
@@ -17,7 +17,7 @@ pub struct Storage {
     config: Config,
     players_to_sessions: HashMap<ActorId, AdminId>,
     dns_info: Option<(ActorId, String)>,
-    admin: ActorId
+    admin: ActorId,
 }
 
 #[derive(Default, Clone, Debug)]
@@ -51,7 +51,9 @@ static mut STORAGE: Option<Storage> = None;
 #[scale_info(crate = sails_rs::scale_info)]
 pub enum Event {
     /// Reply on `CreateGameSession` message
-    GameSessionCreated { admin_id: AdminId },
+    GameSessionCreated {
+        admin_id: AdminId,
+    },
 
     /// Reply on `MakeReservation` message
     ReservationMade,
@@ -61,7 +63,10 @@ pub enum Event {
 
     /// Reply on `Play` message
     /// in case of successful completion of the game
-    GameFinished { admin_id: AdminId, winner: ActorId },
+    GameFinished {
+        admin_id: AdminId,
+        winner: ActorId,
+    },
 
     /// Reply on `AddGasToPlayerStrategy`
     GasForPlayerStrategyAdded,
@@ -143,9 +148,16 @@ impl GameService {
         Self(())
     }
 
-    pub fn create_game_session(&mut self, entry_fee: Option<u128>, name: String, strategy_id: ActorId) {
+    pub fn create_game_session(
+        &mut self,
+        entry_fee: Option<u128>,
+        name: String,
+        strategy_id: ActorId,
+    ) {
         let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::create_game_session(storage, entry_fee, &name, &strategy_id));
+        let event = services::utils::panicking(|| {
+            funcs::create_game_session(storage, entry_fee, &name, &strategy_id)
+        });
         self.notify_on(event.clone()).expect("Notification Error");
     }
 
@@ -157,18 +169,19 @@ impl GameService {
 
     pub fn register(&mut self, admin_id: AdminId, strategy_id: ActorId, name: String) {
         let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::register(storage, admin_id, strategy_id, name));
+        let event =
+            services::utils::panicking(|| funcs::register(storage, admin_id, strategy_id, name));
         self.notify_on(event.clone()).expect("Notification Error");
     }
     pub fn play(&mut self, admin_id: AdminId) {
-        debug!("START PLAY {:?}", exec::gas_available());
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::play(storage, admin_id));
         self.notify_on(event.clone()).expect("Notification Error");
     }
     pub fn add_gas_to_player_strategy(&mut self, admin_id: AdminId) {
         let storage = self.get_mut();
-        let event = services::utils::panicking(|| funcs::add_gas_to_player_strategy(storage, admin_id));
+        let event =
+            services::utils::panicking(|| funcs::add_gas_to_player_strategy(storage, admin_id));
         self.notify_on(event.clone()).expect("Notification Error");
     }
     pub fn cancel_game_session(&mut self, admin_id: AdminId) {
@@ -176,7 +189,7 @@ impl GameService {
         let event = services::utils::panicking(|| funcs::cancel_game_session(storage, admin_id));
         self.notify_on(event.clone()).expect("Notification Error");
     }
-    
+
     pub fn exit_game(&mut self, admin_id: AdminId) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::exit_game(storage, admin_id));
@@ -188,15 +201,19 @@ impl GameService {
         let event = services::utils::panicking(|| funcs::delete_game(storage, admin_id));
         self.notify_on(event.clone()).expect("Notification Error");
     }
-    
+
     pub fn delete_player(&mut self, player_id: AdminId) {
         let storage = self.get_mut();
         let event = services::utils::panicking(|| funcs::delete_player(storage, player_id));
         self.notify_on(event.clone()).expect("Notification Error");
     }
 
-    pub fn throw_roll(&mut self, admin_id: AdminId, pay_fine: bool, properties_for_sale: Option<Vec<u8>>) {
-        debug!("ANSWER");
+    pub fn throw_roll(
+        &mut self,
+        admin_id: AdminId,
+        pay_fine: bool,
+        properties_for_sale: Option<Vec<u8>>,
+    ) {
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
@@ -209,18 +226,16 @@ impl GameService {
             storage.config.gas_for_step,
             storage.config.min_gas_limit,
             storage.config.reservation_duration_in_block,
-        ); 
+        );
         self.notify_on(event.clone()).expect("Notification Error");
     }
 
     pub fn add_gear(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) {
-        debug!("ANSWER");
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
             .get_mut(&admin_id)
             .expect("Game does not exist");
-
 
         funcs::add_gear(game_instance, properties_for_sale);
 
@@ -228,12 +243,11 @@ impl GameService {
             storage.config.gas_for_step,
             storage.config.min_gas_limit,
             storage.config.reservation_duration_in_block,
-        ); 
+        );
         self.notify_on(event.clone()).expect("Notification Error");
     }
 
     pub fn upgrade(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) {
-        debug!("ANSWER");
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
@@ -246,12 +260,11 @@ impl GameService {
             storage.config.gas_for_step,
             storage.config.min_gas_limit,
             storage.config.reservation_duration_in_block,
-        ); 
+        );
         self.notify_on(event.clone()).expect("Notification Error");
     }
 
     pub fn buy_cell(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) {
-        debug!("ANSWER");
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
@@ -264,33 +277,26 @@ impl GameService {
             storage.config.gas_for_step,
             storage.config.min_gas_limit,
             storage.config.reservation_duration_in_block,
-        ); 
+        );
         self.notify_on(event.clone()).expect("Notification Error");
     }
 
     pub fn pay_rent(&mut self, admin_id: AdminId, properties_for_sale: Option<Vec<u8>>) {
-        debug!("ANSWER");
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
             .get_mut(&admin_id)
             .expect("Game does not exist");
 
-        debug!("pay_rent {:?} msg source {:?}",  exec::gas_available(), msg::source());
         funcs::pay_rent(game_instance, properties_for_sale);
-        // debug!("finalize_turn_outcome");
         let event = game_instance.finalize_turn_outcome(
             storage.config.gas_for_step,
             storage.config.min_gas_limit,
             storage.config.reservation_duration_in_block,
         );
-        debug!("pay_rent 2");
-        debug!("game_instance {:?}", game_instance);
         self.notify_on(event.clone()).expect("Notification Error");
-        debug!("AFTER EVENT");
     }
     pub fn skip(&mut self, admin_id: AdminId) {
-        debug!("ANSWER");
         let storage = self.get_mut();
         let game_instance = storage
             .game_sessions
@@ -302,11 +308,7 @@ impl GameService {
             storage.config.min_gas_limit,
             storage.config.reservation_duration_in_block,
         );
-        debug!("skip {:?}", exec::gas_available());
-        debug!("game_instance {:?}", game_instance);
         self.notify_on(event.clone()).expect("Notification Error");
-        debug!("end skip {:?}", exec::gas_available());
-        
     }
 
     pub fn change_admin(&mut self, admin: ActorId) {
@@ -339,7 +341,7 @@ impl GameService {
     pub fn get_players_to_sessions(&self) -> Vec<(ActorId, AdminId)> {
         self.get().players_to_sessions.clone().into_iter().collect()
     }
-    
+
     pub fn get_config(&self) -> Config {
         self.get().config.clone()
     }
@@ -360,13 +362,13 @@ impl GameService {
                 if let Some(strategy_id) = game_session.owners_to_strategy_ids.get(&account_id) {
                     if let Some(player_info) = game_session.players.get(strategy_id) {
                         return Some(player_info.clone().into());
-                    } 
+                    }
                 }
             }
         }
         None
     }
-    
+
     pub fn get_game_session(&self, account_id: ActorId) -> Option<GameState> {
         let storage = self.get();
         if let Some(admin_id) = storage.players_to_sessions.get(&account_id) {

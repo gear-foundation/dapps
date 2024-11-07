@@ -3,7 +3,7 @@
 
 use sails_rs::prelude::*;
 pub mod services;
-use services::game::{GameService, Config};
+use services::game::{Config, GameService};
 pub struct Program(());
 
 #[program]

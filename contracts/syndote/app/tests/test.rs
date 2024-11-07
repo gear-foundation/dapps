@@ -5,7 +5,7 @@ use sails_rs::{
 };
 use syndote::{
     traits::{Syndote, SyndoteFactory},
-    Syndote as SyndoteClient, SyndoteFactory as Factory, Config, GameStatus
+    Config, GameStatus, Syndote as SyndoteClient, SyndoteFactory as Factory,
 };
 
 pub const ADMIN_ID: u64 = 10;
@@ -17,7 +17,7 @@ pub const USER_3: u64 = 13;
 async fn test_play_game() {
     let system = System::new();
     system.init_logger();
-    system.mint_to(ADMIN_ID, 100_000_000_000_000);
+    system.mint_to(ADMIN_ID, 1_000_000_000_000_000);
     system.mint_to(USER_1, 100_000_000_000_000);
     system.mint_to(USER_2, 100_000_000_000_000);
     system.mint_to(USER_3, 100_000_000_000_000);
@@ -81,12 +81,14 @@ async fn test_play_game() {
         program_space.system(),
         player_2.send_bytes(USER_2, request.clone()),
     );
-    check_send(
-        program_space.system(),
-        player_3.send_bytes(USER_3, request),
-    );
+    check_send(program_space.system(), player_3.send_bytes(USER_3, request));
 
-    let state = client.get_game_session(ADMIN_ID.into()).recv(syndote_id).await.unwrap().unwrap();
+    let state = client
+        .get_game_session(ADMIN_ID.into())
+        .recv(syndote_id)
+        .await
+        .unwrap()
+        .unwrap();
     assert_eq!(state.game_status, GameStatus::Registration);
 
     // registration
@@ -109,52 +111,53 @@ async fn test_play_game() {
         .await
         .unwrap();
 
-    client
-        .make_reservation(ADMIN_ID.into())
-        .send_recv(syndote_id)
-        .await
-        .unwrap();
+    for _ in 0..20 {
+        client
+            .make_reservation(ADMIN_ID.into())
+            .send_recv(syndote_id)
+            .await
+            .unwrap();
+    }
 
-    client
-        .play(ADMIN_ID.into())
-        .send_recv(syndote_id)
-        .await;
-    
+    let _ = client.play(ADMIN_ID.into()).send_recv(syndote_id).await;
+
     program_space.system().run_next_block();
     program_space.system().run_next_block();
     // check state
-    let state = client.get_game_session(ADMIN_ID.into()).recv(syndote_id).await.unwrap().unwrap();
-    assert!(matches!(state.game_status, GameStatus::WaitingForGasForStrategy(_)));
-    assert_eq!(state.winner, 0.into());
-    // println!("STATE {:?}", state);
-
-    println!("STATE");
-
-    client
-        .add_gas_to_player_strategy(ADMIN_ID.into())
-        .with_args(GTestArgs::new(USER_3.into()))
-        .send_recv(syndote_id)
-        .await
-        .unwrap();
-
-    for _ in (0..30) {
+    loop {
         program_space.system().run_next_block();
+        program_space.system().run_next_block();
+        program_space.system().run_next_block();
+        program_space.system().run_next_block();
+        program_space.system().run_next_block();
+
+        let state = client
+            .get_game_session(ADMIN_ID.into())
+            .recv(syndote_id)
+            .await
+            .unwrap()
+            .unwrap();
+        match state.game_status {
+            GameStatus::WaitingForGasForStrategy(id) => {
+                let index = state
+                    .players
+                    .iter()
+                    .position(|(actor_id, _info)| id == *actor_id)
+                    .unwrap();
+                let (_, player_info) = state.players.get(index).unwrap();
+                client
+                    .add_gas_to_player_strategy(ADMIN_ID.into())
+                    .with_args(GTestArgs::new(player_info.owner_id))
+                    .send_recv(syndote_id)
+                    .await
+                    .unwrap();
+            }
+            GameStatus::Finished => break,
+            _ => continue,
+        }
     }
-
-    // let state = client.get_game_session(ADMIN_ID.into()).recv(syndote_id).await.unwrap().unwrap();
-    // println!("STATE {:?}", state);
-
-    // for _ in (0..90) {
-    //     program_space.system().run_next_block();
-    // }
-
-    // let state = client.get_game_session(ADMIN_ID.into()).recv(syndote_id).await.unwrap().unwrap();
-    // assert_eq!(state.game_status, GameStatus::Finished);
-    // assert_ne!(state.winner, 0.into());
-    // println!("STATE {:?}", state);
 }
 
-#[ignore]
 #[tokio::test]
 async fn test_play_game_without_refills() {
     let system = System::new();
@@ -223,12 +226,14 @@ async fn test_play_game_without_refills() {
         program_space.system(),
         player_2.send_bytes(USER_2, request.clone()),
     );
-    check_send(
-        program_space.system(),
-        player_3.send_bytes(USER_3, request),
-    );
+    check_send(program_space.system(), player_3.send_bytes(USER_3, request));
 
-    let state = client.get_game_session(ADMIN_ID.into()).recv(syndote_id).await.unwrap().unwrap();
+    let state = client
+        .get_game_session(ADMIN_ID.into())
+        .recv(syndote_id)
+        .await
+        .unwrap()
+        .unwrap();
     assert_eq!(state.game_status, GameStatus::Registration);
 
     // registration
@@ -257,29 +262,35 @@ async fn test_play_game_without_refills() {
         .await
         .unwrap();
 
-    client
-        .play(ADMIN_ID.into())
-        .send_recv(syndote_id)
-        .await;
-    
+    let _ = client.play(ADMIN_ID.into()).send_recv(syndote_id).await;
+
     program_space.system().run_next_block();
     program_space.system().run_next_block();
     // check state
-    let state = client.get_game_session(ADMIN_ID.into()).recv(syndote_id).await.unwrap().unwrap();
-    assert!(matches!(state.game_status, GameStatus::WaitingForGasForStrategy(_)));
+    let state = client
+        .get_game_session(ADMIN_ID.into())
+        .recv(syndote_id)
+        .await
+        .unwrap()
+        .unwrap();
+    assert!(matches!(
+        state.game_status,
+        GameStatus::WaitingForGasForStrategy(_)
+    ));
     assert_eq!(state.winner, 0.into());
-    // println!("STATE {:?}", state);
 
-    println!("STATE");
-
-    for _ in (0..90) {
+    for _ in 0..90 {
         program_space.system().run_next_block();
     }
 
-    let state = client.get_game_session(ADMIN_ID.into()).recv(syndote_id).await.unwrap().unwrap();
+    let state = client
+        .get_game_session(ADMIN_ID.into())
+        .recv(syndote_id)
+        .await
+        .unwrap()
+        .unwrap();
     assert_eq!(state.game_status, GameStatus::Finished);
     assert_ne!(state.winner, 0.into());
-    println!("STATE {:?}", state);
 }
 
 fn check_send(system: &System, mid: MessageId) {
