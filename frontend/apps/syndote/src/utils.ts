@@ -1,3 +1,4 @@
+import { decodeAddress } from '@gear-js/api';
 import { AlertContainerFactory } from '@gear-js/react-hooks';
 
 export const copyToClipboard = async ({
@@ -44,4 +45,26 @@ export const copyToClipboard = async ({
   } else {
     unsecuredCopyToClipboard(value);
   }
+};
+
+export const getSafeDecodedAddress = (address?: string) => {
+  if (address) {
+    try {
+      return decodeAddress(address.trim());
+    } catch (error) {
+      // empty
+    }
+  }
+  return null;
+};
+
+export const getPanicType = (error: unknown) => {
+  if (error instanceof Error) {
+    const errorWords = error?.message?.replaceAll("'", '').trim().split(' ');
+    const panicType = errorWords[errorWords.length - 1];
+
+    return panicType;
+  }
+
+  return null;
 };
