@@ -1,43 +1,44 @@
-import { useAccount, useAlert, useApi, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
+import { useAlert, useApi } from '@gear-js/react-hooks';
 import { Button, checkboxStyles } from '@gear-js/ui';
 import { useState } from 'react';
 import { Heading, Loader, PurchaseSubscriptionModal } from 'components';
-import { useSubscriptionsMessage } from 'hooks';
-import { useHandleCalculateGas, useCheckBalance } from '@dapps-frontend/hooks';
-import varatubeMeta from 'assets/state/varatube_meta.txt';
 import pic from 'assets/images/pic.png';
 import clsx from 'clsx';
 import { ADDRESS, periods } from 'consts';
 import styles from './Subscription.module.scss';
 import { PurchaseSubscriptionApproveModal } from 'components/modals/purchase-subscription-approve-modal';
-import { InitialValues } from 'types';
-import { useFTBalance, useFTMessage, useProgramState } from 'hooks/api';
-import { useProgramMetadata } from 'hooks/metadata';
+import { FormValues } from 'types';
+import {
+  useBalanceOfQuery,
+  useCancelSubscriptionMessage,
+  useGetSubscriberQuery,
+  useRegisterSubscriptionMessage,
+} from 'app/utils';
+import { useApproveMessage } from 'app/utils/sails/messages/use-approve-message';
+import { Period } from 'app/utils/sails/varatube';
+import { useCurrenciesQuery } from 'app/utils/sails/queries/use-currencies-query';
 
 function Subscription() {
-  const amount = 10000;
-  const { account } = useAccount();
+  const { currencies } = useCurrenciesQuery();
+  const amount = currencies?.[0][1] ? Number(currencies[0][1]) : null;
+
   const alert = useAlert();
   const { api } = useApi();
-  const tokens = useFTBalance();
-  const { decodedAddress } = account || {};
-  const [valuesToTransfer, setValuesToTransfer] = useState<InitialValues | null>(null);
-  const { subscriptionsState, isSubscriptionsStateRead, updateState } = useProgramState();
-  const varatubeMetadata = useProgramMetadata(varatubeMeta);
-  const calculateGas = useHandleCalculateGas(ADDRESS.CONTRACT, varatubeMetadata);
-  const { checkBalance } = useCheckBalance();
-  const subscription = subscriptionsState && decodedAddress ? subscriptionsState[decodedAddress] : undefined;
+  const { balance, refetch: refetchBalance } = useBalanceOfQuery();
+  const [valuesToTransfer, setValuesToTransfer] = useState<FormValues | null>(null);
+
+  const { subscriber, isFetching, refetch } = useGetSubscriberQuery();
+
   const [isSubscribing, setIsSubscribing] = useState<boolean>(false);
 
-  const { period, price, willRenew, subscriptionStart, subscriptionEnd } = subscription || {};
-  const [startDateTimestamp] = subscriptionStart || [];
-  const [endDateTimestamp] = subscriptionEnd || [];
+  const { period, start_date, end_date, will_renew } = subscriber || {};
 
-  const startDate = startDateTimestamp ? new Date(+withoutCommas(startDateTimestamp)).toLocaleString() : '';
-  const endDate = endDateTimestamp ? new Date(+withoutCommas(endDateTimestamp)).toLocaleString() : '';
+  const startDate = start_date ? new Date(Number(start_date)).toLocaleString() : '';
+  const endDate = end_date ? new Date(Number(end_date)).toLocaleString() : '';
 
-  const sendMessage = useSubscriptionsMessage();
-  const sendFTMessage = useFTMessage();
+  const { registerSubscriptionMessage } = useRegisterSubscriptionMessage();
+  const { cancelSubscriptionMessage } = useCancelSubscriptionMessage();
+  const { approveMessage } = useApproveMessage();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isApproveModalOpen, setIsApproveModalOpen] = useState(false);
@@ -49,29 +50,15 @@ function Subscription() {
   const openApproveModal = () => setIsApproveModalOpen(true);
 
   const cancelSubscription = () => {
-    const payload = { CancelSubscription: null };
-
-    calculateGas(payload)
-      .then((res) => res.toHuman())
-      .then(({ min_limit }) => {
-        const minLimit = withoutCommas(min_limit as string);
-        const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
-
-        checkBalance(gasLimit, () => {
-          sendMessage({
-            payload,
-            gasLimit,
-            onSuccess: () => {
-              updateState();
-              alert.success('Unsubscribed successfully');
-            },
-          });
-        });
-      })
-      .catch((error) => {
-        console.log(error);
+    cancelSubscriptionMessage({
+      onSuccess: () => {
+        refetch();
+        alert.success('Unsubscribed successfully');
+      },
+      onError: () => {
         alert.error('Gas calculation error');
-      });
+      },
+    });
   };
 
   const clearValues = () => {
@@ -79,42 +66,31 @@ function Subscription() {
   };
 
   const findSelectedPeriodRate = (period: string) => periods.find((item) => item.value === period)?.rate || 1;
+  const price = period && amount ? String(findSelectedPeriodRate(period) * amount) : null;
 
   const purchaseSubscription = () => {
     if (valuesToTransfer) {
-      const payload = {
-        RegisterSubscription: {
+      registerSubscriptionMessage(
+        {
           currency_id: ADDRESS.FT_CONTRACT,
-          period: { [valuesToTransfer.period]: null },
+          period: valuesToTransfer.period as Period,
           with_renewal: valuesToTransfer.isRenewal,
         },
-      };
-
-      calculateGas(payload)
-        .then((res) => res.toHuman())
-        .then(({ min_limit }) => {
-          const minLimit = withoutCommas(min_limit as string);
-          const gasLimit = Math.floor(Number(minLimit) + Number(minLimit) * 0.2);
-
-          checkBalance(gasLimit, () => {
-            sendMessage({
-              payload,
-              gasLimit,
-              onSuccess: () => {
-                closeModal();
-                clearValues();
-                updateState();
-                setIsSubscribing(false);
-                alert.success('Subscribed successfully');
-              },
-            });
-          });
-        })
-        .catch((error) => {
-          console.log(error);
-          alert.error('Gas calculation error');
-          setIsSubscribing(false);
-        });
+        {
+          onSuccess: () => {
+            closeModal();
+            clearValues();
+            setIsSubscribing(false);
+            alert.success('Subscribed successfully');
+            refetch();
+            refetchBalance();
+          },
+          onError: () => {
+            alert.error('Gas calculation error');
+            setIsSubscribing(false);
+          },
+        },
+      );
     }
   };
 
@@ -128,7 +104,7 @@ function Subscription() {
       return;
     }
 
-    if (!tokens || Number(withoutCommas(tokens)) < findSelectedPeriodRate(valuesToTransfer?.period) * amount) {
+    if (!amount || !balance || Number(balance) < findSelectedPeriodRate(valuesToTransfer?.period) * amount) {
       alert.error(`You don't have enough tokens to subscribe`);
       clearValues();
       closeApproveModal();
@@ -138,17 +114,16 @@ function Subscription() {
 
     setIsSubscribing(true);
 
-    checkBalance(api?.blockGasLimit.toNumber(), () => {
-      const amountToTransfer = findSelectedPeriodRate(valuesToTransfer.period) * amount;
-      if (amountToTransfer)
-        sendFTMessage({
-          payload: {
-            Approve: {
-              to: ADDRESS.CONTRACT,
-              amount: String(findSelectedPeriodRate(valuesToTransfer.period) * amount),
-            },
-          },
+    const amountToTransfer = findSelectedPeriodRate(valuesToTransfer.period) * amount;
+    if (amountToTransfer) {
+      approveMessage(
+        {
+          spender: ADDRESS.CONTRACT,
+          value: amountToTransfer,
+        },
+        {
           onSuccess: () => {
+            console.log('onSuccess');
             closeApproveModal();
             purchaseSubscription();
           },
@@ -159,18 +134,19 @@ function Subscription() {
             setIsSubscribing(false);
             alert.error('Some error has occured');
           },
-        });
-    });
+        },
+      );
+    }
   };
 
   return (
     <>
-      {isSubscriptionsStateRead ? (
+      {!isFetching && amount ? (
         <>
           <Heading text="My Subscription" />
 
           <div className={styles.main}>
-            {subscription ? (
+            {subscriber ? (
               <>
                 <div className={styles.subWrapper}>
                   <ul className={styles.list}>
@@ -187,9 +163,9 @@ function Subscription() {
                       Period: <span className={styles.value}>{period}</span>
                     </li>
 
-                    {price && (
+                    {!!price && (
                       <li>
-                        Price: <span className={styles.value}>{price}</span>
+                        Price: <span className={styles.value}>{String(price)}</span>
                       </li>
                     )}
 
@@ -198,7 +174,7 @@ function Subscription() {
                       <input
                         type="checkbox"
                         className={clsx(checkboxStyles.input, checkboxStyles.checkbox)}
-                        checked={willRenew}
+                        checked={will_renew}
                         readOnly
                       />
                     </li>
@@ -207,7 +183,7 @@ function Subscription() {
                   <img src={pic} alt="" />
                 </div>
 
-                <Button text="Cancel subscription" color="light" onClick={cancelSubscription} />
+                {will_renew && <Button text="Cancel subscription" color="light" onClick={cancelSubscription} />}
               </>
             ) : (
               <>
@@ -234,7 +210,7 @@ function Subscription() {
           onSubmit={saveSubscriptionValues}
         />
       )}
-      {isApproveModalOpen && valuesToTransfer && (
+      {isApproveModalOpen && valuesToTransfer && amount && (
         <PurchaseSubscriptionApproveModal
           amount={String(findSelectedPeriodRate(valuesToTransfer.period) * amount)}
           disabledSubmitButton={isSubscribing}

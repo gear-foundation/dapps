@@ -1,5 +1,5 @@
 [package]
-name = "zk-battleship"
+name = "zk-battleship-app"
 version.workspace = true
 edition.workspace = true
 license.workspace = true

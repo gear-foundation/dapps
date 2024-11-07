@@ -1,5 +1,5 @@
 [package]
-name = "tic-tac-toe-wasm"
+name = "tic-tac-toe"
 version.workspace = true
 edition.workspace = true
 license.workspace = true
@@ -16,4 +16,4 @@ tic-tac-toe-app = { path = "../app" }
 
 [lib]
 crate-type = ["rlib"]
-name = "tic_tac_toe_wasm"
+name = "tic_tac_toe"
