@@ -1,8 +1,12 @@
-# [Galactic Express](https://wiki.gear-tech.io/docs/examples/Gaming/galactic-express)
+# Galactic Express
 
 Galactic Express (GalEx) is a 100% on-chain PvE economic game.
 
 Deliver the cargo 📦 to the orbit 🌌 using fuel ⛽️ efficiently.
+
+A detailed description of the project can be found on the [wiki](https://wiki.vara.network/docs/examples/Gaming/galactic-express).
+
+⚙️ **Note**: The project code is developed using the [Sails](https://github.com/gear-tech/sails) framework.
 
 ### 🏗️ Building
 
