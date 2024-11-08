@@ -1,12 +1,28 @@
+type GameInfo = struct {
+  admin_id: actor_id,
+  properties_in_bank: vec u8,
+  players: vec struct { actor_id, PlayerInfo },
+  players_queue: vec actor_id,
+  properties: vec opt struct { actor_id, vec Gear, u32, u32 },
+  ownership: vec actor_id,
+};
+
 type PlayerInfo = struct {
+  owner_id: actor_id,
+  name: str,
   position: u8,
   balance: u32,
   debt: u32,
   in_jail: bool,
   round: u128,
-  cells: vec u8,
+  cells: BTreeSetForU8,
   penalty: u8,
   lost: bool,
+  reservation_id: opt ReservationId,
+};
+
+type ReservationId = struct {
+  [u8, 32],
 };
 
 type Gear = enum {
@@ -20,6 +36,6 @@ constructor {
 };
 
 service Player {
-  query YourTurn : (players: vec struct { actor_id, PlayerInfo }, properties: vec opt struct { actor_id, vec Gear, u32, u32 }) -> bool;
+  query YourTurn : (game_info: GameInfo) -> null;
 };
 

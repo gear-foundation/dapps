@@ -65,6 +65,8 @@ constructor {
 
 service Syndote {
   AddGasToPlayerStrategy : (admin_id: actor_id) -> null;
+  AddGear : (admin_id: actor_id, properties_for_sale: opt vec u8) -> null;
+  BuyCell : (admin_id: actor_id, properties_for_sale: opt vec u8) -> null;
   CancelGameSession : (admin_id: actor_id) -> null;
   ChangeAdmin : (admin: actor_id) -> null;
   CreateGameSession : (entry_fee: opt u128, name: str, strategy_id: actor_id) -> null;
@@ -73,8 +75,12 @@ service Syndote {
   ExitGame : (admin_id: actor_id) -> null;
   Kill : (inheritor: actor_id) -> null;
   MakeReservation : (admin_id: actor_id) -> null;
+  PayRent : (admin_id: actor_id, properties_for_sale: opt vec u8) -> null;
   Play : (admin_id: actor_id) -> null;
   Register : (admin_id: actor_id, strategy_id: actor_id, name: str) -> null;
+  Skip : (admin_id: actor_id) -> null;
+  ThrowRoll : (admin_id: actor_id, pay_fine: bool, properties_for_sale: opt vec u8) -> null;
+  Upgrade : (admin_id: actor_id, properties_for_sale: opt vec u8) -> null;
   query GetConfig : () -> Config;
   query GetGameSession : (account_id: actor_id) -> opt GameState;
   query GetOwnerId : (admin_id: actor_id, strategy_id: actor_id) -> opt actor_id;

@@ -1,19 +1,33 @@
+import { ActorId, TransactionBuilder, ZERO_ADDRESS } from 'sails-js';
 import { GearApi, decodeAddress } from '@gear-js/api';
 import { TypeRegistry } from '@polkadot/types';
-import { TransactionBuilder, ActorId, ZERO_ADDRESS } from 'sails-js';
+
+export interface GameInfo {
+  admin_id: ActorId;
+  properties_in_bank: `0x${string}`;
+  players: Array<[ActorId, PlayerInfo]>;
+  players_queue: Array<ActorId>;
+  properties: Array<[ActorId, Array<Gear>, number, number] | null>;
+  ownership: Array<ActorId>;
+}
 
 export interface PlayerInfo {
+  owner_id: ActorId;
+  name: string;
   position: number;
   balance: number;
   debt: number;
   in_jail: boolean;
   round: number | string | bigint;
-  cells: `0x${string}`;
+  cells: any;
   penalty: number;
   lost: boolean;
+  reservation_id: ReservationId | null;
 }
 
-export type Gear = 'bronze' | 'silver' | 'gold';
+export type ReservationId = [Array<number>];
+
+export type Gear = 'Bronze' | 'Silver' | 'Gold';
 
 export class Program {
   public readonly registry: TypeRegistry;
@@ -21,16 +35,28 @@ export class Program {
 
   constructor(public api: GearApi, public programId?: `0x${string}`) {
     const types: Record<string, any> = {
+      GameInfo: {
+        admin_id: '[u8;32]',
+        properties_in_bank: 'Vec<u8>',
+        players: 'Vec<([u8;32], PlayerInfo)>',
+        players_queue: 'Vec<[u8;32]>',
+        properties: 'Vec<Option<([u8;32], Vec<Gear>, u32, u32)>>',
+        ownership: 'Vec<[u8;32]>',
+      },
       PlayerInfo: {
+        owner_id: '[u8;32]',
+        name: 'String',
         position: 'u8',
         balance: 'u32',
         debt: 'u32',
         in_jail: 'bool',
         round: 'u128',
-        cells: 'Vec<u8>',
+        cells: 'BTreeSetForU8',
         penalty: 'u8',
         lost: 'bool',
+        reservation_id: 'Option<ReservationId>',
       },
+      ReservationId: '([u8; 32])',
       Gear: { _enum: ['Bronze', 'Silver', 'Gold'] },
     };
 
@@ -76,19 +102,13 @@ export class Player {
   constructor(private _program: Program) {}
 
   public async yourTurn(
-    players: Array<[ActorId, PlayerInfo]>,
-    properties: Array<[ActorId, Array<Gear>, number, number] | null>,
+    game_info: GameInfo,
     originAddress?: string,
     value?: number | string | bigint,
     atBlock?: `0x${string}`,
-  ): Promise<boolean> {
+  ): Promise<null> {
     const payload = this._program.registry
-      .createType('(String, String, Vec<([u8;32], PlayerInfo)>, Vec<Option<([u8;32], Vec<Gear>, u32, u32)>>)', [
-        'Player',
-        'YourTurn',
-        players,
-        properties,
-      ])
+      .createType('(String, String, GameInfo)', ['Player', 'YourTurn', game_info])
       .toHex();
     const reply = await this._program.api.message.calculateReply({
       destination: this._program.programId!,
@@ -99,7 +119,7 @@ export class Player {
       at: atBlock,
     });
     if (!reply.code.isSuccess) throw new Error(this._program.registry.createType('String', reply.payload).toString());
-    const result = this._program.registry.createType('(String, String, bool)', reply.payload);
-    return result[2].toJSON() as unknown as boolean;
+    const result = this._program.registry.createType('(String, String, Null)', reply.payload);
+    return result[2].toJSON() as unknown as null;
   }
 }

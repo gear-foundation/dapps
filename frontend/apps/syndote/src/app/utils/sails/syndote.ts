@@ -175,6 +175,32 @@ export class Syndote {
     );
   }
 
+  public addGear(admin_id: ActorId, properties_for_sale: `0x${string}` | null): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Syndote', 'AddGear', admin_id, properties_for_sale],
+      '(String, String, [u8;32], Option<Vec<u8>>)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public buyCell(admin_id: ActorId, properties_for_sale: `0x${string}` | null): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Syndote', 'BuyCell', admin_id, properties_for_sale],
+      '(String, String, [u8;32], Option<Vec<u8>>)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
   public cancelGameSession(admin_id: ActorId): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
@@ -283,6 +309,19 @@ export class Syndote {
     );
   }
 
+  public payRent(admin_id: ActorId, properties_for_sale: `0x${string}` | null): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Syndote', 'PayRent', admin_id, properties_for_sale],
+      '(String, String, [u8;32], Option<Vec<u8>>)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
   public play(admin_id: ActorId): TransactionBuilder<null> {
     if (!this._program.programId) throw new Error('Program ID is not set');
     return new TransactionBuilder<null>(
@@ -304,6 +343,49 @@ export class Syndote {
       'send_message',
       ['Syndote', 'Register', admin_id, strategy_id, name],
       '(String, String, [u8;32], [u8;32], String)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public skip(admin_id: ActorId): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Syndote', 'Skip', admin_id],
+      '(String, String, [u8;32])',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public throwRoll(
+    admin_id: ActorId,
+    pay_fine: boolean,
+    properties_for_sale: `0x${string}` | null,
+  ): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Syndote', 'ThrowRoll', admin_id, pay_fine, properties_for_sale],
+      '(String, String, [u8;32], bool, Option<Vec<u8>>)',
+      'Null',
+      this._program.programId,
+    );
+  }
+
+  public upgrade(admin_id: ActorId, properties_for_sale: `0x${string}` | null): TransactionBuilder<null> {
+    if (!this._program.programId) throw new Error('Program ID is not set');
+    return new TransactionBuilder<null>(
+      this._program.api,
+      this._program.registry,
+      'send_message',
+      ['Syndote', 'Upgrade', admin_id, properties_for_sale],
+      '(String, String, [u8;32], Option<Vec<u8>>)',
       'Null',
       this._program.programId,
     );
