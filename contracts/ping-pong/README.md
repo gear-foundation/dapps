@@ -1,9 +1,20 @@
 ## The **ping-pong** program
 
-The program workspace includes the following packages:
-- `ping-pong` is the package allowing to build WASM binary for the program and IDL file for it.  
-  The package also includes integration tests for the program in the `tests` sub-folder
-- `ping-pong-app` is the package containing business logic for the program represented by the `PingPongService` structure.  
-- `ping-pong-client` is the package containing the client for the program allowing to interact with it from another program, tests, or
-  off-chain client.
+A detailed description of the project can be found on the [wiki](https://wiki.vara.network/docs/examples/Ping).
+
+⚙️ **Note**: The project code is developed using the [Sails](https://github.com/gear-tech/sails) framework.
+
+
+### 🏗️ Building
+
+```sh
+cargo b -r -p "ping-pong"
+```
+
+### ✅ Testing
+
+Run all tests, except `gclient` ones:
+```sh
+cargo t -r -p "ping-pong"
+```
 
