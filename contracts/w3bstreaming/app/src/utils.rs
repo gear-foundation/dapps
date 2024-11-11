@@ -31,6 +31,8 @@ pub struct Profile {
 pub struct ProgramState {
     pub streams: Vec<(String, Stream)>,
     pub users: Vec<(ActorId, Profile)>,
+    pub admins: Vec<ActorId>,
+    pub dns_info: Option<(ActorId, String)>,
 }
 
 impl From<Program> for ProgramState {
@@ -38,6 +40,8 @@ impl From<Program> for ProgramState {
         Self {
             streams: program.streams.into_iter().collect(),
             users: program.users.into_iter().collect(),
+            admins: program.admins,
+            dns_info: program.dns_info,
         }
     }
 }

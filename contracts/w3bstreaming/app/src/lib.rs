@@ -15,6 +15,8 @@ static mut PROGRAM: Option<Program> = None;
 pub struct Program {
     pub streams: HashMap<String, Stream>,
     pub users: HashMap<ActorId, Profile>,
+    pub admins: Vec<ActorId>,
+    pub dns_info: Option<(ActorId, String)>,
 }
 
 struct W3bstreamingService(());
@@ -40,16 +42,34 @@ pub enum Event {
     StreamEdited,
     Subscribed,
     ProfileEdited,
+    AdminAdded { new_admin_id: ActorId },
+    Killed { inheritor: ActorId },
 }
 
 #[sails_rs::service(events = Event)]
 impl W3bstreamingService {
-    fn init() -> Self {
+    async fn init(dns_id_and_name: Option<(ActorId, String)>) -> Self {
         unsafe {
             PROGRAM = Some(Program {
+                dns_info: dns_id_and_name.clone(),
+                admins: vec![msg::source()],
                 ..Default::default()
             });
         }
+        if let Some((id, name)) = dns_id_and_name {
+            let request = [
+                "Dns".encode(),
+                "AddNewProgram".to_string().encode(),
+                (name, exec::program_id()).encode(),
+            ]
+            .concat();
+
+            msg::send_bytes_with_gas_for_reply(id, request, 5_000_000_000, 0, 0)
+                .expect("Error in sending message")
+                .await
+                .expect("Error in `AddNewProgram`");
+        }
+
         Self(())
     }
 
@@ -201,6 +221,33 @@ impl W3bstreamingService {
         self.notify_on(Event::ProfileEdited)
             .expect("Notification Error");
     }
+    pub fn add_admin(&mut self, new_admin_id: ActorId) {
+        let storage = self.get_mut();
+        if !storage.admins.contains(&msg::source()) {
+            panic!("Not Admin");
+        }
+        storage.admins.push(new_admin_id);
+        self.notify_on(Event::AdminAdded { new_admin_id })
+            .expect("Notification Error");
+    }
+    pub async fn kill(&mut self, inheritor: ActorId) {
+        let storage = self.get();
+        if !storage.admins.contains(&msg::source()) {
+            panic!("Not Admin");
+        }
+        if let Some((id, _name)) = &storage.dns_info {
+            let request = ["Dns".encode(), "DeleteMe".to_string().encode(), ().encode()].concat();
+
+            msg::send_bytes_with_gas_for_reply(*id, request, 5_000_000_000, 0, 0)
+                .expect("Error in sending message")
+                .await
+                .expect("Error in `AddNewProgram`");
+        }
+
+        self.notify_on(Event::Killed { inheritor })
+            .expect("Notification Error");
+        exec::exit(inheritor);
+    }
     // Service's query
     pub fn get_state(&self) -> ProgramState {
         self.get().clone().into()
@@ -213,8 +260,8 @@ pub struct W3bstreamingProgram(());
 #[sails_rs::program]
 impl W3bstreamingProgram {
     // Program's constructor
-    pub fn new() -> Self {
-        W3bstreamingService::init();
+    pub async fn new(dns_id_and_name: Option<(ActorId, String)>) -> Self {
+        W3bstreamingService::init(dns_id_and_name).await;
         Self(())
     }
 
