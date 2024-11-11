@@ -22,7 +22,7 @@ async fn test_success() {
     let program_factory = w3bstreaming_client::W3BstreamingFactory::new(remoting.clone());
 
     let program_id = program_factory
-        .new()
+        .new(None)
         .send_recv(program_code_id, b"salt")
         .await
         .unwrap();
