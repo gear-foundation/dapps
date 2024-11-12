@@ -4480,30 +4480,31 @@ checksum = "7843ec2de400bcbc6a6328c958dc38e5359da6e93e72e37bc5246bf1ae776389"
 name = "multisig-wallet"
 version = "1.1.0"
 dependencies = [
- "gear-wasm-builder",
- "gstd",
  "gtest",
- "multisig-wallet-io",
- "primitive-types",
+ "multisig-wallet",
+ "multisig-wallet-app",
+ "multisig-wallet-client",
+ "sails-idl-gen",
+ "sails-rs",
+ "tokio",
 ]
 
 [[package]]
-name = "multisig-wallet-io"
+name = "multisig-wallet-app"
 version = "1.1.0"
 dependencies = [
- "gmeta",
- "gstd",
- "primitive-types",
+ "sails-rs",
 ]
 
 [[package]]
-name = "multisig-wallet-state"
+name = "multisig-wallet-client"
 version = "1.1.0"
 dependencies = [
- "gear-wasm-builder",
- "gmeta",
- "gstd",
- "multisig-wallet-io",
+ "mockall",
+ "multisig-wallet-app",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
 ]
 
 [[package]]
