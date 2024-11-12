@@ -44,12 +44,12 @@ async fn check_submit_and_confirm() {
     let state = service_client.get_state().recv(program_id).await.unwrap();
     assert_eq!(state.transaction_count, 1.into());
     assert!(!state.confirmations.is_empty());
-    assert_eq!(state.transactions[0].1.executed, false);
+    assert!(!state.transactions[0].1.executed);
 
     // check that mail is empty
-    let mail = remoting.system().get_mailbox(1 as u64);
+    let mail = remoting.system().get_mailbox(1_u64);
     let log = Log::builder()
-        .dest(1 as u64)
+        .dest(1_u64)
         .payload_bytes(vec![])
         .source(program_id);
     assert!(!mail.contains(&log));
@@ -63,16 +63,16 @@ async fn check_submit_and_confirm() {
         .unwrap();
 
     // check that mail have necessary message
-    let mail = remoting.system().get_mailbox(1 as u64);
+    let mail = remoting.system().get_mailbox(1_u64);
     let log = Log::builder()
-        .dest(1 as u64)
+        .dest(1_u64)
         .payload_bytes(vec![])
         .source(program_id);
     assert!(mail.contains(&log));
 
     // check state executed
     let state = service_client.get_state().recv(program_id).await.unwrap();
-    assert_eq!(state.transactions[0].1.executed, true);
+    assert!(state.transactions[0].1.executed);
 }
 
 #[tokio::test]
