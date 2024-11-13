@@ -14,7 +14,6 @@ members = [
     "concert/wasm",
     "galactic-express/wasm",
     "multisig-wallet",
-    "multisig-wallet/state",
     "oracle",
     "oracle/state",
     "oracle/randomness",
@@ -70,8 +69,6 @@ tamagotchi-battle-state.path = "tamagotchi-battle/state"
 battleship-io.path = "battleship/io"
 car-races-io.path = "car-races/io"
 multi-token-io.path = "multi-token/io"
-multisig-wallet-io.path = "multisig-wallet/io"
-ping-io.path = "ping/io"
 rmrk-catalog-io.path = "rmrk/catalog/io"
 rmrk-io.path = "rmrk/io"
 rmrk-resource-io.path = "rmrk/resource/io"
