@@ -13,6 +13,7 @@ pub async fn add_market_data(market: &mut Market, nft_contract_id: ContractId, f
         msg::source(),
         "Only owner has a right to add NFT to the marketplace"
     );
+    nft_transfer(&nft_contract_id, &owner, &exec::program_id(), token_id).await;
     market.items
         .entry(contract_and_token_id)
         .and_modify(|item| {
@@ -52,22 +53,20 @@ async fn buy_item_impl(
     new_owner: &ActorId,
     token_id: TokenId,
 ) {
+    let program_id = exec::program_id();
     let ft_id = if let Some(ft_contract_id) = item.ft_contract_id {
         ft_contract_id
     } else {
-        return buy_item_with_value(item, nft_contract_id, new_owner, token_id)
+        return buy_item_with_value(item, nft_contract_id, &program_id, new_owner, token_id)
             .await;
     };
-
-    // // transfer NFT to the marketplace account
-    // nft_transfer(nft_contract_id, &item.owner, &program_id, token_id).await;
 
     let price = item.price.expect("Can't be None");
 
     transfer_tokens(&ft_id, new_owner, &item.owner, price.into()).await;
 
     // transfer NFT to the buyer
-    nft_transfer(nft_contract_id, &item.owner, new_owner, token_id).await;
+    nft_transfer(nft_contract_id, &program_id, new_owner, token_id).await;
     item.owner = *new_owner;
     item.price = None;
 }
@@ -162,6 +161,8 @@ pub async fn accept_offer(
         .get(&(ft_contract_id, price))
         .expect("Offer is not exists");
 
+    let program_id = exec::program_id();
+
     let ft_id = if let Some(ft_contract_id) = ft_contract_id {
         ft_contract_id
     } else {
@@ -171,15 +172,16 @@ pub async fn accept_offer(
             account,
             token_id,
             price,
+            &program_id,
         )
         .await;
         return *account;
     };
 
     // Transfer NFT to the buyer
-    nft_transfer(nft_contract_id, &item.owner, account, token_id).await;
+    nft_transfer(nft_contract_id, &program_id, account, token_id).await;
 
-    transfer_tokens(&ft_id, &exec::program_id(), account, price.into()).await;
+    transfer_tokens(&ft_id, &program_id, account, price.into()).await;
 
     item.owner = *account;
     item.price = None;
@@ -194,9 +196,11 @@ pub async fn accept_offer_with_value(
     new_owner: &ActorId,
     token_id: TokenId,
     price: Price,
+    program_id: &ActorId,
 ) {
     // transfer NFT
-    nft_transfer(nft_contract_id, &item.owner, new_owner, token_id).await;
+    nft_transfer(nft_contract_id, program_id, new_owner, token_id).await;
+
 
     item.owner = *new_owner;
     item.price = None;

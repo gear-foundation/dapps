@@ -17,7 +17,8 @@ nft-marketplace = { path = ".", features = ["wasm-binary"] }
 nft-marketplace-client = { path = "client" }
 sails-rs = { workspace = true, features = ["gtest"] }
 tokio = { workspace = true, features = ["rt", "macros"] }
-gtest.workspace = true
+extended_vft_wasm = { git = "https://github.com/gear-foundation/standards/"}
+extended_vnft_wasm = { git = "https://github.com/gear-foundation/standards/"}
 
 [features]
 wasm-binary = []

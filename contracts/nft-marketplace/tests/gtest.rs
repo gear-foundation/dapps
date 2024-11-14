@@ -1,82 +1,138 @@
-use gtest::Log;
-use multisig_wallet_client::traits::*;
+use nft_marketplace_client::traits::*;
 use sails_rs::{
     calls::*,
     gtest::{calls::*, System},
     ActorId, Encode,
 };
+use sails_rs::prelude::*;
+use sails_rs::gtest::Program;
+use extended_vnft_wasm::TokenMetadata;
 
 const USERS: &[u64] = &[3, 4, 5, 6];
 
-#[tokio::test]
-async fn check_submit_and_confirm() {
-    let system = System::new();
-    system.init_logger();
-    USERS.iter().for_each(|id| {
-        system.mint_to(*id, 1_000_000_000_000_000);
-    });
+fn init_fungible_token(sys: &System, minter: ActorId) -> (ActorId, Program<'_>) {
+    let vft = Program::from_file(
+        sys,
+        "../target/wasm32-unknown-unknown/release/extended_vft_wasm.opt.wasm",
+    );
+    let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
+    let encoded_request = ["New".encode(), payload.encode()].concat();
+    let mid = vft.send_bytes(USERS[0], encoded_request);
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
 
-    let remoting = GTestRemoting::new(system, USERS[0].into());
-    remoting.system().init_logger();
+    let encoded_request = [
+        "Vft".encode(),
+        "GrantMinterRole".encode(),
+        minter.encode(),
+    ]
+    .concat();
+    let mid = vft.send_bytes(USERS[0], encoded_request);
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
 
-    // Submit program code into the system
-    let program_code_id = remoting.system().submit_code(multisig_wallet::WASM_BINARY);
+    (vft.id(), vft)
+}
 
-    let program_factory = multisig_wallet_client::MultisigWalletFactory::new(remoting.clone());
+fn init_non_fungible_token(sys: &System, minter: ActorId) -> (ActorId, Program<'_>) {
+    let vnft = Program::from_file(
+        sys,
+        "../target/wasm32-unknown-unknown/release/extended_vnft_wasm.opt.wasm",
+    );
+    let payload = ("Name".to_string(), "Symbol".to_string());
+    let encoded_request = ["New".encode(), payload.encode()].concat();
+    let mid = vnft.send_bytes(USERS[0], encoded_request);
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
 
-    let program_id = program_factory
-        .new(vec![USERS[0].into(), USERS[1].into(), USERS[2].into()], 2)
-        .send_recv(program_code_id, b"salt")
-        .await
-        .unwrap();
+    let encoded_request = [
+        "Vnft".encode(),
+        "GrantMinterRole".encode(),
+        minter.encode(),
+    ]
+    .concat();
+    let mid = vnft.send_bytes(USERS[0], encoded_request);
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
 
-    let mut service_client = multisig_wallet_client::MultisigWallet::new(remoting.clone());
+    (vnft.id(), vnft)
+}
 
-    // submit transaction
-    service_client
-        .submit_transaction(1.into(), vec![], 0, None)
-        .with_value(10_000_000_000_000)
-        .send_recv(program_id)
-        .await
-        .unwrap();
+fn mint_ft(vft: &Program<'_>, sys: &System, to: ActorId, value: U256) {
+    let encoded_request = [
+        "Vft".encode(),
+        "Mint".encode(),
+        (to, value).encode(),
+    ]
+    .concat();
+    let mid = vft.send_bytes(USERS[0], encoded_request);
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
+}
 
-    // check state after submit transaction
-    let state = service_client.get_state().recv(program_id).await.unwrap();
-    assert_eq!(state.transaction_count, 1.into());
-    assert!(!state.confirmations.is_empty());
-    assert!(!state.transactions[0].1.executed);
+fn mint_nft(vnft: &Program<'_>, sys: &System, to: ActorId) {
+    let metadata = TokenMetadata {
+        name: "NftName".to_string(),
+        description: "NftDescription".to_string(),
+        media: "NftMedia".to_string(),
+        reference: "NftReference".to_string(),
+    };
+    let encoded_request = [
+        "Vnft".encode(),
+        "Mint".encode(),
+        (to, metadata).encode(),
+    ]
+    .concat();
+    let mid = vnft.send_bytes(USERS[0], encoded_request);
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
+}
 
-    // check that mail is empty
-    let mail = remoting.system().get_mailbox(1_u64);
-    let log = Log::builder()
-        .dest(1_u64)
-        .payload_bytes(vec![])
-        .source(program_id);
-    assert!(!mail.contains(&log));
+fn approve_ft(vft: &Program<'_>, sys: &System, from: u64, to: ActorId, value: U256) {
+    let encoded_request = [
+        "Vft".encode(),
+        "Approve".encode(),
+        (to, value).encode(),
+    ]
+    .concat();
+    let mid = vft.send_bytes(from, encoded_request);
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
+}
 
-    // confirm transaction
-    service_client
-        .confirm_transaction(0.into())
-        .with_args(GTestArgs::new(USERS[2].into()))
-        .send_recv(program_id)
-        .await
-        .unwrap();
+fn approve_nft(vnft: &Program<'_>, sys: &System, from: u64, to: ActorId, token_id: U256) {
+    let encoded_request = [
+        "Vnft".encode(),
+        "Approve".encode(),
+        (to, token_id).encode(),
+    ]
+    .concat();
+    let mid = vnft.send_bytes(from, encoded_request);
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
+}
 
-    // check that mail have necessary message
-    let mail = remoting.system().get_mailbox(1_u64);
-    let log = Log::builder()
-        .dest(1_u64)
-        .payload_bytes(vec![])
-        .source(program_id);
-    assert!(mail.contains(&log));
-
-    // check state executed
-    let state = service_client.get_state().recv(program_id).await.unwrap();
-    assert!(state.transactions[0].1.executed);
+fn ft_balance_of(program: &Program<'_>, sys: &System, account: ActorId) -> U256 {
+    let encoded_request = ["Vft".encode(), "BalanceOf".encode(), account.encode()].concat();
+    let mid = program.send_bytes(USERS[0], encoded_request);
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
+    let (_, _, balance) = <(String, String, U256)>::decode(&mut res.log[0].payload())
+        .expect("Unable to decode reply");
+    balance
+}
+fn nft_balance_of(program: &Program<'_>, sys: &System, account: ActorId) -> U256 {
+    let encoded_request = ["Vnft".encode(), "BalanceOf".encode(), account.encode()].concat();
+    let mid = program.send_bytes(USERS[0], encoded_request);
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
+    let (_, _, balance) = <(String, String, U256)>::decode(&mut res.log[0].payload())
+        .expect("Unable to decode reply");
+    balance
 }
 
 #[tokio::test]
-async fn change_required_confirmations_count() {
+async fn success_buy_with_native_tokens() {
     let system = System::new();
     system.init_logger();
     USERS.iter().for_each(|id| {
@@ -87,50 +143,45 @@ async fn change_required_confirmations_count() {
     remoting.system().init_logger();
 
     // Submit program code into the system
-    let program_code_id = remoting.system().submit_code(multisig_wallet::WASM_BINARY);
+    let program_code_id = remoting.system().submit_code(nft_marketplace::WASM_BINARY);
 
-    let program_factory = multisig_wallet_client::MultisigWalletFactory::new(remoting.clone());
+    let program_factory = nft_marketplace_client::NftMarketplaceFactory::new(remoting.clone());
 
     let program_id = program_factory
-        .new(vec![USERS[0].into(), USERS[1].into(), USERS[2].into()], 2)
+        .new(USERS[0].into())
         .send_recv(program_code_id, b"salt")
         .await
         .unwrap();
 
-    let mut service_client = multisig_wallet_client::MultisigWallet::new(remoting.clone());
+    let mut service_client = nft_marketplace_client::NftMarketplace::new(remoting.clone());
 
-    // submit transaction
-    let payload = [
-        "MultisigWallet".encode(),
-        "ChangeRequiredConfirmationsCount".to_string().encode(),
-        (3).encode(),
-    ]
-    .concat();
-    service_client
-        .submit_transaction(program_id, payload, 0, None)
-        .send_recv(program_id)
-        .await
-        .unwrap();
+    let (nft_contract_id, nft_program) = init_non_fungible_token(&remoting.system(), USERS[0].into());
+    service_client.add_nft_contract(nft_contract_id).send_recv(program_id).await.unwrap();
 
-    // check state: required
-    let state = service_client.get_state().recv(program_id).await.unwrap();
-    assert_eq!(state.required, 2);
+    mint_nft(&nft_program, &remoting.system(), USERS[0].into());
+    approve_nft(&nft_program, &remoting.system(), USERS[0], program_id, 0.into());
 
-    // confirm transaction
-    service_client
-        .confirm_transaction(0.into())
-        .with_args(GTestArgs::new(USERS[2].into()))
-        .send_recv(program_id)
-        .await
-        .unwrap();
+    service_client.add_market_data(nft_contract_id, None, 0.into(), Some(10_000_000_000_000)).send_recv(program_id).await.unwrap();
+    
+    assert_eq!(nft_balance_of(&nft_program, &remoting.system(), USERS[0].into()) , 0.into());
+    assert_eq!(nft_balance_of(&nft_program, &remoting.system(), USERS[1].into()) , 0.into());
+    assert_eq!(nft_balance_of(&nft_program, &remoting.system(), program_id) , 1.into());
+    let old_balance_user_0 = remoting.system().balance_of(USERS[0]);
+    let old_balance_user_1 = remoting.system().balance_of(USERS[1]);
 
-    // check state: required + 1
-    let state = service_client.get_state().recv(program_id).await.unwrap();
-    assert_eq!(state.required, 3);
+    service_client.buy_item(nft_contract_id, 0.into()).with_value(10_000_000_000_000).with_args(GTestArgs::new(USERS[1].into())).send_recv(program_id).await.unwrap();
+    
+    let new_balance_user_0 = remoting.system().balance_of(USERS[0]);
+    let new_balance_user_1 = remoting.system().balance_of(USERS[1]);
+    assert_eq!(new_balance_user_0 - old_balance_user_0, 10_000_000_000_000);
+    assert!(old_balance_user_1 - new_balance_user_1 > 10_000_000_000_000); // gas costs are included
+    assert_eq!(nft_balance_of(&nft_program, &remoting.system(), USERS[0].into()) , 0.into());
+    assert_eq!(nft_balance_of(&nft_program, &remoting.system(), USERS[1].into()) , 1.into());
+    assert_eq!(nft_balance_of(&nft_program, &remoting.system(), program_id) , 0.into());
 }
 
 #[tokio::test]
-async fn add_owner_remove_owner_and_replace() {
+async fn success_buy_with_fungible_tokens() {
     let system = System::new();
     system.init_logger();
     USERS.iter().for_each(|id| {
@@ -141,84 +192,49 @@ async fn add_owner_remove_owner_and_replace() {
     remoting.system().init_logger();
 
     // Submit program code into the system
-    let program_code_id = remoting.system().submit_code(multisig_wallet::WASM_BINARY);
+    let program_code_id = remoting.system().submit_code(nft_marketplace::WASM_BINARY);
 
-    let program_factory = multisig_wallet_client::MultisigWalletFactory::new(remoting.clone());
+    let program_factory = nft_marketplace_client::NftMarketplaceFactory::new(remoting.clone());
 
     let program_id = program_factory
-        .new(vec![USERS[0].into(), USERS[1].into()], 1)
+        .new(USERS[0].into())
         .send_recv(program_code_id, b"salt")
         .await
         .unwrap();
 
-    let mut service_client = multisig_wallet_client::MultisigWallet::new(remoting.clone());
+    let mut service_client = nft_marketplace_client::NftMarketplace::new(remoting.clone());
 
-    // check state before add owner
-    let state = service_client.get_state().recv(program_id).await.unwrap();
-    assert!(!state.owners.contains(&USERS[2].into()));
+    let (nft_contract_id, nft_program) = init_non_fungible_token(&remoting.system(), USERS[0].into());
+    let (ft_contract_id, ft_program) = init_fungible_token(&remoting.system(), USERS[0].into());
 
-    // add owner
-    let payload = [
-        "MultisigWallet".encode(),
-        "AddOwner".to_string().encode(),
-        (<u64 as Into<ActorId>>::into(USERS[2])).encode(),
-    ]
-    .concat();
-    service_client
-        .submit_transaction(program_id, payload, 0, None)
-        .send_recv(program_id)
-        .await
-        .unwrap();
+    service_client.add_nft_contract(nft_contract_id).send_recv(program_id).await.unwrap();
+    service_client.add_ft_contract(ft_contract_id).send_recv(program_id).await.unwrap();
 
-    // check state after add owner
-    let state = service_client.get_state().recv(program_id).await.unwrap();
-    assert!(state.owners.contains(&USERS[2].into()));
-    assert!(state.owners.contains(&USERS[1].into()));
+    mint_nft(&nft_program, &remoting.system(), USERS[0].into());
+    approve_nft(&nft_program, &remoting.system(), USERS[0], program_id, 0.into());
 
-    // remove owner
-    let payload = [
-        "MultisigWallet".encode(),
-        "RemoveOwner".to_string().encode(),
-        (<u64 as Into<ActorId>>::into(USERS[1])).encode(),
-    ]
-    .concat();
+    mint_ft(&ft_program, &remoting.system(), USERS[1].into(), 10_000_000_000_000_u128.into());
+    approve_ft(&ft_program, &remoting.system(), USERS[1], program_id,  10_000_000_000_000_u128.into());
+    assert_eq!(ft_balance_of(&ft_program, &remoting.system(), USERS[1].into()), 10_000_000_000_000_u128.into());
 
-    service_client
-        .submit_transaction(program_id, payload, 0, None)
-        .send_recv(program_id)
-        .await
-        .unwrap();
+    service_client.add_market_data(nft_contract_id, Some(ft_contract_id), 0.into(), Some(10_000_000_000_000)).send_recv(program_id).await.unwrap();
+    
+    assert_eq!(nft_balance_of(&nft_program, &remoting.system(), USERS[0].into()) , 0.into());
+    assert_eq!(nft_balance_of(&nft_program, &remoting.system(), USERS[1].into()) , 0.into());
+    assert_eq!(nft_balance_of(&nft_program, &remoting.system(), program_id) , 1.into());
 
-    // check state after remove owner
-    let state = service_client.get_state().recv(program_id).await.unwrap();
-    assert!(!state.owners.contains(&USERS[1].into()));
+    service_client.buy_item(nft_contract_id, 0.into()).with_args(GTestArgs::new(USERS[1].into())).send_recv(program_id).await.unwrap();
+    
+    assert_eq!(ft_balance_of(&ft_program, &remoting.system(), USERS[1].into()), 0_u128.into());
+    assert_eq!(ft_balance_of(&ft_program, &remoting.system(), USERS[0].into()), 10_000_000_000_000_u128.into());
 
-    // replace owner
-    let payload = [
-        "MultisigWallet".encode(),
-        "ReplaceOwner".to_string().encode(),
-        (
-            <u64 as Into<ActorId>>::into(USERS[2]),
-            <u64 as Into<ActorId>>::into(USERS[1]),
-        )
-            .encode(),
-    ]
-    .concat();
-
-    service_client
-        .submit_transaction(program_id, payload, 0, None)
-        .send_recv(program_id)
-        .await
-        .unwrap();
-
-    // check state after replace owner
-    let state = service_client.get_state().recv(program_id).await.unwrap();
-    assert!(state.owners.contains(&USERS[1].into()));
-    assert!(!state.owners.contains(&USERS[2].into()));
+    assert_eq!(nft_balance_of(&nft_program, &remoting.system(), USERS[0].into()) , 0.into());
+    assert_eq!(nft_balance_of(&nft_program, &remoting.system(), USERS[1].into()) , 1.into());
+    assert_eq!(nft_balance_of(&nft_program, &remoting.system(), program_id) , 0.into());
 }
 
 #[tokio::test]
-async fn revoke_confirmation() {
+async fn success_offer_native_tokens() {
     let system = System::new();
     system.init_logger();
     USERS.iter().for_each(|id| {
@@ -229,38 +245,37 @@ async fn revoke_confirmation() {
     remoting.system().init_logger();
 
     // Submit program code into the system
-    let program_code_id = remoting.system().submit_code(multisig_wallet::WASM_BINARY);
+    let program_code_id = remoting.system().submit_code(nft_marketplace::WASM_BINARY);
 
-    let program_factory = multisig_wallet_client::MultisigWalletFactory::new(remoting.clone());
+    let program_factory = nft_marketplace_client::NftMarketplaceFactory::new(remoting.clone());
 
     let program_id = program_factory
-        .new(vec![USERS[0].into(), USERS[1].into(), USERS[2].into()], 2)
+        .new(USERS[0].into())
         .send_recv(program_code_id, b"salt")
         .await
         .unwrap();
 
-    let mut service_client = multisig_wallet_client::MultisigWallet::new(remoting.clone());
+    let mut service_client = nft_marketplace_client::NftMarketplace::new(remoting.clone());
 
-    // submit transaction
-    service_client
-        .submit_transaction(1.into(), vec![], 0, None)
-        .with_value(10_000_000_000_000)
-        .send_recv(program_id)
-        .await
-        .unwrap();
+    let (nft_contract_id, nft_program) = init_non_fungible_token(&remoting.system(), USERS[0].into());
+    service_client.add_nft_contract(nft_contract_id).send_recv(program_id).await.unwrap();
 
-    // check state after submit transaction
-    let state = service_client.get_state().recv(program_id).await.unwrap();
-    assert_eq!(state.confirmations[0].1.len(), 1);
+    mint_nft(&nft_program, &remoting.system(), USERS[0].into());
+    approve_nft(&nft_program, &remoting.system(), USERS[0], program_id, 0.into());
 
-    // revoke confirmation
-    service_client
-        .revoke_confirmation(0.into())
-        .send_recv(program_id)
-        .await
-        .unwrap();
+    service_client.add_market_data(nft_contract_id, None, 0.into(), None).send_recv(program_id).await.unwrap();
+    
+    assert_eq!(nft_balance_of(&nft_program, &remoting.system(), USERS[0].into()) , 0.into());
+    assert_eq!(nft_balance_of(&nft_program, &remoting.system(), program_id) , 1.into());
+    let old_balance_user_0 = remoting.system().balance_of(USERS[0]);
+    let old_balance_user_1 = remoting.system().balance_of(USERS[1]);
 
-    // check state after evoke confirmation
-    let state = service_client.get_state().recv(program_id).await.unwrap();
-    assert_eq!(state.confirmations[0].1.len(), 0);
+    service_client.add_offer(nft_contract_id, None, 0.into(), 20_000_000_000_000).with_value(20_000_000_000_000).with_args(GTestArgs::new(USERS[1].into())).send_recv(program_id).await.unwrap();
+    service_client.accept_offer(nft_contract_id, None, 0.into(), 20_000_000_000_000).send_recv(program_id).await.unwrap();
+    
+    // assert_eq!(nft_balance_of(&nft_program, &remoting.system(), USERS[0].into()) , 0.into());
+    // assert_eq!(nft_balance_of(&nft_program, &remoting.system(), USERS[1].into()) , 1.into());
+    // assert_eq!(nft_balance_of(&nft_program, &remoting.system(), program_id) , 0.into());
+
+    // assert_eq!(ft_balance_of(&nft_program, &remoting.system(), program_id) , 0.into());
 }
