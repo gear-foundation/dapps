@@ -14,6 +14,7 @@ members = [
     "concert/wasm",
     "galactic-express/wasm",
     "multisig-wallet",
+    "nft-marketplace",
     "oracle",
     "oracle/state",
     "oracle/randomness",

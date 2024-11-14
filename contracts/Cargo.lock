@@ -4514,6 +4514,37 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "650eef8c711430f1a879fdd01d4745a7deea475becfb90269c06775983bbf086"
 
 [[package]]
+name = "nft-marketplace"
+version = "1.1.0"
+dependencies = [
+ "gtest",
+ "nft-marketplace",
+ "nft-marketplace-app",
+ "nft-marketplace-client",
+ "sails-idl-gen",
+ "sails-rs",
+ "tokio",
+]
+
+[[package]]
+name = "nft-marketplace-app"
+version = "1.1.0"
+dependencies = [
+ "sails-rs",
+]
+
+[[package]]
+name = "nft-marketplace-client"
+version = "1.1.0"
+dependencies = [
+ "mockall",
+ "nft-marketplace-app",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+]
+
+[[package]]
 name = "nix"
 version = "0.26.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
