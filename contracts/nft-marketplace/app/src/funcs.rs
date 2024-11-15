@@ -181,7 +181,7 @@ pub async fn accept_offer(
     // Transfer NFT to the buyer
     nft_transfer(nft_contract_id, &program_id, account, token_id).await;
 
-    transfer_tokens(&ft_id, &program_id, account, price.into()).await;
+    transfer_tokens(&ft_id, &program_id, &item.owner, price.into()).await;
 
     item.owner = *account;
     item.price = None;
@@ -201,6 +201,7 @@ pub async fn accept_offer_with_value(
     // transfer NFT
     nft_transfer(nft_contract_id, program_id, new_owner, token_id).await;
 
+    msg::send_with_gas(item.owner, "", 0, price).expect("Error in sending value");
 
     item.owner = *new_owner;
     item.price = None;
@@ -286,7 +287,6 @@ pub async fn create_auction(
         panic!("Auction min price is zero");
     }
 
-    nft_transfer(nft_contract_id, &item.owner,&exec::program_id(), token_id).await;
     item.ft_contract_id = ft_contract_id;
     item.auction = Some(Auction {
         bid_period,
@@ -324,14 +324,16 @@ pub async fn add_bid(
             }
 
             assert!(msg::value() == price, "Not enough attached value");
+            if !auction.current_winner.is_zero() { 
+                msg::send_with_gas(
+                    auction.current_winner,
+                    "",
+                    0,
+                    auction.current_price,
+                )
+                .expect("Error in sending value");
+            }
 
-            msg::send_with_gas(
-                auction.current_winner,
-                "",
-                0,
-                auction.current_price,
-            )
-            .expect("Error in sending value");
 
             auction.current_price = price;
             auction.current_winner = msg_src;

@@ -2123,6 +2123,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "extended-vnft-app"
+version = "0.1.0"
+source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
+dependencies = [
+ "gear-wasm-builder",
+ "gstd",
+ "log",
+ "parity-scale-codec",
+ "sails-rs",
+ "scale-info",
+ "vnft-service",
+]
+
+[[package]]
 name = "extended_vft_wasm"
 version = "0.1.0"
 source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
@@ -2139,6 +2153,17 @@ version = "0.1.0"
 source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
 dependencies = [
  "extended-vmt-app",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+]
+
+[[package]]
+name = "extended_vnft_wasm"
+version = "0.1.0"
+source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
+dependencies = [
+ "extended-vnft-app",
  "sails-client-gen",
  "sails-idl-gen",
  "sails-rs",
@@ -4517,7 +4542,8 @@ checksum = "650eef8c711430f1a879fdd01d4745a7deea475becfb90269c06775983bbf086"
 name = "nft-marketplace"
 version = "1.1.0"
 dependencies = [
- "gtest",
+ "extended_vft_wasm",
+ "extended_vnft_wasm",
  "nft-marketplace",
  "nft-marketplace-app",
  "nft-marketplace-client",
@@ -8107,6 +8133,18 @@ dependencies = [
 
 [[package]]
 name = "vmt-service"
+version = "0.1.0"
+source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
+dependencies = [
+ "gstd",
+ "log",
+ "parity-scale-codec",
+ "sails-rs",
+ "scale-info",
+]
+
+[[package]]
+name = "vnft-service"
 version = "0.1.0"
 source = "git+https://github.com/gear-foundation/standards/#673218fcae1dd7540e21b650eea675af0650385e"
 dependencies = [

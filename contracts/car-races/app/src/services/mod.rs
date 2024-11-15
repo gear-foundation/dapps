@@ -48,6 +48,7 @@ pub struct Config {
 #[derive(Debug, Decode, Encode, TypeInfo)]
 pub enum Event {
     RoundInfo(RoundInfo),
+    GameFinished{player: ActorId},
     Killed { inheritor: ActorId },
 }
 #[service(events = Event)]
@@ -168,6 +169,7 @@ impl CarRacesService {
 
                     if game.state == GameState::Finished {
                         send_msg_to_remove_game_instance(player);
+                        return Ok(Event::GameFinished{player: msg_src});
                     }
                 }
             }
