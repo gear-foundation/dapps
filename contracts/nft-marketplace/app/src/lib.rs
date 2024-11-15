@@ -33,7 +33,7 @@ impl MarketService {
 impl MarketService {
     fn init(admin_id: ActorId) -> Self {    
         let market = Market {
-            admin_id: admin_id,
+            admin_id,
             ..Default::default()
         };
         unsafe { STORAGE = Some(market) };
@@ -56,7 +56,6 @@ impl MarketService {
     }
     pub async fn add_market_data(&mut self, nft_contract_id: ContractId, ft_contract_id: Option<ContractId>, token_id: TokenId, price: Option<Price>) {
         let market = self.get_mut();
-        
         add_market_data(market, nft_contract_id, ft_contract_id, token_id, price).await;
         self.notify_on(MarketEvent::MarketDataAdded { nft_contract_id, token_id, price })
             .expect("Notification Error");
@@ -98,9 +97,9 @@ impl MarketService {
             price,
         }).expect("Notification Error");
     }
-    pub async fn create_auction(&mut self, nft_contract_id: ContractId, ft_contract_id: Option<ContractId>, token_id: TokenId, min_price: u128, bid_period: u64, duration: u64) {
+    pub async fn create_auction(&mut self, nft_contract_id: ContractId, ft_contract_id: Option<ContractId>, token_id: TokenId, min_price: u128, duration: u64) {
         let market = self.get_mut();
-        create_auction(market, &nft_contract_id, ft_contract_id, token_id, min_price, bid_period, duration).await;
+        create_auction(market, &nft_contract_id, ft_contract_id, token_id, min_price, duration).await;
         self.notify_on(MarketEvent::AuctionCreated {
             nft_contract_id,
             token_id,
@@ -124,7 +123,9 @@ impl MarketService {
         self.notify_on(event).expect("Notification Error");
     }
 
-    
+    pub fn get_market(&self) -> MarketState {
+        self.get().clone().into()
+    }
 }
 
 pub struct MarketProgram(());

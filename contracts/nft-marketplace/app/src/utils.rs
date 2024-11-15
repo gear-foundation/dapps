@@ -7,7 +7,6 @@ pub type TokenId = U256;
 pub type Price = u128;
 
 pub const MINIMUM_VALUE: u64 = 1_000_000_000_000;
-pub const MIN_BID_PERIOD: u64 = 60_000;
 
 #[derive(Debug, Default, Clone)]
 pub struct Market {
@@ -59,7 +58,6 @@ pub struct InitMarket {
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
 pub struct Auction {
-    pub bid_period: u64,
     pub started_at: u64,
     pub ended_at: u64,
     pub current_price: Price,
@@ -189,4 +187,58 @@ pub enum MarketErr {
     OfferAlreadyExists,
     OfferShouldAcceptedByOwner,
     OfferIsNotExists,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
+pub struct ItemState {
+    pub token_id: TokenId,
+    pub owner: ActorId,
+    pub ft_contract_id: Option<ContractId>,
+    pub price: Option<Price>,
+    pub auction: Option<Auction>,
+    pub offers: Vec<((Option<ContractId>, Price), ActorId)>,
+}
+
+#[derive(Debug, Encode, Decode, TypeInfo)]
+#[codec(crate = sails_rs::scale_codec)]
+#[scale_info(crate = sails_rs::scale_info)]
+pub struct MarketState {
+    pub admin_id: ActorId,
+    pub items: Vec<((ContractId, TokenId), ItemState)>,
+    pub approved_nft_contracts: Vec<ActorId>,
+    pub approved_ft_contracts: Vec<ActorId>,
+}
+
+impl From<Market> for MarketState {
+    fn from(value: Market) -> Self {
+        let Market {
+            admin_id,
+            items,
+            approved_nft_contracts,
+            approved_ft_contracts,
+        } = value;
+
+        let items = items.into_iter().map(|(id, item)| {
+            let item_state = ItemState {
+                token_id: item.token_id,
+                owner: item.owner,
+                ft_contract_id: item.ft_contract_id,
+                price: item.price,
+                auction: item.auction,
+                offers: item.offers.into_iter().collect()
+            };
+            (id, item_state)
+        }).collect();
+        let approved_nft_contracts = approved_nft_contracts.into_iter().collect();
+        let approved_ft_contracts = approved_ft_contracts.into_iter().collect();
+
+        Self {
+            admin_id,
+            items,
+            approved_nft_contracts,
+            approved_ft_contracts,
+        }
+    }
 }
