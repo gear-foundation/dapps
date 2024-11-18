@@ -56,6 +56,7 @@ pub enum Event {
         maximum_number_gold_coins: u16,
         maximum_number_silver_coins: u16,
         prize: u128,
+        player_address: ActorId,
     },
     NewTournamentCreated {
         tournament_name: String,
@@ -83,6 +84,7 @@ pub enum Event {
         maximum_possible_points: u128,
         maximum_number_gold_coins: u16,
         maximum_number_silver_coins: u16,
+        player_address: ActorId,
     },
     GameStarted,
     AdminAdded(ActorId),
