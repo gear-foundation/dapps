@@ -291,6 +291,7 @@ pub async fn finish_single_game(
         maximum_possible_points,
         maximum_number_gold_coins: storage.config.max_number_gold_coins,
         maximum_number_silver_coins: storage.config.max_number_silver_coins,
+        player_address: msg_src
     })
 }
 
@@ -447,6 +448,7 @@ pub fn record_tournament_result(
         maximum_possible_points,
         maximum_number_gold_coins: storage.config.max_number_gold_coins,
         maximum_number_silver_coins: storage.config.max_number_silver_coins,
+        player_address: msg_src,
     })
 }
 
