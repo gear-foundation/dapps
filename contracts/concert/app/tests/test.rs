@@ -14,7 +14,7 @@ pub const DATE: u128 = 100000;
 fn init_multitoken(sys: &System) -> (ActorId, Program<'_>) {
     let vmt = Program::from_file(
         sys,
-        "../../target/wasm32-unknown-unknown/release/extended_vmt_wasm.opt.wasm",
+        "../../target/wasm32-unknown-unknown/release/extended_vmt.opt.wasm",
     );
     let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
     let encoded_request = ["New".encode(), payload.encode()].concat();

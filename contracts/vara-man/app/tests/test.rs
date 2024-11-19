@@ -13,7 +13,7 @@ pub const USER_ID: u64 = 11;
 fn init_fungible_token(sys: &System, vara_man_id: ActorId) -> (ActorId, Program<'_>) {
     let vft = Program::from_file(
         sys,
-        "../../target/wasm32-unknown-unknown/release/extended_vft_wasm.opt.wasm",
+        "../../target/wasm32-unknown-unknown/release/extended_vft.opt.wasm",
     );
     let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
     let encoded_request = ["New".encode(), payload.encode()].concat();

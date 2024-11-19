@@ -14,4 +14,4 @@ gtest.workspace = true
 gclient.workspace = true
 vara-man = { path = "../wasm" }
 tokio = "1"
-extended_vft_wasm = { git = "https://github.com/gear-foundation/standards/"}
+extended-vft = { git = "https://github.com/gear-foundation/standards/"}

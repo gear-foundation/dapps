@@ -12,5 +12,5 @@ sails-rs = { workspace = true, features = ["gtest"] }
 gclient.workspace = true
 concert = { path = "../wasm" }
 tokio = "1"
-extended_vmt_wasm = { git = "https://github.com/gear-foundation/standards/"}
+extended-vmt-client = { git = "https://github.com/gear-foundation/standards/"}
 

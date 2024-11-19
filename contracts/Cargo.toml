@@ -99,6 +99,8 @@ sails-idl-gen = "0.6.1"
 sails-rs = "0.6.1"
 sails-client-gen = "0.6.1"
 session-service = { git = "https://github.com/gear-foundation/signless-gasless-session-service.git" }
+extended-vnft-client = { git = "https://github.com/gear-foundation/standards"}
+extended-vft-client = { git = "https://github.com/gear-foundation/standards"}
 
 # External
 
