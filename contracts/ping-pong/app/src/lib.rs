@@ -11,10 +11,18 @@ impl PingPongService {
         Self(())
     }
     pub fn get_mut(&mut self) -> &'static mut U256 {
-        unsafe { PING_COUNTER.as_mut().expect("Ping counter is not initialized") }
+        unsafe {
+            PING_COUNTER
+                .as_mut()
+                .expect("Ping counter is not initialized")
+        }
     }
     pub fn get(&self) -> &'static U256 {
-        unsafe { PING_COUNTER.as_ref().expect("Ping counter is not initialized") }
+        unsafe {
+            PING_COUNTER
+                .as_ref()
+                .expect("Ping counter is not initialized")
+        }
     }
 }
 
@@ -36,7 +44,7 @@ impl PingPongService {
     // Service's query
     pub fn get_ping_count(&self) -> U256 {
         *self.get()
-    }    
+    }
 }
 
 pub struct PingPongProgram(());

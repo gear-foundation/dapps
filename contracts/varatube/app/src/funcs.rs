@@ -1,4 +1,5 @@
 use crate::{Event, Period, Price, Storage, SubscriberData, VaraTubeError};
+use extended_vft_client::vft::io as vft_io;
 use gstd::{exec, msg, ActorId};
 use sails_rs::prelude::*;
 
@@ -245,13 +246,7 @@ async fn transfer_tokens(
     value: U256,
     gas_limit: u64,
 ) {
-    let request = [
-        "Vft".encode(),
-        "TransferFrom".to_string().encode(),
-        (*from, *to, value).encode(),
-    ]
-    .concat();
-
+    let request = vft_io::TransferFrom::encode_call(*from, *to, value);
     msg::send_bytes_with_gas_for_reply(*ft_address, request, gas_limit, 0, 0)
         .expect("Error in sending a message")
         .await
