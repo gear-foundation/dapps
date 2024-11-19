@@ -92,6 +92,7 @@ pub enum MarketTx {
 
 #[derive(Debug, PartialEq, Eq, Clone, Default)]
 pub struct Item {
+    pub frozen: bool,
     pub token_id: TokenId,
     pub owner: ActorId,
     pub ft_contract_id: Option<ContractId>,
@@ -193,6 +194,7 @@ pub enum MarketErr {
 #[codec(crate = sails_rs::scale_codec)]
 #[scale_info(crate = sails_rs::scale_info)]
 pub struct ItemState {
+    pub frozen: bool,
     pub token_id: TokenId,
     pub owner: ActorId,
     pub ft_contract_id: Option<ContractId>,
@@ -222,6 +224,7 @@ impl From<Market> for MarketState {
 
         let items = items.into_iter().map(|(id, item)| {
             let item_state = ItemState {
+                frozen: item.frozen,
                 token_id: item.token_id,
                 owner: item.owner,
                 ft_contract_id: item.ft_contract_id,

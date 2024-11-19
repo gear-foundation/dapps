@@ -6,14 +6,14 @@ use sails_rs::{
 };
 use sails_rs::prelude::*;
 use sails_rs::gtest::Program;
-use extended_vnft_wasm::TokenMetadata;
+use extended_vnft_client::TokenMetadata;
 
 const USERS: &[u64] = &[3, 4, 5, 6];
 
 fn init_fungible_token(sys: &System, minter: ActorId) -> (ActorId, Program<'_>) {
     let vft = Program::from_file(
         sys,
-        "../target/wasm32-unknown-unknown/release/extended_vft_wasm.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/extended_vft.opt.wasm",
     );
     let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
     let encoded_request = ["New".encode(), payload.encode()].concat();
@@ -37,7 +37,7 @@ fn init_fungible_token(sys: &System, minter: ActorId) -> (ActorId, Program<'_>) 
 fn init_non_fungible_token(sys: &System, minter: ActorId) -> (ActorId, Program<'_>) {
     let vnft = Program::from_file(
         sys,
-        "../target/wasm32-unknown-unknown/release/extended_vnft_wasm.opt.wasm",
+        "../target/wasm32-unknown-unknown/release/extended_vnft.opt.wasm",
     );
     let payload = ("Name".to_string(), "Symbol".to_string());
     let encoded_request = ["New".encode(), payload.encode()].concat();

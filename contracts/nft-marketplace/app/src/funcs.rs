@@ -23,6 +23,7 @@ pub async fn add_market_data(market: &mut Market, nft_contract_id: ContractId, f
             item.ft_contract_id = ft_contract_id
         })
         .or_insert(Item {
+            frozen: false,
             token_id,
             owner,
             ft_contract_id,
@@ -38,6 +39,10 @@ pub async fn buy_item(market: &mut Market, nft_contract_id: &ContractId, token_i
         .items
         .get_mut(&(*nft_contract_id, token_id))
         .expect("Item does not exists");
+
+    if item.frozen {
+        panic!("Item is frozen");
+    }
 
     if item.auction.is_some() {
         panic!("Item on auction");
@@ -79,6 +84,10 @@ pub async fn add_offer(
         .get_mut(&(*nft_contract_id, token_id))
         .expect("Item does not exists");
 
+    if item.frozen {
+        panic!("Item is frozen");
+    }
+
     if item.auction.is_some() {
         panic!("Auction is opened");
     }
@@ -96,11 +105,8 @@ pub async fn add_offer(
             price.into(),
         )
         .await;
-    
-        item.offers.insert((Some(ft_id), price), msg_source);
-    } else {
-        item.offers.insert((None, price), msg_source);
-    };
+    } 
+    item.offers.insert((ft_contract_id, price), msg_source);
 }
 
 
@@ -116,12 +122,16 @@ pub async fn accept_offer(
         .get_mut(&(*nft_contract_id, token_id))
         .expect("Item does not exists");
 
+    if item.frozen {
+        panic!("Item is frozen");
+    }
+
     if item.auction.is_some() {
         panic!("Auction is opened");
     }
 
     if item.owner != msg::source() {
-        panic!("Offer should accepted by owner");
+        panic!("Offer should be accepted by owner");
     }
 
     assert!(
@@ -135,20 +145,19 @@ pub async fn accept_offer(
         .expect("Offer is not exists");
 
     let program_id = exec::program_id();
-
+    item.frozen = true;
+    // Transfer NFT to the buyer
+    nft_transfer(nft_contract_id, &program_id, &account, token_id).await;
     if let Some(ft_id) = ft_contract_id {
-        // Transfer NFT to the buyer
-        nft_transfer(nft_contract_id, &program_id, &account, token_id).await;
         // Transfer FT to the item owner
         transfer_tokens(&ft_id, &program_id, &item.owner, price.into()).await;
     } else {
-        // Transfer NFT to the buyer
-        nft_transfer(nft_contract_id, &program_id, &account, token_id).await;
         // Transfer value to the item owner
         msg::send_with_gas(item.owner, "", 0, price).expect("Error in sending value");
     };
     item.owner = account;
     item.price = None;
+    item.frozen = false;
     item.offers.remove(&(ft_contract_id, price));
     account
 
@@ -166,6 +175,10 @@ pub async fn withdraw(
         .get_mut(&(*nft_contract_id, token_id))
         .expect("Item does not exists");
 
+    if item.frozen {
+        panic!("Item is frozen");
+    }
+    
     let account = if let Some(account) = item.offers.get(&(ft_contract_id, price)) {
         *account
     } else {
@@ -175,13 +188,14 @@ pub async fn withdraw(
     if account != msg::source() {
         panic!("Invalid caller");
     }
-
+    item.frozen = true;
     if let Some(ft_id) = ft_contract_id {
         transfer_tokens(&ft_id, &exec::program_id(), &account, price.into()).await;
     } else {
         msg::send_with_gas(account, "", 0, price).expect("Error in sending value");
     };
     item.offers.remove(&(ft_contract_id, price));
+    item.frozen = false;
 }
 
 
@@ -202,6 +216,10 @@ pub async fn create_auction(
         .get_mut(&(*nft_contract_id, token_id))
         .expect("Item does not exists");
 
+    if item.frozen {
+        panic!("Item is frozen");
+    }
+    
     assert_eq!(
         item.owner,
         msg::source(),
@@ -246,6 +264,10 @@ pub async fn add_bid(
         .get_mut(&(*nft_contract_id, token_id))
         .expect("Item does not exists");
 
+    if item.frozen {
+        panic!("Item is frozen");
+    }
+    
     let auction: &mut Auction = item.auction.as_mut().expect("Auction does not exists");
 
     if auction.ended_at < exec::block_timestamp() {
@@ -294,6 +316,10 @@ pub async fn settle_auction(
         .get_mut(&(*nft_contract_id, token_id))
         .expect("Item does not exists");
 
+    if item.frozen {
+        panic!("Item is frozen");
+    }
+    
     let auction: &mut Auction = item.auction.as_mut().expect("Auction does not exists");
 
     if auction.ended_at > exec::block_timestamp() {
@@ -301,7 +327,7 @@ pub async fn settle_auction(
     }
 
     let price = auction.current_price;
-
+    item.frozen = true;
     let winner = if auction.current_winner.is_zero() {
         nft_transfer(nft_contract_id, &exec::program_id(), &item.owner, token_id).await;
         item.auction = None;
@@ -324,7 +350,7 @@ pub async fn settle_auction(
 
     item.auction = None;
     item.owner = winner;
-
+    item.frozen = false;
     MarketEvent::AuctionSettled {
         nft_contract_id: *nft_contract_id,
         token_id,
