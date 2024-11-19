@@ -1,6 +1,10 @@
 use super::session::Storage as SessionStorage;
 use crate::services;
-use sails_rs::{gstd::{service, exec, msg}, prelude::*, collections::HashMap};
+use sails_rs::{
+    collections::HashMap,
+    gstd::{exec, msg, service},
+    prelude::*,
+};
 mod funcs;
 pub mod utils;
 use utils::*;

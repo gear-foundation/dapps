@@ -7,7 +7,7 @@ pub mod error;
 pub mod game;
 pub mod session;
 pub mod utils;
-use crate::services::utils::{panicking, panic};
+use crate::services::utils::{panic, panicking};
 use error::Error;
 use game::*;
 pub struct CarRacesService;
@@ -48,7 +48,7 @@ pub struct Config {
 #[derive(Debug, Decode, Encode, TypeInfo)]
 pub enum Event {
     RoundInfo(RoundInfo),
-    GameFinished{player: ActorId},
+    GameFinished { player: ActorId },
     Killed { inheritor: ActorId },
 }
 #[service(events = Event)]
@@ -143,7 +143,6 @@ impl CarRacesService {
         );
         let game_instance = self.get_game(&player);
 
-
         panicking(game_instance.verify_game_state());
 
         game_instance.apply_strategy_move(strategy_move);
@@ -176,14 +175,16 @@ impl CarRacesService {
 
         match round_info {
             Some(info) => {
-                self.notify_on(Event::RoundInfo(info)).expect("Notification Error");
+                self.notify_on(Event::RoundInfo(info))
+                    .expect("Notification Error");
                 if game_finished {
-                    self.notify_on(Event::GameFinished{player: msg_src}).expect("Notification Error");
+                    self.notify_on(Event::GameFinished { player: msg_src })
+                        .expect("Notification Error");
                 }
-            },
+            }
             None => {
                 panic(Error::UnexpectedState);
-            },
+            }
         }
     }
 

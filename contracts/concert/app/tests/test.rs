@@ -2,8 +2,9 @@ use concert::{
     traits::{Concert, ConcertFactory},
     Concert as ConcertClient, ConcertFactory as Factory, TokenMetadata,
 };
+use extended_vmt_client::vmt::io as vmt_io;
 use sails_rs::gtest::{calls::*, System};
-use sails_rs::{calls::*, gtest::Program, ActorId, Decode, Encode, U256};
+use sails_rs::{calls::*, gtest::Program, ActorId, Encode, U256};
 
 pub const USER_ID: u64 = 10;
 pub const TOKEN_ID: U256 = U256::one();
@@ -14,7 +15,7 @@ pub const DATE: u128 = 100000;
 fn init_multitoken(sys: &System) -> (ActorId, Program<'_>) {
     let vmt = Program::from_file(
         sys,
-        "../../target/wasm32-unknown-unknown/release/extended_vmt_wasm.opt.wasm",
+        "../../target/wasm32-unknown-unknown/release/extended_vmt.opt.wasm",
     );
     let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
     let encoded_request = ["New".encode(), payload.encode()].concat();
@@ -25,36 +26,22 @@ fn init_multitoken(sys: &System) -> (ActorId, Program<'_>) {
     (vmt.id(), vmt)
 }
 fn grant_roles(sys: &System, vmt: &Program, concert_id: ActorId) {
-    let encoded_request = [
-        "Vmt".encode(),
-        "GrantMinterRole".encode(),
-        (concert_id).encode(),
-    ]
-    .concat();
+    let encoded_request = vmt_io::GrantMinterRole::encode_call(concert_id);
     let mid = vmt.send_bytes(USER_ID, encoded_request);
     let res = sys.run_next_block();
     assert!(res.succeed.contains(&mid));
-
-    let encoded_request = [
-        "Vmt".encode(),
-        "GrantBurnerRole".encode(),
-        (concert_id).encode(),
-    ]
-    .concat();
+    let encoded_request = vmt_io::GrantBurnerRole::encode_call(concert_id);
     let mid = vmt.send_bytes(USER_ID, encoded_request);
     let res = sys.run_next_block();
     assert!(res.succeed.contains(&mid));
 }
 
 fn get_balance(sys: &System, vmt: &Program, account: ActorId, id: U256) -> U256 {
-    let encoded_request = ["Vmt".encode(), "BalanceOf".encode(), (account, id).encode()].concat();
+    let encoded_request = vmt_io::BalanceOf::encode_call(account, id);
     let mid = vmt.send_bytes(USER_ID, encoded_request);
     let res = sys.run_next_block();
     assert!(res.succeed.contains(&mid));
-
-    let (_, _, balance) = <(String, String, U256)>::decode(&mut res.log[0].payload())
-        .expect("Unable to decode reply");
-    balance
+    vmt_io::BalanceOf::decode_reply(res.log[0].payload()).unwrap()
 }
 #[tokio::test]
 async fn create_concert() {
