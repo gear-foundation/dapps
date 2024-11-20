@@ -1,4 +1,4 @@
-# @dapps-frontend/ez-transcations
+# @dapps-frontend/ez-transactions
 
 A library to provide gasless and signless transactions.
 By interacting with a Gear program via voucher, gasless backend and local account it allows users to make transactions without paying gas fees or signing on-chain transactions.
@@ -6,7 +6,7 @@ By interacting with a Gear program via voucher, gasless backend and local accoun
 ## Install:
 
 ```sh
-yarn add @dapps-frontend/ez-transcations
+yarn add @dapps-frontend/ez-transactions
 ```
 
 ## Gasless-transactions
@@ -15,10 +15,10 @@ The gas fees, which are usually required to execute transactions on the blockcha
 
 ### Provider
 
-Import `GaslessTransactionsProvider` from `@dapps-frontend/ez-transcations` in your `index.tsx` and wrap your application with it. You should pass the required arguments:
+Import `GaslessTransactionsProvider` from `@dapps-frontend/ez-transactions` in your `index.tsx` and wrap your application with it. You should pass the required arguments:
 
 ```jsx
-import { GaslessTransactionsProvider } from '@dapps-frontend/ez-transcations';
+import { GaslessTransactionsProvider } from '@dapps-frontend/ez-transactions';
 
 <GaslessTransactionsProvider
   programId={'0x...'} // Program address
@@ -34,7 +34,7 @@ import { GaslessTransactionsProvider } from '@dapps-frontend/ez-transcations';
 The package provides a `useGaslessTransactions` hook that returns a context with all required properties:
 
 ```jsx
-import { useGaslessTransactions } from '@dapps-frontend/ez-transcations';
+import { useGaslessTransactions } from '@dapps-frontend/ez-transactions';
 
 const gaslessContext = useGaslessTransactions();
 const { voucherId, isLoading, isEnabled, isActive, expireTimestamp, requestVoucher, setIsEnabled } = gaslessContext;
@@ -68,7 +68,7 @@ The provider can utilize either a [Sails-generated program](https://github.com/g
 ### Sails program based provider
 
 ```jsx
-import { SignlessTransactionsProvider } from '@dapps-frontend/ez-transcations';
+import { SignlessTransactionsProvider } from '@dapps-frontend/ez-transactions';
 import { useProgram } from '@gear-js/react-hooks';
 import { Program } from './lib';
 
@@ -86,7 +86,7 @@ function SignlessTransactionsProvider({ children }: ProviderProps) {
 ### Metadata based provider
 
 ```jsx
-import { SignlessTransactionsProvider } from '@dapps-frontend/ez-transcations';
+import { SignlessTransactionsProvider } from '@dapps-frontend/ez-transactions';
 
 return (
   <SignlessTransactionsProvider programId={'0x...'} metadataSource={metaTxt}>
@@ -100,7 +100,7 @@ return (
 The package provides a `useSignlessTransactions` hook that returns a context with all required properties:
 
 ```jsx
-import { useSignlessTransactions } from '@dapps-frontend/ez-transcations';
+import { useSignlessTransactions } from '@dapps-frontend/ez-transactions';
 
 const signlessContext = useSignlessTransactions();
 
@@ -119,7 +119,7 @@ Combined Workflow:
 `EzTransactionsProvider` implements logic that allows the use of gasless and signless transactions together, e.g. disabling gasless when signless is active and requesting a voucher before a signless session is created. It uses both the signless and gasless contexts, so it needs to be wrapped by `GaslessTransactionsProvider` and `SignlessTransactionsProvider`.
 
 ```jsx
-import { EzTransactionsProvider } from '@dapps-frontend/ez-transcations';
+import { EzTransactionsProvider } from '@dapps-frontend/ez-transactions';
 
 return <EzTransactionsProvider>{children}</EzTransactionsProvider>;
 ```
@@ -127,7 +127,7 @@ return <EzTransactionsProvider>{children}</EzTransactionsProvider>;
 The package provides a `useEzTransactions` hook that returns both gasless and signless contexts:
 
 ```jsx
-import { useEzTransactions } from '@dapps-frontend/ez-transcations';
+import { useEzTransactions } from '@dapps-frontend/ez-transactions';
 
 const { gasless, signless } = useEzTransactions();
 ```
@@ -137,7 +137,7 @@ const { gasless, signless } = useEzTransactions();
 To work with signless and gasless transactions together, sending transactions requires a `sessionForAccount` parameter and using `pair` as the sender's account. Also, the `voucherId` needs to be requested. `usePrepareEzTransactionParams` implements this logic:
 
 ```jsx
-import { usePrepareEzTransactionParams } from '@dapps-frontend/ez-transcations';
+import { usePrepareEzTransactionParams } from '@dapps-frontend/ez-transactions';
 
 const { prepareEzTransactionParams } = usePrepareEzTransactionParams();
 
@@ -153,7 +153,7 @@ const sendMessage = async () => {
 The package provides components for enabling and disabling gasless and signless transactions.
 
 ```jsx
-import { EzSignlessTransactions, EzGaslessTransactions, EzTransactionsSwitch } from '@dapps-frontend/ez-transcations';
+import { EzSignlessTransactions, EzGaslessTransactions, EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
 
 // Buttons
 <EzSignlessTransactions allowedActions={allowedActions} />
