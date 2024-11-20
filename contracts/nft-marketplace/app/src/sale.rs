@@ -1,6 +1,6 @@
-use sails_rs::gstd::msg;
-use crate::{ActorId, TokenId, ContractId, Item};
 use crate::{nft_transfer, transfer_tokens};
+use crate::{ActorId, ContractId, Item, TokenId};
+use sails_rs::gstd::msg;
 
 pub async fn buy_item_with_value(
     item: &mut Item,
@@ -14,7 +14,7 @@ pub async fn buy_item_with_value(
         panic!("Wrong price");
     }
 
-    // transfer NFT 
+    // transfer NFT
     nft_transfer(nft_contract_id, old_owner, new_owner, token_id).await;
     // send value
     msg::send_with_gas(item.owner, "", 0, price).expect("Error in sending value");
@@ -40,5 +40,4 @@ pub async fn buy_item_with_fungible_tokens(
 
     item.owner = *new_owner;
     item.price = None;
-
 }

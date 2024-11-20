@@ -1,8 +1,21 @@
-use sails_rs::{collections::HashMap, gstd::{msg, exec}, ActorId};
-use crate::{get_owner, nft_transfer, sale::buy_item_with_fungible_tokens, transfer_tokens, Auction, ContractId, Item, Market, MarketEvent, Price, TokenId, MINIMUM_VALUE};
 use crate::sale::buy_item_with_value;
+use crate::{
+    get_owner, nft_transfer, sale::buy_item_with_fungible_tokens, transfer_tokens, Auction,
+    ContractId, Item, Market, MarketEvent, Price, TokenId, MINIMUM_VALUE,
+};
+use sails_rs::{
+    collections::HashMap,
+    gstd::{exec, msg},
+    ActorId,
+};
 
-pub async fn add_market_data(market: &mut Market, nft_contract_id: ContractId, ft_contract_id: Option<ContractId>, token_id: TokenId, price: Option<Price>) {
+pub async fn add_market_data(
+    market: &mut Market,
+    nft_contract_id: ContractId,
+    ft_contract_id: Option<ContractId>,
+    token_id: TokenId,
+    price: Option<Price>,
+) {
     // Check approved nft and ft contract
     market.check_approved_nft_contract(&nft_contract_id);
     market.check_approved_ft_contract(ft_contract_id);
@@ -14,9 +27,10 @@ pub async fn add_market_data(market: &mut Market, nft_contract_id: ContractId, f
         msg::source(),
         "Only owner has a right to add NFT to the marketplace"
     );
-    // Transfer nft to marketplace 
+    // Transfer nft to marketplace
     nft_transfer(&nft_contract_id, &owner, &exec::program_id(), token_id).await;
-    market.items
+    market
+        .items
         .entry((nft_contract_id, token_id))
         .and_modify(|item| {
             item.price = price;
@@ -33,8 +47,12 @@ pub async fn add_market_data(market: &mut Market, nft_contract_id: ContractId, f
         });
 }
 
-
-pub async fn buy_item(market: &mut Market, nft_contract_id: &ContractId, token_id: TokenId, msg_src: ActorId) {
+pub async fn buy_item(
+    market: &mut Market,
+    nft_contract_id: &ContractId,
+    token_id: TokenId,
+    msg_src: ActorId,
+) {
     let item = market
         .items
         .get_mut(&(*nft_contract_id, token_id))
@@ -53,11 +71,18 @@ pub async fn buy_item(market: &mut Market, nft_contract_id: &ContractId, token_i
 
     let program_id = exec::program_id();
     if let Some(ft_contract_id) = item.ft_contract_id {
-        buy_item_with_fungible_tokens(item, nft_contract_id, &ft_contract_id, &program_id, &msg_src, token_id).await;
+        buy_item_with_fungible_tokens(
+            item,
+            nft_contract_id,
+            &ft_contract_id,
+            &program_id,
+            &msg_src,
+            token_id,
+        )
+        .await;
     } else {
         buy_item_with_value(item, nft_contract_id, &program_id, &msg_src, token_id).await;
     };
-
 }
 
 pub async fn add_offer(
@@ -67,7 +92,6 @@ pub async fn add_offer(
     token_id: TokenId,
     price: Price,
 ) {
-
     if let Some(ft_contract_id) = &ft_contract_id {
         if !market.approved_ft_contracts.contains(ft_contract_id) {
             panic!("Contract not approved");
@@ -98,17 +122,10 @@ pub async fn add_offer(
     let msg_source = msg::source();
     if let Some(ft_id) = ft_contract_id {
         // Transfer fungible tokens to marketplace
-        transfer_tokens(
-            &ft_id,
-            &msg_source,
-            &exec::program_id(),
-            price.into(),
-        )
-        .await;
-    } 
+        transfer_tokens(&ft_id, &msg_source, &exec::program_id(), price.into()).await;
+    }
     item.offers.insert((ft_contract_id, price), msg_source);
 }
-
 
 pub async fn accept_offer(
     market: &mut Market,
@@ -160,7 +177,6 @@ pub async fn accept_offer(
     item.frozen = false;
     item.offers.remove(&(ft_contract_id, price));
     account
-
 }
 
 pub async fn withdraw(
@@ -178,7 +194,7 @@ pub async fn withdraw(
     if item.frozen {
         panic!("Item is frozen");
     }
-    
+
     let account = if let Some(account) = item.offers.get(&(ft_contract_id, price)) {
         *account
     } else {
@@ -197,7 +213,6 @@ pub async fn withdraw(
     item.offers.remove(&(ft_contract_id, price));
     item.frozen = false;
 }
-
 
 pub async fn create_auction(
     market: &mut Market,
@@ -219,7 +234,7 @@ pub async fn create_auction(
     if item.frozen {
         panic!("Item is frozen");
     }
-    
+
     assert_eq!(
         item.owner,
         msg::source(),
@@ -267,7 +282,7 @@ pub async fn add_bid(
     if item.frozen {
         panic!("Item is frozen");
     }
-    
+
     let auction: &mut Auction = item.auction.as_mut().expect("Auction does not exists");
 
     if auction.ended_at < exec::block_timestamp() {
@@ -278,7 +293,7 @@ pub async fn add_bid(
         panic!("Wrong price");
     }
 
-    if let Some (ft_id) = item.ft_contract_id {
+    if let Some(ft_id) = item.ft_contract_id {
         transfer_tokens(&ft_id, &msg_src, &exec::program_id(), price.into()).await;
         if !auction.current_winner.is_zero() {
             transfer_tokens(
@@ -291,14 +306,9 @@ pub async fn add_bid(
         }
     } else {
         assert!(msg::value() == price, "Not enough attached value");
-        if !auction.current_winner.is_zero() { 
-            msg::send_with_gas(
-                auction.current_winner,
-                "",
-                0,
-                auction.current_price,
-            )
-            .expect("Error in sending value");
+        if !auction.current_winner.is_zero() {
+            msg::send_with_gas(auction.current_winner, "", 0, auction.current_price)
+                .expect("Error in sending value");
         }
     }
     auction.current_price = price;
@@ -319,7 +329,7 @@ pub async fn settle_auction(
     if item.frozen {
         panic!("Item is frozen");
     }
-    
+
     let auction: &mut Auction = item.auction.as_mut().expect("Auction does not exists");
 
     if auction.ended_at > exec::block_timestamp() {
@@ -340,7 +350,13 @@ pub async fn settle_auction(
     };
 
     if let Some(ft_id) = item.ft_contract_id {
-        transfer_tokens(&ft_id, &exec::program_id(), &item.owner, auction.current_price.into()).await;
+        transfer_tokens(
+            &ft_id,
+            &exec::program_id(),
+            &item.owner,
+            auction.current_price.into(),
+        )
+        .await;
     } else {
         msg::send_with_gas(item.owner, "", 0, auction.current_price)
             .expect("Error in sending value");

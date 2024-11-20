@@ -35,7 +35,6 @@ impl Market {
             panic!("Only owner can make that action");
         }
     }
-
 }
 #[derive(Debug, Encode, Decode, TypeInfo)]
 #[codec(crate = sails_rs::scale_codec)]
@@ -222,18 +221,21 @@ impl From<Market> for MarketState {
             approved_ft_contracts,
         } = value;
 
-        let items = items.into_iter().map(|(id, item)| {
-            let item_state = ItemState {
-                frozen: item.frozen,
-                token_id: item.token_id,
-                owner: item.owner,
-                ft_contract_id: item.ft_contract_id,
-                price: item.price,
-                auction: item.auction,
-                offers: item.offers.into_iter().collect()
-            };
-            (id, item_state)
-        }).collect();
+        let items = items
+            .into_iter()
+            .map(|(id, item)| {
+                let item_state = ItemState {
+                    frozen: item.frozen,
+                    token_id: item.token_id,
+                    owner: item.owner,
+                    ft_contract_id: item.ft_contract_id,
+                    price: item.price,
+                    auction: item.auction,
+                    offers: item.offers.into_iter().collect(),
+                };
+                (id, item_state)
+            })
+            .collect();
         let approved_nft_contracts = approved_nft_contracts.into_iter().collect();
         let approved_ft_contracts = approved_ft_contracts.into_iter().collect();
 

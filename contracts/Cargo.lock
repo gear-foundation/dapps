@@ -1195,6 +1195,7 @@ name = "concert-app"
 version = "1.1.0"
 dependencies = [
  "concert",
+ "extended-vmt",
  "extended-vmt-client",
  "gclient",
  "gstd",
@@ -2204,6 +2205,16 @@ source = "git+https://github.com/gear-foundation/standards/#a59ecb537ee3bb394baf
 dependencies = [
  "extended-vft-app",
  "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+]
+
+[[package]]
+name = "extended-vmt"
+version = "1.1.0"
+source = "git+https://github.com/gear-foundation/standards/#a59ecb537ee3bb394baf18a720c5bb20c5c3afd1"
+dependencies = [
+ "extended-vmt-app",
  "sails-idl-gen",
  "sails-rs",
 ]
@@ -4775,6 +4786,7 @@ name = "nft-marketplace"
 version = "1.1.0"
 dependencies = [
  "extended-vft",
+ "extended-vft-client",
  "extended-vnft",
  "extended-vnft-client",
  "nft-marketplace",
@@ -8352,6 +8364,7 @@ name = "vara-man-app"
 version = "1.1.0"
 dependencies = [
  "extended-vft",
+ "extended-vft-client",
  "gclient",
  "gstd",
  "gtest",
@@ -8374,6 +8387,7 @@ dependencies = [
 name = "varatube-app"
 version = "1.1.0"
 dependencies = [
+ "extended-vft-client",
  "gclient",
  "gear-core",
  "gstd",

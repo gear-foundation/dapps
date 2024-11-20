@@ -2,16 +2,16 @@
 use sails_rs::gstd::msg;
 use sails_rs::prelude::*;
 
-mod utils;
-mod nft_messages;
 mod funcs;
-mod sale;
+mod nft_messages;
 mod payment;
+mod sale;
+mod utils;
 
-use utils::*;
-use nft_messages::*;
 use funcs::*;
+use nft_messages::*;
 use payment::*;
+use utils::*;
 
 static mut STORAGE: Option<Market> = None;
 
@@ -31,7 +31,7 @@ impl MarketService {
 
 #[sails_rs::service(events = MarketEvent)]
 impl MarketService {
-    fn init(admin_id: ActorId) -> Self {    
+    fn init(admin_id: ActorId) -> Self {
         let market = Market {
             admin_id,
             ..Default::default()
@@ -64,11 +64,21 @@ impl MarketService {
     /// * if item already exists, then it cannot be changed if there is an active auction
     ///
     /// On success triggers the event [`MarketEvent::MarketDataAdded`].
-    pub async fn add_market_data(&mut self, nft_contract_id: ContractId, ft_contract_id: Option<ContractId>, token_id: TokenId, price: Option<Price>) {
+    pub async fn add_market_data(
+        &mut self,
+        nft_contract_id: ContractId,
+        ft_contract_id: Option<ContractId>,
+        token_id: TokenId,
+        price: Option<Price>,
+    ) {
         let market = self.get_mut();
         add_market_data(market, nft_contract_id, ft_contract_id, token_id, price).await;
-        self.notify_on(MarketEvent::MarketDataAdded { nft_contract_id, token_id, price })
-            .expect("Notification Error");
+        self.notify_on(MarketEvent::MarketDataAdded {
+            nft_contract_id,
+            token_id,
+            price,
+        })
+        .expect("Notification Error");
     }
     /// Sells the NFT.
     ///
@@ -83,10 +93,20 @@ impl MarketService {
         let market = self.get_mut();
         let msg_src = msg::source();
         buy_item(market, &nft_contract_id, token_id, msg_src).await;
-        self.notify_on(MarketEvent::ItemSold { owner: msg_src, nft_contract_id, token_id })
-            .expect("Notification Error");
+        self.notify_on(MarketEvent::ItemSold {
+            owner: msg_src,
+            nft_contract_id,
+            token_id,
+        })
+        .expect("Notification Error");
     }
-    pub async fn add_offer(&mut self, nft_contract_id: ContractId, ft_contract_id: Option<ContractId>, token_id: TokenId, price: u128) {
+    pub async fn add_offer(
+        &mut self,
+        nft_contract_id: ContractId,
+        ft_contract_id: Option<ContractId>,
+        token_id: TokenId,
+        price: u128,
+    ) {
         let market = self.get_mut();
         add_offer(market, &nft_contract_id, ft_contract_id, token_id, price).await;
         self.notify_on(MarketEvent::OfferAdded {
@@ -94,26 +114,42 @@ impl MarketService {
             ft_contract_id,
             token_id,
             price,
-        }).expect("Notification Error");
+        })
+        .expect("Notification Error");
     }
-    pub async fn accept_offer(&mut self, nft_contract_id: ContractId, ft_contract_id: Option<ContractId>, token_id: TokenId, price: u128) {
+    pub async fn accept_offer(
+        &mut self,
+        nft_contract_id: ContractId,
+        ft_contract_id: Option<ContractId>,
+        token_id: TokenId,
+        price: u128,
+    ) {
         let market = self.get_mut();
-        let new_owner = accept_offer(market, &nft_contract_id, ft_contract_id, token_id, price).await;
+        let new_owner =
+            accept_offer(market, &nft_contract_id, ft_contract_id, token_id, price).await;
         self.notify_on(MarketEvent::OfferAccepted {
             nft_contract_id,
             token_id,
             new_owner,
             price,
-        }).expect("Notification Error");
+        })
+        .expect("Notification Error");
     }
-    pub async fn withdraw(&mut self, nft_contract_id: ContractId, ft_contract_id: Option<ContractId>, token_id: TokenId, price: u128) {
+    pub async fn withdraw(
+        &mut self,
+        nft_contract_id: ContractId,
+        ft_contract_id: Option<ContractId>,
+        token_id: TokenId,
+        price: u128,
+    ) {
         let market = self.get_mut();
         withdraw(market, &nft_contract_id, ft_contract_id, token_id, price).await;
         self.notify_on(MarketEvent::Withdraw {
             nft_contract_id,
             token_id,
             price,
-        }).expect("Notification Error");
+        })
+        .expect("Notification Error");
     }
 
     /// Creates an auction for selected item.
@@ -125,14 +161,30 @@ impl MarketService {
     /// *  There must be no active auction
     ///
     /// On success triggers the event [`MarketEvent::AuctionCreated`].
-    pub async fn create_auction(&mut self, nft_contract_id: ContractId, ft_contract_id: Option<ContractId>, token_id: TokenId, min_price: u128, duration: u64) {
+    pub async fn create_auction(
+        &mut self,
+        nft_contract_id: ContractId,
+        ft_contract_id: Option<ContractId>,
+        token_id: TokenId,
+        min_price: u128,
+        duration: u64,
+    ) {
         let market = self.get_mut();
-        create_auction(market, &nft_contract_id, ft_contract_id, token_id, min_price, duration).await;
+        create_auction(
+            market,
+            &nft_contract_id,
+            ft_contract_id,
+            token_id,
+            min_price,
+            duration,
+        )
+        .await;
         self.notify_on(MarketEvent::AuctionCreated {
             nft_contract_id,
             token_id,
             price: min_price,
-        }).expect("Notification Error");
+        })
+        .expect("Notification Error");
     }
     /// Adds a bid to an ongoing auction.
     ///
@@ -151,9 +203,10 @@ impl MarketService {
             nft_contract_id,
             token_id,
             price,
-        }).expect("Notification Error");
+        })
+        .expect("Notification Error");
     }
-    
+
     pub async fn settle_auction(&mut self, nft_contract_id: ContractId, token_id: TokenId) {
         let market = self.get_mut();
         let event = settle_auction(market, &nft_contract_id, token_id).await;

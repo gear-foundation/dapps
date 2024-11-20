@@ -20,6 +20,7 @@ tokio = { workspace = true, features = ["rt", "macros"] }
 extended-vft = { git = "https://github.com/gear-foundation/standards/"}
 extended-vnft = { git = "https://github.com/gear-foundation/standards/"}
 extended-vnft-client.workspace = true
+extended-vft-client.workspace = true
 
 [features]
 wasm-binary = []
