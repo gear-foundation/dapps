@@ -80,6 +80,24 @@ impl MarketService {
         })
         .expect("Notification Error");
     }
+    /// Removes data on market item.
+    ///
+    /// # Requirements
+    /// * [`msg::source()`](gstd::msg::source) must be the  item.owner
+    /// * There must be no open auction on the item.
+    ///
+    /// On success triggers the event [`MarketEvent::MarketDataRemoved`].
+    pub async fn remove_market_data(&mut self, nft_contract_id: ContractId, token_id: TokenId) {
+        let market = self.get_mut();
+        let msg_src = msg::source();
+        remove_market_data(market, &nft_contract_id, token_id, msg_src).await;
+        self.notify_on(MarketEvent::MarketDataRemoved {
+            owner: msg_src,
+            nft_contract_id,
+            token_id,
+        })
+        .expect("Notification Error");
+    }
     /// Sells the NFT.
     ///
     /// # Requirements:

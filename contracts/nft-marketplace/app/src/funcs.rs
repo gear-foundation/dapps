@@ -47,6 +47,43 @@ pub async fn add_market_data(
         });
 }
 
+pub async fn remove_market_data(
+    market: &mut Market,
+    nft_contract_id: &ContractId,
+    token_id: TokenId,
+    msg_src: ActorId,
+) {
+    let item = market
+        .items
+        .get_mut(&(*nft_contract_id, token_id))
+        .expect("Item does not exists");
+
+    if item.owner != msg_src {
+        panic!("Wrong owner");
+    }
+    if item.frozen {
+        panic!("Item is frozen");
+    }
+
+    if item.auction.is_some() {
+        panic!("Item on auction");
+    }
+    item.frozen = true;
+    let program_id = exec::program_id();
+    nft_transfer(nft_contract_id, &program_id, &item.owner, token_id).await;
+    for ((ft_id, price), account) in item.offers.iter() {
+        if let Some(id) = ft_id {
+            transfer_tokens(id, &program_id, account, (*price).into()).await;
+        } else {
+            msg::send_with_gas(*account, "", 0, *price).expect("Error in sending value");
+        }
+    }
+    market
+        .items
+        .remove(&(*nft_contract_id, token_id))
+        .expect("Item does not exists");
+}
+
 pub async fn buy_item(
     market: &mut Market,
     nft_contract_id: &ContractId,

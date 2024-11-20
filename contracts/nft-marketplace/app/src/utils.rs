@@ -111,6 +111,11 @@ pub enum MarketEvent {
         token_id: TokenId,
         price: Option<Price>,
     },
+    MarketDataRemoved {
+        owner: ActorId,
+        nft_contract_id: ContractId,
+        token_id: TokenId,
+    },
     ItemSold {
         owner: ActorId,
         nft_contract_id: ContractId,
