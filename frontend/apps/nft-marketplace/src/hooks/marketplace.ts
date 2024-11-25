@@ -1,116 +1,133 @@
-import { useReadWasmState, useSendMessageWithGas } from '@gear-js/react-hooks';
-import { AnyJson } from '@polkadot/types/types';
-import { useMemo } from 'react';
-import { ADDRESS } from 'consts';
 import { AuctionFormValues, MarketNFT } from 'types';
-import metaTxt from 'assets/state/nft_marketplace_meta.txt';
-import stateWasm from 'assets/state/market_state.meta.wasm';
 import { getMilliseconds } from 'utils';
-import { useBuffer, useProgramMetadata } from './metadata';
+import {
+  useBuyItemMessage,
+  useAddOfferMessage,
+  useAddBidMessage,
+  useSettleAuctionMessage,
+  useAddMarketDataMessage,
+  useCreateAuctionMessage,
+  useGetMarketQuery,
+} from 'app/utils';
+import { useApproveMessage } from 'app/utils/sails/messages/use-approve-message';
+import { useAlert } from '@gear-js/react-hooks';
 
-function useMarketplaceMeta() {
-  return useProgramMetadata(metaTxt);
-}
-
-function useMarketplaceStateBuffer() {
-  return useBuffer(stateWasm);
-}
-
-function useMarketplaceWasmState<T>(functionName: string, argument: AnyJson) {
-  const programMetadata = useMarketplaceMeta();
-  const buffer = useMarketplaceStateBuffer();
-  
-  return useReadWasmState<T>({
-    programId: ADDRESS.MARKETPLACE_CONTRACT,
-    wasm: buffer,
-    functionName,
-    payload: '0x',
-    programMetadata,
-    argument,
-  });
-}
-
-function useMarketplace() {
-  const { state, isStateRead } = useMarketplaceWasmState<MarketNFT[]>('all_items', null);
-
-  return { NFTs: state, isEachNFTRead: isStateRead };
-}
-
-function useMarketNft(tokenId: string) {
-  const payload = useMemo(() => ({ nft_contract_id: ADDRESS.NFT_CONTRACT, token_id: tokenId }), [tokenId]);
-
-  const { state, isStateRead } = useMarketplaceWasmState<MarketNFT | null>('item_info', payload);
-
-  return { marketNft: state, isMarketNftRead: isStateRead };
-}
-
-function useMarketplaceMessage() {
-  const metadata = useMarketplaceMeta();
-
-  return useSendMessageWithGas(ADDRESS.MARKETPLACE_CONTRACT, metadata);
-}
-
-function useMarketplaceActions(token_id: string, price: MarketNFT['price'] | undefined) {
-  const sendMessage = useMarketplaceMessage();
-
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  const nft_contract_id = ADDRESS.NFT_CONTRACT;
+function useMarketplaceActions(tokenId: string, price: MarketNFT['price'] | undefined, isMarketOwner: boolean) {
+  const alert = useAlert();
+  const { refetch } = useGetMarketQuery();
+  const { buyItemMessage } = useBuyItemMessage();
+  const { addOfferMessage } = useAddOfferMessage();
+  const { addBidMessage } = useAddBidMessage();
+  const { settleAuctionMessage } = useSettleAuctionMessage();
+  const { addMarketDataMessage } = useAddMarketDataMessage();
+  const { createAuctionMessage } = useCreateAuctionMessage();
+  const { approveMessage } = useApproveMessage();
 
   const buy = (onSuccess: () => void) => {
     if (!price) return;
 
-    const payload = { BuyItem: { nft_contract_id, token_id } };
-    const value = price;
-
-    sendMessage({ payload, value, onSuccess });
+    buyItemMessage(
+      { tokenId, value: BigInt(price) },
+      {
+        onSuccess: () => {
+          onSuccess();
+          refetch();
+        },
+      },
+    );
   };
 
   const offer = (value: string, onSuccess: () => void) => {
-    const payload = { AddOffer: { nft_contract_id, token_id, price: value } };
-
-    sendMessage({ payload, value, onSuccess });
+    addOfferMessage(
+      { tokenId, price: BigInt(value), value: BigInt(value) },
+      {
+        onSuccess: () => {
+          onSuccess();
+          refetch();
+        },
+      },
+    );
   };
 
   const bid = (value: string, onSuccess: () => void) => {
-    const payload = { AddBid: { nft_contract_id, token_id, price: value } };
-
-    sendMessage({ payload, value, onSuccess });
+    addBidMessage(
+      { tokenId, price: BigInt(value), value: BigInt(value) },
+      {
+        onSuccess: () => {
+          onSuccess();
+          refetch();
+        },
+      },
+    );
   };
 
   const settle = (onSuccess: () => void) => {
-    const payload = { SettleAuction: { nft_contract_id, token_id } };
-
-    sendMessage({ payload, onSuccess });
+    settleAuctionMessage({ tokenId }, { onSuccess });
   };
 
   const startSale = (value: string, onSuccess: () => void) => {
-    const payload = { AddMarketData: { nft_contract_id, token_id, price: value } };
-
-    sendMessage({ payload, value, onSuccess });
+    const addMarketData = () => {
+      addMarketDataMessage(
+        { tokenId, price: BigInt(value), value: BigInt(value) },
+        {
+          onSuccess: () => {
+            onSuccess();
+            alert.success('Sale started');
+          },
+        },
+      );
+    };
+    if (isMarketOwner) {
+      addMarketData();
+    } else {
+      approveMessage(
+        { tokenId },
+        {
+          onSuccess: () => {
+            alert.info('NFT approved');
+            addMarketData;
+          },
+        },
+      );
+    }
   };
 
   const startAuction = (values: AuctionFormValues, onSuccess: () => void) => {
-    const duration = getMilliseconds(values.duration);
-    // eslint-disable-next-line @typescript-eslint/naming-convention
-    const bid_period = getMilliseconds(values.bidPeriod);
-    const { minPrice } = values;
+    const duration = BigInt(getMilliseconds(values.duration));
+    const minPrice = BigInt(values.minPrice);
 
-    const marketDataPayload = { AddMarketData: { nft_contract_id, token_id } };
-    const auctionPayload = { CreateAuction: { nft_contract_id, token_id, bid_period, duration, min_price: minPrice } };
+    const sendStartAuctionMessage = () => {
+      createAuctionMessage(
+        { tokenId, minPrice, duration },
+        {
+          onSuccess: () => {
+            onSuccess();
+            alert.success('Auction started');
+          },
+        },
+      );
+    };
+    const sendAddMarketDataMessage = () => {
+      alert.info('NFT approved');
+      addMarketDataMessage(
+        { tokenId, price: null },
+        {
+          onSuccess: () => {
+            alert.info('Market data added');
+            sendStartAuctionMessage();
+          },
+        },
+      );
+    };
 
-    const sendStartAuctionMessage = () => sendMessage({ payload: auctionPayload, onSuccess });
-
-    sendMessage({ payload: marketDataPayload, onSuccess: sendStartAuctionMessage });
+    if (isMarketOwner) {
+      sendStartAuctionMessage();
+    } else {
+      approveMessage({ tokenId }, { onSuccess: sendAddMarketDataMessage });
+    }
   };
 
   return { buy, offer, bid, settle, startAuction, startSale };
 }
 
-export {
-  useMarketplace,
-  useMarketplaceStateBuffer,
-  useMarketNft,
-  useMarketplaceMessage,
-  useMarketplaceActions,
-  useMarketplaceMeta,
-};
+export { useMarketplaceActions };
