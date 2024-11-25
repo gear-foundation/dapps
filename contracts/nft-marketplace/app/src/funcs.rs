@@ -16,35 +16,38 @@ pub async fn add_market_data(
     token_id: TokenId,
     price: Option<Price>,
 ) {
-    // Check approved nft and ft contract
-    market.check_approved_nft_contract(&nft_contract_id);
-    market.check_approved_ft_contract(ft_contract_id);
+    let msg_src = msg::source();
+    if let Some(item) = market.items.get_mut(&(nft_contract_id, token_id)) {
+        if msg_src != item.owner {
+            panic!("Only owner has a right to change market dara to the marketplace");
+        }
+        item.price = price;
+    } else {
+        // Check approved nft and ft contract
+        market.check_approved_nft_contract(&nft_contract_id);
+        market.check_approved_ft_contract(ft_contract_id);
 
-    // Check owner
-    let owner = get_owner(&nft_contract_id, token_id).await;
-    assert_eq!(
-        owner,
-        msg::source(),
-        "Only owner has a right to add NFT to the marketplace"
-    );
-    // Transfer nft to marketplace
-    nft_transfer(&nft_contract_id, &owner, &exec::program_id(), token_id).await;
-    market
-        .items
-        .entry((nft_contract_id, token_id))
-        .and_modify(|item| {
-            item.price = price;
-            item.ft_contract_id = ft_contract_id
-        })
-        .or_insert(Item {
-            frozen: false,
-            token_id,
-            owner,
-            ft_contract_id,
-            price,
-            auction: None,
-            offers: HashMap::new(),
-        });
+        // Check owner
+        let owner = get_owner(&nft_contract_id, token_id).await;
+        assert_eq!(
+            owner, msg_src,
+            "Only owner has a right to add NFT to the marketplace"
+        );
+        // Transfer nft to marketplace
+        nft_transfer(&nft_contract_id, &owner, &exec::program_id(), token_id).await;
+        market.items.insert(
+            (nft_contract_id, token_id),
+            Item {
+                frozen: false,
+                token_id,
+                owner,
+                ft_contract_id,
+                price,
+                auction: None,
+                offers: HashMap::new(),
+            },
+        );
+    }
 }
 
 pub async fn remove_market_data(
@@ -106,19 +109,10 @@ pub async fn buy_item(
         panic!("Item is not on sale");
     };
 
-    let program_id = exec::program_id();
     if let Some(ft_contract_id) = item.ft_contract_id {
-        buy_item_with_fungible_tokens(
-            item,
-            nft_contract_id,
-            &ft_contract_id,
-            &program_id,
-            &msg_src,
-            token_id,
-        )
-        .await;
+        buy_item_with_fungible_tokens(item, &ft_contract_id, &msg_src).await;
     } else {
-        buy_item_with_value(item, nft_contract_id, &program_id, &msg_src, token_id).await;
+        buy_item_with_value(item, &msg_src).await;
     };
 }
 
@@ -188,11 +182,6 @@ pub async fn accept_offer(
         panic!("Offer should be accepted by owner");
     }
 
-    assert!(
-        item.price.is_none(),
-        "Remove the item from the sale when accepting the offer"
-    );
-
     let account = *item
         .offers
         .get(&(ft_contract_id, price))
@@ -200,8 +189,7 @@ pub async fn accept_offer(
 
     let program_id = exec::program_id();
     item.frozen = true;
-    // Transfer NFT to the buyer
-    nft_transfer(nft_contract_id, &program_id, &account, token_id).await;
+
     if let Some(ft_id) = ft_contract_id {
         // Transfer FT to the item owner
         transfer_tokens(&ft_id, &program_id, &item.owner, price.into()).await;
@@ -282,16 +270,11 @@ pub async fn create_auction(
         panic!("Auction is already exists");
     }
 
-    assert!(
-        item.price.is_none(),
-        "Remove the item from the sale before starting the auction"
-    );
-
     if ft_contract_id.is_some() {
         if min_price == 0 {
             panic!("Auction min price is zero");
         }
-    } else if min_price <= MINIMUM_VALUE.into() {
+    } else if min_price < MINIMUM_VALUE.into() {
         panic!("Price is less than the minimum value: {:?}", MINIMUM_VALUE);
     }
 
@@ -357,7 +340,6 @@ pub async fn settle_auction(
     nft_contract_id: &ContractId,
     token_id: TokenId,
 ) -> MarketEvent {
-    let program_id = exec::program_id();
     let item = market
         .items
         .get_mut(&(*nft_contract_id, token_id))
@@ -376,7 +358,6 @@ pub async fn settle_auction(
     let price = auction.current_price;
     item.frozen = true;
     let winner = if auction.current_winner.is_zero() {
-        nft_transfer(nft_contract_id, &exec::program_id(), &item.owner, token_id).await;
         item.auction = None;
         return MarketEvent::AuctionCancelled {
             nft_contract_id: *nft_contract_id,
@@ -398,8 +379,6 @@ pub async fn settle_auction(
         msg::send_with_gas(item.owner, "", 0, auction.current_price)
             .expect("Error in sending value");
     }
-
-    nft_transfer(nft_contract_id, &program_id, &winner, token_id).await;
 
     item.auction = None;
     item.owner = winner;

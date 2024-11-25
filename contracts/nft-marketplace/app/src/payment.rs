@@ -10,7 +10,7 @@ pub async fn transfer_tokens(
 ) {
     let request = vft_io::TransferFrom::encode_call(*sender, *recipient, value);
     msg::send_bytes_with_gas_for_reply(*ft_contract_id, request, 5_000_000_000, 0, 0)
-        .expect("Error in sending message to nft contract: `TransferFrom`")
+        .expect("Error in sending message to ft contract: `TransferFrom`")
         .await
-        .expect("Error in receiving message to nft contract: `TransferFrom`");
+        .expect("Error in receiving message to ft contract: `TransferFrom`");
 }

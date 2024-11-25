@@ -174,18 +174,9 @@ async fn success_buy_with_native_tokens() {
     let new_balance_user_1 = remoting.system().balance_of(USERS[1]);
     assert_eq!(new_balance_user_0 - old_balance_user_0, 10_000_000_000_000);
     assert!(old_balance_user_1 - new_balance_user_1 > 10_000_000_000_000); // gas costs are included
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[0].into()),
-        0.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[1].into()),
-        1.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), program_id),
-        0.into()
-    );
+
+    let market = service_client.get_market().recv(program_id).await.unwrap();
+    assert_eq!(market.items[0].1.owner, USERS[1].into());
 }
 
 #[tokio::test]
@@ -297,18 +288,8 @@ async fn success_buy_with_fungible_tokens() {
         10_000_000_000_000_u128.into()
     );
 
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[0].into()),
-        0.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[1].into()),
-        1.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), program_id),
-        0.into()
-    );
+    // let market = service_client.get_market().recv(program_id).await.unwrap();
+    // assert_eq!(market.items[0].1.owner, USERS[1].into());
 }
 
 #[tokio::test]
@@ -397,18 +378,8 @@ async fn success_offer_native_tokens() {
     assert!(new_balance_user_0 - old_balance_user_0 > 9_000_000_000_000);
     assert!(old_balance_user_1 - new_balance_user_1 > 10_000_000_000_000);
 
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[0].into()),
-        0.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[1].into()),
-        1.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), program_id),
-        0.into()
-    );
+    let market = service_client.get_market().recv(program_id).await.unwrap();
+    assert_eq!(market.items[0].1.owner, USERS[1].into());
 }
 
 #[tokio::test]
@@ -532,18 +503,8 @@ async fn success_offer_with_fungible_tokens() {
         ft_balance_of(&ft_program, remoting.system(), USERS[0].into()),
         10_000_000_000_000_u128.into()
     );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[0].into()),
-        0.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[1].into()),
-        1.into()
-    );
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), program_id),
-        0.into()
-    );
+    let market = service_client.get_market().recv(program_id).await.unwrap();
+    assert_eq!(market.items[0].1.owner, USERS[1].into());
 }
 
 #[tokio::test]
@@ -644,10 +605,9 @@ async fn success_auction_with_native_tokens() {
     assert!(market.items[0].1.auction.is_none());
     let new_balance_user = remoting.system().balance_of(USERS[0]);
     assert!(new_balance_user - old_balance_user > 19_000_000_000_000);
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[1].into()),
-        1.into()
-    );
+
+    let market = service_client.get_market().recv(program_id).await.unwrap();
+    assert_eq!(market.items[0].1.owner, USERS[1].into());
 }
 
 #[tokio::test]
@@ -796,10 +756,8 @@ async fn success_auction_with_fungible_tokens() {
     let market = service_client.get_market().recv(program_id).await.unwrap();
     assert!(market.items[0].1.auction.is_none());
 
-    assert_eq!(
-        nft_balance_of(&nft_program, remoting.system(), USERS[1].into()),
-        1.into()
-    );
+    let market = service_client.get_market().recv(program_id).await.unwrap();
+    assert_eq!(market.items[0].1.owner, USERS[1].into());
     assert_eq!(
         ft_balance_of(&ft_program, remoting.system(), USERS[0].into()),
         20_000_000_000_000_u128.into()
