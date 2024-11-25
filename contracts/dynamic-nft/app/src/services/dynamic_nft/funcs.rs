@@ -93,11 +93,11 @@ pub fn update_metadata(
     owner: ActorId,
     update_period: u32,
     updates_count: u32,
-) -> Result<()> {
+) -> Result<u64> {
     let current_owner = owner_by_id.get(&token_id).ok_or(Error::TokenDoesNotExist)?;
 
     if owner != *current_owner {
-        return Ok(());
+        return Err(Error::DeniedAccess);
     }
 
     let metadata = token_metadata_by_id
@@ -124,5 +124,5 @@ pub fn update_metadata(
         .expect("Error in sending message");
     }
 
-    Ok(())
+    Ok(metadata.current_media_index)
 }

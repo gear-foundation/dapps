@@ -51,7 +51,7 @@ pub enum Event {
     },
     MetadataUpdated {
         token_id: TokenId,
-        owner: ActorId,
+        current_media_index: u64,
     },
 }
 #[derive(Clone)]
@@ -205,7 +205,7 @@ impl ExtendedService {
             panic!("This message can only be sent by the programme")
         }
 
-        services::utils::panicking(|| {
+        let current_media_index = services::utils::panicking(|| {
             funcs::update_metadata(
                 Storage::owner_by_id(),
                 &mut self.get_mut().token_metadata_by_id,
@@ -215,8 +215,11 @@ impl ExtendedService {
                 updates_count,
             )
         });
-        self.notify_on(Event::MetadataUpdated { token_id, owner })
-            .expect("Notification Error");
+        self.notify_on(Event::MetadataUpdated {
+            token_id,
+            current_media_index,
+        })
+        .expect("Notification Error");
     }
 
     pub fn minters(&self) -> Vec<ActorId> {
