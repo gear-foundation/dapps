@@ -12,6 +12,7 @@ members = [
     "car-races/car-3",
     "car-races/wasm",
     "concert/wasm",
+    "dynamic-nft",
     "galactic-express/wasm",
     "multisig-wallet",
     "nft-marketplace",
