@@ -1,0 +1,17 @@
+[package]
+name = "nft-marketplace-client"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+mockall = { version = "0.12", optional = true }
+sails-rs.workspace = true
+
+[build-dependencies]
+nft-marketplace-app = { path = "../app" }
+sails-client-gen.workspace = true
+sails-idl-gen.workspace = true
+
+[features]
+mocks = ["sails-rs/mockall", "dep:mockall"]

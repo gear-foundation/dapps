@@ -2275,6 +2275,37 @@ dependencies = [
 ]
 
 [[package]]
+name = "extended-vnft"
+version = "1.1.0"
+source = "git+https://github.com/gear-foundation/standards/#a59ecb537ee3bb394baf18a720c5bb20c5c3afd1"
+dependencies = [
+ "extended-vnft-app",
+ "sails-idl-gen",
+ "sails-rs",
+]
+
+[[package]]
+name = "extended-vnft-app"
+version = "0.1.0"
+source = "git+https://github.com/gear-foundation/standards/#a59ecb537ee3bb394baf18a720c5bb20c5c3afd1"
+dependencies = [
+ "gstd",
+ "sails-rs",
+ "vnft-service",
+]
+
+[[package]]
+name = "extended-vnft-client"
+version = "0.1.0"
+source = "git+https://github.com/gear-foundation/standards/#a59ecb537ee3bb394baf18a720c5bb20c5c3afd1"
+dependencies = [
+ "extended-vnft-app",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+]
+
+[[package]]
 name = "fake-simd"
 version = "0.1.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4783,6 +4814,42 @@ name = "new_debug_unreachable"
 version = "1.0.6"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "650eef8c711430f1a879fdd01d4745a7deea475becfb90269c06775983bbf086"
+
+[[package]]
+name = "nft-marketplace"
+version = "1.1.0"
+dependencies = [
+ "extended-vft",
+ "extended-vft-client",
+ "extended-vnft",
+ "extended-vnft-client",
+ "nft-marketplace",
+ "nft-marketplace-app",
+ "nft-marketplace-client",
+ "sails-idl-gen",
+ "sails-rs",
+ "tokio",
+]
+
+[[package]]
+name = "nft-marketplace-app"
+version = "1.1.0"
+dependencies = [
+ "extended-vft-client",
+ "extended-vnft-client",
+ "sails-rs",
+]
+
+[[package]]
+name = "nft-marketplace-client"
+version = "1.1.0"
+dependencies = [
+ "mockall",
+ "nft-marketplace-app",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+]
 
 [[package]]
 name = "nix"

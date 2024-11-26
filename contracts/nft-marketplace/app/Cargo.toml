@@ -1,0 +1,10 @@
+[package]
+name = "nft-marketplace-app"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+sails-rs.workspace = true
+extended-vnft-client.workspace = true
+extended-vft-client.workspace = true
