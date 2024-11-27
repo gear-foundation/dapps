@@ -14,11 +14,11 @@ def get_latest_semver_tag(repo_url, prefix=''):
     response.raise_for_status()
     tags = response.json()
 
-    # Build the regex pattern based on the prefix
-    if prefix:
-        pattern = r'^' + re.escape(prefix) + r'\d+\.\d+\.\d+$'
-    else:
-        pattern = r'^\d+\.\d+\.\d+$'
+    # Print the raw tags to debug
+    print(f"Raw tags from {repo_url}: {tags}")
+    
+    # Build the regex pattern to account for the optional prefix (empty for gear, 'rs/' for sails)
+    pattern = r'^' + re.escape(prefix) + r'\d+\.\d+\.\d+$'
 
     # Filter out tags that are not valid semantic versions
     valid_tags = [
@@ -29,7 +29,7 @@ def get_latest_semver_tag(repo_url, prefix=''):
         print(f"No valid tags found in repository {repo_url}")
         return None
     
-    # Remove prefix from the tags and sort by version
+    # Remove prefix and sort by version
     valid_tags = [tag.lstrip(prefix) for tag in valid_tags]
     valid_tags.sort(key=lambda s: version.parse(s.lstrip('v')), reverse=True)
 
@@ -66,14 +66,12 @@ def update_wf_contracts(file_path, gear_version):
         file.write(content)
 
 if __name__ == "__main__":
-    # Get the latest GEAR version
-    gear_version = get_latest_semver_tag(GEAR_REPO_TAGS_URL).lstrip('v') if get_latest_semver_tag(GEAR_REPO_TAGS_URL) else None
+    # Get the latest GEAR version (no 'rs/' prefix)
+    gear_version = get_latest_semver_tag(GEAR_REPO_TAGS_URL).lstrip('v')
     
-    # Get the latest SAILS version, strip 'rs/' prefix
-    sails_version = get_latest_semver_tag(SAILS_REPO_TAGS_URL, prefix='rs/').lstrip('v') if get_latest_semver_tag(SAILS_REPO_TAGS_URL, prefix='rs/') else None
-
+    # Get the latest SAILS version with 'rs/' prefix
+    sails_version = get_latest_semver_tag(SAILS_REPO_TAGS_URL, prefix='rs/').lstrip('v')
+    
     if gear_version and sails_version:
         update_cargo_toml('../contracts/Cargo.toml', gear_version, sails_version)
         update_wf_contracts('../.github/workflows/contracts-tests.yml', gear_version)
-    else:
-        print("Error: Could not find valid GEAR or SAILS version.")
