@@ -14844,6 +14844,7 @@ __metadata:
     "@gear-js/api": "npm:0.38.1"
     "@gear-js/react-hooks": "npm:0.13.0"
     "@gear-js/ui": "npm:0.5.28"
+    "@gear-js/vara-ui": "npm:0.0.11"
     "@gear-js/wallet-connect": "npm:0.1.1"
     "@polkadot/api": "npm:11.0.2"
     "@polkadot/react-identicon": "npm:3.10.1"
@@ -24873,6 +24874,7 @@ __metadata:
   dependencies:
     "@gear-js/api": "npm:0.38.1"
     "@gear-js/react-hooks": "npm:0.13.0"
+    "@gear-js/ui": "npm:0.5.28"
     "@gear-js/vara-ui": "npm:0.0.11"
     "@gear-js/wallet-connect": "npm:0.1.1"
     "@polkadot/api": "npm:11.0.2"
