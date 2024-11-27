@@ -15,6 +15,9 @@ def get_latest_gear_version(repo_url):
     response.raise_for_status()
     tags = response.json()
 
+    # Print all tags to see the structure
+    print("GEAR tags:", [tag['name'] for tag in tags])
+
     # Filter out tags that are valid semantic versions
     valid_tags = [tag['name'] for tag in tags if re.match(r'^v?\d+\.\d+\.\d+$', tag['name'])]
 
@@ -27,6 +30,9 @@ def get_latest_sails_version(repo_url):
     response = requests.get(repo_url)
     response.raise_for_status()
     tags = response.json()
+
+    # Print all tags to see the structure
+    print("SAILS tags:", [tag['name'] for tag in tags])
 
     # Filter out tags that match 'rs/' prefix followed by semantic version
     valid_tags = [tag['name'] for tag in tags if re.match(r'^rs/\d+\.\d+\.\d+$', tag['name'])]
