@@ -18,7 +18,8 @@ const useHandleCalculateGas = (address: HexString, meta: ProgramMetadata | undef
   const alert = useAlert();
 
   return (initPayload: AnyJson, value?: AnyNumber | undefined): Promise<GasInfo> => {
-    const balance = Number(withoutCommas(balances?.freeBalance.toString() || ''));
+    const freeBalance = balances?.transferable || balances?.availableBalance;
+    const balance = Number(withoutCommas(freeBalance?.toString() || ''));
     const existentialDeposit = Number(withoutCommas(api?.existentialDeposit.toString() || ''));
 
     if (!balance || balance < existentialDeposit) {
