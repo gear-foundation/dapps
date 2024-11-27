@@ -26,7 +26,7 @@ def get_latest_gear_version(repo_url):
     return valid_tags[0] if valid_tags else None
 
 def get_latest_sails_version(repo_url):
-    """Fetch the latest SAILS version with 'rs/' prefix."""
+    """Fetch the latest SAILS version with 'rs/v' prefix."""
     response = requests.get(repo_url)
     response.raise_for_status()
     tags = response.json()
@@ -34,12 +34,12 @@ def get_latest_sails_version(repo_url):
     # Print all tags to see the structure
     print("SAILS tags:", [tag['name'] for tag in tags])
 
-    # Filter out tags that match 'rs/' prefix followed by semantic version
-    valid_tags = [tag['name'] for tag in tags if re.match(r'^rs/\d+\.\d+\.\d+$', tag['name'])]
+    # Filter out tags that match 'rs/v' prefix followed by semantic version
+    valid_tags = [tag['name'] for tag in tags if re.match(r'^rs/v\d+\.\d+\.\d+$', tag['name'])]
 
     if valid_tags:
         # Sort tags by version and return the latest
-        valid_tags.sort(key=lambda s: version.parse(s.lstrip('rs/').lstrip('v')), reverse=True)
+        valid_tags.sort(key=lambda s: version.parse(s.lstrip('rs/v')), reverse=True)
         return valid_tags[0]
     else:
         return None
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     gear_version = get_latest_gear_version(GEAR_REPO_TAGS_URL).lstrip('v')
     print(f"Latest GEAR version: {gear_version}")
 
-    # Get the latest SAILS version (from sails repo with 'rs/' prefix)
+    # Get the latest SAILS version (from sails repo with 'rs/v' prefix)
     sails_version = get_latest_sails_version(SAILS_REPO_TAGS_URL)
     print(f"Latest SAILS version: {sails_version}")
 
