@@ -25,6 +25,10 @@ def get_latest_semver_tag(repo_url, prefix=''):
         tag['name'] for tag in tags if re.match(pattern, tag['name'])
     ]
     
+    if not valid_tags:
+        print(f"No valid tags found in repository {repo_url}")
+        return None
+    
     # Remove prefix from the tags and sort by version
     valid_tags = [tag.lstrip(prefix) for tag in valid_tags]
     valid_tags.sort(key=lambda s: version.parse(s.lstrip('v')), reverse=True)
@@ -63,11 +67,13 @@ def update_wf_contracts(file_path, gear_version):
 
 if __name__ == "__main__":
     # Get the latest GEAR version
-    gear_version = get_latest_semver_tag(GEAR_REPO_TAGS_URL).lstrip('v')
+    gear_version = get_latest_semver_tag(GEAR_REPO_TAGS_URL).lstrip('v') if get_latest_semver_tag(GEAR_REPO_TAGS_URL) else None
     
     # Get the latest SAILS version, strip 'rs/' prefix
-    sails_version = get_latest_semver_tag(SAILS_REPO_TAGS_URL, prefix='rs/').lstrip('v')
-    
+    sails_version = get_latest_semver_tag(SAILS_REPO_TAGS_URL, prefix='rs/').lstrip('v') if get_latest_semver_tag(SAILS_REPO_TAGS_URL, prefix='rs/') else None
+
     if gear_version and sails_version:
         update_cargo_toml('../contracts/Cargo.toml', gear_version, sails_version)
         update_wf_contracts('../.github/workflows/contracts-tests.yml', gear_version)
+    else:
+        print("Error: Could not find valid GEAR or SAILS version.")
