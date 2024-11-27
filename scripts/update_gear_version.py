@@ -9,32 +9,14 @@ SAILS_REPO_TAGS_URL = "https://api.github.com/repos/gear-tech/sails/tags"
 # ABSOLUTE PATH to cargo file
 CARGO_FILE_PATH = '../contracts/Cargo.toml'
 
-def get_latest_gear_version(repo_url):
-    """Fetch the latest GEAR version, assuming tags are in standard semantic version format."""
+def get_latest_semver_tag(repo_url):
     response = requests.get(repo_url)
     response.raise_for_status()
     tags = response.json()
-    
-    # Filter tags that match a standard semantic version
+    # Filter out tags that are not valid semantic versions
     valid_tags = [tag['name'] for tag in tags if re.match(r'^v?\d+\.\d+\.\d+$', tag['name'])]
-    
-    # Sort the valid tags by version and return the latest
+    # Sort the valid tags by version
     valid_tags.sort(key=lambda s: version.parse(s.lstrip('v')), reverse=True)
-    
-    return valid_tags[0] if valid_tags else None
-
-def get_latest_sails_version(repo_url):
-    """Fetch the latest SAILS version, considering tags with the 'rs/' prefix."""
-    response = requests.get(repo_url)
-    response.raise_for_status()
-    tags = response.json()
-    
-    # Filter tags with 'rs/' prefix followed by a semantic version
-    valid_tags = [tag['name'] for tag in tags if re.match(r'^rs/\d+\.\d+\.\d+$', tag['name'])]
-    
-    # Sort the valid tags by version and return the latest
-    valid_tags.sort(key=lambda s: version.parse(s.lstrip('rs/').lstrip('v')), reverse=True)
-    
     return valid_tags[0] if valid_tags else None
 
 def update_cargo_toml(file_path, gear_version, sails_version):
@@ -68,12 +50,12 @@ def update_wf_contracts(file_path, gear_version):
         file.write(content)
 
 if __name__ == "__main__":
-    # Get the latest GEAR version (from gear repo)
-    gear_version = get_latest_gear_version(GEAR_REPO_TAGS_URL).lstrip('v')
+    # Get the latest GEAR version
+    gear_version = get_latest_semver_tag(GEAR_REPO_TAGS_URL).lstrip('v')
     
-    # Get the latest SAILS version (from sails repo with 'rs/' prefix)
-    sails_version = get_latest_sails_version(SAILS_REPO_TAGS_URL).lstrip('rs/')
-
+    # Get the latest SAILS version
+    sails_version = get_latest_semver_tag(SAILS_REPO_TAGS_URL).lstrip('v')
+    
     if gear_version and sails_version:
         update_cargo_toml('../contracts/Cargo.toml', gear_version, sails_version)
         update_wf_contracts('../.github/workflows/contracts-tests.yml', gear_version)
