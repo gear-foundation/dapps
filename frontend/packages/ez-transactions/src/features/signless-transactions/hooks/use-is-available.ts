@@ -12,7 +12,7 @@ function useIsAvailable(requiredBalance: number, isSessionActive: boolean) {
     if (isSessionActive) return setIsAvailable(true);
     if (!balances) return setIsAvailable(false);
 
-    const freeBalance = balances.freeBalance.toString();
+    const freeBalance = (balances.transferable || balances.availableBalance).toString();
     const result = getChainBalanceValue(requiredBalance).isLessThanOrEqualTo(freeBalance);
 
     setIsAvailable(result);
