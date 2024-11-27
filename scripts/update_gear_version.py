@@ -13,13 +13,22 @@ def get_latest_semver_tag(repo_url, prefix=''):
     response = requests.get(repo_url)
     response.raise_for_status()
     tags = response.json()
+
+    # Build the regex pattern based on the prefix
+    if prefix:
+        pattern = r'^' + re.escape(prefix) + r'\d+\.\d+\.\d+$'
+    else:
+        pattern = r'^\d+\.\d+\.\d+$'
+
     # Filter out tags that are not valid semantic versions
     valid_tags = [
-        tag['name'] for tag in tags if re.match(r'^' + prefix + r'?\d+\.\d+\.\d+$', tag['name'])
+        tag['name'] for tag in tags if re.match(pattern, tag['name'])
     ]
+    
     # Remove prefix from the tags and sort by version
     valid_tags = [tag.lstrip(prefix) for tag in valid_tags]
     valid_tags.sort(key=lambda s: version.parse(s.lstrip('v')), reverse=True)
+
     return valid_tags[0] if valid_tags else None
 
 def update_cargo_toml(file_path, gear_version, sails_version):
