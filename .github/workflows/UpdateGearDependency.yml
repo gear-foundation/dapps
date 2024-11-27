@@ -42,49 +42,50 @@ jobs:
         python update_gear_version.py
         if ! git diff --exit-code; then
           echo "Changes detected in the repository after running the update_gear_version.py script."
-
           # Configure git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
           # Output changes for logging
           echo "The following changes were made:"
           git diff
-
           # Create a new branch
           branch_name="update-gear-dependencies-$(date +%Y%m%d%H%M%S)"
           echo "Creating a new branch: $branch_name"
           git checkout -b $branch_name
-
           # Remove and update Cargo.lock file
           echo "Removing contracts/Cargo.lock"
           rm -f ../contracts/Cargo.lock
           echo "Updating contracts/Cargo.lock"
-          cd ../contracts && cargo generate-lockfile
-
+          
+          # Attempt to update Cargo.lock and capture potential error
+          cargo_error=$(cd ../contracts && cargo generate-lockfile || echo "Dependency conflict detected") # Capture error if it occurs
+          
           # Stage and commit changes
           echo "Staging changed files."
           git add Cargo.toml
           git add ../.github/workflows/contracts-tests.yml
           git add Cargo.lock
-
           echo "Committing changes with message: 'Update GEAR dependencies to latest tag in contracts'"
-          git commit -m "Update GEAR dependencies to latest tag in contracts"
-
+          git commit -m "Update GEAR dependencies to latest tag in contracts" || true  # Ignore commit error
+          
           # Check if there's an open PR with the label 'auto-update-gear'
           open_prs=$(gh pr list --label "auto-update-gear" --state open --json number --jq '.[].number')
-
           if [ -n "$open_prs" ]; then
             echo "An open pull request with the label 'auto-update-gear' already exists. Exiting."
             exit 0
           fi
 
+          # Create the PR message including information about the ignored error
+          pr_message="Automatically created pull request to update GEAR dependencies"
+          if [ "$cargo_error" == "Dependency conflict detected" ]; then
+            pr_message="$pr_message. Note: A dependency conflict was detected and ignored."
+          fi
+
           # If no matching PR was found, push the branch and create a new PR
           echo "Pushing the new branch: $branch_name"
           git push origin $branch_name
-
           echo "Creating a new pull request."
-          gh pr create --title "Update GEAR dependencies" --body "Automatically created pull request to update GEAR dependencies" --base master --head $branch_name --label "auto-update-gear"
+          gh pr create --title "Update GEAR dependencies" --body "$pr_message" --base master --head $branch_name --label "auto-update-gear"
         else
           echo "No changes were detected after running the update_gear_version.py script."
         fi
