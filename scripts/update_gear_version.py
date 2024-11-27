@@ -13,17 +13,10 @@ def get_latest_semver_tag(repo_url, prefix=''):
     response = requests.get(repo_url)
     response.raise_for_status()
     tags = response.json()
-
-    # Print the raw tags to debug
-    print(f"Raw tags from {repo_url}: {tags}")
     
-    # Build the regex pattern to account for the optional prefix (empty for gear, 'rs/' for sails)
+    # Filter out tags that are not valid semantic versions with the given prefix
     pattern = r'^' + re.escape(prefix) + r'\d+\.\d+\.\d+$'
-
-    # Filter out tags that are not valid semantic versions
-    valid_tags = [
-        tag['name'] for tag in tags if re.match(pattern, tag['name'])
-    ]
+    valid_tags = [tag['name'] for tag in tags if re.match(pattern, tag['name'])]
     
     if not valid_tags:
         print(f"No valid tags found in repository {repo_url}")
@@ -66,10 +59,10 @@ def update_wf_contracts(file_path, gear_version):
         file.write(content)
 
 if __name__ == "__main__":
-    # Get the latest GEAR version (no 'rs/' prefix)
+    # Get the latest GEAR version (without prefix)
     gear_version = get_latest_semver_tag(GEAR_REPO_TAGS_URL).lstrip('v')
     
-    # Get the latest SAILS version with 'rs/' prefix
+    # Get the latest SAILS version (with 'rs/' prefix)
     sails_version = get_latest_semver_tag(SAILS_REPO_TAGS_URL, prefix='rs/').lstrip('v')
     
     if gear_version and sails_version:
