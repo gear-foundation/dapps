@@ -9,13 +9,16 @@ SAILS_REPO_TAGS_URL = "https://api.github.com/repos/gear-tech/sails/tags"
 # ABSOLUTE PATH to cargo file
 CARGO_FILE_PATH = '../contracts/Cargo.toml'
 
-def get_latest_semver_tag(repo_url):
+def get_latest_semver_tag(repo_url, prefix=''):
     response = requests.get(repo_url)
     response.raise_for_status()
     tags = response.json()
     # Filter out tags that are not valid semantic versions
-    valid_tags = [tag['name'] for tag in tags if re.match(r'^v?\d+\.\d+\.\d+$', tag['name'])]
-    # Sort the valid tags by version
+    valid_tags = [
+        tag['name'] for tag in tags if re.match(r'^' + prefix + r'?\d+\.\d+\.\d+$', tag['name'])
+    ]
+    # Remove prefix from the tags and sort by version
+    valid_tags = [tag.lstrip(prefix) for tag in valid_tags]
     valid_tags.sort(key=lambda s: version.parse(s.lstrip('v')), reverse=True)
     return valid_tags[0] if valid_tags else None
 
@@ -53,8 +56,8 @@ if __name__ == "__main__":
     # Get the latest GEAR version
     gear_version = get_latest_semver_tag(GEAR_REPO_TAGS_URL).lstrip('v')
     
-    # Get the latest SAILS version
-    sails_version = get_latest_semver_tag(SAILS_REPO_TAGS_URL).lstrip('v')
+    # Get the latest SAILS version, strip 'rs/' prefix
+    sails_version = get_latest_semver_tag(SAILS_REPO_TAGS_URL, prefix='rs/').lstrip('v')
     
     if gear_version and sails_version:
         update_cargo_toml('../contracts/Cargo.toml', gear_version, sails_version)
