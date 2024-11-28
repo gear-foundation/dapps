@@ -1,0 +1,16 @@
+[package]
+name = "counter-client"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mockall = { version = "0.12", optional = true }
+sails-rs = "0.7.0"
+
+[build-dependencies]
+counter-app = { path = "../app" }
+sails-client-gen = "0.7.0"
+sails-idl-gen = "0.7.0"
+
+[features]
+mocks = ["sails-rs/mockall", "dep:mockall"]

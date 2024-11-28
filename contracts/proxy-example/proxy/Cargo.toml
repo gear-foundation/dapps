@@ -1,0 +1,23 @@
+[package]
+name = "proxy"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+proxy-app = { path = "app" }
+
+[build-dependencies]
+proxy-app = { path = "app" }
+sails-rs = { version = "0.7.0", features = ["wasm-builder"] }
+sails-idl-gen = "0.7.0"
+
+[dev-dependencies]
+proxy = { path = ".", features = ["wasm-binary"] }
+proxy-client = { path = "client" }
+sails-rs = { version = "0.7.0", features = ["gtest"] }
+tokio = { version = "1.41", features = ["rt", "macros"] }
+counter = { path ="../counter", features = ["wasm-binary"] }
+counter-client = { path = "../counter/client" }
+
+[features]
+wasm-binary = []
