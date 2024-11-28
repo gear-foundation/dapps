@@ -1,4 +1,7 @@
-use sails_rs::{calls::*, gtest::{calls::*, System}};
+use sails_rs::{
+    calls::*,
+    gtest::{calls::*, System},
+};
 
 use ping_pong_client::traits::*;
 
@@ -26,11 +29,7 @@ async fn do_ping() {
 
     let mut service_client = ping_pong_client::PingPong::new(remoting.clone());
 
-    let result = service_client
-        .ping()
-        .send_recv(program_id)
-        .await
-        .unwrap();
+    let result = service_client.ping().send_recv(program_id).await.unwrap();
 
     assert_eq!(result, "Pong!".to_string());
 
