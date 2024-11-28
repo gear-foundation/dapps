@@ -1,16 +1,19 @@
-[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=multisig-wallet/https://github.com/gear-foundation/dapps)
-[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts.yml?logo=rust&label=docs)](https://dapps.gear.rs/multisig_wallet_io)
+## The **Multisig-Wallet** program
 
-# [Multisig wallet](https://wiki.gear-tech.io/docs/examples/DeFi/multisig-wallet)
+A detailed description of the project can be found on the [wiki](https://wiki.vara.network/docs/examples/DeFi/multisig-wallet).
+
+⚙️ **Note**: The project code is developed using the [Sails](https://github.com/gear-tech/sails) framework.
+
 
 ### 🏗️ Building
 
 ```sh
-cargo b -r -p "multisig-wallet*"
+cargo b -r -p "multisig-wallet"
 ```
 
 ### ✅ Testing
 
+Run all tests:
 ```sh
-cargo t -r -p "multisig-wallet*"
+cargo t -r -p "multisig-wallet"
 ```

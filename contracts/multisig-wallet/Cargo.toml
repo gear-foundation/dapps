@@ -2,17 +2,22 @@
 name = "multisig-wallet"
 version.workspace = true
 edition.workspace = true
-publish.workspace = true
+license.workspace = true
 
 [dependencies]
-gstd.workspace = true
-multisig-wallet-io.workspace = true
-primitive-types.workspace = true
-
-[dev-dependencies]
-gstd.workspace = true
-gtest.workspace = true
+multisig-wallet-app = { path = "app" }
 
 [build-dependencies]
-multisig-wallet-io.workspace = true
-gear-wasm-builder.workspace = true
+multisig-wallet-app = { path = "app" }
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
+
+[dev-dependencies]
+multisig-wallet = { path = ".", features = ["wasm-binary"] }
+multisig-wallet-client = { path = "client" }
+sails-rs = { workspace = true, features = ["gtest"] }
+tokio = { workspace = true, features = ["rt", "macros"] }
+gtest.workspace = true
+
+[features]
+wasm-binary = []
