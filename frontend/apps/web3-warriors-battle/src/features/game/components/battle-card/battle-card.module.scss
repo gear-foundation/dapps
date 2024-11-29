@@ -1,0 +1,91 @@
+.wrapper {
+  background: #fff;
+
+  display: flex;
+  gap: 16px;
+  width: 456px;
+  border: 1.5px solid #0b0b0b;
+
+  &.left {
+    padding: 9px 21px 9px 23px;
+    border-radius: 10px 0 0 10px;
+    border-right: 0.75px solid #0b0b0b;
+  }
+  &.right {
+    padding: 9px 23px 9px 21px;
+    border-radius: 0 10px 10px 0;
+    border-left: 0.75px solid #0b0b0b;
+  }
+}
+
+.info {
+  flex: 1;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+
+.winsCount {
+  height: 26px;
+  padding: 5px 8px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  background: #00ffc412;
+  color: #0ed3a3;
+}
+
+.healthCount {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 72px;
+  margin-right: 16px;
+}
+
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 17px;
+  margin-top: 12px;
+  margin-bottom: 4px;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 60px;
+}
+
+.attackStat {
+  width: 52px;
+}
+
+.icon {
+  color: #cfcfcf;
+}
+
+.attack {
+  color: #db4242;
+}
+
+.reflect {
+  color: #9cc53c;
+}
+
+.dodgeStat {
+  gap: 2px;
+  width: 91px;
+}
+
+.dodge {
+  color: #ffad33;
+}

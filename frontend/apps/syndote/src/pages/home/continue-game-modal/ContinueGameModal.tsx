@@ -4,7 +4,7 @@ import styles from './ContinueGameModal.module.scss';
 import { GameDetails } from 'components/layout/game-details';
 import { ReactComponent as VaraSVG } from 'assets/images/icons/vara-coin.svg';
 import { ReactComponent as TVaraSVG } from 'assets/images/icons/tvara-coin.svg';
-import { useAccountDeriveBalancesAll, useApi, useBalanceFormat } from '@gear-js/react-hooks';
+import { useApi } from '@gear-js/react-hooks';
 
 type Props = {
   onReserve: () => void;
@@ -12,13 +12,10 @@ type Props = {
 };
 
 function ContinueGameModal({ onReserve, onClose }: Props) {
-  const { isApiReady } = useApi();
-  const { getFormattedBalance } = useBalanceFormat();
-  const balances = useAccountDeriveBalancesAll();
-  const balance =
-    isApiReady && balances?.freeBalance ? getFormattedBalance(balances.freeBalance.toString()) : undefined;
+  const { api } = useApi();
 
-  const VaraSvg = balance?.unit?.toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />;
+  const VaraSvg = api?.registry.chainTokens[0].toLowerCase() === 'vara' ? <VaraSVG /> : <TVaraSVG />;
+
   const items = [
     {
       name: 'Required amount of gas  required for the game',

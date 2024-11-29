@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { WalletNew as Wallet } from '@dapps-frontend/ui';
+import { Wallet } from '@dapps-frontend/ui';
 import { Button } from '@gear-js/vara-ui';
 import { useAtom } from 'jotai';
 import { IS_LOADING } from 'atoms';
@@ -8,10 +8,6 @@ import { GameIntro } from '../game-intro';
 import styles from './RequestGame.module.scss';
 import { CreateGameForm } from '../create-game-form';
 import { JoinGameForm } from '../join-game-form';
-
-export interface ContractFormValues {
-  [key: string]: string;
-}
 
 type Status = 'creating' | 'joining' | null;
 

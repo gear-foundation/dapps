@@ -1,16 +1,17 @@
-[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=vara-man/https://github.com/gear-foundation/dapps)
-[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts.yml?logo=rust&label=docs)](https://dapps.gear.rs/vara_man_io)
+# Sails Tic-Tac-Toe
 
-# Tic-Tac-Toe
+A detailed description of the project can be found on the [wiki](https://wiki.vara.network/docs/examples/Gaming/tictactoe).
+
+⚙️ **Note**: The project code is developed using the [Sails](https://github.com/gear-tech/sails) framework.
 
 ### 🏗️ Building
 
 ```sh
-cargo b -p "tic-tac-toe*"
+cargo b -r -p "tic-tac-toe"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "tic-tac-toe*"
+cargo t -r -p "tic-tac-toe-app"
 ```

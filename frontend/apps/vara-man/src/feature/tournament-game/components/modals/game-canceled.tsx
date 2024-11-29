@@ -10,7 +10,7 @@ export const GameCanceledModal = () => {
         <h2 className="typo-h2">The game has been canceled by the administrator</h2>
         <div className="flex flex-col gap-5 mt-5">
           <p className="text-[#555756]">
-            Game administrator Samovit has ended the game. All spent VARA tokens for the entry fee will be refunded.
+            Game administrator has ended the game. All spent VARA tokens for the entry fee will be refunded.
           </p>
           <div className="flex gap-10">
             <Button color="grey" text="OK" className="w-1/3" onClick={() => setPreviousGame(null)} />

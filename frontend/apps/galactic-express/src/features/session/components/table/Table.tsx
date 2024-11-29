@@ -22,7 +22,7 @@ function Table({ data, userId }: Props) {
     ));
 
   const getBody = () =>
-    data?.map(({ participant, name, deadRound, fuelLeft, lastAltitude, payload }, index) => (
+    data?.map(({ participant, name, deadRound, fuelLeft, lastAltitude, payload, haltReason }, index) => (
       <Fragment key={participant}>
         <div
           className={cx(styles.bodyCell, styles.firstColumn)}
@@ -36,7 +36,8 @@ function Table({ data, userId }: Props) {
         <div className={styles.bodyCell}>{deadRound ? <CrossSVG /> : <CheckSVG />}</div>
         <div className={styles.bodyCell}>{fuelLeft}</div>
         <div className={styles.bodyCell}>{lastAltitude}</div>
-        <div className={cx(styles.bodyCell, styles.lastColumn)}>{payload}</div>
+        <div className={styles.bodyCell}>{payload}</div>
+        <div className={cx(styles.bodyCell, styles.lastColumn)}>{haltReason || ' - '}</div>
       </Fragment>
     ));
 

@@ -26,7 +26,7 @@ impl Battleship {
         duration: u64,
         allowed_actions: Vec<ActionsForSession>,
     ) -> Result<BattleshipReply, BattleshipError> {
-        if duration < MINIMUM_SESSION_SURATION_MS {
+        if duration < MINIMUM_SESSION_DURATION_MS {
             return Err(BattleshipError::DurationIsSmall);
         }
 
@@ -44,7 +44,6 @@ impl Battleship {
         }
 
         let expires = block_timestamp + duration;
-
         let number_of_blocks = u32::try_from(duration.div_ceil(self.config.block_duration_ms))
             .expect("Duration is too large");
 
