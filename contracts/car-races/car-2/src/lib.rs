@@ -1,50 +1,14 @@
 #![no_std]
-use codec::{Decode, Encode};
-use gstd::{collections::BTreeMap, exec, msg, prelude::*, ActorId};
 
-#[derive(Encode, Decode, TypeInfo)]
-pub enum CarAction {
-    YourTurn(BTreeMap<ActorId, Car>),
-}
+#[cfg(target_arch = "wasm32")]
+pub use car_strategy_app_2::wasm::*;
 
-#[derive(Encode, Decode, TypeInfo, Clone)]
-pub struct Car {
-    pub balance: u32,
-    pub position: u32,
-    pub speed: u32,
-    pub penalty: u8,
-}
+#[cfg(feature = "wasm-binary")]
+#[cfg(not(target_arch = "wasm32"))]
+pub use code::WASM_BINARY_OPT as WASM_BINARY;
 
-#[derive(Encode, Decode, TypeInfo)]
-pub enum StrategyAction {
-    BuyAcceleration,
-    BuyShell,
-    Skip,
-}
-
-#[no_mangle]
-extern fn handle() {
-    let random_choice = get_random_value(10);
-    match random_choice {
-        0..=2 => {
-            msg::reply(StrategyAction::BuyAcceleration, 0).expect("Error in sending a message");
-        }
-        3..=9 => {
-            msg::reply(StrategyAction::BuyShell, 0).expect("Error in sending a message");
-        }
-        _ => {
-            unreachable!()
-        }
-    }
-}
-
-static mut SEED: u8 = 0;
-
-pub fn get_random_value(range: u8) -> u8 {
-    let seed = unsafe { SEED };
-    unsafe { SEED = SEED.wrapping_add(1) };
-    let mut random_input: [u8; 32] = exec::program_id().into();
-    random_input[0] = random_input[0].wrapping_add(seed);
-    let (random, _) = exec::random(random_input).expect("Error in getting random number");
-    random[0] % range
+#[cfg(feature = "wasm-binary")]
+#[cfg(not(target_arch = "wasm32"))]
+mod code {
+    include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 }

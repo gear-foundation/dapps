@@ -1,25 +1,21 @@
 import { useEffect } from 'react';
 import clsx from 'clsx';
-import { HexString, UserMessageSent } from '@gear-js/api';
+import { HexString } from '@gear-js/api';
 import { Button } from '@gear-js/ui';
 import { useAtom, useSetAtom } from 'jotai';
 import { CURRENT_GAME_ATOM, REGISTRATION_STATUS } from 'atoms';
-import { ADDRESS } from 'consts';
-import { Bytes } from '@polkadot/types';
-import { getVaraAddress, useAccount, useApi } from '@gear-js/react-hooks';
-import { UnsubscribePromise } from '@polkadot/api/types';
-import src from 'assets/images/earth.gif';
+import { getVaraAddress, useAccount } from '@gear-js/react-hooks';
+import earthGif from 'assets/images/earth.gif';
 import { Container } from 'components';
-import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { Participant, Session } from '../../types';
 import { Traits } from '../traits';
 import { Form } from '../form';
-import styles from './Start.module.scss';
-import { useEscrowMetadata } from '../../api';
 import { ParticipantsTable } from '../participants-table';
 import { SuccessfullyRegisteredInfo } from '../successfully-registered-info';
 import { Warning } from '../warning';
 import { CancelGameButton } from '../cancel-game-button/CancelGameButton';
+import { useEventGameCanceledSubscription, useEventPlayerDeletedSubscription } from 'app/utils';
+import styles from './Start.module.scss';
 
 type Props = {
   participants: Participant[];
@@ -31,19 +27,8 @@ type Props = {
   bid: string | undefined;
 };
 
-type DecodedReplyOk = {
-  playerId: string;
-};
-
-type DecodedReply = {
-  Err: string;
-  Ok: Record<string, DecodedReplyOk> & 'GameCanceled';
-};
-
 function Start({ participants, session, isUserAdmin, userAddress, adminAddress, bid, adminName }: Props) {
-  const { api } = useApi();
   const { account } = useAccount();
-  const { programId } = useDnsProgramIds();
   const { decodedAddress } = account || {};
   const [registrationStatus, setRegistrationStatus] = useAtom(REGISTRATION_STATUS);
   const setCurrentGame = useSetAtom(CURRENT_GAME_ATOM);
@@ -52,70 +37,12 @@ function Start({ participants, session, isUserAdmin, userAddress, adminAddress, 
   const isRegistered = decodedAddress ? !!participants.some((participant) => participant[0] === decodedAddress) : false;
   const containerClassName = clsx(styles.container, decodedAddress ? styles.smallMargin : styles.largeMargin);
 
-  const meta = useEscrowMetadata();
-  const getDecodedPayload = (payload: Bytes) => {
-    if (meta?.types.handle.output) {
-      return meta.createType(meta.types.handle.output, payload).toHuman();
-    }
-  };
-
-  const getDecodedReply = (payload: Bytes): DecodedReply => {
-    const decodedPayload = getDecodedPayload(payload);
-
-    return decodedPayload as DecodedReply;
-  };
+  useEventGameCanceledSubscription(isUserAdmin);
+  useEventPlayerDeletedSubscription();
 
   const handleGoBack = () => {
-    setCurrentGame('');
+    setCurrentGame(null);
   };
-
-  const handleEvents = ({ data }: UserMessageSent) => {
-    const { message } = data;
-    const { destination, source, payload } = message;
-    const isOwner = destination.toHex() === account?.decodedAddress;
-    const isEscrowProgram = source.toHex() === programId;
-
-    if (isOwner && isEscrowProgram) {
-      const reply = getDecodedReply(payload);
-
-      if (reply?.Err) {
-        if (reply.Err === 'NotEnoughParticipants' || reply.Err === 'MaximumPlayersReached') {
-          setRegistrationStatus(reply.Err);
-          return;
-        }
-
-        setRegistrationStatus('error');
-      }
-    }
-
-    if (destination.toHex() === adminAddress) {
-      const reply = getDecodedReply(payload);
-
-      if (reply.Ok) {
-        if (reply.Ok.PlayerDeleted?.playerId === account?.decodedAddress) {
-          setRegistrationStatus('PlayerRemoved');
-        }
-
-        if (reply.Ok === 'GameCanceled' && !isUserAdmin) {
-          setRegistrationStatus('GameCanceled');
-        }
-      }
-    }
-  };
-
-  useEffect(() => {
-    let unsub: UnsubscribePromise | undefined;
-
-    if (api && decodedAddress && meta) {
-      unsub = api.gearEvents.subscribeToGearEvent('UserMessageSent', handleEvents);
-    }
-
-    return () => {
-      if (unsub) unsub.then((unsubCallback) => unsubCallback());
-    };
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [api, decodedAddress, meta]);
 
   useEffect(() => {
     if (registrationStatus === 'NotEnoughParticipants' && participants.length) {
@@ -187,7 +114,7 @@ function Start({ participants, session, isUserAdmin, userAddress, adminAddress, 
 
       <div className={styles.imageWrapper}>
         {isRegistered && !isUserAdmin && <CancelGameButton isAdmin={isUserAdmin} participants={participants} />}
-        <img src={src} alt="earth" className={styles.image} />
+        <img src={earthGif} alt="earth" className={styles.image} />
       </div>
     </div>
   );
