@@ -1,0 +1,67 @@
+.background {
+  margin-bottom: 180px;
+}
+
+.card {
+  position: absolute;
+  width: 620px;
+  top: 48px;
+  right: 120px;
+}
+
+.character {
+  position: absolute;
+  width: 620px;
+  top: 258px;
+  left: 211px;
+}
+
+.tutorial {
+  position: absolute;
+  width: 526px;
+  top: 524px;
+  left: 120px;
+}
+
+.redButton {
+  background: #eb5757;
+  color: #ffffff;
+  &:hover {
+    background: #eb5757;
+  }
+}
+
+.buttons {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  & > * {
+    flex: 1;
+  }
+}
+
+.tutorialButton {
+  max-width: 258px;
+}
+
+.info {
+  display: flex;
+  gap: 6px;
+  color: #58696eb2;
+}
+
+.footer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.leaveModal {
+  width: 508px;
+}
+
+.cancelTournamentModal {
+  width: 650px;
+}

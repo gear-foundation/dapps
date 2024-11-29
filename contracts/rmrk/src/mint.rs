@@ -1,5 +1,5 @@
 use crate::*;
-use gstd::{msg, ActorId};
+use gstd::{debug, msg, ActorId};
 
 impl RMRKToken {
     /// Mints token that will belong to another token in another RMRK contract.
@@ -20,16 +20,20 @@ impl RMRKToken {
         tx_manager: &mut TxManager,
         args: (ActorId, TokenId, TokenId),
     ) -> Result<RMRKReply, RMRKError> {
+        debug!("HERE");
         let state = tx_manager.get_state(msg::id());
         let (parent_id, parent_token_id, token_id) = args;
+        debug!("HERE {:?}", state);
         match state {
             TxState::Initial => {
+                debug!("HERE 1");
                 self.token_already_exists(token_id)?;
                 let msg_id = add_child_msg(&parent_id, parent_token_id, token_id);
                 tx_manager.set_tx_state(TxState::MsgAddChildSent, msg_id);
                 exec::wait_for(5);
             }
             TxState::ReplyAddChildReceived => {
+                debug!("HERE 2");
                 self.internal_mint(token_id, &parent_id, Some(parent_token_id));
                 tx_manager.set_tx_state(TxState::Completed, MessageId::zero());
                 Ok(RMRKReply::MintedToNft)

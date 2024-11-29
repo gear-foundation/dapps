@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import styles from './game-info-player-mark.module.scss';
 import { GameMark } from '../game-mark';
-import type { Mark } from '../../types';
+import { Mark } from '@/app/utils';
 import { variantsPlayerMark } from '../../variants';
 import { BaseComponentProps } from '@/app/types';
 

@@ -5,6 +5,7 @@ import {
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { Alert, alertStyles } from '@gear-js/ui';
+import { QueryProvider } from '@dapps-frontend/ui';
 import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { IPFSProvider } from 'context';
@@ -26,7 +27,7 @@ function AlertProvider({ children }: ProviderProps) {
   );
 }
 
-const providers = [BrowserRouter, AlertProvider, IPFSProvider, ApiProvider, AccountProvider];
+const providers = [BrowserRouter, AlertProvider, IPFSProvider, ApiProvider, AccountProvider, QueryProvider];
 
 function withProviders(Component: ComponentType) {
   return () => providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);

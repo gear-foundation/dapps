@@ -1,9 +1,0 @@
-[package]
-name = "decentralized-git-user-io"
-version.workspace = true
-edition.workspace = true
-publish.workspace = true
-
-[dependencies]
-gmeta.workspace = true
-gstd.workspace = true
