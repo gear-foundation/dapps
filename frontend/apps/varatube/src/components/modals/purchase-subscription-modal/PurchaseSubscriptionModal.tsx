@@ -3,11 +3,10 @@ import { useForm as useMantineForm } from '@mantine/form';
 import { UseFormInput } from '@mantine/form/lib/use-form';
 import { ChangeEvent } from 'react';
 import styles from './PurchaseSubscriptionModal.module.scss';
-import { periods } from 'consts';
+import { initialValues, periods } from 'consts';
+import { FormValues } from 'types';
 
-const initialValues = { isRenewal: true, period: periods[0].value };
-
-type Props = { disabledSubmitButton: boolean; close: () => void; onSubmit: (values: typeof initialValues) => void };
+type Props = { disabledSubmitButton: boolean; close: () => void; onSubmit: (values: FormValues) => void };
 
 const useForm = (input: UseFormInput<Record<string, unknown>>) => {
   const form = useMantineForm(input);

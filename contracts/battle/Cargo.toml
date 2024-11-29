@@ -1,0 +1,24 @@
+[package]
+name = "battle"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+battle-app = { path = "app" }
+
+[dev-dependencies]
+battle = { path = ".", features = ["wasm-binary"] }
+battle-client = { path = "client" }
+sails-rs = { workspace = true, features = ["gtest"] }
+gtest.workspace = true
+gstd.workspace = true
+tokio = { version = "1.39", features = ["rt", "macros"] }
+
+[build-dependencies]
+battle-app = { path = "app" }
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
+
+[features]
+wasm-binary = []

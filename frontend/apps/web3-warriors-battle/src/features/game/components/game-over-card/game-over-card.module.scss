@@ -1,0 +1,54 @@
+.backdrop {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  backdrop-filter: grayscale(100%);
+}
+
+.card {
+  position: absolute;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  top: 217px;
+  width: 546px;
+  > div {
+    padding: 32px;
+  }
+  gap: 28px;
+  h2 {
+    font-size: 32px;
+    line-height: 38px;
+  }
+}
+
+.prize {
+  margin-top: 4px;
+  background: #f7f9fa;
+  border-radius: 4px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.icon {
+  margin-left: 16px;
+  margin-right: 10px;
+  height: 32px;
+  width: 32px;
+}
+
+.result {
+  position: absolute;
+  top: 486px;
+  text-transform: uppercase;
+  text-align: center;
+  width: 100%;
+  font-size: 56px;
+  line-height: 67px;
+  font-weight: 700;
+  color: #ffffff;
+  -webkit-text-stroke: 2px #000000;
+}

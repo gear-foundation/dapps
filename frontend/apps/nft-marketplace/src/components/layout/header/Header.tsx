@@ -14,7 +14,7 @@ function Header() {
         </OnLogin>
       </nav>
 
-      <Wallet />
+      <Wallet theme="gear" />
     </header>
   );
 }
