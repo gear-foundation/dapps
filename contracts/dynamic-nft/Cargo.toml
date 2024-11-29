@@ -1,0 +1,24 @@
+[package]
+name = "dynamic-nft"
+version.workspace = true
+license.workspace = true
+edition.workspace = true
+
+[dependencies]
+dynamic-nft-app = { path = "app" }
+
+[build-dependencies]
+dynamic-nft-app = { path = "app" }
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
+
+[dev-dependencies]
+dynamic-nft = { path = ".", features = ["wasm-binary"] }
+dynamic-nft-client = { path = "client" }
+sails-rs = { workspace = true, features = ["gtest"] }
+tokio.workspace = true
+gclient.workspace = true
+gear-core.workspace = true
+
+[features]
+wasm-binary = []
