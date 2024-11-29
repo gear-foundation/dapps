@@ -9,15 +9,17 @@ use utils::*;
 fn success_init() {
     let sys = System::new();
     let oracle_program = load_program(&sys);
+    sys.mint_to(OWNER, 100_000_000_000_000);
 
-    let result = oracle_program.send(
+    let mid = oracle_program.send(
         OWNER,
         InitConfig {
             owner: OWNER.into(),
             manager: MANAGER.into(),
         },
     );
-    assert!(!result.main_failed());
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
 
     let oracle_state: Oracle = oracle_program.read_state(0).expect("Invalid state.");
 
@@ -29,6 +31,7 @@ fn success_init() {
 fn success_change_manager() {
     let sys = System::new();
     let oracle_program = load_program(&sys);
+    sys.mint_to(OWNER, 100_000_000_000_000);
 
     oracle_program.send(
         OWNER,
@@ -38,17 +41,21 @@ fn success_change_manager() {
         },
     );
 
-    let result = oracle_program.send(OWNER, Action::ChangeManager(NEW_MANAGER.into()));
-    assert!(result.contains(&(OWNER, Event::NewManager(NEW_MANAGER.into()).encode())));
+    oracle_program.send(OWNER, Action::ChangeManager(NEW_MANAGER.into()));
+    let res = sys.run_next_block();
+    assert!(res.contains(&(OWNER, Event::NewManager(NEW_MANAGER.into()).encode())));
 
-    let result = oracle_program.send(OWNER, Action::ChangeManager(OWNER.into()));
-    assert!(result.contains(&(OWNER, Event::NewManager(OWNER.into()).encode())));
+    oracle_program.send(OWNER, Action::ChangeManager(OWNER.into()));
+    let res = sys.run_next_block();
+    assert!(res.contains(&(OWNER, Event::NewManager(OWNER.into()).encode())));
 }
 
 #[test]
 fn fail_change_manager_invalid_owner() {
     let sys = System::new();
     let oracle_program = load_program(&sys);
+    sys.mint_to(OWNER, 100_000_000_000_000);
+    sys.mint_to(FAKE_OWNER, 100_000_000_000_000);
 
     oracle_program.send(
         OWNER,
@@ -58,6 +65,7 @@ fn fail_change_manager_invalid_owner() {
         },
     );
 
-    let result = oracle_program.send(FAKE_OWNER, Action::ChangeManager(FAKE_MANAGER.into()));
-    assert!(result.main_failed());
+    let mid = oracle_program.send(FAKE_OWNER, Action::ChangeManager(FAKE_MANAGER.into()));
+    let res = sys.run_next_block();
+    assert!(res.failed.contains(&mid));
 }

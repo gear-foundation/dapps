@@ -1,13 +1,21 @@
 [package]
-name = "car-1"
+name = "car-strategy-1"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-gstd = { workspace = true, features = ["debug"] }
-scale-info.workspace = true
-parity-scale-codec.workspace = true
+car-strategy-app-1 = { path = "app" }
 
 [build-dependencies]
+car-strategy-app-1 = { path = "app" }
+sails-rs.workspace = true
+sails-idl-gen.workspace = true
 gear-wasm-builder.workspace = true
 
+[dev-dependencies]
+car-strategy-1 = { path = ".", features = ["wasm-binary"] }
+sails-rs.workspace = true
+tokio.workspace = true
+
+[features]
+wasm-binary = []
