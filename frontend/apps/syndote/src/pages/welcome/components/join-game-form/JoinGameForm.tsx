@@ -15,10 +15,6 @@ import { TextModal } from 'pages/home/text-modal';
 import styles from './JoinGameForm.module.scss';
 import { GameSessionState, State } from 'types';
 
-export interface ContractFormValues {
-  [key: string]: string;
-}
-
 type Props = {
   onCancel: () => void;
 };

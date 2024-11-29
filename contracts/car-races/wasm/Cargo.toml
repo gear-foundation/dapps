@@ -1,0 +1,19 @@
+[package]
+name = "car-races"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+car-races-app = { path = "../app" }
+sails-rs.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+sails-idl-gen.workspace = true
+sails-client-gen.workspace = true
+car-races-app = { path = "../app" }
+
+[lib]
+crate-type = ["rlib"]
+name = "car_races"

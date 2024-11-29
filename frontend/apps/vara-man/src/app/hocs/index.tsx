@@ -12,11 +12,12 @@ import {
   EzTransactionsProvider,
 } from '@dapps-frontend/ez-transactions';
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
+import { QueryProvider } from '@dapps-frontend/ui';
 import { ENV } from '@/app/consts';
 import { AppProvider } from '@/app/context/ctx-app';
 import { GameProvider } from '@/app/context/ctx-game';
 import { Alert, alertStyles } from '@/components/ui/alert';
-import metaTxt from '@/assets/meta/vara_man.meta.txt';
+import { useProgram } from '../utils';
 
 const ApiProvider = ({ children }: ProviderProps) => (
   <GearApiProvider initialArgs={{ endpoint: ENV.NODE }}>{children}</GearApiProvider>
@@ -54,8 +55,10 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
 
 function SignlessTransactionsProvider({ children }: ProviderProps) {
   const { programId } = useDnsProgramIds();
+  const program = useProgram();
+
   return (
-    <SharedSignlessTransactionsProvider programId={programId} metadataSource={metaTxt}>
+    <SharedSignlessTransactionsProvider programId={programId} program={program}>
       {children}
     </SharedSignlessTransactionsProvider>
   );
@@ -67,6 +70,7 @@ const providers = [
   ApiProvider,
   DnsProvider,
   AccountProvider,
+  QueryProvider,
   AppProvider,
   GameProvider,
   GaslessTransactionsProvider,
