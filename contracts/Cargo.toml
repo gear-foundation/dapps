@@ -3,38 +3,39 @@ resolver = "2"
 # Keep in the lexicographic order!
 # Remove a member if it's used as a dependency in the workspace.
 members = [
+    "battle",
+    "battle/warrior/wasm",
     "battleship",
-    "car-races",
-    "galactic-express",
-    "multi-token",
+    "car-races/app",
+    "car-races/car-1",
+    "car-races/car-2",
+    "car-races/car-3",
+    "car-races/wasm",
+    "concert/wasm",
+    "dynamic-nft",
+    "galactic-express/wasm",
     "multisig-wallet",
-    "multisig-wallet/state",
     "oracle",
     "oracle/state",
     "oracle/randomness",
     "oracle/randomness/state",
-    "ping",
-    "ping/state",
+    "ping-pong",
     "rmrk",
     "rmrk/catalog",
     "rmrk/resource",
     "rmrk/state",
-    "rock-paper-scissors",
-    "rock-paper-scissors/state",
-    "syndote",
-    "syndote/player",
+    "syndote/wasm",
+    "syndote/player/wasm",
     "tamagotchi",
     "tamagotchi/state",
     "tamagotchi-battle",
     "tamagotchi-battle/state",
     "tequila-train",
+    "varatube/wasm",
     "tic-tac-toe/wasm",
     "vara-man/wasm",
     "w3bstreaming",
     "zk-battleship/wasm",
-    # Noncontract crates
-
-    "xtask",
 ]
 
 [workspace.package]
@@ -68,10 +69,7 @@ tamagotchi-battle-state.path = "tamagotchi-battle/state"
 
 battleship-io.path = "battleship/io"
 car-races-io.path = "car-races/io"
-galactic-express-io.path = "galactic-express/io"
 multi-token-io.path = "multi-token/io"
-multisig-wallet-io.path = "multisig-wallet/io"
-ping-io.path = "ping/io"
 rmrk-catalog-io.path = "rmrk/catalog/io"
 rmrk-io.path = "rmrk/io"
 rmrk-resource-io.path = "rmrk/resource/io"
@@ -91,15 +89,22 @@ rmrk-types.path = "rmrk/types"
 
 # Gear
 
-gstd = "1.5.0"
-gear-wasm-builder = "1.5.0"
-gmeta = "1.5.0"
-gclient = "1.5.0"
-gtest = "1.5.0"
-gear-core = "1.5.0"
-sails-idl-gen = "0.3.0"
-sails-rs = "0.3.0"
-sails-client-gen = "0.3.0"
+gstd = "1.7.0"
+gear-wasm-builder = "1.7.0"
+gmeta = "1.7.0"
+gclient = "1.7.0"
+gtest = "1.6.1"
+gear-core = "1.7.0"
+sails-idl-gen = "0.7.0"
+sails-rs = "0.7.0"
+sails-client-gen = "0.7.0"
+session-service = { git = "https://github.com/gear-foundation/signless-gasless-session-service.git" }
+extended-vft-client = { git = "https://github.com/gear-foundation/standards/"}
+extended-vnft-client = { git = "https://github.com/gear-foundation/standards/"}
+extended-vmt-client = { git = "https://github.com/gear-foundation/standards/"}
+extended-vmt = { git = "https://github.com/gear-foundation/standards/"}
+extended-vft = { git = "https://github.com/gear-foundation/standards/"}
+extended-vnft = { git = "https://github.com/gear-foundation/standards/"}
 
 # External
 

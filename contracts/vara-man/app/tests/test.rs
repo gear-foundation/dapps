@@ -1,52 +1,56 @@
-use gtest::{Log, Program, System};
+use extended_vft_client::vft::io as vft_io;
+use gtest::{Log, Program};
 use sails_rs::calls::*;
-use sails_rs::gtest::calls::*;
+use sails_rs::gtest::{calls::*, System};
 use sails_rs::{ActorId, Encode, U256};
-use vara_man_wasm::{
+use vara_man::{
     traits::{VaraMan, VaraManFactory},
     Config, Level, Status, VaraMan as VaraManClient, VaraManFactory as Factory,
 };
 
+pub const ADMIN_ID: u64 = 10;
+pub const USER_ID: u64 = 11;
+
 fn init_fungible_token(sys: &System, vara_man_id: ActorId) -> (ActorId, Program<'_>) {
     let vft = Program::from_file(
         sys,
-        "../../target/wasm32-unknown-unknown/release/extended_vft_wasm.opt.wasm",
+        "../../target/wasm32-unknown-unknown/release/extended_vft.opt.wasm",
     );
     let payload = ("Name".to_string(), "Symbol".to_string(), 10_u8);
     let encoded_request = ["New".encode(), payload.encode()].concat();
-    let res = vft.send_bytes(100_u64, encoded_request);
-    assert!(!res.main_failed());
+    let mid = vft.send_bytes(ADMIN_ID, encoded_request);
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
 
-    let encoded_request = [
-        "Vft".encode(),
-        "GrantMinterRole".encode(),
-        vara_man_id.encode(),
-    ]
-    .concat();
-    let res = vft.send_bytes(100_u64, encoded_request);
-    assert!(!res.main_failed());
+    let encoded_request = vft_io::GrantMinterRole::encode_call(vara_man_id);
+    let mid = vft.send_bytes(ADMIN_ID, encoded_request);
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
 
     (vft.id(), vft)
 }
 
-fn ft_balance_of(program: Program<'_>, account: ActorId) {
-    let encoded_request = ["Vft".encode(), "BalanceOf".encode(), account.encode()].concat();
-    let res = program.send_bytes(100_u64, encoded_request);
-    assert!(!res.main_failed());
+fn ft_balance_of(program: Program<'_>, sys: &System, account: ActorId) {
+    let encoded_request = vft_io::BalanceOf::encode_call(account);
+    let mid = program.send_bytes(ADMIN_ID, encoded_request);
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
     let state = &res.decoded_log::<(String, String, U256)>();
     println!("STATE {:?}", state)
 }
 
+// TODO: Remove `ignore` after adding it to the release tag https://github.com/gear-tech/gear/pull/4270
+#[ignore]
 #[tokio::test]
 async fn test_play_game() {
-    let program_space = GTestRemoting::new(100.into());
-
-    let cloned_program_space = program_space.clone();
-    let system = cloned_program_space.system();
+    let system = System::new();
     system.init_logger();
+    system.mint_to(ADMIN_ID, 1_000_000_000_000_000);
+    let program_space = GTestRemoting::new(system, ADMIN_ID.into());
 
-    let code_id = system
-        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man_wasm.opt.wasm");
+    let code_id = program_space
+        .system()
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man.opt.wasm");
 
     let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -70,6 +74,10 @@ async fn test_play_game() {
         .send_recv(code_id, "123")
         .await
         .unwrap();
+
+    program_space
+        .system()
+        .transfer(ADMIN_ID, vara_man_id, 100_000_000_000_000, true);
 
     let mut client = VaraManClient::new(program_space.clone());
     // change status
@@ -82,36 +90,35 @@ async fn test_play_game() {
     // check game status
     let status = client.status().recv(vara_man_id).await.unwrap();
     assert_eq!(status, Status::StartedWithNativeToken);
-    system.mint_to(vara_man_id, 1_000_000_000_000_000);
 
-    let old_balance = system.balance_of(program_space.actor_id());
+    let old_balance = program_space.system().balance_of(program_space.actor_id());
     client
         .finish_single_game(1, 5, Level::Easy, None)
         .send_recv(vara_man_id)
         .await
         .unwrap();
 
-    let mailbox = system.get_mailbox(program_space.actor_id());
+    let mailbox = program_space.system().get_mailbox(program_space.actor_id());
 
     let log = Log::builder().dest(program_space.actor_id());
     assert!(mailbox.contains(&log));
     assert!(mailbox.claim_value(log).is_ok());
 
-    let new_balance = system.balance_of(program_space.actor_id());
-    println!("new balance: {:?}", new_balance);
+    let new_balance = program_space.system().balance_of(program_space.actor_id());
+
     assert_eq!(new_balance - old_balance, 100_000_000_000_000);
 }
 
 #[tokio::test]
 async fn test_play_game_with_fungible_token() {
-    let program_space = GTestRemoting::new(100.into());
-
-    let cloned_program_space = program_space.clone();
-    let system = cloned_program_space.system();
+    let system = System::new();
     system.init_logger();
+    system.mint_to(ADMIN_ID, 1_000_000_000_000_000);
+    let program_space = GTestRemoting::new(system, ADMIN_ID.into());
 
-    let code_id = system
-        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man_wasm.opt.wasm");
+    let code_id = program_space
+        .system()
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man.opt.wasm");
 
     let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -136,9 +143,12 @@ async fn test_play_game_with_fungible_token() {
         .await
         .unwrap();
 
+    program_space
+        .system()
+        .transfer(ADMIN_ID, vara_man_id, 100_000_000_000_000, true);
     let mut client = VaraManClient::new(program_space.clone());
 
-    let (ft_address, ft_program) = init_fungible_token(system, vara_man_id);
+    let (ft_address, ft_program) = init_fungible_token(program_space.system(), vara_man_id);
     // change status
     client
         .change_status(Status::StartedWithFungibleToken { ft_address })
@@ -155,19 +165,22 @@ async fn test_play_game_with_fungible_token() {
         .await
         .unwrap();
 
-    ft_balance_of(ft_program, program_space.actor_id());
+    ft_balance_of(ft_program, program_space.system(), program_space.actor_id());
 }
 
+// TODO: Remove `ignore` after adding it to the release tag https://github.com/gear-tech/gear/pull/4270
+#[ignore]
 #[tokio::test]
 async fn test_play_tournament() {
-    let program_space = GTestRemoting::new(100.into());
-
-    let cloned_program_space = program_space.clone();
-    let system = cloned_program_space.system();
+    let system = System::new();
     system.init_logger();
+    system.mint_to(ADMIN_ID, 1_000_000_000_000_000);
+    system.mint_to(USER_ID, 100_000_000_000_000);
+    let program_space = GTestRemoting::new(system, ADMIN_ID.into());
 
-    let code_id = system
-        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man_wasm.opt.wasm");
+    let code_id = program_space
+        .system()
+        .submit_code_file("../../target/wasm32-unknown-unknown/release/vara_man.opt.wasm");
 
     let vara_man_factory = Factory::new(program_space.clone());
     let config = Config {
@@ -192,6 +205,10 @@ async fn test_play_tournament() {
         .await
         .unwrap();
 
+    program_space
+        .system()
+        .transfer(ADMIN_ID, vara_man_id, 100_000_000_000_000, true);
+
     let mut client = VaraManClient::new(program_space.clone());
     // change status
     client
@@ -203,10 +220,6 @@ async fn test_play_tournament() {
     // check game status
     let status = client.status().recv(vara_man_id).await.unwrap();
     assert_eq!(status, Status::StartedWithNativeToken);
-    system.mint_to(vara_man_id, 1_000_000_000_000_000);
-    system.mint_to(program_space.actor_id(), 1_000_000_000_000_000);
-    let player_id: ActorId = 101.into();
-    system.mint_to(player_id, 1_000_000_000_000_000);
 
     client
         .create_new_tournament(
@@ -228,7 +241,7 @@ async fn test_play_tournament() {
     client
         .register_for_tournament(program_space.actor_id(), "player #1".to_string(), None)
         .with_value(10_000_000_000_000)
-        .with_args(GTestArgs::new(player_id))
+        .with_args(GTestArgs::new(USER_ID.into()))
         .send_recv(vara_man_id)
         .await
         .unwrap();
@@ -236,27 +249,29 @@ async fn test_play_tournament() {
     let state = client.all().recv(vara_man_id).await.unwrap();
     assert_eq!(state.tournaments[0].1.participants.len(), 2);
 
-    let old_balance = system.balance_of(player_id);
+    let old_balance = program_space.system().balance_of(USER_ID);
     client
         .cancel_register(None)
-        .with_args(GTestArgs::new(player_id))
+        .with_args(GTestArgs::new(USER_ID.into()))
         .send_recv(vara_man_id)
         .await
         .unwrap();
 
-    let mailbox = system.get_mailbox::<ActorId>(player_id);
+    let mailbox = program_space
+        .system()
+        .get_mailbox::<ActorId>(USER_ID.into());
 
-    let log = Log::builder().dest(player_id);
+    let log = Log::builder().dest(USER_ID);
     assert!(mailbox.contains(&log));
     assert!(mailbox.claim_value(log).is_ok());
 
-    let new_balance = system.balance_of(player_id);
+    let new_balance = program_space.system().balance_of(USER_ID);
     assert_eq!(new_balance - old_balance, 10_000_000_000_000);
 
     client
         .register_for_tournament(program_space.actor_id(), "player #1".to_string(), None)
         .with_value(10_000_000_000_000)
-        .with_args(GTestArgs::new(player_id))
+        .with_args(GTestArgs::new(USER_ID.into()))
         .send_recv(vara_man_id)
         .await
         .unwrap();
@@ -273,7 +288,7 @@ async fn test_play_tournament() {
         .unwrap();
     client
         .record_tournament_result(1_000, 1, 5, None)
-        .with_args(GTestArgs::new(player_id))
+        .with_args(GTestArgs::new(USER_ID.into()))
         .send_recv(vara_man_id)
         .await
         .unwrap();
@@ -286,6 +301,6 @@ async fn test_play_tournament() {
     // let state = client.all().recv(vara_man_id).await.unwrap();
     // assert_eq!(
     //     state.tournaments[0].1.stage,
-    //     Stage::Finished(vec![100.into(), 101.into()])
+    //     Stage::Finished(vec![ADMIN_ID.into(), USER_ID.into()])
     // );
 }

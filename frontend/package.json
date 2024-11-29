@@ -12,6 +12,7 @@
     "bump:polkadot": "yarn bump @polkadot/api @polkadot/types",
     "bump:sails": "yarn bump sails-js",
     "bump:query": "yarn bump @tanstack/react-query",
+    "bump:wallet-connect": "yarn bump @gear-js/wallet-connect",
     "build:error-tracking": "yarn workspace @dapps-frontend/error-tracking build",
     "build:ui": "yarn workspace @dapps-frontend/ui build",
     "build:hooks": "yarn workspace @dapps-frontend/hooks build",
@@ -22,5 +23,9 @@
     "./apps/*",
     "./packages/*",
     "./templates/*"
-  ]
+  ],
+  "resolutions": {
+    "@polkadot/api": "14.3.1",
+    "@polkadot/types": "14.3.1"
+  }
 }

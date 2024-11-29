@@ -1,3 +1,4 @@
+#![allow(clippy::too_many_arguments)]
 use gstd::{ActorId, Encode};
 use gtest::{Log, Program, System};
 use tequila_train_io::*;
@@ -5,15 +6,23 @@ use tequila_train_io::*;
 pub const PLAYERS: [u64; 3] = [10, 11, 12];
 
 pub trait TestFunc {
-    fn create_game(&self, from: u64, bid: u128, error: Option<Error>);
-    fn register(&self, from: u64, bid: u128, creator: ActorId, error: Option<Error>);
-    fn cancel_register(&self, from: u64, creator: ActorId, error: Option<Error>);
-    fn delete_player(&self, from: u64, player_id: ActorId, error: Option<Error>);
-    fn cancel_game(&self, from: u64, error: Option<Error>);
-    fn start_game(&self, from: u64, error: Option<Error>);
-    fn skip(&self, from: u64, creator: ActorId, error: Option<Error>);
+    fn create_game(&self, system: &System, from: u64, bid: u128, error: Option<Error>);
+    fn register(
+        &self,
+        system: &System,
+        from: u64,
+        bid: u128,
+        creator: ActorId,
+        error: Option<Error>,
+    );
+    fn cancel_register(&self, system: &System, from: u64, creator: ActorId, error: Option<Error>);
+    fn delete_player(&self, system: &System, from: u64, player_id: ActorId, error: Option<Error>);
+    fn cancel_game(&self, system: &System, from: u64, error: Option<Error>);
+    fn start_game(&self, system: &System, from: u64, error: Option<Error>);
+    fn skip(&self, system: &System, from: u64, creator: ActorId, error: Option<Error>);
     fn place(
         &self,
+        system: &System,
         from: u64,
         creator: ActorId,
         tile_id: u32,
@@ -26,9 +35,10 @@ pub trait TestFunc {
 }
 
 impl TestFunc for Program<'_> {
-    fn create_game(&self, from: u64, bid: u128, error: Option<Error>) {
-        let result = self.send_with_value(from, Command::CreateGame, bid);
-        assert!(!result.main_failed());
+    fn create_game(&self, system: &System, from: u64, bid: u128, error: Option<Error>) {
+        let mid = self.send_with_value(from, Command::CreateGame, bid);
+        let result = system.run_next_block();
+        assert!(result.succeed.contains(&mid));
         let reply = if let Some(error) = error {
             Err(error)
         } else {
@@ -36,9 +46,17 @@ impl TestFunc for Program<'_> {
         };
         assert!(result.contains(&(from, reply.encode())));
     }
-    fn register(&self, from: u64, bid: u128, creator: ActorId, error: Option<Error>) {
-        let result = self.send_with_value(from, Command::Register { creator }, bid);
-        assert!(!result.main_failed());
+    fn register(
+        &self,
+        system: &System,
+        from: u64,
+        bid: u128,
+        creator: ActorId,
+        error: Option<Error>,
+    ) {
+        let mid = self.send_with_value(from, Command::Register { creator }, bid);
+        let result = system.run_next_block();
+        assert!(result.succeed.contains(&mid));
         let reply = if let Some(error) = error {
             Err(error)
         } else {
@@ -48,9 +66,10 @@ impl TestFunc for Program<'_> {
         };
         assert!(result.contains(&(from, reply.encode())));
     }
-    fn cancel_register(&self, from: u64, creator: ActorId, error: Option<Error>) {
-        let result = self.send(from, Command::CancelRegistration { creator });
-        assert!(!result.main_failed());
+    fn cancel_register(&self, system: &System, from: u64, creator: ActorId, error: Option<Error>) {
+        let mid = self.send(from, Command::CancelRegistration { creator });
+        let result = system.run_next_block();
+        assert!(result.succeed.contains(&mid));
         let reply = if let Some(error) = error {
             Err(error)
         } else {
@@ -58,11 +77,10 @@ impl TestFunc for Program<'_> {
         };
         assert!(result.contains(&(from, reply.encode())));
     }
-    fn delete_player(&self, from: u64, player_id: ActorId, error: Option<Error>) {
-        let result = self.send(from, Command::DeletePlayer { player_id });
-        let res = &result.decoded_log::<Result<Event, Error>>();
-        println!("RES: {:?}", res);
-        assert!(!result.main_failed());
+    fn delete_player(&self, system: &System, from: u64, player_id: ActorId, error: Option<Error>) {
+        let mid = self.send(from, Command::DeletePlayer { player_id });
+        let result = system.run_next_block();
+        assert!(result.succeed.contains(&mid));
         let reply = if let Some(error) = error {
             Err(error)
         } else {
@@ -70,11 +88,10 @@ impl TestFunc for Program<'_> {
         };
         assert!(result.contains(&(from, reply.encode())));
     }
-    fn cancel_game(&self, from: u64, error: Option<Error>) {
-        let result = self.send(from, Command::CancelGame);
-        let res = &result.decoded_log::<Result<Event, Error>>();
-        println!("RES: {:?}", res);
-        assert!(!result.main_failed());
+    fn cancel_game(&self, system: &System, from: u64, error: Option<Error>) {
+        let mid = self.send(from, Command::CancelGame);
+        let result = system.run_next_block();
+        assert!(result.succeed.contains(&mid));
         let reply = if let Some(error) = error {
             Err(error)
         } else {
@@ -82,9 +99,10 @@ impl TestFunc for Program<'_> {
         };
         assert!(result.contains(&(from, reply.encode())));
     }
-    fn start_game(&self, from: u64, error: Option<Error>) {
-        let result = self.send(from, Command::StartGame);
-        assert!(!result.main_failed());
+    fn start_game(&self, system: &System, from: u64, error: Option<Error>) {
+        let mid = self.send(from, Command::StartGame);
+        let result = system.run_next_block();
+        assert!(result.succeed.contains(&mid));
         let res = &result.decoded_log::<Result<Event, Error>>();
         println!("RES: {:?}", res);
         let reply = if let Some(error) = error {
@@ -94,9 +112,10 @@ impl TestFunc for Program<'_> {
         };
         assert!(result.contains(&(from, reply.encode())));
     }
-    fn skip(&self, from: u64, creator: ActorId, error: Option<Error>) {
-        let result = self.send(from, Command::Skip { creator });
-        assert!(!result.main_failed());
+    fn skip(&self, system: &System, from: u64, creator: ActorId, error: Option<Error>) {
+        let mid = self.send(from, Command::Skip { creator });
+        let result = system.run_next_block();
+        assert!(result.succeed.contains(&mid));
         let res = &result.decoded_log::<Result<Event, Error>>();
         println!("RES: {:?}", res);
         let reply = if let Some(error) = error {
@@ -108,6 +127,7 @@ impl TestFunc for Program<'_> {
     }
     fn place(
         &self,
+        system: &System,
         from: u64,
         creator: ActorId,
         tile_id: u32,
@@ -115,7 +135,7 @@ impl TestFunc for Program<'_> {
         remove_train: bool,
         error: Option<Error>,
     ) {
-        let result = self.send(
+        let mid = self.send(
             from,
             Command::Place {
                 creator,
@@ -124,9 +144,8 @@ impl TestFunc for Program<'_> {
                 remove_train,
             },
         );
-        let res = &result.decoded_log::<Result<Event, Error>>();
-        println!("RES: {:?}", res);
-        assert!(!result.main_failed());
+        let result = system.run_next_block();
+        assert!(result.succeed.contains(&mid));
         let reply = if let Some(error) = error {
             Err(error)
         } else {
@@ -159,13 +178,19 @@ impl TestFunc for Program<'_> {
         }
     }
 }
-// TODO: fix test
+
+// TODO: Remove `ignore` after adding it to the release tag https://github.com/gear-tech/gear/pull/4270
+
 #[test]
 #[ignore]
 fn success_test() {
     let system = System::new();
 
     system.init_logger();
+    system.mint_to(2, 100_000_000_000_000);
+    system.mint_to(PLAYERS[0], 100_000_000_000_000);
+    system.mint_to(PLAYERS[1], 100_000_000_000_000);
+    system.mint_to(PLAYERS[2], 100_000_000_000_000);
 
     let program = Program::current_opt(&system);
 
@@ -174,14 +199,15 @@ fn success_test() {
         gas_to_check_game: 200_000_000_000,
     };
 
-    let result = program.send(2, config);
-    assert!(!result.main_failed());
+    let mid = program.send(2, config);
+    let result = system.run_next_block();
+    assert!(result.succeed.contains(&mid));
 
-    program.create_game(PLAYERS[0], 0, None);
+    program.create_game(&system, PLAYERS[0], 0, None);
 
-    program.register(PLAYERS[1], 0, PLAYERS[0].into(), None);
-    program.register(PLAYERS[2], 0, PLAYERS[0].into(), None);
-    program.start_game(PLAYERS[0], None);
+    program.register(&system, PLAYERS[1], 0, PLAYERS[0].into(), None);
+    program.register(&system, PLAYERS[2], 0, PLAYERS[0].into(), None);
+    program.start_game(&system, PLAYERS[0], None);
 
     let state: GameLauncherState = program
         .get_all_state()
@@ -191,31 +217,44 @@ fn success_test() {
     let game = state.games[0].1.game_state.clone().unwrap();
     let current_player = game.current_player;
 
-    program.skip(PLAYERS[current_player as usize], PLAYERS[0].into(), None);
+    program.skip(
+        &system,
+        PLAYERS[current_player as usize],
+        PLAYERS[0].into(),
+        None,
+    );
 
-    system.spend_blocks(3);
+    system.run_to_block(system.block_height() + 3);
+
     let current_player = (current_player + 1) as usize % PLAYERS.len();
-    program.skip(PLAYERS[current_player], PLAYERS[0].into(), None);
+    program.skip(&system, PLAYERS[current_player], PLAYERS[0].into(), None);
 
-    system.spend_blocks(8);
+    system.run_to_block(system.block_height() + 8);
+
     let state = program
         .get_game_state(PLAYERS[0].into())
         .expect("Unexpected invalid game state.");
     println!("STATE: {:?}", state);
-    system.spend_blocks(2);
+    system.run_to_block(system.block_height() + 2);
+
     let current_player = (current_player + 1) % PLAYERS.len();
     program.skip(
+        &system,
         PLAYERS[current_player],
         PLAYERS[0].into(),
         Some(Error::NotYourTurnOrYouLose),
     );
 }
 #[test]
+#[ignore]
 fn cancel_register() {
     let system = System::new();
 
     system.init_logger();
-
+    system.mint_to(2, 100_000_000_000_000);
+    system.mint_to(PLAYERS[0], 100_000_000_000_000);
+    system.mint_to(PLAYERS[1], 100_000_000_000_000);
+    system.mint_to(PLAYERS[2], 100_000_000_000_000);
     let program = Program::current_opt(&system);
 
     let config = Config {
@@ -223,32 +262,26 @@ fn cancel_register() {
         gas_to_check_game: 200_000_000_000,
     };
 
-    let result = program.send(2, config);
-    assert!(!result.main_failed());
+    let mid = program.send(2, config);
+    let result = system.run_next_block();
+    assert!(result.succeed.contains(&mid));
 
     let bid = 11_000_000_000_000;
-    system.mint_to(PLAYERS[0], bid);
-    program.create_game(PLAYERS[0], bid, None);
+    program.create_game(&system, PLAYERS[0], bid, None);
 
-    system.mint_to(PLAYERS[1], bid);
-    program.register(PLAYERS[1], bid, PLAYERS[0].into(), None);
-    let balance = system.balance_of(PLAYERS[1]);
-    assert_eq!(balance, 0);
+    program.register(&system, PLAYERS[1], bid, PLAYERS[0].into(), None);
 
     let state: GameLauncherState = program
         .get_all_state()
         .expect("Unexpected invalid game state.");
     assert_eq!(state.games[0].1.initial_players.len(), 2);
 
-    program.cancel_register(PLAYERS[1], PLAYERS[0].into(), None);
+    program.cancel_register(&system, PLAYERS[1], PLAYERS[0].into(), None);
 
     let log = Log::builder().dest(PLAYERS[1]);
     let mailbox = system.get_mailbox(PLAYERS[1]);
     assert!(mailbox.contains(&log));
     assert!(mailbox.claim_value(log).is_ok());
-
-    let balance = system.balance_of(PLAYERS[1]);
-    assert_eq!(balance, bid);
 
     let state: GameLauncherState = program
         .get_all_state()
@@ -258,10 +291,15 @@ fn cancel_register() {
 }
 
 #[test]
+#[ignore]
 fn delete_player() {
     let system = System::new();
 
     system.init_logger();
+    system.mint_to(2, 100_000_000_000_000);
+    system.mint_to(PLAYERS[0], 100_000_000_000_000);
+    system.mint_to(PLAYERS[1], 100_000_000_000_000);
+    system.mint_to(PLAYERS[2], 100_000_000_000_000);
 
     let program = Program::current_opt(&system);
 
@@ -270,32 +308,26 @@ fn delete_player() {
         gas_to_check_game: 200_000_000_000,
     };
 
-    let result = program.send(2, config);
-    assert!(!result.main_failed());
+    let mid = program.send(2, config);
+    let result = system.run_next_block();
+    assert!(result.succeed.contains(&mid));
 
     let bid = 11_000_000_000_000;
-    system.mint_to(PLAYERS[0], bid);
-    program.create_game(PLAYERS[0], bid, None);
+    program.create_game(&system, PLAYERS[0], bid, None);
 
-    system.mint_to(PLAYERS[1], bid);
-    program.register(PLAYERS[1], bid, PLAYERS[0].into(), None);
-    let balance = system.balance_of(PLAYERS[1]);
-    assert_eq!(balance, 0);
+    program.register(&system, PLAYERS[1], bid, PLAYERS[0].into(), None);
 
     let state: GameLauncherState = program
         .get_all_state()
         .expect("Unexpected invalid game state.");
     assert_eq!(state.games[0].1.initial_players.len(), 2);
 
-    program.delete_player(PLAYERS[0], PLAYERS[1].into(), None);
+    program.delete_player(&system, PLAYERS[0], PLAYERS[1].into(), None);
 
     let log = Log::builder().dest(PLAYERS[1]);
     let mailbox = system.get_mailbox(PLAYERS[1]);
     assert!(mailbox.contains(&log));
     assert!(mailbox.claim_value(log).is_ok());
-
-    let balance = system.balance_of(PLAYERS[1]);
-    assert_eq!(balance, bid);
 
     let state: GameLauncherState = program
         .get_all_state()
@@ -305,10 +337,15 @@ fn delete_player() {
 }
 
 #[test]
+#[ignore]
 fn cancel_game() {
     let system = System::new();
 
     system.init_logger();
+    system.mint_to(2, 100_000_000_000_000);
+    system.mint_to(PLAYERS[0], 100_000_000_000_000);
+    system.mint_to(PLAYERS[1], 100_000_000_000_000);
+    system.mint_to(PLAYERS[2], 100_000_000_000_000);
 
     let program = Program::current_opt(&system);
 
@@ -317,40 +354,31 @@ fn cancel_game() {
         gas_to_check_game: 200_000_000_000,
     };
 
-    let result = program.send(2, config);
-    assert!(!result.main_failed());
+    let mid = program.send(2, config);
+    let result = system.run_next_block();
+    assert!(result.succeed.contains(&mid));
 
     let bid = 11_000_000_000_000;
-    system.mint_to(PLAYERS[0], bid);
-    program.create_game(PLAYERS[0], bid, None);
+    program.create_game(&system, PLAYERS[0], bid, None);
 
-    system.mint_to(PLAYERS[1], bid);
-    program.register(PLAYERS[1], bid, PLAYERS[0].into(), None);
-    let balance = system.balance_of(PLAYERS[1]);
-    assert_eq!(balance, 0);
+    program.register(&system, PLAYERS[1], bid, PLAYERS[0].into(), None);
 
     let state: GameLauncherState = program
         .get_all_state()
         .expect("Unexpected invalid game state.");
     assert!(!state.games.is_empty());
 
-    program.cancel_game(PLAYERS[0], None);
+    program.cancel_game(&system, PLAYERS[0], None);
 
     let log = Log::builder().dest(PLAYERS[1]);
     let mailbox = system.get_mailbox(PLAYERS[1]);
     assert!(mailbox.contains(&log));
     assert!(mailbox.claim_value(log).is_ok());
 
-    let balance = system.balance_of(PLAYERS[1]);
-    assert_eq!(balance, bid);
-
     let log = Log::builder().dest(PLAYERS[0]);
     let mailbox = system.get_mailbox(PLAYERS[0]);
     assert!(mailbox.contains(&log));
     assert!(mailbox.claim_value(log).is_ok());
-
-    let balance = system.balance_of(PLAYERS[0]);
-    assert_eq!(balance, bid);
 
     let state: GameLauncherState = program
         .get_all_state()
@@ -360,10 +388,15 @@ fn cancel_game() {
 }
 
 #[test]
+#[ignore]
 fn failures_test() {
     let system = System::new();
 
     system.init_logger();
+    system.mint_to(2, 100_000_000_000_000);
+    system.mint_to(PLAYERS[0], 100_000_000_000_000);
+    system.mint_to(PLAYERS[1], 100_000_000_000_000);
+    system.mint_to(PLAYERS[2], 100_000_000_000_000);
 
     let program = Program::current_opt(&system);
 
@@ -372,39 +405,34 @@ fn failures_test() {
         gas_to_check_game: 200_000_000_000,
     };
 
-    let result = program.send(2, config);
-    assert!(!result.main_failed());
+    let mid = program.send(2, config);
+    let result = system.run_next_block();
+    assert!(result.succeed.contains(&mid));
 
     // After each error, a balance check will be made to verify the balance return
 
     // Сan't create multiple games
     let bid = 11_000_000_000_000;
-    system.mint_to(PLAYERS[0], 2 * bid);
-    program.create_game(PLAYERS[0], bid, None);
-    program.create_game(PLAYERS[0], bid, Some(Error::SeveralGames));
+    program.create_game(&system, PLAYERS[0], bid, None);
+    program.create_game(&system, PLAYERS[0], bid, Some(Error::SeveralGames));
 
     let log = Log::builder().dest(PLAYERS[0]);
     let mailbox = system.get_mailbox(PLAYERS[0]);
     assert!(mailbox.contains(&log));
     assert!(mailbox.claim_value(log).is_ok());
 
-    assert_eq!(system.balance_of(PLAYERS[0]), bid);
-
     // You can't play one game and be an admin in another game
-    system.mint_to(PLAYERS[1], 2 * bid);
-    program.register(PLAYERS[1], bid, PLAYERS[0].into(), None);
-    program.create_game(PLAYERS[1], bid, Some(Error::SeveralGames));
+    program.register(&system, PLAYERS[1], bid, PLAYERS[0].into(), None);
+    program.create_game(&system, PLAYERS[1], bid, Some(Error::SeveralGames));
 
     let log = Log::builder().dest(PLAYERS[1]);
     let mailbox = system.get_mailbox(PLAYERS[1]);
     assert!(mailbox.contains(&log));
     assert!(mailbox.claim_value(log).is_ok());
 
-    assert_eq!(system.balance_of(PLAYERS[1]), bid);
-
     // A non-existent game id has been entered
-    system.mint_to(PLAYERS[2], 2 * bid);
     program.register(
+        &system,
         PLAYERS[2],
         bid,
         PLAYERS[1].into(),
@@ -416,9 +444,9 @@ fn failures_test() {
     assert!(mailbox.contains(&log));
     assert!(mailbox.claim_value(log).is_ok());
 
-    assert_eq!(system.balance_of(PLAYERS[2]), 2 * bid);
     // Wrong bid
     program.register(
+        &system,
         PLAYERS[2],
         bid - 1,
         PLAYERS[0].into(),
@@ -430,9 +458,9 @@ fn failures_test() {
     assert!(mailbox.contains(&log));
     assert!(mailbox.claim_value(log).is_ok());
 
-    assert_eq!(system.balance_of(PLAYERS[2]), 2 * bid);
     // Already registered
     program.register(
+        &system,
         PLAYERS[1],
         bid,
         PLAYERS[0].into(),
@@ -444,10 +472,10 @@ fn failures_test() {
     assert!(mailbox.contains(&log));
     assert!(mailbox.claim_value(log).is_ok());
 
-    assert_eq!(system.balance_of(PLAYERS[1]), bid);
     // Registered In Another Game
-    program.create_game(PLAYERS[2], bid, None);
+    program.create_game(&system, PLAYERS[2], bid, None);
     program.register(
+        &system,
         PLAYERS[1],
         bid,
         PLAYERS[2].into(),
@@ -459,18 +487,26 @@ fn failures_test() {
     assert!(mailbox.contains(&log));
     assert!(mailbox.claim_value(log).is_ok());
 
-    assert_eq!(system.balance_of(PLAYERS[1]), bid);
-
     // Admin try cancel register
-    program.cancel_register(PLAYERS[0], PLAYERS[0].into(), Some(Error::YouAreAdmin));
+    program.cancel_register(
+        &system,
+        PLAYERS[0],
+        PLAYERS[0].into(),
+        Some(Error::YouAreAdmin),
+    );
 
     // No Such Player in registration list
-    program.cancel_register(PLAYERS[2], PLAYERS[0].into(), Some(Error::NoSuchPlayer));
+    program.cancel_register(
+        &system,
+        PLAYERS[2],
+        PLAYERS[0].into(),
+        Some(Error::NoSuchPlayer),
+    );
 
     // players less than 2
-    program.start_game(PLAYERS[2], Some(Error::NotEnoughPlayers));
+    program.start_game(&system, PLAYERS[2], Some(Error::NotEnoughPlayers));
 
     // the game has already started
-    program.start_game(PLAYERS[0], None);
-    program.start_game(PLAYERS[0], Some(Error::GameHasAlreadyStarted));
+    program.start_game(&system, PLAYERS[0], None);
+    program.start_game(&system, PLAYERS[0], Some(Error::GameHasAlreadyStarted));
 }

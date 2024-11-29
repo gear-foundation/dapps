@@ -8,7 +8,7 @@ use gstd::{
 };
 
 // Minimum duration of session: 3 mins = 180_000 ms = 60 blocks
-pub const MINIMUM_SESSION_SURATION_MS: u64 = 180_000;
+pub const MINIMUM_SESSION_DURATION_MS: u64 = 180_000;
 
 pub struct BattleshipMetadata;
 

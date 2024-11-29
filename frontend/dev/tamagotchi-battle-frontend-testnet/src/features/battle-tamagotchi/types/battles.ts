@@ -60,7 +60,7 @@ export type BattleHero = {
   hero_id: HexString
   name: String
   date_of_birth: string
-  defense: string
+  defence: string
   power: string
   health: string
   color: String

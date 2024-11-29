@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
 import { useNavigate, NavigateFunction } from 'react-router-dom';
 import { ArrowRight, Search } from 'lucide-react';
-import { WalletNew } from '@dapps-frontend/ui/';
+import { Wallet } from '@dapps-frontend/ui/';
 import IntroImage from '@/assets/images/welcome.png';
 import { Icons } from '@/components/ui/icons';
 import { EzTransactionsSwitch, useEzTransactions } from '@dapps-frontend/ez-transactions';
@@ -92,7 +92,7 @@ export function HomeRegister() {
             </p>
 
             <div className="mt-3">
-              <WalletNew />
+              <Wallet />
             </div>
           </div>
         )}

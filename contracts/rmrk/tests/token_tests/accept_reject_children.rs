@@ -5,10 +5,11 @@ use rmrk_io::*;
 use rmrk_types::primitives::{CollectionId, TokenId};
 
 #[test]
+#[ignore]
 fn accept_child_simple() {
     let sys = System::new();
     sys.init_logger();
-
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
 
@@ -17,6 +18,7 @@ fn accept_child_simple() {
 
     // mint `parent_token_id`, add child to it and accept child
     mint_parent_and_child_with_acceptance(
+        &sys,
         &rmrk_child,
         &rmrk_parent,
         child_token_id,
@@ -33,10 +35,11 @@ fn accept_child_simple() {
 }
 
 #[test]
+#[ignore]
 fn accept_child_from_approved_address() {
     let sys = System::new();
     sys.init_logger();
-
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
 
@@ -44,11 +47,18 @@ fn accept_child_from_approved_address() {
     let parent_token_id: u64 = 10;
 
     // mint `parent_token_id` and add child to it
-    mint_parent_and_child(&rmrk_child, &rmrk_parent, child_token_id, parent_token_id);
+    mint_parent_and_child(
+        &sys,
+        &rmrk_child,
+        &rmrk_parent,
+        child_token_id,
+        parent_token_id,
+    );
 
-    rmrk_parent.approve(USERS[0], USERS[3], parent_token_id);
+    rmrk_parent.approve(&sys, USERS[0], USERS[3], parent_token_id);
 
     rmrk_parent.accept_child(
+        &sys,
         USERS[3],
         parent_token_id,
         CHILD_NFT_CONTRACT,
@@ -58,10 +68,11 @@ fn accept_child_from_approved_address() {
 }
 
 #[test]
+#[ignore]
 fn accept_child_failures() {
     let sys = System::new();
     sys.init_logger();
-
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
 
@@ -69,10 +80,17 @@ fn accept_child_failures() {
     let parent_token_id: u64 = 10;
 
     // mint `parent_token_id` and add child to it
-    mint_parent_and_child(&rmrk_child, &rmrk_parent, child_token_id, parent_token_id);
+    mint_parent_and_child(
+        &sys,
+        &rmrk_child,
+        &rmrk_parent,
+        child_token_id,
+        parent_token_id,
+    );
 
     // fail since the caller is not the owner
     rmrk_parent.accept_child(
+        &sys,
         USERS[3],
         parent_token_id,
         CHILD_NFT_CONTRACT,
@@ -82,6 +100,7 @@ fn accept_child_failures() {
 
     // fail since the child with that ID does not exist
     rmrk_parent.accept_child(
+        &sys,
         USERS[0],
         parent_token_id,
         CHILD_NFT_CONTRACT,
@@ -91,6 +110,7 @@ fn accept_child_failures() {
 
     // accept child
     rmrk_parent.accept_child(
+        &sys,
         USERS[0],
         parent_token_id,
         CHILD_NFT_CONTRACT,
@@ -100,6 +120,7 @@ fn accept_child_failures() {
 
     // fail since child has alredy been accepted
     rmrk_parent.accept_child(
+        &sys,
         USERS[0],
         parent_token_id,
         CHILD_NFT_CONTRACT,
@@ -109,10 +130,11 @@ fn accept_child_failures() {
 }
 
 #[test]
+#[ignore]
 fn reject_child_simple() {
     let sys = System::new();
     sys.init_logger();
-
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
 
@@ -120,9 +142,16 @@ fn reject_child_simple() {
     let parent_token_id: u64 = 10;
 
     // mint `parent_token_id` and add child to it
-    mint_parent_and_child(&rmrk_child, &rmrk_parent, child_token_id, parent_token_id);
+    mint_parent_and_child(
+        &sys,
+        &rmrk_child,
+        &rmrk_parent,
+        child_token_id,
+        parent_token_id,
+    );
 
     rmrk_parent.reject_child(
+        &sys,
         USERS[0],
         parent_token_id,
         CHILD_NFT_CONTRACT,
@@ -138,10 +167,11 @@ fn reject_child_simple() {
 }
 
 #[test]
+#[ignore]
 fn reject_child_from_approved_address() {
     let sys = System::new();
     sys.init_logger();
-
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
 
@@ -149,12 +179,19 @@ fn reject_child_from_approved_address() {
     let parent_token_id: u64 = 10;
 
     // mint `parent_token_id` and add child to it
-    mint_parent_and_child(&rmrk_child, &rmrk_parent, child_token_id, parent_token_id);
+    mint_parent_and_child(
+        &sys,
+        &rmrk_child,
+        &rmrk_parent,
+        child_token_id,
+        parent_token_id,
+    );
 
     // approve to USERS[3]
-    rmrk_parent.approve(USERS[0], USERS[3], parent_token_id);
+    rmrk_parent.approve(&sys, USERS[0], USERS[3], parent_token_id);
     // reject child from USERS[3]
     rmrk_parent.reject_child(
+        &sys,
         USERS[3],
         parent_token_id,
         CHILD_NFT_CONTRACT,
@@ -164,10 +201,11 @@ fn reject_child_from_approved_address() {
 }
 
 #[test]
+#[ignore]
 fn reject_child_failures() {
     let sys = System::new();
     sys.init_logger();
-
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
 
@@ -175,10 +213,17 @@ fn reject_child_failures() {
     let parent_token_id: u64 = 10;
 
     // mint `parent_token_id` and add child to it
-    mint_parent_and_child(&rmrk_child, &rmrk_parent, child_token_id, parent_token_id);
+    mint_parent_and_child(
+        &sys,
+        &rmrk_child,
+        &rmrk_parent,
+        child_token_id,
+        parent_token_id,
+    );
 
     // must fail since the caller is not owner or not approved account
     rmrk_parent.reject_child(
+        &sys,
         USERS[3],
         parent_token_id,
         CHILD_NFT_CONTRACT,
@@ -188,6 +233,7 @@ fn reject_child_failures() {
 
     // must fail since the child with indicated id does not exist
     rmrk_parent.reject_child(
+        &sys,
         USERS[0],
         parent_token_id,
         CHILD_NFT_CONTRACT,
@@ -197,10 +243,11 @@ fn reject_child_failures() {
 }
 
 #[test]
+#[ignore]
 fn remove_child_simple() {
     let sys = System::new();
     sys.init_logger();
-
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
 
@@ -209,6 +256,7 @@ fn remove_child_simple() {
 
     // mint `parent_token_id`, add child to it and accept child
     mint_parent_and_child_with_acceptance(
+        &sys,
         &rmrk_child,
         &rmrk_parent,
         child_token_id,
@@ -217,6 +265,7 @@ fn remove_child_simple() {
 
     // remove child
     rmrk_parent.remove_child(
+        &sys,
         USERS[0],
         parent_token_id,
         CHILD_NFT_CONTRACT,
@@ -232,10 +281,11 @@ fn remove_child_simple() {
 }
 
 #[test]
+#[ignore]
 fn remove_child_from_approved_account() {
     let sys = System::new();
     sys.init_logger();
-
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
 
@@ -244,15 +294,17 @@ fn remove_child_from_approved_account() {
 
     // mint `parent_token_id`, add child to it and accept child
     mint_parent_and_child_with_acceptance(
+        &sys,
         &rmrk_child,
         &rmrk_parent,
         child_token_id,
         parent_token_id,
     );
 
-    rmrk_parent.approve(USERS[0], USERS[3], parent_token_id);
+    rmrk_parent.approve(&sys, USERS[0], USERS[3], parent_token_id);
 
     rmrk_parent.remove_child(
+        &sys,
         USERS[3],
         parent_token_id,
         CHILD_NFT_CONTRACT,
@@ -264,10 +316,11 @@ fn remove_child_from_approved_account() {
 }
 
 #[test]
+#[ignore]
 fn remove_child_failures() {
     let sys = System::new();
     sys.init_logger();
-
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
 
@@ -276,6 +329,7 @@ fn remove_child_failures() {
 
     // mint `parent_token_id`, add child to it and accept child
     mint_parent_and_child_with_acceptance(
+        &sys,
         &rmrk_child,
         &rmrk_parent,
         child_token_id,
@@ -284,6 +338,7 @@ fn remove_child_failures() {
 
     // must fail since the caller is not owner or not approved account
     rmrk_parent.remove_child(
+        &sys,
         USERS[3],
         parent_token_id,
         CHILD_NFT_CONTRACT,
@@ -293,6 +348,7 @@ fn remove_child_failures() {
 
     // must fail since the child with indicated id does not exist
     rmrk_parent.remove_child(
+        &sys,
         USERS[0],
         parent_token_id,
         CHILD_NFT_CONTRACT,

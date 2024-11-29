@@ -2,12 +2,17 @@ name: Update GEAR Dependencies
 
 on:
   schedule:
-    - cron: '0 0 * * *' # Runs every day at midnight
+    - cron: '0 */2 * * *' # Runs every 30 minutes
   workflow_dispatch: # Allows manual triggering of the workflow
 
 defaults:
   run:
     working-directory: scripts
+
+permissions:
+  contents: write
+  actions: write
+  pull-requests: write
 
 jobs:
   update-dependencies:
@@ -15,30 +20,71 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v2
+      uses: actions/checkout@v4
       with:
         fetch-depth: 0
-        token: ${{ secrets.UPDATE_GEAR_TAG_TOKEN }}
+        token: ${{ secrets.WF_SECRET }}
 
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
 
-    - name: Install GitPython
+    - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
         pip install requests packaging gitpython
 
     - name: Check for new tag and update Cargo.toml
       env:
-        GITHUB_TOKEN: ${{ secrets.UPDATE_GEAR_TAG_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.WF_SECRET }}
       run: |
         python update_gear_version.py
         if ! git diff --exit-code; then
+          echo "Changes detected in the repository after running the update_gear_version.py script."
+
+          # Configure git
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add ../contracts/Cargo.toml
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Output changes for logging
+          echo "The following changes were made:"
+          git diff
+
+          # Create a new branch
+          branch_name="update-gear-dependencies-$(date +%Y%m%d%H%M%S)"
+          echo "Creating a new branch: $branch_name"
+          git checkout -b $branch_name
+
+          # Remove and update Cargo.lock file
+          echo "Removing contracts/Cargo.lock"
+          rm -f ../contracts/Cargo.lock
+          echo "Updating contracts/Cargo.lock"
+          cd ../contracts && cargo generate-lockfile
+
+          # Stage and commit changes
+          echo "Staging changed files."
+          git add Cargo.toml
+          git add ../.github/workflows/contracts-tests.yml
+          git add Cargo.lock
+
+          echo "Committing changes with message: 'Update GEAR dependencies to latest tag in contracts'"
           git commit -m "Update GEAR dependencies to latest tag in contracts"
-          git push origin master -f
+
+          # Check if there's an open PR with the label 'auto-update-gear'
+          open_prs=$(gh pr list --label "auto-update-gear" --state open --json number --jq '.[].number')
+
+          if [ -n "$open_prs" ]; then
+            echo "An open pull request with the label 'auto-update-gear' already exists. Exiting."
+            exit 0
+          fi
+
+          # If no matching PR was found, push the branch and create a new PR
+          echo "Pushing the new branch: $branch_name"
+          git push origin $branch_name
+
+          echo "Creating a new pull request."
+          gh pr create --title "Update GEAR dependencies" --body "Automatically created pull request to update GEAR dependencies" --base master --head $branch_name --label "auto-update-gear"
+        else
+          echo "No changes were detected after running the update_gear_version.py script."
         fi

@@ -1,32 +1,19 @@
-[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=vara-man/https://github.com/gear-foundation/dapps)
-[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts.yml?logo=rust&label=docs)](https://dapps.gear.rs/car-races_io)
-
 # Car Races
+
+This project is a competitive environment where strategy-based programs race against each other, aiming to optimize speed, tactics, and resource management on the track. Each program operates autonomously, employing unique strategies to outmaneuver opponents and complete the race as efficiently as possible.
+
+A detailed description of the project can be found on the [wiki](https://wiki.vara.network/docs/examples/Gaming/racingcars).
+
+⚙️ **Note**: The project code is developed using the [Sails](https://github.com/gear-tech/sails) framework.
 
 ### 🏗️ Building
 
 ```sh
-cargo b -r -p "car-races*"
+cargo b -r -p "car-races"
 ```
-```sh
-cargo b -r -p "car-1*"
-```
-```sh
-cargo b -r -p "car-2*"
-```
-```sh
-cargo b -r -p "car-3*"
-```
+
 ### ✅ Testing
 
-Run all tests, except `gclient` ones:
 ```sh
-cargo t -r -p "car-races*" -- --skip gclient
-```
-
-Run all tests:
-```sh
-# Download the node binary.
-cargo xtask node
-cargo t -r -p "car-races*"
+cargo t -r -p "car-races-app"
 ```

@@ -1,0 +1,34 @@
+@use '@/assets/styles/utils' as *;
+@use '@gear-js/ui/breakpoints' as *;
+
+.card {
+  gap: 32px;
+  margin-top: 40px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+}
+
+.formRow {
+  display: flex;
+  gap: 24px;
+  @include sm {
+    flex-direction: column;
+  }
+  > div {
+    flex: 1;
+  }
+}
+
+.buttons {
+  display: flex;
+  gap: 24px;
+  width: 100%;
+  & > * {
+    flex: 1;
+  }
+}
