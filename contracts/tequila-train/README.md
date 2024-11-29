@@ -6,11 +6,11 @@
 ### 🏗️ Building
 
 ```sh
-cargo b -p "tequila-train*"
+cargo b -r -p "tequila-train*"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "tequila-train*"
+cargo t -r -p "tequila-train*"
 ```

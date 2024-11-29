@@ -1,0 +1,18 @@
+[package]
+name = "warrior-wasm"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+warrior-app = { path = "../app" }
+sails-rs.workspace = true
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+sails-idl-gen.workspace = true
+warrior-app = { path = "../app" }
+
+[lib]
+crate-type = ["rlib"]
+name = "warrior_wasm"

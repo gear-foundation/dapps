@@ -1,0 +1,19 @@
+[package]
+name = "galactic-express"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[dependencies]
+sails-rs.workspace = true
+galactic-express-app = { path = "../app" }
+
+[build-dependencies]
+gear-wasm-builder.workspace = true
+sails-idl-gen.workspace = true
+sails-client-gen.workspace = true
+galactic-express-app = { path = "../app" }
+
+[lib]
+crate-type = ["rlib"]
+name = "galactic_express"

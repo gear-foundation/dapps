@@ -1,16 +1,16 @@
-import styles from './game-countdown.module.scss';
+import clsx from 'clsx';
+import { useAtomValue } from 'jotai';
 import Countdown, { CountdownRenderProps } from 'react-countdown';
+import styles from './game-countdown.module.scss';
 import { GameMark } from '../game-mark';
 import { useGame } from '../../hooks';
-import type { IGameInstance } from '../../types';
-import { toNumber } from '@/app/utils';
-import clsx from 'clsx';
 import { BaseComponentProps } from '@/app/types';
-import { useAtomValue } from 'jotai';
 import { stateChangeLoadingAtom } from '../../store';
+import { GameInstance } from '@/app/utils';
+import { useConfigQuery } from '../../sails';
 
 type GameCountdownProps = BaseComponentProps & {
-  game: IGameInstance;
+  game: GameInstance;
 };
 
 function Clock({ minutes, seconds }: CountdownRenderProps) {
@@ -21,24 +21,25 @@ function Clock({ minutes, seconds }: CountdownRenderProps) {
   );
 }
 
-export function GameCountdown({ game: { playerMark, lastTime }, className }: GameCountdownProps) {
-  const { setCountdown, countdown, configState } = useGame();
+export function GameCountdown({ game: { player_mark, last_time }, className }: GameCountdownProps) {
+  const { setCountdown, countdown } = useGame();
+  const { config } = useConfigQuery();
   const isLoading = useAtomValue(stateChangeLoadingAtom);
 
   return (
     <div className={clsx(styles.wrapper, className)}>
       <div>
-        <GameMark mark={playerMark} className={styles.mark} />
+        <GameMark mark={player_mark} className={styles.mark} />
       </div>
       <div className={styles.text}>Your turn</div>
-      {!isLoading && countdown?.isActive && configState && (
+      {!isLoading && countdown?.isActive && config && (
         <div className={styles.timer}>
           <Countdown
-            date={toNumber(lastTime) + (toNumber(configState.turnDeadlineMs) || 30000)}
+            date={Number(last_time) + (Number(config.turn_deadline_ms) || 30000)}
             renderer={Clock}
             onComplete={() =>
               setCountdown((prev) => ({
-                value: prev ? prev.value : '',
+                value: prev ? prev.value : 0,
                 isActive: false,
               }))
             }

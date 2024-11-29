@@ -8,6 +8,8 @@ import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
+import { QueryProvider } from '@dapps-frontend/ui';
+
 import {
   SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
@@ -65,6 +67,7 @@ const providers = [
   ApiProvider,
   AccountProvider,
   AlertProvider,
+  QueryProvider,
   DnsProvider,
   GaslessTransactionsProvider,
   SignlessTransactionsProvider,

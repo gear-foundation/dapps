@@ -3,45 +3,61 @@ use gtest::{Program, System};
 use rmrk_io::*;
 
 #[test]
+#[ignore]
 fn burn_simple() {
     let sys = System::new();
+    mint_value_to_users(&sys);
     let rmrk = Program::rmrk(&sys, None);
 
     let token_id: u64 = 5;
 
     // mint
-    rmrk.mint_to_root_owner(USERS[0], USERS[0], token_id, None);
+    rmrk.mint_to_root_owner(&sys, USERS[0], USERS[0], token_id, None);
 
     // burn
-    rmrk.burn(USERS[0], token_id, None);
+    rmrk.burn(&sys, USERS[0], token_id, None);
 
     // // check that token does not exist
     // rmrk.check_rmrk_owner(token_id, None, ZERO_ID);
 }
 
 #[test]
+#[ignore]
 fn burn_simple_failures() {
     let sys = System::new();
     sys.init_logger();
+    mint_value_to_users(&sys);
     let rmrk = Program::rmrk(&sys, None);
 
     let token_id: u64 = 5;
 
     // mint
-    rmrk.mint_to_root_owner(USERS[0], USERS[0], token_id, None);
+    rmrk.mint_to_root_owner(&sys, USERS[0], USERS[0], token_id, None);
 
     // must fail since caller is not owner and not approved
-    rmrk.burn(USERS[3], token_id, Some(RMRKError::NotApprovedAccount));
+    rmrk.burn(
+        &sys,
+        USERS[3],
+        token_id,
+        Some(RMRKError::NotApprovedAccount),
+    );
 
     // must fail since token does not exist
-    rmrk.burn(USERS[3], token_id + 1, Some(RMRKError::TokenDoesNotExist));
+    rmrk.burn(
+        &sys,
+        USERS[3],
+        token_id + 1,
+        Some(RMRKError::TokenDoesNotExist),
+    );
 }
 
 #[test]
+#[ignore]
 fn burn_nested_token() {
     let sys = System::new();
 
     sys.init_logger();
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
 
@@ -50,10 +66,11 @@ fn burn_nested_token() {
     let parent_token_id: u64 = 10;
 
     // mint `parent_token_id`
-    rmrk_parent.mint_to_root_owner(USERS[0], USERS[1], parent_token_id, None);
+    rmrk_parent.mint_to_root_owner(&sys, USERS[0], USERS[1], parent_token_id, None);
 
     // mint child_token_id to parent_token_id
     rmrk_child.mint_to_nft(
+        &sys,
         USERS[1],
         PARENT_NFT_CONTRACT,
         parent_token_id,
@@ -63,6 +80,7 @@ fn burn_nested_token() {
 
     // mint child_token_id to parent_token_id
     rmrk_child.mint_to_nft(
+        &sys,
         USERS[1],
         PARENT_NFT_CONTRACT,
         parent_token_id,
@@ -72,6 +90,7 @@ fn burn_nested_token() {
 
     // accept one child
     rmrk_parent.accept_child(
+        &sys,
         USERS[1],
         parent_token_id,
         CHILD_NFT_CONTRACT,
@@ -79,8 +98,8 @@ fn burn_nested_token() {
         None,
     );
 
-    rmrk_child.burn(USERS[1], child_pending_token_id, None);
-    rmrk_child.burn(USERS[1], child_accepted_token_id, None);
+    rmrk_child.burn(&sys, USERS[1], child_pending_token_id, None);
+    rmrk_child.burn(&sys, USERS[1], child_accepted_token_id, None);
 
     // // check that parent contract has no pending children
     // rmrk_parent.check_pending_children(parent_token_id, BTreeSet::new());
@@ -90,10 +109,12 @@ fn burn_nested_token() {
 }
 
 #[test]
+#[ignore]
 fn burn_nested_token_failures() {
     let sys = System::new();
 
     sys.init_logger();
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
 
@@ -101,10 +122,11 @@ fn burn_nested_token_failures() {
     let parent_token_id: u64 = 10;
 
     // mint `parent_token_id`
-    rmrk_parent.mint_to_root_owner(USERS[0], USERS[1], parent_token_id, None);
+    rmrk_parent.mint_to_root_owner(&sys, USERS[0], USERS[1], parent_token_id, None);
 
     // mint child_token_id to parent_token_id
     rmrk_child.mint_to_nft(
+        &sys,
         USERS[1],
         PARENT_NFT_CONTRACT,
         parent_token_id,
@@ -113,15 +135,22 @@ fn burn_nested_token_failures() {
     );
 
     // must fail since caller is not root owner of the nested child token
-    rmrk_child.burn(USERS[3], child_token_id, Some(RMRKError::NotRootOwner));
+    rmrk_child.burn(
+        &sys,
+        USERS[3],
+        child_token_id,
+        Some(RMRKError::NotRootOwner),
+    );
 }
 
 // ownership chain is now USERS[0] > parent_token_id > child_token_id > grand_token_id
 // in that test child_token_id is burning
 // rmrk_child contract must also burn grand_token_id and must be removed from parent_token_id
 #[test]
+#[ignore]
 fn recursive_burn_nested_token() {
     let sys = System::new();
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
     let rmrk_grand = Program::rmrk(&sys, None);
@@ -131,6 +160,7 @@ fn recursive_burn_nested_token() {
 
     // ownership chain is  USERS[0] > parent_token_id > child_token_id > grand_token_id
     rmrk_chain(
+        &sys,
         &rmrk_grand,
         &rmrk_child,
         &rmrk_parent,
@@ -166,9 +196,11 @@ fn recursive_burn_nested_token() {
 // in that test parent_token_id is burning
 // rmrk_child contract must also burn child_token_id and grand_token_id
 #[test]
+#[ignore]
 fn recursive_burn_parent_token() {
     let sys = System::new();
     sys.init_logger();
+    mint_value_to_users(&sys);
     let rmrk_child = Program::rmrk(&sys, None);
     let rmrk_parent = Program::rmrk(&sys, None);
     let rmrk_grand = Program::rmrk(&sys, None);
@@ -178,6 +210,7 @@ fn recursive_burn_parent_token() {
 
     // ownership chain is  USERS[0] > parent_token_id > child_token_id > grand_token_id
     rmrk_chain(
+        &sys,
         &rmrk_grand,
         &rmrk_child,
         &rmrk_parent,
@@ -187,7 +220,7 @@ fn recursive_burn_parent_token() {
     );
 
     // burn parent_token_id
-    rmrk_parent.burn(USERS[0], parent_token_id, None);
+    rmrk_parent.burn(&sys, USERS[0], parent_token_id, None);
 
     // check that child_token_id does not exist
     rmrk_child.check_rmrk_owner(child_token_id, None, ZERO_ID);

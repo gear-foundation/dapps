@@ -2,7 +2,6 @@ import { HelpDescription } from '../ui/typography';
 import styles from './game.module.scss';
 import { GameField } from '../game-field';
 import { GameInfoPlayerMark } from '../game-info-player-mark';
-import type { IGameInstance } from '../../types';
 import { GameCountdown } from '../game-countdown';
 import { GameSkipButton } from '../game-skip-button';
 import { GameStartButton } from '../game-start-button';
@@ -10,28 +9,27 @@ import { Heading } from '@/components/ui/heading';
 import { TextGradient } from '@/components/ui/text-gradient';
 import { useGame } from '@/features/tic-tac-toe/hooks';
 import { BaseComponentProps } from '@/app/types';
-import { ProgramMetadata } from '@gear-js/api';
 import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
+import { GameInstance } from '@/app/utils';
 
 type GameProps = BaseComponentProps & {
-  game: IGameInstance;
-  meta: ProgramMetadata;
+  game: GameInstance;
 };
 
-export function Game({ game, meta }: GameProps) {
-  const { gameResult, playerMark } = game;
+export function Game({ game }: GameProps) {
+  const { game_result, player_mark } = game;
   const { countdown } = useGame();
 
   return (
     <section className={styles.game}>
       <Heading className={styles.game__heading}>
         <>
-          {!!gameResult ? (
+          {!!game_result ? (
             <>
-              {gameResult === 'Player' && <TextGradient>You win</TextGradient>}
-              {gameResult === 'Bot' && <TextGradient className={styles.loose}>You lose</TextGradient>}
-              {gameResult === 'Draw' && "It's a draw"}
+              {game_result === 'Player' && <TextGradient>You win</TextGradient>}
+              {game_result === 'Bot' && <TextGradient className={styles.loose}>You lose</TextGradient>}
+              {game_result === 'Draw' && "It's a draw"}
             </>
           ) : (
             <TextGradient>Tic Tac Toe game</TextGradient>
@@ -39,15 +37,15 @@ export function Game({ game, meta }: GameProps) {
         </>
       </Heading>
       <HelpDescription className={styles.game__text}>
-        {!!gameResult ? (
+        {!!game_result ? (
           <>
-            {gameResult === 'Player' && (
+            {game_result === 'Player' && (
               <p>
                 Congratulations, the game is over, you won! <br /> Good job.
               </p>
             )}
-            {gameResult === 'Bot' && <p>Try again to win.</p>}
-            {gameResult === 'Draw' && (
+            {game_result === 'Bot' && <p>Try again to win.</p>}
+            {game_result === 'Draw' && (
               <p>
                 The game is over, it's a draw! <br />
                 Try again to win.
@@ -62,26 +60,26 @@ export function Game({ game, meta }: GameProps) {
       </HelpDescription>
 
       <div className={styles.game__actions}>
-        {Boolean(!gameResult) ? (
+        {Boolean(!game_result) ? (
           <>
             {countdown?.isActive ? (
               <GameCountdown game={game} className={styles.game__countdown} />
             ) : (
-              <GameSkipButton meta={meta} />
+              <GameSkipButton />
             )}
           </>
         ) : (
           <div className={styles.game__play}>
-            <GameStartButton meta={meta}>Play again</GameStartButton>
+            <GameStartButton>Play again</GameStartButton>
             <EzTransactionsSwitch allowedActions={SIGNLESS_ALLOWED_ACTIONS} />
           </div>
         )}
       </div>
 
       <div className={styles.game__field}>
-        <GameField game={game} meta={meta} />
+        <GameField game={game} />
 
-        <GameInfoPlayerMark isNewGame={!gameResult} mark={playerMark} className={styles.choose} />
+        <GameInfoPlayerMark isNewGame={!game_result} mark={player_mark} className={styles.choose} />
       </div>
     </section>
   );

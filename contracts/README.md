@@ -29,26 +29,20 @@ Note that it's built from the latest commit on the `master` branch. Therefore, w
 ### 🏗️ Build all contract & states
 
 ```sh
-cargo b
+cargo b -r
 ```
 
 ### ✅ Build & run tests
 
 Run all tests, except `gclient` ones:
 ```sh
-cargo t -- --skip gclient
+cargo t -r -- --skip gclient
 ```
 
 Run all tests:
 ```sh
 # Download the node binary.
-cargo xtask node
-cargo t
-```
-
-### 🚀 Run CI locally (should be done before a commit)
-```sh
-cargo xtask ci
+cargo t -r
 ```
 
 ## Versioning & backwards compatibility
