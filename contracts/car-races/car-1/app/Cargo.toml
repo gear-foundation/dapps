@@ -1,0 +1,9 @@
+[package]
+name = "car-strategy-app-1"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sails-rs.workspace = true
+parity-scale-codec.workspace = true
+scale-info.workspace = true

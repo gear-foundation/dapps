@@ -1,0 +1,12 @@
+.DS_Store
+.vscode/
+.binpath
+.metahash
+
+# Rust
+target/
+
+# Npm
+node_modules/
+.env
+dist/

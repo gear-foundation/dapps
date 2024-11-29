@@ -1,0 +1,165 @@
+.container {
+  color: #ffffffcc;
+}
+
+.stats {
+  margin-top: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 22px;
+  > :first-child {
+    color: #00ffc4;
+  }
+
+  button {
+    color: #00ffc4;
+    &:disabled {
+      color: #58696e;
+      opacity: 1;
+    }
+  }
+}
+
+.title {
+  color: #ffffff;
+  margin-bottom: 8px;
+  line-height: 29px;
+}
+
+.subtitle {
+  height: 24px;
+}
+
+.text {
+  text-transform: capitalize;
+  margin-left: 8px;
+  flex: 1;
+  color: #ffffff;
+  text-align: left;
+}
+
+.description {
+  margin-top: 4px;
+}
+
+.points {
+  font-weight: 700;
+  color: #00ffc4;
+}
+
+.max {
+  color: #00ffc4;
+  margin-left: 8px;
+  font-weight: 500;
+  font-size: 12px;
+}
+
+.arrowLeft {
+  transform: rotate(180deg);
+}
+
+.input {
+  position: relative;
+  width: 38px;
+  height: 22px;
+
+  input {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 38px;
+    height: 22px;
+    color: #ffffff;
+    background: transparent;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 16.8px;
+    letter-spacing: 0.02em;
+    text-align: center;
+
+    &:focus {
+      outline: none;
+    }
+  }
+
+  /* remove input arrows */
+  /* Chrome, Safari, Edge, Opera */
+  & input::-webkit-outer-spin-button,
+  & input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox */
+  & input[type='number'] {
+    -moz-appearance: textfield;
+  }
+}
+
+.border {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  background: transparent;
+  pointer-events: none;
+}
+
+.input:before,
+.input:after,
+.border:before,
+.border:after {
+  position: absolute;
+  pointer-events: none;
+  width: 9px;
+  height: 9px;
+  content: '';
+  border-color: #58696e;
+  border-style: solid;
+  border-radius: 1px;
+}
+
+.input:before {
+  left: 0px;
+  top: 0px;
+  border-width: 1.5px 0 0 1.5px;
+}
+
+.input:after {
+  right: 0px;
+  top: 0px;
+  border-width: 1.5px 1.5px 0 0;
+}
+
+.border:before {
+  right: 0px;
+  bottom: 0px;
+  border-width: 0 1.5px 1.5px 0;
+}
+
+.border:after {
+  left: 0px;
+  bottom: 0px;
+  border-width: 0 0 1.5px 1.5px;
+}
+
+.info {
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: #fdd87c;
+  background: #fdd87c14;
+  padding: 0 8px;
+  border-radius: 8px;
+  margin: 63px -13.5px 0;
+}

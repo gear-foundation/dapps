@@ -9,14 +9,16 @@ use utils::*;
 fn success_init() {
     let sys = System::new();
     let oracle_program = load_randomness_program(&sys);
-
-    let result = oracle_program.send(
+    sys.mint_to(OWNER, 100_000_000_000_000);
+    sys.mint_to(MANAGER, 100_000_000_000_000);
+    let mid = oracle_program.send(
         OWNER,
         InitConfig {
             manager: MANAGER.into(),
         },
     );
-    assert!(!result.main_failed());
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
 
     let oracle_state: RandomnessOracle = oracle_program
         .read_state(0)
@@ -32,7 +34,7 @@ fn success_init() {
 fn success_update_manager() {
     let sys = System::new();
     let oracle_program = load_randomness_program(&sys);
-
+    sys.mint_to(OWNER, 100_000_000_000_000);
     oracle_program.send(
         OWNER,
         InitConfig {
@@ -40,18 +42,21 @@ fn success_update_manager() {
         },
     );
 
-    let result = oracle_program.send(OWNER, Action::UpdateManager(NEW_MANAGER.into()));
-    assert!(result.contains(&(OWNER, Event::NewManager(NEW_MANAGER.into()).encode())));
+    oracle_program.send(OWNER, Action::UpdateManager(NEW_MANAGER.into()));
+    let res = sys.run_next_block();
+    assert!(res.contains(&(OWNER, Event::NewManager(NEW_MANAGER.into()).encode())));
 
-    let result = oracle_program.send(OWNER, Action::UpdateManager(OWNER.into()));
-    assert!(result.contains(&(OWNER, Event::NewManager(OWNER.into()).encode())));
+    oracle_program.send(OWNER, Action::UpdateManager(OWNER.into()));
+    let res = sys.run_next_block();
+    assert!(res.contains(&(OWNER, Event::NewManager(OWNER.into()).encode())));
 }
 
 #[test]
 fn success_set_random_value() {
     let sys = System::new();
     let oracle_program = load_randomness_program(&sys);
-
+    sys.mint_to(OWNER, 100_000_000_000_000);
+    sys.mint_to(MANAGER, 100_000_000_000_000);
     oracle_program.send(
         OWNER,
         InitConfig {
@@ -65,21 +70,23 @@ fn success_set_random_value() {
         prev_signature: String::from(""),
     };
 
-    let result = oracle_program.send(
+    oracle_program.send(
         MANAGER,
         Action::SetRandomValue {
             round: 1,
             value: value.clone(),
         },
     );
-    assert!(result.contains(&(MANAGER, Event::NewRandomValue { round: 1, value }.encode())));
+    let res = sys.run_next_block();
+    assert!(res.contains(&(MANAGER, Event::NewRandomValue { round: 1, value }.encode())));
 }
 
 #[test]
 fn fail_set_random_value_invalid_manager() {
     let sys = System::new();
     let oracle_program = load_randomness_program(&sys);
-
+    sys.mint_to(OWNER, 100_000_000_000_000);
+    sys.mint_to(FAKE_MANAGER, 100_000_000_000_000);
     oracle_program.send(
         OWNER,
         InitConfig {
@@ -93,14 +100,17 @@ fn fail_set_random_value_invalid_manager() {
         prev_signature: String::from(""),
     };
 
-    let result = oracle_program.send(FAKE_MANAGER, Action::SetRandomValue { round: 1, value });
-    assert!(result.main_failed());
+    let mid = oracle_program.send(FAKE_MANAGER, Action::SetRandomValue { round: 1, value });
+    let res = sys.run_next_block();
+    assert!(res.failed.contains(&mid));
 }
 
 #[test]
 fn fail_set_random_value_invalid_round() {
     let sys = System::new();
     let oracle_program = load_randomness_program(&sys);
+    sys.mint_to(OWNER, 100_000_000_000_000);
+    sys.mint_to(MANAGER, 100_000_000_000_000);
 
     oracle_program.send(
         OWNER,
@@ -115,23 +125,27 @@ fn fail_set_random_value_invalid_round() {
         prev_signature: String::from(""),
     };
 
-    let result = oracle_program.send(
+    let mid = oracle_program.send(
         MANAGER,
         Action::SetRandomValue {
             round: 1,
             value: value.clone(),
         },
     );
-    assert!(!result.main_failed());
+    let res = sys.run_next_block();
+    assert!(res.succeed.contains(&mid));
 
-    let result = oracle_program.send(MANAGER, Action::SetRandomValue { round: 1, value });
-    assert!(result.main_failed());
+    let mid = oracle_program.send(MANAGER, Action::SetRandomValue { round: 1, value });
+    let res = sys.run_next_block();
+    assert!(res.failed.contains(&mid));
 }
 
 #[test]
 fn fail_update_manager_invalid_owner() {
     let sys = System::new();
     let oracle_program = load_randomness_program(&sys);
+    sys.mint_to(OWNER, 100_000_000_000_000);
+    sys.mint_to(FAKE_OWNER, 100_000_000_000_000);
 
     oracle_program.send(
         OWNER,
@@ -140,6 +154,7 @@ fn fail_update_manager_invalid_owner() {
         },
     );
 
-    let result = oracle_program.send(FAKE_OWNER, Action::UpdateManager(NEW_MANAGER.into()));
-    assert!(result.main_failed());
+    let mid = oracle_program.send(FAKE_OWNER, Action::UpdateManager(NEW_MANAGER.into()));
+    let res = sys.run_next_block();
+    assert!(res.failed.contains(&mid));
 }

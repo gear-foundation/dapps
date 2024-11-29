@@ -1,0 +1,39 @@
+.red {
+  color: #dd1f1f;
+}
+
+.container {
+  position: absolute;
+  top: 45px;
+  color: #ffffff;
+  text-align: center;
+  width: 226px;
+}
+
+.light {
+  position: absolute;
+  top: -85px;
+  left: -38px;
+  width: 300px;
+  height: 300px;
+
+  background-image: url(../../assets/images/timer-light.svg);
+
+  z-index: -1;
+}
+.dark {
+  background-image: url(../../assets/images/timer-dark.svg);
+}
+
+.time {
+  font-size: 72px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  margin: 12px 0 4px;
+}
+
+.title {
+  margin-bottom: 21px;
+  text-transform: uppercase;
+}
