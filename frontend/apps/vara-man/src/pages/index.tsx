@@ -1,7 +1,7 @@
 import { Route } from 'react-router-dom';
 import { Suspense, lazy } from 'react';
 import { ErrorTrackingRoutes } from '@dapps-frontend/error-tracking';
-import { useInitGame } from '@/app/hooks/use-game';
+import { useInitGame } from '@/app/hooks/use-init-game';
 
 const routes = [
   { path: '/', Page: lazy(() => import('./home')) },

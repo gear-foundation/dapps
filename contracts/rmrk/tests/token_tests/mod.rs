@@ -1,5 +1,4 @@
 mod accept_reject_children;
-mod approvals;
 mod burn;
 mod mint;
 mod transfer;

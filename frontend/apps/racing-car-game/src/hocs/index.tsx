@@ -14,8 +14,8 @@ import {
 } from '@dapps-frontend/ez-transactions';
 import { ADDRESS } from 'consts';
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
+import { QueryProvider } from '@dapps-frontend/ui';
 import { Alert, alertStyles } from '@/ui';
-import { QueryProvider } from './query-provider';
 import { useProgram } from '@/app/utils';
 
 function DnsProvider({ children }: ProviderProps) {

@@ -4,6 +4,7 @@ use w3bstreaming_io::*;
 pub const USERS: [u64; 3] = [10, 11, 12];
 
 fn edit_profile(
+    system: &System,
     web_stream: &Program<'_>,
     from: u64,
     name: Option<String>,
@@ -11,7 +12,7 @@ fn edit_profile(
     img_link: Option<String>,
     error: bool,
 ) {
-    let res = web_stream.send(
+    let mid = web_stream.send(
         from,
         Action::EditProfile {
             name,
@@ -19,12 +20,13 @@ fn edit_profile(
             img_link,
         },
     );
-
-    assert_eq!(error, res.main_failed());
+    let res = system.run_next_block();
+    assert_eq!(error, res.failed.contains(&mid));
 }
 
 #[allow(clippy::too_many_arguments)]
 fn new_stream(
+    system: &System,
     web_stream: &Program<'_>,
     from: u64,
     title: String,
@@ -34,7 +36,7 @@ fn new_stream(
     img_link: String,
     error: bool,
 ) {
-    let res = web_stream.send(
+    let mid = web_stream.send(
         from,
         Action::NewStream {
             title,
@@ -44,11 +46,13 @@ fn new_stream(
             img_link,
         },
     );
-    assert_eq!(error, res.main_failed());
+    let res = system.run_next_block();
+    assert_eq!(error, res.failed.contains(&mid));
 }
 
 #[allow(clippy::too_many_arguments)]
 fn edit_stream(
+    system: &System,
     web_stream: &Program<'_>,
     from: u64,
     stream_id: String,
@@ -59,7 +63,7 @@ fn edit_stream(
     description: Option<String>,
     error: bool,
 ) {
-    let res = web_stream.send(
+    let mid = web_stream.send(
         from,
         Action::EditStream {
             stream_id,
@@ -70,29 +74,40 @@ fn edit_stream(
             description,
         },
     );
-    assert_eq!(error, res.main_failed());
+    let res = system.run_next_block();
+    assert_eq!(error, res.failed.contains(&mid));
 }
 
-fn delete_stream(web_stream: &Program<'_>, from: u64, stream_id: String, error: bool) {
-    let res = web_stream.send(from, Action::DeleteStream { stream_id });
-    assert_eq!(error, res.main_failed());
+fn delete_stream(
+    system: &System,
+    web_stream: &Program<'_>,
+    from: u64,
+    stream_id: String,
+    error: bool,
+) {
+    let mid = web_stream.send(from, Action::DeleteStream { stream_id });
+    let res = system.run_next_block();
+    assert_eq!(error, res.failed.contains(&mid));
 }
 
 #[test]
 fn success() {
     let system = System::new();
     system.init_logger();
+    system.mint_to(USERS[0], 100_000_000_000_000);
     let web_stream = Program::current(&system);
 
-    let res = web_stream.send(USERS[0], 0);
-    assert!(!res.main_failed());
+    let mid = web_stream.send(USERS[0], 0);
+    let res = system.run_next_block();
+    assert!(res.succeed.contains(&mid));
 
-    edit_profile(&web_stream, USERS[0], None, None, None, false);
+    edit_profile(&system, &web_stream, USERS[0], None, None, None, false);
 
     let state: State = web_stream.read_state(0).expect("Can't read state");
     assert_eq!(state.users[0].0, USERS[0].into());
 
     new_stream(
+        &system,
         &web_stream,
         USERS[0],
         "Title".to_string(),
@@ -108,6 +123,7 @@ fn success() {
     let stream_id = state.streams[0].0.clone();
 
     edit_stream(
+        &system,
         &web_stream,
         USERS[0],
         stream_id.clone(),
@@ -131,7 +147,7 @@ fn success() {
     let state: State = web_stream.read_state(0).expect("Can't read state");
     assert_eq!(state.streams[0].1, stream);
 
-    delete_stream(&web_stream, USERS[0], stream_id, false);
+    delete_stream(&system, &web_stream, USERS[0], stream_id, false);
 
     let state: State = web_stream.read_state(0).expect("Can't read state");
     assert!(state.streams.is_empty());
@@ -141,13 +157,17 @@ fn success() {
 fn failures() {
     let system = System::new();
     system.init_logger();
+    system.mint_to(USERS[0], 100_000_000_000_000);
+    system.mint_to(USERS[1], 100_000_000_000_000);
     let web_stream = Program::current(&system);
 
-    let res = web_stream.send(USERS[0], 0);
-    assert!(!res.main_failed());
+    let mid = web_stream.send(USERS[0], 0);
+    let res = system.run_next_block();
+    assert!(res.succeed.contains(&mid));
 
     // not registered
     new_stream(
+        &system,
         &web_stream,
         USERS[0],
         "Title".to_string(),
@@ -158,12 +178,13 @@ fn failures() {
         true,
     );
 
-    edit_profile(&web_stream, USERS[0], None, None, None, false);
+    edit_profile(&system, &web_stream, USERS[0], None, None, None, false);
 
     let state: State = web_stream.read_state(0).expect("Can't read state");
     assert_eq!(state.users[0].0, USERS[0].into());
 
     new_stream(
+        &system,
         &web_stream,
         USERS[0],
         "Title".to_string(),
@@ -180,6 +201,7 @@ fn failures() {
 
     // Not broadcaster
     edit_stream(
+        &system,
         &web_stream,
         USERS[1],
         stream_id.clone(),
@@ -192,5 +214,5 @@ fn failures() {
     );
 
     // Account is no registered
-    delete_stream(&web_stream, USERS[1], stream_id, true);
+    delete_stream(&system, &web_stream, USERS[1], stream_id, true);
 }

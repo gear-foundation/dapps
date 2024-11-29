@@ -1,24 +1,17 @@
-[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=vara-man/https://github.com/gear-foundation/dapps)
-[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts.yml?logo=rust&label=docs)](https://dapps.gear.rs/vara_man_io)
-
 # Vara Man
+
+A detailed description of the project can be found on the [wiki](https://wiki.vara.network/docs/examples/Gaming/varaman).
+
+⚙️ **Note**: The project code is developed using the [Sails](https://github.com/gear-tech/sails) framework.
 
 ### 🏗️ Building
 
 ```sh
-cargo b -r -p "vara-man*"
+cargo b -r -p "vara-man"
 ```
 
 ### ✅ Testing
 
-Run all tests, except `gclient` ones:
 ```sh
-cargo t -r -p "vara-man*" -- --skip gclient
-```
-
-Run all tests:
-```sh
-# Download the node binary.
-cargo xtask node
-cargo t -r -p "vara-man*"
+cargo t -r -p "vara-man-app"
 ```

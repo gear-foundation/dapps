@@ -13,10 +13,10 @@ import {
   EzTransactionsProvider,
 } from '@dapps-frontend/ez-transactions';
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
+import { QueryProvider } from '@dapps-frontend/ui';
 
 import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
-import { QueryProvider } from './query-provider';
 import { useProgram } from '../utils/sails';
 
 function ApiProvider({ children }: ProviderProps) {
