@@ -1,5 +1,5 @@
-import { GaslessContext } from '@dapps-frontend/gasless-transactions';
-import { SignlessContext } from '@dapps-frontend/signless-transactions';
+import { GaslessContext } from '@/features/gasless-transactions';
+import { SignlessContext } from '@/features/signless-transactions';
 
 type Value = {
   gasless: GaslessContext;

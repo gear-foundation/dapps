@@ -1,0 +1,16 @@
+[package]
+name = "dynamic-nft-client"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mockall = { version = "0.12", optional = true }
+sails-rs.workspace = true
+
+[build-dependencies]
+dynamic-nft-app = { path = "../app" }
+sails-idl-gen.workspace = true
+sails-client-gen.workspace = true
+
+[features]
+mocks = ["sails-rs/mockall", "dep:mockall"]

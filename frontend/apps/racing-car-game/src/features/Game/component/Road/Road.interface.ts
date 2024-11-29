@@ -1,4 +1,5 @@
-import { Car, Cars } from '@/types';
+import { Car } from '@/app/utils';
+import { Cars } from '@/types';
 
 export type CarEffect = 'shooted' | 'accelerated' | 'sAndA' | null;
 export interface RoadProps {

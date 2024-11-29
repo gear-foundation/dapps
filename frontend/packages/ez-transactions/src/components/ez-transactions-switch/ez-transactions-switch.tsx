@@ -1,5 +1,5 @@
-import { EnableSignlessSession } from '@dapps-frontend/signless-transactions';
-import { EnableGaslessSession } from '@dapps-frontend/gasless-transactions';
+import { EnableSignlessSession } from '@/features/signless-transactions';
+import { EnableGaslessSession } from '@/features/gasless-transactions';
 
 import { useEzTransactions } from '../../context';
 import styles from './ez-transactions-switch.module.css';

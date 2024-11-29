@@ -1,8 +1,9 @@
 import { Fragment } from 'react';
 import { cx } from 'utils';
 import { shortenString } from 'features/session/utils';
+import { decodeAddress } from '@gear-js/api';
 import { Button } from '@gear-js/vara-ui';
-import { useLaunchMessage } from 'features/session/hooks';
+import { useDeletePlayerMessage } from 'app/utils';
 import styles from './ParticipantsTable.module.scss';
 
 interface TableData {
@@ -18,8 +19,7 @@ type Props = {
 };
 
 function ParticipantsTable({ data, userAddress, isUserAdmin }: Props) {
-  const { meta: isMeta, message: sendMessage } = useLaunchMessage();
-
+  const { deletePlayerMessage } = useDeletePlayerMessage();
   const isYourAddress = (address: string) => address === userAddress;
 
   const modifiedData: TableData[] = [
@@ -28,13 +28,7 @@ function ParticipantsTable({ data, userAddress, isUserAdmin }: Props) {
   ];
 
   const handleDeletePlayer = (playerId: string) => {
-    sendMessage({
-      payload: {
-        DeletePlayer: {
-          playerId,
-        },
-      },
-    });
+    deletePlayerMessage({ playerId: decodeAddress(playerId) });
   };
 
   return (

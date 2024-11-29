@@ -1,25 +1,24 @@
 [package]
 name = "dynamic-nft"
 version.workspace = true
+license.workspace = true
 edition.workspace = true
-publish.workspace = true
 
 [dependencies]
-gstd.workspace = true
-primitive-types.workspace = true
-dynamic-nft-io.workspace = true
-gear-lib-old.workspace = true
-gear-lib-derive.workspace = true
-sp-core-hashing.workspace = true
-gmeta.workspace = true
-
-[dev-dependencies]
-hex-literal.workspace = true
-sp-core.workspace = true
-gclient.workspace = true
-gtest.workspace = true
-tokio.workspace = true
+dynamic-nft-app = { path = "app" }
 
 [build-dependencies]
-dynamic-nft-io.workspace = true
-gear-wasm-builder.workspace = true
+dynamic-nft-app = { path = "app" }
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
+
+[dev-dependencies]
+dynamic-nft = { path = ".", features = ["wasm-binary"] }
+dynamic-nft-client = { path = "client" }
+sails-rs = { workspace = true, features = ["gtest"] }
+tokio.workspace = true
+gclient.workspace = true
+gear-core.workspace = true
+
+[features]
+wasm-binary = []

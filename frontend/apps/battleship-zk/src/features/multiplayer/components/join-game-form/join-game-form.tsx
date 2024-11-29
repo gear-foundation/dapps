@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@gear-js/vara-ui';
 import { decodeAddress } from '@gear-js/api';
-import { useAccount, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
+import { useAccount, useAlert, useBalanceFormat, withoutCommas } from '@gear-js/react-hooks';
 import { TextField } from '@/components/layout/text-field';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { HexString } from '@gear-js/api';
@@ -16,10 +16,6 @@ import { useJoinGameMessage } from '../../sails/messages';
 import { useMultiGameQuery } from '../../sails/queries';
 import styles from './JoinGameForm.module.scss';
 
-export interface ContractFormValues {
-  [key: string]: string;
-}
-
 type Props = {
   onCancel: () => void;
 };
@@ -33,6 +29,7 @@ function JoinGameForm({ onCancel }: Props) {
   const { getFormattedBalanceValue } = useBalanceFormat();
   const { triggerGame } = useMultiplayerGame();
   const { joinGameMessage } = useJoinGameMessage();
+  const alert = useAlert();
   const gameQuery = useMultiGameQuery();
   const [foundState, setFoundState] = useState<MultipleGameState | null>(null);
   const { pending, setPending } = usePending();
@@ -83,14 +80,16 @@ function JoinGameForm({ onCancel }: Props) {
       setPending(true);
 
       try {
-        const transaction = await joinGameMessage(foundGame, values.name);
-        const withFee = await transaction.withValue(BigInt(foundState.bid));
-        const { response } = await withFee.signAndSend();
+        const transaction = await joinGameMessage(foundGame, values.name, BigInt(foundState.bid));
+        const { response } = await transaction.signAndSend();
 
         await response();
         await triggerGame();
       } catch (err) {
         console.log(err);
+        const { message, docs } = err as Error & { docs: string };
+        const errorText = message || docs || 'Create game error';
+        alert.error(errorText);
       } finally {
         setPending(false);
       }

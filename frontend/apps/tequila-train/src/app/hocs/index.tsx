@@ -7,6 +7,7 @@ import {
   ProviderProps,
 } from '@gear-js/react-hooks';
 import { DnsProvider as SharedDnsProvider } from '@dapps-frontend/hooks';
+import { QueryProvider } from '@dapps-frontend/ui';
 import { Alert, alertStyles } from 'components/ui/alert';
 import { AppProvider, GameProvider } from 'app/context';
 import { ENV } from 'app/consts';
@@ -35,7 +36,16 @@ function AlertProvider({ children }: ProviderProps) {
   );
 }
 
-const providers = [BrowserRouter, AlertProvider, ApiProvider, DnsProvider, AccountProvider, AppProvider, GameProvider];
+const providers = [
+  BrowserRouter,
+  AlertProvider,
+  ApiProvider,
+  DnsProvider,
+  AccountProvider,
+  AppProvider,
+  GameProvider,
+  QueryProvider,
+];
 
 export const withProviders = (Component: ComponentType) => () =>
   providers.reduceRight((children, Provider) => <Provider>{children}</Provider>, <Component />);

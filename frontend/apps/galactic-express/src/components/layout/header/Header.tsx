@@ -14,8 +14,8 @@ function Header() {
   const { admin, stage } = state || {};
 
   const isUserAdmin = admin === account?.decodedAddress;
-  const isRegistration = Object.keys(stage || {})[0] === 'Registration';
-  const participants = stage?.Registration || stage?.Results?.participants;
+  const isRegistration = stage && 'registration' in stage;
+  const participants = isRegistration ? stage.registration : [];
 
   return (
     <CommonHeader
@@ -25,18 +25,9 @@ function Header() {
           <GalexSVG />
         </Link>
       }
-      menu={
-        <MenuHandler
-          className={{
-            wallet: {
-              balance: styles.walletBalance,
-            },
-            icon: styles.menuIcon,
-          }}
-        />
-      }
+      menu={<MenuHandler className={{ icon: styles.menuIcon }} />}
       className={{ header: styles.header, content: styles.container }}>
-      {isUserAdmin && isRegistration && <CancelGameButton isAdmin={isUserAdmin} participants={participants || []} />}
+      {isUserAdmin && isRegistration && <CancelGameButton isAdmin={isUserAdmin} participants={participants} />}
     </CommonHeader>
   );
 }

@@ -14,13 +14,16 @@ function Home() {
   const [isGameCancelledModalOpen, setIsGameCancelledModalOpen] = useState(false);
   const { account } = useAccount();
   const state = useLaunchState();
-  const { admin, stage, sessionId, altitude, weather, reward, bid, adminName } = state || {};
+  const { admin, stage, altitude, weather, reward, bid, admin_name } = state || {};
 
-  const isSessionEnded = Object.keys(stage || {})[0] === 'Results';
+  const isSessionEnded = stage && 'results' in stage;
 
-  const rankings = stage?.Results?.rankings;
-  const turns = stage?.Results?.turns;
-  const participants = stage?.Registration || stage?.Results?.participants;
+  const rankings = isSessionEnded ? stage.results.rankings : [];
+  const turns = isSessionEnded ? stage.results.turns : [];
+
+  const registrationParticipants = stage && 'registration' in stage && stage.registration;
+  const resultsParticipants = isSessionEnded && stage.results.participants;
+  const participants = registrationParticipants || resultsParticipants || [];
 
   const isUserAdmin = admin === account?.decodedAddress;
 
@@ -51,17 +54,16 @@ function Home() {
         <>
           {!isSessionEnded && (
             <Start
-              participants={participants || []}
+              participants={participants}
               session={{
-                altitude: altitude || '',
+                altitude: String(altitude || ''),
                 weather: weather || '',
-                reward: reward || '',
-                sessionId: sessionId || '',
+                reward: String(reward || ''),
               }}
-              bid={bid}
+              bid={String(bid || 0)}
               isUserAdmin={isUserAdmin}
               adminAddress={admin}
-              adminName={adminName || ''}
+              adminName={admin_name || ''}
               userAddress={account?.address || ''}
             />
           )}
@@ -70,14 +72,13 @@ function Home() {
               {rankings?.map((item) => item[0]).includes(account?.decodedAddress || '0x') ? (
                 <Session
                   session={{
-                    altitude: altitude || '',
+                    altitude: String(altitude || ''),
                     weather: weather || '',
-                    reward: reward || '',
-                    sessionId: sessionId || '',
+                    reward: String(reward || ''),
                   }}
                   participants={participants || []}
-                  turns={turns || []}
-                  rankings={rankings || []}
+                  turns={turns}
+                  rankings={rankings}
                   userId={account?.decodedAddress}
                   admin={admin}
                 />

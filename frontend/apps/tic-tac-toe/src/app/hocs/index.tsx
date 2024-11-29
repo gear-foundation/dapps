@@ -8,15 +8,16 @@ import { ComponentType } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 
 import { DnsProvider as SharedDnsProvider, useDnsProgramIds } from '@dapps-frontend/hooks';
+import { QueryProvider } from '@dapps-frontend/ui';
 import {
   SignlessTransactionsProvider as SharedSignlessTransactionsProvider,
   GaslessTransactionsProvider as SharedGaslessTransactionsProvider,
   EzTransactionsProvider,
 } from '@dapps-frontend/ez-transactions';
 
-import metaTxt from '@/features/tic-tac-toe/assets/meta/tic_tac_toe.meta.txt';
 import { ADDRESS } from '@/app/consts';
 import { Alert, alertStyles } from '@/components/ui/alert';
+import { useProgram } from '../utils';
 
 function ApiProvider({ children }: ProviderProps) {
   return <GearApiProvider initialArgs={{ endpoint: ADDRESS.NODE }}>{children}</GearApiProvider>;
@@ -53,8 +54,9 @@ function GaslessTransactionsProvider({ children }: ProviderProps) {
 
 function SignlessTransactionsProvider({ children }: ProviderProps) {
   const { programId } = useDnsProgramIds();
+  const program = useProgram();
   return (
-    <SharedSignlessTransactionsProvider programId={programId} metadataSource={metaTxt}>
+    <SharedSignlessTransactionsProvider programId={programId} program={program}>
       {children}
     </SharedSignlessTransactionsProvider>
   );
@@ -66,6 +68,7 @@ const providers = [
   AccountProvider,
   AlertProvider,
   DnsProvider,
+  QueryProvider,
   GaslessTransactionsProvider,
   SignlessTransactionsProvider,
   EzTransactionsProvider,

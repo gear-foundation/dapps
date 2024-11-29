@@ -1,29 +1,26 @@
 import './app.scss';
 import { withProviders } from '@/app/hocs';
 import { useInitGame, useInitGameSync } from '@/features/tic-tac-toe/hooks';
-import meta from '@/features/tic-tac-toe/assets/meta/tic_tac_toe.meta.txt';
 import { Loader, LoadingError, MainLayout } from '@/components';
 import '@gear-js/vara-ui/dist/style.css';
 import { Routing } from '@/pages';
-import { useProgramMetadata } from './app/hooks';
 
 function Component() {
-  const metadata = useProgramMetadata(meta);
   const { isGameReady } = useInitGame();
-  const { errorGame: hasError } = useInitGameSync(metadata);
+  const { errorGame } = useInitGameSync();
 
   return (
     <MainLayout>
-      {!!hasError && (
+      {!!errorGame && (
         <LoadingError>
           <p>Error in the Game contract :(</p>
           <pre>
-            <small>Error message:</small> <code>{hasError}</code>
+            <small>Error message:</small> <code>{errorGame.message}</code>
           </pre>
         </LoadingError>
       )}
-      {!hasError && isGameReady && <Routing />}
-      {!hasError && !isGameReady && <Loader />}
+      {!errorGame && isGameReady && <Routing />}
+      {!errorGame && !isGameReady && <Loader />}
     </MainLayout>
   );
 }

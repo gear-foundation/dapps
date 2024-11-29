@@ -12,6 +12,8 @@
 
 React application of [Tic-Tac-Toe](https://wiki.gear-tech.io/docs/examples/Gaming/tictactoe) based on [Rust smart-contract](https://github.com/gear-foundation/dapps/tree/master/contracts/tic-tac-toe).
 
+This is a frontend implementation for programs created using the [Sails Library](https://wiki.vara.network/docs/build/sails/). For programs built with [Gear library](https://wiki.vara.network/docs/build/gstd/), refer to the implementation [here](https://github.com/gear-foundation/dapps/tree/master/frontend/dev/gstd-tic-tac-toe).
+
 ## Getting started
 
 ### Install packages:
