@@ -124,13 +124,13 @@ service VaraMan {
 
   events {
     GameFinished: struct { winners: vec actor_id, participants: vec struct { actor_id, Player }, prize: u128 };
-    SingleGameFinished: struct { gold_coins: u16, silver_coins: u16, points: u128, maximum_possible_points: u128, maximum_number_gold_coins: u16, maximum_number_silver_coins: u16, prize: u128 };
+    SingleGameFinished: struct { gold_coins: u16, silver_coins: u16, points: u128, maximum_possible_points: u128, maximum_number_gold_coins: u16, maximum_number_silver_coins: u16, prize: u128, player_address: actor_id };
     NewTournamentCreated: struct { tournament_name: str, name: str, level: Level, bid: u128 };
     PlayerRegistered: struct { admin_id: actor_id, name: str, bid: u128 };
     RegisterCanceled;
     TournamentCanceled: struct { admin_id: actor_id };
     PlayerDeleted: struct { player_id: actor_id };
-    ResultTournamentRecorded: struct { gold_coins: u16, silver_coins: u16, time: u128, points: u128, maximum_possible_points: u128, maximum_number_gold_coins: u16, maximum_number_silver_coins: u16 };
+    ResultTournamentRecorded: struct { gold_coins: u16, silver_coins: u16, time: u128, points: u128, maximum_possible_points: u128, maximum_number_gold_coins: u16, maximum_number_silver_coins: u16, player_address: actor_id };
     GameStarted;
     AdminAdded: actor_id;
     StatusChanged: Status;

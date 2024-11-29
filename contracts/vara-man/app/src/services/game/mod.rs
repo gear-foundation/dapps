@@ -1,7 +1,10 @@
 use super::session::Storage as SessionStorage;
 use crate::services;
-use gstd::{collections::HashMap, exec, msg, String};
-use sails_rs::{gstd::service, prelude::*};
+use sails_rs::{
+    collections::HashMap,
+    gstd::{exec, msg, service},
+    prelude::*,
+};
 mod funcs;
 pub mod utils;
 use utils::*;
@@ -57,6 +60,7 @@ pub enum Event {
         maximum_number_gold_coins: u16,
         maximum_number_silver_coins: u16,
         prize: u128,
+        player_address: ActorId,
     },
     NewTournamentCreated {
         tournament_name: String,
@@ -84,6 +88,7 @@ pub enum Event {
         maximum_possible_points: u128,
         maximum_number_gold_coins: u16,
         maximum_number_silver_coins: u16,
+        player_address: ActorId,
     },
     GameStarted,
     AdminAdded(ActorId),

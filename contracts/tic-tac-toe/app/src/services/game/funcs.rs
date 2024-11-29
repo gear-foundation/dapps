@@ -2,8 +2,11 @@ use crate::services::game::{
     Config, Event, GameError, GameInstance, GameResult, Mark, Storage, VICTORIES,
 };
 use crate::services::session::utils::{ActionsForSession, SessionData};
-use gstd::{collections::HashMap, exec, msg};
-use sails_rs::prelude::*;
+use sails_rs::{
+    collections::HashMap,
+    gstd::{exec, msg},
+    prelude::*,
+};
 
 pub fn start_game(
     storage: &mut Storage,

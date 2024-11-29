@@ -12,15 +12,14 @@ members = [
     "car-races/car-3",
     "car-races/wasm",
     "concert/wasm",
-    "galactic-express",
+    "dynamic-nft",
+    "galactic-express/wasm",
     "multisig-wallet",
-    "multisig-wallet/state",
     "oracle",
     "oracle/state",
     "oracle/randomness",
     "oracle/randomness/state",
-    "ping",
-    "ping/state",
+    "ping-pong",
     "rmrk",
     "rmrk/catalog",
     "rmrk/resource",
@@ -70,10 +69,7 @@ tamagotchi-battle-state.path = "tamagotchi-battle/state"
 
 battleship-io.path = "battleship/io"
 car-races-io.path = "car-races/io"
-galactic-express-io.path = "galactic-express/io"
 multi-token-io.path = "multi-token/io"
-multisig-wallet-io.path = "multisig-wallet/io"
-ping-io.path = "ping/io"
 rmrk-catalog-io.path = "rmrk/catalog/io"
 rmrk-io.path = "rmrk/io"
 rmrk-resource-io.path = "rmrk/resource/io"
@@ -93,16 +89,22 @@ rmrk-types.path = "rmrk/types"
 
 # Gear
 
-gstd = "1.6.2"
-gear-wasm-builder = "1.6.2"
-gmeta = "1.6.2"
-gclient = "1.6.2"
+gstd = "1.7.0"
+gear-wasm-builder = "1.7.0"
+gmeta = "1.7.0"
+gclient = "1.7.0"
 gtest = "1.6.1"
-gear-core = "1.6.2"
-sails-idl-gen = "0.6.1"
-sails-rs = "0.6.1"
-sails-client-gen = "0.6.1"
+gear-core = "1.7.0"
+sails-idl-gen = "0.7.0"
+sails-rs = "0.7.0"
+sails-client-gen = "0.7.0"
 session-service = { git = "https://github.com/gear-foundation/signless-gasless-session-service.git" }
+extended-vft-client = { git = "https://github.com/gear-foundation/standards/"}
+extended-vnft-client = { git = "https://github.com/gear-foundation/standards/"}
+extended-vmt-client = { git = "https://github.com/gear-foundation/standards/"}
+extended-vmt = { git = "https://github.com/gear-foundation/standards/"}
+extended-vft = { git = "https://github.com/gear-foundation/standards/"}
+extended-vnft = { git = "https://github.com/gear-foundation/standards/"}
 
 # External
 

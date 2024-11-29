@@ -1,0 +1,8 @@
+.gradient {
+  --color-from: #2b2b2b;
+  --color-to: #00ffc4;
+
+  background: linear-gradient(90deg, var(--color-from) 33.39%, var(--color-to) 77.42%);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}

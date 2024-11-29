@@ -3,8 +3,13 @@ use crate::services::game::{
     MAX_PARTICIPANTS,
 };
 use crate::services::session::utils::{ActionsForSession, SessionData};
-use gstd::{collections::HashMap, exec, msg, prelude::*, ActorId};
-use sails_rs::U256;
+use extended_vft_client::vft::io as vft_io;
+use sails_rs::{
+    collections::HashMap,
+    gstd::{exec, msg},
+    prelude::*,
+    ActorId, U256,
+};
 
 pub fn create_new_tournament(
     storage: &mut GameStorage,
@@ -266,12 +271,7 @@ pub async fn finish_single_game(
         msg::send_with_gas(msg_src, "", 0, prize).expect("Error in sending value");
     } else if let Status::StartedWithFungibleToken { ft_address } = storage.status {
         let value: U256 = prize.into();
-        let request = [
-            "Vft".encode(),
-            "Mint".to_string().encode(),
-            (msg_src, value).encode(),
-        ]
-        .concat();
+        let request = vft_io::Mint::encode_call(msg_src, value);
 
         msg::send_bytes_with_gas_for_reply(
             ft_address,
@@ -292,6 +292,7 @@ pub async fn finish_single_game(
         maximum_possible_points,
         maximum_number_gold_coins: storage.config.max_number_gold_coins,
         maximum_number_silver_coins: storage.config.max_number_silver_coins,
+        player_address: msg_src,
     })
 }
 
@@ -448,6 +449,7 @@ pub fn record_tournament_result(
         maximum_possible_points,
         maximum_number_gold_coins: storage.config.max_number_gold_coins,
         maximum_number_silver_coins: storage.config.max_number_silver_coins,
+        player_address: msg_src,
     })
 }
 
