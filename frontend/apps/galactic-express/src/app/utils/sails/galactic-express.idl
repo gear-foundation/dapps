@@ -1,0 +1,90 @@
+type Participant = struct {
+  id: actor_id,
+  name: str,
+  fuel_amount: u8,
+  payload_amount: u8,
+};
+
+type State = struct {
+  games: vec struct { actor_id, GameState },
+  player_to_game_id: vec struct { actor_id, actor_id },
+  dns_info: opt struct { actor_id, str },
+  admin: actor_id,
+};
+
+type GameState = struct {
+  admin: actor_id,
+  admin_name: str,
+  altitude: u16,
+  weather: Weather,
+  reward: u128,
+  stage: StageState,
+  bid: u128,
+};
+
+type Weather = enum {
+  Clear,
+  Cloudy,
+  Rainy,
+  Stormy,
+  Thunder,
+  Tornado,
+};
+
+type StageState = enum {
+  Registration: vec struct { actor_id, Participant },
+  Results: Results,
+};
+
+type Results = struct {
+  turns: vec vec struct { actor_id, Turn },
+  rankings: vec struct { actor_id, u128 },
+  participants: vec struct { actor_id, Participant },
+};
+
+type Turn = enum {
+  Alive: struct { fuel_left: u8, payload_amount: u8 },
+  Destroyed: HaltReason,
+};
+
+type HaltReason = enum {
+  PayloadOverload,
+  FuelOverload,
+  SeparationFailure,
+  AsteroidCollision,
+  FuelShortage,
+  EngineFailure,
+};
+
+constructor {
+  New : (dns_id_and_name: opt struct { actor_id, str });
+};
+
+service GalacticExpress {
+  CancelGame : () -> null;
+  CancelRegister : () -> null;
+  ChangeAdmin : (new_admin: actor_id) -> null;
+  CreateNewSession : (name: str) -> null;
+  DeletePlayer : (player_id: actor_id) -> null;
+  Kill : (inheritor: actor_id) -> null;
+  LeaveGame : () -> null;
+  Register : (creator: actor_id, participant: Participant) -> null;
+  StartGame : (fuel_amount: u8, payload_amount: u8) -> null;
+  query Admin : () -> actor_id;
+  query All : () -> State;
+  query DnsInfo : () -> opt struct { actor_id, str };
+  query GetGame : (player_id: actor_id) -> opt GameState;
+
+  events {
+    GameFinished: Results;
+    NewSessionCreated: struct { altitude: u16, weather: Weather, reward: u128, bid: u128 };
+    Registered: struct { actor_id, Participant };
+    RegistrationCanceled;
+    PlayerDeleted: struct { player_id: actor_id };
+    GameCanceled;
+    GameLeft;
+    AdminChanged: struct { new_admin: actor_id };
+    Killed: struct { inheritor: actor_id };
+  }
+};
+

@@ -1,16 +1,16 @@
-[![Open in Gitpod](https://img.shields.io/badge/Open_in-Gitpod-white?logo=gitpod)](https://gitpod.io/#FOLDER=varatube/https://github.com/gear-foundation/dapps)
-[![Docs](https://img.shields.io/github/actions/workflow/status/gear-foundation/dapps/contracts.yml?logo=rust&label=docs)](https://dapps.gear.rs/varatube_io)
+# [VaraTube](https://wiki.vara.network/docs/examples/Infra/varatube)
 
-# [VaraTube](https://wiki.gear-tech.io/docs/examples/Infra/varatube)
+⚙️ **Note**: The project code is developed using the [Sails](https://github.com/gear-tech/sails) framework.
+
 
 ### 🏗️ Building
 
 ```sh
-cargo b -p "varatube*"
+cargo b -r -p "varatube"
 ```
 
 ### ✅ Testing
 
 ```sh
-cargo t -p "varatube*"
+cargo t -r -p "varatube-app"
 ```

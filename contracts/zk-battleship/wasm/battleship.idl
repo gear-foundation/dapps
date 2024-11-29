@@ -1,0 +1,337 @@
+type VerifyingKeyBytes = struct {
+  alpha_g1_beta_g2: vec u8,
+  gamma_g2_neg_pc: vec u8,
+  delta_g2_neg_pc: vec u8,
+  ic: vec vec u8,
+};
+
+type Configuration = struct {
+  gas_for_delete_single_game: u64,
+  gas_for_delete_multiple_game: u64,
+  gas_for_check_time: u64,
+  gas_for_delete_session: u64,
+  delay_for_delete_single_game: u32,
+  delay_for_delete_multiple_game: u32,
+  delay_for_check_time: u32,
+  minimum_session_duration_ms: u64,
+  block_duration_ms: u64,
+};
+
+type VerificationVariables = struct {
+  proof_bytes: ProofBytes,
+  public_input: PublicMoveInput,
+};
+
+type ProofBytes = struct {
+  a: vec u8,
+  b: vec u8,
+  c: vec u8,
+};
+
+type PublicMoveInput = struct {
+  out: u8,
+  hit: u8,
+  hash: vec u8,
+};
+
+type PublicStartInput = struct {
+  hash: vec u8,
+};
+
+type MultipleGameState = struct {
+  admin: actor_id,
+  participants_data: vec struct { actor_id, ParticipantInfo },
+  create_time: u64,
+  start_time: opt u64,
+  last_move_time: u64,
+  status: Status,
+  bid: u128,
+};
+
+type ParticipantInfo = struct {
+  name: str,
+  board: vec Entity,
+  ship_hash: vec u8,
+  total_shots: u8,
+  succesfull_shots: u8,
+};
+
+type Entity = enum {
+  Empty,
+  Unknown,
+  Occupied,
+  Ship,
+  Boom,
+  BoomShip,
+  DeadShip,
+};
+
+type Status = enum {
+  Registration,
+  VerificationPlacement: opt actor_id,
+  PendingVerificationOfTheMove: struct { actor_id, u8 },
+  Turn: actor_id,
+};
+
+type MultipleUtilsStepResult = enum {
+  Missed,
+  Injured,
+  Killed,
+};
+
+type SignatureData = struct {
+  key: actor_id,
+  duration: u64,
+  allowed_actions: vec ActionsForSession,
+};
+
+type ActionsForSession = enum {
+  PlaySingleGame,
+  PlayMultipleGame,
+};
+
+type Session = struct {
+  key: actor_id,
+  expires: u64,
+  allowed_actions: vec ActionsForSession,
+  expires_at_block: u32,
+};
+
+type SingleGame = struct {
+  player_board: vec Entity,
+  ship_hash: vec u8,
+  bot_ships: Ships,
+  start_time: u64,
+  total_shots: u8,
+  succesfull_shots: u8,
+  last_move_time: u64,
+  verification_requirement: opt u8,
+};
+
+type Ships = struct {
+  ship_1: vec u8,
+  ship_2: vec u8,
+  ship_3: vec u8,
+  ship_4: vec u8,
+};
+
+type SingleGameState = struct {
+  player_board: vec Entity,
+  ship_hash: vec u8,
+  start_time: u64,
+  total_shots: u8,
+  succesfull_shots: u8,
+  last_move_time: u64,
+  verification_requirement: opt u8,
+};
+
+type BattleshipParticipants = enum {
+  Player,
+  Bot,
+};
+
+type SingleUtilsStepResult = enum {
+  Missed,
+  Injured,
+  Killed,
+};
+
+constructor {
+  New : (builtin_bls381: actor_id, verification_key_for_start: VerifyingKeyBytes, verification_key_for_move: VerifyingKeyBytes, config: Configuration);
+};
+
+service Admin {
+  ChangeAdmin : (new_admin: actor_id) -> null;
+  ChangeBuiltinAddress : (new_builtin_address: actor_id) -> null;
+  ChangeConfiguration : (configuration: Configuration) -> null;
+  ChangeVerificationKey : (new_vk_for_start: opt VerifyingKeyBytes, new_vk_for_move: opt VerifyingKeyBytes) -> null;
+  DeleteMultipleGame : (game_id: actor_id) -> null;
+  DeleteMultipleGamesByTime : (time: u64) -> null;
+  DeleteMultipleGamesInBatches : (divider: u64) -> null;
+  DeleteSingleGame : (player_address: actor_id) -> null;
+  DeleteSingleGames : (time: u64) -> null;
+  Kill : (inheritor: actor_id) -> null;
+  query Admin : () -> actor_id;
+  query Builtin : () -> actor_id;
+  query Configuration : () -> Configuration;
+  query VerificationKey : () -> struct { VerifyingKeyBytes, VerifyingKeyBytes };
+
+  events {
+    GameDeleted;
+    GamesDeleted;
+    AdminChanged;
+    BuiltinAddressChanged;
+    VerificationKeyChanged;
+    ConfigurationChanged;
+    Killed: struct { inheritor: actor_id };
+  }
+};
+
+service Multiple {
+  /// Cancels an existing game for a player and updates the game storage accordingly.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
+  CancelGame : (session_for_account: opt actor_id) -> null;
+  /// Checks the timing of a game and updates the game state accordingly.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `game_id` - The `ActorId` representing the ID of the game to check.
+  /// * `check_time` - A 64-bit unsigned integer representing the time to check against.
+  ///     
+  /// # Note
+  /// The source of the message can only be the program itself.
+  CheckOutTiming : (game_id: actor_id, check_time: u64) -> null;
+  /// Creates a new game instance for a player and stores it in the game storage.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
+  CreateGame : (name: str, session_for_account: opt actor_id) -> null;
+  /// Deletes an existing game from the storage based on the game ID and creation time.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `game_id` - The `ActorId` representing the ID of the game to delete.
+  /// * `create_time` - A 64-bit unsigned integer representing the creation time of the game.
+  /// 
+  /// # Note
+  /// The source of the message can only be the program itself.
+  DeleteGame : (game_id: actor_id, create_time: u64) -> null;
+  DeletePlayer : (removable_player: actor_id, session_for_account: opt actor_id) -> null;
+  /// Joins an existing game with the specified game ID for a player and updates the game storage.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `game_id` - The `ActorId` representing the ID of the game to join.
+  /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
+  JoinGame : (game_id: actor_id, name: str, session_for_account: opt actor_id) -> null;
+  /// Allows a player to leave a game and updates the game storage accordingly.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
+  LeaveGame : (session_for_account: opt actor_id) -> null;
+  /// Executes a player's move in the game, including verification of the move if required.
+  /// 
+  /// This function handles the following steps:
+  /// 1. Validates that either verification variables or a step is provided.
+  /// 2. Retrieves the player associated with the current session.
+  /// 3. Checks the current game state to ensure the move is valid.
+  /// 4. If verification variables are provided, it verifies the move using zk proof verification:
+  ///     - Prepares input bytes for verification.
+  ///     - Verifies the proof against the public inputs.
+  ///     - If the proof is valid, processes the move and updates the game state.
+  /// 5. If no verification is required, directly processes the move.
+  /// 6. Sends a notification based on the event generated by the move.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `game_id` - The unique identifier of the game.
+  /// * `verify_variables` - Optional verification data used for proof verification.
+  /// * `step` - Optional step value representing the player's move.
+  /// * `session_for_account` - Optional session identifier for the account making the move.
+  MakeMove : (game_id: actor_id, verify_variables: opt VerificationVariables, step: opt u8, session_for_account: opt actor_id) -> null;
+  /// Verifies the placement of ships in a multiplayer game using zero-knowledge proofs.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `proof` - A zero-knowledge proof in the form of `ProofBytes`.
+  /// * `public_input` - Public input data required for the verification process.
+  /// * `session_for_account` - An optional `ActorId` representing an account session abstraction.
+  /// * `game_id` - The `ActorId` representing the ID of the game to verify.
+  VerifyPlacement : (proof: ProofBytes, public_input: PublicStartInput, session_for_account: opt actor_id, game_id: actor_id) -> null;
+  query Game : (player_id: actor_id) -> opt MultipleGameState;
+  query Games : () -> vec struct { actor_id, MultipleGameState };
+  query GamesPairs : () -> vec struct { actor_id, actor_id };
+  query GetRemainingTime : (player_id: actor_id) -> opt u64;
+
+  events {
+    GameCreated: struct { player_id: actor_id };
+    JoinedTheGame: struct { player_id: actor_id, game_id: actor_id };
+    PlacementVerified: struct { admin: actor_id };
+    GameCanceled: struct { game_id: actor_id };
+    GameLeft: struct { game_id: actor_id };
+    MoveMade: struct { game_id: actor_id, step: opt u8, verified_result: opt struct { u8, MultipleUtilsStepResult }, turn: actor_id };
+    EndGame: struct { admin: actor_id, winner: actor_id, total_time: u64, participants_info: vec struct { actor_id, ParticipantInfo }, last_hit: opt u8 };
+    GameDeleted: struct { game_id: actor_id };
+    PlayerDeleted: struct { game_id: actor_id, removable_player: actor_id };
+  }
+};
+
+service Session {
+  CreateSession : (signature_data: SignatureData, signature: opt vec u8) -> null;
+  DeleteSessionFromAccount : () -> null;
+  DeleteSessionFromProgram : (session_for_account: actor_id) -> null;
+  query SessionForTheAccount : (account: actor_id) -> opt Session;
+  query Sessions : () -> vec struct { actor_id, Session };
+
+  events {
+    SessionCreated;
+    SessionDeleted;
+  }
+};
+
+service Single {
+  CheckOutTiming : (actor_id: actor_id, check_time: u64) -> null;
+  /// Function for deleting a game. This function is called by a delayed message from the program itself
+  /// to delete the game after a certain time, thereby cleaning up the program's state.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `player` - The `ActorId` representing the player associated with the game to be deleted.
+  /// * `start_time` - The start time of the game, represented as a 64-bit unsigned integer. This is used to identify the specific game instance to be deleted.
+  /// 
+  /// # Note
+  /// 
+  /// This function checks that the message source is the program itself (`exec::program_id()`).
+  /// If not, it panics with a message indicating that the function can only be called by the program.
+  DeleteGame : (player: actor_id, start_time: u64) -> null;
+  /// This function processes a move made by a player in a single-player game. It handles both
+  /// regular moves and moves that require verification through a zero-knowledge proof (zk-proof).
+  /// 
+  /// The function performs the following steps:
+  /// 1. Validates the input to ensure that either a step or verification variables are provided.
+  /// 2. Retrieves the `ActorId` of the player making the move, using session information.
+  /// 3. If verification variables are provided, it performs the following sub-steps:
+  ///    a. Validates the current game state to ensure that the move is allowed.
+  ///    b. Prepares the input bytes required for zk-proof verification.
+  ///    c. Verifies the move using zk-proof verification.
+  ///    d. If the verification is successful, it processes the move by calling the `make_move` function
+  ///       with the verified result.
+  /// 4. If no verification is required, it directly processes the move by calling the `make_move` function.
+  /// 5. Sends a notification containing the result of the move.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `step` - An optional `u8` representing the move step made by the player.
+  ///            If `None`, it indicates that a verification process is required.
+  /// * `verify_variables` - An optional `VerificationVariables` struct containing
+  ///                        proof bytes and public input required for zk-proof verification.
+  /// * `session_for_account` - An optional `ActorId` representing the session account
+  ///                           being used to make the move.
+  MakeMove : (step: opt u8, verify_variables: opt VerificationVariables, session_for_account: opt actor_id) -> null;
+  /// Function for creating a single-player game using Zero Knowledge (ZK) proofs.
+  /// 
+  /// # Arguments
+  /// 
+  /// * `proof` - Zero Knowledge proof represented as a byte array. Used to verify the correctness of the public input.
+  /// * `public_input` - Public input data to start the game.
+  /// * `session_for_account` - An optional parameter representing an account associated with the game session. This is an account abstraction that can be used for identification or session data storage.
+  StartSingleGame : (proof: ProofBytes, public_input: PublicStartInput, session_for_account: opt actor_id) -> null;
+  query Game : (player_id: actor_id) -> opt SingleGame;
+  query Games : () -> vec struct { actor_id, SingleGameState };
+  query GetRemainingTime : (player_id: actor_id) -> opt u64;
+  query StartTime : (player_id: actor_id) -> opt u64;
+  query TotalShots : (player_id: actor_id) -> opt u8;
+
+  events {
+    SessionCreated;
+    SingleGameStarted;
+    EndGame: struct { player: actor_id, winner: BattleshipParticipants, time: u64, total_shots: u8, succesfull_shots: u8, last_hit: opt u8 };
+    MoveMade: struct { player: actor_id, step: opt u8, step_result: opt SingleUtilsStepResult, bot_step: opt u8 };
+  }
+};
+

@@ -5,7 +5,7 @@ edition.workspace = true
 publish.workspace = true
 
 [dependencies]
-gstd.workspace = true
+gstd = { workspace = true, features = ["debug"] }
 rmrk-io.workspace = true
 rmrk-catalog-io.workspace = true
 primitive-types.workspace = true

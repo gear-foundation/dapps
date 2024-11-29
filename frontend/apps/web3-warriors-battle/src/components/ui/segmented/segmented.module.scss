@@ -1,0 +1,29 @@
+.wrapper {
+  width: 583px;
+  height: 52px;
+  padding: 4px;
+  gap: 1px;
+  border-radius: 12px;
+  background: #eceded;
+  display: flex;
+  // font-family: Geist;
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 24px;
+  text-align: center;
+  color: #58696e;
+}
+
+.option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.3s;
+  border-radius: 10px;
+}
+
+.selected {
+  background: #ffffff;
+  box-shadow: 0px 0.4px 1.2px 0px #00000033;
+}

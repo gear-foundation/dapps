@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import Identicon from '@polkadot/react-identicon';
-import { VaraBalanceNew as VaraBalance } from '@dapps-frontend/ui';
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
 import { cx } from '@/utils';
 
@@ -9,7 +8,7 @@ import { Button } from '@/ui';
 import { WalletModal } from '../WalletModal';
 import styles from './WalletInfo.module.scss';
 
-function WalletInfo({ account, withoutBalance, buttonClassName }: WalletInfoProps) {
+function WalletInfo({ account, buttonClassName }: WalletInfoProps) {
   const { programId } = useDnsProgramIds();
   const [isWalletModalOpen, setIsWalletModalOpen] = useState<boolean>(false);
 
@@ -25,7 +24,6 @@ function WalletInfo({ account, withoutBalance, buttonClassName }: WalletInfoProp
     <>
       {account ? (
         <div className={cx(styles['wallet-info'])}>
-          {!withoutBalance && <VaraBalance />}
           <button className={cx(styles.description)} onClick={handleOpenWalletModal}>
             {programId && (
               <Identicon value={programId} size={21} theme="polkadot" className={cx(styles['description-icon'])} />

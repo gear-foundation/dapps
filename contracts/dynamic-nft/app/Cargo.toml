@@ -1,0 +1,9 @@
+[package]
+name = "dynamic-nft-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+sails-rs.workspace = true
+gstd = { workspace = true, features = ["debug"] }
+vnft-service = { git = "https://github.com/gear-foundation/standards/" }

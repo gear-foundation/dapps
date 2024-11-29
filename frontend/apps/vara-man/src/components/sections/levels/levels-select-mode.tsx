@@ -74,7 +74,7 @@ export function LevelsSelectMode() {
                   </div>
                 </div>
               </div>
-              {item.title === 'Hard' && (
+              {item.title === 'Hardcore' && (
                 <div className="bg-[#EB5757] rounded-b-2xl border border-[var(--stats-theme)] font-semibold text-white flex justify-center items-center gap-1.5">
                   <Icons.blindMode /> Blind mode
                 </div>
