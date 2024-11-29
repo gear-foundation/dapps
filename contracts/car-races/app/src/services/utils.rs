@@ -1,16 +1,13 @@
-#[macro_export]
-macro_rules! event_or_panic_async {
-    ($self:expr, $expr:expr) => {{
-        let result: Result<Event, Error> = $expr().await;
-        match result {
-            Ok(value) => {
-                if let Err(e) = $self.notify_on(value) {
-                    panic!("Error in depositing events: {:?}", e);
-                }
-            }
-            Err(e) => {
-                panic!("Message processing failed with error: {:?}", e);
-            }
-        }
-    }};
+use sails_rs::fmt::Debug;
+use sails_rs::format;
+
+pub fn panicking<T, E: Debug>(res: Result<T, E>) -> T {
+    match res {
+        Ok(v) => v,
+        Err(e) => panic(e),
+    }
+}
+
+pub fn panic(err: impl Debug) -> ! {
+    panic!("{}", &format!("{err:?}"))
 }

@@ -74,7 +74,7 @@ jobs:
             VITE_NODE_ADDRESS=${{ secrets.VITE_NODE_ADDRESS_TESTNET }}
             VITE_DNS_NAME=${{ secrets.VITE_DNS_NAME_BATTLE_NEW }}
             VITE_SENTRY_DSN=${{ secrets.VITE_SENTRY_DSN }}
-            VITE_GASLESS_BACKEND_ADDRESS=${{ secrets.VITE_GASLESS_BACKEND_ADDRESS }}
+            VITE_GTM_ID=${{ secrets.VITE_GTM_ID_BATTLE_NEW }}
 
   deploy-to-k8s:
     needs: [prepair, build-and-push-image]

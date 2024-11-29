@@ -25,7 +25,7 @@
     "./templates/*"
   ],
   "resolutions": {
-    "@polkadot/api": "11.0.2",
-    "@polkadot/types": "11.0.2"
+    "@polkadot/api": "14.3.1",
+    "@polkadot/types": "14.3.1"
   }
 }
