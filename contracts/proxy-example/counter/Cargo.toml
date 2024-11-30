@@ -8,13 +8,13 @@ counter-app = { path = "app" }
 
 [build-dependencies]
 counter-app = { path = "app" }
-sails-rs = { version = "0.7.0", features = ["wasm-builder"] }
-sails-idl-gen = "0.7.0"
+sails-rs = { workspace = true, features = ["wasm-builder"] }
+sails-idl-gen.workspace = true
 
 [dev-dependencies]
 counter = { path = ".", features = ["wasm-binary"] }
 counter-client = { path = "client" }
-sails-rs = { version = "0.7.0", features = ["gtest"] }
+sails-rs = { workspace = true, features = ["gtest"] }
 tokio = { version = "1.41", features = ["rt", "macros"] }
 
 [features]

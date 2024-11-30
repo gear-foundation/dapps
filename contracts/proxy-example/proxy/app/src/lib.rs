@@ -37,8 +37,24 @@ impl ProxyService {
         Self(())
     }
 
-    pub async fn execute(&mut self, bytes: Vec<u8>) -> Vec<u8> {
-        msg::send_bytes_for_reply(self.get().logic_address, bytes, msg::value(), REPLY_DEPOSIT)
+    pub async fn execute_msg(&mut self, bytes: Vec<u8>) -> Vec<u8> {
+        let original_sender = Some(msg::source());
+        let sender_encoded = original_sender.encode();
+        let mut new_payload = bytes.clone();
+        new_payload.extend(sender_encoded);
+        msg::send_bytes_for_reply(
+            self.get().logic_address,
+            new_payload,
+            msg::value(),
+            REPLY_DEPOSIT,
+        )
+        .expect("Error during message sending")
+        .await
+        .expect("Error during getting the reply")
+    }
+
+    pub async fn read_state(&self, bytes: Vec<u8>) -> Vec<u8> {
+        msg::send_bytes_for_reply(self.get().logic_address, bytes, 0, 0)
             .expect("Error during message sending")
             .await
             .expect("Error during getting the reply")
