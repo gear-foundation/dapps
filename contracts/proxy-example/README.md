@@ -73,7 +73,7 @@ fn get_msg_source(&self, msg_source: Option<ActorId>) -> ActorId {
     - If the contract is called via a proxy:
 The proxy forwards the ActorId of the original sender, and msg_source will be Some(ActorId).
     - If the contract is called directly:
-msg_source will be None, and the contract defaults to using msg::source() to determine the sender.
+`msg_source` will be `None`, and the contract defaults to using `msg::source()` to determine the sender.
 ```rust 
 pub fn contribute(&mut self, msg_source: Option<ActorId>) -> u128 {
     self.check_if_proxy();
