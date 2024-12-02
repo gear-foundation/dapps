@@ -11,7 +11,7 @@ This implementation also includes mechanisms for updating the logic contract add
 #### Message Forwarding
 1. **execute_msg**:
 - Forwards state-modifying messages to the logic contract.
-- Includes the original sender (msg::source) in the forwarded message payload to preserve accountability.
+- Includes the original sender (`msg::source()`) in the forwarded message payload to preserve accountability.
 ```rust
 pub async fn execute_msg(&mut self, bytes: Vec<u8>) -> Vec<u8> {
     let original_sender = Some(msg::source());
