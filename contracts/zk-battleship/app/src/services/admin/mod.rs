@@ -2,12 +2,10 @@ use self::storage::{
     admin::AdminStorage, builtin_bls381::BuiltinStorage, configuration::Configuration,
     verification_key::VerificationKeyStorage,
 };
-use crate::services;
-use crate::VerifyingKeyBytes;
+use crate::{services, VerifyingKeyBytes};
 use core::fmt::Debug;
 use gstd::{exec, msg, ActorId, Decode, Encode, String, TypeInfo, Vec};
-use sails_rs::gstd::service;
-use sails_rs::{format, Box};
+use sails_rs::{format, gstd::service, Box};
 use storage::configuration::ConfigurationStorage;
 
 pub mod storage;

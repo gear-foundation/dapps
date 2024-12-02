@@ -1,8 +1,12 @@
 use battle_client::{traits::*, Appearance, Config, Move};
 use gstd::errors::{ErrorReplyReason, SimpleExecutionError};
 use gtest::{Program, System};
-use sails_rs::errors::{Error, RtlError};
-use sails_rs::{calls::*, gtest::calls::*, ActorId, Encode};
+use sails_rs::{
+    calls::*,
+    errors::{Error, RtlError},
+    gtest::calls::*,
+    ActorId, Encode,
+};
 
 const USER_1: u64 = 100;
 const USER_2: u64 = 101;

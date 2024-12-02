@@ -1,10 +1,9 @@
 #![no_std]
 
 use equippable::Assets;
-use gstd::debug;
 use gstd::{
     collections::{BTreeMap, HashMap, HashSet},
-    exec, msg,
+    debug, exec, msg,
     prelude::*,
     ActorId, MessageId,
 };

@@ -6,8 +6,7 @@ use sails_rs::{
 };
 mod funcs;
 use crate::services;
-use vnft_service::utils::TokenId;
-use vnft_service::{Service as VnftService, Storage};
+use vnft_service::{utils::TokenId, Service as VnftService, Storage};
 
 #[derive(Default)]
 pub struct ExtendedStorage {

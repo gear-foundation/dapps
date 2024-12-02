@@ -1,5 +1,7 @@
-use super::sr25519::verify;
-use super::utils::{Result, *};
+use super::{
+    sr25519::verify,
+    utils::{Result, *},
+};
 use crate::admin::storage::configuration::Configuration;
 use gstd::{exec, msg, prelude::*, ActorId, Encode};
 

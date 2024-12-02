@@ -8,8 +8,7 @@ use sails_rs::{
 };
 mod funcs;
 pub mod utils;
-use utils::Config;
-use utils::*;
+use utils::{Config, *};
 
 #[derive(Debug, Default, Clone)]
 struct Storage {

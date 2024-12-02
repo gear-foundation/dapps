@@ -1,8 +1,7 @@
 #![allow(clippy::new_without_default)]
 use collections::HashMap;
 use sails_rs::prelude::*;
-use session::Storage as SessionStorage;
-use session::{ActionsForSession, SessionData};
+use session::{ActionsForSession, SessionData, Storage as SessionStorage};
 pub mod error;
 pub mod game;
 pub mod session;
