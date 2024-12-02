@@ -140,7 +140,7 @@ impl CounterService {
 
     fn only_admin(&self, msg_source: ActorId) {
         assert_eq!(
-           msg_source,
+            msg_source,
             self.get().admin,
             "Only proxy can send this message"
         )
