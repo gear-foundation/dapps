@@ -71,7 +71,7 @@ fn get_msg_source(&self, msg_source: Option<ActorId>) -> ActorId {
 
     To ensure compatibility with a proxy, key methods in the contract include an additional parameter of type `Option<ActorId>`. This parameter (`msg_source`) specifies the actual sender of the message:
     - If the contract is called via a proxy:
-The proxy forwards the ActorId of the original sender, and msg_source will be Some(ActorId).
+The proxy forwards the `ActorId` of the original sender, and `msg_source` will be `Some(ActorId)`.
     - If the contract is called directly:
 `msg_source` will be `None`, and the contract defaults to using `msg::source()` to determine the sender.
 ```rust 
