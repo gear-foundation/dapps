@@ -69,19 +69,11 @@ fn get_msg_source(&self, msg_source: Option<ActorId>) -> ActorId {
 ```
 3. Forwarding Logic in Proxy-Compatible Methods:
 
-<<<<<<< HEAD
-    To ensure compatibility with a proxy, key methods in the contract include an additional parameter of type `Option<ActorId>`. This parameter (`msg_source`) specifies the actual sender of the message:
-    - If the contract is called via a proxy:
-The proxy forwards the `ActorId` of the original sender, and `msg_source` will be `Some(ActorId)`.
-    - If the contract is called directly:
-`msg_source` will be `None`, and the contract defaults to using `msg::source()` to determine the sender.
-=======
     To ensure compatibility with a proxy, key methods in the program include an additional parameter of type `Option<ActorId>`. This parameter (`msg_source`) specifies the actual sender of the message:
     - If the program is called via a proxy:
 The proxy forwards the `ActorId` of the original sender, and `msg_source` will be `Some(ActorId)`.
     - If the program is called directly:
-`msg_source()` will be `None`, and the program defaults to using `msg::source()` to determine the sender.
->>>>>>> 51184c29 (fixed accordting review)
+`msg_source` will be `None`, and the program defaults to using `msg::source()` to determine the sender.
 ```rust 
 pub fn contribute(&mut self, msg_source: Option<ActorId>) -> u128 {
     self.check_if_proxy();
