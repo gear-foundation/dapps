@@ -86,19 +86,20 @@ impl CounterService {
         state.contributions.clear();
     }
 
-    /// This function is used in the old contract to export the migration state.
+    /// This function is used in the old program to export the migration state.
     /// It serializes only the essential fields (`value`, `limit`, and `contributions`)
-    /// needed for transferring to the new contract.
+    /// needed for transferring to the new program.
     pub fn export_migration_state(&self) -> Vec<u8> {
         let state = self.get();
         let export_data = (state.value, state.limit, state.contributions.clone());
         export_data.encode()
     }
 
-    /// This function is used in the new contract to import the migration state.
-    /// It decodes the provided serialized data and updates the contract's internal state
-    /// with the `value`, `limit`, and `contributions` from the previous contract.
+    /// This function is used in the new program to import the migration state.
+    /// It decodes the provided serialized data and updates the program's internal state
+    /// with the `value`, `limit`, and `contributions` from the previous program.
     pub fn import_migration_state(&mut self, encoded_state: Vec<u8>) {
+        self.only_admin(msg::source());
         let (value, limit, contributions) =
             <(u128, u128, BTreeMap<ActorId, u128>)>::decode(&mut encoded_state.as_ref())
                 .expect("Failed to decode migration state");
@@ -110,9 +111,9 @@ impl CounterService {
         state.contributions = contributions;
     }
 
-    /// Stops the execution of the current contract and transfers its remaining `value`
-    /// (balance) to an indicated address (for example, new inheritor contract). This can be used, for example, when deploying
-    /// a new version of the contract.
+    /// Stops the execution of the current program and transfers its remaining `value`
+    /// (balance) to an indicated address (for example, new inheritor program). This can be used, for example, when deploying
+    /// a new version of the program.
     pub async fn kill(&mut self, inheritor: ActorId, msg_source: Option<ActorId>) {
         self.check_if_proxy();
         let msg_source = self.get_msg_source(msg_source);
