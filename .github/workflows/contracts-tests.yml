@@ -42,7 +42,7 @@ jobs:
           toolchain: stable
           target: wasm32-unknown-unknown
           profile: minimal
-          components: clippy
+          components: rustfmt, clippy
 
       - name: Set up Rust (Nightly)
         uses: actions-rs/toolchain@v1
