@@ -22,6 +22,7 @@ macro_rules! declare_storage {
         pub struct $name(());
 
         mod $module {
+            #![allow(static_mut_refs)]
             use super::*;
 
             static mut INSTANCE: Option<$ty> = None;

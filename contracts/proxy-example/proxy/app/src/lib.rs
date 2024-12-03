@@ -1,5 +1,5 @@
 #![no_std]
-
+#![allow(static_mut_refs)]
 use sails_rs::{gstd::msg, prelude::*};
 
 static mut STATE: Option<State> = None;
