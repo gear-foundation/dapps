@@ -1,4 +1,5 @@
 #![allow(clippy::new_without_default)]
+#![allow(static_mut_refs)]
 use collections::HashMap;
 use sails_rs::prelude::*;
 use session::{ActionsForSession, SessionData, Storage as SessionStorage};

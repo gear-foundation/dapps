@@ -1,5 +1,5 @@
 #![no_std]
-
+#![allow(static_mut_refs)]
 use sails_rs::{
     collections::BTreeMap,
     gstd::{exec, msg},
