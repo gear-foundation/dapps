@@ -16,7 +16,7 @@
     "build:error-tracking": "yarn workspace @dapps-frontend/error-tracking build",
     "build:ui": "yarn workspace @dapps-frontend/ui build",
     "build:hooks": "yarn workspace @dapps-frontend/hooks build",
-    "build:ez-transactions": "yarn workspace @dapps-frontend/ez-transactions build",
+    "build:ez-transactions": "yarn workspace gear-ez-transactions build",
     "build:packages": "yarn build:error-tracking && yarn build:ui && yarn build:hooks"
   },
   "workspaces": [

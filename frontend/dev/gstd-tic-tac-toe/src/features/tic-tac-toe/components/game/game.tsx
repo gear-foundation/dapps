@@ -11,7 +11,7 @@ import { TextGradient } from '@/components/ui/text-gradient';
 import { useGame } from '@/features/tic-tac-toe/hooks';
 import { BaseComponentProps } from '@/app/types';
 import { ProgramMetadata } from '@gear-js/api';
-import { EzTransactionsSwitch } from '@dapps-frontend/ez-transactions';
+import { EzTransactionsSwitch } from 'gear-ez-transactions';
 import { SIGNLESS_ALLOWED_ACTIONS } from '@/app/consts';
 
 type GameProps = BaseComponentProps & {

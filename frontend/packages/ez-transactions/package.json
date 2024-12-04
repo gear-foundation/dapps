@@ -1,5 +1,5 @@
 {
-  "name": "@dapps-frontend/ez-transactions",
+  "name": "gear-ez-transactions",
   "version": "0.0.4",
   "type": "module",
   "private": true,
@@ -41,6 +41,6 @@
   "files": [
     "dist"
   ],
-  "main": "dist/ez-transactions.js",
+  "main": "dist/gear-ez-transactions.js",
   "types": "dist/index.d.ts"
 }
