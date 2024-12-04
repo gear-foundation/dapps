@@ -2,7 +2,6 @@
   "name": "gear-ez-transactions",
   "version": "0.0.4",
   "type": "module",
-  "private": true,
   "scripts": {
     "start": "vite dev -p 6006",
     "build": "tsc && vite build",
