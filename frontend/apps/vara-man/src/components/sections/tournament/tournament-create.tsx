@@ -6,7 +6,7 @@ import { Input, Select, Button } from '@gear-js/vara-ui';
 import { useApp } from '@/app/context/ctx-app';
 
 import { SpriteIcon } from '@/components/ui/sprite-icon';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import { useEzTransactions } from 'gear-ez-transactions';
 import { useCreateNewTournamentMessage } from '@/app/utils';
 import { Level } from '@/app/utils';
 

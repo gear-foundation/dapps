@@ -3,7 +3,7 @@ import { useAccount } from '@gear-js/react-hooks';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { useLocation } from 'react-router-dom';
 import { useDnsProgramIds, useProgramMetadata } from '@dapps-frontend/hooks';
-import { useSignlessSendMessage } from '@dapps-frontend/ez-transactions';
+import { useSignlessSendMessage } from 'gear-ez-transactions';
 
 import meta from './assets/meta/battleship.meta.txt';
 import { IGameInstance } from './types';

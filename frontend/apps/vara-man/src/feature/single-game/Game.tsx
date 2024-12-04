@@ -7,7 +7,7 @@ import { useApp } from '@/app/context/ctx-app';
 import { findMapLevel } from '../game/utils/findMapLevel';
 import { GameEngine } from '../game/models/Game';
 import { COINS, GAME_OVER } from '../game/consts';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import { useEzTransactions } from 'gear-ez-transactions';
 import useOnScreen from '@/hooks/use-on-screen';
 import { Level, useFinishSingleGameMessage } from '@/app/utils';
 
