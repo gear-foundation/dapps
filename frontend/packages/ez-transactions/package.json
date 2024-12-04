@@ -1,8 +1,7 @@
 {
-  "name": "@dapps-frontend/ez-transactions",
+  "name": "gear-ez-transactions",
   "version": "0.0.4",
   "type": "module",
-  "private": true,
   "scripts": {
     "start": "vite dev -p 6006",
     "build": "tsc && vite build",
@@ -41,6 +40,6 @@
   "files": [
     "dist"
   ],
-  "main": "dist/ez-transactions.js",
+  "main": "dist/gear-ez-transactions.js",
   "types": "dist/index.d.ts"
 }

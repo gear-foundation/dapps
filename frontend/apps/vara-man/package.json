@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
-    "@dapps-frontend/ez-transactions": "workspace:*",
     "@dapps-frontend/hooks": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.39.0",
@@ -42,6 +41,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "1.2.1",
     "framer-motion": "10.12.4",
+    "gear-ez-transactions": "workspace:*",
     "jotai": "2.7.0",
     "lodash": "4.17.21",
     "lucide-react": "0.220.0",

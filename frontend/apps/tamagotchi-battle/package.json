@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
-    "@dapps-frontend/ez-transactions": "workspace:*",
     "@dapps-frontend/hooks": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@fireworks-js/react": "2.10.7",
@@ -33,6 +32,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "1.2.1",
     "framer-motion": "9.0.7",
+    "gear-ez-transactions": "workspace:*",
     "jotai": "^2.4.3",
     "keen-slider": "6.8.5",
     "nanoid": "4.0.1",
