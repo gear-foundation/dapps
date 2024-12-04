@@ -14,7 +14,7 @@
     "@dapps-frontend/hooks": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.39.0",
-    "@gear-js/react-hooks": "0.14.0",
+    "@gear-js/react-hooks": "0.14.1",
     "@headlessui/react": "1.7.17",
     "@polkadot/api": "14.3.1",
     "@polkadot/types": "14.3.1",
