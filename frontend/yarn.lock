@@ -18642,6 +18642,7 @@ __metadata:
     eslint-plugin-react: "npm:7.34.1"
     eslint-plugin-react-hooks: "npm:4.6.0"
     ipfs-http-client: "npm:57.0.1"
+    jotai: "npm:2.7.1"
     react: "npm:18.2.0"
     react-app-rewired: "npm:2.2.1"
     react-dom: "npm:18.2.0"

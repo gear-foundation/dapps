@@ -26,11 +26,11 @@ function List({ heading, filter, NFTs }: Props) {
 
   const getNFTs = () =>
     list?.map((nft) => {
-      const { id, ownerId } = nft;
-      const isOwner = account?.decodedAddress === ownerId;
+      const { token_id, owner } = nft;
+      const isOwner = account?.decodedAddress === owner;
       const { name, path, src, text, price, button } = getNFTProps(nft, isOwner);
 
-      return <NFT key={id} path={path} src={src} name={name} text={text} price={price} button={button} />;
+      return <NFT key={token_id} path={path} src={src} name={name} text={text} price={price} button={button} />;
     });
 
   return (

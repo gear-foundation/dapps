@@ -1,41 +1,25 @@
-import { useAlert, useApi } from '@gear-js/react-hooks';
-import { ADDRESS } from 'consts';
-import { useEffect, useState } from 'react';
-import { NFT, MarketNFT, BaseNFT } from 'types';
-import { useMarketplace, useMarketplaceMeta, useMarketplaceStateBuffer } from './marketplace';
-import { useStateMetadata } from './metadata';
-import { useNftMeta, useNftStateBuffer, useOwnersNft } from './nft';
+import { useAccount, useAlert, useApi } from '@gear-js/react-hooks';
+import { useEffect, useMemo, useState } from 'react';
+import { MarketNFT, NFT } from 'types';
+import { useGetMarketQuery, useNftProgram, useTokensForOwnerQuery } from 'app/utils';
+import { MarketState } from 'app/utils/sails/nft_marketplace';
 
-function useMergedNFTs() {
+function useMergedNFTs(items?: MarketState['items']) {
   const { api } = useApi();
   const alert = useAlert();
 
-  const { NFTs: marketNFTs } = useMarketplace();
-  const nftMetadata = useNftMeta();
-  const nftStateBuffer = useNftStateBuffer();
-  const nftStateMetadata = useStateMetadata(nftStateBuffer);
+  const nftProgram = useNftProgram();
 
   const [NFTs, setNFTs] = useState<NFT[]>([]);
   const [isEachNFTRead, setIsEachNFTRead] = useState(false);
 
   useEffect(() => {
-    if (!api || !marketNFTs || !nftStateBuffer || !nftStateMetadata || !nftMetadata) return;
+    if (!api || !items || !nftProgram) return;
 
-    const combinedNFTs = marketNFTs.map((marketNft) =>
-      api.programState
-        .readUsingWasm(
-          {
-            programId: ADDRESS.NFT_CONTRACT,
-            fn_name: 'token',
-            wasm: nftStateBuffer,
-            argument: marketNft.tokenId,
-            payload: '0x',
-          },
-          nftStateMetadata,
-          nftMetadata,
-        )
-        .then((state) => state.toHuman() as BaseNFT)
-        .then((baseNft) => ({ ...marketNft, ...baseNft })),
+    const combinedNFTs = items.map(([_, marketNft]) =>
+      nftProgram.vnft
+        .tokenMetadataById(marketNft.token_id)
+        .then((baseNft) => ({ ...marketNft, ...baseNft!, token_id: parseInt(String(marketNft.token_id), 16) })),
     );
 
     Promise.all(combinedNFTs)
@@ -46,55 +30,45 @@ function useMergedNFTs() {
       .catch(({ message }: Error) => alert.error(message));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [api, marketNFTs]);
+  }, [api, items, nftProgram]);
 
   return { NFTs, isEachNFTRead };
+}
+
+function useMergedAllNFTs() {
+  const { market } = useGetMarketQuery();
+
+  return useMergedNFTs(market?.items);
 }
 
 function useMergedOwnerNFTs() {
-  const { api } = useApi();
-  const alert = useAlert();
+  const { ownerTokens, isFetched: isOwnerTokensFetched } = useTokensForOwnerQuery();
+  const { market, isFetched: isMarketFetched } = useGetMarketQuery();
+  const { account } = useAccount();
 
-  const { NFTs: ownerNFTs } = useOwnersNft();
-  const marketplaceStateBuffer = useMarketplaceStateBuffer();
-  const marketplaceStateMetadata = useStateMetadata(marketplaceStateBuffer);
-  const marketplaceMeta = useMarketplaceMeta();
+  const ownerMarketTokens = useMemo(
+    () => market?.items.filter(([_, { owner }]) => owner === account?.decodedAddress),
+    [market?.items],
+  );
 
-  const [NFTs, setNFTs] = useState<NFT[]>([]);
-  const [isEachNFTRead, setIsEachNFTRead] = useState(false);
+  const { NFTs: ownerMarketNFTs, isEachNFTRead: isMarketNFTRead } = useMergedNFTs(ownerMarketTokens);
 
-  useEffect(() => {
-    if (!api || !ownerNFTs || !marketplaceStateBuffer || !marketplaceStateMetadata || !marketplaceMeta) return;
+  const isEachNFTRead = isOwnerTokensFetched && isMarketFetched && isMarketNFTRead;
 
-    const combinedNFTs = ownerNFTs.map(
-      (baseNft) =>
-        api.programState
-          .readUsingWasm(
-            {
-              programId: ADDRESS.MARKETPLACE_CONTRACT,
-              fn_name: 'item_info',
-              wasm: marketplaceStateBuffer,
-              argument: { nft_contract_id: ADDRESS.NFT_CONTRACT, token_id: baseNft.id },
-              payload: '0x',
-            },
-            marketplaceStateMetadata,
-            marketplaceMeta,
-          )
-          .then((state) => state.toHuman() as MarketNFT)
-          .then((marketNft) => ({ ...marketNft, ...baseNft })), // order is important
-    );
+  const ownerNFTs = useMemo(() => {
+    if (!ownerTokens || !market || !account || !isEachNFTRead) return [];
 
-    Promise.all(combinedNFTs)
-      .then((result) => {
-        setNFTs(result);
-        setIsEachNFTRead(true);
-      })
-      .catch(({ message }: Error) => alert.error(message));
+    const mergedOwnerTokens = ownerTokens.map(([tokenId, baseNft]) => {
+      const marketNft = market.items.find(([_, { token_id }]) => token_id === tokenId)?.[1] as MarketNFT;
+      return { ...marketNft, ...baseNft, token_id: parseInt(String(tokenId), 16), owner: account.decodedAddress }; // order is important
+    });
+
+    return [...ownerMarketNFTs, ...mergedOwnerTokens];
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [api, ownerNFTs, marketplaceStateBuffer, marketplaceStateMetadata]);
+  }, [ownerTokens, market, ownerMarketNFTs]);
 
-  return { NFTs, isEachNFTRead };
+  return { ownerNFTs, isEachNFTRead };
 }
 
-export { useMergedNFTs, useMergedOwnerNFTs };
+export { useMergedAllNFTs, useMergedOwnerNFTs };

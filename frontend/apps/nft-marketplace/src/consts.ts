@@ -12,4 +12,6 @@ const LOCAL_STORAGE = {
   ACCOUNT: 'account',
 };
 
-export { ADDRESS, LOCAL_STORAGE };
+const MIN_PRICE = 1000000000000;
+
+export { ADDRESS, LOCAL_STORAGE, MIN_PRICE };

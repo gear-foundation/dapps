@@ -1,0 +1,43 @@
+type TokenMetadata = struct {
+  name: str,
+  description: str,
+  media: str,
+  reference: str,
+};
+
+constructor {
+  New : (name: str, symbol: str);
+};
+
+service Vnft {
+  Burn : (from: actor_id, token_id: u256) -> null;
+  GrantAdminRole : (to: actor_id) -> null;
+  GrantBurnerRole : (to: actor_id) -> null;
+  GrantMinterRole : (to: actor_id) -> null;
+  Mint : (to: actor_id, token_metadata: TokenMetadata) -> null;
+  RevokeAdminRole : (from: actor_id) -> null;
+  RevokeBurnerRole : (from: actor_id) -> null;
+  RevokeMinterRole : (from: actor_id) -> null;
+  Approve : (approved: actor_id, token_id: u256) -> null;
+  Transfer : (to: actor_id, token_id: u256) -> null;
+  TransferFrom : (from: actor_id, to: actor_id, token_id: u256) -> null;
+  query Admins : () -> vec actor_id;
+  query Burners : () -> vec actor_id;
+  query Minters : () -> vec actor_id;
+  query TokenId : () -> u256;
+  query TokenMetadataById : (token_id: u256) -> opt TokenMetadata;
+  query TokensForOwner : (owner: actor_id) -> vec struct { u256, TokenMetadata };
+  query BalanceOf : (owner: actor_id) -> u256;
+  query GetApproved : (token_id: u256) -> actor_id;
+  query Name : () -> str;
+  query OwnerOf : (token_id: u256) -> actor_id;
+  query Symbol : () -> str;
+
+  events {
+    Minted: struct { to: actor_id, token_metadata: TokenMetadata };
+    Burned: struct { from: actor_id, token_id: u256 };
+    Transfer: struct { from: actor_id, to: actor_id, token_id: u256 };
+    Approval: struct { owner: actor_id, approved: actor_id, token_id: u256 };
+  }
+};
+
