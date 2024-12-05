@@ -10,7 +10,6 @@ export const useGetMarketQuery = () => {
     serviceName: 'nftMarketplace',
     functionName: 'getMarket',
     args: [],
-    query: { enabled: account ? undefined : false },
     watch: account ? true : false,
   });
 

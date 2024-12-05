@@ -14,7 +14,7 @@ export const useOwnerOfQuery = ({ tokenId }: Params) => {
     serviceName: 'vnft',
     functionName: 'ownerOf',
     args: [tokenId],
-    query: { enabled: account && tokenId ? undefined : false },
+    query: { enabled: tokenId ? undefined : false },
     watch: account ? true : false,
   });
 

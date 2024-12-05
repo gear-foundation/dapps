@@ -14,7 +14,7 @@ export const useTokenMetadataByIdQuery = ({ tokenId }: Params) => {
     serviceName: 'vnft',
     functionName: 'tokenMetadataById',
     args: [tokenId],
-    query: { enabled: account && tokenId ? undefined : false },
+    query: { enabled: tokenId ? undefined : false },
     watch: account ? true : false,
   });
 

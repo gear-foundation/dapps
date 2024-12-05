@@ -85,7 +85,7 @@ function useMarketplaceActions(tokenId: string, price: MarketNFT['price'] | unde
         {
           onSuccess: () => {
             alert.info('NFT approved');
-            addMarketData;
+            addMarketData();
           },
         },
       );

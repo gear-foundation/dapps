@@ -1,3 +1,4 @@
+import { useBalanceFormat } from '@gear-js/react-hooks';
 import { ButtonProps } from '@gear-js/ui';
 import { Auction, BaseNFT, MarketNFT, NFT, NFTDetails } from 'types';
 import { getIpfsAddress } from 'utils';
@@ -14,7 +15,7 @@ function getButtonText(isOwner: boolean, isAuction: boolean) {
 
 function getNFTProps(nft: NFT, isOwner: boolean) {
   const { token_id, auction, price, media, name } = nft;
-
+  const { getFormattedBalance } = useBalanceFormat();
   const { current_price } = auction || {};
   const isAuction = !!auction;
 
@@ -22,9 +23,11 @@ function getNFTProps(nft: NFT, isOwner: boolean) {
   const src = getIpfsAddress(media);
   const text = `#${token_id}`;
 
+  const actualPrice = price ?? current_price;
+
   const priceProp = {
     heading: isAuction ? 'Top bid' : 'Price',
-    text: String(price ?? current_price ?? 'None'),
+    text: actualPrice ? getFormattedBalance(actualPrice).value : 'None',
   };
 
   const buttonProp = {

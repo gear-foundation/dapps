@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { useAccount } from '@gear-js/react-hooks';
+import { useAccount, useBalanceFormat } from '@gear-js/react-hooks';
 import { Button } from '@gear-js/ui';
 import { HexString } from '@polkadot/util/types';
 import { ConfirmationModal } from 'components/modals';
@@ -22,10 +22,13 @@ function Offer({ bidder, listingOwner, price }: Props) {
   const { account } = useAccount();
 
   const { acceptOfferMessage } = useAcceptOfferMessage();
+  const { getFormattedBalance } = useBalanceFormat();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const isOwner = account?.decodedAddress === listingOwner;
+
+  const formattedPrice = getFormattedBalance(price).value;
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -43,7 +46,7 @@ function Offer({ bidder, listingOwner, price }: Props) {
     <>
       <div className={styles.offer}>
         <div className={styles.info}>
-          <p className={styles.bid}>{price}</p>
+          <p className={styles.bid}>{formattedPrice}</p>
           <p className={styles.bidder}>{bidder}</p>
         </div>
         {isOwner && <Button text="Accept" size="small" onClick={openModal} />}
@@ -51,7 +54,7 @@ function Offer({ bidder, listingOwner, price }: Props) {
 
       {isModalOpen && (
         <ConfirmationModal
-          heading={`Do you agree to sell the item for ${price}?`}
+          heading={`Do you agree to sell the item for ${formattedPrice}?`}
           close={closeModal}
           onSubmit={accept}
         />

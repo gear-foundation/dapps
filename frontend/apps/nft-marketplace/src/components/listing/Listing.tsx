@@ -1,3 +1,4 @@
+import { useBalanceFormat } from '@gear-js/react-hooks';
 import { ReactNode } from 'react';
 import { Listing as ListingType } from 'types';
 import { Card } from './card';
@@ -12,6 +13,7 @@ type Props = {
 function Listing({ children, item }: Props) {
   const { heading, description, owner, currentWinner, price, src, rarity, attrs, offers } = item;
   const isAnyOffer = !!offers?.length;
+  const { getFormattedBalance } = useBalanceFormat();
 
   const getAttributes = () =>
     attrs &&
@@ -27,7 +29,7 @@ function Listing({ children, item }: Props) {
       ))
       .reverse();
 
-  const priceText = price ? String(price) : undefined;
+  const priceText = price ? getFormattedBalance(price).value : undefined;
   const hasCurrentWinner = currentWinner && Number(currentWinner) !== 0;
 
   return (
