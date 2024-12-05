@@ -1,5 +1,6 @@
 #![allow(clippy::too_many_arguments)]
 #![allow(clippy::new_without_default)]
+#![allow(static_mut_refs)]
 use crate::services;
 use sails_rs::{
     collections::{HashMap, HashSet},
