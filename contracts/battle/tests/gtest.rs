@@ -142,7 +142,7 @@ async fn test() {
 
     println!("\n RES {:?}", result);
 
-    make_move(&mut service_client, Move::Attack, USER_2, program_id)
+    make_move(&mut service_client, Move::Attack, USER_3, program_id)
         .await
         .unwrap();
 
@@ -170,7 +170,7 @@ async fn test() {
 
     service_client
         .start_next_fight()
-        .with_args(GTestArgs::new(USER_3.into()))
+        .with_args(GTestArgs::new(USER_1.into()))
         .send_recv(program_id)
         .await
         .unwrap();
