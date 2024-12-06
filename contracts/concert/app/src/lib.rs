@@ -1,5 +1,5 @@
 #![no_std]
-
+#![allow(static_mut_refs)]
 use core::fmt::Debug;
 use extended_vmt_client::{vmt::io as vmt_io, TokenMetadata as TokenMetadataVmt};
 use gstd::{ext, format};

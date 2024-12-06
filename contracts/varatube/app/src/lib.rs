@@ -1,6 +1,6 @@
 #![no_std]
 #![allow(clippy::new_without_default)]
-
+#![allow(static_mut_refs)]
 use gstd::{exec, msg};
 use sails_rs::{collections::HashMap, prelude::*};
 pub mod funcs;

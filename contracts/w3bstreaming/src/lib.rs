@@ -1,5 +1,5 @@
 #![no_std]
-
+#![allow(static_mut_refs)]
 use gstd::{exec, msg, prelude::*};
 use w3bstreaming_io::{Action, Event, Profile, Program, State, Stream, Subscription};
 

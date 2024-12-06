@@ -97,9 +97,9 @@ gmeta = "1.7.0"
 gclient = "1.7.0"
 gtest = "1.6.1"
 gear-core = "1.7.0"
-sails-idl-gen = "0.7.0"
-sails-rs = "0.7.0"
-sails-client-gen = "0.7.0"
+sails-idl-gen = "0.7.1"
+sails-rs = "0.7.1"
+sails-client-gen = "0.7.1"
 session-service = { git = "https://github.com/gear-foundation/signless-gasless-session-service.git" }
 extended-vft-client = { git = "https://github.com/gear-foundation/standards/"}
 extended-vnft-client = { git = "https://github.com/gear-foundation/standards/"}
