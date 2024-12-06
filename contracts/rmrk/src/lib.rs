@@ -1,5 +1,5 @@
 #![no_std]
-
+#![allow(static_mut_refs)]
 use equippable::Assets;
 use gstd::debug;
 use gstd::{

@@ -1,3 +1,4 @@
+#![allow(static_mut_refs)]
 use super::session::Storage as SessionStorage;
 use crate::services;
 use sails_rs::{
