@@ -74,8 +74,8 @@ async fn test() {
         .await
         .unwrap();
 
-    let warrior_id = init_warrior(remoting.system(), USER_2);
-    println!("warrior_id {:?}", warrior_id);
+    // let warrior_id = init_warrior(remoting.system(), USER_2);
+
     service_client
         .register(
             remoting.actor_id(),
@@ -99,12 +99,10 @@ async fn test() {
         .await
         .unwrap();
 
-    let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
+    // let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
 
-    println!("\n RES {:?}", result);
+    // let warrior_id = init_warrior(remoting.system(), USER_3);
 
-    let warrior_id = init_warrior(remoting.system(), USER_3);
-    println!("warrior_id {:?}", warrior_id);
     service_client
         .register(
             remoting.actor_id(),
@@ -128,9 +126,7 @@ async fn test() {
         .await
         .unwrap();
 
-    let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
-
-    println!("\n RES {:?}", result);
+    // let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
 
     service_client
         .start_battle()
@@ -138,35 +134,26 @@ async fn test() {
         .await
         .unwrap();
 
-    let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
-
-    println!("\n RES {:?}", result);
+    // let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
 
     make_move(&mut service_client, Move::Attack, USER_3, program_id)
         .await
         .unwrap();
 
-    let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
-
-    println!("\n block {:?}", remoting.system().block_height());
-    println!("\n RES {:?}", result);
+    // let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
 
     remoting
         .system()
         .run_to_block(remoting.system().block_height() + 20);
 
-    println!("\n block {:?}", remoting.system().block_height());
-    let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
+    // let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
 
-    println!("\n RES {:?}", result);
 
     remoting
         .system()
         .run_to_block(remoting.system().block_height() + 150);
-    println!("\n block {:?}", remoting.system().block_height());
-    let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
 
-    println!("\n RES {:?}", result);
+    // let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
 
     service_client
         .start_next_fight()
@@ -175,17 +162,13 @@ async fn test() {
         .await
         .unwrap();
 
-    let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
-
-    println!("\n RES {:?}", result);
+    // let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
 
     remoting
         .system()
         .run_to_block(remoting.system().block_height() + 100);
-    println!("\n block {:?}", remoting.system().block_height());
-    let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
 
-    println!("\n RES {:?}", result);
+    // let result = get_battle(&service_client, remoting.actor_id(), program_id).await;
 }
 
 #[tokio::test]
