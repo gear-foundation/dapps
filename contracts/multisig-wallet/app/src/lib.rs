@@ -2,8 +2,7 @@
 #![allow(static_mut_refs)]
 
 use core::cmp::min;
-use sails_rs::gstd::msg;
-use sails_rs::prelude::*;
+use sails_rs::{gstd::msg, prelude::*};
 mod utils;
 use utils::*;
 

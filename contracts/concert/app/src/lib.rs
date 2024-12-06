@@ -1,13 +1,12 @@
 #![no_std]
 #![allow(static_mut_refs)]
 use core::fmt::Debug;
-use extended_vmt_client::vmt::io as vmt_io;
-use extended_vmt_client::TokenMetadata as TokenMetadataVmt;
+use extended_vmt_client::{vmt::io as vmt_io, TokenMetadata as TokenMetadataVmt};
 use gstd::{ext, format};
-use sails_rs::gstd::msg;
 use sails_rs::{
     calls::ActionIo,
     collections::{HashMap, HashSet},
+    gstd::msg,
     prelude::*,
 };
 

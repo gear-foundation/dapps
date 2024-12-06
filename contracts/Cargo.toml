@@ -20,6 +20,8 @@ members = [
     "oracle/randomness",
     "oracle/randomness/state",
     "ping-pong",
+    "proxy-example/counter",
+    "proxy-example/proxy",
     "rmrk",
     "rmrk/catalog",
     "rmrk/resource",
