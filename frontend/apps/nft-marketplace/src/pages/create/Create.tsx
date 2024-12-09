@@ -67,7 +67,6 @@ function Create() {
     const detailsFile =
       isAnyAttribute || isRarity ? getMintDetails(isAnyAttribute ? attributes : undefined, rarity) : undefined;
 
-    console.log('1');
     const files = detailsFile ? [imageFile, detailsFile] : [imageFile];
 
     uploadToIpfs(files)
