@@ -8559,20 +8559,30 @@ dependencies = [
 name = "w3bstreaming"
 version = "1.1.0"
 dependencies = [
- "gear-wasm-builder",
- "gstd",
- "gtest",
- "w3bstreaming-io",
+ "sails-idl-gen",
+ "sails-rs",
+ "tokio",
+ "w3bstreaming",
+ "w3bstreaming-app",
+ "w3bstreaming-client",
 ]
 
 [[package]]
-name = "w3bstreaming-io"
+name = "w3bstreaming-app"
 version = "1.1.0"
 dependencies = [
- "gmeta",
- "gstd",
- "parity-scale-codec",
- "scale-info",
+ "sails-rs",
+]
+
+[[package]]
+name = "w3bstreaming-client"
+version = "1.1.0"
+dependencies = [
+ "mockall",
+ "sails-client-gen",
+ "sails-idl-gen",
+ "sails-rs",
+ "w3bstreaming-app",
 ]
 
 [[package]]
