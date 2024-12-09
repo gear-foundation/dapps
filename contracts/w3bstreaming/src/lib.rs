@@ -1,4 +1,5 @@
 #![no_std]
+#![allow(static_mut_refs)]
 
 #[cfg(target_arch = "wasm32")]
 pub use w3bstreaming_app::wasm::*;

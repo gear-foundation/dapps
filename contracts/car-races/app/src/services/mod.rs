@@ -1,13 +1,13 @@
 #![allow(clippy::new_without_default)]
+#![allow(static_mut_refs)]
 use collections::HashMap;
 use sails_rs::prelude::*;
-use session::Storage as SessionStorage;
-use session::{ActionsForSession, SessionData};
+use session::{ActionsForSession, SessionData, Storage as SessionStorage};
 pub mod error;
 pub mod game;
 pub mod session;
 pub mod utils;
-use crate::event_or_panic_async;
+use crate::services::utils::{panic, panicking};
 use error::Error;
 use game::*;
 pub struct CarRacesService;
@@ -48,6 +48,7 @@ pub struct Config {
 #[derive(Debug, Decode, Encode, TypeInfo)]
 pub enum Event {
     RoundInfo(RoundInfo),
+    GameFinished { player: ActorId },
     Killed { inheritor: ActorId },
 }
 #[service(events = Event)]
@@ -140,43 +141,51 @@ impl CarRacesService {
             &session_for_account,
             ActionsForSession::Move,
         );
-        let game = self.get_game(&player);
+        let game_instance = self.get_game(&player);
 
-        event_or_panic_async!(self, || async move {
-            game.verify_game_state()?;
+        panicking(game_instance.verify_game_state());
 
-            game.apply_strategy_move(strategy_move);
+        game_instance.apply_strategy_move(strategy_move);
 
-            game.state = GameState::Race;
-            game.last_time_step = exec::block_timestamp();
+        game_instance.state = GameState::Race;
+        game_instance.last_time_step = exec::block_timestamp();
 
-            let num_of_cars = game.car_ids.len() as u8;
+        let num_of_cars = game_instance.car_ids.len() as u8;
 
-            game.current_turn = (game.current_turn + 1) % num_of_cars;
+        game_instance.current_turn = (game_instance.current_turn + 1) % num_of_cars;
 
-            let mut round_info: Option<RoundInfo> = None;
+        let mut round_info: Option<RoundInfo> = None;
+        let mut game_finished = false;
+        while !game_instance.is_player_action_or_finished() {
+            panicking(game_instance.process_car_turn().await);
+            if game_instance.current_turn == 0 {
+                game_instance.state = GameState::PlayerAction;
+                game_instance.current_round = game_instance.current_round.saturating_add(1);
 
-            while !game.is_player_action_or_finished() {
-                game.process_car_turn().await?;
-                if game.current_turn == 0 {
-                    game.state = GameState::PlayerAction;
-                    game.current_round = game.current_round.saturating_add(1);
+                game_instance.update_positions();
 
-                    game.update_positions();
+                round_info = Some(create_round_info(game_instance));
 
-                    round_info = Some(create_round_info(game));
-
-                    if game.state == GameState::Finished {
-                        send_msg_to_remove_game_instance(player);
-                    }
+                if game_instance.state == GameState::Finished {
+                    send_msg_to_remove_game_instance(player);
+                    game_finished = true;
                 }
             }
+        }
 
-            match round_info {
-                Some(info) => Ok(Event::RoundInfo(info)),
-                None => Err(Error::UnexpectedState),
+        match round_info {
+            Some(info) => {
+                self.notify_on(Event::RoundInfo(info))
+                    .expect("Notification Error");
+                if game_finished {
+                    self.notify_on(Event::GameFinished { player: msg_src })
+                        .expect("Notification Error");
+                }
             }
-        })
+            None => {
+                panic(Error::UnexpectedState);
+            }
+        }
     }
 
     pub fn remove_game_instance(&mut self, account: ActorId) {

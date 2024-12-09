@@ -1,10 +1,12 @@
 #![no_std]
-
+#![allow(static_mut_refs)]
 use core::fmt::Debug;
+use extended_vmt_client::{vmt::io as vmt_io, TokenMetadata as TokenMetadataVmt};
 use gstd::{ext, format};
-use sails_rs::gstd::msg;
 use sails_rs::{
+    calls::ActionIo,
     collections::{HashMap, HashSet},
+    gstd::msg,
     prelude::*,
 };
 
@@ -141,30 +143,18 @@ impl ConcertService {
             .take(accounts.len())
             .collect();
 
-        let request = [
-            "Vmt".encode(),
-            "BalanceOfBatch".to_string().encode(),
-            (accounts.clone(), tokens.clone()).encode(),
-        ]
-        .concat();
+        let request = vmt_io::BalanceOfBatch::encode_call(accounts.clone(), tokens.clone());
 
         let bytes_reply_balances = msg::send_bytes_for_reply(storage.contract_id, request, 0, 0)
             .expect("Error in async message to Mtk contract")
             .await
             .expect("CONCERT: Error getting balances from the contract");
+        let balances: Vec<U256> =
+            vmt_io::BalanceOfBatch::decode_reply(bytes_reply_balances).unwrap();
 
-        let (_, _, balances) =
-            <(String, String, Vec<U256>)>::decode(&mut bytes_reply_balances.as_ref())
-                .expect("Unable to decode reply");
         // we know each user balance now
         for (i, balance) in balances.iter().enumerate() {
-            let request = [
-                "Vmt".encode(),
-                "Burn".to_string().encode(),
-                (msg_src, tokens[i], balance).encode(),
-            ]
-            .concat();
-
+            let request = vmt_io::Burn::encode_call(msg_src, tokens[i], *balance);
             msg::send_bytes_for_reply(storage.contract_id, request, 0, 0)
                 .expect("Error in async message to Mtk contract")
                 .await
@@ -179,16 +169,20 @@ impl ConcertService {
                 let mut meta = vec![];
                 for (token, token_meta) in actor_md {
                     ids.push(token);
-                    meta.push(token_meta);
+                    let token_meta_vmt = if let Some(token_meta) = token_meta {
+                        Some(TokenMetadataVmt {
+                            title: token_meta.title,
+                            description: token_meta.description,
+                            media: token_meta.media,
+                            reference: token_meta.reference,
+                        })
+                    } else {
+                        None
+                    };
+
+                    meta.push(token_meta_vmt);
                 }
-
-                let request = [
-                    "Vmt".encode(),
-                    "MintBatch".to_string().encode(),
-                    (actor, ids, amounts, meta).encode(),
-                ]
-                .concat();
-
+                let request = vmt_io::MintBatch::encode_call(*actor, ids, amounts, meta);
                 msg::send_bytes_for_reply(storage.contract_id, request, 0, 0)
                     .expect("Error in async message to Mtk contract")
                     .await
@@ -233,13 +227,8 @@ impl ConcertService {
 
         storage.buyers.insert(msg_src);
         storage.tickets_left -= amount;
-        let request = [
-            "Vmt".encode(),
-            "Mint".to_string().encode(),
-            (msg_src, storage.token_id, amount, None::<TokenMetadata>).encode(),
-        ]
-        .concat();
-
+        let request =
+            vmt_io::Mint::encode_call(msg_src, storage.token_id, amount, None::<TokenMetadataVmt>);
         msg::send_bytes_for_reply(storage.contract_id, request, 0, 0)
             .expect("Error in async message to Mtk contract")
             .await

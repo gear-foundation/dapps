@@ -10,7 +10,7 @@ import { BaseComponentProps } from '@/app/types';
 import { useAtom } from 'jotai';
 import { stateChangeLoadingAtom } from '../../store';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import { useEzTransactions } from 'gear-ez-transactions';
 import { GameInstance } from '@/app/utils';
 import { useEventGameFinishedSubscription, useEventMoveMadeSubscription, useTurnMessage } from '../../sails';
 

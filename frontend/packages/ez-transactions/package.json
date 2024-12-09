@@ -1,8 +1,7 @@
 {
-  "name": "@dapps-frontend/ez-transactions",
-  "version": "0.0.2",
+  "name": "gear-ez-transactions",
+  "version": "0.0.4",
   "type": "module",
-  "private": true,
   "scripts": {
     "start": "vite dev -p 6006",
     "build": "tsc && vite build",
@@ -10,16 +9,16 @@
     "preview": "vite preview"
   },
   "peerDependencies": {
-    "@gear-js/api": "0.38.1",
-    "@gear-js/react-hooks": "0.13.0",
+    "@gear-js/api": "0.39.0",
+    "@gear-js/react-hooks": "0.14.1",
     "react": "18.2.0",
     "react-dom": "18.2.0"
   },
   "dependencies": {
     "@gear-js/vara-ui": "0.0.11",
     "@polkadot/keyring": "12.6.2",
-    "@polkadot/react-identicon": "3.6.4",
-    "@polkadot/types": "11.0.2",
+    "@polkadot/react-identicon": "3.11.3",
+    "@polkadot/types": "14.3.1",
     "clsx": "2.0.0",
     "react-hook-form": "7.52.2"
   },
@@ -41,6 +40,6 @@
   "files": [
     "dist"
   ],
-  "main": "dist/ez-transactions.js",
+  "main": "dist/gear-ez-transactions.js",
   "types": "dist/index.d.ts"
 }

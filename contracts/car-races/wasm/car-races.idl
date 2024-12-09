@@ -114,6 +114,7 @@ service CarRacesService {
 
   events {
     RoundInfo: RoundInfo;
+    GameFinished: struct { player: actor_id };
     Killed: struct { inheritor: actor_id };
   }
 };

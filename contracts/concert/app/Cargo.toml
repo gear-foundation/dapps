@@ -7,10 +7,11 @@ license.workspace = true
 [dependencies]
 gstd = { workspace = true, features = ["debug"] }
 sails-rs = { workspace = true, features = ["gtest"] }
+extended-vmt-client.workspace = true
 
 [dev-dependencies]
 gclient.workspace = true
 concert = { path = "../wasm" }
 tokio = "1"
-extended_vmt_wasm = { git = "https://github.com/gear-foundation/standards/"}
+extended-vmt = { git = "https://github.com/gear-foundation/standards/"}
 
