@@ -30,7 +30,7 @@ async fn test_success() {
     let mut service_client = w3bstreaming_client::W3Bstreaming::new(remoting.clone());
 
     service_client
-        .edit_profile(None, None, None)
+        .edit_profile(None, None, None, None)
         .send_recv(program_id)
         .await
         .unwrap();
