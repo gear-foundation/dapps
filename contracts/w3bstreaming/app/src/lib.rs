@@ -41,6 +41,7 @@ pub enum Event {
     StreamDeleted { id: String },
     StreamEdited,
     Subscribed,
+    Unsubscribed,
     ProfileEdited,
     AdminAdded { new_admin_id: ActorId },
     Killed { inheritor: ActorId },
@@ -190,6 +191,33 @@ impl W3bstreamingService {
         });
 
         self.notify_on(Event::Subscribed)
+            .expect("Notification Error");
+    }
+
+    pub fn unsubscribe(&mut self, account_id: ActorId) {
+        let storage = self.get_mut();
+        if !storage.users.contains_key(&account_id) {
+            panic!("The user is not found");
+        }
+
+        let msg_src = msg::source();
+
+        if !storage.users.contains_key(&msg_src) {
+            panic!("You are not registered");
+        }
+
+        storage
+            .users
+            .entry(account_id)
+            .and_modify(|profile| profile.subscribers.retain(|&id| id != msg_src));
+
+        storage.users.entry(msg_src).and_modify(|profile| {
+            profile
+                .subscriptions
+                .retain(|sub| sub.account_id != account_id)
+        });
+
+        self.notify_on(Event::Unsubscribed)
             .expect("Notification Error");
     }
 
