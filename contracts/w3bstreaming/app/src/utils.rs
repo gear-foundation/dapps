@@ -20,6 +20,7 @@ pub struct Profile {
     pub name: Option<String>,
     pub surname: Option<String>,
     pub img_link: Option<String>,
+    pub time_zone: Option<String>,
     pub stream_ids: Vec<String>,
     pub subscribers: Vec<ActorId>,
     pub subscriptions: Vec<Subscription>,

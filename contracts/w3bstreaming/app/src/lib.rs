@@ -227,6 +227,7 @@ impl W3bstreamingService {
         name: Option<String>,
         surname: Option<String>,
         img_link: Option<String>,
+        time_zone: Option<String>,
     ) {
         let storage = self.get_mut();
 
@@ -237,11 +238,13 @@ impl W3bstreamingService {
                 profile.name.clone_from(&name);
                 profile.surname.clone_from(&surname);
                 profile.img_link.clone_from(&img_link);
+                profile.time_zone.clone_from(&img_link);
             })
             .or_insert_with(|| Profile {
                 name,
                 surname,
                 img_link,
+                time_zone,
                 stream_ids: Vec::new(),
                 subscribers: Vec::new(),
                 subscriptions: Vec::new(),
