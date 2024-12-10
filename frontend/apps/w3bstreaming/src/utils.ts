@@ -84,3 +84,10 @@ export const logger = (message: unknown | unknown[]) => {
 
   console.log(time, message);
 };
+
+export const arrayToRecord = <T extends [string, any]>(array: T[]): Record<T[0], T[1]> => {
+  return array.reduce((record, [key, value]) => {
+    (record as any)[key] = value;
+    return record;
+  }, {} as Record<T[0], T[1]>);
+};

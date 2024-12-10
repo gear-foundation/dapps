@@ -13,7 +13,7 @@ export const ADDRESS = {
   NODES: 'https://idea.gear-tech.io/gear-nodes',
   DNS_API_URL: process.env.REACT_APP_DNS_API_URL as string,
   DNS_NAME: process.env.REACT_APP_DNS_NAME as string,
-  IPFS_GATEWAY: 'https://ipfs-gw.gear-tech.io/ipfs' as string,
+  IPFS_GATEWAY: process.env.REACT_APP_IPFS_GATEWAY_ADDRESS as string,
   IPFS_NODE: process.env.REACT_APP_IPFS_ADDRESS as string,
   SIGNALING_SERVER: process.env.REACT_APP_SIGNALING_SERVER || 'ws://127.0.0.1:3001',
   BACKEND_SERVER: process.env.REACT_APP_BACKEND_SERVER || 'http://127.0.0.1:3001',

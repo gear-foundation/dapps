@@ -14529,7 +14529,7 @@ __metadata:
     moment: "npm:2.29.4"
     moment-timezone: "npm:0.5.43"
     rc-time-picker: "npm:^3.7.3"
-    react: "npm:^18.2.0"
+    react: "npm:18.2.0"
     react-app-rewired: "npm:2.2.1"
     react-datepicker: "npm:4.15.0"
     react-dom: "npm:18.2.0"
@@ -21565,7 +21565,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:18.3.1, react@npm:^18.2.0":
+"react@npm:18.3.1":
   version: 18.3.1
   resolution: "react@npm:18.3.1"
   dependencies:
