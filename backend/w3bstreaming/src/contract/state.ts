@@ -1,9 +1,10 @@
 import { HexString } from "@polkadot/util/types";
 
-import { program } from "./init";
+import { initProgram } from "./init";
 import { ProgramState } from "./lib";
 
 export async function getStateUsers(): Promise<ProgramState["users"]> {
+  const program = await initProgram();
   const { users } = await program.w3Bstreaming.getState();
   return users;
 }

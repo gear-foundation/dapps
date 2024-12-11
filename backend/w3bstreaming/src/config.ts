@@ -1,6 +1,6 @@
-import { HexString } from '@gear-js/api';
-import assert from 'assert';
-import { config } from 'dotenv';
+import { HexString } from "@gear-js/api";
+import assert from "assert";
+import { config } from "dotenv";
 
 config();
 
@@ -15,6 +15,8 @@ function getEnv(envName: string, default_?: string): string {
 
 export default {
   port: process.env.PORT || 3001,
-  wsAddress: getEnv('REACT_APP_NODE_ADDRESS', 'wss://testnet.vara-network.io'),
-  programId: getEnv('PROGRAM_ID') as HexString,
+  wsAddress: getEnv("REACT_APP_NODE_ADDRESS", "wss://testnet.vara-network.io"),
+  programId: getEnv("PROGRAM_ID") as HexString,
+  dnsApiUrl: getEnv("REACT_APP_DNS_API_URL"),
+  dnsName: getEnv("REACT_APP_DNS_NAME"),
 };
