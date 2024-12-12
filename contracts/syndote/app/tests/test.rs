@@ -1,5 +1,5 @@
-use sails_rs::calls::*;
 use sails_rs::{
+    calls::*,
     gtest::{calls::*, Program, System},
     Encode, MessageId,
 };

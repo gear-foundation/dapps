@@ -15,8 +15,7 @@ function DropzoneUploader({
   multi,
   previewLinks,
 }: DropzoneUploaderProps) {
-  // const uploadUrl = 'http://127.0.0.1:5001/api/v0/add';
-  const uploadUrl = `${uploadConfig.address}/add`;
+  const uploadUrl = `${uploadConfig.address}`;
   const [preview, setPreview] = useState<string[]>(previewLinks || []);
 
   useEffect(() => {
@@ -33,13 +32,13 @@ function DropzoneUploader({
       body: formData,
     })
       .then((res) => res.json())
-      .then(({ Hash }) => {
+      .then(([{ ipfsHash }]) => {
         const link = `${uploadConfig.gateway}/`;
 
         if (multi) {
-          setPreview((prev) => [...prev, `${link}${Hash}`]);
+          setPreview((prev) => [...prev, `${link}${ipfsHash}`]);
         } else {
-          setPreview([`${link}${Hash}`]);
+          setPreview([`${link}${ipfsHash}`]);
         }
       });
   };

@@ -9,7 +9,7 @@ import { SpriteIcon } from '@/components/ui/sprite-icon';
 import { useApp } from '@/app/context/ctx-app';
 import { GAME_OVER, PRIZE_POOL } from '@/feature/game/consts';
 import { ConfirmCancelModal } from '../modals/confirm-cancel';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import { useEzTransactions } from 'gear-ez-transactions';
 
 export const GamePlayers = () => {
   const { api } = useApi();

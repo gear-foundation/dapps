@@ -1,5 +1,7 @@
-use sails_rs::calls::*;
-use sails_rs::gtest::{calls::*, System};
+use sails_rs::{
+    calls::*,
+    gtest::{calls::*, System},
+};
 use tic_tac_toe::{
     traits::{TicTacToe, TicTacToeFactory},
     Config, GameResult, TicTacToe as TicTacToeClient, TicTacToeFactory as Factory,

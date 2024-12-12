@@ -1,5 +1,4 @@
-use sails_rs::fmt::Debug;
-use sails_rs::format;
+use sails_rs::{fmt::Debug, format};
 
 pub fn panicking<T, E: Debug>(res: Result<T, E>) -> T {
     match res {

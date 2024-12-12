@@ -2,8 +2,10 @@ use dynamic_nft_client::{
     traits::{DynamicNft, DynamicNftFactory},
     DynamicNft as DynamicNftClient, DynamicNftFactory as Factory, TokenMetadata,
 };
-use sails_rs::calls::*;
-use sails_rs::gtest::{calls::*, System};
+use sails_rs::{
+    calls::*,
+    gtest::{calls::*, System},
+};
 
 pub const ADMIN_ID: u64 = 10;
 pub const USER_ID: [u64; 2] = [11, 12];

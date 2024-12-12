@@ -4,9 +4,11 @@ use galactic_express::{
     StageState,
 };
 use gstd::errors::{ErrorReplyReason, SimpleExecutionError};
-use sails_rs::calls::*;
-use sails_rs::errors::{Error, RtlError};
-use sails_rs::gtest::{calls::*, System};
+use sails_rs::{
+    calls::*,
+    errors::{Error, RtlError},
+    gtest::{calls::*, System},
+};
 
 pub const ADMIN: u64 = 10;
 pub const PLAYERS: [u64; 3] = [12, 13, 14];

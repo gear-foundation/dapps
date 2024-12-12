@@ -3,8 +3,11 @@ use concert::{
     Concert as ConcertClient, ConcertFactory as Factory, TokenMetadata,
 };
 use extended_vmt_client::vmt::io as vmt_io;
-use sails_rs::gtest::{calls::*, System};
-use sails_rs::{calls::*, gtest::Program, ActorId, Encode, U256};
+use sails_rs::{
+    calls::*,
+    gtest::{calls::*, Program, System},
+    ActorId, Encode, U256,
+};
 
 pub const USER_ID: u64 = 10;
 pub const TOKEN_ID: U256 = U256::one();

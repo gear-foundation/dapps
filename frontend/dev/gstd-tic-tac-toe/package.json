@@ -10,7 +10,7 @@
   },
   "dependencies": {
     "@dapps-frontend/error-tracking": "workspace:*",
-    "@dapps-frontend/ez-transactions": "workspace:*",
+    "gear-ez-transactions": "workspace:*",
     "@dapps-frontend/hooks": "workspace:*",
     "@dapps-frontend/ui": "workspace:*",
     "@gear-js/api": "0.38.1",

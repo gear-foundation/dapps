@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { BaseComponentProps } from '@/app/types';
 import { useAccount, useAlert } from '@gear-js/react-hooks';
-import { useGaslessTransactions } from '@dapps-frontend/ez-transactions';
+import { useGaslessTransactions } from 'gear-ez-transactions';
 import { useAtom } from 'jotai';
 import { stateChangeLoadingAtom } from '../../store';
 import { useStartGameMessage, useEventGameStartedSubscription } from '../../sails';

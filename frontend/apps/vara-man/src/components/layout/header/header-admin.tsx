@@ -1,7 +1,7 @@
 import { Icons } from '@/components/ui/icons';
 import { useGame } from '@/app/context/ctx-game';
 import { useApp } from '@/app/context/ctx-app';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import { useEzTransactions } from 'gear-ez-transactions';
 import { useChangeStatusMessage } from '@/app/utils';
 
 type HeaderAdminProps = BaseComponentProps & {};
