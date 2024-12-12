@@ -1,5 +1,5 @@
 import { usePrepareProgramTransaction } from '@gear-js/react-hooks';
-import { usePrepareEzTransactionParams } from '@dapps-frontend/ez-transactions';
+import { usePrepareEzTransactionParams } from 'gear-ez-transactions';
 import { useProgram } from '@/app/utils/sails';
 import { ProofBytes, PublicStartInput } from '@/app/utils/sails/lib/lib';
 

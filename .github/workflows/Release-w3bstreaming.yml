@@ -42,7 +42,7 @@ jobs:
       - name: Set IMAGE_NAME
         id: image
         run: |
-          image_name=${{ env.REGISTRY }}:${{ env.branch_name }}-${{ env.sha_short }}
+          image_name=${{ env.REGISTRY }}-${{ env.KUBE_DEPLOYMENT_PREFIX }}:${{ env.branch_name }}-${{ env.sha_short }}
           echo "image_name=$image_name" >> $GITHUB_OUTPUT
 
   build-and-push-image:

@@ -3,6 +3,6 @@ export interface ProfileaInfoProps {}
 export interface FormValues {
   name: string;
   surname: string;
-  imgLink: string;
-  timezone: string;
+  img_link: string;
+  time_zone: string;
 }

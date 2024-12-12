@@ -13,7 +13,7 @@ import { useAtom } from 'jotai';
 import { stateChangeLoadingAtom } from '../../store';
 import { useAccount, useAlert, useHandleCalculateGas } from '@gear-js/react-hooks';
 import { useCheckBalance, useDnsProgramIds } from '@dapps-frontend/hooks';
-import { useEzTransactions } from '@dapps-frontend/ez-transactions';
+import { useEzTransactions } from 'gear-ez-transactions';
 import { withoutCommas } from '@/app/utils';
 import { ProgramMetadata } from '@gear-js/api';
 

@@ -5,8 +5,7 @@
 use sails_rs::prelude::*;
 mod services;
 use crate::services::game::utils::Config;
-use services::game::Service;
-use services::session::SessionService;
+use services::{game::Service, session::SessionService};
 pub struct Program(());
 
 #[program]

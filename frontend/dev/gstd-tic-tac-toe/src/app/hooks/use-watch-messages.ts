@@ -4,7 +4,7 @@ import { UnsubscribePromise } from '@polkadot/api/types';
 import { Bytes } from '@polkadot/types';
 import { ProgramMetadata, UserMessageSent, decodeAddress } from '@gear-js/api';
 import { ContractError } from '../types';
-import { useSignlessTransactions } from '@dapps-frontend/ez-transactions';
+import { useSignlessTransactions } from 'gear-ez-transactions';
 import { useDnsProgramIds } from '@dapps-frontend/hooks';
 
 export function useWatchMessages<T>(meta: ProgramMetadata) {

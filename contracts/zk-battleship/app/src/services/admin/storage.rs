@@ -1,4 +1,5 @@
 pub mod builtin_bls381 {
+    #![allow(static_mut_refs)]
     use gstd::ActorId;
     pub struct BuiltinStorage(());
 
@@ -43,6 +44,7 @@ pub mod builtin_bls381 {
 }
 
 pub mod verification_key {
+    #![allow(static_mut_refs)]
     use crate::services::verify::VerifyingKeyBytes;
     use gstd::Vec;
 
@@ -144,7 +146,7 @@ pub mod verification_key {
 }
 
 pub mod admin {
-
+    #![allow(static_mut_refs)]
     use gstd::ActorId;
     pub struct AdminStorage(());
 
@@ -189,6 +191,7 @@ pub mod admin {
 }
 
 pub mod configuration {
+    #![allow(static_mut_refs)]
     use gstd::{Decode, Encode, TypeInfo};
     pub struct ConfigurationStorage(());
 
