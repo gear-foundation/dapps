@@ -1,8 +1,10 @@
 use extended_vft_client::vft::io as vft_io;
 use gtest::{Log, Program};
-use sails_rs::calls::*;
-use sails_rs::gtest::{calls::*, System};
-use sails_rs::{ActorId, Encode, U256};
+use sails_rs::{
+    calls::*,
+    gtest::{calls::*, System},
+    ActorId, Encode, U256,
+};
 use vara_man::{
     traits::{VaraMan, VaraManFactory},
     Config, Level, Status, VaraMan as VaraManClient, VaraManFactory as Factory,
