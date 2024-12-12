@@ -11,14 +11,12 @@ import StreamSignalSVG from '@/assets/icons/signal-stream-icon.svg';
 import { BroadcastProps, AnswerMsg, CandidateMsg, WatchMsg, StreamStatus, StreamType } from './Broadcast.interface';
 import { ADDRESS } from '@/consts';
 import { TrackIds } from '../../types';
-import { useProgramState } from '@/hooks';
+import { useGetStateQuery } from '@/app/utils';
 
 function Broadcast({ socket, streamId }: BroadcastProps) {
   const { account } = useAccount();
   const navigate = useNavigate();
-  const {
-    state: { streamTeasers },
-  } = useProgramState();
+  const { streams } = useGetStateQuery();
 
   const localVideo: MutableRefObject<HTMLVideoElement | null> = useRef(null);
   const conns: MutableRefObject<Record<string, RTCPeerConnection>> = useRef({});
@@ -555,10 +553,10 @@ function Broadcast({ socket, streamId }: BroadcastProps) {
       {streamStatus === 'loading' && <div className={cx(styles['start-stream-curtain'])}>loading...</div>}
       {streamStatus === 'not-started' && (
         <div className={cx(styles['start-stream-curtain'])}>
-          {streamTeasers?.[streamId]?.imgLink && (
+          {streams?.[streamId]?.img_link && (
             <>
               <img
-                src={streamTeasers?.[streamId]?.imgLink}
+                src={streams?.[streamId]?.img_link}
                 alt="stream background"
                 className={cx(styles['stream-background'])}
               />
